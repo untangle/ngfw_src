@@ -14,13 +14,10 @@ import com.untangle.uvm.util.Pulse;
 public class ConntrackMonitorImpl
 {
     private static final Logger logger = Logger.getLogger(ConntrackMonitorImpl.class);
-    private static final int FREQUENCY = 10*1000; /* 60 seconds */
+    private static final int FREQUENCY = 60*1000; /* 60 seconds */
     
     private final Pulse pulse = new Pulse("conntrack-monitor", true, new ConntrackPulse());
 
-    private static final int maxArrayLength = 64*1024;
-    private final Conntrack[] conntrackArray = new Conntrack[maxArrayLength];
-    
     public ConntrackMonitorImpl()
     {
         pulse.start(FREQUENCY);
@@ -42,7 +39,7 @@ public class ConntrackMonitorImpl
             //     logger.warn("CONNTRACK: " + conntrack.toString());
                 
             //     logger.warn("CONNTRACK: " +
-            //                 conntrack.getId());
+            //                 conntrack.getConntrackId());
             //     logger.warn("CONNTRACK: " +
             //                 conntrack.getProtocol() + " " +
             //                 conntrack.getPreNatClient() + ":" + conntrack.getPreNatClientPort() + " -> " +
@@ -53,6 +50,11 @@ public class ConntrackMonitorImpl
                             
             //     logger.warn("");
             // }
+
+            for ( Conntrack conntrack : entries ) {
+                conntrack.raze();
+            }
+
         }
 
     }

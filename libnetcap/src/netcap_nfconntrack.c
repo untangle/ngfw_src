@@ -82,19 +82,6 @@ int  netcap_nfconntrack_init( int num_handles )
     _netcap_nfconntrack.num_handles = num_handles;
     
     debug( 2, "Initialization completed.\n" );
-
-    /* struct nf_conntrack* foo[500]; */
-    /* int count = netcap_nfconntrack_dump(foo, 500); */
-    /* int i = 0; */
-    /* for ( i = 0; i < count; i++ ) { */
-    /*     struct nf_conntrack* conntrack = foo[i]; */
-    /*     char buf[4096]; */
-    /*     bzero(buf, sizeof(buf)); */
-    /*     nfct_snprintf(buf, sizeof(buf), conntrack, NFCT_T_UNKNOWN, NFCT_O_DEFAULT, NFCT_OF_SHOW_LAYER3 | NFCT_OF_TIMESTAMP); */
-    /*     printf("CONNTRACK: %s\n", buf); */
-    /*     nfct_destroy( conntrack ); */
-    /* } */
-
     return 0;
 }
 

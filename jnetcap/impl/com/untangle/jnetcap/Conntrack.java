@@ -83,97 +83,121 @@ public class Conntrack
     private final static int FLAG_CONNLABELS_MASK = 67;			/* variable length */
     private final static int FLAG_MAX = 68;
     
-    protected static native long   getLongValue  ( int id, long conntrack_ptr );
-    protected static native int    getIntValue   ( int id, long conntrack_ptr );
-    protected static native short  getShortValue ( int id, long conntrack_ptr );
-    protected static native byte   getByteValue  ( int id, long conntrack_ptr );
-    protected static native int    getShortValueAsIntReversedByteOrder   ( int id, long conntrack_ptr );
-    protected static native String toString( long session );
+    protected static native long   getLongValue  ( long conntrack_ptr, int id );
+    protected static native void   setLongValue  ( long conntrack_ptr, int id, long value );
+    protected static native int    getIntValue   ( long conntrack_ptr, int id );
+    protected static native void   setIntValue   ( long conntrack_ptr, int id, int value );
+    protected static native short  getShortValue ( long conntrack_ptr, int id );
+    protected static native void   setShortValue ( long conntrack_ptr, int id, short value );
+    protected static native byte   getByteValue  ( long conntrack_ptr, int id );
+    protected static native void   setByteValue  ( long conntrack_ptr, int id, byte value );
+    protected static native int    getShortValueAsIntReversedByteOrder   ( long conntrack_ptr, int id );
+    protected static native String toString( long conntrack_ptr );
+    protected static native void   destroy( long conntrack_ptr );
     
-    protected Conntrack( CPointer pointer )
+    public Conntrack( long pointer )
+    {
+        if ( pointer == 0 )
+            throw new RuntimeException("Can not create NULL Conntrack entry");
+        this.pointer = new CPointer( pointer );
+    }
+
+    public Conntrack( CPointer pointer )
     {
         if ( pointer == null )
             throw new RuntimeException("Can not create NULL Conntrack entry");
         this.pointer = pointer;
     }
     
-    public int getId()
+    public int getConntrackId()
     {
-        return getIntValue( FLAG_ID, pointer.value() );
+        return getIntValue( pointer.value(), FLAG_ID );
     }
 
+    public long getSessionId()
+    {
+        // we store the session ID in the DCCP handshake field
+        // its not used by use and its 64 bits
+        return getLongValue( pointer.value(), FLAG_DCCP_HANDSHAKE_SEQ );
+    }
+    
     public int getMark()
     {
-        return getIntValue( FLAG_MARK, pointer.value() );
+        return getIntValue( pointer.value(), FLAG_MARK );
     }
     
     public int getProtocol()
     {
-        return getByteValue( FLAG_ORIG_L4PROTO, pointer.value() );
+        return getByteValue( pointer.value(), FLAG_ORIG_L4PROTO );
     }
     
     public InetAddress getOriginalSourceAddress()
     {
-        long addr = getLongValue( FLAG_ORIG_IPV4_SRC, pointer.value() );
+        long addr = getLongValue(  pointer.value(), FLAG_ORIG_IPV4_SRC );
         return Inet4AddressConverter.toAddress( addr );
     }
 
     public InetAddress getOriginalDestinationAddress()
     {
-        long addr = getLongValue( FLAG_ORIG_IPV4_DST, pointer.value() );
+        long addr = getLongValue(  pointer.value(), FLAG_ORIG_IPV4_DST );
         return Inet4AddressConverter.toAddress( addr );
     }
 
     public InetAddress getReplySourceAddress()
     {
-        long addr = getLongValue( FLAG_REPL_IPV4_SRC, pointer.value() );
+        long addr = getLongValue(  pointer.value(), FLAG_REPL_IPV4_SRC );
         return Inet4AddressConverter.toAddress( addr );
     }
 
     public InetAddress getReplyDestinationAddress()
     {
-        long addr = getLongValue( FLAG_REPL_IPV4_DST, pointer.value() );
+        long addr = getLongValue( pointer.value(), FLAG_REPL_IPV4_DST );
         return Inet4AddressConverter.toAddress( addr );
     }
 
     public int getOriginalSourcePort()
     {
-        return getShortValueAsIntReversedByteOrder( FLAG_ORIG_PORT_SRC, pointer.value() );
+        return getShortValueAsIntReversedByteOrder( pointer.value(), FLAG_ORIG_PORT_SRC );
     }
 
     public int getOriginalDestinationPort()
     {
-        return getShortValueAsIntReversedByteOrder( FLAG_ORIG_PORT_DST, pointer.value() );
+        return getShortValueAsIntReversedByteOrder( pointer.value(), FLAG_ORIG_PORT_DST );
     }
 
     public int getReplySourcePort()
     {
-        return getShortValueAsIntReversedByteOrder( FLAG_REPL_PORT_SRC, pointer.value() );
+        return getShortValueAsIntReversedByteOrder( pointer.value(), FLAG_REPL_PORT_SRC );
     }
 
     public int getReplyDestinationPort()
     {
-        return getShortValueAsIntReversedByteOrder( FLAG_REPL_PORT_DST, pointer.value() );
+        return getShortValueAsIntReversedByteOrder( pointer.value(), FLAG_REPL_PORT_DST );
     }
 
     public long getOriginalCounterPackets()
     {
-        return getLongValue( FLAG_ORIG_COUNTER_PACKETS, pointer.value() );
+        return getLongValue( pointer.value(), FLAG_ORIG_COUNTER_PACKETS );
     }
 
     public long getReplyCounterPackets()
     {
-        return getLongValue( FLAG_REPL_COUNTER_PACKETS, pointer.value() );
+        return getLongValue( pointer.value(), FLAG_REPL_COUNTER_PACKETS );
     }
     
     public long getOriginalCounterBytes()
     {
-        return getLongValue( FLAG_ORIG_COUNTER_BYTES, pointer.value() );
+        return getLongValue( pointer.value(), FLAG_ORIG_COUNTER_BYTES );
     }
 
     public long getReplyCounterBytes()
     {
-        return getLongValue( FLAG_REPL_COUNTER_BYTES, pointer.value() );
+        return getLongValue( pointer.value(), FLAG_REPL_COUNTER_BYTES );
+    }
+
+    public byte getIcmpType()
+    {
+        return getByteValue( pointer.value(), FLAG_ICMP_TYPE );
     }
 
     public String toString()
@@ -203,5 +227,21 @@ public class Conntrack
     public Integer  getPostNatClientPort() {return getReplyDestinationPort();}
     public Integer  getPostNatServerPort() {return getReplySourcePort();}
     
+    public void raze()
+    {
+        if ( pointer != null && pointer.value() != 0 ) {
+            destroy( pointer.value() );
+            pointer.raze();
+        }
+    }
+
+    @Override
+    protected void finalize() throws Throwable
+    {
+        if ( pointer != null && pointer.value() != 0 ) {
+            destroy( pointer.value() );
+            pointer.raze();
+        }
+    }
     
 }

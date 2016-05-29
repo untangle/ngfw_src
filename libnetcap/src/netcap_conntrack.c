@@ -44,7 +44,6 @@ struct netcap_ct_entry {
 };
 
 static int  _netcap_conntrack_callback( enum nf_conntrack_msg_type type, struct nf_conntrack *ct, void *data );
-static void _netcap_conntrack_ct_entry_copy(struct netcap_ct_entry *n, struct nf_conntrack *ct);
 
 #define GET_CT_ITEM(elem, attr, x)                              \
         do { n->elem = nfct_get_attr_u##x(ct,(attr)); } while (0)
@@ -101,109 +100,45 @@ void* netcap_conntrack_listen ( void* arg )
 
 }
 
-void netcap_conntrack_null_hook ( int type, long mark, long conntrack_id, u_int64_t session_id, 
-                                  int l3_proto, int l4_proto, int icmp_type,
-                                  long c_client_addr, long c_server_addr,
-                                  int  c_client_port, int c_server_port,
-                                  long s_client_addr, long s_server_addr,
-                                  int  s_client_port, int s_server_port,
-                                  int c2s_packets, int c2s_bytes,
-                                  int s2c_packets, int s2c_bytes,
-                                  long timestamp_start, long timestamp_stop )
+void netcap_conntrack_null_hook ( struct nf_conntrack* ct, int type )
 {
     //do nothing
 }
 
 int _netcap_conntrack_callback( enum nf_conntrack_msg_type type, struct nf_conntrack *ct, void *data )
 {
-        uint32_t mark = nfct_get_attr_u32(ct, ATTR_MARK);
-        struct netcap_ct_entry netcap_ct;
+        struct nf_conntrack *my_ct = nfct_clone(ct); // clone it because ct is gone after this hook returns
+        uint32_t client = nfct_get_attr_u32(my_ct, ATTR_ORIG_IPV4_SRC);
+        uint32_t server = nfct_get_attr_u32(my_ct, ATTR_REPL_IPV4_SRC);
 
-        _netcap_conntrack_ct_entry_copy(&netcap_ct, ct);
-
-        // if its TCP and not bypassed, the event will be logged elsewhere
-        /* if( netcap_ct.l4_proto == 6 && (mark & BYPASS_MARK) != BYPASS_MARK) { */
-        /*     debug( 10, "CONNTRACK: type=6 mark=0x%08x\n", mark ); */
-        /*     return NFCT_CB_CONTINUE; */
-        /* } */
-        // if its UDP and not bypassed, the event will be logged elsewhere
-        /* if( netcap_ct.l4_proto == 17 && (mark & BYPASS_MARK) != BYPASS_MARK) { */
-        /*     debug( 10, "CONNTRACK: type=17 mark=0x%08x\n", mark ); */
-        /*     return NFCT_CB_CONTINUE; */
-        /* } */
         /* ignore sessions from 127.0.0.1 to 127.0.0.1 */
-        if ( netcap_ct.ip4_src_addr == 0x0100007f && netcap_ct.ip4_dst_addr == 0x0100007f ) {
-            //debug( 10, "CONNTRACK: local mark=0x%08x\n", mark );
+        if ( client == 0x0100007f && server == 0x0100007f ) {
+            //debug( 10, "CONNTRACK: local mark=0x%08x\n", nfct_get_attr_u32(my_ct, ATTR_MARK) );
             return NFCT_CB_CONTINUE;
         }
 
-        u_int64_t session_id = 0;
-        
         switch (type) {
         case NFCT_T_DESTROY:
-            debug( 10, "CONNTRACK: type=DESTROY mark=0x%08x %s:%d -> %s:%d\n", mark,
-                   unet_next_inet_ntoa(netcap_ct.ip4_src_addr), netcap_ct.port_src,
-                   unet_next_inet_ntoa(netcap_ct.r_ip4_src_addr), netcap_ct.r_port_src);
+            debug( 10, "CONNTRACK: type=DESTROY mark=0x%08x %s:%d -> %s:%d\n", nfct_get_attr_u32(my_ct, ATTR_MARK),
+                   unet_next_inet_ntoa(client), ntohs(nfct_get_attr_u16(my_ct, ATTR_ORIG_PORT_SRC)),
+                   unet_next_inet_ntoa(server), ntohs(nfct_get_attr_u16(my_ct, ATTR_REPL_PORT_SRC)));
             //_netcap_conntrack_print_ct_entry(10, &netcap_ct);
             break;
         case NFCT_T_NEW:
-            debug( 10, "CONNTRACK: type=NEW mark=0x%08x %s:%d -> %s:%d\n", mark,
-                   unet_next_inet_ntoa(netcap_ct.ip4_src_addr), netcap_ct.port_src,
-                   unet_next_inet_ntoa(netcap_ct.r_ip4_src_addr), netcap_ct.r_port_src);
+            debug( 10, "CONNTRACK: type=NEW mark=0x%08x %s:%d -> %s:%d\n", nfct_get_attr_u32(my_ct, ATTR_MARK),
+                   unet_next_inet_ntoa(client), ntohs(nfct_get_attr_u16(my_ct, ATTR_ORIG_PORT_SRC)),
+                   unet_next_inet_ntoa(server), ntohs(nfct_get_attr_u16(my_ct, ATTR_REPL_PORT_SRC)));
             //_netcap_conntrack_print_ct_entry(10, &netcap_ct);
-            session_id = netcap_session_next_id();
+
+            // we create a new UVM session id and store it in ATTR_DCCP_HANDSHAKE_SEQ
+            nfct_set_attr_u64(my_ct, ATTR_DCCP_HANDSHAKE_SEQ, netcap_session_next_id());
             break;
         default:
             errlog( ERR_WARNING, "CONNTRACK: unknown type: %i\n", type );
             break;
         }
 
-        global_conntrack_hook( type, netcap_ct.mark, netcap_ct.ct_id, session_id,
-                               netcap_ct.l3_proto, netcap_ct.l4_proto, netcap_ct.icmp_type,
-                               netcap_ct.ip4_src_addr, netcap_ct.ip4_dst_addr,
-                               netcap_ct.port_src, netcap_ct.port_dst,
-                               netcap_ct.r_ip4_dst_addr, netcap_ct.r_ip4_src_addr,
-                               netcap_ct.r_port_dst, netcap_ct.r_port_src,
-                               netcap_ct.counter_pkts, netcap_ct.counter_bytes,
-                               netcap_ct.r_counter_pkts, netcap_ct.r_counter_bytes,
-                               netcap_ct.timestamp_start, netcap_ct.timestamp_stop );
-                               
+        global_conntrack_hook( my_ct, type );
         return NFCT_CB_CONTINUE;
 }
 
-void _netcap_conntrack_ct_entry_copy(struct netcap_ct_entry *n, struct nf_conntrack *ct)
-{
-        GET_CT_ITEM(l3_proto, ATTR_ORIG_L3PROTO, 8);
-        GET_CT_ITEM(l4_proto, ATTR_ORIG_L4PROTO, 8);
-
-        GET_CT_ITEM(ip4_src_addr, ATTR_ORIG_IPV4_SRC, 32);
-        GET_CT_ITEM(ip4_dst_addr, ATTR_ORIG_IPV4_DST, 32);
-
-        GET_CT_ITEM(port_src, ATTR_ORIG_PORT_SRC, 16);
-        GET_CT_ITEM(port_dst, ATTR_ORIG_PORT_DST, 16);
-        n->port_src = ntohs(n->port_src);
-        n->port_dst = ntohs(n->port_dst);
-        
-        GET_CT_ITEM(r_ip4_src_addr, ATTR_REPL_IPV4_SRC, 32);
-        GET_CT_ITEM(r_ip4_dst_addr, ATTR_REPL_IPV4_DST, 32);
-
-        GET_CT_ITEM(icmp_type, ATTR_ICMP_TYPE, 8);
-        
-        GET_CT_ITEM(r_port_src, ATTR_REPL_PORT_SRC, 16);
-        GET_CT_ITEM(r_port_dst, ATTR_REPL_PORT_DST, 16);
-        n->r_port_src = ntohs(n->r_port_src);
-        n->r_port_dst = ntohs(n->r_port_dst);
-
-        GET_CT_ITEM(counter_pkts, ATTR_ORIG_COUNTER_PACKETS, 64);
-        GET_CT_ITEM(counter_bytes, ATTR_ORIG_COUNTER_BYTES, 64);
-
-        GET_CT_ITEM(r_counter_pkts, ATTR_REPL_COUNTER_PACKETS, 64);
-        GET_CT_ITEM(r_counter_bytes, ATTR_REPL_COUNTER_BYTES, 64);
-
-        /* XXX - these always returns 0? */
-        GET_CT_ITEM(timestamp_start, ATTR_TIMESTAMP_START, 64);
-        GET_CT_ITEM(timestamp_stop, ATTR_TIMESTAMP_STOP, 64);
-
-        GET_CT_ITEM(ct_id, ATTR_ID, 32);
-        GET_CT_ITEM(mark, ATTR_MARK, 32);
-}

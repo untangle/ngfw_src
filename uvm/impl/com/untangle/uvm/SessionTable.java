@@ -140,6 +140,8 @@ public class SessionTable
                     logger.warn("Missing value in port availability map: " + addr.getHostAddress() + ":" + port );
                 }
             }
+        } else {
+            logger.warn("Failed to remove session: " + tupleKey);
         }
 
         return session;

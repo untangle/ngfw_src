@@ -32,7 +32,7 @@
 #define _HOOK_OBJ_STR     JP_BUILD_NAME( NetcapCallback )
 #define _HOOK_METHOD_NAME "event"
 #define _HOOK_METHOD_DESC "(J)V"
-#define _CONNTRACK_HOOK_METHOD_DESC "(IJJJIIIJJIIJJIIIIIIJJ)V"
+#define _CONNTRACK_HOOK_METHOD_DESC "(JI)V"
 
 /* default session limit ( 0 means no limit ) */
 #define _SESSION_LIMIT_DEFAULT 0
@@ -94,15 +94,7 @@ static void*             _run_thread( void* arg );
 
 static void              _udp_hook( netcap_session_t* netcap_session, void* arg );
 static void              _tcp_hook( netcap_session_t* netcap_session, void* arg );
-static void              _conntrack_hook( int type, long mark, long conntrack_id, u_int64_t session_id,
-                                          int l3_proto, int l4_proto, int icmp_type,
-                                          long c_client_addr, long c_server_addr,
-                                          int  c_client_port, int c_server_port,
-                                          long s_client_addr, long s_server_addr,
-                                          int  s_client_port, int s_server_port,
-                                          int c2s_packets, int c2s_bytes,
-                                          int s2c_packets, int s2c_bytes,
-                                          long timestamp_start, long timestamp_stop );
+static void              _conntrack_hook( struct nf_conntrack* ct, int type );
 
 /* shared hook between the UDP and TCP hooks, these just get the program into java */
 static void              _hook( int protocol, netcap_session_t* netcap_session, void* arg );
@@ -544,15 +536,7 @@ static void              _udp_hook( netcap_session_t* netcap_sess, void* arg )
     }
 }
 
-static void              _conntrack_hook( int type, long mark, long conntrack_id, u_int64_t session_id,
-                                          int l3_proto, int l4_proto, int icmp_type,
-                                          long c_client_addr, long c_server_addr,
-                                          int  c_client_port, int c_server_port,
-                                          long s_client_addr, long s_server_addr,
-                                          int  s_client_port, int s_server_port,
-                                          int c2s_packets, int c2s_bytes,
-                                          int s2c_packets, int s2c_bytes,
-                                          long timestamp_start, long timestamp_stop )
+static void              _conntrack_hook( struct nf_conntrack* ct, int type )
 {
     JNIEnv* env = jmvutil_get_java_env();
     if ( env == NULL ) {
@@ -577,16 +561,7 @@ static void              _conntrack_hook( int type, long mark, long conntrack_id
     debug( 10, "jnetcap: Calling hook\n" );
     
     /* Call the global method */
-    (*env)->CallVoidMethod( env, global_hook, _jnetcap.java.conntrack_event_method_id,
-                            ((jint)type), ((jlong)mark), ((jlong)conntrack_id), ((jlong)session_id),
-                            ((jint)l3_proto), ((jint)l4_proto), ((jint)icmp_type),
-                            ((jlong)c_client_addr), ((jlong)c_server_addr),
-                            ((jint)c_client_port), ((jint)c_server_port),
-                            ((jlong)s_client_addr), ((jlong)s_server_addr),
-                            ((jint)s_client_port), ((jint)s_server_port),
-                            ((jint)c2s_packets), ((jint)c2s_bytes),
-                            ((jint)s2c_packets), ((jint)s2c_bytes),
-                            ((jlong)timestamp_start), ((jlong)timestamp_stop) );
+    (*env)->CallVoidMethod( env, global_hook, _jnetcap.java.conntrack_event_method_id, ((jlong)ct), ((jint)type));
 
     debug( 10, "jnetcap: Exiting hook\n" );
 
