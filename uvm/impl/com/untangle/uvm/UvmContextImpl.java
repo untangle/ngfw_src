@@ -40,15 +40,9 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 {
     private static final UvmContextImpl CONTEXT = new UvmContextImpl();
 
-    private static final String REBOOT_SCRIPT = "/sbin/reboot";
-    private static final String SHUTDOWN_SCRIPT = "/sbin/shutdown";
-    private static final String TIMESYNC_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-force-time-sync";
     private static final String UVM_STATUS_FILE = "/var/run/uvm.status";
     private static final String UPGRADE_PID_FILE = "/var/run/upgrade.pid";
-    private static final String UID_FILE = System.getProperty("uvm.conf.dir") + "/uid";
     private static final String UPGRADE_SPLASH_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-show-upgrade-splash";;
-
-    private static final String CREATE_UID_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-createUID.py";
     private static final String UID_FILE = System.getProperty("uvm.conf.dir") + "/uid";
     private static final String WIZARD_SETTINGS_FILE = System.getProperty("uvm.conf.dir") + "/" + "wizard.js";
     private static final String IS_REGISTERED_FLAG_FILE = System.getProperty("uvm.conf.dir") + "/is-registered-flag";
@@ -56,6 +50,11 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private static final String APPLIANCE_FLAG_FILE = System.getProperty("uvm.conf.dir") + "/appliance-flag";
     private static final String APPLIANCE_MODEL_FILE = System.getProperty("uvm.conf.dir") + "/appliance-model";
 
+    private static final String CREATE_UID_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-createUID.py";
+    private static final String REBOOT_SCRIPT = "/sbin/reboot";
+    private static final String SHUTDOWN_SCRIPT = "/sbin/shutdown";
+    private static final String TIMESYNC_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-force-time-sync";
+    
     private static final String PROPERTY_STORE_URL = "uvm.store.url";
     private static final String DEFAULT_STORE_URL = "https://www.untangle.com/store/open.php";
     private static final String PROPERTY_HELP_URL = "uvm.help.url";
