@@ -29,7 +29,7 @@ public class PolicyManagerApp extends NodeBase implements com.untangle.uvm.node.
     private final Logger logger = Logger.getLogger(getClass());
     private final PipelineConnector[] connectors = new PipelineConnector[] { };
 
-    private final Pulse cleanerPulse = new Pulse("policy-manager-session-cleaner", true, new SessionExpirationWorker(this));
+    private final Pulse cleanerPulse = new Pulse("policy-manager-session-cleaner", new SessionExpirationWorker(this), 60000);
 
     private PolicyManagerSettings settings = new PolicyManagerSettings();
     
@@ -206,7 +206,7 @@ public class PolicyManagerApp extends NodeBase implements com.untangle.uvm.node.
     {
         super.postStart();
         
-        cleanerPulse.start(60000);
+        cleanerPulse.start();
     }
 
     @Override
