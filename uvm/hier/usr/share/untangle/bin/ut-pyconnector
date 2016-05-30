@@ -20,7 +20,7 @@ from uvm import Manager
 from uvm import Uvm
 
 UNTANGLE_CMD_PORTS   = [80,443,993,4443,587,995,8080,53,25]
-UNTANGLE_CMD_SERVERS = ["cmd.untangle.com", "74.123.28.85", "cmd.metaloft.com"]
+UNTANGLE_CMD_SERVERS = ["cmd.untangle.com", "74.123.31.18", "cmd.metaloft.com"]
 RETRY_TIME_LONG = 10
 RETRY_TIME_SHORT = 5
 CERTS_FILE = '/tmp/pyconnector/certs.pem'
@@ -101,6 +101,8 @@ def connect():
      if command_socket != None:
           return
 
+     random.shuffle(UNTANGLE_CMD_SERVERS)
+     random.shuffle(UNTANGLE_CMD_PORTS)
      debug("Connecting to %s:%i..." % (UNTANGLE_CMD_SERVERS[0],UNTANGLE_CMD_PORTS[0]))
 
      try:
@@ -124,8 +126,8 @@ def connect():
           return
      finally:
           # rotate the port list to try a new port
-          UNTANGLE_CMD_SERVERS = UNTANGLE_CMD_SERVERS[1:] + UNTANGLE_CMD_SERVERS[:1]
-          UNTANGLE_CMD_PORTS   = UNTANGLE_CMD_PORTS[1:]   + UNTANGLE_CMD_PORTS[:1]
+          # UNTANGLE_CMD_SERVERS = UNTANGLE_CMD_SERVERS[1:] + UNTANGLE_CMD_SERVERS[:1]
+          # UNTANGLE_CMD_PORTS   = UNTANGLE_CMD_PORTS[1:]   + UNTANGLE_CMD_PORTS[:1]
 
      command_socket_file = command_socket.makefile("rb")
 
