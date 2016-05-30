@@ -52,7 +52,7 @@ public class Pulse implements Runnable
 
     /* The thread priority */
     private int threadPriority;
-    
+
     /**
      * Create a new pulse with the default name and isDaemon setting.
      */
@@ -175,10 +175,12 @@ public class Pulse implements Runnable
         if ( origCount != this.getCount())
             return true;
 
-        try {
-            this.wait( maxWait );
-        } catch ( InterruptedException e ) {
-            logger.debug(logPrefix() + "interrupted while waiting", e );
+        synchronized ( this ) {
+            try {
+                this.wait( maxWait );
+            } catch ( InterruptedException e ) {
+                logger.debug(logPrefix() + "interrupted while waiting", e );
+            }
         }
 
         /* If the count changed, then this waited for one tick to complete */
@@ -214,7 +216,7 @@ public class Pulse implements Runnable
                 long sleepTime = nextTask - System.currentTimeMillis(); // sleep until nextTask
                 if ( sleepTime <= 0 ) {
                     logger.debug(logPrefix() + "delay(" + delay + ") <= 0, firing immediately." );
-                    break;
+                    sleepTime = 0;
                 } else if ( sleepTime < DELAY_MINIMUM ) {
                     logger.debug(logPrefix() + "delay(" + delay + ") < " + DELAY_MINIMUM + " less than minimum.");
                 }
