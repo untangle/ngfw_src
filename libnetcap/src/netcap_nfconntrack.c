@@ -51,8 +51,8 @@ static struct
 
 static int _nfconntrack_tuple_callback( enum nf_conntrack_msg_type type, struct nf_conntrack *conntrack, void * user_data );
 static int _nfconntrack_dump_callback( enum nf_conntrack_msg_type type, struct nf_conntrack *conntrack, void * user_data );
+static int _nfconntrack_update( struct nf_conntrack* ct );
 static int _initialize_handle( _conntrack_handle_t* handler );
-static int _nfconntrack_update_mark( struct nf_conntrack* ct );
 static _conntrack_handle_t* _get_handle( void );
 
 /**
@@ -82,6 +82,7 @@ int  netcap_nfconntrack_init( int num_handles )
     _netcap_nfconntrack.num_handles = num_handles;
     
     debug( 2, "Initialization completed.\n" );
+
     return 0;
 }
 
@@ -141,9 +142,10 @@ int  netcap_nfconntrack_update_mark( netcap_session_t* session, u_int32_t mark)
     nfct_set_attr_u32( ct, ATTR_MARK, mark );
 
     /* Packet is post-NAT, lookup in reverse */
-    _nfconntrack_update_mark(ct);
+    _nfconntrack_update(ct);
 
-    if ( ct != NULL ) nfct_destroy( ct );
+    if ( ct != NULL )
+        nfct_destroy( ct );
     
     return 0;
 }
@@ -371,7 +373,7 @@ static int _nfconntrack_dump_callback( enum nf_conntrack_msg_type type, struct n
 /**
  * Update the specified conntrack
  */
-static int _nfconntrack_update_mark( struct nf_conntrack* ct )
+static int _nfconntrack_update( struct nf_conntrack* ct )
 {
     struct nf_conntrack* ct_result = NULL;
     _conntrack_handle_t* handle = NULL;

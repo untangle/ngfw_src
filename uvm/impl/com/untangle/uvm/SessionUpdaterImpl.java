@@ -43,7 +43,7 @@ public class SessionUpdaterImpl
      */
     private static final long SESSION_MIN_DIFF = 1000 * 50; /* 50k bytes */
     
-    private final Pulse updaterPulse = new Pulse("session-updater", true, new SessionUpdaterPulse());
+    private final Pulse updaterPulse = new Pulse("session-updater", new SessionUpdaterPulse(), UPDATE_PERIOD);
 
     public SessionUpdaterImpl()
     {
@@ -53,7 +53,7 @@ public class SessionUpdaterImpl
 
     public void start()
     {
-        updaterPulse.start( UPDATE_PERIOD );
+        updaterPulse.start();
     }
 
     public void stop()

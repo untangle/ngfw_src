@@ -49,8 +49,9 @@ public class MetricManagerImpl implements MetricManager
 
     private static final Set<String> MEMINFO_KEEPERS;
     private static final Set<String> VMSTAT_KEEPERS;
-
-    private final Pulse updatePulse = new Pulse("system-stat-collector", true, new SystemStatCollector());
+    private static final long FREQUENCY = 10*1000; /* 10 seconds */
+    
+    private final Pulse updatePulse = new Pulse("system-stat-collector", new SystemStatCollector(), FREQUENCY);
 
     private final Map<String,Long> rxtxBytesStore = new HashMap<String,Long>();
 
@@ -68,7 +69,7 @@ public class MetricManagerImpl implements MetricManager
 
     protected void start()
     {
-        updatePulse.start(10000);
+        updatePulse.start();
     }
 
     protected void stop()

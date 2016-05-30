@@ -16,11 +16,11 @@ public class ConntrackMonitorImpl
     private static final Logger logger = Logger.getLogger(ConntrackMonitorImpl.class);
     private static final int FREQUENCY = 60*1000; /* 60 seconds */
     
-    private final Pulse pulse = new Pulse("conntrack-monitor", true, new ConntrackPulse());
+    private final Pulse pulse = new Pulse("conntrack-monitor", new ConntrackPulse(), FREQUENCY);
 
     public ConntrackMonitorImpl()
     {
-        pulse.start(FREQUENCY);
+        pulse.start();
     }
 
     protected void stop()

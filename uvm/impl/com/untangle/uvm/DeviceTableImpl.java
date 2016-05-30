@@ -44,7 +44,7 @@ public class DeviceTableImpl implements DeviceTable
 
     private ConcurrentHashMap<String, DeviceTableEntry> deviceTable;
 
-    private final Pulse saverPulse = new Pulse("device-table-saver", true, new DeviceTableSaver());
+    private final Pulse saverPulse = new Pulse("device-table-saver", new DeviceTableSaver(), PERIODIC_SAVE_DELAY);
 
     private volatile long lastSaveTime = 0;
 
@@ -53,7 +53,7 @@ public class DeviceTableImpl implements DeviceTable
         this.lastSaveTime = System.currentTimeMillis();
         loadSavedDevices();
 
-        saverPulse.start( PERIODIC_SAVE_DELAY );
+        saverPulse.start();
     }
 
     public int size()

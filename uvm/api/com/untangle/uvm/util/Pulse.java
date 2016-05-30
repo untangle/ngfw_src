@@ -5,369 +5,287 @@ package com.untangle.uvm.util;
 
 import org.apache.log4j.Logger;
 
-public class Pulse
+public class Pulse implements Runnable
 {
     /* things shouldn't be firing that fast, must be a bug */
-    private static final long DELAY_MINIMUM = 5000;
+    private static final long DELAY_MINIMUM = 500;
 
-    /* wait at most a second for the beat to execute */
-    private static final long BEAT_MAX_WAIT = 1000;
+    /* wait at most a second for the pulse to execute when force running */
+    private static final long FORCE_RUN_MAX_WAIT = 1000;
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    private final Thread thread;
-    private final Runnable blip;
-    private final Ticker ticker;
-
     public enum PulseState 
     {
-        /* Pulse thread has never started running */
-        UNBORN,
-
-        /* Pulse thread is actively running */
-        STARTING,
-
-        /* Pulse thread is actively running */
-        RUNNING,
-
-        /* Pulse thread has been killed, but for some reason hasn't died yet */
-        KILLED,
-
-        /* Thread is totally dead and cannot be resurrected */
-        DEAD
+        UNBORN, /* Pulse thread has never started running */
+        STARTING, /* Pulse thread is actively running */
+        RUNNING, /* Pulse thread is actively running */
+        KILLED, /* Pulse thread has been killed, but for some reason hasn't died yet */
+        DEAD /* Thread is totally dead and cannot be resurrected */
     };
 
     private PulseState state = PulseState.UNBORN;
 
+    /* The thread to run this task */
+    private Thread thread = null;
+
+    /* The task to run */
+    private Runnable task;
+
+    /* The name of this pulse */
+    private String name;
+    
     /* amount of time to wait until the next beat */
     private long delay;
 
+    /* an extra delay for the initial run (optional) */
+    private long extraInitialDelay;
+
+    /* a flag used when forcing the pulse to run prematurely */
+    private boolean forceRun = false;
+    
+    /* the number of times the pulse has run */
+    private long count = 0;
+
+    /* This is the next time that you should wake up */
+    private long nextTask = 0;
+
+    /* The thread priority */
+    private int threadPriority;
+    
     /**
      * Create a new pulse with the default name and isDaemon setting.
      */
-    public Pulse( Runnable blip )
+    public Pulse( Runnable task, long delay )
     {
-        this( null, null, blip );
+        this( null, task, delay );
     }
 
     /**
-     * Create a new pulse with the default name and set whether it is
-     * a daemon thread.
+     * Create a new pulse and set its name, task, delay
      */
-    public Pulse( boolean isDaemon, Runnable blip )
+    public Pulse( String name, Runnable task, long delay )
     {
-        this( null, isDaemon, blip, Thread.MIN_PRIORITY );
+        this( name, task, delay, 0, Thread.MIN_PRIORITY );
     }
 
     /**
-     * Create a new pulse and set its name, default isDaemon.
+     * Create a new pulse and set its name, task, delay, extraInitialDelay
      */
-    public Pulse( String name, Runnable blip )
+    public Pulse( String name, Runnable task, long delay, long extraInitialDelay )
     {
-        this( name, null, blip, Thread.MIN_PRIORITY );
+        this( name, task, delay, extraInitialDelay, Thread.MIN_PRIORITY );
     }
-
-    /**
-     * Create a new pulse, optionally setting the name and isDaemon
-     * setting.
-     */
-    public Pulse( String name, Boolean isDaemon, Runnable blip )
-    {
-        this( name, isDaemon, blip, Thread.MIN_PRIORITY );
-    }
-
+    
     /**
      * Create a new pulse, optionally setting the name and isDaemon
      * setting.
      */
-    public Pulse( String name, Boolean isDaemon, Runnable blip, int threadPriority )
+    public Pulse( String name, Runnable task, long delay, long extraInitialDelay, int threadPriority )
     {
-        this.blip = blip;
-        this.ticker = new Ticker();
-        /* Check if the caller wants to set the thread name */
-        if (( null == name ) || ( 0 == name.length())) {
-            /* No name */
-            this.thread = new Thread( this.ticker );
-        } else {
-            /* Set the thread name */
-            this.thread = new Thread( this.ticker, name );
-        }
-
-        if ( isDaemon != null ) this.thread.setDaemon( isDaemon );
-        this.thread.setPriority( threadPriority );
+        this.name = name;
+        this.task = task;
+        this.delay = delay;
+        this.extraInitialDelay = extraInitialDelay;
+        this.threadPriority = threadPriority;
     }
 
     /**
      * Start the thread, you can only start a pulse once and once it
      * is stopped, you can never restart it.
      */
-    public synchronized void start( long delay )
+    public void start()
     {
         /* Can't start unless it is in the unborn state */
         if ( PulseState.UNBORN != this.state ) {
             throw new IllegalStateException( "Unable to start a pulse twice" );
         }
 
-        this.delay = Math.max( delay, DELAY_MINIMUM );
-
+        this.delay = delay;
+        this.extraInitialDelay = extraInitialDelay;
+        
         /* Indicate that the thread is now starting */
         this.state = PulseState.STARTING;
 
-        /* Start a thread */
+        /* Create and start the thread */
+        if ( ( name == null ) || ( name.length() == 0 ) ) {
+            this.thread = new Thread( this );
+        } else {
+            this.thread = new Thread( this, name );
+        }
+        this.thread.setDaemon( true );
+        this.thread.setPriority( threadPriority );
+
+        logger.debug(logPrefix() + "launching..." );
         this.thread.start();
     }
-
+    
     /**
      * Stop the thread, you can only start a pulse once and once it
      * is stopped, you can never restart it.
      */
-    public synchronized void stop()
+    public void stop()
     {
         switch ( this.state ) {
         case UNBORN:
-            logger.warn( "Attempt to stop an unborn pulse." );
+            logger.warn(logPrefix() + "Attempt to stop an unborn pulse." );
             return;
 
         case DEAD:
-            logger.warn( "Attempt to stop a dead pulse." );
+            logger.warn(logPrefix() + "Attempt to stop a dead pulse." );
             return;
 
         case STARTING: /* unlikely but possible */
         case KILLED:
         case RUNNING:
-            logger.debug( "Stopping the pulse." );
+            logger.debug(logPrefix() + "Stopping the pulse." );
             this.state = PulseState.KILLED;
             /* Interrupt the thread. */
-            this.thread.interrupt();
+            if ( this.thread != null )
+                this.thread.interrupt();
             return;
         }
     }
 
     /**
-     * Retrieve the delay between tasks
+     * Return the current state
      */
-    public long getDelay()
+    public PulseState getState()
     {
-        return this.delay;
+        return this.state;
     }
-
+    
     /**
-     * Change the delay, this also causes it to run right now.
+     * Run it now (blocks complete or until maxWait ms)
      */
-    public synchronized void setDelay( long delay )
+    public boolean forceRun( long maxWait )
     {
-        switch ( this.state ) {
-        case UNBORN:
-            logger.warn( "Attempt to set delay on an unborn pulse." );
-            return;
-
-        case DEAD:
-            logger.warn( "Attempt to set delay on a dead pulse." );
-            return;
-
-        case KILLED:
-            logger.warn( "Attempt to set delay on a dying pulse." );
-            return;
-
-        case STARTING: /* STARTING is unlikely but possible */
-            logger.debug( "Updating the delay to " + delay );
-            this.delay = Math.max( delay, DELAY_MINIMUM );
-            break;
-
-        case RUNNING:
-            logger.debug( "Updating the delay to " + delay );
-            this.delay = Math.max( delay, DELAY_MINIMUM );
-            synchronized ( this.ticker ) {
-                /* Set the trigger to zero to force it to run */
-                this.ticker.setNextTrigger( 0 );
-                this.ticker.notifyAll();
-            }
-
-            break;
+        if ( this.state != PulseState.RUNNING ) {
+            logger.warn(logPrefix() +"Can not force run pulse that is not running: " + this.state );
+            return false;
+        } else if ( this.thread == null ) {
+            logger.warn(logPrefix() +"Can not force run pulse that without thread: " + this.state );
+            return false;
         }
-    }
-
-    /**
-     * Run the ticker now, and wait until it finishes.
-     */
-    public boolean beat( long maxWait )
-    {
-        long count = this.ticker.getCount();
-
-        setDelay( this.delay );
-
+        
+        long origCount = this.getCount();
+        this.forceRun = true;
+            
         /* has ticked since beat was called. */
-        if ( count != this.ticker.getCount()) return true;
+        if ( origCount != this.getCount())
+            return true;
 
-        synchronized ( this.ticker ) {
-            /* has ticked since beat was called. */
-            if ( count != this.ticker.getCount()) return true;
-
-            try {
-                this.ticker.wait( maxWait );
-            } catch ( InterruptedException e ) {
-                logger.debug( "interrupted while waiting for the ticker", e );
-            }
+        try {
+            this.wait( maxWait );
+        } catch ( InterruptedException e ) {
+            logger.debug(logPrefix() + "interrupted while waiting", e );
         }
 
         /* If the count changed, then this waited for one tick to complete */
-        return ( count == this.ticker.getCount());
+        return ( count == this.getCount() );
     }
 
     /**
      * Beat with the default max wait
      */
-    public boolean beat()
+    public boolean forceRun()
     {
-        return beat( BEAT_MAX_WAIT );
+        return forceRun( FORCE_RUN_MAX_WAIT );
     }
 
     /**
-     * Retrieve the current state of the pulse
+     * This contains the loop that runs the task over and over
      */
-    public synchronized PulseState getState()
+    public void run()
     {
-        return this.state;
-    }
+        long now;
+        
+        if ( this.state != PulseState.STARTING) {
+            logger.warn(logPrefix() + "Unable to start the thread outside of running state" );
+            return;
+        }
+        this.state = PulseState.RUNNING;
+        logger.debug(logPrefix() + "starting ..." );
 
-    private synchronized void setState( PulseState state )
-    {
-        this.state = state;
-    }
+        nextTask = System.currentTimeMillis() + delay + extraInitialDelay;
 
-    private class Ticker implements Runnable
-    {
-        /* the number of times the beat has occurred */
-        private long count = 0;
-
-        /* This is the next time that you should wake up */
-        private long nextTrigger = Long.MIN_VALUE;
-
-        private Ticker() {}      
-
-        public void run()
-        {
-            synchronized( Pulse.this ) {
-                if ( PulseState.STARTING != getState()) {
-                    Pulse.this.logger.warn( "Unable to start the ticker thread outside of running state" );
-                    return;
-                }
-
-                setState( PulseState.RUNNING );
-            }
-
-            while ( PulseState.RUNNING == getState()) {
-                try {
-                    waitForNextBlip();
-                } catch ( Exception e ) {
-                    logger.info( "Exception waiting for next blip: ", e );
-                }
-
-                /* run the blip */
-                try {
-                    logger.debug("Running pulse[" + blip.getClass().getSimpleName() + "] ...");
-                    blip.run();
-                    logger.debug("Running pulse[" + blip.getClass().getSimpleName() + "] ... done");
-                } catch ( Exception e ) {
-                    logger.warn( "Exception running blip", e );
+        while ( this.state == PulseState.RUNNING ) {
+            try {
+                long sleepTime = nextTask - System.currentTimeMillis(); // sleep until nextTask
+                if ( sleepTime <= 0 ) {
+                    logger.debug(logPrefix() + "delay(" + delay + ") <= 0, firing immediately." );
+                    break;
+                } else if ( sleepTime < DELAY_MINIMUM ) {
+                    logger.debug(logPrefix() + "delay(" + delay + ") < " + DELAY_MINIMUM + " less than minimum.");
                 }
 
                 synchronized ( this ) {
-                    /* Increment the number of counts */
-                    this.count++;
-
-                    /* Notify anyone waiting */
-                    notifyAll();
+                    wait( sleepTime );
                 }
+            } catch ( InterruptedException e ) {
+                logger.debug(logPrefix() + "interrupted while waiting for task to complete." );
             }
 
-            logger.debug( "pulse is stopping" );
-            setState( PulseState.DEAD );
-        }
+            /* We woke up */
+            now = System.currentTimeMillis();
 
-        /**
-         * Wait until it is time to trigger the next blip.
-         */
-        private void waitForNextBlip()
-        {
-            /* used to gauge if there is funny stuff going on with the clock */
-            long waitStart = ( System.nanoTime() / 1000000l );
+            /* If we need to exit, quit now */
+            if ( this.state != PulseState.RUNNING )
+                return;
 
-            /* amount of time to wait */
-            long delay = getDelay();
+            /* If we woke up prematurely, go back to sleep, unless forceRun is set */
+            if ( !forceRun && now < nextTask )
+                continue;
 
-            /* the next time you should wake up assuming everything is normal */
-            if ( delay < DELAY_MINIMUM ) {
-                /* never wake up */
-                setNextTrigger( Long.MIN_VALUE );
-                /* doesn't matter, just some time that will not happen soon */
-                delay = 60 * 60 * 1000;
-            } else {
-                /* set the time of the next trigger */
-                /* add a tenth of a second little buffer */
-                setNextTrigger( waitStart + delay - 100 );
+            /* Save when the next task should occur */
+            nextTask = nextTask + delay;
+
+            /**
+             * If we are so far behind that the *next* task has already supposed to be run
+             * then just reset to a reasonable time
+             */
+            if ( nextTask < now ) {
+                logger.debug(logPrefix() + "pulse running behind, reset to min delay.");
+                nextTask = now + DELAY_MINIMUM;
             }
 
-            while ( true ) {
-                try {
-                    if ( delay <= 0 ) {
-                        logger.info( "Delay(" + delay + ") <= 0, firing immediately." );
-                        break;
-                    }
-
-                    synchronized( this ) {
-                        wait( delay );
-                    }
-                } catch ( InterruptedException e ) {
-                    logger.debug( "interrupted while waiting for task to complete." );
+            /* Run the task */
+            try {
+                long t0=0, t1=0;
+                if ( logger.isDebugEnabled() ) {
+                    t0 = System.currentTimeMillis();
+                    logger.debug(logPrefix() + "running ...");
                 }
-
-                long nextTrigger = getNextTrigger();
-
-                /* isn't running anymore, time to stop */
-                if ( PulseState.RUNNING != getState()) break;
-
-                if ( nextTrigger == 0 ) {
-                    logger.debug( "instructed to execute immediately." );
-                    break;
-                } else if ( nextTrigger == Long.MIN_VALUE ) {
-                    logger.debug( "instructed to never execute, continuing." );
-                    continue;
+                task.run();
+                if ( logger.isDebugEnabled() ) { 
+                    t1 = System.currentTimeMillis();
+                    logger.debug(logPrefix() + "running ... done (" + (t1-t0) + " ms)");
                 }
-                long now = ( System.nanoTime() / 1000000l );
+            } catch ( Exception e ) {
+                logger.warn(logPrefix() + "exception running task", e );
+            }
 
-                if ( now < waitStart ) {
-                    /* time has gone backwards, just run just in case */
-                    logger.debug( "time has gone backwards, executing immediately(" + now + "," + waitStart + ")" );
-                    break;
-                }
-
-                /* Time to run. */
-                if ( now > nextTrigger ) {
-                    break;
-                }
-
-                /* Decrease the delay */
-                delay = now - nextTrigger;
+            /* Increment the number of counts */
+            this.count++;
+            
+            /* Notify anyone waiting */
+            synchronized (this) {
+                notifyAll();
             }
         }
 
-        /**
-         * Return the next time the trigger is supposed to go off
-         */
-        private synchronized long getNextTrigger()
-        {
-            return this.nextTrigger;
-        }
+        logger.debug(logPrefix() + "stopping ..." );
+        this.state = PulseState.DEAD;
+        this.thread = null;
+    }
 
-        private synchronized void setNextTrigger( long nextTrigger )
-        {
-            this.nextTrigger = nextTrigger;
-        }
+    private long getCount()
+    {
+        return this.count;
+    }
 
-        private long getCount()
-        {
-            return this.count;
-        }
+    private String logPrefix()
+    {
+        return "Pulse[" + task.getClass().getSimpleName() + "] ";
     }
 }

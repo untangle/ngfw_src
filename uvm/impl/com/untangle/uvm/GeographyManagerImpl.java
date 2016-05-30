@@ -49,8 +49,8 @@ public class GeographyManagerImpl implements GeographyManager
     protected GeographyManagerImpl()
     {
         openDatabaseInstance();
-        databaseChecker = new Pulse("GeographyManagerUpdater", true, new DatabaseUpdateChecker(this));
-        databaseChecker.start(DATABASE_CHECK_FREQUENCY);
+        databaseChecker = new Pulse("GeographyManagerUpdater", new DatabaseUpdateChecker(this), DATABASE_CHECK_FREQUENCY);
+        databaseChecker.start();
     }
 
     public String getCountryName(String netAddress)

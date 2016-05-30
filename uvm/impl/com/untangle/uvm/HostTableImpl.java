@@ -60,7 +60,7 @@ public class HostTableImpl implements HostTable
     private volatile Thread reverseLookupThread;
     private HostTableReverseHostnameLookup reverseLookup = new HostTableReverseHostnameLookup();
 
-    private final Pulse saverPulse = new Pulse("device-table-saver", true, new HostTableSaver());
+    private final Pulse saverPulse = new Pulse("device-table-saver", new HostTableSaver(), PERIODIC_SAVE_DELAY);
     
     private int maxActiveSize = 0;
 
@@ -71,7 +71,7 @@ public class HostTableImpl implements HostTable
         this.lastSaveTime = System.currentTimeMillis();
         loadSavedHosts();
         
-        saverPulse.start( PERIODIC_SAVE_DELAY );
+        saverPulse.start();
 
         UvmContextFactory.context().newThread(this.cleaner).start();
         UvmContextFactory.context().newThread(this.reverseLookup).start();
