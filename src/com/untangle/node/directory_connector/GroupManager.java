@@ -26,7 +26,7 @@ import com.untangle.uvm.util.Pulse.PulseState;
 public class GroupManager
 {
     /* Default amount of time between updating the Group Cache */
-    private static long DEFAULT_GROUP_RENEW_MS = 1800000;
+    private static long DEFAULT_GROUP_RENEW_MS = 30 * 60 * 1000; /* every 30 minutes */
 
     private static final int CACHE_COUNT_MAX = 4000;
 
@@ -48,7 +48,7 @@ public class GroupManager
     /**
      * Pulse thread to re-read the AD into cache
      */
-    private Pulse pulseRenewCache = new Pulse("renew-ad-cache", true, new RenewCache());
+    private Pulse pulseRenewCache = new Pulse("renew-ad-cache", new RenewCache(), DEFAULT_GROUP_RENEW_MS);
     
     /**
      * This is used to cap the number of negative cache hits. This way someone
@@ -68,14 +68,15 @@ public class GroupManager
     public synchronized void start()
     {
         if ( this.pulseRenewCache.getState() == PulseState.RUNNING) {
-            this.pulseRenewCache.beat();
+            this.pulseRenewCache.forceRun();
         } else {
-            this.pulseRenewCache.start(DEFAULT_GROUP_RENEW_MS);
+            this.pulseRenewCache.start();
         }
     }
     
     public synchronized void stop()
     {
+            this.pulseRenewCache.stop();
     }
     
     public boolean isMemberOf( String user, String group )
@@ -179,7 +180,7 @@ public class GroupManager
 
     protected void refreshGroupCache()
     {
-        this.pulseRenewCache.beat();
+        this.pulseRenewCache.forceRun();
     }
     
     private boolean isLicenseValid()
