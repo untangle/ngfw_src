@@ -64,8 +64,8 @@ public class HostCache
     static
     {
         domainCache = new ConcurrentHashMap<String,DomainCacheRecord>();
-        cacheCleaner = new Pulse("HostCacheCleaner", true, new HostCacheCleaner());
-        cacheCleaner.start(CACHE_CLEAN_FREQUENCY);
+        cacheCleaner = new Pulse("HostCacheCleaner", new HostCacheCleaner(), CACHE_CLEAN_FREQUENCY);
+        cacheCleaner.start();
 
         logger.info("Initializing HostCache");
     }
