@@ -73,6 +73,7 @@ def createFakeEmailEnvironment(emailLogFile="report_test.log"):
     orig_mailsettings = uvmContext.mailSender().getSettings()
     new_mailsettings = copy.deepcopy(orig_mailsettings)
     new_mailsettings['sendMethod'] = 'DIRECT'
+    new_mailsettings['fromAddress'] = testEmailAddress
     uvmContext.mailSender().setSettings(new_mailsettings)
 
     # set untangletest email to get to fakeSmtpServerHost where fake SMTP sink is running using special DNS server
@@ -96,6 +97,9 @@ def findEmailContent(searchTerm1,searchTerm2):
         emailfile = remote_control.runCommand("ls -l /tmp/" + testEmailAddress + "*",host=fakeSmtpServerHost)
         if (emailfile == 0):
             ifFound = True
+        else:
+            # unfreeze any messages in the exim queue
+            subprocess.call(["exim","-qff"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
     grepContext=remote_control.runCommand("grep -i '" + searchTerm1 + "' /tmp/" + testEmailAddress + "*",host=fakeSmtpServerHost, stdout=True)
     grepContext2=remote_control.runCommand("grep -i '" + searchTerm2 + "' /tmp/" + testEmailAddress + "*",host=fakeSmtpServerHost, stdout=True)
     return(ifFound, grepContext, grepContext2)
@@ -438,6 +442,15 @@ class ReportsTests(unittest2.TestCase):
         raise unittest2.SkipTest("Skip failing test")        
         if (not canRelay):
             raise unittest2.SkipTest('Unable to relay through ' + fakeSmtpServerHost)
+        # Create settings to receive testEmailAddress 
+        createFakeEmailEnvironment("test_090.log")
+
+        # set admin email to get alerts
+        adminsettings = uvmContext.adminManager().getSettings()
+        orig_adminsettings = copy.deepcopy(adminsettings)
+        adminsettings['users']['list'].append(createAdminUser(useremail=testEmailAddress))
+        uvmContext.adminManager().setSettings(adminsettings)
+
         fname = sys._getframe().f_code.co_name
         settings = node.getSettings()
         # set email address and alert for downloads
@@ -445,18 +458,9 @@ class ReportsTests(unittest2.TestCase):
         settings["alertRules"]["list"] = []
         settings["alertRules"]["list"].append(createAlertRule(fname,"class","=","*SessionEvent*","SServerPort","=","80"))
         node.setSettings(settings)
-
-        # Create settings to receive testEmailAddress 
-        createFakeEmailEnvironment("test_080.log")
         
-        # set admin email to get alerts
-        adminsettings = uvmContext.adminManager().getSettings()
-        orig_adminsettings = copy.deepcopy(adminsettings)
-        adminsettings['users']['list'].append(createAdminUser(useremail=testEmailAddress))
-        uvmContext.adminManager().setSettings(adminsettings)
-
         # trigger alert
-        result = remote_control.isOnline(tries=1)
+        result = remote_control.isOnline(tries=5)
 
         # look for alert email
         emailFound, emailContext, emailContext2 = findEmailContent('alert',fname)
