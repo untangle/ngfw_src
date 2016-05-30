@@ -80,10 +80,6 @@ parser.parse_args()
 if CURRENT_STABLE == None or CURRENT_NAME == None or UID_FILENAME == None:
     printUsage()
 
-if os.path.exists( UID_FILENAME ):
-    print "UID already exists"
-    sys.exit(1)
-
 # find debian version
 debian_distro='wheezy'
 try:
