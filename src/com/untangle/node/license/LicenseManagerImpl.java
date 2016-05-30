@@ -100,8 +100,8 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
         this._readLicenses();
         this._mapLicenses();
 
-        this.pulse = new Pulse("uvm-license", true, task);
-        this.pulse.start(TIMER_DELAY);
+        this.pulse = new Pulse("uvm-license", task, TIMER_DELAY);
+        this.pulse.start();
     }
 
     @Override
