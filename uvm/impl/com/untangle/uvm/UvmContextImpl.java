@@ -45,6 +45,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private static final String TIMESYNC_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-force-time-sync";
     private static final String UVM_STATUS_FILE = "/var/run/uvm.status";
     private static final String UPGRADE_PID_FILE = "/var/run/upgrade.pid";
+    private static final String UID_FILE = System.getProperty("uvm.conf.dir") + "/uid";
     private static final String UPGRADE_SPLASH_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-show-upgrade-splash";;
 
     private static final String CREATE_UID_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-createUID.py";
@@ -998,19 +999,18 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
      */
     private void createUID()
     {
-        File uidFile = new File(System.getProperty("uvm.conf.dir") + "/uid");
+        File uidFile = new File(UID_FILE);
         
         // If the UID file exists and is non-empty, return
         if (uidFile.exists() && uidFile.length() > 0)
             return;
-
-        String extraOptions = "";
 
         // if its devel env just return
         if (isDevel())
             return;
 
         // if its an untangle netboot, point to internal package server
+        String extraOptions = "";
         if (isNetBoot()) {
             extraOptions += " -u \"package-server.\" ";
             extraOptions += " -d \"nightly\" ";
@@ -1024,7 +1024,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             extraOptions += " -n \"" + com.untangle.uvm.Version.getVersionName() + "\" ";
 
         Integer exitValue = this.execManager().execResult(CREATE_UID_SCRIPT + extraOptions);
-        if (0 != exitValue) {
+        if ( exitValue != 0 ) {
             logger.error("Unable to create UID (" + exitValue + ")");
             return;
         } else {
