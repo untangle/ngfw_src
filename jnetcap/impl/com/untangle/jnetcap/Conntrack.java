@@ -114,19 +114,12 @@ public class Conntrack
         return getIntValue( pointer.value(), FLAG_ID );
     }
 
-    public long getSessionId()
-    {
-        // we store the session ID in the DCCP handshake field
-        // its not used by use and its 64 bits
-        return getLongValue( pointer.value(), FLAG_DCCP_HANDSHAKE_SEQ );
-    }
-    
     public int getMark()
     {
         return getIntValue( pointer.value(), FLAG_MARK );
     }
     
-    public int getProtocol()
+    public short getProtocol()
     {
         return getByteValue( pointer.value(), FLAG_ORIG_L4PROTO );
     }

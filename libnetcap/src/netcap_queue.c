@@ -638,15 +638,11 @@ static int _nfq_get_conntrack_info( struct nfq_data *nfad, netcap_pkt_t* pkt, in
         return errlog( ERR_WARNING, "nfq_payload_parse returned error.\n" );
     }
 
-    /* using the union from the nfqueue structure, doesn't matter if
-     * this is TCP, UDP, whatever, but it is kind of filthy. */
     pkt->nat_info.original.src_address     = nfct_get_attr_u32(ct,ATTR_ORIG_IPV4_SRC);
     pkt->nat_info.original.src_protocol_id = nfct_get_attr_u16(ct,ATTR_ORIG_PORT_SRC);
     pkt->nat_info.original.dst_address     = nfct_get_attr_u32(ct,ATTR_ORIG_IPV4_DST); 
     pkt->nat_info.original.dst_protocol_id = nfct_get_attr_u16(ct,ATTR_ORIG_PORT_DST); 
     
-    /* using the union from the nfqueue structure, doesn't matter if
-     * this is TCP, UDP, whatever, but it is kind of filthy. */
     pkt->nat_info.reply.src_address     = nfct_get_attr_u32(ct,ATTR_REPL_IPV4_SRC);
     pkt->nat_info.reply.src_protocol_id = nfct_get_attr_u16(ct,ATTR_REPL_PORT_SRC);
     pkt->nat_info.reply.dst_address     = nfct_get_attr_u32(ct,ATTR_REPL_IPV4_DST);

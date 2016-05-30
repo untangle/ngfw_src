@@ -364,6 +364,14 @@ static int _nfconntrack_dump_callback( enum nf_conntrack_msg_type type, struct n
     if (( list = pthread_getspecific( _netcap_nfconntrack.tls_key )) == NULL )
         return errlog( ERR_CRITICAL, "null args\n" );
 
+    /**
+     * Ignore sessions from 127.0.0.1 to 127.0.0.1
+     */
+    u_int32_t client = nfct_get_attr_u32( conntrack, ATTR_ORIG_IPV4_SRC );
+    u_int32_t server = nfct_get_attr_u32( conntrack, ATTR_ORIG_IPV4_SRC );
+    if ( client == 0x0100007f && server == 0x0100007f ) 
+        return NFCT_CB_CONTINUE;
+    
     struct nf_conntrack* ct = nfct_clone(conntrack);
     list_add_tail( list, ct );
     

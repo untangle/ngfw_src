@@ -215,7 +215,7 @@ public class NetFilterLogger
 
                 // create a new session event and fill it with our data
                 SessionEvent event = new SessionEvent();
-                event.setSessionId(new Long(com.untangle.jnetcap.Netcap.nextSessionId()));
+                event.setSessionId(com.untangle.jnetcap.Netcap.nextSessionId());
                 event.setProtocol(new Short((short) netProto));
 
                 HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry(srcAddress);

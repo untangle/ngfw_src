@@ -47,6 +47,11 @@ public class NetcapConntrackHook implements NetcapCallback
 
     public void event( long sessionId ) {}
 
+    public Long lookupSessionIdByConntrackId( Long conntrackId )
+    {
+        return conntrackIdToSessionIdMap.get( conntrackId );
+    }
+    
     public void event( long conntrackPtr, int type )
     {
         if ( conntrackPtr == 0 ) {
@@ -95,7 +100,6 @@ public class NetcapConntrackHook implements NetcapCallback
             int sClientPort = ct.getPostNatClientPort();
             int sServerPort = ct.getPostNatServerPort();
 
-            long sessionId = ct.getSessionId();
             long conntrackId = ct.getConntrackId();
             
             HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry( cClientAddr );
@@ -110,6 +114,7 @@ public class NetcapConntrackHook implements NetcapCallback
                 hostname = cClientAddr.getHostAddress();
         
             if ( type == CONNTRACK_TYPE_NEW ) { /* New Session */
+                long sessionId = com.untangle.jnetcap.Netcap.nextSessionId(); /* create new session ID */
                 if ( logEvent ) {
                     SessionEvent sessionEvent =  new SessionEvent( );
                     if ( logger.isDebugEnabled() ) {
@@ -147,10 +152,7 @@ public class NetcapConntrackHook implements NetcapCallback
 
             if ( type == CONNTRACK_TYPE_END ) { /* End Session */
                 // fetch the session Id
-                Long sess_id = conntrackIdToSessionIdMap.remove( conntrackId );
-                if ( sess_id != null && sessionId != 0 && sess_id != sessionId ) {
-                    logger.warn("Mismatched ID: " + sessionId + " != " + sess_id );
-                }
+                Long sessionId = conntrackIdToSessionIdMap.remove( conntrackId );
 
                 /**
                  * UDP supports bypassing the session mid-session
@@ -159,10 +161,10 @@ public class NetcapConntrackHook implements NetcapCallback
                  * If we couldn't find it, check the session table to see
                  * if this is a session we bypassed mid-session.
                  */
-                if ( sess_id == null && protocol == 17 ) {
+                if ( sessionId == null && protocol == 17 ) {
                     SessionGlobalState session = SessionTableImpl.getInstance().remove( (short)protocol, clientIntf, serverIntf, cClientAddr, sServerAddr, cClientPort, sServerPort );
                     if ( session != null ) {
-                        sess_id = session.id();
+                        sessionId = session.id();
                         // we set this to true, because we always want to log the end of this session
                         // even if "log bypassed" is not enabled.
                         // this session was not originally bypassed
@@ -176,7 +178,7 @@ public class NetcapConntrackHook implements NetcapCallback
                 long s2c_packets = ct.getReplyCounterPackets();
                 
                 if ( logger.isDebugEnabled() ) {
-                    logger.debug("End Session: [" + sess_id + "] " +
+                    logger.debug("End Session: [" + sessionId + "] " +
                                  "[protocol " + protocol + "] " +
                                  "[" + clientIntf + "->" + serverIntf + "] " +
                                  cClientAddr.getHostAddress() + ":" + cClientPort +
@@ -190,11 +192,11 @@ public class NetcapConntrackHook implements NetcapCallback
 
                 // dont know session id (session probably started before hook was installed)
                 // nothing to log
-                if ( sess_id == null )
+                if ( sessionId == null )
                     return;
                 
                 if ( logEvent ) {
-                    SessionStatsEvent statEvent = new SessionStatsEvent( sess_id );
+                    SessionStatsEvent statEvent = new SessionStatsEvent( sessionId );
                     statEvent.setC2pBytes( c2s_bytes ); 
                     statEvent.setP2cBytes( s2c_bytes );
                     //statEvent.setC2pChunks( c2s_packets );

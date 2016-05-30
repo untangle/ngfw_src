@@ -45,10 +45,6 @@ struct netcap_ct_entry {
 
 static int  _netcap_conntrack_callback( enum nf_conntrack_msg_type type, struct nf_conntrack *ct, void *data );
 
-#define GET_CT_ITEM(elem, attr, x)                              \
-        do { n->elem = nfct_get_attr_u##x(ct,(attr)); } while (0)
-
-
 #if 0
 static void _netcap_conntrack_print_ct_entry( int level, struct netcap_ct_entry* netcap_ct )
 {
@@ -70,18 +66,18 @@ static void _netcap_conntrack_print_ct_entry( int level, struct netcap_ct_entry*
 
 int  netcap_conntrack_init()
 {
-        int ret = 0;
-        cth = nfct_open(CONNTRACK, NF_NETLINK_CONNTRACK_NEW|NF_NETLINK_CONNTRACK_DESTROY);
+    int ret = 0;
+    cth = nfct_open(CONNTRACK, NF_NETLINK_CONNTRACK_NEW|NF_NETLINK_CONNTRACK_DESTROY);
 
-        if (!cth)  return -1;
+    if (!cth)  return -1;
 
-        ret = nfnl_rcvbufsiz(nfct_nfnlh(cth), BUFFER_SIZE);
-        debug( 5, "CONNTRACK: set socket buffer size to %d.\n", ret );
+    ret = nfnl_rcvbufsiz(nfct_nfnlh(cth), BUFFER_SIZE);
+    debug( 5, "CONNTRACK: set socket buffer size to %d.\n", ret );
 
-        //nfct_callback_register(cth, NFCT_T_ALL, _netcap_conntrack_callback, NULL);
-        nfct_callback_register(cth, NFCT_T_NEW | NFCT_T_DESTROY, _netcap_conntrack_callback, NULL);
+    //nfct_callback_register(cth, NFCT_T_ALL, _netcap_conntrack_callback, NULL);
+    nfct_callback_register(cth, NFCT_T_NEW | NFCT_T_DESTROY, _netcap_conntrack_callback, NULL);
 
-        return 0;
+    return 0;
 }
 
 void* netcap_conntrack_listen ( void* arg )
@@ -107,38 +103,35 @@ void netcap_conntrack_null_hook ( struct nf_conntrack* ct, int type )
 
 int _netcap_conntrack_callback( enum nf_conntrack_msg_type type, struct nf_conntrack *ct, void *data )
 {
-        struct nf_conntrack *my_ct = nfct_clone(ct); // clone it because ct is gone after this hook returns
-        uint32_t client = nfct_get_attr_u32(my_ct, ATTR_ORIG_IPV4_SRC);
-        uint32_t server = nfct_get_attr_u32(my_ct, ATTR_REPL_IPV4_SRC);
+    struct nf_conntrack *my_ct = nfct_clone(ct); // clone it because ct is gone after this hook returns
+    uint32_t client = nfct_get_attr_u32(my_ct, ATTR_ORIG_IPV4_SRC);
+    uint32_t server = nfct_get_attr_u32(my_ct, ATTR_REPL_IPV4_SRC);
 
-        /* ignore sessions from 127.0.0.1 to 127.0.0.1 */
-        if ( client == 0x0100007f && server == 0x0100007f ) {
-            //debug( 10, "CONNTRACK: local mark=0x%08x\n", nfct_get_attr_u32(my_ct, ATTR_MARK) );
-            return NFCT_CB_CONTINUE;
-        }
-
-        switch (type) {
-        case NFCT_T_DESTROY:
-            debug( 10, "CONNTRACK: type=DESTROY mark=0x%08x %s:%d -> %s:%d\n", nfct_get_attr_u32(my_ct, ATTR_MARK),
-                   unet_next_inet_ntoa(client), ntohs(nfct_get_attr_u16(my_ct, ATTR_ORIG_PORT_SRC)),
-                   unet_next_inet_ntoa(server), ntohs(nfct_get_attr_u16(my_ct, ATTR_REPL_PORT_SRC)));
-            //_netcap_conntrack_print_ct_entry(10, &netcap_ct);
-            break;
-        case NFCT_T_NEW:
-            debug( 10, "CONNTRACK: type=NEW mark=0x%08x %s:%d -> %s:%d\n", nfct_get_attr_u32(my_ct, ATTR_MARK),
-                   unet_next_inet_ntoa(client), ntohs(nfct_get_attr_u16(my_ct, ATTR_ORIG_PORT_SRC)),
-                   unet_next_inet_ntoa(server), ntohs(nfct_get_attr_u16(my_ct, ATTR_REPL_PORT_SRC)));
-            //_netcap_conntrack_print_ct_entry(10, &netcap_ct);
-
-            // we create a new UVM session id and store it in ATTR_DCCP_HANDSHAKE_SEQ
-            nfct_set_attr_u64(my_ct, ATTR_DCCP_HANDSHAKE_SEQ, netcap_session_next_id());
-            break;
-        default:
-            errlog( ERR_WARNING, "CONNTRACK: unknown type: %i\n", type );
-            break;
-        }
-
-        global_conntrack_hook( my_ct, type );
+    /* ignore sessions from 127.0.0.1 to 127.0.0.1 */
+    if ( client == 0x0100007f && server == 0x0100007f ) {
+        //debug( 10, "CONNTRACK: local mark=0x%08x\n", nfct_get_attr_u32(my_ct, ATTR_MARK) );
         return NFCT_CB_CONTINUE;
+    }
+
+    switch (type) {
+    case NFCT_T_DESTROY:
+        debug( 10, "CONNTRACK: type=DESTROY mark=0x%08x %s:%d -> %s:%d\n", nfct_get_attr_u32(my_ct, ATTR_MARK),
+               unet_next_inet_ntoa(client), ntohs(nfct_get_attr_u16(my_ct, ATTR_ORIG_PORT_SRC)),
+               unet_next_inet_ntoa(server), ntohs(nfct_get_attr_u16(my_ct, ATTR_REPL_PORT_SRC)));
+        //_netcap_conntrack_print_ct_entry(10, &netcap_ct);
+        break;
+    case NFCT_T_NEW:
+        debug( 10, "CONNTRACK: type=NEW mark=0x%08x %s:%d -> %s:%d\n", nfct_get_attr_u32(my_ct, ATTR_MARK),
+               unet_next_inet_ntoa(client), ntohs(nfct_get_attr_u16(my_ct, ATTR_ORIG_PORT_SRC)),
+               unet_next_inet_ntoa(server), ntohs(nfct_get_attr_u16(my_ct, ATTR_REPL_PORT_SRC)));
+        //_netcap_conntrack_print_ct_entry(10, &netcap_ct);
+        break;
+    default:
+        errlog( ERR_WARNING, "CONNTRACK: unknown type: %i\n", type );
+        break;
+    }
+
+    global_conntrack_hook( my_ct, type );
+    return NFCT_CB_CONTINUE;
 }
 

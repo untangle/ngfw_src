@@ -162,6 +162,8 @@ typedef struct netcap_pkt {
 
     u_int32_t packet_id;
 
+    u_int32_t conntrack_id;
+    
     /**
      * TCP flags (if a tcp packet)
      */

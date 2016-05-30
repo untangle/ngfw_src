@@ -37,7 +37,7 @@ public final class Netcap
     /**
      * Return the next available session ID
      */
-    public static native int nextSessionId();
+    public static native long nextSessionId();
 
     /** 
      * Initialize the JNetcap and Netcap library with the same debugging level for
