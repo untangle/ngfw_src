@@ -40,6 +40,18 @@ public class SessionTableImpl
         return INSTANCE;
     }
 
+    /**
+     * Lookup a session by the TUPLE
+     * IMPORTANT:
+     * The tuple MUST be in the following format:
+     * protocol
+     * CLIENT SIDE client interface
+     * SERVER SIDE server interface
+     * CLIENT SIDE client address
+     * CLIENT SIDE client port
+     * CLIENT SIDE server address
+     * SERVER SIDE server port
+     */
     public SessionGlobalState lookupTuple( SessionTupleImpl tuple )
     {
         return sessionTableByTuple.get( tuple );
@@ -71,9 +83,9 @@ public class SessionTableImpl
                                                               session.netcapSession().clientSide().interfaceId(),
                                                               session.netcapSession().serverSide().interfaceId(),
                                                               session.netcapSession().clientSide().client().host(),
-                                                              session.netcapSession().serverSide().server().host(),
+                                                              session.netcapSession().clientSide().server().host(),
                                                               session.netcapSession().clientSide().client().port(),
-                                                              session.netcapSession().serverSide().server().port());
+                                                              session.netcapSession().clientSide().server().port());
             sessionTableByTuple.put( tupleKey, session );
         }
         
@@ -98,9 +110,9 @@ public class SessionTableImpl
                                                               session.netcapSession().clientSide().interfaceId(),
                                                               session.netcapSession().serverSide().interfaceId(),
                                                               session.netcapSession().clientSide().client().host(),
-                                                              session.netcapSession().serverSide().server().host(),
+                                                              session.netcapSession().clientSide().server().host(),
                                                               session.netcapSession().clientSide().client().port(),
-                                                              session.netcapSession().serverSide().server().port());
+                                                              session.netcapSession().clientSide().server().port());
             if ( sessionTableByTuple.remove( tupleKey ) == null ) {
                 logger.warn("Missing value in tuple map: " + tupleKey );
             }
