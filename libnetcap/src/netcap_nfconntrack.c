@@ -270,7 +270,7 @@ int netcap_nfconntrack_dump( struct nf_conntrack** array, int limit )
         count++;
     }
 
-    return i;
+    return count;
 }
 
 /**

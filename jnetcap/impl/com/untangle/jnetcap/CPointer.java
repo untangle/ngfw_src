@@ -10,13 +10,15 @@ class CPointer
     
     protected CPointer( long pointer ) 
     {
-        if ( pointer == NULL ) throw new NullPointerException();
+        if ( pointer == NULL )
+            throw new NullPointerException();
         this.pointer = pointer;
     }
     
     long value() 
     {
-        if ( pointer == NULL ) throw new NullPointerException();
+        if ( pointer == NULL )
+            throw new NullPointerException();
         return pointer;
     }
 
