@@ -999,8 +999,9 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private void createUID()
     {
         File uidFile = new File(System.getProperty("uvm.conf.dir") + "/uid");
-
-        if (uidFile.exists())
+        
+        // If the UID file exists and is non-empty, return
+        if (uidFile.exists() && uidFile.length() > 0)
             return;
 
         String extraOptions = "";
