@@ -259,13 +259,15 @@ int netcap_nfconntrack_dump( struct nf_conntrack** array, int limit )
     struct nf_conntrack* entry;
     int count = 0;
     int i = 0;
-    for ( ; i < limit ; i++ ) {
+    for ( ; i < limit && list_length( list ) > 0 ; i++ ) {
         if ( list_pop_head( list, (void**)&entry ) < 0 )
             break;
-        array[i] = entry;
+        if ( entry == NULL ) {
+            errlog(ERR_WARNING, "NULL entry [%i] pulled from conntrack list.", i);
+            continue;
+        }
+        array[count] = entry;
         count++;
-        if ( list_length( list ) < 1 )
-            break;
     }
 
     return i;

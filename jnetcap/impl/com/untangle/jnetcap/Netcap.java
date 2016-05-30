@@ -81,7 +81,11 @@ public final class Netcap
         LinkedList<Conntrack> entries = new LinkedList<Conntrack>();
         int num = conntrackDump( longArray, longArrayLength );
         for ( int i = 0 ; i < num ; i++ ) {
-            entries.add( new Conntrack( new CPointer(longArray[i]) ) );
+            if ( longArray[i] == 0 ) {
+                logger.warn("conntrackDump() returned a NULL value. " + num); 
+            } else {
+                entries.add( new Conntrack( new CPointer(longArray[i]) ) );
+            }
         }
         return entries;
     }
