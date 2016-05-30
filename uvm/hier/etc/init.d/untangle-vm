@@ -56,6 +56,13 @@ uvmStatus() {
     if [ -z "`uvmWrapperPid`" ] && [ -z "`uvmJavaPid`" ] ; then
         echo "stopped"
     elif [ -f ${UVM_STATUS_FILE} ] ; then
+        # check that the STATUS is not stale
+        if [ -f ${UVM_PID_FILE} ] ; then
+            pid=`cat ${UVM_PID_FILE}`
+            if ! ps ax | grep -qE '^\s*'$pid'\s' ; then
+                echo "stopped"
+            fi
+        fi
         cat ${UVM_STATUS_FILE}
     else
         echo "unknown"
@@ -76,7 +83,7 @@ case "$1" in
 
         if [ -f ${UVM_PID_FILE} ] ; then
             pid=`cat ${UVM_PID_FILE}`
-            if ! ps ax | grep -qE '^'$pid'$' ; then
+            if ! ps ax | grep -qE '^\s*'$pid'\s' ; then
                 echo -n "Removing Stale PIDfile  (file:`cat ${UVM_PID_FILE}` pid:$pid) "
                 rm -f ${UVM_PID_FILE}
             else
@@ -109,7 +116,7 @@ case "$1" in
             if [ $? -ne 0 ]; then
                 updateStatusExit "x]\n" "Stopped"
             fi
-        
+
             if [ "`uvmStatus`" == "running" ] || [ "`uvmStatus`" == "starting" ]; then
                 break
             fi
@@ -136,7 +143,7 @@ case "$1" in
     stop)
         log_daemon_msg "Stopping $DESC"
 
-        if [ ! -f ${UVM_PID_FILE} ] && [ "`uvmStatus`" == "stopped" ]; then
+        if [ "`uvmStatus`" == "stopped" ]; then
             echo "Not Running."
 	        log_end_msg 0
             exit
