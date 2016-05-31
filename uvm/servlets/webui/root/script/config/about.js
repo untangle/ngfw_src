@@ -71,22 +71,25 @@ Ext.define('Webui.config.about', {
                 }]
             }]
         });
-        Ext.data.JsonP.request({
-            url: rpc.storeUrl + "?" + "action=find_account&uid="+rpc.serverUID,
-            type: 'GET',
-            success: function(response, opts) {
-                if( response!=null && response.account) {
-                    if(!me || !me.isVisible()) {
-                        return;
+        // if the UID looks valid update the account info from the store
+        if ( rpc.serverUID && rpc.serverUID.length == 20 ) {
+            Ext.data.JsonP.request({
+                url: rpc.storeUrl + "?" + "action=find_account&uid="+rpc.serverUID,
+                type: 'GET',
+                success: function(response, opts) {
+                    if( response!=null && response.account) {
+                        if(!me || !me.isVisible()) {
+                            return;
+                        }
+                        var uidComponent = me.panelServer.down('textarea[name="UID"]');
+                        uidComponent.setValue(uidComponent.getValue() + "\n" + i18n._('Account') + ": " + response.account);
                     }
-                    var uidComponent = me.panelServer.down('textarea[name="UID"]');
-                    uidComponent.setValue(uidComponent.getValue() + "\n" + i18n._('Account') + ": " + response.account);
+                },
+                failure: function(response, opts) {
+                    console.log("Failed to get account info fro UID:", rpc.serverUID);
                 }
-            },
-            failure: function(response, opts) {
-                console.log("Failed to get account info fro UID:", rpc.serverUID);
-            }
-        });
+            });
+        }
     },
     buildLicenseAgreement: function() {
         this.panelLicenseAgreement = Ext.create('Ext.panel.Panel',{
