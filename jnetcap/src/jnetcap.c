@@ -492,6 +492,9 @@ JNIEXPORT jint JNICALL JF_Netcap( conntrackDump )
         count++;
     }
 
+    if ( list_raze( list ) < 0 )
+        perrlog("list_raze");
+    
     (*env)->ReleaseLongArrayElements(env, arr, arr_body, 0);
     return count;
 }

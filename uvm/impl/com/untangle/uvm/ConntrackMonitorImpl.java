@@ -97,13 +97,13 @@ public class ConntrackMonitorImpl
                     
                     // not new session 
                     if ( state != null ) {
-                        logger.warn("CONNTRACK STILL EXISTS : " + conntrack.toString());
+                        logger.info("CONNTRACK UPDATE : " + conntrack.toSummaryString());
                         // put the entrie in the new map
                         newConntrackEntries.put( conntrackId, state );
                     }
                     // new session
                     else {
-                        logger.warn("CONNTRACK NEW SESSION  : " + conntrack.toString());
+                        logger.info("CONNTRACK NEW    : " + conntrack.toSummaryString());
                         ConntrackEntryState newState = new ConntrackEntryState( conntrack, sessionId );
                         // put the entrie in the new map
                         newConntrackEntries.put( conntrackId, newState );
@@ -116,7 +116,7 @@ public class ConntrackMonitorImpl
                 conntrackEntries = newConntrackEntries;
 
                 for ( ConntrackEntryState state : oldConntrackEntries.values() ) {
-                    logger.warn("CONNTRACK DEAD SESSION   : " + state.conntrack.toString());
+                    logger.info("CONNTRACK REMOVE : " + state.conntrack.toSummaryString());
                     if ( state.conntrack != null ) {
                         state.conntrack.raze();
                         state.conntrack = null;

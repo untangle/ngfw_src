@@ -198,6 +198,27 @@ public class Conntrack
         return toString( pointer.value() );
     }
 
+    public String toSummaryString()
+    {
+        String summary = "";
+
+        summary += String.format("|%2d| ", getProtocol());
+        String client = (getPreNatClient() == null ? "null" : getPreNatClient().getHostAddress()) + ":" + getPreNatClientPort();
+        String server;
+
+        // If its TCP, use the pre nat server side info instead
+        // For TCP sessions its 192.0.2.42 if its being redirected to a local IP for scanning
+        if ( getProtocol() == 6 ) 
+            server = (getPreNatServer() == null ? "null" : getPreNatServer().getHostAddress()) + ":" + getPreNatServerPort();
+        else
+            server = (getPostNatServer() == null ? "null" : getPostNatServer().getHostAddress()) + ":" + getPostNatServerPort();
+
+        summary += String.format("%20s ->%20s ",client,server);
+        summary += String.format("|%d->%d|", getClientIntf(), getServerIntf());
+
+        return summary;
+    }
+    
     /******************************************************/
     /****************  computed values ********************/
     /******************************************************/
