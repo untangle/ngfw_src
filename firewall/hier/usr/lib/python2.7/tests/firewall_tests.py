@@ -727,7 +727,7 @@ class FirewallTests(unittest2.TestCase):
     def test_900_logEventLog(self):
         nukeRules()
         appendRule(createSingleConditionRule("DST_PORT","80",blocked=False,flagged=False))
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.isOnline()
         assert (result == 0)
 
         events = global_functions.get_events('Firewall','All Events',None,1)
