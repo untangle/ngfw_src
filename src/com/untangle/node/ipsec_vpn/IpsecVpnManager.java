@@ -19,6 +19,7 @@ import org.json.JSONObject;
 import com.untangle.uvm.node.IPMaskedAddress;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.InterfaceSettings;
+import com.untangle.uvm.CertificateManager;
 import com.untangle.uvm.UvmContextFactory;
 
 public class IpsecVpnManager
@@ -30,7 +31,6 @@ public class IpsecVpnManager
     private static final String TAB = "\t";
     private static final String RET = "\n";
 
-    private static final String CERT_STORE_PATH = System.getProperty("uvm.settings.dir") + "/untangle-certificates/";
     private static final String RELOAD_IPSEC_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-reload";
     private static final String XAUTH_UPDOWN_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-xauth-updown";
     private static final String IKEV2_UPDOWN_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-ikev2-updown";
@@ -86,8 +86,8 @@ public class IpsecVpnManager
     {
         logger.debug("writeConfigFiles()");
 
-        String ipsecKeyFile = System.getProperty("uvm.settings.dir") + "/untangle-certificates/" + UvmContextFactory.context().systemManager().getSettings().getIpsecCertificate().replaceAll("\\.pem", "\\.key");
-        String ipsecCrtFile = System.getProperty("uvm.settings.dir") + "/untangle-certificates/" + UvmContextFactory.context().systemManager().getSettings().getIpsecCertificate().replaceAll("\\.pem", "\\.crt");
+        String ipsecCrtFile = CertificateManager.CERT_STORE_PATH + UvmContextFactory.context().systemManager().getSettings().getIpsecCertificate().replaceAll("\\.pem", "\\.crt");
+        String ipsecKeyFile = CertificateManager.CERT_STORE_PATH + UvmContextFactory.context().systemManager().getSettings().getIpsecCertificate().replaceAll("\\.pem", "\\.key");
         String domainName = UvmContextFactory.context().networkManager().getNetworkSettings().getDomainName();
         String hostName = UvmContextFactory.context().networkManager().getNetworkSettings().getHostName();
 
