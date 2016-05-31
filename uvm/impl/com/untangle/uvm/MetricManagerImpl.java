@@ -124,7 +124,7 @@ public class MetricManagerImpl implements MetricManager
 
     private class SystemStatCollector implements Runnable
     {
-        private int  SYSTEM_STAT_LOG_DELAY = 60; // in seconds
+        private int  SYSTEM_STAT_LOG_DELAY = 55; // setting this to 55 means we'll log one every ~60 seconds
         private long ONE_BILLION = 1000000000l;
         private long lastLogTimeStamp = 0;
 
