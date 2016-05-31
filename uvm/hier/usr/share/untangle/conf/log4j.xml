@@ -109,12 +109,20 @@
   <category name="com.untangle.uvm.HostTableImpl">
     <priority value="INFO"/>
   </category>
+
+  <category name="com.untangle.node.util.Pulse">
+    <priority value="INFO"/>
+  </category>
   
   <category name="com.untangle.uvm.networking">
     <priority value="INFO"/>
   </category>
 
   <category name="com.untangle.uvm.license">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.util">
     <priority value="INFO"/>
   </category>
 
