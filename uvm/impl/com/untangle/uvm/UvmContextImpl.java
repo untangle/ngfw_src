@@ -908,14 +908,17 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         // the will be removed again by the wrapper
         // this is just so traffic will pass while the untangle-vm shutsdown
         try {
-            networkManager.removeRules();
+            if ( networkManager != null )
+                networkManager.removeRules();
         } catch (Exception exn) {
             logger.error("Failed to remove rules", exn);
         }
             
         try {
-            hostTableImpl.saveHosts();
-            deviceTableImpl.saveDevices();
+            if ( hostTableImpl != null )
+                hostTableImpl.saveHosts();
+            if ( deviceTableImpl != null )
+                deviceTableImpl.saveDevices();
         } catch (Exception exn) {
             logger.error("Failed to save hosts/devices", exn);
         }
@@ -923,8 +926,10 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         state = UvmState.DESTROYED;
 
         try {
-            conntrackMonitor.stop();
-            metricManager.stop();
+            if ( conntrackMonitor != null )
+                conntrackMonitor.stop();
+            if ( metricManager != null )
+                metricManager.stop();
         } catch (Exception exn) {
             logger.error("could not stop MetricManager", exn);
         }
@@ -938,12 +943,14 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         // stop nodes
         try {
-            nodeManager.destroy();
+            if ( nodeManager != null )
+                nodeManager.destroy();
         } catch (Exception exn) {
             logger.warn("could not destroy NodeManager", exn);
         }
 
         try {
+            if ( tomcatManager != null )
             tomcatManager.stopTomcat();
         } catch (Exception exn) {
             logger.warn("could not stop tomcat", exn);
@@ -1000,8 +1007,9 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     {
         File uidFile = new File(UID_FILE);
         
-        // If the UID file exists and is non-empty, return
-        if (uidFile.exists() && uidFile.length() > 0)
+        // If the UID file exists and it is the correct length
+        // We already have a valid one
+        if (uidFile.exists() && uidFile.length() != 20)
             return;
 
         // if its devel env just return

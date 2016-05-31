@@ -34,6 +34,9 @@ public class Pulse implements Runnable
 
     /* The name of this pulse */
     private String name;
+
+    /* Used for debugging */
+    private String logPrefix;
     
     /* amount of time to wait until the next beat */
     private long delay;
@@ -88,6 +91,7 @@ public class Pulse implements Runnable
         this.delay = delay;
         this.extraInitialDelay = extraInitialDelay;
         this.threadPriority = threadPriority;
+        this.logPrefix = "Pulse[" + task.getClass().getSimpleName() + "] ";
     }
 
     /**
@@ -116,7 +120,7 @@ public class Pulse implements Runnable
         this.thread.setDaemon( true );
         this.thread.setPriority( threadPriority );
 
-        logger.debug(logPrefix() + "launching..." );
+        logger.debug(logPrefix + "launching..." );
         this.thread.start();
     }
     
@@ -128,17 +132,17 @@ public class Pulse implements Runnable
     {
         switch ( this.state ) {
         case UNBORN:
-            logger.warn(logPrefix() + "Attempt to stop an unborn pulse." );
+            logger.warn(logPrefix + "Attempt to stop an unborn pulse." );
             return;
 
         case DEAD:
-            logger.warn(logPrefix() + "Attempt to stop a dead pulse." );
+            logger.warn(logPrefix + "Attempt to stop a dead pulse." );
             return;
 
         case STARTING: /* unlikely but possible */
         case KILLED:
         case RUNNING:
-            logger.debug(logPrefix() + "Stopping the pulse." );
+            logger.debug(logPrefix + "Stopping the pulse." );
             this.state = PulseState.KILLED;
             /* Interrupt the thread. */
             if ( this.thread != null )
@@ -161,10 +165,10 @@ public class Pulse implements Runnable
     public boolean forceRun( long maxWait )
     {
         if ( this.state != PulseState.RUNNING ) {
-            logger.warn(logPrefix() +"Can not force run pulse that is not running: " + this.state );
+            logger.warn(logPrefix +"Can not force run pulse that is not running: " + this.state );
             return false;
         } else if ( this.thread == null ) {
-            logger.warn(logPrefix() +"Can not force run pulse that without thread: " + this.state );
+            logger.warn(logPrefix +"Can not force run pulse that without thread: " + this.state );
             return false;
         }
         
@@ -179,7 +183,7 @@ public class Pulse implements Runnable
             try {
                 this.wait( maxWait );
             } catch ( InterruptedException e ) {
-                logger.debug(logPrefix() + "interrupted while waiting", e );
+                logger.debug(logPrefix + "interrupted while waiting", e );
             }
         }
 
@@ -203,11 +207,11 @@ public class Pulse implements Runnable
         long now;
         
         if ( this.state != PulseState.STARTING) {
-            logger.warn(logPrefix() + "Unable to start the thread outside of running state" );
+            logger.warn(logPrefix + "Unable to start the thread outside of running state" );
             return;
         }
         this.state = PulseState.RUNNING;
-        logger.debug(logPrefix() + "starting ..." );
+        logger.debug(logPrefix + "starting ..." );
 
         nextTask = System.currentTimeMillis() + delay + extraInitialDelay;
 
@@ -215,17 +219,21 @@ public class Pulse implements Runnable
             try {
                 long sleepTime = nextTask - System.currentTimeMillis(); // sleep until nextTask
                 if ( sleepTime <= 0 ) {
-                    logger.debug(logPrefix() + "delay(" + delay + ") <= 0, firing immediately." );
-                    sleepTime = 0;
-                } else if ( sleepTime < DELAY_MINIMUM ) {
-                    logger.debug(logPrefix() + "delay(" + delay + ") < " + DELAY_MINIMUM + " less than minimum.");
+                    logger.debug(logPrefix + "delay(" + delay + ") <= 0, firing immediately." );
+                    sleepTime = DELAY_MINIMUM;
+                }
+
+                if ( sleepTime < DELAY_MINIMUM ) {
+                    logger.debug(logPrefix + "delay(" + delay + ") < " + DELAY_MINIMUM + " less than minimum.");
+                    sleepTime = DELAY_MINIMUM;
                 }
 
                 synchronized ( this ) {
+                    logger.debug(logPrefix + "sleeping " + sleepTime + "ms ...");
                     wait( sleepTime );
                 }
             } catch ( InterruptedException e ) {
-                logger.debug(logPrefix() + "interrupted while waiting for task to complete." );
+                logger.debug(logPrefix + "interrupted while waiting for task to complete." );
             }
 
             /* We woke up */
@@ -247,7 +255,7 @@ public class Pulse implements Runnable
              * then just reset to a reasonable time
              */
             if ( nextTask < now ) {
-                logger.debug(logPrefix() + "pulse running behind, reset to min delay.");
+                logger.debug(logPrefix + "pulse running behind, reset to min delay.");
                 nextTask = now + DELAY_MINIMUM;
             }
 
@@ -256,15 +264,15 @@ public class Pulse implements Runnable
                 long t0=0, t1=0;
                 if ( logger.isDebugEnabled() ) {
                     t0 = System.currentTimeMillis();
-                    logger.debug(logPrefix() + "running ...");
+                    logger.debug(logPrefix + "running ...");
                 }
                 task.run();
                 if ( logger.isDebugEnabled() ) { 
                     t1 = System.currentTimeMillis();
-                    logger.debug(logPrefix() + "running ... done (" + (t1-t0) + " ms)");
+                    logger.debug(logPrefix + "running ... done (" + (t1-t0) + " ms)");
                 }
             } catch ( Exception e ) {
-                logger.warn(logPrefix() + "exception running task", e );
+                logger.warn(logPrefix + "exception running task", e );
             }
 
             /* Increment the number of counts */
@@ -276,7 +284,7 @@ public class Pulse implements Runnable
             }
         }
 
-        logger.debug(logPrefix() + "stopping ..." );
+        logger.debug(logPrefix + "stopping ..." );
         this.state = PulseState.DEAD;
         this.thread = null;
     }
@@ -284,10 +292,5 @@ public class Pulse implements Runnable
     private long getCount()
     {
         return this.count;
-    }
-
-    private String logPrefix()
-    {
-        return "Pulse[" + task.getClass().getSimpleName() + "] ";
     }
 }
