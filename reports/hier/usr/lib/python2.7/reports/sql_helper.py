@@ -323,6 +323,18 @@ def create_table( table_sql, unique_index_columns=[], other_index_columns=[], cr
 
         __make_trigger( tablename, 'time_stamp', trigger_times )
 
+def drop_view( view ):
+    tn = '%s.%s' % (SCHEMA, view)
+    conn = get_connection()
+    try:
+        curs = conn.cursor()
+        curs.execute('DROP VIEW %s' % (tn,))
+        logger.debug("dropped view '%s'" % (view,))
+    except psycopg2.ProgrammingError:
+        logger.debug('cannot drop view: %s' % (view,))
+    finally:
+        conn.commit()
+        
 def drop_table( table ):
     tn = '%s.%s' % (SCHEMA, table)
 

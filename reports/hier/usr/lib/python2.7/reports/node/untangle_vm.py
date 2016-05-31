@@ -138,9 +138,66 @@ CREATE TABLE reports.session_min (
 
     @sql_helper.print_timing
     def __build_session_minutes_view( self ):
+        sql_helper.drop_view("session_minutes")
         sql_helper.create_view("""\
 CREATE VIEW reports.session_minutes AS
-        SELECT sessions.*,session_min.c2s_bytes,session_min.s2c_bytes FROM
+        SELECT 
+        sessions.session_id,
+        sessions.end_time,
+        sessions.bypassed,
+        sessions.entitled,
+        sessions.protocol,
+        sessions.icmp_type,
+        sessions.hostname,
+        sessions.username,
+        sessions.policy_id,
+        sessions.policy_rule_id,
+        sessions.c_client_addr,
+        sessions.c_server_addr,
+        sessions.c_server_port,
+        sessions.c_client_port,
+        sessions.s_client_addr,
+        sessions.s_server_addr,
+        sessions.s_server_port,
+        sessions.s_client_port,
+        sessions.client_intf,
+        sessions.server_intf,
+        sessions.client_country,
+        sessions.client_latitude,
+        sessions.client_longitude,
+        sessions.server_country,
+        sessions.server_latitude,
+        sessions.server_longitude,
+        sessions.c2p_bytes,
+        sessions.p2c_bytes,
+        sessions.s2p_bytes,
+        sessions.p2s_bytes,
+        sessions.filter_prefix,
+        sessions.shield_blocked,
+        sessions.firewall_blocked,
+        sessions.firewall_flagged,
+        sessions.firewall_rule_index,
+        sessions.application_control_lite_protocol,
+        sessions.application_control_lite_blocked,
+        sessions.captive_portal_blocked,
+        sessions.captive_portal_rule_index,
+        sessions.application_control_application,
+        sessions.application_control_protochain,
+        sessions.application_control_category,
+        sessions.application_control_blocked,
+        sessions.application_control_flagged,
+        sessions.application_control_confidence,
+        sessions.application_control_ruleid,
+        sessions.application_control_detail,
+        sessions.bandwidth_control_priority,
+        sessions.bandwidth_control_rule,
+        sessions.ssl_inspector_ruleid,
+        sessions.ssl_inspector_status,
+        sessions.ssl_inspector_detail,
+        session_min.time_stamp,
+        session_min.c2s_bytes,
+        session_min.s2c_bytes 
+        FROM
         reports.session_min INNER JOIN reports.sessions USING (session_id)""")
         
     @sql_helper.print_timing
