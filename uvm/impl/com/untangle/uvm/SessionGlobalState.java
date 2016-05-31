@@ -13,6 +13,7 @@ import com.untangle.jnetcap.NetcapSession;
 import com.untangle.jnetcap.NetcapTCPSession;
 import com.untangle.jnetcap.NetcapUDPSession;
 import com.untangle.uvm.node.SessionEvent;
+import com.untangle.uvm.node.SessionTupleImpl;
 
 /**
  * This stores the global system-wide state for a given session
@@ -34,9 +35,10 @@ public class SessionGlobalState
 
     protected String user; 
     protected SessionEvent sessionEvent = null;
+    protected SessionTupleImpl sessionTuple = null;
     protected long endTime = 0;
     protected long lastUpdateBytes = 0;
-
+    
     /**
      * This is the global list of attachments for this session
      * It is used by various parts of the platform and apps to store metadata about the session
@@ -93,6 +95,9 @@ public class SessionGlobalState
 
     public SessionEvent getSessionEvent() { return this.sessionEvent; }
     public void setSessionEvent( SessionEvent newValue ) { this.sessionEvent = newValue; }
+
+    public SessionTupleImpl getSessionTuple() { return this.sessionTuple; }
+    public void setSessionTuple( SessionTupleImpl newValue ) { this.sessionTuple = newValue; }
     
     public NetcapSession netcapSession()
     {
@@ -169,5 +174,10 @@ public class SessionGlobalState
     public Map<String,Object> getAttachments()
     {
         return this.stringAttachments;
+    }
+
+    public String toString()
+    {
+        return (sessionEvent == null ? "null" : sessionEvent.toString());
     }
 }

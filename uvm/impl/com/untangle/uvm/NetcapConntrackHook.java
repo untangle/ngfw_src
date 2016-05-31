@@ -14,6 +14,7 @@ import com.untangle.jnetcap.NetcapCallback;
 import com.untangle.jnetcap.Conntrack;
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.node.SessionStatsEvent;
+import com.untangle.uvm.node.SessionTupleImpl;
 
 public class NetcapConntrackHook implements NetcapCallback
 {
@@ -26,7 +27,7 @@ public class NetcapConntrackHook implements NetcapCallback
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    private HashMap<Long,Long> conntrackIdToSessionIdMap = new HashMap<Long, Long>();
+    private HashMap<SessionTupleImpl,Long> conntrackSessionIdMap = new HashMap<SessionTupleImpl, Long>();
     
     public static NetcapConntrackHook getInstance()
     {
@@ -47,9 +48,9 @@ public class NetcapConntrackHook implements NetcapCallback
 
     public void event( long sessionId ) {}
 
-    public Long lookupSessionIdByConntrackId( Long conntrackId )
+    public Long lookupSessionId( SessionTupleImpl tuple )
     {
-        return conntrackIdToSessionIdMap.get( conntrackId );
+        return conntrackSessionIdMap.get( tuple );
     }
     
     public void event( long conntrackPtr, int type )
@@ -60,12 +61,19 @@ public class NetcapConntrackHook implements NetcapCallback
         }
 
         Conntrack ct = new Conntrack(conntrackPtr);
-        
+
         try {
             int mark = ct.getMark();
             int clientIntf = ct.getClientIntf();
             int serverIntf = ct.getServerIntf();
             int protocol = ct.getProtocol();
+            SessionTupleImpl tuple = new SessionTupleImpl( ct.getProtocol(),
+                                                           ct.getClientIntf(),
+                                                           ct.getServerIntf(),
+                                                           ct.getPreNatClient(),
+                                                           ct.getPreNatServer(),
+                                                           ct.getPreNatClientPort(),
+                                                           ct.getPreNatServerPort() );
 
             boolean logEvent = UvmContextFactory.context().networkManager().getNetworkSettings().getLogBypassedSessions();
             
@@ -100,8 +108,6 @@ public class NetcapConntrackHook implements NetcapCallback
             int sClientPort = ct.getPostNatClientPort();
             int sServerPort = ct.getPostNatServerPort();
 
-            long conntrackId = ct.getConntrackId();
-            
             HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry( cClientAddr );
             String username = null;
             String hostname = null;
@@ -147,12 +153,12 @@ public class NetcapConntrackHook implements NetcapCallback
                 }
                 
                 // remember the session Id so we know it when the session ends
-                conntrackIdToSessionIdMap.put( conntrackId, sessionId );
+                conntrackSessionIdMap.put( tuple, sessionId );
             }
 
             if ( type == CONNTRACK_TYPE_END ) { /* End Session */
                 // fetch the session Id
-                Long sessionId = conntrackIdToSessionIdMap.remove( conntrackId );
+                Long sessionId = conntrackSessionIdMap.remove( tuple );
 
                 /**
                  * UDP supports bypassing the session mid-session

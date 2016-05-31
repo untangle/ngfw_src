@@ -423,8 +423,12 @@ public abstract class NetcapHook implements Runnable
          * If its TCP, the put it in the recently completed table
          */
         try {
+            /**
+             * Let the conntrack monitor know this session died if its TCP
+             * We do this so that it knows when it sees the conntrack entry in time_wait
+             */
             if ( sessionGlobalState.getProtocol() == 6 ) {
-                sessionTable.putTcpCompletedSessions( sessionGlobalState );
+                ConntrackMonitorImpl.getInstance().addDeadTcpSession( sessionGlobalState );
             }
             
             /**

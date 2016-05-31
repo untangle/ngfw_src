@@ -826,7 +826,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         this.networkManager = new NetworkManagerImpl();
 
-        this.conntrackMonitor = new ConntrackMonitorImpl();
+        this.conntrackMonitor = ConntrackMonitorImpl.getInstance();
 
         this.defaultLicenseManager = new DefaultLicenseManagerImpl();
 
