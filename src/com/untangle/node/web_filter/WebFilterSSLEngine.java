@@ -12,6 +12,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.KeyManagerFactory;
+
 import java.net.InetAddress;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
@@ -19,16 +20,16 @@ import java.io.FileInputStream;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.security.KeyStore;
+
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.NodeSession;
+import com.untangle.uvm.CertificateManager;
 import com.untangle.uvm.UvmContextFactory;
+
 import org.apache.log4j.Logger;
 
 public class WebFilterSSLEngine
 {
-    private static final String certFile = System.getProperty("uvm.settings.dir") + "/untangle-certificates/apache.pfx";
-    private static final String certPass = "password";
-
     private final Logger logger = Logger.getLogger(getClass());
     private NodeTCPSession session;
     private SSLContext sslContext;
@@ -38,6 +39,8 @@ public class WebFilterSSLEngine
 
     protected WebFilterSSLEngine(NodeTCPSession session, String nonceStr, String nodeStr)
     {
+        String webCertFile = CertificateManager.CERT_STORE_PATH + UvmContextFactory.context().systemManager().getSettings().getWebCertificate().replaceAll("\\.pem", "\\.pfx");
+        String webCertPass = "password";
         this.session = session;
         this.nonceStr = nonceStr;
         this.nodeStr = nodeStr;
@@ -45,9 +48,9 @@ public class WebFilterSSLEngine
         try {
             // use the argumented certfile and password to init our keystore
             KeyStore keyStore = KeyStore.getInstance("PKCS12");
-            keyStore.load(new FileInputStream(certFile), certPass.toCharArray());
+            keyStore.load(new FileInputStream(webCertFile), webCertPass.toCharArray());
             KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
-            kmf.init(keyStore, certPass.toCharArray());
+            kmf.init(keyStore, webCertPass.toCharArray());
 
             // pass trust_all_certificates as the trust manager for our
             // engine to prevent the SSLEngine from loading cacerts
