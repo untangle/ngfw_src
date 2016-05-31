@@ -53,6 +53,30 @@ public class ConntrackMonitorImpl
     
     private class ConntrackPulse implements Runnable
     {
+        private void doAccounting( Conntrack conntrack, ConntrackEntryState state, String action )
+        {
+            long oldC2sBytes = state.c2sBytes;
+            long newC2sBytes = conntrack.getOriginalCounterBytes();
+            long oldS2cBytes = state.s2cBytes;
+            long newS2cBytes = conntrack.getReplyCounterBytes();
+            long diffC2sBytes = newC2sBytes - oldC2sBytes;
+            long diffS2cBytes = newS2cBytes - oldS2cBytes;
+            state.c2sBytes = newC2sBytes;
+            state.s2cBytes = newS2cBytes;
+            if ( diffC2sBytes < 0 ) {
+                logger.warn("Negative diffC2sBytes: " + diffC2sBytes + " oldC2sBytes: " + oldC2sBytes + " newC2sBytes: " + newC2sBytes + " action: " + action + " conntrack: " + conntrack.toSummaryString());
+            }
+            if ( diffS2cBytes < 0 ) {
+                logger.warn("Negative diffS2cBytes: " + diffS2cBytes + " oldS2cBytes: " + oldS2cBytes + " newS2cBytes: " + newS2cBytes + " action: " + action + " conntrack: " + conntrack.toSummaryString());
+            }
+            
+            logger.info("CONNTRACK " + action + "| " + conntrack.toSummaryString() + " client: " + (((diffC2sBytes)/60)/1000) + "kB/s" + " server: "+ (((diffS2cBytes/60)/1000)) + "kB/s");
+
+            //log event
+            SessionMinuteEvent event = new SessionMinuteEvent( state.sessionId, diffC2sBytes, diffS2cBytes );
+            UvmContextFactory.context().logEvent( event );
+        }
+        
         public void run()
         {
             synchronized( ConntrackMonitorImpl.class ) {
@@ -71,13 +95,25 @@ public class ConntrackMonitorImpl
                     ConntrackEntryState state = oldConntrackEntries.remove( conntrackId );
 
                     long sessionId = 0;
+                    /**
+                     * If we already know about this session, then pull the sessionId from the state
+                     */
                     if ( state != null )
                         sessionId = state.sessionId;
+                    /**
+                     * If we don't know about this session, ask the Conntrack Hook to see if it knows about it
+                     * The Connntrack Hook stores a list of all the "bypassed" sessions and all of the conntrack IDs and session IDs
+                     * for those sessions.
+                     */
                     if ( sessionId == 0 ) {
                         Long sid = NetcapConntrackHook.getInstance().lookupSessionIdByConntrackId( conntrackId );
                         if ( sid != null )
                             sessionId = sid;
                     }
+                    /**
+                     * If we still don't know it, lookup the tuple in the session table to see if it matches
+                     * an existing session
+                     */
                     if ( sessionId == 0 ) {
                         SessionTupleImpl tuple = new SessionTupleImpl( conntrack.getProtocol(),
                                                                        conntrack.getClientIntf(),
@@ -107,20 +143,9 @@ public class ConntrackMonitorImpl
 
                     // put the entry in the new map
                     newConntrackEntries.put( conntrackId, state );
-                    
-                    long oldC2sBytes = state.c2sBytes;
-                    long newC2sBytes = conntrack.getOriginalCounterBytes();
-                    long oldS2cBytes = state.s2cBytes;
-                    long newS2cBytes = conntrack.getReplyCounterBytes();
-                    long diffC2sBytes = newC2sBytes - oldC2sBytes;
-                    long diffS2cBytes = newS2cBytes - oldS2cBytes;
-                    state.c2sBytes = newC2sBytes;
-                    state.s2cBytes = newS2cBytes;
-                    logger.info("CONNTRACK " + action + "| " + conntrack.toSummaryString() + " client: " + (((diffC2sBytes)/60)/1000) + "kB/s" + " server: "+ (((diffS2cBytes/60)/1000)) + "kB/s");
 
-                    //log event
-                    SessionMinuteEvent event = new SessionMinuteEvent( sessionId, diffC2sBytes, diffS2cBytes );
-                    UvmContextFactory.context().logEvent( event );
+                    // log event 
+                    doAccounting( conntrack, state, action );
                 }
 
                 /**
@@ -129,23 +154,10 @@ public class ConntrackMonitorImpl
                 conntrackEntries = newConntrackEntries;
 
                 for ( ConntrackEntryState state : oldConntrackEntries.values() ) {
-                    String action = "REMOVE ";
-                    Conntrack conntrack = state.conntrack;
+                    // log event 
+                    doAccounting( state.conntrack, state, "REMOVE " );
 
-                    long oldC2sBytes = state.c2sBytes;
-                    long newC2sBytes = conntrack.getOriginalCounterBytes();
-                    long oldS2cBytes = state.s2cBytes;
-                    long newS2cBytes = conntrack.getReplyCounterBytes();
-                    long diffC2sBytes = newC2sBytes - oldC2sBytes;
-                    long diffS2cBytes = newS2cBytes - oldS2cBytes;
-                    state.c2sBytes = newC2sBytes;
-                    state.s2cBytes = newS2cBytes;
-                    logger.info("CONNTRACK " + action + "| " + conntrack.toSummaryString() + " client: " + (((diffC2sBytes)/60)/1000) + "kB/s" + " server: "+ (((diffS2cBytes/60)/1000)) + "kB/s");
-                    
-                    //log event
-                    SessionMinuteEvent event = new SessionMinuteEvent( state.sessionId, diffC2sBytes, diffS2cBytes );
-                    UvmContextFactory.context().logEvent( event );
-                    
+                    // raze forces it to free the struct nf_conntrack* now
                     if ( state.conntrack != null ) {
                         state.conntrack.raze();
                         state.conntrack = null;
