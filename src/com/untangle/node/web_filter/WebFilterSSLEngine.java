@@ -40,7 +40,6 @@ public class WebFilterSSLEngine
     protected WebFilterSSLEngine(NodeTCPSession session, String nonceStr, String nodeStr)
     {
         String webCertFile = CertificateManager.CERT_STORE_PATH + UvmContextFactory.context().systemManager().getSettings().getWebCertificate().replaceAll("\\.pem", "\\.pfx");
-        String webCertPass = "password";
         this.session = session;
         this.nonceStr = nonceStr;
         this.nodeStr = nodeStr;
@@ -48,9 +47,9 @@ public class WebFilterSSLEngine
         try {
             // use the argumented certfile and password to init our keystore
             KeyStore keyStore = KeyStore.getInstance("PKCS12");
-            keyStore.load(new FileInputStream(webCertFile), webCertPass.toCharArray());
+            keyStore.load(new FileInputStream(webCertFile), CertificateManager.CERT_FILE_PASSWORD.toCharArray());
             KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
-            kmf.init(keyStore, webCertPass.toCharArray());
+            kmf.init(keyStore, CertificateManager.CERT_FILE_PASSWORD.toCharArray());
 
             // pass trust_all_certificates as the trust manager for our
             // engine to prevent the SSLEngine from loading cacerts
