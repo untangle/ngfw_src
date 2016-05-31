@@ -61,8 +61,6 @@ public class CertificateManagerImpl implements CertificateManager
     private static final String MARKER_GKEY_HEAD = "-----BEGIN PRIVATE KEY-----";
     private static final String MARKER_GKEY_TAIL = "-----END PRIVATE KEY-----";
 
-    private static final String CERT_PASSWORD = "password";
-
     private final Logger logger = Logger.getLogger(getClass());
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE MMM d HH:mm:ss zzz yyyy");
 
@@ -311,7 +309,7 @@ public class CertificateManagerImpl implements CertificateManager
 
             // last thing we do is convert the certificate PEM file to PFX format
             // for apps that use SSLEngine like web filter and captive portal
-            UvmContextFactory.context().execManager().exec("openssl pkcs12 -export -passout pass:" + CERT_PASSWORD + " -name default -out " + CERT_STORE_PATH + baseName + ".pfx -in " + CERT_STORE_PATH + baseName + ".pem");
+            UvmContextFactory.context().execManager().exec("openssl pkcs12 -export -passout pass:" + CERT_FILE_PASSWORD + " -name default -out " + CERT_STORE_PATH + baseName + ".pfx -in " + CERT_STORE_PATH + baseName + ".pem");
 
             return new ExecManagerResult(0, "Certificate successfully uploaded.");
         }

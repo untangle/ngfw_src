@@ -41,16 +41,15 @@ public class CaptivePortalSSLEngine
     protected CaptivePortalSSLEngine(String nodeStr, CaptivePortalApp nodePtr)
     {
         String webCertFile = CertificateManager.CERT_STORE_PATH + UvmContextFactory.context().systemManager().getSettings().getWebCertificate().replaceAll("\\.pem", "\\.pfx");
-        String webCertPass = "password";
         this.nodeStr = nodeStr;
         this.captureNode = nodePtr;
 
         try {
             // use the argumented certfile and password to init our keystore
             KeyStore keyStore = KeyStore.getInstance("PKCS12");
-            keyStore.load(new FileInputStream(webCertFile), webCertPass.toCharArray());
+            keyStore.load(new FileInputStream(webCertFile), CertificateManager.CERT_FILE_PASSWORD.toCharArray());
             KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
-            kmf.init(keyStore, webCertPass.toCharArray());
+            kmf.init(keyStore, CertificateManager.CERT_FILE_PASSWORD.toCharArray());
 
             // pass trust_all_certificates as the trust manager for our
             // engine to prevent the SSLEngine from loading cacerts
