@@ -87,7 +87,6 @@ public class SessionTableImpl
                                                               session.netcapSession().clientSide().server().host(),
                                                               session.netcapSession().clientSide().client().port(),
                                                               session.netcapSession().clientSide().server().port());
-            session.setSessionTuple( tupleKey );
             sessionTableByTuple.put( tupleKey, session );
         }
         

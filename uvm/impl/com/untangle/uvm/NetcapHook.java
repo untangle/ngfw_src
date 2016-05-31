@@ -71,8 +71,8 @@ public abstract class NetcapHook implements Runnable
 
     protected SessionGlobalState sessionGlobalState;
 
-    protected SessionTuple clientSide = null;
-    protected SessionTuple serverSide = null;
+    protected SessionTupleImpl clientSide = null;
+    protected SessionTupleImpl serverSide = null;
 
     protected boolean cleanupSessionOnExit = true;
 
@@ -132,6 +132,7 @@ public abstract class NetcapHook implements Runnable
                                                netcapSession.clientSide().server().host(),
                                                netcapSession.clientSide().client().port(),
                                                netcapSession.clientSide().server().port());
+            sessionGlobalState.setSessionTuple( clientSide );
             serverSide = new SessionTupleImpl( sessionGlobalState.getProtocol(),
                                                netcapSession.clientSide().interfaceId(), /* always get clientIntf from client side */
                                                netcapSession.serverSide().interfaceId(), /* always get serverIntf from server side */
