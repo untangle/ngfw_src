@@ -38,23 +38,21 @@ import com.untangle.uvm.servlet.DownloadHandler;
 
 public class CertificateManagerImpl implements CertificateManager
 {
-    private static final String ROOT_CERT_INSTALLER_FILE = System.getProperty("uvm.settings.dir") + "/untangle-certificates/RootCAInstaller.exe";
     private static final String CERTIFICATE_GENERATOR_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-certgen";
     private static final String ROOT_CA_CREATOR_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-rootgen";
+    private static final String ROOT_CERT_INSTALLER_FILE = CERT_STORE_PATH + "RootCAInstaller.exe";
 
-    private static final String APACHE_PEM_FILE = "/etc/apache2/ssl/apache.pem";
+    private static final String CERTIFICATE_UPLOAD_FILE = CERT_STORE_PATH + "upload.crt";
+    private static final String EXTERNAL_REQUEST_FILE = CERT_STORE_PATH + "request.csr";
 
-    private static final String CERTIFICATE_UPLOAD_FILE = System.getProperty("uvm.settings.dir") + "/untangle-certificates/upload.crt";
-    private static final String EXTERNAL_REQUEST_FILE = System.getProperty("uvm.settings.dir") + "/untangle-certificates/request.csr";
+    private static final String ROOT_CERT_FILE = CERT_STORE_PATH + "untangle.crt";
+    private static final String ROOT_KEY_FILE = CERT_STORE_PATH + "untangle.key";
 
-    private static final String ROOT_CERT_FILE = System.getProperty("uvm.settings.dir") + "/untangle-certificates/untangle.crt";
-    private static final String ROOT_KEY_FILE = System.getProperty("uvm.settings.dir") + "/untangle-certificates/untangle.key";
-
-    private static final String LOCAL_REQUEST_FILE = System.getProperty("uvm.settings.dir") + "/untangle-certificates/apache.csr";
-    private static final String LOCAL_CERT_FILE = System.getProperty("uvm.settings.dir") + "/untangle-certificates/apache.crt";
-    private static final String LOCAL_KEY_FILE = System.getProperty("uvm.settings.dir") + "/untangle-certificates/apache.key";
-    private static final String LOCAL_PEM_FILE = System.getProperty("uvm.settings.dir") + "/untangle-certificates/apache.pem";
-    private static final String LOCAL_PFX_FILE = System.getProperty("uvm.settings.dir") + "/untangle-certificates/apache.pfx";
+    private static final String LOCAL_REQUEST_FILE = CERT_STORE_PATH + "apache.csr";
+    private static final String LOCAL_CERT_FILE = CERT_STORE_PATH + "apache.crt";
+    private static final String LOCAL_KEY_FILE = CERT_STORE_PATH + "apache.key";
+    private static final String LOCAL_PEM_FILE = CERT_STORE_PATH + "apache.pem";
+    private static final String LOCAL_PFX_FILE = CERT_STORE_PATH + "apache.pfx";
 
     private static final String MARKER_CERT_HEAD = "-----BEGIN CERTIFICATE-----";
     private static final String MARKER_CERT_TAIL = "-----END CERTIFICATE-----";

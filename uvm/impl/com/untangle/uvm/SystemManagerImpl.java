@@ -68,9 +68,6 @@ public class SystemManagerImpl implements SystemManager
     private static final String CRON_STRING = " root /usr/share/untangle/bin/ut-upgrade.py >/dev/null 2>&1";
     private static final File CRON_FILE = new File("/etc/cron.d/untangle-upgrade");
 
-    private static final String CERT_STORE_PATH = System.getProperty("uvm.settings.dir") + "/untangle-certificates/";
-    private static final String APACHE_PEM_FILE = "/etc/apache2/ssl/apache.pem";
-
     // 850K .......... .......... .......... .......... .......... 96% 46.6K 6s
     private static final Pattern DOWNLOAD_PATTERN = Pattern.compile(".*([0-9]+)K[ .]+([0-9%]+) *([0-9]+\\.[0-9]+[KM]).*");
     private static final String TIMEZONE_FILE = "/etc/timezone";
@@ -976,7 +973,7 @@ public class SystemManagerImpl implements SystemManager
     public void activateApacheCertificate()
     {
         // copy the configured pem file to the apache directory and restart
-        UvmContextFactory.context().execManager().exec("cp " + CERT_STORE_PATH + getSettings().getWebCertificate() + " " + APACHE_PEM_FILE);
+        UvmContextFactory.context().execManager().exec("cp " + CertificateManager.CERT_STORE_PATH + getSettings().getWebCertificate() + " " + CertificateManager.APACHE_PEM_FILE);
         UvmContextFactory.context().execManager().exec("/usr/sbin/apache2ctl graceful");
     }
 }
