@@ -1009,7 +1009,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         
         // If the UID file exists and it is the correct length
         // We already have a valid one
-        if (uidFile.exists() && uidFile.length() != 20)
+        if (uidFile.exists() && uidFile.length() > 0)
             return;
 
         // if its devel env just return
