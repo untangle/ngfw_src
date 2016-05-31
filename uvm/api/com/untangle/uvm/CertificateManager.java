@@ -12,8 +12,11 @@ import java.util.LinkedList;
 
 public interface CertificateManager
 {
-    String ROOT_CA_INSTALLER_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-rootgen-installer";
-    String ROOT_CA_INSTALLER_DIRECTORY_NAME = System.getProperty("uvm.lib.dir") + "/untangle-vm/root_certificate_installer";;
+    // this is where we store certificate files - MUST HAVE TRAILING SLASH
+    static final String CERT_STORE_PATH = System.getProperty("uvm.settings.dir") + "/untangle-certificates/";
+
+    static final String ROOT_CA_INSTALLER_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-rootgen-installer";
+    static final String ROOT_CA_INSTALLER_DIRECTORY_NAME = System.getProperty("uvm.lib.dir") + "/untangle-vm/root_certificate_installer";;
 
     CertificateInformation getRootCertificateInformation();
 

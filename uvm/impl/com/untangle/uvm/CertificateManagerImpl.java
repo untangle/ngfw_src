@@ -42,9 +42,6 @@ public class CertificateManagerImpl implements CertificateManager
     private static final String CERTIFICATE_GENERATOR_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-certgen";
     private static final String ROOT_CA_CREATOR_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-rootgen";
 
-    // this is where we store certificate files - MUST HAVE TRAILING SLASH
-    private static final String CERT_STORE_PATH = System.getProperty("uvm.settings.dir") + "/untangle-certificates/";
-
     private static final String APACHE_PEM_FILE = "/etc/apache2/ssl/apache.pem";
 
     private static final String CERTIFICATE_UPLOAD_FILE = System.getProperty("uvm.settings.dir") + "/untangle-certificates/upload.crt";
@@ -85,18 +82,40 @@ public class CertificateManagerImpl implements CertificateManager
 
     protected CertificateManagerImpl()
     {
+        File rootCertFile = new File(ROOT_CERT_FILE);
+        File rootKeyFile = new File(ROOT_KEY_FILE);
+
         UvmContextFactory.context().servletFileManager().registerUploadHandler(new ServerCertificateUploadHandler());
         UvmContextFactory.context().servletFileManager().registerDownloadHandler(new RootCertificateDownloadHandler());
         UvmContextFactory.context().servletFileManager().registerDownloadHandler(new RootCertificateInstallerDownloadHandler());
         UvmContextFactory.context().servletFileManager().registerDownloadHandler(new CertificateRequestDownloadHandler());
 
-        File rootCertFile = new File(ROOT_CERT_FILE);
-        File rootKeyFile = new File(ROOT_KEY_FILE);
+        // in the development environment if the root CA files are missing copy
+        // them from the backup area to avoid recreating after every rake clean
+        if (UvmContextFactory.context().isDevel()) {
+            logger.info("Restoring dev enviroment CA certificate and key files");
+            UvmContextFactory.context().execManager().exec("mkdir -p " + CERT_STORE_PATH);
+            if (!rootKeyFile.exists()) {
+                UvmContextFactory.context().execManager().exec("cp -fa /etc/untangle/untangle.key " + ROOT_KEY_FILE);
+                UvmContextFactory.context().execManager().exec("cp -fa /etc/untangle/untangle.crt " + ROOT_CERT_FILE);
+                UvmContextFactory.context().execManager().exec("cp -fa /etc/untangle/apache.pem " + LOCAL_PEM_FILE);
+                UvmContextFactory.context().execManager().exec("cp -fa /etc/untangle/apache.key " + LOCAL_KEY_FILE);
+                UvmContextFactory.context().execManager().exec("cp -fa /etc/untangle/apache.crt " + LOCAL_CERT_FILE);
+            }
+        }
+
         // if either of the root CA files are missing create the thing now
         if ((rootCertFile.exists() == false) || (rootKeyFile.exists() == false)) {
             logger.info("Creating default root certificate authority");
             UvmContextFactory.context().execManager().exec(ROOT_CA_CREATOR_SCRIPT + " DEFAULT");
             UvmContextFactory.context().execManager().exec(ROOT_CA_INSTALLER_SCRIPT);
+
+            // in the development enviroment save these to a global location
+            // so they will survive a rake clean
+            if (UvmContextFactory.context().isDevel()) {
+                UvmContextFactory.context().execManager().exec("cp -fa " + ROOT_KEY_FILE + " /etc/untangle/untangle.key");
+                UvmContextFactory.context().execManager().exec("cp -fa " + ROOT_CERT_FILE + " /etc/untangle/untangle.crt");
+            }
         }
 
         // always perform a check for the root installer.  It will determine if it needs to be rebuilt.
@@ -120,6 +139,14 @@ public class CertificateManagerImpl implements CertificateManager
         if (apacheFingerprint.equals(configFingerprint) == false) {
             logger.info("Replacing existing apache certificate [" + apacheFingerprint + "] with configured certificate [" + configFingerprint + "]");
             UvmContextFactory.context().systemManager().activateApacheCertificate();
+
+            // in the development enviroment save these to a global location
+            // so they will survive a rake clean
+            if (UvmContextFactory.context().isDevel()) {
+                UvmContextFactory.context().execManager().exec("cp -fa " + LOCAL_PEM_FILE + " /etc/untangle/apache.pem");
+                UvmContextFactory.context().execManager().exec("cp -fa " + LOCAL_KEY_FILE + " /etc/untangle/apache.key");
+                UvmContextFactory.context().execManager().exec("cp -fa " + LOCAL_CERT_FILE + " /etc/untangle/apache.crt");
+            }
         }
     }
 
@@ -563,6 +590,14 @@ public class CertificateManagerImpl implements CertificateManager
         String argString = UvmContextFactory.context().execManager().argBuilder(argList);
         UvmContextFactory.context().execManager().exec(ROOT_CA_CREATOR_SCRIPT + argString);
         UvmContextFactory.context().execManager().exec(ROOT_CA_INSTALLER_SCRIPT + argString);
+
+        // in the development enviroment save these to a global location
+        // so they will survive a rake clean
+        if (UvmContextFactory.context().isDevel()) {
+            UvmContextFactory.context().execManager().exec("cp -fa " + ROOT_KEY_FILE + " /etc/untangle/untangle.key");
+            UvmContextFactory.context().execManager().exec("cp -fa " + ROOT_CERT_FILE + " /etc/untangle/untangle.crt");
+        }
+
         return (true);
     }
 
