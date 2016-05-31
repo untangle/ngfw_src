@@ -23,14 +23,13 @@ import java.security.KeyStore;
 
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.NodeSession;
+import com.untangle.uvm.CertificateManager;
 import com.untangle.uvm.UvmContextFactory;
 
 import org.apache.log4j.Logger;
 
 public class CaptivePortalSSLEngine
 {
-    private static final String certFile = System.getProperty("uvm.settings.dir") + "/untangle-certificates/apache.pfx";
-    private static final String certPass = "password";
 
     private final Logger logger = Logger.getLogger(getClass());
     private final CaptivePortalApp captureNode;
@@ -41,6 +40,8 @@ public class CaptivePortalSSLEngine
 
     protected CaptivePortalSSLEngine(String nodeStr, CaptivePortalApp nodePtr)
     {
+        String certFile = CertificateManager.CERT_STORE_PATH + UvmContextFactory.context().systemManager().getSettings().getWebCertificate().replaceAll("\\.pem", "\\.pfx");
+        String certPass = "password";
         this.nodeStr = nodeStr;
         this.captureNode = nodePtr;
 
