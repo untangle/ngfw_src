@@ -114,6 +114,8 @@ public class ConntrackMonitorImpl
                     long newS2cBytes = conntrack.getReplyCounterBytes();
                     long diffC2sBytes = newC2sBytes - oldC2sBytes;
                     long diffS2cBytes = newS2cBytes - oldS2cBytes;
+                    state.c2sBytes = newC2sBytes;
+                    state.s2cBytes = newS2cBytes;
                     logger.info("CONNTRACK " + action + "| " + conntrack.toSummaryString() + " client: " + (((diffC2sBytes)/60)/1000) + "kB/s" + " server: "+ (((diffS2cBytes/60)/1000)) + "kB/s");
 
                     //log event
@@ -136,6 +138,8 @@ public class ConntrackMonitorImpl
                     long newS2cBytes = conntrack.getReplyCounterBytes();
                     long diffC2sBytes = newC2sBytes - oldC2sBytes;
                     long diffS2cBytes = newS2cBytes - oldS2cBytes;
+                    state.c2sBytes = newC2sBytes;
+                    state.s2cBytes = newS2cBytes;
                     logger.info("CONNTRACK " + action + "| " + conntrack.toSummaryString() + " client: " + (((diffC2sBytes)/60)/1000) + "kB/s" + " server: "+ (((diffS2cBytes/60)/1000)) + "kB/s");
                     
                     //log event
