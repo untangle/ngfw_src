@@ -28,6 +28,7 @@ import java.io.FileInputStream;
 import java.io.File;
 
 import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.CertificateManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.util.GlobUtil;
 
@@ -163,7 +164,7 @@ class SslInspectorManager
 
     public void initializeClientEngine(X509Certificate baseCert) throws Exception
     {
-        String mailCertFile = System.getProperty("uvm.settings.dir") + "/untangle-certificates/" + UvmContextFactory.context().systemManager().getSettings().getMailCertificate().replaceAll("\\.pem", "\\.pfx");
+        String mailCertFile = CertificateManager.CERT_STORE_PATH + UvmContextFactory.context().systemManager().getSettings().getMailCertificate().replaceAll("\\.pem", "\\.pfx");
         String mailCertPass = "password";
         KeyStore keyStore = null;
 
