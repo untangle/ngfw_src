@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 import com.untangle.jnetcap.Netcap;
 import com.untangle.jnetcap.Conntrack;
 import com.untangle.uvm.node.SessionTupleImpl;
+import com.untangle.uvm.node.SessionMinuteEvent;
 import com.untangle.uvm.util.Pulse;
 
 public class ConntrackMonitorImpl
@@ -94,20 +95,30 @@ public class ConntrackMonitorImpl
                         // we can't log events without a session ID
                         continue;
                     } 
+
+
+                    String action = null;
+                    if ( state == null ) {
+                        action = "NEW    ";
+                        state = new ConntrackEntryState( conntrack, sessionId );
+                    } else {
+                        action = "UPDATE ";
+                    }
+
+                    // put the entry in the new map
+                    newConntrackEntries.put( conntrackId, state );
                     
-                    // not new session 
-                    if ( state != null ) {
-                        logger.info("CONNTRACK UPDATE : " + conntrack.toSummaryString());
-                        // put the entrie in the new map
-                        newConntrackEntries.put( conntrackId, state );
-                    }
-                    // new session
-                    else {
-                        logger.info("CONNTRACK NEW    : " + conntrack.toSummaryString());
-                        ConntrackEntryState newState = new ConntrackEntryState( conntrack, sessionId );
-                        // put the entrie in the new map
-                        newConntrackEntries.put( conntrackId, newState );
-                    }
+                    long oldC2sBytes = state.c2sBytes;
+                    long newC2sBytes = conntrack.getOriginalCounterBytes();
+                    long oldS2cBytes = state.s2cBytes;
+                    long newS2cBytes = conntrack.getReplyCounterBytes();
+                    long diffC2sBytes = newC2sBytes - oldC2sBytes;
+                    long diffS2cBytes = newS2cBytes - oldS2cBytes;
+                    logger.info("CONNTRACK " + action + "| " + conntrack.toSummaryString() + " client: " + (((diffC2sBytes)/60)/1000) + "kB/s" + " server: "+ (((diffS2cBytes/60)/1000)) + "kB/s");
+
+                    //log event
+                    SessionMinuteEvent event = new SessionMinuteEvent( sessionId, diffC2sBytes, diffS2cBytes );
+                    UvmContextFactory.context().logEvent( event );
                 }
 
                 /**
@@ -116,7 +127,21 @@ public class ConntrackMonitorImpl
                 conntrackEntries = newConntrackEntries;
 
                 for ( ConntrackEntryState state : oldConntrackEntries.values() ) {
-                    logger.info("CONNTRACK REMOVE : " + state.conntrack.toSummaryString());
+                    String action = "REMOVE ";
+                    Conntrack conntrack = state.conntrack;
+
+                    long oldC2sBytes = state.c2sBytes;
+                    long newC2sBytes = conntrack.getOriginalCounterBytes();
+                    long oldS2cBytes = state.s2cBytes;
+                    long newS2cBytes = conntrack.getReplyCounterBytes();
+                    long diffC2sBytes = newC2sBytes - oldC2sBytes;
+                    long diffS2cBytes = newS2cBytes - oldS2cBytes;
+                    logger.info("CONNTRACK " + action + "| " + conntrack.toSummaryString() + " client: " + (((diffC2sBytes)/60)/1000) + "kB/s" + " server: "+ (((diffS2cBytes/60)/1000)) + "kB/s");
+                    
+                    //log event
+                    SessionMinuteEvent event = new SessionMinuteEvent( state.sessionId, diffC2sBytes, diffS2cBytes );
+                    UvmContextFactory.context().logEvent( event );
+                    
                     if ( state.conntrack != null ) {
                         state.conntrack.raze();
                         state.conntrack = null;
@@ -131,6 +156,9 @@ public class ConntrackMonitorImpl
         protected Conntrack conntrack;
         protected long sessionId;
         
+        protected long c2sBytes = 0;
+        protected long s2cBytes = 0;
+
         protected ConntrackEntryState( Conntrack conntrack, long sessionId )
         {
             this.conntrack = conntrack;

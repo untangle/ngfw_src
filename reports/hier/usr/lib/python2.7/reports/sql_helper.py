@@ -253,7 +253,10 @@ def clean_table(tablename, cutoff):
         run_sql(sql, (cutoff,))
     else: 
         logger.warn("Table %s missing time_stamp column!" % tablename)
-    
+
+def create_view( view_sql ):
+    run_sql(view_sql)
+        
 def create_table( table_sql, unique_index_columns=[], other_index_columns=[], create_partitions=True ):
     (schema, tablename) = __get_tablename(table_sql)
     

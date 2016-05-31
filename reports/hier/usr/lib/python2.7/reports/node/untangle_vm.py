@@ -14,6 +14,8 @@ class UvmNode(Node):
     def create_tables(self):
         self.__build_admin_logins_table()
         self.__build_sessions_table()
+        self.__build_session_min_table()
+        self.__build_session_minutes_view()
         self.__build_penaltybox_table()
         self.__build_quotas_table()
         self.__build_host_table_updates_table()
@@ -24,7 +26,7 @@ class UvmNode(Node):
     def reports_cleanup(self, cutoff):
         sql_helper.clean_table("admin_logins", cutoff)
         sql_helper.clean_table("sessions", cutoff)
-        sql_helper.clean_table("session_counts", cutoff)
+        sql_helper.clean_table("session_min", cutoff)
         sql_helper.clean_table("penaltybox", cutoff)
         sql_helper.clean_table("quotas", cutoff)
         sql_helper.clean_table("host_table_updates", cutoff)
@@ -122,6 +124,25 @@ CREATE TABLE reports.sessions (
         sql_helper.add_column('sessions','server_latitude','real') # 12.1
         sql_helper.add_column('sessions','server_longitude','real') # 12.1
 
+    @sql_helper.print_timing
+    def __build_session_min_table( self ):
+        sql_helper.create_table("""\
+CREATE TABLE reports.session_min (
+        session_id int8 NOT NULL,
+        time_stamp timestamp NOT NULL,
+        c2s_bytes int8,
+        s2c_bytes int8)""",
+                                [],
+                                ["time_stamp",
+                                 "session_id"])
+
+    @sql_helper.print_timing
+    def __build_session_minutes_view( self ):
+        sql_helper.create_view("""\
+CREATE VIEW reports.session_minutes AS
+        SELECT sessions.*,session_min.c2s_bytes,session_min.s2c_bytes FROM
+        reports.session_min INNER JOIN reports.sessions USING (session_id)""")
+        
     @sql_helper.print_timing
     def __build_alerts_events_table( self ):
         sql_helper.create_table("""\

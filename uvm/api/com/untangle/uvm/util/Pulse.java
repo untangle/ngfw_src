@@ -219,21 +219,25 @@ public class Pulse implements Runnable
             try {
                 long sleepTime = nextTask - System.currentTimeMillis(); // sleep until nextTask
                 if ( sleepTime <= 0 ) {
-                    logger.debug(logPrefix + "delay(" + delay + ") <= 0, firing immediately." );
+                    if ( logger.isDebugEnabled() )
+                        logger.debug(logPrefix + "delay(" + delay + ") <= 0, firing immediately." );
                     sleepTime = DELAY_MINIMUM;
                 }
 
                 if ( sleepTime < DELAY_MINIMUM ) {
-                    logger.debug(logPrefix + "delay(" + delay + ") < " + DELAY_MINIMUM + " less than minimum.");
+                    if ( logger.isDebugEnabled() )
+                        logger.debug(logPrefix + "delay(" + delay + ") < " + DELAY_MINIMUM + " less than minimum.");
                     sleepTime = DELAY_MINIMUM;
                 }
 
                 synchronized ( this ) {
-                    logger.debug(logPrefix + "sleeping (" + sleepTime + " ms) ...");
+                    if ( logger.isDebugEnabled() )
+                        logger.debug(logPrefix + "sleeping (" + sleepTime + " ms) ...");
                     wait( sleepTime );
                 }
             } catch ( InterruptedException e ) {
-                logger.debug(logPrefix + "interrupted while waiting for task to complete." );
+                if ( logger.isDebugEnabled() )
+                    logger.debug(logPrefix + "interrupted while waiting for task to complete." );
             }
 
             /* We woke up */
@@ -255,7 +259,8 @@ public class Pulse implements Runnable
              * then just reset to a reasonable time
              */
             if ( nextTask < now ) {
-                logger.debug(logPrefix + "pulse running behind, reset to min delay.");
+                if ( logger.isDebugEnabled() )
+                    logger.debug(logPrefix + "pulse running behind, reset to min delay.");
                 nextTask = now + DELAY_MINIMUM;
             }
 
