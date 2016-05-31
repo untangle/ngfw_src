@@ -229,7 +229,7 @@ public class Pulse implements Runnable
                 }
 
                 synchronized ( this ) {
-                    logger.debug(logPrefix + "sleeping " + sleepTime + "ms ...");
+                    logger.debug(logPrefix + "sleeping (" + sleepTime + " ms) ...");
                     wait( sleepTime );
                 }
             } catch ( InterruptedException e ) {

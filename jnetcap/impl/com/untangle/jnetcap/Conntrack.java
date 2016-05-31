@@ -213,7 +213,7 @@ public class Conntrack
         else
             server = (getPostNatServer() == null ? "null" : getPostNatServer().getHostAddress()) + ":" + getPostNatServerPort();
 
-        summary += String.format("%20s ->%20s ",client,server);
+        summary += String.format("%21s ->%21s ",client,server);
         summary += String.format("|%d->%d|", getClientIntf(), getServerIntf());
 
         return summary;
