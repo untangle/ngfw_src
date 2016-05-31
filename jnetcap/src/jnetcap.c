@@ -21,6 +21,7 @@
 #include <mvutil/errlog.h>
 #include <mvutil/debug.h>
 #include <mvutil/uthread.h>
+#include <mvutil/list.h>
 #include <jmvutil.h>
 
 #include "jnetcap.h"
@@ -474,10 +475,25 @@ JNIEXPORT jstring JNICALL JF_Netcap( arpLookup )
 JNIEXPORT jint JNICALL JF_Netcap( conntrackDump )
 (JNIEnv *env, jclass _class, jlongArray arr, jint arr_length )
 {
+    int count = 0;
     jlong* arr_body = (*env)->GetLongArrayElements(env, arr, 0);
-    int ret = netcap_nfconntrack_dump( (struct nf_conntrack**)arr_body, arr_length );
+    
+    list_t* list = netcap_nfconntrack_dump( (struct nf_conntrack**)arr_body, arr_length );
+
+    struct nf_conntrack* entry;
+    while ( list_length( list ) > 0 ) {
+        if ( list_pop_head( list, (void**)&entry ) < 0 )
+            break;
+        if ( entry == NULL ) {
+            errlog(ERR_WARNING, "NULL entry pulled from conntrack list.");
+            continue;
+        }
+        arr_body[count] = (jlong)entry;
+        count++;
+    }
+
     (*env)->ReleaseLongArrayElements(env, arr, arr_body, 0);
-    return ret;
+    return count;
 }
 
 static void*             _tcp_run_thread( void* arg )

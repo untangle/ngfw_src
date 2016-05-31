@@ -103,6 +103,11 @@ void netcap_conntrack_null_hook ( struct nf_conntrack* ct, int type )
 
 int _netcap_conntrack_callback( enum nf_conntrack_msg_type type, struct nf_conntrack *ct, void *data )
 {
+    if ( ct == NULL ) {
+        errlog(ERR_WARNING, "_netcap_conntrack_callback() called with NULL conntrack");
+        return NFCT_CB_CONTINUE;
+    }
+
     struct nf_conntrack *my_ct = nfct_clone(ct); // clone it because ct is gone after this hook returns
     uint32_t client = nfct_get_attr_u32(my_ct, ATTR_ORIG_IPV4_SRC);
     uint32_t server = nfct_get_attr_u32(my_ct, ATTR_REPL_IPV4_SRC);

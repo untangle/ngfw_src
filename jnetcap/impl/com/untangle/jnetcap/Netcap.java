@@ -22,9 +22,18 @@ public final class Netcap
     private static final int NETCAP_DEBUG  = 2;
 
     private static final Netcap INSTANCE = new Netcap();
+
+    private static final int longArrayLength = 1024*64;
+    private final long[] longArray = new long[longArrayLength];
     
     /* Singleton */
-    private Netcap() {}
+    private Netcap()
+    {
+        /* Zero out array so valgrind won't complain */
+        for ( int i = 0 ; i < longArrayLength ; i++ ) {
+            longArray[i] = 0;
+        }
+    }
 
     /**
      * Initialzie the JNetcap and Netcap library. </p>
@@ -73,9 +82,6 @@ public final class Netcap
         setNetcapDebugLevel( level );
     }
 
-    private static final int longArrayLength = 1024*64;
-    private final long[] longArray = new long[longArrayLength];
-    
     public synchronized List<Conntrack> getConntrackDump()
     {
         LinkedList<Conntrack> entries = new LinkedList<Conntrack>();

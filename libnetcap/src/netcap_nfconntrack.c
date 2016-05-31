@@ -217,7 +217,7 @@ int netcap_nfconntrack_del_entry_tuple( netcap_nfconntrack_ipv4_tuple_t* tuple, 
 /**
  * Dump all of conntrack
  */
-int netcap_nfconntrack_dump( struct nf_conntrack** array, int limit )
+list_t* netcap_nfconntrack_dump( struct nf_conntrack** array, int limit )
 {
     _conntrack_handle_t* handle = NULL;
     int ret;
@@ -231,15 +231,15 @@ int netcap_nfconntrack_dump( struct nf_conntrack** array, int limit )
     }
 
     if (( handle = _get_handle()) == NULL )
-        return errlog( ERR_CRITICAL, "_get_handle\n" );
+        return errlog_null( ERR_CRITICAL, "_get_handle\n" );
 
     list_t* list = list_create(0);
     if ( list == NULL )
-        return perrlog("list_create");
+        return perrlog_null("list_create");
 
     if ( pthread_mutex_lock( &handle->mutex ) < 0 ) {
         list_raze( list );
-        return perrlog( "pthread_mutex_lock" );
+        return perrlog_null( "pthread_mutex_lock" );
     }
 
     pthread_setspecific( _netcap_nfconntrack.tls_key, list );
@@ -248,29 +248,15 @@ int netcap_nfconntrack_dump( struct nf_conntrack** array, int limit )
 
     if ( pthread_mutex_unlock( &handle->mutex ) < 0 ) {
         list_raze( list );
-        return perrlog( "pthread_mutex_unlock" );
+        return perrlog_null( "pthread_mutex_unlock" );
     }
 
     if ( ret < 0 ) {
         list_raze( list );
-        return errlog( ERR_CRITICAL, "_critical_section\n" );
+        return errlog_null( ERR_CRITICAL, "_critical_section\n" );
     }
 
-    struct nf_conntrack* entry;
-    int count = 0;
-    int i = 0;
-    for ( ; i < limit && list_length( list ) > 0 ; i++ ) {
-        if ( list_pop_head( list, (void**)&entry ) < 0 )
-            break;
-        if ( entry == NULL ) {
-            errlog(ERR_WARNING, "NULL entry [%i] pulled from conntrack list.", i);
-            continue;
-        }
-        array[count] = entry;
-        count++;
-    }
-
-    return count;
+    return list;
 }
 
 /**

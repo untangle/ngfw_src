@@ -438,7 +438,7 @@ int  netcap_set_verdict_mark ( struct nfq_q_handle* nfq_qh, u_int32_t packet_id,
 int  netcap_nfconntrack_update_mark( netcap_session_t* session, u_int32_t mark);
 
 /* Dump all of conntrack */
-int netcap_nfconntrack_dump( struct nf_conntrack** array, int limit );
+list_t* netcap_nfconntrack_dump();
 
 /**
  * Lookups up the MAC address for the provided IP in the ARP table
