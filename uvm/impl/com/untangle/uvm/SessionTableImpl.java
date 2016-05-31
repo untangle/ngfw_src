@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.List;
 import java.util.LinkedList;
+import java.util.LinkedHashMap;
 import java.net.InetAddress;
 
 import org.apache.log4j.Logger;
@@ -16,12 +17,15 @@ import com.untangle.jvector.Vector;
 import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.node.SessionTupleImpl;
 import com.untangle.uvm.vnet.PipelineConnector;
+import com.untangle.uvm.util.Pulse;
 
 /**
  * This table stores a global list of all currently active sessions being vectored
  */
 public class SessionTableImpl
 {
+    public static final short PROTO_TCP = 6;
+
     private final Logger logger = Logger.getLogger(getClass());
 
     private static final SessionTableImpl INSTANCE = new SessionTableImpl();
@@ -29,11 +33,17 @@ public class SessionTableImpl
     private final Map<Long,SessionGlobalState> sessionTableById = new HashMap<Long,SessionGlobalState>();
     private final Map<SessionTupleImpl,SessionGlobalState> sessionTableByTuple = new HashMap<SessionTupleImpl,SessionGlobalState>();
     private final Map<NatPortAvailabilityKey,SessionGlobalState> tcpPortAvailabilityMap = new HashMap<NatPortAvailabilityKey,SessionGlobalState>();
+    private final LinkedHashMap<SessionTupleImpl,SessionGlobalState> tcpCompletedSessions = new LinkedHashMap<SessionTupleImpl,SessionGlobalState>();
 
-    public static final short PROTO_TCP = 6;
+    private static final int CLEANER_FREQUENCY = 60*1000; /* 1 minute */
+    private static final long LIFETIME_MS = 1000*60*2; /* 2 minutes */ /* Amount of time to keep complete sessions in table */
+    private final Pulse tcpCompletedSessionsCleaner = new Pulse("tcp-completed-table-cleaner", new TcpCompletedSessionsCleaner(), CLEANER_FREQUENCY);
     
     /* Singleton */
-    private SessionTableImpl() {}
+    private SessionTableImpl()
+    {
+        tcpCompletedSessionsCleaner.start();
+    }
 
     public static SessionTableImpl getInstance()
     {
@@ -92,6 +102,44 @@ public class SessionTableImpl
         return inserted;
     }
 
+    /**
+     * Put this session into the TCP table that holds all of the sessions
+     * that have recently ended (and are in time_wait state.)
+     * If this is never removed it will be cleaned out by a periodic task
+     */
+    protected boolean putTcpCompletedSessions( SessionGlobalState session )
+    {
+        SessionTupleImpl tupleKey = new SessionTupleImpl( session.getProtocol(),
+                                                          session.netcapSession().clientSide().interfaceId(),
+                                                          session.netcapSession().serverSide().interfaceId(),
+                                                          session.netcapSession().clientSide().client().host(),
+                                                          session.netcapSession().clientSide().server().host(),
+                                                          session.netcapSession().clientSide().client().port(),
+                                                          session.netcapSession().clientSide().server().port());
+        synchronized ( tcpCompletedSessions ) {
+            return ( tcpCompletedSessions.put( tupleKey, session ) == null );
+        }
+    }
+
+    /**
+     * Lookup a session by the TUPLE in the TCP completed sessions table
+     * IMPORTANT:
+     * The tuple MUST be in the following format:
+     * protocol
+     * CLIENT SIDE client interface
+     * SERVER SIDE server interface
+     * CLIENT SIDE client address
+     * CLIENT SIDE client port
+     * CLIENT SIDE server address
+     * SERVER SIDE server port
+     */
+    public SessionGlobalState lookupTupleTcpCompleteDSessions( SessionTupleImpl tuple )
+    {
+        synchronized ( tcpCompletedSessions ) {
+            return tcpCompletedSessions.get( tuple );
+        }
+    }
+    
     /**
      * Remove a session ID from the table(s).
      * @return - returns the session if it was removed, null if not found
@@ -368,5 +416,35 @@ public class SessionTableImpl
             return addr.hashCode() + port;
         }
     }
+
+    private class TcpCompletedSessionsCleaner implements Runnable
+    {
+        public void run()
+        {
+            long now = System.currentTimeMillis();
+            
+            synchronized( tcpCompletedSessions ) {
+                for(Iterator<Map.Entry<SessionTupleImpl, SessionGlobalState>> i = tcpCompletedSessions.entrySet().iterator(); i.hasNext(); ) {
+                    Map.Entry<SessionTupleImpl, SessionGlobalState> entry = i.next();
+                    SessionGlobalState session = entry.getValue();
+                    long endTime = session.getEndTime();
+                    if ( endTime == 0 ) {
+                        logger.warn("Invalid endTime: " + endTime + " session: " + session );
+                    }
+                    if( now - endTime > LIFETIME_MS ) {
+                        logger.debug("Removing session from tcpCompletedSessions: " + session);
+                        i.remove();
+                    } else {
+                        // Because we are using a LinkedHashMap, they ordering is maintained and the younger elements are later in the list
+                        // Because this entry has not yet expired, none of the entries after it have expired either
+                        // We can quit iteration now.
+                        break;
+                    }
+                }                
+            }
+            return;
+        }
+    }
+
 }
 

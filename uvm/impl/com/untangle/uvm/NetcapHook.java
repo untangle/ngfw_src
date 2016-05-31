@@ -418,9 +418,15 @@ public abstract class NetcapHook implements Runnable
         sessionGlobalState.setEndTime( System.currentTimeMillis() );
         logSessionStatsEvent( sessionEvent );
 
+        /**
+         * Remove the session from the active sessions table
+         * If its TCP, the put it in the recently completed table
+         */
         try {
-            /* Remove the session from the active sessions table */
-
+            if ( sessionGlobalState.getProtocol() == 6 ) {
+                sessionTable.putTcpCompletedSessions( sessionGlobalState );
+            }
+            
             /**
              * If cleanupSessionOnExit is true (almost always is)
              * We remove the session from the global session table

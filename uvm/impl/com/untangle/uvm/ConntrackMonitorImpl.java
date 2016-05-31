@@ -111,8 +111,9 @@ public class ConntrackMonitorImpl
                             sessionId = sid;
                     }
                     /**
-                     * If we still don't know it, lookup the tuple in the session table to see if it matches
-                     * an existing session
+                     * If we still don't know it,
+                     * lookup the tuple in the session table for a live session
+                     * or lookup the tuple in the recently completed tcp session table
                      */
                     if ( sessionId == 0 ) {
                         SessionTupleImpl tuple = new SessionTupleImpl( conntrack.getProtocol(),
@@ -122,9 +123,19 @@ public class ConntrackMonitorImpl
                                                                        conntrack.getPreNatServer(),
                                                                        conntrack.getPreNatClientPort(),
                                                                        conntrack.getPreNatServerPort() );
-                        SessionGlobalState session = SessionTableImpl.getInstance().lookupTuple( tuple );
-                        if ( session != null )
-                            sessionId = session.id();
+
+                        SessionGlobalState session;
+                        if ( sessionId == 0 ) {
+                            session = SessionTableImpl.getInstance().lookupTuple( tuple );
+                            if ( session != null )
+                                sessionId = session.id();
+                        }
+                        
+                        if ( sessionId == 0 ) {
+                            session = SessionTableImpl.getInstance().lookupTupleTcpCompleteDSessions( tuple );
+                            if ( session != null )
+                                sessionId = session.id();
+                        }
                     }
                     if ( sessionId == 0 ) {
                         // unable to find the session ID for this session
