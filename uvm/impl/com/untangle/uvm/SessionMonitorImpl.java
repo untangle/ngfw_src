@@ -125,6 +125,8 @@ public class SessionMonitorImpl implements SessionMonitor
             SessionTupleImpl tuple = _makeTuple( session );
             // find corresponding session in UVM
             SessionGlobalState netcapSession = SessionTableImpl.getInstance().lookupTuple(tuple); 
+            if ( logger.isDebugEnabled() )
+                logger.debug("Lookup tuple (" + tuple + ") -> " + netcapSession);
             
             if ( netcapSession != null ) {
                 try {

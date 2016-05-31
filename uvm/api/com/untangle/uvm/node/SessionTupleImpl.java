@@ -72,9 +72,9 @@ public class SessionTupleImpl implements SessionTuple
     public int hashCode()
     {
         if ( clientAddr == null || serverAddr == null )
-            return protocol + clientPort + serverPort + clientIntf + serverIntf;
+            return protocol + clientPort + serverPort;
         else
-            return protocol + clientAddr.hashCode() + clientPort + serverAddr.hashCode() + serverPort + clientIntf + serverIntf;
+            return protocol + clientAddr.hashCode() + clientPort + serverAddr.hashCode() + serverPort;
     }
 
     @Override
@@ -85,9 +85,7 @@ public class SessionTupleImpl implements SessionTuple
         SessionTupleImpl t = (SessionTupleImpl)o;
         if ( t.protocol != this.protocol ||
              t.clientPort != this.clientPort ||
-             t.serverPort != this.serverPort ||
-             t.clientIntf != this.clientIntf ||
-             t.serverIntf != this.serverIntf) {
+             t.serverPort != this.serverPort) {
             return false;
         }
         if ( ! ( t.clientAddr == null ? this.clientAddr == null : t.clientAddr.equals(this.clientAddr) ) ) {
@@ -106,8 +104,6 @@ public class SessionTupleImpl implements SessionTuple
         String str = "[Tuple ";
         if ( protocol != 0)
             str += "PROTO:" + protocol+" ";
-        if ( clientIntf != 0 && serverIntf != 0 )
-            str += "|" + clientIntf + "->" + serverIntf + "| ";
         
         str += (clientAddr == null ? "null" : clientAddr.getHostAddress()) + ":" + clientPort;
         str += " -> ";
