@@ -488,7 +488,7 @@ JNIEXPORT jint JNICALL JF_Netcap( conntrackDump )
             errlog(ERR_WARNING, "NULL entry pulled from conntrack list.");
             continue;
         }
-        arr_body[count] = (jlong)entry;
+        arr_body[count] = (jlong)(intptr_t)entry;
         count++;
     }
 
@@ -580,7 +580,7 @@ static void              _conntrack_hook( struct nf_conntrack* ct, int type )
     debug( 10, "jnetcap: Calling hook\n" );
     
     /* Call the global method */
-    (*env)->CallVoidMethod( env, global_hook, _jnetcap.java.conntrack_event_method_id, ((jlong)ct), ((jint)type));
+    (*env)->CallVoidMethod( env, global_hook, _jnetcap.java.conntrack_event_method_id, ((jlong)(intptr_t)ct), ((jint)type));
 
     debug( 10, "jnetcap: Exiting hook\n" );
 
