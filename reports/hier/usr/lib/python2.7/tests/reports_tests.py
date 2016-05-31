@@ -439,7 +439,6 @@ class ReportsTests(unittest2.TestCase):
         assert(found)
 
     def test_090_email_alert(self):
-        raise unittest2.SkipTest("Skip failing test")        
         if (not canRelay):
             raise unittest2.SkipTest('Unable to relay through ' + fakeSmtpServerHost)
         # Create settings to receive testEmailAddress 
