@@ -124,10 +124,10 @@ def connect():
           sys.stderr.write("Failed to connect: (%s)\n" % e )
           reset_command_socket()
           return
-     finally:
-          # rotate the port list to try a new port
-          # UNTANGLE_CMD_SERVERS = UNTANGLE_CMD_SERVERS[1:] + UNTANGLE_CMD_SERVERS[:1]
-          # UNTANGLE_CMD_PORTS   = UNTANGLE_CMD_PORTS[1:]   + UNTANGLE_CMD_PORTS[:1]
+     # finally:
+     #     # rotate the port list to try a new port
+     #     UNTANGLE_CMD_SERVERS = UNTANGLE_CMD_SERVERS[1:] + UNTANGLE_CMD_SERVERS[:1]
+     #     UNTANGLE_CMD_PORTS   = UNTANGLE_CMD_PORTS[1:]   + UNTANGLE_CMD_PORTS[:1]
 
      command_socket_file = command_socket.makefile("rb")
 
