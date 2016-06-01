@@ -93,7 +93,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private OemManagerImpl oemManager;
     private AlertManagerImpl alertManager;
     private SessionMonitorImpl sessionMonitor;
-    private SessionUpdaterImpl sessionUpdater;
     private ConntrackMonitorImpl conntrackMonitor;
     private BackupManagerImpl backupManager;
     private LocalDirectoryImpl localDirectory;
@@ -861,8 +860,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         this.alertManager = new AlertManagerImpl();
 
-        this.sessionUpdater = new SessionUpdaterImpl();
-        
         // start vectoring
         NetcapManagerImpl.getInstance().run();
 
