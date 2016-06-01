@@ -75,6 +75,9 @@ Ext.define('Ung.panel.Reports', {
         columns: [{
             width: 30,
             renderer: Ext.bind(function (value, metaData, record) {
+                if (record.getData().category === 'All') {
+                    return '<i class="material-icons">format_list_bulleted</i>';
+                }
                 return '<img src="' + record.getData().icon + '"/>';
             }, this)
         }, {
