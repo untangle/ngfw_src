@@ -437,8 +437,10 @@ Ext.define("Ung.window.ReportEditor", {
             store: [
                 ["LINE", i18n._("Line")],
                 ["AREA", i18n._("Area")],
+                ["AREA_STACKED", i18n._("Stacked Area")],
                 ["BAR", i18n._("Bar")],
-                ["BAR_OVERLAPPED", i18n._("Bar Overlapped")]
+                ["BAR_OVERLAPPED", i18n._("Bar Overlapped")],
+                ["BAR_STACKED", i18n._("Stacked Columns")]
             ]
         }, {
             xtype: 'combo',
@@ -662,8 +664,8 @@ Ext.define("Ung.window.ReportEditor", {
         this.cmps.pieStyle.setVisible(type == "PIE_GRAPH");
         this.cmps.pieStyle.setDisabled(type != "PIE_GRAPH");
 
-        this.cmps.timeStyle.setVisible(type == "TIME_GRAPH");
-        this.cmps.timeStyle.setDisabled(type != "TIME_GRAPH");
+        this.cmps.timeStyle.setVisible(type == "TIME_GRAPH" || type == "TIME_GRAPH_DYNAMIC");
+        this.cmps.timeStyle.setDisabled(type != "TIME_GRAPH" && type != "TIME_GRAPH_DYNAMIC");
 
         this.cmps.timeDataInterval.setVisible(type == "TIME_GRAPH" || type == "TIME_GRAPH_DYNAMIC");
         this.cmps.timeDataInterval.setDisabled(type != "TIME_GRAPH" && type != "TIME_GRAPH_DYNAMIC");

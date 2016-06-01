@@ -1079,8 +1079,10 @@ Ext.define('Ung.panel.Reports', {
                 var timeStyleButtons = [
                     {timeStyle: 'LINE', icon: 'show_chart', text: i18n._('Line')},
                     {timeStyle: 'AREA', icon: 'show_chart', text: i18n._('Area')},
+                    {timeStyle: 'AREA_STACKED', icon: 'show_chart', text: i18n._('Stacked Area')},
                     {timeStyle: 'BAR', icon: 'insert_chart', text: i18n._('Grouped Columns')},
-                    {timeStyle: 'BAR_OVERLAPPED', icon: 'insert_chart', text: i18n._('Overlapped Columns')}
+                    {timeStyle: 'BAR_OVERLAPPED', icon: 'insert_chart', text: i18n._('Overlapped Columns')},
+                    {timeStyle: 'BAR_STACKED', icon: 'insert_chart', text: i18n._('Stacked Columns')}
                 ];
 
                 for (i = 0; i < timeStyleButtons.length; i += 1) {

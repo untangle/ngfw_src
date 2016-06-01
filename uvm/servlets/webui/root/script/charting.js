@@ -247,12 +247,14 @@ Ext.define('Ung.charts', {
             chartType = 'spline';
             break;
         case 'AREA':
+        case 'AREA_STACKED':
             chartType = 'areaspline';
             break;
         case 'BAR':
         case 'BAR_3D':
         case 'BAR_OVERLAPPED':
         case 'BAR_3D_OVERLAPPED':
+        case 'BAR_STACKED':
             chartType = 'column';
             break;
         default:
@@ -403,15 +405,13 @@ Ext.define('Ung.charts', {
                 symbolRadius: 4
             },
             tooltip: {
-                animation: false,
                 shared: true,
                 backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                useHTML: true,
                 style: {
                     padding: '5px',
                     fontSize: '11px'
                 },
-                headerFormat: '<div style="font-size: 12px; font-weight: bold; line-height: 1.5; border-bottom: 1px #EEE solid; margin-bottom: 5px; color: #777;">{point.key}</div>',
+                headerFormat: '<div style="font-size: 12px; font-weight: bold; line-height: 1.5;">{point.key}</div><br/>',
                 pointFormatter: function () {
                     var str = '<span style="color: ' + this.color + '; font-weight: bold;">' + this.series.name + '</span>';
                     if (entry.units === "bytes" || entry.units === "bytes/s") {
@@ -419,11 +419,12 @@ Ext.define('Ung.charts', {
                     } else {
                         str += ': <b>' + this.y + '</b> ' + entry.units;
                     }
-                    return '<div>' + str + '</div>';
+                    return str + '<br/>';
                 }
             },
             plotOptions: {
                 column: {
+                    stacking: (entry.timeStyle === 'AREA_STACKED' || entry.timeStyle === 'BAR_STACKED') ? 'normal' : undefined,
                     edgeWidth: 0,
                     borderWidth: 0,
                     pointPadding: 0,
@@ -445,8 +446,9 @@ Ext.define('Ung.charts', {
                     }
                 },
                 areaspline: {
+                    stacking: (entry.timeStyle === 'AREA_STACKED' || entry.timeStyle === 'BAR_STACKED') ? 'normal' : undefined,
                     lineWidth: 0,
-                    fillOpacity: 0.5
+                    fillOpacity: (entry.timeStyle === 'AREA_STACKED' || entry.timeStyle === 'BAR_STACKED') ? 0.75 : 0.5
                     //shadow: true
                 },
                 spline: {
@@ -793,10 +795,12 @@ Ext.define('Ung.charts', {
             chartType = 'spline';
             break;
         case 'AREA':
+        case 'AREA_STACKED':
             chartType = 'areaspline';
             break;
         case 'BAR':
         case 'BAR_3D':
+        case 'BAR_STACKED':
             chartType = 'column';
             break;
         case 'BAR_OVERLAPPED':
@@ -812,7 +816,9 @@ Ext.define('Ung.charts', {
             _newOptions = {
                 grouping: !columnOverlapped,
                 pointPadding: columnOverlapped ? (chart.series.length <= 3 ? 0.15 : 0.075) * i : 0.1,
-                type: chartType
+                type: chartType,
+                stacking: (entry.timeStyle === 'AREA_STACKED' || entry.timeStyle === 'BAR_STACKED') ? 'normal' : undefined,
+                fillOpacity: (entry.timeStyle === 'AREA_STACKED' || entry.timeStyle === 'BAR_STACKED') ? 0.75 : 0.5
             };
 
             if (columnOverlapped) {
