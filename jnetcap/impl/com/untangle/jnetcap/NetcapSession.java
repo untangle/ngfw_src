@@ -187,11 +187,6 @@ public abstract class NetcapSession
     protected static native int    getIntValue   ( int id, long session );
     protected static native String toString( long session, boolean ifClient );
 
-    static
-    {
-        Netcap.load();
-    }
-
     protected class SessionEndpoints implements Endpoints
     {
         protected final boolean isClientSide;

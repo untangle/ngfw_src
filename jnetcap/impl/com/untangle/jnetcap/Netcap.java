@@ -160,11 +160,6 @@ public final class Netcap
      */
     private static native void debugLevel( int type, int level );
 
-    /**
-     * An empty function that when executed will automatically call the static initializer 
-     */
-    public static void load() {}
-
     static
     {
         System.loadLibrary( "uvmcore" );

@@ -101,9 +101,6 @@ public class NetcapTCPSession extends NetcapSession
             logger.error( "Unable to modify the server endpoint" + pointer.value());
         }
 
-        /* XXX If the destination is local, then you have to remap the connection, this
-         * will be dealt with at a later date */
-        
         serverComplete( );
     }
     
@@ -171,10 +168,5 @@ public class NetcapTCPSession extends NetcapSession
         {
             NetcapTCPSession.close( pointer.value(), isClientSide );
         }
-    }
-
-    static 
-    {
-        Netcap.load();
     }
 }

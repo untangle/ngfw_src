@@ -240,11 +240,6 @@ public class UDPAttributes
         return (( isSrc ) ? FLAG_SRC_MASK : 0 ) | type;
     }
 
-    static
-    {
-        Netcap.load();
-    }
-
     private static native long   createUDPAttributes ( long src, int srcPort, long dst, int dstPort );
     private static native long   getLongValue    ( long packetPointer, int req );
     private static native int    getIntValue     ( long packetPointer, int req );
