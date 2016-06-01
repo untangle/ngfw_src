@@ -14,6 +14,7 @@ public interface CertificateManager
 {
     // this is where we store certificate files - MUST HAVE TRAILING SLASH
     static final String CERT_STORE_PATH = System.getProperty("uvm.settings.dir") + "/untangle-certificates/";
+
     static final String APACHE_PEM_FILE = "/etc/apache2/ssl/apache.pem";
     static final String CERT_FILE_PASSWORD = "password";
 
@@ -23,8 +24,6 @@ public interface CertificateManager
     CertificateInformation getRootCertificateInformation();
 
     LinkedList<CertificateInformation> getServerCertificateList();
-
-    public String getServerCertificateDetails(String fileName);
 
     boolean generateCertificateAuthority(String certSubject, String dummy);
 

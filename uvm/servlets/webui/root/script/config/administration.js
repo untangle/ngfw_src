@@ -639,8 +639,15 @@ Ext.define('Webui.config.administration', {
             width: 60,
             iconClass: 'icon-edit-row',
             handler: function(view, rowIndex, colIndex, item, e, record) {
-                var detail = Ung.Main.getCertificateManager().getServerCertificateDetails(record.get("fileName"));
-                Ext.MessageBox.alert(record.get("fileName"),"<TT>" + detail + "</TT>");
+                var detail = "";
+                detail += "<b>FILENAME:</b> " + record.get("fileName") + "<br><br>";
+                detail += "<b>VALID:</b> " + i18n.timestampFormat(record.get("dateValid")) + "<br><br>";
+                detail += "<b>EXPIRES:</b> " + i18n.timestampFormat(record.get("dateExpires")) + "<br><br>";
+                detail += "<b>ISSUER:</b> " + record.get("certIssuer") + "<br><br>";
+                detail += "<b>SUBJECT:</b> " + record.get("certSubject") + "<br><br>";
+                detail += "<b>SAN:</b> " + record.get("certNames") + "<br><br>";
+                detail += "<b>EKU:</b> " + record.get("certUsage") + "<br><br>";
+                Ext.MessageBox.alert({ buttons: Ext.Msg.OK, maxWidth: 1024, title: record.get("fileName"), msg: "<tt>" + detail + "</tt>" });
             }
         });
 

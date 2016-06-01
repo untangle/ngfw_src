@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.io.ByteArrayInputStream;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -462,18 +463,6 @@ public class CertificateManagerImpl implements CertificateManager
         return (certList);
     }
 
-    public String getServerCertificateDetails(String fileName)
-    {
-        StringBuilder detail = new StringBuilder(1024);
-        detail.append("FILE: " + fileName + "<br>");
-        detail.append("ONE: " + "11111<br>");
-        detail.append("TWO: " + "22222<br>");
-        detail.append("THREE: " + "33333<br>");
-        detail.append("FOUR: " + "44444<br>");
-        detail.append("FIVE: " + "55555<br>");
-        return (detail.toString());
-    }
-
     // called by getCertificateList to retrieve details about a certificate
     public CertificateInformation getServerCertificateInformation(String fileName)
     {
@@ -513,6 +502,40 @@ public class CertificateManagerImpl implements CertificateManager
             certInfo.setDateExpires(simpleDateFormat.parse(certObject.getNotAfter().toString()));
             certInfo.setCertSubject(certObject.getSubjectDN().toString());
             certInfo.setCertIssuer(certObject.getIssuerDN().toString());
+
+            List<String> usageList = certObject.getExtendedKeyUsage();
+            if (usageList != null) {
+                StringBuilder usageInfo = new StringBuilder(1024);
+                String item;
+                for (int x = 0; x < usageList.size(); x++) {
+                    switch (usageList.get(x).toString())
+                    {
+                    case "1.3.6.1.5.5.7.3.1":
+                        item = "serverAuth";
+                        break;
+                    case "1.3.6.1.5.5.7.3.2":
+                        item = "clientAuth";
+                        break;
+                    case "1.3.6.1.5.5.7.3.3":
+                        item = "codeSigning";
+                        break;
+                    case "1.3.6.1.5.5.7.3.4":
+                        item = "emailProtection";
+                        break;
+                    case "1.3.6.1.5.5.7.3.8":
+                        item = "timeStamping";
+                        break;
+                    case "1.3.6.1.5.5.8.2.2":
+                        item = "ikeIntermediate";
+                        break;
+                    default:
+                        item = ("[" + usageList.get(x).toString() + "]");
+                    }
+                    if (x != 0) usageInfo.append(" , ");
+                    usageInfo.append(item);
+                }
+                certInfo.setCertUsage(usageInfo.toString());
+            }
 
             /*
              * The subject alt names list is stored as a collection of Lists
