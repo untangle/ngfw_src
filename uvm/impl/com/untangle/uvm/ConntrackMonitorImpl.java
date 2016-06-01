@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
 
 import com.untangle.jnetcap.Netcap;
 import com.untangle.jnetcap.Conntrack;
-import com.untangle.uvm.node.SessionTupleImpl;
+import com.untangle.uvm.node.SessionTuple;
 import com.untangle.uvm.node.SessionMinuteEvent;
 import com.untangle.uvm.util.Pulse;
 
@@ -31,8 +31,8 @@ public class ConntrackMonitorImpl
 
     private final Pulse deadTcpSessionsCleaner;
 
-    private LinkedHashMap<SessionTupleImpl,ConntrackEntryState> conntrackEntries = new LinkedHashMap<SessionTupleImpl,ConntrackEntryState>();
-    private LinkedHashMap<SessionTupleImpl,DeadTcpSessionState> deadTcpSessions = new LinkedHashMap<SessionTupleImpl,DeadTcpSessionState>();
+    private LinkedHashMap<SessionTuple,ConntrackEntryState> conntrackEntries = new LinkedHashMap<SessionTuple,ConntrackEntryState>();
+    private LinkedHashMap<SessionTuple,DeadTcpSessionState> deadTcpSessions = new LinkedHashMap<SessionTuple,DeadTcpSessionState>();
     
     private ConntrackMonitorImpl()
     {
@@ -96,7 +96,7 @@ public class ConntrackMonitorImpl
     
     private class ConntrackPulse implements Runnable
     {
-        private void doAccounting( Conntrack conntrack, ConntrackEntryState state, String desc, SessionTupleImpl tuple )
+        private void doAccounting( Conntrack conntrack, ConntrackEntryState state, String desc, SessionTuple tuple )
         {
             long oldC2sBytes = state.c2sBytes;
             long newC2sBytes = conntrack.getOriginalCounterBytes();
@@ -127,14 +127,14 @@ public class ConntrackMonitorImpl
         
         public synchronized void run()
         {
-            LinkedHashMap<SessionTupleImpl,ConntrackEntryState> oldConntrackEntries = conntrackEntries;
-            LinkedHashMap<SessionTupleImpl,ConntrackEntryState> newConntrackEntries = new LinkedHashMap<SessionTupleImpl, ConntrackEntryState>(conntrackEntries.size()*2);
+            LinkedHashMap<SessionTuple,ConntrackEntryState> oldConntrackEntries = conntrackEntries;
+            LinkedHashMap<SessionTuple,ConntrackEntryState> newConntrackEntries = new LinkedHashMap<SessionTuple, ConntrackEntryState>(conntrackEntries.size()*2);
                 
             List<Conntrack> dumpEntries = com.untangle.jnetcap.Netcap.getInstance().getConntrackDump();            
 
             String type = null;
             for ( Conntrack conntrack : dumpEntries ) {
-                SessionTupleImpl tuple = new SessionTupleImpl( conntrack.getProtocol(),
+                SessionTuple tuple = new SessionTuple( conntrack.getProtocol(),
                                                                conntrack.getPreNatClient(),
                                                                conntrack.getPreNatServer(),
                                                                conntrack.getPreNatClientPort(),
@@ -242,9 +242,9 @@ public class ConntrackMonitorImpl
             long now = System.currentTimeMillis();
             
             synchronized( deadTcpSessions ) {
-                for(Iterator<Map.Entry<SessionTupleImpl, DeadTcpSessionState>> i = deadTcpSessions.entrySet().iterator(); i.hasNext(); ) {
-                    Map.Entry<SessionTupleImpl, DeadTcpSessionState> entry = i.next();
-                    SessionTupleImpl tuple = entry.getKey();
+                for(Iterator<Map.Entry<SessionTuple, DeadTcpSessionState>> i = deadTcpSessions.entrySet().iterator(); i.hasNext(); ) {
+                    Map.Entry<SessionTuple, DeadTcpSessionState> entry = i.next();
+                    SessionTuple tuple = entry.getKey();
                     DeadTcpSessionState state = entry.getValue();
                     if ( state == null ) {
                         logger.warn("Invalid state: " + state);
@@ -271,11 +271,11 @@ public class ConntrackMonitorImpl
     private class ConntrackEntryState
     {
         protected long sessionId;
-        protected SessionTupleImpl tuple;
+        protected SessionTuple tuple;
         protected long c2sBytes = 0;
         protected long s2cBytes = 0;
         
-        protected ConntrackEntryState( long sessionId, SessionTupleImpl tuple )
+        protected ConntrackEntryState( long sessionId, SessionTuple tuple )
         {
             this.sessionId = sessionId;
             this.tuple = tuple;

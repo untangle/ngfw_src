@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
 
 import com.untangle.jvector.Vector;
 import com.untangle.uvm.SessionMatcher;
-import com.untangle.uvm.node.SessionTupleImpl;
+import com.untangle.uvm.node.SessionTuple;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.util.Pulse;
 
@@ -30,7 +30,7 @@ public class SessionTableImpl
     private static final SessionTableImpl INSTANCE = new SessionTableImpl();
 
     private final Map<Long,SessionGlobalState> sessionTableById = new HashMap<Long,SessionGlobalState>();
-    private final Map<SessionTupleImpl,SessionGlobalState> sessionTableByTuple = new HashMap<SessionTupleImpl,SessionGlobalState>();
+    private final Map<SessionTuple,SessionGlobalState> sessionTableByTuple = new HashMap<SessionTuple,SessionGlobalState>();
     private final Map<NatPortAvailabilityKey,SessionGlobalState> tcpPortAvailabilityMap = new HashMap<NatPortAvailabilityKey,SessionGlobalState>();
 
     /* Singleton */
@@ -53,7 +53,7 @@ public class SessionTableImpl
      * CLIENT SIDE server address
      * SERVER SIDE server port
      */
-    public SessionGlobalState lookupTuple( SessionTupleImpl tuple )
+    public SessionGlobalState lookupTuple( SessionTuple tuple )
     {
         return sessionTableByTuple.get( tuple );
     }
@@ -80,7 +80,7 @@ public class SessionTableImpl
                 }
             }
 
-            SessionTupleImpl tupleKey = new SessionTupleImpl( session.getProtocol(),
+            SessionTuple tupleKey = new SessionTuple( session.getProtocol(),
                                                               session.netcapSession().clientSide().client().host(),
                                                               session.netcapSession().clientSide().server().host(),
                                                               session.netcapSession().clientSide().client().port(),
@@ -105,7 +105,7 @@ public class SessionTableImpl
         boolean removed = ( sessionTableById.remove( sessionId ) != null );
         
         if ( removed ) {
-            SessionTupleImpl tupleKey = new SessionTupleImpl( session.getProtocol(),
+            SessionTuple tupleKey = new SessionTuple( session.getProtocol(),
                                                               session.netcapSession().clientSide().client().host(),
                                                               session.netcapSession().clientSide().server().host(),
                                                               session.netcapSession().clientSide().client().port(),
@@ -133,7 +133,7 @@ public class SessionTableImpl
      */
     protected synchronized SessionGlobalState remove( short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort )
     {
-        SessionTupleImpl tupleKey = new SessionTupleImpl( protocol, clientAddr, serverAddr, clientPort, serverPort );
+        SessionTuple tupleKey = new SessionTuple( protocol, clientAddr, serverAddr, clientPort, serverPort );
         SessionGlobalState session = sessionTableByTuple.get( tupleKey );
         if ( session == null ) {
             return null;

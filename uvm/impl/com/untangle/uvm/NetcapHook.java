@@ -27,7 +27,7 @@ import com.untangle.uvm.GeographyManager;
 import com.untangle.uvm.HostTable;
 import com.untangle.uvm.HostTableEntry;
 import com.untangle.uvm.node.SessionTuple;
-import com.untangle.uvm.node.SessionTupleImpl;
+import com.untangle.uvm.node.SessionTuple;
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.node.SessionNatEvent;
 import com.untangle.uvm.node.SessionStatsEvent;
@@ -71,8 +71,8 @@ public abstract class NetcapHook implements Runnable
 
     protected SessionGlobalState sessionGlobalState;
 
-    protected SessionTupleImpl clientSide = null;
-    protected SessionTupleImpl serverSide = null;
+    protected SessionTuple clientSide = null;
+    protected SessionTuple serverSide = null;
 
     protected boolean cleanupSessionOnExit = true;
 
@@ -125,13 +125,13 @@ public abstract class NetcapHook implements Runnable
             /**
              * Create the initial tuples based on current information
              */
-            clientSide = new SessionTupleImpl( sessionGlobalState.getProtocol(),
+            clientSide = new SessionTuple( sessionGlobalState.getProtocol(),
                                                netcapSession.clientSide().client().host(),
                                                netcapSession.clientSide().server().host(),
                                                netcapSession.clientSide().client().port(),
                                                netcapSession.clientSide().server().port());
             sessionGlobalState.setSessionTuple( clientSide );
-            serverSide = new SessionTupleImpl( sessionGlobalState.getProtocol(),
+            serverSide = new SessionTuple( sessionGlobalState.getProtocol(),
                                                netcapSession.serverSide().client().host(),
                                                netcapSession.serverSide().server().host(),
                                                netcapSession.serverSide().client().port(),
@@ -321,7 +321,7 @@ public abstract class NetcapHook implements Runnable
              * modified the sessionEvent (we can't do it until we connect
              * to the server since that is what actually modifies the
              * session global state. */
-            serverSide = new SessionTupleImpl( sessionGlobalState.getProtocol(),
+            serverSide = new SessionTuple( sessionGlobalState.getProtocol(),
                                                sessionEvent.getSClientAddr(),
                                                sessionEvent.getSServerAddr(),
                                                sessionEvent.getSClientPort(),

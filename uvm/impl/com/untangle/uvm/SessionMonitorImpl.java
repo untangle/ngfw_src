@@ -23,7 +23,7 @@ import com.untangle.uvm.SessionMonitorEntry;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeManager;
 import com.untangle.uvm.node.SessionTuple;
-import com.untangle.uvm.node.SessionTupleImpl;
+import com.untangle.uvm.node.SessionTuple;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.network.InterfaceSettings;
@@ -122,7 +122,7 @@ public class SessionMonitorImpl implements SessionMonitor
                 session.setServerIntf(Integer.valueOf(-1));
             session.setPriority(session.getQosPriority()); 
 
-            SessionTupleImpl tuple = _makeTuple( session );
+            SessionTuple tuple = _makeTuple( session );
             // find corresponding session in UVM
             SessionGlobalState sessionState = SessionTableImpl.getInstance().lookupTuple(tuple); 
             if ( logger.isDebugEnabled() )
@@ -298,9 +298,9 @@ public class SessionMonitorImpl implements SessionMonitor
         List<SessionMonitorEntry> jnettopSessions = _getJnettopSessionMonitorEntrys(systemIntfName);
         List<SessionMonitorEntry> sessions = this.getMergedSessions();
 
-        HashMap<SessionTupleImpl,SessionMonitorEntry> map = new HashMap<SessionTupleImpl,SessionMonitorEntry>();
+        HashMap<SessionTuple,SessionMonitorEntry> map = new HashMap<SessionTuple,SessionMonitorEntry>();
         for (SessionMonitorEntry entry : jnettopSessions) {
-            SessionTupleImpl tuple = _makeTuple( entry.getProtocol(),
+            SessionTuple tuple = _makeTuple( entry.getProtocol(),
                                                  0,
                                                  0,
                                                  entry.getPreNatClient(),
@@ -394,7 +394,7 @@ public class SessionMonitorImpl implements SessionMonitor
         return parseProcNetIpConntrack();
     }
 
-    private SessionTupleImpl _makeTuple( String protocolStr, int clientIntf, int serverIntf, InetAddress preNatClient, InetAddress preNatServer, int preNatClientPort, int preNatServerPort )
+    private SessionTuple _makeTuple( String protocolStr, int clientIntf, int serverIntf, InetAddress preNatClient, InetAddress preNatServer, int preNatClientPort, int preNatServerPort )
     {
         short protocol;
         if ( "TCP".equals(protocolStr) )
@@ -405,10 +405,10 @@ public class SessionMonitorImpl implements SessionMonitor
             logger.warn("Unknown protocol: " + protocolStr);
             protocol = 0;
         }
-        return new SessionTupleImpl( protocol, preNatClient, preNatServer, preNatClientPort, preNatServerPort );
+        return new SessionTuple( protocol, preNatClient, preNatServer, preNatClientPort, preNatServerPort );
     }
 
-    private SessionTupleImpl _makeTuple( SessionMonitorEntry session )
+    private SessionTuple _makeTuple( SessionMonitorEntry session )
     {
         short protocol;
         if ( "TCP".equals(session.getProtocol()) )
@@ -419,16 +419,16 @@ public class SessionMonitorImpl implements SessionMonitor
             logger.warn("Unknown protocol: " + session.getProtocol());
             protocol = 0;
         }
-        return new SessionTupleImpl( protocol,
+        return new SessionTuple( protocol,
                                      session.getPreNatClient(),
                                      session.getPreNatServer(),
                                      session.getPreNatClientPort(),
                                      session.getPreNatServerPort() );
     }
 
-    private SessionTupleImpl _makeTuple( SessionTuple tuple )
+    private SessionTuple _makeTuple( SessionTuple tuple )
     {
-        return new SessionTupleImpl( tuple );
+        return new SessionTuple( tuple );
     }
     
     private List<SessionMonitorEntry> parseProcNetIpConntrack()

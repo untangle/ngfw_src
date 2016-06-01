@@ -3,7 +3,6 @@
  */
 package com.untangle.uvm.vnet;
 
-import com.untangle.uvm.node.SessionTuple;
 import com.untangle.uvm.node.SessionEvent;
 
 import java.nio.ByteBuffer;
@@ -13,7 +12,7 @@ import java.net.InetAddress;
 /**
  * The base Sessoin interface
  */
-public interface NodeSession extends SessionTuple
+public interface NodeSession
 {
     public static final int CLIENT = 0;
     public static final int SERVER = 1;
@@ -90,7 +89,7 @@ public interface NodeSession extends SessionTuple
     Object globalAttachment(String key);
 
     /**
-     * <code>id</code> returns the session's unique identifier, a positive integer >= 1.
+h     * <code>id</code> returns the session's unique identifier, a positive integer >= 1.
      * All sessions have a unique id assigned by Netcap.  This will eventually, of course,
      * wrap around.  This will take long enough, and any super-long-lived sessions that
      * get wrapped to will not be duplicated, so the rollover is ok.
@@ -106,7 +105,7 @@ public interface NodeSession extends SessionTuple
      *
      */
     String user();
-    
+
     /**
      * The following are attachment keys used by various nodes to
      * share information with other nodes.
@@ -172,11 +171,6 @@ public interface NodeSession extends SessionTuple
     short getProtocol();
 
     /**
-     * Return the policy Id for this session
-     */
-    long getPolicyId();
-    
-    /**
      * Returns an netcap interface for the client.</p>
      *
      * @return a <code>int</code> giving the client interface of the session.
@@ -190,6 +184,37 @@ public interface NodeSession extends SessionTuple
      */
     int getServerIntf();
 
+    /**
+     * Gets the Client Address of this session. </p>
+     *
+     * @return  the client address
+     */
+    InetAddress getClientAddr();
+
+    /**
+     * Gets the Server Address of this session. </p>
+     *
+     * @return  the server addr.
+     */
+    InetAddress getServerAddr();
+
+    /**
+     * Gets the client port for this session.</p>
+     * @return the client port.
+     */
+    int getClientPort();
+
+    /**
+     * Gets the server port for this session.</p>
+     * @return the server port.
+     */
+    int getServerPort();
+
+    /**
+     * Return the policy Id for this session
+     */
+    long getPolicyId();
+    
     /**
      * Gets the original (pre-NAT) Client Address of this session. </p>
      *

@@ -14,7 +14,7 @@ import com.untangle.jnetcap.NetcapCallback;
 import com.untangle.jnetcap.Conntrack;
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.node.SessionStatsEvent;
-import com.untangle.uvm.node.SessionTupleImpl;
+import com.untangle.uvm.node.SessionTuple;
 
 public class NetcapConntrackHook implements NetcapCallback
 {
@@ -27,7 +27,7 @@ public class NetcapConntrackHook implements NetcapCallback
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    private HashMap<SessionTupleImpl,Long> conntrackSessionIdMap = new HashMap<SessionTupleImpl, Long>();
+    private HashMap<SessionTuple,Long> conntrackSessionIdMap = new HashMap<SessionTuple, Long>();
     
     public static NetcapConntrackHook getInstance()
     {
@@ -48,7 +48,7 @@ public class NetcapConntrackHook implements NetcapCallback
 
     public void event( long sessionId ) {}
 
-    public Long lookupSessionId( SessionTupleImpl tuple )
+    public Long lookupSessionId( SessionTuple tuple )
     {
         return conntrackSessionIdMap.get( tuple );
     }
@@ -67,7 +67,7 @@ public class NetcapConntrackHook implements NetcapCallback
             int clientIntf = ct.getClientIntf();
             int serverIntf = ct.getServerIntf();
             int protocol = ct.getProtocol();
-            SessionTupleImpl tuple = new SessionTupleImpl( ct.getProtocol(),
+            SessionTuple tuple = new SessionTuple( ct.getProtocol(),
                                                            ct.getPreNatClient(),
                                                            ct.getPreNatServer(),
                                                            ct.getPreNatClientPort(),

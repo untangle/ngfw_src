@@ -13,7 +13,7 @@ import com.untangle.jnetcap.NetcapSession;
 import com.untangle.jnetcap.NetcapTCPSession;
 import com.untangle.jnetcap.NetcapUDPSession;
 import com.untangle.uvm.node.SessionEvent;
-import com.untangle.uvm.node.SessionTupleImpl;
+import com.untangle.uvm.node.SessionTuple;
 
 /**
  * This stores the global system-wide state for a given session
@@ -35,7 +35,7 @@ public class SessionGlobalState
 
     protected String user; 
     protected SessionEvent sessionEvent = null;
-    protected SessionTupleImpl sessionTuple = null;
+    protected SessionTuple sessionTuple = null;
     protected long endTime = 0;
     protected long lastUpdateBytes = 0;
     
@@ -96,8 +96,8 @@ public class SessionGlobalState
     public SessionEvent getSessionEvent() { return this.sessionEvent; }
     public void setSessionEvent( SessionEvent newValue ) { this.sessionEvent = newValue; }
 
-    public SessionTupleImpl getSessionTuple() { return this.sessionTuple; }
-    public void setSessionTuple( SessionTupleImpl newValue ) { this.sessionTuple = newValue; }
+    public SessionTuple getSessionTuple() { return this.sessionTuple; }
+    public void setSessionTuple( SessionTuple newValue ) { this.sessionTuple = newValue; }
     
     public NetcapSession netcapSession()
     {

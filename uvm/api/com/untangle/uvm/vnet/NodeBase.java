@@ -26,7 +26,7 @@ import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.node.SessionTuple;
-import com.untangle.uvm.node.SessionTupleImpl;
+import com.untangle.uvm.node.SessionTuple;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.logging.LogEvent;
 
@@ -314,7 +314,10 @@ public abstract class NodeBase implements Node
         List<SessionTuple> sessions = new LinkedList<SessionTuple>();
 
         for (NodeSession sess : liveNodeSessions()) {
-            sessions.add( new SessionTupleImpl(sess) );
+            SessionTuple tuple = new SessionTuple( sess.getProtocol(),
+                                                   sess.getClientAddr(), sess.getServerAddr(),
+                                                   sess.getClientPort(), sess.getServerPort() );
+            sessions.add( tuple );
         }
 
         return sessions;
