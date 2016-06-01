@@ -17,7 +17,9 @@ Ext.define("Ung.window.ReportEditor", {
                 this.updateActionRecursive(this.items, data, 0);
                 this.record.set(data);
                 var entry = this.record.getData();
+                this.setLoading('<strong>' + i18n._('Updating report') + ':</strong> ' + entry.title + '...');
                 Ung.Main.getReportsManager().saveReportEntry(Ext.bind(function (result, exception) {
+                    this.setLoading(false);
                     if (Ung.Util.handleException(exception)) {
                         return;
                     }
@@ -45,7 +47,9 @@ Ext.define("Ung.window.ReportEditor", {
                     this.record.set("uniqueId", this.getUniqueId());
                     var entry = this.record.getData();
 
+                    this.setLoading('<strong>' + i18n._('Creating report') + ':</strong> ' + entry.title + '...');
                     Ung.Main.getReportsManager().saveReportEntry(Ext.bind(function (result, exception) {
+                        this.setLoading(false);
                         if (Ung.Util.handleException(exception)) {
                             return;
                         }

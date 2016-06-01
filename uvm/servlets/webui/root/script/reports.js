@@ -1707,8 +1707,9 @@ Ext.define('Ung.panel.Reports', {
             }, this), this.dashboardSettings);
         }
 
-
+        this.reportContainer.setLoading('<span style="color: red; font-weight: bold;">' + i18n._('Deleting report') + ':</span> ' + this.entry.title + '...');
         Ung.Main.getReportsManager().removeReportEntry(Ext.bind(function (result, exception) {
+            this.reportContainer.setLoading(false);
             if (Ung.Util.handleException(exception)) {
                 return;
             }
