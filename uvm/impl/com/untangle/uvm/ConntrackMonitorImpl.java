@@ -135,8 +135,6 @@ public class ConntrackMonitorImpl
             String type = null;
             for ( Conntrack conntrack : dumpEntries ) {
                 SessionTupleImpl tuple = new SessionTupleImpl( conntrack.getProtocol(),
-                                                               conntrack.getClientIntf(),
-                                                               conntrack.getServerIntf(),
                                                                conntrack.getPreNatClient(),
                                                                conntrack.getPreNatServer(),
                                                                conntrack.getPreNatClientPort(),

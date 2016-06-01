@@ -81,8 +81,6 @@ public class SessionTableImpl
             }
 
             SessionTupleImpl tupleKey = new SessionTupleImpl( session.getProtocol(),
-                                                              session.netcapSession().clientSide().interfaceId(),
-                                                              session.netcapSession().serverSide().interfaceId(),
                                                               session.netcapSession().clientSide().client().host(),
                                                               session.netcapSession().clientSide().server().host(),
                                                               session.netcapSession().clientSide().client().port(),
@@ -108,8 +106,6 @@ public class SessionTableImpl
         
         if ( removed ) {
             SessionTupleImpl tupleKey = new SessionTupleImpl( session.getProtocol(),
-                                                              session.netcapSession().clientSide().interfaceId(),
-                                                              session.netcapSession().serverSide().interfaceId(),
                                                               session.netcapSession().clientSide().client().host(),
                                                               session.netcapSession().clientSide().server().host(),
                                                               session.netcapSession().clientSide().client().port(),
@@ -137,7 +133,7 @@ public class SessionTableImpl
      */
     protected synchronized SessionGlobalState remove( short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort )
     {
-        SessionTupleImpl tupleKey = new SessionTupleImpl( protocol, clientIntf, serverIntf, clientAddr, serverAddr, clientPort, serverPort );
+        SessionTupleImpl tupleKey = new SessionTupleImpl( protocol, clientAddr, serverAddr, clientPort, serverPort );
         SessionGlobalState session = sessionTableByTuple.get( tupleKey );
         if ( session == null ) {
             return null;

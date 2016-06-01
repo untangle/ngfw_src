@@ -148,8 +148,8 @@ public class SessionMonitorImpl implements SessionMonitor
                     session.setCreationTime(netcapSession.getCreationTime());
                     session.setPipeline(netcapSession.getPipelineDescription());
                     session.setBypassed(Boolean.FALSE);
-                    session.setClientIntf(new Integer(clientSide.getClientIntf()));
-                    session.setServerIntf(new Integer(serverSide.getServerIntf()));
+                    session.setClientIntf(new Integer(netcapSession.netcapSession().clientSide().interfaceId()));
+                    session.setServerIntf(new Integer(netcapSession.netcapSession().serverSide().interfaceId()));
 
                     session.setClientCountry(netcapSession.getSessionEvent().getClientCountry());
                     session.setClientLatitude(netcapSession.getSessionEvent().getClientLatitude());                    
@@ -405,7 +405,7 @@ public class SessionMonitorImpl implements SessionMonitor
             logger.warn("Unknown protocol: " + protocolStr);
             protocol = 0;
         }
-        return new SessionTupleImpl( protocol, clientIntf, serverIntf, preNatClient, preNatServer, preNatClientPort, preNatServerPort );
+        return new SessionTupleImpl( protocol, preNatClient, preNatServer, preNatClientPort, preNatServerPort );
     }
 
     private SessionTupleImpl _makeTuple( SessionMonitorEntry session )
@@ -420,8 +420,6 @@ public class SessionMonitorImpl implements SessionMonitor
             protocol = 0;
         }
         return new SessionTupleImpl( protocol,
-                                     session.getClientIntf(),
-                                     session.getServerIntf(),
                                      session.getPreNatClient(),
                                      session.getPreNatServer(),
                                      session.getPreNatClientPort(),

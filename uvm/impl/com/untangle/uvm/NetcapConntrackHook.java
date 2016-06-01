@@ -68,8 +68,6 @@ public class NetcapConntrackHook implements NetcapCallback
             int serverIntf = ct.getServerIntf();
             int protocol = ct.getProtocol();
             SessionTupleImpl tuple = new SessionTupleImpl( ct.getProtocol(),
-                                                           ct.getClientIntf(),
-                                                           ct.getServerIntf(),
                                                            ct.getPreNatClient(),
                                                            ct.getPreNatServer(),
                                                            ct.getPreNatClientPort(),

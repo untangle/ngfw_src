@@ -126,16 +126,12 @@ public abstract class NetcapHook implements Runnable
              * Create the initial tuples based on current information
              */
             clientSide = new SessionTupleImpl( sessionGlobalState.getProtocol(),
-                                               netcapSession.clientSide().interfaceId(), /* always get clientIntf from client side */
-                                               netcapSession.serverSide().interfaceId(), /* always get serverIntf from server side */
                                                netcapSession.clientSide().client().host(),
                                                netcapSession.clientSide().server().host(),
                                                netcapSession.clientSide().client().port(),
                                                netcapSession.clientSide().server().port());
             sessionGlobalState.setSessionTuple( clientSide );
             serverSide = new SessionTupleImpl( sessionGlobalState.getProtocol(),
-                                               netcapSession.clientSide().interfaceId(), /* always get clientIntf from client side */
-                                               netcapSession.serverSide().interfaceId(), /* always get serverIntf from server side */
                                                netcapSession.serverSide().client().host(),
                                                netcapSession.serverSide().server().host(),
                                                netcapSession.serverSide().client().port(),
@@ -250,8 +246,8 @@ public abstract class NetcapHook implements Runnable
             sessionEvent.setBypassed( false );
             sessionEvent.setEntitled( entitled );
             sessionEvent.setProtocol( sessionGlobalState.getProtocol() );
-            sessionEvent.setClientIntf( clientSide.getClientIntf() );
-            sessionEvent.setServerIntf( clientSide.getServerIntf() );
+            sessionEvent.setClientIntf( clientIntf );
+            sessionEvent.setServerIntf( serverIntf );
             sessionEvent.setUsername( username );
             sessionEvent.setHostname( hostname );
             sessionEvent.setPolicyId( policyId );
@@ -310,7 +306,7 @@ public abstract class NetcapHook implements Runnable
             /* If any NAT/transformation of the session has taken place, log a NAT event to update the server side attributes */
             if (  tupleHashCodeOriginal != tupleHashCodeNew ) {
                 SessionNatEvent natEvent = new SessionNatEvent( sessionEvent,
-                                                                serverSide.getServerIntf(),
+                                                                serverIntf,
                                                                 sessionEvent.getSClientAddr(),
                                                                 sessionEvent.getSClientPort(),                                                               
                                                                 sessionEvent.getSServerAddr(),
@@ -326,8 +322,6 @@ public abstract class NetcapHook implements Runnable
              * to the server since that is what actually modifies the
              * session global state. */
             serverSide = new SessionTupleImpl( sessionGlobalState.getProtocol(),
-                                               netcapSession.clientSide().interfaceId(), /* always get clientIntf from client side */
-                                               netcapSession.serverSide().interfaceId(), /* always get serverIntf from server side */
                                                sessionEvent.getSClientAddr(),
                                                sessionEvent.getSServerAddr(),
                                                sessionEvent.getSClientPort(),

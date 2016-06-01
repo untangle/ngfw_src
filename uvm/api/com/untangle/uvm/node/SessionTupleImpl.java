@@ -6,8 +6,8 @@ package com.untangle.uvm.node;
 import java.net.InetAddress;
 
 /**
- * This is a generic 7-tuple that describes sessions
- * (Protocol, Client Intf, Client, Client Port, Server Intf, Server, Server Port)
+ * This is a generic 5-tuple that describes sessions
+ * (Protocol, Client, Client Port, Server, Server Port)
  */
 public class SessionTupleImpl implements SessionTuple
 {
@@ -16,23 +16,18 @@ public class SessionTupleImpl implements SessionTuple
 
     private short protocol = 0;
     private InetAddress clientAddr;
-    private int clientIntf = 0;
     private int clientPort = 0;
     private InetAddress serverAddr;
-    private int serverIntf = 0;
     private int serverPort = 0;
     
     public SessionTupleImpl( short protocol,
-                             int clientIntf, int serverIntf,
                              InetAddress clientAddr, InetAddress serverAddr,
                              int clientPort, int serverPort )
     {
         this.protocol = protocol;
         this.clientAddr = clientAddr;
-        this.clientIntf = clientIntf;
         this.clientPort = clientPort;
         this.serverAddr = serverAddr;
-        this.serverIntf = serverIntf;
         this.serverPort = serverPort;
     }
 
@@ -40,10 +35,8 @@ public class SessionTupleImpl implements SessionTuple
     {
         this.protocol = tuple.getProtocol();
         this.clientAddr = tuple.getClientAddr();
-        this.clientIntf = tuple.getClientIntf();
         this.clientPort = tuple.getClientPort();
         this.serverAddr = tuple.getServerAddr();
-        this.serverIntf = tuple.getServerIntf();
         this.serverPort = tuple.getServerPort();
     }
 
@@ -53,17 +46,11 @@ public class SessionTupleImpl implements SessionTuple
     public InetAddress getClientAddr() { return this.clientAddr; }
     public void setClientAddr( InetAddress clientAddr ) { this.clientAddr = clientAddr; }
 
-    public int getClientIntf() { return this.clientIntf; }
-    public void setClientIntf( int clientIntf ) { this.clientIntf = clientIntf; }
-
     public int getClientPort() { return this.clientPort; }
     public void setClientPort( int clientPort ) { this.clientPort = clientPort; }
 
     public InetAddress getServerAddr() { return this.serverAddr; }
     public void setServerAddr( InetAddress serverAddr ) { this.serverAddr = serverAddr; }
-
-    public int getServerIntf() { return this.serverIntf; }
-    public void setServerIntf( int serverIntf ) { this.serverIntf = serverIntf; }
 
     public int getServerPort() { return this.serverPort; }
     public void setServerPort( int serverPort ) { this.serverPort = serverPort; }
@@ -102,9 +89,17 @@ public class SessionTupleImpl implements SessionTuple
     public String toString()
     {
         String str = "[Tuple ";
-        if ( protocol != 0)
-            str += "PROTO:" + protocol+" ";
-        
+        switch ( protocol ) {
+        case PROTO_UDP:
+            str += "UDP ";
+            break;
+        case PROTO_TCP:
+            str += "TCP ";
+            break;
+        default:
+            str += "PROTO:" + protocol + " ";
+            break;
+        }
         str += (clientAddr == null ? "null" : clientAddr.getHostAddress()) + ":" + clientPort;
         str += " -> ";
         str += (serverAddr == null ? "null" : serverAddr.getHostAddress()) + ":" + serverPort;

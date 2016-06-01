@@ -82,6 +82,10 @@ public final class Netcap
         setNetcapDebugLevel( level );
     }
 
+    /**
+     * Return a list of conntrack entries that represent the current
+     * conntrack table
+     */
     public synchronized List<Conntrack> getConntrackDump()
     {
         LinkedList<Conntrack> entries = new LinkedList<Conntrack>();

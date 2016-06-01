@@ -123,7 +123,7 @@ public class NetcapUDPHook implements NetcapCallback
 
             /* Setup the marking */
             serviceSideAttributes.isMarkEnabled( true );
-            int nfmark = clientSide.getClientIntf() + ( serverSide.getServerIntf() << 8 );
+            int nfmark = netcapUDPSession.clientSide().interfaceId() + ( netcapUDPSession.serverSide().interfaceId() << 8 );
             serviceSideAttributes.mark( nfmark);
             serviceSideAttributes.lock();
 
@@ -148,7 +148,7 @@ public class NetcapUDPHook implements NetcapCallback
             clientSideAttributes.isMarkEnabled( true );
                 
             /* Packets cannot go back out on the server interface */
-            int nfmark = clientSide.getServerIntf() + ( serverSide.getClientIntf() << 8 );
+            int nfmark = netcapUDPSession.serverSide().interfaceId() + ( netcapUDPSession.clientSide().interfaceId() << 8 );
             clientSideAttributes.mark( nfmark );
 
             clientSideAttributes.lock();

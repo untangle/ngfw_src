@@ -6,8 +6,8 @@ package com.untangle.uvm.node;
 import java.net.InetAddress;
 
 /**
- * This is a generic 7-tuple that describes sessions
- * (Protocol, Client Intf, Client, Client Port, Server Intf, Server, Server Port)
+ * This is a generic 5-tuple that describes sessions
+ * (Protocol, Client, Client Port, Server, Server Port)
  */
 public interface SessionTuple
 {
@@ -19,21 +19,6 @@ public interface SessionTuple
      * @return a <code>short</code> giving one of the protocols (right now always TCP(6) or UDP(17))
      */
     short getProtocol();
-
-    /**
-     * Returns an netcap interface for the client.</p>
-     *
-     * @return a <code>int</code> giving the client interface of the session.
-     */
-    int getClientIntf();
-
-    /**
-     * Returns an netcap interface for the server.</p>
-     * Zero means no interface
-     *
-     * @return a <code>int</code> giving the server interface of the session.
-     */
-    int getServerIntf();
 
     /**
      * Gets the Client Address of this session. </p>

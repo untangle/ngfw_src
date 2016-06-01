@@ -117,7 +117,7 @@ public class NetcapTCPHook implements NetcapCallback
             }
 
             try {
-                int intfId = clientSide.getServerIntf();
+                int intfId = netcapTCPSession.serverSide().interfaceId();
                 netcapTCPSession.serverComplete( clientAddr, clientPort, serverAddr, serverPort, intfId );
                 netcapTCPSession.serverSide().blocking( false );
                 ifServerComplete = true;
