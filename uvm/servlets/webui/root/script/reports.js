@@ -741,6 +741,8 @@ Ext.define('Ung.panel.Reports', {
             var rec = this.entryList.getSelectionModel().getSelected();
             rec.items[0].set('inDashboard', btn.addAction, {commit: true});
 
+            Ung.Util.userActionToast('<span style="color: #FFF;">' + this.entry.title + '</span> ' + (btn.addAction ? i18n._('was added to Dashboard') : i18n._('was removed from Dashboard')));
+
             btn.addAction = !btn.addAction;
             this.entry.inDashboard = btn.addAction;
         }, this), this.dashboardSettings);
@@ -1716,6 +1718,7 @@ Ext.define('Ung.panel.Reports', {
             Ung.dashboard.reportEntriesModified = true;
             this.initEntry = null;
             this.reloadReports();
+            Ung.Util.userActionToast('<span style="color: #FFF;">' + this.entry.title + '</span> ' + i18n._('deleted successfully'));
         }, this), this.entry);
 
     },

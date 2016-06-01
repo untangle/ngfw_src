@@ -273,6 +273,25 @@ Ext.define('Ung.Util', {
         return false;
     },
 
+    userActionToast: function(message, handler, type, continueExecution) {
+        var toast;
+        toast = Ext.toast({
+            html: '<i class="material-icons" style="font-size: 16px;">info</i> <span style="vertical-align: middle; color: #CCC;">' + message + '!</span>',
+            border: false,
+            bodyBorder: false,
+            cls: 'toast-exception',
+            autoCloseDelay: 3000,
+            align: 'br',
+            bodyCls: 'content',
+            width: 300
+        });
+        if (this.toasts.length >= 3) {
+            this.toasts[0].close();
+            this.toasts.shift();
+        }
+        this.toasts.push(toast);
+    },
+
     addBuildStampToUrl: function(url) {
         var scriptArgs = "s=" + Ung.Main.debugMode ? (new Date()).getTime(): Ung.Main.buildStamp;
         if (url.indexOf("?") >= 0) {

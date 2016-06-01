@@ -27,6 +27,7 @@ Ext.define("Ung.window.ReportEditor", {
                     this.parentCmp.initEntry = entry;
                     this.parentCmp.reloadReports();
                     Ung.dashboard.reportEntriesModified = true;
+                    Ung.Util.userActionToast('<span style="color: #FFF;">' + entry.title + '</span> ' + i18n._('updated successfully'));
                 }, this), entry);
             },
             scope: this
@@ -57,6 +58,7 @@ Ext.define("Ung.window.ReportEditor", {
                         this.parentCmp.initEntry = entry;
                         this.parentCmp.reloadReports();
                         Ung.dashboard.reportEntriesModified = true;
+                        Ung.Util.userActionToast('<span style="color: #FFF;">' + entry.title + '</span> ' + i18n._('created successfully'));
                     }, this), entry);
                 }
             },
