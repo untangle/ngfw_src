@@ -14,7 +14,7 @@
     "timeDataDynamicColumn": "application_control_application",
     "timeDataDynamicLimit": "10",
     "timeDataDynamicAggregationFunction": "sum",
-    "timeStyle": "LINE",
+    "timeStyle": "AREA_STACKED",
     "title": "Top Applications Usage",
     "type": "TIME_GRAPH_DYNAMIC"
 }
