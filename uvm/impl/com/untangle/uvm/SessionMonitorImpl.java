@@ -124,17 +124,17 @@ public class SessionMonitorImpl implements SessionMonitor
 
             SessionTupleImpl tuple = _makeTuple( session );
             // find corresponding session in UVM
-            SessionGlobalState netcapSession = SessionTableImpl.getInstance().lookupTuple(tuple); 
+            SessionGlobalState sessionState = SessionTableImpl.getInstance().lookupTuple(tuple); 
             if ( logger.isDebugEnabled() )
-                logger.debug("Lookup tuple (" + tuple + ") -> " + netcapSession);
+                logger.debug("Lookup tuple (" + tuple + ") -> " + sessionState);
             
-            if ( netcapSession != null ) {
+            if ( sessionState != null ) {
                 try {
-                    int priority = netcapSession.netcapSession().clientQosMark();
-                    com.untangle.uvm.node.SessionTuple clientSide = netcapSession.netcapHook().getClientSide();
-                    com.untangle.uvm.node.SessionTuple serverSide = netcapSession.netcapHook().getServerSide();
+                    int priority = sessionState.netcapSession().clientQosMark();
+                    com.untangle.uvm.node.SessionTuple clientSide = sessionState.netcapHook().getClientSide();
+                    com.untangle.uvm.node.SessionTuple serverSide = sessionState.netcapHook().getServerSide();
 
-                    NetcapHook hook = netcapSession.netcapHook();
+                    NetcapHook hook = sessionState.netcapHook();
                     if (hook == null)
                         continue;
                         
@@ -144,20 +144,20 @@ public class SessionMonitorImpl implements SessionMonitor
                     else
                         session.setPolicy(policyId.toString()); 
 
-                    session.setSessionId(netcapSession.id());
-                    session.setCreationTime(netcapSession.getCreationTime());
-                    session.setPipeline(netcapSession.getPipelineDescription());
+                    session.setSessionId(sessionState.id());
+                    session.setCreationTime(sessionState.getCreationTime());
+                    session.setPipeline(sessionState.getPipelineDescription());
                     session.setBypassed(Boolean.FALSE);
-                    session.setClientIntf(new Integer(netcapSession.netcapSession().clientSide().interfaceId()));
-                    session.setServerIntf(new Integer(netcapSession.netcapSession().serverSide().interfaceId()));
+                    session.setClientIntf(new Integer(sessionState.netcapSession().clientSide().interfaceId()));
+                    session.setServerIntf(new Integer(sessionState.netcapSession().serverSide().interfaceId()));
 
-                    session.setClientCountry(netcapSession.getSessionEvent().getClientCountry());
-                    session.setClientLatitude(netcapSession.getSessionEvent().getClientLatitude());                    
-                    session.setClientLongitude(netcapSession.getSessionEvent().getClientLongitude());
+                    session.setClientCountry(sessionState.getSessionEvent().getClientCountry());
+                    session.setClientLatitude(sessionState.getSessionEvent().getClientLatitude());                    
+                    session.setClientLongitude(sessionState.getSessionEvent().getClientLongitude());
 
-                    session.setServerCountry(netcapSession.getSessionEvent().getServerCountry());
-                    session.setServerLatitude(netcapSession.getSessionEvent().getServerLatitude());                    
-                    session.setServerLongitude(netcapSession.getSessionEvent().getServerLongitude());                    
+                    session.setServerCountry(sessionState.getSessionEvent().getServerCountry());
+                    session.setServerLatitude(sessionState.getSessionEvent().getServerLatitude());                    
+                    session.setServerLongitude(sessionState.getSessionEvent().getServerLongitude());                    
 
                     /**
                      * The conntrack entry shows that this session has been redirect to the local host
@@ -175,12 +175,12 @@ public class SessionMonitorImpl implements SessionMonitor
                     if (priority != 0)
                         session.setPriority(priority);
 
-                    session.setAttachments(netcapSession.getAttachments());
+                    session.setAttachments(sessionState.getAttachments());
                 } catch (Exception e) {
                     logger.warn("Exception while searching for session",e);
                 }
             }
-            // else netcapSession == null (no UVM session found)
+            // else sessionState == null (no UVM session found)
             else {
                 if ( session.getMark() != null ) {
                     Integer mark = session.getMark();
