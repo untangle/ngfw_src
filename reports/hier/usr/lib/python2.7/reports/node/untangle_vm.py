@@ -194,6 +194,7 @@ CREATE VIEW reports.session_minutes AS
         sessions.ssl_inspector_ruleid,
         sessions.ssl_inspector_status,
         sessions.ssl_inspector_detail,
+        sessions.time_stamp as sessions_time_stamp,
         session_min.time_stamp,
         session_min.c2s_bytes,
         session_min.s2c_bytes 
