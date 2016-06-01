@@ -48,8 +48,8 @@ public class CertificateManagerImpl implements CertificateManager
     private static final String ROOT_CERT_FILE = CERT_STORE_PATH + "untangle.crt";
     private static final String ROOT_KEY_FILE = CERT_STORE_PATH + "untangle.key";
 
-    private static final String LOCAL_REQUEST_FILE = CERT_STORE_PATH + "apache.csr";
-    private static final String LOCAL_CERT_FILE = CERT_STORE_PATH + "apache.crt";
+    private static final String LOCAL_CSR_FILE = CERT_STORE_PATH + "apache.csr";
+    private static final String LOCAL_CRT_FILE = CERT_STORE_PATH + "apache.crt";
     private static final String LOCAL_KEY_FILE = CERT_STORE_PATH + "apache.key";
     private static final String LOCAL_PEM_FILE = CERT_STORE_PATH + "apache.pem";
     private static final String LOCAL_PFX_FILE = CERT_STORE_PATH + "apache.pfx";
@@ -94,9 +94,11 @@ public class CertificateManagerImpl implements CertificateManager
             if (!rootKeyFile.exists()) {
                 UvmContextFactory.context().execManager().exec("cp -fa /etc/untangle/untangle.key " + ROOT_KEY_FILE);
                 UvmContextFactory.context().execManager().exec("cp -fa /etc/untangle/untangle.crt " + ROOT_CERT_FILE);
-                UvmContextFactory.context().execManager().exec("cp -fa /etc/untangle/apache.pem " + LOCAL_PEM_FILE);
+                UvmContextFactory.context().execManager().exec("cp -fa /etc/untangle/apache.crt " + LOCAL_CSR_FILE);
+                UvmContextFactory.context().execManager().exec("cp -fa /etc/untangle/apache.crt " + LOCAL_CRT_FILE);
                 UvmContextFactory.context().execManager().exec("cp -fa /etc/untangle/apache.key " + LOCAL_KEY_FILE);
-                UvmContextFactory.context().execManager().exec("cp -fa /etc/untangle/apache.crt " + LOCAL_CERT_FILE);
+                UvmContextFactory.context().execManager().exec("cp -fa /etc/untangle/apache.pem " + LOCAL_PEM_FILE);
+                UvmContextFactory.context().execManager().exec("cp -fa /etc/untangle/apache.pfx " + LOCAL_PFX_FILE);
             }
         }
 
@@ -119,7 +121,7 @@ public class CertificateManagerImpl implements CertificateManager
 
         // we should have a root CA at this point so we check the local apache
         // cert files and create them now if either is missing
-        File localCertFile = new File(LOCAL_CERT_FILE);
+        File localCertFile = new File(LOCAL_CRT_FILE);
         File localKeyFile = new File(LOCAL_KEY_FILE);
         if ((localCertFile.exists() == false) || (localKeyFile.exists() == false)) {
             String hostName = UvmContextFactory.context().networkManager().getNetworkSettings().getHostName();
@@ -139,9 +141,11 @@ public class CertificateManagerImpl implements CertificateManager
             // in the development enviroment save these to a global location
             // so they will survive a rake clean
             if (UvmContextFactory.context().isDevel()) {
-                UvmContextFactory.context().execManager().exec("cp -fa " + LOCAL_PEM_FILE + " /etc/untangle/apache.pem");
+                UvmContextFactory.context().execManager().exec("cp -fa " + LOCAL_CSR_FILE + " /etc/untangle/apache.csr");
+                UvmContextFactory.context().execManager().exec("cp -fa " + LOCAL_CRT_FILE + " /etc/untangle/apache.crt");
                 UvmContextFactory.context().execManager().exec("cp -fa " + LOCAL_KEY_FILE + " /etc/untangle/apache.key");
-                UvmContextFactory.context().execManager().exec("cp -fa " + LOCAL_CERT_FILE + " /etc/untangle/apache.crt");
+                UvmContextFactory.context().execManager().exec("cp -fa " + LOCAL_PEM_FILE + " /etc/untangle/apache.pem");
+                UvmContextFactory.context().execManager().exec("cp -fa " + LOCAL_PFX_FILE + " /etc/untangle/apache.pfx");
             }
         }
     }
