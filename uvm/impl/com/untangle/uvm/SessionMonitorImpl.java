@@ -301,8 +301,8 @@ public class SessionMonitorImpl implements SessionMonitor
         HashMap<SessionTupleImpl,SessionMonitorEntry> map = new HashMap<SessionTupleImpl,SessionMonitorEntry>();
         for (SessionMonitorEntry entry : jnettopSessions) {
             SessionTupleImpl tuple = _makeTuple( entry.getProtocol(),
-                                                 entry.getClientIntf(),
-                                                 entry.getServerIntf(),
+                                                 0,
+                                                 0,
                                                  entry.getPreNatClient(),
                                                  entry.getPreNatServer(),
                                                  entry.getPreNatClientPort(),
@@ -332,20 +332,16 @@ public class SessionMonitorImpl implements SessionMonitor
 
             SessionMonitorEntry matchingEntry = null;
             if ( matchingEntry == null ) {
-                matchingEntry = map.get(a);
-                if ( matchingEntry != null ) map.remove(a);
+                matchingEntry = map.remove(a);
             }
             if ( matchingEntry == null ) {
-                matchingEntry = map.get(b);
-                if ( matchingEntry != null ) map.remove(b);
+                matchingEntry = map.remove(b);
             }
             if ( matchingEntry == null ) {
-                matchingEntry = map.get(c);
-                if ( matchingEntry != null ) map.remove(c);
+                matchingEntry = map.remove(c);
             }
             if ( matchingEntry == null ) {
-                matchingEntry = map.get(d);
-                if ( matchingEntry != null ) map.remove(d);
+                matchingEntry = map.remove(d);
             }
 
             if ( matchingEntry == null ) {
