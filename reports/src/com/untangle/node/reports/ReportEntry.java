@@ -490,6 +490,7 @@ public class ReportEntry implements Serializable, JSONString
             "$$ SELECT value FROM tempDistinctTable $$" + ") " + " as " +
             "( \"time_trunc\" timestamp ";
         for ( String s : distinctValues ) {
+            if ( "".equals(s) ) s = " ";
             crosstabQuery = crosstabQuery + ", \"" + s + "\" numeric ";
         }
         crosstabQuery = crosstabQuery + ")";
