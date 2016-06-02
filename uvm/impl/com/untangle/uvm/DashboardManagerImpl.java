@@ -158,9 +158,21 @@ public class DashboardManagerImpl implements DashboardManager
         widgetSettings = new DashboardWidgetSettings("ReportEntry");
         widgetSettings.setRefreshIntervalSec(60);
         widgetSettings.setTimeframe(3600);
-        widgetSettings.setEntryId("application-control-lBxH9QZ8A8"); // Application Control - Top Application (by size)
+        widgetSettings.setEntryId("bandwidth-control-BVOy539ahO"); // Bandwidth Control - Top Hostnames Usage
+        widgets.add( widgetSettings);
+        
+        widgetSettings = new DashboardWidgetSettings("ReportEntry");
+        widgetSettings.setRefreshIntervalSec(60);
+        widgetSettings.setTimeframe(3600);
+        widgetSettings.setEntryId("application-control-lBxH9QZ8A8"); // Application Control - Top Applications (by size)
         widgets.add( widgetSettings);
 
+        widgetSettings = new DashboardWidgetSettings("ReportEntry");
+        widgetSettings.setRefreshIntervalSec(60);
+        widgetSettings.setTimeframe(3600);
+        widgetSettings.setEntryId("application-control-OAI5zmhxOM"); // Application Control - Top Applications Usage
+        widgets.add( widgetSettings);
+    
         widgetSettings = new DashboardWidgetSettings("ReportEntry");
         widgetSettings.setRefreshIntervalSec(60);
         widgetSettings.setTimeframe(3600*24);
