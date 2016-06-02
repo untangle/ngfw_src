@@ -100,15 +100,16 @@ public abstract class NetcapHook implements Runnable
         try {
             Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
 
-            sessionGlobalState = new SessionGlobalState( netcapSession(), clientSideListener(), serverSideListener(), this );
+            this.sessionGlobalState = new SessionGlobalState( netcapSession(), clientSideListener(), serverSideListener(), this );
             boolean serverActionCompleted = false;
             boolean clientActionCompleted = false;
+            boolean entitled = true;
+
             NetcapSession netcapSession = sessionGlobalState.netcapSession();
             int clientIntf = netcapSession.clientSide().interfaceId();
             int serverIntf = netcapSession.serverSide().interfaceId();
             InetAddress clientAddr = netcapSession.clientSide().client().host();
             long sessionId = sessionGlobalState.id();
-            boolean entitled = true;
             
             if ( logger.isDebugEnabled()) {
                 logger.debug( "New thread for session id: " + sessionId + " " + sessionGlobalState );
@@ -121,7 +122,9 @@ public abstract class NetcapHook implements Runnable
             } else {
                 netcapSession.setServerIntf(serverIntf);
             }
-
+            sessionGlobalState.setClientIntf( clientIntf );
+            sessionGlobalState.setServerIntf( serverIntf );
+            
             /**
              * Create the initial tuples based on current information
              */
@@ -130,12 +133,13 @@ public abstract class NetcapHook implements Runnable
                                                netcapSession.clientSide().server().host(),
                                                netcapSession.clientSide().client().port(),
                                                netcapSession.clientSide().server().port());
-            sessionGlobalState.setSessionTuple( clientSide );
+            sessionGlobalState.setClientSideTuple( clientSide );
             serverSide = new SessionTuple( sessionGlobalState.getProtocol(),
                                                netcapSession.serverSide().client().host(),
                                                netcapSession.serverSide().server().host(),
                                                netcapSession.serverSide().client().port(),
                                                netcapSession.serverSide().server().port());
+            sessionGlobalState.setServerSideTuple( clientSide );
 
             /* lookup the host table information */
             HostTableEntry hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( clientAddr );

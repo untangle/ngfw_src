@@ -148,8 +148,8 @@ public class SessionMonitorImpl implements SessionMonitor
                     session.setCreationTime(sessionState.getCreationTime());
                     session.setPipeline(sessionState.getPipelineDescription());
                     session.setBypassed(Boolean.FALSE);
-                    session.setClientIntf(new Integer(sessionState.netcapSession().clientSide().interfaceId()));
-                    session.setServerIntf(new Integer(sessionState.netcapSession().serverSide().interfaceId()));
+                    session.setClientIntf(new Integer(sessionState.getClientIntf()));
+                    session.setServerIntf(new Integer(sessionState.getServerIntf()));
 
                     session.setClientCountry(sessionState.getSessionEvent().getClientCountry());
                     session.setClientLatitude(sessionState.getSessionEvent().getClientLatitude());                    

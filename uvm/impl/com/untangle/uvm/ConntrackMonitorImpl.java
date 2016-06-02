@@ -63,7 +63,7 @@ public class ConntrackMonitorImpl
             logger.warn("Invalid arguments");
             return;
         }
-        if ( session.getSessionTuple() == null ) {
+        if ( session.getClientSideTuple() == null ) {
             logger.warn("Missing tuple in session: " + session);
             return;
         }
@@ -74,7 +74,7 @@ public class ConntrackMonitorImpl
         
         DeadTcpSessionState state = new DeadTcpSessionState( session.id(), session.getEndTime() );
         synchronized ( this.deadTcpSessions ) {
-            this.deadTcpSessions.put( session.getSessionTuple(), state );
+            this.deadTcpSessions.put( session.getClientSideTuple(), state );
         }
     }
 

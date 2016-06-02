@@ -35,7 +35,10 @@ public class SessionGlobalState
 
     protected String user; 
     protected SessionEvent sessionEvent = null;
-    protected SessionTuple sessionTuple = null;
+    protected SessionTuple clientSideTuple = null;
+    protected SessionTuple serverSideTuple = null;
+    protected int clientIntf = 0;
+    protected int serverIntf = 0;
     protected long endTime = 0;
     protected long lastUpdateBytes = 0;
     
@@ -96,8 +99,17 @@ public class SessionGlobalState
     public SessionEvent getSessionEvent() { return this.sessionEvent; }
     public void setSessionEvent( SessionEvent newValue ) { this.sessionEvent = newValue; }
 
-    public SessionTuple getSessionTuple() { return this.sessionTuple; }
-    public void setSessionTuple( SessionTuple newValue ) { this.sessionTuple = newValue; }
+    public SessionTuple getClientSideTuple() { return this.clientSideTuple; }
+    public void setClientSideTuple( SessionTuple newValue ) { this.clientSideTuple = newValue; }
+
+    public SessionTuple getServerSideTuple() { return this.serverSideTuple; }
+    public void setServerSideTuple( SessionTuple newValue ) { this.serverSideTuple = newValue; }
+
+    public int getClientIntf() { return this.clientIntf; }
+    public void setClientIntf( int newValue ) { this.clientIntf = newValue; }
+
+    public int getServerIntf() { return this.serverIntf; }
+    public void setServerIntf( int newValue ) { this.serverIntf = newValue; }
     
     public NetcapSession netcapSession()
     {
