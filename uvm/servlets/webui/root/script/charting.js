@@ -178,7 +178,7 @@ Ext.define('Ung.charts', {
 
             yAxis: [{
                 min: 0,
-                max: 7,
+                max: 50,
                 minorTickPosition: 'outside',
                 tickPosition: 'outside',
                 tickColor: '#555',
@@ -191,19 +191,19 @@ Ext.define('Ung.charts', {
                 plotBands: [{
                     from: 0,
                     to: 3,
-                    color: 'rgba(112, 173, 112, 0.5)',
+                    color: 'rgba(112, 173, 112, 1)',
                     innerRadius: '100%',
                     outerRadius: '105%'
                 }, {
                     from: 3,
                     to: 6,
-                    color: 'rgba(255, 255, 0, 0.5)',
+                    color: 'rgba(255, 255, 0, 1)',
                     innerRadius: '100%',
                     outerRadius: '105%'
                 }, {
                     from: 6,
                     to: 7,
-                    color: 'rgba(255, 0, 0, 0.5)',
+                    color: 'rgba(255, 0, 0, 1)',
                     innerRadius: '100%',
                     outerRadius: '105%'
                 }],
@@ -216,8 +216,8 @@ Ext.define('Ung.charts', {
                         enabled: false
                     },
                     dial: {
-                        radius: '95%',
-                        backgroundColor: '#555'
+                        radius: '99%',
+                        backgroundColor: '#999'
                     }
                 }
             },

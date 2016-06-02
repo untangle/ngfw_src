@@ -1629,10 +1629,10 @@ a.forgot-password:hover {
 
 /* CPU Load */
 .wg-wrapper.cpuload .cpuLoadVal {
-    position: absolute; width: 100px; bottom: 20px; text-align: center; font-size: 20px; line-height: 1; border-radius: 20px; left: 50%; margin-left: -50px;
+    position: absolute; width: 100px; bottom: 50px; text-align: center; font-size: 20px; line-height: 0.7; border-radius: 20px; left: 50%; margin-left: -50px;
 }
 .wg-wrapper.cpuload .cpuLoadVal span {
-    font-size: 12px;
+    font-size: 10px;
     text-transform: uppercase;
 }
 .wg-wrapper.cpuload .cpuLoadVal.medium {

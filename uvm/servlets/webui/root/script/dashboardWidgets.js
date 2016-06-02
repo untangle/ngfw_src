@@ -228,14 +228,10 @@ Ext.define('Ung.dashboard.Queue', {
 
 Ext.define('Ung.dashboard.Widget', {
     extend: 'Ext.panel.Panel',
-    cls: 'widget',
+    cls: 'widget init',
     refreshIntervalSec: 0,
     height: 320,
     initComponent: function () {
-        if (this.entry) {
-            this.addCls('init');
-        }
-
         if (this.hasRefresh) {
             this.tools = [];
             if (this.widgetType === 'ReportEntry') {
@@ -500,19 +496,19 @@ Ext.define('Ung.dashboard.CPULoad', {
                 plotBands: [{
                     from: 0,
                     to: medLimit,
-                    color: 'rgba(112, 173, 112, 0.5)',
+                    color: 'rgba(112, 173, 112, 1)',
                     innerRadius: '100%',
                     outerRadius: '105%'
                 }, {
                     from: medLimit,
                     to: highLimit,
-                    color: 'rgba(255, 255, 0, 0.5)',
+                    color: 'rgba(255, 255, 0, 1)',
                     innerRadius: '100%',
                     outerRadius: '105%'
                 }, {
                     from: highLimit,
                     to: highLimit + 1,
-                    color: 'rgba(255, 0, 0, 0.5)',
+                    color: 'rgba(255, 0, 0, 1)',
                     innerRadius: '100%',
                     outerRadius: '105%'
                 }]
@@ -536,12 +532,15 @@ Ext.define('Ung.dashboard.CPULoad', {
             loadLabel = 'high';
         }
         if (Ext.select('.cpuLoadVal', this).elements[0]) {
-            Ext.select('.cpuLoadVal', this).elements[0].addCls(loadLabel).setHtml(stats.oneMinuteLoadAvg + '<br/><span>' + loadLabel + '</span>');
+            var loadValElement = Ext.select('.cpuLoadVal', this).elements[0];
+            loadValElement.removeCls('high');
+            loadValElement.removeCls('medium');
+            loadValElement.addCls(loadLabel).setHtml(stats.oneMinuteLoadAvg + '<br/><span>' + loadLabel + '</span>');
         }
 
         if (this.lineChart !== null && this.gaugeChart !== null) {
             this.lineChart.series[0].addPoint([this.lineChart.series[0].data[this.lineChart.series[0].data.length - 1].x + 3000, stats.oneMinuteLoadAvg], true, true);
-            this.gaugeChart.series[0].points[0].update(stats.oneMinuteLoadAvg <= 7 ? stats.oneMinuteLoadAvg : 7, true);
+            this.gaugeChart.series[0].points[0].update(stats.oneMinuteLoadAvg <= highLimit + 1 ? stats.oneMinuteLoadAvg : highLimit + 1, true);
         }
 
     }
