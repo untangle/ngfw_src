@@ -2,7 +2,7 @@
     "uniqueId": "bandwidth-control-48CahLowKb",
     "category": "Bandwidth Control",
     "description": "The sum of the data transferred grouped by bypassed.",
-    "displayOrder": 801,
+    "displayOrder": 901,
     "enabled": true,
     "javaClass": "com.untangle.node.reports.ReportEntry",
     "orderByColumn": "value",

@@ -1,0 +1,20 @@
+{
+    "uniqueId": "bandwidth-control-rlAEQATivh",
+    "category": "Bandwidth Control",
+    "description": "The bandwidth usage by top server port.",
+    "displayOrder": 500,
+    "enabled": true,
+    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "orderDesc": false,
+    "units": "bytes/s",
+    "readOnly": true,
+    "table": "session_minutes",
+    "timeDataInterval": "AUTO",
+    "timeDataDynamicValue": "(s2c_bytes+c2s_bytes)/60",
+    "timeDataDynamicColumn": "s_server_port",
+    "timeDataDynamicLimit": "10",
+    "timeDataDynamicAggregationFunction": "sum",
+    "timeStyle": "AREA_STACKED",
+    "title": "Top Server Port Usage",
+    "type": "TIME_GRAPH_DYNAMIC"
+}

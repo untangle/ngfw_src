@@ -1,0 +1,20 @@
+{
+    "uniqueId": "bandwidth-control-BVOy539ahO",
+    "category": "Bandwidth Control",
+    "description": "The bandwidth usage of the top hostnames.",
+    "displayOrder": 200,
+    "enabled": true,
+    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "orderDesc": false,
+    "units": "bytes/s",
+    "readOnly": true,
+    "table": "session_minutes",
+    "timeDataInterval": "AUTO",
+    "timeDataDynamicValue": "(s2c_bytes+c2s_bytes)/60",
+    "timeDataDynamicColumn": "hostname",
+    "timeDataDynamicLimit": "10",
+    "timeDataDynamicAggregationFunction": "sum",
+    "timeStyle": "AREA_STACKED",
+    "title": "Top Hostnames Usage",
+    "type": "TIME_GRAPH_DYNAMIC"
+}

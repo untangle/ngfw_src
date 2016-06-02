@@ -2,7 +2,7 @@
     "uniqueId": "bandwidth-control-OMrXdWbxWu",
     "category": "Bandwidth Control",
     "description": "The sum of the data sent grouped by Application Control category.",
-    "displayOrder": 602,
+    "displayOrder": 702,
     "enabled": true,
     "javaClass": "com.untangle.node.reports.ReportEntry",
     "orderByColumn": "value",

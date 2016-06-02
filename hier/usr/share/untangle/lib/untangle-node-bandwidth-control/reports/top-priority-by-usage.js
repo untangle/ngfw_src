@@ -2,7 +2,7 @@
     "uniqueId": "bandwidth-control-yiCG2oFF1o",
     "category": "Bandwidth Control",
     "description": "The sum of the data transferred grouped by priority.",
-    "displayOrder": 701,
+    "displayOrder": 801,
     "enabled": true,
     "javaClass": "com.untangle.node.reports.ReportEntry",
     "orderByColumn": "value",
