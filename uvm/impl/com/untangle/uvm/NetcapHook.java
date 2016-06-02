@@ -213,8 +213,10 @@ public abstract class NetcapHook implements Runnable
                     /* If the hostname isn't known in the host table then set hostname */
                     if ( !hostEntry.isHostnameKnown()) {
                         hostEntry.setHostname( hostname );
-                        if ( deviceEntry != null )
-                            deviceEntry.setHostname( hostname );
+                    }
+                    /* If the hostname isn't known in the device table then set hostname */
+                    if ( deviceEntry != null && !deviceEntry.isHostnameKnown()) {
+                        deviceEntry.setHostname( hostname );
                     }
                 }
             } else {

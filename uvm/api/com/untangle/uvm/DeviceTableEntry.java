@@ -117,6 +117,19 @@ public class DeviceTableEntry implements Serializable, JSONString
         this.deviceUsername = newValue;
     }
     
+    /**
+     * Utility method to check that hostname is known
+     */
+    public boolean isHostnameKnown()
+    {
+        String hostname = getHostname();
+        if (hostname == null)
+            return false;
+        if (hostname.equals(""))
+            return false;
+        return true;
+    }
+
     public String toJSONString()
     {
         JSONObject jO = new JSONObject(this);
