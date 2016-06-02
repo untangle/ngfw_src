@@ -12,7 +12,7 @@
     "pieSumColumn": "round(coalesce(sum(p2s_bytes), 0) / (1024*1024),1)",
     "readOnly": true,
     "table": "sessions",
-    "title": "Top Ports (by sent bytes)",
+    "title": "Top Ports (by received bytes)",
     "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }
