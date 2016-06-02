@@ -4,6 +4,8 @@
 
 package com.untangle.node.virus_blocker;
 
+import java.io.File;
+import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.DaemonManager;
 import com.untangle.uvm.node.License;
@@ -11,6 +13,8 @@ import com.untangle.node.virus_blocker.VirusBlockerBaseApp;
 
 public class VirusBlockerApp extends VirusBlockerBaseApp
 {
+    private final Logger logger = Logger.getLogger(VirusBlockerApp.class);
+
     public VirusBlockerApp(com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties)
     {
         super(nodeSettings, nodeProperties, new VirusBlockerScanner());
@@ -40,7 +44,7 @@ public class VirusBlockerApp extends VirusBlockerBaseApp
         // virus blocker is 15
         // virus blocker lite is 18
         // virus blocker should be lower (closer to client)
-        return 15; 
+        return 15;
     }
 
     @Override
@@ -60,33 +64,43 @@ public class VirusBlockerApp extends VirusBlockerBaseApp
     {
         return true;
     }
-    
+
     @Override
     protected void preStart()
     {
-        UvmContextFactory.context().daemonManager().incrementUsageCount("untangle-bdamserver");
+        // skip the daemon stuff if package is not installed
+        File daemonCheck = new File("/etc/init.d/untangle-bdamserver");
+        if (daemonCheck.exists()) {
+            UvmContextFactory.context().daemonManager().incrementUsageCount("untangle-bdamserver");
 
-        // we only need to enable the monitoring since it will be disabled
-        // automatically when the daemon count reaches zero
-        String transmit = "INFO 1\r\n";
-        String search = "200 1";
-        UvmContextFactory.context().daemonManager().enableRequestMonitoring("untangle-bdamserver", 1200, "127.0.0.1", 1344, transmit, search);
+            // we only need to enable the monitoring since it will be disabled
+            // automatically when the daemon count reaches zero
+            String transmit = "INFO 1\r\n";
+            String search = "200 1";
+            UvmContextFactory.context().daemonManager().enableRequestMonitoring("untangle-bdamserver", 1200, "127.0.0.1", 1344, transmit, search);
+        } else {
+            logger.info("Skipping DaemonManager initialization because the package is not installed.");
+        }
+
         super.preStart();
     }
 
     @Override
     protected void postStop()
     {
-        UvmContextFactory.context().daemonManager().decrementUsageCount("untangle-bdamserver");
+        // skip the daemon stuff if the package is not installed
+        File daemonCheck = new File("/etc/init.d/untangle-bdamserver");
+        if (daemonCheck.exists()) {
+            UvmContextFactory.context().daemonManager().decrementUsageCount("untangle-bdamserver");
+        }
+
         super.postStop();
     }
 
     private boolean isLicenseValid()
     {
-        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.VIRUS_BLOCKER))
-            return true;
-        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.VIRUS_BLOCKER_OLDNAME))
-            return true;
+        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.VIRUS_BLOCKER)) return true;
+        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.VIRUS_BLOCKER_OLDNAME)) return true;
         return false;
     }
 }
