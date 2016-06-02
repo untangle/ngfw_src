@@ -43,19 +43,122 @@ public class SessionMinuteEvent extends LogEvent
     @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
-        String sql = "INSERT INTO reports.session_min" + getPartitionTablePostfix() + " " +
-            "(time_stamp, session_id, c2s_bytes, s2c_bytes) " +
-            "values " +
-            "(?, ?, ?, ?); ";
+        String sql = "INSERT INTO reports.session_minutes" + getPartitionTablePostfix() + " " +
+            "(time_stamp,c2s_bytes,s2c_bytes," + 
+            "session_id, " + 
+            "start_time, " + 
+            "end_time, " + 
+            "bypassed, " + 
+            "entitled, " + 
+            "protocol, " + 
+            "icmp_type, " + 
+            "hostname, " + 
+            "username, " + 
+            "policy_id, " + 
+            "policy_rule_id, " + 
+            "c_client_addr, " + 
+            "c_server_addr, " + 
+            "c_server_port, " + 
+            "c_client_port, " + 
+            "s_client_addr, " + 
+            "s_server_addr, " + 
+            "s_server_port, " + 
+            "s_client_port, " + 
+            "client_intf, " + 
+            "server_intf, " + 
+            "client_country, " + 
+            "client_latitude, " + 
+            "client_longitude, " + 
+            "server_country, " + 
+            "server_latitude, " + 
+            "server_longitude, " + 
+            "filter_prefix, " + 
+            "shield_blocked, " + 
+            "firewall_blocked, " + 
+            "firewall_flagged, " + 
+            "firewall_rule_index, " + 
+            "application_control_lite_protocol, " + 
+            "application_control_lite_blocked, " + 
+            "captive_portal_blocked, " + 
+            "captive_portal_rule_index, " + 
+            "application_control_application, " + 
+            "application_control_protochain, " + 
+            "application_control_category, " + 
+            "application_control_blocked, " + 
+            "application_control_flagged, " + 
+            "application_control_confidence, " + 
+            "application_control_ruleid, " + 
+            "application_control_detail, " + 
+            "bandwidth_control_priority, " + 
+            "bandwidth_control_rule, " + 
+            "ssl_inspector_ruleid, " + 
+            "ssl_inspector_status, " + 
+            "ssl_inspector_detail) " + 
+            "SELECT " + 
+            "?, ?, ?, " +
+            "session_id, " + 
+            "time_stamp as start_time, " + 
+            "end_time, " + 
+            "bypassed, " + 
+            "entitled, " + 
+            "protocol, " + 
+            "icmp_type, " + 
+            "hostname, " + 
+            "username, " + 
+            "policy_id, " + 
+            "policy_rule_id, " + 
+            "c_client_addr, " + 
+            "c_server_addr, " + 
+            "c_server_port, " + 
+            "c_client_port, " + 
+            "s_client_addr, " + 
+            "s_server_addr, " + 
+            "s_server_port, " + 
+            "s_client_port, " + 
+            "client_intf, " + 
+            "server_intf, " + 
+            "client_country, " + 
+            "client_latitude, " + 
+            "client_longitude, " + 
+            "server_country, " + 
+            "server_latitude, " + 
+            "server_longitude, " + 
+            "filter_prefix, " + 
+            "shield_blocked, " + 
+            "firewall_blocked, " + 
+            "firewall_flagged, " + 
+            "firewall_rule_index, " + 
+            "application_control_lite_protocol, " + 
+            "application_control_lite_blocked, " + 
+            "captive_portal_blocked, " + 
+            "captive_portal_rule_index, " + 
+            "application_control_application, " + 
+            "application_control_protochain, " + 
+            "application_control_category, " + 
+            "application_control_blocked, " + 
+            "application_control_flagged, " + 
+            "application_control_confidence, " + 
+            "application_control_ruleid, " + 
+            "application_control_detail, " + 
+            "bandwidth_control_priority, " + 
+            "bandwidth_control_rule, " + 
+            "ssl_inspector_ruleid, " + 
+            "ssl_inspector_status, " + 
+            "ssl_inspector_detail " + 
+            "FROM reports.sessions WHERE sessions.session_id = ?";
 
         java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
-        
+
         int i=0;
         pstmt.setTimestamp(++i,getTimeStamp());
-        pstmt.setLong(++i,getSessionId());
         pstmt.setLong(++i,getC2sBytes());
         pstmt.setLong(++i,getS2cBytes());
+        pstmt.setLong(++i,getSessionId());
         pstmt.addBatch();
+
+        // java.io.PrintWriter out = new java.io.PrintWriter("/tmp/query.txt");
+        // out.println(pstmt.toString());
+        // out.close();
         return;
     }
     

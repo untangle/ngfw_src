@@ -14,8 +14,7 @@ class UvmNode(Node):
     def create_tables(self):
         self.__build_admin_logins_table()
         self.__build_sessions_table()
-        self.__build_session_min_table()
-        self.__build_session_minutes_view()
+        self.__build_session_minutes_table()
         self.__build_penaltybox_table()
         self.__build_quotas_table()
         self.__build_host_table_updates_table()
@@ -50,7 +49,7 @@ CREATE TABLE reports.admin_logins (
 CREATE TABLE reports.sessions (
         session_id int8 NOT NULL,
         time_stamp timestamp NOT NULL,
-        end_time timestamp NOT NULL,
+        end_time timestamp,
         bypassed boolean,
         entitled boolean,
         protocol int2,
@@ -125,82 +124,77 @@ CREATE TABLE reports.sessions (
         sql_helper.add_column('sessions','server_longitude','real') # 12.1
 
     @sql_helper.print_timing
-    def __build_session_min_table( self ):
+    def __build_session_minutes_table( self ):
         sql_helper.create_table("""\
-CREATE TABLE reports.session_min (
+CREATE TABLE reports.session_minutes (
         session_id int8 NOT NULL,
         time_stamp timestamp NOT NULL,
-        c2s_bytes int8,
-        s2c_bytes int8)""",
+        c2s_bytes int8 default 0,
+        s2c_bytes int8 default 0,
+        start_time timestamp,
+        end_time timestamp,
+        bypassed boolean,
+        entitled boolean,
+        protocol int2,
+        icmp_type int2,
+        hostname text,
+        username text,
+        policy_id int2,
+        policy_rule_id int2,
+        c_client_addr inet,
+        c_server_addr inet,
+        c_server_port int4,
+        c_client_port int4,
+        s_client_addr inet,
+        s_server_addr inet,
+        s_server_port int4,
+        s_client_port int4,
+        client_intf int2,
+        server_intf int2,
+        client_country text,
+        client_latitude real,
+        client_longitude real,
+        server_country text,
+        server_latitude real,
+        server_longitude real,
+        filter_prefix text,
+        shield_blocked boolean,
+        firewall_blocked boolean,
+        firewall_flagged boolean,
+        firewall_rule_index integer,
+        application_control_lite_protocol text,
+        application_control_lite_blocked boolean,
+        captive_portal_blocked boolean,
+        captive_portal_rule_index integer,
+        application_control_application text,
+        application_control_protochain text,
+        application_control_category text,
+        application_control_blocked boolean,
+        application_control_flagged boolean,
+        application_control_confidence integer,
+        application_control_ruleid integer,
+        application_control_detail text,
+        bandwidth_control_priority integer,
+        bandwidth_control_rule integer,
+        ssl_inspector_ruleid integer,
+        ssl_inspector_status text,
+        ssl_inspector_detail text)""", 
                                 [],
-                                ["time_stamp",
-                                 "session_id"])
+                                ["session_id",
+                                 "time_stamp",
+                                 "hostname",
+                                 "username",
+                                 "policy_id",
+                                 "c_client_addr",
+                                 "s_server_addr",
+                                 "client_intf",
+                                 "server_intf",
+                                 "firewall_flagged",
+                                 "firewall_blocked",
+                                 "application_control_application",
+                                 "application_control_blocked",
+                                 "application_control_flagged"])
 
-    @sql_helper.print_timing
-    def __build_session_minutes_view( self ):
-        sql_helper.drop_view("session_minutes")
-        sql_helper.create_view("""\
-CREATE VIEW reports.session_minutes AS
-        SELECT 
-        sessions.session_id,
-        sessions.end_time,
-        sessions.bypassed,
-        sessions.entitled,
-        sessions.protocol,
-        sessions.icmp_type,
-        sessions.hostname,
-        sessions.username,
-        sessions.policy_id,
-        sessions.policy_rule_id,
-        sessions.c_client_addr,
-        sessions.c_server_addr,
-        sessions.c_server_port,
-        sessions.c_client_port,
-        sessions.s_client_addr,
-        sessions.s_server_addr,
-        sessions.s_server_port,
-        sessions.s_client_port,
-        sessions.client_intf,
-        sessions.server_intf,
-        sessions.client_country,
-        sessions.client_latitude,
-        sessions.client_longitude,
-        sessions.server_country,
-        sessions.server_latitude,
-        sessions.server_longitude,
-        sessions.c2p_bytes,
-        sessions.p2c_bytes,
-        sessions.s2p_bytes,
-        sessions.p2s_bytes,
-        sessions.filter_prefix,
-        sessions.shield_blocked,
-        sessions.firewall_blocked,
-        sessions.firewall_flagged,
-        sessions.firewall_rule_index,
-        sessions.application_control_lite_protocol,
-        sessions.application_control_lite_blocked,
-        sessions.captive_portal_blocked,
-        sessions.captive_portal_rule_index,
-        sessions.application_control_application,
-        sessions.application_control_protochain,
-        sessions.application_control_category,
-        sessions.application_control_blocked,
-        sessions.application_control_flagged,
-        sessions.application_control_confidence,
-        sessions.application_control_ruleid,
-        sessions.application_control_detail,
-        sessions.bandwidth_control_priority,
-        sessions.bandwidth_control_rule,
-        sessions.ssl_inspector_ruleid,
-        sessions.ssl_inspector_status,
-        sessions.ssl_inspector_detail,
-        sessions.time_stamp as sessions_time_stamp,
-        session_min.time_stamp,
-        session_min.c2s_bytes,
-        session_min.s2c_bytes 
-        FROM
-        reports.session_min INNER JOIN reports.sessions USING (session_id)""")
-        
     @sql_helper.print_timing
     def __build_alerts_events_table( self ):
         sql_helper.create_table("""\
