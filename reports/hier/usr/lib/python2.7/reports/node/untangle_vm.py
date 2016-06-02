@@ -187,13 +187,11 @@ CREATE TABLE reports.session_minutes (
                                  "policy_id",
                                  "c_client_addr",
                                  "s_server_addr",
+                                 "s_server_port",
                                  "client_intf",
                                  "server_intf",
-                                 "firewall_flagged",
-                                 "firewall_blocked",
-                                 "application_control_application",
-                                 "application_control_blocked",
-                                 "application_control_flagged"])
+                                 "application_control_application"])
+
 
     @sql_helper.print_timing
     def __build_alerts_events_table( self ):
