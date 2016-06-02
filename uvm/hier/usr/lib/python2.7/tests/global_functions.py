@@ -14,7 +14,7 @@ import json
 from uvm import Uvm
 
 officeNetworks = ('10.111.0.0/16','10.112.0.0/16');
-iperfServers = [('10.111.0.0/16','10.111.56.32'), # Office network
+iperfServers = [('10.111.0.0/16','10.111.56.84'), # Office network
                 ('10.112.0.0/16','10.112.56.44')] # ATS VM
 iperfServer = ""
 smtpServerHost = 'test.untangle.com'
