@@ -118,7 +118,7 @@ public class SslInspectorApp extends NodeBase
 
                 // between v1 and v2 we added a new default rule to scan secure SMTP traffic
                 if (readSettings.getVersion().intValue() < 2) {
-                    SslInspectorRule addRule = createDefaultRule(0, "Inspect Port 25 Secure SMTP Traffic", SslInspectorRuleCondition.ConditionType.PROTOCOL, "TCP", SslInspectorRuleCondition.ConditionType.DST_PORT, "25", SslInspectorRuleAction.ActionType.INSPECT, true);
+                    SslInspectorRule addRule = createDefaultRule(0, "Inspect SMTP + STARTTLS", SslInspectorRuleCondition.ConditionType.PROTOCOL, "TCP", SslInspectorRuleCondition.ConditionType.SRC_INTF, "wan", SslInspectorRuleCondition.ConditionType.DST_PORT, "25", SslInspectorRuleAction.ActionType.INSPECT, true);                    
                     readSettings.getIgnoreRules().addFirst(addRule);
                     int idx = 1;
                     for (SslInspectorRule rule : readSettings.getIgnoreRules()) {
@@ -251,25 +251,29 @@ public class SslInspectorApp extends NodeBase
         LinkedList<SslInspectorRule> defaultRules = new LinkedList<SslInspectorRule>();
         int ruleNumber = 1;
 
-        defaultRules.add(createDefaultRule(ruleNumber++, "Inspect Port 25 Secure SMTP Traffic", SslInspectorRuleCondition.ConditionType.PROTOCOL, "TCP", SslInspectorRuleCondition.ConditionType.DST_PORT, "25", SslInspectorRuleAction.ActionType.INSPECT, true));
-        defaultRules.add(createDefaultRule(ruleNumber++, "Ignore Microsoft Update", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SUBJECT_DN, "*update.microsoft*", null, null, SslInspectorRuleAction.ActionType.IGNORE, true));
-        defaultRules.add(createDefaultRule(ruleNumber++, "Ignore GotoMeeting", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SUBJECT_DN, "*citrix*", null, null, SslInspectorRuleAction.ActionType.IGNORE, true));
-        defaultRules.add(createDefaultRule(ruleNumber++, "Ignore Dropbox", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SUBJECT_DN, "*dropbox*", null, null, SslInspectorRuleAction.ActionType.IGNORE, true));
-        defaultRules.add(createDefaultRule(ruleNumber++, "Inspect All Traffic", null, null, null, null, SslInspectorRuleAction.ActionType.INSPECT, false));
-        defaultRules.add(createDefaultRule(ruleNumber++, "Inspect YouTube Traffic", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SNI_HOSTNAME, "*youtube.com", null, null, SslInspectorRuleAction.ActionType.INSPECT, true));
-        defaultRules.add(createDefaultRule(ruleNumber++, "Inspect Google Traffic", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SUBJECT_DN, "*Google*", null, null, SslInspectorRuleAction.ActionType.INSPECT, true));
-        defaultRules.add(createDefaultRule(ruleNumber++, "Inspect Facebook Traffic", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SUBJECT_DN, "*Facebook*", null, null, SslInspectorRuleAction.ActionType.INSPECT, true));
-        defaultRules.add(createDefaultRule(ruleNumber++, "Inspect Wikipedia Traffic", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SUBJECT_DN, "*Wikimedia*", null, null, SslInspectorRuleAction.ActionType.INSPECT, true));
-        defaultRules.add(createDefaultRule(ruleNumber++, "Inspect Twitter Traffic", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SUBJECT_DN, "*Twitter*", null, null, SslInspectorRuleAction.ActionType.INSPECT, true));
-        defaultRules.add(createDefaultRule(ruleNumber++, "Inspect Yahoo Traffic", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SUBJECT_DN, "*Yahoo*", null, null, SslInspectorRuleAction.ActionType.INSPECT, true));
-        defaultRules.add(createDefaultRule(ruleNumber++, "Inspect Bing Traffic", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SNI_HOSTNAME, "*bing.com", null, null, SslInspectorRuleAction.ActionType.INSPECT, true));
-        defaultRules.add(createDefaultRule(ruleNumber++, "Inspect Ask Traffic", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SNI_HOSTNAME, "*ask.com", null, null, SslInspectorRuleAction.ActionType.INSPECT, true));
-        defaultRules.add(createDefaultRule(ruleNumber++, "Ignore Other Traffic", null, null, null, null, SslInspectorRuleAction.ActionType.IGNORE, true));
+        defaultRules.add(createDefaultRule(ruleNumber++, "Ignore Microsoft Update", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SUBJECT_DN, "*update.microsoft*", null, null, null, null, SslInspectorRuleAction.ActionType.IGNORE, true));
+        defaultRules.add(createDefaultRule(ruleNumber++, "Ignore GotoMeeting", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SUBJECT_DN, "*citrix*", null, null, null, null, SslInspectorRuleAction.ActionType.IGNORE, true));
+        defaultRules.add(createDefaultRule(ruleNumber++, "Ignore Dropbox", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SUBJECT_DN, "*dropbox*", null, null, null, null, SslInspectorRuleAction.ActionType.IGNORE, true));
+        defaultRules.add(createDefaultRule(ruleNumber++, "Inspect All Traffic", null, null, null, null, null, null, SslInspectorRuleAction.ActionType.INSPECT, false));
+        defaultRules.add(createDefaultRule(ruleNumber++, "Inspect SMTP + STARTTLS", SslInspectorRuleCondition.ConditionType.PROTOCOL, "TCP", SslInspectorRuleCondition.ConditionType.SRC_INTF, "wan", SslInspectorRuleCondition.ConditionType.DST_PORT, "25", SslInspectorRuleAction.ActionType.INSPECT, true));
+        defaultRules.add(createDefaultRule(ruleNumber++, "Inspect YouTube", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SNI_HOSTNAME, "*youtube.com", null, null, null, null, SslInspectorRuleAction.ActionType.INSPECT, true));
+        defaultRules.add(createDefaultRule(ruleNumber++, "Inspect Google", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SUBJECT_DN, "*Google*", null, null, null, null, SslInspectorRuleAction.ActionType.INSPECT, true));
+        defaultRules.add(createDefaultRule(ruleNumber++, "Inspect Facebook", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SUBJECT_DN, "*Facebook*", null, null, null, null, SslInspectorRuleAction.ActionType.INSPECT, true));
+        defaultRules.add(createDefaultRule(ruleNumber++, "Inspect Wikipedia", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SUBJECT_DN, "*Wikimedia*", null, null, null, null, SslInspectorRuleAction.ActionType.INSPECT, true));
+        defaultRules.add(createDefaultRule(ruleNumber++, "Inspect Twitter", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SUBJECT_DN, "*Twitter*", null, null, null, null, SslInspectorRuleAction.ActionType.INSPECT, true));
+        defaultRules.add(createDefaultRule(ruleNumber++, "Inspect Yahoo", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SUBJECT_DN, "*Yahoo*", null, null, null, null, SslInspectorRuleAction.ActionType.INSPECT, true));
+        defaultRules.add(createDefaultRule(ruleNumber++, "Inspect Bing", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SNI_HOSTNAME, "*bing.com", null, null, null, null, SslInspectorRuleAction.ActionType.INSPECT, true));
+        defaultRules.add(createDefaultRule(ruleNumber++, "Inspect Ask", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SNI_HOSTNAME, "*ask.com", null, null, null, null, SslInspectorRuleAction.ActionType.INSPECT, true));
+        defaultRules.add(createDefaultRule(ruleNumber++, "Ignore Other Traffic", null, null, null, null, null, null, SslInspectorRuleAction.ActionType.IGNORE, true));
 
         return defaultRules;
     }
 
-    private SslInspectorRule createDefaultRule(int ruleNumber, String ruleDescription, SslInspectorRuleCondition.ConditionType matcherOneType, String matcherOneString, SslInspectorRuleCondition.ConditionType matcherTwoType, String matcherTwoString, SslInspectorRuleAction.ActionType actionType, boolean isLive)
+    private SslInspectorRule createDefaultRule(int ruleNumber, String ruleDescription,
+            SslInspectorRuleCondition.ConditionType matcherOneType, String matcherOneString,
+            SslInspectorRuleCondition.ConditionType matcherTwoType, String matcherTwoString,
+            SslInspectorRuleCondition.ConditionType matcherThreeType, String matcherThreeString,            
+            SslInspectorRuleAction.ActionType actionType, boolean isLive)
     {
         SslInspectorRule rule;
         LinkedList<SslInspectorRuleCondition> matchers;
@@ -286,6 +290,11 @@ public class SslInspectorApp extends NodeBase
 
         if (matcherTwoString != null) {
             ruleMatcher = new SslInspectorRuleCondition(matcherTwoType, matcherTwoString);
+            matchers.add(ruleMatcher);
+        }
+
+        if (matcherThreeString != null) {
+            ruleMatcher = new SslInspectorRuleCondition(matcherThreeType, matcherThreeString);
             matchers.add(ruleMatcher);
         }
 
