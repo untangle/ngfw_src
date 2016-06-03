@@ -732,6 +732,11 @@ Ext.define('Webui.config.administration', {
                             Ext.MessageBox.alert("Certificate In Use","You can not delete a certificate that is assigned to one or more services.");
                             return;
                         }
+                        if (this.isDirty())
+                        {
+                            Ext.MessageBox.alert("Unsaved Changes","You must apply unsaved changes changes before you can delete this certificate.");
+                            return;
+                        }
                         Ext.MessageBox.confirm("Are you sure you want to delete this certificate?", "<B>SUBJECT:</B> " + record.get("certSubject") + "<BR><BR><B>ISSUER:</B> " + record.get("certIssuer"), function(button) {
                             if (button === 'yes')
                             {
