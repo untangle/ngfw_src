@@ -640,14 +640,13 @@ Ext.define('Webui.config.administration', {
             iconClass: 'icon-edit-row',
             handler: function(view, rowIndex, colIndex, item, e, record) {
                 var detail = "";
-                detail += "<b>FILENAME:</b> " + record.get("fileName") + "<br><br>";
                 detail += "<b>VALID:</b> " + i18n.timestampFormat(record.get("dateValid")) + "<br><br>";
                 detail += "<b>EXPIRES:</b> " + i18n.timestampFormat(record.get("dateExpires")) + "<br><br>";
                 detail += "<b>ISSUER:</b> " + record.get("certIssuer") + "<br><br>";
                 detail += "<b>SUBJECT:</b> " + record.get("certSubject") + "<br><br>";
                 detail += "<b>SAN:</b> " + record.get("certNames") + "<br><br>";
                 detail += "<b>EKU:</b> " + record.get("certUsage") + "<br><br>";
-                Ext.MessageBox.alert({ buttons: Ext.Msg.OK, maxWidth: 1024, title: record.get("fileName"), msg: "<tt>" + detail + "</tt>" });
+                Ext.MessageBox.alert({ buttons: Ext.Msg.OK, maxWidth: 1024, title: "Certificate Details", msg: "<tt>" + detail + "</tt>" });
             }
         });
 
@@ -663,8 +662,6 @@ Ext.define('Webui.config.administration', {
             recordJavaClass: "com.untangle.uvm.CertificateInformation",
             plugins: [viewCertificateColumn],
             fields: [{
-                name: 'fileName',
-            }, {
                 name: 'certSubject',
             }, {
                 name: 'certIssuer',
@@ -680,12 +677,6 @@ Ext.define('Webui.config.administration', {
                 name: 'ipsecServer',
             }],
             columns: [{
-                header: i18n._("File"),
-                flex: 0,
-                width: 120,
-                sortable: true,
-                dataIndex: 'fileName'
-            }, {
                 header: i18n._("Subject"),
                 flex: 1,
                 width: 220,
