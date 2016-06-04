@@ -41,6 +41,36 @@ def sendSpamMail(host=smtpServerHost, useTLS=False):
         mailResult = remote_control.runCommand("python mailsender.py --from=test@example.com --to=qa@example.com ./spam-mail/ --host=" + host + " --reconnect --series=30:0,150,100,50,25,0,180")
     return mailResult
 
+def createSSLInspectRule(port="25"):
+    return {
+        "action": {
+            "actionType": "INSPECT",
+            "flag": False,
+            "javaClass": "com.untangle.node.ssl_inspector.SslInspectorRuleAction"
+        },
+        "conditions": {
+            "javaClass": "java.util.LinkedList",
+            "list": [
+                {
+                    "conditionType": "PROTOCOL",
+                    "invert": False,
+                    "javaClass": "com.untangle.node.ssl_inspector.SslInspectorRuleCondition",
+                    "value": "TCP"
+                },
+                {
+                    "conditionType": "DST_PORT",
+                    "invert": False,
+                    "javaClass": "com.untangle.node.ssl_inspector.SslInspectorRuleCondition",
+                    "value": port
+                }
+            ]
+        },
+        "description": "Inspect" + port,
+        "javaClass": "com.untangle.node.ssl_inspector.SslInspectorRule",
+        "live": True,
+        "ruleId": 1
+    };
+
 class SpamBlockerBaseTests(unittest2.TestCase):
 
     @staticmethod
@@ -261,6 +291,7 @@ class SpamBlockerBaseTests(unittest2.TestCase):
         node.setSettings(nodeData)
         # Turn on SSL Inspector
         nodeSSLData['processEncryptedMailTraffic'] = True
+        nodeSSLData['ignoreRules']['list'].insert(0,createSSLInspectRule("25"))
         nodeSSL.setSettings(nodeSSLData)
         nodeSSL.start()
         tlsSMTPResult = sendSpamMail(host=tlsSmtpServerHost, useTLS=True)
