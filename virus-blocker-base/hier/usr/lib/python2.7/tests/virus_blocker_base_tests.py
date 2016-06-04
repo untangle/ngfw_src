@@ -36,6 +36,36 @@ def nukePassSites():
     rules["list"] = []
     node.setPassSites(rules)
 
+def createSSLInspectRule(port="25"):
+    return {
+        "action": {
+            "actionType": "INSPECT",
+            "flag": False,
+            "javaClass": "com.untangle.node.ssl_inspector.SslInspectorRuleAction"
+        },
+        "conditions": {
+            "javaClass": "java.util.LinkedList",
+            "list": [
+                {
+                    "conditionType": "PROTOCOL",
+                    "invert": False,
+                    "javaClass": "com.untangle.node.ssl_inspector.SslInspectorRuleCondition",
+                    "value": "TCP"
+                },
+                {
+                    "conditionType": "DST_PORT",
+                    "invert": False,
+                    "javaClass": "com.untangle.node.ssl_inspector.SslInspectorRuleCondition",
+                    "value": port
+                }
+            ]
+        },
+        "description": "Inspect" + port,
+        "javaClass": "com.untangle.node.ssl_inspector.SslInspectorRule",
+        "live": True,
+        "ruleId": 1
+    };
+
 class VirusBlockerBaseTests(unittest2.TestCase):
 
     @staticmethod
@@ -335,6 +365,7 @@ class VirusBlockerBaseTests(unittest2.TestCase):
         assert (result == 0)
         # Turn on SSL Inspector
         nodeSSLData['processEncryptedMailTraffic'] = True
+        nodeSSLData['ignoreRules']['list'].insert(0,createSSLInspectRule("25"))
         nodeSSL.setSettings(nodeSSLData)
         nodeSSL.start()
         # email the file
