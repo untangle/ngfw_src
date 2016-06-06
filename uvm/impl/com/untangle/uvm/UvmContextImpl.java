@@ -85,6 +85,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private MetricManagerImpl metricManager;
     private LanguageManagerImpl languageManager;
     private DefaultLicenseManagerImpl defaultLicenseManager;
+    private LicenseManager licenseManager = null;
     private InheritableThreadLocal<HttpServletRequest> threadRequest;
     private TomcatManagerImpl tomcatManager;
     private ServletFileManagerImpl servletFileManager;
@@ -219,9 +220,13 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         NodeManager nodeManager = this.nodeManager();
         if ( nodeManager == null )
             return this.defaultLicenseManager;
-        LicenseManager licenseManager = (LicenseManager) nodeManager.node("untangle-node-license");
-        if (licenseManager == null)
-            return this.defaultLicenseManager;
+        if (this.licenseManager == null ) {
+            this.licenseManager = (LicenseManager) nodeManager.node("untangle-node-license");
+            if (this.licenseManager == null) {
+                logger.warn("Failed to initialize license manager.");
+                return this.defaultLicenseManager;
+            }
+        }
 
         return licenseManager;
     }
