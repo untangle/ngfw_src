@@ -287,10 +287,9 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
         // create string to pass session data to the classd daemon
         // string format = CMD:ID:DATALEN
         // string sample = CLIENT:123456789:437
-        String message = (isClient ? "CLIENT:" : "SERVER:");
-        message = message + getIdString(status.sessionId) + ":";
-        message = message + Integer.toString(data.limit());
-        message = message + "\r\n";
+        String message = (isClient ? "CLIENT:" : "SERVER:") + 
+            getIdString(status.sessionId) + ":" + 
+            Integer.toString(data.limit()) + "\r\n";
 
         // add 1 to the chunk count
         // if we've scanned more chunks than allowed, just give up on categorization
