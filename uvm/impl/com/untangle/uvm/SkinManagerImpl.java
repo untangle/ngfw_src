@@ -79,7 +79,12 @@ public class SkinManagerImpl implements SkinManager
                 this.settings.setSkinName( "classic-rack" );
                 this.setSettings( this.settings );
             }
-
+            if ( "material".equals(this.settings.getSkinName()) ) {
+                logger.info("Switching \"material\" to \"simple-gray\"");
+                this.settings.setSkinName( "simple-gray" );
+                this.setSettings( this.settings );
+            }
+            
             logger.debug("Loading Settings: " + this.settings.toJSONString());
         }
 
