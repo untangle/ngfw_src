@@ -339,7 +339,7 @@ Ext.define('Webui.config.network', {
             hasEdit: false,
             initialLoad: function() {}, //Don't load automatically
             dataFn: function(handler) {
-                var command1 = "ifconfig "+this.symbolicDev+" | grep 'Link\\|packets' |tr '\\n' ' ' | tr -s ' ' ";
+                var command1 = "ifconfig "+this.symbolicDev+" | grep 'Link\\|packets' | grep -v inet6 | tr '\\n' ' ' | tr -s ' ' ";
                 var command2 = "ifconfig "+this.symbolicDev+" | grep 'inet addr' | tr -s ' ' | cut -c 7- ";
                 var command3 = "ifconfig "+this.symbolicDev+" | grep inet6 | grep Global | cut -d' ' -f 13";
                 Ung.Main.getExecManager().execOutput(Ext.bind(function(result, exception) {
@@ -364,7 +364,6 @@ Ext.define('Webui.config.network', {
                         var txdrop = "";
 
                         if (result.search("Ethernet") >= 0) {
-
                             macAddress = lineparts[4];
                             rxpkts = lineparts[6].split(":")[1];
                             rxerr = lineparts[7].split(":")[1];
