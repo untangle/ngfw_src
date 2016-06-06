@@ -77,6 +77,20 @@ public class DashboardManagerImpl implements DashboardManager
                     iterator.remove();
             }
 
+            DashboardWidgetSettings widgetSettings;
+
+            widgetSettings = new DashboardWidgetSettings("ReportEntry");
+            widgetSettings.setRefreshIntervalSec(60);
+            widgetSettings.setTimeframe(3600);
+            widgetSettings.setEntryId("bandwidth-control-BVOy539ahO"); // Bandwidth Control - Top Hostnames Usage
+            settings.getWidgets().add( widgetSettings);
+
+            widgetSettings = new DashboardWidgetSettings("ReportEntry");
+            widgetSettings.setRefreshIntervalSec(60);
+            widgetSettings.setTimeframe(3600);
+            widgetSettings.setEntryId("application-control-OAI5zmhxOM"); // Application Control - Top Applications Usage
+            settings.getWidgets().add( widgetSettings);
+            
             this.setSettings( settings );
             logger.info("Migrating dashboard settings to v2... done.");
         }
