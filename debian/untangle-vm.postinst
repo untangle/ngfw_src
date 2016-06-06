@@ -40,4 +40,7 @@ rm -f /var/log/restart-uvm.log
 rm -f /var/log/uvm/kernel-modules.log
 find /var/log/uvm -name '*crash*' -mtime +30 2>/dev/null | xargs rm -f
 
+# 12.1 remove old ntp servers from ntp.conf
+sed -e '/74.123/d' -i  /etc/ntp.conf
+
 exit 0
