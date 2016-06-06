@@ -912,26 +912,26 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
     
     private boolean isGPLApp(String identifier)
     {
-        if ("untangle-node-ad-blocker".equals(identifier)) return true;
-        else if ("untangle-node-virus-blocker-lite".equals(identifier)) return true;
-        else if ("untangle-node-captive-portal".equals(identifier)) return true;
-        else if ("untangle-node-firewall".equals(identifier)) return true;
-        else if ("untangle-node-intrusion-prevention".equals(identifier)) return true;
-        else if ("untangle-node-openvpn".equals(identifier)) return true;
-        else if ("untangle-node-phish-blocker".equals(identifier)) return true;
-        else if ("untangle-node-application-control-lite".equals(identifier)) return true;
-        else if ("untangle-node-router".equals(identifier)) return true;
-        else if ("untangle-node-reports".equals(identifier)) return true;
-        else if ("untangle-node-shield".equals(identifier)) return true;
-        else if ("untangle-node-spam-blocker-lite".equals(identifier)) return true;
-        else if ("untangle-node-web-filter-lite".equals(identifier)) return true;
-
-        if ("untangle-node-license".equals(identifier)) return true;
-        else if ("untangle-casing-http".equals(identifier)) return true;
-        else if ("untangle-casing-ftp".equals(identifier)) return true;
-        else if ("untangle-casing-smtp".equals(identifier)) return true;
-        
-        return false;
+        switch ( identifier ) {
+        case "untangle-node-ad-blocker": return true;
+        case "untangle-node-virus-blocker-lite": return true;
+        case "untangle-node-captive-portal": return true;
+        case "untangle-node-firewall": return true;
+        case "untangle-node-intrusion-prevention": return true;
+        case "untangle-node-openvpn": return true;
+        case "untangle-node-phish-blocker": return true;
+        case "untangle-node-application-control-lite": return true;
+        case "untangle-node-router": return true;
+        case "untangle-node-reports": return true;
+        case "untangle-node-shield": return true;
+        case "untangle-node-spam-blocker-lite": return true;
+        case "untangle-node-web-filter-lite": return true;
+        case "untangle-node-license": return true;
+        case "untangle-casing-http": return true;
+        case "untangle-casing-ftp": return true;
+        case "untangle-casing-smtp": return true;
+        default: return false;
+        }
     }
 
     private boolean isObsoleteApp(String identifier)
