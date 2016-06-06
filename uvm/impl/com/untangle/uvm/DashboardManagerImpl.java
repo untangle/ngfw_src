@@ -148,12 +148,6 @@ public class DashboardManagerImpl implements DashboardManager
         widgetSettings = new DashboardWidgetSettings("ReportEntry");
         widgetSettings.setRefreshIntervalSec(60);
         widgetSettings.setTimeframe(3600);
-        widgetSettings.setEntryId("network-biCUnFjuBr"); // Network - Session Per Minute
-        widgets.add( widgetSettings);
-
-        widgetSettings = new DashboardWidgetSettings("ReportEntry");
-        widgetSettings.setRefreshIntervalSec(60);
-        widgetSettings.setTimeframe(3600);
         widgetSettings.setEntryId("web-filter-h0jelsttGp"); // Web Filter - Web Usage
         widgets.add( widgetSettings);
 
@@ -187,6 +181,12 @@ public class DashboardManagerImpl implements DashboardManager
         widgetSettings.setEntryId("application-control-OAI5zmhxOM"); // Application Control - Top Applications Usage
         widgets.add( widgetSettings);
     
+        widgetSettings = new DashboardWidgetSettings("ReportEntry");
+        widgetSettings.setRefreshIntervalSec(60);
+        widgetSettings.setTimeframe(3600);
+        widgetSettings.setEntryId("network-biCUnFjuBr"); // Network - Session Per Minute
+        widgets.add( widgetSettings);
+
         widgetSettings = new DashboardWidgetSettings("ReportEntry");
         widgetSettings.setRefreshIntervalSec(60);
         widgetSettings.setTimeframe(3600*24);
