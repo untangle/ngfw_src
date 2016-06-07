@@ -659,24 +659,30 @@ Ext.define('Ung.setupWizard.Internet', {
                 },
                 items: [{
                     name: 'ip',
+                    margin: '0 0 0 0',
                     fieldLabel: i18n._('Current IP Address')
                 }, {
                     name: 'netmask',
+                    margin: '0 0 0 0',
                     fieldLabel: i18n._('Current Netmask')
                 }, {
                     name: 'gateway',
+                    margin: '0 0 0 0',
                     fieldLabel: i18n._('Current Gateway')
                 }, {
                     name: 'dns1',
+                    margin: '0 0 0 0',
                     fieldLabel: i18n._('Current Primary DNS')
                 }, {
                     name: 'dns2',
+                    margin: '0 0 0 0',
                     fieldLabel: i18n._('Current Secondary DNS')
                 }]
             }],
-            buttonAlign: 'center',
+            buttonAlign: 'left',
             buttons: [{
                 xtype: 'button',
+                style: {marginLeft: '30px'},
                 iconCls: 'icon-refresh',
                 text: i18n._('Refresh'),
                 handler: Ext.bind(this.refresh, this)
@@ -749,9 +755,10 @@ Ext.define('Ung.setupWizard.Internet', {
                     }]
                 }]
             }],
-            buttonAlign: 'center',
+            buttonAlign: 'left',
             buttons: [{
                 xtype: 'button',
+                style: {marginLeft: '30px'},
                 iconCls: 'icon-test-connectivity',
                 text: i18n._('Test Connectivity'),
                 handler: Ext.bind(this.testConnectivity, this, [null])
@@ -798,24 +805,30 @@ Ext.define('Ung.setupWizard.Internet', {
                 },
                 items: [{
                     fieldLabel: i18n._('IP Address'),
+                    margin: '0 0 0 0',
                     name: 'ip'
                 }, {
                     fieldLabel: i18n._('Netmask'),
+                    margin: '0 0 0 0',
                     name: 'prefix'
                 }, {
                     name: 'gateway',
+                    margin: '0 0 0 0',
                     fieldLabel: i18n._('Gateway')
                 }, {
                     name: 'dns1',
+                    margin: '0 0 0 0',
                     fieldLabel: i18n._('Primary DNS')
                 }, {
                     name: 'dns2',
+                    margin: '0 0 0 0',
                     fieldLabel: i18n._('Secondary DNS')
                 }]
             }],
-            buttonAlign: 'center',
+            buttonAlign: 'left',
             buttons: [{
                 xtype: 'button',
+                style: {marginLeft: '30px'},
                 iconCls: 'icon-refresh',
                 text: i18n._('Refresh'),
                 handler: Ext.bind(this.refresh, this)
