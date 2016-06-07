@@ -550,6 +550,8 @@ class BandwidthControlTests(unittest2.TestCase):
         assert(pre_count < post_count)
  
     def test_060_quota(self):
+        if remote_control.quickTestsOnly:
+            raise unittest2.SkipTest('Skipping a time consuming test')
         global node
         nukeRules()
         priority_level = 7 # Severely Limited 
@@ -565,6 +567,12 @@ class BandwidthControlTests(unittest2.TestCase):
         appendRule(createBandwidthQuotaRule("CLIENT_HAS_NO_QUOTA","true","GIVE_CLIENT_HOST_QUOTA",given_quota))
         # Create penalty for exceeding quota
         appendRule(createBandwidthSingleConditionRule("CLIENT_QUOTA_EXCEEDED","true","SET_PRIORITY",priority_level))
+
+        # Download the file so quota is exceeded
+        global_functions.getDownloadSpeed()
+
+        # quota accounting occurs every 60 seconds, so we must wait at least 60 seconds
+        time.sleep(60)
 
         # Download file and record the average speed in which the file was download
         wget_speed_post = global_functions.getDownloadSpeed()

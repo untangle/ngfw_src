@@ -25,7 +25,6 @@ import com.untangle.uvm.vnet.NodeBase;
 public class BandwidthControlApp extends NodeBase
 {
     public static final String STAT_PRIORITIZE = "prioritize";
-    public static final String STAT_QUOTA_EXCEEDED = "quota-exceeded";
     public static final String STAT_PENALTY_BOXED = "penalty-boxed";
 
     private final Logger logger = Logger.getLogger(getClass());
@@ -48,7 +47,6 @@ public class BandwidthControlApp extends NodeBase
         this.listener = new ReprioritizeHandler();
 
         this.addMetric(new NodeMetric(STAT_PRIORITIZE, I18nUtil.marktr("Session prioritized")));
-        this.addMetric(new NodeMetric(STAT_QUOTA_EXCEEDED, I18nUtil.marktr("Quota exceeded")));
         this.addMetric(new NodeMetric(STAT_PENALTY_BOXED, I18nUtil.marktr("Penalty boxed")));
 
         this.connector = UvmContextFactory.context().pipelineFoundry().create("bandwidth", this, null, handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.SERVER, 20, true);

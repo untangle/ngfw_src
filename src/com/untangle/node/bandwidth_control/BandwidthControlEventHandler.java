@@ -125,40 +125,13 @@ public class BandwidthControlEventHandler extends AbstractEventHandler
         }
     }
 
-    private void _doQuotaAccounting( int chunkSize, NodeSession sess, Protocol protocol )
-    {
-        if (chunkSize == 0) 
-            return; /* no data with this event. return */
-
-
-        /**
-         * Account for packet header overhead
-         */
-        if ( protocol.getId() == 6 ) {
-            chunkSize = chunkSize + IP_HEADER_SIZE + TCP_HEADER_SIZE_ESTIMATE;
-        }
-        if ( protocol.getId() == 17 ) {
-            chunkSize = chunkSize + IP_HEADER_SIZE + UDP_HEADER_SIZE;
-        }
-        
-        /**
-         * Do quota accounting
-         */
-        if (UvmContextFactory.context().hostTable().decrementQuota(sess.getClientAddr(),chunkSize)) {
-            this.node.incrementMetric( BandwidthControlApp.STAT_QUOTA_EXCEEDED );
-            reprioritizeHostSessions(sess.getClientAddr(),"quota exceeded");
-        }
-        if (UvmContextFactory.context().hostTable().decrementQuota(sess.getServerAddr(),chunkSize)) {
-            this.node.incrementMetric( BandwidthControlApp.STAT_QUOTA_EXCEEDED );
-            reprioritizeHostSessions(sess.getServerAddr(),"quota exceeded");
-        }
-    }
-
     private void _handleNewSessionRequest( IPNewSessionRequest request, Protocol protocol )
     {
-        logger.debug( "New NodeSession Request: " + protocol + " " +
-                     request.getOrigClientAddr().getHostAddress() + ":" + request.getOrigClientPort() + " -> " +
-                     request.getNewServerAddr().getHostAddress() + ":" + request.getNewServerPort());
+        if ( logger.isDebugEnabled() ) {
+            logger.debug( "New NodeSession Request: " + protocol + " " +
+                          request.getOrigClientAddr().getHostAddress() + ":" + request.getOrigClientPort() + " -> " +
+                          request.getNewServerAddr().getHostAddress() + ":" + request.getNewServerPort());
+        }
 
         BandwidthControlSessionState sessInfo = new BandwidthControlSessionState();
         request.attach(sessInfo);
@@ -175,9 +148,6 @@ public class BandwidthControlEventHandler extends AbstractEventHandler
         if (! this.node.isLicenseValid()) 
             return;
         
-        if ( data != null )
-            _doQuotaAccounting( data.remaining(), sess, protocol );
-        
         /**
          * If we are too deep in the session - stop running the rules
          */
@@ -187,9 +157,11 @@ public class BandwidthControlEventHandler extends AbstractEventHandler
             return;
         }
         
-        logger.debug( "Session Event  : " + protocol + " " +
-                     sess.getClientAddr().getHostAddress() + ":" + sess.getClientPort() + " -> " +
-                     sess.getServerAddr().getHostAddress() + ":" + sess.getServerPort());
+        if ( logger.isDebugEnabled() ) {
+            logger.debug( "Session Event  : " + protocol + " " +
+                          sess.getClientAddr().getHostAddress() + ":" + sess.getClientPort() + " -> " +
+                          sess.getServerAddr().getHostAddress() + ":" + sess.getServerPort());
+        }
 
         /**
          * Check for a matching rule and apply it
@@ -210,9 +182,11 @@ public class BandwidthControlEventHandler extends AbstractEventHandler
     {
         List<BandwidthControlRule> rules = this.node.getRules();
 
-        logger.debug( "Checking Rules against NodeSession : " + sess.getProtocol() + " " +
-                      sess.getClientAddr().getHostAddress() + ":" + sess.getClientPort() + " -> " +
-                      sess.getServerAddr().getHostAddress() + ":" + sess.getServerPort());
+        if ( logger.isDebugEnabled() ) {
+            logger.debug( "Checking Rules against NodeSession : " + sess.getProtocol() + " " +
+                          sess.getClientAddr().getHostAddress() + ":" + sess.getClientPort() + " -> " +
+                          sess.getServerAddr().getHostAddress() + ":" + sess.getServerPort());
+        }
 
         for ( BandwidthControlRule rule : rules ) {
             boolean evalRule = true;
@@ -227,14 +201,18 @@ public class BandwidthControlEventHandler extends AbstractEventHandler
             }
             
             if (rule.getEnabled() && evalRule && rule.matches( sess )) {
-                logger.debug( "Matched NodeSession : " + sess.getProtocol() + " " +
-                              sess.getClientAddr().getHostAddress() + ":" + sess.getClientPort() + " -> " +
-                              sess.getServerAddr().getHostAddress() + ":" + sess.getServerPort() + " matches " + rule.getDescription());
+                if ( logger.isDebugEnabled() ) {
+                    logger.debug( "Matched NodeSession : " + sess.getProtocol() + " " +
+                                  sess.getClientAddr().getHostAddress() + ":" + sess.getClientPort() + " -> " +
+                                  sess.getServerAddr().getHostAddress() + ":" + sess.getServerPort() + " matches " + rule.getDescription());
+                }
                 return rule; /* check no further */
             } else {
-                logger.debug( "Checking Rule \"" + rule.getDescription() + "\" against NodeSession : " + sess.getProtocol() + " " +
-                              sess.getClientAddr().getHostAddress() + ":" + sess.getClientPort() + " -> " +
-                              sess.getServerAddr().getHostAddress() + ":" + sess.getServerPort());
+                if ( logger.isDebugEnabled() ) {
+                    logger.debug( "Checking Rule \"" + rule.getDescription() + "\" against NodeSession : " + sess.getProtocol() + " " +
+                                  sess.getClientAddr().getHostAddress() + ":" + sess.getClientPort() + " -> " +
+                                  sess.getServerAddr().getHostAddress() + ":" + sess.getServerPort());
+                }
             }
         }
 
