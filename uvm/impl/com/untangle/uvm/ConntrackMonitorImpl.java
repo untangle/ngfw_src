@@ -10,6 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Iterator;
 import java.lang.Math;
+import java.net.InetAddress;
 
 import org.apache.log4j.Logger;
 
@@ -61,7 +62,7 @@ public class ConntrackMonitorImpl
             return conntrackEntries.get( sessionTuple );
         }
     }
-    
+
     protected void stop()
     {
         this.mainPulse.stop();
@@ -144,9 +145,21 @@ public class ConntrackMonitorImpl
                         " server: "+ Math.round(s2cRateBps/1000.0) + " kB/s" +
                         " total: "+ Math.round(totalRateBps/1000.0) + " kB/s");
 
-            //log event
+            // do quota accounting
+            doQuotaAccounting( conntrack.getPreNatClient(), diffTotalBytes );
+            doQuotaAccounting( conntrack.getPostNatServer(), diffTotalBytes );
+
+            // log SessionMinute event
             SessionMinuteEvent event = new SessionMinuteEvent( state.sessionId, diffC2sBytes, diffS2cBytes );
             UvmContextFactory.context().logEvent( event );
+        }
+
+        private void doQuotaAccounting( InetAddress address, long bytes )
+        {
+            if ( bytes == 0 ) 
+                return; /* no data with this event. return */
+
+            UvmContextFactory.context().hostTable().decrementQuota( address, bytes );
         }
         
         public void run()
