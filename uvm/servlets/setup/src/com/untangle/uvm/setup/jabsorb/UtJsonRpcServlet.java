@@ -102,7 +102,7 @@ public class UtJsonRpcServlet extends JSONRPCServlet
 
     public interface SetupContext
     {
-        public void setLanguage( String language );
+        public void setLanguage( String language, String source );
 
         public void setAdminPassword( String password, String email ) throws TransactionRolledbackException;
 

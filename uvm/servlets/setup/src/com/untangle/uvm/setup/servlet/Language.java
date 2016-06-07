@@ -49,6 +49,7 @@ public class Language extends HttpServlet
         try {
             request.setAttribute( "languageList", js.toJSON( rlm.getLanguagesList()));
             request.setAttribute( "language", rlm.getLanguageSettings().getLanguage());
+            request.setAttribute( "languageSource", rlm.getLanguageSettings().getSource());
         } catch ( MarshallException e ) {
             throw new ServletException( "Unable to serializer JSON", e );
         }

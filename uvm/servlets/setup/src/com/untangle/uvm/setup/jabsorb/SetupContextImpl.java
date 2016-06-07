@@ -35,11 +35,12 @@ public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
         this.context = context;
     }
 
-    public void setLanguage( String language )
+    public void setLanguage( String language, String source )
     {
         LanguageManager lm = this.context.languageManager();
         LanguageSettings ls = lm.getLanguageSettings();
         ls.setLanguage( language );
+        ls.setSource( source );
         lm.setLanguageSettings( ls );
     }
     

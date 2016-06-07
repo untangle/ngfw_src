@@ -28,7 +28,8 @@
     Ext.onReady(function(){
         Ung.Language.init({
             languageList : ${languageList},
-            language : "${language}"
+            language : "${language}",
+            languageSource : "${languageSource}"
         });
     });
     </script>

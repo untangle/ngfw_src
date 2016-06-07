@@ -7,7 +7,7 @@ Ext.define('Ung.setupWizard.Language', {
     constructor: function (config) {
         Ext.applyIf(this, config);
         var languageStore = Ext.create('Ext.data.JsonStore', {
-            fields: ['code', 'languageName'],
+            fields: ['code', 'name'],
             data: this.languageList.list
         });
         this.panel = Ext.create('Ext.container.Container', {
@@ -19,12 +19,40 @@ Ext.define('Ung.setupWizard.Language', {
                 valueField: 'code',
                 displayField: 'languageName',
                 store: languageStore,
-                value: this.language,
+                value: this.languageSource + "-" + this.language,
                 labelWidth: 200,
                 queryMode: 'local',
                 validationEvent: 'blur',
                 msgTarget: 'side',
-                margin: '50 0 0 0'
+                margin: '50 0 0 0',
+                listeners: {
+                    "select": {
+                        fn: Ext.bind(function(elem, record) {
+                            if(record.get("code") == null){
+                                /* Ignore source entries and instead get the next record. */
+                                var nextRecord = null;
+                                var sourceName = record.get("name"); 
+                                var getNext = false;
+                                record.store.each(function(record){
+                                    if(getNext == true){
+                                        nextRecord = record;
+                                        return false;
+                                    }else if(record.get("name") == sourceName){
+                                        getNext = true;
+                                    }
+                                },this);
+                                if(nextRecord == null){
+                                    return;
+                                }
+                                record = nextRecord;
+                                elem.setValue(record.get("code"));
+                            }
+                            var source_language = record.get("code").split("-",2);
+                            this.source = source_language[0];
+                            this.language = source_language[1];
+                        }, this)
+                    }
+                }
             }]
         });
 
@@ -35,14 +63,14 @@ Ext.define('Ung.setupWizard.Language', {
                 return Ung.Util.validate(this.panel);
             }, this),
             onNext: Ext.bind(function (handler) {
-                var language = this.panel.down('combo[name="language"]').getValue();
+                var source_language = this.panel.down('combo[name="language"]').getValue().split("-", 2);
                 rpc.setup.setLanguage(Ext.bind(function (result, exception) {
                     if (Ung.Util.handleException(exception, "Unable to save the language")) {
                         return;
                     }
                     // Send the user to the setup wizard.
                     window.location.href = 'index.do';
-                }, this), language);
+                }, this), source_language[1], source_language[0]);
             }, this)
         };
     }
@@ -65,7 +93,8 @@ Ext.define("Ung.Language", {
     },
     initComplete: function () {
         i18n = new Ung.I18N({ 'map': rpc.translations });
-        var language = Ext.create('Ung.setupWizard.Language', {languageList: this.languageList, language: this.language});
+        console.log(this);
+        var language = Ext.create('Ung.setupWizard.Language', {languageList: this.languageList, language: this.language, languageSource: this.languageSource});
 
         Ext.create('Ext.container.Viewport', {
             layout: 'auto',
