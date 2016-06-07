@@ -195,18 +195,32 @@ public class LanguageManagerImpl implements LanguageManager
     public List<LocaleInfo> getLanguagesList()
     {
         List<LocaleInfo> locales = new ArrayList<LocaleInfo>();
+        boolean headerAdded = true;
+        boolean defaultAdded = false;
 
         /* Contact translation server */
         for(languageSource source : LanguageSources){
             Set<String> available = new HashSet<String>();
             Collections.addAll(available, (new File(source.getDirectory())).list());
             if(getRemoteLanguagesList(available, locales, source) == false){
-                locales.add(new LocaleInfo(null, "<em><b>" + source.title + " (" + I18nUtil.marktr("local")+ ")" + "</b></em>", null, null));
+                // Add header 
+                headerAdded = false;
+            }else if(source.getId().equals("official")){
+                locales.add(new LocaleInfo(source.getId() + "-" + DEFAULT_LANGUAGE, allLanguages.get(DEFAULT_LANGUAGE), null, null));
+                defaultAdded = true;
             }
 
             for (String code : available) {
                 /* Add local-only stragglers like test.*/
                 /* Or if server had problems, everything local. */
+                if(headerAdded == false){
+                    locales.add(new LocaleInfo(null, "<em><b>" + source.title + "</b></em>", null, null));
+                    headerAdded = true;
+                    if(source.getId().equals("official")){
+                        locales.add(new LocaleInfo(source.getId() + "-" + DEFAULT_LANGUAGE, allLanguages.get(DEFAULT_LANGUAGE), null, null));
+                        defaultAdded = true;
+                    }
+                }
                 String tokens[] = code.split("_");
                 String langCode = tokens[0];
                 String langName = allLanguages.get(langCode);
@@ -559,6 +573,7 @@ public class LanguageManagerImpl implements LanguageManager
 
     private boolean getRemoteLanguagesList(Set<String> available, List<LocaleInfo> locales, languageSource source ){
         boolean result = true;
+        boolean headerAdded = false;
 
         InputStream is = null;
 
@@ -575,11 +590,6 @@ public class LanguageManagerImpl implements LanguageManager
         JSONObject remoteObject = null;
         JSONObject remoteTable = null;
         JSONObject remoteStats = null;
-
-        locales.add(new LocaleInfo(null, "<em><b>" + source.getTitle() + "</b></em>", null, null));
-        if(source.getId().equals("official")){
-            locales.add(new LocaleInfo(source.getId() + "-" + DEFAULT_LANGUAGE, allLanguages.get(DEFAULT_LANGUAGE), null, null));
-        }
 
         String urlString = REMOTE_LANGUAGES_URL + "json/" + source.getUrl();
         try {
@@ -622,6 +632,13 @@ public class LanguageManagerImpl implements LanguageManager
                             }
                             String langName = item.getString("title");
                             JSONObject langStats = remoteObject.getJSONObject("stats").getJSONObject("children").getJSONObject(langCode);
+
+                            if(headerAdded == false){
+                                // Add header
+                                locales.add(new LocaleInfo(null, "<em><b>" + source.getTitle() + "</b></em>", null, null));
+                                headerAdded = true;
+                            }
+
                             if(langStats.isNull("lastaction")){
                                 locales.add(new LocaleInfo(source.getId() + "-" + langCodeLang, langName, null, null));
                             }else{
