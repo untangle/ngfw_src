@@ -505,33 +505,31 @@ Ext.define('Webui.config.sessionMonitor', {
             }
         }];
 
-        if(this.bandwidthColumns) {
-            columns.push({
-                header: i18n._("Client KB/s") + " " + "(Bandwidth Control)",
-                dataIndex: "clientKBps",
-                width: 80,
-                gridColumnSummaryType: "sum",
-                filter: {
-                    type: 'numeric'
-                }
-            },{
-                header: i18n._("Server KB/s") + " " + "(Bandwidth Control)",
-                dataIndex: "serverKBps",
-                width: 80,
-                gridColumnSummaryType: "sum",
-                filter: {
-                    type: 'numeric'
-                }
-            },{
-                header: i18n._("Total KB/s") + " " + "(Bandwidth Control)",
-                dataIndex: "totalKBps",
-                width: 80,
-                gridColumnSummaryType: "sum",
-                filter: {
-                    type: 'numeric'
-                }
-            });
-        }
+        columns.push({
+            header: i18n._("Client KB/s") + " " + "(Bandwidth Control)",
+            dataIndex: "clientKBps",
+            width: 80,
+            gridColumnSummaryType: "sum",
+            filter: {
+                type: 'numeric'
+            }
+        },{
+            header: i18n._("Server KB/s") + " " + "(Bandwidth Control)",
+            dataIndex: "serverKBps",
+            width: 80,
+            gridColumnSummaryType: "sum",
+            filter: {
+                type: 'numeric'
+            }
+        },{
+            header: i18n._("Total KB/s") + " " + "(Bandwidth Control)",
+            dataIndex: "totalKBps",
+            width: 80,
+            gridColumnSummaryType: "sum",
+            filter: {
+                type: 'numeric'
+            }
+        });
 
         columns.push({
             hidden: !this.bandwidthColumns,

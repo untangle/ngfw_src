@@ -124,9 +124,19 @@ public class SessionMonitorImpl implements SessionMonitor
 
             SessionTuple tuple = _makeTuple( session );
             // find corresponding session in UVM
-            SessionGlobalState sessionState = SessionTableImpl.getInstance().lookupTuple(tuple); 
+            SessionGlobalState sessionState = SessionTableImpl.getInstance().lookupTuple(tuple);
+            ConntrackMonitorImpl.ConntrackEntryState conntrackState = ConntrackMonitorImpl.getInstance().lookupTuple(tuple);
+
             if ( logger.isDebugEnabled() )
-                logger.debug("Lookup tuple (" + tuple + ") -> " + sessionState);
+                logger.debug("Lookup session table (" + tuple + ") -> " + sessionState);
+            if ( logger.isDebugEnabled() )
+                logger.debug("Lookup conntrack table (" + tuple + ") -> " + conntrackState);
+
+            if ( conntrackState != null ) {
+                session.setClientKBps( conntrackState.c2sRateBps/1000.0f );
+                session.setServerKBps( conntrackState.s2cRateBps/1000.0f );
+                session.setTotalKBps( conntrackState.totalRateBps/1000.0f );
+            }
             
             if ( sessionState != null ) {
                 try {
