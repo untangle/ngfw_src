@@ -613,6 +613,7 @@ Ext.define('Ung.dashboard.NetworkLayout', {
         externalInterfaces: null,
         internalInterfaces: null
     },
+    interfacesLoaded: false,
     initComponent: function () {
         this.title = '<h3>' + i18n._("Network Layout") + '</h3>';
         this.callParent(arguments);
@@ -652,6 +653,10 @@ Ext.define('Ung.dashboard.NetworkLayout', {
         '</div>' +
         '<div class="mask init-mask"><i class="material-icons">widgets</i><p>' + i18n._("Network Layout") + '</p></div>',
     updateStats: function (stats) {
+        if (!this.interfacesLoaded) {
+            return;
+        }
+
         var me = this;
         var interfaceEl, i, interfaceDevicesMap = [], device;
 
@@ -721,6 +726,7 @@ Ext.define('Ung.dashboard.NetworkLayout', {
                     }
                 }
             });
+            this.interfacesLoaded = true;
             this.update(this.data);
         }, this));
     }
