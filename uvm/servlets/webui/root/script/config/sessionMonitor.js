@@ -506,7 +506,7 @@ Ext.define('Webui.config.sessionMonitor', {
         }];
 
         columns.push({
-            header: i18n._("Client KB/s") + " " + "(Bandwidth Control)",
+            header: i18n._("Client KB/s"),
             dataIndex: "clientKBps",
             width: 80,
             gridColumnSummaryType: "sum",
@@ -514,7 +514,7 @@ Ext.define('Webui.config.sessionMonitor', {
                 type: 'numeric'
             }
         },{
-            header: i18n._("Server KB/s") + " " + "(Bandwidth Control)",
+            header: i18n._("Server KB/s"),
             dataIndex: "serverKBps",
             width: 80,
             gridColumnSummaryType: "sum",
@@ -522,7 +522,7 @@ Ext.define('Webui.config.sessionMonitor', {
                 type: 'numeric'
             }
         },{
-            header: i18n._("Total KB/s") + " " + "(Bandwidth Control)",
+            header: i18n._("Total KB/s"),
             dataIndex: "totalKBps",
             width: 80,
             gridColumnSummaryType: "sum",
