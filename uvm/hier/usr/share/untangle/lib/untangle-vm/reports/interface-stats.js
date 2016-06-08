@@ -13,7 +13,7 @@
     "timeDataDynamicValue": "rx_rate",
     "timeDataDynamicColumn": "interface_id",
     "timeDataDynamicLimit": "10",
-    "timeDataDynamicAggregationFunction": "max",
+    "timeDataDynamicAggregationFunction": "avg",
     "timeStyle": "LINE",
     "title": "Interface Usage",
     "type": "TIME_GRAPH_DYNAMIC",
