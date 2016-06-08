@@ -2700,6 +2700,7 @@ Ext.define('Ung.TableConfig', {
                     sortable: true,
                     dataIndex: "rx_bytes",
                     renderer: function(value) {
+                        if ((value === null) || (value ==="")) return("");
                         var kb = value/1024;
                         return (Math.round( kb*10 )/10).toString() + " KB";
                     }
@@ -2709,6 +2710,7 @@ Ext.define('Ung.TableConfig', {
                     sortable: true,
                     dataIndex: "tx_bytes",
                     renderer: function(value) {
+                        if ((value === null) || (value ==="")) return("");
                         var kb = value/1024;
                         return (Math.round( kb*10 )/10).toString() + " KB";
                     }
