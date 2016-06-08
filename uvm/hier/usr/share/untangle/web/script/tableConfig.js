@@ -678,6 +678,506 @@ Ext.define('Ung.TableConfig', {
                     }
                 }]
             },
+            session_minutes: {
+                fields: [{
+                    name: 'session_id'
+                }, {
+                    name: 'time_stamp',
+                    sortType: 'asTimestamp'
+                }, {
+                    name: 'start_time',
+                    sortType: 'asTimestamp'
+                }, {
+                    name: 'end_time',
+                    sortType: 'asTimestamp'
+                }, {
+                    name: 'bypassed',
+                    type: 'boolean'
+                }, {
+                    name: 'entitled',
+                    type: 'boolean'
+                }, {
+                    name: 'protocol'
+                }, {
+                    name: 'icmp_type'
+                }, {
+                    name: 'hostname'
+                }, {
+                    name: 'username'
+                }, {
+                    name: 'policy_id'
+                }, {
+                    name: 'policy_rule_id'
+                }, {
+                    name: 'c_client_addr',
+                    sortType: 'asIp'
+                }, {
+                    name: 'c_client_port',
+                    sortType: 'asInt'
+                }, {
+                    name: 'c_server_addr',
+                    sortType: 'asIp'
+                }, {
+                    name: 'c_server_port',
+                    sortType: 'asInt'
+                }, {
+                    name: 's_client_addr',
+                    sortType: 'asIp'
+                }, {
+                    name: 's_client_port',
+                    sortType: 'asInt'
+                }, {
+                    name: 's_server_addr',
+                    sortType: 'asIp'
+                }, {
+                    name: 's_server_port',
+                    sortType: 'asInt'
+                }, {
+                    name: 'client_intf'
+                }, {
+                    name: 'server_intf'
+                }, {
+                    name: 'client_country'
+                }, {
+                    name: 'client_latitude'
+                }, {
+                    name: 'client_longitude'
+                }, {
+                    name: 'server_country'
+                }, {
+                    name: 'server_latitude'
+                }, {
+                    name: 'server_longitude'
+                }, {
+                    name: "c2p_bytes"
+                }, {
+                    name: "p2c_bytes"
+                }, {
+                    name: "s2p_bytes"
+                }, {
+                    name: "p2s_bytes"
+                }, {
+                    name: 'filter_prefix'
+                }, {
+                    name: 'shield_blocked',
+                    type: 'boolean'
+                }, {
+                    name: 'firewall_blocked'
+                }, {
+                    name: 'firewall_flagged'
+                }, {
+                    name: 'firewall_rule_index'
+                }, {
+                    name: 'application_control_lite_blocked'
+                }, {
+                    name: 'application_control_lite_protocol',
+                    type: 'string'
+                }, {
+                    name: 'captive_portal_rule_index'
+                }, {
+                    name: 'captive_portal_blocked'
+                }, {
+                    name: 'application_control_application',
+                    type: 'string'
+                }, {
+                    name: 'application_control_protochain',
+                    type: 'string'
+                }, {
+                    name: 'application_control_category',
+                    type: 'string'
+                }, {
+                    name: 'application_control_flagged',
+                    type: 'boolean'
+                }, {
+                    name: 'application_control_blocked',
+                    type: 'boolean'
+                }, {
+                    name: 'application_control_confidence'
+                }, {
+                    name: 'application_control_detail'
+                }, {
+                    name: 'application_control_ruleid'
+                }, {
+                    name: 'bandwidth_control_priority'
+                }, {
+                    name: 'bandwidth_control_rule'
+                }, {
+                    name: 'ssl_inspector_status'
+                }, {
+                    name: 'ssl_inspector_detail'
+                }, {
+                    name: 'ssl_inspector_ruleid'
+                }],
+                columns: [{
+                    header: i18n._("Session Id"),
+                    width: Ung.TableConfig.portFieldWidth,
+                    sortable: true,
+                    dataIndex: 'session_id'
+                }, {
+                    header: i18n._("Timestamp"),
+                    width: Ung.TableConfig.timestampFieldWidth,
+                    sortable: true,
+                    dataIndex: 'time_stamp',
+                    renderer: function(value) {
+                        return i18n.timestampFormat(value);
+                    }
+                }, {
+                    header: i18n._("Start Timestamp"),
+                    width: Ung.TableConfig.timestampFieldWidth,
+                    sortable: true,
+                    dataIndex: 'start_time',
+                    renderer: function(value) {
+                        return i18n.timestampFormat(value);
+                    }
+                }, {
+                    header: i18n._("End Timestamp"),
+                    width: Ung.TableConfig.timestampFieldWidth,
+                    sortable: true,
+                    dataIndex: 'end_time',
+                    renderer: function(value) {
+                        return i18n.timestampFormat(value);
+                    }
+                }, {
+                    header: i18n._('Bypassed'),
+                    width: Ung.TableConfig.booleanFieldWidth,
+                    sortable: true,
+                    dataIndex: 'bypassed',
+                    filter: {
+                        type: 'boolean',
+                        yesText: i18n._('true'),
+                        noText: i18n._('false')
+                    }
+                }, {
+                    header: i18n._('Entitled'),
+                    width: Ung.TableConfig.booleanFieldWidth,
+                    sortable: true,
+                    dataIndex: 'entitled',
+                    filter: {
+                        type: 'boolean',
+                        yesText: i18n._('true'),
+                        noText: i18n._('false')
+                    }
+                }, {
+                    header: i18n._("Protocol"),
+                    width: Ung.TableConfig.portFieldWidth,
+                    sortable: true,
+                    dataIndex: 'protocol',
+                    renderer: Ung.panel.Reports.getColumnRenderer('protocol')
+                }, {
+                    header: i18n._("ICMP Type"),
+                    width: Ung.TableConfig.portFieldWidth,
+                    sortable: true,
+                    dataIndex: 'icmp_type'
+                }, {
+                    header: i18n._('Policy Id'),
+                    width: 60,
+                    sortable: true,
+                    dataIndex: 'policy_id',
+                    renderer: Ung.panel.Reports.getColumnRenderer('policy_id')
+                }, {
+                    header: i18n._('Policy Rule Id'),
+                    width: 60,
+                    sortable: true,
+                    dataIndex: 'policy_rule_id'
+                }, {
+                    header: i18n._("Client Interface") ,
+                    width: Ung.TableConfig.portFieldWidth,
+                    sortable: true,
+                    dataIndex: 'client_intf'
+                }, {
+                    header: i18n._("Server Interface") ,
+                    width: Ung.TableConfig.portFieldWidth,
+                    sortable: true,
+                    dataIndex: 'server_intf'
+                }, {
+                    header: i18n._("Client Country") ,
+                    width: 80,
+                    sortable: true,
+                    dataIndex: 'client_country',
+                    renderer: function(value) { return Ung.Main.getCountryName(value); }
+                }, {
+                    header: i18n._("Client Latitude") ,
+                    width: 80,
+                    sortable: true,
+                    dataIndex: 'client_latitude'
+                }, {
+                    header: i18n._("Client Longitude") ,
+                    width: 80,
+                    sortable: true,
+                    dataIndex: 'client_longitude'
+                }, {
+                    header: i18n._("Server Country") ,
+                    width: 80,
+                    sortable: true,
+                    dataIndex: 'server_country',
+                    renderer: function(value) { return Ung.Main.getCountryName(value); }
+                }, {
+                    header: i18n._("Server Latitude") ,
+                    width: 80,
+                    sortable: true,
+                    dataIndex: 'server_latitude'
+                }, {
+                    header: i18n._("Server Longitude") ,
+                    width: 80,
+                    sortable: true,
+                    dataIndex: 'server_longitude'
+                }, {
+                    header: i18n._("Username"),
+                    width: Ung.TableConfig.usernameFieldWidth,
+                    sortable: true,
+                    dataIndex: 'username'
+                }, {
+                    header: i18n._("Hostname"),
+                    width: Ung.TableConfig.hostnameFieldWidth,
+                    sortable: true,
+                    dataIndex: 'hostname'
+                }, {
+                    header: i18n._("Client"),
+                    width: Ung.TableConfig.ipFieldWidth,
+                    sortable: true,
+                    dataIndex: 'c_client_addr'
+                }, {
+                    header: i18n._("Client Port"),
+                    width: Ung.TableConfig.portFieldWidth,
+                    sortable: true,
+                    dataIndex: 'c_client_port',
+                    filter: {
+                        type: 'numeric'
+                    }
+                }, {
+                    header: i18n._("New Client"),
+                    width: Ung.TableConfig.ipFieldWidth,
+                    sortable: true,
+                    dataIndex: 's_client_addr'
+                }, {
+                    header: i18n._("New Client Port"),
+                    width: Ung.TableConfig.portFieldWidth,
+                    sortable: true,
+                    dataIndex: 's_client_port',
+                    filter: {
+                        type: 'numeric'
+                    }
+                }, {
+                    header: i18n._("Original Server") ,
+                    width: Ung.TableConfig.ipFieldWidth,
+                    sortable: true,
+                    dataIndex: 'c_server_addr'
+                }, {
+                    header: i18n._("Original Server Port"),
+                    width: Ung.TableConfig.portFieldWidth,
+                    sortable: true,
+                    dataIndex: 'c_server_port',
+                    filter: {
+                        type: 'numeric'
+                    }
+                }, {
+                    header: i18n._("Server") ,
+                    width: Ung.TableConfig.ipFieldWidth,
+                    sortable: true,
+                    dataIndex: 's_server_addr'
+                }, {
+                    header: i18n._("Server Port"),
+                    width: Ung.TableConfig.portFieldWidth,
+                    sortable: true,
+                    dataIndex: 's_server_port',
+                    filter: {
+                        type: 'numeric'
+                    }
+                }, {
+                    header: i18n._('Filter Prefix'),
+                    width: 120,
+                    sortable: true,
+                    dataIndex: 'filter_prefix'
+                }, {
+                    header: i18n._('Shield Blocked'),
+                    width: Ung.TableConfig.booleanFieldWidth,
+                    sortable: true,
+                    dataIndex: 'shield_blocked',
+                    filter: {
+                        type: 'boolean',
+                        yesText: i18n._('true'),
+                        noText: i18n._('false')
+                    }
+                }, {
+                    header: i18n._('Rule Id') + ' (Application Control)',
+                    width: 70,
+                    sortable: true,
+                    dataIndex: 'application_control_ruleid',
+                    filter: {
+                        type: 'numeric'
+                    }
+                }, {
+                    header: i18n._('Priority') + ' (Bandwidth Control)',
+                    width: 120,
+                    sortable: true,
+                    dataIndex: 'bandwidth_control_priority',
+                    renderer: function(value) {
+                        if (Ext.isEmpty(value)) {
+                            return "";
+                        }
+                        switch(value) {
+                            case 0: return "";
+                            case 1: return i18n._("Very High");
+                            case 2: return i18n._("High");
+                            case 3: return i18n._("Medium");
+                            case 4: return i18n._("Low");
+                            case 5: return i18n._("Limited");
+                            case 6: return i18n._("Limited More");
+                            case 7: return i18n._("Limited Severely");
+                            default: return Ext.String.format(i18n._("Unknown Priority: {0}"), value);
+                        }
+                    }
+                }, {
+                    header: i18n._('Rule') + ' (Bandwidth Control)',
+                    width: 120,
+                    sortable: true,
+                    dataIndex: 'bandwidth_control_rule',
+                    renderer: function(value) {
+                        return Ext.isEmpty(value) ? i18n._("none") : value;
+                    }
+                }, {
+                    header: i18n._('Application') + ' (Application Control)',
+                    width: 120,
+                    sortable: true,
+                    dataIndex: 'application_control_application'
+                }, {
+                    header: i18n._('ProtoChain') + ' (Application Control)',
+                    width: 180,
+                    sortable: true,
+                    dataIndex: 'application_control_protochain'
+                }, {
+                    header: i18n._('Category') + ' (Application Control)',
+                    width: 80,
+                    sortable: true,
+                    dataIndex: 'application_control_category'
+                }, {
+                    header: i18n._('Blocked') + ' (Application Control)',
+                    width: Ung.TableConfig.booleanFieldWidth,
+                    sortable: true,
+                    dataIndex: 'application_control_blocked',
+                    filter: {
+                        type: 'boolean',
+                        yesText: i18n._('true'),
+                        noText: i18n._('false')
+                    }
+                }, {
+                    header: i18n._('Flagged') + ' (Application Control)',
+                    width: Ung.TableConfig.booleanFieldWidth,
+                    sortable: true,
+                    dataIndex: 'application_control_flagged',
+                    filter: {
+                        type: 'boolean',
+                        yesText: i18n._('true'),
+                        noText: i18n._('false')
+                    }
+                }, {
+                    header: i18n._('Confidence') + ' (Application Control)',
+                    width: Ung.TableConfig.portFieldWidth,
+                    sortable: true,
+                    dataIndex: 'application_control_confidence',
+                    filter: {
+                        type: 'numeric'
+                    }
+                }, {
+                    header: i18n._('Detail') + ' (Application Control)',
+                    width: 200,
+                    sortable: true,
+                    dataIndex: 'application_control_detail'
+                },{
+                    header: i18n._('Protocol') + ' (Application Control Lite)',
+                    width: 120,
+                    sortable: true,
+                    dataIndex: 'application_control_lite_protocol'
+                }, {
+                    header: i18n._('Blocked') + ' (Application Control Lite)',
+                    width: Ung.TableConfig.booleanFieldWidth,
+                    sortable: true,
+                    dataIndex: 'application_control_lite_blocked',
+                    filter: {
+                        type: 'boolean',
+                        yesText: i18n._('true'),
+                        noText: i18n._('false')
+                    }
+                }, {
+                    header: i18n._('Rule Id') + ' (HTTPS Inspector)',
+                    width: 70,
+                    sortable: true,
+                    dataIndex: 'ssl_inspector_ruleid',
+                    filter: {
+                        type: 'numeric'
+                    }
+                }, {
+                    header: i18n._('Status') + ' (HTTPS Inspector)',
+                    width: 100,
+                    sortable: true,
+                    dataIndex: 'ssl_inspector_status'
+                }, {
+                    header: i18n._('Detail') + ' (HTTPS Inspector)',
+                    width: 250,
+                    sortable: true,
+                    dataIndex: 'ssl_inspector_detail'
+                }, {
+                    header: i18n._('Blocked') + ' (Firewall)',
+                    width: Ung.TableConfig.booleanFieldWidth,
+                    sortable: true,
+                    dataIndex: 'firewall_blocked',
+                    filter: {
+                        type: 'boolean',
+                        yesText: i18n._('true'),
+                        noText: i18n._('false')
+                    }
+                }, {
+                    header: i18n._('Flagged') + ' (Firewall)',
+                    width: Ung.TableConfig.booleanFieldWidth,
+                    sortable: true,
+                    dataIndex: 'firewall_flagged',
+                    filter: {
+                        type: 'boolean',
+                        yesText: i18n._('true'),
+                        noText: i18n._('false')
+                    }
+                }, {
+                    header: i18n._('Rule Id') + ' (Firewall)',
+                    width: 60,
+                    sortable: true,
+                    flex:1,
+                    dataIndex: 'firewall_rule_index',
+                    filter: {
+                        type: 'numeric'
+                    }
+                }, {
+                    header: i18n._('Captured') + ' (Captive Portal)',
+                    width: 100,
+                    sortable: true,
+                    dataIndex: "captive_portal_blocked",
+                    filter: {
+                        type: 'boolean',
+                        yesText: i18n._('true'),
+                        noText: i18n._('false')
+                    }
+                }, {
+                    header: i18n._('Rule Id') + ' (Captive Portal)',
+                    width: 60,
+                    sortable: true,
+                    dataIndex: "captive_portal_rule_index"
+                }, {
+                    header: i18n._('From-Server Bytes'),
+                    width: Ung.TableConfig.portFieldWidth,
+                    sortable: true,
+                    dataIndex: 's2c_bytes',
+                    filter: {
+                        type: 'numeric'
+                    }
+                }, {
+                    header: i18n._('From-Client Bytes'),
+                    width: Ung.TableConfig.portFieldWidth,
+                    sortable: true,
+                    dataIndex: 'c2s_bytes',
+                    filter: {
+                        type: 'numeric'
+                    }
+                }]
+            },
             http_events: {
                 fields: [{
                     name: 'request_id',
