@@ -132,13 +132,16 @@ public class ConntrackMonitorImpl
                 logger.warn("Action: " + desc);
                 logger.warn("Conntrack: " + conntrack.toSummaryString());
                 logger.warn("Tuple: " + tuple);
+                return;
             }
             if ( diffS2cBytes < 0 ) {
                 logger.warn("Negative diffS2cBytes: " + diffS2cBytes + " oldS2cBytes: " + oldS2cBytes + " newS2cBytes: " + newS2cBytes);
                 logger.warn("Action: " + desc);
                 logger.warn("Conntrack: " + conntrack.toSummaryString());
                 logger.warn("Tuple: " + tuple);
+                return;
             }
+
             logger.info("CONNTRACK " + desc + " | " +
                         conntrack.toSummaryString() +
                         " client: " + Math.round(c2sRateBps/1000.0) + " kB/s" +
