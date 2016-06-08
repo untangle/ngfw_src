@@ -1026,7 +1026,7 @@ Ext.define('Ung.panel.Reports', {
     },
 
     loadReportEntry: function (entry) {
-        this.down('#downloadBtn').setHidden(entry.type === 'TEXT' || entry.type === 'EVENT_LIST');
+        this.down('#downloadBtn').setHidden(entry.type === 'TEXT' || entry.type === 'EVENT_LIST' || this.hideCustomization);
         if (entry.type === 'TEXT') {
             this.reportChart.down('#textentry').update('');
             this.reportChart.setActiveItem('textentry');

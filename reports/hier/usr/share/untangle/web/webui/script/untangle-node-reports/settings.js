@@ -20,7 +20,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
         this.buildAlertRules();
         this.buildData();
 
-        var panels = [this.gridReportEntries, this.panelData, this.panelAlertRules, this.panelUsers, this.panelSyslog, this.gridHostnameMap ];
+        var panels = [this.panelData, this.panelAlertRules, this.panelUsers, this.panelSyslog, this.gridHostnameMap ];
 
         this.buildTabPanel(panels);
         this.callParent(arguments);
@@ -681,18 +681,31 @@ Ext.define('Webui.untangle-node-reports.settings', {
     },
     // Manage Reports Panel
     buildReportEntries: function() {
-        var chartTypes = [["TEXT", i18n._("Text")],["PIE_GRAPH", i18n._("Pie Graph")],["TIME_GRAPH", i18n._("Time Graph")],["TIME_GRAPH_DYNAMIC", i18n._("Time Graph Dynamic")]];
+        var chartTypes = [["TEXT", i18n._("Text")],["PIE_GRAPH", i18n._("Pie Graph")],["TIME_GRAPH", i18n._("Time Graph")],["TIME_GRAPH_DYNAMIC", i18n._("Time Graph Dynamic")], ["EVENT_LIST", i18n._("Event List")]];
         var chartTypeMap = Ung.Util.createStoreMap(chartTypes);
         var chartTypeRenderer = function(value) {
             return chartTypeMap[value]?chartTypeMap[value]:value;
         };
-            this.gridReportEntries= Ext.create('Ung.grid.Panel',{
-                name: 'Manage Reports',
+
+        var availableCategories = ['Hosts', 'Devices', 'Network', 'Administration', 'System', 'Shield'], i;
+
+        Ung.Main.getReportsManager().getCurrentApplications(Ext.bind(function (result, exception) {
+            if (Ung.Util.handleException(exception)) {
+                return;
+            }
+            for (i = 0; i < result.list.length; i += 1) {
+                availableCategories.push(result.list[i].displayName);
+            }
+
+            this.gridReportEntries = Ext.create('Ung.grid.Panel',{
+                name: 'All Reports',
                 helpSource: 'reports_manage_reports',
                 settingsCmp: this,
                 hasReadOnly: true,
+                hasAdd: false,
+                hasEdit: false,
                 changableFields: ['enabled'],
-                title: i18n._("Manage Reports"),
+                title: i18n._("All Reports"),
                 features: [{
                     ftype: 'grouping'
                 }],
@@ -711,7 +724,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 columnsDefaultSortable: false,
                 fields: ['uniqueId', 'enabled', 'readOnly', 'type', 'title', 'category', 'description', 'displayOrder', 'units', 'table', 'conditions',
                          'pieGroupColumn', 'pieSumColumn', 'timeDataInterval', 'timeDataColumns', 'orderByColumn', 'orderDesc', 'javaClass'],
-                filterFields: ['title', 'description', 'units', 'displayOrder'],
+                //filterFields: ['title', 'description', 'units', 'displayOrder'],
                 columns: [{
                     header: i18n._("Title"),
                     width: 230,
@@ -744,18 +757,34 @@ Ext.define('Webui.untangle-node-reports.settings', {
                     header: i18n._("View"),
                     xtype: 'actioncolumn',
                     width: 70,
-                    items: [{
-                        iconCls: 'icon-row icon-play',
-                        tooltip: i18n._('View Report'),
-                        handler: Ext.bind(function(view, rowIndex, colIndex, item, e, record) {
-                            this.viewReport(Ext.clone(record.getData()));
-                        }, this)
-                    }]
+                    defaultRenderer: function (value, metaData, record) {
+                        if (availableCategories.indexOf(record.getData().category) < 0) {
+                            return '<div style="font-size: 10px; line-height: 1; text-align: center; color: coral;">not installed</div>';
+                        }
+                        return '<div style="text-align: center;"><i role="button" class="x-action-col-icon x-action-col-0 material-icons" style="font-size: 16px;">visibility</i></div>';
+                    },
+                    handler: Ext.bind(function(view, rowIndex, colIndex, item, e, record) {
+                        this.viewReport(Ext.clone(record.getData()));
+                    }, this)
+                }, {
+                    header: i18n._("Category"),
+                    dataIndex: 'category',
+                    hidden: true,
+                    renderer: function (value) {
+                        if (availableCategories.indexOf(value) < 0) {
+                            return value + ' (<span style="color: coral;">' + i18n._('not installed') + '</span>)';
+                        }
+                        return value;
+                    }
                 }]
             });
-        this.gridReportEntries.setRowEditor(Ext.create('Ung.window.ReportEditor', {
-            parentCmp: this
-        }));
+
+            this.gridReportEntries.setRowEditor(Ext.create('Ung.window.ReportEditor', {
+                parentCmp: this
+            }));
+
+            this.down('tabpanel').insert(1, this.gridReportEntries);
+        }, this));
     },
     viewReport: function(reportEntry) {
         if(!this.winViewReport) {
@@ -769,17 +798,15 @@ Ext.define('Webui.untangle-node-reports.settings', {
                         this.up('window').cancelAction();
                     }
                 }," "],
-                items: Ext.create('Ung.panel.Reports',{
-                    width: 1000,
-                    height: 600,
-                    hasEntriesSection: false,
+                items: Ext.create('Ung.panel.Reports', {
+                    initEntry: reportEntry,
                     hideCustomization: true
                 }),
                 listeners: {
                     "hide": {
                         fn: function() {
-                            var panelReports = this.down('panel[name=panelReports]');
-                            if(panelReports.autoRefreshEnabled) {
+                            var panelReports = this.down('[name=panelReports]');
+                            if (panelReports.autoRefreshEnabled) {
                                 panelReports.stopAutoRefresh(true);
                             }
                         }
@@ -787,9 +814,12 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 }
             });
             this.subCmps.push(this.winViewReport);
+        } else {
+            var panelReports = this.winViewReport.down('[name=panelReports]');
+            panelReports.categoryList.getSelectionModel().select(panelReports.categoryList.getStore().findRecord('category', reportEntry.category));
+            panelReports.entryList.getSelectionModel().select(panelReports.entryList.getStore().findRecord('entryId', reportEntry.uniqueId));
         }
         this.winViewReport.show();
-        this.winViewReport.down('panel[name=panelReports]').loadReportEntry(reportEntry);
     },
     // AlertRules Panel
     buildAlertRules: function() {
