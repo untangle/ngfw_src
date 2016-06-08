@@ -219,7 +219,9 @@ public class Main
         System.setProperty("uvm.skins.dir", uvmSkins);
         String uvmLang = uvmHome + "/lang";
         System.setProperty("uvm.lang.dir", uvmLang);
-
+        String tomcatDir = System.getProperty("prefix") + "/var/lib/uvm";
+        System.setProperty("uvm.tomcat.dir", tomcatDir);
+        
         logger.info("uvm.home         " + uvmHome);
         logger.info("uvm.lib.dir      " + uvmLib);
         logger.info("uvm.log.dir      " + uvmLog);

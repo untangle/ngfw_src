@@ -824,7 +824,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         this.threadRequest = new InheritableThreadLocal<HttpServletRequest>();
 
-        this.tomcatManager = new TomcatManagerImpl(this, threadRequest, System.getProperty("uvm.home"), System.getProperty("uvm.web.dir"), System.getProperty("uvm.log.dir"));
+        this.tomcatManager = new TomcatManagerImpl(this, threadRequest, System.getProperty("uvm.tomcat.dir"), System.getProperty("uvm.web.dir"), System.getProperty("uvm.log.dir"));
 
         this.adminManager = new AdminManagerImpl();
 
