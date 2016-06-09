@@ -267,7 +267,9 @@ public class ConntrackMonitorImpl
                         DeadTcpSessionState deadSession = deadTcpSessions.remove( state.tuple );
                         if ( deadSession != null ) {
                             logger.debug("Removed session from deadTcpSessions: " + state.tuple);
-                        } 
+                        } else {
+                            logger.debug("Failed to remove session from deadTcpSessions: " + state.tuple);
+                        }
                     }
                 }
             
