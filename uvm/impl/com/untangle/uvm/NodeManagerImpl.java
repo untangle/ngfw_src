@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Semaphore;
 
 import org.apache.log4j.Logger;
 import org.xml.sax.InputSource;
@@ -55,7 +56,19 @@ public class NodeManagerImpl implements NodeManager
      */
     private final Map<Long, Node> loadedNodesMap = new ConcurrentHashMap<Long, Node>();
 
+    /**
+     * Stores a map of all yet to be loaded nodes from their nodeId to their NodeSettings
+     */
+    private final Map<Long, NodeSettings> unloadedNodesMap = new ConcurrentHashMap<Long, NodeSettings>();
+
+    /**
+     * This stores the count of nodes currently being loaded
+     */
+    private volatile int nodesBeingLoaded = 0;
+    
     private NodeManagerSettings settings = null;
+
+    private Semaphore startSemaphore = new Semaphore(0);
 
     private boolean live = true;
 
@@ -217,7 +230,7 @@ public class NodeManagerImpl implements NodeManager
                 throw new Exception("NodeManager is shut down");
 
             logger.info("initializing node: " + nodeName);
-            nodeProperties = initNodeProperties( nodeName );
+            nodeProperties = getNodeProperties( nodeName );
 
             if ( nodeProperties == null ) {
                 logger.error("Missing node properties for " + nodeName);
@@ -486,6 +499,13 @@ public class NodeManagerImpl implements NodeManager
 
         restartUnloaded();
 
+        if ( logger.isDebugEnabled() ) {
+            logger.debug("Fininshed restarting nodes:");
+            for ( Node node : loadedNodesMap.values() ) {
+                logger.info( node.getNodeSettings().getId() + " " + node.getNodeSettings().getNodeName() );
+            }
+        }
+        
         startAutoLoad();
 
         logger.info("Initialized NodeManager");
@@ -576,7 +596,7 @@ public class NodeManagerImpl implements NodeManager
             } else {
                 if ( "nodeProperties.js".equals( f.getName() ) ) {
                     try {
-                        NodeProperties np = initNodePropertiesFilename( f.getAbsolutePath() );
+                        NodeProperties np = getNodePropertiesFilename( f.getAbsolutePath() );
                         nodeProps.add( np );
                     } catch (Exception e) {
                         logger.warn("Ignoring bad node properties: " + f.getAbsolutePath(), e);
@@ -590,50 +610,48 @@ public class NodeManagerImpl implements NodeManager
     private void restartUnloaded()
     {
         long t0 = System.currentTimeMillis();
-
+        int passCount = 0;
+        
         if (!live) {
             throw new RuntimeException("NodeManager is shut down");
         }
 
         logger.info("Restarting unloaded nodes...");
 
-        List<NodeSettings> unloaded = getUnloaded();
-        Map<NodeSettings, NodeProperties> nodePropertiesMap = loadNodePropertiess(unloaded);
-        Set<String> loadedParents = new HashSet<String>(unloaded.size());
+        for (NodeSettings nSettings : settings.getNodes()) {
+            unloadedNodesMap.put( nSettings.getId(), nSettings );
+        }
 
-        while ( unloaded.size() > 0 ) {
+        while ( unloadedNodesMap.size() > 0 || nodesBeingLoaded > 0 ) {
+            passCount++;
+            List<NodeSettings> loadable = getLoadable();
 
-            List<NodeSettings> startQueue = getLoadable(unloaded, nodePropertiesMap, loadedParents);
-
-            for (NodeSettings ns : startQueue)
-                logger.info("Loading in this pass: " + ns.getNodeName() + " (" + ns.getId() + ")");
-
-            if ( startQueue.size() == 0 ) {
-                logger.info("not all parents loaded, proceeding");
-                for (NodeSettings n : unloaded) {
-                    List<NodeSettings> l = Collections.singletonList(n);
-                    startUnloaded(l, nodePropertiesMap, loadedParents);
-                }
-                break;
+            if ( loadable.size() > 0 ) {
+                for (NodeSettings ns : loadable)
+                    logger.info("Loading in this pass[" + passCount + "]: " + ns.getNodeName() + " (" + ns.getId() + ")");
+                startUnloaded( loadable );
             }
 
-            startUnloaded(startQueue, nodePropertiesMap, loadedParents);
+            logger.debug("Completing pass[" + passCount + "]");
+            do {
+                try { startSemaphore.acquire(); } catch (InterruptedException e) { continue; }
+                break;
+            } while (true);
         }
 
         long t1 = System.currentTimeMillis();
         logger.info("Time to restart nodes: " + (t1 - t0) + " millis");
-
     }
 
     private static int startThreadNum = 0;
 
-    private void startUnloaded(List<NodeSettings> startQueue, Map<NodeSettings, NodeProperties> nodePropertiesMap, Set<String> loadedParents)
+    private void startUnloaded(List<NodeSettings> startQueue )
     {
         List<Runnable> restarters = new ArrayList<Runnable>(startQueue.size());
 
         for (final NodeSettings nodeSettings : startQueue) {
             final String name = nodeSettings.getNodeName();
-            final NodeProperties nodeProps = nodePropertiesMap.get(nodeSettings);
+            final NodeProperties nodeProps = getNodeProperties(nodeSettings);
 
             if ( name == null ) {
                 logger.error("Unable to load node \"" + name + "\": NULL name.");
@@ -646,104 +664,99 @@ public class NodeManagerImpl implements NodeManager
                         {
                             NodeBase node = null;
                             try {
-                                logger.info("Restarting: " + name + " (" + nodeSettings.getId() + ")");
+                                // remove from unloaded nodes 
+                                nodesBeingLoaded++;
+                                unloadedNodesMap.remove( nodeSettings.getId() );
 
+                                logger.info("Restarting: " + name + " (" + nodeSettings.getId() + ")");
                                 long startTime = System.currentTimeMillis();
                                 node = (NodeBase) NodeBase.loadClass(nodeProps, nodeSettings, false);
                                 long endTime   = System.currentTimeMillis();
-
                                 logger.info("Restarted : " + name + " (" + nodeSettings.getId() + ") [" + ( ((float)(endTime - startTime))/1000.0f ) + " seconds]");
 
+                                // add to loaded nodes
                                 loadedNodesMap.put( nodeSettings.getId(), node );
+
                             } catch (Exception exn) {
                                 logger.error("Could not restart: " + name, exn);
                             } catch (LinkageError err) {
                                 logger.error("Could not restart: " + name, err);
+                            } finally {
+
+                                // alert the main thread that a node is done loading
+                                nodesBeingLoaded--;
+                                startSemaphore.release();
+
                             }
                             if ( node == null ) {
                                 logger.error("Failed to load node:" + name);
                                 loadedNodesMap.remove(nodeSettings);
-                            }
+                            } 
                         }
                     };
                 restarters.add(r);
-                loadedParents.add(name);
             }
         }
 
         List<Thread> threads = new ArrayList<Thread>(restarters.size());
-        try {
-            for (Iterator<Runnable> riter = restarters.iterator(); riter.hasNext();) {
-                Thread t = UvmContextFactory.context().newThread(riter.next(), "START_" + startThreadNum++);
-                threads.add(t);
-                t.start();
-            }
-            // Must wait for them to finish starting
-            for (Thread t : threads)
-                t.join();
-        } catch (InterruptedException exn) {
-            logger.error("Interrupted while starting nodes"); // Give up
+
+        for (Iterator<Runnable> iter = restarters.iterator(); iter.hasNext();) {
+            Thread t = UvmContextFactory.context().newThread(iter.next(), "START_" + startThreadNum++);
+            threads.add(t);
+            t.start();
         }
     }
 
-    private List<NodeSettings> getLoadable(List<NodeSettings> unloaded, Map<NodeSettings, NodeProperties> nodePropertiesMap, Set<String> loadedParents)
+    private List<NodeSettings> getLoadable()
     {
-        List<NodeSettings> l = new ArrayList<NodeSettings>(unloaded.size());
-        Set<String> thisPass = new HashSet<String>(unloaded.size());
+        List<NodeSettings> loadable = new ArrayList<NodeSettings>(unloadedNodesMap.size());
+        Set<String> thisPass = new HashSet<String>(unloadedNodesMap.size());
 
-        for (Iterator<NodeSettings> i = unloaded.iterator(); i.hasNext(); ) {
+        for (Iterator<NodeSettings> i = unloadedNodesMap.values().iterator(); i.hasNext(); ) {
             NodeSettings nodeSettings = i.next();
-            NodeProperties nodeProps = nodePropertiesMap.get(nodeSettings);
+            String name = nodeSettings.getNodeName();
+            NodeProperties nodeProps = getNodeProperties( name );
             if ( nodeProps == null ) {
                 logger.warn("Missing NodeProperties for: " + nodeSettings);
                 continue;
             }
 
             List<String> parents = nodeProps.getParents();
-
             boolean parentsLoaded = true;
             for (String parent : parents) {
-                if (!loadedParents.contains(parent)) {
+                if (!isLoaded( parent )) {
                     parentsLoaded = false;
+                    break;
                 }
-                if (false == parentsLoaded) { break; }
             }
-
-            String name = nodeProps.getName();
 
             // all parents loaded and another instance of this
             // node not loading this pass or already loaded in
             // previous pass (prevents classloader race).
-            if (parentsLoaded && (!thisPass.contains(name) || loadedParents.contains(name))) {
-                i.remove();
-                l.add(nodeSettings);
+            if (parentsLoaded && !thisPass.contains(name)) {
+                loadable.add(nodeSettings);
                 thisPass.add(name);
             }
         }
 
-        return l;
+        return loadable;
     }
 
-    private Map<NodeSettings, NodeProperties> loadNodePropertiess(List<NodeSettings> unloaded)
+    private boolean isLoaded( String nodeName )
     {
-        Map<NodeSettings, NodeProperties> nodePropertiesMap = new HashMap<NodeSettings, NodeProperties>(unloaded.size());
-
-        for (NodeSettings nodeSettings : unloaded) {
-            String name = nodeSettings.getNodeName();
-            logger.debug("Getting mackage desc for: " + name);
-
-            nodeSettings.setNodeName(name);
-
-            try {
-                logger.debug("Initializing node properties for: " + name);
-                NodeProperties nodeProperties = initNodeProperties( name );
-                nodePropertiesMap.put(nodeSettings, nodeProperties);
-            } catch (Exception exn) {
-                logger.warn("NodeProperties could not be parsed", exn);
+        if ( nodeName == null ) {
+            logger.warn("Invalid arguments");
+            return false;
+        }
+        
+        for( Node n : loadedNodesMap.values() ) {
+            String name = n.getNodeSettings().getNodeName();
+            if ( nodeName.equals( name ) ) {
+                return true;
             }
         }
 
-        return nodePropertiesMap;
+        return false;
     }
 
     private NodeManagerSettings loadSettings()
@@ -788,34 +801,26 @@ public class NodeManagerImpl implements NodeManager
     }
 
     /**
-     * Reads the setting and returns all the nodes in the settings that aren't already loaded
+     * Get NodeProperties from the node settings
      */
-    private List<NodeSettings> getUnloaded()
+    private NodeProperties getNodeProperties( NodeSettings nodeSettings )
     {
-        final List<NodeSettings> unloaded = new LinkedList<NodeSettings>();
-
-        for (NodeSettings nSettings : settings.getNodes()) {
-            if (!loadedNodesMap.containsKey(nSettings)) {
-                unloaded.add(nSettings);
-            }
-        }
-
-        return unloaded;
+        return getNodeProperties( nodeSettings.getNodeName() );
     }
 
     /**
-     * Initialize NodeProperties from the node name (ie "untangle-node-firewall")
+     * Get NodeProperties from the node name (ie "untangle-node-firewall")
      */
-    private NodeProperties initNodeProperties( String name ) throws Exception
+    private NodeProperties getNodeProperties( String name )
     {
         String fileName = System.getProperty("uvm.lib.dir") + "/" + name + "/" + "nodeProperties.js";
-        return initNodePropertiesFilename( fileName );
+        return getNodePropertiesFilename( fileName );
     }
 
     /**
-     * Initialize NodeProperties from the full path file name
+     * Get NodeProperties from the full path file name
      */
-    private NodeProperties initNodePropertiesFilename( String fileName ) throws Exception
+    private NodeProperties getNodePropertiesFilename( String fileName )
     {
         NodeProperties nodeProperties = null;
 
