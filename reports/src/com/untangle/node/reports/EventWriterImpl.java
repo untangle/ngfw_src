@@ -392,7 +392,7 @@ public class EventWriterImpl implements Runnable
                  */
                 try {
                     long write_t0 = System.currentTimeMillis();
-                    logger.debug("Write event: " + statement);
+                    logger.debug("Writing " + className + " events...");
                     try {
                         //statement.execute();
                         statement.executeBatch();

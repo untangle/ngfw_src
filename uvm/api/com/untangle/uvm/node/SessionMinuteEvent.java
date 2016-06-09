@@ -17,12 +17,14 @@ public class SessionMinuteEvent extends LogEvent
     private final long sessionId;
     private final long c2sBytes;
     private final long s2cBytes;
+    private long sessionStartTime = 0;
     
-    public SessionMinuteEvent( long sessionId, long c2sBytes, long s2cBytes )
+    public SessionMinuteEvent( long sessionId, long c2sBytes, long s2cBytes, long sessionStartTime )
     {
         this.sessionId = sessionId;
         this.c2sBytes = c2sBytes;
         this.s2cBytes = s2cBytes;
+        this.sessionStartTime = sessionStartTime;
     }
 
     /**
@@ -145,7 +147,7 @@ public class SessionMinuteEvent extends LogEvent
             "ssl_inspector_ruleid, " + 
             "ssl_inspector_status, " + 
             "ssl_inspector_detail " + 
-            "FROM reports.sessions WHERE sessions.session_id = ?";
+            "FROM reports.sessions" + getSessionTablePostfix() + " as s WHERE s.session_id = ?";
 
         java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
 
@@ -191,5 +193,14 @@ public class SessionMinuteEvent extends LogEvent
     public int hashCode()
     {
         return ((int)sessionId) + getTimeStamp().hashCode();
+    }
+
+    private String getSessionTablePostfix()
+    {
+        if ( sessionStartTime != 0 )
+            return getPartitionTablePostfix( new java.sql.Timestamp ( this.sessionStartTime ) );
+
+        logger.warn("Unknown start time in event: " + this);
+        return getPartitionTablePostfix( new java.sql.Timestamp ( System.currentTimeMillis() ) );
     }
 }

@@ -153,7 +153,7 @@ public class ConntrackMonitorImpl
             doQuotaAccounting( conntrack.getPostNatServer(), diffTotalBytes );
 
             // log SessionMinute event
-            SessionMinuteEvent event = new SessionMinuteEvent( state.sessionId, diffC2sBytes, diffS2cBytes );
+            SessionMinuteEvent event = new SessionMinuteEvent( state.sessionId, diffC2sBytes, diffS2cBytes, conntrack.getTimeStampStartMillis() );
             UvmContextFactory.context().logEvent( event );
         }
 

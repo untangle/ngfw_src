@@ -81,7 +81,7 @@ public class NetcapConntrackHook implements NetcapCallback
             // if its UDP and not bypassed, the event will be logged elsewhere
             if( protocol == 17 && (mark & BYPASS_MARK) != BYPASS_MARK )
                 return;
-        
+
             // clientIntf == 0 means its from the local server
             // must check clientIntf first, because outbound traffic is 0->0
             if ( clientIntf == 0 ) {
@@ -200,7 +200,7 @@ public class NetcapConntrackHook implements NetcapCallback
                     return;
                 
                 if ( logEvent ) {
-                    SessionStatsEvent statEvent = new SessionStatsEvent( sessionId );
+                    SessionStatsEvent statEvent = new SessionStatsEvent( sessionId, ct.getTimeStampStartMillis() );
                     statEvent.setC2pBytes( c2s_bytes ); 
                     statEvent.setP2cBytes( s2c_bytes );
                     //statEvent.setC2pChunks( c2s_packets );

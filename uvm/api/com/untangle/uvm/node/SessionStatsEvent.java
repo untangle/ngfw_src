@@ -21,6 +21,7 @@ public class SessionStatsEvent extends LogEvent
 {
     private long sessionId;
     private SessionEvent sessionEvent;
+    private long sessionStartTime = 0;
     
     private long c2pBytes = 0;
     private long p2sBytes = 0;
@@ -36,9 +37,10 @@ public class SessionStatsEvent extends LogEvent
 
     public SessionStatsEvent() { }
 
-    public SessionStatsEvent( long sessionId )
+    public SessionStatsEvent( long sessionId, long sessionStartTime )
     {
         this.sessionId = sessionId;
+        this.sessionStartTime = sessionStartTime;
     }
 
     public SessionStatsEvent( SessionEvent sessionEvent )
@@ -124,9 +126,13 @@ public class SessionStatsEvent extends LogEvent
 
     private String getPostfix()
     {
-        if ( sessionEvent == null )
-            return "";
-        else
+        if ( sessionEvent != null )
             return sessionEvent.getPartitionTablePostfix();
+
+        if ( sessionStartTime != 0 )
+            return getPartitionTablePostfix( new java.sql.Timestamp ( this.sessionStartTime ) );
+
+        logger.warn("Unknown start time in event: " + this);
+        return getPartitionTablePostfix( new java.sql.Timestamp ( System.currentTimeMillis() ) );
     }
 }

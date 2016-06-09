@@ -193,6 +193,26 @@ public class Conntrack
         return getByteValue( pointer.value(), FLAG_ICMP_TYPE );
     }
 
+    public long getTimeStampStart()
+    {
+        return getLongValue( pointer.value(), FLAG_TIMESTAMP_START );
+    }
+
+    public long getTimeStampStartMillis()
+    {
+        return (getLongValue( pointer.value(), FLAG_TIMESTAMP_START ) / 1000000);
+    }
+    
+    public long getTimeStampStop()
+    {
+        return getLongValue( pointer.value(), FLAG_TIMESTAMP_STOP );
+    }
+
+    public long getTimeStampStopMillis()
+    {
+        return (getLongValue( pointer.value(), FLAG_TIMESTAMP_STOP ) / 1000000);
+    }
+    
     public String toString()
     {
         return toString( pointer.value() );
