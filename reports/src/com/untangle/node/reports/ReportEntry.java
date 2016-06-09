@@ -101,6 +101,7 @@ public class ReportEntry implements Serializable, JSONString
     private String timeDataDynamicColumn;  /* The columns to create the dynamic column based on (the distinct values) */
     private Integer timeDataDynamicLimit;  /* The columns to create the dynamic column based on (the distinct values) */
     private String timeDataDynamicAggregationFunction; /* The way to aggregate multiple values per date_trun (max, avg, etc) */
+    private Boolean timeDataDynamicAllowNull;  /* Allow Null/None as one of the distinct valuestimeD */
     
     private String orderByColumn = null; /* The column to order by */
     private Boolean orderDesc = null; /* The direction to order, True is DESC, False is regular, null is neither */
@@ -205,6 +206,9 @@ public class ReportEntry implements Serializable, JSONString
 
     public Integer getTimeDataDynamicLimit() { return this.timeDataDynamicLimit; }
     public void setTimeDataDynamicLimit( Integer newValue ) { this.timeDataDynamicLimit = newValue; }
+
+    public Boolean getTimeDataDynamicAllowNull() { return this.timeDataDynamicAllowNull; }
+    public void setTimeDataDynamicAllowNull( Boolean newValue ) { this.timeDataDynamicAllowNull = newValue; }
     
     public String getTimeDataDynamicAggregationFunction() { return this.timeDataDynamicAggregationFunction; }
     public void setTimeDataDynamicAggregationFunction( String newValue ) { this.timeDataDynamicAggregationFunction = newValue; }
@@ -425,7 +429,7 @@ public class ReportEntry implements Serializable, JSONString
             " FROM " + "reports." + getTable() +
             " WHERE " + dateCondition +
             conditionsToString( allConditions ) + 
-            " AND " + getTimeDataDynamicColumn() + " IS NOT NULL" +
+            ( getTimeDataDynamicAllowNull() == null || getTimeDataDynamicAllowNull() == Boolean.FALSE ? (" AND " + getTimeDataDynamicColumn() + " IS NOT NULL") : "" ) +
             " GROUP BY " + getTimeDataDynamicColumn() + 
             " ORDER BY 2 DESC " + 
             ( getTimeDataDynamicLimit() != null ? " LIMIT " + getTimeDataDynamicLimit() : "" );
@@ -460,14 +464,16 @@ public class ReportEntry implements Serializable, JSONString
          * So we create the temp table and then select the temp table inside the crosstab function
          */
         String createDataTempTableQuery;
-        if ( dataInterval.equals("tenminute") )
+        if ( dataInterval.equals("tenminute") ) {
             createDataTempTableQuery = "SELECT " +
-                " date_trunc( 'hour', time_stamp ) + INTERVAL '10 min' * ROUND(date_part('minute', time_stamp)/10.0) as time_trunc ";
-        else
+                " date_trunc( 'hour', time_stamp ) + INTERVAL '10 min' * ROUND(date_part('minute', time_stamp)/10.0) as time_trunc, ";
+        } else {
             createDataTempTableQuery = "SELECT " +
-                " date_trunc( '" + dataInterval + "', time_stamp ) as time_trunc ";
-        createDataTempTableQuery += ", " + getTimeDataDynamicColumn() + ", " + getTimeDataDynamicAggregationFunction() + "(" + getTimeDataDynamicValue() + ")";
-        createDataTempTableQuery += " FROM " +
+                " date_trunc( '" + dataInterval + "', time_stamp ) as time_trunc, ";
+        }
+        createDataTempTableQuery += "COALESCE(" + getTimeDataDynamicColumn() + "::text,'None') AS " + getTimeDataDynamicColumn() + ", ";
+        createDataTempTableQuery += "COALESCE(" + getTimeDataDynamicAggregationFunction() + "(" + getTimeDataDynamicValue() + "),0) AS value ";
+        createDataTempTableQuery += "FROM " +
             " reports." + getTable() +
             " WHERE " + dateCondition;
         createDataTempTableQuery += conditionsToString( allConditions );
@@ -487,11 +493,11 @@ public class ReportEntry implements Serializable, JSONString
          */
         String crosstabQuery = "SELECT * FROM crosstab( " +
             "$$ SELECT * FROM tempTimeTable $$" + " , " +
-            "$$ SELECT value FROM tempDistinctTable $$" + ") " + " as " +
+            "$$ SELECT CASE WHEN value IS NULL THEN 'None'::text ELSE value::text END FROM tempDistinctTable $$" + ") " + " as " +
             "( \"time_trunc\" timestamp ";
         for ( String s : distinctValues ) {
             if ( "".equals(s) ) s = " ";
-            crosstabQuery = crosstabQuery + ", \"" + s + "\" numeric ";
+            crosstabQuery = crosstabQuery + ", \"" + ( s == null ? "None" : s ) + "\" numeric ";
         }
         crosstabQuery = crosstabQuery + ")";
 
@@ -511,6 +517,11 @@ public class ReportEntry implements Serializable, JSONString
             logger.debug("crosstabQuery                QUERY: " + crosstabQuery);
             logger.debug("finalQuery                   QUERY: " + finalQuery);
         }
+        // try {
+        //     java.io.PrintWriter out = new java.io.PrintWriter("/tmp/query.txt");
+        //     out.println(finalQuery);
+        //     out.close();
+        // } catch (Exception e) {}
         
         LinkedList<SqlCondition> doubleConditions = new LinkedList<SqlCondition>(allConditions);
         doubleConditions.addAll(allConditions);

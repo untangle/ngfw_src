@@ -534,6 +534,12 @@ Ext.define("Ung.window.ReportEditor", {
             fieldLabel: i18n._("Time Data Aggregation Function"),
             width: 500
         }, {
+            xtype: 'checkbox',
+            name: "timeDataDynamicAllowNull",
+            dataIndex: "timeDataDynamicAllowNull",
+            fieldLabel: i18n._("Time Data Dynamic Allow Null"),
+            width: 500
+        }, {
             xtype: 'textfield',
             name: "seriesRenderer",
             dataIndex: "seriesRenderer",
@@ -642,6 +648,7 @@ Ext.define("Ung.window.ReportEditor", {
                 timeDataDynamicColumn: this.down('[dataIndex=timeDataDynamicColumn]'),
                 timeDataDynamicLimit: this.down('[dataIndex=timeDataDynamicLimit]'),
                 timeDataDynamicAggregationFunction: this.down('[dataIndex=timeDataDynamicAggregationFunction]'),
+                timeDataDynamicAllowNull: this.down('[dataIndex=timeDataDynamicAllowNull]'),
                 seriesRenderer: this.down('[dataIndex=seriesRenderer]'),
                 colors: this.down('[dataIndex=colors]'),
                 units: this.down('[dataIndex=units]'),
@@ -691,6 +698,9 @@ Ext.define("Ung.window.ReportEditor", {
         this.cmps.timeDataDynamicAggregationFunction.setVisible(type == "TIME_GRAPH_DYNAMIC");
         this.cmps.timeDataDynamicAggregationFunction.setDisabled(type != "TIME_GRAPH_DYNAMIC");
 
+        this.cmps.timeDataDynamicAllowNull.setVisible(type == "TIME_GRAPH_DYNAMIC");
+        this.cmps.timeDataDynamicAllowNull.setDisabled(type != "TIME_GRAPH_DYNAMIC");
+        
         this.cmps.seriesRenderer.setVisible(type == "TIME_GRAPH" || type == "TIME_GRAPH_DYNAMIC");
         this.cmps.seriesRenderer.setDisabled(type != "TIME_GRAPH" && type != "TIME_GRAPH_DYNAMIC");
 
