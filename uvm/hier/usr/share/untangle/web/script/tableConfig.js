@@ -183,11 +183,9 @@ Ext.define('Ung.TableConfig', {
                     name: 'end_time',
                     sortType: 'asTimestamp'
                 }, {
-                    name: 'bypassed',
-                    type: 'boolean'
+                    name: 'bypassed'
                 }, {
-                    name: 'entitled',
-                    type: 'boolean'
+                    name: 'entitled'
                 }, {
                     name: 'protocol'
                 }, {
@@ -251,8 +249,7 @@ Ext.define('Ung.TableConfig', {
                 }, {
                     name: 'filter_prefix'
                 }, {
-                    name: 'shield_blocked',
-                    type: 'boolean'
+                    name: 'shield_blocked'
                 }, {
                     name: 'firewall_blocked'
                 }, {
@@ -278,11 +275,9 @@ Ext.define('Ung.TableConfig', {
                     name: 'application_control_category',
                     type: 'string'
                 }, {
-                    name: 'application_control_flagged',
-                    type: 'boolean'
+                    name: 'application_control_flagged'
                 }, {
-                    name: 'application_control_blocked',
-                    type: 'boolean'
+                    name: 'application_control_blocked'
                 }, {
                     name: 'application_control_confidence'
                 }, {
@@ -691,11 +686,9 @@ Ext.define('Ung.TableConfig', {
                     name: 'end_time',
                     sortType: 'asTimestamp'
                 }, {
-                    name: 'bypassed',
-                    type: 'boolean'
+                    name: 'bypassed'
                 }, {
-                    name: 'entitled',
-                    type: 'boolean'
+                    name: 'entitled'
                 }, {
                     name: 'protocol'
                 }, {
@@ -759,8 +752,7 @@ Ext.define('Ung.TableConfig', {
                 }, {
                     name: 'filter_prefix'
                 }, {
-                    name: 'shield_blocked',
-                    type: 'boolean'
+                    name: 'shield_blocked'
                 }, {
                     name: 'firewall_blocked'
                 }, {
@@ -786,11 +778,9 @@ Ext.define('Ung.TableConfig', {
                     name: 'application_control_category',
                     type: 'string'
                 }, {
-                    name: 'application_control_flagged',
-                    type: 'boolean'
+                    name: 'application_control_flagged'
                 }, {
-                    name: 'application_control_blocked',
-                    type: 'boolean'
+                    name: 'application_control_blocked'
                 }, {
                     name: 'application_control_confidence'
                 }, {
@@ -1251,17 +1241,13 @@ Ext.define('Ung.TableConfig', {
                 }, {
                     name: 's2c_content_type'
                 }, {
-                    name: 'web_filter_lite_blocked',
-                    type: 'boolean'
+                    name: 'web_filter_lite_blocked'
                 }, {
-                    name: 'web_filter_blocked',
-                    type: 'boolean'
+                    name: 'web_filter_blocked'
                 }, {
-                    name: 'web_filter_lite_flagged',
-                    type: 'boolean'
+                    name: 'web_filter_lite_flagged'
                 }, {
-                    name: 'web_filter_flagged',
-                    type: 'boolean'
+                    name: 'web_filter_flagged'
                 }, {
                     name: 'web_filter_lite_category',
                     type: 'string'
@@ -1286,14 +1272,12 @@ Ext.define('Ung.TableConfig', {
                     name: 'ad_blocker_cookie_ident',
                     type: 'string'
                 }, {
-                    name: 'virus_blocker_clean',
-                    type: 'boolean'
+                    name: 'virus_blocker_clean'
                 }, {
                     name: 'virus_blocker_name',
                     type: 'string'
                 }, {
-                    name: 'virus_blocker_lite_clean',
-                    type: 'boolean'
+                    name: 'virus_blocker_lite_clean'
                 }, {
                     name: 'virus_blocker_lite_name',
                     type: 'string'
@@ -1523,7 +1507,12 @@ Ext.define('Ung.TableConfig', {
                     header: i18n._('Clean') + ' (Virus Blocker Lite)',
                     width: Ung.TableConfig.booleanFieldWidth,
                     sortable: true,
-                    dataIndex: 'virus_blocker_lite_clean'
+                    dataIndex: 'virus_blocker_lite_clean',
+                    filter: {
+                        type: 'boolean',
+                        yesText: i18n._('true'),
+                        noText: i18n._('false')
+                    }
                 }, {
                     header: i18n._('Virus Name') + ' (Virus Blocker Lite)',
                     width: 140,
@@ -1533,7 +1522,12 @@ Ext.define('Ung.TableConfig', {
                     header: i18n._('Clean') + ' (Virus Blocker)',
                     width: Ung.TableConfig.booleanFieldWidth,
                     sortable: true,
-                    dataIndex: 'virus_blocker_clean'
+                    dataIndex: 'virus_blocker_clean',
+                    filter: {
+                        type: 'boolean',
+                        yesText: i18n._('true'),
+                        noText: i18n._('false')
+                    }
                 }, {
                     header: i18n._('Virus Name') + ' (Virus Blocker)',
                     width: 140,
@@ -1843,8 +1837,7 @@ Ext.define('Ung.TableConfig', {
                 }, {
                     name: 'spam_blocker_lite_score'
                 }, {
-                    name: 'spam_blocker_lite_is_spam',
-                    type: 'boolean'
+                    name: 'spam_blocker_lite_is_spam'
                 }, {
                     name: 'spam_blocker_lite_tests_string'
                 }, {
@@ -1854,8 +1847,7 @@ Ext.define('Ung.TableConfig', {
                 }, {
                     name: 'spam_blocker_score'
                 }, {
-                    name: 'spam_blocker_is_spam',
-                    type: 'boolean'
+                    name: 'spam_blocker_is_spam'
                 }, {
                     name: 'spam_blocker_tests_string'
                 }, {
@@ -1865,8 +1857,7 @@ Ext.define('Ung.TableConfig', {
                 }, {
                     name: 'phish_blocker_score'
                 }, {
-                    name: 'phish_blocker_is_spam',
-                    type: 'boolean'
+                    name: 'phish_blocker_is_spam'
                 }, {
                     name: 'phish_blocker_tests_string'
                 }],
@@ -3077,8 +3068,7 @@ Ext.define('Ung.TableConfig', {
                     name: 'protocol',
                     sortType: 'asInt'
                 }, {
-                    name: 'blocked',
-                    type: 'boolean'
+                    name: 'blocked'
                 }, {
                     name: 'category',
                     type: 'string'
