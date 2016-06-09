@@ -327,6 +327,13 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
             logger.warn("Running v12.0 conversion...");
             conversion_12_0();
         }
+        /**
+         * 12.1 conversion
+         */
+        if ( settings.getVersion() == 1 ) {
+            logger.warn("Running v12.1 conversion...");
+            conversion_12_1();
+        }
         
         /**
          * Report updates
@@ -612,6 +619,19 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         matchers.add( matcher2 );
         alertRule = new AlertRule( false, matchers, true, true, "New device discovered", false, 0 );
         rules.add( alertRule );
+        
+        setSettings( settings );
+    }
+
+    private void conversion_12_1()
+    {
+        settings.setVersion( 2 );
+
+        for ( ReportEntry entry : settings.getReportEntries() ) {
+            if ( entry.getType() == ReportEntry.ReportEntryType.PIE_GRAPH && entry.getPieStyle() == null ) {
+                entry.setPieStyle( ReportEntry.PieStyle.PIE );
+            }
+        }
         
         setSettings( settings );
     }

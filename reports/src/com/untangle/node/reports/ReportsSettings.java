@@ -19,7 +19,7 @@ import com.untangle.uvm.node.DayOfWeekMatcher;
 @SuppressWarnings("serial")
 public class ReportsSettings implements Serializable, JSONString
 {
-    private Integer version = null;
+    private Integer version = 2;
     
     private Integer dbRetention = 7; // days
     private Integer generationHour = 2;

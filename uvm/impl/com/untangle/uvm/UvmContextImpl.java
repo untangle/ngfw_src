@@ -223,7 +223,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         if (this.licenseManager == null ) {
             this.licenseManager = (LicenseManager) nodeManager.node("untangle-node-license");
             if (this.licenseManager == null) {
-                logger.warn("Failed to initialize license manager.");
+                logger.debug("Failed to initialize license manager.");
                 return this.defaultLicenseManager;
             }
         }
