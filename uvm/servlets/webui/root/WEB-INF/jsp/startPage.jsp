@@ -13,6 +13,7 @@
 
     <script type="text/javascript" src="/highcharts/highstock.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/highcharts/highcharts-extra.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="/highcharts/map.js?s=${buildStamp}"></script>
 
 <c:if test="${isDebug==false}">
     <script type="text/javascript" src="/ext6/ext-all.js?s=${buildStamp}"></script>

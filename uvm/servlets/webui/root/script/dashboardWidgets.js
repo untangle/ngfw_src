@@ -93,6 +93,8 @@ Ext.define('Ung.dashboard', {
         this.dashboardPanel.removeAll();
         var i, j, type, entry, widget;
 
+        this.widgetsList.push(Ext.create('Ung.dashboard.Map'));
+
         for (i = 0; i < this.allWidgets.length; i += 1) {
             widget = this.allWidgets[i];
             type = widget.type;
@@ -392,6 +394,32 @@ Ext.define('Ung.dashboard.Information', {
     }
 });
 
+/* Map Widget which shall turn into report entry widget of type map */
+Ext.define('Ung.dashboard.Map', {
+    extend: 'Ung.dashboard.Widget',
+    hasStats: true,
+    refreshIntervalSec: 600,
+    userCls: 'large',
+    initComponent: function () {
+        this.title = '<h3>' + i18n._('Map distribution') + '</h3>';
+        this.callParent(arguments);
+    },
+    data: {},
+    tpl: '<div class="wg-wrapper no-padding">' +
+        '<div class="map-chart" style="height: 100%; width: 100%;"></div>' +
+        '</div>' +
+        '<div class="mask init-mask"><i class="material-icons">widgets</i><p>' + i18n._("CPU Load") + '</p></div>',
+    listeners: {
+        'afterrender': function (widget) {
+            widget.chart = Ung.charts.mapChart(widget.getEl().query('.map-chart')[0]);
+        }
+    },
+    updateStats: function (stats) {
+        this.removeCls('init');
+    }
+});
+
+
 /* Resources Widget */
 Ext.define('Ung.dashboard.Resources', {
     extend: 'Ung.dashboard.Widget',
@@ -660,7 +688,7 @@ Ext.define('Ung.dashboard.NetworkLayout', {
         var me = this;
         var interfaceEl, i, interfaceDevicesMap = [], device;
 
-        if (this.data && this.data.externalInterfaces) {
+        if (me.data && me.data.externalInterfaces) {
             for (i = 0; i < this.data.externalInterfaces.length; i += 1) {
                 interfaceEl = document.querySelector('#interface_' + this.data.externalInterfaces[i].id);
                 if (interfaceEl && stats['interface_' + this.data.externalInterfaces[i].id + '_txBps']) {
@@ -670,7 +698,7 @@ Ext.define('Ung.dashboard.NetworkLayout', {
             }
         }
 
-        if (this.data && this.data.internalInterfaces) {
+        if (me.data && me.data.internalInterfaces) {
             rpc.deviceTable.getDevices(Ext.bind(function (res, ex) {
                 if (Ung.Util.handleException(ex)) {
                     return;
@@ -727,7 +755,7 @@ Ext.define('Ung.dashboard.NetworkLayout', {
                 }
             });
             this.interfacesLoaded = true;
-            this.update(this.data);
+            this.update(me.data);
         }, this));
     }
 });
