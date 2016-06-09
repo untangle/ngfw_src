@@ -25,7 +25,7 @@ public class ConntrackMonitorImpl
     private static final int CONNTRACK_PULSE_FREQUENCY_MS = 60*1000; /* 1 minute */
     private static final int CONNTRACK_PULSE_FREQUENCY_SEC = 60; /* 1 minute */
     private static final int CLEANER_PULSE_FREQUENCY = 560*1000; /* 5 minutes */
-    private static final long LIFETIME_MS = 1000*60*2; /* 2 minutes */ /* Amount of time to keep complete sessions in table */
+    private static final long LIFETIME_MS = 1000*60*3; /* 3 minutes */ /* Amount of time to keep complete sessions in table */
     private static final Logger logger = Logger.getLogger(ConntrackMonitorImpl.class);
     
     private static ConntrackMonitorImpl INSTANCE = null;
@@ -265,7 +265,7 @@ public class ConntrackMonitorImpl
                         DeadTcpSessionState deadSession = deadTcpSessions.remove( state.tuple );
                         if ( deadSession != null ) {
                             logger.debug("Removed session from deadTcpSessions: " + state.tuple);
-                        }
+                        } 
                     }
                 }
             
