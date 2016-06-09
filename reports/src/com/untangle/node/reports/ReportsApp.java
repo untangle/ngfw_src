@@ -443,21 +443,29 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         matchers.add( matcher2 );
         alertRule = new AlertRule( false, matchers, true, true, "New device discovered", false, 0 );
         rules.add( alertRule );
-        
-        matchers = new LinkedList<AlertRuleCondition>();
-        matcher1 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "class", "=", "*ApplicationControlLogEvent*" ) );
-        matchers.add( matcher1 );
-        matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "protochain", "=", "*BITTORRE*" ) );
-        matchers.add( matcher2 );
-        alertRule = new AlertRule( false, matchers, true, true, "Host is using Bittorrent", true, 60 );
-        rules.add( alertRule );
 
+        matchers = new LinkedList<AlertRuleCondition>();
+        matcher1 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "class", "=", "*QuotaEvent*" ) );
+        matchers.add( matcher1 );
+        matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "action", "=", "2" ) );
+        matchers.add( matcher2 );
+        alertRule = new AlertRule( false, matchers, true, true, "Host exceeded quota.", false, 0 );
+        rules.add( alertRule );
+        
         matchers = new LinkedList<AlertRuleCondition>();
         matcher1 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "class", "=", "*PenaltyBoxEvent*" ) );
         matchers.add( matcher1 );
         matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "action", "=", "1" ) );
         matchers.add( matcher2 );
         alertRule = new AlertRule( false, matchers, true, true, "Host put in penalty box", false, 0 );
+        rules.add( alertRule );
+
+        matchers = new LinkedList<AlertRuleCondition>();
+        matcher1 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "class", "=", "*ApplicationControlLogEvent*" ) );
+        matchers.add( matcher1 );
+        matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "protochain", "=", "*BITTORRE*" ) );
+        matchers.add( matcher2 );
+        alertRule = new AlertRule( false, matchers, true, true, "Host is using Bittorrent", true, 60 );
         rules.add( alertRule );
 
         matchers = new LinkedList<AlertRuleCondition>();
