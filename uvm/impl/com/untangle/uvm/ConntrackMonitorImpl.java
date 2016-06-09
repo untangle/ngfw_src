@@ -142,11 +142,13 @@ public class ConntrackMonitorImpl
                 return;
             }
 
-            logger.info("CONNTRACK " + desc + " | " +
-                        conntrack.toSummaryString() +
-                        " client: " + Math.round(c2sRateBps/1000.0) + " kB/s" +
-                        " server: "+ Math.round(s2cRateBps/1000.0) + " kB/s" +
-                        " total: "+ Math.round(totalRateBps/1000.0) + " kB/s");
+            if ( logger.isDebugEnabled() ) {
+                logger.debug("CONNTRACK " + desc + " | " +
+                             conntrack.toSummaryString() +
+                             " client: " + Math.round(c2sRateBps/1000.0) + " kB/s" +
+                             " server: "+ Math.round(s2cRateBps/1000.0) + " kB/s" +
+                             " total: "+ Math.round(totalRateBps/1000.0) + " kB/s");
+            }
 
             // do quota accounting
             doQuotaAccounting( conntrack.getPreNatClient(), diffTotalBytes );
