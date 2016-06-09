@@ -15,6 +15,5 @@
     "table": "sessions",
     "title": "Top IP Protocols",
     "pieStyle": "PIE",
-    "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }
