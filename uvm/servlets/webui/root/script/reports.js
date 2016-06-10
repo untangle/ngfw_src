@@ -1130,12 +1130,11 @@ Ext.define('Ung.panel.Reports', {
             padding: '5px'
         });
 
-        this.reportContainer.setLoading(i18n._('Loading report...'));
+        this.setLoading(i18n._('Loading report...'));
         this.reportData.getStore().loadData([]);
 
         rpc.reportsManager.getDataForReportEntry(Ext.bind(function (result, exception) {
-            var i;
-            this.reportContainer.setLoading(false);
+            this.setLoading(false);
             if (Ung.Util.handleException(exception)) {
                 return;
             }
