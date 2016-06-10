@@ -14,7 +14,7 @@
     "timeDataDynamicColumn": "bandwidth_control_priority",
     "timeDataDynamicLimit": "10",
     "timeDataDynamicAggregationFunction": "sum",
-    "timeDataDynamicAllowNull", true,
+    "timeDataDynamicAllowNull": true,
     "timeStyle": "AREA_STACKED",
     "title": "Top Priorities Usage",
     "type": "TIME_GRAPH_DYNAMIC"
