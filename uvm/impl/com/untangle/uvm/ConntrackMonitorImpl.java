@@ -118,33 +118,43 @@ public class ConntrackMonitorImpl
             long oldS2cBytes = state.s2cBytes;
             long newS2cBytes = conntrack.getReplyCounterBytes();
             long oldTotalBytes = state.totalBytes;
+            long newTotalBytes = (newC2sBytes + newS2cBytes);
             long diffC2sBytes = newC2sBytes - oldC2sBytes;
             long diffS2cBytes = newS2cBytes - oldS2cBytes;
-            long diffTotalBytes = (newC2sBytes + newS2cBytes) - oldTotalBytes;
+            long diffTotalBytes = newTotalBytes - oldTotalBytes;
             float c2sRateBps = (diffC2sBytes/((float)CONNTRACK_PULSE_FREQUENCY_SEC));
             float s2cRateBps = (diffS2cBytes/((float)CONNTRACK_PULSE_FREQUENCY_SEC));
             float totalRateBps = (diffTotalBytes/((float)CONNTRACK_PULSE_FREQUENCY_SEC));
-            state.c2sBytes = newC2sBytes;
-            state.s2cBytes = newS2cBytes;
-            state.totalBytes = newC2sBytes + newS2cBytes;
-            state.c2sRateBps = c2sRateBps;
-            state.s2cRateBps = s2cRateBps;
-            state.totalRateBps = totalRateBps;
-            if ( diffC2sBytes < 0 ) {
-                logger.warn("Negative diffC2sBytes: " + diffC2sBytes + " oldC2sBytes: " + oldC2sBytes + " newC2sBytes: " + newC2sBytes);
-                logger.warn("Action: " + desc);
-                logger.warn("Conntrack: " + conntrack.toSummaryString());
-                logger.warn("Tuple: " + tuple);
-                return;
-            }
-            if ( diffS2cBytes < 0 ) {
-                logger.warn("Negative diffS2cBytes: " + diffS2cBytes + " oldS2cBytes: " + oldS2cBytes + " newS2cBytes: " + newS2cBytes);
-                logger.warn("Action: " + desc);
-                logger.warn("Conntrack: " + conntrack.toSummaryString());
-                logger.warn("Tuple: " + tuple);
+
+            /**
+             * In some cases specifically UDP a new session takes the place of an old session with the same tuple
+             * in this case the counts go down because its actually a new session.
+             * If the total bytes is low, this is probably the case and just assume it went from zero to current total bytes
+             * If not, just discard the event with a warning
+             */
+            if ( diffC2sBytes < 0 || diffS2cBytes < 0 ) {
+                if ( diffC2sBytes < 0 ) {
+                    logger.warn("Negative diffC2sBytes: " + diffC2sBytes + " oldC2sBytes: " + oldC2sBytes + " newC2sBytes: " + newC2sBytes);
+                    logger.warn("Action: " + desc);
+                    logger.warn("Conntrack: " + conntrack.toSummaryString());
+                    logger.warn("Tuple: " + tuple);
+                }
+                if ( diffS2cBytes < 0 ) {
+                    logger.warn("Negative diffS2cBytes: " + diffS2cBytes + " oldS2cBytes: " + oldS2cBytes + " newS2cBytes: " + newS2cBytes);
+                    logger.warn("Action: " + desc);
+                    logger.warn("Conntrack: " + conntrack.toSummaryString());
+                    logger.warn("Tuple: " + tuple);
+                }
                 return;
             }
 
+            state.c2sBytes = newC2sBytes;
+            state.s2cBytes = newS2cBytes;
+            state.totalBytes = newTotalBytes;
+            state.c2sRateBps = c2sRateBps;
+            state.s2cRateBps = s2cRateBps;
+            state.totalRateBps = totalRateBps;
+            
             if ( logger.isDebugEnabled() ) {
                 logger.debug("CONNTRACK " + desc + " | " +
                              conntrack.toSummaryString() +
@@ -180,15 +190,27 @@ public class ConntrackMonitorImpl
             synchronized( ConntrackMonitorImpl.INSTANCE ) {
                 String type = null;
                 for ( Conntrack conntrack : dumpEntries ) {
+                    long sessionId = 0;
                     SessionTuple tuple = new SessionTuple( conntrack.getProtocol(),
                                                            conntrack.getPreNatClient(),
                                                            conntrack.getPreNatServer(),
                                                            conntrack.getPreNatClientPort(),
                                                            conntrack.getPreNatServerPort() );
+                    /**
+                     * Lookup the session from the previous conntrack entries
+                     */
                     ConntrackEntryState state = oldConntrackEntries.remove( tuple );
-                    DeadTcpSessionState deadSession = null;
-                
-                    long sessionId = 0;
+
+                    /**
+                     * In some cases (especially UDP) a conntrack entry expires, and shortly after
+                     * a new session replaces it with the same tuple. 
+                     * If this is the case then set the state to null so that we resolve it like a new session.
+                     */
+                    if ( state != null && (state.sessionStartTime != conntrack.getTimeStampStart()) ) {
+                        logger.debug("Conntrack does not match " + tuple + " " + state.sessionStartTime + " != " + conntrack.getTimeStampStart());
+                        state = null;
+                    }
+                    
                     /**
                      * If we already know about this session, then pull the sessionId from the state
                      */
@@ -225,6 +247,7 @@ public class ConntrackMonitorImpl
                         }
                         
                         if ( sessionId == 0 ) {
+                            DeadTcpSessionState deadSession = null;
                             synchronized ( deadTcpSessions ) {
                                 deadSession = deadTcpSessions.get( tuple );
                             }
@@ -245,7 +268,7 @@ public class ConntrackMonitorImpl
                     String action = null;
                     if ( state == null ) {
                         action = "NEW    ";
-                        state = new ConntrackEntryState( sessionId, tuple );
+                        state = new ConntrackEntryState( sessionId, tuple, conntrack.getTimeStampStart() );
                     } else {
                         action = "UPDATE ";
                     }
@@ -267,7 +290,10 @@ public class ConntrackMonitorImpl
                  */
                 for ( ConntrackEntryState state : oldConntrackEntries.values() ) {
                     if ( state.tuple != null && state.tuple.getProtocol() == 6 ) {
-                        DeadTcpSessionState deadSession = deadTcpSessions.remove( state.tuple );
+                        DeadTcpSessionState deadSession;
+                        synchronized ( deadTcpSessions ) {
+                            deadSession = deadTcpSessions.remove( state.tuple );
+                        }
                         if ( logger.isDebugEnabled() ) {
                             if ( deadSession != null )
                                 logger.debug("Removed session from deadTcpSessions: " + state.tuple);
@@ -330,6 +356,7 @@ public class ConntrackMonitorImpl
     public class ConntrackEntryState
     {
         protected long sessionId;
+        protected long sessionStartTime;
         protected SessionTuple tuple;
         protected long c2sBytes = 0;
         protected long s2cBytes = 0;
@@ -338,9 +365,10 @@ public class ConntrackMonitorImpl
         protected float s2cRateBps = 0.0f;
         protected float totalRateBps = 0.0f;
         
-        protected ConntrackEntryState( long sessionId, SessionTuple tuple )
+        protected ConntrackEntryState( long sessionId, SessionTuple tuple, long sessionStartTime )
         {
             this.sessionId = sessionId;
+            this.sessionStartTime = sessionStartTime;
             this.tuple = tuple;
         }
         
