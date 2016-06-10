@@ -10,6 +10,7 @@ from copy import copy
 from StringIO import StringIO
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
+from jsonrpc import JSONDecodeException
 import uvm
 from uvm import Manager
 from uvm import Uvm
