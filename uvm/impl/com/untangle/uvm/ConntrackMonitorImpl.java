@@ -25,7 +25,7 @@ public class ConntrackMonitorImpl
     private static final int CONNTRACK_PULSE_FREQUENCY_MS = 60*1000; /* 1 minute */
     private static final int CONNTRACK_PULSE_FREQUENCY_SEC = 60; /* 1 minute */
     private static final int CLEANER_PULSE_FREQUENCY = 560*1000; /* 5 minutes */
-    private static final long LIFETIME_MS = 1000*60*3; /* 3 minutes */ /* Amount of time to keep complete sessions in table */
+    private static final long LIFETIME_MS = 1000*60*3; /* 2 minutes */ /* Amount of time to keep complete sessions in table */
     private static final Logger logger = Logger.getLogger(ConntrackMonitorImpl.class);
     
     private static ConntrackMonitorImpl INSTANCE = null;
@@ -282,6 +282,15 @@ public class ConntrackMonitorImpl
         }
     }
 
+    /**
+     * The TcpCompletedSessionsCleaner task goes through and cleans up old entries in deadTcpSessions
+     *
+     * Usually sessions are removed from deadTcpSessions when the conntrack disappears
+     * However, in some cases the conntrack (which is the client side of the connection) is closed and disappears
+     * before the session thread closes the server side and exits
+     * In this case the session gets added to deadTcpSessions after the conntrack has disappeared.
+     * In this case this task will remove this session after its old enough
+     */
     private class TcpCompletedSessionsCleaner implements Runnable
     {
         public void run()
@@ -301,7 +310,7 @@ public class ConntrackMonitorImpl
                         logger.warn("Invalid endTime: " + state.endTime + " session: " + tuple );
                     }
                     if( now - state.endTime > LIFETIME_MS ) {
-                        logger.warn("Manually removing session from deadTcpSessions: " + tuple);
+                        logger.debug("Manually removing session from deadTcpSessions: " + tuple);
                         i.remove();
                     } else {
                         // Because we are using a LinkedHashMap, they ordering is maintained and the younger elements are later in the list
