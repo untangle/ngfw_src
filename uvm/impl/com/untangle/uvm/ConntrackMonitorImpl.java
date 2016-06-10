@@ -85,6 +85,7 @@ public class ConntrackMonitorImpl
         }
         
         DeadTcpSessionState state = new DeadTcpSessionState( session.id(), session.getEndTime() );
+        logger.debug("Adding to deadTcpSessions: " + session.getClientSideTuple());
         synchronized ( this.deadTcpSessions ) {
             this.deadTcpSessions.put( session.getClientSideTuple(), state );
         }
