@@ -14,6 +14,7 @@
     "timeDataDynamicColumn": "application_control_category",
     "timeDataDynamicLimit": "10",
     "timeDataDynamicAggregationFunction": "sum",
+    "timeDataDynamicAllowNull", true,
     "timeStyle": "AREA_STACKED",
     "title": "Top Categories Usage",
     "type": "TIME_GRAPH_DYNAMIC"

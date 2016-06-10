@@ -14,6 +14,7 @@
     "timeDataDynamicColumn": "server_country",
     "timeDataDynamicLimit": "10",
     "timeDataDynamicAggregationFunction": "sum",
+    "timeDataDynamicAllowNull", true,
     "timeStyle": "AREA_STACKED",
     "title": "Top Countries Usage",
     "type": "TIME_GRAPH_DYNAMIC"
