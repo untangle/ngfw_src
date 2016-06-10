@@ -171,8 +171,16 @@ public class ResultSetReader implements Runnable
                 closeConnection();
                 return;
             }
-
-            int lastPosition = this.resultSet.getRow();
+            int lastPosition;
+            
+            // JDBC can throw null pointer exceptions in this case
+            // no idea why. Just go ahead and close the connection.
+            try {
+                lastPosition = this.resultSet.getRow();
+            } catch ( java.lang.NullPointerException e ) {
+                closeConnection();
+                return;
+            }
         
             while ( true ) {
                 try {
