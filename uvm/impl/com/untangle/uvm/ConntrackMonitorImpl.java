@@ -85,7 +85,9 @@ public class ConntrackMonitorImpl
         }
         
         DeadTcpSessionState state = new DeadTcpSessionState( session.id(), session.getEndTime() );
-        logger.debug("Adding to deadTcpSessions: " + session.getClientSideTuple());
+        if ( logger.isDebugEnabled() ) {
+            logger.debug("Adding to deadTcpSessions: " + session.getClientSideTuple());
+        }
         synchronized ( this.deadTcpSessions ) {
             this.deadTcpSessions.put( session.getClientSideTuple(), state );
         }
@@ -266,10 +268,11 @@ public class ConntrackMonitorImpl
                 for ( ConntrackEntryState state : oldConntrackEntries.values() ) {
                     if ( state.tuple != null && state.tuple.getProtocol() == 6 ) {
                         DeadTcpSessionState deadSession = deadTcpSessions.remove( state.tuple );
-                        if ( deadSession != null ) {
-                            logger.debug("Removed session from deadTcpSessions: " + state.tuple);
-                        } else {
-                            logger.debug("Failed to remove session from deadTcpSessions: " + state.tuple);
+                        if ( logger.isDebugEnabled() ) {
+                            if ( deadSession != null )
+                                logger.debug("Removed session from deadTcpSessions: " + state.tuple);
+                            else
+                                logger.debug("Failed to remove session from deadTcpSessions: " + state.tuple);
                         }
                     }
                 }
