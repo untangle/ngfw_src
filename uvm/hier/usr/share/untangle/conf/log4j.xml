@@ -110,6 +110,14 @@
     <priority value="INFO"/>
   </category>
 
+  <category name="com.untangle.uvm.DeviceTableImpl">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.uvm.ConntrackMonitorImpl">
+    <priority value="INFO"/>
+  </category>
+  
   <category name="com.untangle.uvm.util.Pulse">
     <priority value="INFO"/>
   </category>
