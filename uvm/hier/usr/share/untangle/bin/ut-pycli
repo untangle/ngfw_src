@@ -124,7 +124,7 @@ if __name__ == "__main__":
   uvmContext = None
   try:
       uvmContext = Uvm().getUvmContext( hostname=parser.hostname, username=parser.username, password=parser.password, timeout=parser.timeout )
-  except JSONRPCException, e:
+  except (JSONRPCException, JSONDecodeException) as e:
       errorstr = repr(e.error)
       if (not parser.quiet):
           print "Error: %s" % errorstr
