@@ -207,7 +207,9 @@ public class ConntrackMonitorImpl
                      * If this is the case then set the state to null so that we resolve it like a new session.
                      */
                     if ( state != null && (state.sessionStartTime != conntrack.getTimeStampStart()) ) {
-                        logger.debug("Conntrack does not match " + tuple + " " + state.sessionStartTime + " != " + conntrack.getTimeStampStart());
+                        if ( logger.isDebugEnabled() ) {
+                            logger.debug("Conntrack does not match " + tuple + " " + state.sessionStartTime + " != " + conntrack.getTimeStampStart());
+                        }
                         state = null;
                     }
                     
@@ -339,7 +341,9 @@ public class ConntrackMonitorImpl
                         logger.warn("Invalid endTime: " + state.endTime + " session: " + tuple );
                     }
                     if( now - state.endTime > LIFETIME_MS ) {
-                        logger.debug("Manually removing session from deadTcpSessions: " + tuple);
+                        if ( logger.isDebugEnabled() ) {
+                            logger.debug("Manually removing session from deadTcpSessions: " + tuple);
+                        }
                         i.remove();
                     } else {
                         // Because we are using a LinkedHashMap, they ordering is maintained and the younger elements are later in the list
