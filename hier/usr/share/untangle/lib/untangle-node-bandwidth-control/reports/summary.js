@@ -18,7 +18,7 @@
     ],
     "textString": "Bandwidth Control prioritized {0} sessions.", 
     "readOnly": true,
-    "table": "sessions",
+    "table": "session_minutes",
     "title": "Bandwidth Control Summary",
     "type": "TEXT"
 }

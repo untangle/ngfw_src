@@ -11,7 +11,7 @@
     "pieGroupColumn": "application_control_application",
     "pieSumColumn": "round(coalesce(sum(s2p_bytes), 0) / (1024*1024),1)",
     "readOnly": true,
-    "table": "sessions",
+    "table": "session_minutes",
     "title": "Top Application (by received bytes)",
     "pieStyle": "PIE",
     "type": "PIE_GRAPH"

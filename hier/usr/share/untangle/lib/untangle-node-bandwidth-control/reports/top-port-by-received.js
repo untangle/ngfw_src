@@ -11,7 +11,7 @@
     "pieGroupColumn": "s_server_port",
     "pieSumColumn": "round(coalesce(sum(p2s_bytes), 0) / (1024*1024),1)",
     "readOnly": true,
-    "table": "sessions",
+    "table": "session_minutes",
     "title": "Top Ports (by received bytes)",
     "pieStyle": "PIE",
     "type": "PIE_GRAPH"

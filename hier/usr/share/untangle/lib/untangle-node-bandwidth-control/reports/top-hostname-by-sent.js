@@ -11,7 +11,7 @@
     "pieGroupColumn": "hostname",
     "pieSumColumn": "round(coalesce(sum(p2s_bytes), 0) / (1024*1024),1)",
     "readOnly": true,
-    "table": "sessions",
+    "table": "session_minutes",
     "title": "Top Hostnames (by sent bytes)",
     "pieStyle": "PIE",
     "type": "PIE_GRAPH"
