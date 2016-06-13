@@ -9,7 +9,7 @@
     "orderDesc": true,
     "units": "MB",
     "pieGroupColumn": "s_server_port",
-    "pieSumColumn": "round(coalesce(sum(p2s_bytes), 0) / (1024*1024),1)",
+    "pieSumColumn": "round(coalesce(sum(s2c_bytes), 0) / (1024*1024),1)",
     "readOnly": true,
     "table": "session_minutes",
     "title": "Top Ports (by received bytes)",

@@ -9,7 +9,7 @@
     "orderDesc": true,
     "units": "MB",
     "pieGroupColumn": "application_control_application",
-    "pieSumColumn": "round(coalesce(sum(p2s_bytes), 0) / (1024*1024),1)",
+    "pieSumColumn": "round(coalesce(sum(c2s_bytes), 0) / (1024*1024),1)",
     "readOnly": true,
     "table": "session_minutes",
     "title": "Top Application (by sent bytes)",

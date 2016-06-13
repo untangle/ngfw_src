@@ -9,7 +9,7 @@
     "orderDesc": true,
     "units": "MB",
     "pieGroupColumn": "c_client_addr",
-    "pieSumColumn": "round(coalesce(sum(s2p_bytes + p2s_bytes), 0) / (1024*1024),1)",
+    "pieSumColumn": "round(coalesce(sum(s2c_bytes + c2s_bytes), 0) / (1024*1024),1)",
     "readOnly": true,
     "table": "session_minutes",
     "title": "Top Clients (by total bytes)",
