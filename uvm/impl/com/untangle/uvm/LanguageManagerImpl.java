@@ -6,6 +6,7 @@ package com.untangle.uvm;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -68,6 +69,7 @@ import com.untangle.uvm.SettingsManager;
 public class LanguageManagerImpl implements LanguageManager
 {
     private static final String LANGUAGES_DIR;
+    private static final String RESOURCES_DIR;
     private static final String REMOTE_LANGUAGES_URL = "http://pootle.untangle.com/";
     private static final String LOCALE_DIR = "/usr/share/locale";
     private static final String DEFAULT_LANGUAGE = "en";
@@ -93,6 +95,7 @@ public class LanguageManagerImpl implements LanguageManager
 
     static {
         LANGUAGES_DIR = System.getProperty("uvm.lang.dir"); // place for languages resources files
+        RESOURCES_DIR = System.getProperty("uvm.lang.dir") + File.separator + "i18n"; // place for languages resources files
     }
 
     private static class languageSource
@@ -317,63 +320,48 @@ public class LanguageManagerImpl implements LanguageManager
         return true;
     }
 
-    private boolean compileResourceBundle(languageSource source, ZipEntry entry)
-    {
+    /*
+     * Copy file from zip stream to disk.
+     */
+    private boolean copyZipEntryToDisk(ZipInputStream zipInputStream, ZipEntry entry, String destinationDirectory){
         boolean success = true;
-        try {
-            String tokens[] = entry.getName().split(File.separator);
-            String lang = tokens[0];
-            String moduleName = tokens[1].substring(0, tokens[1].lastIndexOf(".")).replaceAll("-", "_");
 
-            String cmd[] = { "msgfmt", "--java2",
-                    "-d", LANGUAGES_DIR,
-                    "-r", source.getPrefix() + "." + moduleName,
-                    "-l", lang,
-                    source.getDirectory() + File.separator + entry.getName()};
-            Process p = Runtime.getRuntime().exec(cmd);
-            p.waitFor();
-            if (p.exitValue() != 0) {
-                success = false;
-                logProcessError(p, "Error compiling to resource bundle");
-            }
+        BufferedOutputStream dest = null;
 
-        } catch (Exception e) {
-            success = false;
-            logger.error("Error compiling to resource bundle", e);
+        String entryFilename = null;
+        int entryDirectoryIndex = entry.getName().lastIndexOf("/");
+        if(entryDirectoryIndex > 0){
+            entryFilename = entry.getName().substring(entryDirectoryIndex + 1);
+        }else{
+            entryFilename = entry.getName();
         }
-        return success;
-    }
 
-    private boolean compileMoFile(languageSource source, ZipEntry entry)
-    {
-        boolean success = true;
-        try {
-            String tokens[] = entry.getName().split(File.separator);
-            String lang = tokens[0];
-            String moduleName = tokens[1].substring(0, tokens[1].lastIndexOf("."));
-            String moduleLocaleDirName = LOCALE_DIR + File.separator + lang + File.separator + LC_MESSAGES;
+        File file = new File(destinationDirectory + File.separator + entryFilename);
+        File parentDir = file.getParentFile();
+        if (parentDir!=null && !parentDir.exists()) {
+            parentDir.mkdir();
+        }
 
-            File moduleLocaleDir = new File(moduleLocaleDirName);
-            if (!moduleLocaleDir.exists()){
-                if (!moduleLocaleDir.mkdirs()) {
-                    logger.error("Error creating locale folder: " + moduleLocaleDir );
-                    return false;
-                }
-            }
-
-            String cmd[] = { "msgfmt",
-                    "-o", moduleLocaleDirName + File.separator + moduleName  + ".mo",
-                    source.getDirectory() + File.separator + entry.getName()};
-            Process p = Runtime.getRuntime().exec(cmd);
-            p.waitFor();
-            if (p.exitValue() != 0) {
-                success = false;
-                logProcessError(p, "Error compiling to mo file");
-            }
-
-        } catch (Exception e) {
+        int count;
+        byte data[] = new byte[BUFFER];
+        FileOutputStream fos = null;
+        try{
+            fos = new FileOutputStream(file);
+        } catch (FileNotFoundException e) {
+            logger.warn("copyZipEntryToDisk: File not found", e);
             success = false;
-            logger.error("Error compiling to mo file", e);
+            return success;
+        }
+        dest = new BufferedOutputStream(fos, BUFFER);
+        try{
+            while ((count = zipInputStream.read(data, 0, BUFFER)) != -1) {
+                dest.write(data, 0, count);
+            }
+            dest.flush();
+            dest.close();
+        }catch(IOException e){
+            logger.warn("copyZipEntryToDisk: Unable to write file", e);
+            success = false;
         }
         return success;
     }
@@ -712,54 +700,38 @@ public class LanguageManagerImpl implements LanguageManager
 
             ZipEntry entry = null;
             ZipInputStream zis = new ZipInputStream(is);
+            String extension = null;
+            int extensionIndex = 0;
             while ((entry = zis.getNextEntry()) != null) {
-                if (!isValid(entry)){
-                    success = false;
-                    msg = "Invalid Entry";
-                    break;
-                }
+                // if (!isValid(entry)){
+                //     success = false;
+                //     msg = "Invalid Entry";
+                //     break;
+                // }
                 if (entry.isDirectory()) {
                     File dir = new File(source.getDirectory() + File.separator + entry.getName());
                     if (!dir.exists()) {
                         dir.mkdir();
                     }
                 } else {
+                    // ## look at file extensions
+                    extensionIndex = entry.getName().lastIndexOf(".");
+                    if(extensionIndex > 0){
+                        extension = entry.getName().substring(extensionIndex + 1);
+                    }
+
                     File file = new File(source.getDirectory() + File.separator + entry.getName());
                     File parentDir = file.getParentFile();
-                    if (parentDir!=null && !parentDir.exists()) {
-                        logger.warn("need to make parent dir");
-                        parentDir.mkdir();
-                    }
-
-                    // write the files to the disk
-                    int count;
-                    byte data[] = new byte[BUFFER];
-                    FileOutputStream fos = new FileOutputStream(file);
-                    dest = new BufferedOutputStream(fos, BUFFER);
-                    while ((count = zis.read(data, 0, BUFFER)) != -1) {
-                        dest.write(data, 0, count);
-                    }
-                    dest.flush();
-                    dest.close();
-
-                    // compile to .mo file and install it in the
-                    // appropriate place (LOCALE_DIR)
-                    boolean ret = compileMoFile(source, entry);
-                    if (!ret) {
-                        success = false;
-                        msg = "Couldn't compile MO file for entry '" + entry + "'";
-                        file.delete();
-                        break;
-                    }
-
-                    // compile the java properties version & install
-                    // it in the classpath (LANGUAGES_DIR)
-                    ret = compileResourceBundle(source, entry);
-                    if (!ret) {
-                        success = false;
-                        msg = "Couldn't compile resource bundle for entry '" + entry + "'";
-                        file.delete();
-                        break;
+                    switch(extension){
+                        case "po":
+                            copyZipEntryToDisk(zis, entry, source.getDirectory());
+                            break;
+                        case "mo":
+                            copyZipEntryToDisk(zis, entry, LOCALE_DIR + File.separator + language + File.separator + LC_MESSAGES);
+                            break;
+                        case "class":
+                            copyZipEntryToDisk(zis, entry, RESOURCES_DIR + File.separator + source.getId());
+                            break;
                     }
                 }
             }
@@ -774,7 +746,6 @@ public class LanguageManagerImpl implements LanguageManager
             try { if ( response != null ) response.close(); } catch (Exception e) { logger.warn("close",e); }
             try { httpClient.close(); } catch (Exception e) { logger.warn("close",e); }
         }
-
     }
 
 }
