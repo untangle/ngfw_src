@@ -93,7 +93,7 @@ Ext.define('Ung.dashboard', {
         this.dashboardPanel.removeAll();
         var i, j, type, entry, widget;
 
-        this.widgetsList.push(Ext.create('Ung.dashboard.Map'));
+        //this.widgetsList.push(Ext.create('Ung.dashboard.Map'));
 
         for (i = 0; i < this.allWidgets.length; i += 1) {
             widget = this.allWidgets[i];
