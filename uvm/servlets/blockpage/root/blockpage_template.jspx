@@ -63,7 +63,7 @@
 
       <hr/>
       <i class="material-icons" style="font-size: 64px; color: #999; vertical-align: middle;">link</i>
-      <div style="display: inline-block; vertical-align: middle; width: 70%; text-align: left; font-size: 12px; color: #CCC;">
+      <div style="display: inline-block; vertical-align: top; width: 70%; text-align: left; font-size: 12px; color: #CCC;">
         <p><strong><uvm:i18n>Host:</uvm:i18n></strong> <c:out value=" ${bd.formattedHost}"/></p>
         <p><strong><uvm:i18n>URL:</uvm:i18n></strong> <c:out value=" ${bd.formattedUrl}"/></p>
         <c:if test="${!empty reason}">
@@ -87,17 +87,20 @@
         </button>
       </c:if>
 
+      <!--
       <div id="footer">
         <p><span><c:out value="${footer}"/></span></p>
       </div>
-      
+      -->
+
+      <!--
       <div id="extra-div-1"><span></span></div>
       <div id="extra-div-2"><span></span></div>
       <div id="extra-div-3"><span></span></div>
       <div id="extra-div-4"><span></span></div>
       <div id="extra-div-5"><span></span></div>
       <div id="extra-div-6"><span></span></div>
-
+      -->
     </div>
   </body>
 </html>

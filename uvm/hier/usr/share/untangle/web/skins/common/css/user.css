@@ -269,17 +269,17 @@ body.blockpage #footer {
 }
 /* block page */
 .u-form-item {
-    margin: 5px 0px 0px 170px;
+    margin: 5px 0;
     text-align: left;
     width: 340px;
 }
 
 .u-form-item-label {
-    margin-right: 5px;
     float: left;
     font-weight: bold;
     text-align: left;
     color: white;
+    padding: 2px 5px;
 }
 
 #unblockNowButton {
@@ -295,5 +295,6 @@ body.blockpage #footer {
 }
 
 #invalid-password {
-    color: #FF0000;
+    color: coral;
+    margin-left: 60px;
 }
