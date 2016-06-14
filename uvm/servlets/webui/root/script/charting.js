@@ -126,7 +126,7 @@ Ext.define('Ung.charts', {
                     // generate an array of random data
                     var data = [], time = Date.now(), i;
                     try {
-                        time = rpc.systemManager.getMilliseconds() - (new Date().getTimezoneOffset() * 60000) - rpc.timeZoneOffset;
+                        time = rpc.systemManager.getMilliseconds();
                     } catch (e) {
                         console.log('Unable to get current millis.');
                     }

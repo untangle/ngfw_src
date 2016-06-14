@@ -73,10 +73,9 @@ Ext.define("Ung.Main", {
             map: rpc.translations,
             timeoffset: (new Date().getTimezoneOffset() * 60000) + rpc.timeZoneOffset
         });
-
         Highcharts.setOptions({
             global: {
-                timezoneOffset: -1 * (new Date().getTimezoneOffset() + 2 * (rpc.timeZoneOffset / 60000))
+                timezoneOffset: -(rpc.timeZoneOffset / 60000)
             }
         });
 
@@ -514,7 +513,7 @@ Ext.define("Ung.Main", {
                                     }
                                     Highcharts.setOptions({
                                         global: {
-                                            timezoneOffset: -1 * (new Date().getTimezoneOffset() + 2 * (rpc.timeZoneOffset / 60000))
+                                            timezoneOffset: -(rpc.timeZoneOffset / 60000)
                                         }
                                     });
                                 }
