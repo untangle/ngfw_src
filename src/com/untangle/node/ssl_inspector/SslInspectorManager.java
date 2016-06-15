@@ -165,10 +165,11 @@ class SslInspectorManager
     public void initializeClientEngine(X509Certificate baseCert) throws Exception
     {
         String mailCertFile = CertificateManager.CERT_STORE_PATH + UvmContextFactory.context().systemManager().getSettings().getMailCertificate().replaceAll("\\.pem", "\\.pfx");
+        boolean isInbound = UvmContextFactory.context().networkManager().findInterfaceId(session.getClientIntf()).getIsWan();
         KeyStore keyStore = null;
 
-        // for SMTP we use the certificate assigned for scanning STARTTLS traffic
-        if (session.getServerPort() == 25) {
+        // for inbound SMTP we use the certificate assigned for scanning STARTTLS traffic
+        if ((session.getServerPort() == 25) && isInbound) {
             keyStore = KeyStore.getInstance("PKCS12");
             keyStore.load(new FileInputStream(mailCertFile), CertificateManager.CERT_FILE_PASSWORD.toCharArray());
         }
