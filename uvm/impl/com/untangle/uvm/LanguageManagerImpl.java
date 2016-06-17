@@ -310,12 +310,6 @@ public class LanguageManagerImpl implements LanguageManager
                 logger.warn("The folder " + entry.getName() + " does not correspond to a valid language code");
                 return false;
             }
-        } else {
-            // in order to be a valid entry, it should be in the following format: <lang_code>/<package_name>.po
-            if (tokens.length != 2 || !isValidLocaleCode(tokens[0]) || !entry.getName().endsWith(".po")) {
-                logger.warn("The entry " + entry.getName() + " does not conform to the correct naming: <lang_code>/<module_name>.po ");
-                return false;
-            }
         }
         return true;
     }
@@ -685,7 +679,7 @@ public class LanguageManagerImpl implements LanguageManager
 
         languageSource source = getLanguageSource(sourceId);
 
-        String urlString = REMOTE_LANGUAGES_URL + "export/?path=/" + language + "/" + source.getUrl() + "/&zip=true&rename=true";
+        String urlString = REMOTE_LANGUAGES_URL + "export/?path=/" + language + "/" + source.getUrl() + "/&zip=true&rename=true&bundle=true";
         try {
             URL url = new URL(urlString);
 
@@ -703,11 +697,11 @@ public class LanguageManagerImpl implements LanguageManager
             String extension = null;
             int extensionIndex = 0;
             while ((entry = zis.getNextEntry()) != null) {
-                // if (!isValid(entry)){
-                //     success = false;
-                //     msg = "Invalid Entry";
-                //     break;
-                // }
+                if (!isValid(entry)){
+                    success = false;
+                    msg = "Invalid Entry";
+                    break;
+                }
                 if (entry.isDirectory()) {
                     File dir = new File(source.getDirectory() + File.separator + entry.getName());
                     if (!dir.exists()) {
