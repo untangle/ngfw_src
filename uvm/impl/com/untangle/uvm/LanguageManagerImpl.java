@@ -13,7 +13,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.net.URLClassLoader;
 
+import java.lang.ClassLoader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
@@ -105,6 +107,7 @@ public class LanguageManagerImpl implements LanguageManager
         private String url;
         private String directory;
         private String prefix;
+        private String resourcePath;
 
         public languageSource(String id, String title, String url)
         {
@@ -113,12 +116,14 @@ public class LanguageManagerImpl implements LanguageManager
             this.url = url;
             this.directory = LANGUAGES_DIR + File.separator + id;
             this.prefix = "i18n." + id;
+            this.resourcePath = "i18n." + id + ".untangle";
         }
         public String getId(){ return this.id; }
         public String getTitle(){ return this.title; }
         public String getUrl(){ return this.url; }
         public String getDirectory(){ return this.directory;  }
         public String getPrefix(){ return this.prefix; }
+        public String getResourcePath(){ return this.resourcePath; }
     }
 
     private static final ArrayList<languageSource> LanguageSources = new ArrayList<languageSource>() {{
@@ -255,7 +260,7 @@ public class LanguageManagerImpl implements LanguageManager
         }
         languageSource source = getLanguageSource(sourceId);
 
-        String translationKey = i18nModule + "_" + locale.getLanguage();
+        String translationKey = i18nModule + "_" + source.getId() + "_" + locale.getLanguage();
         
         synchronized( this ) {
             map = translations.get(translationKey);
@@ -268,13 +273,21 @@ public class LanguageManagerImpl implements LanguageManager
             if(map.size() == 0){
                 try {
                     I18n i18n = null;
-                    ResourceBundle.clearCache(getClass().getClassLoader());
+                    File file = new File(LANGUAGES_DIR);
+                    ClassLoader urlLoader = null;
+                    try{
+                         urlLoader = new URLClassLoader(new URL[]{file.toURI().toURL()});
+                    }catch(Exception e){
+                        logger.warn("getTranslations: unable to initialize urlLoader, ", e);
+                    }
+                    ResourceBundle.clearCache(urlLoader);
 
                     try{
-                        i18n = I18nFactory.getI18n(source.getPrefix() + "." + i18nModule, i18nModule,
-                                            getClass().getClassLoader(), locale, I18nFactory.NO_CACHE);
+                        i18n = I18nFactory.getI18n(source.getPrefix(), source.getResourcePath(),
+                                            urlLoader, locale, I18nFactory.NO_CACHE);
                     }catch(MissingResourceException e){
                         // Do nothing.  Likely problem is the rare case of localization resource bundle has been deleted.
+                        logger.warn(e);
                     }
 
                     if (i18n != null) {
@@ -286,6 +299,7 @@ public class LanguageManagerImpl implements LanguageManager
                 } catch (MissingResourceException e) {
                     // Do nothing - Fall back to a default that returns the passed text if no resource bundle can be located
                     // is done in client side
+                    logger.warn(e);
                 }
             }
 
