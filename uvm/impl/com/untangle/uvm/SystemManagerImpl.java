@@ -356,9 +356,16 @@ public class SystemManagerImpl implements SystemManager
 
     public Integer getTimeZoneOffset()
     {
+        TimeZone tz = getTimeZone();
+        Calendar cal = Calendar.getInstance(tz);
+        Integer offset = tz.getOffset(cal.getTimeInMillis());
+        return(0);
+    }
+
+    public Integer OLD_getTimeZoneOffset()
+    {
         try {
             String tzoffsetStr = UvmContextImpl.context().execManager().execOutput("date +%:z");
-        
             if (tzoffsetStr == null) {
                 return 0;
             } else {
