@@ -354,14 +354,24 @@ public class SystemManagerImpl implements SystemManager
         return sb.toString();
     }
 
+    /*
+     * The old version of this function called 'date +%:z' to figure out the
+     * current timezone offset, which was returning a value that seemed to
+     * be cached for the process, and did not reflect real time changes.
+     * This new version calculates the offset using the timezone that has
+     * been configured using setTimeZone.  Found this on the interwebs:
+     * http://stackoverflow.com/questions/11399491/java-timezone-offset
+     */
     public Integer getTimeZoneOffset()
     {
         TimeZone tz = getTimeZone();
         Calendar cal = Calendar.getInstance(tz);
         Integer offset = tz.getOffset(cal.getTimeInMillis());
-        return(0);
+        logger.info("getTimeZoneOffset calculated value = " + offset);
+        return(offset);
     }
 
+    // TODO - this should be removed once we're sure the code above is good
     public Integer OLD_getTimeZoneOffset()
     {
         try {
