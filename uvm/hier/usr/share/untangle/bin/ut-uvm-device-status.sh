@@ -56,7 +56,7 @@ function getInterfaceStatus()
             fi
         else
         ##  Use mii-tool instead
-            local t_status=`mii-tool ${t_intf}`
+            local t_status=`mii-tool ${t_intf} 2> /dev/null`
             if [ "${t_status%link ok}" != "${t_status}" ]; then
                 t_isConnected="${FLAG_CONNECTED}"
             else 
