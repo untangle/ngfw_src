@@ -614,7 +614,10 @@ Ext.define('Ung.panel.Reports', {
             }, this)
         }, {
             flex: 1,
-            dataIndex: 'text'
+            dataIndex: 'text',
+            renderer: Ext.bind(function (value, metaData, record) {
+                return i18n._(value);
+            }, this)
         }, {
             width: 24,
             hidden: !Ung.Main.webuiMode,
@@ -758,7 +761,7 @@ Ext.define('Ung.panel.Reports', {
             for (i = 0; i < result.list.length; i += 1) {
                 entry = result.list[i];
                 entry.selModel = Ext.create('Ung.grid.ReportItemModel', {
-                    text : entry.title,
+                    text : i18n._(entry.title),
                     type: entry.type
                 });
                 if (!allReports.hasOwnProperty(entry.category)) {
@@ -921,13 +924,13 @@ Ext.define('Ung.panel.Reports', {
             listEntries.push(entry);
 
             menuEntries.push({
-                text: '<i class="material-icons" style="font-size: 20px;">' + _icon + '</i> <span>' + entries[i].title + '</span>',
+                text: '<i class="material-icons" style="font-size: 20px;">' + _icon + '</i> <span>' + i18n._(entries[i].title) + '</span>',
                 model: entry
             });
 
             btnHtml = '<i class="material-icons">' + _icon + '</i>';
 
-            btnHtml += '<span class="ttl">' + entries[i].title + '</span><br/><span class="dsc">' + entries[i].description + '</span></br>';
+            btnHtml += '<span class="ttl">' + i18n._(entries[i].title) + '</span><br/><span class="dsc">' + i18n._(entries[i].description) + '</span></br>';
 
             if (this.inDashboard(entries[i])) {
                 btnHtml += '<i class="material-icons in-dashboard">home</i> <span class="icon-label">in Dashboard</span>';
@@ -1125,7 +1128,7 @@ Ext.define('Ung.panel.Reports', {
 
         this.reportPanel.setActiveItem('reportContainer');
         this.reportContainer.setTitle({
-            text: '<span class="ttl">' + entry.title + '</span>' + '<br/>' + '<span class="dsc">' + entry.description + '</span>',
+            text: '<span class="ttl">' + i18n._(entry.title) + '</span>' + '<br/>' + '<span class="dsc">' + i18n._(entry.description) + '</span>',
             border: false,
             padding: '5px'
         });
@@ -1957,7 +1960,7 @@ Ext.define('Ung.panel.ReportCategorySelector', {
                 autoEl: {
                     tag: 'a',
                     href: '',
-                    html: '<i class="material-icons">' + this.reports[i].icon + '</i><span>' + this.reports[i].title + '</span>',
+                    html: '<i class="material-icons">' + this.reports[i].icon + '</i><span>' + i18n._(this.reports[i].title) + '</span>',
                     'data-index': i
                 },
                 listeners: {
@@ -1981,7 +1984,7 @@ Ext.define('Ung.panel.ReportCategorySelector', {
                 autoEl: {
                     tag: 'a',
                     href: '',
-                    html: (this.reports.length - 5) + ' more ...'
+                    html: (this.reports.length - 5) + ' ' + i18n._('more') + ' ...'
                 },
                 listeners: {
                     click: {

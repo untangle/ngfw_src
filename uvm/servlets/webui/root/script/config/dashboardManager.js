@@ -167,10 +167,10 @@ Ext.define('Webui.config.dashboardManager', {
                             var entryId = record.get('entryId');
                             var entry = Ung.dashboard.reportsMap[entryId];
                             if (entry) {
-                                return '<span style="font-size: 10px; color: #999;">' + entry.category.toUpperCase() + (_isInstallable ? ' (install required)' : '') + '</span> <br/> ' + entry.title;
+                                return '<span style="font-size: 10px; color: #999;">' + i18n._(entry.category).toUpperCase() + (_isInstallable ? ' (' + i18n._('install required') + ')' : '') + '</span> <br/> ' + i18n._(entry.title);
                             }
                         } else {
-                            return '<span style="font-size: 10px; color: #999;">' + _app.join(' ').toUpperCase() + ' (install required)</span><br/> Report';
+                            return '<span style="font-size: 10px; color: #999;">' + _app.join(' ').toUpperCase() + ' (' + i18n._('install required') + ')</span><br/> Report';
                         }
                     }
                     if (value !== 'ReportEntry') {
