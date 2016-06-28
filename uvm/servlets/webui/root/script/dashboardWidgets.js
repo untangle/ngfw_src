@@ -327,40 +327,40 @@ Ext.define('Ung.dashboard.Information', {
     */
     initComponent: function () {
         this.title = '<h3>' + i18n._('Information') + '</h3>';
+        this.tpl = '<div class="wg-wrapper information">' +
+            '<p class="info-hostname">{hostname}<br/> <span>' + i18n._('version') + ': {version}</span></p>' +
+            '<p class="info-uptime"><i class="material-icons" style="vertical-align: middle; font-size: 16px; margin-right: 5px;">access_time</i> <span style="vertical-align: middle;">' + i18n._('uptime') + ': {uptime}</span></p>' +
+            '<div class="info-hardware">' +
+            '<div class="row">' +
+            '<label style="width: 90px;">' + i18n._('Server') + ':</label>' +
+            '<div class="cell">{applianceModel}</div>' +
+            '</div>' +
+            '<div class="row">' +
+            '<label style="width: 90px;">' + i18n._('CPU Count') + ':</label>' +
+            '<div class="cell">{cpuCount}</div>' +
+            '</div>' +
+            '<div class="row">' +
+            '<label style="width: 90px;">' + i18n._('CPU Type') + ':</label>' +
+            '<div class="cell">{cpuType}</div>' +
+            '</div>' +
+            '<div class="row">' +
+            '<label style="width: 90px;">' + i18n._('Architecture') + ':</label>' +
+            '<div class="cell">{architecture}</div>' +
+            '</div>' +
+            '<div class="row">' +
+            '<label style="width: 90px;">' + i18n._('Memory') + ':</label>' +
+            '<div class="cell">{totalMemory} MB</div>' +
+            '</div>' +
+            '<div class="row">' +
+            '<label style="width: 90px;">' + i18n._('Disk') + ':</label>' +
+            '<div class="cell">{totalDisk} GB</div>' +
+            '</div>' +
+            '</div>' +
+            '</div>' +
+            '<div class="mask init-mask"><i class="material-icons">widgets</i><p>' + i18n._("Information") + '</p></div>';
         this.callParent(arguments);
     },
     data: {},
-    tpl: '<div class="wg-wrapper information">' +
-            '<p class="info-hostname">{hostname}<br/> <span>version: {version}</span></p>' +
-            '<p class="info-uptime"><i class="material-icons" style="vertical-align: middle; font-size: 16px; margin-right: 5px;">access_time</i>' + i18n._('uptime') + ': {uptime}</p>' +
-            '<div class="info-hardware">' +
-                '<div class="row">' +
-                '<label style="width: 90px;">' + i18n._('Server') + ':</label>' +
-                '<div class="cell">{applianceModel}</div>' +
-                '</div>' +
-                '<div class="row">' +
-                '<label style="width: 90px;">' + i18n._('CPU Count') + ':</label>' +
-                '<div class="cell">{cpuCount}</div>' +
-                '</div>' +
-                '<div class="row">' +
-                '<label style="width: 90px;">' + i18n._('CPU Type') + ':</label>' +
-                '<div class="cell">{cpuType}</div>' +
-                '</div>' +
-                '<div class="row">' +
-                '<label style="width: 90px;">' + i18n._('Architecture') + ':</label>' +
-                '<div class="cell">{architecture}</div>' +
-                '</div>' +
-                '<div class="row">' +
-                '<label style="width: 90px;">' + i18n._('Memory') + ':</label>' +
-                '<div class="cell">{totalMemory} MB</div>' +
-                '</div>' +
-                '<div class="row">' +
-                '<label style="width: 90px;">' + i18n._('Disk') + ':</label>' +
-                '<div class="cell">{totalDisk} GB</div>' +
-                '</div>' +
-            '</div>' +
-         '</div>' +
-         '<div class="mask init-mask"><i class="material-icons">widgets</i><p>' + i18n._("Information") + '</p></div>',
     updateStats: function (stats) {
         var numdays = Math.floor((stats.uptime % 31536000) / 86400),
             numhours = Math.floor(((stats.uptime % 31536000) % 86400) / 3600),
@@ -425,33 +425,32 @@ Ext.define('Ung.dashboard.Resources', {
     extend: 'Ung.dashboard.Widget',
     hasStats: true,
     initComponent: function () {
-        this.title = '<h3>' + i18n._("Resources") + '</h3>';
-        this.callParent(arguments);
-    },
-    tpl:
-        '<div class="wg-wrapper flex" style="padding: 0 30px; align-items: initial;">' +
-        '<p style="margin: 5px 0; font-weight: 600;">' + i18n._('Memory') + '</p>' +
-        '<div>' +
+        this.title = '<h3>' + i18n._('Resources') + '</h3>';
+        this.tpl = '<div class="wg-wrapper flex" style="padding: 0 30px; align-items: initial;">' +
+            '<p style="margin: 5px 0; font-weight: 600;">' + i18n._('Memory') + '</p>' +
+            '<div>' +
             '<div class="wg-progress"><div class="wg-progress-bar"><span style="left: -{percentFreeMemory}%;"></span></div><p>{totalMemory} MB</p></div>' +
-            '<div class="wg-progress-vals"><span style="color: #BB9600; font-weight: 600;">{usedMemory} MB</span> used <em>({percentUsedMemory}%)</em></div>' +
-            '<div class="wg-progress-vals"><span style="color: #555; font-weight: 600;">{freeMemory} MB</span> free <em>({percentFreeMemory}%)</em></div>' +
-        '</div>' +
-        '<div class="swap-usage" style="border-top: 1px #EEE solid; border-bottom: 1px #EEE solid; margin: 5px 0; padding: 0 0 10px 0;">' +
+            '<div class="wg-progress-vals"><span style="color: #BB9600; font-weight: 600;">{usedMemory} MB</span> ' + i18n._('used') + ' <em>({percentUsedMemory}%)</em></div>' +
+            '<div class="wg-progress-vals"><span style="color: #555; font-weight: 600;">{freeMemory} MB</span> ' + i18n._('free') + ' <em>({percentFreeMemory}%)</em></div>' +
+            '</div>' +
+            '<div class="swap-usage" style="border-top: 1px #EEE solid; border-bottom: 1px #EEE solid; margin: 5px 0; padding: 0 0 10px 0;">' +
             '<p style="margin: 5px 0; font-weight: 600;">' + i18n._('Swap') + '</p>' +
             '<div>' +
-                '<div class="wg-progress"><div class="wg-progress-bar"><span style="left: -{percentFreeSwap}%;"></span></div><p>{totalSwap} MB</p></div>' +
-                '<div class="wg-progress-vals"><span style="color: #BB9600; font-weight: 600;">{usedSwap} MB</span> used <em>({percentUsedSwap}%)</em></div>' +
-                '<div class="wg-progress-vals"><span style="color: #555; font-weight: 600;">{freeSwap} MB</span> free <em>({percentFreeSwap}%)</em></div>' +
+            '<div class="wg-progress"><div class="wg-progress-bar"><span style="left: -{percentFreeSwap}%;"></span></div><p>{totalSwap} MB</p></div>' +
+            '<div class="wg-progress-vals"><span style="color: #BB9600; font-weight: 600;">{usedSwap} MB</span> ' + i18n._('used') + ' <em>({percentUsedSwap}%)</em></div>' +
+            '<div class="wg-progress-vals"><span style="color: #555; font-weight: 600;">{freeSwap} MB</span> ' + i18n._('free') + ' <em>({percentFreeSwap}%)</em></div>' +
             '</div>' +
-        '</div>' +
-        '<p style="margin: 5px 0; font-weight: 600;">' + i18n._('Disk') + '</p>' +
-        '<div>' +
-        '<div class="wg-progress"><div class="wg-progress-bar"><span style="left: -{percentFreeDisk}%;"></span></div><p>{totalDisk} GB</p></div>' +
-        '<div class="wg-progress-vals"><span style="color: #BB9600; font-weight: 600;">{usedDisk} GB</span> used <em>({percentUsedDisk}%)</em></div>' +
-        '<div class="wg-progress-vals"><span style="color: #555; font-weight: 600;">{freeDisk} GB</span> free <em>({percentFreeDisk}%)</em></div>' +
-        '</div>' +
-        '</div>' +
-        '<div class="mask init-mask"><i class="material-icons">widgets</i><p>' + i18n._("Resources") + '</p></div>',
+            '</div>' +
+            '<p style="margin: 5px 0; font-weight: 600;">' + i18n._('Disk') + '</p>' +
+            '<div>' +
+            '<div class="wg-progress"><div class="wg-progress-bar"><span style="left: -{percentFreeDisk}%;"></span></div><p>{totalDisk} GB</p></div>' +
+            '<div class="wg-progress-vals"><span style="color: #BB9600; font-weight: 600;">{usedDisk} GB</span> ' + i18n._('used') + ' <em>({percentUsedDisk}%)</em></div>' +
+            '<div class="wg-progress-vals"><span style="color: #555; font-weight: 600;">{freeDisk} GB</span> ' + i18n._('free') + ' <em>({percentFreeDisk}%)</em></div>' +
+            '</div>' +
+            '</div>' +
+            '<div class="mask init-mask"><i class="material-icons">widgets</i><p>' + i18n._('Resources') + '</p></div>';
+        this.callParent(arguments);
+    },
     data: {},
     updateStats: function (stats) {
         this.update({
@@ -512,7 +511,7 @@ Ext.define('Ung.dashboard.CPULoad', {
     updateStats: function (stats) {
         var medLimit = stats.numCpus + 1;
         var highLimit = stats.numCpus + 4;
-        var loadLabel = 'low';
+        var loadLabel = i18n._('low');
 
         if (this.lineChart !== null && this.gaugeChart !== null) {
             this.lineChart.yAxis[0].update({
@@ -554,10 +553,10 @@ Ext.define('Ung.dashboard.CPULoad', {
 
 
         if (stats.oneMinuteLoadAvg > medLimit) {
-            loadLabel = 'medium';
+            loadLabel = i18n._('medium');
         }
         if (stats.oneMinuteLoadAvg > highLimit) {
-            loadLabel = 'high';
+            loadLabel = i18n._('high');
         }
         if (Ext.select('.cpuLoadVal', this).elements[0]) {
             var loadValElement = Ext.select('.cpuLoadVal', this).elements[0];
@@ -581,32 +580,40 @@ Ext.define('Ung.dashboard.NetworkInformation', {
     refreshIntervalSec: 10,
     hasStats: true,
     initComponent: function () {
-        this.title = '<h3 style="padding: 5px 0;">' + i18n._("Network Information") + '</h3>';
-        this.callParent(arguments);
-    },
-    tpl: '<div class="wg-wrapper no-padding flex">' +
+        this.title = '<h3 style="padding: 5px 0;">' + i18n._('Network Information') + '</h3>';
+        this.tpl = '<div class="wg-wrapper no-padding flex">' +
             '<div class="info-box" style="border-bottom: 1px #EEE solid;">' +
-                '<div class="info-item">' + i18n._("Currently Active") + '<br/><span>{hosts.activeHosts}</span></div>' +
-                '<div class="info-item">' + i18n._("Maximum Active") + '<br/><span>{hosts.maxActiveHosts}</span></div>' +
-                '<div class="info-item">' + i18n._("Known Devices") + '<br/><span>{hosts.knownDevices}</span></div>' +
-                '<div class="info-actions">' +
-                    '<button class="wg-button" onclick="Ung.Main.showHosts();" style="flex: 1;">View Hosts</button>' +
-                    '<button class="wg-button" onclick="Ung.Main.showDevices();" style="flex: 1;">View Devices</button>' +
-                '</div>' +
+            '<div class="info-item">' + i18n._('Currently Active') + '<br/><span>{hosts.activeHosts}</span></div>' +
+            '<div class="info-item">' + i18n._('Maximum Active') + '<br/><span>{hosts.maxActiveHosts}</span></div>' +
+            '<div class="info-item">' + i18n._('Known Devices') + '<br/><span>{hosts.knownDevices}</span></div>' +
+            '<div class="info-actions">' +
+            '<button class="wg-button" onclick="Ung.Main.showHosts();" style="flex: 1;">' + i18n._('Hosts') + '</button>' +
+            '<button class="wg-button" onclick="Ung.Main.showDevices();" style="flex: 1;">' + i18n._('Devices') + '</button>' +
+            '</div>' +
             '</div>' +
             '<div class="info-box">' +
-                '<div class="info-item">' + i18n._("Total Sessions") + '<br/><span>{sessions.totalSessions}</span></div>' +
-                '<div class="info-item">' + i18n._("Scanned Sessions") + '<br/><span>{sessions.scannedSessions}</span></div>' +
-                '<div class="info-item">' + i18n._("Bypassed Sessions") + '<br/><span>{sessions.bypassedSessions}</span></div>' +
-                '<div class="info-actions">' +
-                    '<button class="wg-button" onclick="Ung.Main.showSessions();" style="flex: 1;">View Sessions</button> ' +
-                '</div>' +
+            '<div class="info-item">' + i18n._('Total Sessions') + '<br/><span>{sessions.totalSessions}</span></div>' +
+            '<div class="info-item">' + i18n._('Scanned Sessions') + '<br/><span>{sessions.scannedSessions}</span></div>' +
+            '<div class="info-item">' + i18n._('Bypassed Sessions') + '<br/><span>{sessions.bypassedSessions}</span></div>' +
+            '<div class="info-actions">' +
+            '<button class="wg-button" onclick="Ung.Main.showSessions();" style="flex: 1;">' + i18n._('Sessions') + '</button> ' +
             '</div>' +
-        '</div>' +
-        '<div class="mask init-mask"><i class="material-icons">widgets</i><p>' + i18n._("Network Information") + '</p></div>',
-    data: {
-        hosts: {},
-        sessions: {}
+            '</div>' +
+            '</div>' +
+            '<div class="mask init-mask"><i class="material-icons">widgets</i><p>' + i18n._('Network Information') + '</p></div>';
+        this.data = {
+            hosts: {
+                activeHosts: 0,
+                maxActiveHosts: 0,
+                knownDevices: 0
+            },
+            sessions: {
+                totalSessions: 0,
+                scannedSessions: 0,
+                bypassedSessions: 0
+            }
+        };
+        this.callParent(arguments);
     },
     updateStats: function (stats) {
         this.data.hosts = {
@@ -637,49 +644,49 @@ Ext.define('Ung.dashboard.NetworkLayout', {
     hasStats: true,
     refreshIntervalSec: 0,
     hasRefresh: true,
-    data: {
-        externalInterfaces: null,
-        internalInterfaces: null
-    },
     interfacesLoaded: false,
     initComponent: function () {
         this.title = '<h3>' + i18n._("Network Layout") + '</h3>';
+        this.data = {
+            externalInterfaces: null,
+            internalInterfaces: null
+        };
+        this.tpl = '<div class="wg-wrapper network-intf">' +
+            '<div class="wrap">' +
+            '<div class="external">' +
+            '<img src="/skins/default/images/admin/icons/interface-cloud.png" style="margin: 5px auto; height: 30px; display: block;"/>' +
+            '<tpl for="externalInterfaces">' +
+            '<div class="iface" id="interface_{id}">' +
+            '<p class="name">{name}</p>' +
+            '<div class="speeds" style="display: inline-block; text-align: left;">' +
+            '<span class="up">{tx} kB/s</span>' +
+            '<span class="down">{rx} kB/s</span>' +
+            '</div>' +
+            '</div>' +
+            '</tpl>' +
+            '<br/><span class="connection ext"></span>' +
+            '</div>' +
+            '</div>' +
+            '<div class="wire"></div>' +
+            '<div class="wrap">' +
+            '<div class="internal">' +
+            '<tpl for="internalInterfaces">' +
+            '<div class="iface" id="interface_{id}">' +
+            '<span class="connection int"></span><br/>' +
+            '<div class="speeds" style="display: inline-block; text-align: left;">' +
+            '<span class="up">{tx} kB/s</span>' +
+            '<span class="down">{rx} kB/s</span>' +
+            '</div>' +
+            '<p class="name">{name}</p>' +
+            '<p class="devs"></p>' +
+            '</div>' +
+            '</tpl>' +
+            '</div>' +
+            '</div>' +
+            '</div>' +
+            '<div class="mask init-mask"><i class="material-icons">widgets</i><p>' + i18n._('Network Layout') + '</p></div>';
         this.callParent(arguments);
     },
-    tpl: '<div class="wg-wrapper network-intf">' +
-        '<div class="wrap">' +
-        '<div class="external">' +
-        '<img src="/skins/default/images/admin/icons/interface-cloud.png" style="margin: 5px auto; height: 30px; display: block;"/>' +
-        '<tpl for="externalInterfaces">' +
-        '<div class="iface" id="interface_{id}">' +
-        '<p class="name">{name}</p>' +
-        '<div class="speeds" style="display: inline-block; text-align: left;">' +
-        '<span class="up">{tx} kB/s</span>' +
-        '<span class="down">{rx} kB/s</span>' +
-        '</div>' +
-        '</div>' +
-        '</tpl>' +
-        '<br/><span class="connection ext"></span>' +
-        '</div>' +
-        '</div>' +
-        '<div class="wire"></div>' +
-        '<div class="wrap">' +
-        '<div class="internal">' +
-        '<tpl for="internalInterfaces">' +
-        '<div class="iface" id="interface_{id}">' +
-        '<span class="connection int"></span><br/>' +
-        '<div class="speeds" style="display: inline-block; text-align: left;">' +
-        '<span class="up">{tx} kB/s</span>' +
-        '<span class="down">{rx} kB/s</span>' +
-        '</div>' +
-        '<p class="name">{name}</p>' +
-        '<p class="devs"></p>' +
-        '</div>' +
-        '</tpl>' +
-        '</div>' +
-        '</div>' +
-        '</div>' +
-        '<div class="mask init-mask"><i class="material-icons">widgets</i><p>' + i18n._("Network Layout") + '</p></div>',
     updateStats: function (stats) {
         if (!this.interfacesLoaded) {
             return;
@@ -769,18 +776,17 @@ Ext.define('Ung.dashboard.ReportEntry', {
     hasRefresh: true,
 
     tpl: '<div class="wg-wrapper no-padding">' +
-        //'<div class="chart-types" style="height: 20px;">' +
         '</div>' +
         '<div class="chart" style="height: 260px; position: absolute; left: 0; bottom: 0; right: 0;">' +
         '</div>' +
         '</div>' +
-        '<div class="mask init-mask"><i class="material-icons">widgets</i><p>Loading ...</p></div>' +
+        '<div class="mask init-mask"><i class="material-icons">widgets</i><p>' + i18n._('Loading') + '...</p></div>' +
         '<div class="mask nodata-mask"><i class="material-icons">not_interested</i><p>' + i18n._('No data available yet!') + '</p></div>',
     data: {},
     chart: null,
     chartData: null,
     initComponent: function () {
-        this.title = '<h3>' + this.entry.category + ' &bull; ' + this.entry.title + '</h3><p>' + this.entry.description + '</p>';
+        this.title = '<h3>' + i18n._(this.entry.category) + ' &bull; ' + i18n._(this.entry.title) + '</h3><p>' + i18n._(this.entry.description) + '</p>';
         if (this.entry.type === 'EVENT_LIST') {
             this.items = [this.buildGrid()];
             this.callParent(arguments);
@@ -798,47 +804,6 @@ Ext.define('Ung.dashboard.ReportEntry', {
             widget.getEl().query('.init-mask p')[0].innerHTML = this.entry.category + ' &bull; ' + this.entry.title;
         }
     },
-
-    /*
-    listeners: {
-        'afterrender': function (widget) {
-            var chartButtons = widget.getEl().query('.chart-types')[0], i;
-
-            if (widget.entry.type !== 'EVENT_LIST' && widget.entry.type !== 'TEXT') {
-                if (widget.entry.type === 'TIME_GRAPH' || widget.entry.type === 'TIME_GRAPH_DYNAMIC') {
-                    chartButtons.innerHTML =
-                        '<button data-type="spline" class="selected">' + i18n._('Line') + '</button>' +
-                        '<button data-type="areaspline">' + i18n._('Area') + '</button>' +
-                        '<button data-type="column">' + i18n._('Grouped Columns') + '</button>' +
-                        '<button data-type="column" data-overlapped>' + i18n._('Overlapped Columns') + '</button>';
-                    chartButtons.addEventListener('click', function (evt) {
-                        for (i = 0; i < chartButtons.querySelectorAll('button').length; i += 1) {
-                            chartButtons.querySelectorAll('button')[i].removeAttribute('class');
-                        }
-                        evt.target.className = 'selected';
-                        widget.entry.columnOverlapped = evt.target.dataset.overlapped !== undefined;
-                        Ung.charts.updateSeriesType(widget.entry, widget.chart, evt.target.dataset.type);
-                    });
-                } else {
-                    chartButtons.innerHTML =
-                        '<button data-type="pie" class="selected">' + i18n._('Pie') + '</button>' +
-                        '<button data-type="pie" data-donut>' + i18n._('Donut') + '</button>' +
-                        '<button data-type="column">' + i18n._('Column') + '</button>';
-                    chartButtons.addEventListener('click', function (evt) {
-                        for (i = 0; i < chartButtons.querySelectorAll('button').length; i += 1) {
-                            chartButtons.querySelectorAll('button')[i].removeAttribute('class');
-                        }
-                        evt.target.className = 'selected';
-                        widget.entry.chartType = evt.target.dataset.type;
-                        widget.entry.isDonut = evt.target.dataset.donut !== undefined;
-                        widget.chart.destroy();
-                        widget.chart = Ung.charts.categoriesChart(widget.entry, widget.chartData, widget, true);
-                    });
-                }
-            }
-        }
-    },
-    */
     loadData: function (handler) {
         if (this.entry.type === 'EVENT_LIST') {
             this.renderEventData(handler);
@@ -910,10 +875,6 @@ Ext.define('Ung.dashboard.ReportEntry', {
                 store.load();
             }, 1000);
         }, this), this.entry, null, this.timeframe, 14);
-    },
-
-    renderTextData: function (handler) {
-        handler.call(this);
     },
 
     buildGrid: function () {
