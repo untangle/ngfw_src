@@ -301,17 +301,15 @@ Ext.define('Ung.RuleBuilder', {
         for(i=0; i<valuesList.length; i++) {
             val = valuesList[i];
             rule=this.conditionsMap[val.conditionType];
-            if(rule && rule.type=='text') {
-                if(Ext.isEmpty(val.value)) {
-                    if(rule.allowBlank!==true) {
-                        if(rule.vtype =='portMatcher') {
-                            return "<b>"+rule.displayName + "</b>: " + Ext.form.field.VTypes.portMatcherText;
-                        } else if(rule.vtype =='ipMatcher') {
-                            return "<b>"+rule.displayName + "</b>: " + Ext.form.field.VTypes.ipMatcherText;
-                        } else {
-                            return "<b>"+rule.displayName + "</b>: " + i18n._("Value is required.");
-                        }
-                    }
+            if (rule && rule.type === 'text') {
+                if (rule.allowBlank !== true && Ext.isEmpty(val.value)) {
+                    return '<b>' + rule.displayName + '</b>: ' + i18n._('Value is required.');
+                }
+                if (rule.vtype =='portMatcher' && !Ext.form.field.VTypes.portMatcher(val.value)) {
+                    return '<b>' + rule.displayName + '</b>: ' + Ext.form.field.VTypes.portMatcherText;
+                }
+                if (rule.vtype == 'ipMatcher' && !Ext.form.field.VTypes.ipMatcher(val.value)) {
+                    return '<b>' + rule.displayName + '</b>: ' + Ext.form.field.VTypes.ipMatcherText;
                 }
             }
         }
