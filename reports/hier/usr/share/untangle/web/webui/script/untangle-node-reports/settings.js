@@ -704,6 +704,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 hasReadOnly: true,
                 hasAdd: false,
                 hasEdit: false,
+                hasImportExport: true,
                 changableFields: ['enabled'],
                 title: i18n._("All Reports"),
                 features: [{
