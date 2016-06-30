@@ -909,7 +909,7 @@ Ext.define("Ung.Main", {
             applyingUpgradesWindow.wait(i18n._("Applying Upgrades..."), i18n._("Please wait"), {
                 interval: 500,
                 increment: 120,
-                duration: 45000,
+                duration: 120000,
                 scope: this,
                 fn: function () {
                     console.log("Upgrade in Progress. Press ok to go to the Start Page...");
