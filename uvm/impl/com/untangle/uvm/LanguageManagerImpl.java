@@ -597,7 +597,7 @@ public class LanguageManagerImpl implements LanguageManager
             response = httpClient.execute(get);
             HttpEntity entity = response.getEntity();
             if ( entity == null ) {
-                throw new IllegalArgumentException("Invalid Response: " + entity);
+                logger.warn("Invalid Response: " + entity);
             }
             is = entity.getContent();
 
@@ -670,10 +670,10 @@ public class LanguageManagerImpl implements LanguageManager
 
         }
         catch (java.net.MalformedURLException e) {
-            throw new IllegalArgumentException("Invalid URL: '" + urlString + "'", e);
+            logger.warn("Invalid URL: '" + urlString + "'", e);
         }
         catch (java.io.IOException e) {
-            throw new IllegalArgumentException("Invalid content in URL: '" + urlString + "'", e);
+            logger.warn("Invalid content in URL: '" + urlString + "'", e);
         } finally {
             try { if ( response != null ) response.close(); } catch (Exception e) { logger.warn("close",e); }
             try { httpClient.close(); } catch (Exception e) { logger.warn("close",e); }
@@ -702,7 +702,7 @@ public class LanguageManagerImpl implements LanguageManager
             response = httpClient.execute(get);
             HttpEntity entity = response.getEntity();
             if ( entity == null ) {
-                throw new IllegalArgumentException("Invalid Response: " + entity);
+                logger.warn("Invalid Response: " + entity);
             }
             is = entity.getContent();
 
@@ -746,10 +746,10 @@ public class LanguageManagerImpl implements LanguageManager
             zis.close();
             is.close();
         }catch (java.net.MalformedURLException e) {
-            throw new IllegalArgumentException("Invalid URL: '" + urlString + "'", e);
+            logger.warn("Invalid URL: '" + urlString + "'", e);
         }
         catch (java.io.IOException e) {
-            throw new IllegalArgumentException("Invalid content in URL: '" + urlString + "'", e);
+            logger.warn("Invalid content in URL: '" + urlString + "'", e);
         } finally {
             try { if ( response != null ) response.close(); } catch (Exception e) { logger.warn("close",e); }
             try { httpClient.close(); } catch (Exception e) { logger.warn("close",e); }
