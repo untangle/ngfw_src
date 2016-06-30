@@ -927,6 +927,9 @@ Ext.define('Webui.config.system', {
                             fn: Ext.bind(function(elem, newValue) {
                                 this.rpc.timeZone = newValue;
                                 Ung.dashboard.timeZoneChanged = true;
+                                Ext.MessageBox.alert(
+                                    i18n._('Timezone changed'),
+                                    i18n._("A reboot is needed for the Timezone change to take effect!"));
                             }, this)
                         }
                     }
