@@ -574,9 +574,9 @@ public class LanguageManagerImpl implements LanguageManager
         InputStream is = null;
 
         RequestConfig defaultRequestConfig = RequestConfig.custom()
-            .setSocketTimeout(2000)
-            .setConnectTimeout(2000)
-            .setConnectionRequestTimeout(2000)
+            .setSocketTimeout(5000)
+            .setConnectTimeout(5000)
+            .setConnectionRequestTimeout(5000)
             .build();        
         CloseableHttpClient httpClient = HttpClients.custom()
             .setDefaultRequestConfig(defaultRequestConfig)
