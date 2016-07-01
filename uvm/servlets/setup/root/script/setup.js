@@ -68,7 +68,7 @@ Ext.define('Ung.setupWizard.Welcome', {
         if (!this.showResume) {
             items = [initialConfig];
         } else {
-            items = [titleContainer, {
+            items = [{
                 xtype: 'container',
                 margin: '20 0 0 20',
                 items: [{
@@ -136,9 +136,10 @@ Ext.define('Ung.setupWizard.Welcome', {
                 var resumeWizard = this.showResume && (this.panel.down('radio[name="restartWizardRadio"]').getGroupValue() == 'yes');
                 if (resumeWizard) {
                     var password = this.panel.down('field[name="password"]').getValue();
-                    Ung.Setup.authenticate(password, function () {
-                        Ung.Setup.wizard.loadPage(rpc.wizardSettings.steps.indexOf(rpc.wizardSettings.completedStep) + 1);
-                    });
+                    var afterFn = Ext.bind(function(handler){
+                        this.panel.ownerCt.ownerCt.controller.loadPage(rpc.wizardSettings.steps.indexOf(rpc.wizardSettings.completedStep) + 1);
+                    },this, [handler]);
+                    Ung.Setup.authenticate(password, afterFn);
                 } else {
                     handler();
                 }
