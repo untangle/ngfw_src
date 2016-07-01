@@ -252,16 +252,19 @@ public class GeographyManagerImpl implements GeographyManager
             Double coordinatesKey = null;
             Double latitude = null;
             Double longitude = null;
+            String country = null;
             Double kbps;
             
             if ( coordinatesKey == null && session.getClientLatitude() != null && session.getClientLongitude() != null ) {
                 latitude = session.getClientLatitude();
                 longitude = session.getClientLongitude();
+                country = session.getClientCountry();
                 coordinatesKey = getCoordinatesKey( latitude, longitude );
             }
             if ( coordinatesKey == null && session.getServerLatitude() != null && session.getServerLongitude() != null ) {
                 latitude = session.getServerLatitude();
                 longitude = session.getServerLongitude();
+                country = session.getServerCountry();
                 coordinatesKey = getCoordinatesKey( latitude, longitude );
             }
             // if this session has no coordinates (on either client or server, just skip it)
@@ -277,7 +280,7 @@ public class GeographyManagerImpl implements GeographyManager
 
             // if this is no existing entry for this lat & longitutde, create one
             if ( value == null ) {
-                JSONObject newValue = createCoordinatesValue(  latitude, longitude, 1, kbps );
+                JSONObject newValue = createCoordinatesValue(  latitude, longitude, country, 1, kbps );
                 coordinatesMap.put( coordinatesKey, newValue );
             }
             // if one exists, just increment the count and add to the kbps value
@@ -298,13 +301,15 @@ public class GeographyManagerImpl implements GeographyManager
         return jsonValues;
     }
 
-    private JSONObject createCoordinatesValue( Double latitude, Double longitude, int sessionCount, Double kbps )
+    private JSONObject createCoordinatesValue( Double latitude, Double longitude, String country, int sessionCount, Double kbps )
     {
         JSONObject json = new JSONObject();
 
         try {
             json.put("latitude",latitude);
             json.put("longitude",longitude);
+            if ( country != null )
+                json.put("country",country);
             json.put("sessionCount",sessionCount);
             json.put("kbps",kbps);
         } catch (Exception e) {
