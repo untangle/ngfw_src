@@ -287,7 +287,6 @@ public class LanguageManagerImpl implements LanguageManager
                                             urlLoader, locale, I18nFactory.NO_CACHE);
                     }catch(MissingResourceException e){
                         // Do nothing.  Likely problem is the rare case of localization resource bundle has been deleted.
-                        logger.warn("Failed to load translation: " + sourceId,e);
                     }
 
                     if (i18n != null) {
@@ -299,7 +298,6 @@ public class LanguageManagerImpl implements LanguageManager
                 } catch (MissingResourceException e) {
                     // Do nothing - Fall back to a default that returns the passed text if no resource bundle can be located
                     // is done in client side
-                    logger.warn("Failed to load translation: " + sourceId,e);
                 }
             }
 
