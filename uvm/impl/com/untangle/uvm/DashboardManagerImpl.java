@@ -64,8 +64,9 @@ public class DashboardManagerImpl implements DashboardManager
                 // Network widget is gone, 
                 if ( "Network".equals(widget.getType()) ) {
                     iterator.remove();
-                    iterator.add( new DashboardWidgetSettings("NetworkLayout") );
                     iterator.add( new DashboardWidgetSettings("NetworkInformation") );
+                    iterator.add( new DashboardWidgetSettings("NetworkLayout") );
+                    iterator.add( new DashboardWidgetSettings("MapDistribution") );
                 }
                 if ( "HostsDevices".equals(widget.getType()) )
                     iterator.remove();
