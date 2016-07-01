@@ -4,9 +4,17 @@
 
 package com.untangle.uvm;
 
-import com.untangle.uvm.GeographyManager;
-import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.util.Pulse;
+import java.net.HttpURLConnection;
+import java.net.InetAddress;
+import java.net.URLEncoder;
+import java.net.URL;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.util.Date;
+import java.util.Collection;
+import java.util.List;
+import java.util.HashMap;
 
 import com.maxmind.geoip2.record.Subdivision;
 import com.maxmind.geoip2.record.Location;
@@ -17,15 +25,11 @@ import com.maxmind.geoip2.model.CityResponse;
 import com.maxmind.geoip2.DatabaseReader;
 import com.maxmind.db.CHMCache;
 import org.apache.log4j.Logger;
+import org.json.JSONObject;
 
-import java.net.HttpURLConnection;
-import java.net.InetAddress;
-import java.net.URLEncoder;
-import java.net.URL;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.util.Date;
+import com.untangle.uvm.GeographyManager;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.util.Pulse;
 
 public class GeographyManagerImpl implements GeographyManager
 {
@@ -238,6 +242,84 @@ public class GeographyManagerImpl implements GeographyManager
         return (true);
     }
 
+    public JSONObject[] getGeoSessionStats()
+    {
+        List<SessionMonitorEntry> sessions = UvmContextFactory.context().sessionMonitor().getMergedSessions();
+
+        HashMap<Double,JSONObject> coordinatesMap = new HashMap<Double,JSONObject>();
+        
+        for ( SessionMonitorEntry session : sessions ) {
+            Double coordinatesKey = null;
+            Double latitude = null;
+            Double longitude = null;
+            Double kbps;
+            
+            if ( coordinatesKey == null && session.getClientLatitude() != null && session.getClientLongitude() != null ) {
+                latitude = session.getClientLatitude();
+                longitude = session.getClientLongitude();
+                coordinatesKey = getCoordinatesKey( latitude, longitude );
+            }
+            if ( coordinatesKey == null && session.getServerLatitude() != null && session.getServerLongitude() != null ) {
+                latitude = session.getServerLatitude();
+                longitude = session.getServerLongitude();
+                coordinatesKey = getCoordinatesKey( latitude, longitude );
+            }
+            // if this session has no coordinates (on either client or server, just skip it)
+            if ( coordinatesKey == null )
+                continue;
+
+            if ( session.getTotalKBps() == null )
+                kbps = 0.0;
+            else
+                kbps = session.getTotalKBps().doubleValue();
+
+            JSONObject value = coordinatesMap.get( coordinatesKey );
+
+            // if this is no existing entry for this lat & longitutde, create one
+            if ( value == null ) {
+                JSONObject newValue = createCoordinatesValue(  latitude, longitude, 1, kbps );
+                coordinatesMap.put( coordinatesKey, newValue );
+            }
+            // if one exists, just increment the count and add to the kbps value
+            else {
+                try {
+                    int oldCount = value.getInt("sessionCount");
+                    double oldKbps = value.getDouble("kbps");
+                    value.put("sessionCount",oldCount+1);
+                    value.put("kbps",oldKbps+kbps);
+                } catch (Exception e) {
+                    logger.warn("Exception",e);
+                }
+            }
+        }
+
+        Collection<JSONObject> values = coordinatesMap.values();
+        JSONObject[] jsonValues = values.toArray(new JSONObject[0]);
+        return jsonValues;
+    }
+
+    private JSONObject createCoordinatesValue( Double latitude, Double longitude, int sessionCount, Double kbps )
+    {
+        JSONObject json = new JSONObject();
+
+        try {
+            json.put("latitude",latitude);
+            json.put("longitude",longitude);
+            json.put("sessionCount",sessionCount);
+            json.put("kbps",kbps);
+        } catch (Exception e) {
+            logger.warn("Exception",e);
+            return null;
+        }
+
+        return json;
+    }
+    
+    private Double getCoordinatesKey( Double latitude, Double longitude )
+    {
+        return latitude + 1024.0*longitude;
+    }
+    
     private static class DatabaseUpdateChecker implements Runnable
     {
         GeographyManagerImpl owner;
