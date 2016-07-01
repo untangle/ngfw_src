@@ -401,7 +401,7 @@ Ext.define('Ung.dashboard.MapDistribution', {
     refreshIntervalSec: 5,
     userCls: 'large',
     initComponent: function () {
-        this.title = '<h3>' + i18n._('Map distribution') + '</h3>';
+        this.title = '<h3>' + i18n._('Map Distribution') + '</h3>';
         this.callParent(arguments);
     },
     data: {},
