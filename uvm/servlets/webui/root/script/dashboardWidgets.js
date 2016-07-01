@@ -398,7 +398,7 @@ Ext.define('Ung.dashboard.Information', {
 Ext.define('Ung.dashboard.MapDistribution', {
     extend: 'Ung.dashboard.Widget',
     hasRefresh: true,
-    refreshIntervalSec: 5,
+    refreshIntervalSec: 10,
     userCls: 'large',
     initComponent: function () {
         this.title = '<h3>' + i18n._('Map Distribution') + '</h3>';
