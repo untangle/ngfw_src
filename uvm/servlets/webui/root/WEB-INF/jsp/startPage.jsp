@@ -10,7 +10,7 @@
     <style type="text/css">
         @import "/ext6/classic/theme-${extjsTheme}/resources/theme-${extjsTheme}-all.css?s=${buildStamp}";
     </style>
-
+    <script type="text/javascript" src="/highcharts/proj4.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/highcharts/highstock.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/highcharts/highcharts-extra.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/highcharts/map.js?s=${buildStamp}"></script>

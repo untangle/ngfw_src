@@ -1161,67 +1161,63 @@ Ext.define('Ung.charts', {
      * @returns {Object}             - the HighCharts chart object
      */
     mapChart: function (container) {
-        var data = [{
-            code: "RO",
-            z: 30552
-        }, {
-            code: "FR",
-            z: 10000
-        }, {
-            code: "US",
-            z: 39208
-        }];
-        Ext.Ajax.request({
-            url: '/highcharts/maps/world-highres2.js',
-            success: function (response, opts) {
-                Ext.util.JSON.decode(response.responseText);
-                var mapData = Highcharts.geojson(Highcharts.maps['custom/world-highres2']);
-                return new Highcharts.Map({
-                    chart : {
-                        type: 'map',
-                        renderTo: container,
-                        margin: [0, 0, 5, 0],
-                        spacing: [0, 0, 0, 0],
-                        backgroundColor: 'transparent'
-                    },
-                    title: null,
-                    legend: {
-                        enabled: false
-                    },
-                    credits: {
-                        enabled: false
-                    },
-                    exporting: {
-                        enabled: false
-                    },
-                    mapNavigation: {
-                        enabled: true,
-                        buttonOptions: {
-                            verticalAlign: 'bottom',
-                            x: 5
-                        }
-                    },
-                    series : [{
-                        name: 'Countries',
-                        mapData: mapData,
-                        color: '#E0E0E0',
-                        enableMouseTracking: false
-                    }, {
-                        type: 'mapbubble',
-                        mapData: mapData,
-                        name: 'Sessions',
-                        joinBy: ['iso-a2', 'code'],
-                        data: data,
-                        minSize: 4,
-                        maxSize: '12%',
-                        tooltip: {
-                            headerFormat: '',
-                            pointFormat: '{point.name}<br/><strong>{point.z}</strong> sessions',
-                            hideDelay: 0
-                        }
-                    }]
-                });
-            }
+        return new Highcharts.Map({
+            chart : {
+                type: 'map',
+                renderTo: container,
+                margin: [0, 0, 5, 0],
+                spacing: [0, 0, 0, 0],
+                backgroundColor: 'transparent'
+            },
+            title: null,
+            legend: {
+                enabled: false
+            },
+            credits: {
+                enabled: false
+            },
+            exporting: {
+                enabled: false
+            },
+            mapNavigation: {
+                enabled: true,
+                buttonOptions: {
+                    verticalAlign: 'bottom',
+                    x: 5
+                }
+            },
+            xAxis: {
+                crosshair: {
+                    zIndex: 5,
+                    dashStyle: 'dot',
+                    snap: false,
+                    color: 'gray'
+                }
+            },
+
+            yAxis: {
+                crosshair: {
+                    zIndex: 5,
+                    dashStyle: 'dot',
+                    snap: false,
+                    color: 'gray'
+                }
+            },
+            series : [{
+                name: 'Countries',
+                mapData: Highcharts.maps['custom/world-highres'],
+                color: '#E0E0E0',
+                enableMouseTracking: false
+            }, {
+                type: 'mapbubble',
+                minSize: 5,
+                maxSize: '10%',
+                tooltip: {
+                    headerFormat: '',
+                    pointFormat: '<strong>{point.sessionCount}</strong> ' + i18n._('sessions') + '<br/><strong>{point.z}</strong> ' + i18n._('kbps'),
+                    hideDelay: 0
+                }
+            }]
         });
     }
 });

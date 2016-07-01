@@ -1052,6 +1052,16 @@ Ext.define("Ung.Main", {
         }
         return rpc.reportsManager;
     },
+    getGeographyManager: function (forceReload) {
+        if (forceReload || rpc.geographyManager === undefined) {
+            try {
+                rpc.geographyManager = rpc.jsonrpc.UvmContext.geographyManager();
+            } catch (e) {
+                Ung.Util.rpcExHandler(e);
+            }
+        }
+        return rpc.geographyManager;
+    },
     // get node reports
     getNodeReports: function (forceReload) {
         if (forceReload || rpc.nodeReports === undefined) {

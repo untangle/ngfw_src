@@ -394,11 +394,11 @@ Ext.define('Ung.dashboard.Information', {
     }
 });
 
-/* Map Widget which shall turn into report entry widget of type map */
-Ext.define('Ung.dashboard.Map', {
+/* Map Widget */
+Ext.define('Ung.dashboard.MapDistribution', {
     extend: 'Ung.dashboard.Widget',
-    hasStats: true,
-    refreshIntervalSec: 600,
+    hasRefresh: true,
+    refreshIntervalSec: 5,
     userCls: 'large',
     initComponent: function () {
         this.title = '<h3>' + i18n._('Map distribution') + '</h3>';
@@ -408,14 +408,57 @@ Ext.define('Ung.dashboard.Map', {
     tpl: '<div class="wg-wrapper no-padding">' +
         '<div class="map-chart" style="height: 100%; width: 100%;"></div>' +
         '</div>' +
-        '<div class="mask init-mask"><i class="material-icons">widgets</i><p>' + i18n._("CPU Load") + '</p></div>',
+        '<div class="mask init-mask"><i class="material-icons">widgets</i><p>' + i18n._("Map distribution") + '</p></div>',
     listeners: {
-        'afterrender': function (widget) {
-            widget.chart = Ung.charts.mapChart(widget.getEl().query('.map-chart')[0]);
+        afterrender: function (widget) {
+            if (!Highcharts.maps['custom/world-highres']) {
+                // load the map only if Maps Widget is enabled/visible in dashboard
+                widget.loadMap().then(function () {
+                    widget.chart = Ung.charts.mapChart(widget.getEl().query('.map-chart')[0]);
+                    widget.loadData(widget.afterLoad);
+                }, function (exception) {
+                    console.log(exception);
+                });
+            } else {
+                widget.chart = Ung.charts.mapChart(widget.getEl().query('.map-chart')[0]);
+            }
         }
     },
-    updateStats: function (stats) {
-        this.removeCls('init');
+    loadMap: function () {
+        var deferred = new Ext.Deferred();
+        Ext.Ajax.request({
+            url: '/highcharts/maps/world-highres.js',
+            success: function (response, opts) {
+                Ext.util.JSON.decode(response.responseText);
+                deferred.resolve();
+            },
+            failure: function (response, opts) {
+                deferred.reject(response);
+            }
+        });
+        return deferred.promise;
+    },
+    loadData: function (handler) {
+        var data = [], i;
+        if (this.chart) {
+            Ung.Main.getGeographyManager().getGeoSessionStats(Ext.bind(function (result, exception) {
+                handler.call(this);
+                if (Ung.Util.handleExceptionToast(exception)) {
+                    return;
+                }
+                for (i = 0; i < result.length; i += 1) {
+                    data.push({
+                        lat: result[i].latitude,
+                        lon: result[i].longitude,
+                        z: result[i].kbps.toFixed(2),
+                        sessionCount: result[i].sessionCount
+                    });
+                }
+                this.chart.series[1].setData(data, true, true);
+            }, this));
+        } else {
+            handler.call(this);
+        }
     }
 });
 
