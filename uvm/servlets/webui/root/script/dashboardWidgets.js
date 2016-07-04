@@ -398,7 +398,7 @@ Ext.define('Ung.dashboard.Information', {
 Ext.define('Ung.dashboard.MapDistribution', {
     extend: 'Ung.dashboard.Widget',
     hasRefresh: true,
-    refreshIntervalSec: 10,
+    refreshIntervalSec: 20,
     userCls: 'large',
     initComponent: function () {
         this.title = '<h3>' + i18n._('Map Distribution') + '</h3>';
@@ -415,7 +415,7 @@ Ext.define('Ung.dashboard.MapDistribution', {
                 // load the map only if Maps Widget is enabled/visible in dashboard
                 widget.loadMap().then(function () {
                     widget.chart = Ung.charts.mapChart(widget.getEl().query('.map-chart')[0]);
-                    widget.loadData(widget.afterLoad);
+                    //widget.loadData(widget.afterLoad);
                 }, function (exception) {
                     console.log(exception);
                 });
@@ -451,6 +451,7 @@ Ext.define('Ung.dashboard.MapDistribution', {
                         lat: result[i].latitude,
                         lon: result[i].longitude,
                         z: result[i].kbps.toFixed(2),
+                        country: result[i].country,
                         sessionCount: result[i].sessionCount
                     });
                 }

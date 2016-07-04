@@ -1210,11 +1210,11 @@ Ext.define('Ung.charts', {
                 enableMouseTracking: false
             }, {
                 type: 'mapbubble',
-                minSize: 5,
-                maxSize: '10%',
+                minSize: 10,
+                maxSize: 50,
                 tooltip: {
                     headerFormat: '',
-                    pointFormat: '<strong>{point.sessionCount}</strong> ' + i18n._('sessions') + '<br/><strong>{point.z}</strong> ' + i18n._('kbps'),
+                    pointFormat: '<strong>{point.country}</strong><br/><strong>{point.sessionCount}</strong> ' + i18n._('sessions') + '<br/><strong>{point.z}</strong> kB/s',
                     hideDelay: 0
                 }
             }]
