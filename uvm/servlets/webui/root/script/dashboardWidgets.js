@@ -24,7 +24,21 @@ Ext.define('Ung.dashboard', {
         rpc.dashboardManager.getSettings(function (result, exception) {
             if (exception) { deferred.reject(exception); }
             Ung.dashboard.allWidgets = result.widgets.list.filter(function (widget) { return widget.enabled; });
-            deferred.resolve();
+            // if dashboard has map widget enabled and map not loaded then load the map
+            if (Ung.dashboard.allWidgets.filter(function (widget) { return widget.type === 'MapDistribution'; }).length === 1 && !Highcharts.maps['custom/world-highres']) {
+                Ext.Ajax.request({
+                    url: '/highcharts/maps/world-highres.js',
+                    success: function (response, opts) {
+                        Ext.util.JSON.decode(response.responseText);
+                        deferred.resolve();
+                    },
+                    failure: function (response, opts) {
+                        deferred.reject(response);
+                    }
+                });
+            } else {
+                deferred.resolve();
+            }
         });
         return deferred.promise;
     },
@@ -411,55 +425,27 @@ Ext.define('Ung.dashboard.MapDistribution', {
         '<div class="mask init-mask"><i class="material-icons">widgets</i><p>' + i18n._("Map distribution") + '</p></div>',
     listeners: {
         afterrender: function (widget) {
-            if (!Highcharts.maps['custom/world-highres']) {
-                // load the map only if Maps Widget is enabled/visible in dashboard
-                widget.loadMap().then(function () {
-                    widget.chart = Ung.charts.mapChart(widget.getEl().query('.map-chart')[0]);
-                    //widget.loadData(widget.afterLoad);
-                }, function (exception) {
-                    console.log(exception);
-                });
-            } else {
-                widget.chart = Ung.charts.mapChart(widget.getEl().query('.map-chart')[0]);
-            }
+            widget.chart = Ung.charts.mapChart(widget.getEl().query('.map-chart')[0]);
         }
-    },
-    loadMap: function () {
-        var deferred = new Ext.Deferred();
-        Ext.Ajax.request({
-            url: '/highcharts/maps/world-highres.js',
-            success: function (response, opts) {
-                Ext.util.JSON.decode(response.responseText);
-                deferred.resolve();
-            },
-            failure: function (response, opts) {
-                deferred.reject(response);
-            }
-        });
-        return deferred.promise;
     },
     loadData: function (handler) {
         var data = [], i;
-        if (this.chart) {
-            Ung.Main.getGeographyManager().getGeoSessionStats(Ext.bind(function (result, exception) {
-                handler.call(this);
-                if (Ung.Util.handleExceptionToast(exception)) {
-                    return;
-                }
-                for (i = 0; i < result.length; i += 1) {
-                    data.push({
-                        lat: result[i].latitude,
-                        lon: result[i].longitude,
-                        z: result[i].kbps.toFixed(2),
-                        country: result[i].country,
-                        sessionCount: result[i].sessionCount
-                    });
-                }
-                this.chart.series[1].setData(data, true, true);
-            }, this));
-        } else {
+        Ung.Main.getGeographyManager().getGeoSessionStats(Ext.bind(function (result, exception) {
             handler.call(this);
-        }
+            if (Ung.Util.handleExceptionToast(exception)) {
+                return;
+            }
+            for (i = 0; i < result.length; i += 1) {
+                data.push({
+                    lat: result[i].latitude,
+                    lon: result[i].longitude,
+                    z: Math.round(result[i].kbps * 100) / 100,
+                    country: result[i].country,
+                    sessionCount: result[i].sessionCount
+                });
+            }
+            this.chart.series[1].setData(data, true, false);
+        }, this));
     }
 });
 
