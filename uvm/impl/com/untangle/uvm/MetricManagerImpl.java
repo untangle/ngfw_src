@@ -173,6 +173,9 @@ public class MetricManagerImpl implements MetricManager
                 }
                 
                 for( InterfaceSettings intfSettings : UvmContextFactory.context().networkManager().getNetworkSettings().getInterfaces() ) {
+                    // do not log stats for disabled interfaces
+                    if ( intfSettings.getConfigType() == InterfaceSettings.ConfigType.DISABLED )
+                        continue;
                     String key = "interface_" + intfSettings.getInterfaceId() + "_";
                     Object rxBps_o = m.get(key + "rxBps");
                     Object txBps_o = m.get(key + "txBps");
