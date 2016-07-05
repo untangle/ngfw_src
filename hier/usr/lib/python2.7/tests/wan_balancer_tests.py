@@ -272,6 +272,12 @@ class WanBalancerTests(unittest2.TestCase):
                 assert (result == routedIP)
         nukeWanBalancerRouteRules()
 
+    def test_050_balanced(self):
+        if (len(indexOfWans) < 2):
+            raise unittest2.SkipTest("Need at least two WANS for test_040_routedByIPWan")
+        # Set weighting to default 
+        setWeightOfWan("all", 50)
+
         # Test balanced         
         # WAN index for route rules from networking list.  Balance is zero
         buildSingleWanRouteRule("DST_ADDR",ip_address_testdestination,0)
