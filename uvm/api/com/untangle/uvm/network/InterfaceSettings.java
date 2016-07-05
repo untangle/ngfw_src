@@ -41,6 +41,7 @@ public class InterfaceSettings implements Serializable, JSONString
 
     public static enum ConfigType { ADDRESSED, BRIDGED, DISABLED };
     private ConfigType configType = ConfigType.DISABLED; /* config type */
+    private ConfigType[] supportedConfigTypes = null; /* supported config types, null means all */
 
     private Integer bridgedTo; /* device to bridge to in "bridged" case */
     
@@ -150,6 +151,9 @@ public class InterfaceSettings implements Serializable, JSONString
     
     public ConfigType getConfigType( ) { return this.configType; }
     public void setConfigType( ConfigType newValue ) { this.configType = newValue; }
+
+    public ConfigType[] getSupportedConfigTypes( ) { return this.supportedConfigTypes; }
+    public void setSupportedConfigTypes( ConfigType[] newValue ) { this.supportedConfigTypes = newValue; }
     
     public Integer getBridgedTo( ) { return this.bridgedTo; }
     public void setBridgedTo( Integer newValue ) { this.bridgedTo = newValue; }
