@@ -253,9 +253,34 @@ class WanBalancerTests(unittest2.TestCase):
         # return weight settings to default
         setWeightOfWan("all", 50)
         
-    def test_040_routedByIPWan(self):
+    def test_040_balanced(self):
         if (len(indexOfWans) < 2):
             raise unittest2.SkipTest("Need at least two WANS for test_040_routedByIPWan")
+        # Set weighting to default 
+        setWeightOfWan("all", 50)
+
+        # Test balanced         
+        ipList = {}
+        for wanIndexTup in indexOfWans:
+            wanIndex = wanIndexTup[0]
+            routedIP = wanIndexTup[2]
+            ipList[routedIP] = 0
+        tenTimesWans = (len(indexOfWans) * 10) - 1
+        # Test that all interfaces are used at least a few times
+        for x in range(0, tenTimesWans):
+            subprocess.check_output("ip route flush cache", shell=True)
+            time.sleep(1)
+            result = global_functions.getIpAddress()
+            # print "Retrieved IP %s" % result
+            ipList[result] += 1
+        for listIP in ipList:
+            print "IP %s found %s times" % (listIP,ipList[listIP])
+            assert (ipList[listIP] >= 5)
+        nukeWanBalancerRouteRules()
+
+    def test_050_routedByIPWan(self):
+        if (len(indexOfWans) < 2):
+            raise unittest2.SkipTest("Need at least two WANS for test_050_routedByIPWan")
         # Set weighting to default 
         setWeightOfWan("all", 50)
 
@@ -272,34 +297,6 @@ class WanBalancerTests(unittest2.TestCase):
                 assert (result == routedIP)
         nukeWanBalancerRouteRules()
 
-    def test_050_balanced(self):
-        if (len(indexOfWans) < 2):
-            raise unittest2.SkipTest("Need at least two WANS for test_040_routedByIPWan")
-        # Set weighting to default 
-        setWeightOfWan("all", 50)
-
-        # Test balanced         
-        # WAN index for route rules from networking list.  Balance is zero
-        buildSingleWanRouteRule("DST_ADDR",ip_address_testdestination,0)
-        ipList = {}
-        for wanIndexTup in indexOfWans:
-            wanIndex = wanIndexTup[0]
-            routedIP = wanIndexTup[2]
-            ipList[routedIP] = 0
-        tenTimesWans = (len(indexOfWans) * 10) - 1
-        print "tenTimesWans %s" % tenTimesWans
-        # Test that all interfaces are used at least 7/10 times
-        for x in range(0, tenTimesWans):
-            subprocess.check_output("ip route flush cache", shell=True)
-            time.sleep(1)
-            result = global_functions.getIpAddress()
-            # print "Retrieved IP %s" % result
-            ipList[result] += 1
-        for listIP in ipList:
-            print "IP %s found %s times" % (listIP,ipList[listIP])
-            assert (ipList[listIP] >= 5)
-        nukeWanBalancerRouteRules()
-    
     def test_060_routedByPortWan(self):        
         # Test that route rules override weighted rules on 2 WANs
         if (len(indexOfWans) < 2):
