@@ -1181,6 +1181,8 @@ Ext.define('Ung.charts', {
             },
             mapNavigation: {
                 enabled: true,
+                enableMouseWheelZoom: false,
+                enableTouchZoom: false,
                 buttonOptions: {
                     verticalAlign: 'bottom',
                     x: 5
