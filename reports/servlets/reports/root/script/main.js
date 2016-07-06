@@ -152,7 +152,8 @@ Ext.define("Ung.Main", {
                         xtype: 'button',
                         html: '<i class="material-icons">exit_to_app</i> <span>' + i18n._('Logout') + '</span>',
                         cls: 'main-menu-btn',
-                        href: '/auth/logout?url=/reports&realm=Reports'
+                        href: '/auth/logout?url=/reports&realm=Reports',
+                        hrefTarget: '_self'
                     }]
                 }]
             }, {

@@ -16,7 +16,6 @@ String extjsTheme = uvm.skinManager().getSkinInfo().getExtjsTheme();
     <title><%=company%> | Reports</title>
     <style type="text/css">
         @import "/ext6/classic/theme-<%=extjsTheme%>/resources/theme-<%=extjsTheme%>-all.css?s=<%=buildStamp%>";
-        @import "/ext6/packages/charts/classic/classic/resources/charts-all.css?s=<%=buildStamp%>";
     </style>
 
     <script type="text/javascript" src="/highcharts/highstock.js?s=<%=buildStamp%>"></script>
@@ -24,23 +23,24 @@ String extjsTheme = uvm.skinManager().getSkinInfo().getExtjsTheme();
 
     <script type="text/javascript" src="/ext6/ext-all.js?s=<%=buildStamp%>"></script>
     <script type="text/javascript" src="/ext6/classic/theme-<%=extjsTheme%>/theme-<%=extjsTheme%>.js?s=<%=buildStamp%>"></script>
-    <script type="text/javascript" src="/ext6/packages/charts/classic/charts.js?s=<%=buildStamp%>"></script>
-
-    <script type="text/javascript" src="/jsonrpc/jsonrpc.js?s=<%=buildStamp%>"></script>
-    <script type="text/javascript" src="/script/i18n.js?s=<%=buildStamp%>"></script>
-    <script type="text/javascript" src="/script/tableConfig.js?s=<%=buildStamp%>"></script>
-    <script type="text/javascript" src="/webui/script/charting.js?s=<%=buildStamp%>"></script>
-    <script type="text/javascript" src="script/main.js?s=<%=buildStamp%>"></script>
-    <script type="text/javascript" src="/webui/script/window.js?s=<%=buildStamp%>"></script>
-    <script type="text/javascript" src="/webui/script/util.js?s=<%=buildStamp%>"></script>
-    <script type="text/javascript" src="/webui/script/reports.js?s=<%=buildStamp%>"></script>
-
 
     <script type="text/javascript">
         Ext.onReady(function() {
             Ung.Main.init({buildStamp:'<%=buildStamp%>'})
         });
     </script>
+
+    <!-- global scripts -->
+    <script type="text/javascript" src="/jsonrpc/jsonrpc.js?s=<%=buildStamp%>"></script>
+    <script type="text/javascript" src="/script/i18n.js?s=<%=buildStamp%>"></script>
+    <script type="text/javascript" src="/script/tableConfig.js?s=<%=buildStamp%>"></script>
+    <script type="text/javascript" src="/script/charting.js?s=<%=buildStamp%>"></script>
+    <script type="text/javascript" src="/script/window.js?s=<%=buildStamp%>"></script>
+    <script type="text/javascript" src="/script/util.js?s=<%=buildStamp%>"></script>
+    <script type="text/javascript" src="/script/reports.js?s=<%=buildStamp%>"></script>
+
+    <script type="text/javascript" src="script/main.js?s=<%=buildStamp%>"></script>
+
  </head>
 <body>
 <div id="container" style="display:none;">

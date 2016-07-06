@@ -26,26 +26,27 @@
     <script type="text/javascript">
         Ext.buildStamp='${buildStamp}';
     </script>
+    <!-- global scripts -->
     <script type="text/javascript" src="/jsonrpc/jsonrpc.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/script/i18n.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/main.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/extOverrides.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/util.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/window.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="/script/util.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="/script/window.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="/script/charting.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="/script/tableConfig.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="/script/reports.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="/script/wizard.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="/script/datetime.js?s=${buildStamp}"></script>
+
     <script type="text/javascript" src="script/gridPanel.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/ruleBuilder.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/matcherWindow.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/monitor.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="/script/tableConfig.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/reports.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/reportEditor.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/dashboardWidgets.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/charting.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/components.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/main.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/extOverrides.js?s=${buildStamp}"></script>
 
-    <script type="text/javascript" src="/script/wizard.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="/script/datetime.js?s=${buildStamp}"></script>
-    
 <c:if test="${isDebug==true}">
     <!-- static resource loading during development. -->
     <script type="text/javascript" src="script/config/about.js?s=${buildStamp}"></script>
