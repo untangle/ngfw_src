@@ -191,6 +191,34 @@ Ext.define('Webui.config.administration', {
             confirmPwd.clearInvalid();
             return true;
         };
+        var newAddHandler = function(button, e, rowData) {
+            Ext.MessageBox.show({
+                title: i18n._('Administrator Warning'),
+                msg: i18n._('This action will add an ADMINISTRATOR account.') + '<br/>' + '<br/>' +
+                    '<b>' + i18n._('ADMINISTRATORS (also sometimes known as admin or root or superuser) have ADMINISTRATOR access to the server.') + '</b>' + '<br/>' + '<br/>' +
+                    i18n._('Administrator accounts have the ability to do anything including:') + '<br/>' + 
+                    '<ul>' +
+                    '<li>' + i18n._("Read/Modify any setting") + '</li>' +
+                    '<li>' + i18n._("Restore/Backup all settings") + '</li>' +
+                    '<li>' + i18n._("Create more administrators") + '</li>' +
+                    '<li>' + i18n._("Delete/Modify/Create any file") + '</li>' +
+                    '<li>' + i18n._("Run any command") + '</li>' +
+                    '<li>' + i18n._("Install any software") + '</li>' +
+                    '<li>' + i18n._("Complete control and access identical to what you now possess") + '</li>' +
+                    '</ul>' + '<br/>' + 
+                    i18n._('Do you understand the above statement?') + '<br/>' +
+                    '<input type="checkbox" id="admin_understand"/> <i>' + i18n._('Yes, I understand.') + '</i>' + '<br/>' +
+                    '<br/>' + 
+                    i18n._('Do you wish to continue?') + '<br/>',
+                buttons: Ext.MessageBox.YESNO,
+                fn: Ext.bind(function(btn) {
+                    if (btn == "yes") {
+                        if (Ext.get('admin_understand').dom.checked) {
+                            Ung.grid.Panel.prototype.addHandler.call(this, button, e, rowData);
+                        }
+                    }
+                }, this)});
+        };
         this.gridAdminAccounts=Ext.create('Ung.grid.Panel', {
             flex: 1,
             settingsCmp: this,
@@ -198,6 +226,7 @@ Ext.define('Webui.config.administration', {
             bodyStyle: 'padding-bottom:30px;',
             autoScroll: true,
             hasEdit: false,
+            addHandler: newAddHandler,
             name: 'gridAdminAccounts',
             dataExpression: "getAdminSettings().users.list",
             recordJavaClass: "com.untangle.uvm.AdminUserSettings",
