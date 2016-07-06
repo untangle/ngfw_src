@@ -2434,6 +2434,15 @@ Ext.define('Webui.config.network', {
                         vlanParentInterfaces.push([intf.interfaceId, intf.name]);
                     }
                 }
+                // set ConfigType store
+                if (record.get('supportedConfigTypes') !== null) {
+                    var configTypes = [], configType;
+                    for (var j = 0; j < record.get('supportedConfigTypes').length; j += 1) {
+                        configType = record.get('supportedConfigTypes')[j];
+                        configTypes.push([configType, i18n._(configType.charAt(0) + configType.slice(1).toLowerCase())]);
+                    }
+                    this.down('combo[dataIndex="configType"]').setStore(configTypes);
+                }
                 // refresh interface selector stores
                 var bridgedTo = this.down('combo[dataIndex="bridgedTo"]');
                 bridgedTo.getStore().loadData( bridgedToInterfaces );
