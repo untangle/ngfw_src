@@ -596,6 +596,54 @@ Ext.define("Ung.Main", {
                             xtype: 'component',
                             html: '',
                             flex: 1
+                        }, {
+                            xtype: 'button',
+                            cls: 'action-button material-button',
+                            text: '<span>' + i18n._("Sessions") + '</span>',
+                            height: 30,
+                            margin: '0 5 0 0',
+                            handler: Ung.Main.showSessions,
+                            plugins: 'responsive',
+                            responsiveConfig: {
+                                'width <= 550': {
+                                    hidden: true
+                                },
+                                'width > 550': {
+                                    hidden: false
+                                }
+                            }
+                        }, {
+                            xtype: 'button',
+                            cls: 'action-button material-button',
+                            text: '<span>' + i18n._("Hosts") + '</span>',
+                            height: 30,
+                            margin: '0 5 0 0',
+                            handler: Ung.Main.showHosts,
+                            plugins: 'responsive',
+                            responsiveConfig: {
+                                'width <= 550': {
+                                    hidden: true
+                                },
+                                'width > 550': {
+                                    hidden: false
+                                }
+                            }
+                        }, {
+                            xtype: 'button',
+                            cls: 'action-button material-button',
+                            text: '<span>' + i18n._("Devices") + '</span>',
+                            height: 30,
+                            margin: '0 10 0 0',
+                            handler: Ung.Main.showDevices,
+                            plugins: 'responsive',
+                            responsiveConfig: {
+                                'width <= 550': {
+                                    hidden: true
+                                },
+                                'width > 550': {
+                                    hidden: false
+                                }
+                            }
                         }]
                     }, {
                         xtype: 'container',
