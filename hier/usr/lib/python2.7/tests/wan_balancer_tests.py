@@ -260,24 +260,18 @@ class WanBalancerTests(unittest2.TestCase):
         # Set weighting to default 
         setWeightOfWan("all", 50)
 
-        # Test balanced         
-        ipList = {}
+        # Test balanced
+        # send netcat UDP to random IPs
+        result = remote_control.runCommand("for i in \`seq 100\` ; do echo \"test\" | netcat -u -w1 -q1 1.2.3.\$i 7 >/dev/null ; done",stdout=False)
+
+        events = global_functions.get_events('Network','All Sessions',None,20)
+        assert(events != None)
         for wanIndexTup in indexOfWans:
-            wanIndex = wanIndexTup[0]
-            routedIP = wanIndexTup[2]
-            ipList[routedIP] = 0
-        tenTimesWans = (len(indexOfWans) * 10) - 1
-        # Test that all interfaces are used at least a few times
-        for x in range(0, tenTimesWans):
-            subprocess.check_output("ip route flush cache", shell=True)
-            time.sleep(1)
-            result = global_functions.getIpAddress()
-            # print "Retrieved IP %s" % result
-            ipList[result] += 1
-        for listIP in ipList:
-            print "IP %s found %s times" % (listIP,ipList[listIP])
-            assert (ipList[listIP] >= 5)
-        nukeWanBalancerRouteRules()
+            found = global_functions.check_events( events.get('list'), 20,
+                                                "server_intf", wanIndexTup[0],
+                                                "c_client_addr", remote_control.clientIP,
+                                                "s_server_port", 7)
+            assert(found)
 
     def test_050_routedByIPWan(self):
         if (len(indexOfWans) < 2):
