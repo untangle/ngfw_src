@@ -168,12 +168,7 @@ Ext.define("Ung.Main", {
                         id: 'reportsMenuItem',
                         cls: 'main-menu-btn',
                         hidden: !rpc.reportsEnabled,
-                        handler: function (btn) {
-                            this.panelCenter.setActiveItem("reports");
-                            this.panelCenter.setLoading('Loading ...');
-                            this.viewsMenu.items.each(function (button) { button.setPressed(false); });
-                            btn.setPressed(true);
-                        },
+                        handler: this.reportsMenuHandler,
                         scope: this
                     }]
                 }, {
@@ -303,13 +298,7 @@ Ext.define("Ung.Main", {
                                 scope: this
                             }, {
                                 text: '<i class="material-icons">show_chart</i> <span>' + i18n._('Reports') + '</span>',
-                                handler: function () {
-                                    this.panelCenter.setActiveItem("reports");
-                                    this.panelCenter.setLoading('Loading ...');
-                                    this.viewsMenu.items.each(function (button, idx) {
-                                        button.setPressed(idx === 3);
-                                    });
-                                },
+                                handler: this.reportsMenuHandler,
                                 scope: this
                             }, '-', {
                                 text: '<i class="material-icons">help</i> <span>' + i18n._('Help') + '</span>',
@@ -856,6 +845,19 @@ Ext.define("Ung.Main", {
         Ung.dashboard.loadDashboard();
         this.buildConfig();
         this.loadPolicies();
+    },
+
+    reportsMenuHandler: function (btn) {
+        if (this.panelCenter.getLayout().getActiveItem().getItemId() !== 'reports') {
+            this.panelCenter.setActiveItem('reports');
+            this.panelCenter.setLoading('Loading ...');
+            this.viewsMenu.items.each(function (button) {
+                button.setPressed(false);
+            });
+            btn.setPressed(true);
+        } else {
+            this.panelCenter.down('[name=panelReports]').categoryList.getSelectionModel().select(0);
+        }
     },
     about: function (forceReload) {
         if (rpc.about === undefined) {
