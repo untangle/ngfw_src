@@ -254,7 +254,6 @@ class WanBalancerTests(unittest2.TestCase):
         setWeightOfWan("all", 50)
         
     def test_040_balanced(self):
-        raise unittest2.SkipTest("We need to rewrite this test #12955 bug (ip flush cache no longer works)")
         if (len(indexOfWans) < 2):
             raise unittest2.SkipTest("Need at least two WANS for test_040_routedByIPWan")
         # Set weighting to default 
