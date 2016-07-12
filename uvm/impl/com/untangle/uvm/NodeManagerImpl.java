@@ -714,19 +714,32 @@ public class NodeManagerImpl implements NodeManager
 
         for (Iterator<NodeSettings> i = unloadedNodesMap.values().iterator(); i.hasNext(); ) {
             NodeSettings nodeSettings = i.next();
+            if ( nodeSettings == null ) {
+                logger.error("Invalid settings: " + nodeSettings);
+                i.remove(); // remove from unloadedNodesMap because we can never load this one
+                continue;
+            }
             String name = nodeSettings.getNodeName();
+            if ( name == null ) {
+                logger.error("Missing name for: " + nodeSettings);
+                i.remove(); // remove from unloadedNodesMap because we can never load this one
+                continue;
+            }
             NodeProperties nodeProps = getNodeProperties( name );
             if ( nodeProps == null ) {
-                logger.warn("Missing NodeProperties for: " + nodeSettings);
+                logger.error("Missing properties for: " + nodeSettings);
+                i.remove(); // remove from unloadedNodesMap because we can never load this one
                 continue;
             }
 
             List<String> parents = nodeProps.getParents();
             boolean parentsLoaded = true;
-            for (String parent : parents) {
-                if (!isLoaded( parent )) {
-                    parentsLoaded = false;
-                    break;
+            if ( parents != null ) {
+                for (String parent : parents) {
+                    if (!isLoaded( parent )) {
+                        parentsLoaded = false;
+                        break;
+                    }
                 }
             }
 
