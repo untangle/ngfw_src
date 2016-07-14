@@ -249,6 +249,7 @@ public abstract class VirusBlockerBaseApp extends NodeBase
         s.add(new GenericRule("*windowsupdate.com", "Microsoft", "update", null, true));
         s.add(new GenericRule("*windowsupdate.microsoft.com", "Microsoft", "update", null, true));
         s.add(new GenericRule("*update.microsoft.com", "Microsoft", "update", null, true));
+        s.add(new GenericRule("*liveupdate.symantecliveupdate.com", "Symantec", "update", null, true));
 
         vs.setPassSites(s);
     }
