@@ -72,7 +72,7 @@ Ext.define('Webui.config.about', {
             }]
         });
         // if the UID looks valid update the account info from the store
-        if ( rpc.serverUID && rpc.serverUID.length == 20 ) {
+        if ( rpc.serverUID && rpc.serverUID.length == 19 ) {
             Ext.data.JsonP.request({
                 url: rpc.storeUrl + "?" + "action=find_account&uid="+rpc.serverUID,
                 type: 'GET',
