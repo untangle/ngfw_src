@@ -969,6 +969,7 @@ Ext.define('Webui.config.email', {
                                 result.list[i].sender = result.list[i].mailSummary.sender;
                                 result.list[i].quarantineCategory = result.list[i].mailSummary.quarantineCategory;
                                 result.list[i].quarantineDetail = result.list[i].mailSummary.quarantineDetail;
+                                result.list[i].size = result.list[i].mailSummary.quarantineSize;
                             }
                         }
                         handler(result, exception);
@@ -1120,9 +1121,6 @@ Ext.define('Webui.config.email', {
                 width: 85,
                 dataIndex: 'size',
                 renderer: function(value) {
-                    if (!value) {
-                        return '';
-                    }
                     return i18n.numberFormat((value /1024.0).toFixed(3));
                 },
                 filter: {
