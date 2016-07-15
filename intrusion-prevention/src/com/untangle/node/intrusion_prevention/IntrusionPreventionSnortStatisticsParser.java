@@ -62,7 +62,7 @@ public class IntrusionPreventionSnortStatisticsParser
         NONE ("===============$"),
         BREAKDOWN ("Breakdown by protocol \\(includes rebuilt packets\\):$"),
         ACTION ("Action Stats:$"),
-        STREAM5 ("Stream5 statistics:$");
+        STREAM ("Stream statistics:$");
         
         private final Pattern match;
         State( String match ){
@@ -96,11 +96,11 @@ public class IntrusionPreventionSnortStatisticsParser
          */
         ACTION_BLACKLIST ("Blacklist"),
         /*
-         * We have stream5 configured to process TCP and UDP as sessions.
+         * We have stream configured to process TCP and UDP as sessions.
          */
-        STREAM5_TOTAL_SESSIONS ("Total sessions"),
-        STREAM5_TCP_SESSIONS ("TCP sessions"),
-        STREAM5_UDP_SESSIONS ("UDP sessions");
+        STREAM_TOTAL_SESSIONS ("Total sessions"),
+        STREAM_TCP_SESSIONS ("TCP sessions"),
+        STREAM_UDP_SESSIONS ("UDP sessions");
         
         private final Pattern match;
         Statistic( String match ){
@@ -152,6 +152,10 @@ public class IntrusionPreventionSnortStatisticsParser
         }
         long lastLength = file.length();
 
+        long currentLength = file.length();
+        long sleepInterval = 10;
+        long maxTime = 1000 / sleepInterval;
+
         /**
          * I changed this to killall because if snort crashes it leaves its PID file in place
          * When that happens evenually something else takes the PID and we send it a signal
@@ -166,38 +170,35 @@ public class IntrusionPreventionSnortStatisticsParser
         // String cmd = "/bin/kill -SIGUSR1 " + pid;
         ExecManagerResult result = IntrusionPreventionSnortStatisticsParser.execManager.exec( cmd );
 
-        long currentLength = file.length();
-        long sleepInterval = 10;
-        long maxTime = 1000 / sleepInterval;
-        do{
-            try{
+        do {
+            try {
                 Thread.sleep(sleepInterval);
-            }catch( InterruptedException e){
+            } catch( InterruptedException e) {
                 logger.warn("parse: Cannot sleep: ", e);
                 break;
             }
             maxTime--;
             currentLength = file.length();
-        }while( ( currentLength == lastLength ) && ( maxTime > 0 ) );
+        } while( ( currentLength == lastLength ) && ( maxTime > 0 ) );
         
-        try{
+        try {
             long breakdownTotal = 0;
             long breakdownTcp = 0;
             long breakdownUdp = 0;
             long actionAlerts = 0;
             long actionBlacklist = 0;
-            long stream5TotalSessions = 0;
-            long stream5TcpSessions = 0;
-            long stream5UdpSessions = 0;
+            long streamTotalSessions = 0;
+            long streamTcpSessions = 0;
+            long streamUdpSessions = 0;
             
             State currentState = State.NONE;
             Matcher matcher;
             
             String line = null;
             while( true ){
-                try{
+                try {
                     line = raf.readLine();
-                }catch( IOException e){
+                } catch( IOException e){
                     break;
                 }
                 if( line == null ){
@@ -237,39 +238,55 @@ public class IntrusionPreventionSnortStatisticsParser
                         actionBlacklist = Long.valueOf(matcher.group(1)).longValue();
                     }
                     break;
-                 case STREAM5:
-                    matcher = Statistic.STREAM5_TOTAL_SESSIONS.match().matcher(line);
+                 case STREAM:
+                    matcher = Statistic.STREAM_TOTAL_SESSIONS.match().matcher(line);
                     if( matcher.find() ){
-                        stream5TotalSessions = Long.valueOf(matcher.group(1)).longValue();
+                        streamTotalSessions = Long.valueOf(matcher.group(1)).longValue();
                     }
-                    matcher = Statistic.STREAM5_TCP_SESSIONS.match().matcher(line);
+                    matcher = Statistic.STREAM_TCP_SESSIONS.match().matcher(line);
                     if( matcher.find() ){
-                        stream5TcpSessions = Long.valueOf(matcher.group(1)).longValue();
+                        streamTcpSessions = Long.valueOf(matcher.group(1)).longValue();
                     }
-                    matcher = Statistic.STREAM5_UDP_SESSIONS.match().matcher(line);
+                    matcher = Statistic.STREAM_UDP_SESSIONS.match().matcher(line);
                     if( matcher.find() ){
-                        stream5UdpSessions = Long.valueOf(matcher.group(1)).longValue();
+                        streamUdpSessions = Long.valueOf(matcher.group(1)).longValue();
                     }
                     break;
                 }
-            }
-            
+            } 
+
+            long otherSessions = breakdownTotal - breakdownTcp - breakdownUdp;
             long blocked = actionBlacklist;
             long logged = actionAlerts;
-            long sessions = breakdownTotal - breakdownTcp - breakdownUdp + stream5TotalSessions;
+            long sessions = otherSessions + streamTotalSessions;
+            
+            if ( logger.isDebugEnabled() ) {
+                logger.debug("breakdownTotal: " + breakdownTotal);
+                logger.debug("breakdownTcp: " + breakdownTcp);
+                logger.debug("breakdownUDP: " + breakdownUdp);
+                logger.debug("actionAlerts: " + actionAlerts);
+                logger.debug("actionBlacklist: " + actionBlacklist);
+                logger.debug("streamTotalSessions: " + streamTotalSessions);
+                logger.debug("streamTcpSessions: " + streamTcpSessions);
+                logger.debug("streamUdpSessions: " + streamUdpSessions);
+                logger.debug("otherSessions: " + otherSessions);
+                logger.debug("scanCount: " + sessions);
+                logger.debug("detectCount: " + logged);
+                logger.debug("blockCount: " + blocked);
+            }
             
             ipsNode.setScanCount( sessions );
             ipsNode.setDetectCount( logged );
             ipsNode.setBlockCount( blocked );
             
-        }catch( Exception e){
+        } catch( Exception e){
             logger.warn("parse: problem in loop:", e );
         }
-        try{
+        try {
             if( raf != null ){
                 raf.close();
             }
-        }catch( IOException e){
+        } catch( IOException e){
             logger.warn("parse: Cannot close: ", e);
         }
         
