@@ -554,7 +554,7 @@ class IntrusionPreventionTests(unittest2.TestCase):
 
         event = self.intrusion_prevention_interface.get_log_event(rule)
         assert( event != None and event["blocked"] == False )
-
+        
     def test_051_functional_tcp_block(self):
         """
         Functional, TCP block
@@ -568,11 +568,26 @@ class IntrusionPreventionTests(unittest2.TestCase):
         self.intrusion_prevention_interface.config_request( "save", self.intrusion_prevention_interface.create_patch( "rule", "add", rule ) )
         node.reconfigure()
 
+        pre_events_scan = global_functions.getStatusValue(node,"scan")
+        pre_events_detect = global_functions.getStatusValue(node,"detect")
+        pre_events_block = global_functions.getStatusValue(node,"block")
+        
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/CompanySecret")
 
         event = self.intrusion_prevention_interface.get_log_event(rule)
         assert( event != None and event["blocked"] == True )
 
+        post_events_scan = global_functions.getStatusValue(node,"scan")
+        post_events_detect = global_functions.getStatusValue(node,"detect")
+        post_events_block = global_functions.getStatusValue(node,"block")
+
+        print "pre_events_scan: %s post_events_scan: %s"%(str(pre_events_scan),str(post_events_scan))
+        assert(pre_events_scan < post_events_scan)
+        print "pre_events_detect: %s post_events_detect: %s"%(str(pre_events_detect),str(post_events_detect))
+        assert(pre_events_detect < post_events_detect)
+        print "pre_events_block: %s post_events_block: %s"%(str(pre_events_block),str(post_events_block))
+        assert(pre_events_block < post_events_block)
+        
     def test_052_functional_udp_log(self):
         """
         Functional, UDP log
@@ -642,18 +657,26 @@ class IntrusionPreventionTests(unittest2.TestCase):
         self.intrusion_prevention_interface.config_request( "save", self.intrusion_prevention_interface.create_patch( "rule", "add", rule ) )
         node.reconfigure()
 
+        pre_events_scan = global_functions.getStatusValue(node,"scan")
         pre_events_detect = global_functions.getStatusValue(node,"detect")
+        pre_events_block = global_functions.getStatusValue(node,"block")
         
         result = remote_control.runCommand("ping -c 5 " + dest_ip_address + " > /dev/null")
         
         event = self.intrusion_prevention_interface.get_log_event(rule)
         assert( event != None and event["blocked"] == True )
 
-        # Check to see if the faceplate counters have incremented. 
+        post_events_scan = global_functions.getStatusValue(node,"scan")
         post_events_detect = global_functions.getStatusValue(node,"detect")
+        post_events_block = global_functions.getStatusValue(node,"block")
+
+        print "pre_events_scan: %s post_events_scan: %s"%(str(pre_events_scan),str(post_events_scan))
+        assert(pre_events_scan < post_events_scan)
         print "pre_events_detect: %s post_events_detect: %s"%(str(pre_events_detect),str(post_events_detect))
         assert(pre_events_detect < post_events_detect)
-
+        print "pre_events_block: %s post_events_block: %s"%(str(pre_events_block),str(post_events_block))
+        assert(pre_events_block < post_events_block)
+        
     @staticmethod
     def finalTearDown(self):
         """
