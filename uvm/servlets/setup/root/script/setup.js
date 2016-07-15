@@ -1740,7 +1740,7 @@ Ext.define('Ung.Setup', {
             callback: Ext.bind(function (options, success, response) {
                 if (success) {
                     if (response.responseText && response.responseText.indexOf('loginPage') != -1) {
-                        Ext.MessageBox.alert(i18n._('Authenticatication failed'), i18n._('Invalid password.'));
+                        Ext.MessageBox.alert(i18n._('Authentication failed'), i18n._('Invalid password.'));
                         return;
                     }
                     // It is very wrong to do this all synchronously
