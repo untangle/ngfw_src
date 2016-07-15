@@ -93,7 +93,6 @@ Ext.define("Ung.Language", {
     },
     initComplete: function () {
         i18n = new Ung.I18N({ 'map': rpc.translations });
-        console.log(this);
         var language = Ext.create('Ung.setupWizard.Language', {languageList: this.languageList, language: this.language, languageSource: this.languageSource});
 
         Ext.create('Ext.container.Viewport', {
