@@ -1120,6 +1120,9 @@ Ext.define('Webui.config.email', {
                 width: 85,
                 dataIndex: 'size',
                 renderer: function(value) {
+                    if (!value) {
+                        return '';
+                    }
                     return i18n.numberFormat((value /1024.0).toFixed(3));
                 },
                 filter: {
