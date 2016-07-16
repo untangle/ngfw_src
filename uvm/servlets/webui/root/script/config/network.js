@@ -2435,7 +2435,7 @@ Ext.define('Webui.config.network', {
                     }
                 }
                 // set ConfigType store
-                if (record.get('supportedConfigTypes') !== null) {
+                if (record.get('supportedConfigTypes') != null) {
                     var configTypes = [], configType;
                     for (var j = 0; j < record.get('supportedConfigTypes').length; j += 1) {
                         configType = record.get('supportedConfigTypes')[j];
