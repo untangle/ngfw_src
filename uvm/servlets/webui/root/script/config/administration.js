@@ -196,7 +196,7 @@ Ext.define('Webui.config.administration', {
                 title: i18n._('Administrator Warning'),
                 msg: i18n._('This action will add an ADMINISTRATOR account.') + '<br/>' + '<br/>' +
                     '<b>' + i18n._('ADMINISTRATORS (also sometimes known as admin or root or superuser) have ADMINISTRATOR access to the server.') + '</b>' + '<br/>' + '<br/>' +
-                    i18n._('Administrator accounts have the ability to do anything including:') + '<br/>' + 
+                    i18n._('Administrator accounts have the ability to do anything including:') + '<br/>' +
                     '<ul>' +
                     '<li>' + i18n._("Read/Modify any setting") + '</li>' +
                     '<li>' + i18n._("Restore/Backup all settings") + '</li>' +
@@ -205,10 +205,10 @@ Ext.define('Webui.config.administration', {
                     '<li>' + i18n._("Run any command") + '</li>' +
                     '<li>' + i18n._("Install any software") + '</li>' +
                     '<li>' + i18n._("Complete control and access identical to what you now possess") + '</li>' +
-                    '</ul>' + '<br/>' + 
+                    '</ul>' + '<br/>' +
                     i18n._('Do you understand the above statement?') + '<br/>' +
                     '<input type="checkbox" id="admin_understand"/> <i>' + i18n._('Yes, I understand.') + '</i>' + '<br/>' +
-                    '<br/>' + 
+                    '<br/>' +
                     i18n._('Do you wish to continue?') + '<br/>',
                 buttons: Ext.MessageBox.YESNO,
                 fn: Ext.bind(function(btn) {
@@ -733,17 +733,62 @@ Ext.define('Webui.config.administration', {
                 header: i18n._("HTTPS"),
                 xtype: 'checkcolumn',
                 width: 60,
-                dataIndex: 'httpsServer'
+                dataIndex: 'httpsServer',
+                listeners: {
+                    // don't allow uncheck - they must pick a different cert
+                    beforecheckchange: Ext.bind(function(elem, rowIndex, checked) {
+                        if (checked === false) return(false);
+                        return(true);
+                    }, this),
+                    // when a new cert is selected uncheck all others
+                    checkchange: Ext.bind(function(elem, rowIndex, checked) {
+                        var records=elem.up("grid").getStore().getRange();
+                        for(var i=0; i<records.length; i++) {
+                            if (i === rowIndex) continue;
+                            records[i].set('httpsServer', false);
+                        }
+                    }, this)
+                }
             }, {
                 header: i18n._("SMTPS"),
                 xtype: 'checkcolumn',
                 width: 60,
-                dataIndex: 'smtpsServer'
+                dataIndex: 'smtpsServer',
+                listeners: {
+                    // don't allow uncheck - they must pick a different cert
+                    beforecheckchange: Ext.bind(function(elem, rowIndex, checked) {
+                        if (checked === false) return(false);
+                        return(true);
+                    }, this),
+                    // when a new cert is selected uncheck all others
+                    checkchange: Ext.bind(function(elem, rowIndex, checked) {
+                        var records=elem.up("grid").getStore().getRange();
+                        for(var i=0; i<records.length; i++) {
+                            if (i === rowIndex) continue;
+                            records[i].set('smtpsServer', false);
+                        }
+                    }, this)
+                }
             }, {
                 header: i18n._("IPSEC"),
                 xtype: 'checkcolumn',
                 width: 60,
-                dataIndex: 'ipsecServer'
+                dataIndex: 'ipsecServer',
+                listeners: {
+                    // don't allow uncheck - they must pick a different cert
+                    beforecheckchange: Ext.bind(function(elem, rowIndex, checked) {
+                        if (checked === false) return(false);
+                        return(true);
+                    }, this),
+                    // when a new cert is selected uncheck all others
+                    checkchange: Ext.bind(function(elem, rowIndex, checked) {
+                        var records=elem.up("grid").getStore().getRange();
+                        for(var i=0; i<records.length; i++) {
+                            if (i === rowIndex) continue;
+                            records[i].set('ipsecServer', false);
+                        }
+                    }, this)
+                }
             }, viewCertificateColumn, {
                 header: i18n._("Delete"),
                 xtype: 'actioncolumn',
