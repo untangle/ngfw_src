@@ -34,6 +34,4 @@ mv /tmp/$FILENAME "$DEST_DIR"
 /usr/bin/drive push --no-prompt "$DEST_DIR/$FILENAME"
 
 # remove the backup file
-rm -f $DEST_DIR/$FILENAME
-
-     
+rm -f "$DEST_DIR/$FILENAME"
