@@ -229,6 +229,7 @@ public class AdminManagerImpl implements AdminManager
 
         if ( admin == null ) {
             logger.warn("No \"admin\" account - not setting root password");
+            return;
         }
  
             
