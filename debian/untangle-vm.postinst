@@ -46,4 +46,9 @@ find /var/log/uvm -name '*crash*' -mtime +30 2>/dev/null | xargs rm -f
 # 12.1 remove old ntp servers from ntp.conf
 sed -e '/74.123/d' -i  /etc/ntp.conf
 
+# 12.1 upgrade
+if [ -d /var/lib/google-drive ] ; then
+    rm -rf /var/lib/google-drive/*
+fi
+
 exit 0
