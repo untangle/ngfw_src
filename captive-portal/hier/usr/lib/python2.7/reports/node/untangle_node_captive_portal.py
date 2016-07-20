@@ -1,4 +1,3 @@
-import gettext
 import logging
 import mx
 import reports.colors as colors

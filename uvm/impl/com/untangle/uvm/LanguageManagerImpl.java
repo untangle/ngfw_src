@@ -49,8 +49,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.xnap.commons.i18n.I18n;
-import com.untangle.uvm.util.I18nUtil;
 import org.xnap.commons.i18n.I18nFactory;
+import com.untangle.uvm.util.I18nUtil;
 
 import com.untangle.uvm.LanguageSettings;
 import com.untangle.uvm.UvmContextFactory;
