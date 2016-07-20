@@ -145,6 +145,15 @@ public class SessionMonitorEntry implements Serializable, JSONString
         for ( String key : attachments.keySet() ) {
             Object obj = attachments.get( key );
             if ( obj instanceof java.io.Serializable ) {
+
+                // Ignore lists and maps.
+                // These can be very large and are currently not used by the UI
+                // Also serializing them can cause exceptions if they are being modified
+                if ( obj instanceof java.util.List )
+                    continue;
+                if ( obj instanceof java.util.Map )
+                    continue;
+
                 this.attachments.put( key, obj );
             }
         }

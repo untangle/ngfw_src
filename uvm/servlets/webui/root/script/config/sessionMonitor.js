@@ -61,14 +61,14 @@ Ext.define('Webui.config.sessionMonitor', {
                         "serverLongitude" : 0,
                         "attachments": {
                             "map": {
-                                "web_filter-best-category-name": "Social Networking",
+                                "web-filter-best-category-name": "Social Networking",
                                 "application-control-lite-matched": (ii%3==0),
-                                "web_filter-best-category-description": "Social Networking",
-                                "web_filter-best-category-blocked": false,
-                                "web_filter-flagged": false,
+                                "web-filter-best-category-description": "Social Networking",
+                                "web-filter-best-category-blocked": false,
+                                "web-filter-flagged": false,
                                 "platform-hostname": "acct07-wxp"+t,
-                                "web_filter-best-category-flagged": (ii%2==1),
-                                "web_filter-best-category-id": null,
+                                "web-filter-best-category-flagged": (ii%2==1),
+                                "web-filter-best-category-id": null,
                                 "http-uri": "/t.gif",
                                 "platform-username": "foobar"+t,
                                 "http-hostname": "p.twitter.com"+(t%500)
