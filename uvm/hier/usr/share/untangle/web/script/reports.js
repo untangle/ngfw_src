@@ -1959,7 +1959,7 @@ Ext.define('Ung.panel.ReportCategorySelector', {
                 idx: i,
                 autoEl: {
                     tag: 'a',
-                    href: '',
+                    href: '#',
                     html: '<i class="material-icons">' + this.reports[i].icon + '</i><span>' + i18n._(this.reports[i].title) + '</span>',
                     'data-index': i
                 },
@@ -1968,8 +1968,10 @@ Ext.define('Ung.panel.ReportCategorySelector', {
                         element: 'el',
                         fn: function (e) {
                             e.preventDefault();
+                            e.stopPropagation();
                             me.parentCt.categoryList.getSelectionModel().select(me.category);
                             me.parentCt.entryList.getSelectionModel().select(this.component.idx);
+                            return false;
                         }
                     }
                 }
@@ -1983,7 +1985,7 @@ Ext.define('Ung.panel.ReportCategorySelector', {
                 //category: this.category,
                 autoEl: {
                     tag: 'a',
-                    href: '',
+                    href: '#',
                     html: (this.reports.length - 5) + ' ' + i18n._('more') + ' ...'
                 },
                 listeners: {
@@ -1991,7 +1993,9 @@ Ext.define('Ung.panel.ReportCategorySelector', {
                         element: 'el',
                         fn: function (e) {
                             e.preventDefault();
+                            e.stopPropagation();
                             me.parentCt.categoryList.getSelectionModel().select(me.category);
+                            return false;
                         }
                     }
                 }
