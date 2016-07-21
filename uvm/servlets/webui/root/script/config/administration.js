@@ -1128,14 +1128,9 @@ Ext.define('Webui.config.administration', {
     updateCertificateDisplay: function() {
         var certInfo = this.getRootCertificateInformation(true);
         if (certInfo != null) {
-            Ext.getCmp('rootca_status_notBefore').setValue(i18n.timestampFormat(certInfo.rootcaDateValid));
-            Ext.getCmp('rootca_status_notAfter').setValue(i18n.timestampFormat(certInfo.rootcaDateExpires));
-            Ext.getCmp('rootca_status_subjectDN').setValue(certInfo.rootcaSubject);
-
-            Ext.getCmp('server_status_notBefore').setValue(i18n.timestampFormat(certInfo.serverDateValid));
-            Ext.getCmp('server_status_notAfter').setValue(i18n.timestampFormat(certInfo.serverDateExpires));
-            Ext.getCmp('server_status_subjectDN').setValue(certInfo.serverSubject);
-            Ext.getCmp('server_status_issuerDN').setValue(certInfo.serverIssuer);
+            Ext.getCmp('rootca_status_notBefore').setValue(i18n.timestampFormat(certInfo.dateValid));
+            Ext.getCmp('rootca_status_notAfter').setValue(i18n.timestampFormat(certInfo.dateExpires));
+            Ext.getCmp('rootca_status_subjectDN').setValue(certInfo.certSubject);
         }
     },
 
