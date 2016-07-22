@@ -31,7 +31,7 @@ import com.untangle.uvm.util.Pulse;
  */
 public class DeviceTableImpl implements DeviceTable
 {
-    private static final String CLOUD_LOOKUP_URL = "https://labs.totaldefense.com/Utility/v1/mac";
+    private static final String CLOUD_LOOKUP_URL = "https://labs.untangle.com/Utility/v1/mac";
     private static final String CLOUD_LOOKUP_KEY = "B132C885-962B-4D63-8B2F-441B7A43CD93";
 
     private static final int HIGH_WATER_SIZE = 12000; /* absolute max */
