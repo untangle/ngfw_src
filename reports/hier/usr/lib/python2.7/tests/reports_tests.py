@@ -388,7 +388,11 @@ class ReportsTests(unittest2.TestCase):
         if (uvmContext.nodeManager().isInstantiated(self.nodeWanFailoverName())):
             raise unittest2.SkipTest('WAN Failover already installed')
         else:
-            nodeWanFailover = uvmContext.nodeManager().instantiate(self.nodeWanFailoverName(), defaultRackId)
+            try:
+                nodeWanFailover = uvmContext.nodeManager().instantiate(self.nodeWanFailoverName(), defaultRackId)
+            except:
+                # Some deployments don't have wan failover, if so skip this test
+                raise unittest2.SkipTest('WAN Failover failed to install')
 
         # WAN is offine test
         wanIndex = 0
