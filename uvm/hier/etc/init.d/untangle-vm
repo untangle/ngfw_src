@@ -60,10 +60,16 @@ uvmStatus() {
         if [ -f ${UVM_PID_FILE} ] ; then
             pid=`cat ${UVM_PID_FILE}`
             if ! ps ax | grep -qE '^\s*'$pid'\s' ; then
+                # PID file is stale, so it doesnt matter whats in status
                 echo "stopped"
+            else
+                # PID is current
+                cat ${UVM_STATUS_FILE}
             fi
+        else
+            # no PID file
+            echo "unknown"
         fi
-        cat ${UVM_STATUS_FILE}
     else
         echo "unknown"
     fi
@@ -81,19 +87,15 @@ case "$1" in
             exit
         fi
 
-        if [ -f ${UVM_PID_FILE} ] ; then
-            pid=`cat ${UVM_PID_FILE}`
-            if ! ps ax | grep -qE '^\s*'$pid'\s' ; then
-                echo -n "Removing Stale PIDfile  (file:`cat ${UVM_PID_FILE}` pid:$pid) "
-                rm -f ${UVM_PID_FILE}
-            else
-                echo "Already started."
-		        log_end_msg 0
-                exit
-            fi
+        if [ "`uvmStatus`" == "running" ] ; then
+            echo "Already started."
+		    log_end_msg 0
+            exit
         fi
-
+        
         updateStatus "[" "Starting"
+
+        echo "launching" > ${UVM_STATUS_FILE}
 
         start-stop-daemon --start \
             --background --make-pidfile -q \
@@ -159,9 +161,6 @@ case "$1" in
         # Attempt polite kill first
         start-stop-daemon -s INT --stop -q --pidfile ${UVM_PID_FILE}
         code=$?
-
-        # Remove PID file
-        rm -f ${UVM_PID_FILE}  &> /dev/null
 
         # exit if start-stop-daemon failed and the process was not found anyway (it must already be dead)
         if [ $code != "0" ] && [ "`uvmStatus`" == "stopped" ] ; then
