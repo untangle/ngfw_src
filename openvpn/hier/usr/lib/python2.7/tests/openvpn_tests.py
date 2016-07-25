@@ -35,7 +35,7 @@ vpnServerVpnIP = "10.111.56.96"
 vpnServerVpnLanIP = "192.168.235.96"
 
 # special box with testshell in the sudoer group  - used to connect to vpn as client
-vpnClientVpnIP = "10.111.56.84"  
+vpnClientVpnIP = "10.111.56.41"  
 
 tunnelUp = False
 
