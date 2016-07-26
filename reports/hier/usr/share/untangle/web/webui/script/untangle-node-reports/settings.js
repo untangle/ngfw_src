@@ -20,7 +20,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
         this.buildAlertRules();
         this.buildData();
 
-        var panels = [this.panelData, this.panelAlertRules, this.panelUsers, this.panelSyslog, this.gridHostnameMap ];
+        var panels = [this.gridReportEntries, this.panelData, this.panelAlertRules, this.panelUsers, this.panelSyslog, this.gridHostnameMap ];
 
         this.buildTabPanel(panels);
         this.callParent(arguments);
@@ -689,104 +689,94 @@ Ext.define('Webui.untangle-node-reports.settings', {
 
         var availableCategories = ['Hosts', 'Devices', 'Network', 'Administration', 'System', 'Shield'], i;
 
-        Ung.Main.getReportsManager().getCurrentApplications(Ext.bind(function (result, exception) {
-            if (Ung.Util.handleException(exception)) {
-                return;
-            }
-            for (i = 0; i < result.list.length; i += 1) {
-                availableCategories.push(result.list[i].displayName);
-            }
-
-            this.gridReportEntries = Ext.create('Ung.grid.Panel',{
-                name: 'All Reports',
-                helpSource: 'reports_manage_reports',
-                settingsCmp: this,
-                hasReadOnly: true,
-                hasAdd: false,
-                hasEdit: false,
-                hasImportExport: true,
-                changableFields: ['enabled'],
-                title: i18n._("All Reports"),
-                features: [{
-                    ftype: 'grouping'
-                }],
-                groupField: 'category',
-                recordJavaClass: "com.untangle.node.reports.ReportEntry",
-                emptyRow: {
-                    "uniqueId": null,
-                    "enabled": true,
-                    "readOnly": false,
-                    "displayOrder": 500,
-                    "pieStyle": "PIE",
-                    "type": "PIE_GRAPH"
-                },
-                dataProperty: "reportEntries",
-                sortField: 'displayOrder',
-                columnsDefaultSortable: false,
-                fields: ['uniqueId', 'enabled', 'readOnly', 'type', 'title', 'category', 'description', 'displayOrder', 'units', 'table', 'conditions',
-                         'pieGroupColumn', 'pieSumColumn', 'timeDataInterval', 'timeDataColumns', 'orderByColumn', 'orderDesc', 'javaClass'],
-                //filterFields: ['title', 'description', 'units', 'displayOrder'],
-                columns: [{
-                    header: i18n._("Title"),
-                    width: 230,
-                    dataIndex: 'title'
-                }, {
-                    xtype:'checkcolumn',
-                    header: i18n._("Enabled"),
-                    dataIndex: 'enabled',
-                    resizable: false,
-                    width: 55
-                }, {
-                    header: i18n._("Type"),
-                    width: 110,
-                    dataIndex: 'type',
-                    renderer: chartTypeRenderer
-                }, {
-                    header: i18n._("Description"),
-                    width: 200,
-                    dataIndex: 'description',
-                    flex: 1
-                }, {
-                    header: i18n._("Units"),
-                    width: 90,
-                    dataIndex: 'units'
-                }, {
-                    header: i18n._("Display Order"),
-                    width: 90,
-                    dataIndex: 'displayOrder'
-                }, {
-                    header: i18n._("View"),
-                    xtype: 'actioncolumn',
-                    width: 70,
-                    defaultRenderer: function (value, metaData, record) {
-                        if (availableCategories.indexOf(record.getData().category) < 0) {
-                            return '<div style="font-size: 10px; line-height: 1; text-align: center; color: coral;">not installed</div>';
-                        }
-                        return '<div style="text-align: center;"><i role="button" class="x-action-col-icon x-action-col-0 material-icons" style="font-size: 16px;">visibility</i></div>';
-                    },
-                    handler: Ext.bind(function(view, rowIndex, colIndex, item, e, record) {
-                        this.viewReport(Ext.clone(record.getData()));
-                    }, this)
-                }, {
-                    header: i18n._("Category"),
-                    dataIndex: 'category',
-                    hidden: true,
-                    renderer: function (value) {
-                        if (availableCategories.indexOf(value) < 0) {
-                            return value + ' (<span style="color: coral;">' + i18n._('not installed') + '</span>)';
-                        }
-                        return value;
+        this.gridReportEntries = Ext.create('Ung.grid.Panel',{
+            name: 'All Reports',
+            helpSource: 'reports_manage_reports',
+            settingsCmp: this,
+            hasReadOnly: true,
+            hasAdd: false,
+            hasEdit: true,
+            hasImportExport: true,
+            changableFields: ['enabled'],
+            title: i18n._("All Reports"),
+            features: [{
+                ftype: 'grouping'
+            }],
+            groupField: 'category',
+            recordJavaClass: "com.untangle.node.reports.ReportEntry",
+            emptyRow: {
+                "uniqueId": null,
+                "enabled": true,
+                "readOnly": false,
+                "displayOrder": 500,
+                "pieStyle": "PIE",
+                "type": "PIE_GRAPH"
+            },
+            dataProperty: "reportEntries",
+            sortField: 'displayOrder',
+            columnsDefaultSortable: false,
+            fields: ['uniqueId', 'enabled', 'readOnly', 'type', 'title', 'category', 'description', 'displayOrder', 'units', 'table', 'conditions',
+                'pieGroupColumn', 'pieSumColumn', 'timeDataInterval', 'timeDataColumns', 'orderByColumn', 'orderDesc', 'javaClass'],
+            //filterFields: ['title', 'description', 'units', 'displayOrder'],
+            columns: [{
+                header: i18n._("Title"),
+                width: 230,
+                dataIndex: 'title'
+            }, {
+                xtype:'checkcolumn',
+                header: i18n._("Enabled"),
+                dataIndex: 'enabled',
+                resizable: false,
+                width: 55
+            }, {
+                header: i18n._("Type"),
+                width: 110,
+                dataIndex: 'type',
+                renderer: chartTypeRenderer
+            }, {
+                header: i18n._("Description"),
+                width: 200,
+                dataIndex: 'description',
+                flex: 1
+            }, {
+                header: i18n._("Units"),
+                width: 90,
+                dataIndex: 'units'
+            }, {
+                header: i18n._("Display Order"),
+                width: 90,
+                dataIndex: 'displayOrder'
+            }, {
+                header: i18n._("View"),
+                xtype: 'actioncolumn',
+                width: 70,
+                defaultRenderer: function (value, metaData, record) {
+                    if (availableCategories.indexOf(record.getData().category) < 0) {
+                        return '<div style="font-size: 10px; line-height: 1; text-align: center; color: coral;">not installed</div>';
                     }
-                }]
-            });
+                    return '<div style="text-align: center;"><i role="button" class="x-action-col-icon x-action-col-0 material-icons" style="font-size: 16px;">visibility</i></div>';
+                },
+                handler: Ext.bind(function(view, rowIndex, colIndex, item, e, record) {
+                    this.viewReport(Ext.clone(record.getData()));
+                }, this)
+            }, {
+                header: i18n._("Category"),
+                dataIndex: 'category',
+                hidden: true,
+                renderer: function (value) {
+                    if (availableCategories.indexOf(value) < 0) {
+                        return value + ' (<span style="color: coral;">' + i18n._('not installed') + '</span>)';
+                    }
+                    return value;
+                }
+            }]
+        });
 
-            this.gridReportEntries.setRowEditor(Ext.create('Ung.window.ReportEditor', {
-                parentCmp: this
-            }));
-
-            this.down('tabpanel').insert(1, this.gridReportEntries);
-        }, this));
+        this.gridReportEntries.setRowEditor(Ext.create('Ung.window.ReportEditor', {
+            parentCmp: this
+        }));
     },
+
     viewReport: function(reportEntry) {
         if(!this.winViewReport) {
             this.winViewReport = Ext.create('Ung.Window', {
@@ -801,7 +791,12 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 }," "],
                 items: Ext.create('Ung.panel.Reports', {
                     initEntry: reportEntry,
-                    hideCustomization: true
+                    hideCustomization: true,
+                    responsiveFormulas: {
+                        insideSettingsWin: function() {
+                            return true;
+                        }
+                    }
                 }),
                 listeners: {
                     "hide": {
@@ -817,6 +812,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
             this.subCmps.push(this.winViewReport);
         } else {
             var panelReports = this.winViewReport.down('[name=panelReports]');
+            panelReports.categoryList.getSelectionModel().deselectAll();
             panelReports.categoryList.getSelectionModel().select(panelReports.categoryList.getStore().findRecord('category', reportEntry.category));
             panelReports.entryList.getSelectionModel().select(panelReports.entryList.getStore().findRecord('entryId', reportEntry.uniqueId));
         }
