@@ -23,7 +23,7 @@ nodeSSLData = None
 canRelay = True
 canRelayTLS = True
 smtpServerHost = 'test.untangle.com'
-listFakeSmtpServerHosts = [('10.112.56.30','16'),('10.111.56.84','16')]
+listFakeSmtpServerHosts = [('10.112.56.30','16'),('10.111.56.41','16')]
 tlsSmtpServerHost = '10.112.56.44' # Vcenter VM Debian-ATS-TLS 
 
 def getLatestMailSender():
