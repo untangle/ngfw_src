@@ -25,9 +25,9 @@ Ext.define("Ung.window.ReportEditor", {
                     }
                     this.closeWindow();
                     this.parentCmp.initEntry = entry;
-                    this.parentCmp.reloadReports();
                     Ung.dashboard.reportEntriesModified = true;
                     Ung.Util.userActionToast('<span style="color: #FFF;">' + entry.title + '</span> ' + i18n._('updated successfully'));
+                    this.reloadReports();
                 }, this), entry);
             },
             scope: this
@@ -56,9 +56,9 @@ Ext.define("Ung.window.ReportEditor", {
                         }
                         this.closeWindow();
                         this.parentCmp.initEntry = entry;
-                        this.parentCmp.reloadReports();
                         Ung.dashboard.reportEntriesModified = true;
                         Ung.Util.userActionToast('<span style="color: #FFF;">' + entry.title + '</span> ' + i18n._('created successfully'));
+                        this.reloadReports();
                     }, this), entry);
                 }
             },
@@ -719,5 +719,18 @@ Ext.define("Ung.window.ReportEditor", {
         this.cmps.defaultColumns.setVisible(type === "EVENT_LIST");
         this.cmps.defaultColumns.setDisabled(type !== "EVENT_LIST");
 
+    },
+
+    reloadReports: function () {
+        if (Ext.isFunction(this.parentCmp.reloadReports)) {
+            this.parentCmp.reloadReports();
+        }
+        if (this.parentCmp && Ext.isFunction(this.parentCmp.getSettings)) {
+            Ext.MessageBox.wait(i18n._("Reloading..."), i18n._("Please wait"));
+            this.parentCmp.getSettings(Ext.bind(function () {
+                this.parentCmp.clearDirty();
+                Ext.MessageBox.hide();
+            }, this));
+        }
     }
 });
