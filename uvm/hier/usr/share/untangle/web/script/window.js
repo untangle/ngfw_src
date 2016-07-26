@@ -158,11 +158,17 @@ Ext.define("Ung.SettingsWin", {
             var reportCategory = this.reportCategory;
             if ( reportCategory == null ) reportCategory = this.displayName;
             itemsArray.push(Ext.create('Ung.panel.Reports',{
-                category: i18n._(reportCategory),
                 title: i18n._('Reports'),
+                hideCustomization: true,
                 responsiveFormulas: {
-                    insideSettingsWin: function(context) {
+                    insideSettingsWin: function() {
                         return true;
+                    }
+                },
+                listeners: {
+                    activate: function (rep) {
+                        rep.categoryList.getSelectionModel().deselectAll();
+                        rep.categoryList.getSelectionModel().select(rep.categoryList.getStore().findRecord('category', reportCategory));
                     }
                 }
             }));

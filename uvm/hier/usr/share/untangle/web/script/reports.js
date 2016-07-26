@@ -338,7 +338,7 @@ Ext.define('Ung.panel.Reports', {
                 //iconCls: 'icon-add-row',
                 margin: '0 3',
                 scale: 'medium',
-                hidden: !Ung.Main.webuiMode,
+                hidden: !Ung.Main.webuiMode || this.hideCustomization,
                 handler: Ext.bind(function (btn) {
                     this.dashboardAction(btn);
                 }, this)
@@ -862,13 +862,7 @@ Ext.define('Ung.panel.Reports', {
 
 
             this.buildCategorySelector(_categorySideItems);
-
-            // reports opened within app settings, having an initial category set
-            if (this.category) {
-                this.categoryList.getSelectionModel().select(this.categoryList.getStore().findRecord('text', this.category));
-            } else {
-                this.categoryList.setSelection(_categorySideItems[0]);
-            }
+            this.categoryList.setSelection(_categorySideItems[0]);
 
             if (this.initEntry) {
                 this.categoryList.getSelectionModel().select(this.categoryList.getStore().findRecord('category', this.initEntry.category));
