@@ -23,7 +23,7 @@ node = None
 canRelay = None
 # special box with testshell in the sudoer group  - used to connect to as client
 # DNS MX record on 10.111.56.57 for domains untangletestvm.com and untangletest.com
-listFakeSmtpServerHosts = [('10.112.56.30','16','untangletestvm.com'),('10.111.56.84','16','untangletest.com')]
+listFakeSmtpServerHosts = [('10.112.56.30','16','untangletestvm.com'),('10.111.56.41','16','untangletest.com')]
 specialDnsServer = "10.111.56.96"
 fakeSmtpServerHost = ""
 fakeSmtpServerHostResult = -1
