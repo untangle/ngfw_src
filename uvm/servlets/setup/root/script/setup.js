@@ -1549,9 +1549,7 @@ Ext.define('Ung.setupWizard.Wireless', {
         this.card = {
             title: i18n._('Wireless'),
             panel: this.panel,
-            onValidate: Ext.bind(function () {
-                return Ung.Util.validate(this.panel);
-            }, this),
+            onValidate: Ext.bind(this.validateWireless, this),
             onLoad: Ext.bind(function (complete) {
                 complete();
                 Ext.MessageBox.wait(i18n._('Loading Wireless Settings'), i18n._('Please Wait'));
@@ -1570,7 +1568,8 @@ Ext.define('Ung.setupWizard.Wireless', {
                         rpc.networkManager.getWirelessPassword(Ext.bind(function (result, exception) {
                             if (Ung.Util.handleException(exception)) return;
                             var element = this.panel.down('textfield[name="wirelessPassword"]');
-                            element.setValue( result );
+                            if ( result != "12345678" ) // this is the default password, do not autofill
+                                element.setValue( result );
                             this.initialPassword = result;
 
                             Ext.MessageBox.hide();
@@ -1582,6 +1581,33 @@ Ext.define('Ung.setupWizard.Wireless', {
             }, this),
             onNext: Ext.bind(this.saveWireless, this)
         };
+    },
+    validateWireless: function () {
+        var element = this.panel.down('textfield[name="wirelessPassword"]');
+        var password = element.getValue();
+
+        if ( password == null || password.length < 8 ) {
+            Ext.MessageBox.show({
+                title: i18n._('Wireless Password'),
+                msg: i18n._('The wireless password must be at least 8 characters.'),
+                width: 300,
+                buttons: Ext.MessageBox.OK,
+                icon: Ext.MessageBox.INFO
+            });
+            return false;
+        }
+        if ( password == "12345678" ) {
+            Ext.MessageBox.show({
+                title: i18n._('Wireless Password'),
+                msg: i18n._('You must choose a new and different wireless password.'),
+                width: 300,
+                buttons: Ext.MessageBox.OK,
+                icon: Ext.MessageBox.INFO
+            });
+            return false;
+        }
+        
+        return Ung.Util.validate(this.panel);
     },
     saveWireless: function (handler) {
         var wirelessSsidValue = this.panel.down('textfield[name="wirelessSsid"]').getValue();
@@ -1596,7 +1622,7 @@ Ext.define('Ung.setupWizard.Wireless', {
         if (changed) {
             Ext.MessageBox.wait(i18n._('Saving Settings'), i18n._('Please Wait'));
             var delegate = Ext.bind(function (result, exception, foo, handler) {
-                if (Ung.Util.handleException(exception, i18n._('Unable to save Settings'))) {
+                if (Ung.Util.handleException(exception, i18n._('Problem'))) {
                     return;
                 }
                 Ext.MessageBox.hide();
@@ -1803,7 +1829,7 @@ Ext.define('Ung.Setup', {
         //--- DEBUGGING CODE (Enable wizard resuming to any step)---
         //rpc.wizardSettings.wizardComplete=false; //Force wizard completed flag to false
         //rpc.wizardSettings.completedStep="AutoUpgrades"; //wizard will resume after this step
-        //rpc.wizardSettings.steps = ['Welcome','ServerSettings','Wireless']; //Force different Steps for configurations
+        //rpc.wizardSettings.steps = ['Welcome','ServerSettings','Wireless','Complete']; //Force different Steps for configurations
         //rpc.wizardSettings.steps = ['Welcome','ServerSettings','AutoUpgrades','Complete']; //Force different Steps for configurations
         //rpc.wizardSettings.steps = ['Welcome','ServerSettings','Interfaces','Internet','InternalNetwork','AutoUpgrades','Complete']; //Force different Steps for configurations
         //------------------
