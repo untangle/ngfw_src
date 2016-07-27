@@ -26,7 +26,9 @@ node = None
 nodeDataAD = None
 nodeAD = None
 nodeWeb = None
-adHost = "10.111.56.48"
+AD_HOST = "10.112.56.47"
+AD_ADMIN = "ATSadmin"
+AD_PASSWORD = "passwd"
 radiusHost = "10.112.56.71"
 localUserName = 'test20'
 adUserName = 'atsadmin'
@@ -75,14 +77,14 @@ def createDirectoryConnectorSettings():
     # Need to send Radius setting even though it's not used in this case.
     return {
        "activeDirectorySettings": {
-            "LDAPHost": adHost,
+            "LDAPHost": AD_HOST,
             "LDAPPort": 389,
             "OUFilter": "",
-            "domain": "adtesting.int",
+            "domain": "adtest.adtesting.int",
             "enabled": True,
             "javaClass": "com.untangle.node.directory_connector.ActiveDirectorySettings",
-            "superuser": "ATSadmin",
-            "superuserPass": "passwd"
+            "superuser": AD_ADMIN,
+            "superuserPass": AD_PASSWORD
        },
         "radiusSettings": {
             "port": 1812, 
@@ -111,8 +113,8 @@ def createRadiusSettings():
             "OUFilter": "", 
             "domain": "adtest.metaloft.com", 
             "javaClass": "com.untangle.node.directory_connector.ActiveDirectorySettings", 
-            "LDAPHost": adHost, 
-            "superuser": "Administrator"
+            "LDAPHost": AD_HOST, 
+            "superuser": AD_ADMIN
         }, 
         "radiusSettings": {
             "port": 1812, 
@@ -189,7 +191,7 @@ class CaptivePortalTests(unittest2.TestCase):
             print "ERROR: Node %s already installed" % self.nodeNameWeb()
             raise unittest2.SkipTest('node %s already instantiated' % self.nodeNameWeb())
         nodeWeb = uvmContext.nodeManager().instantiate(self.nodeNameWeb(), defaultRackId)
-        adResult = subprocess.call(["ping","-c","1",adHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        adResult = subprocess.call(["ping","-c","1",AD_HOST],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         radiusResult = subprocess.call(["ping","-c","1",radiusHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         # Create local directory user 'test20'
         uvmContext.localDirectory().setUsers(createLocalDirectoryUser())
@@ -578,7 +580,7 @@ class CaptivePortalTests(unittest2.TestCase):
         foundUsername = findNameInHostTable(adUserName)
         assert(not foundUsername)        
 
-        # check extend ascii in login and password 
+        # check extend ascii in login and password bug 10860
         result = remote_control.runCommand("wget -O /tmp/capture_test_035e.out  \'http://" + captureIP + "/capture/handler.py/authpost?username=britishguy&password=passwd%C2%A3&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
         assert (result == 0)
         search = remote_control.runCommand("grep -q 'Hi!' /tmp/capture_test_035e.out")
