@@ -24,7 +24,6 @@ AD_USER = "user_28004"
 RADIUS_HOST = "10.112.56.71"
 
 AD_RESULT = 1
-AD_RESULT = 1
 RADIUS_RESULT = 1
 
 # pdb.set_trace()
