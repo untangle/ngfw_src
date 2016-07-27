@@ -1504,6 +1504,111 @@ Ext.define('Ung.setupWizard.InternalNetwork', {
     }
 });
 
+// Setup Wizard - Step 4.1 (Wireless)
+Ext.define('Ung.setupWizard.Wireless', {
+    constructor: function (config) {
+        Ext.apply(this, config);
+        this.panel = Ext.create('Ext.container.Container', {
+            items: [{
+                xtype: 'component',
+                margin: '20 20 0 20',
+                html: '<h3>' + i18n._('Configure Wireless Settings') + '</h3>'
+            }, {
+                xtype: 'container',
+                margin: '30 0 0 20',
+                items: [{
+                    xtype:'textfield',
+                    name: "wirelessSsid",
+                    fieldLabel: i18n._('Network Name (SSID)'),
+                    labelWidth: 150,
+                    maxLength: 30,
+                    maskRe: /[a-zA-Z0-9\-_=]/
+                },{
+                    xtype: "combo",
+                    name: "wirelessEncryption",
+                    fieldLabel: i18n._("Encryption"),
+                    labelWidth: 150,
+                    editable: false,
+                    store: [["NONE", i18n._('None')], ["WPA1", i18n._('WPA')], ["WPA12", i18n._('WPA / WPA2')], ["WPA2", i18n._('WPA2')]]
+                },{
+                    xtype:'textfield',
+                    name: "wirelessPassword",
+                    fieldLabel: i18n._('Password'),
+                    labelWidth: 150,
+                    maxLength: 63,
+                    minLength: 8,
+                    maskRe: /[a-zA-Z0-9~@#%_=,\!\-\/\?\(\)\[\]\\\^\$\+\*\.\|]/
+                },{
+                    xtype: 'component',
+                    margin: '0 0 0 150',
+                    html: "<i>" + i18n._('The wireless password must be at least 8 characters.') + "</i>"
+                }]
+            }]
+        });
+
+        this.card = {
+            title: i18n._('Wireless'),
+            panel: this.panel,
+            onValidate: Ext.bind(function () {
+                return Ung.Util.validate(this.panel);
+            }, this),
+            onLoad: Ext.bind(function (complete) {
+                complete();
+                Ext.MessageBox.wait(i18n._('Loading Wireless Settings'), i18n._('Please Wait'));
+                rpc.networkManager.getWirelessSsid(Ext.bind(function (result, exception) {
+                    if (Ung.Util.handleException(exception)) return;
+                    var element = this.panel.down('textfield[name="wirelessSsid"]');
+                    element.setValue( result );
+                    this.initialSsid = result;
+                    
+                    rpc.networkManager.getWirelessEncryption(Ext.bind(function (result, exception) {
+                        if (Ung.Util.handleException(exception)) return;
+                        var element = this.panel.down('combo[name="wirelessEncryption"]');
+                        element.setValue( result );
+                        this.initialEncryption = result;
+                        
+                        rpc.networkManager.getWirelessPassword(Ext.bind(function (result, exception) {
+                            if (Ung.Util.handleException(exception)) return;
+                            var element = this.panel.down('textfield[name="wirelessPassword"]');
+                            element.setValue( result );
+                            this.initialPassword = result;
+
+                            Ext.MessageBox.hide();
+                        }, this));
+
+                    }, this));
+
+                }, this));
+            }, this),
+            onNext: Ext.bind(this.saveWireless, this)
+        };
+    },
+    saveWireless: function (handler) {
+        var wirelessSsidValue = this.panel.down('textfield[name="wirelessSsid"]').getValue();
+        var wirelessEncryptionValue = this.panel.down('combo[name="wirelessEncryption"]').getValue();
+        var wirelessPasswordValue = this.panel.down('textfield[name="wirelessPassword"]').getValue();
+        var afterFn = Ext.bind(function (handler) {
+            Ung.Setup.saveCurrentStep(this.stepName);
+            handler();
+        }, this, [handler]);
+
+        var changed = (this.initialSsid != wirelessSsidValue) || (this.initialEncryption != wirelessEncryptionValue) || (this.initialPassword != wirelessPasswordValue);
+        if (changed) {
+            Ext.MessageBox.wait(i18n._('Saving Settings'), i18n._('Please Wait'));
+            var delegate = Ext.bind(function (result, exception, foo, handler) {
+                if (Ung.Util.handleException(exception, i18n._('Unable to save Settings'))) {
+                    return;
+                }
+                Ext.MessageBox.hide();
+                handler();
+            }, this, [ afterFn ], true);
+            rpc.networkManager.setWirelessSettings( delegate, wirelessSsidValue, wirelessEncryptionValue, wirelessPasswordValue );
+        } else {
+            afterFn();
+        }
+    }
+});
+
 // Setup Wizard - Step 5 (Configure Upgrades)
 Ext.define('Ung.setupWizard.AutoUpgrades', {
     constructor: function (config) {
@@ -1685,6 +1790,7 @@ Ext.define('Ung.Setup', {
             'Interfaces': i18n._('Network Cards'),
             'Internet': i18n._('Internet Connection'),
             'InternalNetwork': i18n._('Internal Network'),
+            'Wireless': i18n._('Wireless'),
             'AutoUpgrades': i18n._('Automatic Upgrades'),
             'Complete': i18n._('Finished')
         };
@@ -1697,6 +1803,7 @@ Ext.define('Ung.Setup', {
         //--- DEBUGGING CODE (Enable wizard resuming to any step)---
         //rpc.wizardSettings.wizardComplete=false; //Force wizard completed flag to false
         //rpc.wizardSettings.completedStep="AutoUpgrades"; //wizard will resume after this step
+        //rpc.wizardSettings.steps = ['Welcome','ServerSettings','Wireless']; //Force different Steps for configurations
         //rpc.wizardSettings.steps = ['Welcome','ServerSettings','AutoUpgrades','Complete']; //Force different Steps for configurations
         //rpc.wizardSettings.steps = ['Welcome','ServerSettings','Interfaces','Internet','InternalNetwork','AutoUpgrades','Complete']; //Force different Steps for configurations
         //------------------

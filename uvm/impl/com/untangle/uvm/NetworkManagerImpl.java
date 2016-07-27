@@ -1975,7 +1975,7 @@ public class NetworkManagerImpl implements NetworkManager
             if ( changedFiles.contains("/etc/hosts") && changedFiles.contains("/etc/hosts.dnsmasq") && changedFiles.size() == 2 ) {
                 return new String[] {"/bin/true", "/etc/untangle-netd/post-network-hook.d/990-restart-dnsmasq"};
             }
-
+            
             /**
              * If only /etc/dnsmasq.conf has been written, just restart dnsmasq
              * This is commented out because if you just change DNS settings, it will only change dnsmasq.conf
@@ -2068,6 +2068,98 @@ public class NetworkManagerImpl implements NetworkManager
 	return channels;
     }
 
+    /**
+     * Iterate through all wireless interfaces set the settings to the given values
+     * Used by the setup wizard
+     */
+    public void setWirelessSettings( String ssid, InterfaceSettings.WirelessEncryption encryption, String password )
+    {
+        boolean changed = false;
+
+        if ( ssid == null || password == null || encryption == null ) {
+            logger.warn("Invalid arguments: " + ssid + " " + password + " " + encryption );
+            return;
+        }
+        
+        for ( InterfaceSettings intf : this.networkSettings.getInterfaces() ) {
+            if (! intf.getIsWirelessInterface() )
+                continue;
+
+            if (! ssid.equals( intf.getWirelessSsid() ) ) {
+                changed = true;
+                intf.setWirelessSsid( ssid );
+            }
+            if (! password.equals( intf.getWirelessPassword() ) ) {
+                changed = true;
+                intf.setWirelessPassword( password );
+            }
+            if (! encryption.equals( intf.getWirelessEncryption() ) ) {
+                changed = true;
+                intf.setWirelessEncryption( encryption );
+            }
+        }
+
+        if (changed)
+            setNetworkSettings( this.networkSettings, false );
+    }
+
+    /**
+     * Get the first wireless interface.
+     * If no wireless interface exists, return null
+     * Used by the setup wizard
+     */
+    public InterfaceSettings getFirstWirelessInterface()
+    {
+        for ( InterfaceSettings intf : this.networkSettings.getInterfaces() ) {
+            if ( intf.getIsWirelessInterface() )
+                return intf;
+        }
+        return null;
+    }
+
+    /**
+     * Get the SSID from the first wireless interface
+     * If no wireless interface exists returns null
+     * Used by the setup wizard
+     */
+    public String getWirelessSsid()
+    {
+        InterfaceSettings intf = getFirstWirelessInterface();
+        if ( intf != null )
+            return intf.getWirelessSsid();
+        else
+            return null;
+    }
+
+    /**
+     * Get the password from the first wireless interface
+     * If no wireless interface exists returns null
+     * Used by the setup wizard
+     */
+    public String getWirelessPassword()
+    {
+        InterfaceSettings intf = getFirstWirelessInterface();
+        if ( intf != null )
+            return intf.getWirelessPassword();
+        else
+            return null;
+    }
+
+    /**
+     * Get the encryption from the first wireless interface
+     * If no wireless interface exists returns null
+     * Used by the setup wizard
+     */
+    public InterfaceSettings.WirelessEncryption getWirelessEncryption()
+    {
+        InterfaceSettings intf = getFirstWirelessInterface();
+        if ( intf != null )
+            return intf.getWirelessEncryption();
+        else
+            return null;
+    }
+
+    
     private class NetworkTestDownloadHandler implements DownloadHandler
     {
         private static final String CHARACTER_ENCODING = "utf-8";

@@ -238,7 +238,7 @@ public class NodeManagerImpl implements NodeManager
             }
 
             if ( ! checkArchitecture( nodeProperties.getSupportedArchitectures() ) ) {
-                throw new Exception("Unspported Architecture " + System.getProperty("os.arch"));
+                throw new Exception("Unsupported Architecture " + System.getProperty("os.arch"));
             }
             
             if (nodeProperties.getType() == NodeProperties.Type.SERVICE )
