@@ -19,7 +19,8 @@ DEFAULT_TIME_FIELD = 'time_stamp'
 DEFAULT_SLICES = 150
 
 SCHEMA = 'reports'
-
+UNLOGGED_ENABLED = False
+EXTRA_INDEXES_ENABLED = True
 CONNECTION_STRING = "dbname=uvm user=postgres"
 
 class Cursor(psycopg2.extensions.cursor):
@@ -265,9 +266,13 @@ def create_table( table_sql, unique_index_columns=[], other_index_columns=[], cr
     else:
         full_tablename = tablename
 
+    # if extra indexes not enabled, just set the list to empty    
+    if not EXTRA_INDEXES_ENABLED:
+        other_index_columns=[]
+        
     # create root table
     if not table_exists( tablename ):
-        logger.info("CREATE TABLE %s" % full_tablename)
+        logger.info("CREATE %s TABLE %s" % ((UNLOGGED_ENABLED == True and "UNLOGGED" or ""),full_tablename))
         run_sql(table_sql)
         # always create time_stamp index
         if column_exists( tablename, "time_stamp") and not index_exists( tablename, "time_stamp", unique=False):
@@ -298,7 +303,7 @@ def create_table( table_sql, unique_index_columns=[], other_index_columns=[], cr
             if not table_exists( partition_tablename ):
                 start_time = table_start_time
                 end_time = table_start_time + mx.DateTime.RelativeDateTime(days=1)
-                partition_table_sql = "CREATE TABLE %s (CHECK (time_stamp >= '%s' AND time_stamp < '%s')) INHERITS (%s)" % (partition_full_tablename, start_time, end_time, full_tablename)
+                partition_table_sql = "CREATE %s TABLE %s (CHECK (time_stamp >= '%s' AND time_stamp < '%s')) INHERITS (%s)" % ((UNLOGGED_ENABLED == True and "UNLOGGED" or ""), partition_full_tablename, start_time, end_time, full_tablename)
                 logger.info(partition_table_sql)
                 run_sql(partition_table_sql)
 
