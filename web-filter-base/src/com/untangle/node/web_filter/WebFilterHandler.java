@@ -18,7 +18,7 @@ public class WebFilterHandler extends WebFilterBaseHandler
 {
     // constructors -----------------------------------------------------------
 
-    WebFilterHandler( WebFilterBase node )
+    public WebFilterHandler( WebFilterBase node )
     {
         super( node );
     }
