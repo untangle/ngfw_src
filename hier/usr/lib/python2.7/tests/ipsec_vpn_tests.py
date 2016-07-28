@@ -23,7 +23,7 @@ tunnelUp = False
 # hardcoded for ats testing
 radiusHost = "10.112.56.71"
 l2tpServerHosts = ["10.111.56.61","10.111.56.49","10.111.56.56","10.112.11.53","10.111.56.91"]
-l2tpClientHost = "10.111.56.33"  # Windows running freeSSHd
+l2tpClientHost = "10.111.56.57"  # Windows running freeSSHd
 l2tpLocalUser = "test"
 l2tpLocalPassword = "passwd"
 l2tpRadiusUser = "normal"
@@ -90,24 +90,36 @@ def removeLocalDirectoryUser():
 def createRadiusSettings():
     return {
         "activeDirectorySettings": {
-            "enabled": False, 
-            "superuserPass": "passwd", 
-            "LDAPPort": "389", 
-            "OUFilter": "", 
-            "domain": "adtest.metaloft.com", 
-            "javaClass": "com.untangle.node.directory_connector.ActiveDirectorySettings", 
-            "LDAPHost": "", 
-            "superuser": "Administrator"}, 
+            "LDAPHost": "ad_server.mydomain.int",
+            "LDAPPort": 636,
+            "LDAPSecure": True,
+            "OUFilter": "",
+            "domain": "mydomain.int",
+            "enabled": False,
+            "javaClass": "com.untangle.node.directory_connector.ActiveDirectorySettings",
+            "superuser": "Administrator",
+            "superuserPass": "mypassword"
+        },
+        "apiEnabled": True,
+        "facebookSettings": {
+            "authenticationEnabled": False,
+            "javaClass": "com.untangle.node.directory_connector.FacebookSettings"
+        },
         "googleSettings": {
-                "javaClass": "com.untangle.node.directory_connector.GoogleSettings"},
+            "authenticationEnabled": False,
+            "javaClass": "com.untangle.node.directory_connector.GoogleSettings"
+        },
+        "javaClass": "com.untangle.node.directory_connector.DirectoryConnectorSettings",
         "radiusSettings": {
-            "acctPort": 1813, 
-            "authPort": 1812, 
-            "enabled": True, 
-            "authenticationMethod": "MSCHAPV2", 
-            "javaClass": "com.untangle.node.directory_connector.RadiusSettings", 
-            "server": radiusHost, 
-            "sharedSecret": "chakas"}
+            "acctPort": 1813,
+            "authPort": 1812,
+            "authenticationMethod": "MSCHAPV2",
+            "enabled": True,
+            "javaClass": "com.untangle.node.directory_connector.RadiusSettings",
+            "server": radiusHost,
+            "sharedSecret": "chakas"
+        },
+        "version": 1
     }
     
 class IPsecTests(unittest2.TestCase):
@@ -196,7 +208,7 @@ class IPsecTests(unittest2.TestCase):
             raise unittest2.SkipTest("No paried L2TP client available")
         uvmContext.localDirectory().setUsers(createLocalDirectoryUser())
         createL2TPconfig("LOCAL_DIRECTORY")
-        timeout = 180
+        timeout = 480
         found = False
         # Send command for Windows VPN connect.
         vpnServerResult = remote_control.runCommand("rasdial.exe %s %s %s" % (wan_IP,l2tpLocalUser,l2tpLocalPassword), host=l2tpClientHost)
@@ -224,7 +236,7 @@ class IPsecTests(unittest2.TestCase):
         # Configure RADIUS settings
         nodeAD.setSettings(createRadiusSettings())
         createL2TPconfig("RADIUS_SERVER")
-        timeout = 180
+        timeout = 480
         found = False
         vpnServerResult = remote_control.runCommand("rasdial.exe %s %s %s" % (wan_IP,l2tpRadiusUser,l2tpRadiusPassword), host=l2tpClientHost)
         while not found and timeout > 0:
