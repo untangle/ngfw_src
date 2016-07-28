@@ -46,7 +46,7 @@ import com.untangle.uvm.vnet.NodeSession;
 /**
  * Does blacklist lookups from zvelo API.
  */
-class WebFilterDecisionEngine extends DecisionEngine
+public class WebFilterDecisionEngine extends DecisionEngine
 {
     private static final int[] CRC_TABLE;
     private static final long DIA_TIMEOUT = 604800000; // 1 week
@@ -257,9 +257,7 @@ class WebFilterDecisionEngine extends DecisionEngine
         return (category == answerCategory ? category : -1);
     }
 
-    // private methods --------------------------------------------------------
-
-    protected String getDiaKey()
+    public String getDiaKey()
     {
         if (WebFilterDecisionEngine.diaKey != null)
             return WebFilterDecisionEngine.diaKey;
@@ -324,6 +322,8 @@ class WebFilterDecisionEngine extends DecisionEngine
 
         return diaKey;
     }
+
+    // private methods --------------------------------------------------------
 
     private static String encodeUrl(String domain, String uri)
     {

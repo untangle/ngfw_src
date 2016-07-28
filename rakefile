@@ -72,6 +72,7 @@ task :targets => :download do
   require "#{SRC_HOME}/phish-blocker/package.rb"
   require "#{SRC_HOME}/spam-blocker-lite/package.rb"
   require "#{SRC_HOME}/web-filter-lite/package.rb"
+  require "#{SRC_HOME}/web-monitor/package.rb"
   require "#{SRC_HOME}/ad-blocker/package.rb"
   require "#{SRC_HOME}/virus-blocker-lite/package.rb"
   require "#{SRC_HOME}/captive-portal/package.rb"
