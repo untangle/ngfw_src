@@ -17,6 +17,7 @@ class ServerNode(Node):
 
     def reports_cleanup(self, cutoff):
         sql_helper.clean_table("server_events", cutoff)
+        sql_helper.clean_table("interface_stat_events", cutoff)
 
     @sql_helper.print_timing
     def __create_server_events(self):
