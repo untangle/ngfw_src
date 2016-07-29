@@ -240,7 +240,10 @@ def clean_table(tablename, cutoff):
     logger.info("clean_table " + str(tablename) + " < " + str(cutoff))
     
     for t, date in find_table_partitions(tablename):
-        if date < cutoff:
+        # if the entire table is before the date specified, just drop it
+        # but only if the *entire* table is before the the cutoff
+        day_cutoff = mx.DateTime.Parser.DateTimeFromString("%d-%d-%d"%cutoff.timetuple()[:3])
+        if date < day_cutoff:
             logger.info("DROP TABLE " + str(t))
             drop_table( t )
 
