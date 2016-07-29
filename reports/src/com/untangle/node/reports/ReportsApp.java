@@ -51,6 +51,10 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
 
     private static final String DATE_FORMAT_NOW = "yyyy-MM-dd";
     private static final String REPORTS_GENERATE_TABLES_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-generate-tables.py";
+    private static final String REPORTS_CLEAN_TABLES_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-clean-tables.py";
+    private static final String REPORTS_VACUUM_TABLES_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-vacuum-yesterdays-tables.sh";
+    private static final String REPORTS_GOOGLE_DATA_BACKUP_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-google-backup-yesterdays-data.sh";
+    private static final String REPORTS_GOOGLE_CSV_BACKUP_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-google-backup-yesterdays-csv.sh";
     private static final String REPORTS_GENERATE_REPORTS_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-generate-reports.py";
     private static final String REPORTS_GENERATE_FIXED_REPORTS_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-generate-fixed-reports.py";
     private static final String REPORTS_RESTORE_DATA_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-restore-backup.sh";
@@ -517,11 +521,12 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
     private void writeCronFile()
     {
         // write the cron file for nightly runs
+        // FIXME we should not write to log file directly - we should use logger/syslog
         String cronStr = "#!/bin/sh" + "\n" +
-            "/usr/share/untangle/bin/reports-generate-tables.py >> /var/log/uvm/reports.log 2>&1" + "\n" +
-            "/usr/share/untangle/bin/reports-clean-tables.py " + settings.getDbRetention() + " >> /var/log/uvm/reports.log 2>&1" + "\n" +
-            "/usr/share/untangle/bin/reports-vacuum-yesterdays-tables.sh >> /var/log/uvm/reports.log 2>&1" + "\n" + 
-            REPORTS_GENERATE_FIXED_REPORTS_SCRIPT + "\n";
+            REPORTS_GENERATE_TABLES_SCRIPT + " >> /var/log/uvm/reports.log 2>&1" + "\n" +
+            REPORTS_CLEAN_TABLES_SCRIPT + " " + settings.getDbRetention() + " >> /var/log/uvm/reports.log 2>&1" + "\n" +
+            REPORTS_VACUUM_TABLES_SCRIPT + " >> /var/log/uvm/reports.log 2>&1" + "\n" + 
+            REPORTS_GENERATE_FIXED_REPORTS_SCRIPT + " >> /var/log/uvm/reports.log 2>&1" + "\n";
 
         if ( settings.getGoogleDriveUploadData() ) {
             String dir = settings.getGoogleDriveDirectory();
@@ -530,7 +535,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
             else
                 dir = "";
             
-            cronStr += "/usr/share/untangle/bin/reports-google-backup-yesterdays-data.sh " + dir + " >> /var/log/uvm/reports.log 2>&1" + "\n";
+            cronStr += REPORTS_GOOGLE_DATA_BACKUP_SCRIPT + " " + dir + " >> /var/log/uvm/reports.log 2>&1" + "\n";
         }
         if ( settings.getGoogleDriveUploadCsv() ) {
             String dir = settings.getGoogleDriveDirectory();
@@ -539,7 +544,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
             else
                 dir = "";
             
-            cronStr += "/usr/share/untangle/bin/reports-google-backup-yesterdays-csv.sh " + dir + " >> /var/log/uvm/reports.log 2>&1" + "\n";
+            cronStr += REPORTS_GOOGLE_CSV_BACKUP_SCRIPT + " " + dir + " >> /var/log/uvm/reports.log 2>&1" + "\n";
         }
 
         
