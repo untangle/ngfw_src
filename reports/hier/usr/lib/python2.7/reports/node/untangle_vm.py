@@ -25,7 +25,7 @@ class UvmNode(Node):
     def reports_cleanup(self, cutoff):
         sql_helper.clean_table("admin_logins", cutoff)
         sql_helper.clean_table("sessions", cutoff)
-        sql_helper.clean_table("session_min", cutoff)
+        sql_helper.clean_table("session_minutes", cutoff)
         sql_helper.clean_table("penaltybox", cutoff)
         sql_helper.clean_table("quotas", cutoff)
         sql_helper.clean_table("host_table_updates", cutoff)
