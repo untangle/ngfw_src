@@ -2087,7 +2087,12 @@ public class NetworkManagerImpl implements NetworkManager
 
             if (! ssid.equals( intf.getWirelessSsid() ) ) {
                 changed = true;
-                intf.setWirelessSsid( ssid );
+                // if its a 5Mhz channel just add a 5 on the end
+                if ( intf.getWirelessChannel() != null && intf.getWirelessChannel() == -2 ) {
+                    intf.setWirelessSsid( ssid + "5" );
+                } else {
+                    intf.setWirelessSsid( ssid );
+                }
             }
             if (! password.equals( intf.getWirelessPassword() ) ) {
                 changed = true;
