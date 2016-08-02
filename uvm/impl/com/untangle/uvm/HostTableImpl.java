@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.Comparator;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.concurrent.Semaphore;
 import java.net.InetAddress;
 
 import org.apache.log4j.Logger;
@@ -58,6 +59,7 @@ public class HostTableImpl implements HostTable
     private HostTableCleaner cleaner = new HostTableCleaner();
 
     private volatile Thread reverseLookupThread;
+    private volatile Semaphore reverseLookupSemaphore = new Semaphore(0);
     private HostTableReverseHostnameLookup reverseLookup = new HostTableReverseHostnameLookup();
 
     private final Pulse saverPulse = new Pulse("device-table-saver", new HostTableSaver(), PERIODIC_SAVE_DELAY);
@@ -98,9 +100,7 @@ public class HostTableImpl implements HostTable
             }
             else {
                 this.hostTable.put( address, entry );
-                /* wake it up to force hostname lookup */
-                if ( !this.reverseLookupThread.isInterrupted() )
-                    this.reverseLookupThread.interrupt(); 
+                this.reverseLookupSemaphore.release(); /* wake up thread to force hostname lookup */
             }
         }
 
@@ -119,9 +119,7 @@ public class HostTableImpl implements HostTable
         if ( entry == null && createIfNecessary ) {
             entry = createNewHostTableEntry( addr );
             hostTable.put( addr, entry );
-            /* wake it up to force hostname lookup */
-            if ( !this.reverseLookupThread.isInterrupted() )
-                this.reverseLookupThread.interrupt(); 
+            this.reverseLookupSemaphore.release(); /* wake up thread to force hostname lookup */
         }
 
         return entry;
@@ -808,7 +806,9 @@ public class HostTableImpl implements HostTable
             }
 
             while (reverseLookupThread != null) {
-                try {Thread.sleep(CLEANER_SLEEP_TIME_MILLI);} catch (Exception e) {}
+
+                reverseLookupSemaphore.drainPermits();
+                try {reverseLookupSemaphore.tryAcquire(CLEANER_SLEEP_TIME_MILLI,java.util.concurrent.TimeUnit.MILLISECONDS);} catch (Exception e) {}
                 logger.debug("HostTableReverseHostnameLookup: Running... ");
 
                 try {
