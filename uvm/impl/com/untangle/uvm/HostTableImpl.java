@@ -98,7 +98,9 @@ public class HostTableImpl implements HostTable
             }
             else {
                 this.hostTable.put( address, entry );
-                this.reverseLookupThread.interrupt(); /* wake it up to force hostname lookup */
+                /* wake it up to force hostname lookup */
+                if ( !this.reverseLookupThread.isInterrupted() )
+                    this.reverseLookupThread.interrupt(); 
             }
         }
 
@@ -117,7 +119,9 @@ public class HostTableImpl implements HostTable
         if ( entry == null && createIfNecessary ) {
             entry = createNewHostTableEntry( addr );
             hostTable.put( addr, entry );
-            this.reverseLookupThread.interrupt(); /* wake it up to force hostname lookup */
+            /* wake it up to force hostname lookup */
+            if ( !this.reverseLookupThread.isInterrupted() )
+                this.reverseLookupThread.interrupt(); 
         }
 
         return entry;
@@ -794,6 +798,14 @@ public class HostTableImpl implements HostTable
         public void run()
         {
             reverseLookupThread = Thread.currentThread();
+
+            try {
+                org.xbill.DNS.ExtendedResolver defaultResolver = new org.xbill.DNS.ExtendedResolver(new String[]{"127.0.0.1"});
+                defaultResolver.setTimeout(2);
+                org.xbill.DNS.Lookup.setDefaultResolver(defaultResolver);
+            } catch (Exception e) {
+                logger.warn("Exception:",e);
+            }
 
             while (reverseLookupThread != null) {
                 try {Thread.sleep(CLEANER_SLEEP_TIME_MILLI);} catch (Exception e) {}
