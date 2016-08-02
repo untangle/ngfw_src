@@ -20,10 +20,9 @@ import remote_control
 import system_properties
 import global_functions
 
-iperfServer = "10.111.56.84"
 ftp_server = "test.untangle.com"
 ftp_file_name = ""
-ftp_client_external = "10.111.56.84"
+ftp_client_external = "10.111.56.41"
 dyn_hostname = ""
 dyn_names = ['atstest.dnsalias.com', 'atstest2.dyndns-ip.com', 'atstest3.dnsalias.com', 'atstest4.dnsalias.com'];
 
@@ -574,9 +573,9 @@ class NetworkTests(unittest2.TestCase):
     # test a port forward from outside if possible
     def test_030_portForwardInbound(self):
         # We will use iperfServer for this test. Test to see if we can reach it.
-        externalClientResult = subprocess.call(["ping","-c","1",iperfServer],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-        if (externalClientResult != 0):
-            raise unittest2.SkipTest("External test client unreachable, skipping alternate port forwarding test")
+        iperfAvail = global_functions.verifyIperf(wan_IP)
+        if (not iperfAvail):
+            raise unittest2.SkipTest("IperfServer test client unreachable, skipping alternate port forwarding test")
         # Also test that it can probably reach us (we're on a 10.x network)
         if not device_in_office:
             raise unittest2.SkipTest("Not on office network, skipping")
@@ -588,7 +587,7 @@ class NetworkTests(unittest2.TestCase):
         setFirstLevelRule(createPortForwardTripleCondition("DST_PORT","11245","DST_LOCAL","true","PROTOCOL","TCP",remote_control.clientIP,"11245"),'portForwardRules')
 
         # try connecting to netcat on client from "outside" box
-        result = remote_control.runCommand("echo test | netcat -q0 " + wan_IP + " 11245", host=iperfServer)
+        result = remote_control.runCommand("echo test | netcat -q0 " + wan_IP + " 11245", host=global_functions.iperfServer)
         assert (result == 0)
 
     # test a port forward from outside if possible
@@ -597,9 +596,8 @@ class NetworkTests(unittest2.TestCase):
         # Also test that it can probably reach us (we're on a 10.x network)
         if not device_in_office:
             raise unittest2.SkipTest("Not on office network, skipping")
-        iperfResult = global_functions.verifyIperf(wan_IP)
-        pingIperfServer = subprocess.call(["ping","-c","1",global_functions.iperfServer],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-        if (pingIperfServer != 0):
+        iperfAvail = global_functions.verifyIperf(wan_IP)
+        if (not iperfAvail):
             raise unittest2.SkipTest("iperfServer " + global_functions.iperfServer + " is unreachable, skipping")
         # Only if iperf is used
         # if not iperfResult:
