@@ -197,6 +197,7 @@ public class DashboardManagerImpl implements DashboardManager
         widgets.add( widgetSettings);
         
         DashboardSettings newSettings = new DashboardSettings();
+        newSettings.setVersion(2);
         newSettings.setWidgets(widgets);
         return newSettings;
     }
