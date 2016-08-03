@@ -398,6 +398,10 @@ public class EventWriterImpl implements Runnable
                         statement.executeBatch();
                     } catch (Exception e) {
                         logger.warn("Failed SQL query for " + statement, e);
+                        Throwable t = e;
+                        while ( ( t = t.getCause() ) != null ) {
+                            logger.warn("Cause: " + t, t);
+                        }
                     }
                     long write_t1 = System.currentTimeMillis();
 
