@@ -61,6 +61,7 @@ public class NetworkSettings implements Serializable, JSONString
     private int httpsPort = 443;
     
     private QosSettings qosSettings;
+    private UpnpSettings upnpSettings;
     private DnsSettings dnsSettings;
 
     private String dnsmasqOptions;
@@ -162,6 +163,9 @@ public class NetworkSettings implements Serializable, JSONString
 
     public QosSettings getQosSettings() { return this.qosSettings; }
     public void setQosSettings( QosSettings newValue ) { this.qosSettings = newValue; }
+
+    public UpnpSettings getUpnpSettings() { return this.upnpSettings; }
+    public void setUpnpSettings( UpnpSettings newValue ) { this.upnpSettings = newValue; }
 
     public DnsSettings getDnsSettings() { return this.dnsSettings; }
     public void setDnsSettings( DnsSettings newValue ) { this.dnsSettings = newValue; }

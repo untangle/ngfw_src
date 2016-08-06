@@ -49,6 +49,9 @@ import com.untangle.uvm.network.DnsSettings;
 import com.untangle.uvm.network.DnsStaticEntry;
 import com.untangle.uvm.network.DnsLocalServer;
 import com.untangle.uvm.network.DhcpStaticEntry;
+import com.untangle.uvm.network.UpnpSettings;
+import com.untangle.uvm.network.UpnpRule;
+import com.untangle.uvm.network.UpnpRuleCondition;
 import com.untangle.uvm.node.IPMaskedAddress;
 import com.untangle.uvm.node.RuleCondition;
 import com.untangle.uvm.servlet.DownloadHandler;
@@ -125,6 +128,12 @@ public class NetworkManagerImpl implements NetworkManager
             checkForNewDevices( readSettings );
             
             this.networkSettings = readSettings;
+            /* 13.0 conversion */
+            if(this.networkSettings.getVersion() < 3){
+                this.networkSettings.setUpnpSettings( defaultUpnpSettings() );
+                this.networkSettings.setVersion( 3 );
+                this.setNetworkSettings( this.networkSettings);
+            }
             logger.debug( "Loading Settings: " + this.networkSettings.toJSONString() );
         }
 
@@ -762,7 +771,7 @@ public class NetworkManagerImpl implements NetworkManager
         NetworkSettings newSettings = new NetworkSettings();
         
         try {
-            newSettings.setVersion( 2 ); // Currently on v2 (as of v11.0)
+            newSettings.setVersion( 3 ); // Currently on v2 (as of v11.0)
             newSettings.setHostName( UvmContextFactory.context().oemManager().getOemName().toLowerCase() );
             newSettings.setDomainName( "example.com" );
             newSettings.setHttpPort( 80 );
@@ -852,6 +861,7 @@ public class NetworkManagerImpl implements NetworkManager
             newSettings.setBypassRules( defaultBypassRules() );
             newSettings.setStaticRoutes( new LinkedList<StaticRoute>() );
             newSettings.setQosSettings( defaultQosSettings() );
+            newSettings.setUpnpSettings( defaultUpnpSettings() );
             newSettings.setDnsSettings( new DnsSettings() );
             newSettings.setForwardFilterRules( new LinkedList<FilterRule>() );
             newSettings.setInputFilterRules( defaultInputFilterRules() );
@@ -1204,7 +1214,10 @@ public class NetworkManagerImpl implements NetworkManager
         for (QosRule rule : networkSettings.getQosSettings().getQosRules()) {
             rule.setRuleId(++idx);
         }
-
+        idx = 0;
+        for (UpnpRule rule : networkSettings.getUpnpSettings().getUpnpRules()) {
+            rule.setRuleId(++idx);
+        }
         /**
          * Reset all symbolic devs to system devs
          */
@@ -1481,6 +1494,81 @@ public class NetworkManagerImpl implements NetworkManager
         
         
         return qosSettings;
+    }
+
+    private UpnpSettings defaultUpnpSettings()
+    {
+        UpnpSettings upnpSettings = new UpnpSettings();
+
+        upnpSettings.setUpnpEnabled( false );
+        upnpSettings.setDownloadSpeed( 0 );
+        upnpSettings.setUploadSpeed( 0 );
+        upnpSettings.setMinimumLifetime( 120 );
+        upnpSettings.setMaximumLifetime( 86400 );
+        upnpSettings.setSecureMode( true );
+
+        List<UpnpRule> upnpRules = new LinkedList<UpnpRule>();
+
+        /**
+         * Allow all rule
+         */
+        UpnpRule upnpRule = new UpnpRule();
+        upnpRule.setEnabled( true );
+        upnpRule.setAllow( true );
+        upnpRule.setDescription( "Allow all" );
+        
+        List<UpnpRuleCondition> ruleConditions = new LinkedList<UpnpRuleCondition>();
+        UpnpRuleCondition ruleMatcher = new UpnpRuleCondition();
+        ruleMatcher.setConditionType(UpnpRuleCondition.ConditionType.SRC_ADDR);
+        ruleMatcher.setValue("0.0.0.0/0");
+        ruleConditions.add(ruleMatcher);
+
+        ruleMatcher = new UpnpRuleCondition();
+        ruleMatcher.setConditionType(UpnpRuleCondition.ConditionType.DST_PORT);
+        ruleMatcher.setValue("1024-65535");
+        ruleConditions.add(ruleMatcher);
+
+        ruleMatcher = new UpnpRuleCondition();
+        ruleMatcher.setConditionType(UpnpRuleCondition.ConditionType.SRC_PORT);
+        ruleMatcher.setValue("1024-65535");
+        ruleConditions.add(ruleMatcher);
+
+        upnpRule.setConditions(ruleConditions);
+        upnpRules.add( upnpRule );
+
+        /**
+         * Deny all rule
+         */
+        upnpRule = new UpnpRule();
+        upnpRule.setEnabled( true );
+        upnpRule.setAllow( false );
+        upnpRule.setDescription( "Deny all" );
+        
+        ruleConditions = new LinkedList<UpnpRuleCondition>();
+        ruleMatcher = new UpnpRuleCondition();
+        ruleMatcher.setConditionType(UpnpRuleCondition.ConditionType.SRC_ADDR);
+        ruleMatcher.setValue("0.0.0.0/0");
+        ruleConditions.add(ruleMatcher);
+
+        ruleMatcher = new UpnpRuleCondition();
+        ruleMatcher.setConditionType(UpnpRuleCondition.ConditionType.DST_PORT);
+        ruleMatcher.setValue("0-65535");
+        ruleConditions.add(ruleMatcher);
+
+        ruleMatcher = new UpnpRuleCondition();
+        ruleMatcher.setConditionType(UpnpRuleCondition.ConditionType.SRC_PORT);
+        ruleMatcher.setValue("0-65535");
+        ruleConditions.add(ruleMatcher);
+
+        upnpRule.setConditions(ruleConditions);
+        upnpRules.add( upnpRule );
+
+        /*
+         * Add rules
+         */
+        upnpSettings.setUpnpRules( upnpRules );
+
+        return upnpSettings;
     }
 
     private List<FilterRule> defaultInputFilterRules()
@@ -1974,6 +2062,13 @@ public class NetworkManagerImpl implements NetworkManager
              */
             if ( changedFiles.contains("/etc/hosts") && changedFiles.contains("/etc/hosts.dnsmasq") && changedFiles.size() == 2 ) {
                 return new String[] {"/bin/true", "/etc/untangle-netd/post-network-hook.d/990-restart-dnsmasq"};
+            }
+
+            /*
+             * If only /etc/miniupnpd/miniupnpd.conf has  been written, just restart miniupnpd
+             */
+            if ( changedFiles.contains("/etc/miniupnpd/miniupnpd.conf") && changedFiles.size() == 2 ) {
+                return new String[] {"/bin/true", "/etc/untangle-netd/post-network-hook.d/990-restart-upnp"};
             }
             
             /**
