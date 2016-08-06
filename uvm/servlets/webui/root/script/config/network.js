@@ -133,6 +133,13 @@ Ext.define('Webui.config.network', {
             {name:"SRC_PORT",displayName: i18n._("Source Port"), type: "text",vtype:"portMatcher", visible: rpc.isExpertMode}
         ];
     },
+    getUpnpRuleConditions: function () {
+        return [
+            {name:"DST_PORT",displayName: i18n._("Destination Port"), type: "text",vtype:"portMatcher", visible: true},
+            {name:"SRC_ADDR",displayName: i18n._("Source Address"), type: "text", visible: true, vtype:"ipMatcher"},
+            {name:"SRC_PORT",displayName: i18n._("Source Port"), type: "text",vtype:"portMatcher", visible: true}
+        ];
+    },
     getFilterRuleConditions: function () {
         return [
             {name:"DST_LOCAL",displayName: i18n._("Destined Local"), type: "boolean", visible: true},
@@ -3866,6 +3873,7 @@ Ext.define('Webui.config.network', {
         this.buildOptions();
         this.buildQoS();
         this.buildFilter();
+        this.buildUPnP();
         this.buildDnsDhcp();
         this.buildNetworkCards();
 
@@ -3874,7 +3882,7 @@ Ext.define('Webui.config.network', {
             deferredRender: false,
             autoHeight: true,
             flex: 1,
-            items: [ this.panelOptions, this.panelQoS, this.panelFilter, this.panelDnsDhcp, this.gridNetworkCards ]
+            items: [ this.panelOptions, this.panelQoS, this.panelFilter, this.panelUPnP, this.panelDnsDhcp, this.gridNetworkCards ]
         });
 
         this.panelAdvanced = Ext.create('Ext.panel.Panel',{
@@ -4842,6 +4850,279 @@ Ext.define('Webui.config.network', {
             }]
         }));
     },
+    // UPnP Panel
+    buildUPnP: function() {
+        this.upnpActionStore = [
+            [false, i18n._("Deny")],
+            [true, i18n._("Allow")]
+        ];
+        this.upnpActionMap = Ung.Util.createStoreMap(this.upnpActionStore);
+
+        this.gridUpnpRules = Ext.create('Ung.grid.Panel', {
+            name: 'UPnP Rules',
+            margin: '5 0 0 0',
+            height: 200,
+            settingsCmp: this,
+            hasReorder: true,
+            addAtTop: false,
+            dataExpression:'settings.upnpSettings.upnpRules.list',
+            recordJavaClass: "com.untangle.uvm.network.UpnpRule",
+            emptyRow: {
+                "ruleId": -1,
+                "enabled": true,
+                "description": "",
+                "priority": 1
+            },
+            fields: [{
+                name: 'ruleId'
+            }, {
+                name: 'enabled'
+            },{
+                name: 'allow'
+            }, {
+                name: 'conditions'
+            },{
+                name: 'description'
+            }, {
+                name: 'javaClass'
+            }],
+            columns: [{
+                header: i18n._("Rule Id"),
+                width: 50,
+                dataIndex: 'ruleId',
+                renderer: function(value) {
+                    if (value < 0) {
+                        return i18n._("new");
+                    } else {
+                        return value;
+                    }
+                }
+            }, {
+                xtype:'checkcolumn',
+                header: i18n._("Enable"),
+                dataIndex: 'enabled',
+                resizable: false,
+                width:55
+            }, {
+                header: i18n._( "Action" ),
+                width: 100,
+                dataIndex: "allow",
+                renderer: Ext.bind(function( value, metadata, record ) {
+                    return this.upnpActionMap[value];
+                }, this ),
+                editor: {
+                    xtype: 'combo',
+                    store: this.upnpActionStore,
+                    queryMode: 'local',
+                    editable: false
+                }
+            }, {
+                header: i18n._("Description"),
+                width: 200,
+                dataIndex: 'description',
+                flex: 1,
+                editor: {
+                    xtype:'textfield',
+                    emptyText: i18n._("[no description]")
+                }
+            }]
+        });
+
+        this.panelUPnP = Ext.create('Ext.panel.Panel',{
+            name: 'UPnP',
+            helpSource: 'network_upnp',
+            title: i18n._('UPnP'),
+            autoScroll: true,
+            cls: 'ung-panel',
+            items: [{
+                xtype: 'fieldset',
+                title: i18n._('UPnP'),
+                defaults: {
+                    labelWidth: 250
+                },
+                items: [{
+                    xtype: "checkbox",
+                    fieldLabel: i18n._("Enabled"),
+                    checked: this.settings.upnpSettings.upnpEnabled,
+                    listeners: {
+                        "change": {
+                            fn: Ext.bind(function(elem, newValue) {
+                                this.settings.upnpSettings.upnpEnabled = newValue;
+                            }, this)
+                        }
+                    }
+                },{
+                    xtype: "checkbox",
+                    fieldLabel: i18n._("Secure Mode"),
+                    checked: this.settings.upnpSettings.secureMode,
+                    listeners: {
+                        "change": {
+                            fn: Ext.bind(function(elem, newValue) {
+                                this.settings.upnpSettings.secureMode = newValue;
+                            }, this)
+                        }
+                    }
+                },{
+                    xtype: 'numberfield',
+                    fieldLabel: i18n._("Download Speed (Kbps)"),
+                    value: this.settings.upnpSettings.downloadSpeed,
+                    allowBlank : false,
+                    allowDecimals: false,
+                    minValue: 0
+                },{
+                    xtype: 'numberfield',
+                    fieldLabel: i18n._("Upload Speed (Kbps)"),
+                    value: this.settings.upnpSettings.uploadSpeed,
+                    allowBlank : false,
+                    allowDecimals: false,
+                    minValue: 0
+                },{
+                    xtype: 'numberfield',
+                    fieldLabel: i18n._("Minimum Lifetime (seconds)"),
+                    value: this.settings.upnpSettings.minimumLifetime,
+                    allowBlank : false,
+                    allowDecimals: false,
+                    minValue: 0
+                },{
+                    xtype: 'numberfield',
+                    fieldLabel: i18n._("Maximum Lifetime (seconds)"),
+                    value: this.settings.upnpSettings.maximumLifetime,
+                    allowBlank : false,
+                    allowDecimals: false,
+                    minValue: 0
+                }, {
+                    xtype: 'fieldset',
+                    title: i18n._('Access Control List'),
+                    items: [{
+                        // xtype: 'label',
+                        // html: Ext.String.format(i18n._("{0}Note{1}: Custom Rules only match <b>Bypassed</b> traffic."),'<font color="red">','</font>')
+                    },
+                    this.gridUpnpRules
+                    ]
+            // }, {
+            //     xtype: 'fieldset',
+            //     name: 'bandwidth_fieldset',
+            //     title: i18n._('WAN Bandwidth'),
+            //     items: [{
+            //         xtype: 'component',
+            //         name: 'bandwidthLabel',
+            //         html: ' '
+            //     }, this.gridQosWanBandwidth]
+            // }, {
+            //     xtype: 'fieldset',
+            //     title: i18n._('QoS Rules'),
+            //     items: [{
+            //         xtype: "combo",
+            //         fieldLabel: i18n._("Ping Priority"),
+            //         value: this.settings.qosSettings.pingPriority,
+            //         store : this.qosPriorityStore,
+            //         editable: false,
+            //         queryMode: 'local',
+            //         listeners: {
+            //             "change": {
+            //                 fn: Ext.bind(function(elem, newValue) {
+            //                     this.settings.qosSettings.pingPriority = newValue;
+            //                 }, this)
+            //             }
+            //         }
+            //     }, {
+            //         xtype: "combo",
+            //         fieldLabel: i18n._("DNS Priority"),
+            //         value: this.settings.qosSettings.dnsPriority,
+            //         store : this.qosPriorityStore,
+            //         editable: false,
+            //         queryMode: 'local',
+            //         listeners: {
+            //             "change": {
+            //                 fn: Ext.bind(function(elem, newValue) {
+            //                     this.settings.qosSettings.dnsPriority = newValue;
+            //                 }, this)
+            //             }
+            //         }
+            //     }, {
+            //         xtype: "combo",
+            //         fieldLabel: i18n._("SSH Priority"),
+            //         value: this.settings.qosSettings.sshPriority,
+            //         store : this.qosPriorityStore,
+            //         editable: false,
+            //         queryMode: 'local',
+            //         listeners: {
+            //             "change": {
+            //                 fn: Ext.bind(function(elem, newValue) {
+            //                     this.settings.qosSettings.sshPriority = newValue;
+            //                 }, this)
+            //             }
+            //         }
+            //     }, {
+            //         xtype: "combo",
+            //         fieldLabel: i18n._("OpenVPN Priority"),
+            //         value: this.settings.qosSettings.openvpnPriority,
+            //         store : this.qosPriorityStore,
+            //         editable: false,
+            //         queryMode: 'local',
+            //         listeners: {
+            //             "change": {
+            //                 fn: Ext.bind(function(elem, newValue) {
+            //                     this.settings.qosSettings.openvpnPriority = newValue;
+            //                 }, this)
+            //             }
+            //         }
+                }]
+            // }, {
+            //     xtype: 'fieldset',
+            //     title: i18n._('QoS Custom Rules'),
+            //     items: [{
+            //         xtype: 'label',
+            //         html: Ext.String.format(i18n._("{0}Note{1}: Custom Rules only match <b>Bypassed</b> traffic."),'<font color="red">','</font>')
+            //     }, this.gridQosRules]
+            // }, {
+            //     xtype: 'fieldset',
+            //     title: i18n._('QoS Priorities'),
+            //     items: [this.gridQosPriorities]
+            // }, {
+            //     xtype: 'fieldset',
+            //     title: i18n._('QoS Statistics'),
+            //     items: [this.gridQosStatistics]
+            }]
+        });
+        this.gridUpnpRules.setRowEditor(Ext.create('Ung.RowEditorWindow',{
+            sizeToParent: true,
+            inputLines:[{
+                xtype:'checkbox',
+                dataIndex: "enabled",
+                fieldLabel: i18n._("Enable")
+            }, {
+                xtype:'textfield',
+                dataIndex: "description",
+                fieldLabel: i18n._("Description"),
+                emptyText: i18n._("[no description]"),
+                width: 500
+            }, {
+                xtype:'fieldset',
+                title: i18n._("If all of the following conditions are met:"),
+                items:[{
+                    xtype:'rulebuilder',
+                    settingsCmp: this,
+                    javaClass: "com.untangle.uvm.network.UpnpRuleCondition",
+                    dataIndex: "conditions",
+                    conditions: this.getUpnpRuleConditions()
+                }]
+            }, {
+                xtype: 'fieldset',
+                title: i18n._('Perform the following action(s):'),
+                items: [{
+                    xtype: "combo",
+                    allowBlank: false,
+                    dataIndex: "allow",
+                    fieldLabel: i18n._("Action"),
+                    editable: false,
+                    store: this.upnpActionStore,
+                    queryMode: 'local'
+                }]
+            }]
+        }));
+        // this.gridQosWanBandwidth.updateTotalBandwidth();
+    },
     // NetworkCards Panel
     buildNetworkCards: function() {
         this.duplexStore = [
@@ -5697,6 +5978,7 @@ Ext.define('Webui.config.network', {
         this.settings.staticRoutes.list = this.gridStaticRoutes.getList();
         this.settings.qosSettings.qosRules.list = this.gridQosRules.getList();
         this.settings.qosSettings.qosPriorities.list = this.gridQosPriorities.getList();
+        this.settings.upnpSettings.upnpRules.list = this.gridUpnpRules.getList();
         this.settings.forwardFilterRules.list = this.gridForwardFilterRules.getList();
         this.settings.inputFilterRules.list = this.gridInputFilterRules.getList();
         this.settings.dnsSettings.staticEntries.list =  this.gridDnsStaticEntries.getList();
