@@ -22,10 +22,7 @@ import com.untangle.uvm.vnet.NodeSession;
 public class VirusBlockerScannerLauncher extends VirusScannerLauncher
 {
     private static final long CLOUD_SCAN_MAX_MILLISECONDS = 2000;
-
     private static final String BDAM_SCANNER_HOST = "127.0.0.1";
-    private static final long SCANNER_MAXSIZE = 10485760;
-    private static final long SCANNER_MINSIZE = 1;
     private static final int BDAM_SCANNER_PORT = 1344;
 
     /**
@@ -52,26 +49,6 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
         VirusBlockerState virusState = (VirusBlockerState) nodeSession.attachment();
 
         logger.debug("Scanning file: " + scanfilePath + " MD5: " + virusState.fileHash);
-
-        try {
-            // Bug #9796 - to avoid large memory usage don't scan large files // XXX
-            if (scanFileLength > SCANNER_MAXSIZE) {
-                logger.debug("Passing large file: " + (scanFile.length() / 1024) + "K");
-                setResult(VirusScannerResult.CLEAN);
-                return;
-            }
-            // ignore small or empty files
-            if (scanFileLength < SCANNER_MINSIZE) {
-                logger.debug("Passing small file: " + scanFile.length() + " bytes");
-                setResult(VirusScannerResult.CLEAN);
-                return;
-            }
-
-        } catch (Exception exn) {
-            logger.warn("Exception checking file length: ", exn);
-            setResult(VirusScannerResult.ERROR);
-            return;
-        }
 
         // if we have a good MD5 hash then spin up the cloud checker
         if (virusState.fileHash != null) {
