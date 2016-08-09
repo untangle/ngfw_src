@@ -41,7 +41,7 @@ class HandlerCookie:
     def get_field(self,key):
         value = self.cookie.get(self.cookie_key, None)
         if value:
-            if ((type(value) is Cookie.MarshalCookie) and 
+            if ((type(value) is Cookie.MarshalCookie) and
                 key in value.value ):
                 return value.value[key]
         return None
@@ -81,7 +81,7 @@ def index(req):
     appid = args['APPID']
     captureSettings = load_capture_settings(req,appid)
 
-    if captureSettings.get("sessionCookiesEnabled") == True:       
+    if captureSettings.get("sessionCookiesEnabled") == True:
         captureNode = load_rpc_manager(appid)
         # Process cookie if exists.
         address = req.get_remote_host(apache.REMOTE_NOLOOKUP,None)
@@ -92,10 +92,10 @@ def index(req):
             captureNode.removeUserFromCookieTable(address)
             cookie.expire()
         elif ((cookie != None) and
-            (cookie.is_valid() == True) and 
+            (cookie.is_valid() == True) and
             (captureNode.userActivate(address,cookie.get_field("username"),"agree",False) == 0)):
             # Cookie checks out.  Active them, let them through.
-            redirectUrl = captureSettings.get('redirectUrl')    
+            redirectUrl = captureSettings.get('redirectUrl')
             if (redirectUrl != None and len(redirectUrl) != 0 and (not redirectUrl.isspace())):
                 target = str(redirectUrl)
             else:
@@ -166,7 +166,7 @@ def authpost(req,username,password,method,nonce,appid,host,uri):
             # Hand the user a cookie
             cookie = HandlerCookie(req,appid)
             cookie.set(username)
-        redirectUrl = captureSettings.get('redirectUrl')    
+        redirectUrl = captureSettings.get('redirectUrl')
         if (redirectUrl != None and len(redirectUrl) != 0 and (not redirectUrl.isspace())):
             target = str(redirectUrl)
         else:
@@ -227,7 +227,7 @@ def infopost(req,method,nonce,appid,host,uri,agree='empty'):
     # on successful login redirect to the redirectUrl if not empty
     # otherwise send them to the page originally requested
     if (authResult == 0):
-        redirectUrl = captureSettings.get('redirectUrl')    
+        redirectUrl = captureSettings.get('redirectUrl')
         if (redirectUrl != None and len(redirectUrl) != 0 and (not redirectUrl.isspace())):
             target = str(redirectUrl)
         else:
@@ -452,7 +452,7 @@ def load_rpc_manager(appid=None):
     if (appid == None):
         captureNode = uvmContext.nodeManager().node("untangle-node-captive-portal")
     else:
-        captureNode = uvmContext.nodeManager().node(long(appid))
+        captureNode = uvmContext.nodeManager().node(int(appid))
 
     # if we can't find the node then throw an exception
     if (captureNode == None):
@@ -465,12 +465,17 @@ def load_rpc_manager(appid=None):
 
 def load_capture_settings(req,appid=None):
 
+    captureSettings = None
+
+    # start with our company name
     companyName = 'Untangle'
 
+    # if there is an OEM name configured we use that instead of our company name
     oemName = get_settings_item("/usr/share/untangle/conf/oem.js","oemName")
     if (oemName != None):
         companyName = oemName
 
+    # if there is a company name in the branding manager it wins over everything else
     brandco = get_node_settings_item('untangle-node-branding-manager','companyName')
     if (brandco != None):
         companyName = brandco
@@ -479,15 +484,19 @@ def load_capture_settings(req,appid=None):
         if (appid == None):
             captureSettings = get_node_settings('untangle-node-captive-portal')
         else:
-            captureSettings = get_nodeid_settings(long(appid))
-    except Execption as e:
+            captureSettings = get_nodeid_settings(int(appid))
+    except Exception as e:
         req.log_error("handler.py: Exception loading settings: %s" % str(e))
 
-    if captureSettings == None:
-        req.log_error("handler.py: Unable to retrieve capture settings.")
-    if captureSettings.get('pageType') == None:
+    if (captureSettings == None):
+        if (appid == None):
+            req.log_error("handler.py: Unable to load capture settings for appid: None")
+        else:
+            req.log_error("handler.py: Unable to load capture settings for appid: %s" % appid)
+
+    if (captureSettings.get('pageType') == None):
         req.log_error("handler.py: Missing required setting: pageType")
-        
+
     # add the company name to the node settings dictionary
     captureSettings['companyName'] = companyName
 
