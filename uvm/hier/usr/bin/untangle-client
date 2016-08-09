@@ -9,5 +9,5 @@ if [ -f /usr/bin/chromium ] ; then
     # https://techblog.willshouse.com/2014/06/18/hide-you-can-search-from-here-with-google-in-chromium/
     /usr/bin/chromium --window-size=$wh --no-first-run $url 
 else
-    /usr/bin/iceweasel -width ${wh/,*} -height ${wh/*,} $url
+    /usr/bin/firefox -width ${wh/,*} -height ${wh/*,} $url
 fi
