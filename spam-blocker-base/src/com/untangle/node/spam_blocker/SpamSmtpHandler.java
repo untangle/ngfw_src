@@ -173,18 +173,18 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
 
         boolean isWanBound = UvmContextFactory.context().networkManager().findInterfaceId(session.getServerIntf()).getIsWan();
 
+        if (safelist.isSafelisted(tx.getFrom(), getFromNoEx(msg), tx.getRecipients(false))) {
+            logger.debug("Message sender safelisted");
+            postSpamEvent(msgInfo, cleanReport(), SpamMessageAction.SAFELIST);
+            node.incrementPassCount();
+            return new ScannedMessageResult(BlockOrPassResult.PASS);
+        }
+
         // If greylist is enable, check greylist
         if (node.getSettings().getSmtpConfig().getGreylist() && !isWanBound) {
             InetAddress client = session.getClientAddr();
             String from = msgInfo.getEnvelopeFromAddress();
             String to = msgInfo.getEnvelopeToAddress();
-
-            if (! safelist.isSafelisted(tx.getFrom(), getFromNoEx(msg), tx.getRecipients(false))) {
-                logger.debug("Message sender safelisted");
-                postSpamEvent(msgInfo, cleanReport(), SpamMessageAction.SAFELIST);
-                node.incrementPassCount();
-                return new ScannedMessageResult(BlockOrPassResult.PASS);
-            }
 
             GreyListKey key = new GreyListKey(client, from, to);
             logger.debug("greylist: check message " + key);
@@ -206,13 +206,6 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
         // Scan the message
         File f = null;
         try {
-            if (safelist.isSafelisted(tx.getFrom(), getFromNoEx(msg), tx.getRecipients(false))) {
-                logger.debug("Message sender safelisted");
-                postSpamEvent(msgInfo, cleanReport(), SpamMessageAction.SAFELIST);
-                node.incrementPassCount();
-                return new ScannedMessageResult(BlockOrPassResult.PASS);
-            }
-
             f = messageToFile(session, msg, tx);
             if (f == null) {
                 logger.error("Error writing to file.  Unable to scan.  Assume pass");
