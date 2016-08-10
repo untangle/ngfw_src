@@ -282,12 +282,12 @@ public abstract class VirusBlockerBaseApp extends NodeBase
         s.add(new GenericRule("gz",  "archive", "download" , null, true));
         s.add(new GenericRule("tar", "archive", "download" , null, true));
         s.add(new GenericRule("tgz", "archive", "download" , null, true));
-        s.add(new GenericRule("doc", "document", "document", null, false));
-        s.add(new GenericRule("docx", "document", "document", null, false));
-        s.add(new GenericRule("ppt", "presentation", "document", null, false));
-        s.add(new GenericRule("pptx", "presentation", "document", null, false));
-        s.add(new GenericRule("xls", "spreadsheet", "document", null, false));
-        s.add(new GenericRule("xlsx", "spreadsheet", "document", null, false));
+        s.add(new GenericRule("doc", "document", "document", null, true));
+        s.add(new GenericRule("docx", "document", "document", null, true));
+        s.add(new GenericRule("ppt", "presentation", "document", null, true));
+        s.add(new GenericRule("pptx", "presentation", "document", null, true));
+        s.add(new GenericRule("xls", "spreadsheet", "document", null, true));
+        s.add(new GenericRule("xlsx", "spreadsheet", "document", null, true));
         s.add(new GenericRule("pdf", "document", "document" , null, true));
         s.add(new GenericRule("mp3", "audio", "download", null, false));
         s.add(new GenericRule("wav", "audio", "download", null, false));
