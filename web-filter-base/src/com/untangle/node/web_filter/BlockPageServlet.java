@@ -33,9 +33,18 @@ public class BlockPageServlet extends HttpServlet
 
         Map<String,String> i18n_map = UvmContextFactory.context().languageManager().getTranslations( "untangle" );
 
-        WebFilter node = (WebFilter) nm.node( Long.parseLong(request.getParameter( "tid" )) );
-        if ( node == null || !(node instanceof WebFilter) ) {
-            response.sendError( HttpServletResponse.SC_NOT_ACCEPTABLE, I18nUtil.tr( "Feature is not installed.", i18n_map ));
+        WebFilter node = null;
+        if ( node == null )
+            try {node = (WebFilter) nm.node( Long.parseLong(request.getParameter( "tid" )) );} catch (Exception e) {}
+        if ( node == null )
+            try {node = (WebFilter) nm.node( Long.parseLong(request.getParameter( "appid" )) );} catch (Exception e) {}
+            
+        if ( node == null ) { 
+            response.sendError( HttpServletResponse.SC_NOT_ACCEPTABLE, I18nUtil.tr( "App ID not found.", i18n_map ));
+            return;
+        }
+        if ( !(node instanceof WebFilter) ) {
+            response.sendError( HttpServletResponse.SC_NOT_ACCEPTABLE, I18nUtil.tr( "Invalid App ID.", i18n_map ));
             return;
         }
 
@@ -44,7 +53,7 @@ public class BlockPageServlet extends HttpServlet
 
         blockDetails = node.getDetails(nonce);
         if (blockDetails == null) {
-            response.sendError( HttpServletResponse.SC_NOT_ACCEPTABLE, I18nUtil.tr( "This request has expired.", i18n_map ));
+            response.sendError( HttpServletResponse.SC_NOT_ACCEPTABLE, I18nUtil.tr( "Invalid nonce.", i18n_map ));
             return;
         }
 

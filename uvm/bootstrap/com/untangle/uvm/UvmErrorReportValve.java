@@ -40,13 +40,11 @@ public class UvmErrorReportValve extends ErrorReportValve
         throws IOException
     {
         int statusCode = response.getStatus();
-
         if ((statusCode < 400) || (response.getContentWritten() > 0)) {
             return;
         }
 
         Map<String, String> i18nMap = getTranslations();
-
         String errorMessage = null;
 
         Object o = request.getAttribute(UVM_WEB_MESSAGE_ATTR);
@@ -54,8 +52,16 @@ public class UvmErrorReportValve extends ErrorReportValve
             errorMessage = (String)o;
         }
 
-        if (null == errorMessage) {
+        if (errorMessage == null) {
             errorMessage = getError(i18nMap, statusCode);
+            if ( response.getMessage() != null ) {
+                errorMessage += " - ";
+                errorMessage += response.getMessage();
+            }
+            if (throwable != null ) {
+                errorMessage += " - ";
+                errorMessage += throwable.toString();
+            }
         }
 
         errorMessage = RequestUtil.filter(errorMessage);
