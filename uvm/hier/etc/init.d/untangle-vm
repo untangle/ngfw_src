@@ -88,7 +88,12 @@ case "$1" in
         fi
 
         if [ "`uvmStatus`" == "running" ] ; then
-            echo "Already started."
+            echo "untangle-vm already running."
+		    log_end_msg 0
+            exit
+        fi
+        if [ "`uvmStatus`" == "launching" ] ; then
+            echo "untangle-vm already launching."
 		    log_end_msg 0
             exit
         fi
