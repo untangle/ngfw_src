@@ -269,16 +269,9 @@ public class NetcapUDPHook implements NetcapCallback
             netcapSession().orClientMark( 0x01000000 );
             netcapSession().orServerMark( 0x01000000 );
 
-            // we can't actually kill the session here because there may be data
-            // remaining in the buffers that needs to be sent
-            // if ( vector != null )
-            //     vector.shutdown();
-
             // set a really low timeout so it will exit after sending any remaining data            
             if ( vector != null )
                 vector.timeout(1000); 
-
-            this.setCleanupSessionOnExit( false );
         }
 
         private class UDPSideListener extends SideListener
