@@ -289,6 +289,7 @@ public class ConntrackMonitorImpl
                  * Iterate through sessions that we not in the current conntrack dump
                  * These have disappeared from the new entries so they are dead.
                  * If they are TCP remove them from deadTcpSessions.
+                 * If they are UDP remove the from the sessiontable if they still exist.
                  */
                 for ( ConntrackEntryState state : oldConntrackEntries.values() ) {
                     if ( state.tuple != null && state.tuple.getProtocol() == 6 ) {
@@ -302,6 +303,11 @@ public class ConntrackMonitorImpl
                             else
                                 logger.debug("Failed to remove session from deadTcpSessions: " + state.tuple);
                         }
+                    }
+                    if ( state.tuple != null && state.tuple.getProtocol() == 17 ) {
+                        // We have to remove UDP sessions that have been dynamically bypassed
+                        logger.debug("Remove UDP session from session table: " + state.tuple);
+                        SessionTableImpl.getInstance().remove( state.sessionId );
                     }
                 }
             
