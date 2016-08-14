@@ -126,7 +126,10 @@ if __name__ == "__main__":
   try:
       uvmContext = Uvm().getUvmContext( hostname=parser.hostname, username=parser.username, password=parser.password, timeout=parser.timeout )
   except (JSONRPCException, JSONDecodeException) as e:
-      errorstr = repr(e.error)
+      if hasattr(e, 'error'):
+          errorstr = repr(e.error)
+      else:
+          errorstr = str(e)
       if (not parser.quiet):
           print "Error: %s" % errorstr
           if (errorstr.find("password") != -1):
@@ -171,7 +174,7 @@ if __name__ == "__main__":
           remoteManager = manager(uvmContext)
           getattr( remoteManager, "api_" + method )( *script_args )
       except JSONRPCException, e:
-          sys.stderr.write( "Unable to make the request: (%s)\n" % e.error )
+          sys.stderr.write( "Unable to make the request: (%s)\n" % str(e) )
       break
 
   if not calledMethod:
