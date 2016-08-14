@@ -117,16 +117,6 @@ table {
 </td>
 </tr>
 
-{% cycle rowColors %}
-<tr style="background-color:{{ rowColors }};">
-<td>
-{% trans "Highest active device count since reboot" %}
-</td>
-<td>
-{{ hostTable.getMaxActiveSize }}
-</td>
-</tr>
-
 {% with reportsNode=nodeManager.node,untangle-node-reports %}
 {% for name in ["Network" "Administration" "Hosts" "Devices"] %}
 	{% with reports=reportsNode.getReportsManager.getReportEntries,name|getType==TEXT %}
