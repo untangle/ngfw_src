@@ -220,8 +220,14 @@ public class AlertManagerImpl implements AlertManager
      */
     private void testDiskErrors(List<String> alertList)
     {
-        ExecManagerResult result = this.execManager.exec( "tail -n 15000 /var/log/kern.log | grep -m1 -B3 'DRDY ERR'" );
+        ExecManagerResult result;
 
+        result = this.execManager.exec( "tail -n 15000 /var/log/kern.log | grep -m1 -B3 'DRDY ERR'" );
+        if ( result.getResult() == 0 ) {
+            alertList.add( i18nUtil.tr("Disk errors reported.") + "<br/>\n" + result.getOutput().replaceAll("\n","<br/>\n") );
+        }
+
+        result = this.execManager.exec( "tail -n 15000 /var/log/kern.log | grep -m1 -B3 'I/O error'" );
         if ( result.getResult() == 0 ) {
             alertList.add( i18nUtil.tr("Disk errors reported.") + "<br/>\n" + result.getOutput().replaceAll("\n","<br/>\n") );
         }
