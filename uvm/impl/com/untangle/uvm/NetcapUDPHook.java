@@ -20,7 +20,7 @@ import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.vnet.NodeUDPSession;
 
 public class NetcapUDPHook implements NetcapCallback
-{
+{/
     private static NetcapUDPHook INSTANCE;
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -273,6 +273,10 @@ public class NetcapUDPHook implements NetcapCallback
             if ( vector != null )
                 vector.timeout(1000); 
 
+            // set the flag so this session does not get removed from the session table
+            // we need to maintain the metadata in the untangle-vm because even though
+            // this thread is dead, the session is still alive
+            // It will get cleaned up later by the ConntrackMonitor.
             this.setCleanupSessionOnExit( false );
         }
 
