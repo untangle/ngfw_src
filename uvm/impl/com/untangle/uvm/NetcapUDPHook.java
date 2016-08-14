@@ -272,6 +272,8 @@ public class NetcapUDPHook implements NetcapCallback
             // set a really low timeout so it will exit after sending any remaining data            
             if ( vector != null )
                 vector.timeout(1000); 
+
+            this.setCleanupSessionOnExit( false );
         }
 
         private class UDPSideListener extends SideListener
