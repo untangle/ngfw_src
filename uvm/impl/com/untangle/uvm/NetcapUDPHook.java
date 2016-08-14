@@ -20,7 +20,7 @@ import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.vnet.NodeUDPSession;
 
 public class NetcapUDPHook implements NetcapCallback
-{/
+{
     private static NetcapUDPHook INSTANCE;
     private final Logger logger = Logger.getLogger(getClass());
 
