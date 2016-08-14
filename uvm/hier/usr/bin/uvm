@@ -452,9 +452,6 @@ while True:
             exit_sig = result & 0xff
             exit_code = (result & 0xff00) >> 8
 
-            with open('/var/run/uvm.status', 'w+') as status_file:
-                status_file.write('stopped\n')
-
             break;
         except OSError,e :
             # If its EINTR (interrupted), dont print error
@@ -471,6 +468,10 @@ while True:
         debug("==============================");
         debug("       UVM Stopped");
         debug("==============================");
+
+        with open('/var/run/uvm.status', 'w+') as status_file:
+            status_file.write('stopped\n')
+
         resetIptables();
         if developmentEnv:
             devEnvRestoreSystem()
