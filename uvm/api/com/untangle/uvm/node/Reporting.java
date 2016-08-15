@@ -14,8 +14,6 @@ public interface Reporting
 
     void forceFlush();
 
-    void createSchemas();
-
     double getAvgWriteTimePerEvent();
 
     long getWriteDelaySec();

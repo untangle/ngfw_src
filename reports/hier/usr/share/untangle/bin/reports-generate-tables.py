@@ -26,10 +26,20 @@ import reports.sql_helper as sql_helper
 from reports.log import *
 logger = getLogger(__name__)
 
+
+reports.engine.init_engine(NODE_MODULE_DIR)
+
 try:
      sql_helper.create_schema(sql_helper.SCHEMA);
 except Exception:
-     logger.warn("Failed to create tables", exc_info=True)
+     logger.warn("Failed to create schema", exc_info=True)
 
-reports.engine.init_engine(NODE_MODULE_DIR)
-reports.engine.create_tables()
+os.system("createuser -U postgres -dSR untangle >/dev/null 2>&1")
+os.system("createdb -O postgres -U postgres uvm >/dev/null 2>&1");
+os.system("createlang -U postgres plpgsql uvm >/dev/null 2>&1");
+os.system("psql -U postgres -c \"CREATE EXTENSION tablefunc\" uvm >/dev/null 2>&1");
+
+try:
+     reports.engine.create_tables()
+except Exception:
+     logger.warn("Failed to create tables", exc_info=True)
