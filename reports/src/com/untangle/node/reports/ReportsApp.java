@@ -127,16 +127,8 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         return this.settings;
     }
 
-    public void createSchemas()
+    public void initializeDB()
     {
-        // run commands to create user just in case
-        UvmContextFactory.context().execManager().execResult("createuser -U postgres -dSR untangle >/dev/null 2>&1");
-        UvmContextFactory.context().execManager().execResult("createdb -O postgres -U postgres uvm >/dev/null 2>&1");
-        UvmContextFactory.context().execManager().execResult("createlang -U postgres plpgsql uvm >/dev/null 2>&1");
-
-        // table the tablefunc module
-        UvmContextFactory.context().execManager().execResult("psql -U postgres -c \"CREATE EXTENSION tablefunc\" uvm >/dev/null 2>&1");
-
         synchronized (this) {
             String cmd = REPORTS_GENERATE_TABLES_SCRIPT;
             ExecManagerResult result = UvmContextFactory.context().execManager().exec(cmd);
@@ -344,8 +336,8 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
          */
         ReportsManagerImpl.getInstance().updateSystemReportEntries( settings.getReportEntries(), true );
         
-        /* intialize schema (if necessary) */
-        this.createSchemas();
+        /* intialize tables (if necessary) */
+        this.initializeDB();
 
         /* sync settings to disk if necessary */
         File settingsFile = new File( settingsFileName );
