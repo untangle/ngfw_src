@@ -1264,6 +1264,31 @@ class NetworkTests(unittest2.TestCase):
         # 3 occurances of ms per line so check for at least two lines of ms times.
         assert(result.count('ms') > 6) 
 
+    # UPnP - Disabled
+    def test_170_upnp_disabled(self):
+#    netsettings = uvmContext.networkManager().getNetworkSettings()
+#    netsettings['dynamicDnsServiceEnabled'] = True
+#    netsettings['dynamicDnsServiceHostnames'] = hostname
+#    netsettings['dynamicDnsServiceName'] = "dyndns"
+#    netsettings['dynamicDnsServiceUsername'] = login
+#    netsettings['dynamicDnsServicePassword'] = password
+#    uvmContext.networkManager().setNetworkSettings(netsettings)
+        # setFirstLevelRule(createPortForwardTripleCondition("DST_PORT","11234","DST_LOCAL","true","PROTOCOL","TCP",remote_control.clientIP,11234),'portForwardRules')
+        # remote_control.runCommand("nohup netcat -l -p 11234 >/dev/null 2>&1",stdout=False,nowait=True)
+        # result = remote_control.runCommand("echo test | netcat -q0 %s 11234" % uvmContext.networkManager().getFirstWanAddress())
+        # print "result: %s" % str(result)
+        # assert(result == 0)
+#        wanAdminIp = system_properties.findInterfaceIPbyIP(remote_control.clientIP)
+#        print "lanIP=" + lanAdminIp
+
+
+
+    # UPnP - Enabled, default
+    # UPnP - Enabled, Secure mode
+    # UPnP - Enabled, minimum lifetime
+    # UPnP - Enabled, maximum lifetime
+    # UPnP - Enabled, Deny rule
+
     @staticmethod
     def finalTearDown(self):
         # Restore original settings to return to initial settings

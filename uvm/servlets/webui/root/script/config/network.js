@@ -4964,20 +4964,6 @@ Ext.define('Webui.config.network', {
                     }
                 },{
                     xtype: 'numberfield',
-                    fieldLabel: i18n._("Download Speed (Kbps)"),
-                    value: this.settings.upnpSettings.downloadSpeed,
-                    allowBlank : false,
-                    allowDecimals: false,
-                    minValue: 0
-                },{
-                    xtype: 'numberfield',
-                    fieldLabel: i18n._("Upload Speed (Kbps)"),
-                    value: this.settings.upnpSettings.uploadSpeed,
-                    allowBlank : false,
-                    allowDecimals: false,
-                    minValue: 0
-                },{
-                    xtype: 'numberfield',
                     fieldLabel: i18n._("Minimum Lifetime (seconds)"),
                     value: this.settings.upnpSettings.minimumLifetime,
                     allowBlank : false,

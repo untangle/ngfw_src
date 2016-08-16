@@ -1501,8 +1501,6 @@ public class NetworkManagerImpl implements NetworkManager
         UpnpSettings upnpSettings = new UpnpSettings();
 
         upnpSettings.setUpnpEnabled( false );
-        upnpSettings.setDownloadSpeed( 0 );
-        upnpSettings.setUploadSpeed( 0 );
         upnpSettings.setMinimumLifetime( 120 );
         upnpSettings.setMaximumLifetime( 86400 );
         upnpSettings.setSecureMode( true );

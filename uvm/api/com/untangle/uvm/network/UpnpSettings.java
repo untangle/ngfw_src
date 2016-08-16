@@ -18,8 +18,6 @@ import org.json.JSONString;
 public class UpnpSettings implements Serializable, JSONString
 {
     private boolean upnpEnabled = false;
-    private int downloadSpeed = 0;
-    private int uploadSpeed = 0;
     private int minimumLifetime = 120;
     private int maximumLifetime = 86400;
     private boolean secureMode = true;
@@ -29,12 +27,6 @@ public class UpnpSettings implements Serializable, JSONString
 
     public boolean getUpnpEnabled() { return this.upnpEnabled; }
     public void setUpnpEnabled( boolean newValue ) { this.upnpEnabled = newValue; }
-
-    public int getDownloadSpeed() { return this.downloadSpeed; }
-    public void setDownloadSpeed( int newValue ) { this.downloadSpeed = newValue; }
-
-    public int getUploadSpeed() { return this.uploadSpeed; }
-    public void setUploadSpeed( int newValue ) { this.uploadSpeed = newValue; }
 
     public int getMinimumLifetime() { return this.minimumLifetime; }
     public void setMinimumLifetime( int newValue ) { this.minimumLifetime = newValue; }
