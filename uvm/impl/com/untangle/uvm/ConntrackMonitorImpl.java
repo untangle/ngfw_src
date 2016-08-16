@@ -304,11 +304,6 @@ public class ConntrackMonitorImpl
                                 logger.debug("Failed to remove session from deadTcpSessions: " + state.tuple);
                         }
                     }
-                    if ( state.tuple != null && state.tuple.getProtocol() == 17 ) {
-                        // We have to remove UDP sessions that have been dynamically bypassed
-                        logger.debug("Remove UDP session from session table: " + state.tuple);
-                        SessionTableImpl.getInstance().remove( state.sessionId );
-                    }
                 }
             
                 /**
