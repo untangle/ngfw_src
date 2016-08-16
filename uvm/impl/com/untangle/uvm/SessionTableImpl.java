@@ -51,7 +51,7 @@ public class SessionTableImpl
      * CLIENT SIDE client address
      * CLIENT SIDE client port
      * CLIENT SIDE server address
-     * SERVER SIDE server port
+     * CLIENT SIDE server port
      */
     public SessionGlobalState lookupTuple( SessionTuple tuple )
     {
@@ -106,10 +106,10 @@ public class SessionTableImpl
         
         if ( removed ) {
             SessionTuple tupleKey = new SessionTuple( session.getProtocol(),
-                                                              session.netcapSession().clientSide().client().host(),
-                                                              session.netcapSession().clientSide().server().host(),
-                                                              session.netcapSession().clientSide().client().port(),
-                                                              session.netcapSession().clientSide().server().port());
+                                                      session.netcapSession().clientSide().client().host(),
+                                                      session.netcapSession().clientSide().server().host(),
+                                                      session.netcapSession().clientSide().client().port(),
+                                                      session.netcapSession().clientSide().server().port());
             if ( sessionTableByTuple.remove( tupleKey ) == null ) {
                 logger.warn("Missing value in tuple map: " + tupleKey );
             }
