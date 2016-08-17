@@ -1266,7 +1266,8 @@ class NetworkTests(unittest2.TestCase):
 
     # UPnP - Disabled
     def test_170_upnp_disabled(self):
-#    netsettings = uvmContext.networkManager().getNetworkSettings()
+        pass
+        #    netsettings = uvmContext.networkManager().getNetworkSettings()
 #    netsettings['dynamicDnsServiceEnabled'] = True
 #    netsettings['dynamicDnsServiceHostnames'] = hostname
 #    netsettings['dynamicDnsServiceName'] = "dyndns"
