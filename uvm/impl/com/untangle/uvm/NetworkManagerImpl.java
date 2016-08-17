@@ -771,7 +771,7 @@ public class NetworkManagerImpl implements NetworkManager
         NetworkSettings newSettings = new NetworkSettings();
         
         try {
-            newSettings.setVersion( 3 ); // Currently on v2 (as of v11.0)
+            newSettings.setVersion( 3 ); // Currently on v3 (as of v13.0)
             newSettings.setHostName( UvmContextFactory.context().oemManager().getOemName().toLowerCase() );
             newSettings.setDomainName( "example.com" );
             newSettings.setHttpPort( 80 );
