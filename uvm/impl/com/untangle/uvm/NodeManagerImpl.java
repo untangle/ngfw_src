@@ -664,10 +664,6 @@ public class NodeManagerImpl implements NodeManager
                         {
                             NodeBase node = null;
                             try {
-                                // remove from unloaded nodes 
-                                nodesBeingLoaded++;
-                                unloadedNodesMap.remove( nodeSettings.getId() );
-
                                 logger.info("Restarting: " + name + " (" + nodeSettings.getId() + ")");
                                 long startTime = System.currentTimeMillis();
                                 node = (NodeBase) NodeBase.loadClass(nodeProps, nodeSettings, false);
@@ -694,6 +690,10 @@ public class NodeManagerImpl implements NodeManager
                             } 
                         }
                     };
+                // remove from unloaded nodes 
+                nodesBeingLoaded++;
+                unloadedNodesMap.remove( nodeSettings.getId() );
+
                 restarters.add(r);
             }
         }
