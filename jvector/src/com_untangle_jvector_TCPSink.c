@@ -146,9 +146,11 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_TCPSink_splice
      * This behavior was replicated using an old XD unit in bridge mode.
      * >50% of the time there is a long delay when connecting to a remote machine.
      * 
-     * Bug #11886
+     * Bug #11885
+     *
+     * 2016-08-20 - this does not seem to be an issue on the newer kernel
      */
-    errlog( ERR_CRITICAL, "splice() usage is dangerous.\n" );
+    // errlog( ERR_CRITICAL, "splice() usage is dangerous.\n" );
     
     if ( snk->pipefd[0] == 0 ) {
         result = pipe( snk->pipefd );
