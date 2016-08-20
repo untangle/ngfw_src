@@ -13,6 +13,7 @@ import re
 import subprocess
 import ipaddr
 import time
+import ssl
 
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
@@ -76,6 +77,10 @@ class UvmTests(unittest2.TestCase):
             if line == "":
                 continue
 
+            ctx = ssl.create_default_context()
+            ctx.check_hostname = False
+            ctx.verify_mode = ssl.CERT_NONE
+
             webUiFile = open( line )
             assert( webUiFile )
             pat  = re.compile(r'''^.*helpSource:\s*['"]+([a-zA-Z_]*)['"]+[\s,]*$''')
@@ -88,7 +93,7 @@ class UvmTests(unittest2.TestCase):
 
                     url = "http://wiki.untangle.com/get.php?source=" + helpSource + "&uid=0000-0000-0000-0000&version=11.0.0&webui=true&lang=en"
                     print "Checking %s = %s " % (helpSource, url)
-                    ret = urllib2.urlopen( url )
+                    ret = urllib2.urlopen( url, context=ctx )
                     time.sleep(.1) # dont flood wiki
                     assert(ret)
                     result = ret.read()
