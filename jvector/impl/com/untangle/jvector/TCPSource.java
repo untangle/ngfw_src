@@ -38,17 +38,17 @@ public class TCPSource extends Source
          * disable the use of splice optimization for now (bug #11885)
          */
 
-        // if ( sink instanceof TCPSink ) {
-        //     /**
-        //      * We only send a FakeDataCrumb if data is available
-        //      * If not, do a traditional read so resets and closes
-        //      * are handled like normal
-        //      */
-        //     if ( bytes_available > 0 ) {
-        //         crumb = new FakeDataCrumb( this );
-        //         return crumb;
-        //     }
-        // }
+        if ( sink instanceof TCPSink ) {
+            /**
+             * We only send a FakeDataCrumb if data is available
+             * If not, do a traditional read so resets and closes
+             * are handled like normal
+             */
+            if ( bytes_available > 0 ) {
+                crumb = new FakeDataCrumb( this );
+                return crumb;
+            }
+        }
 
         int readSize;
         if ( bytes_available > 0 && bytes_available < MAX_READ_SIZE )
