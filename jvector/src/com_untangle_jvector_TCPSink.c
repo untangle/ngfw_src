@@ -153,7 +153,11 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_TCPSink_splice
     // errlog( ERR_CRITICAL, "splice() usage is dangerous.\n" );
     
     if ( snk->pipefd[0] == 0 ) {
-        result = pipe2( snk->pipefd, O_NONBLOCK );
+        /**
+         * XXX - its not clear if the pipes themselves should be non-blocking
+         */
+        //result = pipe2( snk->pipefd, O_NONBLOCK );
+        result = pipe2( snk->pipefd, 0 );
         if ( result < 0 ) {
             perrlog("pipe");
             if ( snk->pipefd[0] > 0 ) {
@@ -178,7 +182,7 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_TCPSink_splice
 
     if ( num_bytes < 0 ) {
         if ( errno == EAGAIN ) {
-            debug(10,"splice: %s\n",strerror(errno));
+            errlog(ERR_WARNING,"splice: %s\n",strerror(errno));
             usleep(100);
             return 0;
         } else {
@@ -196,7 +200,7 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_TCPSink_splice
         //errlog(ERR_WARNING,"2 splice(%i,%i) = %i\n",snk->pipefd[0], snk_fd, result);
         if ( result < 0 ) {
             if ( errno == EAGAIN ) {
-                debug(10,"splice: %s\n",strerror(errno));
+                errlog(ERR_WARNING,"splice: %s\n",strerror(errno));
                 usleep(100);
                 continue;
             } else {
