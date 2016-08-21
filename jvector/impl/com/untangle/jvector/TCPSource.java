@@ -10,9 +10,12 @@ public class TCPSource extends Source
     private static final int MAX_READ_SIZE = 8 * 1024;
     private static final int READ_RESET = -1;
 
+    private boolean spliceEnabled = false;
+
     public TCPSource( int fd )
     {
         pointer = create( fd );
+        spliceEnabled = (System.getProperty("uvm.tcp.splice") != null);
     }
 
     public TCPSource( int fd, SourceEndpointListener listener )
@@ -34,11 +37,9 @@ public class TCPSource extends Source
         int bytes_available = peek( pointer );
         
         /**
-         * Splice implementation - disabled
-         * disable the use of splice optimization for now (bug #11885)
+         * Splice optimization
          */
-
-        if ( sink instanceof TCPSink ) {
+        if ( spliceEnabled && sink instanceof TCPSink ) {
             /**
              * We only send a FakeDataCrumb if data is available
              * If not, do a traditional read so resets and closes
