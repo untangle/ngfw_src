@@ -153,7 +153,7 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_TCPSink_splice
     // errlog( ERR_CRITICAL, "splice() usage is dangerous.\n" );
     
     if ( snk->pipefd[0] == 0 ) {
-        result = pipe( snk->pipefd );
+        result = pipe2( snk->pipefd, O_NONBLOCK );
         if ( result < 0 ) {
             perrlog("pipe");
             if ( snk->pipefd[0] > 0 ) {
@@ -171,8 +171,10 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_TCPSink_splice
     /**
      * write to the pipe
      */
-    int max_write = 4096;
-    int num_bytes = splice( src_fd, NULL, snk->pipefd[1], NULL, max_write, 0 );
+    int max_write = 65536;
+    //errlog(ERR_WARNING,"1 splice(%i,%i)\n",src_fd, snk->pipefd[1]);
+    int num_bytes = splice( src_fd, NULL, snk->pipefd[1], NULL, max_write, SPLICE_F_NONBLOCK );
+    //errlog(ERR_WARNING,"1 splice(%i,%i) = %i\n",src_fd, snk->pipefd[1], num_bytes);
 
     if ( num_bytes < 0 ) {
         return perrlog("splice");
@@ -180,10 +182,12 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_TCPSink_splice
     if ( num_bytes == 0 ) {
         return errlog( ERR_CRITICAL, "socket closed on splice.\n" );
     }
-    
+
     int bytes_remaining = num_bytes;
     while ( bytes_remaining > 0 ) {
-        result = splice( snk->pipefd[0], NULL, snk_fd, NULL, bytes_remaining, 0 );
+        //errlog(ERR_WARNING,"2 splice(%i,%i)\n",snk->pipefd[0], snk_fd);
+        result = splice( snk->pipefd[0], NULL, snk_fd, NULL, bytes_remaining, SPLICE_F_NONBLOCK );
+        //errlog(ERR_WARNING,"2 splice(%i,%i) = %i\n",snk->pipefd[0], snk_fd, result);
         if ( result < 0 ) {
             return perrlog("splice");
         }
