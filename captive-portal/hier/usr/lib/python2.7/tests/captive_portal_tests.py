@@ -435,6 +435,10 @@ class CaptivePortalTests(unittest2.TestCase):
         if platform.machine().startswith('arm'):
             raise unittest2.SkipTest('Not supported on ARM')
         global node, nodeData
+        wan_IP = uvmContext.networkManager().getFirstWanAddress()
+        device_in_office = global_functions.isInOfficeNetwork(wan_IP)
+        if (device_in_office):
+            raise unittest2.SkipTest('Google Login not working in office')
         googleUserName, googlePassword = global_functions.getLiveAccountInfo("Google")
         print "username: %s\n " % str(googleUserName)
         if googlePassword != None:
