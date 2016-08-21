@@ -177,7 +177,13 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_TCPSink_splice
     //errlog(ERR_WARNING,"1 splice(%i,%i) = %i\n",src_fd, snk->pipefd[1], num_bytes);
 
     if ( num_bytes < 0 ) {
-        return perrlog("splice");
+        if ( errno == EAGAIN ) {
+            debug(10,"splice: %s\n",strerror(errno));
+            usleep(100);
+            return 0;
+        } else {
+            return perrlog("splice");
+        }
     }
     if ( num_bytes == 0 ) {
         return errlog( ERR_CRITICAL, "socket closed on splice.\n" );
@@ -189,7 +195,13 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_TCPSink_splice
         result = splice( snk->pipefd[0], NULL, snk_fd, NULL, bytes_remaining, SPLICE_F_NONBLOCK );
         //errlog(ERR_WARNING,"2 splice(%i,%i) = %i\n",snk->pipefd[0], snk_fd, result);
         if ( result < 0 ) {
-            return perrlog("splice");
+            if ( errno == EAGAIN ) {
+                debug(10,"splice: %s\n",strerror(errno));
+                usleep(100);
+                continue;
+            } else {
+                return perrlog("splice");
+            }
         }
 
         bytes_remaining -= result;
