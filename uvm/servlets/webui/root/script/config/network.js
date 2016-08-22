@@ -4986,7 +4986,7 @@ Ext.define('Webui.config.network', {
                     listeners: {
                         "change": {
                             fn: Ext.bind(function(elem, newValue) {
-                                this.this.settings.upnpSettings.maximumLifetime = newValue;
+                                this.settings.upnpSettings.maximumLifetime = newValue;
                             }, this)
                         }
                     }
@@ -4999,90 +4999,7 @@ Ext.define('Webui.config.network', {
                     },
                     this.gridUpnpRules
                     ]
-            // }, {
-            //     xtype: 'fieldset',
-            //     name: 'bandwidth_fieldset',
-            //     title: i18n._('WAN Bandwidth'),
-            //     items: [{
-            //         xtype: 'component',
-            //         name: 'bandwidthLabel',
-            //         html: ' '
-            //     }, this.gridQosWanBandwidth]
-            // }, {
-            //     xtype: 'fieldset',
-            //     title: i18n._('QoS Rules'),
-            //     items: [{
-            //         xtype: "combo",
-            //         fieldLabel: i18n._("Ping Priority"),
-            //         value: this.settings.qosSettings.pingPriority,
-            //         store : this.qosPriorityStore,
-            //         editable: false,
-            //         queryMode: 'local',
-            //         listeners: {
-            //             "change": {
-            //                 fn: Ext.bind(function(elem, newValue) {
-            //                     this.settings.qosSettings.pingPriority = newValue;
-            //                 }, this)
-            //             }
-            //         }
-            //     }, {
-            //         xtype: "combo",
-            //         fieldLabel: i18n._("DNS Priority"),
-            //         value: this.settings.qosSettings.dnsPriority,
-            //         store : this.qosPriorityStore,
-            //         editable: false,
-            //         queryMode: 'local',
-            //         listeners: {
-            //             "change": {
-            //                 fn: Ext.bind(function(elem, newValue) {
-            //                     this.settings.qosSettings.dnsPriority = newValue;
-            //                 }, this)
-            //             }
-            //         }
-            //     }, {
-            //         xtype: "combo",
-            //         fieldLabel: i18n._("SSH Priority"),
-            //         value: this.settings.qosSettings.sshPriority,
-            //         store : this.qosPriorityStore,
-            //         editable: false,
-            //         queryMode: 'local',
-            //         listeners: {
-            //             "change": {
-            //                 fn: Ext.bind(function(elem, newValue) {
-            //                     this.settings.qosSettings.sshPriority = newValue;
-            //                 }, this)
-            //             }
-            //         }
-            //     }, {
-            //         xtype: "combo",
-            //         fieldLabel: i18n._("OpenVPN Priority"),
-            //         value: this.settings.qosSettings.openvpnPriority,
-            //         store : this.qosPriorityStore,
-            //         editable: false,
-            //         queryMode: 'local',
-            //         listeners: {
-            //             "change": {
-            //                 fn: Ext.bind(function(elem, newValue) {
-            //                     this.settings.qosSettings.openvpnPriority = newValue;
-            //                 }, this)
-            //             }
-            //         }
                 }]
-            // }, {
-            //     xtype: 'fieldset',
-            //     title: i18n._('QoS Custom Rules'),
-            //     items: [{
-            //         xtype: 'label',
-            //         html: Ext.String.format(i18n._("{0}Note{1}: Custom Rules only match <b>Bypassed</b> traffic."),'<font color="red">','</font>')
-            //     }, this.gridQosRules]
-            // }, {
-            //     xtype: 'fieldset',
-            //     title: i18n._('QoS Priorities'),
-            //     items: [this.gridQosPriorities]
-            // }, {
-            //     xtype: 'fieldset',
-            //     title: i18n._('QoS Statistics'),
-            //     items: [this.gridQosStatistics]
             }]
         });
         this.gridUpnpRules.setRowEditor(Ext.create('Ung.RowEditorWindow',{
@@ -5121,7 +5038,6 @@ Ext.define('Webui.config.network', {
                 }]
             }]
         }));
-        // this.gridQosWanBandwidth.updateTotalBandwidth();
     },
     // NetworkCards Panel
     buildNetworkCards: function() {
