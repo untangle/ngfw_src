@@ -1266,29 +1266,98 @@ class NetworkTests(unittest2.TestCase):
 
     # UPnP - Disabled
     def test_170_upnp_disabled(self):
-        pass
-        #    netsettings = uvmContext.networkManager().getNetworkSettings()
-#    netsettings['dynamicDnsServiceEnabled'] = True
-#    netsettings['dynamicDnsServiceHostnames'] = hostname
-#    netsettings['dynamicDnsServiceName'] = "dyndns"
-#    netsettings['dynamicDnsServiceUsername'] = login
-#    netsettings['dynamicDnsServicePassword'] = password
-#    uvmContext.networkManager().setNetworkSettings(netsettings)
-        # setFirstLevelRule(createPortForwardTripleCondition("DST_PORT","11234","DST_LOCAL","true","PROTOCOL","TCP",remote_control.clientIP,11234),'portForwardRules')
-        # remote_control.runCommand("nohup netcat -l -p 11234 >/dev/null 2>&1",stdout=False,nowait=True)
-        # result = remote_control.runCommand("echo test | netcat -q0 %s 11234" % uvmContext.networkManager().getFirstWanAddress())
-        # print "result: %s" % str(result)
-        # assert(result == 0)
-#        wanAdminIp = system_properties.findInterfaceIPbyIP(remote_control.clientIP)
-#        print "lanIP=" + lanAdminIp
+        upnpcExists = remote_control.runCommand("test -x /usr/bin/upnpc")
+        if upnpcExists != 0:
+            raise unittest2.SkipTest("Upnpc app needs to be installed on client")
+        netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings['upnpSettings']['upnpEnabled'] = False
+        uvmContext.networkManager().setNetworkSettings(netsettings)
+        result = remote_control.runCommand("/usr/bin/upnpc -a %s 5559 5559 tcp >/dev/null 2>&1" % (remote_control.clientIP),stdout=False)
+        assert(result == 1)
 
+    # UPnP - Enabled
+    def test_171_upnp_enabled_defaults(self):
+        upnpcExists = remote_control.runCommand("test -x /usr/bin/upnpc")
+        if upnpcExists != 0:
+            raise unittest2.SkipTest("Upnpc app needs to be installed on client")
+        netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings['upnpSettings']['upnpEnabled'] = True
+        uvmContext.networkManager().setNetworkSettings(netsettings)
+        result = remote_control.runCommand("/usr/bin/upnpc -a %s 5559 5559 tcp >/dev/null 2>&1" % (remote_control.clientIP),stdout=False)
+        assert(result == 0)
 
+    # UPnP - Secure mode enabled
+    def test_172_upnp_secure_mode_enabled(self):
+        upnpcExists = remote_control.runCommand("test -x /usr/bin/upnpc")
+        if upnpcExists != 0:
+            raise unittest2.SkipTest("Upnpc app needs to be installed on client")
+        netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings['upnpSettings']['upnpEnabled'] = True
+        netsettings['upnpSettings']['secureMode'] = True
+        uvmContext.networkManager().setNetworkSettings(netsettings)
+        result = remote_control.runCommand("/usr/bin/upnpc -a %s 5559 5559 tcp >/dev/null 2>&1" % (remote_control.clientIP),stdout=False)
+        assert(result == 0)
+        result = remote_control.runCommand("/usr/bin/upnpc -a %s 5558 5558 tcp 2>&1 | grep ConflictInMappingEntry" % ("1.2.3.4"),stdout=False)
+        assert(result == 0)
 
-    # UPnP - Enabled, default
-    # UPnP - Enabled, Secure mode
-    # UPnP - Enabled, minimum lifetime
-    # UPnP - Enabled, maximum lifetime
+    # UPnP - Secure mode disabled
+    def test_173_upnp_secure_mode_disabled(self):
+        upnpcExists = remote_control.runCommand("test -x /usr/bin/upnpc")
+        if upnpcExists != 0:
+            raise unittest2.SkipTest("Upnpc app needs to be installed on client")
+        netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings['upnpSettings']['upnpEnabled'] = True
+        netsettings['upnpSettings']['secureMode'] = False
+        uvmContext.networkManager().setNetworkSettings(netsettings)
+        result = remote_control.runCommand("/usr/bin/upnpc -a %s 5559 5559 tcp >/dev/null 2>&1" % (remote_control.clientIP),stdout=False)
+        assert(result == 0)
+        result = remote_control.runCommand("/usr/bin/upnpc -a %s 5558 5558 tcp 2>&1 | grep ConflictInMappingEntry" % ("1.2.3.4"),stdout=False)
+        assert(result == 1)
+
     # UPnP - Enabled, Deny rule
+    def test_174_upnp_rules_deny_all(self):
+        upnpcExists = remote_control.runCommand("test -x /usr/bin/upnpc")
+        if upnpcExists != 0:
+            raise unittest2.SkipTest("Upnpc app needs to be installed on client")
+        netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings['upnpSettings']['upnpEnabled'] = True
+        netsettings['upnpSettings']['upnpRules'] = {
+            "javaClass": "java.util.LinkedList",
+            "list": [{
+                    "allow": False,
+                    "conditions": {
+                        "javaClass": "java.util.LinkedList",
+                        "list": [
+                            {
+                                "conditionType": "SRC_ADDR",
+                                "invert": False,
+                                "javaClass": "com.untangle.uvm.network.UpnpRuleCondition",
+                                "value": "0.0.0.0/0"
+                            },
+                            {
+                                "conditionType": "DST_PORT",
+                                "invert": False,
+                                "javaClass": "com.untangle.uvm.network.UpnpRuleCondition",
+                                "value": "0-65535"
+                            },
+                            {
+                                "conditionType": "SRC_PORT",
+                                "invert": False,
+                                "javaClass": "com.untangle.uvm.network.UpnpRuleCondition",
+                                "value": "0-65535"
+                            }
+                        ]
+                    },
+                    "description": "Deny all",
+                    "enabled": True,
+                    "javaClass": "com.untangle.uvm.network.UpnpRule",
+                    "ruleId": 2
+                }                
+            ]
+        }
+        uvmContext.networkManager().setNetworkSettings(netsettings)
+        result = remote_control.runCommand("/usr/bin/upnpc -a %s 5559 5559 tcp 2>&1 | grep failed" % (remote_control.clientIP),stdout=False)
+        assert(result == 0)
 
     @staticmethod
     def finalTearDown(self):
