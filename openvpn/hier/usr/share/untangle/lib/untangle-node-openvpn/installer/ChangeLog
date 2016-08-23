@@ -1,3 +1,51 @@
+OpenVPN 2.3.11
+
+Gert Doering (1):
+      Preparing for release v2.3.11 (ChangeLog, version.m4)
+
+James Yonan (1):
+      Fixed port-share bug with DoS potential
+
+Jens Neuhalfen (2):
+      Make intent of utun device name validation clear
+      Fix buffer overflow by user supplied data
+
+Leonardo Basilio (1):
+      Correctly report TCP connection timeout on windows.
+
+Lev Stipakov (1):
+      Report Windows bitness
+
+Michael McConville (1):
+      Fix undefined signed shift overflow
+
+Niels Ole Salscheider (1):
+      Fix build with libressl
+
+Samuli Sepp‰nen (1):
+      Improve LZO, PAM and OpenSSL documentation
+
+Selva Nair (2):
+      Ensure input read using systemd-ask-password is null terminated
+      Support reading the challenge-response from console
+
+Steffan Karger (10):
+      openssl: improve logging
+      polarssl: improve logging
+      Update manpage: OpenSSL might also need /dev/urandom inside chroot
+      socks.c: fix check on get_user_pass() return value(s)
+      Fix OCSP_check.sh
+      hardening: add safe FD_SET() wrapper openvpn_fd_set()
+      Fix memory leak in argv_extract_cmd_name()
+      Replace MSG_TEST() macro for static inline msg_test()
+      Restrict default TLS cipher list
+      Various Changes.rst fixes
+
+ValdikSS (3):
+      Clarify mssfix documentation
+      Clarify --block-outside-dns documentation
+      Update --block-outside-dns to work on Windows Vista
+
 OpenVPN 2.3.10
 
 Gert Doering (2):
@@ -75,7 +123,7 @@ Lukasz Kutyla (1):
 Michal Ludvig (1):
       Support for username-only auth file.
 
-Samuli Sepp√§nen (2):
+Samuli Sepp‰nen (2):
       Add CONTRIBUTING.rst
       Updates to Changes.rst
 
@@ -197,7 +245,7 @@ Mike Gilbert (1):
 Robert Fischer (1):
       Updated manpage for --rport and --lport
 
-Samuli Sepp√§nen (2):
+Samuli Sepp‰nen (2):
       Properly escape dashes on the man-page
       Improve documentation in --script-security section of the man-page
 
@@ -225,7 +273,7 @@ Gert Doering (2):
       Add client-only support for peer-id.
       Preparing for release v2.3.6 (ChangeLog, version.m4)
 
-Samuli Sepp√§nen (1):
+Samuli Sepp‰nen (1):
       Fix to --shaper documentation on the man-page
 
 Steffan Karger (4):
@@ -489,7 +537,7 @@ Josh Cepek (2):
 Matthias Andree (1):
       Enable TCP_NODELAY configuration on FreeBSD.
 
-Samuli Sepp√§nen (4):
+Samuli Sepp‰nen (4):
       Removed ChangeLog.IPv6
       Added cross-compilation information INSTALL-win32.txt
       Updated README
@@ -808,7 +856,7 @@ Jonathan K. Bullard (2):
       Fix file access checks on commands
       Clarified the docs and help screen about what a 'cmd' is
 
-Samuli Sepp√§nen (1):
+Samuli Sepp‰nen (1):
       Added notes about upgrading from 2.3-alpha1 and earlier to INSTALL-win32.txt
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.11 (GNU/Linux)
@@ -1259,7 +1307,7 @@ Robert Fischer (8):
       Update man page with info about --remote-random-hostname
       Added man page entry for --management-client
 
-Samuli Sepp√§nen (19):
+Samuli Sepp‰nen (19):
       Add man page entry for --redirect-private
       Change all CRLF linefeeds to LF linefeeds
       Fix a bug in devcon source code handling
