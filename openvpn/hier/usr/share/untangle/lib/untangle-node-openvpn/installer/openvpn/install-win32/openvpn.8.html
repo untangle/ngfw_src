@@ -1371,8 +1371,8 @@ When used with
 or
 <B>--pull,</B>
 
-accept options pushed by server EXCEPT for routes and dhcp options
-like DNS servers.
+accept options pushed by server EXCEPT for routes, block-outside-dns and dhcp
+options like DNS servers.
 <P>
 When used on the client, this option effectively bars the
 server from adding routes to the client's routing table,
@@ -1674,7 +1674,11 @@ parameter is interpreted in the same way as the
 
 parameter, i.e. the UDP packet size after encapsulation
 overhead has been added in, but not including
-the UDP header itself.
+the UDP header itself. Resulting packet would be at most 28
+bytes larger for IPv4 and 48 bytes for IPv6 (20/40 bytes for IP
+header and 8 bytes for UDP header). Default value of 1450 allows
+IPv4 packets to be transmitted over a link with MTU 1473 or higher
+without IP level fragmentation.
 <P>
 The
 <B>--mssfix</B>
@@ -1741,13 +1745,13 @@ connection problems) with the following options:
 
 <DD>
 Set the TCP/UDP socket send buffer size.
-Currently defaults to 65536 bytes.
+Defaults to operation system default.
 
 <DT><B>--rcvbuf size</B>
 
 <DD>
 Set the TCP/UDP socket receive buffer size.
-Currently defaults to 65536 bytes.
+Defaults to operation system default.
 
 <DT><B>--mark value</B>
 
@@ -2609,17 +2613,13 @@ parameter can point to an empty directory, however
 complications can result when scripts or restarts
 are executed after the chroot operation.
 <P>
-Note: if OpenVPN is built using the PolarSSL SSL
-library,
-<B>--chroot</B>
-
-will only work if a /dev/urandom device node is available
-inside the chroot directory
+Note: The SSL library will probably need /dev/urandom to be available inside
+the chroot directory
 <B>dir.</B>
 
-This is due to the way PolarSSL works (it wants to open
-/dev/urandom every time randomness is needed, not just once
-at startup) and nothing OpenVPN can influence.
+This is because SSL libraries occasionally need to collect fresh random.  Newer
+linux kernels and some BSDs implement a getrandom() or getentropy() syscall
+that removes the need for /dev/urandom to be available.
 
 <DT><B>--setcon context</B>
 
@@ -2704,6 +2704,26 @@ openvpn command for a fairly reliable indication of whether the command
 has correctly initialized and entered the packet forwarding event loop.
 <P>
 In OpenVPN, the vast majority of errors which occur after initialization are non-fatal.
+<P>
+Note: as soon as OpenVPN has daemonized, it can not ask for usernames,
+passwords, or key pass phrases anymore.  This has certain consequences,
+namely that using a password-protected private key will fail unless the
+<B>--askpass</B>
+
+option is used to tell OpenVPN to ask for the pass phrase (this
+requirement is new in 2.3.7, and is a consequence of calling daemon()
+before initializing the crypto layer).
+<P>
+Further, using
+<B>--daemon</B>
+
+together with
+<B>--auth-user-pass</B>
+
+(entered on console) and
+<B>--auth-nocache</B>
+
+will fail as soon as key renegotiation (and reauthentication) occurs.
 
 <DT><B>--syslog [progname]</B>
 
@@ -4478,10 +4498,8 @@ over the client's routing table.
 Authenticate with server using username/password.
 <B>up</B>
 
-is a file containing username/password on 2 lines (Note: OpenVPN
-will only read passwords from a file if it has been built
-with the --enable-password-save configure option, or on Windows
-by defining ENABLE_PASSWORD_SAVE in win/settings.in).
+is a file containing username/password on 2 lines. If the
+password line is missing, OpenVPN will prompt for one.
 <P>
 If
 <B>up</B>
@@ -5530,7 +5548,8 @@ your VPN connection.  But it is also easy to unwittingly use it to carefully
 align a gun with your foot, or just break your connection.  Use with care!
 <P>
 The default for --tls-cipher is to use PolarSSL's default cipher list
-when using PolarSSL or &quot;DEFAULT:!EXP:!PSK:!SRP:!kRSA&quot; when using OpenSSL.
+when using PolarSSL or &quot;DEFAULT:!EXP:!LOW:!MEDIUM:!PSK:!SRP:!kRSA&quot; when using
+OpenSSL.
 
 <DT><B>--tls-timeout n</B>
 
@@ -5794,10 +5813,7 @@ is specified, read the password from the first line of
 
 Keep in mind that storing your password in a file
 to a certain extent invalidates the extra security provided by
-using an encrypted key (Note: OpenVPN
-will only read passwords from a file if it has been built
-with the --enable-password-save configure option, or on Windows
-by defining ENABLE_PASSWORD_SAVE in win/settings.in).
+using an encrypted key.
 
 <DT><B>--auth-nocache</B>
 
@@ -6644,6 +6660,27 @@ Output OpenVPN's view of the system routing table and network
 adapter list to the syslog or log file after the TUN/TAP adapter
 has been brought up and any routes have been added.
 
+<DT><B>--block-outside-dns</B>
+
+<DD>
+Block DNS servers on other network adapters to prevent
+DNS leaks. This option prevents any application from accessing
+TCP or UDP port 53 except one inside the tunnel. It uses
+Windows Filtering Platform (WFP) and works on Windows Vista or
+later.
+<P>
+This option is considered unknown on non-Windows platforms
+and unsupported on Windows XP, resulting in fatal error.
+You may want to use
+<B>--setenv opt</B>
+
+or
+<B>--ignore-unknown-option</B>
+
+(not suitable for Windows XP) to ignore said error.
+Note that pushing unknown options from server does not trigger
+fatal errors.
+
 <DT><B>--dhcp-renew</B>
 
 <DD>
@@ -7109,6 +7146,20 @@ Set on program initiation and reset on SIGHUP.
 <DD>
 The actual name of the TUN/TAP device, including
 a unit number if it exists.
+Set prior to
+<B>--up</B>
+
+or
+<B>--down</B>
+
+script execution.
+
+<DT><B>dev_idx</B>
+
+<DD>
+On Windows, the device index of the TUN/TAP adapter (to
+be used in netsh.exe calls which sometimes just do not work
+right with interface names).
 Set prior to
 <B>--up</B>
 
@@ -7953,16 +8004,16 @@ for use with OpenVPN.
 
 For purposes
 of our example, our two machines will be called
-<B>may.kg</B>
+<B>bob.example.com</B>
 
 and
-<B>june.kg.</B>
+<B>alice.example.com.</B>
 
 If you are constructing a VPN over the internet, then replace
-<B>may.kg</B>
+<B>bob.example.com</B>
 
 and
-<B>june.kg</B>
+<B>alice.example.com</B>
 
 with the internet hostname or IP address that each machine will use
 to contact the other over the internet.
@@ -7971,8 +8022,8 @@ Now we will choose the tunnel endpoints.  Tunnel endpoints are
 private IP addresses that only have meaning in the context of
 the VPN.  Each machine will use the tunnel endpoint of the other
 machine to access it over the VPN.  In our example,
-the tunnel endpoint for may.kg
-will be 10.4.0.1 and for june.kg, 10.4.0.2.
+the tunnel endpoint for bob.example.com
+will be 10.4.0.1 and for alice.example.com, 10.4.0.2.
 <P>
 Once the VPN is established, you have essentially
 created a secure alternate path between the two hosts
@@ -7981,7 +8032,7 @@ control which network
 traffic passes between the hosts 
 (a) over the VPN or (b) independently of the VPN, by choosing whether to use
 (a) the VPN endpoint address or (b) the public internet address,
-to access the remote host. For example if you are on may.kg and you wish to connect to june.kg
+to access the remote host. For example if you are on bob.example.com and you wish to connect to alice.example.com
 via
 <B>ssh</B>
 
@@ -7989,12 +8040,12 @@ without using the VPN (since
 <B>ssh</B>
 
 has its own built-in security) you would use the command
-<B>ssh june.kg.</B>
+<B>ssh alice.example.com.</B>
 
 However in the same scenario, you could also use the command
 <B>telnet 10.4.0.2</B>
 
-to create a telnet session with june.kg over the VPN, that would
+to create a telnet session with alice.example.com over the VPN, that would
 use the VPN to secure the session rather than
 <B>ssh.</B>
 
@@ -8013,18 +8064,18 @@ you will get a weird feedback loop.
 
 <P>
 
-On may:
+On bob:
 <DL COMPACT>
 <DT><DD>
-<B>openvpn --remote june.kg --dev tun1 --ifconfig 10.4.0.1 10.4.0.2 --verb 9</B>
+<B>openvpn --remote alice.example.com --dev tun1 --ifconfig 10.4.0.1 10.4.0.2 --verb 9</B>
 
 </DL>
 <P>
 
-On june:
+On alice:
 <DL COMPACT>
 <DT><DD>
-<B>openvpn --remote may.kg --dev tun1 --ifconfig 10.4.0.2 10.4.0.1 --verb 9</B>
+<B>openvpn --remote bob.example.com --dev tun1 --ifconfig 10.4.0.2 10.4.0.1 --verb 9</B>
 
 </DL>
 <P>
@@ -8032,7 +8083,7 @@ On june:
 Now verify the tunnel is working by pinging across the tunnel.
 <P>
 
-On may:
+On bob:
 <DL COMPACT>
 <DT><DD>
 <B>ping 10.4.0.2</B>
@@ -8040,7 +8091,7 @@ On may:
 </DL>
 <P>
 
-On june:
+On alice:
 <DL COMPACT>
 <DT><DD>
 <B>ping 10.4.0.1</B>
@@ -8062,7 +8113,7 @@ option to have OpenVPN run quietly.
 <A NAME="lbBD">&nbsp;</A>
 <H3>Example 2: A tunnel with static-key security (i.e. using a pre-shared secret)</H3>
 
-First build a static key on may.
+First build a static key on bob.
 <DL COMPACT>
 <DT><DD>
 <B>openvpn --genkey --secret key</B>
@@ -8077,25 +8128,25 @@ This command will build a random key file called
 Now copy
 <B>key</B>
 
-to june over a secure medium such as by
+to alice over a secure medium such as by
 using the
 <B><A HREF="/cgi-bin/man/man2html?1+scp">scp</A></B>(1)
 
 program.
 <P>
 
-On may:
+On bob:
 <DL COMPACT>
 <DT><DD>
-<B>openvpn --remote june.kg --dev tun1 --ifconfig 10.4.0.1 10.4.0.2 --verb 5 --secret key</B>
+<B>openvpn --remote alice.example.com --dev tun1 --ifconfig 10.4.0.1 10.4.0.2 --verb 5 --secret key</B>
 
 </DL>
 <P>
 
-On june:
+On alice:
 <DL COMPACT>
 <DT><DD>
-<B>openvpn --remote may.kg --dev tun1 --ifconfig 10.4.0.2 10.4.0.1 --verb 5 --secret key</B>
+<B>openvpn --remote bob.example.com --dev tun1 --ifconfig 10.4.0.2 10.4.0.1 --verb 5 --secret key</B>
 
 </DL>
 <P>
@@ -8103,7 +8154,7 @@ On june:
 Now verify the tunnel is working by pinging across the tunnel.
 <P>
 
-On may:
+On bob:
 <DL COMPACT>
 <DT><DD>
 <B>ping 10.4.0.2</B>
@@ -8111,7 +8162,7 @@ On may:
 </DL>
 <P>
 
-On june:
+On alice:
 <DL COMPACT>
 <DT><DD>
 <B>ping 10.4.0.1</B>
@@ -8122,17 +8173,17 @@ On june:
 <H3>Example 3: A tunnel with full TLS-based security</H3>
 
 For this test, we will designate
-<B>may</B>
+<B>bob</B>
 
 as the TLS client and
-<B>june</B>
+<B>alice</B>
 
 as the TLS server.
 <I>Note that client or server designation only has meaning for the TLS subsystem.  It has no bearing on OpenVPN's peer-to-peer, UDP-based communication model.</I>
 
 <P>
 First, build a separate certificate/key pair
-for both may and june (see above where
+for both bob and alice (see above where
 <B>--cert</B>
 
 is discussed for more info).  Then construct
@@ -8151,18 +8202,18 @@ parameters you can use the included file dh1024.pem.
 
 <P>
 
-On may:
+On bob:
 <DL COMPACT>
 <DT><DD>
-<B>openvpn --remote june.kg --dev tun1 --ifconfig 10.4.0.1 10.4.0.2 --tls-client --ca ca.crt --cert client.crt --key client.key --reneg-sec 60 --verb 5</B>
+<B>openvpn --remote alice.example.com --dev tun1 --ifconfig 10.4.0.1 10.4.0.2 --tls-client --ca ca.crt --cert client.crt --key client.key --reneg-sec 60 --verb 5</B>
 
 </DL>
 <P>
 
-On june:
+On alice:
 <DL COMPACT>
 <DT><DD>
-<B>openvpn --remote may.kg --dev tun1 --ifconfig 10.4.0.2 10.4.0.1 --tls-server --dh dh1024.pem --ca ca.crt --cert server.crt --key server.key --reneg-sec 60 --verb 5</B>
+<B>openvpn --remote bob.example.com --dev tun1 --ifconfig 10.4.0.2 10.4.0.1 --tls-server --dh dh1024.pem --ca ca.crt --cert server.crt --key server.key --reneg-sec 60 --verb 5</B>
 
 </DL>
 <P>
@@ -8170,7 +8221,7 @@ On june:
 Now verify the tunnel is working by pinging across the tunnel.
 <P>
 
-On may:
+On bob:
 <DL COMPACT>
 <DT><DD>
 <B>ping 10.4.0.2</B>
@@ -8178,7 +8229,7 @@ On may:
 </DL>
 <P>
 
-On june:
+On alice:
 <DL COMPACT>
 <DT><DD>
 <B>ping 10.4.0.1</B>
@@ -8207,12 +8258,12 @@ option to use OpenVPN's default key renegotiation interval of one hour.
 
 Assuming you can ping across the tunnel,
 the next step is to route a real subnet over
-the secure tunnel.  Suppose that may and june have two network
+the secure tunnel.  Suppose that bob and alice have two network
 interfaces each, one connected
 to the internet, and the other to a private
 network.  Our goal is to securely connect
-both private networks.  We will assume that may's private subnet
-is 10.0.0.0/24 and june's is 10.0.1.0/24.
+both private networks.  We will assume that bob's private subnet
+is 10.0.0.0/24 and alice's is 10.0.1.0/24.
 <P>
 
 First, ensure that IP forwarding is enabled on both peers.
@@ -8232,7 +8283,7 @@ and enable TUN packet forwarding through the firewall:
 </DL>
 <P>
 
-On may:
+On bob:
 <DL COMPACT>
 <DT><DD>
 <B>route add -net 10.0.1.0 netmask 255.255.255.0 gw 10.4.0.2</B>
@@ -8240,7 +8291,7 @@ On may:
 </DL>
 <P>
 
-On june:
+On alice:
 <DL COMPACT>
 <DT><DD>
 <B>route add -net 10.0.0.0 netmask 255.255.255.0 gw 10.4.0.1</B>
@@ -8490,6 +8541,6 @@ James Yonan &lt;<A HREF="mailto:jim@yonan.net">jim@yonan.net</A>&gt;
 This document was created by
 <A HREF="/cgi-bin/man/man2html">man2html</A>,
 using the manual pages.<BR>
-Time: 06:43:19 GMT, June 08, 2015
+Time: 07:56:39 GMT, May 10, 2016
 </BODY>
 </HTML>
