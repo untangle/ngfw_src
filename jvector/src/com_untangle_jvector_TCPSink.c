@@ -203,12 +203,10 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_TCPSink_splice
                 continue;
             case ECONNRESET:
                 debug( 5, "TCPSink: fd %d reset\n", snk_fd );
-                num_bytes = com_untangle_jvector_TCPSink_WRITE_RETURN_IGNORE;
-                break;
+                return -1;
             case EPIPE:
                 debug( 5, "TCPSink: Broken pipe fd %d, resetting\n", snk_fd );
-                num_bytes = com_untangle_jvector_TCPSink_WRITE_RETURN_IGNORE;
-                break;
+                return -1;
             default:
                 return errlog(ERR_WARNING,"TCPSink: splice(pipe: %i, tcp: %i, remaining: %i): %s\n", snk->pipefd[0], snk_fd, bytes_remaining, strerror(errno));
             }
@@ -229,10 +227,23 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_TCPSink_close
   (JNIEnv *env, jclass _this, jlong pointer)
 {
     int fd;
+    jvector_sink_t* snk = ((jvector_sink_t*)(uintptr_t)pointer);
     
     if (( fd = _sink_get_fd( pointer )) < 0 ) return errlog( ERR_CRITICAL, "_sink_get_fd\n" );
     if ( close( fd ) < 0 ) return perrlog( "close" );
 
+    if ( snk->pipefd[0] != 0 ) {
+        if ( close(snk->pipefd[0]) < 0)
+            perrlog("close");
+        snk->pipefd[0] = 0;
+    }
+    if ( snk->pipefd[1] != 0 ) {
+        if ( close(snk->pipefd[1]) < 0)
+            perrlog("close");
+        snk->pipefd[1] = 0;
+    }
+
+    
     return 0;
 }
 
