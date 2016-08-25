@@ -106,9 +106,9 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_TCPSink_write
                 break;
 
             case EAGAIN:
-                /* Unable to write at this time, would have blocked 
-                 * XXXX Why isn't this an error */
+                /* Unable to write at this time, would have blocked  */
                 debug( 5, "TCPSink: fd %d polled when unable to write data\n", fd );
+                errlog( ERR_WARNING, "TCPSink: fd %d polled when unable to write data\n", fd );
                 number_bytes = 0;
                 break;                
 
@@ -175,18 +175,16 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_TCPSink_splice
     /**
      * write to the pipe
      */
-    int max_write = 65536;
-    //errlog(ERR_WARNING,"1 splice(%i,%i)\n",src_fd, snk->pipefd[1]);
+    int max_write = 8192;
     int num_bytes = splice( src_fd, NULL, snk->pipefd[1], NULL, max_write, SPLICE_F_NONBLOCK );
-    //errlog(ERR_WARNING,"1 splice(%i,%i) = %i\n",src_fd, snk->pipefd[1], num_bytes);
 
     if ( num_bytes < 0 ) {
         if ( errno == EAGAIN ) {
-            errlog(ERR_WARNING,"splice: %s\n",strerror(errno));
-            usleep(100);
+            errlog(ERR_WARNING,"TCPSink: splice(tcp: %i, pipe: %i): %s\n", src_fd, snk->pipefd[1], strerror(errno));
+            usleep(1000000);
             return 0;
         } else {
-            return perrlog("splice");
+            return errlog(ERR_WARNING,"TCPSink: splice(tcp: %i, pipe: %i): %s\n", src_fd, snk->pipefd[1], strerror(errno));
         }
     }
     if ( num_bytes == 0 ) {
@@ -195,16 +193,24 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_TCPSink_splice
 
     int bytes_remaining = num_bytes;
     while ( bytes_remaining > 0 ) {
-        //errlog(ERR_WARNING,"2 splice(%i,%i)\n",snk->pipefd[0], snk_fd);
         result = splice( snk->pipefd[0], NULL, snk_fd, NULL, bytes_remaining, SPLICE_F_NONBLOCK );
-        //errlog(ERR_WARNING,"2 splice(%i,%i) = %i\n",snk->pipefd[0], snk_fd, result);
+
         if ( result < 0 ) {
-            if ( errno == EAGAIN ) {
-                errlog(ERR_WARNING,"splice: %s\n",strerror(errno));
-                usleep(100);
+            switch ( errno ) {
+            case EAGAIN:
+                errlog(ERR_WARNING,"TCPSink: splice(pipe: %i, tcp: %i, remaining: %i): %s\n", snk->pipefd[0], snk_fd, bytes_remaining, strerror(errno));
+                usleep(1000000);
                 continue;
-            } else {
-                return perrlog("splice");
+            case ECONNRESET:
+                debug( 5, "TCPSink: fd %d reset\n", snk_fd );
+                num_bytes = com_untangle_jvector_TCPSink_WRITE_RETURN_IGNORE;
+                break;
+            case EPIPE:
+                debug( 5, "TCPSink: Broken pipe fd %d, resetting\n", snk_fd );
+                num_bytes = com_untangle_jvector_TCPSink_WRITE_RETURN_IGNORE;
+                break;
+            default:
+                return errlog(ERR_WARNING,"TCPSink: splice(pipe: %i, tcp: %i, remaining: %i): %s\n", snk->pipefd[0], snk_fd, bytes_remaining, strerror(errno));
             }
         }
 
