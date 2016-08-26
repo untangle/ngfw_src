@@ -171,7 +171,7 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
                 for (Rdn rdn : ldapName.getRdns()) {
                     if (rdn.getType().equals("CN") == false)
                         continue;
-                    domain = rdn.getValue().toString();
+                    domain = rdn.getValue().toString().toLowerCase();
                     break;
                 }
             }
@@ -359,7 +359,7 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
             data.get(hostData, 0, nameLength);
             String hostName = new String(hostData);
             logger.debug("Extracted SNI hostname = " + hostName);
-            return hostName;
+            return hostName.toLowerCase();
         }
 
         return (null);
