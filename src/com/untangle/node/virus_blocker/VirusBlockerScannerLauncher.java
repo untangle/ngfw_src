@@ -25,12 +25,19 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
     private static final String BDAM_SCANNER_HOST = "127.0.0.1";
     private static final int BDAM_SCANNER_PORT = 1344;
 
+    private boolean memoryMode = false;
+
     /**
      * Create a Launcher for the give file
      */
     public VirusBlockerScannerLauncher(File scanfile, NodeSession session)
     {
         super(scanfile, session);
+
+        // if memory scanning mode is active scanfile will be null
+        if (scanfile == null) {
+            memoryMode = true;
+            }
     }
 
     /**
@@ -39,16 +46,23 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
      */
     public void run()
     {
-        File scanFile = new File(scanfilePath);
-        long scanFileLength = scanFile.length();
         VirusCloudScanner cloudScanner = null;
         VirusCloudResult cloudResult = null;
         String daemonResult = null;
         String virusName = null;
+        File scanFile = null;
+        long scanFileLength = 0;
+
+        if (memoryMode == false) {
+            scanFile = new File(scanfilePath);
+            scanFileLength = scanFile.length();
+        } else {
+            scanfilePath = "n/a";
+        }
 
         VirusBlockerState virusState = (VirusBlockerState) nodeSession.attachment();
 
-        logger.debug("Scanning file: " + scanfilePath + " MD5: " + virusState.fileHash);
+        logger.debug("Scanning FILE: " + scanfilePath + " MD5: " + virusState.fileHash);
 
         // if we have a good MD5 hash then spin up the cloud checker
         if (virusState.fileHash != null) {
@@ -56,10 +70,8 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
             cloudScanner.start();
         }
 
-        File daemonCheck = new File("/etc/init.d/untangle-bdamserver");
-
-        // if the bdamserver package is installed have it scan the file        
-        if (daemonCheck.exists()) {
+        // if not in memory only mode then use the file scanner
+        if (memoryMode == false) {
             DataOutputStream txstream = null;
             DataInputStream rxstream = null;
             Socket socket = null;
@@ -157,8 +169,8 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
         }
 
         // if no BD feedback and cloud returned positive result we also send feedback
-        if ((feedback == null) && (cloudResult != null) && (cloudResult.getItemCategory() != null) && (cloudResult.getItemConfidence() == 100)) {
-            feedback = new VirusCloudFeedback(virusState, "BD", threatName, threatType, scanFileLength, nodeSession, cloudResult);
+        if ((feedback == null) && (cloudResult != null) && (cloudResult.getItemCategory() != null) && (cloudResult.getItemClass() != null) && (cloudResult.getItemConfidence() == 100)) {
+            feedback = new VirusCloudFeedback(virusState, "TD", cloudResult.getItemCategory(), cloudResult.getItemClass(), scanFileLength, nodeSession, cloudResult);
         }
 
         // if we have a feedback object start it up now
