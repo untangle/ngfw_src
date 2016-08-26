@@ -3,19 +3,8 @@
  */
 package com.untangle.node.virus_blocker;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.math.BigInteger;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
-import java.nio.channels.Channels;
-import java.nio.channels.FileChannel;
-import java.nio.channels.WritableByteChannel;
-import java.security.DigestOutputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.Iterator;
@@ -31,7 +20,6 @@ import com.untangle.node.ftp.FtpReply;
 import com.untangle.node.ftp.FtpEventHandler;
 import com.untangle.uvm.vnet.ChunkToken;
 import com.untangle.uvm.vnet.EndMarkerToken;
-import com.untangle.uvm.vnet.FileChunkStreamer;
 import com.untangle.uvm.vnet.Token;
 import com.untangle.uvm.vnet.TokenStreamer;
 import com.untangle.uvm.vnet.TokenStreamerAdaptor;
@@ -52,14 +40,9 @@ class VirusFtpHandler extends FtpEventHandler
 
     private class VirusFtpState extends VirusBlockerState
     {
-        private File diskFile = null;
-        private FileInputStream inStream = null;
-        private FileOutputStream outStream = null;
-        private FileChannel inChannel = null;
-        private FileChannel outChannel = null;
-        private MessageDigest msgDigest = null;
-        private DigestOutputStream msgStream = null;
-        private WritableByteChannel msgChannel = null;
+        private VirusFileManager fileManager = null;
+        private boolean memoryMode = false;
+        private boolean scan = false;
         private boolean c2s;
     }
 
@@ -72,122 +55,112 @@ class VirusFtpHandler extends FtpEventHandler
      */
     private static final Map<Long, String> fileNamesByCtlSessionId = new ConcurrentHashMap<Long, String>();
 
-    VirusFtpHandler( VirusBlockerBaseApp node )
+    VirusFtpHandler(VirusBlockerBaseApp node)
     {
         this.node = node;
     }
 
     @Override
-    public void handleTCPNewSession( NodeTCPSession session )
+    public void handleTCPNewSession(NodeTCPSession session)
     {
         VirusFtpState state = new VirusFtpState();
-        session.attach( state );
+        session.attach(state);
     }
-    
+
     @Override
-    protected void doClientData( NodeTCPSession session, ChunkToken c )
+    protected void doClientData(NodeTCPSession session, ChunkToken c)
     {
         VirusFtpState state = (VirusFtpState) session.attachment();
-        if ( node.getSettings().getScanFtp() ) {
+        if (node.getSettings().getScanFtp()) {
             logger.debug("doServerData()");
 
-            if ( state.diskFile == null ) {
+            if (state.fileManager == null) {
                 logger.debug("creating file for client");
-                createFile( session );
+                createFile(session);
                 state.c2s = true;
             }
 
-            ChunkToken outChunkToken = trickle( session, c.getData() );
+            ChunkToken outChunkToken = trickle(session, c.getData());
 
-            session.sendObjectToServer( outChunkToken );
+            session.sendObjectToServer(outChunkToken);
             return;
         } else {
-            session.sendObjectToServer( c );
+            session.sendObjectToServer(c);
             return;
         }
     }
 
     @Override
-    protected void doServerData( NodeTCPSession session, ChunkToken c )
+    protected void doServerData(NodeTCPSession session, ChunkToken c)
     {
         VirusFtpState state = (VirusFtpState) session.attachment();
-        if ( node.getSettings().getScanFtp() ) {
+        if (node.getSettings().getScanFtp()) {
             logger.debug("doServerData()");
 
-            if ( state.diskFile == null ) {
+            if (state.fileManager == null) {
                 logger.debug("creating file for server");
-                createFile( session );
+                createFile(session);
                 state.c2s = false;
             }
 
-            ChunkToken outChunkToken = trickle( session, c.getData() );
+            ChunkToken outChunkToken = trickle(session, c.getData());
 
-            session.sendObjectToClient( outChunkToken );
+            session.sendObjectToClient(outChunkToken);
             return;
         } else {
-            session.sendObjectToClient( c );
+            session.sendObjectToClient(c);
             return;
         }
     }
 
     @Override
-    protected void doClientDataEnd( NodeTCPSession session )
+    protected void doClientDataEnd(NodeTCPSession session)
     {
         VirusFtpState state = (VirusFtpState) session.attachment();
         logger.debug("doClientDataEnd()");
 
-        if ( node.getSettings().getScanFtp() && state.c2s && state.diskFile != null ) {
-            try {
-                BigInteger val = new BigInteger(1, state.msgDigest.digest());
-                state.fileHash = String.format("%1$032x", val);
-                state.outChannel.close();
-            } catch (IOException exn) {
-                logger.warn("could not close out channel");
-            }
+        if (node.getSettings().getScanFtp() && state.c2s && state.fileManager != null) {
+            state.fileHash = state.fileManager.getFileHash();
 
             if (logger.isDebugEnabled()) {
-                logger.debug("c2s file: " + state.diskFile);
+                logger.debug("c2s file: " + state.fileManager.getFileDisplayName());
             }
-            TCPStreamer ts = scan( session );
+
+            TCPStreamer ts = scan(session);
             if (null != ts) {
                 session.sendStreamerToServer(ts);
             }
-            state.diskFile = null;
+            state.fileManager = null;
         } else {
             session.shutdownServer();
         }
     }
 
     @Override
-    protected void doServerDataEnd( NodeTCPSession session )
+    protected void doServerDataEnd(NodeTCPSession session)
     {
         VirusFtpState state = (VirusFtpState) session.attachment();
         logger.debug("doServerDataEnd()");
 
-        if ( node.getSettings().getScanFtp() && !state.c2s && state.diskFile != null ) {
-            try {
-                BigInteger val = new BigInteger(1, state.msgDigest.digest());
-                state.fileHash = String.format("%1$032x", val);
-                state.outChannel.close();
-            } catch (IOException exn) {
-                logger.warn("could not close out channel", exn);
-            }
+        if (node.getSettings().getScanFtp() && !state.c2s && state.fileManager != null) {
+            state.fileHash = state.fileManager.getFileHash();
 
             if (logger.isDebugEnabled()) {
-                logger.debug("!c2s file: " + state.diskFile);
+                logger.debug("!c2s file: " + state.fileManager.getFileDisplayName());
             }
-            TCPStreamer ts = scan( session );
+
+            TCPStreamer ts = scan(session);
             if (null != ts) {
                 session.sendStreamerToClient(ts);
             }
-            state.diskFile = null;
+            state.fileManager = null;
         } else {
             session.shutdownClient();
         }
     }
 
     @Override
-    protected void doCommand( NodeTCPSession session, FtpCommand command )
+    protected void doCommand(NodeTCPSession session, FtpCommand command)
     {
         // no longer have a setting for blocking partial fetches
         // it causes too many issues
@@ -198,45 +171,41 @@ class VirusFtpHandler extends FtpEventHandler
         // return;
         // }
 
-        if (command.getFunction() == FtpFunction.RETR){
+        if (command.getFunction() == FtpFunction.RETR) {
             String fileName = command.getArgument();
-            addFileName( session.getSessionId(), fileName );
+            addFileName(session.getSessionId(), fileName);
         }
-        session.sendObjectToServer( command );
-        return;
-    }
-    
-    protected void doReply( NodeTCPSession session, FtpReply reply )
-    {
-        if (reply.getReplyCode() == FtpReply.PASV || reply.getReplyCode() == FtpReply.EPSV){
-            try {
-                InetSocketAddress socketAddress = reply.getSocketAddress();
-                addDataSocket( socketAddress, session.getSessionId() );
-            } catch ( Exception e ) {
-                throw new RuntimeException(e);
-            }
-        }
-        session.sendObjectToClient( reply );
+        session.sendObjectToServer(command);
         return;
     }
 
-    private ChunkToken trickle( NodeTCPSession session, ByteBuffer b )
+    protected void doReply(NodeTCPSession session, FtpReply reply)
+    {
+        if (reply.getReplyCode() == FtpReply.PASV || reply.getReplyCode() == FtpReply.EPSV) {
+            try {
+                InetSocketAddress socketAddress = reply.getSocketAddress();
+                addDataSocket(socketAddress, session.getSessionId());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        session.sendObjectToClient(reply);
+        return;
+    }
+
+    private ChunkToken trickle(NodeTCPSession session, ByteBuffer b)
     {
         VirusFtpState state = (VirusFtpState) session.attachment();
         int l = b.remaining() * node.getTricklePercent() / 100;
 
-        try {
-            while (b.hasRemaining()) {
-                state.msgChannel.write(b);
-            }
+        while (b.hasRemaining()) {
+            state.fileManager.write(b);
+        }
 
-            b.clear().limit(l);
+        b.clear().limit(l);
 
-            while (b.hasRemaining()) {
-                state.inChannel.read(b);
-            }
-        } catch (IOException exn) {
-            throw new RuntimeException("could not trickle", exn);
+        while (b.hasRemaining()) {
+            state.fileManager.read(b);
         }
 
         b.flip();
@@ -244,17 +213,18 @@ class VirusFtpHandler extends FtpEventHandler
         return new ChunkToken(b);
     }
 
-    private TCPStreamer scan( NodeTCPSession session )
+    private TCPStreamer scan(NodeTCPSession session)
     {
         VirusFtpState state = (VirusFtpState) session.attachment();
         VirusScannerResult result;
 
         try {
             node.incrementScanCount();
-            if( ignoredHost( session.sessionEvent().getSServerAddr() ) ){
+            if (ignoredHost(session.sessionEvent().getSServerAddr())) {
                 result = VirusScannerResult.CLEAN;
             } else {
-                result = node.getScanner().scanFile( state.diskFile, session );                
+                logger.debug("Scanning the SMTP file: " + state.fileManager.getFileDisplayName());                
+                result = node.getScanner().scanFile(state.fileManager.getFileObject(), session);
             }
         } catch (Exception exn) {
             // Should never happen
@@ -262,12 +232,12 @@ class VirusFtpHandler extends FtpEventHandler
         }
 
         String fileName = (String) session.globalAttachment(NodeSession.KEY_FTP_FILE_NAME);
-        node.logEvent( new VirusFtpEvent( session.sessionEvent(), result.isClean(), result.getVirusName(), node.getName(), fileName ) );
+        node.logEvent(new VirusFtpEvent(session.sessionEvent(), result.isClean(), result.getVirusName(), node.getName(), fileName));
 
-        if ( result.isClean() ) {
+        if (result.isClean()) {
             node.incrementPassCount();
-            TokenStreamer tokSt = new FileChunkStreamer( state.diskFile, state.inChannel, null, EndMarkerToken.MARKER, true );
-            return new TokenStreamerAdaptor( tokSt, session );
+            TokenStreamer tokSt = new VirusChunkStreamer(state.fileManager, null, EndMarkerToken.MARKER, true);
+            return new TokenStreamerAdaptor(tokSt, session);
         } else {
             node.incrementBlockCount();
             session.shutdownClient();
@@ -275,43 +245,42 @@ class VirusFtpHandler extends FtpEventHandler
             return null;
         }
     }
-    
+
     @Override
-    public void handleTCPFinalized( NodeTCPSession session )
+    public void handleTCPFinalized(NodeTCPSession session)
     {
         session.cleanupTempFiles();
     }
 
-    private void createFile( NodeTCPSession session )
+    private void createFile(NodeTCPSession session)
     {
         VirusFtpState state = (VirusFtpState) session.attachment();
 
-        try {
-            state.diskFile = File.createTempFile("VirusFtpHandler-", null);
-            if (state.diskFile != null)
-                session.attachTempFile(state.diskFile.getAbsolutePath());
-            
-            state.inStream = new FileInputStream( state.diskFile );
-            state.inChannel = state.inStream.getChannel();
+        // start with the memory only flag in the settings
+        state.memoryMode = node.getSettings().getForceMemoryMode();
 
-            state.outStream = new FileOutputStream( state.diskFile );
-            state.outChannel = state.outStream.getChannel();
-            state.msgDigest = MessageDigest.getInstance("MD5");
-            state.msgStream = new DigestOutputStream(state.outStream, state.msgDigest);
-            state.msgChannel = Channels.newChannel(state.msgStream);
-        } catch (IOException ioe) {
-            throw new RuntimeException("could not create tmp file");
+        // if the file scanner is not installed we MUST use memory mode
+        if (node.isFileScannerAvailable() == false) {
+            state.memoryMode = true;
         }
-        catch (NoSuchAlgorithmException nsae) {
-            throw new RuntimeException("could not initialize message digest");
+
+        try {
+            state.fileManager = new VirusFileManager(state.memoryMode, "VirusFtpHandler-");
+            state.scan = true;
+            if (state.memoryMode == false) {
+                session.attachTempFile(state.fileManager.getTempFileAbsolutePath());
+            }
+        } catch (Exception exn) {
+            logger.warn("Unable to initialize file manager: ", exn);
         }
-        
+
         /**
-         * Obtain the sessionId of the control session that opened this data session
+         * Obtain the sessionId of the control session that opened this data
+         * session
          */
-        Long ctlSessionId = removeDataSocket( new InetSocketAddress( session.getServerAddr(), session.getServerPort() ) );
+        Long ctlSessionId = removeDataSocket(new InetSocketAddress(session.getServerAddr(), session.getServerPort()));
         if (ctlSessionId == null) {
-            ctlSessionId = removeDataSocket( new InetSocketAddress( session.getClientAddr(), session.getClientPort() ) );
+            ctlSessionId = removeDataSocket(new InetSocketAddress(session.getClientAddr(), session.getClientPort()));
         }
 
         /**
@@ -319,8 +288,7 @@ class VirusFtpHandler extends FtpEventHandler
          */
         if (ctlSessionId != null) {
             String fileName = removeFileName(ctlSessionId);
-            if (fileName != null)
-                session.globalAttach( NodeSession.KEY_FTP_FILE_NAME, fileName );
+            if (fileName != null) session.globalAttach(NodeSession.KEY_FTP_FILE_NAME, fileName);
         }
 
     }
@@ -338,29 +306,29 @@ class VirusFtpHandler extends FtpEventHandler
         return null;
     }
 
-    private boolean ignoredHost( InetAddress host )
+    private boolean ignoredHost(InetAddress host)
     {
-        if (host == null){
+        if (host == null) {
             return false;
         }
         Pattern p;
-        
+
         for (Iterator<GenericRule> i = node.getSettings().getPassSites().iterator(); i.hasNext();) {
             GenericRule sr = i.next();
-            if (sr.getEnabled() ){
+            if (sr.getEnabled()) {
                 p = (Pattern) sr.attachment();
-                if( null == p ){
-                    try{
-                        p = Pattern.compile( GlobUtil.globToRegex( sr.getString() ) );
-                    }catch( Exception error ){
-                        logger.error("Unable to compile passSite="+sr.getString());
-                    }                    
-                    sr.attach( p );
+                if (null == p) {
+                    try {
+                        p = Pattern.compile(GlobUtil.globToRegex(sr.getString()));
+                    } catch (Exception error) {
+                        logger.error("Unable to compile passSite=" + sr.getString());
+                    }
+                    sr.attach(p);
                 }
-                if( p.matcher( host.getHostName() ).matches() ){
+                if (p.matcher(host.getHostName()).matches()) {
                     return true;
                 }
-                if( p.matcher( host.getHostAddress() ).matches() ){
+                if (p.matcher(host.getHostAddress()).matches()) {
                     return true;
                 }
             }

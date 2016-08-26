@@ -3,21 +3,12 @@
  */
 package com.untangle.node.virus_blocker;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Iterator;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-import java.math.BigInteger;
 import java.net.InetAddress;
-import java.nio.channels.FileChannel;
-import java.nio.channels.WritableByteChannel;
-import java.security.MessageDigest;
-import java.security.DigestOutputStream;
-import java.security.NoSuchAlgorithmException;
 
 import javax.activation.DataHandler;
 import javax.mail.Part;
@@ -60,9 +51,10 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
 
     private final WrappedMessageGenerator generator;
 
-    protected class VirusSmtpStatus extends VirusBlockerState
+    protected class VirusSmtpState extends VirusBlockerState
     {
-        private File diskFile = null;
+        private VirusFileManager fileManager = null;
+        private boolean memoryMode = false;
     }
 
     public VirusSmtpHandler(VirusBlockerBaseApp node)
@@ -136,7 +128,7 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
         String actionTaken = "pass";
         String configuredAction = node.getSettings().getSmtpAction();
         String virusName = null;
-        
+
         for (Part part : candidateParts) {
             String disposition = null;
             String contentType = null;
@@ -144,11 +136,11 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
             try {
                 disposition = part.getDisposition();
                 contentType = part.getContentType();
-                shouldScan = shouldScan( disposition, contentType );
+                shouldScan = shouldScan(disposition, contentType);
             } catch (Exception e) {
-                logger.warn("Exception",e);
+                logger.warn("Exception", e);
             }
-            
+
             if (!shouldScan) {
                 logger.debug("Message[" + msgInfo.getMessageId() + "] Skip part: Disposition: " + disposition + " ContentType: " + contentType);
                 continue;
@@ -157,9 +149,7 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
             VirusScannerResult scanResult;
             if (ignoredHost(session.sessionEvent().getSServerAddr()) || ignoredHost(session.sessionEvent().getCClientAddr())) {
                 scanResult = VirusScannerResult.CLEAN;
-                logger.warn("Message[" + msgInfo.getMessageId() + "] Ignore SMTP: " +
-                            session.sessionEvent().getCClientAddr().getHostAddress() + " -> " +
-                            session.sessionEvent().getSServerAddr().getHostAddress());
+                logger.warn("Message[" + msgInfo.getMessageId() + "] Ignore SMTP: " + session.sessionEvent().getCClientAddr().getHostAddress() + " -> " + session.sessionEvent().getSServerAddr().getHostAddress());
             } else {
                 scanResult = scanPart(session, part);
             }
@@ -168,10 +158,8 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
                 logger.warn("Message[" + msgInfo.getMessageId() + "] Scanning returned null (error already reported).  Skip " + "part assuming local error");
                 continue;
             }
-            if (scanResult.isClean())
-                actionTaken = "pass";
-            else
-                actionTaken = configuredAction;
+            if (scanResult.isClean()) actionTaken = "pass";
+            else actionTaken = configuredAction;
 
             if (scanResult.isClean()) {
                 logger.debug("Message[" + msgInfo.getMessageId() + "] Clean part: Disposition: " + disposition + " ContentType: " + contentType);
@@ -183,7 +171,7 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
                 }
                 foundVirus = true;
                 virusName = scanResult.getVirusName();
-                
+
                 if ("pass".equals(actionTaken)) {
                     logger.debug("Message[" + msgInfo.getMessageId() + "] Passing infected part as-per policy");
                 } else if ("block".equals(actionTaken)) {
@@ -208,7 +196,7 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
 
         VirusSmtpEvent event = new VirusSmtpEvent(msgInfo, !foundVirus, virusName, actionTaken, this.node.getName());
         this.node.logEvent(event);
-        
+
         if (foundVirus) {
             if ("block".equals(configuredAction)) {
                 logger.debug("Message[" + msgInfo.getMessageId() + "] Returning BLOCK as-per policy");
@@ -223,7 +211,7 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
                 logger.debug("Message[" + msgInfo.getMessageId() + "] Passing infected message (as-per policy)");
                 this.node.incrementPassedInfectedMessageCount();
             }
-        } 
+        }
         this.node.incrementPassCount();
         return new ScannedMessageResult(BlockOrPassResult.PASS);
     }
@@ -251,7 +239,7 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
         boolean foundVirus = false;
         VirusScannerResult scanResultForWrap = null;
         String virusName = null;
-        
+
         for (Part part : candidateParts) {
             String disposition = null;
             String contentType = null;
@@ -259,16 +247,16 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
             try {
                 disposition = part.getDisposition();
                 contentType = part.getContentType();
-                shouldScan = shouldScan( disposition, contentType );
+                shouldScan = shouldScan(disposition, contentType);
             } catch (Exception e) {
-                logger.warn("Exception",e);
+                logger.warn("Exception", e);
             }
 
             if (shouldScan) {
                 try {
                     logger.debug("Message[" + msgInfo.getMessageId() + "] Skip part: Disposition: " + disposition + " ContentType: " + contentType);
                 } catch (Exception e) {
-                    logger.warn("Exception",e);
+                    logger.warn("Exception", e);
                 }
                 continue;
             }
@@ -276,9 +264,7 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
             VirusScannerResult scanResult;
             if (ignoredHost(session.sessionEvent().getSServerAddr()) || ignoredHost(session.sessionEvent().getCClientAddr())) {
                 scanResult = VirusScannerResult.CLEAN;
-                logger.warn("Message[" + msgInfo.getMessageId() + "] Ignore SMTP: " +
-                            session.sessionEvent().getCClientAddr().getHostAddress() + " -> " +
-                            session.sessionEvent().getSServerAddr().getHostAddress());
+                logger.warn("Message[" + msgInfo.getMessageId() + "] Ignore SMTP: " + session.sessionEvent().getCClientAddr().getHostAddress() + " -> " + session.sessionEvent().getSServerAddr().getHostAddress());
             } else {
                 scanResult = scanPart(session, part);
             }
@@ -359,63 +345,61 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
     private VirusScannerResult scanPart(NodeTCPSession session, Part part)
     {
         // Get the part as a file
-        VirusSmtpStatus status = null;
+        VirusSmtpState state = null;
         try {
-            status = partToFile(session, part);
-            session.attach(status);
+            state = partToFile(session, part);
+            session.attach(state);
         } catch (Exception ex) {
             logger.error("Exception writing MIME part to file", ex);
             return null;
         }
         // Call VirusScanner
         try {
-            VirusScannerResult result = this.node.getScanner().scanFile(status.diskFile, session);
+            logger.debug("Scanning the SMTP file: " + state.fileManager.getFileDisplayName());
+            VirusScannerResult result = this.node.getScanner().scanFile(state.fileManager.getFileObject(), session);
             if (result == null || result == VirusScannerResult.ERROR) {
                 logger.warn("Received an error scan report.  Assume local error" + " and report file clean");
                 return null;
             }
-            status.diskFile.delete();
+            state.fileManager.delete();
             return result;
         } catch (Exception ex) {
             try {
-                logger.error("Exception scanning MIME part in file \"" + status.diskFile.getAbsolutePath() + "\"", ex);
-                status.diskFile.delete();
+                logger.error("Exception scanning MIME part in file \"" + state.fileManager.getTempFileAbsolutePath() + "\"", ex);
+                state.fileManager.delete();
             } catch (Exception e) {
             }
             return null;
         }
     }
 
-    private VirusSmtpStatus partToFile(NodeTCPSession session, Part part)
+    private VirusSmtpState partToFile(NodeTCPSession session, Part part)
     {
-        VirusSmtpStatus status = new VirusSmtpStatus();
-        FileOutputStream fOut = null;
+        VirusSmtpState state = new VirusSmtpState();
+        state.memoryMode = node.getSettings().getForceMemoryMode();
+
         try {
-            status.diskFile = File.createTempFile("MimePart-", null);
-            if (status.diskFile != null) session.attachTempFile(status.diskFile.getAbsolutePath());
-            fOut = new FileOutputStream(status.diskFile);
-            MessageDigest msgDigest = MessageDigest.getInstance("MD5");
-            DigestOutputStream dOut = new DigestOutputStream(fOut, msgDigest);
-            MIMEOutputStream mimeOut = new MIMEOutputStream(dOut);
+            state.fileManager = new VirusFileManager(state.memoryMode, "VirusMimePart-");
+
+            if (state.memoryMode == false) {
+                session.attachTempFile(state.fileManager.getTempFileAbsolutePath());
+            }
+
+            MIMEOutputStream mimeOut = new MIMEOutputStream(state.fileManager);
             DataHandler dh = part.getDataHandler();
             dh.writeTo(mimeOut);
             mimeOut.flush();
-            dOut.flush();
-            fOut.flush();
-            
-            BigInteger val = new BigInteger(1, msgDigest.digest());
-            status.fileHash = String.format("%1$032x", val);
-            
-            fOut.close();
-
-            return status;
+            state.fileManager.flush();
+            state.fileHash = state.fileManager.getFileHash();
+            state.fileManager.close();
+            return state;
         } catch (Exception ex) {
             try {
-                fOut.close();
+                state.fileManager.close();
             } catch (Exception ignore) {
             }
             try {
-                status.diskFile.delete();
+                state.fileManager.delete();
             } catch (Exception ignore) {
             }
             logger.error("Exception writing MIME Message to file", ex);
@@ -456,11 +440,10 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
 
     private boolean shouldScan(String disposition, String contentType)
     {
-        if (disposition != null ) {
-            if (disposition.equalsIgnoreCase(HeaderNames.ATTACHMENT_DISPOSITION_STR))
-                return true;
+        if (disposition != null) {
+            if (disposition.equalsIgnoreCase(HeaderNames.ATTACHMENT_DISPOSITION_STR)) return true;
         }
-        if (contentType != null ) {
+        if (contentType != null) {
             contentType = contentType.toLowerCase();
             if (contentType.startsWith("text")) return false;
             if (contentType.startsWith("image")) return false;
@@ -468,5 +451,4 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
         }
         return false;
     }
-    
 }

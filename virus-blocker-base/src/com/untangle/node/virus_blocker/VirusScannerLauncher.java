@@ -22,14 +22,14 @@ abstract public class VirusScannerLauncher implements Runnable
 
     protected VirusScannerLauncher(File scanfile, NodeSession session)
     {
-        scanfilePath = scanfile.getAbsolutePath();
-	nodeSession = session;
+        if (scanfile != null) scanfilePath = scanfile.getAbsolutePath();
+        nodeSession = session;
     }
 
     /**
-     * Starts the scan and waits for timeout milliseconds for a result
-     * If a result is reached, it is returned.
-     * If the time expires VirusScannerResult.ERROR is returned
+     * Starts the scan and waits for timeout milliseconds for a result If a
+     * result is reached, it is returned. If the time expires
+     * VirusScannerResult.ERROR is returned
      */
     public VirusScannerResult doScan(long timeout)
     {
