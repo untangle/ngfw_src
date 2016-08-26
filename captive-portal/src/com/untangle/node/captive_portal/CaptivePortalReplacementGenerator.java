@@ -33,9 +33,9 @@ class CaptivePortalReplacementGenerator extends ReplacementGenerator<CaptivePort
 
 // THIS IS FOR ECLIPSE - @formatter:on
 
-    CaptivePortalReplacementGenerator(NodeSettings tid,CaptivePortalApp node)
+    CaptivePortalReplacementGenerator(NodeSettings nodeId,CaptivePortalApp node)
     {
-        super(tid);
+        super(nodeId);
         this.captureNode = node;
     }
 

@@ -267,7 +267,7 @@ public class WebFilterSSLEngine
         InetAddress host = UvmContextFactory.context().networkManager().getInterfaceHttpAddress(session.getClientIntf());
 
         vector += "HTTP/1.1 307 Temporary Redirect\r\n";
-        vector += "Location: http://" + host.getHostAddress().toString() + "/web-filter/blockpage?nonce=" + nonceStr + "&tid=" + nodeStr + "\r\n";
+        vector += "Location: http://" + host.getHostAddress().toString() + "/web-filter/blockpage?nonce=" + nonceStr + "&appid=" + nodeStr + "\r\n";
         vector += "Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0\r\n";
         vector += "Pragma: no-cache\r\n";
         vector += "Expires: Mon, 10 Jan 2000 00:00:00 GMT\r\n";
