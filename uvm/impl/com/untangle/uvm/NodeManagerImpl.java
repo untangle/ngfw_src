@@ -427,16 +427,21 @@ public class NodeManagerImpl implements NodeManager
         }
 
         /**
-         * SPECIAL CASE: If Web Filter is installed in this rack OR licensed for non-trial, hide Web Filter Lite
+         * SPECIAL CASE: Web Filter Lite is being deprecated - hide it
+         */
+        installableNodesMap.remove("Web Filter Lite"); /* hide web filter lite from left hand nav */
+
+        /**
+         * SPECIAL CASE: If Web Filter is installed in this rack OR licensed for non-trial, hide Web Monitor
          */
         List<Node> webFilterNodes = UvmContextFactory.context().nodeManager().nodeInstances( "untangle-node-web-filter", policyId );
         if (webFilterNodes != null && webFilterNodes.size() > 0) {
-            installableNodesMap.remove("Web Filter Lite"); /* hide web filter lite from left hand nav */
+            installableNodesMap.remove("Web Monitor"); /* hide web monitor from left hand nav */
         }
         if ( ! UvmContextFactory.context().isDevel() ) {
             License webFilterLicense = lm.getLicense(License.WEB_FILTER);
             if ( webFilterLicense != null && webFilterLicense.getValid() && !webFilterLicense.getTrial() ) {
-                installableNodesMap.remove("Web Filter Lite"); /* hide web filter lite from left hand nav */
+                installableNodesMap.remove("Web Monitor"); /* hide web monitor from left hand nav */
             }
         }
 
