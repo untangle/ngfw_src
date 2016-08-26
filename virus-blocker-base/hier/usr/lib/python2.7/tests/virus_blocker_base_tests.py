@@ -23,8 +23,8 @@ canRelay = True
 canRelayTLS = True
 testsite = "test.untangle.com"
 testsiteIP = socket.gethostbyname(testsite)
-tlsSmtpServerHost = '10.112.56.44' # Vcenter VM Debian-ATS-TLS 
-      
+tlsSmtpServerHost = '10.112.56.44' # Vcenter VM Debian-ATS-TLS
+
 def addPassSite(site, enabled=True, description="description"):
     newRule =  { "enabled": enabled, "description": description, "javaClass": "com.untangle.uvm.node.GenericRule", "string": site }
     rules = node.getPassSites()
@@ -94,8 +94,10 @@ class VirusBlockerBaseTests(unittest2.TestCase):
         result = remote_control.runCommand("wget -q -O /tmp/std_022_ftpVirusBlocked_file ftp://test.untangle.com/virus/fedexvirus.zip")
         assert (result == 0)
         md5StdNum = remote_control.runCommand("\"md5sum /tmp/std_022_ftpVirusBlocked_file | awk '{print $1}'\"", stdout=True)
+        self.md5StdNum = md5StdNum
         # print "md5StdNum <%s>" % md5StdNum
         assert (result == 0)
+
         try:
             canRelay = global_functions.sendTestmessage(mailhost=testsiteIP)
         except Exception,e:
@@ -104,16 +106,18 @@ class VirusBlockerBaseTests(unittest2.TestCase):
             canRelayTLS = global_functions.sendTestmessage(mailhost=tlsSmtpServerHost)
         except Exception,e:
             canRelayTLS = False
+
         if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
             raise unittest2.SkipTest('node %s already instantiated' % self.nodeName())
         node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
+        self.node = node
+
         if uvmContext.nodeManager().isInstantiated(self.nodeNameSSLInspector()):
             raise Exception('node %s already instantiated' % self.nodeNameSSLInspector())
         nodeSSL = uvmContext.nodeManager().instantiate(self.nodeNameSSLInspector(), defaultRackId)
         # nodeSSL.start() # leave node off. node doesn't auto-start
         nodeSSLData = nodeSSL.getSettings()
 
-        
     def setUp(self):
         pass
 
@@ -145,7 +149,7 @@ class VirusBlockerBaseTests(unittest2.TestCase):
 
         assert(pre_events_scan < post_events_scan)
         assert(pre_events_block < post_events_block)
-        
+
     # test that client can block virus http download zip
     def test_016_httpVirusBlocked(self):
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/virus/virus.exe 2>&1 | grep -q blocked")
@@ -188,7 +192,7 @@ class VirusBlockerBaseTests(unittest2.TestCase):
 
     # test that client can block virus ftp download zip
     def test_025_ftpVirusBlocked(self):
-        remote_control.runCommand("rm -f /tmp/temp_022_ftpVirusBlocked_file") 
+        remote_control.runCommand("rm -f /tmp/temp_022_ftpVirusBlocked_file")
         result = remote_control.runCommand("wget -q -O /tmp/temp_022_ftpVirusBlocked_file ftp://test.untangle.com/virus/fedexvirus.zip")
         assert (result == 0)
         md5TestNum = remote_control.runCommand("\"md5sum /tmp/temp_022_ftpVirusBlocked_file | awk '{print $1}'\"", stdout=True)
@@ -198,9 +202,9 @@ class VirusBlockerBaseTests(unittest2.TestCase):
         events = global_functions.get_events(self.displayName(),'Infected Ftp Events',None,1)
         assert(events != None)
         ftp_server_IP = socket.gethostbyname("test.untangle.com")
-        found = global_functions.check_events( events.get('list'), 5, 
-                                            "s_server_addr", ftp_server_IP, 
-                                            "c_client_addr", remote_control.clientIP, 
+        found = global_functions.check_events( events.get('list'), 5,
+                                            "s_server_addr", ftp_server_IP,
+                                            "c_client_addr", remote_control.clientIP,
                                             "uri", "fedexvirus.zip",
                                             self.shortName() + '_clean', False )
         assert( found )
@@ -209,7 +213,7 @@ class VirusBlockerBaseTests(unittest2.TestCase):
     def test_027_ftpVirusPassSite(self):
         ftp_server_IP = socket.gethostbyname("test.untangle.com")
         addPassSite(ftp_server_IP)
-        remote_control.runCommand("rm -f /tmp/temp_022_ftpVirusBlocked_file") 
+        remote_control.runCommand("rm -f /tmp/temp_022_ftpVirusBlocked_file")
         result = remote_control.runCommand("wget -q -O /tmp/temp_022_ftpVirusPassSite_file ftp://test.untangle.com/virus/fedexvirus.zip")
         assert (result == 0)
         md5TestNum = remote_control.runCommand("\"md5sum /tmp/temp_022_ftpVirusPassSite_file | awk '{print $1}'\"", stdout=True)
@@ -218,9 +222,9 @@ class VirusBlockerBaseTests(unittest2.TestCase):
 
         events = global_functions.get_events(self.displayName(),'Infected Ftp Events',None,1)
         assert(events != None)
-        found = global_functions.check_events( events.get('list'), 5, 
-                                            "s_server_addr", ftp_server_IP, 
-                                            "c_client_addr", remote_control.clientIP, 
+        found = global_functions.check_events( events.get('list'), 5,
+                                            "s_server_addr", ftp_server_IP,
+                                            "c_client_addr", remote_control.clientIP,
                                             "uri", "fedexvirus.zip",
                                             self.shortName() + '_clean', False )
         assert( found )
@@ -233,8 +237,8 @@ class VirusBlockerBaseTests(unittest2.TestCase):
 
         events = global_functions.get_events(self.displayName(),'Infected Web Events',None,1)
         assert(events != None)
-        found = global_functions.check_events( events.get('list'), 5, 
-                                            "host", "test.untangle.com", 
+        found = global_functions.check_events( events.get('list'), 5,
+                                            "host", "test.untangle.com",
                                             "uri", ("/virus/eicar.zip?arg=%s" % fname),
                                             self.shortName() + '_clean', False )
         assert( found )
@@ -246,8 +250,8 @@ class VirusBlockerBaseTests(unittest2.TestCase):
 
         events = global_functions.get_events(self.displayName(),'Clean Web Events',None,1)
         assert(events != None)
-        found = global_functions.check_events( events.get('list'), 5, 
-                                            "host", "test.untangle.com", 
+        found = global_functions.check_events( events.get('list'), 5,
+                                            "host", "test.untangle.com",
                                             "uri", ("/test/test.zip?arg=%s" % fname),
                                             self.shortName() + '_clean', True )
         assert( found )
@@ -259,7 +263,7 @@ class VirusBlockerBaseTests(unittest2.TestCase):
 
         events = global_functions.get_events(self.displayName(),'Infected Ftp Events',None,1)
         assert(events != None)
-        found = global_functions.check_events( events.get('list'), 5, 
+        found = global_functions.check_events( events.get('list'), 5,
                                             "uri", "fedexvirus.zip",
                                             self.shortName() + '_clean', False )
         assert( found )
@@ -271,7 +275,7 @@ class VirusBlockerBaseTests(unittest2.TestCase):
 
         events = global_functions.get_events(self.displayName(),'Clean Ftp Events',None,1)
         assert(events != None)
-        found = global_functions.check_events( events.get('list'), 5, 
+        found = global_functions.check_events( events.get('list'), 5,
                                             "uri", "test.zip",
                                             self.shortName() + '_clean', True )
         assert( found )
@@ -293,8 +297,8 @@ class VirusBlockerBaseTests(unittest2.TestCase):
         events = global_functions.get_events(self.displayName(),'Infected Email Events',None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
-                                            "addr", "junk@test.untangle.com", 
-                                            "subject", str(fname), 
+                                            "addr", "junk@test.untangle.com",
+                                            "subject", str(fname),
                                             self.shortName() + '_clean', False,
                                             min_date=startTime )
         assert( found )
@@ -318,9 +322,9 @@ class VirusBlockerBaseTests(unittest2.TestCase):
 
         events = global_functions.get_events(self.displayName(),'Clean Email Events',None,1)
         assert(events != None)
-        found = global_functions.check_events( events.get('list'), 5, 
-                                            "addr", "junk@test.untangle.com", 
-                                            "subject", str(fname), 
+        found = global_functions.check_events( events.get('list'), 5,
+                                            "addr", "junk@test.untangle.com",
+                                            "subject", str(fname),
                                             self.shortName() + '_clean', True,
                                             min_date=startTime )
         assert( found )
@@ -345,9 +349,9 @@ class VirusBlockerBaseTests(unittest2.TestCase):
 
         events = global_functions.get_events(self.displayName(),'Clean Email Events',None,1)
         assert(events != None)
-        found = global_functions.check_events( events.get('list'), 5, 
-                                            "addr", "junk@test.untangle.com", 
-                                            "subject", str(fname), 
+        found = global_functions.check_events( events.get('list'), 5,
+                                            "addr", "junk@test.untangle.com",
+                                            "subject", str(fname),
                                             self.shortName() + '_clean', True,
                                             min_date=startTime )
         assert( found )
@@ -377,8 +381,8 @@ class VirusBlockerBaseTests(unittest2.TestCase):
         # print events['list'][0]
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
-                                            "addr", "junk@test.untangle.com", 
-                                            "subject", str(fname), 
+                                            "addr", "junk@test.untangle.com",
+                                            "subject", str(fname),
                                             's_server_addr', tlsSmtpServerHost,
                                             self.shortName() + '_clean', False,
                                             min_date=startTime)

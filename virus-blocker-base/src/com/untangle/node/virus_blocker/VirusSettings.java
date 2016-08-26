@@ -31,6 +31,13 @@ public class VirusSettings implements Serializable
     private List<GenericRule> httpFileExtensions = new LinkedList<GenericRule>();
     private List<GenericRule> passSites = new LinkedList<GenericRule>();
 
+    /*
+     * On systems where we can't write to temp files we operate in a mode
+     * where we calculate the MD5 and only use the cloud scanner.  This
+     * flag allows that mode to manually be enabled and tested.
+     */
+    private boolean forceMemoryMode = false;
+
     // constructors -----------------------------------------------------------
 
     public VirusSettings() { }
@@ -61,6 +68,8 @@ public class VirusSettings implements Serializable
     public List<GenericRule> getHttpFileExtensions() { return httpFileExtensions; }
     public void setHttpFileExtensions(List<GenericRule> httpFileExtensions) { this.httpFileExtensions = httpFileExtensions; }
 
+    public boolean getForceMemoryMode() { return forceMemoryMode; }
+    public void setForceMemoryMode(boolean newValue ) { this.forceMemoryMode = newValue; }
 
     public String toJSONString()
     {
