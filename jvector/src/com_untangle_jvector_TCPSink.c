@@ -135,29 +135,24 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_TCPSink_splice
     int src_fd = src->key->data.fd;
     int result;
 
+    int pipe_flags = O_NONBLOCK;
+    int splice_flags = SPLICE_F_NONBLOCK;
+    int max_write = 8192;
+    
     /**
-     * OK, splice seems to cause weird issues and it has no measurable benefit.
-     * It seems to work great, however when running in bridge mode it causes weird
-     * delays is some applications.
-     * We have now had reports that it also causes issues in some cases in router mode.
-     * As such, I'm not sure where the ultimate problem lives.
-     * Clearly using splice() is somewhat buggy/dangerous.
-     * 
-     * This behavior was replicated using an old XD unit in bridge mode.
-     * >50% of the time there is a long delay when connecting to a remote machine.
-     * 
-     * Bug #11885
+     * Splice warning.
+     * Splice is experimental. It seems to cause "weird" issues.
+     * Inconsistent performance, indefinitely blocking, etc.
      *
-     * 2016-08-20 - this does not seem to be an issue on the newer kernel
+     * There are several variable in how it performs:
+     * 1) Is the pipe non-blocking?
+     * 2) Is the destination socket non-blocking?
+     * 3) The size of the write (max_write)
      */
     // errlog( ERR_CRITICAL, "splice() usage is dangerous.\n" );
     
     if ( snk->pipefd[0] == 0 ) {
-        /**
-         * XXX - its not clear if the pipes themselves should be non-blocking
-         */
-        //result = pipe2( snk->pipefd, O_NONBLOCK );
-        result = pipe2( snk->pipefd, 0 );
+        result = pipe2( snk->pipefd, pipe_flags );
         if ( result < 0 ) {
             perrlog("pipe");
             if ( snk->pipefd[0] > 0 ) {
@@ -175,8 +170,7 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_TCPSink_splice
     /**
      * write to the pipe
      */
-    int max_write = 8192;
-    int num_bytes = splice( src_fd, NULL, snk->pipefd[1], NULL, max_write, SPLICE_F_NONBLOCK );
+    int num_bytes = splice( src_fd, NULL, snk->pipefd[1], NULL, max_write, splice_flags );
 
     if ( num_bytes < 0 ) {
         if ( errno == EAGAIN ) {
@@ -192,8 +186,12 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_TCPSink_splice
     }
 
     int bytes_remaining = num_bytes;
+
+    // temporarily set the socket to blocking
+    unet_blocking_enable( snk_fd );
+
     while ( bytes_remaining > 0 ) {
-        result = splice( snk->pipefd[0], NULL, snk_fd, NULL, bytes_remaining, SPLICE_F_NONBLOCK );
+        result = splice( snk->pipefd[0], NULL, snk_fd, NULL, bytes_remaining, splice_flags );
 
         if ( result < 0 ) {
             switch ( errno ) {
@@ -202,19 +200,31 @@ JNIEXPORT jint JNICALL Java_com_untangle_jvector_TCPSink_splice
                 usleep(1000000);
                 continue;
             case ECONNRESET:
+                //errlog( ERR_WARNING, "TCPSink: fd %d reset\n", snk_fd );
                 debug( 5, "TCPSink: fd %d reset\n", snk_fd );
-                return -1;
+                bytes_remaining = 0;
+                num_bytes = -1;
+                break;
             case EPIPE:
+                //errlog( ERR_WARNING, "TCPSink: Broken pipe fd %d, resetting\n", snk_fd );
                 debug( 5, "TCPSink: Broken pipe fd %d, resetting\n", snk_fd );
-                return -1;
+                bytes_remaining = 0;
+                num_bytes = -1;
+                break;
             default:
-                return errlog(ERR_WARNING,"TCPSink: splice(pipe: %i, tcp: %i, remaining: %i): %s\n", snk->pipefd[0], snk_fd, bytes_remaining, strerror(errno));
+                errlog(ERR_WARNING,"TCPSink: splice(pipe: %i, tcp: %i, remaining: %i): %s\n", snk->pipefd[0], snk_fd, bytes_remaining, strerror(errno));
+                bytes_remaining = 0;
+                num_bytes = -1;
+                break;
             }
+        } else {
+            bytes_remaining -= result;
         }
-
-        bytes_remaining -= result;
     }
 
+    // set socket back to non-blocking
+    unet_blocking_disable( snk_fd );
+    
     return num_bytes;
 }
 
