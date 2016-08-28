@@ -688,7 +688,30 @@ public class HostTableImpl implements HostTable
                         InetAddress address = entry.getAddress();
                         if ( address == null )
                             continue;
+                        String addressStr = address.getHostAddress();
 
+                        /**
+                         * Check if the MAC address for this host has changed
+                         * If so, delete it from the host table so all state will be cleared.
+                         */
+                        try {
+                            String macAddress1 = entry.getMacAddress();
+                            if ( macAddress1 != null && !"".equals(macAddress1) ) {
+                                String macAddress2 = UvmContextFactory.context().netcapManager().arpLookup( addressStr );
+                                if ( ! macAddress1.equals(macAddress2) ) {
+                                    logger.warn("Host " + addressStr + " changed MAC address " + macAddress1 + " -> " + macAddress2 + ". Deleting host entry...");
+
+                                    HostTableEvent event = new HostTableEvent( address, "remove", null );
+                                    UvmContextFactory.context().logEvent(event);
+
+                                    hostTable.remove( address );
+                                    continue;
+                                }
+                            }
+                        } catch (Exception e) {
+                            logger.warn("Exception",e);
+                        }
+                        
                         /**
                          * Check penalty box expiration
                          * Remove from penalty box if expired
@@ -746,6 +769,7 @@ public class HostTableImpl implements HostTable
                                 UvmContextFactory.context().logEvent(event);
 
                                 hostTable.remove(address);
+                                continue;
                             }
                         }
                     }
