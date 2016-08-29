@@ -954,6 +954,7 @@ Ext.define('Ung.setupWizard.Internet', {
 
         wanSettings.v4ConfigType = 'PPPOE';
         wanSettings.v4NatEgressTraffic = true;
+        wanSettings.v4PPPoEUsePeerDns = true;
         wanSettings.v4PPPoEUsername = this.pppoePanel.down('field[name="username"]').getValue();
         wanSettings.v4PPPoEPassword = this.pppoePanel.down('field[name="password"]').getValue();
 
@@ -1138,6 +1139,8 @@ Ext.define('Ung.setupWizard.Internet', {
                 }
             }
             this.updateValue(this.card.panel.down('combo[name="v4ConfigType"]'), firstWan.v4ConfigType);
+            this.updateValue(this.card.panel.down('field[name="username"]'), firstWan.v4PPPoEUsername);
+            this.updateValue(this.card.panel.down('field[name="password"]'), firstWan.v4PPPoEPassword);
 
             for (c = 0; c < this.cards.length; c += 1) {
                 card = this.cards[c];
