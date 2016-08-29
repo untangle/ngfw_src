@@ -196,12 +196,13 @@ Ext.define('Webui.untangle-node-policy-manager.settings', {
             dataProperty:'rules',
             recordJavaClass: "com.untangle.node.policy_manager.PolicyRule",
             emptyRow: {
+                "ruleId": -1,
                 "enabled": true,
                 "targetPolicy": 1,
                 "description": ""
             },
             fields: [{
-                name: 'internalId'
+                name: 'ruleId'
             }, {
                 name: 'enabled'
             }, {
@@ -215,7 +216,7 @@ Ext.define('Webui.untangle-node-policy-manager.settings', {
             }],
             columns: [{
                 header: i18n._("Rule ID"),
-                dataIndex: 'internalId',
+                dataIndex: 'ruleId',
                 width: 50,
                 renderer: function(value) {
                     if (value < 0) {

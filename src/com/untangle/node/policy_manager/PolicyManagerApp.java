@@ -43,9 +43,54 @@ public class PolicyManagerApp extends NodeBase implements com.untangle.uvm.node.
         return this.settings;
     }
 
-    public void setSettings( PolicyManagerSettings settings )
+    public void setSettings( PolicyManagerSettings newSettings )
     {
-        this._setSettings(settings);
+        /**
+         * Set null IDs for new Policies
+         */
+        for( PolicySettings policy : newSettings.getPolicies()) 
+            if (policy.getPolicyId() == null) 
+                policy.setPolicyId(newSettings.nextAvailablePolicyId());
+
+        int idx = 0;
+        for( PolicyRule policyRule : newSettings.getRules()) 
+            policyRule.setRuleId( ++idx );
+        
+        /**
+         * Update nextPolicyId
+         * This is necessary in case they imported a bunch of policy
+         * that already have policyIds
+         */
+        updateNextPolicyIDIfNecessary( newSettings );
+        
+        /**
+         * sanity check settings
+         */
+        sanityCheck( newSettings );
+        
+        /**
+         * Save the settings
+         */
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+        String nodeID = this.getNodeSettings().getId().toString();
+        try {
+            settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "untangle-node-policy-manager/" + "settings_"  + nodeID + ".js", newSettings );
+        } catch (SettingsManager.SettingsException e) {
+            logger.warn("Failed to save settings.",e);
+            return;
+        }
+
+        /**
+         * Change current settings
+         */
+        this.settings = newSettings;
+        try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
+
+
+        /**
+         * Clear the cache in the pipeline foundry in case of changes to policy rules
+         */
+        UvmContextFactory.context().pipelineFoundry().clearCache();
     }
 
     public String getPolicyName( Integer policyId )
@@ -81,7 +126,7 @@ public class PolicyManagerApp extends NodeBase implements com.untangle.uvm.node.
                              clientIntf, serverIntf,
                              clientAddr, serverAddr,
                              clientPort, serverPort)) {
-                return new PolicyManagerResult(rule.getTargetPolicy(),rule.getId());
+                return new PolicyManagerResult(rule.getTargetPolicy(),rule.getRuleId());
             }
 
         }
@@ -248,52 +293,6 @@ public class PolicyManagerApp extends NodeBase implements com.untangle.uvm.node.
         return null;
     }
 
-    private void _setSettings( PolicyManagerSettings newSettings )
-    {
-        /**
-         * Set null IDs for new Policies
-         */
-        for( PolicySettings policy : newSettings.getPolicies()) 
-            if (policy.getPolicyId() == null) 
-                policy.setPolicyId(newSettings.nextAvailablePolicyId());
-
-        /**
-         * Update nextPolicyId
-         * This is necessary in case they imported a bunch of policy
-         * that already have policyIds
-         */
-        updateNextPolicyIDIfNecessary( newSettings );
-        
-        /**
-         * sanity check settings
-         */
-        sanityCheck( newSettings );
-        
-        /**
-         * Save the settings
-         */
-        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeSettings().getId().toString();
-        try {
-            settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "untangle-node-policy-manager/" + "settings_"  + nodeID + ".js", newSettings );
-        } catch (SettingsManager.SettingsException e) {
-            logger.warn("Failed to save settings.",e);
-            return;
-        }
-
-        /**
-         * Change current settings
-         */
-        this.settings = newSettings;
-        try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
-
-
-        /**
-         * Clear the cache in the pipeline foundry in case of changes to policy rules
-         */
-        UvmContextFactory.context().pipelineFoundry().clearCache();
-    }
-    
     private void sanityCheck( PolicyManagerSettings settings )
     {
         if (settings == null)

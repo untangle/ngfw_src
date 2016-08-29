@@ -58,7 +58,7 @@ def createPolicySingleConditionRule( conditionType, value, targetPolicy, blocked
     valueStr = str(value)
     return {
         "javaClass": "com.untangle.node.policy_manager.PolicyRule", 
-        "id": 1, 
+        "ruleId": 1, 
         "enabled": True, 
         "description": "Single Matcher: " + conditionTypeStr + " = " + valueStr, 
         "targetPolicy" : targetPolicy,

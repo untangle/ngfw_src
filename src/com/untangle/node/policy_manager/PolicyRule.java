@@ -27,7 +27,7 @@ public class PolicyRule implements JSONString, Serializable
 
     private List<PolicyRuleCondition> conditions;
 
-    private Integer id;
+    private Integer ruleId;
     private Boolean enabled;
     private String description;
     private Integer targetPolicy;
@@ -47,8 +47,8 @@ public class PolicyRule implements JSONString, Serializable
     public List<PolicyRuleCondition> getConditions() { return this.conditions; }
     public void setConditions( List<PolicyRuleCondition> conditions ) { this.conditions = conditions; }
 
-    public Integer getId() { return this.id; }
-    public void setId(Integer id) { this.id = id; }
+    public Integer getRuleId() { return this.ruleId; }
+    public void setRuleId( Integer newValue ) { this.ruleId = newValue; }
     
     public Boolean getEnabled() { return enabled; }
     public void setEnabled( Boolean enabled ) { this.enabled = enabled; }
