@@ -46,7 +46,7 @@ function imgLoadFailure(isRequired) {
     var newLink = document.createElement('a');
     var linkText = document.createTextNode("Click this link to download the root certificate Windows installer.");
     newLink.appendChild(linkText);
-    newLink.href = '/UntangleRootCAInstaller.exe';
+    newLink.href = '/RootCAInstaller.exe';
     newLink.title ="Download server root CA certificate installer";
     newParagraph.appendChild(newLink);
     cont.parentElement.appendChild(newParagraph);
