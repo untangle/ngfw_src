@@ -133,7 +133,7 @@ public class ResultSetReader implements Runnable
         }
     }
     
-    public void closeConnection()
+    public synchronized void closeConnection()
     {
         if ( this.statement != null ) {
             try { this.statement.close(); } catch (Exception e) {
