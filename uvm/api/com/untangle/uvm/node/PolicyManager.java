@@ -44,13 +44,13 @@ public interface PolicyManager
     
     public class PolicyManagerResult
     {
+        public Integer policyId;
+        public Integer policyRuleId;
+
         public PolicyManagerResult( Integer policyId, Integer policyRuleId )
         {
             this.policyId = policyId;
             this.policyRuleId = policyRuleId;
         }
-        
-        public Integer policyId;
-        public Integer policyRuleId;
     }
 }
