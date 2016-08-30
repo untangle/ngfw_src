@@ -1,0 +1,74 @@
+#!/usr/bin/python
+
+# Under iptables, nat, read upnp-rules chain
+# return Json output for UI
+
+# iptables -t nat -L upnp-rules -nv
+
+import json
+import re
+import subprocess
+import sys
+
+UNTANGLE_DIR = '%s/usr/lib/python%d.%d' % ( "@PREFIX@", sys.version_info[0], sys.version_info[1] )
+if ( "@PREFIX@" != ''):
+    sys.path.insert(0, UNTANGLE_DIR)
+
+class Iptables:
+
+    regex_chain_prefix = re.compile(r'^Chain ([^w]+)')
+#    regex_split = re.compile()
+
+    def __init__(self, table, chain):
+    	self.table = table
+    	self.chain = chain
+    	self.parse()
+
+    def parse(self):
+        """
+        Parse iptables chain into hash
+        """
+        self.data = {
+        	"active": []
+        }
+        process = subprocess.Popen("/sbin/iptables -t " + self.table + " -L " + self.chain + " -nv", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        (process_stdout, process_stderror) = process.communicate()
+        headers = []
+        for entry in process_stdout.splitlines():
+            if re.match(self.regex_chain_prefix, entry):
+                continue
+            entry_values = entry.split()
+            if len(headers) == 0:
+                headers = entry_values
+                # Extra DNAT options
+                headers.append("upnp_protocol")
+                headers.append("upnp_destination_port")
+                headers.append("upnp_client_ip_address")
+                headers.append("upnp_client_port")
+                continue
+            for index, value in enumerate(entry_values):
+                if ":" in value:
+                	# Break down dnat values
+                    entry_values[index] = value[value.find(":")+1:]
+                    if ":" in entry_values[index]:
+                    	# Break down client
+                        value = entry_values[index]
+                        port = value[value.find(":"):]
+                        entry_values[index] = value[:value.find(":"):]
+                        entry_values.append(port)
+            self.data["active"].append(dict(zip(headers, entry_values)))
+
+    def get_json(self):
+        return self.data
+
+
+def main(argv):
+    """
+    Main loop
+    """
+
+    iptables = Iptables("nat", "upnp-rules")
+    print iptables.get_json()
+
+if __name__ == "__main__":
+    main(sys.argv[1:])

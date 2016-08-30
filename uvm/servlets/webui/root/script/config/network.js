@@ -4928,6 +4928,72 @@ Ext.define('Webui.config.network', {
             }]
         });
 
+        this.gridUPnpStatus = Ext.create('Ext.grid.Panel', {
+            name: 'UPnP Status',
+            margin: '5 0 0 0',
+            height: 160,
+            settingsCmp: this,
+            hasAdd: false,
+            hasDelete: false,
+            hasEdit: false,
+            columnsDefaultSortable: false,
+            store: Ext.create('Ext.data.Store',{
+                fields: [
+                    'upnp_protocol',
+                    'upnp_client_ip_address',
+                    'upnp_client_port',
+                    'upnp_destination_port',
+                    'bytes'
+                ],
+                data: []
+            }),
+            forceFit: true,
+            autoExpandColumn: 'bytes',
+            columns: [{
+                header: i18n._("Protocol"),
+                width: 80,
+                dataIndex: 'upnp_protocol'
+            }, {
+                header: i18n._("Client IP Address"),
+                width: 150,
+                dataIndex: 'upnp_client_ip_address'
+            }, {
+                header: i18n._("Client Port"),
+                width: 150,
+                dataIndex: 'upnp_client_port'
+            }, {
+                header: i18n._("Destination Port"),
+                width: 150,
+                dataIndex: 'upnp_destination_port'
+            }, {
+                header: i18n._("Bytes"),
+                dataIndex: 'bytes',
+                width: 180,
+                renderer: Ext.bind(function( value, metadata, record ) {
+                    if (Ext.isEmpty(value)) {
+                        return i18n._("Not set");
+                    } else {
+                        value = value / 1000;
+                        var mbit_value = value/1000;
+                        return Number(value).toFixed(2) + " kbps" + " (" + Number(mbit_value).toFixed(2) + " Mbit" + ")";
+                    }
+                }, this )
+            }],
+            bbar: [{
+                xtype: 'button',
+                text: '<i class="material-icons" style="font-size: 20px;">refresh</i> <span style="vertical-align: middle;">' + i18n._("Refresh") + '</span>',
+                handler: function(button) {
+                    button.up('panel').updateStatus();
+                }
+            }],
+            updateStatus: function(){
+                Ung.Main.getNetworkManager().getUpnpStatus(Ext.bind(function(status, exception){
+                    if(Ung.Util.handleException(exception)) return;
+                    this.getStore().loadData(Ext.decode(status)["active"]);
+                }, this));
+            }
+        });
+
         this.panelUPnP = Ext.create('Ext.panel.Panel',{
             name: 'UPnP',
             helpSource: 'network_upnp',
@@ -4951,6 +5017,15 @@ Ext.define('Webui.config.network', {
                             }, this)
                         }
                     }
+                }, {
+                    xtype: 'fieldset',
+                    name: 'upnp_status_fieldset',
+                    title: i18n._('Status'),
+                    items: [{
+                        xtype: 'component',
+                        name: 'upnpStatusLabel',
+                        html: ' '
+                    }, this.gridUPnpStatus]
                 },{
                     xtype: "checkbox",
                     fieldLabel: i18n._("Secure Mode"),
@@ -4993,10 +5068,7 @@ Ext.define('Webui.config.network', {
                 }, {
                     xtype: 'fieldset',
                     title: i18n._('Access Control List'),
-                    items: [{
-                        // xtype: 'label',
-                        // html: Ext.String.format(i18n._("{0}Note{1}: Custom Rules only match <b>Bypassed</b> traffic."),'<font color="red">','</font>')
-                    },
+                    items: [
                     this.gridUpnpRules
                     ]
                 }]
@@ -5038,6 +5110,8 @@ Ext.define('Webui.config.network', {
                 }]
             }]
         }));
+        // !!! only do when tab is selected
+        this.gridUPnpStatus.updateStatus();
     },
     // NetworkCards Panel
     buildNetworkCards: function() {
