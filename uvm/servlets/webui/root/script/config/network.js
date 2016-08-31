@@ -5037,34 +5037,6 @@ Ext.define('Webui.config.network', {
                             }, this)
                         }
                     }
-                },{
-                    xtype: 'numberfield',
-                    fieldLabel: i18n._("Minimum Lifetime (seconds)"),
-                    value: this.settings.upnpSettings.minimumLifetime,
-                    allowBlank : false,
-                    allowDecimals: false,
-                    minValue: 0,
-                    listeners: {
-                        "change": {
-                            fn: Ext.bind(function(elem, newValue) {
-                                this.settings.upnpSettings.minimumLifetime = newValue;
-                            }, this)
-                        }
-                    }
-                },{
-                    xtype: 'numberfield',
-                    fieldLabel: i18n._("Maximum Lifetime (seconds)"),
-                    value: this.settings.upnpSettings.maximumLifetime,
-                    allowBlank : false,
-                    allowDecimals: false,
-                    minValue: 0,
-                    listeners: {
-                        "change": {
-                            fn: Ext.bind(function(elem, newValue) {
-                                this.settings.upnpSettings.maximumLifetime = newValue;
-                            }, this)
-                        }
-                    }
                 }, {
                     xtype: 'fieldset',
                     title: i18n._('Access Control List'),
