@@ -1502,8 +1502,6 @@ public class NetworkManagerImpl implements NetworkManager
         UpnpSettings upnpSettings = new UpnpSettings();
 
         upnpSettings.setUpnpEnabled( false );
-        upnpSettings.setMinimumLifetime( 120 );
-        upnpSettings.setMaximumLifetime( 86400 );
         upnpSettings.setSecureMode( true );
 
         List<UpnpRule> upnpRules = new LinkedList<UpnpRule>();

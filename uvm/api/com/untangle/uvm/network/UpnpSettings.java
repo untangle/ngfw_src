@@ -18,8 +18,6 @@ import org.json.JSONString;
 public class UpnpSettings implements Serializable, JSONString
 {
     private boolean upnpEnabled = false;
-    private int minimumLifetime = 120;
-    private int maximumLifetime = 86400;
     private boolean secureMode = true;
     private int listenPort = 5000;
     
@@ -27,12 +25,6 @@ public class UpnpSettings implements Serializable, JSONString
 
     public boolean getUpnpEnabled() { return this.upnpEnabled; }
     public void setUpnpEnabled( boolean newValue ) { this.upnpEnabled = newValue; }
-
-    public int getMinimumLifetime() { return this.minimumLifetime; }
-    public void setMinimumLifetime( int newValue ) { this.minimumLifetime = newValue; }
-
-    public int getMaximumLifetime() { return this.maximumLifetime; }
-    public void setMaximumLifetime( int newValue ) { this.maximumLifetime = newValue; }
 
     public boolean getSecureMode() { return this.secureMode; }
     public void setSecureMode( boolean newValue ) { this.secureMode = newValue; }
