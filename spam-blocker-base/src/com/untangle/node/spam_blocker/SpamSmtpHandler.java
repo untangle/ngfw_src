@@ -42,6 +42,7 @@ import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
+import com.untangle.uvm.network.InterfaceSettings;
 
 /**
  * Protocol Handler which is called-back as scannable messages are encountered.
@@ -171,7 +172,9 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
     {
         logger.debug("blockPassOrModify()");
 
-        boolean isWanBound = UvmContextFactory.context().networkManager().findInterfaceId(session.getServerIntf()).getIsWan();
+        InterfaceSettings iset = UvmContextFactory.context().networkManager().findInterfaceId(session.getServerIntf());
+        boolean isWanBound = false;
+        if (iset != null) isWanBound = iset.getIsWan();
 
         if (safelist.isSafelisted(tx.getFrom(), getFromNoEx(msg), tx.getRecipients(false))) {
             logger.debug("Message sender safelisted");
@@ -354,7 +357,8 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
         // Anything going out External MARK instead of QUARANTINE
         boolean isWanBound = false;
         try {
-            isWanBound = UvmContextFactory.context().networkManager().findInterfaceId(session.getServerIntf()).getIsWan();
+            InterfaceSettings iset = UvmContextFactory.context().networkManager().findInterfaceId(session.getServerIntf());
+            if (iset != null) isWanBound = iset.getIsWan();
         } catch (Exception e) {
             logger.warn("Unable to lookup destination interface", e);
         }
