@@ -27,6 +27,7 @@ import java.nio.ByteBuffer;
 import java.io.FileInputStream;
 import java.io.File;
 
+import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.CertificateManager;
 import com.untangle.uvm.UvmContextFactory;
@@ -165,7 +166,10 @@ class SslInspectorManager
     public void initializeClientEngine(X509Certificate baseCert) throws Exception
     {
         String mailCertFile = CertificateManager.CERT_STORE_PATH + UvmContextFactory.context().systemManager().getSettings().getMailCertificate().replaceAll("\\.pem", "\\.pfx");
-        boolean isInbound = UvmContextFactory.context().networkManager().findInterfaceId(session.getClientIntf()).getIsWan();
+        InterfaceSettings intfSettings = UvmContextFactory.context().networkManager().findInterfaceId(session.getClientIntf());
+
+        boolean isInbound = false;
+        if (intfSettings != null) isInbound = intfSettings.getIsWan();
         KeyStore keyStore = null;
 
         // for inbound SMTP we use the certificate assigned for scanning STARTTLS traffic
