@@ -349,7 +349,13 @@ public class AlertManagerImpl implements AlertManager
                     logger.warn("Invalid brctl showstp line: \"" + line + "\"");
                     break;
                 }
-                Integer key = Integer.parseInt(subline[1]);
+                Integer key;
+                try {
+                    key = Integer.parseInt(subline[1]);
+                } catch (Exception e) {
+                    logger.warn("Invalid output: " + subline[1]);
+                    continue;
+                }
                 String systemName = subline[0];
                 logger.debug("testBridgeBackwards: Map: " + key + " -> " + systemName);
                 bridgeIdToSystemNameMap.put(key, systemName);
