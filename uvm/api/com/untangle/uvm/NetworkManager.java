@@ -55,5 +55,5 @@ public interface NetworkManager
 
     List<Integer> getWirelessChannels( String systemDev );
 
-    String getUpnpStatus();
+    String getUpnpManager(String command, String arguments);
 }

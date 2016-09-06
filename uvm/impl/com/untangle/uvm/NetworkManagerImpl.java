@@ -67,7 +67,7 @@ public class NetworkManagerImpl implements NetworkManager
     
     private final String updateRulesScript = System.getProperty("uvm.bin.dir") + "/ut-uvm-update-rules.sh";
     private final String deviceStatusScript = System.getProperty("uvm.bin.dir") + "/ut-uvm-device-status.sh";
-    private final String upnpStatusScript = System.getProperty("uvm.bin.dir") + "/ut-upnp-status";
+    private final String upnpManagerScript = System.getProperty("uvm.bin.dir") + "/ut-upnp-manager";
 
     private final String settingsFilename = System.getProperty("uvm.settings.dir") + "/untangle-vm/" + "network.js";
     private final String settingsFilenameBackup = "/etc/untangle-netd/network.js";
@@ -2160,10 +2160,9 @@ public class NetworkManagerImpl implements NetworkManager
 	return channels;
     }
 
-    public String getUpnpStatus()
+    public String getUpnpManager(String command, String arguments)
     {
-        logger.debug("getUpnpStatus()");
-        return UvmContextFactory.context().execManager().execOutput(upnpStatusScript);
+        return UvmContextFactory.context().execManager().execOutput(upnpManagerScript + " " + command + " " + arguments);
     }
 
     /**
