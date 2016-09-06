@@ -5,6 +5,7 @@
 
 # iptables -t nat -L upnp-rules -nv
 
+import getopt
 import json
 import re
 import subprocess
@@ -17,7 +18,7 @@ if ( "@PREFIX@" != ''):
 class Iptables:
 
     regex_chain_prefix = re.compile(r'^Chain ([^w]+)')
-#    regex_split = re.compile()
+    iptables_command = "/sbin/iptables"
 
     def __init__(self, table, chain):
     	self.table = table
@@ -31,7 +32,7 @@ class Iptables:
         self.data = {
         	"active": []
         }
-        process = subprocess.Popen("/sbin/iptables -t " + self.table + " -L " + self.chain + " -nv", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        process = subprocess.Popen(self.iptables_command + " -t " + self.table + " -L " + self.chain + " -nv --line-numbers", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         (process_stdout, process_stderror) = process.communicate()
         headers = []
         for entry in process_stdout.splitlines():
@@ -41,11 +42,13 @@ class Iptables:
             if len(headers) == 0:
                 headers = entry_values
                 # Extra DNAT options
+                headers.insert(0, "internalId")
                 headers.append("upnp_protocol")
                 headers.append("upnp_destination_port")
                 headers.append("upnp_client_ip_address")
                 headers.append("upnp_client_port")
                 continue
+
             for index, value in enumerate(entry_values):
                 if ":" in value:
                 	# Break down dnat values
@@ -56,11 +59,44 @@ class Iptables:
                         port = value[value.find(":"):]
                         entry_values[index] = value[:value.find(":"):]
                         entry_values.append(port)
+
+            entry_values.insert(0, entry_values[0])
+            
             self.data["active"].append(dict(zip(headers, entry_values)))
 
     def get_json(self):
+        """
+        Return data
+        """
         return self.data
 
+    def match_rule(self, rule, rule_matches):
+        """
+        Compare rule ignoring indexes
+        """
+        result = True
+        for key in rule_matches:
+            if key == "internalId" or key == "num":
+                continue
+            if key in rule and key in rule_matches and rule[key] != rule_matches[key]:
+                result = False
+                break
+        return result
+
+    def delete(self, rule_match):
+        """
+        Delete rule by rule specification
+        """
+        rule = json.loads(rule_match.replace("'", "\""))
+        self.parse()
+        upnp_option_match = rule["upnp_protocol"] + " dpt:" + rule["upnp_destination_port"] + " to:" + rule["upnp_client_ip_address"] + ":" + rule["upnp_client_port"]
+        for active_rule in self.data["active"]:
+            if self.match_rule(active_rule, rule) is True:
+                try:
+                    process = subprocess.Popen(self.iptables_command + " -t " + self.table + " -D " + self.chain + " " + str(active_rule["num"]), shell=True)
+                    print "deleted"
+                except:
+                    print "not delete"
 
 def main(argv):
     """
@@ -68,7 +104,16 @@ def main(argv):
     """
 
     iptables = Iptables("nat", "upnp-rules")
-    print iptables.get_json()
+    try:
+        opts, args = getopt.getopt(argv, "sd", ["status", "delete="] )
+    except getopt.GetoptError:
+        # usage()
+        sys.exit(2)
+    for opt, arg in opts:
+        if opt in ( "-s", "--status"):
+            print iptables.get_json()
+        elif opt in ( "-d", "--delete"):
+            iptables.delete(arg)
 
 if __name__ == "__main__":
     main(sys.argv[1:])

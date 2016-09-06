@@ -4928,25 +4928,23 @@ Ext.define('Webui.config.network', {
             }]
         });
 
-        this.gridUPnpStatus = Ext.create('Ext.grid.Panel', {
+        this.gridUPnpStatus = Ext.create('Ung.grid.Panel', {
             name: 'UPnP Status',
             margin: '5 0 0 0',
             height: 160,
             settingsCmp: this,
             hasAdd: false,
-            hasDelete: false,
+            hasDelete: true,
             hasEdit: false,
+            hasReadOnly: true,
             columnsDefaultSortable: false,
-            store: Ext.create('Ext.data.Store',{
-                fields: [
+            fields:[
                     'upnp_protocol',
                     'upnp_client_ip_address',
                     'upnp_client_port',
                     'upnp_destination_port',
                     'bytes'
-                ],
-                data: []
-            }),
+            ],
             forceFit: true,
             autoExpandColumn: 'bytes',
             columns: [{
@@ -4987,10 +4985,16 @@ Ext.define('Webui.config.network', {
                 }
             }],
             updateStatus: function(){
-                Ung.Main.getNetworkManager().getUpnpStatus(Ext.bind(function(status, exception){
+                Ung.Main.getNetworkManager().getUpnpManager(Ext.bind(function(status, exception){
                     if(Ung.Util.handleException(exception)) return;
                     this.getStore().loadData(Ext.decode(status)["active"]);
-                }, this));
+                }, this), "--status", "");
+            },
+            deleteHandler: function(record){
+                Ung.Main.getNetworkManager().getUpnpManager(Ext.bind(function(result, exception){
+                    if(Ung.Util.handleException(exception)) return;
+                    this.updateStatus();
+                }, this), "--delete", "'" + Ext.encode(record.data) + "'");
             }
         });
 
