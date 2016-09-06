@@ -54,6 +54,11 @@ public abstract class VirusBlockerBaseApp extends NodeBase
 
     private static final String NOTIFY_BODY_TEMPLATE = "On $MIMEHeader:DATE$ a message from $MIMEMessage:FROM$ ($SMTPTransaction:FROM$)" + CRLF + "was received by $SMTPTransaction:TO$.  The message was found" + CRLF + "to contain the virus \"$VirusReport:VIRUS_NAME$\"." + CRLF + "The infected portion of the message was removed by Virus Blocker";
 
+    private VirusFtpHandler virusFtpCtlHandler;
+    private VirusFtpHandler virusFtpDataHandler;
+    private VirusHttpHandler virusHttpHandler;
+    private VirusSmtpHandler virusSmtpHandler;
+
     private PipelineConnector virusFtpCtl;
     private PipelineConnector virusFtpData;
     private PipelineConnector virusHttp;
@@ -120,10 +125,15 @@ public abstract class VirusBlockerBaseApp extends NodeBase
         this.addMetric(new NodeMetric(STAT_REMOVE, I18nUtil.marktr("Infections removed")));
         this.addMetric(new NodeMetric(STAT_PASS_POLICY, I18nUtil.marktr("Passed by policy")));
 
-        this.virusFtpCtl = UvmContextFactory.context().pipelineFoundry().create("virus-ftp-ctl", this, null, new VirusFtpHandler(this), Fitting.FTP_CTL_TOKENS, Fitting.FTP_CTL_TOKENS, Affinity.SERVER, getFtpStrength(), isPremium());
-        this.virusFtpData = UvmContextFactory.context().pipelineFoundry().create("virus-data-ctl", this, null, new VirusFtpHandler(this), Fitting.FTP_DATA_TOKENS, Fitting.FTP_DATA_TOKENS, Affinity.SERVER, getFtpStrength(), isPremium());
-        this.virusHttp = UvmContextFactory.context().pipelineFoundry().create("virus-http", this, null, new VirusHttpHandler(this), Fitting.HTTP_TOKENS, Fitting.HTTP_TOKENS, Affinity.SERVER, getHttpStrength(), isPremium());
-        this.virusSmtp = UvmContextFactory.context().pipelineFoundry().create("virus-smtp", this, null, new VirusSmtpHandler(this), Fitting.SMTP_TOKENS, Fitting.SMTP_TOKENS, Affinity.CLIENT, getSmtpStrength(), isPremium());
+        this.virusFtpCtlHandler = new VirusFtpHandler(this);
+        this.virusFtpDataHandler = new VirusFtpHandler(this);
+        this.virusHttpHandler = new VirusHttpHandler(this);
+        this.virusSmtpHandler = new VirusSmtpHandler(this);
+
+        this.virusFtpCtl = UvmContextFactory.context().pipelineFoundry().create("virus-ftp-ctl", this, null, virusFtpCtlHandler, Fitting.FTP_CTL_TOKENS, Fitting.FTP_CTL_TOKENS, Affinity.SERVER, getFtpStrength(), isPremium());
+        this.virusFtpData = UvmContextFactory.context().pipelineFoundry().create("virus-data-ctl", this, null, virusFtpDataHandler, Fitting.FTP_DATA_TOKENS, Fitting.FTP_DATA_TOKENS, Affinity.SERVER, getFtpStrength(), isPremium());
+        this.virusHttp = UvmContextFactory.context().pipelineFoundry().create("virus-http", this, null, virusHttpHandler, Fitting.HTTP_TOKENS, Fitting.HTTP_TOKENS, Affinity.SERVER, getHttpStrength(), isPremium());
+        this.virusSmtp = UvmContextFactory.context().pipelineFoundry().create("virus-smtp", this, null, virusSmtpHandler, Fitting.SMTP_TOKENS, Fitting.SMTP_TOKENS, Affinity.CLIENT, getSmtpStrength(), isPremium());
         this.connectors = new PipelineConnector[] { virusFtpCtl, virusFtpData, virusHttp, virusSmtp };
 
         // if the bdamserver package is not installed we set our special flag
@@ -226,6 +236,14 @@ public abstract class VirusBlockerBaseApp extends NodeBase
     public abstract String getAppName();
 
     public abstract boolean isPremium();
+
+    public void clearAllEventHandlerCaches()
+    {
+        virusFtpCtlHandler.clearEventHandlerCache();
+        virusFtpDataHandler.clearEventHandlerCache();
+        virusHttpHandler.clearEventHandlerCache();
+        virusSmtpHandler.clearEventHandlerCache();
+    }
 
     public void reconfigure()
     {

@@ -223,7 +223,7 @@ class VirusFtpHandler extends FtpEventHandler
             if (ignoredHost(session.sessionEvent().getSServerAddr())) {
                 result = VirusScannerResult.CLEAN;
             } else {
-                logger.debug("Scanning the SMTP file: " + state.fileManager.getFileDisplayName());                
+                logger.debug("Scanning the SMTP file: " + state.fileManager.getFileDisplayName());
                 result = node.getScanner().scanFile(state.fileManager.getFileObject(), session);
             }
         } catch (Exception exn) {
@@ -334,5 +334,9 @@ class VirusFtpHandler extends FtpEventHandler
             }
         }
         return false;
+    }
+
+    protected void clearEventHandlerCache()
+    {
     }
 }

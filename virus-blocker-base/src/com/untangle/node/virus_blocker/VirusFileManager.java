@@ -34,11 +34,11 @@ public class VirusFileManager extends OutputStream
     VirusFileManager(boolean argMemory, String filePrefix) throws Exception
     {
         memoryMode = argMemory;
-        byteWriter = ByteBuffer.allocate(1024);
 
         if (memoryMode == true) {
             logger.debug("VIRUS: Using memory buffering mode");
             memoryBuffer = new LinkedList<ByteBuffer>();
+            byteWriter = ByteBuffer.allocate(1024);
             dummyStream = new ByteArrayOutputStream();
             hashDigest = MessageDigest.getInstance("MD5");
             hashStream = new DigestOutputStream(dummyStream, hashDigest);
@@ -70,7 +70,13 @@ public class VirusFileManager extends OutputStream
             return (retval);
         }
 
-        // memory mode active so return end of file if the list is empty
+        /*
+         * we are in memory mode so start by making sure anything in byte writer
+         * gets pushed into the memory buffer so it can be read
+         */
+        localFlush();
+
+        // in memory mode we return end of file if the memory list is empty
         if (memoryBuffer.size() == 0) return (-1);
 
         int total = 0;
@@ -119,36 +125,40 @@ public class VirusFileManager extends OutputStream
         return (arg);
     }
 
-    public int write(ByteBuffer bb)
-    {
-        return (_write(bb, true));
-    }
-
     public void write(int b)
     {
         /*
-         * I think this is only used by the SMTP handler. We take single
-         * characters and buffer them until we have enough to do the actual
-         * write.
+         * If we're not in memory mode pass directly to the file and return
          */
+        if (memoryMode == false) {
+            try {
+                hashStream.write(b);
+            } catch (Exception exn) {
+                logger.error("Virus scan write file failed: ", exn);
+            }
+            return;
+        }
 
+        /*
+         * In memory mode we don't want to fill our list with a bunch of single
+         * character objects so we take single characters and buffer them
+         * locally until we have enough to do the actual write. First we make
+         * sure the local buffer isn't full before we put the new data.
+         */
         if (byteWriter.remaining() == 0) {
-            byteWriter.flip();
-            _write(byteWriter, false);
-            byteWriter.clear();
+            localFlush();
         }
 
         byteWriter.put((byte) b);
     }
 
-    private int _write(ByteBuffer bb, boolean preFlush)
+    public void write(ByteBuffer bb)
     {
         /*
-         * If there is anything in the byteWriter buffer and preFlush is set we
-         * handle that first so things don't end up out of order.
+         * If there is anything in the byte writer buffer we have to flush it
+         * first so things don't end up out of order
          */
-
-        if (preFlush == true) flush();
+        localFlush();
 
         int pos = bb.position();
         int rem = bb.remaining();
@@ -190,8 +200,33 @@ public class VirusFileManager extends OutputStream
         }
 
         bb.position(pos + rem);
+    }
 
-        return (rem - pos);
+    private void localFlush()
+    {
+        // if the byte writer is null or empty just return
+        if (byteWriter == null) return;
+        if (byteWriter.position() == 0) return;
+
+        // we have something in the byte writer so we first make a copy
+        ByteBuffer local = ByteBuffer.allocate(byteWriter.position());
+        byteWriter.flip();
+        local.put(byteWriter);
+        local.flip();
+
+        // add the data to the memory buffer 
+        memoryBuffer.add(local);
+
+        // make sure we also push the byte writer data to the MD5 generator
+        try {
+            byteWriter.rewind();
+            hashStream.write(byteWriter.array(), 0, byteWriter.limit());
+            dummyStream.reset();
+        } catch (Exception exn) {
+            logger.error("Virus scan write memory failed: ", exn);
+        }
+
+        byteWriter.clear();
     }
 
     public void position(int location)
@@ -207,14 +242,10 @@ public class VirusFileManager extends OutputStream
 
     public void flush()
     {
-        // handle any data hanging around in the byteWriter
-        if (byteWriter.position() > 0) {
-            byteWriter.flip();
-            _write(byteWriter, false);
-            byteWriter.clear();
-        }
+        // handle any data hanging around in the byte writer
+        localFlush();
 
-        // for memory mode we are done
+        // for memory mode there are no file streams so just return
         if (memoryMode == true) return;
 
         // for file mode flush the actual file streams 
@@ -228,10 +259,10 @@ public class VirusFileManager extends OutputStream
 
     public void close()
     {
-        // handle any data hanging around in the byteWriter
-        flush();
+        // handle any data hanging around in the byte writer
+        localFlush();
 
-        // for memory mode we are done
+        // for memory mode there is nothing to close so just return
         if (memoryMode == true) return;
 
         // for file mode we close the actual file stream
@@ -294,8 +325,8 @@ public class VirusFileManager extends OutputStream
         String fileHash = "00000000000000000000000000000000";
         if (hashDigest == null) return (fileHash);
 
-        // handle any data hanging around in the byteWriter        
-        flush();
+        // handle any data hanging around in the byte writer        
+        localFlush();
 
         // get the hash from the MessageDigest and close the stream
         try {

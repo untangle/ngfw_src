@@ -451,4 +451,8 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
         }
         return false;
     }
+
+    protected void clearEventHandlerCache()
+    {
+    }
 }
