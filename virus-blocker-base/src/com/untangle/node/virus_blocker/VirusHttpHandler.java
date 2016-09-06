@@ -590,4 +590,10 @@ class VirusHttpHandler extends HttpEventHandler
         protected String virusName;
         protected long creationTimeMillis;
     }
+
+    protected void clearEventHandlerCache()
+    {
+        logger.debug("urlCache clear: removing " + urlCache.size() + " items");
+        urlCache.clear();
+    }
 }
