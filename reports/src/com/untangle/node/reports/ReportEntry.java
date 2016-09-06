@@ -534,6 +534,8 @@ public class ReportEntry implements Serializable, JSONString
      */
     private PreparedStatement sqlToStatement( Connection conn, String sql, LinkedList<SqlCondition> conditions )
     {
+        EventReaderImpl.checkConnection( conn );
+
         try {
             java.sql.PreparedStatement statement = conn.prepareStatement( sql );
             statement.setFetchDirection( java.sql.ResultSet.FETCH_FORWARD );
@@ -573,6 +575,8 @@ public class ReportEntry implements Serializable, JSONString
 
     private String[] getDistinctValues( Connection conn, String table, String querySql, List<SqlCondition> conditions )
     {
+        EventReaderImpl.checkConnection( conn );
+            
         try {
             java.sql.PreparedStatement statement = conn.prepareStatement( querySql );
             SqlCondition.setPreparedStatementValues( statement, conditions, table );
