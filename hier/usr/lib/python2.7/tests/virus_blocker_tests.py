@@ -69,28 +69,32 @@ class VirusBlockTests(VirusBlockerBaseTests):
         virusSettings = self.node.getSettings()
         assert (virusSettings['forceMemoryMode'] == True)
 
+    # clear anything cached to force files to be downloaded again
+    def test_220_clearEventHandlerCache(self):
+        self.node.clearAllEventHandlerCaches()
+
     # test the cloud scanner using our special test virus
-    def test_220_httpCloudBlocked(self):
+    def test_230_httpCloudBlocked(self):
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/UntangleVirus.exe 2>&1 | grep -q blocked")
         assert (result == 0)
 
     # test that client can block virus http download zip
-    def test_230_httpVirusBlocked(self):
+    def test_240_httpVirusBlocked(self):
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/virus/virus.exe 2>&1 | grep -q blocked")
         assert (result == 0)
 
     # test that client can http download zip
-    def test_231_httpNonVirusNotBlocked(self):
+    def test_250_httpNonVirusNotBlocked(self):
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/test.zip 2>&1 | grep -q text123")
         assert (result == 0)
-        
+
     # test that client can block virus http download zip
-    def test_240_httpVirusZipBlocked(self):
+    def test_260_httpVirusZipBlocked(self):
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/virus/fedexvirus.zip 2>&1 | grep -q blocked")
         assert (result == 0)
 
     # test that client can block virus ftp
-    def test_250_ftpVirusBlocked(self):
+    def test_270_ftpVirusBlocked(self):
         remote_control.runCommand("rm -f /tmp/temp_022_ftpVirusBlocked_file")
         result = remote_control.runCommand("wget -q -O /tmp/temp_022_ftpVirusBlocked_file ftp://test.untangle.com/virus/fedexvirus.zip")
         assert (result == 0)
@@ -99,7 +103,7 @@ class VirusBlockTests(VirusBlockerBaseTests):
         assert (self.md5StdNum != md5TestNum)
 
     # turn off forceMemoryMode when we are finished
-    def test_260_disableForceMemoryScanMode(self):
+    def test_280_disableForceMemoryScanMode(self):
         virusSettings = self.node.getSettings()
         assert (virusSettings['forceMemoryMode'] == True)
 
