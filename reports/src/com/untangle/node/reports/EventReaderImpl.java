@@ -49,10 +49,7 @@ public class EventReaderImpl
 
     public ResultSetReader getEventsResultSet( final Connection dbConnection, final PreparedStatement statement, final int limit )
     {
-        if ( dbConnection == null) {
-            logger.warn("Invalid parameter.");
-            throw new RuntimeException("Invalid parameter.");
-        }
+        EventReaderImpl.checkConnection( dbConnection );
         
         try {
             logger.debug("getEventsResultSet( statement: " + statement + " )");
@@ -213,6 +210,21 @@ public class EventReaderImpl
     {
         ResultSetReader resultSetReader = getEventsResultSet( dbConnection, statement, table, null, limit );
         return resultSetReader.getAllEvents();
+    }
+
+    public static void checkConnection( final Connection dbConnection )
+    {
+        if ( dbConnection == null ) {
+            throw new RuntimeException("Database connection failed.");
+        }
+        
+        try {
+            java.sql.PreparedStatement statement = dbConnection.prepareStatement( "SELECT 1" );
+            boolean execResult = statement.execute();
+            ResultSet resultSet = statement.getResultSet();
+        } catch (Exception e) {
+            throw new RuntimeException("Database connection failed.");
+        }
     }
     
 }
