@@ -210,7 +210,7 @@ case "$1" in
             echo -n "."
             if [ "`uvmStatus`" == "stopped" ] ; then
                 rm -f ${UVM_PID_FILE}
-                rm -f ${UVM_STATUS_FILE
+                rm -f ${UVM_STATUS_FILE}
                 updateStatusExit "]\n" "Stopped"
             fi
             sleep 1
