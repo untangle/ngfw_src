@@ -410,7 +410,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         matchers = new LinkedList<AlertRuleCondition>();
         matcher1 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "class", "=", "*SystemStatEvent*" ) );
         matchers.add( matcher1 );
-        matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "memFreePercent", "<", ".1" ) );
+        matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "memFreePercent", "<", ".05" ) );
         matchers.add( matcher2 );
         alertRule = new AlertRule( false, matchers, true, true, "Free Memory is low", true, 60 );
         rules.add( alertRule );
