@@ -854,17 +854,21 @@ Ext.define('Webui.untangle-node-captive-portal.settings', {
                         bodyStyle: "padding:0px 0px 10px 25px",
                         pageType: "CUSTOM",
                         name: "upload_form",
-                        url: "/capture/handler.py/custom_upload",
+                        url: "upload",
                         border: false,
                         items: [{
-                            xtype: 'fileuploadfield',
+                            xtype: "fileuploadfield",
                             name: "upload_file",
                             allowBlank:false,
                             width: 500
                         },{
-                            xtype: 'hidden',
-                            name: 'appid',
-                            value: this.nodeId
+                            xtype: "hidden",
+                            name: "type",
+                            value: "custom_page"
+                        },{
+                            xtype: "hidden",
+                            name: "argument",
+                            value: "UPLOAD"
                         },{
                             xtype: "button",
                             name: "upload",
@@ -876,22 +880,31 @@ Ext.define('Webui.untangle-node-captive-portal.settings', {
                         bodyPadding: "10px 0px 0px 25px",
                         pageType: "CUSTOM",
                         name: "remove_form",
-                        url: "/capture/handler.py/custom_remove",
+                        url: "upload",
                         border: false,
                         items: [{
                             xtype: "label",
                             forId: "custom_file",
                             text: "Active Custom File"
                         },{
-                            xtype: 'textfield',
+                            xtype: "textfield",
                             readOnly: true,
                             name: "custom_file",
                             value: this.settings.customFilename,
                             width: 500
                         },{
-                            xtype: 'hidden',
-                            name: 'appid',
-                            value: this.nodeId
+                            xtype: "fileuploadfield",
+                            name: "remove_file",
+                            allowBlank: true,
+                            hidden: true
+                        },{
+                            xtype: "hidden",
+                            name: "type",
+                            value: "custom_page"
+                        },{
+                            xtype: "hidden",
+                            name: "argument",
+                            value: "REMOVE"
                         },{
                             xtype: "button",
                             name: "remove",
@@ -1005,9 +1018,9 @@ Ext.define('Webui.untangle-node-captive-portal.settings', {
     },
 
     uploadCustomFileSuccess: function(origin,reply) {
-        this.settings.customFilename = reply.result.filename;
+        this.settings.customFilename = reply.result.msg;
         var worker = this.panelCaptivePage.down('textfield[name="custom_file"]');
-        worker.setValue(reply.result.filename);
+        worker.setValue(reply.result.msg);
         Ext.Msg.show({
             title: i18n._("Custom Page Upload Success"),
             msg: i18n._(reply.result.msg),

@@ -6,18 +6,25 @@ package com.untangle.node.captive_portal;
 import java.util.LinkedList;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Enumeration;
 import java.util.TimerTask;
 import java.util.Timer;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
 import java.net.InetAddress;
 import java.net.URLDecoder;
 import java.io.File;
+import java.io.FileOutputStream;
 
+import org.apache.commons.fileupload.FileItem;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.BrandingManager;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.SessionMatcher;
@@ -37,6 +44,7 @@ import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.Token;
 import com.untangle.uvm.util.I18nUtil;
+import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.node.http.ReplacementGenerator;
 
 public class CaptivePortalApp extends NodeBase
@@ -53,6 +61,7 @@ public class CaptivePortalApp extends NodeBase
     private final String CAPTURE_CUSTOM_CREATE_SCRIPT = System.getProperty("uvm.home") + "/bin/captive-portal-custom-create";
     private final String CAPTURE_CUSTOM_REMOVE_SCRIPT = System.getProperty("uvm.home") + "/bin/captive-portal-custom-remove";
     private final String CAPTURE_PERMISSIONS_SCRIPT = System.getProperty("uvm.home") + "/bin/captive-portal-permissions";
+    private final String CAPTURE_TEMPORARY_UPLOAD = System.getProperty("java.io.tmpdir") + "/capture_upload.zip";
 
     private static final String STAT_SESSALLOW = "sessallow";
     private static final String STAT_SESSBLOCK = "sessblock";
@@ -87,6 +96,8 @@ public class CaptivePortalApp extends NodeBase
         super( nodeSettings, nodeProperties );
 
         replacementGenerator = new CaptivePortalReplacementGenerator(getNodeSettings(),this);
+
+        UvmContextFactory.context().servletFileManager().registerUploadHandler(new CustomPageUploadHandler());
 
         addMetric(new NodeMetric(STAT_SESSALLOW, I18nUtil.marktr("Sessions Allowed")));
         addMetric(new NodeMetric(STAT_SESSBLOCK, I18nUtil.marktr("Sessions Blocked")));
@@ -422,7 +433,7 @@ public class CaptivePortalApp extends NodeBase
             // when concurrent logins are disabled and we have an active entry for the user
             // we check the address and ignore the match if they are the same since it's
             // not really a concurrent login but a duplicate login from the same client
-            if ( (entry != null) && (address.equals(entry.getUserAddress()) == false) ) {
+            if ((entry != null) && (address.equals(entry.getUserAddress()) == false)) {
                 CaptivePortalUserEvent event = new CaptivePortalUserEvent(policyId, address, username, captureSettings.getAuthenticationType(), CaptivePortalUserEvent.EventType.FAILED);
                 logEvent(event);
                 incrementBlinger(BlingerType.AUTHFAIL, 1);
@@ -483,7 +494,7 @@ public class CaptivePortalApp extends NodeBase
                 isAuthenticated = false;
             }
             break;
-            
+
         case GOOGLE:
             try {
                 DirectoryConnector directoryConnector = (DirectoryConnector) UvmContextFactory.context().nodeManager().node("untangle-node-directory-connector");
@@ -503,7 +514,7 @@ public class CaptivePortalApp extends NodeBase
                 isAuthenticated = false;
             }
             break;
-            
+
         case ANY:
             try {
                 DirectoryConnector directoryConnector = (DirectoryConnector) UvmContextFactory.context().nodeManager().node("untangle-node-directory-connector");
@@ -515,7 +526,7 @@ public class CaptivePortalApp extends NodeBase
             break;
         default:
             logger.error("Unknown Authenticate Method: " + captureSettings.getAuthenticationType());
-            
+
         }
 
         if (!isAuthenticated) {
@@ -605,9 +616,7 @@ public class CaptivePortalApp extends NodeBase
         logEvent(event);
         logger.info("Logout success: " + address);
 
-        if (captureSettings.getSessionCookiesEnabled() &&
-            ((reason == CaptivePortalUserEvent.EventType.USER_LOGOUT) ||
-             (reason == CaptivePortalUserEvent.EventType.ADMIN_LOGOUT))) {
+        if (captureSettings.getSessionCookiesEnabled() && ((reason == CaptivePortalUserEvent.EventType.USER_LOGOUT) || (reason == CaptivePortalUserEvent.EventType.ADMIN_LOGOUT))) {
             captureUserCookieTable.insertInactiveUser(user);
         }
 
@@ -696,15 +705,13 @@ public class CaptivePortalApp extends NodeBase
     }
 
     /**
-     * This runs the periodic cleanup task now.
-     * It is used by the test suite
+     * This runs the periodic cleanup task now. It is used by the test suite
      */
     public void runCleanup()
     {
-        if (captureTimer != null)
-            captureTimer.run();
+        if (captureTimer != null) captureTimer.run();
     }
-    
+
     /**
      * Attempt to load any relevent user state from a file if it exists
      */
@@ -766,6 +773,100 @@ public class CaptivePortalApp extends NodeBase
             logger.info("Saving user state to file... done");
         } catch (Exception e) {
             logger.warn("Exception saving user state", e);
+        }
+    }
+
+    /*
+     * This is called by the UI to upload and remove custom captive pages.
+     */
+    private class CustomPageUploadHandler implements UploadHandler
+    {
+        @Override
+        public String getName()
+        {
+            return "custom_page";
+        }
+
+        @Override
+        public ExecManagerResult handleFile(FileItem fileItem, String argument) throws Exception
+        {
+            logger.info("CUSTOM UPLOAD: " + fileItem.getName() + " ARGUMENT: " + argument);
+
+            switch (argument)
+            {
+            case "UPLOAD":
+                return handleFileUpload(fileItem);
+            case "REMOVE":
+                return handleFileRemove();
+            }
+
+            return new ExecManagerResult(1, "Unknown argument: " + argument);
+        }
+
+        private ExecManagerResult handleFileUpload(FileItem fileItem) throws Exception
+        {
+            /*
+             * save the uploaded file to disk so we can work on it
+             */
+            File tempFile = new File(CAPTURE_TEMPORARY_UPLOAD);
+            if (tempFile.exists()) tempFile.delete();
+            java.io.FileOutputStream tempStream = new FileOutputStream(tempFile);
+            tempStream.write(fileItem.get());
+            tempStream.close();
+
+            /*
+             * make sure we have a valid zip file and check the contents to see
+             * if there is either a custom.html or custom.py script
+             */
+            try {
+                int checker = 0;
+                ZipFile zipFile = new ZipFile(tempFile);
+                Enumeration<? extends ZipEntry> zipList = zipFile.entries();
+
+                while (zipList.hasMoreElements()) {
+                    ZipEntry zipEntry = (ZipEntry) zipList.nextElement();
+                    String fileName = zipEntry.getName();
+                    logger.debug("Custom zip contents: " + fileName);
+                    if (fileName.equals("custom.html") == true) checker += 1;
+                    if (fileName.equals("custom.py") == true) checker += 1;
+                }
+
+                zipFile.close();
+
+                if (checker == 0) {
+                    tempFile.delete();
+                    return new ExecManagerResult(1, "The uploaded ZIP file does not contain custom.html or custom.py");
+                }
+
+            } catch (ZipException zip) {
+                tempFile.delete();
+                return new ExecManagerResult(1, "The uploaded file does not appear to be a valid ZIP archive");
+            }
+
+            catch (Exception exn) {
+                tempFile.delete();
+                return new ExecManagerResult(1, exn.getMessage());
+            }
+
+            /*
+             * We seem to have a good ZIP archive and it contains the files we
+             * expect so clean up any existing custom page that may already
+             * exist and extract the file into our custom directory
+             */
+            UvmContextFactory.context().execManager().exec(CAPTURE_CUSTOM_REMOVE_SCRIPT + " " + customPath);
+            UvmContextFactory.context().execManager().exec(CAPTURE_CUSTOM_CREATE_SCRIPT + " " + customPath);
+            UvmContextFactory.context().execManager().exec("unzip -o " + CAPTURE_TEMPORARY_UPLOAD + " -d " + customPath);
+
+            tempFile.delete();
+            return new ExecManagerResult(0, fileItem.getName());
+        }
+
+        private ExecManagerResult handleFileRemove() throws Exception
+        {
+            // use our existing remove and create scripts to wipe any existing custom page 
+            UvmContextFactory.context().execManager().exec(CAPTURE_CUSTOM_REMOVE_SCRIPT + " " + customPath);
+            UvmContextFactory.context().execManager().exec(CAPTURE_CUSTOM_CREATE_SCRIPT + " " + customPath);
+            return new ExecManagerResult(0, "The custom captive portal page has been removed");
         }
     }
 }
