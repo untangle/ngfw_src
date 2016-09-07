@@ -45,11 +45,20 @@ class SnortRule:
             "msg": ""
         }
         
-        # !!!! may not be enough to look for variables!
+        in_quote = False
+        key = None
         for option in self.options_raw.split(';'):
+            if in_quote:
+                if key in self.options:
+                    self.options[key] += option.strip()
+                if option.count('"') == 1:
+                    in_quote = False
+                in_quote = False
             if option.find(':') > -1:
                 key, value = option.strip().split( ':', 1 )
                 if key in self.options:
+                    if value.count('"') == 1:
+                        in_quote = True
                     self.options[key] = value.strip()
 
         self.rule_id = self.options["sid"] + "_" + self.options["gid"] 
