@@ -79,6 +79,22 @@ public class Pulse implements Runnable
     {
         this( name, task, delay, extraInitialDelay, Thread.MIN_PRIORITY );
     }
+
+    /**
+     * Create a new pulse and set its name, task, delay, run
+     */
+    public Pulse( String name, Runnable task, long delay, boolean runImmediately )
+    {
+        this.name = name;
+        this.task = task;
+        this.delay = delay;
+        if (runImmediately)
+            this.extraInitialDelay = -delay; /* no delay on first run */
+        else
+            this.extraInitialDelay = 0;
+        this.threadPriority = Thread.MIN_PRIORITY;
+        this.logPrefix = "Pulse[" + task.getClass().getSimpleName() + "] ";
+    }
     
     /**
      * Create a new pulse, optionally setting the name and isDaemon
@@ -164,17 +180,24 @@ public class Pulse implements Runnable
      */
     public boolean forceRun( long maxWait )
     {
-        if ( this.state != PulseState.RUNNING ) {
-            logger.warn(logPrefix +"Can not force run pulse that is not running: " + this.state );
+        if ( this.state != PulseState.RUNNING && this.state != PulseState.STARTING) {
+            logger.warn(logPrefix +"Can not force run pulse that is not running: " + this.state, new Exception() );
             return false;
         } else if ( this.thread == null ) {
             logger.warn(logPrefix +"Can not force run pulse that without thread: " + this.state );
             return false;
         }
+
+        if ( logger.isDebugEnabled() )
+            logger.debug("Forcing pulse: " + this);
         
         long origCount = this.getCount();
         this.forceRun = true;
             
+        synchronized ( this ) {
+            this.notifyAll();
+        }
+        
         /* has ticked since beat was called. */
         if ( origCount != this.getCount())
             return true;
@@ -207,7 +230,7 @@ public class Pulse implements Runnable
         long now;
         
         if ( this.state != PulseState.STARTING) {
-            logger.warn(logPrefix + "Unable to start the thread outside of running state" );
+            logger.warn(logPrefix + "Unable to start the thread outside of running state");
             return;
         }
         this.state = PulseState.RUNNING;
@@ -233,7 +256,7 @@ public class Pulse implements Runnable
                 synchronized ( this ) {
                     if ( logger.isDebugEnabled() )
                         logger.debug(logPrefix + "sleeping (" + sleepTime + " ms) ...");
-                    wait( sleepTime );
+                    this.wait( sleepTime );
                 }
             } catch ( InterruptedException e ) {
                 if ( logger.isDebugEnabled() )
@@ -285,7 +308,7 @@ public class Pulse implements Runnable
             
             /* Notify anyone waiting */
             synchronized (this) {
-                notifyAll();
+                this.notifyAll();
             }
         }
 
