@@ -48,7 +48,7 @@ public class GroupManager
     /**
      * Pulse thread to re-read the AD into cache
      */
-    private Pulse pulseRenewCache = new Pulse("renew-ad-cache", new RenewCache(), DEFAULT_GROUP_RENEW_MS);
+    private Pulse pulseRenewCache = new Pulse("renew-ad-cache", new RenewCache(), DEFAULT_GROUP_RENEW_MS, true);
     
     /**
      * This is used to cap the number of negative cache hits. This way someone
@@ -356,11 +356,6 @@ public class GroupManager
         {
             if ( !GroupManager.this.isLicenseValid()) {
                 logger.warn( "Invalid license, not renewing group cache.");
-                return false;
-            }
-            
-            if ( node.getRunState() != NodeState.RUNNING ) {
-                logger.info( "Directory Connector Connector is not running. Not renewing group cache.");
                 return false;
             }
             

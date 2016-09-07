@@ -75,9 +75,6 @@ public class DirectoryConnectorApp extends NodeBase implements com.untangle.uvm.
     {
         super.postStart();
 
-        /* Refresh the group cache on startup */
-        this.refreshGroupCache();
-
         /* Start the servlet */
         UvmContextFactory.context().tomcatManager().loadServlet("/" + OAUTH_WEBAPP, OAUTH_WEBAPP);
         UvmContextFactory.context().tomcatManager().loadServlet("/" + USERAPI_WEBAPP, USERAPI_WEBAPP);
