@@ -46,5 +46,5 @@ end
 # associate a task to the installation of that so file
 task :dest_uvmcore_so => dest_libuvmcore_so
 
-# DO IT!
-#graphViz('graphviz.dot')
+# create the build dependency graph
+# graphViz('graphviz.dot')
