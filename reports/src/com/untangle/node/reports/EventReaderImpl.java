@@ -218,12 +218,18 @@ public class EventReaderImpl
             throw new RuntimeException("Database connection failed.");
         }
         
+        java.sql.PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        
         try {
-            java.sql.PreparedStatement statement = dbConnection.prepareStatement( "SELECT 1" );
-            boolean execResult = statement.execute();
-            ResultSet resultSet = statement.getResultSet();
+            statement = dbConnection.prepareStatement( "SELECT 1" );
+            statement.execute();
+            resultSet = statement.getResultSet();
         } catch (Exception e) {
             throw new RuntimeException("Database connection failed.");
+        } finally {
+            if ( resultSet != null ) try {resultSet.close();} catch (Exception e) {}
+            if ( statement != null ) try {statement.close();} catch (Exception e) {}
         }
     }
     
