@@ -47,4 +47,4 @@ end
 task :dest_uvmcore_so => dest_libuvmcore_so
 
 # DO IT!
-#graphViz('foo.dot')
+#graphViz('graphviz.dot')
