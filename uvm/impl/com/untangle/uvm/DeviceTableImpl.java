@@ -116,6 +116,11 @@ public class DeviceTableImpl implements DeviceTable
             return newEntry;
         }
 
+        if ("00:00:00:00:00:00".equals( macAddress )) {
+            logger.warn("Ignoring 00:00:00:00:00:00 device.");
+            return null;
+        }
+
         try {
             logger.info("Discovered new device: " + macAddress);
             newEntry = new DeviceTableEntry( macAddress );
