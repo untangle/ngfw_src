@@ -67,11 +67,11 @@ public class SystemStatEvent extends LogEvent
     public long getDiskFree() { return diskFree; }
     public void setDiskFree(long newDiskFree) { this.diskFree = newDiskFree; }
 
-    public long getSwapFree() { return swapFree; }
-    public void setSwapFree(final long newSwapFree) { this.swapFree = newSwapFree; }
-
     public long getSwapTotal() { return swapTotal; }
     public void setSwapTotal(final long newSwapTotal) { this.swapTotal = newSwapTotal; }
+
+    public long getSwapFree() { return swapFree; }
+    public void setSwapFree(final long newSwapFree) { this.swapFree = newSwapFree; }
 
     public int getActiveHosts() { return activeHosts; }
     public void setActiveHosts(final int newValue) { this.activeHosts = newValue; }
@@ -81,9 +81,44 @@ public class SystemStatEvent extends LogEvent
         return ( ((float)getDiskFree()) / ((float)getDiskTotal()) );
     }
 
+    public long getDiskUsed()
+    {
+        return getDiskTotal() - getDiskFree();
+    }
+
+    public float getDiskUsedPercent()
+    {
+        return ( ((float)getDiskUsed()) / ((float)getDiskTotal()) );
+    }
+    
     public float getMemFreePercent()
     {
         return ( ((float)getMemFree()) / ((float)getMemTotal()) );
+    }
+
+    public long getMemUsed()
+    {
+        return getMemTotal() - getMemFree();
+    }
+
+    public float getMemUsedPercent()
+    {
+        return ( ((float)getMemUsed()) / ((float)getMemTotal()) );
+    }
+    
+    public float getSwapFreePercent()
+    {
+        return ( ((float)getSwapFree()) / ((float)getSwapTotal()) );
+    }
+
+    public long getSwapUsed()
+    {
+        return getSwapTotal() - getSwapFree();
+    }
+
+    public float getSwapUsedPercent()
+    {
+        return ( ((float)getSwapUsed()) / ((float)getSwapTotal()) );
     }
     
     @Override
@@ -125,7 +160,7 @@ public class SystemStatEvent extends LogEvent
             I18nUtil.marktr("Load (15-minute)") + ": " + getLoad15() + ", " +
             I18nUtil.marktr("Memory Free") + ": " + (getMemFree()/(1024*1024)) + "MB" + ", " +
             I18nUtil.marktr("Disk Free") + ": " + (getDiskFree()/(1024*1024)) + "MB" + ", " +
-            I18nUtil.marktr("Swap Free") + ": " + (getSwapFree()/(1024*1024)) + "MB" + " ]";
+            I18nUtil.marktr("Swap Used") + ": " + (getSwapUsed()/(1024*1024)) + "MB" + " ]";
 
         return summary;
     }
