@@ -19,6 +19,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.Properties;
+import java.util.Iterator;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -330,6 +331,13 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
             logger.warn("Running v12.1 conversion...");
             conversion_12_1();
         }
+        /**
+         * 12.1.1 conversion
+         */
+        if ( settings.getVersion() == 2 ) {
+            logger.warn("Running v12.1.1 conversion...");
+            conversion_12_1_1();
+        }
         
         /**
          * Report updates
@@ -412,7 +420,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         matchers.add( matcher1 );
         matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "memFreePercent", "<", ".05" ) );
         matchers.add( matcher2 );
-        alertRule = new AlertRule( false, matchers, true, true, "Free Memory is low", true, 60 );
+        alertRule = new AlertRule( false, matchers, true, true, "Free memory is low", true, 60 );
         rules.add( alertRule );
 
         matchers = new LinkedList<AlertRuleCondition>();
@@ -505,7 +513,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
     private ReportsSettings defaultSettings()
     {
         ReportsSettings settings = new ReportsSettings();
-        settings.setVersion( 1 );
+        settings.setVersion( 3 );
         settings.setAlertRules( defaultAlertRules() );
         return settings;
     }
@@ -634,6 +642,46 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
             }
         }
         
+        setSettings( settings );
+    }
+
+    private void conversion_12_1_1()
+    {
+        settings.setVersion( 3 );
+
+        try {
+            boolean found = false;
+            
+            for (Iterator<AlertRule> it = settings.getAlertRules().iterator(); it.hasNext() ;) {
+                AlertRule rule = it.next();
+                if ("Free Memory is low".equals( rule.getDescription() ) ) {
+                    logger.info("Replacing Free Memory alert rule...");
+                    it.remove();
+                    found = true;
+                    break;
+                }
+            }
+
+            if ( found ) {
+                LinkedList<AlertRuleCondition> matchers;
+                AlertRuleCondition matcher1;
+                AlertRuleCondition matcher2;
+                AlertRule alertRule;
+                
+                matchers = new LinkedList<AlertRuleCondition>();
+                matcher1 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "class", "=", "*SystemStatEvent*" ) );
+                matchers.add( matcher1 );
+                matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "memFreePercent", "<", ".05" ) );
+                matchers.add( matcher2 );
+                alertRule = new AlertRule( false, matchers, true, true, "Free memory is low", true, 60 );
+
+                LinkedList<AlertRule> rules = settings.getAlertRules();
+                rules.add( 3, alertRule );
+            }
+        } catch (Exception e) {
+            logger.warn("Conversion Exception",e);
+        }
+
         setSettings( settings );
     }
     
