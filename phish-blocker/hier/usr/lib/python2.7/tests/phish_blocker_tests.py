@@ -133,15 +133,20 @@ class PhishBlockerTests(unittest2.TestCase):
         time.sleep(3)
         sendPhishMail(mailfrom="test022")
 
-        events = global_functions.get_events('Phish Blocker','All Phish Events',None,1)
-        assert(events != None)
-        # print events['list'][0]
-        found = global_functions.check_events( events.get('list'), 5,
-                                            'c_server_addr', ip_address_testuntangle,
-                                            's_server_port', 25,
-                                            'addr', 'qa@example.com',
-                                            'c_client_addr', remote_control.clientIP,
-                                            'phish_blocker_action', 'Q')
+        timeout = 4
+        found = False
+        while (not found and timeout > 0):
+            events = global_functions.get_events('Phish Blocker','All Phish Events',None,1)
+            assert(events != None)
+            # print events['list'][0]
+            found = global_functions.check_events( events.get('list'), 5,
+                                                'c_server_addr', ip_address_testuntangle,
+                                                's_server_port', 25,
+                                                'addr', 'qa@example.com',
+                                                'c_client_addr', remote_control.clientIP,
+                                                'phish_blocker_action', 'Q')
+            timeout -= 1
+            
         assert( found )
             
         # Check to see if the faceplate counters have incremented. 
