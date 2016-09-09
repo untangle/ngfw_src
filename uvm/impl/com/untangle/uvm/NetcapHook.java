@@ -234,7 +234,6 @@ public abstract class NetcapHook implements Runnable
                                                                                        netcapSession.clientSide().interfaceId(), netcapSession.serverSide().interfaceId(),
                                                                                        netcapSession.clientSide().client().host(), netcapSession.serverSide().server().host(),
                                                                                        netcapSession.clientSide().client().port(), netcapSession.serverSide().server().port());
-                logger.warn("POLICY: " + result.policyId + " RULE: " + result.policyRuleId);
                 this.policyId  = result.policyId;
                 this.policyRuleId  = result.policyRuleId;
             }
