@@ -181,7 +181,7 @@ public class AlertManagerImpl implements AlertManager
         try {
             if ( UvmContextFactory.context().isDevel() )
                 return;
-            if ( ! UvmContextFactory.context().systemManager().getSettings().getSupportEnabled() )
+            if ( ! UvmContextFactory.context().systemManager().getSettings().getCloudEnabled() )
                 return;
 
             File pidFile = new File("/var/run/ut-pyconnector.pid");
