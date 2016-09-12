@@ -11,7 +11,7 @@ public class Pulse implements Runnable
     private static final long DELAY_MINIMUM = 500;
 
     /* wait at most a second for the pulse to execute when force running */
-    private static final long FORCE_RUN_MAX_WAIT = 1000;
+    private static final long FORCE_RUN_MAX_WAIT = 60000;
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -38,7 +38,7 @@ public class Pulse implements Runnable
     /* Used for debugging */
     private String logPrefix;
     
-    /* amount of time to wait until the next beat */
+    /* amount of time to wait until the next pulse */
     private long delay;
 
     /* an extra delay for the initial run (optional) */
@@ -78,6 +78,22 @@ public class Pulse implements Runnable
     public Pulse( String name, Runnable task, long delay, long extraInitialDelay )
     {
         this( name, task, delay, extraInitialDelay, Thread.MIN_PRIORITY );
+    }
+
+    /**
+     * Create a new pulse and set its name, task, delay, run
+     */
+    public Pulse( String name, Runnable task, long delay, boolean runImmediately )
+    {
+        this.name = name;
+        this.task = task;
+        this.delay = delay;
+        if (runImmediately)
+            this.extraInitialDelay = -delay; /* no delay on first run */
+        else
+            this.extraInitialDelay = 0;
+        this.threadPriority = Thread.MIN_PRIORITY;
+        this.logPrefix = "Pulse[" + task.getClass().getSimpleName() + "] ";
     }
     
     /**
@@ -164,35 +180,68 @@ public class Pulse implements Runnable
      */
     public boolean forceRun( long maxWait )
     {
-        if ( this.state != PulseState.RUNNING ) {
-            logger.warn(logPrefix +"Can not force run pulse that is not running: " + this.state );
+        if ( this.state != PulseState.RUNNING && this.state != PulseState.STARTING) {
+            logger.warn(logPrefix +"Can not force run pulse that is not running: " + this.state, new Exception() );
             return false;
         } else if ( this.thread == null ) {
             logger.warn(logPrefix +"Can not force run pulse that without thread: " + this.state );
             return false;
         }
+
+        if ( logger.isDebugEnabled() )
+            logger.debug("Forcing pulse: " + this);
         
         long origCount = this.getCount();
         this.forceRun = true;
             
-        /* has ticked since beat was called. */
+        /* wake up the pulse thread */
+        synchronized ( this ) {
+            this.notifyAll();
+        }
+        
+        /* if pulse has already fired - return true */
         if ( origCount != this.getCount())
             return true;
 
-        synchronized ( this ) {
-            try {
-                this.wait( maxWait );
-            } catch ( InterruptedException e ) {
-                logger.debug(logPrefix + "interrupted while waiting", e );
+        /**
+         * call wait until the pulse has fired
+         * loop because this thread could be woken up by things other
+         * than the pulse calling notifyAll()
+         
+         * Give up after maxTries iterations instead of indefinite as a safety mechanism
+         */
+        long waitUntil = System.currentTimeMillis() + maxWait;
+        int i = 0;
+        int maxTries = 10;
+        for ( i = 0 ; i < maxTries ; i++ ) {
+            long waitMs = waitUntil - System.currentTimeMillis();
+
+            /* if more than maxwait time has passed - give up */
+            if ( waitMs < 0 )
+                break;
+
+            synchronized ( this ) {
+                try {
+                    this.wait( waitMs );
+                } catch ( InterruptedException e ) {
+                    logger.debug(logPrefix + "interrupted while waiting", e );
+                }
             }
+
+            /* if pulse has run - return true */
+            if ( origCount != this.getCount() )
+                return true;
         }
 
-        /* If the count changed, then this waited for one tick to complete */
-        return ( count == this.getCount() );
+        if ( i == maxTries ) {
+            logger.warn("Maximum iterations reached - problem likely.");
+        }
+        
+        return false;
     }
 
     /**
-     * Beat with the default max wait
+     * Force the pulse to run and block for the default maximum
      */
     public boolean forceRun()
     {
@@ -207,7 +256,7 @@ public class Pulse implements Runnable
         long now;
         
         if ( this.state != PulseState.STARTING) {
-            logger.warn(logPrefix + "Unable to start the thread outside of running state" );
+            logger.warn(logPrefix + "Unable to start the thread outside of running state");
             return;
         }
         this.state = PulseState.RUNNING;
@@ -233,7 +282,7 @@ public class Pulse implements Runnable
                 synchronized ( this ) {
                     if ( logger.isDebugEnabled() )
                         logger.debug(logPrefix + "sleeping (" + sleepTime + " ms) ...");
-                    wait( sleepTime );
+                    this.wait( sleepTime );
                 }
             } catch ( InterruptedException e ) {
                 if ( logger.isDebugEnabled() )
@@ -285,7 +334,7 @@ public class Pulse implements Runnable
             
             /* Notify anyone waiting */
             synchronized (this) {
-                notifyAll();
+                this.notifyAll();
             }
         }
 
