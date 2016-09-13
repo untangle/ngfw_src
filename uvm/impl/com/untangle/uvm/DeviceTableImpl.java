@@ -34,8 +34,8 @@ public class DeviceTableImpl implements DeviceTable
     private static final String CLOUD_LOOKUP_URL = "https://labs.untangle.com/Utility/v1/mac";
     private static final String CLOUD_LOOKUP_KEY = "B132C885-962B-4D63-8B2F-441B7A43CD93";
 
-    private static final int HIGH_WATER_SIZE = 12000; /* absolute max */
-    private static final int LOW_WATER_SIZE = 10000; /* max size to reduce to when pruning map */
+    private static final int HIGH_WATER_SIZE = 30000; /* absolute max */
+    private static final int LOW_WATER_SIZE = 25000; /* max size to reduce to when pruning map */
 
     private static final int PERIODIC_SAVE_DELAY = 1000 * 60 * 60 * 6; /* 6 hours */
 
