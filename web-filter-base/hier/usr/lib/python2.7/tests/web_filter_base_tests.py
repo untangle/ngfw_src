@@ -447,7 +447,9 @@ class WebFilterBaseTests(unittest2.TestCase):
         node.flushAllUnblockedSites()
 
         print "block %s button %s unblock %s" % (resultBlock,resultButton,resultUnBlock)
-        assert (resultBlock == 0 and resultButton == 0 and resultUnBlock == 0 )
+        assert (resultBlock == 0)
+        assert (resultButton == 0)
+        assert (resultUnBlock == 0)
 
     # disable pass referer and verify that a page with content that would be blocked is blocked.
     def test_130_passrefererDisabled(self):

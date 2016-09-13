@@ -27,12 +27,12 @@ public class UnblockerServlet extends HttpServlet
         resp.addHeader("Cache-Control", "no-cache");
 
         String nonce = req.getParameter("nonce");
-        String tidStr = req.getParameter("tid");
+        String appidStr = req.getParameter("appid");
         boolean global = Boolean.parseBoolean(req.getParameter("global"));
 
         try {
             NodeManager tman = UvmContextFactory.context().nodeManager();
-            WebFilter tran = (WebFilter) tman.node( Long.parseLong(tidStr) );
+            WebFilter tran = (WebFilter) tman.node( Long.parseLong(appidStr) );
 
             if (tran.unblockSite(nonce, global)) {
                 resp.getOutputStream().println("<success/>");
