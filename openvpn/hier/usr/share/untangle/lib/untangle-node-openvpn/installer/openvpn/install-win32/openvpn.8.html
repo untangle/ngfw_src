@@ -3543,16 +3543,44 @@ options at the global config file level.
 <DT><B>--push-peer-info</B>
 
 <DD>
-Push additional information about the client to server.  The additional information
-consists of the following data:
+Push additional information about the client to server.
+The following data is always pushed to the server:
 <P>
 IV_VER=&lt;version&gt; -- the client OpenVPN version
 <P>
 IV_PLAT=[linux|solaris|openbsd|mac|netbsd|freebsd|win] -- the client OS platform
 <P>
+IV_LZO_STUB=1 -- if client was built with LZO stub capability
+<P>
+IV_LZ4=1 -- if the client supports LZ4 compressions.
+<P>
+IV_RGI6=1 -- if the client supports
+<B>--redirect-gateway</B>
+
+for ipv6
+<P>
+IV_PROTO=2 -- if the client supports peer-id floating mechansim
+<P>
+IV_NCP=2 -- negotiable ciphers, client supports
+<B>--cipher</B>
+
+pushed by the server, a value of 2 or greater indicates client
+supports AES-GCM-128 and AES-GCM-256.
+<P>
+IV_UI_VER=&lt;gui_id&gt; &lt;version&gt; -- the UI version of a UI if one is
+running, for example &quot;de.blinkt.openvpn 0.5.47&quot; for the
+Android app.
+<P>
+When
+<B>--push-peer-info</B>
+
+is enabled the additional information consists of the following data:
+<P>
 IV_HWADDR=&lt;mac address&gt; -- the MAC address of clients default gateway
 <P>
-IV_LZO_STUB=1 -- if client was built with LZO stub capability
+IV_SSL=&lt;version string&gt; -- the ssl version used by the client, e.g. &quot;OpenSSL 1.0.2f 28 Jan 2016&quot;.
+<P>
+IV_PLAT_VER=x.y - the version of the operating system, e.g. 6.1 for Windows 7.
 <P>
 UV_&lt;name&gt;=&lt;value&gt; -- client environment variables whose names start with &quot;UV_&quot;
 
@@ -6880,11 +6908,7 @@ Specify an IPv6 address pool for dynamic assignment to clients.  The
 pool starts at
 <B>ipv6addr</B>
 
-and increments by +1 for every new client (linear mode).  The
-<B>/bits</B>
-
-setting controls the size of the pool.  Due to implementation details,
-the pool size must be between /64 and /112.
+and matches the offset determined from the start of the IPv4 pool.
 <DT><B>--ifconfig-ipv6-push ipv6addr/bits ipv6remote</B>
 
 <DD>
@@ -8541,6 +8565,6 @@ James Yonan &lt;<A HREF="mailto:jim@yonan.net">jim@yonan.net</A>&gt;
 This document was created by
 <A HREF="/cgi-bin/man/man2html">man2html</A>,
 using the manual pages.<BR>
-Time: 07:56:39 GMT, May 10, 2016
+Time: 14:34:32 GMT, August 23, 2016
 </BODY>
 </HTML>
