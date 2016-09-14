@@ -1,3 +1,54 @@
+OpenVPN 2.3.12
+
+Arne Schwabe (2):
+      Complete push-peer-info documentation and allow IV_PLAT_VER for other platforms than Windows if the client UI supplies it.
+      Move ASSERT so external-key with OpenSSL works again
+
+David Sommerseth (5):
+      Only build and run cmocka unit tests if its submodule is initialized
+      Another fix related to unit test framework
+      Remove NOP function and callers
+      Revert "Drop recursively routed packets"
+      Preparing release of v2.3.12
+
+Dorian Harmans (1):
+      Add CHACHA20-POLY1305 ciphersuite IANA name translations.
+
+Ivo Manca (1):
+      Plug memory leak in mbedTLS backend
+
+Jeffrey Cutter (1):
+      Update contrib/pull-resolv-conf/client.up for no DOMAIN
+
+Jens Neuhalfen (2):
+      Add unit testing support via cmocka
+      Add a test for auth-pam searchandreplace
+
+Josh Cepek (1):
+      Push an IPv6 CIDR mask used by the server, not the pool's size
+
+Leon Klingele (1):
+      Add link to bug tracker
+
+Lev Stipakov (1):
+      Drop recursively routed packets
+
+Samuli Seppänen (2):
+      Update CONTRIBUTING.rst to allow GitHub PRs for code review purposes
+      Clarify the fact that build instructions in README are for release tarballs
+
+Selva Nair (4):
+      Make error non-fatal while deleting address using netsh
+      Make block-outside-dns work with persist-tun
+      Ignore SIGUSR1/SIGHUP during exit notification
+      Promptly close the netcmd_semaphore handle after use
+
+Steffan Karger (4):
+      Fix polarssl / mbedtls builds
+      Don't limit max incoming message size based on c2->frame
+      Fix '--cipher none --cipher' crash
+      Discourage using 64-bit block ciphers
+
 OpenVPN 2.3.11
 
 Gert Doering (1):
@@ -22,7 +73,7 @@ Michael McConville (1):
 Niels Ole Salscheider (1):
       Fix build with libressl
 
-Samuli Seppnen (1):
+Samuli Seppänen (1):
       Improve LZO, PAM and OpenSSL documentation
 
 Selva Nair (2):
@@ -123,7 +174,7 @@ Lukasz Kutyla (1):
 Michal Ludvig (1):
       Support for username-only auth file.
 
-Samuli Seppnen (2):
+Samuli Seppänen (2):
       Add CONTRIBUTING.rst
       Updates to Changes.rst
 
@@ -245,7 +296,7 @@ Mike Gilbert (1):
 Robert Fischer (1):
       Updated manpage for --rport and --lport
 
-Samuli Seppnen (2):
+Samuli Seppänen (2):
       Properly escape dashes on the man-page
       Improve documentation in --script-security section of the man-page
 
@@ -273,7 +324,7 @@ Gert Doering (2):
       Add client-only support for peer-id.
       Preparing for release v2.3.6 (ChangeLog, version.m4)
 
-Samuli Seppnen (1):
+Samuli Seppänen (1):
       Fix to --shaper documentation on the man-page
 
 Steffan Karger (4):
@@ -537,7 +588,7 @@ Josh Cepek (2):
 Matthias Andree (1):
       Enable TCP_NODELAY configuration on FreeBSD.
 
-Samuli Seppnen (4):
+Samuli Seppänen (4):
       Removed ChangeLog.IPv6
       Added cross-compilation information INSTALL-win32.txt
       Updated README
@@ -856,7 +907,7 @@ Jonathan K. Bullard (2):
       Fix file access checks on commands
       Clarified the docs and help screen about what a 'cmd' is
 
-Samuli Seppnen (1):
+Samuli Seppänen (1):
       Added notes about upgrading from 2.3-alpha1 and earlier to INSTALL-win32.txt
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.11 (GNU/Linux)
@@ -1307,7 +1358,7 @@ Robert Fischer (8):
       Update man page with info about --remote-random-hostname
       Added man page entry for --management-client
 
-Samuli Seppnen (19):
+Samuli Seppänen (19):
       Add man page entry for --redirect-private
       Change all CRLF linefeeds to LF linefeeds
       Fix a bug in devcon source code handling
