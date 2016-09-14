@@ -126,16 +126,15 @@ class PhishBlockerTests(unittest2.TestCase):
         except:
             pass
                 
-        time.sleep(3)
-        sendPhishMail(mailfrom="test020")
-        time.sleep(3)
-        sendPhishMail(mailfrom="test021")
-        time.sleep(3)
-        sendPhishMail(mailfrom="test022")
-
-        timeout = 4
+        timeout = 12
         found = False
+        email_index = 20;
         while (not found and timeout > 0):
+            time.sleep(3)
+            email_index += 1
+            from_address = "test0" + str(email_index)
+            sendPhishMail(mailfrom=from_address)
+
             events = global_functions.get_events('Phish Blocker','All Phish Events',None,1)
             assert(events != None)
             # print events['list'][0]
