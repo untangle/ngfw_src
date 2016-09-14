@@ -62,6 +62,7 @@ public class InterfaceSettings implements Serializable, JSONString
     private List<InterfaceAlias> v4Aliases = new LinkedList<InterfaceAlias>();
     private List<InterfaceAlias> v6Aliases = new LinkedList<InterfaceAlias>();
     
+    private String      v4PPPoERootDev; /* The PPPoE root device (the device ppp is based on)  */
     private String      v4PPPoEUsername; /* PPPoE Username */
     private String      v4PPPoEPassword; /* PPPoE Password */
     private Boolean     v4PPPoEUsePeerDns; /* If the DNS should be determined via PPP */
@@ -190,6 +191,9 @@ public class InterfaceSettings implements Serializable, JSONString
 
     public InetAddress getV4AutoDns2Override( ) { return this.v4AutoDns2Override; }
     public void setV4AutoDns2Override( InetAddress newValue ) { this.v4AutoDns2Override = newValue; }
+
+    public String getV4PPPoERootDev( ) { return this.v4PPPoERootDev; }
+    public void setV4PPPoERootDev( String newValue ) { this.v4PPPoERootDev = newValue; }
 
     public String getV4PPPoEUsername( ) { return this.v4PPPoEUsername; }
     public void setV4PPPoEUsername( String newValue ) { this.v4PPPoEUsername = newValue; }
