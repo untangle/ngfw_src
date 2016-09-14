@@ -1283,6 +1283,9 @@ public class NetworkManagerImpl implements NetworkManager
         int pppCount = 0;
         for ( InterfaceSettings intf : networkSettings.getInterfaces() ) {
             if ( InterfaceSettings.V4ConfigType.PPPOE.equals( intf.getV4ConfigType() ) ) {
+                // save the old system dev (usuallyy physdev or sometimse vlan dev as root dev)
+                intf.setV4PPPoERootDev(intf.getSystemDev());
+                intf.setSystemDev("ppp" + pppCount);
                 intf.setSymbolicDev("ppp" + pppCount);
                 pppCount++;
             }
