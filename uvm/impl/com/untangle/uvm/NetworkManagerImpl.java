@@ -1249,21 +1249,7 @@ public class NetworkManagerImpl implements NetworkManager
         networkSettings.setHostName( networkSettings.getHostName().replaceAll("\\..*","") );
         
         /**
-         * Set system names
-         */
-        int pppCount = 0;
-        for ( InterfaceSettings intf : networkSettings.getInterfaces() ) {
-            if ( InterfaceSettings.V4ConfigType.PPPOE.equals( intf.getV4ConfigType() ) ) {
-                //String ethNum = intf.getPhysicalDev().replaceAll( "[^\\d]", "" ); /* remove all alpha characters */
-                //intf.setSystemDev( "ppp" + ethNum );
-                intf.setSystemDev("ppp" + pppCount);
-                intf.setSymbolicDev("ppp" + pppCount);
-                pppCount++;
-            }
-        }
-        
-        /**
-         * Handle VLAN alias interfaces
+         * Handle VLAN interfaces
          */
         for ( InterfaceSettings intf : networkSettings.getInterfaces() ) {
             if ( ! intf.getIsVlanInterface() )
@@ -1291,6 +1277,17 @@ public class NetworkManagerImpl implements NetworkManager
             intf.setSymbolicDev( intf.getSystemDev() );
         }
 
+        /**
+         * Handle PPPoE interfaces
+         */
+        int pppCount = 0;
+        for ( InterfaceSettings intf : networkSettings.getInterfaces() ) {
+            if ( InterfaceSettings.V4ConfigType.PPPOE.equals( intf.getV4ConfigType() ) ) {
+                intf.setSymbolicDev("ppp" + pppCount);
+                pppCount++;
+            }
+        }
+        
         /**
          * Determine if the interface is a bridge. If so set the symbolic device name
          */
