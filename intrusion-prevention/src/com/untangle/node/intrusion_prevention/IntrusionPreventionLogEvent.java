@@ -120,7 +120,9 @@ public class IntrusionPreventionLogEvent extends LogEvent
     @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
-        String sql = "INSERT INTO reports.intrusion_prevention_events" + getPartitionTablePostfix() + " " +
+        Timestamp ts = new Timestamp( ( getEventSecond() * 1000 ) + ( getEventMicrosecond() / 1000 ) );
+
+        String sql = "INSERT INTO reports.intrusion_prevention_events" + getPartitionTablePostfix(ts) + " " +
             "( time_stamp, sig_id, gen_id, class_id, source_addr, source_port, dest_addr, dest_port, protocol, blocked, category, classtype, msg)" +
             " values " +
             "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ); ";
@@ -129,7 +131,6 @@ public class IntrusionPreventionLogEvent extends LogEvent
 
         int i=0;
 
-        Timestamp ts = new Timestamp( ( getEventSecond() * 1000 ) + ( getEventMicrosecond() / 1000 ) );
         pstmt.setTimestamp(++i, ts );
         pstmt.setLong(++i, getSignatureId() );
         pstmt.setLong(++i, getGeneratorId() );
