@@ -170,7 +170,7 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
 
         // if no BD feedback and cloud returned positive result we also send feedback
         if ((feedback == null) && (cloudResult != null) && (cloudResult.getItemCategory() != null) && (cloudResult.getItemClass() != null) && (cloudResult.getItemConfidence() == 100)) {
-            feedback = new VirusCloudFeedback(virusState, "TD", cloudResult.getItemCategory(), cloudResult.getItemClass(), scanFileLength, nodeSession, cloudResult);
+            feedback = new VirusCloudFeedback(virusState, "UT", cloudResult.getItemCategory(), cloudResult.getItemClass(), scanFileLength, nodeSession, cloudResult);
         }
 
         // if we have a feedback object start it up now
