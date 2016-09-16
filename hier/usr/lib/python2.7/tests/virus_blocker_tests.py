@@ -13,6 +13,10 @@ import remote_control
 import test_registry
 import global_functions
 
+# we have two special files with known MD5's that we use for testing the cloud scanner
+md5SmallFile = "0f14ddcbb42bd6a8af5b820a4f52572b"
+md5LargeFile = "e223ff196471639c8cc4b8d3d1d444a9"
+
 #
 # Just extends the virus base tests
 #
@@ -52,6 +56,7 @@ class VirusBlockTests(VirusBlockerBaseTests):
         # do a scan - this forces it to wait until the signatures are done downloading
         result = os.system("touch /tmp/bdamtest ; bdamclient -p 127.0.0.1:1344 /tmp/bdamtest >/dev/null 2>&1")
         assert (result == 0)
+
 #
 # All of the tests below this point are run using memory mode instead of file mode scanning.
 # We do this by setting the hidden memoryMode flag which forces the app to operate as it would
@@ -73,18 +78,36 @@ class VirusBlockTests(VirusBlockerBaseTests):
     def test_220_clearEventHandlerCache(self):
         self.node.clearAllEventHandlerCaches()
 
-    # test the cloud scanner using our special small test virus
+    # test the cloud scanner with http using our special small test virus
     def test_230_httpCloudSmallBlocked(self):
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/UntangleVirus.exe 2>&1 | grep -q blocked")
         assert (result == 0)
 
-    # test the cloud scanner using our special large test virus
+    # test the cloud scanner with http using our special large test virus
     def test_240_httpCloudLargeBlocked(self):
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/UntangleLargeVirus.exe 2>&1 | grep -q blocked")
         assert (result == 0)
 
+    # test the cloud scanner with ftp using our special small test virus
+    def test_250_ftpCloudSmallBlocked(self):
+        remote_control.runCommand("rm -f /tmp/temp_250_ftpVirusBlocked_file")
+        result = remote_control.runCommand("wget -q -O /tmp/temp_250_ftpVirusBlocked_file ftp://test.untangle.com/test/UntangleVirus.exe")
+        assert (result == 0)
+        md5TestNum = remote_control.runCommand("\"md5sum /tmp/temp_250_ftpVirusBlocked_file | awk '{print $1}'\"", stdout=True)
+        print "md5SmallFile <%s> vs md5TestNum <%s>" % (md5SmallFile, md5TestNum)
+        assert (md5SmallFile != md5TestNum)
+
+    # test the cloud scanner with ftp using our special large test virus
+    def test_260_ftpCloudLargeBlocked(self):
+        remote_control.runCommand("rm -f /tmp/temp_260_ftpVirusBlocked_file")
+        result = remote_control.runCommand("wget -q -O /tmp/temp_260_ftpVirusBlocked_file ftp://test.untangle.com/test/UntangleLargeVirus.exe")
+        assert (result == 0)
+        md5TestNum = remote_control.runCommand("\"md5sum /tmp/temp_260_ftpVirusBlocked_file | awk '{print $1}'\"", stdout=True)
+        print "md5LargeFile <%s> vs md5TestNum <%s>" % (md5LargeFile, md5TestNum)
+        assert (md5LargeFile != md5TestNum)
+
     # turn off forceMemoryMode when we are finished
-    def test_250_disableForceMemoryScanMode(self):
+    def test_270_disableForceMemoryScanMode(self):
         virusSettings = self.node.getSettings()
         assert (virusSettings['forceMemoryMode'] == True)
 
