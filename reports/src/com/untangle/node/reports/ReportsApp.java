@@ -404,7 +404,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         matchers.add( matcher1 );
         matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "load1", ">", "20" ) );
         matchers.add( matcher2 );
-        alertRule = new AlertRule( true, matchers, true, true, "Server load is very high", true, 60 );
+        alertRule = new AlertRule( true, matchers, true, true, "Server load is high", true, 60 );
         rules.add( alertRule );
 
         matchers = new LinkedList<AlertRuleCondition>();
