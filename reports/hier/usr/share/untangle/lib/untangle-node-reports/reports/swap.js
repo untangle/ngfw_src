@@ -6,11 +6,11 @@
     "enabled": true,
     "javaClass": "com.untangle.node.reports.ReportEntry",
     "orderDesc": false,
-    "units": "percent",
+    "units": "bytes",
     "readOnly": true,
     "table": "server_events",
     "timeDataColumns": [
-        "round(((max(swap_total)-max(swap_free))::float/max(swap_total)::float)::numeric,4)*100 as swap_usage"
+        "(max(swap_total)-max(swap_free)) as swap_usage"
     ],
     "colors": [
         "#396c2b"
