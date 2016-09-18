@@ -13,8 +13,11 @@ import java.util.Iterator;
 import org.apache.log4j.Logger;
 
 import com.untangle.jvector.Vector;
+import com.untangle.jnetcap.Netcap;
+import com.untangle.jnetcap.NetcapSession;
 import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.node.SessionTuple;
+import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.util.Pulse;
 
@@ -252,6 +255,7 @@ public class SessionTableImpl
 
         int shutdownCount = 0;
         LinkedList<Vector> shutdownList = new LinkedList<Vector>();
+        LinkedList<SessionEvent> conntrackDestroyList = new LinkedList<SessionEvent>();
 
         if ( sessionTableById.isEmpty()) 
             return;
@@ -310,8 +314,17 @@ public class SessionTableImpl
                 Vector vector = null;
                 if ( session.netcapHook() != null )
                     vector = session.netcapHook().getVector();
-                if ( vector != null )
+                if ( vector != null ) {
                     shutdownList.add(vector);
+                }
+                // if the vector doesn't exist then the session may still be alive
+                // but dynamically bypassed and still passing at layer-3
+                // if this is the case try to delete the conntrack entry
+                else {
+                    NetcapSession netcapSession = session.netcapSession();
+                    if ( netcapSession != null )
+                        conntrackDestroyList.add( sessionEvent );
+                }
             }
         }
 
@@ -323,6 +336,12 @@ public class SessionTableImpl
             catch (Exception e) {
                 logger.warn( "Exception killing session", e );
             }
+        }
+
+        for ( SessionEvent sessionEvent : conntrackDestroyList ) {
+            String cli = sessionEvent.getCClientAddr().getHostAddress();
+            String srv = sessionEvent.getCServerAddr().getHostAddress();
+            Netcap.conntrackDestroy( sessionEvent.getProtocol(), cli, sessionEvent.getCClientPort(), srv, sessionEvent.getCServerPort());
         }
 
         if ( shutdownCount > 0 )

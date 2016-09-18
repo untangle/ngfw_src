@@ -75,7 +75,7 @@ public class UDPAttributes
     public static UDPAttributes makeSwapped( Endpoints endpoints )
     {
         return new UDPAttributes( endpoints.server().host(), endpoints.server().port(), 
-                              endpoints.client().host(), endpoints.client().port());        
+                                  endpoints.client().host(), endpoints.client().port());        
     }
 
     protected UDPAttributes( CPointer pointer ) 
@@ -84,19 +84,21 @@ public class UDPAttributes
         this.pointer = pointer;
     }
 
-    public long pointer() { return pointer.value(); }
+    public long pointer()
+    {
+        return pointer.value();
+    }
 
     public MutableEndpoint src() 
-    { 
+    {
         return src;
     }
 
     public MutableEndpoint dst() 
-    { 
+    {
         return dst;
     }
 
-    /* XXX Create helper get methods that do error checking */
     public byte ttl() 
     {
         return (byte)getIntValue( FLAG_TTL );
