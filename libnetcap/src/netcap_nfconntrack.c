@@ -51,7 +51,7 @@ static struct
 
 static int _nfconntrack_tuple_callback( enum nf_conntrack_msg_type type, struct nf_conntrack *conntrack, void * user_data );
 static int _nfconntrack_dump_callback( enum nf_conntrack_msg_type type, struct nf_conntrack *conntrack, void * user_data );
-static int _nfconntrack_update( struct nf_conntrack* ct );
+static int _nfconntrack_query( struct nf_conntrack* ct, const enum nf_conntrack_query query );
 static int _initialize_handle( _conntrack_handle_t* handler );
 static _conntrack_handle_t* _get_handle( void );
 
@@ -141,8 +141,40 @@ int  netcap_nfconntrack_update_mark( netcap_session_t* session, u_int32_t mark)
     /* set the mark to set */
     nfct_set_attr_u32( ct, ATTR_MARK, mark );
 
-    /* Packet is post-NAT, lookup in reverse */
-    _nfconntrack_update(ct);
+    /* update the mark */
+    _nfconntrack_query(ct, NFCT_Q_UPDATE);
+
+    if ( ct != NULL )
+        nfct_destroy( ct );
+    
+    return 0;
+}
+
+/**
+ * destroy the contrack of the session
+ */
+int  netcap_nfconntrack_destroy_conntrack( const u_int32_t protocol, const char* c_client_addr, const u_int32_t c_client_port, const char* c_server_addr, const u_int32_t c_server_port )
+{
+    struct nf_conntrack* ct = NULL;
+    if (( ct = nfct_new()) == NULL ) return errlog( ERR_CRITICAL, "nfct_new\n" );
+    
+    /* set protocol info */
+    nfct_set_attr_u8( ct, ATTR_ORIG_L3PROTO, AF_INET );
+    nfct_set_attr_u8( ct, ATTR_ORIG_L4PROTO, (u_int8_t) protocol );
+    nfct_set_attr_u8( ct, ATTR_REPL_L3PROTO, AF_INET );
+    nfct_set_attr_u8( ct, ATTR_REPL_L4PROTO, (u_int8_t) protocol );
+
+    in_addr_t cli = inet_addr( c_client_addr );
+    in_addr_t srv = inet_addr( c_server_addr );
+
+    /* set the client side (orig) info */
+    nfct_set_attr_u32( ct, ATTR_ORIG_IPV4_SRC, cli);
+    nfct_set_attr_u16( ct, ATTR_ORIG_PORT_SRC, htons((u_short)c_client_port) );
+    nfct_set_attr_u32( ct, ATTR_ORIG_IPV4_DST, srv );
+    nfct_set_attr_u16( ct, ATTR_ORIG_PORT_DST, htons((u_short)c_server_port) );
+            
+    /* destroy the conntrack entry */
+    _nfconntrack_query(ct, NFCT_Q_DESTROY);
 
     if ( ct != NULL )
         nfct_destroy( ct );
@@ -367,20 +399,19 @@ static int _nfconntrack_dump_callback( enum nf_conntrack_msg_type type, struct n
 }
 
 /**
- * Update the specified conntrack
+ * Run the specific conntrack query
  */
-static int _nfconntrack_update( struct nf_conntrack* ct )
+static int _nfconntrack_query( struct nf_conntrack* ct, const enum nf_conntrack_query query )
 {
     struct nf_conntrack* ct_result = NULL;
     _conntrack_handle_t* handle = NULL;
 
     int _critical_section() {
-
         // netcap_nfconntrack_print_entry( 10, ct );
 
         /* Actually make the query */
         errno = 0;
-        if ( nfct_query( handle->handle, NFCT_Q_UPDATE, ct ) < 0 ) {
+        if ( nfct_query( handle->handle, query, ct ) < 0 ) {
             return perrlog( "nfct_query" );
         }
         

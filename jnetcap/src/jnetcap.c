@@ -469,6 +469,21 @@ JNIEXPORT jstring JNICALL JF_Netcap( arpLookup )
 
 /*
  * Class:     com_untangle_jnetcap_Netcap
+ * Method:    conntrackDestroy
+ * Signature: (ISISI)I
+ */
+JNIEXPORT jint JNICALL JF_Netcap( conntrackDestroy )
+    (JNIEnv *env, jclass _class, jint protocol, jstring cClientAddr, jint cClientPort, jstring cServerAddr, jint cServerPort )
+{
+    const char* cli = (*env)->GetStringUTFChars(env, cClientAddr, NULL);
+    const char* srv = (*env)->GetStringUTFChars(env, cServerAddr, NULL);
+
+    int ret = netcap_nfconntrack_destroy_conntrack( protocol, cli, cClientPort, srv, cServerPort);
+    return ret;
+}
+
+/*
+ * Class:     com_untangle_jnetcap_Netcap
  * Method:    arpLookup
  * Signature: ([JI)I
  */
