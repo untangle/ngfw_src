@@ -104,6 +104,7 @@ public class IpsecVpnManager
         FileWriter strongswan_conf = new FileWriter(STRONGSWAN_CONF_FILE, false);
 
         AddressCalculator calculator = new AddressCalculator(settings.getVirtualAddressPool());
+        String osArch = System.getProperty("os.arch", "unknown");
 
         ipsec_conf.write("# " + IPSEC_CONF_FILE + RET + FILE_DISCLAIMER);
         ipsec_secrets.write("# " + IPSEC_SECRETS_FILE + RET + FILE_DISCLAIMER);
@@ -160,6 +161,20 @@ public class IpsecVpnManager
 
             ipsec_conf.write(TAB + "rekey=yes" + RET);
             ipsec_conf.write(TAB + "keyingtries=%forever" + RET);
+
+            /*
+             * When running on the ASUS we have to disable the TCP replay
+             * protection, otherwise we see massive packet loss. The tunnel is
+             * up but when testing with ping only 1 in 1000 or so replies are
+             * actually received properly. Using tcpdump we see all the replies
+             * and everything looks correct, but almost all seem to be ignored
+             * by charon. Our best guess is the unique switch/network setup on
+             * this device is somehow triggering the replay detection, so our
+             * current solution is adding this config option.
+             */
+            if (osArch.equals("arm") == true) {
+                ipsec_conf.write(TAB + "replay_window=0" + RET);
+            }
 
             if (data.getPhase1Manual() == true) {
                 ipsec_conf.write(TAB + "ike=" + data.getPhase1Cipher() + "-" + data.getPhase1Hash() + "-" + data.getPhase1Group() + "!" + RET);
