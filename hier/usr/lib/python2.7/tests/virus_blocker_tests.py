@@ -80,13 +80,21 @@ class VirusBlockTests(VirusBlockerBaseTests):
 
     # test the cloud scanner with http using our special small test virus
     def test_230_httpCloudSmallBlocked(self):
-        result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/UntangleVirus.exe 2>&1 | grep -q blocked")
+        remote_control.runCommand("rm -f /tmp/temp_230_httpVirusBlocked_file")
+        result = remote_control.runCommand("wget -q -O /tmp/temp_230_httpVirusBlocked_file http://test.untangle.com/test/UntangleVirus.exe")
         assert (result == 0)
+        md5TestNum = remote_control.runCommand("\"md5sum /tmp/temp_230_httpVirusBlocked_file | awk '{print $1}'\"", stdout=True)
+        print "md5SmallFile <%s> vs md5TestNum <%s>" % (md5SmallFile, md5TestNum)
+        assert (md5SmallFile != md5TestNum)
 
     # test the cloud scanner with http using our special large test virus
     def test_240_httpCloudLargeBlocked(self):
-        result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/UntangleLargeVirus.exe 2>&1 | grep -q blocked")
+        remote_control.runCommand("rm -f /tmp/temp_240_httpVirusBlocked_file")
+        result = remote_control.runCommand("wget -q -O /tmp/temp_240_httpVirusBlocked_file http://test.untangle.com/test/UntangleLargeVirus.exe")
         assert (result == 0)
+        md5TestNum = remote_control.runCommand("\"md5sum /tmp/temp_240_httpVirusBlocked_file | awk '{print $1}'\"", stdout=True)
+        print "md5LargeFile <%s> vs md5TestNum <%s>" % (md5LargeFile, md5TestNum)
+        assert (md5LargeFile != md5TestNum)
 
     # test the cloud scanner with ftp using our special small test virus
     def test_250_ftpCloudSmallBlocked(self):
