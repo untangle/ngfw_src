@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.HashMap;
 import java.util.List;
+import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.io.FileInputStream;
 import java.io.File;
@@ -500,11 +501,8 @@ for more data when a full packet has not yet been received.
 
     public String extractSNIhostname(ByteBuffer data) throws Exception
     {
-        byte[] clientRandom = new byte[28];
-        byte[] sessionData = new byte[256];
-        byte[] cipherList = new byte[256];
-        byte[] compData = new byte[256];
         int counter = 0;
+        int pos;
 
         // we use the first byte of the message to determine the protocol
         int recordType = Math.abs(data.get());
@@ -541,21 +539,37 @@ for more data when a full packet has not yet been received.
         // extract all the handshake data so we can get to the extensions
         int messageExtra = data.get();
         int messageLength = data.getShort();
-
         int clientVersion = data.getShort();
-
         int clientTime = data.getInt();
 
-        data.get(clientRandom, 0, 28);
+        // skip over the fixed size client random data 
+        if (data.remaining() < 28) throw new BufferUnderflowException();
+        pos = data.position();
+        data.position(pos + 28);
 
+        // skip over the variable size session id data
         int sessionLength = Math.abs(data.get());
-        if (sessionLength > 0) data.get(sessionData, 0, sessionLength);
+        if (sessionLength > 0) {
+            if (data.remaining() < sessionLength) throw new BufferUnderflowException();
+            pos = data.position();
+            data.position(pos + sessionLength);
+        }
 
+        // skip over the variable size cipher suites data
         int cipherLength = Math.abs(data.getShort());
-        if (cipherLength > 0) data.get(cipherList, 0, cipherLength);
+        if (cipherLength > 0) {
+            if (data.remaining() < cipherLength) throw new BufferUnderflowException();
+            pos = data.position();
+            data.position(pos + cipherLength);
+        }
 
+        // skip over the variable size compression methods data
         int compLength = Math.abs(data.get());
-        if (compLength > 0) data.get(compData, 0, compLength);
+        if (compLength > 0) {
+            if (data.remaining() < compLength) throw new BufferUnderflowException();
+            pos = data.position();
+            data.position(pos + compLength);
+        }
 
         // if position equals recordLength plus five we know this is the end
         // of the packet and thus there are no extensions - will normally
