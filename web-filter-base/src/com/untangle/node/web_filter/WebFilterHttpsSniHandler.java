@@ -43,7 +43,7 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
         logger.debug("Created WebFilterHttpsSniHandler");
     }
 
-    public void handleTCPNewSessionRequest( TCPNewSessionRequest req )
+    public void handleTCPNewSessionRequest(TCPNewSessionRequest req)
     {
         if (!node.isHttpsEnabledSni()) {
             req.release();
@@ -56,15 +56,15 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
         }
     }
 
-    public void handleTCPClientChunk( NodeTCPSession session, ByteBuffer data )
+    public void handleTCPClientChunk(NodeTCPSession session, ByteBuffer data)
     {
         // grab the SSL Inspector status attachment
-        Boolean sslInspectorStatus = (Boolean)session.globalAttachment(NodeSession.KEY_SSL_INSPECTOR_SESSION_INSPECT);
-       
+        Boolean sslInspectorStatus = (Boolean) session.globalAttachment(NodeSession.KEY_SSL_INSPECTOR_SESSION_INSPECT);
+
         // if we find the attachment and it is true then we release the
         // session now since we'll see the unencrypted traffic later
         if ((sslInspectorStatus != null) && (sslInspectorStatus.booleanValue() == true)) {
-            session.sendDataToServer( data );
+            session.sendDataToServer(data);
             session.release();
             return;
         }
@@ -76,16 +76,16 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
             // found an engine which means we've decided to block so we pass
             // all received data to the SSL engine which will create and
             // encrypt the redirect and return it for transmit to the client
-            engine.handleClientData( data );
+            engine.handleClientData(data);
             return;
         } else {
             // no engine attached so we're still analyzing this thing
-            checkClientRequest( session, data );
+            checkClientRequest(session, data);
             return;
         }
     }
 
-    private void checkClientRequest( NodeTCPSession sess, ByteBuffer data )
+    private void checkClientRequest(NodeTCPSession sess, ByteBuffer data)
     {
         java.security.cert.X509Certificate serverCert = null;
         ByteBuffer buff = data;
@@ -106,7 +106,7 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
                 sess.release();
                 ByteBuffer array[] = new ByteBuffer[1];
                 array[0] = hold;
-                sess.sendDataToServer( array );
+                sess.sendDataToServer(array);
                 return;
             }
 
@@ -120,7 +120,7 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
 
         // scan the buffer for the SNI hostname
         try {
-            domain = _extractSNIhostname(buff.duplicate());
+            domain = extractSNIhostname(buff.duplicate());
         }
 
         // on underflow exception we stuff the partial packet into a buffer
@@ -135,16 +135,15 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
 
         // any other exception we just log, release, and return
         catch (Exception exn) {
-            logger.warn("Exception calling _extractSNIhostname ", exn);
+            logger.warn("Exception calling extractSNIhostname ", exn);
             sess.release();
             ByteBuffer array[] = new ByteBuffer[1];
             array[0] = buff;
-            sess.sendDataToServer( array );
+            sess.sendDataToServer(array);
             return;
         }
 
-        if (domain != null)
-            logger.debug("Detected SSL connection (via SNI) to: " + domain);
+        if (domain != null) logger.debug("Detected SSL connection (via SNI) to: " + domain);
 
         /**
          * If SNI information is not present then we fallback to using the
@@ -169,8 +168,7 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
 
                 // we only want the CN from the certificate
                 for (Rdn rdn : ldapName.getRdns()) {
-                    if (rdn.getType().equals("CN") == false)
-                        continue;
+                    if (rdn.getType().equals("CN") == false) continue;
                     domain = rdn.getValue().toString().toLowerCase();
                     break;
                 }
@@ -194,7 +192,7 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
             sess.release();
             ByteBuffer array[] = new ByteBuffer[1];
             array[0] = buff;
-            sess.sendDataToServer( array );
+            sess.sendDataToServer(array);
             return;
         }
 
@@ -221,7 +219,7 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
             sess.release();
             ByteBuffer array[] = new ByteBuffer[1];
             array[0] = buff;
-            sess.sendDataToServer( array );
+            sess.sendDataToServer(array);
             return;
         }
         requestLine.setRequestUri(fakeUri); // URI is unknown
@@ -259,23 +257,21 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
         sess.release();
         ByteBuffer array[] = new ByteBuffer[1];
         array[0] = buff;
-        sess.sendDataToServer( array );
+        sess.sendDataToServer(array);
         return;
     }
 
     /*
-     * We don't bother checking the buffer position or length here since the
-     * caller uses the buffer underflow exception to know when it needs to wait
-     * for more data when a full packet has not yet been received
+     * We don't bother checking the buffer position or length on much of the
+     * stuff here since the caller uses the buffer underflow exception to know
+     * when it needs to wait for more data when a full packet has not yet been
+     * received.
      */
 
-    public String _extractSNIhostname(ByteBuffer data) throws Exception
+    public String extractSNIhostname(ByteBuffer data) throws Exception
     {
-        byte[] clientRandom = new byte[28];
-        byte[] sessionData = new byte[256];
-        byte[] cipherList = new byte[256];
-        byte[] compData = new byte[256];
         int counter = 0;
+        int pos;
 
         logger.debug("Searching for SNI in " + data.toString());
 
@@ -303,16 +299,35 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
         int messLolen = data.getShort();
         int clientVersion = data.getShort();
         int clientTime = data.getInt();
-        data.get(clientRandom, 0, 28);
+
+        // skip over the fixed size client random data 
+        if (data.remaining() < 28) throw new BufferUnderflowException();
+        pos = data.position();
+        data.position(pos + 28);
+
+        // skip over the variable size session id data
         int sessionLength = Math.abs(data.get());
-        if (sessionLength > 0)
-            data.get(sessionData, 0, sessionLength);
+        if (sessionLength > 0) {
+            if (data.remaining() < sessionLength) throw new BufferUnderflowException();
+            pos = data.position();
+            data.position(pos + sessionLength);
+        }
+
+        // skip over the variable size cipher suites data
         int cipherLength = Math.abs(data.getShort());
-        if (cipherLength > 0)
-            data.get(cipherList, 0, cipherLength);
+        if (cipherLength > 0) {
+            if (data.remaining() < cipherLength) throw new BufferUnderflowException();
+            pos = data.position();
+            data.position(pos + cipherLength);
+        }
+
+        // skip over the variable size compression methods data
         int compLength = Math.abs(data.get());
-        if (compLength > 0)
-            data.get(compData, 0, compLength);
+        if (compLength > 0) {
+            if (data.remaining() < compLength) throw new BufferUnderflowException();
+            pos = data.position();
+            data.position(pos + compLength);
+        }
 
         // if the position equals recLength plus 5 we know this is the end
         // of the packet and thus there are no extensions - will normally
