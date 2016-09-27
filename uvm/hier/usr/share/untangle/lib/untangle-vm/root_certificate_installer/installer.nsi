@@ -9,16 +9,18 @@
 SetCompressor /FINAL lzma 
 
 # Includes Needed
+!addincludedir "/usr/share/nsis/Include"
 !addincludedir ".\include"
 !addplugindir ".\plugin"
 !include "MUI.nsh"
 !include "x64.nsh"
 !include "nsProcess.nsh"
 !include "EnumUsersReg.nsh"
+!include "StrFunc.nsh"
 
 #!define MULTIUSER_EXECUTIONLEVEL Admin
 !define PACKAGE_NAME "Untangle Root CA Installer"
-!define VERSION "1.0.0.0"
+!define VERSION "1.1.0.0"
 !define FILENAME "RootCAInstaller.exe"
 !define UNTANGLE_SETTINGS_DIR "./"
 !define PUBLISHER "Untangle"
@@ -28,16 +30,19 @@ SetCompressor /FINAL lzma
 #!define ROOTCANAME "www.untangle.com - Untangle"
 !define ROOTCANAME "www.untangle.com"
 
-
 # Function AddCertificateToStore Defines
-!define CERT_QUERY_OBJECT_FILE 1
-!define CERT_QUERY_CONTENT_FLAG_ALL 16382
-!define CERT_QUERY_FORMAT_FLAG_ALL 14
-!define CERT_STORE_PROV_SYSTEM 10
-!define CERT_STORE_OPEN_EXISTING_FLAG 0x4000
+!define CERT_QUERY_OBJECT_FILE          1
+!define CERT_QUERY_CONTENT_FLAG_ALL     16382
+!define CERT_QUERY_FORMAT_FLAG_ALL      14
+!define CERT_STORE_PROV_SYSTEM          10
+!define CERT_STORE_OPEN_EXISTING_FLAG   0x4000
 !define CERT_SYSTEM_STORE_LOCAL_MACHINE 0x20000
 !define CERT_STORE_MAXIMUM_ALLOWED_FLAG 0x00001000
-!define CERT_STORE_ADD_ALWAYS 4
+!define CERT_STORE_ADD_ALWAYS           4
+
+# CertGetNameString Defines
+!define CERT_STORE_CERTIFICATE_CONTEXT  1
+!define CERT_NAME_SIMPLE_DISPLAY_TYPE   4
 
 # MUI Defines
 !define MUI_WELCOMEPAGE_TEXT "This wizard will guide you through the installation of ${PACKAGE_NAME} ${VERSION}. $\r$\n$\r$\nNote that the Windows version of ${PACKAGE_NAME} will only run on Windows XP, or higher.$\r$\n$\r$\n$\r$\n"
@@ -141,7 +146,6 @@ Section /o "Add to Firefox" SecFirefoxUnchecked
     File "${UNTANGLE_SETTINGS_DIR}\untangle-firefox-preferences.js"
 
     SetOutPath "$INSTDIR\bin"
-    File "${UNTANGLE_SETTINGS_DIR}\bin\certutil.exe"
     File "${UNTANGLE_SETTINGS_DIR}\bin\freebl3.dll"
     File "${UNTANGLE_SETTINGS_DIR}\bin\libnspr4.dll"
     File "${UNTANGLE_SETTINGS_DIR}\bin\libplc4.dll"
@@ -168,7 +172,6 @@ Section "Add to Firefox" SecFirefoxChecked
     File "${UNTANGLE_SETTINGS_DIR}\untangle-firefox-preferences.js"
 
     SetOutPath "$INSTDIR\bin"
-    File "${UNTANGLE_SETTINGS_DIR}\bin\certutil.exe"
     File "${UNTANGLE_SETTINGS_DIR}\bin\freebl3.dll"
     File "${UNTANGLE_SETTINGS_DIR}\bin\libnspr4.dll"
     File "${UNTANGLE_SETTINGS_DIR}\bin\libplc4.dll"
@@ -184,7 +187,6 @@ Section "Add to Firefox" SecFirefoxChecked
     File "${UNTANGLE_SETTINGS_DIR}\bin\ssl3.dll"
 
 SectionEnd
-
 
 Function AddCertificateToStore
     Exch $0
@@ -228,6 +230,9 @@ Function AddCertificateToStore
 FunctionEnd
 
 InstallDir "$PROGRAMFILES\${PACKAGE_NAME}"
+
+# StrFuncs we want to use
+${UnStrLoc}
 
 # Function before installation start verify is application already exist.
 Function .onInit
@@ -335,7 +340,7 @@ Section "Uninstall"
     DetailPrint "Uninstalling Untangle Root Certificates"
 
     DetailPrint "Uninstalling Untangle Root Certificates from Windows keystore"
-    nsExec::ExecToLog '"$INSTDIR\bin\certmgr.exe" -del -c -n ${ROOTCANAME} -s -r localMachine root'
+    ${un.EnumUsersReg} un.removeWindows temp.key
 
     DetailPrint "Uninstalling Untangle Root Certificates from Firefox"
     Delete "$PROGRAMFILES\Mozilla Firefox\untangle-firefox-certificate.cfg"
@@ -343,7 +348,6 @@ Section "Uninstall"
 
     ReadINIStr $1 "$APPDATA\Mozilla\Firefox\profiles.ini" "Profile0" "Path"
     DetailPrint "Uninstalling Untangle Root Certificates from Firefox keystore"
-    nsExec::ExecToLog '"$INSTDIR\bin\certutil.exe -D" -n "${ROOTCANAME} - Untangle" -d "$APPDATA\Mozilla\Firefox\$1"'
 
     ${un.EnumUsersReg} un.removeFirefox temp.key
 
@@ -352,7 +356,6 @@ Section "Uninstall"
     Delete "$INSTDIR\untangle.crt"
     Delete "$INSTDIR\ut.ico"
     Delete "$INSTDIR\bin\certmgr.exe"
-    Delete "$INSTDIR\bin\certutil.exe"
     Delete "$INSTDIR\bin\freebl3.dll"
     Delete "$INSTDIR\bin\libnspr4.dll"
     Delete "$INSTDIR\bin\libplc4.dll"
@@ -374,6 +377,39 @@ Section "Uninstall"
 
 SectionEnd
 
+Function un.removeWindows
+
+    Exch $0
+    System::Call "crypt32::CertOpenStore(i ${CERT_STORE_PROV_SYSTEM}, i 0, i 0, \
+    i ${CERT_STORE_OPEN_EXISTING_FLAG}|${CERT_SYSTEM_STORE_LOCAL_MACHINE}, \
+    w 'ROOT') i .r1"
+
+    ${If} $1 <> 0
+        StrCpy $2 0
+        ${Do}
+            System::Call "crypt32::CertEnumCertificatesInStore(i r1, i r2) i .r2"
+            ${If} $2 != 0
+                System::Call "crypt32::CertGetNameString(i r2, \ 
+                    i ${CERT_NAME_SIMPLE_DISPLAY_TYPE}, i 0, i 0, \ 
+                    t .r4, i ${NSIS_MAX_STRLEN}) i.r3" 
+                ${If} $3 != 0
+                    ## Compare names here
+                    ${UnStrLoc} $5 $4 "Untangle" ">"
+                    ${If} $5 != ""
+                        System::Call "crypt32::CertDuplicateCertificateContext(i r2) i.r6"
+                        System::Call "crypt32::CertDeleteCertificateFromStore(i r6) i.r7"
+                    ${Endif}
+                ${EndIf}
+            ${Else}
+                ${ExitDo}
+            ${EndIf}
+        ${Loop}
+        System::Call "crypt32::CertCloseStore(i r1, i 0)"
+    ${Else}
+        StrCpy $0 "Unable to open certificate store"
+    ${EndIf}
+FunctionEnd
+
 Function un.removeFirefox
     Pop $0
 
@@ -381,11 +417,6 @@ Function un.removeFirefox
     ReadRegStr $APPDATA_PATH HKU \
         "$0\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders" \
         "AppData"
-
-    ${If} "$APPDATA_PATH" != ""
-        ReadINIStr $1 "$APPDATA_PATH\Mozilla\Firefox\profiles.ini" "Profile0" "Path"
-        nsExec::ExecToLog '"$INSTDIR\bin\certutil.exe" -D -n "${ROOTCANAME} - Untangle" -d "$APPDATA_PATH\Mozilla\Firefox\$1"'
-    ${Endif}
 
 FunctionEnd
 
