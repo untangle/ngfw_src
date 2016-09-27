@@ -2,8 +2,8 @@
 #
 # Generate Windows installer for root certificate.
 #
-BRANDING_INSTALLER_PATH=/usr/share/untangle/lib/untangle-node-branding-manager/root_certificate_installer/
-INSTALLER_PATH=/usr/share/untangle/lib/untangle-vm/root_certificate_installer/
+BRANDING_INSTALLER_PATH=@PREFIX@/usr/share/untangle/lib/untangle-node-branding-manager/root_certificate_installer/
+INSTALLER_PATH=@PREFIX@/usr/share/untangle/lib/untangle-vm/root_certificate_installer/
 if [ -d ${BRANDING_INSTALLER_PATH} ] ; then
 	# Use branding manager's installer configuration
 	INSTALLER_PATH=${BRANDING_INSTALLER_PATH}
@@ -11,7 +11,7 @@ fi
 INSTALLER_CONFIGURATION=${INSTALLER_PATH}installer.nsi
 INSTALLER_FILE_NAME=RootCAInstaller.exe
 
-UT_ROOT_PATH=/usr/share/untangle/settings/untangle-certificates
+UT_ROOT_PATH=@PREFIX@/usr/share/untangle/settings/untangle-certificates
 UT_ROOT_CERTIFICATE=${UT_ROOT_PATH}/untangle.crt
 UT_ROOT_INSTALLER=${UT_ROOT_PATH}/${INSTALLER_FILE_NAME}
 
@@ -24,6 +24,11 @@ if [ "$1" = "check" ] ; then
 			exit
 		fi
 	fi
+fi
+
+DEBUG=0
+if [ "$1" = "debug" ] ; then
+	DEBUG=1
 fi
 
 if [ ! -f ${UT_ROOT_CERTIFICATE} ]; then
@@ -71,7 +76,11 @@ for f in untangle-firefox-*; do
 	rm -f $f.converted
 done
 
-makensis ${INSTALLER_CONFIGURATION} > /dev/null
+if [ $DEBUG -eq 1 ] ; then
+	makensis ${INSTALLER_CONFIGURATION} 
+else
+	makensis ${INSTALLER_CONFIGURATION} > /dev/null
+fi
 
 if [ $? -eq 0 ] ; then
 	if [ -f ${UT_ROOT_INSTALLER} ] ; then
