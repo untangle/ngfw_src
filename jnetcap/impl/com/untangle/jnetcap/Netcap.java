@@ -152,6 +152,11 @@ public final class Netcap
     public static native String arpLookup( String ipAddress );
 
     /**
+     * Destroy a conntrack entry
+     */
+    public static native int conntrackDestroy( int protocol, String cClientAddr, int cClientPort, String cServerAddr, int cServerPort );
+    
+    /**
      * Get a dump of the conntrack
      */
     public static native int conntrackDump( long[] arr, int arrLength );

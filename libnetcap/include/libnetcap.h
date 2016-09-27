@@ -430,14 +430,25 @@ char* netcap_session_fd_tuple_print  ( netcap_session_t* sess );
  */
 u_int64_t netcap_session_next_id ( void );
 
-/* Set the verdict on a packet */
+/**
+ * Set the verdict on a packet
+ */
 int  netcap_set_verdict      ( struct nfq_q_handle* nfq_qh, u_int32_t packet_id, int verdict, u_char* buf, int len);
 int  netcap_set_verdict_mark ( struct nfq_q_handle* nfq_qh, u_int32_t packet_id, int verdict, u_char* buf, int len, int set_mark, u_int32_t mark );
 
-/* Conntrack manipulation functions */
+/**
+ * Update the mark in the conntrack of the provided session
+ */
 int  netcap_nfconntrack_update_mark( netcap_session_t* session, u_int32_t mark);
 
-/* Dump all of conntrack */
+/**
+ * Destroy any conntrack entry with the matching attributes (client-side)
+ */
+int  netcap_nfconntrack_destroy_conntrack( const u_int32_t protocol, const char* c_client_addr, const u_int32_t c_client_port, const char* c_server_addr, const u_int32_t c_server_port );
+
+/**
+ * Dump all of conntrack
+ */
 list_t* netcap_nfconntrack_dump();
 
 /**

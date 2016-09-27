@@ -62,9 +62,8 @@ Ext.define('Webui.untangle-base-virus-blocker.settings', {
                     }
                 }, {
                     xtype: 'component',
-                    margin: '30 0 0 0',
-                    html: i18n._("Signatures were last updated") + ":&nbsp;&nbsp;&nbsp;&nbsp;" +
-                        (this.lastUpdate != null && this.lastUpdate.time != 0 ? i18n.timestampFormat(this.lastUpdate): i18n._("never"))
+                    name: 'signatureStatus',
+                    margin: '30 0 0 0'
                 }]
             }, {
                 xtype: 'fieldset',
@@ -74,6 +73,12 @@ Ext.define('Webui.untangle-base-virus-blocker.settings', {
             }]
             
         });
+
+        if ( this.lastUpdate != null && this.lastUpdate.time != 0 ) {
+            var sigString = "<i>" + i18n._("Signatures were last updated") + "</i>" + ":&nbsp;&nbsp;&nbsp;&nbsp;" + i18n.timestampFormat(this.lastUpdate);
+            var signatureStatusField = this.panelWeb.down('component[name=signatureStatus]');
+            signatureStatusField.setHtml(sigString);
+        }
     },
     // File Types
     buildExtensions: function() {

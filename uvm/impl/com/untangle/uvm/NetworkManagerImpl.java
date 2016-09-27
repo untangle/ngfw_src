@@ -2061,6 +2061,13 @@ public class NetworkManagerImpl implements NetworkManager
                 return new String[] {"/bin/true", "/etc/untangle-netd/post-network-hook.d/990-restart-dnsmasq"};
             }
 
+            /**
+             * If only /etc/dnsmasq.d/dhcp-static has changed, just restart dnsmasq
+             */
+            if ( changedFiles.contains("/etc/dnsmasq.d/dhcp-static") && changedFiles.size() == 1 ) {
+                return new String[] {"/bin/true", "/etc/untangle-netd/post-network-hook.d/990-restart-dnsmasq"};
+            }
+
             /*
              * If only /etc/miniupnpd/miniupnpd.conf has  been written, just restart miniupnpd
              */
