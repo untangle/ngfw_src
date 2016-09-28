@@ -25,7 +25,6 @@ nodeSSL = None
 canRelay = True
 canRelayTLS = True
 smtpServerHost = 'test.untangle.com'
-tlsSmtpServerHost = '10.112.56.44' # Vcenter VM Debian-ATS-TLS 
 
 def getLatestMailSender():
     remote_control.runCommand("rm -f mailpkg.tar*") # remove all previous mail packages
@@ -78,7 +77,7 @@ class PhishBlockerTests(unittest2.TestCase):
         except Exception,e:
             canRelay = False
         try:
-            canRelayTLS = global_functions.sendTestmessage(mailhost=tlsSmtpServerHost)
+            canRelayTLS = global_functions.sendTestmessage(mailhost=global_functions.tlsSmtpServerHost)
         except Exception,e:
             canRelayTLS = False
         getLatestMailSender()
@@ -205,8 +204,8 @@ class PhishBlockerTests(unittest2.TestCase):
         if not global_functions.isInOfficeNetwork(wan_IP):
             raise unittest2.SkipTest("Not on office network, skipping")
         if (not canRelayTLS):
-            raise unittest2.SkipTest('Unable to relay through ' + tlsSmtpServerHost)
-        tlsSMTPResult = sendPhishMail(host=tlsSmtpServerHost, useTLS=True)
+            raise unittest2.SkipTest('Unable to relay through ' + global_functions.tlsSmtpServerHost)
+        tlsSMTPResult = sendPhishMail(host=global_functions.tlsSmtpServerHost, useTLS=True)
         # print "TLS  : " + str(tlsSMTPResult)
         assert(tlsSMTPResult == 0)
        
@@ -215,11 +214,11 @@ class PhishBlockerTests(unittest2.TestCase):
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
         if not global_functions.isInOfficeNetwork(wan_IP):
             raise unittest2.SkipTest("Not on office network, skipping")
-        externalClientResult = subprocess.call(["ping -c 1 " + tlsSmtpServerHost + " >/dev/null 2>&1"],shell=True,stdout=None,stderr=None)            
+        externalClientResult = subprocess.call(["ping -c 1 " + global_functions.tlsSmtpServerHost + " >/dev/null 2>&1"],shell=True,stdout=None,stderr=None)            
         if (externalClientResult != 0):
             raise unittest2.SkipTest("TLS SMTP server is unreachable, skipping TLS Allow check")
         nodeSSL.start()
-        tlsSMTPResult = sendPhishMail(mailfrom="test060", host=tlsSmtpServerHost, useTLS=True)
+        tlsSMTPResult = sendPhishMail(mailfrom="test060", host=global_functions.tlsSmtpServerHost, useTLS=True)
         # print "TLS  : " + str(tlsSMTPResult)
         nodeSSL.stop()
         assert(tlsSMTPResult == 0)
@@ -227,7 +226,7 @@ class PhishBlockerTests(unittest2.TestCase):
         events = global_functions.get_events('Phish Blocker','All Phish Events',None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
-                                            'c_server_addr', tlsSmtpServerHost,
+                                            'c_server_addr', global_functions.tlsSmtpServerHost,
                                             's_server_port', 25,
                                             'addr', 'qa@example.com',
                                             'c_client_addr', remote_control.clientIP,

@@ -23,8 +23,6 @@ nodeSSLData = None
 canRelay = True
 canRelayTLS = True
 smtpServerHost = 'test.untangle.com'
-listFakeSmtpServerHosts = [('10.112.56.30','16'),('10.111.56.41','16')]
-tlsSmtpServerHost = '10.112.56.44' # Vcenter VM Debian-ATS-TLS 
 
 def getLatestMailSender():
     remote_control.runCommand("rm -f mailpkg.tar") # remove all previous mail packages
@@ -104,7 +102,7 @@ class SpamBlockerBaseTests(unittest2.TestCase):
         except Exception,e:
             canRelay = False
         try:
-            canRelayTLS = global_functions.sendTestmessage(mailhost=tlsSmtpServerHost)
+            canRelayTLS = global_functions.sendTestmessage(mailhost=global_functions.tlsSmtpServerHost)
         except Exception,e:
             canRelayTLS = False
         getLatestMailSender()
@@ -202,10 +200,7 @@ class SpamBlockerBaseTests(unittest2.TestCase):
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
         # find local SMTP sender
         fakeSmtpServerHost = "";
-        for smtpServerHostIP in listFakeSmtpServerHosts:
-            interfaceNet = smtpServerHostIP[0] + "/" + str(smtpServerHostIP[1])
-            if ipaddr.IPAddress(wan_IP) in ipaddr.IPv4Network(interfaceNet):
-                fakeSmtpServerHost = smtpServerHostIP[0]
+        fakeSmtpServerHost = global_functions.findSmtpServer(wan_IP)
         if (fakeSmtpServerHost == ""):
             raise unittest2.SkipTest("No local SMTP server")
         externalClientResult = subprocess.call(["ping","-c","1",fakeSmtpServerHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
@@ -264,17 +259,17 @@ class SpamBlockerBaseTests(unittest2.TestCase):
         if not global_functions.isInOfficeNetwork(wan_IP):
             raise unittest2.SkipTest("Not on office network, skipping")
         if (not canRelayTLS):
-            raise unittest2.SkipTest('Unable to relay through ' + tlsSmtpServerHost)
+            raise unittest2.SkipTest('Unable to relay through ' + global_functions.tlsSmtpServerHost)
         nodeData['smtpConfig']['scanWanMail'] = True
         node.setSettings(nodeData)
         # Make sure SSL Inspector is off
         nodeSSL.stop()
-        tlsSMTPResult = sendSpamMail(host=tlsSmtpServerHost, useTLS=True)
+        tlsSMTPResult = sendSpamMail(host=global_functions.tlsSmtpServerHost, useTLS=True)
         # print "TLS 1 : " + str(tlsSMTPResult)
         assert(tlsSMTPResult != 0)
         nodeData['smtpConfig']['allowTls'] = True
         node.setSettings(nodeData)
-        tlsSMTPResult = sendSpamMail(host=tlsSmtpServerHost, useTLS=True)
+        tlsSMTPResult = sendSpamMail(host=global_functions.tlsSmtpServerHost, useTLS=True)
         # print "TLS 2 : " + str(tlsSMTPResult)
         assert(tlsSMTPResult == 0)
         
@@ -284,7 +279,7 @@ class SpamBlockerBaseTests(unittest2.TestCase):
         if not global_functions.isInOfficeNetwork(wan_IP):
             raise unittest2.SkipTest("Not on office network, skipping")
         if (not canRelayTLS):
-            raise unittest2.SkipTest('Unable to relay through ' + tlsSmtpServerHost)
+            raise unittest2.SkipTest('Unable to relay through ' + global_functions.tlsSmtpServerHost)
         nodeData['smtpConfig']['scanWanMail'] = True
         nodeData['smtpConfig']['allowTls'] = False
         nodeData['smtpConfig']['strength'] = 30
@@ -294,7 +289,7 @@ class SpamBlockerBaseTests(unittest2.TestCase):
         nodeSSLData['ignoreRules']['list'].insert(0,createSSLInspectRule("25"))
         nodeSSL.setSettings(nodeSSLData)
         nodeSSL.start()
-        tlsSMTPResult = sendSpamMail(host=tlsSmtpServerHost, useTLS=True)
+        tlsSMTPResult = sendSpamMail(host=global_functions.tlsSmtpServerHost, useTLS=True)
         # print "TLS 090 : " + str(tlsSMTPResult)
         nodeSSL.stop()
         assert(tlsSMTPResult == 0)
@@ -304,7 +299,7 @@ class SpamBlockerBaseTests(unittest2.TestCase):
 
         print events['list'][0]
         found = global_functions.check_events( events.get('list'), 5,
-                                               's_server_addr', tlsSmtpServerHost,
+                                               's_server_addr', global_functions.tlsSmtpServerHost,
                                                's_server_port', 25,
                                                'addr', 'qa@example.com',
                                                'c_client_addr', remote_control.clientIP)

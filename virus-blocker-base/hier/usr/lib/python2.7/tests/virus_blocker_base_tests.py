@@ -23,7 +23,6 @@ canRelay = True
 canRelayTLS = True
 testsite = "test.untangle.com"
 testsiteIP = socket.gethostbyname(testsite)
-tlsSmtpServerHost = '10.112.56.44' # Vcenter VM Debian-ATS-TLS
 
 def addPassSite(site, enabled=True, description="description"):
     newRule =  { "enabled": enabled, "description": description, "javaClass": "com.untangle.uvm.node.GenericRule", "string": site }
@@ -103,7 +102,7 @@ class VirusBlockerBaseTests(unittest2.TestCase):
         except Exception,e:
             canRelay = False
         try:
-            canRelayTLS = global_functions.sendTestmessage(mailhost=tlsSmtpServerHost)
+            canRelayTLS = global_functions.sendTestmessage(mailhost=global_functions.tlsSmtpServerHost)
         except Exception,e:
             canRelayTLS = False
 
@@ -359,7 +358,7 @@ class VirusBlockerBaseTests(unittest2.TestCase):
 
     def test_110_eventlog_smtpSSLVirus(self):
         if (not canRelayTLS):
-            raise unittest2.SkipTest('Unable to relay through ' + tlsSmtpServerHost)
+            raise unittest2.SkipTest('Unable to relay through ' + global_functions.tlsSmtpServerHost)
         startTime = datetime.now()
         fname = sys._getframe().f_code.co_name
         # download the email script
@@ -373,7 +372,7 @@ class VirusBlockerBaseTests(unittest2.TestCase):
         nodeSSL.setSettings(nodeSSLData)
         nodeSSL.start()
         # email the file
-        result = remote_control.runCommand("/tmp/email_script.py --server=%s --from=junk@test.untangle.com --to=junk@test.untangle.com --subject='%s' --body='body' --file=/tmp/eicar --starttls" % (tlsSmtpServerHost, fname),nowait=False)
+        result = remote_control.runCommand("/tmp/email_script.py --server=%s --from=junk@test.untangle.com --to=junk@test.untangle.com --subject='%s' --body='body' --file=/tmp/eicar --starttls" % (global_functions.tlsSmtpServerHost, fname),nowait=False)
         nodeSSL.stop()
         assert (result == 0)
 
@@ -383,7 +382,7 @@ class VirusBlockerBaseTests(unittest2.TestCase):
         found = global_functions.check_events( events.get('list'), 5,
                                             "addr", "junk@test.untangle.com",
                                             "subject", str(fname),
-                                            's_server_addr', tlsSmtpServerHost,
+                                            's_server_addr', global_functions.tlsSmtpServerHost,
                                             self.shortName() + '_clean', False,
                                             min_date=startTime)
         assert( found )
