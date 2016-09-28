@@ -339,19 +339,9 @@ Section "Uninstall"
 
     DetailPrint "Uninstalling Untangle Root Certificates"
 
-    DetailPrint "Uninstalling Untangle Root Certificates from Windows keystore"
     ${un.EnumUsersReg} un.removeWindows temp.key
 
-    DetailPrint "Uninstalling Untangle Root Certificates from Firefox"
-    Delete "$PROGRAMFILES\Mozilla Firefox\untangle-firefox-certificate.cfg"
-    Delete "$PROGRAMFILES\Mozilla Firefox\defaults\pref\untangle-firefox-preferences.js"
-
-    ReadINIStr $1 "$APPDATA\Mozilla\Firefox\profiles.ini" "Profile0" "Path"
-    DetailPrint "Uninstalling Untangle Root Certificates from Firefox keystore"
-
     ${un.EnumUsersReg} un.removeFirefox temp.key
-
-    # loop system users
 
     Delete "$INSTDIR\untangle.crt"
     Delete "$INSTDIR\ut.ico"
@@ -374,10 +364,13 @@ Section "Uninstall"
 
     DetailPrint "Remove Regvalues for Untangle Root Certificates"
     DeleteRegKey HKLM  "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PACKAGE_NAME}"
+    DeleteRegKey HKLM  "Software\${PACKAGE_NAME}"
 
 SectionEnd
 
 Function un.removeWindows
+
+    DetailPrint "Uninstalling Untangle Root Certificates from Windows keystore"
 
     Exch $0
     System::Call "crypt32::CertOpenStore(i ${CERT_STORE_PROV_SYSTEM}, i 0, i 0, \
@@ -412,6 +405,13 @@ FunctionEnd
 
 Function un.removeFirefox
     Pop $0
+
+    DetailPrint "Uninstalling Untangle Root Certificates from Firefox"
+#    Delete "$PROGRAMFILES\Mozilla Firefox\untangle-firefox-certificate.cfg"
+#    Delete "$PROGRAMFILES\Mozilla Firefox\defaults\pref\untangle-firefox-preferences.js"
+
+    ReadINIStr $1 "$APPDATA\Mozilla\Firefox\profiles.ini" "Profile0" "Path"
+    DetailPrint "Uninstalling Untangle Root Certificates from Firefox keystore"
 
     var /GLOBAL APPDATA_PATH
     ReadRegStr $APPDATA_PATH HKU \
