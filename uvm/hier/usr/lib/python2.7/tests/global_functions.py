@@ -14,10 +14,14 @@ import json
 from uvm import Uvm
 
 officeNetworks = ('10.111.0.0/16','10.112.0.0/16');
-iperfServers = [('10.111.0.0/16','10.111.56.20'), # Office network
+iperfServers = [('10.111.0.0/16','10.111.5.20'), # Office network
                 ('10.112.0.0/16','10.112.56.44')] # ATS VM
 iperfServer = ""
+ftpServer = "10.111.5.20"
 smtpServerHost = 'test.untangle.com'
+tlsSmtpServerHost = '10.112.56.44'  # Vcenter VM Debian-ATS-TLS 
+listFakeSmtpServerHosts = [('10.111.5.20','16'),# Office network
+                            ('10.112.56.30','16')]# ATS VM
 accountFileServer = "10.112.56.44"
 accountFile = "/tmp/account_login.json"
 
@@ -62,6 +66,12 @@ def verifyIperf(wanIP):
         print "iperf not installed on client."
         return False
     return True
+
+def findSmtpServer(wan_IP):
+    for smtpServerHostIP in listFakeSmtpServerHosts:
+        interfaceNet = smtpServerHostIP[0] + "/" + str(smtpServerHostIP[1])
+        if ipaddr.IPAddress(wan_IP) in ipaddr.IPv4Network(interfaceNet):
+            return smtpServerHostIP[0]
 
 def getUDPSpeed( receiverIP, senderIP, targetIP=None, targetRate=None ):
     if targetIP == None:

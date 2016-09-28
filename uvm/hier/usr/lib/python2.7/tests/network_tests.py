@@ -22,7 +22,6 @@ import global_functions
 
 ftp_server = "test.untangle.com"
 ftp_file_name = ""
-ftp_client_external = "10.111.56.41"
 dyn_hostname = ""
 dyn_names = ['atstest.dnsalias.com', 'atstest2.dyndns-ip.com', 'atstest3.dnsalias.com', 'atstest4.dnsalias.com'];
 
@@ -463,7 +462,7 @@ class NetworkTests(unittest2.TestCase):
                 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 s.connect( ( remote_control.clientIP, 21 ))
                 s.close()
-                pingResult = subprocess.call(["ping","-c","1",ftp_client_external],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+                pingResult = subprocess.call(["ping","-c","1",global_functions.ftpServer],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
                 if pingResult == 0:
                     run_ftp_inbound_tests = True
                 else:
@@ -777,10 +776,10 @@ class NetworkTests(unittest2.TestCase):
 
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
 
-        pasvResult = remote_control.runCommand("wget -t2 --timeout=10 -q -O /dev/null ftp://" +  wan_IP + "/" + ftp_file_name,host=ftp_client_external)
-        portResult = remote_control.runCommand("wget -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + wan_IP + "/" + ftp_file_name,host=ftp_client_external)
-        epsvResult = remote_control.runCommand("curl --epsv -s -o /dev/null ftp://" + wan_IP + "/" + ftp_file_name,host=ftp_client_external)
-        eprtResult = remote_control.runCommand("curl --eprt -P - -s -o /dev/null ftp://" + wan_IP + "/" + ftp_file_name,host=ftp_client_external)
+        pasvResult = remote_control.runCommand("wget -t2 --timeout=10 -q -O /dev/null ftp://" +  wan_IP + "/" + ftp_file_name,host=global_functions.ftpServer)
+        portResult = remote_control.runCommand("wget -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + wan_IP + "/" + ftp_file_name,host=global_functions.ftpServer)
+        epsvResult = remote_control.runCommand("curl --epsv -s -o /dev/null ftp://" + wan_IP + "/" + ftp_file_name,host=global_functions.ftpServer)
+        eprtResult = remote_control.runCommand("curl --eprt -P - -s -o /dev/null ftp://" + wan_IP + "/" + ftp_file_name,host=global_functions.ftpServer)
 
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
@@ -803,10 +802,10 @@ class NetworkTests(unittest2.TestCase):
 
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
 
-        pasvResult = remote_control.runCommand("wget -t2 --timeout=10 -q -O /dev/null ftp://" +  wan_IP + "/" + ftp_file_name,host=ftp_client_external)
-        portResult = remote_control.runCommand("wget -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + wan_IP + "/" + ftp_file_name,host=ftp_client_external)
-        epsvResult = remote_control.runCommand("curl --epsv -s -o /dev/null ftp://" + wan_IP + "/" + ftp_file_name,host=ftp_client_external)
-        eprtResult = remote_control.runCommand("curl --eprt -P - -s -o /dev/null ftp://" + wan_IP + "/" + ftp_file_name,host=ftp_client_external)
+        pasvResult = remote_control.runCommand("wget -t2 --timeout=10 -q -O /dev/null ftp://" +  wan_IP + "/" + ftp_file_name,host=global_functions.ftpServer)
+        portResult = remote_control.runCommand("wget -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + wan_IP + "/" + ftp_file_name,host=global_functions.ftpServer)
+        epsvResult = remote_control.runCommand("curl --epsv -s -o /dev/null ftp://" + wan_IP + "/" + ftp_file_name,host=global_functions.ftpServer)
+        eprtResult = remote_control.runCommand("curl --eprt -P - -s -o /dev/null ftp://" + wan_IP + "/" + ftp_file_name,host=global_functions.ftpServer)
 
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
@@ -885,7 +884,7 @@ class NetworkTests(unittest2.TestCase):
         setDynDNS(dynDNSUserName, dynDNSPassword,dyn_hostname)
         
         # since Untangle uses our own servers for ddclient, test boxes will show the office IP addresses so lookup up internal IP
-        outsideIP2 = global_functions.getIpAddress(base_URL="10.112.56.44",localcall=True)
+        outsideIP2 = global_functions.getIpAddress(base_URL=global_functions.tlsSmtpServerHost,localcall=True)
         outsideIP2 = outsideIP2.rstrip()  # strip return character
 
         loopCounter = 60
