@@ -17,11 +17,26 @@ officeNetworks = ('10.111.0.0/16','10.112.0.0/16');
 iperfServers = [('10.111.0.0/16','10.111.5.20'), # Office network
                 ('10.112.0.0/16','10.112.56.44')] # ATS VM
 iperfServer = ""
-ftpServer = "10.111.5.20"
+
+# special box with testshell in the sudoer group  - used to connect to vpn as client
+# and ftp server.
+ftpServer = vpnClientVpnIP = "10.111.5.20"  
+
+# special Untangle box configured as a OpenVPN server and special DNS config
+specialDnsServer= vpnServerVpnIP = "10.111.56.96"
+
+# special box within vpnServerVpnIP's network
+vpnServerVpnLanIP = "192.168.235.96"
+
+# special box with testshell in the sudoer group  - used to connect to vpn as client
+vpnClientVpnIP = "10.111.5.20"  
+
 smtpServerHost = 'test.untangle.com'
 tlsSmtpServerHost = '10.112.56.44'  # Vcenter VM Debian-ATS-TLS 
-listFakeSmtpServerHosts = [('10.111.5.20','16'),# Office network
-                            ('10.112.56.30','16')]# ATS VM
+# DNS MX record on 10.111.56.57 for domains untangletestvm.com and untangletest.com
+listFakeSmtpServerHosts = [('10.111.5.20','16','untangletest.com'),# Office network
+                            ('10.112.56.30','16','untangletestvm.com')]# ATS VM
+
 accountFileServer = "10.112.56.44"
 accountFile = "/tmp/account_login.json"
 
@@ -71,7 +86,7 @@ def findSmtpServer(wan_IP):
     for smtpServerHostIP in listFakeSmtpServerHosts:
         interfaceNet = smtpServerHostIP[0] + "/" + str(smtpServerHostIP[1])
         if ipaddr.IPAddress(wan_IP) in ipaddr.IPv4Network(interfaceNet):
-            return smtpServerHostIP[0]
+            return smtpServerHostIP[0],smtpServerHostIP[2]
 
 def getUDPSpeed( receiverIP, senderIP, targetIP=None, targetRate=None ):
     if targetIP == None:

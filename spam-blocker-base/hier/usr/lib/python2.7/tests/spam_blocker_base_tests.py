@@ -200,7 +200,7 @@ class SpamBlockerBaseTests(unittest2.TestCase):
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
         # find local SMTP sender
         fakeSmtpServerHost = "";
-        fakeSmtpServerHost = global_functions.findSmtpServer(wan_IP)
+        fakeSmtpServerHost, fakeSmtpdomain = global_functions.findSmtpServer(wan_IP)
         if (fakeSmtpServerHost == ""):
             raise unittest2.SkipTest("No local SMTP server")
         externalClientResult = subprocess.call(["ping","-c","1",fakeSmtpServerHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)

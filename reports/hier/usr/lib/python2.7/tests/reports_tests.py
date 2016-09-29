@@ -21,10 +21,7 @@ from global_functions import uvmContext
 defaultRackId = 1
 node = None
 canRelay = None
-# special box with testshell in the sudoer group  - used to connect to as client
-# DNS MX record on 10.111.56.57 for domains untangletestvm.com and untangletest.com
-listFakeSmtpServerHosts = [('10.112.56.30','16','untangletestvm.com'),('10.111.56.41','16','untangletest.com')]
-specialDnsServer = "10.111.56.96"
+canSyslog = None
 fakeSmtpServerHost = ""
 fakeSmtpServerHostResult = -1
 testdomain = ""
@@ -35,7 +32,7 @@ orig_mailsettings = None
 
 # pdb.set_trace()
 
-def sendTestmessage(smtpHost=listFakeSmtpServerHosts[0]):
+def sendTestmessage(smtpHost=global_functions.listFakeSmtpServerHosts[0]):
     sender = 'test@example.com'
     receivers = ['qa@example.com']
     relaySuccess = False
@@ -47,7 +44,7 @@ def sendTestmessage(smtpHost=listFakeSmtpServerHosts[0]):
     This is a test e-mail message.
     """
     remote_control.runCommand("sudo python fakemail.py --host=" + smtpHost +" --log=/tmp/report_test.log --port 25 --background --path=/tmp/", host=smtpHost, stdout=False, nowait=True)
-    time.sleep(2) # its run in the background so wait for it to start
+    time.sleep(5) # its run in the background so wait for it to start
     
     try:
        smtpObj = smtplib.SMTP(smtpHost)
@@ -79,7 +76,7 @@ def createFakeEmailEnvironment(emailLogFile="report_test.log"):
     # set untangletest email to get to fakeSmtpServerHost where fake SMTP sink is running using special DNS server
     netsettings = uvmContext.networkManager().getNetworkSettings()
     # Add Domain DNS Server for special test domains of untangletestvm.com and untangletest.com
-    netsettings['dnsSettings']['localServers']['list'].append(createDomainDNSentries(testdomain,specialDnsServer))
+    netsettings['dnsSettings']['localServers']['list'].append(createDomainDNSentries(testdomain,global_functions.specialDnsServer))
     uvmContext.networkManager().setNetworkSettings(netsettings)
 
     # Remove old email and log files.
@@ -219,7 +216,7 @@ class ReportsTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        global node, orig_settings, orig_netsettings, fakeSmtpServerHost, fakeSmtpServerHostResult, testdomain, testEmailAddress, canRelay
+        global node, orig_settings, orig_netsettings, fakeSmtpServerHost, fakeSmtpServerHostResult, testdomain, testEmailAddress, canRelay, canSyslog
         orig_netsettings = uvmContext.networkManager().getNetworkSettings()
         if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
             # report node is normally installed.
@@ -234,12 +231,8 @@ class ReportsTests(unittest2.TestCase):
         # Skip checking relaying is possible if we have determined it as true on previous test.
         if canRelay == None:
             wan_IP = uvmContext.networkManager().getFirstWanAddress()
-            for smtpServerHostIP in listFakeSmtpServerHosts:
-                interfaceNet = smtpServerHostIP[0] + "/" + str(smtpServerHostIP[1])
-                if ipaddr.IPAddress(wan_IP) in ipaddr.IPv4Network(interfaceNet):
-                    fakeSmtpServerHost = smtpServerHostIP[0]
-                    testdomain = smtpServerHostIP[2]
-                    testEmailAddress = "qa@" + testdomain                
+            fakeSmtpServerHost, testdomain = global_functions.findSmtpServer(wan_IP)
+            testEmailAddress = "qa@" + testdomain                
             # print "fakeSmtpServerHost " + fakeSmtpServerHost
             if (fakeSmtpServerHost == ""):
                 canRelay = None
@@ -252,6 +245,13 @@ class ReportsTests(unittest2.TestCase):
                     except Exception,e:
                         canRelay = False
 
+        if canSyslog == None:
+            portResult = remote_control.runCommand("sudo lsof -i :514", host=fakeSmtpServerHost)
+            if portResult == 0:
+               canSyslog = True
+            else:
+               canSyslog = False
+               
     def setUp(self):
         pass
                 
@@ -261,10 +261,10 @@ class ReportsTests(unittest2.TestCase):
         assert (result == 0)
     
     def test_040_remoteSyslog(self):
-        if (not canRelay):
-            raise unittest2.SkipTest('Unable to relay through ' + fakeSmtpServerHost)
         if (fakeSmtpServerHostResult != 0):
             raise unittest2.SkipTest("Syslog server unreachable")        
+        if (not canSyslog):
+            raise unittest2.SkipTest('Unable to syslog through ' + fakeSmtpServerHost)
 
         nodeFirewall = None
         if (uvmContext.nodeManager().isInstantiated(self.nodeFirewallName())):
