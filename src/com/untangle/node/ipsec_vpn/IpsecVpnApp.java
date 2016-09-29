@@ -36,6 +36,7 @@ public class IpsecVpnApp extends NodeBase
     private final static String GRAB_STATE_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-state";
     private final static String GRAB_STATUS_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-status";
     private final static String GRAB_TRAFFIC_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-tunnel-stats";
+    private final static String APP_STARTUP_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-app-startup";
 
     private final static String STRONGSWAN_STROKE_CONFIG = "/etc/strongswan.d/charon/stroke.conf";
     private final static String STRONGSWAN_STROKE_TIMEOUT = "15000";
@@ -260,6 +261,7 @@ public class IpsecVpnApp extends NodeBase
         if (IpsecVpnApp.execManager == null) {
             IpsecVpnApp.execManager = UvmContextFactory.context().createExecManager();
             IpsecVpnApp.execManager.setLevel(org.apache.log4j.Level.DEBUG);
+            IpsecVpnApp.execManager.exec(APP_STARTUP_SCRIPT);
         }
 
         if (isLicenseValid() != true) throw (new RuntimeException("Unable to start ipsec-vpn service: invalid license"));
