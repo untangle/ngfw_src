@@ -497,6 +497,7 @@ public class ReportEntry implements Serializable, JSONString
             "( \"time_trunc\" timestamp ";
         for ( String s : distinctValues ) {
             if ( "".equals(s) ) s = " ";
+            s = s.replaceAll("\"","\"\""); // double quote quote characters
             crosstabQuery = crosstabQuery + ", \"" + ( s == null ? "None" : s ) + "\" numeric ";
         }
         crosstabQuery = crosstabQuery + ")";
