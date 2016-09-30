@@ -216,6 +216,7 @@ class SpamBlockerBaseTests(unittest2.TestCase):
         remote_control.runCommand("sudo rm -f /tmp/test_070_checkForSMTPHeaders.log /tmp/qa@example.com.*", host=fakeSmtpServerHost)
         # Start mail sink
         remote_control.runCommand("sudo python fakemail.py --host " + fakeSmtpServerHost + " --log /tmp/test_070_checkForSMTPHeaders.log --port 25 --path /tmp/ --background", host=fakeSmtpServerHost, stdout=False, nowait=True)
+        time.sleep(5) # the current mail sink takes a bit of time to start listening.
         sendSpamMail(host=fakeSmtpServerHost)
         # check for email file if there is no timeout
         emailFound = False
