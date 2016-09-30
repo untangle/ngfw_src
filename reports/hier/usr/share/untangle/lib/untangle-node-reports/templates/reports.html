@@ -104,6 +104,7 @@ table {
 </td>
 </tr>
 
+<!--
 {% cycle rowColors %}
 <tr style="background-color:{{ rowColors }};">
 <td>
@@ -116,12 +117,20 @@ table {
 {% endif%}
 </td>
 </tr>
+-->
 
 {% with reportsNode=nodeManager.node,untangle-node-reports %}
-{% for name in ["Network" "Administration" "Hosts" "Devices"] %}
+<!-- 
+	{% for name in ["Network" "Administration" "Hosts" "Devices"] %}  
+-->
+	{% for name in ["Network" "Administration" "Hosts" "Devices" "System"] %} 
+<!--	
 	{% with reports=reportsNode.getReportsManager.getReportEntries,name|getType==TEXT %}
+-->
+	{% with reports=reportsNode.getReportsManager.getReportEntries,name %}
 	{% if reports.size != 0 %}
 		{% for report in reports %}
+		{% if report.getTitle == "CPU Load" %}
 		{% cycle rowColors %}
 		<tr style="background-color:{{ rowColors }};">
 		<td>
@@ -134,6 +143,7 @@ table {
 		{% endwith %}
 		{% endwith %}
 		</td></tr>
+		{% endif %}
 		{% endfor %}
 	{% endif %}
 	{% endwith %}

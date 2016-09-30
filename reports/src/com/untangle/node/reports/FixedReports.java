@@ -534,7 +534,6 @@ public class FixedReports
         String operation;
         String right;
 
-
         Matcher tag = Conditional.matcher(condition);
         while( tag.find()){
             left = tag.group(1);
@@ -542,7 +541,14 @@ public class FixedReports
             right = tag.group(3);
 
             if(right.equals("\"\"")){
+                /* Empty string */
                 right = "";
+            }else if(
+                (right.length() > 3) &&
+                (right.charAt(0) == '"') && 
+                (right.charAt(right.length()-1) == '"') ){
+                /* Quoted string */
+                right = right.substring(1,right.length() -1);
             }
 
             List<String> fields = new ArrayList<String>(Arrays.asList(left.split("\\.")));
