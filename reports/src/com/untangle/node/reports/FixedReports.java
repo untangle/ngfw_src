@@ -122,6 +122,7 @@ public class FixedReports
     private static final Pattern Conditional = Pattern.compile("(.+?)\\s*(\\=\\=|\\!\\=)\\s*(.+)");
 
     /*
+     * Variable context
      */
     class variableContext
     {
@@ -136,6 +137,23 @@ public class FixedReports
             this.name = name;
             this.object = object;
             this.index = -1;
+        }
+    }
+
+    /*
+     * Conditional context
+     */
+    class conditionalContext
+    {
+        Boolean match;
+
+        public conditionalContext(Boolean match)
+        {
+            this.match = match;
+        }
+
+        public Boolean getMatch(){
+            return match;
         }
     }
 
@@ -161,6 +179,7 @@ public class FixedReports
         }
 
         List<variableContext> variables = new ArrayList<variableContext>();
+        List<conditionalContext> conditionals = new ArrayList<conditionalContext>();
 
         public void addVariable(Tag tag, String name, Object object){
             variables.add(new variableContext(tag, name, object));
@@ -191,6 +210,30 @@ public class FixedReports
                 }
             }
             return null;
+        }
+
+        /* Multi-level conditional support in a context */
+        public void pushConditional(Boolean match){
+            conditionals.add(new conditionalContext(match));
+        }
+
+        /*
+         * If current level match is what we want and nested is true, we match
+         */
+        public Boolean getCurrentConditionalMatch(Boolean wantMatch){
+            Boolean walkMatch = true;
+            Boolean match = true;
+            for(conditionalContext cc : conditionals){
+                if(cc == conditionals.get(conditionals.size()-1)){
+                    match = (wantMatch == cc.getMatch());
+                }else if(cc.getMatch() == false){
+                    walkMatch = false;
+                }
+            }
+            return match && walkMatch;
+        }
+        public void popConditional(){
+            conditionals.remove(conditionals.get(conditionals.size()-1));
         }
 
         public Object getVariable(String name){
@@ -448,21 +491,22 @@ public class FixedReports
                                 break;
                             case IF:
                                 if( parseContext.buildLoopBuffer == false){
-                                    Boolean match = parseConditional(tag.group(1));
-                                    parseContext.allowOutput = match;
+                                    parseContext.pushConditional(parseConditional(tag.group(1)));
+                                    parseContext.allowOutput = parseContext.getCurrentConditionalMatch(true);
                                     parseContext.ignoreLine = true;
                                 }
                                 break;
                             case ELSE:
                                 if( parseContext.buildLoopBuffer == false){
-                                    parseContext.allowOutput = !parseContext.allowOutput;
+                                    parseContext.allowOutput = parseContext.getCurrentConditionalMatch(false);
                                     parseContext.ignoreLine = true;
                                 }
                                 break;
                             case ENDIF:
                                 if( parseContext.buildLoopBuffer == false){
-                                    parseContext.allowOutput = true;
                                     parseContext.ignoreLine = true;
+                                    parseContext.popConditional();
+                                    parseContext.allowOutput = parseContext.getCurrentConditionalMatch(true);
                                 }
                                 break;
 
