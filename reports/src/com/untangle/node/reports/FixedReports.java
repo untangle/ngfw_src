@@ -74,7 +74,9 @@ public class FixedReports
         WITH,
         ENDWITH,
         CYCLE_INITIALIZE,
-        CYCLE_NEXT
+        CYCLE_NEXT,
+        COMMENT_BEGIN,
+        COMMENT_END
     }
 
     public enum Filter{
@@ -100,6 +102,9 @@ public class FixedReports
         TagPatterns.put(Tag.ENDIF, Pattern.compile("\\{\\%\\s*endif\\s*\\%\\}"));
         TagPatterns.put(Tag.WITH, Pattern.compile("\\{\\%\\s*with (.+?)\\=(.+?)\\s*\\%\\}"));
         TagPatterns.put(Tag.ENDWITH, Pattern.compile("\\{\\%\\s*endwith\\s*\\%\\}"));
+
+        TagPatterns.put(Tag.COMMENT_BEGIN, Pattern.compile("\\<\\!\\-\\-\\s*"));
+        TagPatterns.put(Tag.COMMENT_END, Pattern.compile("\\s*\\-\\-\\>"));
 
         TagPatterns.put(Tag.CYCLE_INITIALIZE, Pattern.compile("\\{\\%\\s*cycle (.+?) as (.+?) \\s*\\%\\}"));
         TagPatterns.put(Tag.CYCLE_NEXT, Pattern.compile("\\{\\%\\s*cycle ([^\\s]+?) \\s*\\%\\}"));
@@ -141,6 +146,7 @@ public class FixedReports
         Boolean allowOutput = true;
         Boolean ignoreLine = true;
         Boolean buildLoopBuffer = false;
+        Boolean inComment = false;
 
         int loopsSeen = 0;
         StringBuilder loopBuffer = null;
@@ -187,7 +193,6 @@ public class FixedReports
             return null;
         }
 
-
         public Object getVariable(String name){
             for(variableContext vc: variables){
                 if(vc.name.equals(name)){
@@ -207,10 +212,24 @@ public class FixedReports
             variableObject = obj;
             variableIndex = 0;
         }
+
         public void unsetVariable()
         {
             variableName = null;
             variableObject = null;
+        }
+
+        public void addToBuffer(String line){
+            if(ignoreLine == false && getInComment() == false){
+                loopBuffer.append(line);
+            }
+        } 
+
+        public void setInComment(Boolean value){
+            inComment = value;
+        }
+        public Boolean getInComment(){
+            return inComment;
         }
     }
     private List<parseContext> parseContextStack;
@@ -342,6 +361,7 @@ public class FixedReports
         Matcher tag;
         String search = null;
         String replace = null;
+        Tag key;
         for(String line : buffer.split("\\n")){
             parseContext.ignoreLine = false;
 
@@ -351,6 +371,11 @@ public class FixedReports
             for(Map.Entry<Tag, Pattern> syntax : TagPatterns.entrySet()) {
                 if(syntax.getKey() == Tag.TRANS){
                     tag = syntax.getValue().matcher(line);
+
+                    if( parseContext.getInComment()){
+                        continue;
+                    }
+
                     while(tag.find()){
                         StringBuilder newLine = new StringBuilder();
                         newLine.append(line.substring(0,line.indexOf(tag.group())));
@@ -368,6 +393,14 @@ public class FixedReports
                 try{
                     tag = syntax.getValue().matcher(line);
                     while( tag.find()){
+                        key = syntax.getKey();
+
+                        if((key != Tag.COMMENT_END) &&
+                            parseContext.getInComment()){
+                            parseContext.ignoreLine = true;
+                            continue;
+                        }
+
                         switch(syntax.getKey()){
                             case VARIABLE:
                                 if(parseContext.allowOutput && 
@@ -396,9 +429,6 @@ public class FixedReports
                                 if( parseContext.loopsSeen > 0 ){
                                     parseContext.loopsSeen--;
                                 }else{
-                                    // release loop variable and unset loop flag, unset loop level
-                                    // perform loop on buffer bsed on collection value
-                                    //      pass buffer into parseLine(writer, buffer)
                                     parseContext.ignoreLine = true;
                                     parseContext.buildLoopBuffer = false;
                                 
@@ -463,6 +493,16 @@ public class FixedReports
                                     nextVariableCycle(tag);
                                 }
                                 break;
+
+                            case COMMENT_BEGIN:
+                                parseContext.setInComment(true);
+                                parseContext.ignoreLine = true;
+                                break;
+
+                            case COMMENT_END:
+                                parseContext.setInComment(false);
+                                parseContext.ignoreLine = true;
+                                break;
                         }
                     }
                 }catch(Exception e){
@@ -472,9 +512,11 @@ public class FixedReports
             if(parseContext.allowOutput && 
                 parseContext.ignoreLine == false){
                 if(parseContext.buildLoopBuffer){
-                    parseContext.loopBuffer.append(line + "\n");
+                    parseContext.addToBuffer(line + "\n");
                 }else{
-                    messageHtml.append(line+"\n");
+                    if(!parseContext.getInComment()){
+                        messageHtml.append(line+"\n");
+                    }
                 }
             }
         }
