@@ -55,6 +55,8 @@ deps=[]
 
 ServletBuilder.new(uvm_lib, "com.untangle.uvm.webui.servlet", ["./uvm/servlets/webui"], deps)
 
+ServletBuilder.new(uvm_lib, "com.untangle.uvm.admin.servlet", ["./uvm/servlets/admin"], deps)
+
 ServletBuilder.new(uvm_lib, "com.untangle.uvm.setup.servlet", ["./uvm/servlets/setup"], deps)
 
 ServletBuilder.new(uvm_lib, 'com.untangle.uvm.blockpage.jsp', ["./uvm/servlets/blockpage"], deps, [], [])

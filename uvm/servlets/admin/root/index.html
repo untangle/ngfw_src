@@ -1,0 +1,68 @@
+<html>
+<c:set var="isDebug" value="true"/>
+<head>
+    <meta charset="UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+    <title>Administration</title>
+    <style type="text/css">
+        @import "/ext6/classic/theme-gray/resources/theme-gray-all.css?s=12345";
+    </style>
+    <script type="text/javascript" src="/highcharts/proj4.js?s=12345"></script>
+    <script type="text/javascript" src="/highcharts/highstock.js?s=12345"></script>
+    <script type="text/javascript" src="/highcharts/highcharts-extra.js?s=12345"></script>
+    <script type="text/javascript" src="/highcharts/map.js?s=12345"></script>
+    <script type="text/javascript" src="/ext6/ext-all-debug.js?s=12345"></script>
+    <script type="text/javascript" src="/ext6/classic/theme-gray/theme-gray.js?s=12345"></script>
+    <script type="text/javascript" src="/jsonrpc/jsonrpc.js?s=12345"></script>
+
+    <script type="text/javascript">
+      var rpc = {}; // the main json rpc object
+ 
+      Ext.onReady(function() {
+        if (Ext.isGecko) {
+            document.onkeypress = function (e) {
+                return e.keyCode !== 27;
+            };
+        }
+        //JSONRpcClient.toplevel_ex_handler = Ung.Util.rpcExHandler;
+        JSONRpcClient.max_req_active = 25;
+
+        // get JSONRpcClient
+        rpc.jsonrpc = new JSONRpcClient("/webui/JSON-RPC");
+        //load all managers and startup info
+        var startupInfo;
+        try {
+            startupInfo = rpc.jsonrpc.UvmContext.getWebuiStartupInfo();
+        } catch (e) {
+            Ung.Util.rpcExHandler(e);
+        }
+        Ext.applyIf(rpc, startupInfo);
+
+        alert(startupInfo.fullVersionAndRevision);
+    });
+    </script>
+ </head>
+<body>
+  <br/><br/>
+  This is the new admin UI!
+  <br/>
+  <div id="container" style="display:none;">
+  <form name="exportGridSettings" id="exportGridSettings" method="post" action="gridSettings">
+    <input type="hidden" name="gridName" value=""/>
+    <input type="hidden" name="gridData" value=""/>
+    <input type="hidden" name="type" value="export"/>
+  </form>
+  <form name="downloadForm" id="downloadForm" method="post" action="download">
+    <input type="hidden" name="type" value=""/>
+    <input type="hidden" name="arg1" value=""/>
+    <input type="hidden" name="arg2" value=""/>
+    <input type="hidden" name="arg3" value=""/>
+    <input type="hidden" name="arg4" value=""/>
+    <input type="hidden" name="arg5" value=""/>
+    <input type="hidden" name="arg6" value=""/>
+  </form>
+</div>
+</body>
+</html>
+
