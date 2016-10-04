@@ -123,6 +123,9 @@ public class AdminManagerImpl implements AdminManager
     
     public String getFullVersionAndRevision()
     {
+        if (UvmContextFactory.context().isDevel())
+            return "DEVEL-VERSION";
+
         try {
             String version = UvmContextImpl.context().execManager().execOutput("dpkg-query -f '${Version}\\n' -W untangle-vm");
 

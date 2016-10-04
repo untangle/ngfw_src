@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import com.untangle.uvm.UvmContextFactory;
+
 /**
  * Provides access to the UVM version.
  */
@@ -19,6 +21,8 @@ public class Version
      */
     public static String getMajorVersion()
     {
+        if (UvmContextFactory.context().isDevel())
+            return "DEVEL-MAJOR-VERSION";
         return getResource("MAJORVERSION");
     }
 
@@ -28,6 +32,8 @@ public class Version
      */
     public static String getVersion()
     {
+        if (UvmContextFactory.context().isDevel())
+            return "DEVEL-PUB-VERSION";
         return getResource("PUBVERSION");
     }
 
@@ -37,6 +43,8 @@ public class Version
      */
     public static String getFullVersion()
     {
+        if (UvmContextFactory.context().isDevel())
+            return "DEVEL-VERSION";
         return getResource("VERSION");
     }
 
@@ -46,6 +54,8 @@ public class Version
      */
     public static String getVersionName()
     {
+        if (UvmContextFactory.context().isDevel())
+            return "DEVEL";
         return getResource("RELEASE_CODENAME");
     }
     
