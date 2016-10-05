@@ -40,7 +40,7 @@ jts << (jt = JarTarget.build_target(uvm_lib, Jars::Base, 'api', ["./uvm/api", '.
 BuildEnv::SRC.installTarget.install_jars(jt, uvm_lib.getWebappDir('webstart'), nil, true)
 
 ## Implementation
-deps  = Jars::Base + Jars::TomcatEmb + Jars::JavaMail + 
+deps  = Jars::Base + Jars::TomcatEmb + Jars::JavaMail +
   [ uvm_lib['bootstrap'], uvm_lib['api'], jnetcap['impl'], jvector['impl']]
 
 jts << JarTarget.build_target(uvm_lib, deps, 'impl', ["./uvm/impl"])
@@ -98,8 +98,8 @@ if BuildEnv::SRC.isDevel
   BuildEnv::SRC.installTarget.register_dependency(isRegisteredFile)
 end
 
-jsFiles = FileList["./uvm/servlets/**/*.js"]
-if ( jsFiles.length > 0 ) 
+jsFiles = FileList["./uvm/servlets/**/*.js"].exclude(/admin\/app|admin\/node_modules|ung-all/)
+if ( jsFiles.length > 0 )
   jsFiles.each do |f|
     jsl = JsLintTarget.new(uvm_lib, [f], 'jslint', f)
     BuildEnv::SRC.jsLintTarget.register_dependency(jsl)
@@ -107,7 +107,7 @@ if ( jsFiles.length > 0 )
 end
 
 poFiles = FileList["./i18ntools/po/**/*.po"]
-if ( poFiles.length > 0 ) 
+if ( poFiles.length > 0 )
   poFiles.each do |f|
     pol = PoMsgFmtTarget.new(uvm_lib, [f], 'msgfmt', f, "#{uvm.distDirectory}")
     BuildEnv::SRC.i18nTarget.register_dependency(pol)

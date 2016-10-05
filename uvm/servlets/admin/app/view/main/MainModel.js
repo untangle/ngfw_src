@@ -1,0 +1,28 @@
+Ext.define('Ung.view.main.MainModel', {
+    extend: 'Ext.app.ViewModel',
+
+    alias: 'viewmodel.main',
+
+    data: {
+        reportsInstalled: false,
+        reportsRunning: false
+    },
+    formulas: {
+        // reports are enabled only if are installed and has running state
+        reportsEnabled: function (get) {
+            return (get('reportsInstalled') && get('reportsRunning'));
+        },
+        isDashboard: function(get) {
+            return get('activeItem') === 'dashboard';
+        },
+        isApps: function(get) {
+            return get('activeItem') === 'apps';
+        },
+        isConfig: function(get) {
+            return get('activeItem') === 'config';
+        },
+        isReports: function(get) {
+            return get('activeItem') === 'reports';
+        }
+    }
+});

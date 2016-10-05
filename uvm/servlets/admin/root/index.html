@@ -1,68 +1,116 @@
-<html>
-<c:set var="isDebug" value="true"/>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
-    <title>Administration</title>
-    <style type="text/css">
-        @import "/ext6/classic/theme-gray/resources/theme-gray-all.css?s=12345";
-    </style>
-    <script type="text/javascript" src="/highcharts/proj4.js?s=12345"></script>
-    <script type="text/javascript" src="/highcharts/highstock.js?s=12345"></script>
-    <script type="text/javascript" src="/highcharts/highcharts-extra.js?s=12345"></script>
-    <script type="text/javascript" src="/highcharts/map.js?s=12345"></script>
-    <script type="text/javascript" src="/ext6/ext-all-debug.js?s=12345"></script>
-    <script type="text/javascript" src="/ext6/classic/theme-gray/theme-gray.js?s=12345"></script>
-    <script type="text/javascript" src="/jsonrpc/jsonrpc.js?s=12345"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Untangle</title>
 
-    <script type="text/javascript">
-      var rpc = {}; // the main json rpc object
- 
-      Ext.onReady(function() {
-        if (Ext.isGecko) {
-            document.onkeypress = function (e) {
-                return e.keyCode !== 27;
-            };
+  <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300,600,700' rel='stylesheet' type='text/css'>
+
+  <style type="text/css">
+    #app-loader {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: #282828;
+        opacity: 1;
+        z-index: 9998;
+        transition: opacity .2s ease-in-out;
+    }
+    #app-loader.removing {
+        opacity: 0;
+    }
+
+    #app-message {
+      font-family: 'Source Sans Pro', sans-serif;
+      color: #FFF;
+      font-size: 12px;
+      text-align: center;
+      line-height: 1;
+    }
+
+    #app-message span {
+      color: #ff6161;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .spinner {
+      margin: 10px auto 0;
+      width: 70px;
+      text-align: center;
+    }
+
+    .spinner > div {
+      width: 10px;
+      height: 10px;
+      background-color: #31c734;
+
+      border-radius: 100%;
+      display: inline-block;
+      -webkit-animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+      animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+    }
+
+    .spinner .bounce1 {
+      -webkit-animation-delay: -0.32s;
+      animation-delay: -0.32s;
+    }
+
+    .spinner .bounce2 {
+      -webkit-animation-delay: -0.16s;
+      animation-delay: -0.16s;
+    }
+
+    @-webkit-keyframes sk-bouncedelay {
+      0%, 80%, 100% { -webkit-transform: scale(0) }
+      40% { -webkit-transform: scale(1.0) }
+    }
+
+    @keyframes sk-bouncedelay {
+      0%, 80%, 100% {
+        -webkit-transform: scale(0);
+        transform: scale(0);
+      } 40% {
+          -webkit-transform: scale(1.0);
+          transform: scale(1.0);
         }
-        //JSONRpcClient.toplevel_ex_handler = Ung.Util.rpcExHandler;
-        JSONRpcClient.max_req_active = 25;
+    }
+  </style>
 
-        // get JSONRpcClient
-        rpc.jsonrpc = new JSONRpcClient("/webui/JSON-RPC");
-        //load all managers and startup info
-        var startupInfo;
-        try {
-            startupInfo = rpc.jsonrpc.UvmContext.getWebuiStartupInfo();
-        } catch (e) {
-            Ung.Util.rpcExHandler(e);
-        }
-        Ext.applyIf(rpc, startupInfo);
-
-        alert(startupInfo.fullVersionAndRevision);
-    });
-    </script>
- </head>
+</head>
 <body>
-  <br/><br/>
-  This is the new admin UI!
-  <br/>
-  <div id="container" style="display:none;">
-  <form name="exportGridSettings" id="exportGridSettings" method="post" action="gridSettings">
-    <input type="hidden" name="gridName" value=""/>
-    <input type="hidden" name="gridData" value=""/>
-    <input type="hidden" name="type" value="export"/>
-  </form>
-  <form name="downloadForm" id="downloadForm" method="post" action="download">
-    <input type="hidden" name="type" value=""/>
-    <input type="hidden" name="arg1" value=""/>
-    <input type="hidden" name="arg2" value=""/>
-    <input type="hidden" name="arg3" value=""/>
-    <input type="hidden" name="arg4" value=""/>
-    <input type="hidden" name="arg5" value=""/>
-    <input type="hidden" name="arg6" value=""/>
-  </form>
-</div>
+
+
+  <div id="app-loader">
+    <div style="position: absolute; left: 50%; top: 30%; margin-left: -75px; margin-top: -60px; width: 150px; height: 140px; font-size: 16px;">
+      <img src="/images/BrandingLogo.png"/>
+      <div id="app-spinner" class="spinner">
+        <div class="bounce1"></div>
+        <div class="bounce2"></div>
+        <div class="bounce3"></div>
+      </div>
+      <p id="app-message"></p>
+    </div>
+  </div>
+
+  <script src="/jsonrpc/jsonrpc.js"></script>
+  <script src="/highcharts/highstock.js"></script>
+  <script src="/ext6/ext-all-debug.js"></script>
+  <script src="/ext6/classic/theme-gray/theme-gray.js"></script>
+  <link rel="stylesheet" href="/ext6/classic/theme-gray/resources/theme-gray-all.css" />
+  <link rel="stylesheet" href="res/base.css" />
+
+
+  <script src="script/bootstrap.js"></script>
+  <script>
+    Highcharts.setOptions({
+      global: {
+        useUTC: false
+      }
+    });
+  </script>
 </body>
 </html>
-
