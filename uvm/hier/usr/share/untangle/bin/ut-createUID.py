@@ -13,7 +13,6 @@ import datetime
 import traceback
 
 CURRENT_STABLE=None
-CURRENT_NAME=None
 UID_FILENAME=None
 SOURCES_FILENAME="/etc/apt/sources.list.d/untangle.list"
 UPDATE_SERVER="updates.untangle.com"
@@ -25,10 +24,6 @@ class ArgumentParser(object):
     def set_distro( self, arg ):
         global CURRENT_STABLE
         CURRENT_STABLE = arg
-
-    def set_name( self, arg ):
-        global CURRENT_NAME
-        CURRENT_NAME = arg
 
     def set_uidfile( self, arg ):
         global UID_FILENAME
@@ -45,7 +40,6 @@ class ArgumentParser(object):
     def parse_args( self ):
         handlers = {
             '-d' : self.set_distro,
-            '-n' : self.set_name,
             '-f' : self.set_uidfile,
             '-a' : self.set_aptfile,
             '-u' : self.set_updatesrv
@@ -66,7 +60,6 @@ def printUsage():
 %s Usage:
   required args:
     -d <current_stable_distro> example: "stable-10"
-    -n <current_stable_name>   example: "focus"
     -f <uid_filename>          example: "/usr/share/untangle/conf/uid"
   optional args:
     -a <apt_sources_filename>  default: "/etc/apt/sources.list.d/untangle.list"
@@ -77,7 +70,7 @@ def printUsage():
 parser = ArgumentParser()
 parser.parse_args()
 
-if CURRENT_STABLE == None or CURRENT_NAME == None or UID_FILENAME == None:
+if CURRENT_STABLE == None or UID_FILENAME == None:
     printUsage()
 
 # find debian version
@@ -117,7 +110,6 @@ file = open( SOURCES_FILENAME, "w+" )
 file.write("## Auto Generated on %s\n" % datetime.datetime.now());
 file.write("## DO NOT EDIT. Changes will be overwritten.\n" + "\n");
 file.write("deb http://%s:untangle@%s/public/%s %s main non-free upstream" % (uid, UPDATE_SERVER, debian_distro, CURRENT_STABLE)+ "\n")
-file.write("deb http://%s:untangle@%s/public/%s %s main non-free upstream" % (uid, UPDATE_SERVER, debian_distro, CURRENT_NAME)+ "\n")
 file.flush()
 file.close()
 
