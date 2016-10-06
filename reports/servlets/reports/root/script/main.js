@@ -33,7 +33,11 @@ Ext.define("Ung.Main", {
             this.loadTimezoneOffset,
             this.loadTranslations
         ]).then(Ext.bind(function () {
-            this.startApplication();
+            if(config.reportChart){
+                this.startReportChart(config);
+            }else{
+                this.startApplication();
+            }
         }, this), function (exception) {
             Ung.Util.handleException(exception);
         });
@@ -171,6 +175,84 @@ Ext.define("Ung.Main", {
 
         if (rpc.reportsEnabled) {
             this.viewport.down("#reports").add(Ext.create("Ung.panel.Reports"));
+        } else {
+            this.viewport.down("#reports").add({
+                xtype: 'container',
+                html: '<i class="material-icons" style="font-size: 48px; color: orange;">warning</i><br/>' + i18n._('Reports is not installed into your rack or it is not turned on.'),
+                margin: '100 0 0 0',
+                style: {
+                    fontFamily: '"PT Sans", sans-serif',
+                    textAlign: 'center',
+                    fontSize: '18px'
+                }
+            });
+        }
+        Ext.MessageBox.hide();
+    },
+    /**
+     * Specialized chart-only mode used by fixed reports to generate charts
+     * for reports.  Expects the following parameters in config object:
+     @param {String}    reportCategory - Category report belongs to
+     @param {String}    reportTitle    - Report title
+     @param {Date}      startDate      - Start date
+     @param {Date}      startDate      - End date
+     */
+    startReportChart: function (config) {
+
+        this.viewport = Ext.create('Ext.container.Viewport', {
+            layout: 'border',
+            items: [{
+                border: false,
+                region: 'center',
+                xtype: 'panel',
+                layout: 'fit',
+                items: [{
+                    xtype: 'panel',
+                    itemId: 'highchart',
+                    border: false
+                }]
+            }]
+        });
+
+        if (rpc.reportsEnabled) {
+            var entry = {};
+            rpc.reportsManager.getReportEntry(Ext.bind(function (result, exception) {
+                if (Ung.Util.handleException(exception)) {
+                    console.log("nope");
+                    return;
+                }
+                this.entry = result;
+            if(this.entry != {}){
+                rpc.reportsManager.getDataForReportEntry(Ext.bind(function (result, exception) {
+                    if (Ung.Util.handleException(exception)) {
+                        return;
+                    }
+                    this.chartData = result.list;
+
+                    // add a new time prop because the datagrid alters the time_trunc, causing charting issues
+                    for (i = 0; i < this.chartData.length; i += 1) {
+                        if (this.chartData[i].time_trunc) {
+                            this.chartData[i].time = this.chartData[i].time_trunc.time;
+                        }
+                    }
+
+                    switch (this.entry.type) {
+                        case 'TEXT':
+                            break;
+                        case 'TIME_GRAPH':
+                        case 'TIME_GRAPH_DYNAMIC':
+                            console.log(this.entry);
+                            console.log(result.list);
+                            this.chart = Ung.charts.timeSeriesChart(this.entry, result.list, this.viewport.down('#highchart').body, false, true);
+                            break;
+                        default:
+                            this.chart = Ung.charts.categoriesChart(this.entry, result.list, this.viewport.down('#highchart').body, false, true);
+                    }
+                }, this), this.entry, new Date(decodeURI(config.startDate)), new Date(decodeURI(config.endDate)), [], -1);
+            }
+            }, this), decodeURI(config.reportCategory), decodeURI(config.reportTitle));
+
+
         } else {
             this.viewport.down("#reports").add({
                 xtype: 'container',

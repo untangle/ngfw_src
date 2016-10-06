@@ -25,8 +25,22 @@ String extjsTheme = uvm.skinManager().getSkinInfo().getExtjsTheme();
     <script type="text/javascript" src="/ext6/classic/theme-<%=extjsTheme%>/theme-<%=extjsTheme%>.js?s=<%=buildStamp%>"></script>
 
     <script type="text/javascript">
+        var config = {
+            buildStamp: '<%=buildStamp%>'
+        };
+        <%
+            if(request.getParameter("reportChart") != null){
+        %>
+            config.reportChart = '<%=request.getParameter("reportChart")%>';
+            config.reportCategory = '<%=request.getParameter("reportCategory")%>';
+            config.reportTitle = '<%=request.getParameter("reportTitle")%>';
+            config.startDate = '<%=request.getParameter("startDate")%>';
+            config.endDate = '<%=request.getParameter("endDate")%>';
+        <%
+            }
+        %>
         Ext.onReady(function() {
-            Ung.Main.init({buildStamp:'<%=buildStamp%>'})
+            Ung.Main.init(config)
         });
     </script>
 
