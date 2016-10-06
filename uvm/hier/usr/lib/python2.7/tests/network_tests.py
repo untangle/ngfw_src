@@ -866,6 +866,7 @@ class NetworkTests(unittest2.TestCase):
         for interface in netsettings['interfaces']['list']:
             if interface['isWan'] and interface['disabled'] == False:
                 wan_count += 1
+        
         if (wan_count > 1):
             raise unittest2.SkipTest("More than 1 WAN does not work with Dynamic DNS NGFW-5543")
             
