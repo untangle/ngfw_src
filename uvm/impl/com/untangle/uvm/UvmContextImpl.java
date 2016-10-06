@@ -1021,16 +1021,13 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         // if its an untangle netboot, point to internal package server
         String extraOptions = "";
         if (isNetBoot()) {
-            extraOptions += " -u \"package-server.\" ";
+            extraOptions += " -u \"package-server.untangle.int\" ";
             extraOptions += " -d \"nightly\" ";
         } else {
             extraOptions += " -d \"stable-" + com.untangle.uvm.Version.getVersion().replaceAll("\\.","") + "\" ";
         }
 
         extraOptions += " -f \"" + System.getProperty("uvm.conf.dir") + "/uid" + "\" ";
-
-        if (com.untangle.uvm.Version.getVersionName() != null)
-            extraOptions += " -n \"" + com.untangle.uvm.Version.getVersionName() + "\" ";
 
         Integer exitValue = this.execManager().execResult(CREATE_UID_SCRIPT + extraOptions);
         if ( exitValue != 0 ) {
