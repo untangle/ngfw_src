@@ -80,13 +80,13 @@ def offlineWanCount():
             offlineCount = offlineCount + 1
     return offlineCount
 
-def waitForChangeInStatus(maxWait=60):
+def waitForChangeInStatus(maxWait=120):
     increment = 1
     time.sleep(increment)
     maxWait = maxWait - increment
     originalOnlineCount = onlineWanCount()
     originalOfflineCount = offlineWanCount()
-    while maxWait > 10:
+    while maxWait > 0:
         time.sleep(increment)
         maxWait = maxWait - increment
         if (originalOfflineCount != offlineWanCount()):
