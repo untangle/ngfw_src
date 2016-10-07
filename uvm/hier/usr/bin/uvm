@@ -438,6 +438,10 @@ while True:
     uvm_pid = pid;        
     debug("untangle-vm launched (pid: %i)" % uvm_pid);
 
+    # write the java pid file
+    with open('/var/run/uvm-java.pid','w') as pid_file:
+        pid_file.write(str(uvm_pid)+"\n");
+
     # adjust oom value to that the kernel will kill java when out of memory
     procset('/proc/%i/oom_adj'%uvm_pid,'15',True);
 
@@ -466,6 +470,9 @@ while True:
             continue; #ignore interrupted
 
     uvm_pid = 0;
+
+    # remove pid file
+    os.remove('/var/run/uvm-java.pid')
 
     # if this was expected, clean up and exit
     if exit_flag == 1:
