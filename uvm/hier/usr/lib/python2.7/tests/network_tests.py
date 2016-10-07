@@ -861,7 +861,15 @@ class NetworkTests(unittest2.TestCase):
         # raise unittest2.SkipTest('Broken test')
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
+        wan_count = 0
+        netsettings = uvmContext.networkManager().getNetworkSettings()
+        for interface in netsettings['interfaces']['list']:
+            if interface['isWan'] and interface['disabled'] == False:
+                wan_count += 1
         
+        if (wan_count > 1):
+            raise unittest2.SkipTest("More than 1 WAN does not work with Dynamic DNS NGFW-5543")
+            
         # if dynamic name is already in the ddclient cache with the same IP, dyndns is never updates
         # we need a name never used or name with cache IP different than in the cache
         result = subprocess.check_output("wget --timeout=4 -q -O - \"$@\" checkip.dyndns.com", shell=True)
