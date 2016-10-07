@@ -1194,19 +1194,19 @@ a.forgot-password:hover {
     box-shadow: 0 1px 3px rgba(0,0,0,0.4);
     border-radius: 3px;
     box-sizing: border-box;
-    
+
     /*opacity: 1;*/
 
     /*transition: opacity 1s cubic-bezier(0.23, 1, 0.32, 1);*/
-    
-    
+
+
     background: rgb(249,249,249);
     background: -moz-linear-gradient(top,  rgba(249,249,249,1) 0%, rgba(255,255,255,1) 50%, rgba(249,249,249,1) 100%);
     background: -webkit-linear-gradient(top,  rgba(249,249,249,1) 0%,rgba(255,255,255,1) 50%,rgba(249,249,249,1) 100%);
     background: linear-gradient(to bottom,  rgba(249,249,249,1) 0%,rgba(255,255,255,1) 50%,rgba(249,249,249,1) 100%);
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f9f9f9', endColorstr='#f0f0f0',GradientType=0 );
-    
-    
+
+
 }
 
 .widget.init {
@@ -1414,7 +1414,7 @@ a.forgot-password:hover {
 .dashboard .ellipsis .x-form-display-field-default {
     max-width: 120px;
     white-space: nowrap;
-    overflow: hidden; 
+    overflow: hidden;
     text-overflow: ellipsis;
 }
 
@@ -1593,10 +1593,10 @@ a.forgot-password:hover {
     height: 28px;
     line-height: 1;
     color: #FFF;
-    margin: 0 5px; 
+    margin: 0 5px;
     border: 0;
     border-radius: 3px;
-    
+
     box-shadow: 0 1px 3px rgba(0,0,0,.25);
     font-size: 11px;
     cursor: pointer;
@@ -2033,4 +2033,26 @@ a.forgot-password:hover {
     margin: 5px 0 5px 0;
     font-weight: normal;
     font-size: 20px;
+}
+
+
+
+
+.reg-field .x-form-error-wrap {
+    display: table-row !important;
+    height: 16px;
+}
+
+
+.reg-field-error {
+    background-image: none;
+    padding: 0;
+    line-height: 1;
+}
+
+.reg-field-error li {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    padding: 1px 0;
 }
