@@ -236,9 +236,10 @@ Ext.define('Ung.charts', {
      * @param {Object} data          - the data used upon chart creation
      * @param {Object} container     - the ExtJS component containing the chart
      * @param {Boolean} forDashboard - apply specific chart options for Dashboard/Reports charts
+     * @param {Boolean} forFixed     - apply specific chart options for fixed/non-interactive charts
      * @returns {Object}             - the HighStock chart object
      */
-    timeSeriesChart: function (entry, data, container, forDashboard) {
+    timeSeriesChart: function (entry, data, container, forDashboard, forFixed) {
         var chartType,
             colors = (entry.colors !== null && entry.colors.length > 0) ? entry.colors : this.baseColors;
 
@@ -297,7 +298,7 @@ Ext.define('Ung.charts', {
                 buttons: this.setRangeButtons(data)
             },
             scrollbar: {
-                enabled: !forDashboard
+                enabled: !forDashboard && !forFixed
             },
             credits: {
                 enabled: false
@@ -555,9 +556,10 @@ Ext.define('Ung.charts', {
      * @param {Object} data          - the data used upon chart creation
      * @param {Object} container     - the ExtJS component containing the chart
      * @param {Boolean} forDashboard - apply specific chart options for Dashboard/Reports charts
+     * @param {Boolean} forFixed     - apply specific chart options for fixed/non-interactive charts
      * @returns {Object}             - the HighCharts chart object
      */
-    categoriesChart: function (entry, data, container, forDashboard) {
+    categoriesChart: function (entry, data, container, forDashboard, forFixed) {
         var colors = (entry.colors !== null && entry.colors.length > 0) ? entry.colors : this.baseColors,
             tableConfig = Ext.clone(Ung.TableConfig.getConfig(entry.table)),
             seriesName,

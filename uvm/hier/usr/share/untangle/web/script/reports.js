@@ -1098,7 +1098,7 @@ Ext.define('Ung.panel.Reports', {
                             });
                             btn.setPressed(true);
                             entry.timeStyle = btn.timeStyle;
-                            //this.chart = Ung.charts.timeSeriesChart(entry, this.chartData, this.down('#highchart').body, false);
+                            //this.chart = Ung.charts.timeSeriesChart(entry, this.chartData, this.down('#highchart').body, false, false);
                             Ung.charts.updateSeriesType(entry, this.chart);
                         }, this)
                     });
@@ -1149,10 +1149,10 @@ Ext.define('Ung.panel.Reports', {
                     break;
                 case 'TIME_GRAPH':
                 case 'TIME_GRAPH_DYNAMIC':
-                    this.chart = Ung.charts.timeSeriesChart(entry, result.list, this.down('#highchart').body, false);
+                    this.chart = Ung.charts.timeSeriesChart(entry, result.list, this.down('#highchart').body, false, false);
                     break;
                 default:
-                    this.chart = Ung.charts.categoriesChart(entry, result.list, this.down('#highchart').body, false);
+                    this.chart = Ung.charts.categoriesChart(entry, result.list, this.down('#highchart').body, false, false);
             }
             this.loadReportData(this.chartData);
         }, this), entry, this.startDateWindow.serverDate, this.endDateWindow.serverDate, this.extraConditions, -1);
@@ -1412,7 +1412,7 @@ Ext.define('Ung.panel.Reports', {
             }
 
             if (this.entry.type === 'TIME_GRAPH' || this.entry.type === 'TIME_GRAPH_DYNAMIC') {
-                this.chart = Ung.charts.timeSeriesChart(this.entry, this.chartData, this.down('#highchart').body, false);
+                this.chart = Ung.charts.timeSeriesChart(this.entry, this.chartData, this.down('#highchart').body, false, false);
                 this.loadReportData(this.chartData);
             } else {
                 Ung.charts.setCategoriesSeries(this.entry, this.chartData, this.chart);
