@@ -17,10 +17,10 @@ Ext.define('Webui.config.accountRegistration', {
         }];
         this.storeApiUrl = rpc.storeUrl.replace("/store/open.php","/api/v1");
         var forgotPasswordUrl = rpc.storeUrl + "?" + "action=forgot_password" + "&" + Ung.Main.about();
-        
+
         this.expirationMonths = Ext.create('Ext.data.ArrayStore', {
             fields: ['id', 'value'],
-            data: [ 
+            data: [
                 ["01", "01 - " + i18n._("January")],
                 ["02", "02 - " + i18n._("February")],
                 ["03", "03 - " + i18n._("March")],
@@ -37,7 +37,7 @@ Ext.define('Webui.config.accountRegistration', {
         });
         this.cardTypes = Ext.create('Ext.data.ArrayStore', {
             fields: ['id', 'value'],
-            data: [ 
+            data: [
                 ["MC", i18n._("Mastercard")],
                 ["VISA", i18n._("VISA")],
                 ["DISC", i18n._("Discover")],
@@ -47,7 +47,7 @@ Ext.define('Webui.config.accountRegistration', {
         this.defaultFocusButton = function(buttonName){
             return function(me, event, eOpts) {
                     var scope = this.up("container");
-                    this.keyNav = Ext.create('Ext.util.KeyNav', this.el, {                    
+                    this.keyNav = Ext.create('Ext.util.KeyNav', this.el, {
                         enter: scope.down("button[name="+buttonName+"]"),
                         scope: scope
                     });
@@ -125,15 +125,16 @@ Ext.define('Webui.config.accountRegistration', {
                             scope: this
                         }
                     }]
-                }, 
+                },
                 {
                     xtype: 'container',
                     itemId: 'step2',
                     layout: { type: 'hbox', align: 'stretch'},
                     style: {borderTop: '1px solid #D0D0D0'},
                     items: [{
-                        xtype: 'container',
+                        xtype: 'form',
                         flex: 7,
+                        border: false,
                         autoScroll: true,
                         name: 'loginForm',
                         layout: { type: 'vbox', align: 'stretch'},
@@ -152,22 +153,41 @@ Ext.define('Webui.config.accountRegistration', {
                             width: 300,
                             margin: '0 40 0 20',
                             name: 'emailAddress',
-                            vtype: 'email',
+                            //vtype: 'email',
                             labelAlign: 'top',
                             fieldLabel: i18n._("Email Address")+ " *",
+                            cls: 'reg-field',
+                            msgTarget: 'under',
+                            errorMsgCls: 'reg-field-error',
+                            //validateOnChange: false,
                             listeners: {
                                 focus: this.defaultFocusButton("loginButton")
+                            },
+                            validator: function (email) {
+                                if (!/^(")?(?:[^\."\s])(?:(?:[\.])?(?:[\w\-!#$%&'*+/=?^_`{|}~]))*\1@(\w[\-\w]*\.){1,5}([A-Za-z]){2,6}$/.test(email)) {
+                                    return i18n._('You must provide a valid login name or email address.');
+                                }
+                                return true;
                             }
                         }, {
                             xtype:'textfield',
                             width: 300,
-                            margin: '10 40 0 20',
+                            margin: '0 40 0 20',
                             labelAlign: 'top',
                             inputType: 'password',
                             name: 'password',
                             fieldLabel: i18n._("Password")+ " *",
+                            cls: 'reg-field',
+                            msgTarget: 'under',
+                            errorMsgCls: 'reg-field-error',
                             listeners: {
                                 focus: this.defaultFocusButton("loginButton")
+                            },
+                            validator: function (pass) {
+                                if (!pass) {
+                                    return i18n._('Please specify your password.');
+                                }
+                                return true;
                             }
                         }, {
                             xtype: 'container',
@@ -175,6 +195,7 @@ Ext.define('Webui.config.accountRegistration', {
                             height: 70,
                             items: {
                                 xtype: 'button',
+                                formBind: true,
                                 name: "loginButton",
                                 text: i18n._('Login'),
                                 padding: '7 30 7 30',
@@ -194,7 +215,8 @@ Ext.define('Webui.config.accountRegistration', {
                             }
                         }]
                     }, {
-                        xtype: 'container',
+                        xtype: 'form',
+                        border: false,
                         flex: 10,
                         autoScroll: true,
                         style: {borderLeft: '1px solid #D0D0D0'},
@@ -220,8 +242,17 @@ Ext.define('Webui.config.accountRegistration', {
                                 labelAlign: 'top',
                                 name: 'firstName',
                                 fieldLabel: i18n._("First Name")+ " *",
+                                cls: 'reg-field',
+                                msgTarget: 'under',
+                                errorMsgCls: 'reg-field-error',
                                 listeners: {
                                     focus: this.defaultFocusButton("registerButton")
+                                },
+                                validator: function (fname) {
+                                    if (!fname) {
+                                        return i18n._('Please specify your first name.');
+                                    }
+                                    return true;
                                 }
                             }, {
                                 xtype:'textfield',
@@ -230,8 +261,17 @@ Ext.define('Webui.config.accountRegistration', {
                                 labelAlign: 'top',
                                 name: 'lastName',
                                 fieldLabel: i18n._("Last Name")+ " *",
+                                cls: 'reg-field',
+                                msgTarget: 'under',
+                                errorMsgCls: 'reg-field-error',
                                 listeners: {
                                     focus: this.defaultFocusButton("registerButton")
+                                },
+                                validator: function (lname) {
+                                    if (!lname) {
+                                        return i18n._('Please specify your last name.');
+                                    }
+                                    return true;
                                 }
                             }]
                         }, {
@@ -240,18 +280,34 @@ Ext.define('Webui.config.accountRegistration', {
                             labelAlign: 'top',
                             name: 'companyName',
                             fieldLabel: i18n._("Company Name"),
+                            cls: 'reg-field',
+                            msgTarget: 'under',
+                            errorMsgCls: 'reg-field-error',
                             listeners: {
                                 focus: this.defaultFocusButton("registerButton")
                             }
                         }, {
                             xtype:'textfield',
-                            vtype: 'email',
+                            //vtype: 'email',
                             margin: '0 50 0 20',
                             labelAlign: 'top',
                             name: 'emailAddress',
                             fieldLabel: i18n._("Email Address")+ " *",
+                            cls: 'reg-field',
+                            msgTarget: 'under',
+                            errorMsgCls: 'reg-field-error',
+                            //validateOnChange: false,
                             listeners: {
                                 focus: this.defaultFocusButton("registerButton")
+                            },
+                            validator: function (email) {
+                                if (!email) {
+                                    return i18n._('We need your email address to contact you.');
+                                }
+                                if (!/^(")?(?:[^\."\s])(?:(?:[\.])?(?:[\w\-!#$%&'*+/=?^_`{|}~]))*\1@(\w[\-\w]*\.){1,5}([A-Za-z]){2,6}$/.test(email)) {
+                                    return i18n._('Your email address must be in the format of name@domain.com.');
+                                }
+                                return true;
                             }
                         }, {
                             xtype: 'container',
@@ -264,8 +320,20 @@ Ext.define('Webui.config.accountRegistration', {
                                 labelAlign: 'top',
                                 name: 'password',
                                 fieldLabel: i18n._("Password")+ " *",
+                                cls: 'reg-field',
+                                msgTarget: 'under',
+                                errorMsgCls: 'reg-field-error',
                                 listeners: {
                                     focus: this.defaultFocusButton("registerButton")
+                                },
+                                validator: function (pass) {
+                                    if (!pass) {
+                                        return i18n._('Please specify your password.');
+                                    }
+                                    if (pass.length < 6) {
+                                        return i18n._('Your password is too short.');
+                                    }
+                                    return true;
                                 }
                             }, {
                                 xtype:'textfield',
@@ -275,8 +343,17 @@ Ext.define('Webui.config.accountRegistration', {
                                 columnWidth: 0.5,
                                 name: 'confirmPassword',
                                 fieldLabel: i18n._("Confirm Password")+ " *",
+                                cls: 'reg-field',
+                                msgTarget: 'under',
+                                errorMsgCls: 'reg-field-error',
                                 listeners: {
                                     focus: this.defaultFocusButton("registerButton")
+                                },
+                                validator: function (pass) {
+                                    if (!pass) {
+                                        return i18n._('Please retype your password.');
+                                    }
+                                    return true;
                                 }
                             }]
                         }, {
@@ -286,6 +363,7 @@ Ext.define('Webui.config.accountRegistration', {
                             height: 40,
                             items: {
                                 xtype: 'button',
+                                formBind: true,
                                 name: "registerButton",
                                 text: i18n._('Register'),
                                 padding: '7 30 7 30',
@@ -296,7 +374,7 @@ Ext.define('Webui.config.accountRegistration', {
                             }
                         }]
                     }]
-                }, 
+                },
                 //Subscriptions step
                 {
                     xtype: 'container',
@@ -447,7 +525,7 @@ Ext.define('Webui.config.accountRegistration', {
                                         // Determine credit card type for those supported (AMEX, MC, DISC, VISA).
                                         // In theory we could do this silently but we would risk
                                         // future changes to credit card algorithms.
-                                        // To be safe, we provide a combobox to select the type but 
+                                        // To be safe, we provide a combobox to select the type but
                                         // aid in changing that value automatically when the number has changed
                                         // using the current card algoritm.
                                         creditNumber = creditNumber.replace(/\-/g, '');
@@ -599,7 +677,7 @@ Ext.define('Webui.config.accountRegistration', {
             errors.push(i18n._("The Email Address is not valid."));
         } else if(Ext.isEmpty(emailAddress.getValue())) {
             errors.push(Ext.String.format(i18n._("The {0} is required."), i18n._("Email Address")));
-        } 
+        }
         if(Ext.isEmpty(password.getValue())) {
             errors.push(Ext.String.format(i18n._("The {0} is required."), i18n._("Password")));
         }
@@ -646,7 +724,7 @@ Ext.define('Webui.config.accountRegistration', {
         var emailAddress = form.down("textfield[name=emailAddress]");
         var password = form.down("textfield[name=password]");
         var confirmPassword = form.down("textfield[name=confirmPassword]");
-        
+
         var errors = [];
         if(Ext.isEmpty(firstName)) {
             errors.push(Ext.String.format(i18n._("The {0} is required."), i18n._("First Name")));
@@ -658,7 +736,7 @@ Ext.define('Webui.config.accountRegistration', {
             errors.push(i18n._("The Email Address is not valid."));
         } else if(Ext.isEmpty(emailAddress.getValue())) {
             errors.push(Ext.String.format(i18n._("The {0} is required."), i18n._("Email Address")));
-        } 
+        }
         if(Ext.isEmpty(password.getValue())) {
             errors.push(Ext.String.format(i18n._("The {0} is required."), i18n._("Password")));
         }
@@ -674,7 +752,7 @@ Ext.define('Webui.config.accountRegistration', {
             url: this.storeApiUrl+"/account/create",
             scope: this,
             params: {
-                email: emailAddress.getValue(), 
+                email: emailAddress.getValue(),
                 password: password.getValue(),
                 fname: firstName,
                 lname: lastName,
@@ -701,7 +779,7 @@ Ext.define('Webui.config.accountRegistration', {
                 this.setLoading(false);
                 Ext.MessageBox.alert(i18n._("Warning"), i18n._("Failed to access the store to create the account"));
             }
-            
+
         });
     },
     checkAccount: function() {
@@ -731,7 +809,7 @@ Ext.define('Webui.config.accountRegistration', {
                     }
                     this.checkSubscriptions();
                 }
-                
+
             },
             failure: function(response, opts) {
                 this.setLoading(false);
@@ -769,11 +847,11 @@ Ext.define('Webui.config.accountRegistration', {
                     }
                     if(unbound == true){
                         this.down("container[name=cardsContainer]").setActiveItem("step3");
-                    }else{                            
+                    }else{
                         this.checkActivationCode();
                     }
                 }
-                
+
             },
             failure: function(response, opts) {
                 this.setLoading(false);
@@ -844,7 +922,7 @@ Ext.define('Webui.config.accountRegistration', {
         }else{
             if( (creditYear.length < 4) || !/^\d+$/.test(creditYear)){
                 errors.push(Ext.String.format(i18n._("The {0} is invalid."), i18n._("Credit Year")));
-            }            
+            }
         }
         if(errors.length>0) {
             Ext.MessageBox.alert(i18n._("Warning"), errors.join("<br/>"));
@@ -879,7 +957,7 @@ Ext.define('Webui.config.accountRegistration', {
                         return;
                     }
                 }
-                
+
             },
             failure: function(response, opts) {
                 this.setLoading(false);
