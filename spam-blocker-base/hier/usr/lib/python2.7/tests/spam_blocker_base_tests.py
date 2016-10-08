@@ -197,6 +197,8 @@ class SpamBlockerBaseTests(unittest2.TestCase):
         assert(not addressFound)
 
     def test_070_checkForSMTPHeaders(self):
+        if (not canRelay):
+            raise unittest2.SkipTest('Unable to relay through test.untangle.com')
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
         # find local SMTP sender
         fakeSmtpServerHost = "";
