@@ -284,12 +284,7 @@ def setHttpHttpsPorts(httpPort, httpsPort):
 
 def setFirstLevelRule(newRule,ruleGroup):
     netsettings = uvmContext.networkManager().getNetworkSettings()
-    netsettings[ruleGroup]['list'].append(newRule)
-    uvmContext.networkManager().setNetworkSettings(netsettings)
-
-def appendQoSRule(newRule):
-    netsettings = uvmContext.networkManager().getNetworkSettings()
-    netsettings['qosSettings']['qosRules']['list'].append(newRule)
+    netsettings[ruleGroup]['list'].insert(0,newRule)
     uvmContext.networkManager().setNetworkSettings(netsettings)
 
 def appendFWRule(node, newRule):
@@ -297,9 +292,9 @@ def appendFWRule(node, newRule):
     rules["list"].append(newRule)
     node.setRules(rules)
 
-def appendDNSRule(newRule):
+def addDNSRule(newRule):
     netsettings = uvmContext.networkManager().getNetworkSettings()
-    netsettings['dnsSettings']['staticEntries']['list'].append(newRule)
+    netsettings['dnsSettings']['staticEntries']['list'].insert(0,newRule)
     uvmContext.networkManager().setNetworkSettings(netsettings)
 
 def findUsedIP(startIP):
@@ -841,7 +836,7 @@ class NetworkTests(unittest2.TestCase):
         match = re.search(r'address \d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
         ip_address_testuntangle = (match.group()).replace('address ','')
         # print "IP address of test.untangle.com <%s>" % ip_address_testuntangle
-        appendDNSRule(createDNSRule(ip_address_testuntangle,"www.foobar.com"))
+        addDNSRule(createDNSRule(ip_address_testuntangle,"www.foobar.com"))
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
         print "wan_IP <%s>" % wan_IP
 
