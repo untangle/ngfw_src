@@ -9,7 +9,15 @@
     "orderDesc": true,
     "units": "hits",
     "pieGroupColumn": "username",
-    "pieSumColumn": "count(shield_blocked::int)",
+    "pieSumColumn": "count(*)",
+    "conditions": [
+        {
+            "column": "filter_prefix",
+            "javaClass": "com.untangle.node.reports.SqlCondition",
+            "operator": "=",
+            "value": "shield_blocked"
+        }
+    ],
     "readOnly": true,
     "table": "sessions",
     "title": "Top Blocked Usernames",

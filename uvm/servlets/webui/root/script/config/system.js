@@ -38,29 +38,11 @@ Ext.define('Webui.config.system', {
         return [
             {name:"DST_ADDR",displayName: i18n._("Destination Address"), type: "text", visible: true, vtype:"ipMatcher"},
             {name:"DST_PORT",displayName: i18n._("Destination Port"), type: "text",vtype:"portMatcher", visible: true},
-            {name:"DST_INTF",displayName: i18n._("Destination Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, false), visible: true},
+            {name:"DST_INTF",displayName: i18n._("Destination Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, true), visible: true},
             {name:"SRC_ADDR",displayName: i18n._("Source Address"), type: "text", visible: true, vtype:"ipMatcher"},
             {name:"SRC_PORT",displayName: i18n._("Source Port"), type: "text",vtype:"portMatcher", visible: rpc.isExpertMode},
-            {name:"SRC_INTF",displayName: i18n._("Source Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, false), visible: true},
-            {name:"PROTOCOL",displayName: i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["any",i18n._("any")]], visible: true},
-            {name:"USERNAME",displayName: i18n._("Username"), type: "editor", editor: Ext.create('Ung.UserEditorWindow',{}), visible: true},
-            {name:"CLIENT_HOSTNAME",displayName: i18n._("Client Hostname"), type: "text", visible: true},
-            {name:"SERVER_HOSTNAME",displayName: i18n._("Server Hostname"), type: "text", visible: rpc.isExpertMode},
-            {name:"SRC_MAC", displayName: i18n._("Client MAC Address"), type: "text", visible: true },
-            {name:"DST_MAC", displayName: i18n._("Server MAC Address"), type: "text", visible: true },
-            {name:"CLIENT_MAC_VENDOR",displayName: i18n._("Client MAC Vendor"), type: "text", visible: true},
-            {name:"SERVER_MAC_VENDOR",displayName: i18n._("Server MAC Vendor"), type: "text", visible: true},
-            {name:"CLIENT_IN_PENALTY_BOX",displayName: i18n._("Client in Penalty Box"), type: "boolean", visible: true},
-            {name:"SERVER_IN_PENALTY_BOX",displayName: i18n._("Server in Penalty Box"), type: "boolean", visible: true},
-            {name:"CLIENT_HAS_NO_QUOTA",displayName: i18n._("Client has no Quota"), type: "boolean", visible: rpc.isExpertMode},
-            {name:"SERVER_HAS_NO_QUOTA",displayName: i18n._("Server has no Quota"), type: "boolean", visible: rpc.isExpertMode},
-            {name:"CLIENT_QUOTA_EXCEEDED",displayName: i18n._("Client has exceeded Quota"), type: "boolean", visible: true},
-            {name:"SERVER_QUOTA_EXCEEDED",displayName: i18n._("Server has exceeded Quota"), type: "boolean", visible: true},
-            {name:"DIRECTORY_CONNECTOR_GROUP",displayName: i18n._("Directory Connector: User in Group"), type: "editor", editor: Ext.create('Ung.GroupEditorWindow',{}), visible: true},
-            {name:"HTTP_USER_AGENT",displayName: i18n._("HTTP: Client User Agent"), type: "text", visible: true},
-            {name:"HTTP_USER_AGENT_OS",displayName: i18n._("HTTP: Client User OS"), type: "text", visible: false},
-            {name:"CLIENT_COUNTRY",displayName: i18n._("Client Country"), type: "editor", editor: Ext.create('Ung.CountryEditorWindow',{}), visible: true},
-            {name:"SERVER_COUNTRY",displayName: i18n._("Server Country"), type: "editor", editor: Ext.create('Ung.CountryEditorWindow',{}), visible: true}
+            {name:"SRC_INTF",displayName: i18n._("Source Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, true), visible: true},
+            {name:"PROTOCOL",displayName: i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"]], visible: true}
         ];
     },
     // get languange settings object
@@ -1104,14 +1086,6 @@ Ext.define('Webui.config.system', {
         }
     },
     buildShield: function() {
-        var multiplierData = [
-            [1, 1 + ' ' + i18n._("1 user")],
-            [5, 5 + ' ' + i18n._("users")],
-            [25, 25 + ' ' + i18n._("users")],
-            [50, 50 + ' ' + i18n._("users")],
-            [100, 100 + ' ' + i18n._("users")],
-            [-1, i18n._("unlimited")]
-        ];
         this.gridShieldRules = Ext.create( 'Ung.grid.Panel', {
             name: 'Shield Rules',
             settingsCmp: this,
@@ -1124,7 +1098,7 @@ Ext.define('Webui.config.system', {
                 "ruleId": -1,
                 "enabled": true,
                 "description": "",
-                "multiplier": -1
+                "action": ""
             },
             fields: [{
                 name: 'ruleId'
@@ -1134,8 +1108,8 @@ Ext.define('Webui.config.system', {
                 name: 'conditions'
             }, {
                 name: 'description'
-            }, {
-                name: 'multiplier'
+            },{
+                name: "action"
             }, {
                 name: 'javaClass'
             }],
@@ -1160,17 +1134,16 @@ Ext.define('Webui.config.system', {
                     emptyText: i18n._("[no description]")
                 }
             }, {
-                header: i18n._("User Count"),
-                width: 120,
-                dataIndex: 'multiplier',
-                renderer: function(value) {
-                    for (var i = 0; i < multiplierData.length; i++) {
-                        if (multiplierData[i][0] === value) {
-                            return multiplierData[i][1];
-                        }
+                header: i18n._("Action"),
+                dataIndex:'action',
+                width: 150,
+                renderer: Ext.bind(function(value) {
+                    switch(value) {
+                        case 'SCAN': return i18n._("Scan");
+                        case 'PASS': return i18n._("Pass");
+                        default: return "Unknown Action: \"" + value + "\"";
                     }
-                    return value;
-                }
+                }, this)
             }],
             rowEditorInputLines:[{
                 xtype:'checkbox',
@@ -1194,14 +1167,37 @@ Ext.define('Webui.config.system', {
                 }]
             }, {
                 xtype: 'fieldset',
-                title: i18n._('Perform the following action(s):'),
-                items: [{
-                    xtype: 'combo',
-                    store: multiplierData,
-                    dataIndex: "multiplier",
-                    fieldLabel: i18n._("User Count"),
-                    queryMode: 'local',
-                    typeAhead: true
+                title: i18n._('Perform the following action:'),
+                items:[{
+                    xtype: "container",
+                    name: "Action",
+                    dataIndex: "action",
+                    fieldLabel: i18n._("Action"),
+                    items: [{
+                        xtype: "combo",
+                        name: "actionType",
+                        allowBlank: false,
+                        fieldLabel: i18n._("Action"),
+                        editable: false,
+                        store: [['SCAN', i18n._('Scan')],
+                                ['PASS', i18n._('Pass')]],
+                        valueField: "value",
+                        displayField: "displayName",
+                        queryMode: "local"
+                    }],
+                    setValue: function(value) {
+                        var actionType  = this.down('combo[name="actionType"]');
+                        actionType.setValue(value.actionType);
+                    },
+                    getValue: function() {
+                        return this.down('combo[name="actionType"]').getValue();
+                    },
+                    isValid: function () {
+                        var actionType  = this.down('combo[name="actionType"]');
+                        var isValid = actionType.isValid();
+                        this.activeErrors=actionType.activeErrors;
+                        return isValid;
+                    }
                 }]
             }]
         });

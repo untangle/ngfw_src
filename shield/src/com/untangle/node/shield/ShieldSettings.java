@@ -14,13 +14,15 @@ import org.json.JSONString;
 @SuppressWarnings("serial")
 public class ShieldSettings implements java.io.Serializable
 {
+    private Integer version = null; /* default is set in initializeSettings() */
     private boolean shieldEnabled = true;
-
     private LinkedList<ShieldRule> rules = new LinkedList<ShieldRule>();
-
     private int requestPerSecondLimit = 30;
     
     public ShieldSettings() { }
+
+    public Integer getVersion() { return this.version; }
+    public void setVersion(Integer newValue) { this.version = newValue; }
 
     public int getRequestPerSecondLimit() { return this.requestPerSecondLimit; }
     public void setRequestPerSecondLimit( int newValue ) { this.requestPerSecondLimit = newValue; }
@@ -36,5 +38,4 @@ public class ShieldSettings implements java.io.Serializable
         JSONObject jO = new JSONObject(this);
         return jO.toString();
     }
-
 }

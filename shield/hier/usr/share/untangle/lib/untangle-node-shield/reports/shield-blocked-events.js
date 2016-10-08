@@ -4,13 +4,13 @@
     "type": "EVENT_LIST",
     "conditions": [
         {
-            "column": "shield_blocked",
+            "column": "filter_prefix",
             "javaClass": "com.untangle.node.reports.SqlCondition",
-            "operator": "is",
-            "value": "TRUE"
+            "operator": "=",
+            "value": "shield_blocked"
         }
     ],
-    "defaultColumns": ["time_stamp","username","hostname","c_client_port","s_server_addr","s_server_port","shield_blocked"],
+    "defaultColumns": ["time_stamp","username","hostname","c_client_port","s_server_addr","s_server_port","filter_prefix"],
     "description": "All sessions blocked by Shield.",
     "displayOrder": 1011,
     "javaClass": "com.untangle.node.reports.ReportEntry",

@@ -50,7 +50,6 @@ public class ExtensionImpl implements Runnable
         classDescriptions.put("ApplicationControlLiteEvent","These events are created by [[Application Control Lite]] and update the [[Global_DB_schema#sessions|sessions]] table when application control lite identifies a session.");
         classDescriptions.put("ApplicationControlLogEvent","These events are created by [[Application Control]] and update the [[Global_DB_schema#sessions|sessions]] table when application control identifies a session.");
         classDescriptions.put("FirewallEvent","These events are created by [[Firewall]] and update the [[Global_DB_schema#sessions|sessions]] table when a firewall rule matches a session.");
-        classDescriptions.put("ShieldEvent","These events are created by base system and update the [[Global_DB_schema#sessions|sessions]] table when the shield blocks a session.");
         classDescriptions.put("WebFilterEvent","These events are created by [[Web Filter]] and update the [[Global_DB_schema#http_events|http_events]] table when web filter processes a web request.");
         classDescriptions.put("WebFilterQueryEvent","These events are created by [[Web Filter]] and inserted to the [[Global_DB_schema#http_query_events|http_query_events]] table when web filter processes a search engine search.");
         classDescriptions.put("SslInspectorLogEvent","These events are created by [[SSL Inspector]] and update the [[Global_DB_schema#sessions|sessions]] table when a session is processed by SSL Inspector.");

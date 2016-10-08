@@ -249,8 +249,6 @@ Ext.define('Ung.TableConfig', {
                 }, {
                     name: 'filter_prefix'
                 }, {
-                    name: 'shield_blocked'
-                }, {
                     name: 'firewall_blocked'
                 }, {
                     name: 'firewall_flagged'
@@ -467,16 +465,6 @@ Ext.define('Ung.TableConfig', {
                     width: 120,
                     sortable: true,
                     dataIndex: 'filter_prefix'
-                }, {
-                    header: i18n._('Shield Blocked'),
-                    width: Ung.TableConfig.booleanFieldWidth,
-                    sortable: true,
-                    dataIndex: 'shield_blocked',
-                    filter: {
-                        type: 'boolean',
-                        yesText: i18n._('true'),
-                        noText: i18n._('false')
-                    }
                 }, {
                     header: i18n._('Rule Id') + ' (Application Control)',
                     width: 70,
@@ -752,8 +740,6 @@ Ext.define('Ung.TableConfig', {
                 }, {
                     name: 'filter_prefix'
                 }, {
-                    name: 'shield_blocked'
-                }, {
                     name: 'firewall_blocked'
                 }, {
                     name: 'firewall_flagged'
@@ -978,16 +964,6 @@ Ext.define('Ung.TableConfig', {
                     width: 120,
                     sortable: true,
                     dataIndex: 'filter_prefix'
-                }, {
-                    header: i18n._('Shield Blocked'),
-                    width: Ung.TableConfig.booleanFieldWidth,
-                    sortable: true,
-                    dataIndex: 'shield_blocked',
-                    filter: {
-                        type: 'boolean',
-                        yesText: i18n._('true'),
-                        noText: i18n._('false')
-                    }
                 }, {
                     header: i18n._('Rule Id') + ' (Application Control)',
                     width: 70,

@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.Iterator;
+import java.io.File;
 
 import org.apache.log4j.Logger;
 
@@ -24,24 +26,21 @@ import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.PipelineConnector;
 
-public class ShieldNodeImpl extends NodeBase
+public class ShieldApp extends NodeBase
 {
-    private final Logger logger = Logger.getLogger(ShieldNodeImpl.class);
+    private final Logger logger = Logger.getLogger(ShieldApp.class);
 
-    private final EventHandler handler;
-    private final PipelineConnector connector;
+    private static final String SHIELD_RULES_FILE = "/etc/untangle-netd/iptables-rules.d/600-shield";
+
     private final PipelineConnector[] connectors;
 
     private ShieldSettings settings;
 
-    public ShieldNodeImpl( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
+    public ShieldApp( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
     {
         super( nodeSettings, nodeProperties );
 
-        this.handler = new EventHandler( this );
-
-        this.connector = UvmContextFactory.context().pipelineFoundry().create("shield", this, null, this.handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, -10000, false);
-        this.connectors = new PipelineConnector[] { connector };
+        this.connectors = new PipelineConnector[] { };
     }
 
     public void setSettings(final ShieldSettings newSettings)
@@ -71,6 +70,11 @@ public class ShieldNodeImpl extends NodeBase
          */
         this.settings = newSettings;
         try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
+
+        /**
+         * Sync the settings to the system
+         */
+        syncToSystem();
     }
 
     public ShieldSettings getSettings()
@@ -91,7 +95,8 @@ public class ShieldNodeImpl extends NodeBase
     {
         ShieldSettings settings = new ShieldSettings();
         logger.info("Initializing Settings...");
-        setSettings( settings);
+        settings.setVersion( Integer.valueOf(1) ); /* Current version */
+        setSettings( settings );
     }
 
     @Override
@@ -124,5 +129,117 @@ public class ShieldNodeImpl extends NodeBase
             this.settings = readSettings;
             logger.debug("Settings: " + this.settings.toJSONString());
         }
+
+        if ( settings.getVersion() == null || settings.getVersion() < 1 ) {
+            convertSettingsToV1( settings );
+            setSettings( settings );
+        }
+
+        /**
+         * If the settings file date is newer than the system files, re-sync them
+         */
+        if ( ! UvmContextFactory.context().isDevel() ) {
+            File settingsFile = new File( settingsFileName );
+            File interfacesFile = new File( SHIELD_RULES_FILE );
+            if (settingsFile.lastModified() > interfacesFile.lastModified() ) {
+                logger.warn("Settings file newer than rules files, Syncing...");
+                syncToSystem();
+            }
+        }
+    }
+
+    private void syncToSystem( )
+    {
+        /**
+         * First we write a new SHIELD_RULES_FILE iptables script with the current settings
+         */
+        String nodeID = this.getNodeSettings().getId().toString();
+        String settingsFilename = System.getProperty("uvm.settings.dir") + "/" + "untangle-node-shield/" + "settings_"  + nodeID + ".js";
+        String scriptFilename = System.getProperty("uvm.bin.dir") + "/shield-sync-settings.py";
+        String networkSettingFilename = System.getProperty("uvm.settings.dir") + "/" + "untangle-vm/" + "network.js";
+        String output = UvmContextFactory.context().execManager().execOutput(scriptFilename + " -f " + settingsFilename + " -v -n " + networkSettingFilename);
+        if (this.settings.isShieldEnabled() != true)
+            output += " -d"; // disable
+        String lines[] = output.split("\\r?\\n");
+        for ( String line : lines )
+            logger.info("Sync Settings: " + line);
+
+        /**
+         * Run the iptables script
+         */
+        output = UvmContextFactory.context().execManager().execOutput(SHIELD_RULES_FILE);
+        lines = output.split("\\r?\\n");
+        for ( String line : lines )
+            logger.info(SHIELD_RULES_FILE + ": " + line);
+    }
+
+    private void convertSettingsToV1( ShieldSettings settings )
+    {
+        logger.warn("Converting Shield settings from to V1...");
+
+        settings.setVersion(1);
+
+        if (settings.getRules() != null ) {
+
+            /**
+             * Remove any rules with unsupported conditions
+             */
+            for (Iterator<ShieldRule> it = settings.getRules().iterator(); it.hasNext() ;) {
+                ShieldRule rule = it.next();
+
+                for ( ShieldRuleCondition condition : rule.getConditions() ) {
+                    boolean removed = false;
+                    switch( condition.getConditionType() ) {
+                    case USERNAME: removed = true; it.remove(); break;
+                    case CLIENT_HOSTNAME: removed = true; it.remove(); break;
+                    case SERVER_HOSTNAME: removed = true; it.remove(); break;
+                    case SRC_MAC: removed = true; it.remove(); break;
+                    case DST_MAC: removed = true; it.remove(); break;
+                    case CLIENT_MAC_VENDOR: removed = true; it.remove(); break;
+                    case SERVER_MAC_VENDOR: removed = true; it.remove(); break;
+                    case CLIENT_IN_PENALTY_BOX: removed = true; it.remove(); break;
+                    case SERVER_IN_PENALTY_BOX: removed = true; it.remove(); break;
+                    case CLIENT_HAS_NO_QUOTA: removed = true; it.remove(); break;
+                    case SERVER_HAS_NO_QUOTA: removed = true; it.remove(); break;
+                    case CLIENT_QUOTA_EXCEEDED: removed = true; it.remove(); break;
+                    case SERVER_QUOTA_EXCEEDED: removed = true; it.remove(); break;
+                    case DIRECTORY_CONNECTOR_GROUP: removed = true; it.remove(); break;
+                    case HTTP_USER_AGENT: removed = true; it.remove(); break;
+                    case HTTP_USER_AGENT_OS: removed = true; it.remove(); break;
+                    case CLIENT_COUNTRY: removed = true; it.remove(); break;
+                    case SERVER_COUNTRY: removed = true; it.remove(); break;
+                    default: break;
+                    }
+                    if (removed) {
+                        logger.warn("Removing shield rule (unsupported condition): " + rule);
+                        break;
+                    }
+                }
+            }
+
+            /**
+             * Change the action to the new format as best is possible
+             */
+            for( ShieldRule rule : settings.getRules() ) {
+                int multiplier = rule.getMultiplier();
+
+                // if unlimited - set unlimited (pass)
+                if ( multiplier < 0 ) {
+                    logger.warn("Setting unlimited rule to unlimited: " + rule);
+                    rule.setAction(ShieldRule.ShieldRuleAction.PASS);
+                    continue;
+                }
+                // if a high multiplier - set unlimited (pass)
+                if ( multiplier > 20 ) {
+                    logger.warn("Setting high multiplier rule to unlimited: " + rule);
+                    rule.setAction(ShieldRule.ShieldRuleAction.PASS);
+                    continue;
+                }
+                logger.warn("Setting normal rule to scan: " + rule);
+                rule.setAction(ShieldRule.ShieldRuleAction.SCAN);
+            }
+        }
+
+        logger.warn("Converting Shield settings to V1...done");
     }
 }

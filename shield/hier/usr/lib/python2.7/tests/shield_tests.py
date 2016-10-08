@@ -16,6 +16,7 @@ import global_functions
 
 defaultRackId = 1
 node = None
+defaultEnabled = None
 
 class ShieldTests(unittest2.TestCase):
 
@@ -25,10 +26,11 @@ class ShieldTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        global node
+        global node,defaultEnabled
         if (not uvmContext.nodeManager().isInstantiated(self.nodeName())):
             raise Exception('node %s already instantiated' % self.nodeName())
         node = uvmContext.nodeManager().node(self.nodeName())
+        defaultEnabled = node.getSettings()['shieldEnabled']
 
     def setUp(self):
         pass
@@ -38,6 +40,10 @@ class ShieldTests(unittest2.TestCase):
         assert (result == 0)
 
     def test_011_shieldDetectsNmap(self):
+        settings = node.getSettings()
+        settings['shieldEnabled'] = True
+        node.setSettings(settings)
+
         startTime = datetime.now()
         result = remote_control.runCommand("nmap -PN -sT -T5 --min-parallelism 15 -p10000-12000 1.2.3.4 2>&1 >/dev/null")
         assert (result == 0)
@@ -51,6 +57,10 @@ class ShieldTests(unittest2.TestCase):
 
     @staticmethod
     def finalTearDown(self):
+        settings = node.getSettings()
+        settings['shieldEnabled'] = defaultEnabled
+        node.setSettings(settings)
+
         # sleep so the reputation goes down so it will not interfere with any future tests
         time.sleep(3)
         # shield is always installed, do not remove it

@@ -16,9 +16,8 @@ import org.json.JSONString;
 @SuppressWarnings("serial")
 public class FirewallSettings implements Serializable, JSONString
 {
-    private List<FirewallRule> rules = null;
-
     private Integer version = Integer.valueOf(1);
+    private List<FirewallRule> rules = null;
     
     public FirewallSettings()
     {
@@ -30,25 +29,11 @@ public class FirewallSettings implements Serializable, JSONString
         this.rules = rules;
     }
     
-    public List<FirewallRule> getRules()
-    {
-        return rules;
-    }
+    public Integer getVersion() { return this.version; }
+    public void setVersion(Integer newValue) { this.version = newValue; }
 
-    public void setRules( List<FirewallRule> rules )
-    {
-        this.rules = rules;
-    }
-
-    public Integer getVersion()
-    {
-        return this.version;
-    }
-
-    public void setVersion(Integer version)
-    {
-        this.version = version;
-    }
+    public List<FirewallRule> getRules() { return rules; }
+    public void setRules( List<FirewallRule> newValue ) { this.rules = newValue; }
 
     public String toJSONString()
     {

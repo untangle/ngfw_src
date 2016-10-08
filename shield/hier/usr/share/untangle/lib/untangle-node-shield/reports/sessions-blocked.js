@@ -9,8 +9,16 @@
     "units": "hits",
     "readOnly": true,
     "table": "sessions",
-     "timeDataColumns": [
-        "sum(shield_blocked::int) as blocked"
+    "timeDataColumns": [
+        "count(*) as blocked"
+    ],
+    "conditions": [
+        {
+            "column": "filter_prefix",
+            "javaClass": "com.untangle.node.reports.SqlCondition",
+            "operator": "=",
+            "value": "shield_blocked"
+        }
     ],
     "colors": [
         "#8c0000"
