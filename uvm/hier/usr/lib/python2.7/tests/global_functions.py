@@ -87,6 +87,7 @@ def findSmtpServer(wan_IP):
         interfaceNet = smtpServerHostIP[0] + "/" + str(smtpServerHostIP[1])
         if ipaddr.IPAddress(wan_IP) in ipaddr.IPv4Network(interfaceNet):
             return smtpServerHostIP[0],smtpServerHostIP[2]
+        return None,None
 
 def getUDPSpeed( receiverIP, senderIP, targetIP=None, targetRate=None ):
     if targetIP == None:

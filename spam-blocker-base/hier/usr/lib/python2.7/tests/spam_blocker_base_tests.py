@@ -197,13 +197,11 @@ class SpamBlockerBaseTests(unittest2.TestCase):
         assert(not addressFound)
 
     def test_070_checkForSMTPHeaders(self):
-        if (not canRelay):
-            raise unittest2.SkipTest('Unable to relay through test.untangle.com')
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
         # find local SMTP sender
         fakeSmtpServerHost = "";
         fakeSmtpServerHost, fakeSmtpdomain = global_functions.findSmtpServer(wan_IP)
-        if (fakeSmtpServerHost == ""):
+        if (fakeSmtpServerHost == None):
             raise unittest2.SkipTest("No local SMTP server")
         externalClientResult = subprocess.call(["ping","-c","1",fakeSmtpServerHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (externalClientResult != 0):
