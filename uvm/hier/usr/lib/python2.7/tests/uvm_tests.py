@@ -111,10 +111,6 @@ class UvmTests(unittest2.TestCase):
         match = re.search(r'\w{4}-\w{4}-\w{4}.\w{4}', uid)
         assert( match )
 
-        version = uvmContext.adminManager().getFullVersionAndRevision()
-        match = re.search(r'\d{1,2}\.\d\.\d\~vcs\d{8}T\d{6}',version)
-        assert(match)
-
         kernel = uvmContext.adminManager().getKernelVersion()
         match = re.search(r'\d.*', kernel)
         assert(match)
