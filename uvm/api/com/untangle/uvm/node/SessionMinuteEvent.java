@@ -75,7 +75,6 @@ public class SessionMinuteEvent extends LogEvent
             "server_latitude, " + 
             "server_longitude, " + 
             "filter_prefix, " + 
-            "shield_blocked, " + 
             "firewall_blocked, " + 
             "firewall_flagged, " + 
             "firewall_rule_index, " + 
@@ -126,7 +125,6 @@ public class SessionMinuteEvent extends LogEvent
             "server_latitude, " + 
             "server_longitude, " + 
             "filter_prefix, " + 
-            "shield_blocked, " + 
             "firewall_blocked, " + 
             "firewall_flagged, " + 
             "firewall_rule_index, " + 

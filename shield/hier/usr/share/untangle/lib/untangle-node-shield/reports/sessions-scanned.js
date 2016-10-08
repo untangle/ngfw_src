@@ -18,12 +18,10 @@
         }
     ],
     "timeDataColumns": [
-        "count(*) as scanned",
-        "sum(shield_blocked::int) as blocked"
+        "count(*) as scanned"
     ],
     "colors": [
-        "#396c2b",
-        "#8c0000"
+        "#396c2b"
     ],
     "timeDataInterval": "AUTO",
     "timeStyle": "BAR_3D_OVERLAPPED",

@@ -128,7 +128,6 @@ dict = {
     'login' : i18n._('Login'),
     'local' : i18n._('Local'),
     'succeeded' : i18n._('Succeeded'),
-    'shield_blocked' : '\'Shield \' + ' + i18n._('Blocked'),
     'firewall_blocked' : '\'Firewall \' + ' + i18n._('Blocked'),
     'firewall_flagged' : '\'Firewall \' + ' + i18n._('Flagged'),
     'firewall_rule_index' : '\'Firewall \' + ' + i18n._('Rule ID'),

@@ -79,7 +79,6 @@ CREATE TABLE reports.sessions (
         s2p_bytes int8 default 0,
         p2s_bytes int8 default 0,
         filter_prefix text,
-        shield_blocked boolean,
         firewall_blocked boolean,
         firewall_flagged boolean,
         firewall_rule_index integer,
@@ -123,6 +122,8 @@ CREATE TABLE reports.sessions (
         sql_helper.add_column('sessions','server_latitude','real') # 12.1
         sql_helper.add_column('sessions','server_longitude','real') # 12.1
 
+        sql_helper.drop_column('sessions','shield_blocked') # 13.0
+        
     @sql_helper.print_timing
     def __build_session_minutes_table( self ):
         sql_helper.create_table("""\
@@ -158,7 +159,6 @@ CREATE TABLE reports.session_minutes (
         server_latitude real,
         server_longitude real,
         filter_prefix text,
-        shield_blocked boolean,
         firewall_blocked boolean,
         firewall_flagged boolean,
         firewall_rule_index integer,
@@ -192,6 +192,8 @@ CREATE TABLE reports.session_minutes (
                                  "server_intf",
                                  "application_control_application"])
 
+        sql_helper.drop_column('session_minutes','shield_blocked') # 13.0
+        
 
     @sql_helper.print_timing
     def __build_alerts_events_table( self ):

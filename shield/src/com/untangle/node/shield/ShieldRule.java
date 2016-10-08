@@ -25,12 +25,17 @@ public class ShieldRule implements JSONString, Serializable
 {
     private static final Logger logger = Logger.getLogger(ShieldRule.class);
 
+    public enum ShieldRuleAction
+    {
+        SCAN, PASS
+    }
+
     private List<ShieldRuleCondition> matchers;
 
     private Integer ruleId;
     private Boolean enabled;
-    private int multiplier = 1;
     private String description;
+    private ShieldRuleAction action;
     
     public ShieldRule()
     {
@@ -52,12 +57,22 @@ public class ShieldRule implements JSONString, Serializable
     public Boolean getEnabled() { return enabled; }
     public void setEnabled( Boolean enabled ) { this.enabled = enabled; }
 
-    public int getMultiplier() { return multiplier; }
-    public void setMultiplier( int newValue ) { this.multiplier = newValue; }
-    
     public String getDescription() { return description; }
     public void setDescription( String newValue ) { this.description = newValue; }
+
+    public ShieldRuleAction getAction() { return action; }
+    public void setAction( ShieldRuleAction newValue ) { this.action = newValue; }
     
+    /**
+     * DEPRECATED in v13 - 13.0 conversion
+     * Multiplier has been remove in v13
+     * It is kept here for now so that JSON serialization still works and the settings can be converted
+     * This can be removed after v13
+     */
+    private int multiplier = 1;
+    public int getMultiplier() { return multiplier; }
+    public void setMultiplier( int newValue ) { this.multiplier = newValue; }
+
     public String toJSONString()
     {
         JSONObject jO = new JSONObject(this);
