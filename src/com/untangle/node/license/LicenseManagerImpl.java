@@ -105,14 +105,13 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
     }
 
     @Override
-    protected void preStop()
+    protected void preStop( boolean isPermanentTransition )
     {
-        super.preStop();
         logger.debug("preStop()");
     }
 
     @Override
-    protected void postStart()
+    protected void postStart( boolean isPermanentTransition )
     {
         logger.debug("postStart()");
 
