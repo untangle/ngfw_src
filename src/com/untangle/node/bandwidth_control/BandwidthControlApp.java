@@ -77,10 +77,8 @@ public class BandwidthControlApp extends NodeBase
     }
         
     @Override
-    protected void preStart()
+    protected void preStart( boolean isPermanentTransition )
     {
-        super.preStart();
-
         Map<String,String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle");
         I18nUtil i18nUtil = new I18nUtil(i18nMap);
 
@@ -100,7 +98,8 @@ public class BandwidthControlApp extends NodeBase
         UvmContextFactory.context().hostTable().registerListener( this.listener );
     }
 
-    @Override protected void preStop() 
+    @Override
+    protected void preStop( boolean isPermanentTransition ) 
     {
         UvmContextFactory.context().hostTable().unregisterListener( this.listener );
     }

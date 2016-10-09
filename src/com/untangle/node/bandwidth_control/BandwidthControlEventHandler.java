@@ -56,7 +56,7 @@ public class BandwidthControlEventHandler extends AbstractEventHandler
             _handleSession( null, session, Protocol.TCP );
         }
         catch (Exception e) {
-            logger.warn("Exception: ",e);
+            logger.warn("Exception handling TCP Complete: ",e);
         }
     }
 
@@ -66,7 +66,7 @@ public class BandwidthControlEventHandler extends AbstractEventHandler
             _handleSession( null, session, Protocol.UDP );
         }
         catch (Exception e) {
-            logger.warn("Exception: ",e);
+            logger.warn("Exception handling UDP complete: ",e);
         }
     }
 
