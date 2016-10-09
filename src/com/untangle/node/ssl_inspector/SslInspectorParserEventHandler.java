@@ -20,6 +20,7 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.NodeTCPSession;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.ReleaseToken;
+import com.untangle.uvm.vnet.TCPNewSessionRequest;
 
 /*
  * The parser handles converting the encrypted stream of SSL traffic to
@@ -53,8 +54,19 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
     // ------------------------------------------------------------------------
 
     @Override
+    public void handleTCPNewSessionRequest(TCPNewSessionRequest sessionRequest)
+    {
+        // if the license is not valid we ignore all traffic
+        if (node.isLicenseValid() != true) {
+            sessionRequest.release();
+            return;
+        }
+    }
+
+    @Override
     public void handleTCPNewSession(NodeTCPSession session)
     {
+
         SslInspectorManager manager = new SslInspectorManager(session, clientSide, node);
 
         if (clientSide)

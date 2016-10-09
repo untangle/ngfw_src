@@ -145,13 +145,6 @@ public class SslInspectorApp extends NodeBase
     }
 
     @Override
-    protected void preStart()
-    {
-        // check for a valid license
-        if (isLicenseValid() != true) throw (new RuntimeException("Unable to start ssl node: invalid license"));
-    }
-
-    @Override
     protected PipelineConnector[] getConnectors()
     {
         return this.connectors;
