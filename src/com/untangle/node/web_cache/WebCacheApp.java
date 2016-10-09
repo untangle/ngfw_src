@@ -144,22 +144,20 @@ public class WebCacheApp extends NodeBase
     }
 
     @Override
-    protected void preStart()
+    protected void preStart( boolean isPermanentTransition )
     {
         UvmContextFactory.context().daemonManager().incrementUsageCount( "squid" );
         
-        super.preStart();
         WebCacheParent.INSTANCE.connect();
         timer = new Timer();
         timer.schedule(new WebCacheTimer(this),60000,60000);
     }
 
     @Override
-    protected void postStop()
+    protected void postStop( boolean isPermanentTransition )
     {
         UvmContextFactory.context().daemonManager().decrementUsageCount( "squid" );
 
-        super.postStop();
         timer.cancel();
         WebCacheParent.INSTANCE.goodbye();
     }
