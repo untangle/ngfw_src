@@ -152,7 +152,7 @@ public class WanFailoverApp extends NodeBase
     }
 
     @Override
-    protected synchronized void preStart()
+    protected synchronized void preStart( boolean isPermanentTransition )
     {
         if ( ! isLicenseValid()) {
             throw new RuntimeException( "Invalid License." );
@@ -173,7 +173,7 @@ public class WanFailoverApp extends NodeBase
     }
 
     @Override
-    protected synchronized void postStop()
+    protected synchronized void postStop( boolean isPermanentTransition )
     {
         UvmContextFactory.context().networkManager().unregisterListener( this.listener );
 
