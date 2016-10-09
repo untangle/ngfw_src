@@ -239,18 +239,14 @@ public class PolicyManagerApp extends NodeBase implements com.untangle.uvm.node.
     }
 
     @Override
-    protected void preStop()
+    protected void preStop( boolean isPermanentTransition )
     {
-        super.preStop();
-
         cleanerPulse.stop();
     }
 
     @Override
-    protected void postStart()
+    protected void postStart( boolean isPermanentTransition )
     {
-        super.postStart();
-        
         cleanerPulse.start();
     }
 
