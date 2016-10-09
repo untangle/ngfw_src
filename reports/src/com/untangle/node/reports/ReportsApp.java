@@ -362,7 +362,8 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         // new Thread(new PerformanceTest()).start();
     }
 
-    protected void preStart()
+    @Override
+    protected void preStart( boolean isPermanentTransition )
     {
         if (this.settings == null) {
             postInit();
@@ -371,7 +372,8 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         ReportsApp.eventWriter.start( this );
     }
 
-    protected void postStop()
+    @Override
+    protected void postStop( boolean isPermanentTransition )
     {
         ReportsApp.eventWriter.stop();
     }

@@ -148,7 +148,7 @@ public class WebMonitorApp extends WebFilterBase
     }
 
     @Override
-    protected void preStart()
+    protected void preStart( boolean isPermanentTransition )
     {
         if ( ! isLicenseValid() ) {
             throw new RuntimeException( "invalid license" );
@@ -156,21 +156,21 @@ public class WebMonitorApp extends WebFilterBase
 
         engine.getDiaKey();
         
-        super.preStart();
+        super.preStart( isPermanentTransition );
     }
 
     @Override
-    protected void postStart()
+    protected void postStart( boolean isPermanentTransition )
     {
-        super.postStart();
+        super.postStart( isPermanentTransition );
 
         e_deployWebAppIfRequired(logger);
     }
     
     @Override
-    protected void postStop()
+    protected void postStop( boolean isPermanentTransition )
     {
-        super.postStop();
+        super.postStop( isPermanentTransition );
 
         e_unDeployWebAppIfRequired(logger);
     }

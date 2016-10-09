@@ -112,10 +112,8 @@ public class OpenVpnNodeImpl extends NodeBase
     }
 
     @Override
-    protected void preStart()
+    protected void preStart( boolean isPermanentTransition )
     {
-        super.preStart();
-
         try {
             this.openVpnManager.configure( settings );
             this.openVpnManager.restart();
@@ -136,10 +134,8 @@ public class OpenVpnNodeImpl extends NodeBase
     }
     
     @Override
-    protected void preStop()
+    protected void preStop( boolean isPermanentTransition )
     {
-        super.preStop();
-
         UvmContextFactory.context().networkManager().unregisterListener( this.listener );
         
         try {

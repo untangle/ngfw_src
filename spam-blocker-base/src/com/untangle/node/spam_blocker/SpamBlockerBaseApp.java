@@ -254,7 +254,7 @@ public abstract class SpamBlockerBaseApp extends NodeBase
     }
 
     @Override
-    protected void postStop()
+    protected void postStop( boolean isPermanentTransition )
     {
         saveGreyList();
     }

@@ -53,12 +53,14 @@ public class RouterImpl extends NodeBase implements HostnameLookup
         return null;
     }
     
-    protected void preStart() 
+    @Override
+    protected void preStart( boolean isPermanentTransition ) 
     {
         dhcpMonitor.start();
     }
 
-    protected void postStop() 
+    @Override
+    protected void postStop( boolean isPermanentTransition ) 
     {
         killAllSessions();
 

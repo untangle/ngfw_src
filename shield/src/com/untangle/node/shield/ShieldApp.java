@@ -74,7 +74,7 @@ public class ShieldApp extends NodeBase
         /**
          * Sync the settings to the system
          */
-        syncToSystem();
+        syncToSystem( true );
     }
 
     public ShieldSettings getSettings()
@@ -143,12 +143,27 @@ public class ShieldApp extends NodeBase
             File interfacesFile = new File( SHIELD_RULES_FILE );
             if (settingsFile.lastModified() > interfacesFile.lastModified() ) {
                 logger.warn("Settings file newer than rules files, Syncing...");
-                syncToSystem();
+                syncToSystem( true );
             }
         }
     }
 
-    private void syncToSystem( )
+    @Override
+    protected void postStop( boolean isPermanentTransition )
+    {
+        if ( isPermanentTransition ) {
+            // if its a permanent transiiton - disable the shield permanently
+            syncToSystem( false );
+        }
+    }
+
+    @Override
+    protected void postDestroy()
+    {
+        syncToSystem( false );
+    }
+
+    private void syncToSystem( boolean enabled )
     {
         /**
          * First we write a new SHIELD_RULES_FILE iptables script with the current settings
@@ -158,7 +173,7 @@ public class ShieldApp extends NodeBase
         String scriptFilename = System.getProperty("uvm.bin.dir") + "/shield-sync-settings.py";
         String networkSettingFilename = System.getProperty("uvm.settings.dir") + "/" + "untangle-vm/" + "network.js";
         String output = UvmContextFactory.context().execManager().execOutput(scriptFilename + " -f " + settingsFilename + " -v -n " + networkSettingFilename);
-        if (this.settings.isShieldEnabled() != true)
+        if ( !enabled || this.settings.isShieldEnabled() != true )
             output += " -d"; // disable
         String lines[] = output.split("\\r?\\n");
         for ( String line : lines )

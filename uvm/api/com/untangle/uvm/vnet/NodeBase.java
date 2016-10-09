@@ -269,7 +269,7 @@ public abstract class NodeBase implements Node
 
             if (isNew) {
                 node.initializeSettings( );
-                node.init( );
+                node.init();
             } else {
                 try {
                     node.resumeState(nodeSettings.getTargetState());
@@ -436,39 +436,50 @@ public abstract class NodeBase implements Node
     protected void uninstall() { }
 
     /**
-     * Called as the instance is created, but is not configured.
+     * Called before initialization
+     *
+     * initialization occurs when an app is instantiated or on startup
      */
     protected void preInit() { } 
 
     /**
-     * Same as <code>preInit</code>, except now officially in the
-     * {@link NodeState#INITIALIZED} state.
+     * Called after initialization
+     *
+     * initialization occurs when an app is instantiated or on startup
      */
     protected void postInit() { } 
 
     /**
      * Called just after connecting to PipelineConnector, but before starting.
      *
+     * isPermanentTransition is true if this is the permanent (saved)
+     * This can be used to determine if this node is being started permanently
      */
-    protected void preStart() { } 
+    protected void preStart( boolean isPermanentTransition ) { } 
 
     /**
      * Called just after starting PipelineConnector and making subscriptions.
      *
+     * isPermanentTransition is true if this is the permanent (saved)
+     * This can be used to determine if this node is being started permanently
      */
-    protected void postStart() { } 
+    protected void postStart( boolean isPermanentTransition ) { } 
 
     /**
      * Called just before stopping PipelineConnector and disconnecting.
      *
+     * isPermanentTransition is true if this is the permanent (saved)
+     * This can be used to determine if this node is being stopped permanently
      */
-    protected void preStop() { } 
+    protected void preStop( boolean isPermanentTransition ) { } 
 
     /**
      * Called after stopping PipelineConnector and disconnecting.
      *
+     * isPermanentTransition is true if this is the permanent (saved)
+     * This can be used to determine if this node is being stopped permanently
      */
-    protected void postStop() { }
+    protected void postStop( boolean isPermanentTransition ) { }
 
     /**
      * Called just before this instance becomes invalid.
@@ -602,7 +613,7 @@ public abstract class NodeBase implements Node
             logger.info("Starting   node " + this.getNodeProperties().getName() + "(" + this.getNodeProperties().getName() + ")" + " ...");
 
             try {
-                preStart();
+                preStart( saveNewTargetState );
             } catch (Exception e) {
                 logger.warn("Exception in preStart(). Reverting to INITIALIZED state.", e);
                 changeState(NodeState.INITIALIZED, saveNewTargetState);
@@ -612,7 +623,7 @@ public abstract class NodeBase implements Node
             connectPipelineConnectors();
 
             try {
-                postStart(); 
+                postStart( saveNewTargetState ); 
             } catch (Exception e) {
                 logger.warn("Exception in postStart().", e);
             }
@@ -641,7 +652,7 @@ public abstract class NodeBase implements Node
         try {
             UvmContextFactory.context().loggingManager().setLoggingNode( this.nodeSettings.getId() );
             logger.info("Stopping   node " + this.getNodeProperties().getName() + "(" + this.getNodeProperties().getName() + ")" + " ...");
-            preStop();
+            preStop( saveNewTargetState );
             disconnectPipelineConnectors();
         } finally {
             UvmContextFactory.context().loggingManager().setLoggingUvm();
@@ -660,7 +671,7 @@ public abstract class NodeBase implements Node
 
         try {
             UvmContextFactory.context().loggingManager().setLoggingNode( this.nodeSettings.getId() );
-            postStop(); 
+            postStop( saveNewTargetState ); 
             logger.info("Stopped    node " + this.getNodeProperties().getName() + "(" + this.getNodeProperties().getName() + ")" + " ...");
         } finally {
             UvmContextFactory.context().loggingManager().setLoggingUvm();

@@ -21,7 +21,6 @@ public class EventHandler extends AbstractEventHandler
 {
     private final Logger logger = Logger.getLogger(EventHandler.class);
 
-    // These are all set at preStart() time by reconfigure()
     private Set<ApplicationControlLitePattern> _patternSet;
     private int                     _byteLimit;
     private int                     _chunkLimit;
