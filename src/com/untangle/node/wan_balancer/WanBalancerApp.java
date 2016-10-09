@@ -105,11 +105,11 @@ public class WanBalancerApp extends NodeBase
         /**
          * Sync the new settings
          */
-        syncToSystem();
+        syncToSystem( true );
     }
 
     @Override
-    protected void preStart() 
+    protected void preStart( boolean isPermanentTransition ) 
     {
         if ( ! isLicenseValid()) {
             throw new RuntimeException( "Invalid License." );
@@ -117,15 +117,25 @@ public class WanBalancerApp extends NodeBase
 
         UvmContextFactory.context().networkManager().registerListener( this.listener );
 
-        syncToSystem();
+        // if this is permanent write the enabled version of the scripts and run them
+        if ( isPermanentTransition )
+            syncToSystem( true );
     }
 
     @Override
-    protected void postStop() 
+    protected void postStop( boolean isPermanentTransition ) 
     {
-        removeIptablesRules();
-
         UvmContextFactory.context().networkManager().unregisterListener( this.listener );
+
+        // if this is permanent write the disabled version of the scripts and run them
+        if ( isPermanentTransition )
+            syncToSystem( false );
+    }
+
+    @Override
+    protected void postDestroy()
+    {
+        syncToSystem( false );
     }
     
     @Override
@@ -199,7 +209,7 @@ public class WanBalancerApp extends NodeBase
     {
         // refresh iptables rules in case WAN config has changed
         logger.info("Network Settings have changed. Syncing new settings...");
-        syncToSystem();
+        syncToSystem( true );
 
         // update faceplate metrics
         updateNodeMetrics();
@@ -248,7 +258,7 @@ public class WanBalancerApp extends NodeBase
         return false;
     }
 
-    private void syncToSystem( )
+    private void syncToSystem( boolean enabled )
     {
         /**
          * First we write a new 330-wan-balancer iptables script with the current settings
@@ -258,6 +268,8 @@ public class WanBalancerApp extends NodeBase
         String scriptFilename = System.getProperty("uvm.bin.dir") + "/wan-balancer-sync-settings.py";
         String networkSettingFilename = System.getProperty("uvm.settings.dir") + "/" + "untangle-vm/" + "network.js";
         String output = UvmContextFactory.context().execManager().execOutput(scriptFilename + " -f " + settingsFilename + " -v -n " + networkSettingFilename);
+        if ( !enabled )
+            output += " -d";
         String lines[] = output.split("\\r?\\n");
         for ( String line : lines )
             logger.info("Sync Settings: " + line);
@@ -265,8 +277,7 @@ public class WanBalancerApp extends NodeBase
         /**
          * Run the iptables script
          */
-        //remove old name
-        UvmContextFactory.context().execManager().exec("rm -f /etc/untangle-netd/iptables-rules.d/330-splitd");
+        UvmContextFactory.context().execManager().exec("rm -f /etc/untangle-netd/iptables-rules.d/330-splitd");        //remove old name
         output = UvmContextFactory.context().execManager().execOutput("/etc/untangle-netd/iptables-rules.d/330-wan-balancer");
         lines = output.split("\\r?\\n");
         for ( String line : lines )
@@ -275,8 +286,7 @@ public class WanBalancerApp extends NodeBase
         /**
          * Run the route script
          */
-        //remove old name
-        UvmContextFactory.context().execManager().exec("rm -f /etc/untangle-netd/post-network-hook.d/040-splitd");
+        UvmContextFactory.context().execManager().exec("rm -f /etc/untangle-netd/post-network-hook.d/040-splitd");        //remove old name
         output = UvmContextFactory.context().execManager().execOutput("/etc/untangle-netd/post-network-hook.d/040-wan-balancer");
         lines = output.split("\\r?\\n");
         for ( String line : lines )
@@ -284,43 +294,6 @@ public class WanBalancerApp extends NodeBase
         
     }
 
-    private void removeIptablesRules( )
-    {
-        /**
-         * First we write a new 330-wan-balancer iptables script that just deletes existing rules and inserts no new rules
-         */
-        String nodeID = this.getNodeSettings().getId().toString();
-        String settingsFilename = System.getProperty("uvm.settings.dir") + "/" + "untangle-node-wan-balancer/" + "settings_"  + nodeID + ".js";
-        String scriptFilename = System.getProperty("uvm.bin.dir") + "/wan-balancer-sync-settings.py";
-        String networkSettingFilename = System.getProperty("uvm.settings.dir") + "/" + "untangle-vm/" + "network.js";
-        // -d options means disabled
-        String output = UvmContextFactory.context().execManager().execOutput(scriptFilename + " -f " + settingsFilename + " -v -n " + networkSettingFilename + " -d");
-        String lines[] = output.split("\\r?\\n");
-        for ( String line : lines )
-            logger.info("UnSync Settings: " + line);
-
-        /**
-         * Run the iptables script
-         */
-        //remove old name
-        UvmContextFactory.context().execManager().exec("rm -f /etc/untangle-netd/iptables-rules.d/330-splitd");
-        output = UvmContextFactory.context().execManager().execOutput("/etc/untangle-netd/iptables-rules.d/330-wan-balancer");
-        lines = output.split("\\r?\\n");
-        for ( String line : lines )
-            logger.info("Remove wan-balancer iptables: " + line);
-
-        /**
-         * Run the route script
-         */
-        //remove old name
-        UvmContextFactory.context().execManager().exec("rm -f /etc/untangle-netd/post-network-hook.d/040-splitd");
-        output = UvmContextFactory.context().execManager().execOutput("/etc/untangle-netd/post-network-hook.d/040-wan-balancer");
-        lines = output.split("\\r?\\n");
-        for ( String line : lines )
-            logger.info("Remove wan-balancer routes  : " + line);
-
-    }
-    
     private class NetworkListener implements NetworkSettingsListener
     {
         public void event( NetworkSettings settings )

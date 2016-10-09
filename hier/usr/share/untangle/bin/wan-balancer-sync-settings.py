@@ -2,7 +2,9 @@
 
 # Sync Settings is takes the wan-balancer settings JSON file and "syncs" it to the 
 # It reads through the settings and writes the appropriate files:
+#
 # /etc/untangle-netd/iptables-rules.d/330-wan-balancer-rules
+# /etc/untangle-netd/post-network-hook.d/040-wan-balancer
 #
 # This script should be called after changing the settings file to "sync" the settings to the OS.
 
@@ -73,12 +75,28 @@ def printUsage():
 """ % sys.argv[0] )
 
 # sanity check settings
-def checkSettings( settings ):
+def check_settings( settings ):
     if settings.get('routeRules') == None or settings.get('routeRules').get('list') == None:
         raise Exception("Missing Route Rules")
     if settings.get('weights') == None:
         raise Exception("Missing WAN weights")
     return
+
+# Fix settings if anything is odd/weird about them.
+# If all weights are 0, then change to all one so there is no divide by zero
+def fixup_settings( ):
+    global networkSettings, settings
+
+    totalWeight = 0.0
+    for intf in networkSettings.get('interfaces').get('list'):
+        if intf.get('configType') == 'ADDRESSED' and intf.get('isWan'):
+            totalWeight = totalWeight + float(settings.get('weights')[intf.get('interfaceId') - 1])
+
+   # If total weight is zero, change all weights to 1
+    if totalWeight == 0.0:
+        for intf in networkSettings.get('interfaces').get('list'):
+            if intf.get('configType') == 'ADDRESSED' and intf.get('isWan'):
+                settings.get('weights')[intf.get('interfaceId') - 1] = 1;
 
 def write_iptables_route_rule( file, route_rule, verbosity=0 ):
     if 'enabled' in route_rule and not route_rule['enabled']:
@@ -216,21 +234,6 @@ def write_route_file( file, verbosity=0 ):
     
     return
 
-def check_settings( ):
-    global networkSettings, settings
-
-    totalWeight = 0.0
-    for intf in networkSettings.get('interfaces').get('list'):
-        if intf.get('configType') == 'ADDRESSED' and intf.get('isWan'):
-            totalWeight = totalWeight + float(settings.get('weights')[intf.get('interfaceId') - 1])
-
-   # If total weight is zero, change all weights to 1
-    if totalWeight == 0.0:
-        for intf in networkSettings.get('interfaces').get('list'):
-            if intf.get('configType') == 'ADDRESSED' and intf.get('isWan'):
-                settings.get('weights')[intf.get('interfaceId') - 1] = 1;
-
-
 
 
 
@@ -261,7 +264,7 @@ except IOError,e:
     exit(1)
 
 try:
-    checkSettings(settings)
+    check_settings(settings)
 except Exception,e:
     traceback.print_exc(e)
     exit(1)
@@ -269,7 +272,7 @@ except Exception,e:
 IptablesUtil.settings = networkSettings
 NetworkUtil.settings = networkSettings
 
-check_settings()
+fixup_settings()
 
 if parser.verbosity > 0: print "Syncing %s to system..." % parser.file
 
