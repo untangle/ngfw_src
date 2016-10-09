@@ -135,7 +135,7 @@ public class GlobMatcher
          */
         this.type = GlobMatcherType.SINGLE;
         this.single = matcher;
-        String re = GlobUtil.urlGlobToRegex(matcher);
+        String re = GlobUtil.globToRegex(matcher);
         this.singleRegex = Pattern.compile(re);
         
         return;
