@@ -161,11 +161,10 @@ public class ApplicationControlApp extends NodeBase
     }
 
     @Override
-    protected void preStart()
+    protected void preStart( boolean isPermanentTransition )
     {
         // connect to the controller singleton
         UvmContextFactory.context().daemonManager().incrementUsageCount("untangle-classd");
-        super.preStart();
 
         for (int counter = 0; daemonCheck() == false; counter++) {
             if (counter > 60) throw (new RuntimeException("Unable to start application-control node: missing daemon"));
@@ -182,11 +181,10 @@ public class ApplicationControlApp extends NodeBase
     }
 
     @Override
-    protected void postStop()
+    protected void postStop(  boolean isPermanentTransition )
     {
         // stop daemon
         UvmContextFactory.context().daemonManager().decrementUsageCount("untangle-classd");
-        super.postStop();
 
         // close the daemon socket
         socketDestroy();
