@@ -252,11 +252,9 @@ public class IpsecVpnApp extends NodeBase
     }
 
     @Override
-    protected void preStart()
+    protected void preStart( boolean isPermanentTransition )
     {
         logger.debug("preStart()");
-
-        super.preStart();
 
         if (IpsecVpnApp.execManager == null) {
             IpsecVpnApp.execManager = UvmContextFactory.context().createExecManager();
@@ -273,10 +271,8 @@ public class IpsecVpnApp extends NodeBase
     }
 
     @Override
-    protected void postStart()
+    protected void postStart( boolean isPermanentTransition )
     {
-        super.postStart();
-
         logger.debug("postStart()");
 
         // our timer class expects to be called once every minute
@@ -285,11 +281,11 @@ public class IpsecVpnApp extends NodeBase
     }
 
     @Override
-    protected void preStop()
+    protected void preStop( boolean isPermanentTransition )
     {
         logger.debug("preStop()");
 
-        super.preStop();
+        super.preStop( isPermanentTransition );
 
         timer.cancel();
 
@@ -312,7 +308,7 @@ public class IpsecVpnApp extends NodeBase
     }
 
     @Override
-    protected void postStop()
+    protected void postStop( boolean isPermanentTransition )
     {
         logger.debug("postStop()");
 
