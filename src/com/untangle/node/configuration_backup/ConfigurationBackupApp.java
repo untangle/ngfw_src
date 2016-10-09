@@ -119,6 +119,7 @@ public class ConfigurationBackupApp extends NodeBase
         }
     }
     
+    @Override
     protected void postInit()
     {
         String nodeID = this.getNodeSettings().getId().toString();
@@ -156,24 +157,28 @@ public class ConfigurationBackupApp extends NodeBase
             writeCronFile();
     }
 
-    protected void preStart()
+    @Override
+    protected void preStart( boolean isPermanentTransition )
     {
         if ( ! isLicenseValid() ) {
             throw new RuntimeException( "invalid license" );
         }
+
+        writeCronFile();
     }
 
-    /**
-     * Implemented to start the cron job
-     */
-    protected void postStart()
+    @Override
+    protected void postStop( boolean isPermanentTransition )
     {
-        int hour = 6;
-        int minute = 0;
-        if ( settings != null ) {
-            hour = settings.getHourInDay();
-            minute = settings.getMinuteInHour();
-        }
+        // if this is being permanently disable - stop cron job
+        if ( isPermanentTransition )
+            UvmContextFactory.context().execManager().execResult("/bin/rm -f " + CRON_FILE);
+    }
+
+    @Override
+    protected void postDestroy()
+    {
+        UvmContextFactory.context().execManager().execResult("/bin/rm -f " + CRON_FILE);
     }
 
     /**
