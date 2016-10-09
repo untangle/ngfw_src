@@ -66,7 +66,7 @@ public class VirusBlockerApp extends VirusBlockerBaseApp
     }
 
     @Override
-    protected void preStart()
+    protected void preStart( boolean isPermanentTransition )
     {
         // skip the daemon stuff if package is not installed
         File daemonCheck = new File("/etc/init.d/untangle-bdamserver");
@@ -82,11 +82,11 @@ public class VirusBlockerApp extends VirusBlockerBaseApp
             logger.info("Skipping DaemonManager initialization because the package is not installed.");
         }
 
-        super.preStart();
+        super.preStart( isPermanentTransition );
     }
 
     @Override
-    protected void postStop()
+    protected void postStop( boolean isPermanentTransition )
     {
         // skip the daemon stuff if the package is not installed
         File daemonCheck = new File("/etc/init.d/untangle-bdamserver");
@@ -94,7 +94,7 @@ public class VirusBlockerApp extends VirusBlockerBaseApp
             UvmContextFactory.context().daemonManager().decrementUsageCount("untangle-bdamserver");
         }
 
-        super.postStop();
+        super.postStop( isPermanentTransition );
     }
 
     private boolean isLicenseValid()
