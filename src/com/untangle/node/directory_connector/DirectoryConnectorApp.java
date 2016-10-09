@@ -71,10 +71,8 @@ public class DirectoryConnectorApp extends NodeBase implements com.untangle.uvm.
     }
 
     @Override
-    protected void postStart()
+    protected void postStart( boolean isPermanentTransition )
     {
-        super.postStart();
-
         /* Start the servlet */
         UvmContextFactory.context().tomcatManager().loadServlet("/" + OAUTH_WEBAPP, OAUTH_WEBAPP);
         UvmContextFactory.context().tomcatManager().loadServlet("/" + USERAPI_WEBAPP, USERAPI_WEBAPP);
@@ -82,15 +80,13 @@ public class DirectoryConnectorApp extends NodeBase implements com.untangle.uvm.
     }
 
     @Override
-    protected void postStop()
+    protected void postStop( boolean isPermanentTransition )
     {
         UvmContextFactory.context().tomcatManager().unloadServlet("/" + OAUTH_WEBAPP);
         UvmContextFactory.context().tomcatManager().unloadServlet("/" + USERAPI_WEBAPP);
         UvmContextFactory.context().tomcatManager().unloadServlet("/" + USERAPI_WEBAPP_OLD);
 
         stopXvfb();
-        
-        super.postStop();
     }
 
     @Override
