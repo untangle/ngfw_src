@@ -82,20 +82,22 @@ public class SpamBlockerLiteApp extends SpamBlockerBaseApp
     }
 
     @Override
-    protected void preStart()
+    protected void preStart( boolean isPermanentTransition )
     {
         UvmContextFactory.context().daemonManager().incrementUsageCount( "spamassassin" );
         String transmit = "PING SPAMC/1.0\r\n";
         String search = "SPAMD/1.5 0 PONG";
         UvmContextFactory.context().daemonManager().enableRequestMonitoring("spamassassin", 300, "127.0.0.1", 783, transmit, search);
-        super.preStart();
+
+        super.preStart( isPermanentTransition);
     }
     
     @Override
-    protected void postStop()
+    protected void postStop( boolean isPermanentTransition )
     {
         UvmContextFactory.context().daemonManager().decrementUsageCount( "spamassassin" );
-        super.postStop();
+
+        super.postStop( isPermanentTransition );
     }
 
     @Override

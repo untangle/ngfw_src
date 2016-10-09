@@ -120,20 +120,20 @@ public class PhishBlockerApp extends SpamBlockerBaseApp
     }
 
     @Override
-    protected void preStart()
+    protected void preStart( boolean isPermanentTransition )
     {
         UvmContextFactory.context().daemonManager().incrementUsageCount( "clamav-daemon" );
         UvmContextFactory.context().daemonManager().incrementUsageCount( "clamav-freshclam" );
-        super.preStart();
+        super.preStart( isPermanentTransition );
     }
 
     @Override
-    protected void postStop()
+    protected void postStop( boolean isPermanentTransition )
     {
         UvmContextFactory.context().daemonManager().decrementUsageCount( "clamav-daemon" );
         UvmContextFactory.context().daemonManager().decrementUsageCount( "clamav-freshclam" );
         UvmContextFactory.context().daemonManager().enableDaemonMonitoring("clamav-daemon", 300, "clamd");
         UvmContextFactory.context().daemonManager().enableDaemonMonitoring("clamav-freshclam", 3600, "freshclam");
-        super.postStop();
+        super.postStop( isPermanentTransition );
     }
 }

@@ -34,17 +34,17 @@ public class WebFilterLiteApp extends WebFilterBase
     }
 
     @Override
-    protected void postStart()
+    protected void postStart( boolean isPermanentTransition )
     {
-        super.postStart();
+        super.postStart( isPermanentTransition );
 
         deployWebAppIfRequired();
     }
     
     @Override
-    protected void postStop()
+    protected void postStop( boolean isPermanentTransition )
     {
-        super.postStop();
+        super.postStop( isPermanentTransition );
 
         unDeployWebAppIfRequired();
     }

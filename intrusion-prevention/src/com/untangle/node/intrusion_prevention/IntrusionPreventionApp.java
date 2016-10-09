@@ -112,6 +112,7 @@ public class IntrusionPreventionApp extends NodeBase
         return this.connectors;
     }
 
+    @Override
     protected void postInit()
     {
         logger.info("Post init");
@@ -119,10 +120,9 @@ public class IntrusionPreventionApp extends NodeBase
         readNodeSettings();
     }
 
-    protected void preStop()
+    @Override
+    protected void preStop( boolean isPermanentTransition )
     {
-        super.preStop();
-
         UvmContextFactory.context().networkManager().unregisterListener( this.listener );
         try{
             this.ipsEventMonitor.disable();
@@ -131,15 +131,16 @@ public class IntrusionPreventionApp extends NodeBase
         }
     }
 
-    protected void postStop()
+    @Override
+    protected void postStop( boolean isPermanentTransition )
     {
         UvmContextFactory.context().daemonManager().decrementUsageCount( "snort" );
         iptablesRules();
     }
 
-    protected void preStart()
+    @Override
+    protected void preStart( boolean isPermanentTransition )
     {
-        super.preStart();
         Map<String,String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle");
         I18nUtil i18nUtil = new I18nUtil(i18nMap);
         if(wizardCompleted() == false){
@@ -151,7 +152,8 @@ public class IntrusionPreventionApp extends NodeBase
         this.ipsEventMonitor.enable();
     }
 
-    protected void postStart()
+    @Override
+    protected void postStart( boolean isPermanentTransition )
     {
         iptablesRules();
 

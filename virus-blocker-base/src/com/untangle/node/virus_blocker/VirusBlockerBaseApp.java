@@ -370,14 +370,14 @@ public abstract class VirusBlockerBaseApp extends NodeBase
         }
     }
 
-    protected void preStart()
+    protected void preStart( boolean isPermanentTransition )
     {
         deployWebAppIfRequired(logger);
 
         reconfigure();
     }
 
-    protected void postStart()
+    protected void postStart( boolean isPermanentTransition )
     {
         /**
          * killall sessions on HTTP, FTP, etc This is so it blocks viruses
@@ -386,7 +386,7 @@ public abstract class VirusBlockerBaseApp extends NodeBase
         killMatchingSessionsGlobal(VIRUS_SESSION_MATCHER);
     }
 
-    protected void postStop()
+    protected void postStop( boolean isPermanentTransition )
     {
         unDeployWebAppIfRequired(logger);
     }

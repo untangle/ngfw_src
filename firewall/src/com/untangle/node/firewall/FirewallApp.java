@@ -155,19 +155,19 @@ public class FirewallApp extends NodeBase
     }
 
     @Override
-    protected void preStart()
+    protected void preStart( boolean isPermanentTransition )
     {
         this.reconfigure();
     }
 
     @Override
-    protected void postStart()
+    protected void postStart( boolean isPermanentTransition )
     {
         killAllSessions();
     }
 
     @Override
-    protected void postStop()
+    protected void postStop( boolean isPermanentTransition )
     {
         killAllSessions();
     }

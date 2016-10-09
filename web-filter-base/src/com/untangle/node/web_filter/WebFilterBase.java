@@ -321,14 +321,14 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
 
 
     @Override
-    protected void preStart()
+    protected void preStart( boolean isPermanentTransition )
     {
         getDecisionEngine().removeAllUnblockedSites();
         unblockedSitesMonitor.start();
     }
 
     @Override
-    protected void postStop()
+    protected void postStop( boolean isPermanentTransition )
     {
         unblockedSitesMonitor.stop();
         getDecisionEngine().removeAllUnblockedSites();

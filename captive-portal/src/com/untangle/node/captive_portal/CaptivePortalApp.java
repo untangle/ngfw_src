@@ -328,7 +328,7 @@ public class CaptivePortalApp extends NodeBase
     }
 
     @Override
-    protected void preStart()
+    protected void preStart( boolean isPermanentTransition )
     {
         // load user state from file (if exists)
         loadUserState();
@@ -341,7 +341,7 @@ public class CaptivePortalApp extends NodeBase
     }
 
     @Override
-    protected void postStart()
+    protected void postStart( boolean isPermanentTransition )
     {
         logger.debug("Creating session cleanup timer task");
         captureTimer = new CaptivePortalTimer(this);
@@ -350,7 +350,7 @@ public class CaptivePortalApp extends NodeBase
     }
 
     @Override
-    protected void preStop()
+    protected void preStop( boolean isPermanentTransition )
     {
         // stop the session cleanup timer thread
         logger.debug("Destroying session cleanup timer task");
@@ -368,7 +368,7 @@ public class CaptivePortalApp extends NodeBase
     }
 
     @Override
-    protected void postStop()
+    protected void postStop( boolean isPermanentTransition )
     {
     }
 
