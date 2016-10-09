@@ -102,7 +102,7 @@ public class BrandingManagerApp extends NodeBase implements com.untangle.uvm.Bra
     }
 
     @Override
-    protected void preStart()
+    protected void preStart( boolean isPermanentTransition )
     {
         /**
          * Overwrite the logo just in case it has changed on disk
