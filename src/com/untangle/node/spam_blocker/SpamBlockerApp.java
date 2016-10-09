@@ -89,7 +89,7 @@ public class SpamBlockerApp extends SpamBlockerBaseApp
     }
 
     @Override
-    protected void preStart()
+    protected void preStart( boolean isPermanentTransition )
     {
 		String transmit;
 		String search;
@@ -107,15 +107,16 @@ public class SpamBlockerApp extends SpamBlockerBaseApp
         search = "SPAMD/1.5 0 PONG";
         UvmContextFactory.context().daemonManager().enableRequestMonitoring("spamassassin", 300, "127.0.0.1", 783, transmit, search);
 
-        super.preStart();
+        super.preStart( isPermanentTransition );
     }
 
     @Override
-    protected void postStop()
+    protected void postStop( boolean isPermanentTransition )
     {
         UvmContextFactory.context().daemonManager().decrementUsageCount("untangle-spamcatd");
         UvmContextFactory.context().daemonManager().decrementUsageCount("spamassassin");
-        super.postStop();
+
+        super.postStop( isPermanentTransition );
     }
 
     protected boolean isLicenseValid()
