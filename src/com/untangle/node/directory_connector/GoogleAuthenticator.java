@@ -230,8 +230,12 @@ public class GoogleAuthenticator
                     logger.debug("Found element ID: " + elementId2);
                     return true;
                 }
-                if ( driver.getPageSource().contains("Google") ) {
-                    logger.debug("Found string: " + "Google");
+                if ( driver.getPageSource().contains("Welcome") ) {
+                    logger.debug("Found string: " + "Welcome");
+                    return true;
+                }
+                if ( driver.getPageSource().contains("My Account") ) {
+                    logger.debug("Found string: " + "My Account");
                     return true;
                 }
                 return false;
