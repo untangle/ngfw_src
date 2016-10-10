@@ -1,14 +1,14 @@
 {
-    "uniqueId": "virus-blocker-lite-IyG8eOrn",
+    "uniqueId": "virus-blocker-lite-DMTDC6W0",
     "category": "Virus Blocker Lite",
-    "description": "The top web virus blocked.",
-    "displayOrder": 104,
+    "description": "The top web sites by blocked virus count.",
+    "displayOrder": 106,
     "enabled": true,
     "javaClass": "com.untangle.node.reports.ReportEntry",
     "orderByColumn": "value",
     "orderDesc": true,
     "units": "hits",
-    "pieGroupColumn": "virus_blocker_lite_name",
+    "pieGroupColumn": "host",
     "pieSumColumn": "count(*)",
     "conditions": [
         {
@@ -20,7 +20,7 @@
     ],
     "readOnly": true,
     "table": "http_events",
-    "title": "Web Top Blocked Viruses",
+    "title": "Web Top Blocked Sites",
     "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }
