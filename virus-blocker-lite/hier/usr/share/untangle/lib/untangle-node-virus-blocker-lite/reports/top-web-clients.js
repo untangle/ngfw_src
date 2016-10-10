@@ -1,7 +1,7 @@
 {
     "uniqueId": "virus-blocker-lite-JqAuZFGR",
     "category": "Virus Blocker Lite",
-    "description": "The number of clients with blocked viruses by web activity.",
+    "description": "The top web clients by blocked virus count.",
     "displayOrder": 105,
     "enabled": true,
     "javaClass": "com.untangle.node.reports.ReportEntry",
