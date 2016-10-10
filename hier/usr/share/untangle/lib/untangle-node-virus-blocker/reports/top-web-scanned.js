@@ -1,8 +1,8 @@
 {
-    "uniqueId": "virus-blocker-m6J8aPUQ",
+    "uniqueId": "virus-blocker-FGleQWZI",
     "category": "Virus Blocker",
-    "description": "The number of clients with blocked viruses by web activity.",
-    "displayOrder": 106,
+    "description": "The top web sites by scan count.",
+    "displayOrder": 107,
     "enabled": true,
     "javaClass": "com.untangle.node.reports.ReportEntry",
     "orderByColumn": "value",
@@ -14,13 +14,13 @@
         {
             "column": "virus_blocker_clean",
             "javaClass": "com.untangle.node.reports.SqlCondition",
-            "operator": "=",
-            "value": "false"
+            "operator": "is",
+            "value": "not null"
         }
     ],
     "readOnly": true,
     "table": "http_events",
-    "title": "Web Top Blocked Sites",
+    "title": "Web Top Scanned Sites",
     "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }

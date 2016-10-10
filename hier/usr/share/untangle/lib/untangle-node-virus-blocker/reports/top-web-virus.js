@@ -1,7 +1,7 @@
 {
     "uniqueId": "virus-blocker-c3NAVUlS",
     "category": "Virus Blocker",
-    "description": "The number of blocked viruses by web activity.",
+    "description": "The top web virus blocked.",
     "displayOrder": 104,
     "enabled": true,
     "javaClass": "com.untangle.node.reports.ReportEntry",
