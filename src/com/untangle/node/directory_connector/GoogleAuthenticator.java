@@ -75,7 +75,12 @@ public class GoogleAuthenticator
             driver.get(baseUrl);
 
             if ( logger.isDebugEnabled() ) takeScreenshot(driver,tmpDirName + "screenshot-0.png");
-            waitForElementId(driver, wait, "next");
+            try {
+                waitForElementId(driver, wait, "next");
+            } catch (Exception e) {
+                if ( logger.isDebugEnabled() ) takeScreenshot(driver,tmpDirName + "screenshot-0-exception.png");
+                throw e;
+            }
             if ( logger.isDebugEnabled() ) takeScreenshot(driver,tmpDirName + "screenshot-1.png");
         
             List<WebElement> emailElements = driver.findElements(By.name("Email"));
@@ -95,7 +100,12 @@ public class GoogleAuthenticator
             nextButtonElements.get(0).click();
             if ( logger.isDebugEnabled() ) takeScreenshot(driver,tmpDirName + "screenshot-3.png");
 
-            waitForPassword(driver, wait);
+            try {
+                waitForPassword(driver, wait);
+            } catch (Exception e) {
+                if ( logger.isDebugEnabled() ) takeScreenshot(driver,tmpDirName + "screenshot-3-exception.png");
+                throw e;
+            }
             if ( logger.isDebugEnabled() ) takeScreenshot(driver,tmpDirName + "screenshot-4.png");
 
             List<WebElement> passwdElements = driver.findElements(By.name("Passwd"));
@@ -113,7 +123,13 @@ public class GoogleAuthenticator
 
             if ( logger.isDebugEnabled() ) takeScreenshot(driver,tmpDirName + "screenshot-5.png");
             signInButtonElements.get(0).click();
-            waitForLogin(driver, wait);
+            try {
+                waitForLogin(driver, wait);
+            } catch (Exception e) {
+                if ( logger.isDebugEnabled() ) takeScreenshot(driver,tmpDirName + "screenshot-5-exception.png");
+                //printElements(driver);
+                throw e;
+            }
             if ( logger.isDebugEnabled() ) takeScreenshot(driver,tmpDirName + "screenshot-6.png");
 
             //printElements(driver);
@@ -171,7 +187,7 @@ public class GoogleAuthenticator
             return true;
         if ( pageSource.contains("Welcome") )
             return true;
-        
+
         return false;
     }
     
@@ -202,14 +218,22 @@ public class GoogleAuthenticator
         
         wait.until(new ExpectedCondition<Boolean>() {
             public Boolean apply(WebDriver webDriver) {
-                logger.debug("Searching for name:" + elementName1 + " or id:" + elementId2 + " ... ");
+                logger.debug("Waiting for login...");
                 
                 List<WebElement> one = driver.findElements(By.name(elementName1));
-                if ( one.size() > 0 )
+                if ( one.size() > 0 ) {
+                    logger.debug("Found element name: " + elementName1);
                     return true;
+                }
                 List<WebElement> two = driver.findElements(By.id(elementId2));
-                if ( two.size() > 0 )
+                if ( two.size() > 0 ) {
+                    logger.debug("Found element ID: " + elementId2);
                     return true;
+                }
+                if ( driver.getPageSource().contains("Google") ) {
+                    logger.debug("Found string: " + "Google");
+                    return true;
+                }
                 return false;
             }
         });
