@@ -5,7 +5,7 @@
 
 try {
     // Initialize the main RPC object which holds all data and the methods to communicate with backend
-    var rpc = new JSONRpcClient('/webui/JSON-RPC');
+    var rpc = new JSONRpcClient('http://localhost/webui/JSON-RPC');
 
     // Populate rpc with the extra webui features
     try {

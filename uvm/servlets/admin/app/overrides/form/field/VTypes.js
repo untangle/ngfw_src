@@ -7,7 +7,7 @@ Ext.define('Ung.overrides.form.field.VTypes', {
 
     // ip all
     ipall: function (val) {
-        if ( val.indexOf('/') == -1 && val.indexOf(',') == -1 && val.indexOf('-') == -1) {
+        if ( val.indexOf('/') === -1 && val.indexOf(',') === -1 && val.indexOf('-') === -1) {
             switch (val) {
             case 'any':
                 return true;
@@ -15,13 +15,13 @@ Ext.define('Ung.overrides.form.field.VTypes', {
                 return this.ip4(val);
             }
         }
-        if (val.indexOf(',') != -1) {
+        if (val.indexOf(',') !== -1) {
             return this.ipList(val);
         } else {
-            if ( val.indexOf('-') != -1) {
+            if ( val.indexOf('-') !== -1) {
                 return this.ipRange(val);
             }
-            if ( val.indexOf('/') != -1) {
+            if ( val.indexOf('/') !== -1) {
                 return this.cidrRange(val) || this.ipNetmask(val);
             }
             console.log('Unhandled case while handling vtype for ipAddr:', val, ' returning true!');
@@ -48,8 +48,9 @@ Ext.define('Ung.overrides.form.field.VTypes', {
     ip4List: function (value) {
         var addr = value.split(','), i;
         for (i = 0 ; i < addr.length ; i++) {
-            if (!this.ip4Re.test(addr[i]))
+            if (!this.ip4Re.test(addr[i])) {
                 return false;
+            }
         }
         return true;
     },
@@ -69,8 +70,9 @@ Ext.define('Ung.overrides.form.field.VTypes', {
     cidrList: function (value) {
         var blocks = value.split(','), i;
         for (i = 0 ; i < blocks.length ; i++) {
-            if (!this.cidrRe.test(blocks[i]))
+            if (!this.cidrRe.test(blocks[i])) {
                 return false;
+            }
         }
         return true;
     },
@@ -80,8 +82,9 @@ Ext.define('Ung.overrides.form.field.VTypes', {
     cidrBlock: function (value) {
         var blocks = value.split('\n'), i;
         for (i = 0 ; i < blocks.length ; i++) {
-            if (!this.cidrRe.test(blocks[i]))
+            if (!this.cidrRe.test(blocks[i])) {
                 return false;
+            }
         }
         return true;
     },
@@ -111,10 +114,10 @@ Ext.define('Ung.overrides.form.field.VTypes', {
         var ipList = val.split(',');
         var retVal = true;
         for ( var i = 0; i < ipList.length;i++) {
-            if ( ipList[i].indexOf('-') != -1) {
+            if ( ipList[i].indexOf('-') !== -1) {
                 retVal = retVal && this.ipRange(ipList[i]);
             } else {
-                if ( ipList[i].indexOf('/') != -1) {
+                if ( ipList[i].indexOf('/') !== -1) {
                     retVal = retVal && ( this.cidRange(ipList[i]) || this.ipNetmask(ipList[i]));
                 } else {
                     retVal = retVal && this.ip4(ipList[i]);

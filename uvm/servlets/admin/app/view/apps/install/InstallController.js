@@ -72,8 +72,8 @@ Ext.define('Ung.view.apps.install.InstallController', {
                     nodeItem.setDisabled(false);
                     //nodeItem.removeListener('click', this.installnoi);
                     //nodeItem.setHref('#apps/' + policyId + '/' + nodeName);
-                } catch (ex) {
-                    console.log(ex);
+                } catch (exception) {
+                    console.log(exception);
                 }
 
                 Ung.Util.successToast(nodeItem.node.displayName + ' installed successfully!');
