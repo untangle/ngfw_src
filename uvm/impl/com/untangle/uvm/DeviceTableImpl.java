@@ -50,7 +50,6 @@ public class DeviceTableImpl implements DeviceTable
 
     protected DeviceTableImpl()
     {
-        this.lastSaveTime = System.currentTimeMillis();
         loadSavedDevices();
 
         saverPulse.start();
@@ -200,6 +199,23 @@ public class DeviceTableImpl implements DeviceTable
     @SuppressWarnings("unchecked")
     public void saveDevices()
     {
+        /**
+         * If this is the first time we're saving. Lookup any unknown MAC vendors
+         * We only do this once so we don't flood the cloud server
+         */
+        if ( lastSaveTime == 0 ) {
+            for ( DeviceTableEntry entry : deviceTable.values() ) {
+                /**
+                 * If we don't know the MAC vendor, do a lookup in case we know it now with an updated DB
+                 */
+                 if (entry.getMacVendor() == null || entry.getMacVendor().equals("")) {
+                     String macVendor = lookupMacVendor( entry.getMacAddress() );
+                     if ( macVendor != null && !("".equals(macVendor)) )
+                         entry.setMacVendor( macVendor );
+                 }
+            }
+        }
+
         lastSaveTime = System.currentTimeMillis();
 
         try {
@@ -249,16 +265,6 @@ public class DeviceTableImpl implements DeviceTable
                         }
 
                         entry.enableLogging(); //enable logging now that the object has been built
-
-                        /**
-                         * If we don't know the MAC vendor, do a lookup in case we know it now with an updated DB
-                         */
-                        if (entry.getMacVendor() == null || entry.getMacVendor().equals("")) {
-                            String macVendor = lookupMacVendor( entry.getMacAddress() );
-                            if ( macVendor != null && !("".equals(macVendor)) )
-                                entry.setMacVendor( macVendor );
-                        }
-
                         deviceTable.put( entry.getMacAddress(), entry );
                     } catch ( Exception e ) {
                         logger.warn( "Error loading device entry: " + entry.toJSONString(), e);

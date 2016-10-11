@@ -26,10 +26,7 @@ import com.untangle.uvm.vnet.TCPStreamer;
  */
 public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSession
 {
-    protected static final ByteBuffer SHUTDOWN_COOKIE_BUF = ByteBuffer.allocate(1);
-
     private static final ByteBuffer EMPTY_BUF = ByteBuffer.allocate(0);
-    
     private static final String TEMP_FILE_KEY = "temp_file_attachemnt_key";
 
     private final String logPrefix;
