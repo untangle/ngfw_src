@@ -76,11 +76,6 @@ class VirusHttpHandler extends HttpEventHandler
         private long bufferingStart;
         private int outstanding;
         private int totalSize;
-        private String filenameContentDisposition = null; /*
-                                                           * The content
-                                                           * disposition
-                                                           * filename extension
-                                                           */
     }
 
     protected VirusHttpHandler(VirusBlockerBaseApp node)
@@ -167,27 +162,32 @@ class VirusHttpHandler extends HttpEventHandler
         VirusHttpState state = (VirusHttpState) session.attachment();
         logger.debug("doing response header");
 
-        state.filenameContentDisposition = findContentDispositionFilename(header);
-
         RequestLineToken rl = getResponseRequest(session);
 
-        if (rl == null || HttpMethod.HEAD == rl.getMethod()) {
+        String contentDisposition = header.getValue("content-disposition");
+        logger.debug("content-disposition: " + contentDisposition);
+        String mimeType = header.getValue("content-type");
+        logger.debug("content-type: " + mimeType);
+        String contentDispositionFilename = findContentDispositionFilename(header);
+        logger.debug("content-disposition filename: " + contentDispositionFilename);
+
+        if ( rl == null || rl.getMethod() == HttpMethod.HEAD ) {
             logger.debug("CONTINUE or HEAD");
             state.scan = false;
-        } else if (ignoredHost(state.host)) {
-            logger.debug("Ignoring downloads from: " + state.host);
+        } else if ( ignoredHost(state.host) ) {
+            logger.debug("ignoring content from: " + state.host);
             state.scan = false;
-        } else if (matchesExtension(state.uri)) {
-            logger.debug("matches uri");
+        } else if ( matchesExtension(state.uri) ) {
+            logger.debug("matches uri-extension");
             state.scan = true;
-        } else if (matchesExtension(state.filenameContentDisposition)) {
-            logger.debug("matches filenameContentDisposition");
+        } else if ( matchesExtension(contentDispositionFilename) ) {
+            logger.debug("matched file-extension");
+            state.scan = true;
+        } else if ( matchesMimeType(mimeType) ) {
+            logger.debug("matched mime-type");
             state.scan = true;
         } else {
-            String mimeType = header.getValue("content-type");
-
-            state.scan = matchesMimeType(mimeType);
-            logger.debug("content-type: " + mimeType + "matches mime-type: " + state.scan);
+            state.scan = false;
         }
 
         if (state.scan) {
