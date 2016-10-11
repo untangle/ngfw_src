@@ -183,7 +183,7 @@ Ext.define('Ung.view.node.SettingsController', {
             'Would you like to continue?'.t();
 
         Ext.Msg.confirm('Warning:'.t(), message, function(btn) {
-            if (btn == 'yes') {
+            if (btn === 'yes') {
                 var nodeItem = settingsView.up('#main').down('#apps').down('#' + vm.get('nodeInstance.nodeName'));
                 //nodeItem.setDisabled(true);
                 nodeItem.addCls('remove');

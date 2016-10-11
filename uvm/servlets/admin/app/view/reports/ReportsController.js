@@ -139,7 +139,9 @@ Ext.define('Ung.view.reports.ReportsController', {
             });
             me.getView().down('#allCategoriesList').removeAll();
 
-            if (me.getView().down('#categoriesLoader')) me.getView().down('#categoriesLoader').destroy();
+            if (me.getView().down('#categoriesLoader')) {
+                me.getView().down('#categoriesLoader').destroy();
+            }
 
             me.getView().down('#allCategoriesList').add(allCategItems);
         });

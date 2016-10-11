@@ -11,12 +11,10 @@ Ext.define('Ung.rpc.Rpc', {
 
 
             String.prototype.translate = function() {
-                var record = Rpc.rpc.translations[this.valueOf()] ;
-                if(record === null) {
+                var record = Rpc.rpc.translations[this.valueOf()], value;
+                if (record === null) {
                     alert('Missing translation for: ' + this.valueOf()); // Key is not found in the corresponding messages_<locale>.properties file.
                     return this.valueOf(); // Return key name as placeholder
-                } else {
-                    var value = record;
                 }
                 return value;
             };
@@ -329,7 +327,7 @@ Ext.define('Ung.overrides.form.field.VTypes', {
 
     // ip all
     ipall: function (val) {
-        if ( val.indexOf('/') == -1 && val.indexOf(',') == -1 && val.indexOf('-') == -1) {
+        if ( val.indexOf('/') === -1 && val.indexOf(',') === -1 && val.indexOf('-') === -1) {
             switch (val) {
             case 'any':
                 return true;
@@ -337,13 +335,13 @@ Ext.define('Ung.overrides.form.field.VTypes', {
                 return this.ip4(val);
             }
         }
-        if (val.indexOf(',') != -1) {
+        if (val.indexOf(',') !== -1) {
             return this.ipList(val);
         } else {
-            if ( val.indexOf('-') != -1) {
+            if ( val.indexOf('-') !== -1) {
                 return this.ipRange(val);
             }
-            if ( val.indexOf('/') != -1) {
+            if ( val.indexOf('/') !== -1) {
                 return this.cidrRange(val) || this.ipNetmask(val);
             }
             console.log('Unhandled case while handling vtype for ipAddr:', val, ' returning true!');
@@ -370,8 +368,9 @@ Ext.define('Ung.overrides.form.field.VTypes', {
     ip4List: function (value) {
         var addr = value.split(','), i;
         for (i = 0 ; i < addr.length ; i++) {
-            if (!this.ip4Re.test(addr[i]))
+            if (!this.ip4Re.test(addr[i])) {
                 return false;
+            }
         }
         return true;
     },
@@ -391,8 +390,9 @@ Ext.define('Ung.overrides.form.field.VTypes', {
     cidrList: function (value) {
         var blocks = value.split(','), i;
         for (i = 0 ; i < blocks.length ; i++) {
-            if (!this.cidrRe.test(blocks[i]))
+            if (!this.cidrRe.test(blocks[i])) {
                 return false;
+            }
         }
         return true;
     },
@@ -402,8 +402,9 @@ Ext.define('Ung.overrides.form.field.VTypes', {
     cidrBlock: function (value) {
         var blocks = value.split('\n'), i;
         for (i = 0 ; i < blocks.length ; i++) {
-            if (!this.cidrRe.test(blocks[i]))
+            if (!this.cidrRe.test(blocks[i])) {
                 return false;
+            }
         }
         return true;
     },
@@ -433,10 +434,10 @@ Ext.define('Ung.overrides.form.field.VTypes', {
         var ipList = val.split(',');
         var retVal = true;
         for ( var i = 0; i < ipList.length;i++) {
-            if ( ipList[i].indexOf('-') != -1) {
+            if ( ipList[i].indexOf('-') !== -1) {
                 retVal = retVal && this.ipRange(ipList[i]);
             } else {
-                if ( ipList[i].indexOf('/') != -1) {
+                if ( ipList[i].indexOf('/') !== -1) {
                     retVal = retVal && ( this.cidRange(ipList[i]) || this.ipNetmask(ipList[i]));
                 } else {
                     retVal = retVal && this.ip4(ipList[i]);
@@ -1344,8 +1345,8 @@ Ext.define('Ung.view.apps.install.InstallController', {
                     nodeItem.setDisabled(false);
                     //nodeItem.removeListener('click', this.installnoi);
                     //nodeItem.setHref('#apps/' + policyId + '/' + nodeName);
-                } catch (ex) {
-                    console.log(ex);
+                } catch (exception) {
+                    console.log(exception);
                 }
 
                 Ung.Util.successToast(nodeItem.node.displayName + ' installed successfully!');
@@ -1763,7 +1764,9 @@ Ext.define('Ung.view.reports.ReportsController', {
             });
             me.getView().down('#allCategoriesList').removeAll();
 
-            if (me.getView().down('#categoriesLoader')) me.getView().down('#categoriesLoader').destroy();
+            if (me.getView().down('#categoriesLoader')) {
+                me.getView().down('#categoriesLoader').destroy();
+            }
 
             me.getView().down('#allCategoriesList').add(allCategItems);
         });
@@ -3000,7 +3003,7 @@ Ext.define('Ung.view.node.SettingsController', {
             'Would you like to continue?'.t();
 
         Ext.Msg.confirm('Warning:'.t(), message, function(btn) {
-            if (btn == 'yes') {
+            if (btn === 'yes') {
                 var nodeItem = settingsView.up('#main').down('#apps').down('#' + vm.get('nodeInstance.nodeName'));
                 //nodeItem.setDisabled(true);
                 nodeItem.addCls('remove');
@@ -4608,8 +4611,8 @@ Ext.define('Ung.util.TableConfig', {
     },
 
     table: {
-        sessions: ['session_id', 'time_stamp', 'end_time', 'bypassed', 'entitled', 'protocol', 'icmp_type', 'hostname', 'username', 'policy_id', 'policy_rule_id', 'c_client_addr', 'c_client_port', 'c_server_addr', 'c_server_port', 's_client_addr', 's_client_port', 's_server_addr', 's_server_port', 'client_intf', 'server_intf', 'client_country', 'client_latitude', 'client_longitude', 'server_country', 'server_latitude', 'server_longitude', "c2p_bytes", "p2c_bytes", "s2p_bytes", "p2s_bytes", 'filter_prefix', 'shield_blocked', 'firewall_blocked', 'firewall_flagged', 'firewall_rule_index', 'application_control_lite_blocked', 'application_control_lite_protocol', 'captive_portal_rule_index', 'captive_portal_blocked', 'application_control_application', 'application_control_protochain', 'application_control_category', 'application_control_flagged', 'application_control_blocked', 'application_control_confidence', 'application_control_detail', 'application_control_ruleid', 'bandwidth_control_priority', 'bandwidth_control_rule', 'ssl_inspector_status', 'ssl_inspector_detail', 'ssl_inspector_ruleid'],
-        session_minutes: ['session_id', 'time_stamp', 'end_time', 'bypassed', 'entitled', 'protocol', 'icmp_type', 'hostname', 'username', 'policy_id', 'policy_rule_id', 'c_client_addr', 'c_client_port', 'c_server_addr', 'c_server_port', 's_client_addr', 's_client_port', 's_server_addr', 's_server_port', 'client_intf', 'server_intf', 'client_country', 'client_latitude', 'client_longitude', 'server_country', 'server_latitude', 'server_longitude', "c2p_bytes", "p2c_bytes", "s2p_bytes", "p2s_bytes", 'filter_prefix', 'shield_blocked', 'firewall_blocked', 'firewall_flagged', 'firewall_rule_index', 'application_control_lite_blocked', 'application_control_lite_protocol', 'captive_portal_rule_index', 'captive_portal_blocked', 'application_control_application', 'application_control_protochain', 'application_control_category', 'application_control_flagged', 'application_control_blocked', 'application_control_confidence', 'application_control_detail', 'application_control_ruleid', 'bandwidth_control_priority', 'bandwidth_control_rule', 'ssl_inspector_status', 'ssl_inspector_detail', 'ssl_inspector_ruleid'],
+        sessions: ['session_id', 'time_stamp', 'end_time', 'bypassed', 'entitled', 'protocol', 'icmp_type', 'hostname', 'username', 'policy_id', 'policy_rule_id', 'c_client_addr', 'c_client_port', 'c_server_addr', 'c_server_port', 's_client_addr', 's_client_port', 's_server_addr', 's_server_port', 'client_intf', 'server_intf', 'client_country', 'client_latitude', 'client_longitude', 'server_country', 'server_latitude', 'server_longitude', "c2p_bytes", "p2c_bytes", "s2p_bytes", "p2s_bytes", 'filter_prefix', 'firewall_blocked', 'firewall_flagged', 'firewall_rule_index', 'application_control_lite_blocked', 'application_control_lite_protocol', 'captive_portal_rule_index', 'captive_portal_blocked', 'application_control_application', 'application_control_protochain', 'application_control_category', 'application_control_flagged', 'application_control_blocked', 'application_control_confidence', 'application_control_detail', 'application_control_ruleid', 'bandwidth_control_priority', 'bandwidth_control_rule', 'ssl_inspector_status', 'ssl_inspector_detail', 'ssl_inspector_ruleid'],
+        session_minutes: ['session_id', 'time_stamp', 'end_time', 'bypassed', 'entitled', 'protocol', 'icmp_type', 'hostname', 'username', 'policy_id', 'policy_rule_id', 'c_client_addr', 'c_client_port', 'c_server_addr', 'c_server_port', 's_client_addr', 's_client_port', 's_server_addr', 's_server_port', 'client_intf', 'server_intf', 'client_country', 'client_latitude', 'client_longitude', 'server_country', 'server_latitude', 'server_longitude', "c2p_bytes", "p2c_bytes", "s2p_bytes", "p2s_bytes", 'filter_prefix', 'firewall_blocked', 'firewall_flagged', 'firewall_rule_index', 'application_control_lite_blocked', 'application_control_lite_protocol', 'captive_portal_rule_index', 'captive_portal_blocked', 'application_control_application', 'application_control_protochain', 'application_control_category', 'application_control_flagged', 'application_control_blocked', 'application_control_confidence', 'application_control_detail', 'application_control_ruleid', 'bandwidth_control_priority', 'bandwidth_control_rule', 'ssl_inspector_status', 'ssl_inspector_detail', 'ssl_inspector_ruleid'],
         http_events: ['request_id', 'policy_id', 'time_stamp', 'session_id', 'client_intf', 'server_intf', 'c_client_addr', 'c_client_port', 'c_server_addr', 'c_server_port', 's_client_addr', 's_client_port', 's_server_addr', 's_server_port', 'username', 'hostname', 'method', 'domain', 'host', 'uri', 'referer', 'c2s_content_length', 's2c_content_length', 's2c_content_type', 'web_filter_lite_blocked', 'web_filter_blocked', 'web_filter_lite_flagged', 'web_filter_flagged', 'web_filter_lite_category', 'web_filter_category', 'web_filter_lite_reason', 'web_filter_reason', 'ad_blocker_action', 'ad_blocker_cookie_ident', 'virus_blocker_clean', 'virus_blocker_name', 'virus_blocker_lite_clean', 'virus_blocker_lite_name']
     },
 
@@ -6647,6 +6650,7 @@ Ext.define('Ung.store.Widgets', {
     storeId: 'widgets',
     model: 'Ung.model.Widget'
 });
+// test
 Ext.define('Ung.Application', {
     extend: 'Ext.app.Application',
     autoCreateViewport: false,

@@ -11,12 +11,10 @@ Ext.define('Ung.rpc.Rpc', {
 
 
             String.prototype.translate = function() {
-                var record = Rpc.rpc.translations[this.valueOf()] ;
-                if(record === null) {
+                var record = Rpc.rpc.translations[this.valueOf()], value;
+                if (record === null) {
                     alert('Missing translation for: ' + this.valueOf()); // Key is not found in the corresponding messages_<locale>.properties file.
                     return this.valueOf(); // Return key name as placeholder
-                } else {
-                    var value = record;
                 }
                 return value;
             };
