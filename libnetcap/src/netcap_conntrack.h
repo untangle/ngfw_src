@@ -7,6 +7,7 @@
 #include "libnetcap.h"
 
 int   netcap_conntrack_init();
+int   netcap_conntrack_cleanup( void );
 void* netcap_conntrack_listen ( void* arg );
 void netcap_conntrack_null_hook ( struct nf_conntrack* ct, int type );
 

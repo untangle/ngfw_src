@@ -1,10 +1,26 @@
 
-
-
-
+{
+   addr4_unknown_java
+   Memcheck:Addr4
+   ...
+   obj:/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/server/libjvm.so
+   obj:/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/server/libjvm.so
+   obj:/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/server/libjvm.so
+   ...
+}
 
 {
-   java_jvm_call_helper
+   cond_unknown_java
+   Memcheck:Cond
+   ...
+   obj:/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/server/libjvm.so
+   obj:/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/server/libjvm.so
+   obj:/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/server/libjvm.so
+   ...
+}
+
+{
+   cond_java_jvm_call_helper
    Memcheck:Cond
    ...
    fun:*JavaCalls11call_helper*
@@ -12,7 +28,7 @@
 }
 
 {
-   java_jvm_call_helper
+   addr_java_jvm_call_helper
    Memcheck:Addr4
    ...
    fun:*JavaCalls11call_helper*
@@ -20,7 +36,7 @@
 }
 
 {
-   java_jvm_thread_loop
+   cond_java_jvm_thread_loop
    Memcheck:Cond
    ...
    fun:_ZN8VMThread4loopEv
@@ -28,7 +44,7 @@
 }
 
 {
-   java_jvm_thread_loop
+   value_java_jvm_thread_loop
    Memcheck:Value8
    ...
    fun:_ZN8VMThread4loopEv
@@ -36,7 +52,7 @@
 }
 
 {
-   java_jvm_thread_loop_main
+   cond_java_jvm_thread_loop_main
    Memcheck:Cond
    ...
    fun:_ZN10JavaThread17thread_main_innerEv
@@ -44,7 +60,7 @@
 }
 
 {
-   java_jvm_safepointsynchronize
+   cond_java_jvm_safepointsynchronize
    Memcheck:Cond
    ...
    fun:_ZN20SafepointSynchronize5blockEP10JavaThread
@@ -52,7 +68,7 @@
 }
 
 {
-   java_jvm_CMS_thread
+   cond_java_jvm_CMS_thread
    Memcheck:Cond
    ...
    fun:_ZN25ConcurrentMarkSweepThread3runEv
@@ -60,7 +76,7 @@
 }
 
 {
-   java_jvm_parnew
+   cond_java_jvm_parnew
    Memcheck:Cond
    ...
    fun:_ZN13ParNewGenTask4workEj
@@ -68,7 +84,7 @@
 }
 
 {
-   java_jvm_gangworker
+   cond_java_jvm_gangworker
    Memcheck:Cond
    ...
    fun:_ZN10GangWorker4loopEv
@@ -76,7 +92,7 @@
 }
 
 {
-   thread_attach
+   cond_thread_attach
    Memcheck:Cond
    ...
    fun:attach_current_thread
@@ -84,14 +100,14 @@
 }
 
 {
-   java_g1
+   cond_java_g1
    Memcheck:Cond
    fun:_ZN17G1CollectorPolicy16predict_will_fitEmdmd
    ...
 }
 
 {
-   java_epoll
+   param_epoll
    Memcheck:Param
    epoll_ctl(event)
    fun:epoll_ctl
@@ -107,12 +123,168 @@
 }
 
 {
-   nfnl_send
+   param_nfnl_send
    Memcheck:Param
    socketcall.sendto(msg)
    obj:/lib/x86_64-linux-gnu/libpthread-2.19.so
    fun:nfnl_send
    fun:nfnl_query
+   ...
+}
+
+{
+   param_nfnl_sendmsg
+   Memcheck:Param
+   sendmsg(msg.msg_name)
+   obj:/lib/x86_64-linux-gnu/libpthread-2.19.so
+   fun:nfnl_sendmsg
+   ...
+}
+
+{
+   addr1_nfnl_process
+   Memcheck:Addr1
+   obj:/usr/lib/x86_64-linux-gnu/libnfnetlink.so.0.2.0
+   fun:nfnl_process
+   ...
+}
+
+
+{
+   addr8_nfq_set_verdict
+   Memcheck:Addr8
+   obj:/usr/lib/x86_64-linux-gnu/libnetfilter_queue.so.1.3.0
+   fun:nfq_set_verdict
+   ...
+}
+
+
+{
+   addr_create_vm
+   Memcheck:Cond
+   ...
+   fun:JNI_CreateJavaVM
+   ...
+}
+
+{
+   addr_create_vm
+   Memcheck:Addr4
+   ...
+   fun:JNI_CreateJavaVM
+   ...
+}
+
+{
+   addr_find_class
+   Memcheck:Addr4
+   ...
+   fun:JVM_FindClassFromCaller
+   fun:Java_java_lang_Class_forName0
+   ...
+}
+
+{
+   addr_do_priv
+   Memcheck:Addr4
+   ...
+   fun:JVM_DoPrivileged
+   ...
+}
+
+{
+   param_do_priv_ioctl
+   Memcheck:Param
+   ioctl(SIOCGIFCONF)
+   fun:ioctl
+   ...
+   fun:JVM_DoPrivileged
+   ...
+}
+
+{
+   cond_do_priv
+   Memcheck:Cond
+   ...
+   fun:JVM_DoPrivileged
+   ...
+}
+
+{
+   addr_get_class_declared_methods
+   Memcheck:Addr4
+   ...
+   fun:JVM_GetClassDeclaredMethods
+   ...
+}
+
+{
+   cond_get_class_name
+   Memcheck:Cond
+   ...
+   fun:JVM_GetClassName
+   ...
+}
+
+{
+   param_network_getall
+   Memcheck:Param
+   ioctl(SIOCGIFCONF).ifc_buf
+   fun:ioctl
+   obj:/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/libnet.so
+   fun:Java_java_net_NetworkInterface_getAll
+   ...
+}
+
+{
+   leak_jvm
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   obj:/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/server/libjvm.so
+   ...
+}
+
+{
+   leak_create_java_vm
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   ...
+   obj:/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/server/libjvm.so
+   ...
+   fun:JNI_CreateJavaVM
+   ...
+   obj:/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/jli/libjli.so
+   fun:start_thread
+}
+
+{
+   leak_jli_launch_definite
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   ...
+   fun:JLI_Launch
+   ...
+}
+
+{
+   leak_jli_launch_possible
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   ...
+   fun:JLI_Launch
+   ...
+}
+
+{
+   leak_tls
+   Memcheck:Leak
+   match-leak-kinds: possible
+   ...
+   fun:_dl_allocate_tls
    ...
 }
 

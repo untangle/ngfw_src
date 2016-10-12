@@ -190,99 +190,101 @@ public class ConntrackMonitorImpl
             synchronized( ConntrackMonitorImpl.INSTANCE ) {
                 String type = null;
                 for ( Conntrack conntrack : dumpEntries ) {
-                    long sessionId = 0;
-                    SessionTuple tuple = new SessionTuple( conntrack.getProtocol(),
-                                                           conntrack.getPreNatClient(),
-                                                           conntrack.getPreNatServer(),
-                                                           conntrack.getPreNatClientPort(),
-                                                           conntrack.getPreNatServerPort() );
-                    /**
-                     * Lookup the session from the previous conntrack entries
-                     */
-                    ConntrackEntryState state = oldConntrackEntries.remove( tuple );
+                    try {
+                        long sessionId = 0;
+                        SessionTuple tuple = new SessionTuple( conntrack.getProtocol(),
+                                                               conntrack.getPreNatClient(),
+                                                               conntrack.getPreNatServer(),
+                                                               conntrack.getPreNatClientPort(),
+                                                               conntrack.getPreNatServerPort() );
+                        /**
+                         * Lookup the session from the previous conntrack entries
+                         */
+                        ConntrackEntryState state = oldConntrackEntries.remove( tuple );
 
-                    /**
-                     * In some cases (especially UDP) a conntrack entry expires, and shortly after
-                     * a new session replaces it with the same tuple. 
-                     * If this is the case then set the state to null so that we resolve it like a new session.
-                     */
-                    if ( state != null && (state.sessionStartTime != conntrack.getTimeStampStart()) ) {
-                        if ( logger.isDebugEnabled() ) {
-                            logger.debug("Conntrack does not match " + tuple + " " + state.sessionStartTime + " != " + conntrack.getTimeStampStart());
+                        /**
+                         * In some cases (especially UDP) a conntrack entry expires, and shortly after
+                         * a new session replaces it with the same tuple. 
+                         * If this is the case then set the state to null so that we resolve it like a new session.
+                         */
+                        if ( state != null && (state.sessionStartTime != conntrack.getTimeStampStart()) ) {
+                            if ( logger.isDebugEnabled() ) {
+                                logger.debug("Conntrack does not match " + tuple + " " + state.sessionStartTime + " != " + conntrack.getTimeStampStart());
+                            }
+                            state = null;
                         }
-                        state = null;
-                    }
                     
-                    /**
-                     * If we already know about this session, then pull the sessionId from the state
-                     */
-                    if ( state != null ) {
-                        type = "existing";
-                        sessionId = state.sessionId;
-                        tuple = state.tuple;
-                    }
-                    /**
-                     * If we don't know about this session, ask the Conntrack Hook to see if it knows about it
-                     * The Connntrack Hook stores a list of all the "bypassed" sessions and all of the conntrack IDs and session IDs
-                     * for those sessions.
-                     */
-                    if ( sessionId == 0 ) {
-                        Long sid = NetcapConntrackHook.getInstance().lookupSessionId( tuple );
-                        if ( sid != null ) {
-                            type = "bypassed";
-                            sessionId = sid;
+                        /**
+                         * If we already know about this session, then pull the sessionId from the state
+                         */
+                        if ( state != null ) {
+                            type = "existing";
+                            sessionId = state.sessionId;
+                            tuple = state.tuple;
                         }
-                    }
-                    /**
-                     * If we still don't know it,
-                     * lookup the tuple in the session table for a live session
-                     * or lookup the tuple in the recently completed tcp session table
-                     */
-                    if ( sessionId == 0 ) {
-                        SessionGlobalState session;
+                        /**
+                         * If we don't know about this session, ask the Conntrack Hook to see if it knows about it
+                         * The Connntrack Hook stores a list of all the "bypassed" sessions and all of the conntrack IDs and session IDs
+                         * for those sessions.
+                         */
                         if ( sessionId == 0 ) {
-                            session = SessionTableImpl.getInstance().lookupTuple( tuple );
-                            if ( session != null ) {
-                                type = "active  ";
-                                sessionId = session.id();
+                            Long sid = NetcapConntrackHook.getInstance().lookupSessionId( tuple );
+                            if ( sid != null ) {
+                                type = "bypassed";
+                                sessionId = sid;
                             }
                         }
-                        
+                        /**
+                         * If we still don't know it,
+                         * lookup the tuple in the session table for a live session
+                         * or lookup the tuple in the recently completed tcp session table
+                         */
                         if ( sessionId == 0 ) {
-                            DeadTcpSessionState deadSession = null;
-                            synchronized ( deadTcpSessions ) {
-                                deadSession = deadTcpSessions.get( tuple );
+                            SessionGlobalState session;
+                            if ( sessionId == 0 ) {
+                                session = SessionTableImpl.getInstance().lookupTuple( tuple );
+                                if ( session != null ) {
+                                    type = "active  ";
+                                    sessionId = session.id();
+                                }
                             }
-                            if ( deadSession != null ) {
-                                type = "timewait";
-                                sessionId = deadSession.sessionId;
+
+                            if ( sessionId == 0 ) {
+                                DeadTcpSessionState deadSession = null;
+                                synchronized ( deadTcpSessions ) {
+                                    deadSession = deadTcpSessions.get( tuple );
+                                }
+                                if ( deadSession != null ) {
+                                    type = "timewait";
+                                    sessionId = deadSession.sessionId;
+                                }
                             }
                         }
+                        if ( sessionId == 0 ) {
+                            // unable to find the session ID for this session
+                            // we can't log events without a session ID
+                            continue;
+                        } 
+
+
+                        String action = null;
+                        if ( state == null ) {
+                            action = "NEW    ";
+                            state = new ConntrackEntryState( sessionId, tuple, conntrack.getTimeStampStart() );
+                        } else {
+                            action = "UPDATE ";
+                        }
+
+                        // put the entry in the new map
+                        newConntrackEntries.put( tuple, state );
+
+                        // log event 
+                        doAccounting( conntrack, state, action + type, tuple );
                     }
-                    if ( sessionId == 0 ) {
-                        // unable to find the session ID for this session
-                        // we can't log events without a session ID
+                    finally {
+                        // free the conntrack
                         conntrack.raze();
-                        continue;
-                    } 
-
-
-                    String action = null;
-                    if ( state == null ) {
-                        action = "NEW    ";
-                        state = new ConntrackEntryState( sessionId, tuple, conntrack.getTimeStampStart() );
-                    } else {
-                        action = "UPDATE ";
                     }
-
-                    // put the entry in the new map
-                    newConntrackEntries.put( tuple, state );
-
-                    // log event 
-                    doAccounting( conntrack, state, action + type, tuple );
-
-                    // free the conntrack
-                    conntrack.raze();
                 }
 
                 /**
