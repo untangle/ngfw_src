@@ -412,7 +412,10 @@ static int _nfconntrack_query( struct nf_conntrack* ct, const enum nf_conntrack_
         /* Actually make the query */
         errno = 0;
         if ( nfct_query( handle->handle, query, ct ) < 0 ) {
-            return perrlog( "nfct_query" );
+            // if the conntrack entry doesn't exist - do not print error
+            if ( errno == ENOENT )
+                return -1;
+            return errlog( ERR_WARNING, "nfct_query(%i): %s\n", query, strerror(errno) );
         }
         
         return 0;

@@ -80,17 +80,29 @@ int  netcap_conntrack_init()
     return 0;
 }
 
+int  netcap_conntrack_cleanup( void )
+{
+    if ( nfct_close( cth ) < 0 )
+        perrlog( "nfct_close" );
+
+    cth = NULL;
+    return 0;
+}
+
 void* netcap_conntrack_listen ( void* arg )
 {
     int res = 0;
     debug( 1, "ConntrackD listening for conntrack updates...\n" );
 
     while (1) {
+        if ( cth == NULL ) return NULL;
 
         res = nfct_catch(cth);  
         if (res == -1) {
-            errlog( ERR_WARNING,"nfct_catch() returned! %s\n", strerror(errno) );
-            return NULL;
+            if ( cth == NULL )
+                return NULL;
+            else
+                return errlog_null( ERR_WARNING,"nfct_catch() returned! %s\n", strerror(errno) );
         }
     }
 
@@ -98,6 +110,7 @@ void* netcap_conntrack_listen ( void* arg )
 
 void netcap_conntrack_null_hook ( struct nf_conntrack* ct, int type )
 {
+    nfct_destroy(ct);
     //do nothing
 }
 
@@ -108,15 +121,16 @@ int _netcap_conntrack_callback( enum nf_conntrack_msg_type type, struct nf_connt
         return NFCT_CB_CONTINUE;
     }
 
-    struct nf_conntrack *my_ct = nfct_clone(ct); // clone it because ct is gone after this hook returns
-    uint32_t client = nfct_get_attr_u32(my_ct, ATTR_ORIG_IPV4_SRC);
-    uint32_t server = nfct_get_attr_u32(my_ct, ATTR_REPL_IPV4_SRC);
+    uint32_t client = nfct_get_attr_u32(ct, ATTR_ORIG_IPV4_SRC);
+    uint32_t server = nfct_get_attr_u32(ct, ATTR_REPL_IPV4_SRC);
 
     /* ignore sessions from 127.0.0.1 to 127.0.0.1 */
     if ( client == 0x0100007f && server == 0x0100007f ) {
         //debug( 10, "CONNTRACK: local mark=0x%08x\n", nfct_get_attr_u32(my_ct, ATTR_MARK) );
         return NFCT_CB_CONTINUE;
     }
+
+    struct nf_conntrack *my_ct = nfct_clone(ct); // clone it because ct is gone after this hook returns
 
     switch (type) {
     case NFCT_T_DESTROY:
@@ -137,6 +151,7 @@ int _netcap_conntrack_callback( enum nf_conntrack_msg_type type, struct nf_connt
     }
 
     global_conntrack_hook( my_ct, type );
+
     return NFCT_CB_CONTINUE;
 }
 

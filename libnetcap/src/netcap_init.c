@@ -198,6 +198,10 @@ int netcap_cleanup()
 
     if (netcap_server_shutdown()<0)
         perrlog("netcap_server_shutdown");
+    if (netcap_nfconntrack_cleanup()<0)
+        perrlog("netcap_nfconntrack_cleanup");
+    if (netcap_conntrack_cleanup()<0)
+        perrlog("netcap_conntrack_cleanup");
     if (netcap_queue_cleanup()<0)
         perrlog("netcap_queue_cleanup");
     if (netcap_tcp_cleanup()<0)

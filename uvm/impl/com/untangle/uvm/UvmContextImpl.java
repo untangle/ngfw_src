@@ -927,20 +927,20 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         state = UvmState.DESTROYED;
 
+        // stop conntrack monitor
         try {
             if ( conntrackMonitor != null )
                 conntrackMonitor.stop();
-            if ( metricManager != null )
-                metricManager.stop();
         } catch (Exception exn) {
             logger.error("could not stop MetricManager", exn);
         }
 
-        // stop vectoring
+        // stop metric monitor
         try {
-            NetcapManagerImpl.getInstance().destroy();
+            if ( metricManager != null )
+                metricManager.stop();
         } catch (Exception exn) {
-            logger.warn("could not destroy Netcap", exn);
+            logger.error("could not stop MetricManager", exn);
         }
 
         // stop nodes
@@ -948,15 +948,27 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             if ( nodeManager != null )
                 nodeManager.destroy();
         } catch (Exception exn) {
-            logger.warn("could not destroy NodeManager", exn);
+            logger.error("could not destroy NodeManager", exn);
         }
 
+        // stop netcap
+        try {
+            NetcapManagerImpl.getInstance().destroy();
+        } catch (Exception exn) {
+            logger.error("could not destroy Netcap", exn);
+        }
+
+        // stop tomcat
         try {
             if ( tomcatManager != null )
             tomcatManager.stopTomcat();
         } catch (Exception exn) {
-            logger.warn("could not stop tomcat", exn);
+            logger.error("could not stop tomcat", exn);
         }
+
+        // one last garbage collection - for valgrind
+        if (isDevel())
+            gc();
 
         writeStatusFile( "stopped" );
         logger.info("UvmContext destroyed");

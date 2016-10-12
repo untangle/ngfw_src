@@ -9,19 +9,8 @@
 #include <mvutil/errlog.h>
 #include <mvutil/debug.h>
 
-/**
- * Socket used for ARP queries
- */
-int arp_socket = 0;
-
 int  netcap_arp_init ( void )
 {
-    debug( 2, "Initializing arp socket...\n");
-    if (( arp_socket = socket( PF_INET, SOCK_DGRAM, 0 )) < 0 ) {
-        errlog( ERR_CRITICAL, "socket: %s\n", strerror(errno) );
-        return -1;
-    }
-
     return 0;
 }
 

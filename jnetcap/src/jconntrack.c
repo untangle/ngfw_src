@@ -8,6 +8,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <signal.h>
+#include <inttypes.h>
 
 #include <libnetcap.h>
 #include <libmvutil.h>

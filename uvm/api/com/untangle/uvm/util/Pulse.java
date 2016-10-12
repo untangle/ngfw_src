@@ -161,8 +161,9 @@ public class Pulse implements Runnable
             logger.debug(logPrefix + "Stopping the pulse." );
             this.state = PulseState.KILLED;
             /* Interrupt the thread. */
-            if ( this.thread != null )
-                this.thread.interrupt();
+            synchronized ( this ) {
+                this.notifyAll();
+            }
             return;
         }
     }
