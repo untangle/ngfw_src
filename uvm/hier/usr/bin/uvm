@@ -10,6 +10,7 @@ import datetime
 import getopt
 import subprocess
 import syslog
+import platform
 
 # read the configuration
 exec(open("@PREFIX@/usr/share/untangle/conf/untangle-vm.conf"));
@@ -36,8 +37,6 @@ monitor_interval_seconds=10;
 syslog_out = syslog.openlog("uvmwrapper");
 use_valgrind = False
 use_leakdetect = False
-
-arch = subprocess.check_output(['dpkg-architecture','-qDEB_BUILD_ARCH']).strip()
 
 def debug(string):
     print string
@@ -156,13 +155,13 @@ def prepareSystem():
     procset('/proc/sys/net/ipv4/ip_nonlocal_bind',"1",False);
     procset('/proc/sys/net/ipv4/ip_local_port_range',"3200   9000",False);
     procset('/proc/sys/net/ipv4/netfilter/ip_conntrack_tcp_loose',"0",False);
-    if arch != 'armhf': # FIXME: why is this failing on armhf ?
-        procset('/proc/sys/kernel/pid_max',"131072",False);
     procset('/proc/sys/vm/max_map_count',"262144",False);
     # procset('/proc/sys/kernel/threads-max',"1048576",False); # default is pages/4 which is ideal - do not override
     # procset('/proc/sys/fs/file-max',"1642108",False); # default is 10% of memory which is ideal - do not override
 
     # Optional proc settings
+    if platform.machine() == 'x86_64':
+        procset('/proc/sys/kernel/pid_max',"131072",True);
     procset('/proc/sys/net/netfilter/nf_conntrack_udp_timeout_stream',"180",True)
     procset('/proc/sys/net/ipv4/netfilter/ip_conntrack_max',"131072",True)
     procset('/proc/sys/net/ipv4/netfilter/ip_conntrack_udp_timeout_stream',"180",True)
