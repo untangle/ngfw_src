@@ -17,6 +17,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.remote.UnreachableBrowserException;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -31,10 +32,9 @@ public class WebBrowser
     private final Logger logger = Logger.getLogger(getClass());
 
     private WebDriver driver = null;
-    Wait<WebDriver> wait = null;
+    private Wait<WebDriver> wait = null;
 
     private String tempDirectory = "/tmp/webbrowser";
-//    private static String port = ":1.5";
     private static String chromeDriver = "/usr/lib/chromium/chromedriver";
     private static String chromeBrowser = "/usr/bin/chromium";
 
@@ -74,24 +74,29 @@ public class WebBrowser
         	+ " -screen " + this.displayScreen.toString() 
         	+ " " 
         	+ this.screenWidth.toString() + "x" + this.screenHeight.toString() + "x" + this.screenDepth.toString();
-        UvmContextFactory.context().execManager().exec("pkill -f \"" + this.xCommand+ "\"");
-        UvmContextFactory.context().execManager().execOutput("nohup " + this.xCommand + " >/dev/null 2>&1 &");
 
-		ChromeDriverService service = new ChromeDriverService.Builder()
-			.usingDriverExecutable(new File(chromeDriver))
-			.usingAnyFreePort()
-			.withEnvironment(ImmutableMap.of("DISPLAY",":" + this.displaySequence.toString() + "." + displayScreen.toString()))
-			.build();
 		System.setProperty("webdriver.chrome.driver", chromeDriver);
 		System.setProperty("webdriver.chrome.bin", chromeBrowser);
 		System.setProperty("webdriver.chrome.logfile", tempDirectory + "/chrome.log");
 		System.setProperty("webdriver.chrome.verboseLogging", "true");
-		ChromeOptions options = new ChromeOptions();
-		options.addArguments("--no-sandbox");
-		options.addArguments("--user-data-dir=" + tempDirectory);
-		driver = new ChromeDriver(service, options);
-		logger.warn(driver);
-        wait = new WebDriverWait(driver, 120);
+        
+        try{
+            UvmContextFactory.context().execManager().exec("pkill -f \"" + this.xCommand+ "\"");
+            UvmContextFactory.context().execManager().execOutput("nohup " + this.xCommand + " >/dev/null 2>&1 &");
+            ChromeDriverService service = new ChromeDriverService.Builder()
+                .usingDriverExecutable(new File(chromeDriver))
+                .usingAnyFreePort()
+                .withEnvironment(ImmutableMap.of("DISPLAY",":" + this.displaySequence.toString() + "." + displayScreen.toString()))
+                .build();
+            ChromeOptions options = new ChromeOptions();
+            options.addArguments("--no-sandbox");
+            options.addArguments("--user-data-dir=" + tempDirectory);
+            driver = new ChromeDriver(service, options);
+            wait = new WebDriverWait(driver, 120);
+        }catch(UnreachableBrowserException e){
+            logger.warn("Unable to open driver, ", e);
+        }
+
 	}
 
     /**
@@ -100,16 +105,20 @@ public class WebBrowser
      */
 	public void close()
 	{
-        try { driver.close(); 
+        wait = null;
+        try { 
+            driver.close(); 
         } catch (Exception e) {
+        	logger.warn("Could not close driver");
         }
         try { 
             driver.quit(); 
         } catch (Exception e) {
+        	logger.warn("Could not quit driver");
         }
-        UvmContextFactory.context().execManager().exec("pkill -f \"" + this.xCommand+ "\"");
+       UvmContextFactory.context().execManager().exec("pkill -f \"" + this.xCommand+ "\"");
         // debug option to not remove
-        UvmContextFactory.context().execManager().exec("rm -rf " + tempDirectory);
+       IOUtil.rmDir(new File(tempDirectory));
 	}
 
     /**
@@ -156,11 +165,11 @@ public class WebBrowser
 	{
 		Boolean success = false;
 		File scrFile = ((org.openqa.selenium.TakesScreenshot)driver).getScreenshotAs(org.openqa.selenium.OutputType.FILE);
-		// copyFile(scrFile, new File(filename));
 		try{
 			IOUtil.copyFile(scrFile, new File(filename));
+            scrFile.delete();
 		}catch(Exception e){
-			logger.error("Unablew to copy " + e);
+			logger.error("Unable to copy " + e);
 		}
 		return success;
 	}
