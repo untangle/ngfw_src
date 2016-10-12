@@ -98,6 +98,7 @@ void* netcap_conntrack_listen ( void* arg )
 
 void netcap_conntrack_null_hook ( struct nf_conntrack* ct, int type )
 {
+    nfct_destroy(ct);
     //do nothing
 }
 
@@ -108,15 +109,16 @@ int _netcap_conntrack_callback( enum nf_conntrack_msg_type type, struct nf_connt
         return NFCT_CB_CONTINUE;
     }
 
-    struct nf_conntrack *my_ct = nfct_clone(ct); // clone it because ct is gone after this hook returns
-    uint32_t client = nfct_get_attr_u32(my_ct, ATTR_ORIG_IPV4_SRC);
-    uint32_t server = nfct_get_attr_u32(my_ct, ATTR_REPL_IPV4_SRC);
+    uint32_t client = nfct_get_attr_u32(ct, ATTR_ORIG_IPV4_SRC);
+    uint32_t server = nfct_get_attr_u32(ct, ATTR_REPL_IPV4_SRC);
 
     /* ignore sessions from 127.0.0.1 to 127.0.0.1 */
     if ( client == 0x0100007f && server == 0x0100007f ) {
         //debug( 10, "CONNTRACK: local mark=0x%08x\n", nfct_get_attr_u32(my_ct, ATTR_MARK) );
         return NFCT_CB_CONTINUE;
     }
+
+    struct nf_conntrack *my_ct = nfct_clone(ct); // clone it because ct is gone after this hook returns
 
     switch (type) {
     case NFCT_T_DESTROY:
