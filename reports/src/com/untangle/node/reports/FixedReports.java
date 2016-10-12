@@ -10,16 +10,22 @@ import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.util.I18nUtil;
 
+import com.untangle.uvm.WebBrowser;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.io.IOException;
 
+import java.net.URLEncoder;
+
+import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -57,6 +63,9 @@ public class FixedReports
     private StringBuilder messageText = null;
     private StringBuilder messageHtml = null;
     private List<Map<MailSender.MessagePartsField,String>> messageParts;
+    private WebBrowser webbrowser = null;
+    private Date startDate = null;
+    private Date endDate = null;
 
     I18nUtil i18nUtil = null;
     private static final DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
@@ -321,6 +330,8 @@ public class FixedReports
      */
     public void send(ArrayList<String> recipientsList, String reportsUrl)
     {
+        webbrowser = new WebBrowser(1, 5, 250, 250, 8);
+
         File fixedReportTemplateFile = new File(REPORTS_FIXED_TEMPLATE_FILENAME);
         Map<String, String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle");
         i18nUtil = new I18nUtil(i18nMap);
@@ -337,9 +348,9 @@ public class FixedReports
         c.set(Calendar.MINUTE, 0);
         c.set(Calendar.SECOND, 0);
         c.set(Calendar.MILLISECOND, 0);
-        Date startDate = c.getTime();
+        startDate = c.getTime();
         c.add(Calendar.DAY_OF_MONTH, 1);
-        Date endDate = c.getTime();
+        endDate = c.getTime();
 
         context.addVariable(Tag._SYSTEM, "startDate", startDate);
         context.addVariable(Tag._SYSTEM, "endDate", endDate);
@@ -369,7 +380,7 @@ public class FixedReports
                     reader.close();
                 }
             } catch (Exception e) {
-                logger.warn("cannot close");
+                logger.warn("cannot close: ", e);
 
             }
         }
@@ -389,8 +400,10 @@ public class FixedReports
         part = new HashMap<MailSender.MessagePartsField,String>();
         part.put(MailSender.MessagePartsField.HTML, messageHtml.toString());
         messageParts.add(part);
+
         UvmContextFactory.context().mailSender().sendMessage(recipients, subject, messageParts);
 
+        webbrowser.close();
     }
 
     /*
@@ -401,7 +414,7 @@ public class FixedReports
 
         parseContext parseContext = parseContextStack.get(contextIndex);
 
-        Matcher tag;
+        Matcher tag = null;
         String search = null;
         String replace = null;
         Tag key;
@@ -550,7 +563,7 @@ public class FixedReports
                         }
                     }
                 }catch(Exception e){
-                    logger.warn("Cannot process tag: Exception: ",e);
+                    logger.warn("Cannot process tag [" + tag + "]: Exception: ",e);
                 }
             }
             if(parseContext.allowOutput && 
@@ -579,7 +592,7 @@ public class FixedReports
         String right;
 
         Matcher tag = Conditional.matcher(condition);
-        while( tag.find()){
+        while(tag.find()){
             left = tag.group(1);
             operation = tag.group(2);
             right = tag.group(3);
@@ -661,21 +674,28 @@ public class FixedReports
                 }
             }
         }
-        File f = new File(variableSelector.arguments.get(0));
+
+        String filename = variableSelector.arguments.get(0);
+
+        if(variableSelector.arguments.get(0).equals("chart")){
+            filename = getChart(getVariable(new selector(variableSelector.arguments.get(1))), getVariable(new selector(variableSelector.arguments.get(2))), id);
+        }
+
+        File f = new File(filename);
         if(f.exists() == false){
-            logger.warn("insertVariableAttachment: Could not find file " + variableSelector.arguments.get(0));
+            logger.warn("insertVariableAttachment: Could not find file " + filename);
             return;
         }
 
         Boolean duplicate = false;            
         for(int i = 0; i < messageParts.size(); i++ ){
-            if(messageParts.get(i).get(MailSender.MessagePartsField.FILENAME).equals(variableSelector.arguments.get(0))){
+            if(messageParts.get(i).get(MailSender.MessagePartsField.FILENAME).equals(filename)){
                 duplicate = true;
             }
         }
         if( duplicate == false){
             Map<MailSender.MessagePartsField,String> attachment = new HashMap<MailSender.MessagePartsField,String>();
-            attachment.put(MailSender.MessagePartsField.FILENAME, variableSelector.arguments.get(0));
+            attachment.put(MailSender.MessagePartsField.FILENAME, filename);
             if(id != null){
                 attachment.put(MailSender.MessagePartsField.CID, id);
                 messageHtml.append("cid:" + id);
@@ -1109,5 +1129,35 @@ public class FixedReports
         }
 
         return (Object) outgoings;
+    }
+
+    String getChart(Object reportCategory, Object reportTitle, String id){
+        String filename;
+        if(id != null){
+            filename = webbrowser.getTempDirectory() + "/" + id + ".png";
+        }else{
+            try{
+                filename = webbrowser.getTempDirectory() + "/" + URLEncoder.encode((String) reportCategory, "UTF-8") + "_" + URLEncoder.encode((String) reportTitle, "UTF-8") + ".png";
+            }catch(Exception e){
+                filename = webbrowser.getTempDirectory() + "/image.png";
+            }
+        }
+
+        try {
+            String url = "http://127.0.0.1/reports/?reportChart=1" + 
+                "&reportCategory=" + URLEncoder.encode((String) reportCategory, "UTF-8") + 
+                "&reportTitle=" + URLEncoder.encode((String) reportTitle, "UTF-8") + 
+                "&startDate=" + URLEncoder.encode(startDate.toString(), "UTF-8") + 
+                "&endDate=" + URLEncoder.encode(endDate.toString(), "UTF-8");
+            webbrowser.openUrl(url);
+            webbrowser.waitForElement("highcharts-0");
+            webbrowser.takeScreenshot(filename);
+
+        } catch (Exception e) {
+            logger.warn("Exception",e);
+            return "";
+        }
+
+        return filename;
     }
 }
