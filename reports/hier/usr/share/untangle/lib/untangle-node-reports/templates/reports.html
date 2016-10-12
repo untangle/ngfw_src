@@ -104,6 +104,7 @@ table {
 </td>
 </tr>
 
+<!--
 {% cycle rowColors %}
 <tr style="background-color:{{ rowColors }};">
 <td>
@@ -116,25 +117,47 @@ table {
 {% endif%}
 </td>
 </tr>
+-->
 
 {% with reportsNode=nodeManager.node,untangle-node-reports %}
-	{% for name in ["Network" "Administration" "Hosts" "Devices"] %}  
-	{% with reports=reportsNode.getReportsManager.getReportEntries,name|getType==TEXT %}
+	{% for name in ["Network" "Administration" "Hosts" "Devices" "System" "Shield" "Reports"] %} 
+
+	{% with reports=reportsNode.getReportsManager.getReportEntries,name %}
 	{% if reports.size != 0 %}
 		{% for report in reports %}
+		{% if report.getType != EVENT_LIST %}
+
+<!--
 		{% if report.getTitle == "CPU Load" %}
+-->
 		{% cycle rowColors %}
 		<tr style="background-color:{{ rowColors }};">
-		<td>
+		<td valign="top" width="25%">
 {{ report.getTitle }}
 		</td>
-		<td>
+		<td width="75%">
 		{% with reportRows=reportsNode.getReportsManager.getDataForReportEntry,report,startDate,endDate,null,-1 %}
+
+
+		{% if report.getType == TEXT %}
+
 		{% with reportRow=reportRows|first %}
 {{ report.getTextString|format=reportRow,report.getTextColumns }}
 		{% endwith %}
+
+		{% else %}
+
+<img src="{{ attachment,chart,report.getCategory,report.getTitle|id={{report.getUniqueId}}@untangle.com }}" width="640" style="display:block;width:100% !important;" >
+
+		{% endif %}
+
+
 		{% endwith %}
 		</td></tr>
+<!--
+		{% endif %}
+-->
+
 		{% endif %}
 		{% endfor %}
 	{% endif %}
@@ -174,6 +197,11 @@ table {
 		</td>
 	</tr>
 		{% for report in reports %}
+		{% if report.getType != EVENT_LIST %}
+
+
+
+
 		{% cycle rowColors %}
 	<tr style="background-color:{{ rowColors }};">
 		<td></td>
@@ -182,11 +210,22 @@ table {
 	<tr style="background-color:{{ rowColors }};">
 		<td></td>
 		{% with reportRows=reportsNode.getReportsManager.getDataForReportEntry,report,startDate,endDate,null,-1 %}
+		{% if report.getType == TEXT %}
+
 		{% with reportRow=reportRows|first %}
 		<td style="font-size:12px; font-weight:normal;">{{ report.getTextString|format=reportRow,report.getTextColumns }}</td>
 		{% endwith %}
+		{% else %}
+		<td>
+<img src="{{ attachment,chart,report.getCategory,report.getTitle|id={{report.getUniqueId}}@untangle.com }}" width="640" style="display:block;width:100% !important;" >
+		</td>
+
+		{% endif %}
+
 		{% endwith %}
 	</tr>
+
+		{% endif %}	
 		{% endfor %}
 </table>
 	{% endif %}
