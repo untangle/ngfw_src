@@ -341,16 +341,11 @@ public class SmtpTransactionHandler
                     // We Trickle&Buffer if we've timed out but the subclass wants to keep going.
                     //
                     // We simply record the new chunk if nothing else is to be done.
-                    boolean tooBig = accumulator.fileSize() > stateMachine.getGiveUpSz( session );
                     boolean timedOut = stateMachine.shouldBeginTrickle( session );
 
-                    if (tooBig || (timedOut && !stateMachine.isBufferAndTrickle( session ))) {
+                    if (timedOut && !stateMachine.isBufferAndTrickle( session )) {
                         // Passthru DATA Sent
-                        if (tooBig) {
-                            addToTxLog("Mail too big for scanning.  Begin trickle");
-                        } else {
-                            addToTxLog("Mail timed-out w/o needing to buffer (trickle, not buffer-and-trickle)");
-                        }
+                        addToTxLog("Mail timed-out w/o needing to buffer (trickle, not buffer-and-trickle)");
                         // Disable tokens from client until we get the disposition to the DATA command
                         stateMachine.disableClientTokens( session );
                         // Send the DATA command to the server
