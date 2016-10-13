@@ -354,7 +354,7 @@ public class FixedReports
 
         context.addVariable(Tag._SYSTEM, "startDate", startDate);
         context.addVariable(Tag._SYSTEM, "endDate", endDate);
-        context.addVariable(Tag._SYSTEM, "title", I18nUtil.marktr("Daily Report Summary") + ": " + dateFormatter.format(startDate));
+        context.addVariable(Tag._SYSTEM, "title", I18nUtil.marktr("Daily Report") + ": " + dateFormatter.format(startDate));
         context.addVariable(Tag._SYSTEM, "url", reportsUrl);
 
         messageText = new StringBuilder();
