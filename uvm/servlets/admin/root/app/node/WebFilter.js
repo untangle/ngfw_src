@@ -476,7 +476,7 @@ Ext.define('Ung.node.WebFilter', {
             categoryName: 'Web Filter',
             appName: 'untangle-node-web-filter',
             displayName: 'Web Filter'.t(),
-            icon: '/skins/modern-rack/images/admin/apps/untangle-node-web-filter_80x80.png'
+            icon: resourcesBaseHref + '/skins/modern-rack/images/admin/apps/untangle-node-web-filter_80x80.png'
         }
     }]
 });

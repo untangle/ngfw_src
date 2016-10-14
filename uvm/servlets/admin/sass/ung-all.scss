@@ -1,15 +1,16 @@
+/*
 @font-face {
     font-family: 'Material Icons';
     font-style: normal;
     font-weight: 400;
-    src: url(/images/fonts/material-icons/MaterialIcons-Regular.eot); /* For IE6-8 */
+    src: url(images/fonts/material-icons/MaterialIcons-Regular.eot);
     src: local('Material Icons'),
     local('MaterialIcons-Regular'),
-    url(/images/fonts/material-icons/MaterialIcons-Regular.woff2) format('woff2'),
-    url(/images/fonts/material-icons/MaterialIcons-Regular.woff) format('woff'),
-    url(/images/fonts/material-icons/MaterialIcons-Regular.ttf) format('truetype');
+    url(images/fonts/material-icons/MaterialIcons-Regular.woff2) format('woff2'),
+    url(images/fonts/material-icons/MaterialIcons-Regular.woff) format('woff'),
+    url(images/fonts/material-icons/MaterialIcons-Regular.ttf) format('truetype');
 }
-/*
+
 @font-face {
     font-family: 'Source Sans Pro';
     font-style: normal;
@@ -22,7 +23,7 @@
     font-family: 'Material Icons';
     font-weight: normal;
     font-style: normal;
-    font-size: 24px;  /* Preferred icon size */
+    font-size: 24px;
     display: inline-block;
     width: 1em;
     height: 1em;
@@ -33,15 +34,9 @@
     white-space: nowrap;
     direction: ltr;
     vertical-align: middle;
-    /* Support for all WebKit browsers. */
     -webkit-font-smoothing: antialiased;
-    /* Support for Safari and Chrome. */
     text-rendering: optimizeLegibility;
-
-    /* Support for Firefox. */
     -moz-osx-font-smoothing: grayscale;
-
-    /* Support for IE. */
     font-feature-settings: 'liga';
 }
 
@@ -254,68 +249,6 @@ cite {
 */
 
 
-
-
-
-
-.appitem {
-    cursor: pointer;
-    position: relative;
-    float: left;
-    height: 140px;
-    width: 140px;
-    margin: 10px;
-    border-radius: 3px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.4);
-    background: #FFF;
-    overflow: hidden;
-    transition: background .3s cubic-bezier(0.23, 1, 0.32, 1), transform .5s cubic-bezier(0.23, 1, 0.32, 1);
-    &.insert {
-        transform: scale(0)
-    }
-    &:hover {
-        background: #EEE;
-    }
-    .node-image {
-        display: block;
-        position: relative;
-        margin: 20px auto 8px auto;
-        width: 80px;
-        height: 80px;
-        img {
-            width: 100%;
-            height: 100%;
-        }
-    }
-
-    .node-label {
-        font-family: 'Source Sans Pro', sans-serif;
-        display: block;
-        padding: 0 3px;
-        text-align: center;
-        color: #4E4C4C;
-        font-weight: bold;
-    }
-
-    .node-state {
-        position: absolute;
-        right: 24px;
-        top: 15px;
-        width: 16px;
-        height: 16px;
-        border-radius: 50%;
-        text-align: center;
-        line-height: 1.1;
-        background: #999;
-        &.on {
-            background: #53b432;
-        }
-        i {
-            color: #FFF;
-            font-size: 14px;
-        }
-    }
-}
 .apps-separator {
     font-family: 'Source Sans Pro', sans-serif;
     font-size: 14px;

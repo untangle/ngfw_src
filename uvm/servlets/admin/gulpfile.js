@@ -117,8 +117,8 @@ gulp.task('lint', function () {
 
 gulp.task('build', function (cb) {
     runSequence(
-        'checkfiles',
         'lint',
+        'checkfiles',
         'clean',
         ['js-compress', 'js-compact', 'css-compact', 'copy-node-settings'],
         function (err) {
@@ -141,14 +141,17 @@ gulp.task('js-sync', function (done) {
 gulp.task('sass', function () {
     gulp.src('./sass/**/*.scss')
         .pipe(sass({outputStyle: 'compact'}).on('error', sass.logError))
-        .pipe(gulp.dest('./res'))
+        .pipe(gulp.dest('./root/res'))
         .pipe(browserSync.stream());
 });
 
 // it starts a local server and watches for changes in JS and SCSS files
 gulp.task('watch', function() {
     browserSync.init({
+        //proxy: 'http://localhost'
+        //localOnly: true,
         server: './'
+        //port: 3000
     });
     gulp.watch('./sass/*.scss', ['sass']);
     gulp.watch('./app/**/*.js', ['js-sync']);

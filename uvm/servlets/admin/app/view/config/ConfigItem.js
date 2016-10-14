@@ -1,17 +1,22 @@
 Ext.define('Ung.view.config.ConfigItem', {
-    extend: 'Ext.Component',
+    extend: 'Ext.Button',
     xtype: 'ung.configitem',
-    cls: 'appitem',
+    baseCls: 'app-item',
 
     viewModel: true,
 
-    bind: {
-        html: '<div class="node-image">' +
-              '<img src="/skins/modern-rack/images/admin/config/icon_config_{iconName}.png" width=80 height=80/></div>' +
-              '<div class="node-label">{displayName}</div>'
-    },
+    hrefTarget: '_self',
 
-    listeners: {
-        afterrender: 'onItemBeforeRender'
+    renderTpl:
+            '<span class="app-icon"><img src="' + resourcesBaseHref + '/skins/modern-rack/images/admin/config/{icon}" width=80 height=80/></span>' +
+            '<span class="app-name">{name}</span>',
+
+    initRenderData: function() {
+        var data = this.callParent();
+        Ext.apply(data, {
+            name: this.name,
+            icon: this.icon
+        });
+        return data;
     }
 });

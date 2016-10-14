@@ -28,6 +28,7 @@ Ext.define('Ung.Application', {
     launch: function () {
         var me = this;
         Rpc.rpc = me.rpc;
+
         Ext.getStore('policies').loadData(me.rpc.appsViews);
 
         // need to check if reports enabled an load it if so
@@ -41,7 +42,7 @@ Ext.define('Ung.Application', {
         }
 
         // uncomment this to retreive the class load order inside browser
-        // Ung.Util.getClassOrder();
+        //Ung.Util.getClassOrder();
     },
 
     loadMainView: function () {
