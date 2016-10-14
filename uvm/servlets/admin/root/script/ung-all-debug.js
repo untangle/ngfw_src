@@ -1158,7 +1158,7 @@ Ext.define('Ung.view.apps.AppItem', {
 
     renderTpl: [
         '<span id="{id}-btnWrap" data-ref="btnWrap" role="presentation" unselectable="on" style="{btnWrapStyle}" ' +
-                '<span class="app-icon"><img src="/skins/modern-rack/images/admin/apps/{node.name}_80x80.png" width=80 height=80/>' +
+                '<span class="app-icon"><img src="' + resourcesBaseHref + '/skins/modern-rack/images/admin/apps/{node.name}_80x80.png" width=80 height=80/>' +
                 '<span class="app-name">{node.displayName}</span>' +
                 '</span>' +
             '<span class="app-state {state}"><i class="material-icons">power_settings_new</i></span>' +
@@ -1401,7 +1401,7 @@ Ext.define('Ung.view.apps.install.Item', {
     renderTpl: [
         '<span id="{id}-btnWrap" data-ref="btnWrap" role="presentation" unselectable="on" style="{btnWrapStyle}" ' +
                 'class="{btnWrapCls} {btnWrapCls}-{ui} {splitCls}{childElCls}">' +
-                '<span class="app-icon"><img src="/skins/modern-rack/images/admin/apps/{node.name}_80x80.png" width=80 height=80/>' +
+                '<span class="app-icon"><img src="' + resourcesBaseHref + '/skins/modern-rack/images/admin/apps/{node.name}_80x80.png" width=80 height=80/>' +
                 '<span class="app-name">{node.displayName}</span>' +
                 '</span>' +
                 '<div class="app-install"><i class="material-icons">get_app</i></div>' +
@@ -1559,7 +1559,7 @@ Ext.define('Ung.view.config.ConfigItem', {
 
     bind: {
         html: '<div class="node-image">' +
-              '<img src="/skins/modern-rack/images/admin/config/icon_config_{iconName}.png" width=80 height=80/></div>' +
+              '<img src="' + resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_{iconName}.png" width=80 height=80/></div>' +
               '<div class="node-label">{displayName}</div>'
     },
 
@@ -1724,12 +1724,12 @@ Ext.define('Ung.view.reports.ReportsController', {
     getCurrentApplications: function () {
         var app, i, vm = this.getViewModel(), me = this;
         var categories = [
-            { categoryName: 'Hosts', displayName: 'Hosts'.t(), icon: '/skins/modern-rack/images/admin/config/icon_config_hosts.png' },
-            { categoryName: 'Devices', displayName: 'Devices'.t(), icon: '/skins/modern-rack/images/admin/config/icon_config_devices.png' },
-            { categoryName: 'Network', displayName: 'Network'.t(), icon: '/skins/modern-rack/images/admin/config/icon_config_network.png' },
-            { categoryName: 'Administration', displayName: 'Administration'.t(), icon: '/skins/modern-rack/images/admin/config/icon_config_administration.png' },
-            { categoryName: 'System', displayName: 'System'.t(), icon: '/skins/modern-rack/images/admin/config/icon_config_system.png' },
-            { categoryName: 'Shield', displayName: 'Shield'.t(), icon: '/skins/modern-rack/images/admin/apps/untangle-node-shield_17x17.png' }
+            { categoryName: 'Hosts', displayName: 'Hosts'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_hosts.png' },
+            { categoryName: 'Devices', displayName: 'Devices'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_devices.png' },
+            { categoryName: 'Network', displayName: 'Network'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_network.png' },
+            { categoryName: 'Administration', displayName: 'Administration'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_administration.png' },
+            { categoryName: 'System', displayName: 'System'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_system.png' },
+            { categoryName: 'Shield', displayName: 'Shield'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/apps/untangle-node-shield_17x17.png' }
         ];
 
         rpc.reportsManager.getCurrentApplications(function (result, ex) {
@@ -1742,7 +1742,7 @@ Ext.define('Ung.view.reports.ReportsController', {
                         categoryName: app.displayName,
                         appName: app.name,
                         displayName: app.displayName, // t()
-                        icon: '/skins/modern-rack/images/admin/apps/' + app.name + '_80x80.png'
+                        icon: resourcesBaseHref + '/skins/modern-rack/images/admin/apps/' + app.name + '_80x80.png'
                     });
                 }
             }
@@ -6680,6 +6680,10 @@ Ext.define('Ung.Application', {
     launch: function () {
         var me = this;
         Rpc.rpc = me.rpc;
+
+        var resBaseHref = resourcesBaseHref || '';
+        console.log(resBaseHref);
+
         Ext.getStore('policies').loadData(me.rpc.appsViews);
 
         // need to check if reports enabled an load it if so
@@ -6693,7 +6697,7 @@ Ext.define('Ung.Application', {
         }
 
         // uncomment this to retreive the class load order inside browser
-        // Ung.Util.getClassOrder();
+        //Ung.Util.getClassOrder();
     },
 
     loadMainView: function () {

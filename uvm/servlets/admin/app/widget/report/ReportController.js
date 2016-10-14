@@ -37,6 +37,7 @@ Ext.define('Ung.widget.report.ReportController', {
                     me.getView().lookupReference('chart').fireEvent('setseries', response.list);
                 }, function (exception) {
                     console.log(exception);
+                    Ung.Util.exceptionToast(exception);
                 });
         }
     },

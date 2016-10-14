@@ -99,12 +99,12 @@ Ext.define('Ung.view.reports.ReportsController', {
     getCurrentApplications: function () {
         var app, i, vm = this.getViewModel(), me = this;
         var categories = [
-            { categoryName: 'Hosts', displayName: 'Hosts'.t(), icon: '/skins/modern-rack/images/admin/config/icon_config_hosts.png' },
-            { categoryName: 'Devices', displayName: 'Devices'.t(), icon: '/skins/modern-rack/images/admin/config/icon_config_devices.png' },
-            { categoryName: 'Network', displayName: 'Network'.t(), icon: '/skins/modern-rack/images/admin/config/icon_config_network.png' },
-            { categoryName: 'Administration', displayName: 'Administration'.t(), icon: '/skins/modern-rack/images/admin/config/icon_config_administration.png' },
-            { categoryName: 'System', displayName: 'System'.t(), icon: '/skins/modern-rack/images/admin/config/icon_config_system.png' },
-            { categoryName: 'Shield', displayName: 'Shield'.t(), icon: '/skins/modern-rack/images/admin/apps/untangle-node-shield_17x17.png' }
+            { categoryName: 'Hosts', displayName: 'Hosts'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_hosts.png' },
+            { categoryName: 'Devices', displayName: 'Devices'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_devices.png' },
+            { categoryName: 'Network', displayName: 'Network'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_network.png' },
+            { categoryName: 'Administration', displayName: 'Administration'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_administration.png' },
+            { categoryName: 'System', displayName: 'System'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_system.png' },
+            { categoryName: 'Shield', displayName: 'Shield'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/apps/untangle-node-shield_17x17.png' }
         ];
 
         rpc.reportsManager.getCurrentApplications(function (result, ex) {
@@ -117,7 +117,7 @@ Ext.define('Ung.view.reports.ReportsController', {
                         categoryName: app.displayName,
                         appName: app.name,
                         displayName: app.displayName, // t()
-                        icon: '/skins/modern-rack/images/admin/apps/' + app.name + '_80x80.png'
+                        icon: resourcesBaseHref + '/skins/modern-rack/images/admin/apps/' + app.name + '_80x80.png'
                     });
                 }
             }
