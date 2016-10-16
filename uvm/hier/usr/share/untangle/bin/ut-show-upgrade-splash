@@ -19,7 +19,8 @@ case "$1" in
     nohup tail -f --retry $UPGRADE_LOGS >> $CONSOLIDATED_UPGRADE_LOG 2>/dev/null &
     echo $! >| $PIDFILE
 
-    /etc/init.d/apache2 reload ;;
+    /etc/init.d/apache2 reload
+    ;;
 
   stop)
     a2ensite -q uvm
@@ -30,7 +31,9 @@ case "$1" in
         kill $(cat $PIDFILE)
         rm -f $PIDFILE
     fi
-    rm -f $CONSOLIDATED_UPGRADE_LOG 
+    rm -f $CONSOLIDATED_UPGRADE_LOG
+    ;;
+  
 esac
 
 exit 0
