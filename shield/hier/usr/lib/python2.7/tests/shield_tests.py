@@ -16,7 +16,8 @@ import global_functions
 
 defaultRackId = 1
 node = None
-defaultEnabled = None
+default_enabled = None
+orig_netsettings = None
 
 class ShieldTests(unittest2.TestCase):
 
@@ -26,11 +27,13 @@ class ShieldTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        global node,defaultEnabled
+        global node,default_enabled, orig_netsettings
+        if orig_netsettings == None:
+            orig_netsettings = uvmContext.networkManager().getNetworkSettings()
         if (not uvmContext.nodeManager().isInstantiated(self.nodeName())):
             raise Exception('node %s already instantiated' % self.nodeName())
         node = uvmContext.nodeManager().node(self.nodeName())
-        defaultEnabled = node.getSettings()['shieldEnabled']
+        default_enabled = node.getSettings()['shieldEnabled']
 
     def setUp(self):
         pass
@@ -40,6 +43,12 @@ class ShieldTests(unittest2.TestCase):
         assert (result == 0)
 
     def test_011_shieldDetectsNmap(self):
+        # enable logging of blocked settings
+        netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings['logBlockedSessions'] = True
+        netsettings['logBypassedSessions'] = True
+        uvmContext.networkManager().setNetworkSettings(netsettings)
+
         settings = node.getSettings()
         settings['shieldEnabled'] = True
         node.setSettings(settings)
@@ -57,8 +66,13 @@ class ShieldTests(unittest2.TestCase):
 
     @staticmethod
     def finalTearDown(self):
+        global orig_netsettings
+        # Restore original settings to return to initial settings
+        # print "orig_netsettings <%s>" % orig_netsettings
+        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+
         settings = node.getSettings()
-        settings['shieldEnabled'] = defaultEnabled
+        settings['shieldEnabled'] = default_enabled
         node.setSettings(settings)
 
         # sleep so the reputation goes down so it will not interfere with any future tests
