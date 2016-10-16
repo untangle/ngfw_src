@@ -37,7 +37,8 @@ Options:
   -h | --help                   help - print this message
   -l <log>       | --log=<log>          output to specified log instead of stdout/stderr
   -d <debug_lvl> | --debug-level=<0-2>  debug verbosite level
-  -s <server>    | --server=<server>    specify a cmd server (default: cmd.untangle.com)
+  -s <server>    | --server=<server>    specify a cmd server
+  -p <port>      | --port=<port>        specify a port to connect to cmd
 """ % sys.argv[0]
 
 def system(cmd_str):
@@ -224,13 +225,14 @@ def check_pid_file():
 
 def parse_args():
      try:
-          opts, args = getopt.getopt(sys.argv[1:], "hl:s:d:", ['help', 'log=', 'server=', 'debug-level=' ])
+          opts, args = getopt.getopt(sys.argv[1:], "hl:s:p:d:", ['help', 'log=', 'server=', 'port=', 'debug-level=' ])
      except getopt.GetoptError, err:
           print str(err)
           usage()
           sys.exit(2)
      
      cmd_servers = []
+     cmd_ports = []
 
      for opt in opts:
           k, v = opt
@@ -243,6 +245,8 @@ def parse_args():
                sys.stderr = logfile
           elif k == '-s' or k == '--server':
                cmd_servers.append(v)
+          elif k == '-p' or k == '--port':
+               cmd_ports.append(int(v))
           elif k == '-d' or k == '--debug-level':
                global debug_level
                debug_level = int(v)
@@ -250,6 +254,9 @@ def parse_args():
      if cmd_servers != []:
           global UNTANGLE_CMD_SERVERS
           UNTANGLE_CMD_SERVERS = cmd_servers
+     if cmd_ports != []:
+          global UNTANGLE_CMD_PORTS
+          UNTANGLE_CMD_PORTS = cmd_ports
 
 
 #
