@@ -3,6 +3,7 @@
 import gettext
 import cgi
 import os
+import sys
 
 from mod_python import apache
 
