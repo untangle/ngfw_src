@@ -4,6 +4,9 @@
 UVM_LOGDIR="/var/log/uvm"
 /bin/chmod 775 ${UVM_LOGDIR}
 
+# Create the uvmlogin group (processed by users in this group can access API)
+addgroup uvmlogin 2>/dev/null
+
 # enable en_US locale (used by java)
 sed -i -e "s/.*en_US.UTF-8 UTF-8.*/en_US.UTF-8 UTF-8/" /etc/locale.gen
 locale-gen

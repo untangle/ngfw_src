@@ -121,11 +121,13 @@ def devEnvSetup():
     # if its not a symlink, move it to a backup just in case
     os.system('if [ ! -L /usr/share/untangle/settings ] ; then mv /usr/share/untangle/settings /usr/share/untangle/settings.backup ; fi');
     os.system('if [ ! -L /usr/share/untangle/bin ] ; then mv /usr/share/untangle/bin /usr/share/untangle/bin.backup ; fi');
+    os.system('if [ ! -L /usr/lib/python2.7/uvm_login.py ] ; then mv /usr/lib/python2.7/uvm_login.py /usr/lib/python2.7/uvm_login.py.backup ; fi');
     # remove old symlink if still there, and add new symlink
     os.system('rm -rf /usr/share/untangle/settings');
     os.system('ln -s @PREFIX@/usr/share/untangle/settings /usr/share/untangle/settings');
     os.system('rm -rf /usr/share/untangle/bin');
     os.system('ln -s @PREFIX@/usr/share/untangle/bin /usr/share/untangle/bin');
+    os.system('ln -s @PREFIX@/usr/lib/python2.7/uvm_login.py /usr/lib/python2.7/uvm_login.py');
 
 #
 # Undo the dev environment changes made earlier
@@ -134,6 +136,7 @@ def devEnvRestoreSystem():
     os.system('if [ -L /usr/share/untangle/settings ] && [ -d /usr/share/untangle/settings.backup ] ; then rm -f /usr/share/untangle/settings && mv /usr/share/untangle/settings.backup /usr/share/untangle/settings ; fi');
     os.system('if [ -L /usr/share/untangle/bin ] && [ -d /usr/share/untangle/bin.backup ] ; then rm -f /usr/share/untangle/bin && mv /usr/share/untangle/bin.backup /usr/share/untangle/bin ; fi');
     os.system('if [ -f /etc/apache2/uvm.conf.back ] ; then cp /etc/apache2/uvm.conf.back /etc/apache2/uvm.conf ; fi');
+    os.system('if [ -f /usr/lib/python2.7/uvm_login.py.back ] ; then cp /usr/lib/python2.7/uvm_login.py.back /usr/lib/python2.7/uvm_login.py ; fi');
 
 #
 # This prepares the system for a running untangle-vm
