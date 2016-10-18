@@ -388,13 +388,27 @@ Ext.define('Webui.config.administration', {
                 this.gridAdminAccounts, {
                     xtype: 'checkbox',
                     fieldLabel: i18n._('Allow HTTP Administration'),
-                    labelWidth: 200,
+                    labelWidth: 250,
                     style: "margin-top: 10px",
                     checked: this.getSystemSettings().httpAdministrationAllowed,
                     listeners: {
                         "change": {
                             fn: Ext.bind(function(elem, newValue) {
                                 this.getSystemSettings().httpAdministrationAllowed = newValue;
+                            }, this)
+                        }
+                    }
+                }, {
+                    xtype: 'textfield',
+                    fieldLabel: i18n._('Default Administration Username Text'),
+                    maxWidth: 400,
+                    labelWidth: 250,
+                    style: "margin-top: 10px",
+                    value: this.getAdminSettings().defaultUsername,
+                    listeners: {
+                        "change": {
+                            fn: Ext.bind(function(elem, newValue) {
+                                this.getAdminSettings().defaultUsername = newValue;
                             }, this)
                         }
                     }

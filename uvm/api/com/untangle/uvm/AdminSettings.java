@@ -17,6 +17,7 @@ public class AdminSettings implements Serializable, JSONString
 {
     private LinkedList<AdminUserSettings> users = new LinkedList<AdminUserSettings>();
     private Long version = null;
+    private String defaultUsername = "admin";
 
     public AdminSettings() { }
 
@@ -28,6 +29,9 @@ public class AdminSettings implements Serializable, JSONString
 
     public Long getVersion() { return version; }
     public void setVersion( Long newValue ) { this.version = newValue; }
+
+    public String getDefaultUsername() { return defaultUsername; }
+    public void setDefaultUsername( String newValue ) { this.defaultUsername = newValue; }
     
     public void addUser(AdminUserSettings user)
     {
