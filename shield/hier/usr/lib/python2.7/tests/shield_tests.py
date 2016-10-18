@@ -38,6 +38,7 @@ class ShieldTests(unittest2.TestCase):
         assert (result == 0)
 
     def test_011_shieldDetectsNmap(self):
+        raise unittest2.SkipTest('Skip this test in 12.1 branch. test update not backported')
         startTime = datetime.now()
         result = remote_control.runCommand("nmap -PN -sT -T5 --min-parallelism 15 -p10000-12000 1.2.3.4 2>&1 >/dev/null")
         assert (result == 0)
