@@ -227,6 +227,8 @@ public class DirectoryConnectorApp extends NodeBase implements com.untangle.uvm.
     {
         if (activeDirectoryAuthenticate(username, pwd)) return true;
         if (radiusAuthenticate(username, pwd)) return true;
+        if (googleAuthenticate(username, pwd)) return true;
+        if (facebookAuthenticate(username, pwd)) return true;
 
         return false;
     }
