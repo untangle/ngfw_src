@@ -95,8 +95,12 @@ class PhishBlockerTests(unittest2.TestCase):
         # wait for freshclam to finish updating sigs
         freshClamResult = os.system("freshclam >/dev/null 2>&1")
         # wait for clam to get ready - trying to fix occasional failure of later tests
-        time.sleep(5)
-        result = os.system("pidof clamd >/dev/null 2>&1")
+        timeout = 60
+        result = 1
+        while (result and timeout > 0):
+            time.sleep(5)
+            timeout -= 5
+            result = os.system("pidof clamd >/dev/null 2>&1")
         assert (result == 0)
 
     # verify client is online
