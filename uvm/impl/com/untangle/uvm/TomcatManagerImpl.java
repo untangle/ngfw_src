@@ -164,6 +164,11 @@ public class TomcatManagerImpl implements TomcatManager
     public void stopTomcat()
     {
         try {
+            // if development environment - delete special file
+            if (UvmContextImpl.context().isDevel()) {
+                UvmContextFactory.context().execManager().exec("rm -f /etc/apache2/uvm-dev.conf");
+            }
+
             if (null != tomcat) {
                 tomcat.stop();
             }
@@ -300,28 +305,14 @@ public class TomcatManagerImpl implements TomcatManager
         String confDir = System.getProperty("uvm.conf.dir");
         FileWriter fw = null;
 
-        // if is devel, write the backup file to /etc/apache2/uvm.conf.back
-        // this will be restored by /usr/bin/uvm when the uvm exits
-        // this is done so that apache will still start if the dev env gets cleaned
+        String filename = "/etc/apache2/uvm.conf";
+        // If the dev environment - write to a different file
         if (UvmContextImpl.context().isDevel()) {
-            try {
-                fw = new FileWriter("/etc/apache2/uvm.conf.back");
-                fw.write("Include /usr/share/untangle/conf/apache2/conf.d/*.conf\n");
-            } catch (IOException exn) {
-                logger.warn("could not write includes: conf.d");
-            } finally {
-                if ( fw != null ) {
-                    try {
-                        fw.close();
-                    } catch (IOException exn) {
-                        logger.warn("could not close file", exn);
-                    }
-                }
-            }
+            filename = "/etc/apache2/uvm-dev.conf";
         }
 
         try {
-            fw = new FileWriter("/etc/apache2/uvm.conf");
+            fw = new FileWriter(filename);
             fw.write("Include " + confDir + "/apache2/conf.d/*.conf\n");
         } catch (IOException exn) {
             logger.warn("could not write includes: conf.d");
