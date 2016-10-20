@@ -16,6 +16,14 @@ task :download_clean do
   Kernel.system( "make --no-print-directory -C downloads distclean" )
 end
 
+task :uvm_clean do
+  Kernel.system('if [ -L /usr/share/untangle/settings ] && [ -d /usr/share/untangle/settings.backup ] ; then rm -f /usr/share/untangle/settings && mv /usr/share/untangle/settings.backup /usr/share/untangle/settings ; fi')
+  Kernel.system('if [ -L /usr/share/untangle/bin ] && [ -d /usr/share/untangle/bin.backup ] ; then rm -f /usr/share/untangle/bin && mv /usr/share/untangle/bin.backup /usr/share/untangle/bin ; fi')
+  Kernel.system("if [ -f /var/run/uvm.pid ] && [ -f /proc/`cat /var/run/uvm.pid`/cmdline ] && grep -q #{SRC_HOME} /proc/`cat /var/run/uvm.pid`/cmdline ; then #{SRC_HOME}/dist/etc/init.d/untangle-vm stop ; fi")
+  Kernel.system("if [ -f /var/run/uvm.pid ] && [ -f /proc/`cat /var/run/uvm.pid`/cmdline ] && grep -q #{SRC_HOME} /proc/`cat /var/run/uvm.pid`/cmdline ; then echo 'Killing UVM...' ; killall uvm ; fi")
+  FileUtils.rm_rf("/etc/apache2/uvm-dev.conf") if File.exist?("/etc/apache2/uvm-dev.conf")
+end
+
 task :kindaclean do
   info "[rm -rf  ] #{BuildEnv::SRC.devel}"
   FileUtils.rm_rf(BuildEnv::SRC.devel) if File.exist?(BuildEnv::SRC.devel)
@@ -29,7 +37,7 @@ task :kindaclean do
   Rake::StampHash.instance.clear
 end
 
-task :clean => [:download_clean, :kindaclean]
+task :clean => [:uvm_clean, :download_clean, :kindaclean]
 
 ## download task; it is needed by both arch-dep and arch-indep,
 ## because Jars.findJars sets up the base classpath used everywhere
