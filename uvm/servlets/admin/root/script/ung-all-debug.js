@@ -185,6 +185,18 @@ Ext.define('Ung.util.Util', {
         return bytes.toFixed(1)+' '+units[u];
     },
 
+    formatBytes: function (bytes, decimals) {
+        if (bytes === 0) {
+            return '0';
+        }
+        //bytes = bytes * 1000;
+        var k = 1000, // or 1024 for binary
+            dm = decimals || 3,
+            sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
+            i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+    },
+
     successToast: function (message) {
         Ext.toast({
             html: this.iconTitle(message, 'check-20'),
@@ -300,7 +312,8 @@ Ext.define('Ung.util.Metrics', {
             //console.log(result.metrics);
             data = [];
 
-            Ext.getStore('stats').first().set(result.systemStats);
+            Ext.getStore('stats').loadRawData(result.systemStats);
+            // console.log(result.systemStats);
 
             for (var nodeId in result.metrics) {
                 if (result.metrics.hasOwnProperty(nodeId)) {
@@ -602,6 +615,11 @@ Ext.define('Ung.view.dashboard.DashboardController', {
             nodeinstall: 'onNodeInstall',
             removewidget: 'onRemoveWidget',
             addwidget: 'onAddWidget'
+        },
+        store: {
+            '#stats': {
+                datachanged: 'onStatsUpdate'
+            }
         }
     },
 
@@ -649,7 +667,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         var vm = this.getViewModel(),
             dashboard = this.getView().lookupReference('dashboard'),
             widgets = Ext.getStore('widgets').getRange(),
-            i, widget, widgetComponents = [];
+            i, widget, widgetComponents = [], entry;
 
         // refresh the dashboard manager grid if the widgets were affected
         this.getView().lookupReference('dashboardNav').getView().refresh();
@@ -658,36 +676,29 @@ Ext.define('Ung.view.dashboard.DashboardController', {
             widget = widgets[i];
 
             if (widget.get('type') !== 'ReportEntry') {
-                // it's a custom widget (not implemented yet)
                 widgetComponents.push({
-                    xtype: 'component',
-                    baseCls: 'widget',
-                    width: 250,
-                    html: widget.get('type'),
+                    xtype: widget.get('type').toLowerCase() + 'widget',
                     itemId: widget.get('type'),
-                    hidden: true,
-                    bind: {
-                        hidden: '{!widget.enabled}'
-                    },
                     viewModel: {
                         data: {
                             widget: widget
                         }
                     }
                 });
-            } else {
+            }
+            else {
                 if (vm.get('reportsEnabled')) {
-                    var entry = Ext.getStore('reports').findRecord('uniqueId', widget.get('entryId'));
+                    entry = Ext.getStore('reports').findRecord('uniqueId', widget.get('entryId'));
                     if (entry && !Ext.getStore('unavailableApps').first().get(entry.get('category'))) {
                         widgetComponents.push({
                             xtype: 'reportwidget',
                             itemId: widget.get('entryId'),
-                            widget: widget,
-                            entry: entry,
-                            hidden: true,
-                            //userCls: entry.get('type') === 'PIE_GRAPH' ? 'medium' : 'large'
-                            bind: {
-                                hidden: '{!widget.enabled}'
+                            refreshIntervalSec: widget.get('refreshIntervalSec'),
+                            viewModel: {
+                                data: {
+                                    widget: widget,
+                                    entry: entry
+                                }
                             }
                         });
                     } else {
@@ -725,11 +736,12 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                     dashboard.insert(i, {
                         xtype: 'reportwidget',
                         itemId: widget.get('entryId'),
-                        widget: widget,
-                        entry: entry,
-                        hidden: true,
-                        bind: {
-                            hidden: '{!widget.enabled}'
+                        refreshIntervalSec: widget.get('refreshIntervalSec'),
+                        viewModel: {
+                            data: {
+                                widget: widget,
+                                entry: entry
+                            }
                         }
                     });
                 } else {
@@ -941,18 +953,89 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         dashboard.add({
             xtype: 'reportwidget',
             itemId: widget.get('entryId'),
-            widget: widget,
-            entry: entry,
-            hidden: true,
-            bind: {
-                hidden: '{!widget.enabled}'
+            refreshIntervalSec: widget.get('refreshIntervalSec'),
+            viewModel: {
+                data: {
+                    widget: widget,
+                    entry: entry
+                }
             }
         });
+    },
+
+    onStatsUpdate: function() {
+        var vm = this.getViewModel();
+        vm.set('stats', Ext.getStore('stats').first());
     }
 
 
 });
 
+Ext.define('Ung.view.dashboard.Queue', {
+    alternateClassName: 'DashboardQueue',
+    singleton: true,
+    processing: false,
+    paused: false,
+    queue: [],
+    queueMap: {},
+    add: function (widget) {
+        if (!this.queueMap[widget.id]) {
+            this.queue.push(widget);
+            //console.log("Adding: "+widget.title);
+            this.process();
+        } /* else { console.log("Prevent Double queuing: " + widget.title); } */
+    },
+    addFirst: function (widget) {
+        if (!this.queueMap[widget.id]) {
+            this.queue.unshift(widget);
+            //console.log("Adding first: " + widget.title);
+            this.process();
+        }
+    },
+    next: function () {
+        //console.log("Finish last started widget.");
+        this.processing = false;
+        this.process();
+    },
+    process: function () {
+        if (!this.paused && !this.processing && this.queue.length > 0) {
+            this.processing = true;
+            var widget = this.queue.shift();
+
+            delete this.queueMap[widget.id];
+
+            //if (this.inView(widget)) {
+            if (!widget.isHidden()) {
+                widget.fetchData();
+            } else {
+                widget.toQueue = true;
+                Ung.view.dashboard.Queue.next();
+            }
+        }
+    },
+    reset: function () {
+        this.queue = [];
+        this.queueMap = {};
+        this.processing = false;
+    },
+    pause: function () {
+        this.paused = true;
+    },
+    resume: function () {
+        this.paused = false;
+        this.process();
+    },
+
+    inView: function (widget) {
+        // checks if the widget is visible
+        if (!widget.getEl()) {
+            return false;
+        }
+        var widgetGeometry = widget.getEl().dom.getBoundingClientRect();
+        return (widgetGeometry.top + widgetGeometry.height / 2) > 0 && (widgetGeometry.height / 2 + widgetGeometry.top < window.innerHeight);
+    }
+
+});
 /**
  * An ActionColumn which renders material icons
  * extends Ext.grid.column.Action
@@ -1038,6 +1121,507 @@ Ext.define('Ung.view.grid.ActionColumn', {
     }
 });
 
+Ext.define('Ung.widget.WidgetController', {
+    extend: 'Ext.app.ViewController',
+    alias: 'controller.widget',
+
+    control: {
+        '#': {
+            afterrender: 'onAfterRender',
+            afterdata: 'onAfterData'
+            //show: 'onShow'
+        }
+    },
+
+    // listen: {
+    //     store: {
+    //         '#stats': {
+    //             datachanged: 'onStatsUpdate'
+    //         }
+    //     }
+    // },
+
+    init: function (view) {
+        var vm = view.getViewModel(), entryType;
+        if (vm.get('entry')) {
+            entryType = vm.get('entry.type');
+            if (entryType === 'TIME_GRAPH' || entryType === 'TIME_GRAPH_DYNAMIC') {
+                view.add({ xtype: 'timechart', reference: 'chart', height: 250 });
+            }
+
+            if (entryType === 'PIE_GRAPH') {
+                view.add({ xtype: 'piechart', reference: 'chart',  height: 250 });
+            }
+
+            if (entryType === 'EVENT_LIST') {
+                view.add({ xtype: 'component', html: 'Not Implemented',  height: 250 });
+            }
+        }
+    },
+
+    onAfterRender: function (widget) {
+        widget.getViewModel().bind('{widget.enabled}', function (enabled) {
+            if (enabled && Ext.isFunction(widget.fetchData)) {
+                Ung.view.dashboard.Queue.add(widget);
+            }
+        });
+    },
+
+    onAfterData: function () {
+        var widget = this.getView();
+        Ung.view.dashboard.Queue.next();
+        widget.refreshTimeoutId = setTimeout(function () {
+            Ung.view.dashboard.Queue.add(widget);
+        }, widget.refreshIntervalSec * 1000);
+    },
+
+    onShow: function (widget) {
+        console.log('on show', widget.getViewModel().get('widget.type'));
+        if (Ext.isFunction(widget.fetchData)) {
+            Ung.view.dashboard.Queue.add(widget);
+        }
+    },
+
+    fetchData: function () {
+        var widget = this.getView();
+        if (widget.refreshTimeoutId) {
+            clearTimeout(widget.refreshTimeoutId);
+        }
+        Ung.view.dashboard.Queue.addFirst(widget);
+    },
+
+
+    // not used
+    resizeWidget: function () {
+        var view = this.getView();
+        if (view.hasCls('small')) {
+            view.removeCls('small').addCls('medium');
+        } else {
+            if (view.hasCls('medium')) {
+                view.removeCls('medium').addCls('large');
+            } else {
+                if (view.hasCls('large')) {
+                    view.removeCls('large').addCls('x-large');
+                } else {
+                    if (view.hasCls('x-large')) {
+                        view.removeCls('x-large').addCls('small');
+                    }
+                }
+            }
+        }
+        view.updateLayout();
+    }
+
+});
+
+Ext.define('Ung.widget.Information', {
+    extend: 'Ext.container.Container',
+    alias: 'widget.informationwidget',
+
+    controller: 'widget',
+
+    hidden: true,
+    border: false,
+    baseCls: 'widget small',
+
+    bind: {
+        hidden: '{!widget.enabled}'
+    },
+
+    layout: {
+        type: 'vbox',
+        align: 'stretch'
+    },
+
+    items: [{
+        xtype: 'container',
+        layout: {
+            type: 'hbox',
+            align: 'top'
+        },
+        cls: 'header',
+        style: {
+            height: '50px'
+        },
+        items: [{
+            xtype: 'component',
+            flex: 1,
+            html: '<h1>' + 'Information'.t() + '</h1>'
+        }]
+    }, {
+        xtype: 'container',
+        baseCls: 'info-widget',
+        layout: {
+            type: 'vbox',
+            align: 'stretch'
+        },
+        items: [{
+            xtype: 'component',
+            cls: 'info-host',
+            bind: { html: '{stats.hostname}' }
+        }, {
+            xtype: 'component',
+            cls: 'info-version',
+            bind: { html: '{stats.version}' }
+        }, {
+            layout: {
+                type: 'table',
+                columns: 2,
+                tableAttrs: {
+                    style: {
+                        width: '100%'
+                    }
+                }
+            },
+            margin: '10 0',
+            border: false,
+            defaults: {
+                border: false
+            },
+            items: [
+                { html: 'uptime'.t() + ':', cellCls: 'info-label' }, { bind: { html: '{stats.uptimeFormatted}' }, cellCls: 'info-value' },
+                { html: 'Server'.t() + ':', cellCls: 'info-label' }, { bind: { html: '{stats.appliance}' }, cellCls: 'info-value' },
+                { html: 'CPU Count'.t() + ':', cellCls: 'info-label' }, { bind: { html: '{stats.numCpus}' }, cellCls: 'info-value' },
+                { html: 'CPU Type'.t() + ':', cellCls: 'info-label' }, { bind: { html: '{stats.cpuModel}' }, cellCls: 'info-value' },
+                { html: 'Architecture'.t() + ':', cellCls: 'info-label' }, { bind: { html: '{stats.architecture}'}, cellCls: 'info-value' },
+                { html: 'Memory'.t() + ':', cellCls: 'info-label' }, { bind: { html: '{stats.totalMemory}' }, cellCls: 'info-value' },
+                { html: 'Disk'.t() + ':', cellCls: 'info-label' }, { bind: { html: '{stats.totalDisk}' }, cellCls: 'info-value' }
+            ]
+        }]
+    }]
+});
+Ext.define('Ung.widget.Resources', {
+    extend: 'Ext.container.Container',
+    alias: 'widget.resourceswidget',
+
+    controller: 'widget',
+
+    hidden: true,
+    border: false,
+    baseCls: 'widget small',
+
+    bind: {
+        hidden: '{!widget.enabled}'
+    },
+
+    layout: {
+        type: 'vbox',
+        align: 'stretch'
+    },
+
+    items: [{
+        xtype: 'container',
+        layout: {
+            type: 'hbox',
+            align: 'top'
+        },
+        cls: 'header',
+        style: {
+            height: '50px'
+        },
+        items: [{
+            xtype: 'component',
+            flex: 1,
+            html: '<h1>' + 'Resources'.t() + '</h1>'
+        }]
+    }, {
+        xtype: 'container',
+        margin: '10 0 0 0',
+        layout: {
+            type: 'vbox',
+            align: 'stretch'
+        },
+        items: [{
+            xtype: 'component',
+            flex: 1,
+            padding: '5 10',
+            bind: {
+                html: '<div>' +
+                        '<p style="margin: 2px; text-align: left; font-weight: bold; font-size: 14px;">' + 'Memory'.t() + '</p>' +
+                        '<div class="load-bar"><div class="load-bar-inner" style="left: -{stats.freeMemoryPercent}%;"></div><p>{stats.totalMemory}</p></div>' +
+                        '<div class="load-bar-values">' +
+                            '<div class="load-used"><strong>{stats.usedMemoryPercent}%</strong> used<br/><span>{stats.usedMemory}</span></div>' +
+                            '<div class="load-free">free <strong>{stats.freeMemoryPercent}%</strong><br/><span>{stats.freeMemory}</span></div>' +
+                        '</div>' +
+                      '</div>'
+            }
+        }, {
+            xtype: 'component',
+            flex: 1,
+            padding: '5 10',
+            bind: {
+                html: '<div>' +
+                        '<p style="margin: 2px; text-align: left; font-weight: bold; font-size: 14px;">' + 'Swap'.t() + '</p>' +
+                        '<div class="load-bar"><div class="load-bar-inner" style="left: -{stats.freeSwapPercent}%;"></div><p>{stats.totalSwap}</p></div>' +
+                        '<div class="load-bar-values">' +
+                            '<div class="load-used"><strong>{stats.usedSwapPercent}%</strong> used<br/><span>{stats.usedSwap}</span></div>' +
+                            '<div class="load-free">free <strong>{stats.freeSwapPercent}%</strong><br/><span>{stats.freeSwap}</span></div>' +
+                        '</div>' +
+                      '</div>'
+            }
+        }, {
+            xtype: 'component',
+            flex: 1,
+            padding: '5 10',
+            bind: {
+                html: '<div>' +
+                        '<p style="margin: 2px; text-align: left; font-weight: bold; font-size: 14px;">' + 'Disk'.t() + '</p>' +
+                        '<div class="load-bar"><div class="load-bar-inner" style="left: -{stats.freeDiskPercent}%;"></div><p>{stats.totalDisk}</p></div>' +
+                        '<div class="load-bar-values">' +
+                            '<div class="load-used"><strong>{stats.usedDiskPercent}%</strong> used<br/><span>{stats.usedDisk}</span></div>' +
+                            '<div class="load-free">free <strong>{stats.freeDiskPercent}%</strong><br/><span>{stats.freeDisk}</span></div>' +
+                        '</div>' +
+                      '</div>'
+            }
+        }]
+    }]
+});
+Ext.define('Ung.widget.NetworkInformation', {
+    extend: 'Ext.container.Container',
+    alias: 'widget.networkinformationwidget',
+
+    controller: 'widget',
+
+    hidden: true,
+    border: false,
+    baseCls: 'widget small',
+
+    layout: {
+        type: 'vbox',
+        align: 'stretch'
+    },
+
+    bind: {
+        hidden: '{!widget.enabled}'
+    },
+
+    refreshIntervalSec: 3,
+
+    items: [{
+        xtype: 'container',
+        layout: {
+            type: 'hbox',
+            align: 'top'
+        },
+        cls: 'header',
+        style: {
+            height: '50px'
+        },
+        items: [{
+            xtype: 'component',
+            flex: 1,
+            html: '<h1>' + 'Network Information'.t() + '</h1>'
+        }, {
+            xtype: 'container',
+            margin: '10 5 0 0',
+            layout: {
+                type: 'hbox',
+                align: 'middle'
+            },
+            items: [{
+                xtype: 'button',
+                baseCls: 'action',
+                text: '<i class="material-icons">refresh</i>',
+                listeners: {
+                    click: 'fetchData'
+                }
+            }]
+        }]
+    }, {
+        xtype: 'container',
+        //cls: 'wg-wrapper flex',
+        items: [{
+            xtype: 'component',
+            bind: {
+                html: '<div class="info-box" style="border-bottom: 1px #EEE solid;">' +
+                '<div class="info-item">' + 'Currently Active'.t() + '<br/><span>{stats.activeHosts}</span></div>' +
+                '<div class="info-item">' + 'Maximum Active'.t() + '<br/><span>{stats.maxActiveHosts}</span></div>' +
+                '<div class="info-item">' + 'Known Devices'.t() + '<br/><span>{stats.knownDevices}</span></div>' +
+                '<div class="info-actions">' +
+                '<a class="wg-button" href="#hosts" style="flex: 1;">' + 'Hosts'.t() + '</a>' +
+                '<a class="wg-button" href="#devices" style="flex: 1;">' + 'Devices'.t() + '</a>' +
+                '</div>' +
+                '</div>'
+            }
+        }, {
+            xtype: 'component',
+            bind: {
+                html: '<div class="info-box">' +
+                '<div class="info-item">' + 'Total Sessions'.t() + '<br/><span>{sessions.totalSessions}</span></div>' +
+                '<div class="info-item">' + 'Scanned Sessions'.t() + '<br/><span>{sessions.scannedSessions}</span></div>' +
+                '<div class="info-item">' + 'Bypassed Sessions'.t() + '<br/><span>{sessions.bypassedSessions}</span></div>' +
+                '<div class="info-actions">' +
+                '<a class="wg-button" href="#sessions" style="flex: 1;">' + 'Sessions'.t() + '</a> ' +
+                '</div>' +
+                '</div>'
+            }
+        }]
+    }],
+
+    fetchData: function () {
+        var me = this;
+        rpc.sessionMonitor.getSessionStats(function (result, exception) {
+            me.getViewModel().set('sessions', result);
+            //console.log(result);
+            me.fireEvent('afterdata');
+        });
+    }
+});
+Ext.define('Ung.widget.NetworkLayout', {
+    extend: 'Ext.container.Container',
+    alias: 'widget.networklayoutwidget',
+
+    controller: 'widget',
+
+    hidden: true,
+    border: false,
+    baseCls: 'widget',
+
+    layout: {
+        type: 'vbox',
+        align: 'stretch'
+    },
+
+    bind: {
+        hidden: '{!widget.enabled}'
+    },
+
+    refreshIntervalSec: 5,
+
+    items: [{
+        xtype: 'container',
+        layout: {
+            type: 'hbox',
+            align: 'top'
+        },
+        cls: 'header',
+        style: {
+            height: '50px'
+        },
+        items: [{
+            xtype: 'component',
+            flex: 1,
+            html: '<h1>' + 'Network Layout'.t() + '</h1>'
+        }, {
+            xtype: 'container',
+            margin: '10 5 0 0',
+            layout: {
+                type: 'hbox',
+                align: 'middle'
+            },
+            items: [{
+                xtype: 'button',
+                baseCls: 'action',
+                text: '<i class="material-icons">refresh</i>',
+                listeners: {
+                    click: 'fetchData'
+                }
+            }, {
+                xtype: 'button',
+                baseCls: 'action',
+                text: '<i class="material-icons">call_made</i>',
+                //bind: {
+                //    href: '#reports/{widget.entryId}'
+                //},
+                hrefTarget: '_self'
+            }]
+        }]
+    }, {
+        xtype: 'container',
+        html: 'Under construction'
+    }],
+
+    fetchData: function () {
+        var me = this;
+        rpc.networkManager.getNetworkSettings(function (result, exception) {
+            me.fireEvent('afterdata');
+            //handler.call(this);
+
+            // Ext.each(result.interfaces.list, function (iface) {
+            //     if (!iface.disabled) {
+            //         if (iface.isWan) {
+            //             me.data.externalInterfaces.push({
+            //                 id: iface.interfaceId,
+            //                 name: iface.name,
+            //                 rx: 0,
+            //                 tx: 0
+            //             });
+            //         } else {
+            //             me.data.internalInterfaces.push({
+            //                 id: iface.interfaceId,
+            //                 name: iface.name,
+            //                 rx: 0,
+            //                 tx: 0
+            //             });
+            //         }
+            //     }
+            // });
+            // this.interfacesLoaded = true;
+            // this.update(me.data);
+        });
+    }
+});
+Ext.define('Ung.widget.MapDistribution', {
+    extend: 'Ext.container.Container',
+    alias: 'widget.mapdistributionwidget',
+
+    controller: 'widget',
+
+    hidden: true,
+    border: false,
+    baseCls: 'widget',
+
+    layout: {
+        type: 'vbox',
+        align: 'stretch'
+    },
+
+    bind: {
+        hidden: '{!widget.enabled}'
+    },
+
+    refreshIntervalSec: 5,
+
+    items: [{
+        xtype: 'container',
+        layout: {
+            type: 'hbox',
+            align: 'top'
+        },
+        cls: 'header',
+        style: {
+            height: '50px'
+        },
+        items: [{
+            xtype: 'component',
+            flex: 1,
+            html: '<h1>' + 'Map Distribution'.t() + '</h1>'
+        }, {
+            xtype: 'container',
+            margin: '10 5 0 0',
+            layout: {
+                type: 'hbox',
+                align: 'middle'
+            },
+            items: [{
+                xtype: 'button',
+                baseCls: 'action',
+                text: '<i class="material-icons">refresh</i>',
+                listeners: {
+                    click: 'fetchData'
+                }
+            }]
+        }]
+    }, {
+        xtype: 'container',
+        html: 'Under construction'
+    }],
+
+    fetchData: function () {
+        var me = this;
+        me.fireEvent('afterdata');
+    }
+});
 Ext.define('Ung.view.apps.AppsController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.apps',
@@ -1186,7 +1770,6 @@ Ext.define('Ung.view.apps.Apps', {
     requires: [
         'Ung.view.apps.AppsController',
         'Ung.view.apps.AppsModel',
-
         'Ung.view.apps.AppItem'
     ],
 
@@ -1427,7 +2010,6 @@ Ext.define('Ung.view.apps.install.Install', {
     requires: [
         'Ung.view.apps.install.InstallController',
         'Ung.view.apps.install.Item'
-        //'Ung.view.main.MainModel'
     ],
 
     controller: 'appsinstall',
@@ -1501,37 +2083,43 @@ Ext.define('Ung.view.config.ConfigController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.config',
 
-    init: function (view) {
-        this.configNames = ['Network', 'Administration', 'Email', 'Local Directory', 'Upgrade', 'System', 'About'];
-        this.toolNames = ['Policy Manager', 'Sessions', 'Hosts', 'Devices'];
+    init: function () {
+        this.configItems = [
+            { name: 'Network', icon: 'icon_config_network.png' },
+            { name: 'Administration', icon: 'icon_config_admin.png' },
+            { name: 'Email', icon: 'icon_config_email.png' },
+            { name: 'Local Directory', icon: 'icon_config_directory.png' },
+            { name: 'Upgrade', icon: 'icon_config_upgrade.png' },
+            { name: 'System', icon: 'icon_config_system.png' },
+            { name: 'About', icon: 'icon_config_about.png' }
+        ];
+        this.toolItems = [
+            { name: 'Sessions', icon: 'icon_config_sessions.png' },
+            { name: 'Hosts', icon: 'icon_config_hosts.png' },
+            { name: 'Devices', icon: 'icon_config_devices.png' }
+        ];
     },
 
     onBeforeRender: function () {
-        var configName, toolName, i, configs = [], tools = [];
+        var config, tool, i, configs = [], tools = [];
 
-        for (i = 0; i < this.configNames.length; i += 1) {
-            configName = this.configNames[i];
+        for (i = 0; i < this.configItems.length; i += 1) {
+            config = this.configItems[i];
             configs.push({
                 xtype: 'ung.configitem',
-                viewModel: {
-                    data: {
-                        displayName: configName.t(),
-                        iconName: configName.toLowerCase().replace(/ /g, '_')
-                    }
-                }
+                name: config.name.t(),
+                icon: config.icon,
+                href: '#config/' + config.name.toLowerCase().replace(/ /g, '')
             });
         }
 
-        for (i = 0; i < this.toolNames.length; i += 1) {
-            toolName = this.toolNames[i];
+        for (i = 0; i < this.toolItems.length; i += 1) {
+            tool = this.toolItems[i];
             tools.push({
                 xtype: 'ung.configitem',
-                viewModel: {
-                    data: {
-                        displayName: toolName.t(),
-                        iconName: toolName.toLowerCase().replace(/ /g, '_')
-                    }
-                }
+                name: tool.name.t(),
+                icon: tool.icon,
+                href: '#' + tool.name.toLowerCase().replace(/ /g, '')
             });
         }
 
@@ -1551,31 +2139,33 @@ Ext.define('Ung.view.config.ConfigController', {
 });
 
 Ext.define('Ung.view.config.ConfigItem', {
-    extend: 'Ext.Component',
+    extend: 'Ext.Button',
     xtype: 'ung.configitem',
-    cls: 'appitem',
+    baseCls: 'app-item',
 
     viewModel: true,
 
-    bind: {
-        html: '<div class="node-image">' +
-              '<img src="' + resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_{iconName}.png" width=80 height=80/></div>' +
-              '<div class="node-label">{displayName}</div>'
-    },
+    hrefTarget: '_self',
 
-    listeners: {
-        afterrender: 'onItemBeforeRender'
+    renderTpl:
+            '<span class="app-icon"><img src="' + resourcesBaseHref + '/skins/modern-rack/images/admin/config/{icon}" width=80 height=80/></span>' +
+            '<span class="app-name">{name}</span>',
+
+    initRenderData: function() {
+        var data = this.callParent();
+        Ext.apply(data, {
+            name: this.name,
+            icon: this.icon
+        });
+        return data;
     }
 });
-
 Ext.define('Ung.view.config.Config', {
     extend: 'Ext.container.Container',
     xtype: 'ung.config',
     layout: 'fit',
     requires: [
         'Ung.view.config.ConfigController',
-        //'Ung.view.apps.AppsModel',
-
         'Ung.view.config.ConfigItem'
     ],
 
@@ -2185,7 +2775,6 @@ Ext.define('Ung.view.reports.Reports', {
     requires: [
         'Ung.view.reports.ReportsController',
         'Ung.view.reports.ReportsModel',
-
         'Ung.model.Category'
     ],
 
@@ -3156,78 +3745,7 @@ Ext.define ('Ung.model.GenericRule', {
         }
     }
 });
-Ext.define('Ung.widget.report.ReportController', {
-    extend: 'Ext.app.ViewController',
-    alias: 'controller.reportwidget',
-    //stores: ['widgetsStore'],
-    init: function (view) {
-        this.getViewModel().set('widget', view.getWidget());
-        this.getViewModel().set('entry', view.getEntry());
-
-        var type = view.getEntry().get('type');
-
-        if (type === 'TIME_GRAPH' || type === 'TIME_GRAPH_DYNAMIC') {
-            view.add({ xtype: 'timechart', reference: 'chart', height: 250 });
-        }
-
-        if (type === 'PIE_GRAPH') {
-            view.add({ xtype: 'piechart', reference: 'chart',  height: 250 });
-        }
-
-        if (type === 'EVENT_LIST') {
-            view.add({ xtype: 'component', html: 'Not Implemented',  height: 250 });
-        }
-    },
-
-    fetchData: function () {
-        var me = this,
-            entry = me.getViewModel().get('entry'),
-            timeframe = me.getViewModel().get('widget.timeframe');
-
-        if (entry.get('type') === 'EVENT_LIST') {
-            // fetch event data
-            //console.log('Event List');
-        } else {
-            // fetch chart data
-            me.getView().lookupReference('chart').fireEvent('beginfetchdata');
-            Rpc.getReportData(entry.getData(), timeframe)
-                .then(function (response) {
-                    me.getView().lookupReference('chart').fireEvent('setseries', response.list);
-                }, function (exception) {
-                    console.log(exception);
-                });
-        }
-    },
-
-    /*
-    showEditor: function () {
-        this.getView().up('dashboardmain').fireEvent('showwidgeteditor', this.getView().getWidget());
-    },
-    */
-
-    resizeWidget: function () {
-        var view = this.getView();
-        if (view.hasCls('small')) {
-            view.removeCls('small').addCls('medium');
-        } else {
-            if (view.hasCls('medium')) {
-                view.removeCls('medium').addCls('large');
-            } else {
-                if (view.hasCls('large')) {
-                    view.removeCls('large').addCls('x-large');
-                } else {
-                    if (view.hasCls('x-large')) {
-                        view.removeCls('x-large').addCls('small');
-                    }
-                }
-            }
-        }
-        view.updateLayout();
-    }
-
-});
-
-Ext.define('Ung.widget.report.ReportModel', {
+Ext.define('Ung.widget.ReportModel', {
     extend: 'Ext.app.ViewModel',
     alias: 'viewmodel.reportwidget',
 
@@ -3249,6 +3767,395 @@ Ext.define('Ung.widget.report.ReportModel', {
         }
     }
 
+});
+Ext.define('Ung.widget.CpuLoadController', {
+    extend: 'Ext.app.ViewController',
+    alias: 'controller.cpuload',
+
+    control: {
+        '#': {
+            afterrender: 'onAfterRender',
+            resize: 'onResize'
+        }
+    },
+
+    listen: {
+        store: {
+            '#stats': {
+                datachanged: 'addPoint'
+            }
+        }
+    },
+
+    onAfterRender: function (view) {
+        this.lineChart = new Highcharts.Chart({
+            chart: {
+                type: 'areaspline',
+                renderTo: view.lookupReference('cpulinechart').getEl().dom,
+                marginBottom: 15,
+                marginTop: 20,
+                //padding: [0, 0, 0, 0],
+                backgroundColor: 'transparent',
+                animation: false,
+                style: {
+                    fontFamily: 'Source Sans Pro',
+                    fontSize: '12px'
+                }
+            },
+            title: null,
+            credits: {
+                enabled: false
+            },
+            exporting: {
+                enabled: false
+            },
+            xAxis: [{
+                type: 'datetime',
+                crosshair: {
+                    width: 1,
+                    dashStyle: 'ShortDot',
+                    color: 'rgba(100, 100, 100, 0.3)'
+                },
+                lineColor: '#C0D0E0',
+                lineWidth: 1,
+                tickLength: 3,
+                gridLineWidth: 1,
+                gridLineDashStyle: 'dash',
+                gridLineColor: '#EEE',
+                labels: {
+                    style: {
+                        fontFamily: 'Source Sans Pro',
+                        color: '#999',
+                        fontSize: '11px',
+                        fontWeight: 600
+                    },
+                    y: 12
+                },
+                maxPadding: 0,
+                minPadding: 0
+            }],
+            yAxis: {
+                min: 0,
+                minRange: 2,
+                lineColor: '#C0D0E0',
+                lineWidth: 1,
+                gridLineWidth: 1,
+                gridLineDashStyle: 'dash',
+                gridLineColor: '#EEE',
+                tickAmount: 4,
+                tickLength: 5,
+                tickWidth: 1,
+                tickPosition: 'inside',
+                opposite: false,
+                labels: {
+                    align: 'left',
+                    useHTML: true,
+                    padding: 0,
+                    style: {
+                        fontFamily: 'Source Sans Pro',
+                        color: '#999',
+                        fontSize: '11px',
+                        fontWeight: 600,
+                        background: 'rgba(255, 255, 255, 0.6)',
+                        padding: '0 1px',
+                        borderRadius: '2px',
+                        //textShadow: '1px 1px 1px #000'
+                        lineHeight: '11px'
+                    },
+                    x: 1,
+                    y: -2
+                },
+                title: null
+            },
+            legend: {
+                enabled: false
+            },
+            tooltip: {
+                shared: true,
+                animation: true,
+                followPointer: true,
+                backgroundColor: 'rgba(255, 255, 255, 0.7)',
+                borderWidth: 1,
+                borderColor: 'rgba(0, 0, 0, 0.1)',
+                style: {
+                    textAlign: 'right',
+                    fontFamily: 'Source Sans Pro',
+                    padding: '5px',
+                    fontSize: '10px',
+                    marginBottom: '40px'
+                },
+                //useHTML: true,
+                hideDelay: 0,
+                shadow: false,
+                headerFormat: '<span style="font-size: 11px; line-height: 1.5; font-weight: bold;">{point.key}</span><br/>',
+                pointFormatter: function () {
+                    var str = '<span>' + this.series.name + '</span>';
+                    str += ': <span style="color: ' + this.color + '; font-weight: bold;">' + this.y + '</span>';
+                    return str + '<br/>';
+                }
+            },
+            plotOptions: {
+                areaspline: {
+                    fillOpacity: 0.15,
+                    lineWidth: 2
+                },
+                series: {
+                    marker: {
+                        enabled: true,
+                        radius: 0,
+                        states: {
+                            hover: {
+                                enabled: true,
+                                lineWidthPlus: 2,
+                                radius: 4,
+                                radiusPlus: 2
+                            }
+                        }
+                    },
+                    states: {
+                        hover: {
+                            enabled: true,
+                            lineWidthPlus: 0,
+                            halo: {
+                                size: 2
+                            }
+                        }
+                    }
+                }
+            },
+            series: [{
+                name: 'load',
+                data: (function () {
+                    var data = [], time = Date.now(), i;
+                    try {
+                        time = rpc.systemManager.getMilliseconds();
+                    } catch (e) {
+                        console.log('Unable to get current millis.');
+                    }
+                    time = Math.round(time/1000) * 1000;
+                    for (i = -19; i <= 0; i += 1) {
+                        data.push({
+                            x: time + i * 3000,
+                            y: 0
+                        });
+                    }
+                    return data;
+                }())
+            }]
+        });
+
+        this.gaugeChart = new Highcharts.Chart({
+            chart: {
+                type: 'gauge',
+                renderTo: view.lookupReference('cpugaugechart').getEl().dom,
+                height: 140,
+                margin: [-20, 0, 0, 0],
+                backgroundColor: 'transparent',
+                style: {
+                    margin: '0 auto'
+                }
+            },
+            credits: {
+                enabled: false
+            },
+            title: null,
+            exporting: {
+                enabled: false
+            },
+            pane: [{
+                startAngle: -45,
+                endAngle: 45,
+                background: null,
+                center: ['50%', '135%'],
+                size: 280
+            }],
+
+            tooltip: {
+                enabled: false
+            },
+
+            yAxis: [{
+                min: 0,
+                max: 50,
+                minorTickPosition: 'outside',
+                tickPosition: 'outside',
+                tickColor: '#555',
+                minorTickColor: '#999',
+                labels: {
+                    rotation: 'auto',
+                    distance: 20,
+                    step: 1
+                },
+                plotBands: [{
+                    from: 0,
+                    to: 3,
+                    color: 'rgba(112, 173, 112, 1)',
+                    innerRadius: '100%',
+                    outerRadius: '105%'
+                }, {
+                    from: 3,
+                    to: 6,
+                    color: 'rgba(255, 255, 0, 1)',
+                    innerRadius: '100%',
+                    outerRadius: '105%'
+                }, {
+                    from: 6,
+                    to: 7,
+                    color: 'rgba(255, 0, 0, 1)',
+                    innerRadius: '100%',
+                    outerRadius: '105%'
+                }],
+                title: null
+            }],
+
+            plotOptions: {
+                gauge: {
+                    dataLabels: {
+                        enabled: false
+                    },
+                    dial: {
+                        radius: '99%',
+                        backgroundColor: '#999'
+                    }
+                }
+            },
+            series: [{
+                data: [0]
+            }]
+
+        });
+    },
+
+    onResize: function () {
+        this.lineChart.reflow();
+        this.gaugeChart.reflow();
+    },
+
+    addPoint: function (store) {
+        var vm = this.getViewModel(),
+            stats = store.first().getData(),
+            medLimit = stats.numCpus + 1,
+            highLimit = stats.numCpus + 4;
+
+        if (this.getView().down('#loader')) {
+            this.getView().down('#loader').destroy();
+        }
+
+        this.lineChart.yAxis[0].update({
+            minRange: stats.numCpus
+        });
+
+        this.gaugeChart.yAxis[0].update({
+            max: highLimit + 1,
+            plotBands: [{
+                from: 0,
+                to: medLimit,
+                color: 'rgba(112, 173, 112, 1)',
+                innerRadius: '100%',
+                outerRadius: '105%'
+            }, {
+                from: medLimit,
+                to: highLimit,
+                color: 'rgba(255, 255, 0, 1)',
+                innerRadius: '100%',
+                outerRadius: '105%'
+            }, {
+                from: highLimit,
+                to: highLimit + 1,
+                color: 'rgba(255, 0, 0, 1)',
+                innerRadius: '100%',
+                outerRadius: '105%'
+            }]
+        });
+
+        this.lineChart.series[0].addPoint({
+            x: Date.now(),
+            y: store.first().getData().oneMinuteLoadAvg
+        }, true, true);
+
+        this.gaugeChart.series[0].points[0].update(stats.oneMinuteLoadAvg <= highLimit + 1 ? stats.oneMinuteLoadAvg : highLimit + 1, true);
+
+        if (stats.oneMinuteLoadAvg < medLimit) {
+            vm.set('loadLabel', 'low'.t());
+        }
+        if (stats.oneMinuteLoadAvg > medLimit) {
+            vm.set('loadLabel', 'medium'.t());
+        }
+        if (stats.oneMinuteLoadAvg > highLimit) {
+            vm.set('loadLabel', 'high'.t());
+        }
+
+    }
+});
+Ext.define('Ung.widget.CpuLoad', {
+    extend: 'Ext.container.Container',
+    alias: 'widget.cpuloadwidget',
+
+    requires: [
+        'Ung.widget.CpuLoadController'
+    ],
+
+    controller: 'cpuload',
+    viewModel: true,
+
+    hidden: true,
+    border: false,
+    baseCls: 'widget small',
+
+    bind: {
+        hidden: '{!widget.enabled}'
+    },
+
+    layout: {
+        type: 'vbox',
+        align: 'stretch'
+    },
+
+    items: [{
+        xtype: 'container',
+        layout: {
+            type: 'hbox',
+            align: 'top'
+        },
+        cls: 'header',
+        style: {
+            height: '50px'
+        },
+        items: [{
+            xtype: 'component',
+            flex: 1,
+            html: '<h1>' + 'CPU Load'.t() + '</h1>'
+        }]
+    }, {
+        xtype: 'container',
+        /*
+        layout: {
+            type: 'vbox',
+            align: 'stretch'
+        },
+        */
+        items: [{
+            xtype: 'component',
+            height: 120,
+            reference: 'cpulinechart'
+        }, {
+            xtype: 'component',
+            reference: 'cpugaugechart',
+            height: 140
+        }, {
+            xtype: 'component',
+            cls: 'cpu-gauge',
+            bind: {
+                html: '{stats.oneMinuteLoadAvg}<br/><span>{loadLabel}</span>'
+            }
+        }, {
+            xtype: 'component',
+            itemId: 'loader',
+            cls: 'loader',
+            hideMode: 'display',
+            html: '<div class="spinner"><div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div></div>'
+        }]
+    }]
 });
 Ext.define('Ung.view.grid.GridController', {
     extend: 'Ext.app.ViewController',
@@ -4857,30 +5764,27 @@ Ext.define('Ung.chart.EventChart', {
     }
 
 });
-Ext.define('Ung.widget.report.Report', {
+Ext.define('Ung.widget.Report', {
     extend: 'Ext.container.Container',
     alias: 'widget.reportwidget',
     requires: [
-        'Ung.widget.report.ReportController',
-        'Ung.widget.report.ReportModel',
-        //'Ung.view.widget.editor.TimeWidget',
-        //'Ung.view.widget.editor.PieWidget',
+        //'Ung.widget.report.ReportController',
+        'Ung.widget.ReportModel',
         'Ung.chart.TimeChart',
         'Ung.chart.PieChart',
         'Ung.chart.EventChart'
-        //'Ung.model.Widget'
     ],
 
-    controller: 'reportwidget',
+    controller: 'widget',
     viewModel: {
         type: 'reportwidget'
     },
-
     config: {
         widget: null,
         entry: null
     },
 
+    hidden: true,
     bind: {
         hidden: '{!widget.enabled}'
     },
@@ -4948,12 +5852,31 @@ Ext.define('Ung.widget.report.Report', {
         }]
     }],
 
-    listeners: {
-        afterrender: 'fetchData',
-        fetchdata: 'fetchData'
-        //resize: 'resize'
-    }
+    fetchData: function () {
+        var me = this,
+            entry = me.getViewModel().get('entry'),
+            timeframe = me.getViewModel().get('widget.timeframe');
 
+        // console.log('fetch data - ', entry.get('title'));
+
+        if (entry.get('type') === 'EVENT_LIST') {
+            // fetch event data
+            //console.log('Event List');
+            me.fireEvent('afterdata');
+        } else {
+            // fetch chart data
+            this.lookupReference('chart').fireEvent('beginfetchdata');
+            Rpc.getReportData(entry.getData(), timeframe)
+                .then(function (response) {
+                    me.lookupReference('chart').fireEvent('setseries', response.list);
+                    me.fireEvent('afterdata');
+                }, function (exception) {
+                    console.log(exception);
+                    Ung.Util.exceptionToast(exception);
+                    me.fireEvent('afterdata');
+                });
+        }
+    }
 });
 /**
  * Dashboard view which holds the widgets and manager
@@ -4964,8 +5887,17 @@ Ext.define('Ung.view.dashboard.Dashboard', {
 
     requires: [
         'Ung.view.dashboard.DashboardController',
-        'Ung.widget.report.Report',
-        'Ung.view.grid.ActionColumn'
+        'Ung.view.dashboard.Queue',
+        'Ung.widget.Report',
+        'Ung.view.grid.ActionColumn',
+
+        'Ung.widget.WidgetController',
+        'Ung.widget.Information',
+        'Ung.widget.Resources',
+        'Ung.widget.CpuLoad',
+        'Ung.widget.NetworkInformation',
+        'Ung.widget.NetworkLayout',
+        'Ung.widget.MapDistribution'
     ],
 
     controller: 'dashboard',
@@ -5118,7 +6050,7 @@ Ext.define('Ung.view.dashboard.Dashboard', {
         }, {
             xtype: 'component',
             html: '<table>' +
-                    '<tr><td style="text-align: right;"><i class="material-icons" style="color: #333; font-size: 16px; vertical-align: middle;">check_box</i> | <i class="material-icons" style="color: #999; font-size: 16px; vertical-align: middle;">check_box_outline_blank</i></td><td>' +
+                    '<tr><td style="text-align: right; width: 50px;"><i class="material-icons" style="color: #333; font-size: 16px; vertical-align: middle;">check_box</i> | <i class="material-icons" style="color: #999; font-size: 16px; vertical-align: middle;">check_box_outline_blank</i></td><td>' +
                     'enables or disables the widget'.t() + '</td></tr>' +
                     '<tr><td style="width: 45px; text-align: right; vertical-align: top;"><i class="material-icons" style="color: #F00; font-size: 16px; vertical-align: middle;">info_outline</i></td><td>' + 'requires Reports and App to be installed'.t() + '</td></tr>' +
                     '<tr><td style="text-align: right;"><i class="material-icons" style="color: #999; font-size: 16px; vertical-align: middle;">format_line_spacing</i></td><td>' + 'drag widgets to sort them'.t() + '</td></tr>' +
@@ -6194,7 +7126,6 @@ Ext.define('Ung.view.grid.Conditions', {
         'Ung.store.Conditions',
         'Ung.store.Countries',
         'Ung.view.grid.ConditionEditor'
-        //'Ung.view.grid.Editor'
     ],
 
     //height: 200,
@@ -6328,13 +7259,7 @@ Ext.define('Ung.view.node.Settings', {
         'Ung.view.node.SettingsModel',
         'Ung.view.node.Status',
         'Ung.view.node.Reports',
-
         'Ung.util.Util',
-        //'Ung.node.WebFilter',
-        //'Ung.node.BandwidthControl',
-        //'Ung.node.VirusBlocker',
-        //'Ung.node.SpamBlocker',
-
         'Ung.model.NodeMetric',
         'Ung.view.grid.Grid',
         'Ung.view.grid.Conditions',
@@ -6443,7 +7368,7 @@ Ext.define('Ung.view.main.Main', {
                 hrefTarget: '_self'
             },
             items: [{
-                html: '<img src="/images/BrandingLogo.png" style="height: 40px;"/>',
+                html: '<img src="' + resourcesBaseHref + '/images/BrandingLogo.png" style="height: 40px;"/>',
                 width: 100,
                 height: 40,
                 href: '#'
@@ -6514,17 +7439,6 @@ Ext.define('Ung.store.Metrics', {
         }
     }
 });
-Ext.define('Ung.store.Stats', {
-    extend: 'Ext.data.Store',
-    storeId: 'stats',
-    data: [{}],
-    proxy: {
-        type: 'memory',
-        reader: {
-            type: 'json'
-        }
-    }
-});
 Ext.define('Ung.store.Categories', {
     extend: 'Ext.data.Store',
     storeId: 'categories',
@@ -6573,6 +7487,135 @@ Ext.define('Ung.store.Policies', {
             //rootProperty: 'list'
         }
     }
+});
+Ext.define ('Ung.model.Stat', {
+    extend: 'Ext.data.Model' ,
+    proxy: {
+        type: 'memory',
+        reader: {
+            type: 'json'
+        }
+    },
+    fields: ['numCpus', 'cpuModel', 'MemFree', 'MemTotal', 'SwapFree', 'SwapTotal', 'freeDiskSpace', 'totalDiskSpace', 'uptime',
+        {
+            name: 'hostname',
+            calculate: function () {
+                return rpc.hostname;
+            }
+        }, {
+            name: 'version',
+            calculate: function () {
+                return rpc.fullVersion;
+            }
+        }, {
+            name: 'appliance',
+            calculate: function() {
+                return (rpc.applianceModel === undefined || rpc.applianceModel === null || rpc.applianceModel === '' ? 'custom'.t() : rpc.applianceModel);
+            }
+        }, {
+            name: 'totalMemory',
+            calculate: function (data) {
+                return Ung.Util.formatBytes(data.MemTotal, 2);
+            }
+        }, {
+            name: 'freeMemory',
+            calculate: function (data) {
+                return Ung.Util.formatBytes(data.MemFree, 2);
+            }
+        }, {
+            name: 'freeMemoryPercent',
+            calculate: function (data) {
+                // return (Math.random() * 100).toFixed(2);
+                return (data.MemFree / data.MemTotal * 100).toFixed(1);
+            }
+        }, {
+            name: 'usedMemory',
+            calculate: function (data) {
+                return Ung.Util.formatBytes(data.MemTotal - data.MemFree, 2);
+            }
+        }, {
+            name: 'usedMemoryPercent',
+            calculate: function (data) {
+                return ((1 - data.MemFree / data.MemTotal) * 100).toFixed(1);
+            }
+        }, {
+            name: 'totalSwap',
+            calculate: function (data) {
+                return Ung.Util.formatBytes(data.SwapTotal, 2);
+            }
+        }, {
+            name: 'freeSwap',
+            calculate: function (data) {
+                return Ung.Util.formatBytes(data.SwapFree, 2);
+            }
+        }, {
+            name: 'freeSwapPercent',
+            calculate: function (data) {
+                // return (Math.random() * 100).toFixed(2);
+                return (data.SwapFree / data.SwapTotal * 100).toFixed(1);
+            }
+        }, {
+            name: 'usedSwap',
+            calculate: function (data) {
+                return Ung.Util.formatBytes(data.SwapTotal - data.SwapFree, 2);
+            }
+        }, {
+            name: 'usedSwapPercent',
+            calculate: function (data) {
+                return ((1 - data.SwapFree / data.SwapTotal) * 100).toFixed(1);
+            }
+        }, {
+            name: 'totalDisk',
+            calculate: function (data) {
+                return Ung.Util.formatBytes(data.totalDiskSpace, 2);
+            }
+        }, {
+            name: 'freeDisk',
+            calculate: function (data) {
+                return Ung.Util.formatBytes(data.freeDiskSpace, 2);
+            }
+        }, {
+            name: 'freeDiskPercent',
+            calculate: function (data) {
+                // return (Math.random() * 100).toFixed(2);
+                return (data.freeDiskSpace / data.totalDiskSpace * 100).toFixed(1);
+            }
+        }, {
+            name: 'usedDisk',
+            calculate: function (data) {
+                return Ung.Util.formatBytes(data.totalDiskSpace - data.freeDiskSpace, 2);
+            }
+        }, {
+            name: 'usedDiskPercent',
+            calculate: function (data) {
+                return ((1 - data.freeDiskSpace / data.totalDiskSpace) * 100).toFixed(1);
+            }
+        }, {
+            name: 'uptimeFormatted',
+            calculate: function (data) {
+                var numdays = Math.floor((data.uptime % 31536000) / 86400),
+                    numhours = Math.floor(((data.uptime % 31536000) % 86400) / 3600),
+                    numminutes = Math.floor((((data.uptime % 31536000) % 86400) % 3600) / 60),
+                    uptime = '';
+
+                if (numdays > 0) {
+                    uptime += numdays + 'd ';
+                }
+                if (numhours > 0) {
+                    uptime += numhours + 'h ';
+                }
+                if (numminutes > 0) {
+                    uptime += numminutes + 'm';
+                }
+                return uptime;
+            }
+        }]
+});
+Ext.define('Ung.store.Stats', {
+    extend: 'Ext.data.Store',
+    alias: 'store.stats',
+    storeId: 'stats',
+    model: 'Ung.model.Stat'
 });
 Ext.define ('Ung.model.Report', {
     extend: 'Ext.data.Model' ,
@@ -6681,9 +7724,6 @@ Ext.define('Ung.Application', {
         var me = this;
         Rpc.rpc = me.rpc;
 
-        var resBaseHref = resourcesBaseHref || '';
-        console.log(resBaseHref);
-
         Ext.getStore('policies').loadData(me.rpc.appsViews);
 
         // need to check if reports enabled an load it if so
@@ -6697,7 +7737,7 @@ Ext.define('Ung.Application', {
         }
 
         // uncomment this to retreive the class load order inside browser
-        //Ung.Util.getClassOrder();
+        // Ung.Util.getClassOrder();
     },
 
     loadMainView: function () {

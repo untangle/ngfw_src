@@ -1,4 +1,4 @@
-Ext.define('Ung.widget.report.ReportModel', {
+Ext.define('Ung.widget.ReportModel', {
     extend: 'Ext.app.ViewModel',
     alias: 'viewmodel.reportwidget',
 

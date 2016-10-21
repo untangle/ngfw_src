@@ -6,7 +6,6 @@ Ext.define('Ung.view.reports.Reports', {
     requires: [
         'Ung.view.reports.ReportsController',
         'Ung.view.reports.ReportsModel',
-
         'Ung.model.Category'
     ],
 

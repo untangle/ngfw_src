@@ -21,6 +21,11 @@ Ext.define('Ung.view.dashboard.DashboardController', {
             nodeinstall: 'onNodeInstall',
             removewidget: 'onRemoveWidget',
             addwidget: 'onAddWidget'
+        },
+        store: {
+            '#stats': {
+                datachanged: 'onStatsUpdate'
+            }
         }
     },
 
@@ -68,7 +73,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         var vm = this.getViewModel(),
             dashboard = this.getView().lookupReference('dashboard'),
             widgets = Ext.getStore('widgets').getRange(),
-            i, widget, widgetComponents = [];
+            i, widget, widgetComponents = [], entry;
 
         // refresh the dashboard manager grid if the widgets were affected
         this.getView().lookupReference('dashboardNav').getView().refresh();
@@ -77,36 +82,29 @@ Ext.define('Ung.view.dashboard.DashboardController', {
             widget = widgets[i];
 
             if (widget.get('type') !== 'ReportEntry') {
-                // it's a custom widget (not implemented yet)
                 widgetComponents.push({
-                    xtype: 'component',
-                    baseCls: 'widget',
-                    width: 250,
-                    html: widget.get('type'),
+                    xtype: widget.get('type').toLowerCase() + 'widget',
                     itemId: widget.get('type'),
-                    hidden: true,
-                    bind: {
-                        hidden: '{!widget.enabled}'
-                    },
                     viewModel: {
                         data: {
                             widget: widget
                         }
                     }
                 });
-            } else {
+            }
+            else {
                 if (vm.get('reportsEnabled')) {
-                    var entry = Ext.getStore('reports').findRecord('uniqueId', widget.get('entryId'));
+                    entry = Ext.getStore('reports').findRecord('uniqueId', widget.get('entryId'));
                     if (entry && !Ext.getStore('unavailableApps').first().get(entry.get('category'))) {
                         widgetComponents.push({
                             xtype: 'reportwidget',
                             itemId: widget.get('entryId'),
-                            widget: widget,
-                            entry: entry,
-                            hidden: true,
-                            //userCls: entry.get('type') === 'PIE_GRAPH' ? 'medium' : 'large'
-                            bind: {
-                                hidden: '{!widget.enabled}'
+                            refreshIntervalSec: widget.get('refreshIntervalSec'),
+                            viewModel: {
+                                data: {
+                                    widget: widget,
+                                    entry: entry
+                                }
                             }
                         });
                     } else {
@@ -144,11 +142,12 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                     dashboard.insert(i, {
                         xtype: 'reportwidget',
                         itemId: widget.get('entryId'),
-                        widget: widget,
-                        entry: entry,
-                        hidden: true,
-                        bind: {
-                            hidden: '{!widget.enabled}'
+                        refreshIntervalSec: widget.get('refreshIntervalSec'),
+                        viewModel: {
+                            data: {
+                                widget: widget,
+                                entry: entry
+                            }
                         }
                     });
                 } else {
@@ -360,13 +359,19 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         dashboard.add({
             xtype: 'reportwidget',
             itemId: widget.get('entryId'),
-            widget: widget,
-            entry: entry,
-            hidden: true,
-            bind: {
-                hidden: '{!widget.enabled}'
+            refreshIntervalSec: widget.get('refreshIntervalSec'),
+            viewModel: {
+                data: {
+                    widget: widget,
+                    entry: entry
+                }
             }
         });
+    },
+
+    onStatsUpdate: function() {
+        var vm = this.getViewModel();
+        vm.set('stats', Ext.getStore('stats').first());
     }
 
 

@@ -94,6 +94,7 @@ gulp.task('js-compact', function () {
 gulp.task('css-compact', function () {
     gutil.log('Generate ' + gutil.colors.yellow('ung-all.css') + ' compressed styles ...');
     return gulp.src('./sass/**/*.scss')
+        .pipe(concat('ung-all.css'))
         .pipe(sass({outputStyle: 'compressed'}).on('error', sass.logError))
         .pipe(gulp.dest('./root/res/'));
 });
@@ -140,6 +141,7 @@ gulp.task('js-sync', function (done) {
 
 gulp.task('sass', function () {
     gulp.src('./sass/**/*.scss')
+        .pipe(concat('ung-all.css'))
         .pipe(sass({outputStyle: 'compact'}).on('error', sass.logError))
         .pipe(gulp.dest('./root/res'))
         .pipe(browserSync.stream());
@@ -156,3 +158,11 @@ gulp.task('watch', function() {
     gulp.watch('./sass/*.scss', ['sass']);
     gulp.watch('./app/**/*.js', ['js-sync']);
 });
+//////////////////////////////////////
+
+var extb = require('./extbuild.js');
+
+gulp.task('ext', function () {
+    extb.resolve('Application.js');
+});
+

@@ -5,7 +5,6 @@ Ext.define('Ung.view.apps.install.Install', {
     requires: [
         'Ung.view.apps.install.InstallController',
         'Ung.view.apps.install.Item'
-        //'Ung.view.main.MainModel'
     ],
 
     controller: 'appsinstall',

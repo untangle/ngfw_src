@@ -7,8 +7,17 @@ Ext.define('Ung.view.dashboard.Dashboard', {
 
     requires: [
         'Ung.view.dashboard.DashboardController',
-        'Ung.widget.report.Report',
-        'Ung.view.grid.ActionColumn'
+        'Ung.view.dashboard.Queue',
+        'Ung.widget.Report',
+        'Ung.view.grid.ActionColumn',
+
+        'Ung.widget.WidgetController',
+        'Ung.widget.Information',
+        'Ung.widget.Resources',
+        'Ung.widget.CpuLoad',
+        'Ung.widget.NetworkInformation',
+        'Ung.widget.NetworkLayout',
+        'Ung.widget.MapDistribution'
     ],
 
     controller: 'dashboard',
@@ -161,7 +170,7 @@ Ext.define('Ung.view.dashboard.Dashboard', {
         }, {
             xtype: 'component',
             html: '<table>' +
-                    '<tr><td style="text-align: right;"><i class="material-icons" style="color: #333; font-size: 16px; vertical-align: middle;">check_box</i> | <i class="material-icons" style="color: #999; font-size: 16px; vertical-align: middle;">check_box_outline_blank</i></td><td>' +
+                    '<tr><td style="text-align: right; width: 50px;"><i class="material-icons" style="color: #333; font-size: 16px; vertical-align: middle;">check_box</i> | <i class="material-icons" style="color: #999; font-size: 16px; vertical-align: middle;">check_box_outline_blank</i></td><td>' +
                     'enables or disables the widget'.t() + '</td></tr>' +
                     '<tr><td style="width: 45px; text-align: right; vertical-align: top;"><i class="material-icons" style="color: #F00; font-size: 16px; vertical-align: middle;">info_outline</i></td><td>' + 'requires Reports and App to be installed'.t() + '</td></tr>' +
                     '<tr><td style="text-align: right;"><i class="material-icons" style="color: #999; font-size: 16px; vertical-align: middle;">format_line_spacing</i></td><td>' + 'drag widgets to sort them'.t() + '</td></tr>' +

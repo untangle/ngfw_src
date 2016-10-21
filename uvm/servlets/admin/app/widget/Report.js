@@ -1,27 +1,24 @@
-Ext.define('Ung.widget.report.Report', {
+Ext.define('Ung.widget.Report', {
     extend: 'Ext.container.Container',
     alias: 'widget.reportwidget',
     requires: [
-        'Ung.widget.report.ReportController',
-        'Ung.widget.report.ReportModel',
-        //'Ung.view.widget.editor.TimeWidget',
-        //'Ung.view.widget.editor.PieWidget',
+        //'Ung.widget.report.ReportController',
+        'Ung.widget.ReportModel',
         'Ung.chart.TimeChart',
         'Ung.chart.PieChart',
         'Ung.chart.EventChart'
-        //'Ung.model.Widget'
     ],
 
-    controller: 'reportwidget',
+    controller: 'widget',
     viewModel: {
         type: 'reportwidget'
     },
-
     config: {
         widget: null,
         entry: null
     },
 
+    hidden: true,
     bind: {
         hidden: '{!widget.enabled}'
     },
@@ -89,10 +86,29 @@ Ext.define('Ung.widget.report.Report', {
         }]
     }],
 
-    listeners: {
-        afterrender: 'fetchData',
-        fetchdata: 'fetchData'
-        //resize: 'resize'
-    }
+    fetchData: function () {
+        var me = this,
+            entry = me.getViewModel().get('entry'),
+            timeframe = me.getViewModel().get('widget.timeframe');
 
+        // console.log('fetch data - ', entry.get('title'));
+
+        if (entry.get('type') === 'EVENT_LIST') {
+            // fetch event data
+            //console.log('Event List');
+            me.fireEvent('afterdata');
+        } else {
+            // fetch chart data
+            this.lookupReference('chart').fireEvent('beginfetchdata');
+            Rpc.getReportData(entry.getData(), timeframe)
+                .then(function (response) {
+                    me.lookupReference('chart').fireEvent('setseries', response.list);
+                    me.fireEvent('afterdata');
+                }, function (exception) {
+                    console.log(exception);
+                    Ung.Util.exceptionToast(exception);
+                    me.fireEvent('afterdata');
+                });
+        }
+    }
 });

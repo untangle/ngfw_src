@@ -42,7 +42,7 @@ Ext.define('Ung.Application', {
         }
 
         // uncomment this to retreive the class load order inside browser
-        //Ung.Util.getClassOrder();
+        // Ung.Util.getClassOrder();
     },
 
     loadMainView: function () {

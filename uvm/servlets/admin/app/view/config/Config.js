@@ -4,8 +4,6 @@ Ext.define('Ung.view.config.Config', {
     layout: 'fit',
     requires: [
         'Ung.view.config.ConfigController',
-        //'Ung.view.apps.AppsModel',
-
         'Ung.view.config.ConfigItem'
     ],
 
