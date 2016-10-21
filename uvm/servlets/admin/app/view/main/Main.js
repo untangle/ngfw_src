@@ -43,7 +43,7 @@ Ext.define('Ung.view.main.Main', {
                 hrefTarget: '_self'
             },
             items: [{
-                html: '<img src="/images/BrandingLogo.png" style="height: 40px;"/>',
+                html: '<img src="' + resourcesBaseHref + '/images/BrandingLogo.png" style="height: 40px;"/>',
                 width: 100,
                 height: 40,
                 href: '#'

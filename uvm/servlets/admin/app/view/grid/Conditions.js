@@ -10,7 +10,6 @@ Ext.define('Ung.view.grid.Conditions', {
         'Ung.store.Conditions',
         'Ung.store.Countries',
         'Ung.view.grid.ConditionEditor'
-        //'Ung.view.grid.Editor'
     ],
 
     //height: 200,

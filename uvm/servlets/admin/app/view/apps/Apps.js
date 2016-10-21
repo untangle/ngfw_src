@@ -5,7 +5,6 @@ Ext.define('Ung.view.apps.Apps', {
     requires: [
         'Ung.view.apps.AppsController',
         'Ung.view.apps.AppsModel',
-
         'Ung.view.apps.AppItem'
     ],
 

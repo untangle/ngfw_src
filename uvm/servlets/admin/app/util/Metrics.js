@@ -27,7 +27,8 @@ Ext.define('Ung.util.Metrics', {
             //console.log(result.metrics);
             data = [];
 
-            Ext.getStore('stats').first().set(result.systemStats);
+            Ext.getStore('stats').loadRawData(result.systemStats);
+            // console.log(result.systemStats);
 
             for (var nodeId in result.metrics) {
                 if (result.metrics.hasOwnProperty(nodeId)) {

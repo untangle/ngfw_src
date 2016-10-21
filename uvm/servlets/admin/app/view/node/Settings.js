@@ -10,13 +10,7 @@ Ext.define('Ung.view.node.Settings', {
         'Ung.view.node.SettingsModel',
         'Ung.view.node.Status',
         'Ung.view.node.Reports',
-
         'Ung.util.Util',
-        //'Ung.node.WebFilter',
-        //'Ung.node.BandwidthControl',
-        //'Ung.node.VirusBlocker',
-        //'Ung.node.SpamBlocker',
-
         'Ung.model.NodeMetric',
         'Ung.view.grid.Grid',
         'Ung.view.grid.Conditions',

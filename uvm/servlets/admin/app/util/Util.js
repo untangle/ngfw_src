@@ -78,6 +78,18 @@ Ext.define('Ung.util.Util', {
         return bytes.toFixed(1)+' '+units[u];
     },
 
+    formatBytes: function (bytes, decimals) {
+        if (bytes === 0) {
+            return '0';
+        }
+        //bytes = bytes * 1000;
+        var k = 1000, // or 1024 for binary
+            dm = decimals || 3,
+            sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
+            i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+    },
+
     successToast: function (message) {
         Ext.toast({
             html: this.iconTitle(message, 'check-20'),

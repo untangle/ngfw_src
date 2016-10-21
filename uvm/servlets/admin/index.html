@@ -9,6 +9,7 @@
   <title>Untangle</title>
 
   <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300,600,700' rel='stylesheet' type='text/css'>
+  <link href="https://fonts.googleapis.com/css?family=PT+Sans:400,700" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
   <style type="text/css">
@@ -106,6 +107,7 @@
   <!-- load main resources from existing :80 running server (common location) -->
   <script src="http://localhost/jsonrpc/jsonrpc.js"></script>
   <script src="http://localhost/highcharts/highstock.js"></script>
+  <script src="http://localhost/highcharts/highcharts-extra.js"></script>
   <script src="http://localhost/ext6/ext-all-debug.js"></script>
   <script src="http://localhost/ext6/classic/theme-gray/theme-gray.js"></script>
   <link rel="stylesheet" href="http://localhost/ext6/classic/theme-gray/resources/theme-gray-all.css" />
@@ -148,6 +150,7 @@
       });
 
       // Disable Ext Area to avoid unwanted debug messages
+      Ext.supports.MouseWheel = false;
       Ext.enableAria = false;
       Ext.enableAriaButtons = false;
       Ext.enableAriaPanels = false;
