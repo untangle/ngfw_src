@@ -11,7 +11,6 @@ app/widget/WidgetController.js
 app/widget/Information.js
 app/widget/Resources.js
 app/widget/NetworkInformation.js
-app/widget/NetworkLayout.js
 app/widget/MapDistribution.js
 app/view/apps/AppsController.js
 app/view/apps/AppsModel.js
@@ -35,6 +34,8 @@ app/model/GenericRule.js
 app/widget/ReportModel.js
 app/widget/CpuLoadController.js
 app/widget/CpuLoad.js
+app/widget/InterfaceItem.js
+app/widget/NetworkLayout.js
 app/view/grid/GridController.js
 app/view/grid/ConditionsController.js
 app/store/Conditions.js
