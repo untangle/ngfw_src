@@ -313,7 +313,6 @@ Ext.define('Ung.util.Metrics', {
             data = [];
 
             Ext.getStore('stats').loadRawData(result.systemStats);
-            // console.log(result.systemStats);
 
             for (var nodeId in result.metrics) {
                 if (result.metrics.hasOwnProperty(nodeId)) {
@@ -966,6 +965,13 @@ Ext.define('Ung.view.dashboard.DashboardController', {
     onStatsUpdate: function() {
         var vm = this.getViewModel();
         vm.set('stats', Ext.getStore('stats').first());
+
+        // get devices
+        // @todo: review this based on oler implementation
+        rpc.deviceTable.getDevices(function (result, ex) {
+            if (ex) { Ung.Util.exceptionToast(ex); return false; }
+            vm.set('deviceCount', result.list.length);
+        });
     }
 
 
@@ -1170,9 +1176,11 @@ Ext.define('Ung.widget.WidgetController', {
     onAfterData: function () {
         var widget = this.getView();
         Ung.view.dashboard.Queue.next();
-        widget.refreshTimeoutId = setTimeout(function () {
-            Ung.view.dashboard.Queue.add(widget);
-        }, widget.refreshIntervalSec * 1000);
+        if (widget.refreshIntervalSec && widget.refreshIntervalSec > 0) {
+            widget.refreshTimeoutId = setTimeout(function () {
+                Ung.view.dashboard.Queue.add(widget);
+            }, widget.refreshIntervalSec * 1000);
+        }
     },
 
     onShow: function (widget) {
@@ -1464,100 +1472,6 @@ Ext.define('Ung.widget.NetworkInformation', {
             me.getViewModel().set('sessions', result);
             //console.log(result);
             me.fireEvent('afterdata');
-        });
-    }
-});
-Ext.define('Ung.widget.NetworkLayout', {
-    extend: 'Ext.container.Container',
-    alias: 'widget.networklayoutwidget',
-
-    controller: 'widget',
-
-    hidden: true,
-    border: false,
-    baseCls: 'widget',
-
-    layout: {
-        type: 'vbox',
-        align: 'stretch'
-    },
-
-    bind: {
-        hidden: '{!widget.enabled}'
-    },
-
-    refreshIntervalSec: 5,
-
-    items: [{
-        xtype: 'container',
-        layout: {
-            type: 'hbox',
-            align: 'top'
-        },
-        cls: 'header',
-        style: {
-            height: '50px'
-        },
-        items: [{
-            xtype: 'component',
-            flex: 1,
-            html: '<h1>' + 'Network Layout'.t() + '</h1>'
-        }, {
-            xtype: 'container',
-            margin: '10 5 0 0',
-            layout: {
-                type: 'hbox',
-                align: 'middle'
-            },
-            items: [{
-                xtype: 'button',
-                baseCls: 'action',
-                text: '<i class="material-icons">refresh</i>',
-                listeners: {
-                    click: 'fetchData'
-                }
-            }, {
-                xtype: 'button',
-                baseCls: 'action',
-                text: '<i class="material-icons">call_made</i>',
-                //bind: {
-                //    href: '#reports/{widget.entryId}'
-                //},
-                hrefTarget: '_self'
-            }]
-        }]
-    }, {
-        xtype: 'container',
-        html: 'Under construction'
-    }],
-
-    fetchData: function () {
-        var me = this;
-        rpc.networkManager.getNetworkSettings(function (result, exception) {
-            me.fireEvent('afterdata');
-            //handler.call(this);
-
-            // Ext.each(result.interfaces.list, function (iface) {
-            //     if (!iface.disabled) {
-            //         if (iface.isWan) {
-            //             me.data.externalInterfaces.push({
-            //                 id: iface.interfaceId,
-            //                 name: iface.name,
-            //                 rx: 0,
-            //                 tx: 0
-            //             });
-            //         } else {
-            //             me.data.internalInterfaces.push({
-            //                 id: iface.interfaceId,
-            //                 name: iface.name,
-            //                 rx: 0,
-            //                 tx: 0
-            //             });
-            //         }
-            //     }
-            // });
-            // this.interfacesLoaded = true;
-            // this.update(me.data);
         });
     }
 });
@@ -4156,6 +4070,208 @@ Ext.define('Ung.widget.CpuLoad', {
             html: '<div class="spinner"><div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div></div>'
         }]
     }]
+});
+Ext.define('Ung.widget.InterfaceItem', {
+    extend: 'Ext.Component',
+    alias: 'widget.interfaceitem',
+
+    bind: {
+        html: '<p class="name" style="display: {displayWan};">{iface.name}</p>' +
+            '<div class="speeds">' +
+            '<div class="speed_up"><i class="material-icons">arrow_drop_up</i><span>{tx} kB/s</span></div>' +
+            '<div class="speed_down"><i class="material-icons">arrow_drop_down</i><span>{rx} kB/s</span></div>' +
+            '</div>' +
+            '<p class="name" style="display: {displayNotWan};">{iface.name}</p>' +
+            '<i class="material-icons pointer">arrow_drop_down</i>'
+    },
+
+    viewModel: {
+        formulas: {
+            displayWan: function (get) {
+                return get('iface.isWan') ? 'block' : 'none';
+            },
+            displayNotWan: function (get) {
+                return get('iface.isWan') ? 'none' : 'block';
+            },
+            tx: function (get) {
+                var stats = get('stats').getData(),
+                    propStr = 'interface_' + get('iface.interfaceId') + '_txBps';
+                if (stats.hasOwnProperty(propStr)) {
+                    return (stats[propStr]/1024).toFixed(2);
+                } else {
+                    return '-';
+                }
+            },
+            rx: function (get) {
+                var stats = get('stats').getData(),
+                    propStr = 'interface_' + get('iface.interfaceId') + '_rxBps';
+                if (stats.hasOwnProperty(propStr)) {
+                    return (stats[propStr]/1024).toFixed(2);
+                } else {
+                    return '-';
+                }
+            }
+        }
+    }
+});
+Ext.define('Ung.widget.NetworkLayout', {
+    extend: 'Ext.container.Container',
+    alias: 'widget.networklayoutwidget',
+
+    requires: [
+        'Ung.widget.InterfaceItem'
+    ],
+
+    controller: 'widget',
+
+    hidden: true,
+    border: false,
+    baseCls: 'widget',
+
+    layout: {
+        type: 'vbox',
+        align: 'stretch'
+    },
+
+    bind: {
+        hidden: '{!widget.enabled}'
+    },
+
+    refreshIntervalSec: 0,
+
+    items: [{
+        xtype: 'container',
+        layout: {
+            type: 'hbox',
+            align: 'top'
+        },
+        cls: 'header',
+        style: {
+            height: '50px'
+        },
+        items: [{
+            xtype: 'component',
+            flex: 1,
+            html: '<h1>' + 'Network Layout'.t() + '</h1>'
+        }, {
+            xtype: 'container',
+            margin: '10 5 0 0',
+            layout: {
+                type: 'hbox',
+                align: 'middle'
+            },
+            items: [{
+                xtype: 'button',
+                baseCls: 'action',
+                text: '<i class="material-icons">refresh</i>',
+                listeners: {
+                    click: 'fetchData'
+                }
+            }]
+        }]
+    }, {
+        //xtype: 'container',
+        cls: 'net-layout',
+        margin: 10,
+        layout: {
+            type: 'vbox',
+            align: 'stretch'
+            //pack: 'middle'
+        },
+        border: false,
+        defaults: {
+            xtype: 'component'
+        },
+        items: [{
+            html: '<img src="' + resourcesBaseHref + '/skins/default/images/admin/icons/interface-cloud.png" style="margin: 0 auto; display: block; height: 30px;"/>'
+        }, {
+            xtype: 'container',
+            cls: 'ifaces',
+            height: 69,
+            itemId: 'externalInterface'
+        }, {
+            xtype: 'component',
+            cls: 'line'
+        }, {
+            xtype: 'container',
+            cls: 'ifaces',
+            height: 80,
+            itemId: 'internalInterface'
+        }, {
+            xtype: 'component',
+            cls: 'devices',
+            margin: '10 0 0 0',
+            height: 40,
+            bind: {
+                html: '<img src="' + resourcesBaseHref + '/skins/default/images/admin/icons/interface-devices.png"><br/>{deviceCount}'
+            }
+        }]
+    }],
+
+    fetchData: function () {
+        var me = this;
+        rpc.networkManager.getNetworkSettings(function (result, ex) {
+            me.fireEvent('afterdata');
+            if (ex) { Ung.Util.exceptionToast(ex); return false; }
+            me.down('#externalInterface').removeAll();
+            me.down('#internalInterface').removeAll();
+            Ext.each(result.interfaces.list, function (iface) {
+                if (!iface.disabled) {
+                    if (iface.isWan) {
+                        me.down('#externalInterface').add({
+                            xtype: 'interfaceitem',
+                            cls: 'iface wan',
+                            viewModel: {
+                                data: {
+                                    iface: iface
+                                }
+                            }
+                        });
+                    } else {
+                        me.down('#internalInterface').add({
+                            xtype: 'interfaceitem',
+                            cls: 'iface',
+                            viewModel: {
+                                data: {
+                                    iface: iface
+                                }
+                            }
+                        });
+                    }
+                }
+            });
+        });
+    }
+
+    // fetchData: function () {
+    //     var me = this;
+    //     rpc.networkManager.getNetworkSettings(function (result, exception) {
+    //         me.fireEvent('afterdata');
+    //         //handler.call(this);
+
+    //         // Ext.each(result.interfaces.list, function (iface) {
+    //         //     if (!iface.disabled) {
+    //         //         if (iface.isWan) {
+    //         //             me.data.externalInterfaces.push({
+    //         //                 id: iface.interfaceId,
+    //         //                 name: iface.name,
+    //         //                 rx: 0,
+    //         //                 tx: 0
+    //         //             });
+    //         //         } else {
+    //         //             me.data.internalInterfaces.push({
+    //         //                 id: iface.interfaceId,
+    //         //                 name: iface.name,
+    //         //                 rx: 0,
+    //         //                 tx: 0
+    //         //             });
+    //         //         }
+    //         //     }
+    //         // });
+    //         // this.interfacesLoaded = true;
+    //         // this.update(me.data);
+    //     });
+    // }
 });
 Ext.define('Ung.view.grid.GridController', {
     extend: 'Ext.app.ViewController',

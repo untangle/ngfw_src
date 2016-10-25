@@ -47,9 +47,11 @@ Ext.define('Ung.widget.WidgetController', {
     onAfterData: function () {
         var widget = this.getView();
         Ung.view.dashboard.Queue.next();
-        widget.refreshTimeoutId = setTimeout(function () {
-            Ung.view.dashboard.Queue.add(widget);
-        }, widget.refreshIntervalSec * 1000);
+        if (widget.refreshIntervalSec && widget.refreshIntervalSec > 0) {
+            widget.refreshTimeoutId = setTimeout(function () {
+                Ung.view.dashboard.Queue.add(widget);
+            }, widget.refreshIntervalSec * 1000);
+        }
     },
 
     onShow: function (widget) {

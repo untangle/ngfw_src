@@ -372,6 +372,13 @@ Ext.define('Ung.view.dashboard.DashboardController', {
     onStatsUpdate: function() {
         var vm = this.getViewModel();
         vm.set('stats', Ext.getStore('stats').first());
+
+        // get devices
+        // @todo: review this based on oler implementation
+        rpc.deviceTable.getDevices(function (result, ex) {
+            if (ex) { Ung.Util.exceptionToast(ex); return false; }
+            vm.set('deviceCount', result.list.length);
+        });
     }
 
 
