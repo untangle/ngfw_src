@@ -245,3 +245,76 @@
     }
 }
 
+
+.widget .exception {
+    top: 46px !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 250px;
+    padding-top: 50px;
+    box-sizing: border-box;
+    background: #FFF;
+    text-align: center;
+    h3 {
+        color: red;
+        font-size: 16px;
+        font-weight: 100;
+        span {
+            vertical-align: middle;
+        }
+    }
+}
+
+
+.widget-manager {
+    box-shadow: 1px 0 5px rgba(0, 0, 0, 0.3);
+    z-index: 10;
+    .x-grid-row.disabled {
+        color: #555;
+        i {
+            //color: #999;
+        }
+    }
+    .x-grid-cell-inner {
+        font-family: 'Source Sans Pro', sans-serif;
+        font-size: 13px;
+        padding: 5px 6px 3px;
+    }
+
+    .x-grid-cell-inner-action-col {
+        padding: 1px 0 10px 0;
+    }
+
+    i {
+        font-size: 16px;
+        height: auto;
+        cursor: pointer;
+    }
+
+    .heading {
+        font-size: 18px;
+        font-family: 'Source Sans Pro', sans-serif;
+        color: #FFF;
+        background: rgb(85, 85, 85);
+        .manager-close-btn {
+            cursor: pointer;
+            i {
+                color: #CCC;
+                font-size: 20px;
+            }
+            &:hover i {
+                color: #FFF;
+            }
+        }
+    }
+
+    .x-grid-cell-last i {
+        display: none;
+    }
+
+    .x-grid-item-over .x-grid-cell-last i{
+        display: block;
+    }
+
+}
+

@@ -5,7 +5,8 @@ Ext.define('Ung.widget.WidgetController', {
     control: {
         '#': {
             afterrender: 'onAfterRender',
-            afterdata: 'onAfterData'
+            afterdata: 'onAfterData',
+            beforedestroy: 'onBeforeRemove'
             //show: 'onShow'
         }
     },
@@ -42,6 +43,7 @@ Ext.define('Ung.widget.WidgetController', {
                 Ung.view.dashboard.Queue.add(widget);
             }
         });
+        widget.getViewModel().notify();
     },
 
     onAfterData: function () {
@@ -52,6 +54,11 @@ Ext.define('Ung.widget.WidgetController', {
                 Ung.view.dashboard.Queue.add(widget);
             }, widget.refreshIntervalSec * 1000);
         }
+    },
+
+    onBeforeRemove: function (widget) {
+        // remove widget from queue if; important if removal is happening while fetching data
+        Ung.view.dashboard.Queue.remove(widget);
     },
 
     onShow: function (widget) {

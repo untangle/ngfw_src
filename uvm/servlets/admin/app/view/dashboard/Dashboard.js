@@ -29,11 +29,13 @@ Ext.define('Ung.view.dashboard.Dashboard', {
     },
 
     layout: 'border',
+
     defaults: {
         border: false
     },
     items: [{
         region: 'north',
+        weight: 20,
         border: false,
         height: 44,
         itemId: 'apps-topnav',
@@ -45,39 +47,78 @@ Ext.define('Ung.view.dashboard.Dashboard', {
             type: 'hbox',
             align: 'middle'
         },
-        items: [{
+        defaults: {
             xtype: 'button',
-            itemId: 'policies-menu',
-            hidden: true,
-            style: {
-                marginRight: '5px'
+            baseCls: 'heading-btn'
+        },
+        items: [{
+            html: Ung.Util.iconTitle('Manage Widgets'.t(), 'settings-16'),
+            handler: 'managerHandler',
+            bind: {
+                hidden: '{managerOpen}'
             }
         }, {
-            xtype: 'button',
-            html: Ung.Util.iconTitle('Manage Widgets', 'settings-16'),
-            handler: 'managerHandler'
+            xtype: 'component',
+            flex: 1
+        }, {
+            html: 'Sessions'.t(),
+            href: '#sessions',
+            hrafTarget: '_self'
+        }, {
+            html: 'Hosts'.t(),
+            href: '#hosts',
+            hrafTarget: '_self'
+        }, {
+            html: 'Devices'.t(),
+            href: '#devices',
+            hrafTarget: '_self'
         }]
     }, {
-        //baseCls: 'dashboard-manager',
-        title: 'Manage Widgets'.t(),
+        region: 'west',
+        weight: 30,
         collapsible: true,
         layout: {
             type: 'vbox',
             align: 'stretch'
         },
-        region: 'west',
         //border: false,
+        header: false,
         shadow: false,
         animCollapse: false,
+        collapsed: false,
+        collapseMode: 'mini',
         bind: {
             collapsed: '{!managerOpen}'
         },
-        collapsed: false,
-        titleCollapse: true,
+        //titleCollapse: true,
         floatable: false,
         cls: 'widget-manager',
-        //split: true,
+        split: {
+            size: 0
+        },
         items: [{
+            xtype: 'container',
+            cls: 'heading',
+            height: 44,
+            border: false,
+            layout: {
+                type: 'hbox',
+                align: 'stretch',
+                pack: 'center'
+            },
+            items: [{
+                xtype: 'component',
+                flex: 1,
+                padding: 10,
+                html: 'Manage Widgets'.t()
+            }, {
+                xtype: 'button',
+                width: 44,
+                baseCls: 'manager-close-btn',
+                html: '<i class="material-icons">close</i>',
+                handler: 'managerHandler'
+            }]
+        }, {
             xtype: 'grid',
             reference: 'dashboardNav',
             forceFit: true,
@@ -131,6 +172,16 @@ Ext.define('Ung.view.dashboard.Dashboard', {
             }, {
                 dataIndex: 'entryId',
                 renderer: 'widgetTitleRenderer'
+            }, {
+                width: 25,
+                align: 'center',
+                sortable: false,
+                hideable: false,
+                resizable: false,
+                menuDisabled: true,
+                //handler: 'toggleWidgetEnabled',
+                dataIndex: 'enabled',
+                renderer: 'removeRenderer'
             }/*, {
                 xtype: 'actioncolumn',
                 align: 'center',
@@ -170,17 +221,14 @@ Ext.define('Ung.view.dashboard.Dashboard', {
         }, {
             xtype: 'component',
             html: '<table>' +
-                    '<tr><td style="text-align: right; width: 50px;"><i class="material-icons" style="color: #333; font-size: 16px; vertical-align: middle;">check_box</i> | <i class="material-icons" style="color: #999; font-size: 16px; vertical-align: middle;">check_box_outline_blank</i></td><td>' +
-                    'enables or disables the widget'.t() + '</td></tr>' +
-                    '<tr><td style="width: 45px; text-align: right; vertical-align: top;"><i class="material-icons" style="color: #F00; font-size: 16px; vertical-align: middle;">info_outline</i></td><td>' + 'requires Reports and App to be installed'.t() + '</td></tr>' +
-                    '<tr><td style="text-align: right;"><i class="material-icons" style="color: #999; font-size: 16px; vertical-align: middle;">format_line_spacing</i></td><td>' + 'drag widgets to sort them'.t() + '</td></tr>' +
+                    '<tr><td style="text-align: right;"><i class="material-icons" style="color: #999; font-size: 16px; vertical-align: middle;">info</i></td><td>' + 'drag widgets to sort them'.t() + '</td></tr>' +
                     '</table>',
             style: {
                 color: '#555',
                 fontSize: '11px',
                 background: '#efefef'
             },
-            padding: '10',
+            padding: 5,
             border: false
         }]
     }, {

@@ -8,7 +8,7 @@ Ext.define('Ung.view.dashboard.Queue', {
     add: function (widget) {
         if (!this.queueMap[widget.id]) {
             this.queue.push(widget);
-            //console.log("Adding: "+widget.title);
+            // console.log('Adding: ' + widget.itemId);
             this.process();
         } /* else { console.log("Prevent Double queuing: " + widget.title); } */
     },
@@ -24,7 +24,14 @@ Ext.define('Ung.view.dashboard.Queue', {
         this.processing = false;
         this.process();
     },
+    remove: function (widget) {
+        if (this.processing) {
+            this.processing = false;
+        }
+    },
     process: function () {
+        //console.log(this.processing);
+        //console.log(this.queue);
         if (!this.paused && !this.processing && this.queue.length > 0) {
             this.processing = true;
             var widget = this.queue.shift();

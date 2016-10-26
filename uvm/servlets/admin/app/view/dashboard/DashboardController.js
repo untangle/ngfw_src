@@ -36,6 +36,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         vm.bind('{reportsEnabled}', function() {
             me.loadWidgets();
         });
+        vm.set('managerOpen', false);
     },
 
     /**
@@ -95,7 +96,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
             else {
                 if (vm.get('reportsEnabled')) {
                     entry = Ext.getStore('reports').findRecord('uniqueId', widget.get('entryId'));
-                    if (entry && !Ext.getStore('unavailableApps').first().get(entry.get('category'))) {
+                    if (entry && !Ext.getStore('unavailableApps').first().get(entry.get('category')) && widget.get('enabled')) {
                         widgetComponents.push({
                             xtype: 'reportwidget',
                             itemId: widget.get('entryId'),
@@ -109,6 +110,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                         });
                     } else {
                         widgetComponents.push({
+                            xtype: 'component',
                             itemId: widget.get('entryId'),
                             hidden: true
                         });
@@ -153,6 +155,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                 } else {
                     // add widget placeholder
                     dashboard.insert(i, {
+                        xtype: 'component',
                         itemId: widget.get('entryId'),
                         hidden: true
                     });
@@ -172,6 +175,10 @@ Ext.define('Ung.view.dashboard.DashboardController', {
             return '<i class="material-icons" style="color: #F00;">info_outline</i>';
         }
         return '<i class="material-icons">' + (value ? 'check_box' : 'check_box_outline_blank') + '</i>';
+    },
+
+    removeRenderer: function (value, meta, record) {
+        return '<i class="material-icons" style="color: red; font-size: 16px;">delete</i>';
     },
 
     settingsRenderer: function () {
@@ -237,7 +244,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
     },
 
 
-    onItemClick: function (cell, td, cellIndex, record) {
+    onItemClick: function (cell, td, cellIndex, record, tr, rowIndex) {
         var me = this,
             dashboard = me.getView().lookupReference('dashboard'),
             vm = this.getViewModel(),
@@ -245,6 +252,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
 
         if (cellIndex === 0) {
             // toggle visibility or show alerts
+
             if (record.get('type') !== 'ReportEntry') {
                 record.set('enabled', !record.get('enabled'));
             } else {
@@ -258,8 +266,33 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                 }
 
                 entry = Ext.getStore('reports').findRecord('uniqueId', record.get('entryId'));
-                if (entry) {
+                widgetCmp = dashboard.down('#' + record.get('entryId'));
+                if (entry && widgetCmp) {
                     if (!Ext.getStore('unavailableApps').first().get(entry.get('category'))) {
+                        widgetCmp.destroy();
+                        if (!record.get('enabled')) {
+                            dashboard.insert(rowIndex, {
+                                xtype: 'reportwidget',
+                                itemId: record.get('entryId'),
+                                refreshIntervalSec: record.get('refreshIntervalSec'),
+                                viewModel: {
+                                    data: {
+                                        widget: record,
+                                        entry: entry
+                                    }
+                                }
+                            });
+                            widgetCmp = dashboard.down('#' + record.get('entryId'));
+                            setTimeout(function () {
+                                dashboard.scrollTo(0, dashboard.getEl().getScrollTop() + widgetCmp.getEl().getY() - 121, {duration: 300 });
+                            }, 100);
+                        } else {
+                            dashboard.insert(rowIndex, {
+                                xtype: 'component',
+                                itemId: record.get('entryId'),
+                                hidden: true
+                            });
+                        }
                         record.set('enabled', !record.get('enabled'));
                     } else {
                         Ext.Msg.alert('Install required'.t(), Ext.String.format('To enable this Widget please install <strong>{0}</strong> app first!'.t(), entry.get('category')));
@@ -279,6 +312,11 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                 widgetCmp.addCls('highlight-item');
                 dashboard.scrollTo(0, dashboard.getEl().getScrollTop() + widgetCmp.getEl().getY() - 121, {duration: 500});
             }
+        }
+
+        if (cellIndex === 2) {
+            // remove widget
+            record.drop();
         }
     },
 

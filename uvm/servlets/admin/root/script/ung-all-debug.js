@@ -313,6 +313,7 @@ Ext.define('Ung.util.Metrics', {
             data = [];
 
             Ext.getStore('stats').loadRawData(result.systemStats);
+            // console.log(result.systemStats);
 
             for (var nodeId in result.metrics) {
                 if (result.metrics.hasOwnProperty(nodeId)) {
@@ -629,6 +630,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         vm.bind('{reportsEnabled}', function() {
             me.loadWidgets();
         });
+        vm.set('managerOpen', false);
     },
 
     /**
@@ -688,7 +690,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
             else {
                 if (vm.get('reportsEnabled')) {
                     entry = Ext.getStore('reports').findRecord('uniqueId', widget.get('entryId'));
-                    if (entry && !Ext.getStore('unavailableApps').first().get(entry.get('category'))) {
+                    if (entry && !Ext.getStore('unavailableApps').first().get(entry.get('category')) && widget.get('enabled')) {
                         widgetComponents.push({
                             xtype: 'reportwidget',
                             itemId: widget.get('entryId'),
@@ -702,6 +704,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                         });
                     } else {
                         widgetComponents.push({
+                            xtype: 'component',
                             itemId: widget.get('entryId'),
                             hidden: true
                         });
@@ -746,6 +749,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                 } else {
                     // add widget placeholder
                     dashboard.insert(i, {
+                        xtype: 'component',
                         itemId: widget.get('entryId'),
                         hidden: true
                     });
@@ -765,6 +769,10 @@ Ext.define('Ung.view.dashboard.DashboardController', {
             return '<i class="material-icons" style="color: #F00;">info_outline</i>';
         }
         return '<i class="material-icons">' + (value ? 'check_box' : 'check_box_outline_blank') + '</i>';
+    },
+
+    removeRenderer: function (value, meta, record) {
+        return '<i class="material-icons" style="color: red; font-size: 16px;">delete</i>';
     },
 
     settingsRenderer: function () {
@@ -830,7 +838,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
     },
 
 
-    onItemClick: function (cell, td, cellIndex, record) {
+    onItemClick: function (cell, td, cellIndex, record, tr, rowIndex) {
         var me = this,
             dashboard = me.getView().lookupReference('dashboard'),
             vm = this.getViewModel(),
@@ -838,6 +846,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
 
         if (cellIndex === 0) {
             // toggle visibility or show alerts
+
             if (record.get('type') !== 'ReportEntry') {
                 record.set('enabled', !record.get('enabled'));
             } else {
@@ -851,8 +860,33 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                 }
 
                 entry = Ext.getStore('reports').findRecord('uniqueId', record.get('entryId'));
-                if (entry) {
+                widgetCmp = dashboard.down('#' + record.get('entryId'));
+                if (entry && widgetCmp) {
                     if (!Ext.getStore('unavailableApps').first().get(entry.get('category'))) {
+                        widgetCmp.destroy();
+                        if (!record.get('enabled')) {
+                            dashboard.insert(rowIndex, {
+                                xtype: 'reportwidget',
+                                itemId: record.get('entryId'),
+                                refreshIntervalSec: record.get('refreshIntervalSec'),
+                                viewModel: {
+                                    data: {
+                                        widget: record,
+                                        entry: entry
+                                    }
+                                }
+                            });
+                            widgetCmp = dashboard.down('#' + record.get('entryId'));
+                            setTimeout(function () {
+                                dashboard.scrollTo(0, dashboard.getEl().getScrollTop() + widgetCmp.getEl().getY() - 121, {duration: 300 });
+                            }, 100);
+                        } else {
+                            dashboard.insert(rowIndex, {
+                                xtype: 'component',
+                                itemId: record.get('entryId'),
+                                hidden: true
+                            });
+                        }
                         record.set('enabled', !record.get('enabled'));
                     } else {
                         Ext.Msg.alert('Install required'.t(), Ext.String.format('To enable this Widget please install <strong>{0}</strong> app first!'.t(), entry.get('category')));
@@ -872,6 +906,11 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                 widgetCmp.addCls('highlight-item');
                 dashboard.scrollTo(0, dashboard.getEl().getScrollTop() + widgetCmp.getEl().getY() - 121, {duration: 500});
             }
+        }
+
+        if (cellIndex === 2) {
+            // remove widget
+            record.drop();
         }
     },
 
@@ -987,7 +1026,7 @@ Ext.define('Ung.view.dashboard.Queue', {
     add: function (widget) {
         if (!this.queueMap[widget.id]) {
             this.queue.push(widget);
-            //console.log("Adding: "+widget.title);
+            // console.log('Adding: ' + widget.itemId);
             this.process();
         } /* else { console.log("Prevent Double queuing: " + widget.title); } */
     },
@@ -1003,7 +1042,14 @@ Ext.define('Ung.view.dashboard.Queue', {
         this.processing = false;
         this.process();
     },
+    remove: function (widget) {
+        if (this.processing) {
+            this.processing = false;
+        }
+    },
     process: function () {
+        //console.log(this.processing);
+        //console.log(this.queue);
         if (!this.paused && !this.processing && this.queue.length > 0) {
             this.processing = true;
             var widget = this.queue.shift();
@@ -1134,7 +1180,8 @@ Ext.define('Ung.widget.WidgetController', {
     control: {
         '#': {
             afterrender: 'onAfterRender',
-            afterdata: 'onAfterData'
+            afterdata: 'onAfterData',
+            beforedestroy: 'onBeforeRemove'
             //show: 'onShow'
         }
     },
@@ -1171,6 +1218,7 @@ Ext.define('Ung.widget.WidgetController', {
                 Ung.view.dashboard.Queue.add(widget);
             }
         });
+        widget.getViewModel().notify();
     },
 
     onAfterData: function () {
@@ -1181,6 +1229,11 @@ Ext.define('Ung.widget.WidgetController', {
                 Ung.view.dashboard.Queue.add(widget);
             }, widget.refreshIntervalSec * 1000);
         }
+    },
+
+    onBeforeRemove: function (widget) {
+        // remove widget from queue if; important if removal is happening while fetching data
+        Ung.view.dashboard.Queue.remove(widget);
     },
 
     onShow: function (widget) {
@@ -5970,27 +6023,44 @@ Ext.define('Ung.widget.Report', {
 
     fetchData: function () {
         var me = this,
-            entry = me.getViewModel().get('entry'),
-            timeframe = me.getViewModel().get('widget.timeframe');
+            vm = this.getViewModel();
 
-        // console.log('fetch data - ', entry.get('title'));
+        if (vm) {
+            var entry = vm.get('entry'),
+                timeframe = vm.get('widget.timeframe');
 
-        if (entry.get('type') === 'EVENT_LIST') {
-            // fetch event data
-            //console.log('Event List');
-            me.fireEvent('afterdata');
-        } else {
-            // fetch chart data
-            this.lookupReference('chart').fireEvent('beginfetchdata');
-            Rpc.getReportData(entry.getData(), timeframe)
-                .then(function (response) {
-                    me.lookupReference('chart').fireEvent('setseries', response.list);
-                    me.fireEvent('afterdata');
-                }, function (exception) {
-                    console.log(exception);
-                    Ung.Util.exceptionToast(exception);
-                    me.fireEvent('afterdata');
-                });
+            // console.log('fetch data - ', entry.get('title'));
+
+            if (entry.get('type') === 'EVENT_LIST') {
+                // fetch event data
+                //console.log('Event List');
+                me.fireEvent('afterdata');
+            } else {
+                // fetch chart data
+                this.lookupReference('chart').fireEvent('beginfetchdata');
+                Rpc.getReportData(entry.getData(), timeframe)
+                    .then(function (response) {
+                        me.fireEvent('afterdata');
+                        me.lookupReference('chart').fireEvent('setseries', response.list);
+                    }, function (exception) {
+                        me.fireEvent('afterdata');
+                        me.lookupReference('chart').lookupReference('loader').hide();
+                        console.log(exception);
+                        // Ung.Util.exceptionToast(exception);
+
+                        if (me.down('#exception')) {
+                            me.remove('exception');
+                        }
+                        me.add({
+                            xtype: 'component',
+                            itemId: 'exception',
+                            cls: 'exception',
+                            scrollable: true,
+                            html: '<h3><i class="material-icons">error</i> <span>' + 'Widget error'.t() + '</span></h3>' +
+                                '<p>' + 'There was an issue while fetching data!'.t() + '</p>'
+                        });
+                    });
+            }
         }
     }
 });
@@ -6025,11 +6095,13 @@ Ext.define('Ung.view.dashboard.Dashboard', {
     },
 
     layout: 'border',
+
     defaults: {
         border: false
     },
     items: [{
         region: 'north',
+        weight: 20,
         border: false,
         height: 44,
         itemId: 'apps-topnav',
@@ -6041,39 +6113,78 @@ Ext.define('Ung.view.dashboard.Dashboard', {
             type: 'hbox',
             align: 'middle'
         },
-        items: [{
+        defaults: {
             xtype: 'button',
-            itemId: 'policies-menu',
-            hidden: true,
-            style: {
-                marginRight: '5px'
+            baseCls: 'heading-btn'
+        },
+        items: [{
+            html: Ung.Util.iconTitle('Manage Widgets'.t(), 'settings-16'),
+            handler: 'managerHandler',
+            bind: {
+                hidden: '{managerOpen}'
             }
         }, {
-            xtype: 'button',
-            html: Ung.Util.iconTitle('Manage Widgets', 'settings-16'),
-            handler: 'managerHandler'
+            xtype: 'component',
+            flex: 1
+        }, {
+            html: 'Sessions'.t(),
+            href: '#sessions',
+            hrafTarget: '_self'
+        }, {
+            html: 'Hosts'.t(),
+            href: '#hosts',
+            hrafTarget: '_self'
+        }, {
+            html: 'Devices'.t(),
+            href: '#devices',
+            hrafTarget: '_self'
         }]
     }, {
-        //baseCls: 'dashboard-manager',
-        title: 'Manage Widgets'.t(),
+        region: 'west',
+        weight: 30,
         collapsible: true,
         layout: {
             type: 'vbox',
             align: 'stretch'
         },
-        region: 'west',
         //border: false,
+        header: false,
         shadow: false,
         animCollapse: false,
+        collapsed: false,
+        collapseMode: 'mini',
         bind: {
             collapsed: '{!managerOpen}'
         },
-        collapsed: false,
-        titleCollapse: true,
+        //titleCollapse: true,
         floatable: false,
         cls: 'widget-manager',
-        //split: true,
+        split: {
+            size: 0
+        },
         items: [{
+            xtype: 'container',
+            cls: 'heading',
+            height: 44,
+            border: false,
+            layout: {
+                type: 'hbox',
+                align: 'stretch',
+                pack: 'center'
+            },
+            items: [{
+                xtype: 'component',
+                flex: 1,
+                padding: 10,
+                html: 'Manage Widgets'.t()
+            }, {
+                xtype: 'button',
+                width: 44,
+                baseCls: 'manager-close-btn',
+                html: '<i class="material-icons">close</i>',
+                handler: 'managerHandler'
+            }]
+        }, {
             xtype: 'grid',
             reference: 'dashboardNav',
             forceFit: true,
@@ -6127,6 +6238,16 @@ Ext.define('Ung.view.dashboard.Dashboard', {
             }, {
                 dataIndex: 'entryId',
                 renderer: 'widgetTitleRenderer'
+            }, {
+                width: 25,
+                align: 'center',
+                sortable: false,
+                hideable: false,
+                resizable: false,
+                menuDisabled: true,
+                //handler: 'toggleWidgetEnabled',
+                dataIndex: 'enabled',
+                renderer: 'removeRenderer'
             }/*, {
                 xtype: 'actioncolumn',
                 align: 'center',
@@ -6166,17 +6287,14 @@ Ext.define('Ung.view.dashboard.Dashboard', {
         }, {
             xtype: 'component',
             html: '<table>' +
-                    '<tr><td style="text-align: right; width: 50px;"><i class="material-icons" style="color: #333; font-size: 16px; vertical-align: middle;">check_box</i> | <i class="material-icons" style="color: #999; font-size: 16px; vertical-align: middle;">check_box_outline_blank</i></td><td>' +
-                    'enables or disables the widget'.t() + '</td></tr>' +
-                    '<tr><td style="width: 45px; text-align: right; vertical-align: top;"><i class="material-icons" style="color: #F00; font-size: 16px; vertical-align: middle;">info_outline</i></td><td>' + 'requires Reports and App to be installed'.t() + '</td></tr>' +
-                    '<tr><td style="text-align: right;"><i class="material-icons" style="color: #999; font-size: 16px; vertical-align: middle;">format_line_spacing</i></td><td>' + 'drag widgets to sort them'.t() + '</td></tr>' +
+                    '<tr><td style="text-align: right;"><i class="material-icons" style="color: #999; font-size: 16px; vertical-align: middle;">info</i></td><td>' + 'drag widgets to sort them'.t() + '</td></tr>' +
                     '</table>',
             style: {
                 color: '#555',
                 fontSize: '11px',
                 background: '#efefef'
             },
-            padding: '10',
+            padding: 5,
             border: false
         }]
     }, {
