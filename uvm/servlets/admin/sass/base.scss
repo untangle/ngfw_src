@@ -110,6 +110,7 @@ cite {
     height: 100%;
     padding: 8px;
     vertical-align: top;
+    background: darkgray;
 }
 
 .dashboard .x-autocontainer-innerCt::after {
@@ -721,33 +722,6 @@ i.draggable {
 
 
 
-.widget-manager {
-    box-shadow: 1px 0 5px rgba(0, 0, 0, 0.3);
-    z-index: 10;
-    .x-grid-row.disabled {
-        color: #555;
-        i {
-            //color: #999;
-        }
-    }
-    .x-grid-cell-inner {
-        font-family: 'Source Sans Pro', sans-serif;
-        font-size: 13px;
-        padding: 5px 6px 3px;
-    }
-
-    .x-grid-cell-inner-action-col {
-        padding: 1px 0 10px 0;
-    }
-
-    i {
-        font-size: 16px;
-        height: auto;
-        cursor: pointer;
-    }
-}
-
-
 .bar-text .x-form-display-field-default {
     font-size: 11px;
     min-height: auto;
@@ -855,5 +829,29 @@ i.draggable {
 }
 
 
+.heading-btn {
+    cursor: pointer;
+    border-radius: 3px;
+    transition: background .3s cubic-bezier(0.23, 1, 0.32, 1);
+    text-decoration: none;
+    .x-btn-inner {
+        color: #FFF;
+        font-size: 12px;
+        padding: 5px 10px;
+    }
+    &:hover {
+        background: #1b1e26;
+        .x-btn-inner {
+            color: #FFF;
+            font-size: 12px;
+        }
+    }
+    &.x-btn-pressed {
+        background: #1b1e26;
+        -webkit-box-shadow: inset 0 3px 5px #000;
+        box-shadow: inset 0 3px 5px #000;
+    }
+}
 
-/** End Widgets styles */
+
+

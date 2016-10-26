@@ -88,27 +88,44 @@ Ext.define('Ung.widget.Report', {
 
     fetchData: function () {
         var me = this,
-            entry = me.getViewModel().get('entry'),
-            timeframe = me.getViewModel().get('widget.timeframe');
+            vm = this.getViewModel();
 
-        // console.log('fetch data - ', entry.get('title'));
+        if (vm) {
+            var entry = vm.get('entry'),
+                timeframe = vm.get('widget.timeframe');
 
-        if (entry.get('type') === 'EVENT_LIST') {
-            // fetch event data
-            //console.log('Event List');
-            me.fireEvent('afterdata');
-        } else {
-            // fetch chart data
-            this.lookupReference('chart').fireEvent('beginfetchdata');
-            Rpc.getReportData(entry.getData(), timeframe)
-                .then(function (response) {
-                    me.lookupReference('chart').fireEvent('setseries', response.list);
-                    me.fireEvent('afterdata');
-                }, function (exception) {
-                    console.log(exception);
-                    Ung.Util.exceptionToast(exception);
-                    me.fireEvent('afterdata');
-                });
+            // console.log('fetch data - ', entry.get('title'));
+
+            if (entry.get('type') === 'EVENT_LIST') {
+                // fetch event data
+                //console.log('Event List');
+                me.fireEvent('afterdata');
+            } else {
+                // fetch chart data
+                this.lookupReference('chart').fireEvent('beginfetchdata');
+                Rpc.getReportData(entry.getData(), timeframe)
+                    .then(function (response) {
+                        me.fireEvent('afterdata');
+                        me.lookupReference('chart').fireEvent('setseries', response.list);
+                    }, function (exception) {
+                        me.fireEvent('afterdata');
+                        me.lookupReference('chart').lookupReference('loader').hide();
+                        console.log(exception);
+                        // Ung.Util.exceptionToast(exception);
+
+                        if (me.down('#exception')) {
+                            me.remove('exception');
+                        }
+                        me.add({
+                            xtype: 'component',
+                            itemId: 'exception',
+                            cls: 'exception',
+                            scrollable: true,
+                            html: '<h3><i class="material-icons">error</i> <span>' + 'Widget error'.t() + '</span></h3>' +
+                                '<p>' + 'There was an issue while fetching data!'.t() + '</p>'
+                        });
+                    });
+            }
         }
     }
 });
