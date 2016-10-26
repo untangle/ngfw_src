@@ -181,10 +181,17 @@ public class RuleCondition implements JSONString, Serializable
         if ( this.matcherType != null && this.value != null ) computeMatchers();
     }
     
+    @Override
     public String toJSONString()
     {
         JSONObject jO = new JSONObject(this);
         return jO.toString();
+    }
+
+    @Override
+    public String toString()
+    {
+        return "RuleCondition[" + this.matcherType + "," + this.value + "]";
     }
     
     /**
@@ -192,10 +199,15 @@ public class RuleCondition implements JSONString, Serializable
      */
     public boolean matches( NodeSession sess )
     {
-        if (this.getInvert()) 
-            return !_matches(sess);
-        else
-            return _matches(sess);
+        try {
+            if (this.getInvert())
+                return !_matches(sess);
+            else
+                return _matches(sess);
+        } catch (Exception e) {
+            logger.warn("Failed to evaluate rule condition: " + this ,e);
+            return false;
+        }
     }
 
     /**
@@ -208,10 +220,16 @@ public class RuleCondition implements JSONString, Serializable
                             InetAddress srcAddress, InetAddress dstAddress,
                             int srcPort, int dstPort)
     {
-        if (this.getInvert()) 
-            return !_matches( protocol, srcIntf, dstIntf, srcAddress, dstAddress, srcPort, dstPort );
-        else
-            return _matches( protocol, srcIntf, dstIntf, srcAddress, dstAddress, srcPort, dstPort );
+        try {
+            if (this.getInvert())
+                return !_matches( protocol, srcIntf, dstIntf, srcAddress, dstAddress, srcPort, dstPort );
+            else
+                return _matches( protocol, srcIntf, dstIntf, srcAddress, dstAddress, srcPort, dstPort );
+        } catch (Exception e) {
+            logger.warn("Failed to evaluate rule condition: " + this ,e);
+            return false;
+        }
+
     }
     
     /**
