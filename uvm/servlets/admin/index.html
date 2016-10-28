@@ -8,6 +8,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>Untangle</title>
 
+  <script>console.time('all');</script>
+
   <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300,600,700' rel='stylesheet' type='text/css'>
   <link href="https://fonts.googleapis.com/css?family=PT+Sans:400,700" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -100,7 +102,7 @@
         <div class="bounce2"></div>
         <div class="bounce3"></div>
       </div>
-      <p id="app-message"></p>
+      <p id="app-message">Loading ...</p>
     </div>
   </div>
 
@@ -108,7 +110,7 @@
   <script src="http://localhost/jsonrpc/jsonrpc.js"></script>
   <script src="http://localhost/highcharts/highstock.js"></script>
   <script src="http://localhost/highcharts/highcharts-extra.js"></script>
-  <script src="http://localhost/ext6/ext-all-debug.js"></script>
+  <script src="http://localhost/ext6/ext-all.js"></script>
   <script src="http://localhost/ext6/classic/theme-gray/theme-gray.js"></script>
   <link rel="stylesheet" href="http://localhost/ext6/classic/theme-gray/resources/theme-gray-all.css" />
 
@@ -118,6 +120,7 @@
 
 
   <script>
+    console.time('resources');
     Highcharts.setOptions({
       global: {
         useUTC: false
@@ -130,6 +133,8 @@
     var rpc = new JSONRpcClient('http://localhost:8000/webui/JSON-RPC');
 
     Ext.onReady(function () {
+      console.timeEnd('resources');
+      Ext.get('app-message').setHtml('Fetching data ...');
       try {
           var startUpInfo = rpc.UvmContext.getWebuiStartupInfo();
       } catch (ex) {
@@ -143,11 +148,26 @@
           return rpc.translations[this.valueOf()] || '<cite>' + this.valueOf() + '</cite>';
       };
 
+
       Ext.application({
           name: 'Ung',
           extend: 'Ung.Application',
           rpc: rpc
       });
+
+
+      /*
+      Ext.Loader.loadScript({
+          url: 'root/script/ung-all.js',
+          onLoad: function () {
+              Ext.application({
+                  name: 'Ung',
+                  extend: 'Ung.Application',
+                  rpc: rpc
+              });
+          }
+      });
+      */
 
       // Disable Ext Area to avoid unwanted debug messages
       Ext.supports.MouseWheel = false;

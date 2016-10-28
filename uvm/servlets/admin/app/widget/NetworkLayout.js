@@ -10,7 +10,7 @@ Ext.define('Ung.widget.NetworkLayout', {
 
     hidden: true,
     border: false,
-    baseCls: 'widget',
+    baseCls: 'widget adding',
 
     layout: {
         type: 'vbox',
@@ -24,35 +24,11 @@ Ext.define('Ung.widget.NetworkLayout', {
     refreshIntervalSec: 0,
 
     items: [{
-        xtype: 'container',
-        layout: {
-            type: 'hbox',
-            align: 'top'
-        },
+        xtype: 'component',
         cls: 'header',
-        style: {
-            height: '50px'
-        },
-        items: [{
-            xtype: 'component',
-            flex: 1,
-            html: '<h1>' + 'Network Layout'.t() + '</h1>'
-        }, {
-            xtype: 'container',
-            margin: '10 5 0 0',
-            layout: {
-                type: 'hbox',
-                align: 'middle'
-            },
-            items: [{
-                xtype: 'button',
-                baseCls: 'action',
-                text: '<i class="material-icons">refresh</i>',
-                listeners: {
-                    click: 'fetchData'
-                }
-            }]
-        }]
+        itemId: 'header',
+        html: '<h1>' + 'Network Layout'.t() + '</h1>' +
+            '<button class="action-btn"><i class="material-icons" data-action="refresh">refresh</i></button>'
     }, {
         //xtype: 'container',
         cls: 'net-layout',
@@ -84,7 +60,7 @@ Ext.define('Ung.widget.NetworkLayout', {
         }, {
             xtype: 'component',
             cls: 'devices',
-            margin: '10 0 0 0',
+            margin: '5 0 0 0',
             height: 40,
             bind: {
                 html: '<img src="' + resourcesBaseHref + '/skins/default/images/admin/icons/interface-devices.png"><br/>{deviceCount}'

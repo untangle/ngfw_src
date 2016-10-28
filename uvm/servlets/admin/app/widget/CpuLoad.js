@@ -11,7 +11,7 @@ Ext.define('Ung.widget.CpuLoad', {
 
     hidden: true,
     border: false,
-    baseCls: 'widget small',
+    baseCls: 'widget small adding',
 
     bind: {
         hidden: '{!widget.enabled}'
@@ -23,20 +23,9 @@ Ext.define('Ung.widget.CpuLoad', {
     },
 
     items: [{
-        xtype: 'container',
-        layout: {
-            type: 'hbox',
-            align: 'top'
-        },
+        xtype: 'component',
         cls: 'header',
-        style: {
-            height: '50px'
-        },
-        items: [{
-            xtype: 'component',
-            flex: 1,
-            html: '<h1>' + 'CPU Load'.t() + '</h1>'
-        }]
+        html: '<h1>' + 'CPU Load'.t() + '</h1>'
     }, {
         xtype: 'container',
         /*
@@ -59,12 +48,6 @@ Ext.define('Ung.widget.CpuLoad', {
             bind: {
                 html: '{stats.oneMinuteLoadAvg}<br/><span>{loadLabel}</span>'
             }
-        }, {
-            xtype: 'component',
-            itemId: 'loader',
-            cls: 'loader',
-            hideMode: 'display',
-            html: '<div class="spinner"><div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div></div>'
         }]
     }]
 });

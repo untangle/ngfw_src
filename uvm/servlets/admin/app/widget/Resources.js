@@ -6,7 +6,8 @@ Ext.define('Ung.widget.Resources', {
 
     hidden: true,
     border: false,
-    baseCls: 'widget small',
+    baseCls: 'widget',
+    cls: 'small adding',
 
     bind: {
         hidden: '{!widget.enabled}'
@@ -18,23 +19,11 @@ Ext.define('Ung.widget.Resources', {
     },
 
     items: [{
-        xtype: 'container',
-        layout: {
-            type: 'hbox',
-            align: 'top'
-        },
+        xtype: 'component',
         cls: 'header',
-        style: {
-            height: '50px'
-        },
-        items: [{
-            xtype: 'component',
-            flex: 1,
-            html: '<h1>' + 'Resources'.t() + '</h1>'
-        }]
+        html: '<h1>' + 'Resources'.t() + '</h1>'
     }, {
         xtype: 'container',
-        margin: '10 0 0 0',
         layout: {
             type: 'vbox',
             align: 'stretch'

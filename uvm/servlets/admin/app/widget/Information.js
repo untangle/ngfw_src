@@ -6,7 +6,7 @@ Ext.define('Ung.widget.Information', {
 
     hidden: true,
     border: false,
-    baseCls: 'widget small',
+    baseCls: 'widget small info-widget adding',
 
     bind: {
         hidden: '{!widget.enabled}'
@@ -18,59 +18,27 @@ Ext.define('Ung.widget.Information', {
     },
 
     items: [{
-        xtype: 'container',
-        layout: {
-            type: 'hbox',
-            align: 'top'
-        },
+        xtype: 'component',
         cls: 'header',
-        style: {
-            height: '50px'
-        },
-        items: [{
-            xtype: 'component',
-            flex: 1,
-            html: '<h1>' + 'Information'.t() + '</h1>'
-        }]
+        html: '<h1>' + 'Information'.t() + '</h1>'
     }, {
-        xtype: 'container',
-        baseCls: 'info-widget',
-        layout: {
-            type: 'vbox',
-            align: 'stretch'
-        },
-        items: [{
-            xtype: 'component',
-            cls: 'info-host',
-            bind: { html: '{stats.hostname}' }
-        }, {
-            xtype: 'component',
-            cls: 'info-version',
-            bind: { html: '{stats.version}' }
-        }, {
-            layout: {
-                type: 'table',
-                columns: 2,
-                tableAttrs: {
-                    style: {
-                        width: '100%'
-                    }
-                }
-            },
-            margin: '10 0',
-            border: false,
-            defaults: {
-                border: false
-            },
-            items: [
-                { html: 'uptime'.t() + ':', cellCls: 'info-label' }, { bind: { html: '{stats.uptimeFormatted}' }, cellCls: 'info-value' },
-                { html: 'Server'.t() + ':', cellCls: 'info-label' }, { bind: { html: '{stats.appliance}' }, cellCls: 'info-value' },
-                { html: 'CPU Count'.t() + ':', cellCls: 'info-label' }, { bind: { html: '{stats.numCpus}' }, cellCls: 'info-value' },
-                { html: 'CPU Type'.t() + ':', cellCls: 'info-label' }, { bind: { html: '{stats.cpuModel}' }, cellCls: 'info-value' },
-                { html: 'Architecture'.t() + ':', cellCls: 'info-label' }, { bind: { html: '{stats.architecture}'}, cellCls: 'info-value' },
-                { html: 'Memory'.t() + ':', cellCls: 'info-label' }, { bind: { html: '{stats.totalMemory}' }, cellCls: 'info-value' },
-                { html: 'Disk'.t() + ':', cellCls: 'info-label' }, { bind: { html: '{stats.totalDisk}' }, cellCls: 'info-value' }
-            ]
-        }]
+        xtype: 'component',
+        cls: 'info-host',
+        padding: 5,
+        bind: {
+            html: '<p class="hostname">{stats.hostname}</p><p class="version">{stats.version}</p>'
+        }
+    }, {
+        xtype: 'component',
+        margin: '10 0',
+        bind : {
+            html: '<span class="info-lbl">' + 'uptime'.t() + ':</span><span class="info-val">{stats.uptimeFormatted}</span><br/>' +
+                '<span class="info-lbl">' + 'Server'.t() + ':</span><span class="info-val">{stats.appliance}</span><br/>' +
+                '<span class="info-lbl">' + 'CPU Count'.t() + ':</span><span class="info-val">{stats.numCpus}</span><br/>' +
+                '<span class="info-lbl">' + 'CPU Type'.t() + ':</span><span class="info-val">{stats.cpuModel}</span><br/>' +
+                '<span class="info-lbl">' + 'Architecture'.t() + ':</span><span class="info-val">{stats.architecture}</span><br/>' +
+                '<span class="info-lbl">' + 'Memory'.t() + ':</span><span class="info-val">{stats.totalMemory}</span><br/>' +
+                '<span class="info-lbl">' + 'Disk'.t() + ':</span><span class="info-val">{stats.totalDisk}</span>'
+        }
     }]
 });

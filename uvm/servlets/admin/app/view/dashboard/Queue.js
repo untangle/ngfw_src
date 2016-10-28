@@ -5,6 +5,7 @@ Ext.define('Ung.view.dashboard.Queue', {
     paused: false,
     queue: [],
     queueMap: {},
+    tout: null,
     add: function (widget) {
         if (!this.queueMap[widget.id]) {
             this.queue.push(widget);
@@ -25,12 +26,20 @@ Ext.define('Ung.view.dashboard.Queue', {
         this.process();
     },
     remove: function (widget) {
+        console.log('removing');
         if (this.processing) {
             this.processing = false;
         }
     },
     process: function () {
-        //console.log(this.processing);
+        var me = this;
+        // ensure processing is false in some cases when ir remains true
+        clearTimeout(this.tout);
+        this.tout = setTimeout(function () {
+            me.processing = false;
+            me.queue = [];
+        }, 3000);
+
         //console.log(this.queue);
         if (!this.paused && !this.processing && this.queue.length > 0) {
             this.processing = true;

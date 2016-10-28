@@ -21,6 +21,8 @@ Ext.define('Ung.Application', {
 
     defaultToken : '',
 
+    // mainView: 'Ung.view.main.Main',
+
     init: function () {
 
     },
@@ -31,15 +33,41 @@ Ext.define('Ung.Application', {
 
         Ext.getStore('policies').loadData(me.rpc.appsViews);
 
+        // Ext.get('app-message').setHtml('Reports ...');
+
         // need to check if reports enabled an load it if so
-        if (me.rpc.nodeManager.node('untangle-node-reports')) {
-            Rpc.loadReports().then(function (reports) {
-                Ext.getStore('reports').loadData(reports.list);
+
+        //Rpc.loadDashboardSettings().then(function(settings) {
+
+            //Ext.getStore('widgets').loadData(settings.widgets.list);
+
+            if (me.rpc.nodeManager.node('untangle-node-reports')) {
+                Rpc.loadReports().then(function (reports) {
+                    Ext.getStore('reports').loadData(reports.list);
+                    me.loadMainView();
+                });
+            } else {
                 me.loadMainView();
-            });
-        } else {
-            me.loadMainView();
-        }
+            }
+            // me.loadMainView();
+            // me.getView().setSettings(settings);
+            // if (vm.get('reportsInstalled')) {
+            //     // load unavailable apps needed for showing the widgets
+            //     console.time('unavailApps');
+            //     rpc.reportsManager.getUnavailableApplicationsMap(function (result, ex) {
+            //         if (ex) { Ung.Util.exceptionToast(ex); return false; }
+
+            //         Ext.getStore('unavailableApps').loadRawData(result.map);
+            //         Ext.getStore('widgets').loadData(settings.widgets.list);
+            //         console.timeEnd('unavailApps');
+            //         me.loadWidgets();
+            //     });
+            // } else {
+            //     Ext.getStore('widgets').loadData(settings.widgets.list);
+            //     me.loadWidgets();
+            // }
+            // me.populateMenus();
+        //});
 
         // uncomment this to retreive the class load order inside browser
         // Ung.Util.getClassOrder();
@@ -57,11 +85,13 @@ Ext.define('Ung.Application', {
         Ung.util.Metrics.start();
 
         // destroy app loader
-        Ext.Function.defer(function() {
-            Ext.get('app-loader').addCls('removing');
-            Ext.Function.defer(function () {
-                Ext.get('app-loader').destroy();
-            }, 200);
-        }, 150);
+        Ext.get('app-loader').destroy();
+
+        // Ext.Function.defer(function() {
+        //     Ext.get('app-loader').addCls('removing');
+        //     Ext.Function.defer(function () {
+        //         Ext.get('app-loader').destroy();
+        //     }, 300);
+        // }, 1500);
     }
 });

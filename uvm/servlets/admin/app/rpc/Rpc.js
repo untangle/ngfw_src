@@ -30,10 +30,12 @@ Ext.define('Ung.rpc.Rpc', {
     },
 
     loadReports: function () {
+        console.time('loadReports');
         var deferred = new Ext.Deferred();
         if (this.rpc.nodeManager.node('untangle-node-reports')) {
             this.rpc.reportsManager = this.rpc.nodeManager.node('untangle-node-reports').getReportsManager();
             this.rpc.reportsManager.getReportEntries(function (result, exception) {
+                console.timeEnd('loadReports');
                 if (exception) { deferred.reject(exception); }
                 deferred.resolve(result);
             });
@@ -45,8 +47,10 @@ Ext.define('Ung.rpc.Rpc', {
     },
 
     loadDashboardSettings: function () {
+        console.time('dashboardSettings');
         var deferred = new Ext.Deferred();
         this.rpc.dashboardManager.getSettings(function (settings, exception) {
+            console.timeEnd('dashboardSettings');
             if (exception) { deferred.reject(exception); }
             //Ung.app.dashboardSettings = result;
 

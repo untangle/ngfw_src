@@ -252,8 +252,8 @@ Ext.define('Ung.widget.CpuLoadController', {
             series: [{
                 data: [0]
             }]
-
         });
+        this.addPoint();
     },
 
     onResize: function () {
@@ -261,15 +261,12 @@ Ext.define('Ung.widget.CpuLoadController', {
         this.gaugeChart.reflow();
     },
 
-    addPoint: function (store) {
+    addPoint: function () {
+        var store = Ext.getStore('stats');
         var vm = this.getViewModel(),
             stats = store.first().getData(),
             medLimit = stats.numCpus + 1,
             highLimit = stats.numCpus + 4;
-
-        if (this.getView().down('#loader')) {
-            this.getView().down('#loader').destroy();
-        }
 
         this.lineChart.yAxis[0].update({
             minRange: stats.numCpus

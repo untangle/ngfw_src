@@ -28,63 +28,72 @@ Ext.define('Ung.widget.Report', {
         align: 'stretch'
     },
     border: false,
-    baseCls: 'widget',
+    baseCls: 'widget adding',
 
     items: [{
-        xtype: 'container',
-        layout: {
-            type: 'hbox',
-            align: 'top'
-        },
+        xtype: 'component',
         cls: 'header',
-        style: {
-            height: '50px'
-        },
-        items: [{
-            xtype: 'component',
-            flex: 1,
-            bind: {
-                html: '{title}'
-            }
-        }, {
-            xtype: 'container',
-            margin: '10 5 0 0',
-            layout: {
-                type: 'hbox',
-                align: 'middle'
-            },
-            items: [/*{
-                xtype: 'button',
-                baseCls: 'action',
-                text: '<i class="material-icons">settings_ethernet</i>',
-                listeners: {
-                    click: 'resizeWidget'
-                }
-            }, {
-                xtype: 'button',
-                baseCls: 'action',
-                text: '<i class="material-icons">settings</i>',
-                listeners: {
-                    click: 'showEditor'
-                }
-            },*/ {
-                xtype: 'button',
-                baseCls: 'action',
-                text: '<i class="material-icons">refresh</i>',
-                listeners: {
-                    click: 'fetchData'
-                }
-            }, {
-                xtype: 'button',
-                baseCls: 'action',
-                text: '<i class="material-icons">call_made</i>',
-                bind: {
-                    href: '#reports/{widget.entryId}'
-                },
-                hrefTarget: '_self'
-            }]
-        }]
+        itemId: 'header',
+        bind: {
+            html: '{title}' +
+                '<button class="action-btn"><i class="material-icons" data-action="refresh">refresh</i></button>'
+        }
     }],
+    // {
+    //     xtype: 'container',
+    //     layout: {
+    //         type: 'hbox',
+    //         align: 'top'
+    //     },
+    //     cls: 'header',
+    //     style: {
+    //         height: '50px'
+    //     },
+    //     items: [{
+    //         xtype: 'component',
+    //         flex: 1,
+    //         bind: {
+    //             html: '{title}'
+    //         }
+    //     }, {
+    //         xtype: 'container',
+    //         margin: '10 5 0 0',
+    //         layout: {
+    //             type: 'hbox',
+    //             align: 'middle'
+    //         },
+    //         items: [/*{
+    //             xtype: 'button',
+    //             baseCls: 'action',
+    //             text: '<i class="material-icons">settings_ethernet</i>',
+    //             listeners: {
+    //                 click: 'resizeWidget'
+    //             }
+    //         }, {
+    //             xtype: 'button',
+    //             baseCls: 'action',
+    //             text: '<i class="material-icons">settings</i>',
+    //             listeners: {
+    //                 click: 'showEditor'
+    //             }
+    //         },*/ {
+    //             xtype: 'button',
+    //             baseCls: 'action',
+    //             text: '<i class="material-icons">refresh</i>',
+    //             listeners: {
+    //                 click: 'fetchData'
+    //             }
+    //         }, {
+    //             xtype: 'button',
+    //             baseCls: 'action',
+    //             text: '<i class="material-icons">call_made</i>',
+    //             bind: {
+    //                 href: '#reports/{widget.entryId}'
+    //             },
+    //             hrefTarget: '_self'
+    //         }]
+    //     }]
+    // }],
 
     fetchData: function () {
         var me = this,

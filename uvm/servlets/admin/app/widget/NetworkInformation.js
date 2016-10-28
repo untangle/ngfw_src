@@ -6,7 +6,7 @@ Ext.define('Ung.widget.NetworkInformation', {
 
     hidden: true,
     border: false,
-    baseCls: 'widget small',
+    baseCls: 'widget small adding',
 
     layout: {
         type: 'vbox',
@@ -20,35 +20,11 @@ Ext.define('Ung.widget.NetworkInformation', {
     refreshIntervalSec: 3,
 
     items: [{
-        xtype: 'container',
-        layout: {
-            type: 'hbox',
-            align: 'top'
-        },
+        xtype: 'component',
         cls: 'header',
-        style: {
-            height: '50px'
-        },
-        items: [{
-            xtype: 'component',
-            flex: 1,
-            html: '<h1>' + 'Network Information'.t() + '</h1>'
-        }, {
-            xtype: 'container',
-            margin: '10 5 0 0',
-            layout: {
-                type: 'hbox',
-                align: 'middle'
-            },
-            items: [{
-                xtype: 'button',
-                baseCls: 'action',
-                text: '<i class="material-icons">refresh</i>',
-                listeners: {
-                    click: 'fetchData'
-                }
-            }]
-        }]
+        itemId: 'header',
+        html: '<h1>' + 'Network Information'.t() + '</h1>' +
+            '<button class="action-btn"><i class="material-icons" data-action="refresh">refresh</i></button>'
     }, {
         xtype: 'container',
         //cls: 'wg-wrapper flex',

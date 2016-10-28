@@ -108,9 +108,10 @@ cite {
     -webkit-flex-wrap: wrap;
     width: 100%;
     height: 100%;
-    padding: 8px;
+    // padding: 8px;
     vertical-align: top;
-    background: darkgray;
+    // background: darkgray;
+    box-sizing: border-box;
 }
 
 .dashboard .x-autocontainer-innerCt::after {
@@ -146,7 +147,7 @@ cite {
     flex-grow: 1;
     //overflow: hidden;
     position: relative;
-    transition: transform .3s cubic-bezier(0.23, 1, 0.32, 1), opacity .3s cubic-bezier(0.23, 1, 0.32, 1);
+    transition: transform .3s cubic-bezier(0.23, 1, 0.32, 1), opacity 1s cubic-bezier(0.23, 1, 0.32, 1);
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
     &.highlight-item {
@@ -172,72 +173,6 @@ cite {
 .widget.x-large {
     width: 550px;
 }
-
-
-.widget .header {
-    font-family: 'Source Sans Pro', sans-serif;
-    height: 50px;
-    position: relative;
-}
-.widget .header h1, .editor-header h1 {
-    /*font-family: 'Roboto', sans-serif;*/
-    padding: 6px 10px 0 10px;
-    margin: 0;
-    font-size: 20px;
-    font-weight: 300;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-}
-.widget .header p, .editor-header p {
-    font-size: 12px;
-    margin: 0 10px 3px 10px;
-    color: #333;
-    line-height: 1;
-}
-
-
-.widget:hover .header .action {
-    opacity: 1;
-}
-
-.widget .header .action {
-    border: 0;
-    border-radius: 50%;
-    background: none;
-    cursor: pointer;
-    opacity: 0;
-    transition: opacity .3s cubic-bezier(0.23, 1, 0.32, 1);
-}
-.widget .header .action i {
-    color: #777;
-    font-size: 16px;
-    transition: color .3s cubic-bezier(0.23, 1, 0.32, 1);
-}
-
-.widget .header .action:hover i {
-    color: #ec3610;
-}
-
-
-.widget .chart {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-}
-
-.widget .settings {
-    position: absolute;
-    top: 50px; left: 0; right: 0; bottom: 0;
-}
-
-.widget.moved {
-    background: rgba(100, 100, 100, 0.3);
-    transform: scale(0.8);
-}
-
 
 /*
 .widget .highcharts-axis-labels {
@@ -617,6 +552,7 @@ i.draggable {
 }
 
 .chart {
+    margin-top: 5px;
     width: 100%;
     height: 100%;
     position: absolute;
@@ -726,106 +662,6 @@ i.draggable {
     font-size: 11px;
     min-height: auto;
     margin-top: 2px;
-}
-
-
-
-/** Widgets styles **/
-
-.info-widget {
-    .info-host {
-        text-align: center;
-        font-weight: 600;
-        font-size: 16px;
-        background-color: #EEE;
-        padding: 5px 0 3px;
-        margin-top: 10px;
-    }
-    .info-version {
-        text-align: center;
-        color: #555;
-        background-color: #EEE;
-        padding: 0 0 5px;
-    }
-    .info-uptime {
-        text-align: center;
-        padding: 5px;
-    }
-    .info-label {
-        width: 50%;
-        text-align: right;
-        padding: 3px 5px 3px 10px;
-        vertical-align: top;
-        & > div > div {
-            font-size: 14px;
-            font-family: 'PT Sans', sans-serif;
-            color: #555;
-        }
-    }
-    .info-value {
-        width: 50%;
-        padding: 3px 5px 3px 0;
-        vertical-align: top;
-        & > div > div {
-            font-size: 14px;
-            font-family: 'PT Sans', sans-serif;
-            font-weight: 600;
-        }
-    }
-}
-
-
-.load-bar {
-    width: 100%;
-    background: #EEF1F5;
-    height: 16px;
-    border-radius: 10px;
-    position: relative;
-    overflow: hidden;
-    z-index: 10;
-    box-shadow: 0 0 2px rgba(0, 0, 0, .25);
-    &-inner {
-        background: #E1B505;
-        width: 100%;
-        height: 16px;
-        position: relative;
-        transition: left 0.35s ease-in;
-        box-shadow: 1px 0 1px rgba(0, 0, 0, .3);
-        //top: 0;
-    }
-    p {
-        position: absolute;
-        right: 5px;
-        top: 0;
-        margin: 0;
-    }
-    &-values {
-        width: 100%;
-        display: table;
-        font-size: 14px;
-        font-family: 'PT Sans', sans-serif;
-        font-weight: 400;
-        line-height: 1;
-        margin-top: 2px;
-        color: #555;
-        position: relative;
-        .load-used {
-            display: table-cell;
-            padding-left: 5px;
-            white-space: nowrap;
-            overflow: hidden;
-        }
-        .load-free {
-            display: table-cell;
-            text-align: right;
-            padding-right: 5px;
-        }
-        span {
-            line-height: 1;
-            font-size: 11px;
-            color: #999;
-        }
-    }
 }
 
 
