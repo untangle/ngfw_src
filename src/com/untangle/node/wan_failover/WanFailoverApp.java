@@ -19,10 +19,10 @@ import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.ExecManager;
+import com.untangle.uvm.HookCallback;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.License;
 import com.untangle.uvm.node.NodeMetric;
-import com.untangle.uvm.network.NetworkSettingsListener;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.util.I18nUtil;
@@ -45,7 +45,7 @@ public class WanFailoverApp extends NodeBase
 
     private final PipelineConnector[] connectors = new PipelineConnector[] {};
 
-    private final NetworkListener listener;
+    private final WanFailoverNetworkHookCallback networkHookCallback = new WanFailoverNetworkHookCallback();
 
     private WanFailoverSettings settings = null;
 
@@ -64,8 +64,6 @@ public class WanFailoverApp extends NodeBase
         this.addMetric(new NodeMetric(STAT_CHANGE, I18nUtil.marktr("WAN Change")));
         this.addMetric(new NodeMetric(STAT_RECONNECTS, I18nUtil.marktr("Reconnects")));
         this.addMetric(new NodeMetric(STAT_DISCONNECTS, I18nUtil.marktr("Disconnects")));
-
-        this.listener = new NetworkListener();
     }
 
     @Override
@@ -158,8 +156,7 @@ public class WanFailoverApp extends NodeBase
             throw new RuntimeException( "Invalid License." );
         }
 
-        /* Register a listener, this should hang out until the node is removed dies. */
-        UvmContextFactory.context().networkManager().registerListener( this.listener );
+        UvmContextFactory.context().hookManager().registerCallback( com.untangle.uvm.HookManager.NETWORK_SETTINGS_CHANGE, this.networkHookCallback );
 
         if (WanFailoverApp.execManager == null) {
             WanFailoverApp.execManager = UvmContextFactory.context().createExecManager();
@@ -175,7 +172,7 @@ public class WanFailoverApp extends NodeBase
     @Override
     protected synchronized void postStop( boolean isPermanentTransition )
     {
-        UvmContextFactory.context().networkManager().unregisterListener( this.listener );
+        UvmContextFactory.context().hookManager().unregisterCallback( com.untangle.uvm.HookManager.NETWORK_SETTINGS_CHANGE, this.networkHookCallback );
 
         if (this.wanFailoverTesterMonitor != null) {
             this.wanFailoverTesterMonitor.stop();
@@ -227,10 +224,22 @@ public class WanFailoverApp extends NodeBase
             this.wanFailoverTesterMonitor.reconfigure();
     }
 
-    private class NetworkListener implements NetworkSettingsListener
+    private class WanFailoverNetworkHookCallback implements HookCallback
     {
-        public void event( NetworkSettings settings )
+        public String getName()
         {
+            return "wan-failover-network-settings-change-hook";
+        }
+
+        public void callback( Object o )
+        {
+            if ( ! (o instanceof NetworkSettings) ) {
+                logger.warn( "Invalid network settings: " + o);
+                return;
+            }
+                 
+            NetworkSettings settings = (NetworkSettings)o;
+
             if ( logger.isDebugEnabled()) logger.debug( "network settings changed:" + settings );
             try {
                 networkSettingsEvent( settings );
