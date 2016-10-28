@@ -17,7 +17,7 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.ExecManagerResult;
-import com.untangle.uvm.network.NetworkSettingsListener;
+import com.untangle.uvm.HookCallback;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.network.InterfaceStatus;
@@ -49,7 +49,7 @@ public class OpenVpnNodeImpl extends NodeBase
     private final OpenVpnMonitor openVpnMonitor;
     private final OpenVpnManager openVpnManager = new OpenVpnManager();
 
-    private final NetworkListener listener;
+    private final OpenVpnHookCallback openVpnHookCallback;
     
     private OpenVpnSettings settings;
 
@@ -61,7 +61,7 @@ public class OpenVpnNodeImpl extends NodeBase
 
         this.handler          = new EventHandler( this );
         this.openVpnMonitor   = new OpenVpnMonitor( this );
-        this.listener         = new NetworkListener();
+        this.openVpnHookCallback = new OpenVpnHookCallback();
 
         this.addMetric(new NodeMetric(STAT_PASS, I18nUtil.marktr("Sessions passed")));
         this.addMetric(new NodeMetric(STAT_CONNECT, I18nUtil.marktr("Clients Connected")));
@@ -127,7 +127,7 @@ public class OpenVpnNodeImpl extends NodeBase
             throw new RuntimeException(e);
         }
 
-        UvmContextFactory.context().networkManager().registerListener( this.listener );
+        UvmContextFactory.context().hookManager().registerCallback( com.untangle.uvm.HookManager.NETWORK_SETTINGS_CHANGE, this.openVpnHookCallback );
 
         this.openVpnMonitor.start();
         this.openVpnMonitor.enable();
@@ -136,7 +136,7 @@ public class OpenVpnNodeImpl extends NodeBase
     @Override
     protected void preStop( boolean isPermanentTransition )
     {
-        UvmContextFactory.context().networkManager().unregisterListener( this.listener );
+        UvmContextFactory.context().hookManager().unregisterCallback( com.untangle.uvm.HookManager.NETWORK_SETTINGS_CHANGE, this.openVpnHookCallback );
         
         try {
             this.openVpnMonitor.disable();
@@ -640,11 +640,25 @@ public class OpenVpnNodeImpl extends NodeBase
         return results;
     }
 
-    private class NetworkListener implements NetworkSettingsListener
+    private class OpenVpnHookCallback implements HookCallback
     {
-        public void event( NetworkSettings settings )
+        public String getName()
         {
-            if ( logger.isDebugEnabled()) logger.debug( "network settings changed:" + settings );
+            return "openvpn-network-settings-change-hook";
+        }
+        
+        public void callback( Object o )
+        {
+            if ( ! (o instanceof NetworkSettings) ) {
+                logger.warn( "Invalid network settings: " + o);
+                return;
+            }
+                 
+            NetworkSettings settings = (NetworkSettings)o;
+
+            if ( logger.isDebugEnabled())
+                logger.debug( "network settings changed:" + settings );
+            
             try {
                 networkSettingsEvent( settings );
             } catch( Exception e ) {

@@ -11,7 +11,6 @@ import com.untangle.uvm.network.InterfaceStatus;
 import com.untangle.uvm.network.DeviceStatus;
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.network.NetworkSettings;
-import com.untangle.uvm.network.NetworkSettingsListener;
 
 /**
  * NetworkManager interface
@@ -22,10 +21,6 @@ public interface NetworkManager
     NetworkSettings getNetworkSettings();
 
     void setNetworkSettings( NetworkSettings newSettings );
-
-    void registerListener( NetworkSettingsListener networkListener );
-
-    void unregisterListener( NetworkSettingsListener networkListener );
 
     void renewDhcpLease( int interfaceId );
     
