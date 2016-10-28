@@ -25,9 +25,9 @@ import javax.servlet.http.HttpServletResponse;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.NetworkManager;
+import com.untangle.uvm.HookManager;
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.network.NetworkSettings;
-import com.untangle.uvm.network.NetworkSettingsListener;
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.network.InterfaceStatus;
 import com.untangle.uvm.network.DeviceStatus;
@@ -74,9 +74,6 @@ public class NetworkManagerImpl implements NetworkManager
     
     private NetworkSettings networkSettings;
 
-    /* networkListeners stores parties interested in being notified of network settings change */
-    private LinkedList<NetworkSettingsListener> networkListeners = new LinkedList<NetworkSettingsListener>();
-    
     protected NetworkManagerImpl()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
@@ -264,7 +261,7 @@ public class NetworkManagerImpl implements NetworkManager
         }
         
         // notify interested parties that the settings have changed
-        callNetworkListeners();
+        UvmContextFactory.context().hookManager().callCallbacks( HookManager.NETWORK_SETTINGS_CHANGE, this.networkSettings );
 
         if ( errorOccurred ) {
             throw new RuntimeException(errorStr);
@@ -311,22 +308,6 @@ public class NetworkManagerImpl implements NetworkManager
         } catch (Exception e) {}
     }
         
-    /**
-     * Register a listener for network settings changes
-     */
-    public void registerListener( NetworkSettingsListener networkListener )
-    {
-        this.networkListeners.add( networkListener );
-    }
-
-    /**
-     * Unregister a listener for network settings changes
-     */
-    public void unregisterListener( NetworkSettingsListener networkListener )
-    {
-        this.networkListeners.remove( networkListener );
-    }
-
     public List<InterfaceSettings> getEnabledInterfaces()
     {
         LinkedList<InterfaceSettings> newList = new LinkedList<InterfaceSettings>();
@@ -1398,24 +1379,6 @@ public class NetworkManagerImpl implements NetworkManager
             logger.warn("Exception initializing DHCP Address: ",e);
             interfaceSettings.setDhcpEnabled( false );
         }
-    }
-
-    /**
-     * Call all the networkListeners
-     */
-    private void callNetworkListeners()
-    {
-        logger.debug( "Calling network listeners." );
-        for ( NetworkSettingsListener listener : this.networkListeners ) {
-            if ( logger.isDebugEnabled()) logger.debug( "Calling listener: " + listener );
-
-            try {
-                listener.event( this.networkSettings );
-            } catch ( Exception e ) {
-                logger.error( "Exception calling listener", e );
-            }
-        }
-        logger.debug( "Done calling network listeners." );
     }
 
     private QosSettings defaultQosSettings()

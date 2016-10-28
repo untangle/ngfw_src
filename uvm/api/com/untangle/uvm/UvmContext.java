@@ -181,6 +181,13 @@ public interface UvmContext
      * @return the BackupManager.
      */
     BackupManager backupManager();
+
+    /**
+     * Get the <code>HookManager</code> singleton.
+     *
+     * @return the HookManager.
+     */
+    HookManager hookManager();
     
     /**
      * Get the NetcapManager

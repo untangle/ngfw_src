@@ -96,6 +96,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private SessionMonitorImpl sessionMonitor;
     private ConntrackMonitorImpl conntrackMonitor;
     private BackupManagerImpl backupManager;
+    private HookManagerImpl hookManager;
     private LocalDirectoryImpl localDirectory;
     private ExecManagerImpl execManager;
     private SystemManagerImpl systemManager;
@@ -259,6 +260,11 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     public BackupManager backupManager()
     {
         return this.backupManager;
+    }
+
+    public HookManager hookManager()
+    {
+        return this.hookManager;
     }
     
     public PipelineFoundryImpl pipelineFoundry()
@@ -804,6 +810,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         createUID();
 
+        this.hookManager = HookManagerImpl.getInstance();
+        
         this.certCacheManager = new CertCacheManagerImpl();
 
         this.sessionMonitor = new SessionMonitorImpl();

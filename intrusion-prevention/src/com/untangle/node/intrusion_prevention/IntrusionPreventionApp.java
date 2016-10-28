@@ -33,12 +33,12 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
-import com.untangle.uvm.servlet.DownloadHandler;
+import com.untangle.uvm.HookCallback;
 import com.untangle.uvm.ExecManager;
 import com.untangle.uvm.ExecManagerResult;
+import com.untangle.uvm.ExecManagerResultReader;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.IOUtil;
-import com.untangle.uvm.network.NetworkSettingsListener;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.network.InterfaceStatus;
@@ -50,7 +50,7 @@ import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipelineConnector;
-import com.untangle.uvm.ExecManagerResultReader;
+import com.untangle.uvm.servlet.DownloadHandler;
 
 public class IntrusionPreventionApp extends NodeBase
 {
@@ -74,7 +74,7 @@ public class IntrusionPreventionApp extends NodeBase
     private float memoryThreshold = .25f;
     private boolean updatedSettingsFlag = false;
 
-    private final NetworkListener listener;
+    private final HookCallback networkSettingsChangeHook;
 
     private List<IPMaskedAddress> homeNetworks = null;
     private List<String> interfaceIds = null;
@@ -86,7 +86,7 @@ public class IntrusionPreventionApp extends NodeBase
         handler = new EventHandler(this);
         this.homeNetworks = this.calculateHomeNetworks( UvmContextFactory.context().networkManager().getNetworkSettings(), false );
         this.interfaceIds = calculateInterfaces( UvmContextFactory.context().networkManager().getNetworkSettings() );
-        this.listener = new NetworkListener();
+        this.networkSettingsChangeHook = new IntrusionPreventionNetworkSettingsHook();
 
         this.addMetric(new NodeMetric(STAT_SCAN, I18nUtil.marktr("Sessions scanned")));
         this.addMetric(new NodeMetric(STAT_DETECT, I18nUtil.marktr("Sessions logged")));
@@ -123,7 +123,7 @@ public class IntrusionPreventionApp extends NodeBase
     @Override
     protected void preStop( boolean isPermanentTransition )
     {
-        UvmContextFactory.context().networkManager().unregisterListener( this.listener );
+        UvmContextFactory.context().hookManager().registerCallback( com.untangle.uvm.HookManager.NETWORK_SETTINGS_CHANGE, this.networkSettingsChangeHook );
         try{
             this.ipsEventMonitor.disable();
         }catch( Exception e ){
@@ -147,7 +147,7 @@ public class IntrusionPreventionApp extends NodeBase
             throw new RuntimeException(i18nUtil.tr("The configuration wizard must be completed before enabling Intrusion Prevention"));
         }
         UvmContextFactory.context().daemonManager().incrementUsageCount( "snort" );
-        UvmContextFactory.context().networkManager().registerListener( this.listener );
+        UvmContextFactory.context().hookManager().unregisterCallback( com.untangle.uvm.HookManager.NETWORK_SETTINGS_CHANGE, this.networkSettingsChangeHook );
         this.ipsEventMonitor.start();
         this.ipsEventMonitor.enable();
     }
@@ -736,10 +736,22 @@ public class IntrusionPreventionApp extends NodeBase
         }
     }
 
-    private class NetworkListener implements NetworkSettingsListener
+    private class IntrusionPreventionNetworkSettingsHook implements HookCallback
     {
-        public void event( NetworkSettings settings )
+        public String getName()
         {
+            return "intrusion-prevention-network-settings-change-hook";
+        }
+
+        public void callback( Object o )
+        {
+            if ( ! (o instanceof NetworkSettings) ) {
+                logger.warn( "Invalid network settings: " + o);
+                return;
+            }
+                 
+            NetworkSettings settings = (NetworkSettings)o;
+
             if ( logger.isDebugEnabled()){
                 logger.debug( "network settings changed:" + settings );  
             } 

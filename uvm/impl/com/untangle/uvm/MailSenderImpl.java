@@ -49,7 +49,6 @@ import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.network.NetworkSettings;
-import com.untangle.uvm.network.NetworkSettingsListener;
 import com.untangle.uvm.util.I18nUtil;
 
 /**
@@ -112,6 +111,8 @@ public class MailSenderImpl implements MailSender
     // This is the session used to send report mail inside the organization
     private Session mailSession;
 
+    private MailSenderNetworkSettingsHook networkSettingsChangeHook = new MailSenderNetworkSettingsHook();
+    
     private final Logger logger = Logger.getLogger(getClass());
 
     private MailSenderImpl()
@@ -200,13 +201,7 @@ public class MailSenderImpl implements MailSender
     // is up and runing
     void postInit()
     {
-        ((NetworkManagerImpl)UvmContextFactory.context().networkManager()).
-            registerListener(new NetworkSettingsListener() {
-                    public void event( NetworkSettings settings )
-                    {
-                        syncConfigFiles();
-                    }
-                });
+        UvmContextFactory.context().hookManager().registerCallback( com.untangle.uvm.HookManager.NETWORK_SETTINGS_CHANGE, this.networkSettingsChangeHook );
     }
 
     static MailSenderImpl mailSender()
@@ -1130,4 +1125,19 @@ public class MailSenderImpl implements MailSender
         } catch ( Exception ex ) {
         }
     }
+
+    private class MailSenderNetworkSettingsHook implements HookCallback
+    {
+        public String getName()
+        {
+            return "mail-sender-network-settings-change-hook";
+        }
+
+        public void callback( Object o )
+        {
+            syncConfigFiles();
+        }
+    }
+
 }
+
