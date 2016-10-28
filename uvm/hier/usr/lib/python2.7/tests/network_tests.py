@@ -1271,6 +1271,9 @@ class NetworkTests(unittest2.TestCase):
         upnpcExists = remote_control.runCommand("test -x /usr/bin/upnpc")
         if upnpcExists != 0:
             raise unittest2.SkipTest("Upnpc app needs to be installed on client")
+        wan_IP = uvmContext.networkManager().getFirstWanAddress()
+        if global_functions.isBridged(wan_IP):
+            raise unittest2.SkipTest("Unable to disable upnp on bridged configurations")
         netsettings = uvmContext.networkManager().getNetworkSettings()
         netsettings['upnpSettings']['upnpEnabled'] = False
         uvmContext.networkManager().setNetworkSettings(netsettings)
