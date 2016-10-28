@@ -13,10 +13,10 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
+import com.untangle.uvm.HookCallback;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.node.License;
 import com.untangle.uvm.node.NodeMetric;
-import com.untangle.uvm.network.NetworkSettingsListener;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.util.I18nUtil;
@@ -36,7 +36,7 @@ public class WanBalancerApp extends NodeBase
     private final PipelineConnector connector;
     private final PipelineConnector[] connectors;
 
-    private final NetworkListener listener;
+    private final WanBalancerNetworkHookCallback networkHookCallback = new WanBalancerNetworkHookCallback();
 
     private WanBalancerSettings settings = null;
         
@@ -46,7 +46,6 @@ public class WanBalancerApp extends NodeBase
     {
         super( nodeSettings, nodeProperties );
 
-        this.listener = new NetworkListener();
         updateNodeMetrics( );
 
         /* premium = false because the handler is just used for monitoring & stats so it should still handle traffic even for hosts over the limit */
@@ -115,7 +114,7 @@ public class WanBalancerApp extends NodeBase
             throw new RuntimeException( "Invalid License." );
         }
 
-        UvmContextFactory.context().networkManager().registerListener( this.listener );
+        UvmContextFactory.context().hookManager().registerCallback( com.untangle.uvm.HookManager.NETWORK_SETTINGS_CHANGE, this.networkHookCallback );
 
         // if this is permanent write the enabled version of the scripts and run them
         if ( isPermanentTransition )
@@ -125,7 +124,7 @@ public class WanBalancerApp extends NodeBase
     @Override
     protected void postStop( boolean isPermanentTransition ) 
     {
-        UvmContextFactory.context().networkManager().unregisterListener( this.listener );
+        UvmContextFactory.context().hookManager().unregisterCallback( com.untangle.uvm.HookManager.NETWORK_SETTINGS_CHANGE, this.networkHookCallback );
 
         // if this is permanent write the disabled version of the scripts and run them
         if ( isPermanentTransition )
@@ -294,10 +293,22 @@ public class WanBalancerApp extends NodeBase
         
     }
 
-    private class NetworkListener implements NetworkSettingsListener
+    private class WanBalancerNetworkHookCallback implements HookCallback
     {
-        public void event( NetworkSettings settings )
+        public String getName()
         {
+            return "wan-balancer-network-settings-change-hook";
+        }
+
+        public void callback( Object o )
+        {
+            if ( ! (o instanceof NetworkSettings) ) {
+                logger.warn( "Invalid network settings: " + o);
+                return;
+            }
+                 
+            NetworkSettings settings = (NetworkSettings)o;
+
             if ( logger.isDebugEnabled()) logger.debug( "network settings changed:" + settings );
             try {
                 networkSettingsEvent( settings );
