@@ -12,7 +12,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
 
     control: {
         '#': {
-            beforerender: 'initDashboard'
+            afterrender: 'initDashboard'
         }
     },
 
@@ -34,7 +34,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
 
         // update dashboard when Reports app is installed/removed or enabled/disabled
         vm.bind('{reportsEnabled}', function() {
-            me.loadWidgets();
+            // me.loadWidgets();
         });
         vm.set('managerOpen', false);
     },
@@ -49,21 +49,41 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         // load the dashboard settings
         Rpc.loadDashboardSettings().then(function(settings) {
             me.getView().setSettings(settings);
-
             if (vm.get('reportsInstalled')) {
                 // load unavailable apps needed for showing the widgets
+                console.time('unavailApps');
                 rpc.reportsManager.getUnavailableApplicationsMap(function (result, ex) {
                     if (ex) { Ung.Util.exceptionToast(ex); return false; }
 
                     Ext.getStore('unavailableApps').loadRawData(result.map);
                     Ext.getStore('widgets').loadData(settings.widgets.list);
+                    console.timeEnd('unavailApps');
                     me.loadWidgets();
                 });
             } else {
                 Ext.getStore('widgets').loadData(settings.widgets.list);
                 me.loadWidgets();
             }
+            me.populateMenus();
         });
+
+        // if (vm.get('reportsInstalled')) {
+        //     // load unavailable apps needed for showing the widgets
+        //     console.time('unavailApps');
+        //     rpc.reportsManager.getUnavailableApplicationsMap(function (result, ex) {
+        //         if (ex) { Ung.Util.exceptionToast(ex); return false; }
+
+        //         Ext.getStore('unavailableApps').loadRawData(result.map);
+        //         //Ext.getStore('widgets').loadData(settings.widgets.list);
+        //         console.timeEnd('unavailApps');
+        //         me.loadWidgets();
+        //     });
+        // } else {
+        //     //Ext.getStore('widgets').loadData(settings.widgets.list);
+        //     me.loadWidgets();
+        // }
+
+
     },
 
 
@@ -71,10 +91,12 @@ Ext.define('Ung.view.dashboard.DashboardController', {
      * Load initial dashboard widgets
      */
     loadWidgets: function() {
+
         var vm = this.getViewModel(),
             dashboard = this.getView().lookupReference('dashboard'),
             widgets = Ext.getStore('widgets').getRange(),
             i, widget, widgetComponents = [], entry;
+
 
         // refresh the dashboard manager grid if the widgets were affected
         this.getView().lookupReference('dashboardNav').getView().refresh();
@@ -83,7 +105,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
             widget = widgets[i];
 
             if (widget.get('type') !== 'ReportEntry') {
-                widgetComponents.push({
+                dashboard.add({
                     xtype: widget.get('type').toLowerCase() + 'widget',
                     itemId: widget.get('type'),
                     viewModel: {
@@ -97,7 +119,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                 if (vm.get('reportsEnabled')) {
                     entry = Ext.getStore('reports').findRecord('uniqueId', widget.get('entryId'));
                     if (entry && !Ext.getStore('unavailableApps').first().get(entry.get('category')) && widget.get('enabled')) {
-                        widgetComponents.push({
+                        dashboard.add({
                             xtype: 'reportwidget',
                             itemId: widget.get('entryId'),
                             refreshIntervalSec: widget.get('refreshIntervalSec'),
@@ -109,7 +131,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                             }
                         });
                     } else {
-                        widgetComponents.push({
+                        dashboard.add({
                             xtype: 'component',
                             itemId: widget.get('entryId'),
                             hidden: true
@@ -118,8 +140,9 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                 }
             }
         }
-        dashboard.removeAll(true);
-        dashboard.add(widgetComponents);
+        // dashboard.removeAll(true);
+        // dashboard.add(widgetComponents);
+        console.timeEnd('all');
     },
 
     /**
@@ -175,10 +198,6 @@ Ext.define('Ung.view.dashboard.DashboardController', {
             return '<i class="material-icons" style="color: #F00;">info_outline</i>';
         }
         return '<i class="material-icons">' + (value ? 'check_box' : 'check_box_outline_blank') + '</i>';
-    },
-
-    removeRenderer: function (value, meta, record) {
-        return '<i class="material-icons" style="color: red; font-size: 16px;">delete</i>';
     },
 
     settingsRenderer: function () {
@@ -250,7 +269,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
             vm = this.getViewModel(),
             entry, widgetCmp;
 
-        if (cellIndex === 0) {
+        if (cellIndex === 1) {
             // toggle visibility or show alerts
 
             if (record.get('type') !== 'ReportEntry') {
@@ -304,7 +323,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
             }
         }
 
-        if (cellIndex === 1) {
+        if (cellIndex === 2) {
             // highlights in the dashboard the widget which receives click event in the manager grid
             widgetCmp = dashboard.down('#' + record.get('entryId')) || dashboard.down('#' + record.get('type'));
             if (widgetCmp && !widgetCmp.isHidden()) {
@@ -314,10 +333,16 @@ Ext.define('Ung.view.dashboard.DashboardController', {
             }
         }
 
+        /*
         if (cellIndex === 2) {
             // remove widget
             record.drop();
         }
+        */
+    },
+
+    removeWidget: function (table, rowIndex, colIndex, item, e, record) {
+        console.log(record);
     },
 
     /**
@@ -417,7 +442,75 @@ Ext.define('Ung.view.dashboard.DashboardController', {
             if (ex) { Ung.Util.exceptionToast(ex); return false; }
             vm.set('deviceCount', result.list.length);
         });
+    },
+
+    populateMenus: function () {
+        var addWidgetBtn = this.getView().down('#addWidgetBtn'), categories, categoriesMenu = [], reportsMenu = [];
+        if (rpc.reportsEnabled) {
+            rpc.reportsManager.getCurrentApplications(function (result, ex) {
+                categories = [
+                    { displayName: 'Common', icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_hosts.png' },
+                    { displayName: 'Hosts', icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_hosts.png' },
+                    { displayName: 'Devices', icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_devices.png' },
+                    { displayName: 'Network', icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_network.png' },
+                    { displayName: 'Administration', icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_admin.png' },
+                    { displayName: 'System', icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_system.png' },
+                    { displayName: 'Shield', icon: resourcesBaseHref + '/skins/modern-rack/images/admin/apps/untangle-node-shield_17x17.png' }
+                ];
+                categoriesMenu = [];
+                result.list.forEach(function (app) {
+                    categories.push({
+                        displayName: app.displayName,
+                        icon: resourcesBaseHref + '/skins/modern-rack/images/admin/apps/' + app.name + '_17x17.png'
+                    });
+                });
+
+                categories.forEach(function (category) {
+                    reportsMenu = [];
+                    Ext.getStore('reports').filter({
+                        property: 'category',
+                        value: category.displayName,
+                        exactMatch: true
+                    });
+                    Ext.getStore('reports').getRange().forEach(function(report) {
+                        reportsMenu.push({
+                            text: Ung.Util.iconReportTitle(report) + ' ' + report.get('title'),
+                            report: report
+                        });
+                    });
+
+                    Ext.getStore('reports').clearFilter();
+                    categoriesMenu.push({
+                        text: category.displayName,
+                        icon: category.icon,
+                        iconCls: 'menu-icon',
+                        menu: {
+                            plain: true,
+                            items: reportsMenu,
+                            listeners: {
+                                click: function (menu, item) {
+                                    if (Ext.getStore('widgets').findRecord('entryId', item.report.get('uniqueId'))) {
+                                        Ung.Util.successToast('<span style="color: yellow; font-weight: 600;">' + item.report.get('title') + '</span>' + ' is already in Dashboard!');
+                                        return;
+                                    }
+                                    var newWidget = Ext.create('Ung.model.Widget', {
+                                        displayColumns: item.report.get('displayColumns'),
+                                        enabled: true,
+                                        entryId: item.report.get('uniqueId'),
+                                        javaClass: 'com.untangle.uvm.DashboardWidgetSettings',
+                                        refreshIntervalSec: 60,
+                                        timeframe: 3600,
+                                        type: 'ReportEntry'
+                                    });
+                                    Ext.getStore('widgets').add(newWidget);
+                                    Ext.GlobalEvents.fireEvent('addwidget', newWidget, item.report);
+                                }
+                            }
+                        }
+                    });
+                });
+                addWidgetBtn.getMenu().add(categoriesMenu);
+            });
+        }
     }
-
-
 });

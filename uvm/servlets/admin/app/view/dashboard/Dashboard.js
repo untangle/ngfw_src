@@ -85,7 +85,7 @@ Ext.define('Ung.view.dashboard.Dashboard', {
         header: false,
         shadow: false,
         animCollapse: false,
-        collapsed: false,
+        collapsed: true,
         collapseMode: 'mini',
         bind: {
             collapsed: '{!managerOpen}'
@@ -127,8 +127,8 @@ Ext.define('Ung.view.dashboard.Dashboard', {
             border: false,
             header: false,
             hideHeaders: true,
-            //disableSelection: true,
-            //trackMouseOver: false,
+            // disableSelection: true,
+            // trackMouseOver: false,
 
             viewModel: {
                 stores: {
@@ -149,7 +149,12 @@ Ext.define('Ung.view.dashboard.Dashboard', {
             viewConfig: {
                 plugins: {
                     ptype: 'gridviewdragdrop',
-                    dragText: 'Drag and drop to reorganize'
+                    dragText: 'Drag and drop to reorganize'.t(),
+                    dragZone: {
+                        onBeforeDrag: function (data, e) {
+                            return Ext.get(e.target).hasCls('drag-handle');
+                        }
+                    }
                 },
                 stripeRows: false,
                 getRowClass: function (record) {
@@ -160,7 +165,15 @@ Ext.define('Ung.view.dashboard.Dashboard', {
                 }
             },
             columns: [{
-                width: 25,
+                width: 14,
+                align: 'center',
+                sortable: false,
+                hideable: false,
+                resizable: false,
+                menuDisabled: true,
+                tdCls: 'drag-handle'
+            }, {
+                width: 30,
                 align: 'center',
                 sortable: false,
                 hideable: false,
@@ -173,15 +186,17 @@ Ext.define('Ung.view.dashboard.Dashboard', {
                 dataIndex: 'entryId',
                 renderer: 'widgetTitleRenderer'
             }, {
-                width: 25,
+                xtype: 'actioncolumn',
+                width: 30,
                 align: 'center',
                 sortable: false,
                 hideable: false,
                 resizable: false,
                 menuDisabled: true,
-                //handler: 'toggleWidgetEnabled',
-                dataIndex: 'enabled',
-                renderer: 'removeRenderer'
+                handler: 'removeWidget',
+                renderer: function (value, meta, record) {
+                    return '<i class="material-icons" style="color: #999; font-size: 20px;">close</i>';
+                }
             }/*, {
                 xtype: 'actioncolumn',
                 align: 'center',
@@ -202,7 +217,11 @@ Ext.define('Ung.view.dashboard.Dashboard', {
                 cellclick: 'onItemClick'
             },
             tbar: [{
-                text: Ung.Util.iconTitle('Add'.t(), 'add-16')
+                itemId: 'addWidgetBtn',
+                text: Ung.Util.iconTitle('Add'.t(), 'add_circle-16'),
+                menu: Ext.create('Ext.menu.Menu', {
+                    mouseLeaveDelay: 0
+                })
                 //handler: 'resetDashboard'
             }, '->', {
                 text: Ung.Util.iconTitle('Import'.t(), 'file_download-16')
@@ -218,7 +237,7 @@ Ext.define('Ung.view.dashboard.Dashboard', {
                 text: Ung.Util.iconTitle('Apply'.t(), 'save-16'),
                 handler: 'applyChanges'
             }]
-        }, {
+        }, /*{
             xtype: 'component',
             html: '<table>' +
                     '<tr><td style="text-align: right;"><i class="material-icons" style="color: #999; font-size: 16px; vertical-align: middle;">info</i></td><td>' + 'drag widgets to sort them'.t() + '</td></tr>' +
@@ -230,12 +249,13 @@ Ext.define('Ung.view.dashboard.Dashboard', {
             },
             padding: 5,
             border: false
-        }]
+        }*/]
     }, {
         xtype: 'container',
         region: 'center',
         reference: 'dashboard',
         baseCls: 'dashboard',
+        padding: 8,
         scrollable: true
     }],
     listeners: {

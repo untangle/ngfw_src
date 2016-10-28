@@ -102,7 +102,7 @@ Ext.define('Ung.view.reports.ReportsController', {
             { categoryName: 'Hosts', displayName: 'Hosts'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_hosts.png' },
             { categoryName: 'Devices', displayName: 'Devices'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_devices.png' },
             { categoryName: 'Network', displayName: 'Network'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_network.png' },
-            { categoryName: 'Administration', displayName: 'Administration'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_administration.png' },
+            { categoryName: 'Administration', displayName: 'Administration'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_admin.png' },
             { categoryName: 'System', displayName: 'System'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_system.png' },
             { categoryName: 'Shield', displayName: 'Shield'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/apps/untangle-node-shield_17x17.png' }
         ];
@@ -149,10 +149,12 @@ Ext.define('Ung.view.reports.ReportsController', {
 
     getAvailableTables: function() {
         var me = this;
-        rpc.reportsManager.getTables(function (result, ex) {
-            if (ex) { Ung.Util.exceptionToast(ex); return false; }
-            me.getViewModel().set('tableNames', result);
-        });
+        if (rpc.reportsManager) {
+            rpc.reportsManager.getTables(function (result, ex) {
+                if (ex) { Ung.Util.exceptionToast(ex); return false; }
+                me.getViewModel().set('tableNames', result);
+            });
+        }
     },
 
     onCategorySelect: function (selModel, records) {

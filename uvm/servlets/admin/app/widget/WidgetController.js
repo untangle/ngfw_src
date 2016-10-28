@@ -7,17 +7,31 @@ Ext.define('Ung.widget.WidgetController', {
             afterrender: 'onAfterRender',
             afterdata: 'onAfterData',
             beforedestroy: 'onBeforeRemove'
-            //show: 'onShow'
+            // show: 'onShow'
+        },
+        '#header': {
+            render: 'headerRender'
         }
     },
 
-    // listen: {
-    //     store: {
-    //         '#stats': {
-    //             datachanged: 'onStatsUpdate'
-    //         }
-    //     }
-    // },
+    listen: {
+        // store: {
+        //     '#stats': {
+        //         datachanged: 'onStatsUpdate'
+        //     }
+        // }
+    },
+
+    headerRender: function (cmp) {
+        var me = this;
+        cmp.getEl().on({
+            click: function (e) {
+                if (e.target.dataset.action === 'refresh') {
+                    me.addToQueue();
+                }
+            }
+        });
+    },
 
     init: function (view) {
         var vm = view.getViewModel(), entryType;
@@ -38,6 +52,11 @@ Ext.define('Ung.widget.WidgetController', {
     },
 
     onAfterRender: function (widget) {
+        setTimeout(function () {
+            widget.removeCls('adding');
+        }, 100);
+
+
         widget.getViewModel().bind('{widget.enabled}', function (enabled) {
             if (enabled && Ext.isFunction(widget.fetchData)) {
                 Ung.view.dashboard.Queue.add(widget);
@@ -62,13 +81,16 @@ Ext.define('Ung.widget.WidgetController', {
     },
 
     onShow: function (widget) {
-        console.log('on show', widget.getViewModel().get('widget.type'));
-        if (Ext.isFunction(widget.fetchData)) {
-            Ung.view.dashboard.Queue.add(widget);
-        }
+        console.log('onShow');
+        widget.removeCls('adding');
+        // console.log('on show', widget.getViewModel().get('widget.type'));
+        // if (Ext.isFunction(widget.fetchData)) {
+        //     Ung.view.dashboard.Queue.add(widget);
+        // }
     },
 
-    fetchData: function () {
+    addToQueue: function () {
+        console.log('fetch data');
         var widget = this.getView();
         if (widget.refreshTimeoutId) {
             clearTimeout(widget.refreshTimeoutId);
