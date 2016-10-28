@@ -209,6 +209,14 @@ def isInOfficeNetwork(wanIP):
             break
     return False
 
+def isBridged(wanIP):
+    result = remote_control.runCommand("ip -o -f inet addr show",stdout=True)
+    match = re.search(r'\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}\/\d{1,3} brd', result)
+    hostname_cidr = (match.group()).replace(' brd','')
+    if ipaddr.IPv4Address(wanIP) in ipaddr.IPv4Network(hostname_cidr):
+        return True
+    return False
+    
 def sendTestmessage(mailhost=smtpServerHost):
     sender = 'test@example.com'
     receivers = ['qa@example.com']
