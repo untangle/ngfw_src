@@ -3,7 +3,7 @@ import time
 import sys
 import pdb
 import os
-import global_functions
+import subprocess
 
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
