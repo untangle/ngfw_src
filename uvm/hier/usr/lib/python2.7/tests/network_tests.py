@@ -20,7 +20,7 @@ import remote_control
 import system_properties
 import global_functions
 
-ftp_server = "test.untangle.com"
+
 ftp_file_name = ""
 dyn_hostname = ""
 dyn_names = ['atstest.dnsalias.com', 'atstest2.dyndns-ip.com', 'atstest3.dnsalias.com', 'atstest4.dnsalias.com'];
@@ -686,10 +686,10 @@ class NetworkTests(unittest2.TestCase):
     def test_070_ftpModes(self):
         nukeFirstLevelRule('bypassRules')
 
-        pasvResult = remote_control.runCommand("wget -t2 --timeout=10 -q -O /dev/null ftp://" + ftp_server + "/" + ftp_file_name)
-        portResult = remote_control.runCommand("wget -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + ftp_server + "/" + ftp_file_name)
-        epsvResult = remote_control.runCommand("curl --epsv -s -o /dev/null ftp://" + ftp_server + "/" + ftp_file_name)
-        eprtResult = remote_control.runCommand("curl --eprt -P - -s -o /dev/null ftp://" + ftp_server + "/" + ftp_file_name)
+        pasvResult = remote_control.runCommand("wget -t2 --timeout=10 -q -O /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
+        portResult = remote_control.runCommand("wget -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
+        epsvResult = remote_control.runCommand("curl --epsv -s -o /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
+        eprtResult = remote_control.runCommand("curl --eprt -P - -s -o /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
         print "portResult: %i eprtResult: %i pasvResult: %i epsvResult: %i" % (portResult,eprtResult,pasvResult,epsvResult)
         assert (pasvResult == 0)
         assert (portResult == 0)
@@ -709,10 +709,10 @@ class NetworkTests(unittest2.TestCase):
         appendFWRule(nodeFW, createSingleConditionFirewallRule("DST_PORT","21", blocked=False))
         appendFWRule(nodeFW, createSingleConditionFirewallRule("PROTOCOL","TCP", blocked=True))
 
-        pasvResult = remote_control.runCommand("wget -t2 --timeout=10 -q -O /dev/null ftp://" + ftp_server + "/" + ftp_file_name)
-        portResult = remote_control.runCommand("wget -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + ftp_server + "/" + ftp_file_name)
-        epsvResult = remote_control.runCommand("curl --epsv -s -o /dev/null ftp://" + ftp_server + "/" + ftp_file_name)
-        eprtResult = remote_control.runCommand("curl --eprt -P - -s -o /dev/null ftp://" + ftp_server + "/" + ftp_file_name)
+        pasvResult = remote_control.runCommand("wget -t2 --timeout=10 -q -O /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
+        portResult = remote_control.runCommand("wget -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
+        epsvResult = remote_control.runCommand("curl --epsv -s -o /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
+        eprtResult = remote_control.runCommand("curl --eprt -P - -s -o /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
 
         uvmContext.nodeManager().destroy( nodeFW.getNodeSettings()["id"] )
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
@@ -727,10 +727,10 @@ class NetworkTests(unittest2.TestCase):
     def test_072_ftpModesBypassed(self):
         setFirstLevelRule(createBypassConditionRule("DST_PORT","21"),'bypassRules')
 
-        pasvResult = remote_control.runCommand("wget -t2 --timeout=10 -q -O /dev/null ftp://" + ftp_server + "/" + ftp_file_name)
-        portResult = remote_control.runCommand("wget -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + ftp_server + "/" + ftp_file_name)
-        epsvResult = remote_control.runCommand("curl --epsv -s -o /dev/null ftp://" + ftp_server + "/" + ftp_file_name)
-        eprtResult = remote_control.runCommand("curl --eprt -P - -s -o /dev/null ftp://" + ftp_server + "/" + ftp_file_name)
+        pasvResult = remote_control.runCommand("wget -t2 --timeout=10 -q -O /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
+        portResult = remote_control.runCommand("wget -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
+        epsvResult = remote_control.runCommand("curl --epsv -s -o /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
+        eprtResult = remote_control.runCommand("curl --eprt -P - -s -o /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
 
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
@@ -747,10 +747,10 @@ class NetworkTests(unittest2.TestCase):
         netsettings['forwardFilterRules']['list'] = [ createFilterRule("DST_PORT","21","PROTOCOL","TCP",False), createFilterRule("DST_PORT","1-65535","PROTOCOL","TCP",True) ]
         uvmContext.networkManager().setNetworkSettings(netsettings)
 
-        pasvResult = remote_control.runCommand("wget -t2 --timeout=10 -q -O /dev/null ftp://" + ftp_server + "/" + ftp_file_name)
-        portResult = remote_control.runCommand("wget -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + ftp_server + "/" + ftp_file_name)
-        epsvResult = remote_control.runCommand("curl --epsv -s -o /dev/null ftp://" + ftp_server + "/" + ftp_file_name)
-        eprtResult = remote_control.runCommand("curl --eprt -P - -s -o /dev/null ftp://" + ftp_server + "/" + ftp_file_name)
+        pasvResult = remote_control.runCommand("wget -t2 --timeout=10 -q -O /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
+        portResult = remote_control.runCommand("wget -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
+        epsvResult = remote_control.runCommand("curl --epsv -s -o /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
+        eprtResult = remote_control.runCommand("curl --eprt -P - -s -o /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
 
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
