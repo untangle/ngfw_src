@@ -117,6 +117,7 @@ public class Main
         return uvmCl.loadUvmResource(name);
     }
 
+    @SuppressWarnings("rawtypes")
     public Class loadClass(String className)
     {
         try {
