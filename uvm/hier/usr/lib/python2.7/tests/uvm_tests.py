@@ -77,6 +77,13 @@ class UvmTests(unittest2.TestCase):
             if line == "":
                 continue
 
+            hdr = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
+                   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                   'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
+                   'Accept-Encoding': 'none',
+                   'Accept-Language': 'en-US,en;q=0.8',
+                   'Connection': 'keep-alive'}
+
             ctx = ssl.create_default_context()
             ctx.check_hostname = False
             ctx.verify_mode = ssl.CERT_NONE
@@ -93,7 +100,8 @@ class UvmTests(unittest2.TestCase):
 
                     url = "http://wiki.untangle.com/get.php?source=" + helpSource + "&uid=0000-0000-0000-0000&version=11.0.0&webui=true&lang=en"
                     print "Checking %s = %s " % (helpSource, url)
-                    ret = urllib2.urlopen( url, context=ctx )
+                    req = urllib2.Request( url, headers=hdr) 
+                    ret = urllib2.urlopen( req, context=ctx )
                     time.sleep(.1) # dont flood wiki
                     assert(ret)
                     result = ret.read()
