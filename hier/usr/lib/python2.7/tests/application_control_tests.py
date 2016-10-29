@@ -3,6 +3,7 @@ import time
 import sys
 import pdb
 import os
+import global_functions
 
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
@@ -138,9 +139,12 @@ class ApplicationControlTests(unittest2.TestCase):
 
     def test_025_protoRule_Ftp(self):
         touchProtoRule("FTP",False,False)
-        result1 = remote_control.runCommand("wget -q -O /dev/null -4 -t 2 -o /dev/null --timeout=5 ftp://test.untangle.com/")
+        pingResult = subprocess.call(["ping","-c","1",global_functions.ftpServer],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        if pingResult:
+            raise unittest2.SkipTest(global_functions.ftpServer + " not reachable")
+        result1 = remote_control.runCommand("wget -q -O /dev/null -4 -t 2 -o /dev/null --timeout=5 ftp://" + global_functions.ftpServer + "/")
         touchProtoRule("FTP",True,True)
-        result2 = remote_control.runCommand("wget -q -O /dev/null -4 -t 2 -o /dev/null --timeout=5 ftp://test.untangle.com")
+        result2 = remote_control.runCommand("wget -q -O /dev/null -4 -t 2 -o /dev/null --timeout=5 ftp://" + global_functions.ftpServer + "/")
         touchProtoRule("FTP",False,False)
         assert (result1 == 0)
         assert (result2 != 0)
