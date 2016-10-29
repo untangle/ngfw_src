@@ -175,8 +175,8 @@ class VirusBlockerBaseTests(unittest2.TestCase):
 
     # test that client can ftp download zip
     def test_021_ftpNonVirusNotBlocked(self):
-        adResult = subprocess.call(["ping","-c","1",testsite],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-        if (adResult != 0):
+        ftp_result = subprocess.call(["ping","-c","1",global_functions.ftpServer ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        if (ftp_result != 0):
             raise unittest2.SkipTest("FTP server not available")
         result = remote_control.runCommand("wget -q -O /dev/null ftp://" + global_functions.ftpServer + "/test.zip")
         assert (result == 0)
@@ -191,6 +191,9 @@ class VirusBlockerBaseTests(unittest2.TestCase):
 
     # test that client can block virus ftp download zip
     def test_025_ftpVirusBlocked(self):
+        ftp_result = subprocess.call(["ping","-c","1",global_functions.ftpServer ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        if (ftp_result != 0):
+            raise unittest2.SkipTest("FTP server not available")
         remote_control.runCommand("rm -f /tmp/temp_022_ftpVirusBlocked_file")
         result = remote_control.runCommand("wget -q -O /tmp/temp_022_ftpVirusBlocked_file ftp://" + global_functions.ftpServer + "/virus/fedexvirus.zip")
         assert (result == 0)
@@ -209,6 +212,9 @@ class VirusBlockerBaseTests(unittest2.TestCase):
 
     # test that client can block virus ftp download zip
     def test_027_ftpVirusPassSite(self):
+        ftp_result = subprocess.call(["ping","-c","1",global_functions.ftpServer ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        if (ftp_result != 0):
+            raise unittest2.SkipTest("FTP server not available")
         addPassSite(global_functions.ftpServer)
         remote_control.runCommand("rm -f /tmp/temp_022_ftpVirusBlocked_file")
         result = remote_control.runCommand("wget -q -O /tmp/temp_022_ftpVirusPassSite_file ftp://" + global_functions.ftpServer + "/virus/fedexvirus.zip")
@@ -254,6 +260,9 @@ class VirusBlockerBaseTests(unittest2.TestCase):
         assert( found )
 
     def test_102_eventlog_ftpVirus(self):
+        ftp_result = subprocess.call(["ping","-c","1",global_functions.ftpServer ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        if (ftp_result != 0):
+            raise unittest2.SkipTest("FTP server not available")
         fname = sys._getframe().f_code.co_name
         result = remote_control.runCommand("wget -q -O /tmp/temp_022_ftpVirusBlocked_file ftp://" + global_functions.ftpServer + "/virus/fedexvirus.zip")
         assert (result == 0)
@@ -266,6 +275,9 @@ class VirusBlockerBaseTests(unittest2.TestCase):
         assert( found )
 
     def test_103_eventlog_ftpNonVirus(self):
+        ftp_result = subprocess.call(["ping","-c","1",global_functions.ftpServer ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        if (ftp_result != 0):
+            raise unittest2.SkipTest("FTP server not available")
         fname = sys._getframe().f_code.co_name
         result = remote_control.runCommand("wget -q -O /dev/null ftp://" + global_functions.ftpServer + "/test.zip")
         assert (result == 0)
