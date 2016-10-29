@@ -188,7 +188,14 @@ public interface UvmContext
      * @return the HookManager.
      */
     HookManager hookManager();
-    
+
+    /**
+     * Get the <code>PluginManager</code> singleton.
+     *
+     * @return the PluginManager.
+     */
+    PluginManager pluginManager();
+
     /**
      * Get the NetcapManager
      *
