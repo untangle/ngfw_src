@@ -117,6 +117,17 @@ public class Main
         return uvmCl.loadUvmResource(name);
     }
 
+    public Class loadClass(String className)
+    {
+        try {
+            Class clazz = (Class)uvmCl.loadClass(className);
+            return clazz;
+        } catch (java.lang.ClassNotFoundException e) {
+            logger.warn("Class not found: " + className, e);
+            return null;
+        }
+    }
+    
     public Map<String, String> getTranslations(String module)
     {
         return uvmContext.getTranslations(module);

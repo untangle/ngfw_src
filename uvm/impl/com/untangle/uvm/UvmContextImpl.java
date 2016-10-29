@@ -86,7 +86,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private LanguageManagerImpl languageManager;
     private DefaultLicenseManagerImpl defaultLicenseManager;
     private LicenseManager licenseManager = null;
-    private InheritableThreadLocal<HttpServletRequest> threadRequest;
     private TomcatManagerImpl tomcatManager;
     private ServletFileManagerImpl servletFileManager;
     private SettingsManagerImpl settingsManager;
@@ -97,6 +96,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private ConntrackMonitorImpl conntrackMonitor;
     private BackupManagerImpl backupManager;
     private HookManagerImpl hookManager;
+    private PluginManagerImpl pluginManager;
     private LocalDirectoryImpl localDirectory;
     private ExecManagerImpl execManager;
     private SystemManagerImpl systemManager;
@@ -106,6 +106,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private HostTableImpl hostTableImpl = null;
     private DeviceTableImpl deviceTableImpl = null;
     private NetFilterLogger netFilterLogger = null;
+    private InheritableThreadLocal<HttpServletRequest> threadRequest;
     private long lastLoggedWarningTime = System.currentTimeMillis();
 
     private volatile List<String> annotatedClasses = new LinkedList<String>();
@@ -216,22 +217,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return NetcapManagerImpl.getInstance();
     }
 
-    public LicenseManager licenseManager()
-    {
-        NodeManager nodeManager = this.nodeManager();
-        if ( nodeManager == null )
-            return this.defaultLicenseManager;
-        if (this.licenseManager == null ) {
-            this.licenseManager = (LicenseManager) nodeManager.node("untangle-node-license");
-            if (this.licenseManager == null) {
-                logger.debug("Failed to initialize license manager.");
-                return this.defaultLicenseManager;
-            }
-        }
-
-        return licenseManager;
-    }
-
     public ServletFileManager servletFileManager()
     {
         return this.servletFileManager;
@@ -266,6 +251,11 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     {
         return this.hookManager;
     }
+
+    public PluginManager pluginManager()
+    {
+        return this.pluginManager;
+    }
     
     public PipelineFoundryImpl pipelineFoundry()
     {
@@ -287,18 +277,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return this.execManager;
     }
 
-    public ExecManager createExecManager()
-    {
-        ExecManagerImpl execManager = new ExecManagerImpl();
-        execManager.setSerializer(serializer);
-        return execManager;
-    }
-
-    public InheritableThreadLocal<HttpServletRequest> threadRequest()
-    {
-        return threadRequest;
-    }
-
     public TomcatManager tomcatManager()
     {
         return tomcatManager;
@@ -313,7 +291,35 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     {
         return this.deviceTableImpl;
     }
+
+    public LicenseManager licenseManager()
+    {
+        NodeManager nodeManager = this.nodeManager();
+        if ( nodeManager == null )
+            return this.defaultLicenseManager;
+        if (this.licenseManager == null ) {
+            this.licenseManager = (LicenseManager) nodeManager.node("untangle-node-license");
+            if (this.licenseManager == null) {
+                logger.debug("Failed to initialize license manager.");
+                return this.defaultLicenseManager;
+            }
+        }
+
+        return licenseManager;
+    }
     
+    public ExecManager createExecManager()
+    {
+        ExecManagerImpl execManager = new ExecManagerImpl();
+        execManager.setSerializer(serializer);
+        return execManager;
+    }
+
+    public InheritableThreadLocal<HttpServletRequest> threadRequest()
+    {
+        return threadRequest;
+    }
+
     public void waitForStartup()
     {
         synchronized (startupWaitLock) {
@@ -873,6 +879,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         this.alertManager = new AlertManagerImpl();
 
+        this.pluginManager = PluginManagerImpl.getInstance();
+
         // start vectoring
         NetcapManagerImpl.getInstance().run();
 
@@ -908,6 +916,9 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         // start capturing traffic last
         networkManager.insertRules();
+
+        // load any plugins
+        pluginManager.loadPlugins();
 
         writeStatusFile( "running" );
     }
@@ -997,6 +1008,12 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return main.loadUvmResource(name);
     }
 
+    @SuppressWarnings({"rawtypes","unchecked"})
+    protected Class loadClass(String name)
+    {
+        return main.loadClass(name);
+    }
+    
     /**
      * Writes the status file.
      * The status file should be in one of a few states:
