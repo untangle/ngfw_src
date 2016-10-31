@@ -17,8 +17,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.LinkedList;
 import java.util.Properties;
+import java.util.HashMap;
 import java.util.Iterator;
 
 import javax.servlet.http.HttpServletRequest;
@@ -95,6 +97,44 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         int idx = 0;
         for (AlertRule rule : newSettings.getAlertRules()) {
             rule.setRuleId(++idx);
+        }
+
+        /**
+         * Set the Email Profile Ids
+         */
+        HashMap<Integer,Integer> mapOldNewEmailProfileIds = new HashMap<Integer,Integer>();
+        idx = 0;
+        for (EmailProfile profile : newSettings.getEmailProfiles()) {
+            idx = ++idx;
+            mapOldNewEmailProfileIds.put(profile.getProfileId(), idx);
+            profile.setProfileId(idx);
+        }
+
+        /* Manage id changes for users with email report flag. */
+        if ( settings.getReportsUsers() != null) {
+            for ( ReportsUser user : settings.getReportsUsers() ) {
+                if (user.getEmailSummaries()){
+                    if(user.getEmailProfileIds().size() > 0) {
+                        /* Walk existing list and map to new values. */
+                        List<Integer> oldEmailProfileIds = user.getEmailProfileIds();
+                        LinkedList<Integer> newEmailProfileIds = new LinkedList<Integer>();
+                        Integer newEmailProfileId;
+                        for(int i = 0; i < oldEmailProfileIds.size(); i++){
+                            newEmailProfileId = mapOldNewEmailProfileIds.get(oldEmailProfileIds.get(i));
+                            if(newEmailProfileId != null){
+                                newEmailProfileIds.push(newEmailProfileId);
+                            }
+                        }
+                        user.setEmailProfileIds(newEmailProfileIds);
+                    }
+                    if(user.getEmailProfileIds().size() == 0) {
+                        /* If never set or all removed, add the default. */
+                        LinkedList<Integer> emailProfileIds = new LinkedList<Integer>();
+                        emailProfileIds.push(1);
+                        user.setEmailProfileIds(emailProfileIds);
+                    }
+                }
+            }
         }
         
         /**
@@ -338,6 +378,13 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
             logger.warn("Running v12.1.1 conversion...");
             conversion_12_1_1();
         }
+        /**
+         * 12.2.1 conversion
+         */
+        if ( settings.getVersion() == 3 ) {
+            logger.warn("Running v12.2.1 conversion...");
+            conversion_12_2_1();
+        }
         
         /**
          * Report updates
@@ -520,11 +567,40 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         return rules;
     }
 
+    private LinkedList<EmailProfile> defaultEmailProfiles()
+    {
+        LinkedList<EmailProfile> profiles = new LinkedList<EmailProfile>();
+
+        EmailProfile emailProfile;
+        LinkedList<String> enabledConfigIds;
+        LinkedList<String> enabledAppIds;
+
+        enabledConfigIds = new LinkedList<String>();
+        enabledConfigIds.add("_all");
+        enabledAppIds = new LinkedList<String>();
+        enabledAppIds.add("_all");
+        emailProfile = new EmailProfile( I18nUtil.marktr("Reports"), I18nUtil.marktr("All available reports (default)"), enabledConfigIds, enabledAppIds);
+        emailProfile.setReadOnly(true);
+        profiles.add( emailProfile );
+
+        enabledConfigIds = new LinkedList<String>();
+        enabledConfigIds.add("_type=TEXT");
+        enabledAppIds = new LinkedList<String>();
+        enabledAppIds.add("_type=TEXT");
+        emailProfile = new EmailProfile( I18nUtil.marktr("Report Summary"), I18nUtil.marktr("Text only reports"), enabledConfigIds, enabledAppIds);
+        emailProfile.setReadOnly(true);
+        profiles.add( emailProfile );
+
+        return profiles;
+
+    }
+
     private ReportsSettings defaultSettings()
     {
         ReportsSettings settings = new ReportsSettings();
         settings.setVersion( 3 );
         settings.setAlertRules( defaultAlertRules() );
+        settings.setEmailProfiles( defaultEmailProfiles() );
         return settings;
     }
     
@@ -694,7 +770,21 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
 
         setSettings( settings );
     }
-    
+
+    private void conversion_12_2_1()
+    {
+        settings.setVersion( 4 );
+
+        try {
+            settings.setEmailProfiles( defaultEmailProfiles() );
+        } catch (Exception e) {
+            logger.warn("Conversion Exception",e);
+        }
+
+        setSettings( settings );
+    }
+
+
     private class PerformanceTest implements Runnable
     {
         public void run()
