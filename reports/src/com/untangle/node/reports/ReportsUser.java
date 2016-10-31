@@ -5,6 +5,8 @@ package com.untangle.node.reports;
 
 import java.io.Serializable;
 
+import java.util.List;
+
 import org.apache.commons.codec.binary.Base64;
 
 import com.untangle.uvm.PasswordUtil;
@@ -17,6 +19,7 @@ public class ReportsUser implements Serializable
     private boolean emailSummaries = true;
     private byte[] passwordHash = null;
     private boolean onlineAccess;
+    private List<Integer> emailProfileIds;
 
     public ReportsUser() {}
 
@@ -34,6 +37,9 @@ public class ReportsUser implements Serializable
 
     public byte[] trans_getPasswordHash() { return this.passwordHash; }
     public void setPasswordHash( byte[] newValue ) { this.passwordHash = newValue; }
+
+    public List<Integer> getEmailProfileIds() { return this.emailProfileIds; }
+    public void setEmailProfileIds( List<Integer> newValue ) { this.emailProfileIds = newValue; }
 
     public String getPassword()
     {
