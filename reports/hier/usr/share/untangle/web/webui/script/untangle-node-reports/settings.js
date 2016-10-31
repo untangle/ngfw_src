@@ -8,6 +8,19 @@ Ext.define('Webui.untangle-node-reports.settings', {
     gridHostnameMap: null,
     gridReportEntries: null,
     gridAlertEventLog: null,
+    gridEmailProfiles: null,
+
+    configCategories: ['Hosts', 'Devices', 'Network', 'Administration', 'System', 'Shield'],
+    appCategories: [],
+    chartTypeMap: Ung.Util.createStoreMap([
+            ["TEXT", i18n._("Text")],
+            ["PIE_GRAPH", i18n._("Pie Graph")],
+            ["TIME_GRAPH", i18n._("Time Graph")],
+            ["TIME_GRAPH_DYNAMIC", i18n._("Time Graph Dynamic")], 
+            ["EVENT_LIST", i18n._("Event List")]
+    ]),
+    emailChartTypes: ["TEXT", "PIE_GRAPH", "TIME_GRAPH", "TIME_GRAPH_DYNAMIC"],
+
     getAppSummary: function() {
         return i18n._("Reports records network events to provide administrators the visibility and data necessary to investigate network activity.");
     },
@@ -19,11 +32,92 @@ Ext.define('Webui.untangle-node-reports.settings', {
         this.buildReportEntries();
         this.buildAlertRules();
         this.buildData();
+        this.buildEmailProfiles();
 
-        var panels = [this.gridReportEntries, this.panelData, this.panelAlertRules, this.panelUsers, this.panelSyslog, this.gridHostnameMap ];
+        var panels = [this.gridReportEntries, this.panelData, this.panelAlertRules, this.panelEmailProfiles, this.panelUsers, this.panelSyslog, this.gridHostnameMap ];
 
         this.buildTabPanel(panels);
+
+        this.buildAvailableAppCategories();
+
         this.callParent(arguments);
+    },
+    /*
+     * From array of report identifiers, return comma separated string of report titles.
+     */
+    reportIdToNameRenderer: function(value, metaData){
+        var reportNames = [];
+        var allAdded = false;
+        var typeAdded = [];
+        for(var i = 0; i < value.list.length; i++){
+            for(var j = 0; j < this.settings["reportEntries"].list.length; j++){
+                var entry = this.settings["reportEntries"].list[j];
+                if(value.list[i] == entry.uniqueId){
+                    reportNames.push(entry.title);
+                }else if(
+                    (value.list.indexOf("_all") > -1) && 
+                    (allAdded == false)){
+                    /* Special case: _all */
+                    reportNames.push(i18n._("All reports"));
+                    allAdded = true;
+                }else if(
+                    (value.list.indexOf("_type=" + entry.type) > -1) && 
+                    (typeAdded.indexOf(entry.type) == -1)){
+                    /* Matching type */
+                    reportNames.push(i18n._("Type") + ":" + this.chartTypeMap[entry.type]);
+                    typeAdded.push(entry.type);
+                }
+            }
+        }
+        if(reportNames.length == 0){
+            reportNames.push(i18n._("None"));
+        }
+        value = reportNames.join(", ");
+        metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode(value) + '"';
+        return value;
+    },
+    /*
+     * From chart identifier, return human-readable name.
+     */
+    chartTypeRenderer: function(value) {
+        return this.chartTypeMap[value] ? this.chartTypeMap[value] : value;
+    },
+    viewRenderer: function (value, metaData, record) {
+        if ((this.configCategories.indexOf(record.getData().category) < 0) && 
+            (this.appCategories.indexOf(record.getData().category) < 0)) {
+            return '<div style="font-size: 10px; line-height: 1; text-align: center; color: coral;">not installed</div>';
+        }
+        return '<div style="text-align: center;"><i role="button" class="x-action-col-icon x-action-col-0 material-icons" style="font-size: 16px;">visibility</i></div>';
+    },
+    chartRenderer: function (value) {
+        if ((this.configCategories.indexOf(value) < 0) && 
+            (this.appCategories.indexOf(value) < 0)) {
+            return value + ' (<span style="color: coral;">' + i18n._('not installed') + '</span>)';
+        }
+        return value;
+    },
+    /*
+     * Build array of category names based on whether applications are installed.
+     */
+    buildAvailableAppCategories: function(){
+        rpc.reportsManager.getUnavailableApplicationsMap(Ext.bind(function (results,exception){
+            if (Ung.Util.handleException(exception)) {
+                return;
+            }
+            var category;
+            var unavailableCategories = [];
+            for(category in results.map){
+                unavailableCategories.push(category);
+            }
+            for(var i = 0; i < this.settings["reportEntries"].list.length; i++){
+                category = this.settings["reportEntries"].list[i].category;
+                if((unavailableCategories.indexOf(category) == -1) &&
+                    (this.appCategories.indexOf(category) == -1) &&
+                    (this.configCategories.indexOf(category) == -1)){
+                    this.appCategories.push(category);
+                }
+            }
+        }, this));
     },
     getAlertRuleConditions: function () {
         return [
@@ -126,11 +220,11 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 items: [{
                     xtype: 'component',
                     margin: '0 0 10 0',
-                    html: i18n._('Reports Users are users that can view reports and receive email summaries but do not have administration privileges.')
+                    html: i18n._('Reports Users are users that can view reports and receive email reports but do not have administration privileges.')
                 }, this.gridReportsUsers = Ext.create('Ung.grid.Panel',{
                     title: i18n._("Reports Users"),
                     height: 350,
-                    hasEdit: false,
+                    hasEdit: true,
                     settingsCmp: this,
                     plugins:[changePasswordColumn],
                     dataProperty: 'reportsUsers',
@@ -139,6 +233,10 @@ Ext.define('Webui.untangle-node-reports.settings', {
                         emailAddress: "",
                         emailAlerts: true,
                         emailSummaries: true,
+                        emailProfileIds : {
+                            javaClass: "java.util.LinkedList",
+                            list: []
+                        },
                         onlineAccess: false,
                         password: null,
                         passwordHashBase64: null
@@ -150,6 +248,8 @@ Ext.define('Webui.untangle-node-reports.settings', {
                         name: "emailAlerts"
                     },{
                         name: "emailSummaries"
+                    },{
+                        name: "emailProfileIds",
                     },{
                         name: "onlineAccess"
                     },{
@@ -173,77 +273,38 @@ Ext.define('Webui.untangle-node-reports.settings', {
                         xtype:'checkcolumn',
                         header: i18n._("Email Alerts"),
                         dataIndex: "emailAlerts",
-                        width: 150,
+                        width: 100,
                         resizable: false
                     }, {
                         xtype:'checkcolumn',
-                        header: i18n._("Email Summaries"),
+                        header: i18n._("Email Reports"),
                         dataIndex: "emailSummaries",
-                        width: 150,
+                        width: 100,
                         resizable: false
+                    }, {
+                        header: i18n._("Email Profiles"),
+                        dataIndex: "emailProfileIds",
+                        width: 150,
+                        resizable: false,
+                        renderer: Ext.bind(function(value){
+                            var titles = [];
+                            for(var i = 0; i < this.settings["emailProfiles"].list.length; i++){
+                                var profile = this.settings["emailProfiles"].list[i];
+                                if(value.list.indexOf(profile.profileId) > -1){
+                                    titles.push(profile.title);
+                                }
+                            }
+                            return titles.join(", ");
+                        }, this)
                     }, {
                         xtype:'checkcolumn',
                         header: i18n._("Online Access"),
                         dataIndex: "onlineAccess",
-                        width: 150,
+                        width: 100,
                         resizable: false
-                    }, changePasswordColumn ],
-                    rowEditorInputLines: [{
-                        xtype:'textfield',
-                        dataIndex: "emailAddress",
-                        fieldLabel: i18n._("Email Address (username)"),
-                        vtype: 'email',
-                        emptyText: i18n._("[enter email address]"),
-                        allowBlank: false,
-                        blankText: i18n._("The email address name cannot be blank."),
-                        width: 300
-                    },{
-                        xtype:'checkbox',
-                        dataIndex: "emailAlerts",
-                        fieldLabel: i18n._("Email Alerts"),
-                        width: 300
-                    },{
-                        xtype:'checkbox',
-                        dataIndex: "emailSummaries",
-                        fieldLabel: i18n._("Email Summaries"),
-                        width: 300
-                    },{
-                        xtype:'checkbox',
-                        dataIndex: "onlineAccess",
-                        id: "add_reports_online_reports_" + fieldID,
-                        fieldLabel: i18n._("Online Access"),
-                        width: 300
-                    },{
-                        xtype: 'container',
-                        layout: 'column',
-                        margin: '0 0 5 0',
-                        items: [{
-                            xtype:'textfield',
-                            inputType: "password",
-                            name: "Password",
-                            dataIndex: "password",
-                            id: "add_reports_user_password_" + fieldID,
-                            msgTarget: "title",
-                            fieldLabel: i18n._("Password"),
-                            width: 300,
-                            minLength: 3,
-                            minLengthText: Ext.String.format(i18n._("The password is shorter than the minimum {0} characters."), 3),
-                            validator: this.passwordValidator
-                        },{
-                            xtype: 'label',
-                            html: i18n._("(required for Online Access)"),
-                            cls: 'boxlabel'
-                        }]
-                    }, {
-                        xtype:'textfield',
-                        inputType: "password",
-                        name: "Confirm Password",
-                        dataIndex: "password",
-                        id: "add_reports_confirm_password_" + fieldID,
-                        fieldLabel: i18n._("Confirm Password"),
-                        width: 300,
-                        validator: this.passwordValidator
-                    }]
+                    }, 
+                    changePasswordColumn 
+                    ]
                 })]
             }]
         });
@@ -280,6 +341,105 @@ Ext.define('Webui.untangle-node-reports.settings', {
             }]
         });
         this.gridReportsUsers.subCmps.push(this.gridReportsUsers.rowEditorChangePassword);
+
+        this.gridReportsUsers.setRowEditor( Ext.create('Ung.RowEditorWindow',{
+            name: "edit",
+            pageOwner: this,
+            inputLines: [{
+                xtype:'textfield',
+                dataIndex: "emailAddress",
+                fieldLabel: i18n._("Email Address (username)"),
+                vtype: 'email',
+                emptyText: i18n._("[enter email address]"),
+                allowBlank: false,
+                blankText: i18n._("The email address name cannot be blank."),
+                width: 300
+            },{
+                xtype:'checkbox',
+                dataIndex: "emailAlerts",
+                fieldLabel: i18n._("Email Alerts"),
+                width: 300
+            },{
+                xtype:'checkbox',
+                dataIndex: "emailSummaries",
+                fieldLabel: i18n._("Email Reports"),
+                width: 300
+            },{
+                xtype: 'checkboxgroup',
+                name: 'emailProfiles',
+                dataIndex: "emailProfileIds",
+                fieldLabel: i18n._("Email Profiles"),
+                columns: 1,
+                vertical: true,
+                items:[],
+                getValue: function(){
+                    var values = {
+                        "javaClass": "java.util.LinkedList",
+                        "list": []
+                    };
+                    this.items.each(function(item){
+                        if(item.getValue() == true){
+                            values.list.push(item.inputValue);
+                        }
+                    });
+                    return values;
+                }
+            },{
+                xtype:'checkbox',
+                dataIndex: "onlineAccess",
+                id: "add_reports_online_reports_" + fieldID,
+                fieldLabel: i18n._("Online Access"),
+                width: 300
+            },{
+                xtype: 'container',
+                layout: 'column',
+                margin: '0 0 5 0',
+                items: [{
+                    xtype:'textfield',
+                    inputType: "password",
+                    name: "Password",
+                    dataIndex: "password",
+                    id: "add_reports_user_password_" + fieldID,
+                    msgTarget: "title",
+                    fieldLabel: i18n._("Password"),
+                    width: 300,
+                    minLength: 3,
+                    minLengthText: Ext.String.format(i18n._("The password is shorter than the minimum {0} characters."), 3),
+                    validator: this.passwordValidator
+                },{
+                    xtype: 'label',
+                    html: i18n._("(required for Online Access)"),
+                    cls: 'boxlabel'
+                }]
+            }, {
+                xtype:'textfield',
+                inputType: "password",
+                name: "Confirm Password",
+                dataIndex: "password",
+                id: "add_reports_confirm_password_" + fieldID,
+                fieldLabel: i18n._("Confirm Password"),
+                width: 300,
+                validator: this.passwordValidator
+            }],
+            syncComponents: function () {
+                /* Rebuild email profile checkbox group with available profiles*/
+                var settings = this.pageOwner.settings;
+                var emailProfilesCheckboxes = this.down("[name=emailProfiles]");
+                var items = emailProfilesCheckboxes.items;
+                var userEmailProfiles = this.record.get("emailProfileIds") || {list:[]};
+                emailProfilesCheckboxes.removeAll();
+                for(var i = 0; i < settings["emailProfiles"].list.length; i++){
+                    var profile = settings["emailProfiles"].list[i];
+                    var profileChecked = (userEmailProfiles.list.indexOf(profile.profileId) > -1) ? true : false;
+                    items.add(new Ext.form.Checkbox({
+                        boxLabel: profile.title + " (" + profile.description + ")",
+                        name: "list",
+                        inputValue: profile.profileId,
+                        checked: profileChecked
+                    }));
+                }
+            },
+        }));
     },
     // syslog panel
     buildSyslog: function() {
@@ -681,14 +841,6 @@ Ext.define('Webui.untangle-node-reports.settings', {
     },
     // Manage Reports Panel
     buildReportEntries: function() {
-        var chartTypes = [["TEXT", i18n._("Text")],["PIE_GRAPH", i18n._("Pie Graph")],["TIME_GRAPH", i18n._("Time Graph")],["TIME_GRAPH_DYNAMIC", i18n._("Time Graph Dynamic")], ["EVENT_LIST", i18n._("Event List")]];
-        var chartTypeMap = Ung.Util.createStoreMap(chartTypes);
-        var chartTypeRenderer = function(value) {
-            return chartTypeMap[value]?chartTypeMap[value]:value;
-        };
-
-        var availableCategories = ['Hosts', 'Devices', 'Network', 'Administration', 'System', 'Shield'], i;
-
         this.gridReportEntries = Ext.create('Ung.grid.Panel',{
             name: 'All Reports',
             helpSource: 'reports_manage_reports',
@@ -732,7 +884,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 header: i18n._("Type"),
                 width: 110,
                 dataIndex: 'type',
-                renderer: chartTypeRenderer
+                renderer: Ext.bind( this.chartTypeRenderer, this)
             }, {
                 header: i18n._("Description"),
                 width: 200,
@@ -750,12 +902,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 header: i18n._("View"),
                 xtype: 'actioncolumn',
                 width: 70,
-                defaultRenderer: function (value, metaData, record) {
-                    if (availableCategories.indexOf(record.getData().category) < 0) {
-                        return '<div style="font-size: 10px; line-height: 1; text-align: center; color: coral;">not installed</div>';
-                    }
-                    return '<div style="text-align: center;"><i role="button" class="x-action-col-icon x-action-col-0 material-icons" style="font-size: 16px;">visibility</i></div>';
-                },
+                defaultRenderer: Ext.bind(this.viewRenderer, this),
                 handler: Ext.bind(function(view, rowIndex, colIndex, item, e, record) {
                     this.viewReport(Ext.clone(record.getData()));
                 }, this)
@@ -763,12 +910,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 header: i18n._("Category"),
                 dataIndex: 'category',
                 hidden: true,
-                renderer: function (value) {
-                    if (availableCategories.indexOf(value) < 0) {
-                        return value + ' (<span style="color: coral;">' + i18n._('not installed') + '</span>)';
-                    }
-                    return value;
-                }
+                renderer: Ext.bind(this.chartRenderer, this)
             }]
         });
 
@@ -1046,12 +1188,265 @@ Ext.define('Webui.untangle-node-reports.settings', {
             }
         }));
     },
+    // EmailProfiles Panel
+    buildEmailReportGrid: function(dataIndex){
+        return Ext.create('Ung.grid.Panel',{
+            helpSource: 'reports_manage_reports',
+            settingsCmp: this,
+            hasAdd: false,
+            hasEdit: false,
+            hasDelete: false,
+            hasImportExport: false,
+            changableFields: ['enabled'],
+            // hasReadOnly: true,
+            // hasReorder: true,
+            features: [{
+                ftype: 'grouping'
+            }],
+            groupField: 'category',
+            recordJavaClass: "com.untangle.node.reports.EmailReportEntry",
+            javaClass: "com.untangle.node.reports.EmailReport",
+            dataIndex: dataIndex,
+            /*
+             * Build rows dynamically from existing reports using list of unique report identifers
+             * to determien whether enabled flag should be set or not.
+             */
+            dataFn: function(handler){
+                var settings = this.settingsCmp.settings;
+
+                var results = {
+                    javaClass: "com.untangle.node.reports.ReportEntry",
+                    list: []
+                };
+
+                var enabledIds = this.up("[name=edit]").record.get(this.dataIndex);
+                var categories = this.dataIndex.match(/config/i) ? this.settingsCmp.configCategories : this.settingsCmp.appCategories;
+                for(var i = 0; i < settings["reportEntries"].list.length; i++){
+                    var entry = settings["reportEntries"].list[i];
+
+
+                    if((categories.indexOf(entry.category) != -1) && 
+                        (this.settingsCmp.emailChartTypes.indexOf(entry.type) != -1)){
+
+                        var enabled = false;
+                        if( typeof(enabledIds) != "undefined" ){
+                            if(enabledIds.list.indexOf(entry.uniqueId) > -1){
+                                /* Standard checkbox */
+                                enabled = true;
+                            }else if(enabledIds.list.indexOf("_all") > -1){
+                                /* Special case: _all */
+                                enabled = true;
+                            }else if(enabledIds.list.indexOf("_type=" + entry.type) > -1){
+                                /* Matching type*/
+                                enabled = true;
+                            }
+                        }
+
+                        entry.enabled = enabled;
+                        results.list.push(entry);
+                    }
+                }
+
+                handler(results);
+            },
+            getValue: function(){
+                var enabledUniqueIds = {
+                    "javaClass": "java.util.LinkedList",
+                    "list": []
+                };
+                this.getStore().each(function(record){
+                    if(record.get("enabled") == true){
+                        enabledUniqueIds.list.push(record.get("uniqueId"));
+                    }
+                });
+                return enabledUniqueIds;
+            },
+            setValue: function(incomingRecords, record){
+                record.set(this.dataIndex, incomingRecords);
+            },
+            sortField: 'displayOrder',
+            columnsDefaultSortable: false,
+            fields: ['uniqueId', 'enabled', 'readOnly', 'type', 'title', 'category', 'description', 'displayOrder', 'units', 'table', 'conditions',
+                'pieGroupColumn', 'pieSumColumn', 'timeDataInterval', 'timeDataColumns', 'orderByColumn', 'orderDesc', 'javaClass'],
+            columns: [{
+                header: i18n._("Title"),
+                width: 230,
+                dataIndex: 'title'
+            }, {
+                xtype:'checkcolumn',
+                header: i18n._("Enabled"),
+                dataIndex: 'enabled',
+                resizable: false,
+                width: 55
+            }, {
+                header: i18n._("Type"),
+                width: 110,
+                dataIndex: 'type',
+                renderer: Ext.bind( this.chartTypeRenderer, this)
+            }, {
+                header: i18n._("Description"),
+                width: 200,
+                dataIndex: 'description',
+                flex: 1
+            }, {
+                header: i18n._("Units"),
+                width: 90,
+                dataIndex: 'units'
+            }, {
+                header: i18n._("View"),
+                xtype: 'actioncolumn',
+                width: 70,
+                defaultRenderer: Ext.bind(this.viewRenderer, this),
+                handler: Ext.bind(function(view, rowIndex, colIndex, item, e, record) {
+                    this.viewReport(Ext.clone(record.getData()));
+                }, this)
+            }, {
+                header: i18n._("Category"),
+                dataIndex: 'category',
+                hidden: true,
+                renderer: Ext.bind(this.chartRenderer, this)
+            }]
+        });
+    },
+    buildEmailProfiles: function() {
+        this.panelEmailProfiles = Ext.create('Ext.panel.Panel',{
+            name: 'emailProfiles',
+            helpSource: 'reports_email_profiles',
+            title: i18n._('Email Profiles'),
+            layout: { type: 'vbox', align: 'stretch' },
+            cls: 'ung-panel',
+            items: [{
+                xtype: 'fieldset',
+                title: i18n._('Note'),
+                flex: 0,
+                html: " " + i18n._("<b>Email Profiles</b> must be associated with Users.")
+            },  this.gridEmailProfiles= Ext.create('Ung.grid.Panel',{
+                flex: 1,
+                name: 'Email Profiles',
+                settingsCmp: this,
+                addAtTop: false,
+                title: i18n._("Email Profiles"),
+                hasReadOnly: true,
+                dataProperty:'emailProfiles',
+                recordJavaClass: "com.untangle.node.reports.EmailProfile",
+                emptyRow: {
+                    "profileId": -1,
+                    "title": "",
+                    "description": "",
+                    "readOnly": false,
+                    "enabledConfigIds" : {
+                        "javaClass": "java.util.LinkedList",
+                        "list": []
+
+                    },
+                    "enabledAppIds" : {
+                        "javaClass": "java.util.LinkedList",
+                        "list": []
+                    }
+                },
+                fields: [{
+                    name: 'profileId'
+                }, {
+                    name: 'title'
+                }, {
+                    name: 'description'
+                }, {
+                    name: 'readOnly'
+                }, {
+                    name: 'enabledConfigIds'
+                }, {
+                    name: 'enabledAppIds'
+                }, {
+                    name: 'javaClass'
+                }],
+                columns: [{
+                    header: i18n._("Profile Id"),
+                    width: 65,
+                    dataIndex: 'profileId',
+                    renderer: function(value) {
+                        if (value < 0) {
+                            return i18n._("new");
+                        } else {
+                            return value;
+                        }
+                    }
+                }, {
+                    header: i18n._("Title"),
+                    width: 200,
+                    dataIndex: 'title',
+                    flex: 1,
+                    editor: {
+                        xtype:'textfield',
+                        emptyText: i18n._("[no title]"),
+                        allowBlank: false,
+                        blankText: i18n._("The title cannot be blank.")
+                    },
+                }, {
+                    header: i18n._("Description"),
+                    width: 200,
+                    dataIndex: 'description',
+                    flex: 1,
+                    editor: {
+                        xtype:'textfield',
+                        emptyText: i18n._("[no description]"),
+                        allowBlank: false,
+                        blankText: i18n._("The description cannot be blank.")
+                    },
+                }, {
+                    header: i18n._("Config"),
+                    width: 200,
+                    dataIndex: 'enabledConfigIds',
+                    flex: 1,
+                    renderer: Ext.bind(this.reportIdToNameRenderer, this)
+                }, {
+                    header: i18n._("Apps"),
+                    width: 200,
+                    dataIndex: 'enabledAppIds',
+                    flex: 1,
+                    renderer: Ext.bind(this.reportIdToNameRenderer, this)
+                }]
+            })]
+        });
+        this.gridEmailProfiles.setRowEditor( Ext.create('Ung.RowEditorWindow',{
+            name: "edit",
+            pageOwner: this,
+            inputLines: [{
+                xtype:'textfield',
+                name: "Title",
+                dataIndex: "title",
+                fieldLabel: i18n._("Title"),
+                emptyText: i18n._("[no title]"),
+                width: 500
+            },{
+                xtype:'textfield',
+                name: "Description",
+                dataIndex: "description",
+                fieldLabel: i18n._("Description"),
+                emptyText: i18n._("[no description]"),
+                width: 500
+            }, {
+                xtype: 'label',
+                html: i18n._('Config'),
+            },
+            this.buildEmailReportGrid("enabledConfigIds"),
+            {
+                xtype: 'label',
+                html: i18n._('Apps'),
+            },
+            this.buildEmailReportGrid("enabledAppIds")
+            ],
+            syncComponents: function () {
+                this.down("[dataIndex=enabledConfigIds]").clearDirty();
+                this.down("[dataIndex=enabledAppIds]").clearDirty();
+            },
+        }));
+    },
     beforeSave: function(isApply,handler) {
         this.getSettings().reportsUsers.list = this.gridReportsUsers.getList();
         this.getSettings().hostnameMap.list = this.gridHostnameMap.getList();
         this.getSettings().reportEntries.list = this.gridReportEntries.getList();
-        //console.log(this.getSettings().reportEntries.list);
         this.getSettings().alertRules.list = this.gridAlertRules.getList();
+        this.getSettings().emailProfiles.list = this.gridEmailProfiles.getList();
 
         this.getSettings().syslogHost = this.panelSyslog.down("textfield[name=syslogHost]").getValue();
         this.getSettings().syslogPort = this.panelSyslog.down("numberfield[name=syslogPort]").getValue();
