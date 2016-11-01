@@ -111,8 +111,8 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         }
 
         /* Manage id changes for users with email report flag. */
-        if ( settings.getReportsUsers() != null) {
-            for ( ReportsUser user : settings.getReportsUsers() ) {
+        if ( newSettings.getReportsUsers().size() > 0){
+            for ( ReportsUser user : newSettings.getReportsUsers() ) {
                 if (user.getEmailSummaries()){
                     if(user.getEmailProfileIds().size() > 0) {
                         /* Walk existing list and map to new values. */
