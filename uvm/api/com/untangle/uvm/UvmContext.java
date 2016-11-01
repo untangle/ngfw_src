@@ -190,6 +190,13 @@ public interface UvmContext
     HookManager hookManager();
 
     /**
+     * Get the <code>CloudManager</code> singleton.
+     *
+     * @return the CloudManager.
+     */
+    CloudManager cloudManager();
+
+    /**
      * Get the <code>PluginManager</code> singleton.
      *
      * @return the PluginManager.
