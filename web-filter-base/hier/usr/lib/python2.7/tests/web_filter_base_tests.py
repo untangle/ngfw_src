@@ -37,28 +37,34 @@ def nukePassedUrls():
     rules["list"] = []
     node.setPassedUrls(rules)
 
-def addBlockedMimeType(mimetype, blocked=True, flagged=True, category="category", description="description"):
-    newRule =  { "blocked": blocked, "category": category, "description": description, "flagged": flagged, "javaClass": "com.untangle.uvm.node.GenericRule", "string": mimetype, "name": mimetype }
-    rules = node.getBlockedMimeTypes()
+def addWebFilterRule(conditionType, conditionData, blocked=True, flagged=True, description="description"):
+    newRule =  {
+        "blocked": blocked,
+        "flagged": flagged,
+        "enabled": True,
+        "description": description,
+        "javaClass": "com.untangle.node.web_filter.WebFilterRule",
+            "conditions": {
+                "javaClass": "java.util.LinkedList",
+                "list": [
+                    {
+                        "conditionType": conditionType,
+                        "invert": False,
+                        "javaClass": "com.untangle.node.web_filter.WebFilterRuleCondition",
+                        "value": conditionData
+                    }
+                ]
+            }
+        }
+    rules = node.getFilterRules()
     rules["list"].append(newRule)
-    node.setBlockedMimeTypes(rules)
+    node.setFilterRules(rules)
 
-def nukeBlockedMimeTypes():
-    rules = node.getBlockedMimeTypes()
+def nukeWebFilterRules():
+    rules = node.getFilterRules()
     rules["list"] = []
-    node.setBlockedMimeTypes(rules)
+    node.setFilterRules(rules)
 
-def addBlockedExtension(mimetype, blocked=True, flagged=True, category="category", description="description"):
-    newRule =  { "blocked": blocked, "category": category, "description": description, "flagged": flagged, "javaClass": "com.untangle.uvm.node.GenericRule", "string": mimetype, "name": mimetype }
-    rules = node.getBlockedExtensions()
-    rules["list"].append(newRule)
-    node.setBlockedExtensions(rules)
-
-def nukeBlockedExtensions():
-    rules = node.getBlockedExtensions()
-    rules["list"] = []
-    node.setBlockedExtensions(rules)
-    
 class WebFilterBaseTests(unittest2.TestCase):
 
     @staticmethod
@@ -85,7 +91,7 @@ class WebFilterBaseTests(unittest2.TestCase):
         node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
         nodemetrics = uvmContext.metricManager().getMetrics(node.getNodeSettings()["id"])
         self.node = node
-        
+
     def setUp(self):
         pass
 
@@ -130,12 +136,12 @@ class WebFilterBaseTests(unittest2.TestCase):
         nukeBlockedUrls()
         assert ( "blockpage" in result )
 
-        # Check to see if the faceplate counters have incremented. 
+        # Check to see if the faceplate counters have incremented.
         post_events_scan = global_functions.getStatusValue(node, "scan")
         post_events_block = global_functions.getStatusValue(node, "block")
         assert(pre_events_scan < post_events_scan)
         assert(pre_events_block < post_events_block)
-        
+
     # verify that a block list entry does not match when the URI doesnt match exactly
     def test_017_blockedUrl2(self):
         addBlockedUrl("test.untangle.com/test/testPage1.html")
@@ -165,7 +171,7 @@ class WebFilterBaseTests(unittest2.TestCase):
     # verify that a block list glob functions with * at the end
     def test_030_blockedUrlGlobStar(self):
         addBlockedUrl("test.untangle.com/test/test*")
-        # this test URL should be blocked 
+        # this test URL should be blocked
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q blockpage")
         nukeBlockedUrls()
         assert (result == 0)
@@ -173,7 +179,7 @@ class WebFilterBaseTests(unittest2.TestCase):
     # verify that a block list glob functions with * at the end and at the beginning
     def test_031_blockedUrlGlobStar(self):
         addBlockedUrl("tes*tangle.com/test/test*")
-        # this test URL should be blocked 
+        # this test URL should be blocked
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q blockpage")
         nukeBlockedUrls()
         assert (result == 0)
@@ -181,7 +187,7 @@ class WebFilterBaseTests(unittest2.TestCase):
     # verify that a block list glob functions with * at the end and at the beginning and in the middle
     def test_032_blockedUrlGlobStar(self):
         addBlockedUrl("*est*angle.com/test/test*")
-        # this test URL should be blocked 
+        # this test URL should be blocked
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q blockpage")
         nukeBlockedUrls()
         assert (result == 0)
@@ -189,7 +195,7 @@ class WebFilterBaseTests(unittest2.TestCase):
     # verify that a block list glob matches the whole URL
     def test_033_blockedUrlGlobStar(self):
         addBlockedUrl("test.untangle.com*")
-        # this test URL should be blocked 
+        # this test URL should be blocked
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q blockpage")
         nukeBlockedUrls()
         assert (result == 0)
@@ -197,7 +203,7 @@ class WebFilterBaseTests(unittest2.TestCase):
     # verify that a block list glob * matches zero characters
     def test_034_blockedUrlGlobStar(self):
         addBlockedUrl("te*st.untangle.com*")
-        # this test URL should NOT be blocked 
+        # this test URL should NOT be blocked
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q blockpage")
         nukeBlockedUrls()
         assert (result == 0)
@@ -213,7 +219,7 @@ class WebFilterBaseTests(unittest2.TestCase):
     # verify that a block list glob ? matches a single character
     def test_036_blockedUrlGlobQuestionMark(self):
         addBlockedUrl("te?t.untangle.com/test/testP?ge1.html")
-        # this test URL should be blocked 
+        # this test URL should be blocked
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q blockpage")
         nukeBlockedUrls()
         assert (result == 0)
@@ -221,7 +227,7 @@ class WebFilterBaseTests(unittest2.TestCase):
     # verify that a block list glob ? matches ONLY single character (but not two or more)
     def test_037_blockedUrlGlobQuestionMark(self):
         addBlockedUrl("metalo?t.com/test/testP?.html")
-        # this test URL should NOT be blocked 
+        # this test URL should NOT be blocked
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q text123")
         nukeBlockedUrls()
         assert (result == 0)
@@ -229,7 +235,7 @@ class WebFilterBaseTests(unittest2.TestCase):
     # verify that the full URI is included in the match (even things after argument) bug #10067
     def test_038_blockedUrlGlobArgument(self):
         addBlockedUrl("test.untangle.com/*foo*")
-        # this test URL should NOT be blocked 
+        # this test URL should NOT be blocked
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html?arg=foobar 2>&1 | grep -q blockpage")
         nukeBlockedUrls()
         assert (result == 0)
@@ -237,7 +243,7 @@ class WebFilterBaseTests(unittest2.TestCase):
     # verify that untangle.com block rule also blocks test.untangle.com
     def test_039_blockedUrlSubdomain(self):
         addBlockedUrl("untangle.com")
-        # this test URL should NOT be blocked 
+        # this test URL should NOT be blocked
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q blockpage")
         nukeBlockedUrls()
         assert (result == 0)
@@ -245,7 +251,7 @@ class WebFilterBaseTests(unittest2.TestCase):
     # verify that t.untangle.com block rule DOES NOT block test.untangle.com ( it should block foo.t.untangle.com though )
     def test_040_blockedUrlSubdomain2(self):
         addBlockedUrl("t.untangle.com")
-        # this test URL should NOT be blocked 
+        # this test URL should NOT be blocked
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q text123")
         nukeBlockedUrls()
         assert (result == 0)
@@ -254,7 +260,7 @@ class WebFilterBaseTests(unittest2.TestCase):
     def test_045_blockedUrlRuleOrder(self):
         addBlockedUrl("test.untangle.com/test/testPage1.html", blocked=False, flagged=True)
         addBlockedUrl("test.untangle.com", blocked=True, flagged=True)
-        # this test URL should NOT be blocked 
+        # this test URL should NOT be blocked
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q text123")
         nukeBlockedUrls()
         assert (result == 0)
@@ -263,7 +269,7 @@ class WebFilterBaseTests(unittest2.TestCase):
     def test_046_blockedUrlRuleOrder(self):
         addBlockedUrl("test.untangle.com/test/testPage1.html", blocked=False, flagged=True)
         addBlockedUrl("test.untangle.com", blocked=True, flagged=True)
-        # this test URL should NOT be blocked 
+        # this test URL should NOT be blocked
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage2.html 2>&1 | grep -q blockpage")
         nukeBlockedUrls()
         assert (result == 0)
@@ -290,10 +296,10 @@ class WebFilterBaseTests(unittest2.TestCase):
 
     # verify that an entry in the pass list overrides a blocked category
     def test_052_passedUrlOverridesBlockedMimeType(self):
-        nukeBlockedMimeTypes()
-        addBlockedMimeType("text/plain")
+        nukeWebFilterRules()
+        addWebFilterRule("WEB_FILTER_RESPONSE_CONTENT_TYPE", "text/plain")
         addPassedUrl("test.untangle.com/test/")
-        # this test URL should NOT be blocked 
+        # this test URL should NOT be blocked
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/test.txt 2>&1 | grep -q text123")
         nukeBlockedUrls()
         nukePassedUrls()
@@ -301,10 +307,10 @@ class WebFilterBaseTests(unittest2.TestCase):
 
     # verify that an entry in the pass list overrides a blocked category
     def test_053_passedUrlOverridesBlockedExtension(self):
-        nukeBlockedExtensions()
-        addBlockedExtension("txt")
+        nukeWebFilterRules()
+        addWebFilterRule("WEB_FILTER_REQUEST_FILEEXT", "txt")
         addPassedUrl("test.untangle.com/test/")
-        # this test URL should NOT be blocked 
+        # this test URL should NOT be blocked
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/test.txt 2>&1 | grep -q text123")
         nukeBlockedUrls()
         nukePassedUrls()
@@ -312,56 +318,56 @@ class WebFilterBaseTests(unittest2.TestCase):
 
     # verify that an entry in the mime type block list functions
     def test_060_blockedMimeType(self):
-        nukeBlockedMimeTypes()
-        addBlockedMimeType("text/plain")
+        nukeWebFilterRules()
+        addWebFilterRule("WEB_FILTER_RESPONSE_CONTENT_TYPE","text/plain")
         # this test URL should be blocked
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/test.txt 2>&1 | grep -q blockpage")
-        nukeBlockedMimeTypes()
+        nukeWebFilterRules()
         assert (result == 0)
 
     # verify that an entry in the mime type block list doesn't overmatch
     def test_061_blockedMimeType(self):
-        nukeBlockedMimeTypes()
-        addBlockedMimeType("text/plain")
+        nukeWebFilterRules()
+        addWebFilterRule("WEB_FILTER_RESPONSE_CONTENT_TYPE","text/plain")
         # this test URL should NOT be blocked (its text/html not text/plain)
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/test.html 2>&1 | grep -q text123")
-        nukeBlockedMimeTypes()
+        nukeWebFilterRules()
         assert (result == 0)
 
     # verify that an entry in the file extension block list functions
     def test_070_blockedExtension(self):
-        nukeBlockedExtensions()
-        addBlockedExtension("txt")
+        nukeWebFilterRules()
+        addWebFilterRule("WEB_FILTER_REQUEST_FILEEXT","txt")
         # this test URL should be blocked
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/test.txt 2>&1 | grep -q blockpage")
-        nukeBlockedExtensions()
+        nukeWebFilterRules()
         assert (result == 0)
 
     # verify that an entry in the file extension block list doesn't overmatch
     def test_071_blockedExtension(self):
-        nukeBlockedExtensions()
-        addBlockedExtension("txt")
+        nukeWebFilterRules()
+        addWebFilterRule("WEB_FILTER_REQUEST_FILEEXT","txt")
         # this test URL should NOT be blocked (its text/html not text/plain)
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/test.html 2>&1 | grep -q text123")
-        nukeBlockedExtensions()
+        nukeWebFilterRules()
         assert (result == 0)
 
     # verify that an entry in the file extension block list doesn't overmatch
     def test_072_blockedExtension(self):
-        nukeBlockedExtensions()
-        addBlockedExtension("tml") # not this should only block ".tml" not ".html"
+        nukeWebFilterRules()
+        addWebFilterRule("WEB_FILTER_REQUEST_FILEEXT","tml") # not this should only block ".tml" not ".html"
         # this test URL should NOT be blocked (its text/html not text/plain)
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/test.html 2>&1 | grep -q text123")
-        nukeBlockedExtensions()
+        nukeWebFilterRules()
         assert (result == 0)
 
     # verify that an entry in the file extension block list functions
     def test_073_blockedExtensionWithArgument(self):
-        nukeBlockedExtensions()
-        addBlockedExtension("txt")
+        nukeWebFilterRules()
+        addWebFilterRule("WEB_FILTER_REQUEST_FILEEXT","txt")
         # this test URL should be blocked
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/test.txt?argument 2>&1 | grep -q blockpage")
-        nukeBlockedExtensions()
+        nukeWebFilterRules()
         assert (result == 0)
 
     def test_100_eventlog_blockedUrl(self):
@@ -375,10 +381,10 @@ class WebFilterBaseTests(unittest2.TestCase):
 
         events = global_functions.get_events(self.displayName(),'Blocked Web Events',None,1)
         assert(events != None)
-        found = global_functions.check_events( events.get('list'), 5, 
-                                            "host","test.untangle.com", 
-                                            "uri", ("/test/testPage1.html?arg=%s" % fname), 
-                                            self.eventNodeName() + '_blocked', True, 
+        found = global_functions.check_events( events.get('list'), 5,
+                                            "host","test.untangle.com",
+                                            "uri", ("/test/testPage1.html?arg=%s" % fname),
+                                            self.eventNodeName() + '_blocked', True,
                                             self.eventNodeName() + '_flagged', True )
         assert( found )
 
@@ -392,10 +398,10 @@ class WebFilterBaseTests(unittest2.TestCase):
 
         events = global_functions.get_events(self.displayName(),'Flagged Web Events',None,1)
         assert(events != None)
-        found = global_functions.check_events( events.get('list'), 5, 
-                                            "host","test.untangle.com", 
-                                            "uri", ("/test/testPage1.html?arg=%s" % fname), 
-                                            self.eventNodeName() + '_blocked', False, 
+        found = global_functions.check_events( events.get('list'), 5,
+                                            "host","test.untangle.com",
+                                            "uri", ("/test/testPage1.html?arg=%s" % fname),
+                                            self.eventNodeName() + '_blocked', False,
                                             self.eventNodeName() + '_flagged', True )
         assert( found )
 
@@ -408,10 +414,10 @@ class WebFilterBaseTests(unittest2.TestCase):
 
         events = global_functions.get_events(self.displayName(),'All Web Events',None,1)
         assert(events != None)
-        found = global_functions.check_events( events.get('list'), 5, 
-                                            "host","test.untangle.com", 
-                                            "uri", ("/test/testPage1.html?arg=%s" % fname), 
-                                            self.eventNodeName() + '_blocked', False, 
+        found = global_functions.check_events( events.get('list'), 5,
+                                            "host","test.untangle.com",
+                                            "uri", ("/test/testPage1.html?arg=%s" % fname),
+                                            self.eventNodeName() + '_blocked', False,
                                             self.eventNodeName() + '_flagged', False )
         assert( found )
 
@@ -421,14 +427,14 @@ class WebFilterBaseTests(unittest2.TestCase):
         addBlockedUrl("test.untangle.com/test/testPage1.html")
         settings = node.getSettings()
         settings["unblockMode"] = "Host"
-        node.setSettings(settings)        
-        # this test URL should be blocked but allow  
+        node.setSettings(settings)
+        # this test URL should be blocked but allow
         remote_control.runCommand("rm -f /tmp/web_filter_base_test_120.log")
         result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/web_filter_base_test_120.log -O /tmp/web_filter_base_test_120.out http://test.untangle.com/test/testPage1.html")
         resultButton = remote_control.runCommand("grep -q 'unblock' /tmp/web_filter_base_test_120.out")
         resultBlock = remote_control.runCommand("grep -q 'blockpage' /tmp/web_filter_base_test_120.out")
 
-        # get the IP address of the block page 
+        # get the IP address of the block page
         ipfind = remote_control.runCommand("grep 'Location' /tmp/web_filter_base_test_120.log", stdout=True)
         # print 'ipFind %s' % ipfind
         ip = re.findall( r'[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}(?:[0-9:]{0,6})', ipfind )
@@ -442,7 +448,7 @@ class WebFilterBaseTests(unittest2.TestCase):
         print "wget -q -O /dev/null --post-data=\'" + unBlockParameters + "\' http://" + blockPageIP + "/" + self.shortNodeName() + "/unblock"
         remote_control.runCommand("wget -q -O /dev/null --post-data=\'" + unBlockParameters + "\' http://" + blockPageIP + "/" + self.shortNodeName() + "/unblock")
         resultUnBlock = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q text123")
-        
+
         nukeBlockedUrls()
         node.flushAllUnblockedSites()
 
@@ -464,7 +470,7 @@ class WebFilterBaseTests(unittest2.TestCase):
 
         nukeBlockedUrls()
         nukePassedUrls()
-        assert( resultReferer == 1 )        
+        assert( resultReferer == 1 )
 
     # disable pass referer and verify that a page with content that would be blocked is allowed.
     def test_131_passrefererEnabled(self):
@@ -480,20 +486,11 @@ class WebFilterBaseTests(unittest2.TestCase):
 
         nukeBlockedUrls()
         nukePassedUrls()
-        assert( resultReferer == 0 )        
-        
+        assert( resultReferer == 0 )
+
     @staticmethod
     def finalTearDown(self):
         global node
         if node != None:
             uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
             node = None
-        
-
-
-
-
-
-
-
-

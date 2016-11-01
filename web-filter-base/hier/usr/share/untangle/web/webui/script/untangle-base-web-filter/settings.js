@@ -5,23 +5,76 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
         this.buildUrlValidator();
         this.genericRuleFields = Ung.Util.getGenericRuleFields(this);
         this.buildTabPanel([
-            this.buildPanelBlockedCategories(),
+            this.buildPanelCategories(),
             this.buildPanelBlockedSites(),
-            this.buildPanelBlockedFileTypes(),
-            this.buildPanelBlockedMimeTypes(),
             this.buildPanelPassedSites(),
             this.buildPanelPassedClients(),
+            this.buildGridFilterRules(),
             this.buildPanelAdvanced()
         ]);
         this.callParent(arguments);
     },
+    getConditions: function () {
+        return [
+            {name:"DST_ADDR",displayName: i18n._("Destination Address"), type: "text", visible: true, vtype:"ipMatcher"},
+            {name:"DST_PORT",displayName: i18n._("Destination Port"), type: "text",vtype:"portMatcher", visible: true},
+            {name:"DST_INTF",displayName: i18n._("Destination Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, false), visible: true},
+            {name:"SRC_ADDR",displayName: i18n._("Source Address"), type: "text", visible: true, vtype:"ipMatcher"},
+            {name:"SRC_PORT",displayName: i18n._("Source Port"), type: "text", vtype:"portMatcher", visible: rpc.isExpertMode},
+            {name:"SRC_INTF",displayName: i18n._("Source Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, false), visible: true},
+            {name:"PROTOCOL",displayName: i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["any", i18n._("any")]], visible: true},
+            {name:"USERNAME",displayName: i18n._("Username"), type: "editor", editor: Ext.create('Ung.UserEditorWindow',{}), visible: true},
+            {name:"CLIENT_HOSTNAME",displayName: i18n._("Client Hostname"), type: "text", visible: true},
+            {name:"SERVER_HOSTNAME",displayName: i18n._("Server Hostname"), type: "text", visible: rpc.isExpertMode},
+            {name:"SRC_MAC", displayName: i18n._("Client MAC Address"), type: "text", visible: true },
+            {name:"DST_MAC", displayName: i18n._("Server MAC Address"), type: "text", visible: true },
+            {name:"CLIENT_MAC_VENDOR",displayName: i18n._("Client MAC Vendor"), type: "text", visible: true},
+            {name:"SERVER_MAC_VENDOR",displayName: i18n._("Server MAC Vendor"), type: "text", visible: true},
+            {name:"CLIENT_IN_PENALTY_BOX",displayName: i18n._("Client in Penalty Box"), type: "boolean", visible: true},
+            {name:"SERVER_IN_PENALTY_BOX",displayName: i18n._("Server in Penalty Box"), type: "boolean", visible: true},
+            {name:"CLIENT_HAS_NO_QUOTA",displayName: i18n._("Client has no Quota"), type: "boolean", visible: true},
+            {name:"SERVER_HAS_NO_QUOTA",displayName: i18n._("Server has no Quota"), type: "boolean", visible: true},
+            {name:"CLIENT_QUOTA_EXCEEDED",displayName: i18n._("Client has exceeded Quota"), type: "boolean", visible: true},
+            {name:"SERVER_QUOTA_EXCEEDED",displayName: i18n._("Server has exceeded Quota"), type: "boolean", visible: true},
+            {name:"CLIENT_QUOTA_ATTAINMENT",displayName: i18n._("Client Quota Attainment"), type: "text", visible: true},
+            {name:"SERVER_QUOTA_ATTAINMENT",displayName: i18n._("Server Quota Attainment"), type: "text", visible: true},
+            {name:"HTTP_HOST",displayName: i18n._("HTTP: Hostname"), type: "text", visible: true},
+            {name:"HTTP_REFERER",displayName: i18n._("HTTP: Referer"), type: "text", visible: true},
+            {name:"HTTP_URI",displayName: i18n._("HTTP: URI"), type: "text", visible: true},
+            {name:"HTTP_URL",displayName: i18n._("HTTP: URL"), type: "text", visible: true},
+            {name:"HTTP_CONTENT_TYPE",displayName: i18n._("HTTP: Content Type"), type: "text", visible: true},
+            {name:"HTTP_CONTENT_LENGTH",displayName: i18n._("HTTP: Content Length"), type: "text", visible: true},
+            {name:"HTTP_USER_AGENT",displayName: i18n._("HTTP: Client User Agent"), type: "text", visible: true},
+            {name:"HTTP_USER_AGENT_OS",displayName: i18n._("HTTP: Client User OS"), type: "text", visible: false},
+            {name:"APPLICATION_CONTROL_APPLICATION",displayName: i18n._("Application Control: Application"), type: "text", visible: true},
+            {name:"APPLICATION_CONTROL_CATEGORY",displayName: i18n._("Application Control: Application Category"), type: "text", visible: true},
+            {name:"APPLICATION_CONTROL_PROTOCHAIN",displayName: i18n._("Application Control: ProtoChain"), type: "text", visible: true},
+            {name:"APPLICATION_CONTROL_DETAIL",displayName: i18n._("Application Control: Detail"), type: "text", visible: true},
+            {name:"APPLICATION_CONTROL_CONFIDENCE",displayName: i18n._("Application Control: Confidence"), type: "text", visible: true},
+            {name:"APPLICATION_CONTROL_PRODUCTIVITY",displayName: i18n._("Application Control: Productivity"), type: "text", visible: true},
+            {name:"APPLICATION_CONTROL_RISK",displayName: i18n._("Application Control: Risk"), type: "text", visible: true},
+            {name:"PROTOCOL_CONTROL_SIGNATURE",displayName: i18n._("Application Control Lite: Signature"), type: "text", visible: true},
+            {name:"PROTOCOL_CONTROL_CATEGORY",displayName: i18n._("Application Control Lite: Category"), type: "text", visible: true},
+            {name:"PROTOCOL_CONTROL_DESCRIPTION",displayName: i18n._("Application Control Lite: Description"), type: "text", visible: true},
+            {name:"WEB_FILTER_CATEGORY",displayName: i18n._("Web Filter: Category"), type: "text", visible: true},
+            {name:"WEB_FILTER_CATEGORY_DESCRIPTION",displayName: i18n._("Web Filter: Category Description"), type: "text", visible: true},
+            {name:"WEB_FILTER_FLAGGED",displayName: i18n._("Web Filter: Website is Flagged"), type: "boolean", visible: true},
+            {name:"WEB_FILTER_REQUEST_FILEPATH",displayName: i18n._("Web Filter: Request File Path"), type: "text", visible: true},
+            {name:"WEB_FILTER_REQUEST_FILENAME",displayName: i18n._("Web Filter: Request File Name"), type: "text", visible: true},
+            {name:"WEB_FILTER_REQUEST_FILEEXT",displayName: i18n._("Web Filter: Request File Extension"), type: "text", visible: true},
+            {name:"WEB_FILTER_RESPONSE_CONTENT_TYPE",displayName: i18n._("Web Filter: Response Content Type"), type: "text", visible: true},
+            {name:"WEB_FILTER_RESPONSE_FILENAME",displayName: i18n._("Web Filter: Response File Name"), type: "text", visible: true},
+            {name:"DIRECTORY_CONNECTOR_GROUP",displayName: i18n._("Directory Connector: User in Group"), type: "editor", editor: Ext.create('Ung.GroupEditorWindow',{}), visible: true},
+            {name:"CLIENT_COUNTRY",displayName: i18n._("Client Country"), type: "editor", editor: Ext.create('Ung.CountryEditorWindow',{}), visible: true},
+            {name:"SERVER_COUNTRY",displayName: i18n._("Server Country"), type: "editor", editor: Ext.create('Ung.CountryEditorWindow',{}), visible: true}
+        ];
+    },
     beforeSave: function(isApply, handler) {
         this.settings.categories.list=this.gridCategories.getList();
         this.settings.blockedUrls.list=this.gridBlockedSites.getList();
-        this.settings.blockedExtensions.list=this.gridBlockedFileTypes.getList();
-        this.settings.blockedMimeTypes.list=this.gridBlockedMimeTypes.getList();
         this.settings.passedUrls.list=this.gridAllowedSites.getList();
         this.settings.passedClients.list=this.gridAllowedClients.getList();
+        this.settings.filterRules.list=this.gridFilterRules.getList();
         handler.call(this, isApply);
     },
     buildUrlValidator: function(){
@@ -52,7 +105,7 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
     },
 
     // Block Lists Panel
-    buildPanelBlockedCategories: function() {
+    buildPanelCategories: function() {
         this.gridCategories = Ext.create('Ung.grid.Panel',{
             flex: 1,
             name: 'Categories',
@@ -152,12 +205,12 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
                 height: 60
             }]
         });
-        this.blockedCategoriesPanel = Ext.create('Ext.panel.Panel',{
-            name: 'BlockCategories',
-            title: i18n._('Block Categories'),
+        this.categoriesPanel = Ext.create('Ext.panel.Panel',{
+            name: 'Categories',
+            title: i18n._('Categories'),
             //helpSource: 'web_filter_block_categories',
             //helpSource: 'web_filter_lite_block_categories',
-            helpSource: this.helpSourceName + '_block_categories',
+            helpSource: this.helpSourceName + '_categories',
             cls: 'ung-panel',
             autoScroll: true,
             defaults: {
@@ -168,12 +221,13 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
                 align: 'stretch'
             },
             items: [{
-                title: i18n . _("Block Categories"),
+                title: i18n . _("Categories"),
                 html: i18n . _("Block or flag access to sites associated with the specified category.")
             }, this.gridCategories ]
         });
-        return this.blockedCategoriesPanel;
+        return this.categoriesPanel;
     },
+
     // Blocked sites
     buildPanelBlockedSites: function() {
         this.gridBlockedSites = Ext.create('Ung.grid.Panel',{
@@ -278,243 +332,7 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
         });
         return this.blockedSitesPanel;
     },
-    // Blocked File Types
-    buildPanelBlockedFileTypes: function() {
-        this.gridBlockedFileTypes = Ext.create('Ung.grid.Panel',{
-            flex: 1,
-            name: 'File Types',
-            sizetoParent: true,
-            settingsCmp: this,
-            title: i18n._("File Types"),
-            dataProperty: "blockedExtensions",
-            recordJavaClass: "com.untangle.uvm.node.GenericRule",
-            emptyRow: {
-                "string": "",
-                "blocked": true,
-                "flagged": true,
-                "category": "",
-                "description": ""
-            },
-            sortField: 'string',
-            fields: this.genericRuleFields,
-            columns: [{
-                header: i18n._("File Type"),
-                width: 200,
-                dataIndex: 'string',
-                editor: {
-                    xtype: 'textfield',
-                    emptyText: i18n._("[enter extension]"),
-                    allowBlank: false
-                }
-            },{
-                xtype:'checkcolumn',
-                width:55,
-                header: i18n._("Block"),
-                dataIndex: 'blocked',
-                resizable: false,
-                checkAll: {}
-            },{
-                xtype:'checkcolumn',
-                width:55,
-                header: i18n._("Flag"),
-                dataIndex: 'flagged',
-                resizable: false,
-                tooltip: i18n._("Flag as Violation"),
-                checkAll: {}
-            },{
-                header: i18n._("Category"),
-                width: 200,
-                dataIndex: 'category',
-                editor: {
-                    xtype:'textfield',
-                    emptyText: i18n._("[no category]")
-                }
-            },{
-                header: i18n._("Description"),
-                width: 200,
-                dataIndex: 'description',
-                flex:1,
-                editor: {
-                    xtype:'textfield',
-                    emptyText: i18n._("[no description]")
-                }
-            }],
-            rowEditorInputLines: [{
-                xtype:'textfield',
-                name: "File Type",
-                dataIndex: "string",
-                fieldLabel: i18n._("File Type"),
-                emptyText: i18n._("[enter extension]"),
-                allowBlank: false,
-                width: 300
-            },{
-                xtype:'checkbox',
-                name: "Block",
-                dataIndex: "blocked",
-                fieldLabel: i18n._("Block")
-            },{
-                xtype:'checkbox',
-                name: "Flag",
-                dataIndex: "flagged",
-                fieldLabel: i18n._("Flag"),
-                tooltip: i18n._("Flag as Violation")
-            },{
-                xtype:'textarea',
-                name: "Category",
-                dataIndex: "category",
-                fieldLabel: i18n._("Category"),
-                emptyText: i18n._("[no category]"),
-                width: 300
-            },{
-                xtype:'textarea',
-                name: "Description",
-                dataIndex: "description",
-                fieldLabel: i18n._("Description"),
-                emptyText: i18n._("[no description]"),
-                width: 400,
-                height: 60
-            }]
-        });
-        this.blockedFileTypesPanel = Ext.create('Ext.panel.Panel',{
-            name: 'BlockFileTypes',
-            title: i18n._('Block File Types'),
-            //helpSource: 'web_filter_block_filetypes',
-            //helpSource: 'web_filter_lite_block_filetypes',
-            helpSource: this.helpSourceName + '_block_filetypes',
-            cls: 'ung-panel',
-            autoScroll: true,
-            defaults: {
-                xtype: 'fieldset'
-            },
-            layout: {
-                type: 'vbox',
-                align: 'stretch'
-            },
-            items: [{
-                title: i18n . _("Block File Types"),
-                html: i18n . _("Block or flag access to files associated with the specified file type.")
-            }, this.gridBlockedFileTypes ]
-        });
-        return this.blockedFileTypesPanel;
-    },
-    // Blocked MIME Types
-    buildPanelBlockedMimeTypes: function() {
-        this.gridBlockedMimeTypes = Ext.create('Ung.grid.Panel',{
-            flex: 1,
-            name: 'MIME Types',
-            settingsCmp: this,
-            title: i18n._("MIME Types"),
-            dataProperty: "blockedMimeTypes",
-            recordJavaClass: "com.untangle.uvm.node.GenericRule",
-            emptyRow: {
-                "string": "",
-                "blocked": true,
-                "flagged": true,
-                "category": "",
-                "description": ""
-            },
-            sortField: 'string',
-            fields: this.genericRuleFields,
-            columns: [{
-                header: i18n._("MIME type"),
-                width: 200,
-                dataIndex: 'string',
-                editor: {
-                    xtype:'textfield',
-                    emptyText: i18n._("[enter mime type]"),
-                    allowBlank:false
-                }
-            },{
-                xtype:'checkcolumn',
-                width:55,
-                header: i18n._("Block"),
-                dataIndex: 'blocked',
-                resizable: false,
-                checkAll: {}
-            },{
-                xtype:'checkcolumn',
-                width:55,
-                header: i18n._("Flag"),
-                dataIndex: 'flagged',
-                resizable: false,
-                tooltip: i18n._("Flag as Violation"),
-                checkAll: {}
-            },{
-                header: i18n._("Category"),
-                width: 100,
-                dataIndex: 'category',
-                editor: {
-                    xtype:'textfield',
-                    emptyText: i18n._("[no category]")
-                }
-            },{
-                header: i18n._("Description"),
-                width: 200,
-                flex:1,
-                dataIndex: 'description',
-                editor: {
-                    xtype:'textfield',
-                    emptyText: i18n._("[no description]")
-                }
-            }],
-            rowEditorInputLines: [{
-                xtype:'textfield',
-                name: "MIME Type",
-                dataIndex: "string",
-                fieldLabel: i18n._("MIME Type"),
-                emptyText: i18n._("[enter mime type]"),
-                allowBlank: false,
-                width: 400
-            },{
-                xtype:'checkbox',
-                name: "Block",
-                dataIndex: "blocked",
-                fieldLabel: i18n._("Block")
-            },{
-                xtype:'checkbox',
-                name: "Flag",
-                dataIndex: "flagged",
-                fieldLabel: i18n._("Flag"),
-                tooltip: i18n._("Flag as Violation")
-            },{
-                xtype:'textarea',
-                name: "Category",
-                dataIndex: "category",
-                fieldLabel: i18n._("Category"),
-                emptyText: i18n._("[no category]"),
-                width: 300
-            },{
-                xtype:'textarea',
-                name: "Description",
-                dataIndex: "description",
-                fieldLabel: i18n._("Description"),
-                emptyText: i18n._("[no description]"),
-                width: 400,
-                height: 60
-            }]
-        });
-        this.blockedMimeTypesPanel = Ext.create('Ext.panel.Panel',{
-            name: 'BlockMimeTypes',
-            title: i18n._('Block Mime Types'),
-            //helpSource: 'web_filter_block_mimetypes',
-            //helpSource: 'web_filter_lite_block_mimetypes',
-            helpSource: this.helpSourceName + '_block_mimetypes',
-            cls: 'ung-panel',
-            autoScroll: true,
-            defaults: {
-                xtype: 'fieldset'
-            },
-            layout: {
-                type: 'vbox',
-                align: 'stretch'
-            },
-            items: [{
-                title: i18n . _("Block MIME Types"),
-                html: i18n . _("Block or flag access to files associated with the specified MIME type.")
-            }, this.gridBlockedMimeTypes ]
-        });
-        return this.blockedMimeTypesPanel;
-    },
+
     // Allowed Sites
     buildPanelPassedSites: function() {
         this.gridAllowedSites = Ext.create('Ung.grid.Panel',{
@@ -603,6 +421,7 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
         });
         return this.allowedSitesPanel;
     },
+
     // Allowed Clients
     buildPanelPassedClients: function() {
         this.gridAllowedClients = Ext.create('Ung.grid.Panel',{
@@ -691,6 +510,119 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
         });
         return this.allowedClientsPanel;
     },
+
+    // Rules
+    buildGridFilterRules: function() {
+        this.gridFilterRules = Ext.create('Ung.grid.Panel',{
+            name: "gridFilterRules",
+            helpSource: 'web_filter_rules',
+            settingsCmp: this,
+            height: 500,
+            hasReorder: true,
+            title: i18n._("Rules"),
+            qtip: i18n._("Web Filter rules allow creating flexible block and pass conditions."),
+            dataProperty: "filterRules",
+            recordJavaClass: "com.untangle.node.web_filter.WebFilterRule",
+            emptyRow: {
+                "enabled": true,
+                "ruleId": 0,
+                "flagged": true,
+                "blocked": false,
+                "description": ""
+            },
+            fields: [{
+                name: 'enabled'
+            },{
+                name: 'ruleId'
+            },{
+                name: 'flagged'
+            },{
+                name: 'blocked'
+            },{
+                name: 'description'
+            },{
+                name: 'conditions'
+            }],
+            columns:[{
+                xtype:'checkcolumn',
+                width:65,
+                header: i18n._("Enabled"),
+                dataIndex: 'enabled',
+                resizable: false
+            }, {
+                header: i18n._("Rule ID"),
+                dataIndex: 'ruleId',
+                width: 70,
+                renderer: function(value) {
+                    if (value < 0) {
+                        return i18n._("new");
+                    } else {
+                        return value;
+                    }
+                }
+            }, {
+                xtype:'checkcolumn',
+                width:65,
+                header: i18n._("Flagged"),
+                dataIndex: 'flagged',
+                resizable: false
+            }, {
+                xtype:'checkcolumn',
+                width:65,
+                header: i18n._("Blocked"),
+                dataIndex: 'blocked',
+                resizable: false
+            }, {
+                header: i18n._("Description"),
+                dataIndex:'description',
+                flex:1,
+                width: 200
+            }],
+            rowEditorInputLines: [{
+                xtype: "checkbox",
+                name: "Enabled",
+                dataIndex: "enabled",
+                fieldLabel: i18n._( "Enabled" ),
+                width: 100
+            }, {
+                xtype: "textfield",
+                name: "Description",
+                dataIndex: "description",
+                fieldLabel: i18n._( "Description" ),
+                emptyText: i18n._("[no description]"),
+                width: 480
+            }, {
+                xtype: "fieldset",
+                autoScroll: true,
+                title: "If all of the following conditions are met:",
+                items:[{
+                    xtype: 'rulebuilder',
+                    settingsCmp: this,
+                    javaClass: "com.untangle.node.web_filter.WebFilterRuleCondition",
+                    dataIndex: "conditions",
+                    conditions: this.getConditions()
+                }]
+            }, {
+                xtype: 'fieldset',
+                title: i18n._('Perform the following actions:'),
+                items:[{
+                    xtype: "checkbox",
+                    name: "Flag",
+                    dataIndex: "flagged",
+                    fieldLabel: i18n._( "Flag" ),
+                    width: 100
+                }, {
+                    xtype: "checkbox",
+                    name: "Block",
+                    dataIndex: "blocked",
+                    fieldLabel: i18n._( "Block" ),
+                    width: 100
+                }]
+            }]
+        });
+        return this.gridFilterRules;
+    },
+
     // Advanced options
     buildPanelAdvanced: function() {
         this.panelAdvanced = Ext.create('Ext.panel.Panel',{

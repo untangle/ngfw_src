@@ -26,14 +26,11 @@ public interface WebFilter extends Node
     List<GenericRule> getBlockedUrls();
     void setBlockedUrls(List<GenericRule> blockedUrls);
 
-    List<GenericRule> getBlockedMimeTypes();
-    void setBlockedMimeTypes(List<GenericRule> blockedMimeTypes);
-
-    List<GenericRule> getBlockedExtensions();
-    void setBlockedExtensions(List<GenericRule> blockedExtensions);
-
     List<GenericRule> getCategories();
     void setCategories(List<GenericRule> newCategories);
+
+    List<WebFilterRule> getFilterRules();
+    void setFilterRules(List<WebFilterRule> newRules);
 
     WebFilterBlockDetails getDetails(String nonce);
 
