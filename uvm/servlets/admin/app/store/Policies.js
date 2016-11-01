@@ -1,13 +1,6 @@
 Ext.define('Ung.store.Policies', {
     extend: 'Ext.data.Store',
+    alias: 'store.policies',
     storeId: 'policies',
-    model: 'Ung.model.Policy',
-    //fields: ['policyId'],
-    proxy: {
-        type: 'memory',
-        reader: {
-            type: 'json'
-            //rootProperty: 'list'
-        }
-    }
+    model: 'Ung.model.Policy'
 });

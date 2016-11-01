@@ -33,6 +33,17 @@ Ext.define('Ung.view.apps.Apps', {
             align: 'middle'
         },
         items: [{
+            xtype: 'button',
+            baseCls: 'heading-btn',
+            html: Ung.Util.iconTitle('Install Apps'.t(), 'file_download-16'),
+            hrefTarget: '_self',
+            bind: {
+                href: '#apps/{policyId}/install'
+            }
+        }, {
+            xtype: 'component',
+            flex: 1
+        }, {
             xtype: 'combobox',
             editable: false,
             multiSelect: false,
@@ -46,13 +57,6 @@ Ext.define('Ung.view.apps.Apps', {
             listeners: {
                 change: 'setPolicy'
             }
-        }, {
-            xtype: 'button',
-            html: 'Install Apps'.t(),
-            hrefTarget: '_self',
-            bind: {
-                href: '#apps/{policyId}/install'
-            }
         }]
     }, {
         region: 'center',
@@ -63,10 +67,25 @@ Ext.define('Ung.view.apps.Apps', {
             background: 'transparent'
         },
         items: [{
-            xtype: 'container',
+            xtype: 'dataview',
+            itemId: 'filters',
             margin: 10,
-            reference: 'filters',
+            // tpl: '<tpl for="."><div>{displayName}</div></tpl>',
 
+            tpl: '<tpl for=".">' +
+                    '<tpl if="type == \'FILTER\'">' +
+                        '<a class="app-item" href="#apps/{policyId}/{name}">' +
+                            '<span class="app-icon"><img src="' + resourcesBaseHref + '/skins/modern-rack/images/admin/apps/{name}_80x80.png" width=80 height=80/>' +
+                            '<span class="app-name">{displayName}</span>' +
+                            '</span>' +
+                            '<span class="app-state {state}"><i class="material-icons">power_settings_new</i></span>' +
+                        '</a>' +
+                    '</tpl>' +
+                '</tpl>',
+            itemSelector: 'a',
+            bind: {
+                store: '{nodesStore}'
+            },
             style: {
                 display: 'inline-block'
             }
@@ -75,13 +94,27 @@ Ext.define('Ung.view.apps.Apps', {
             cls: 'apps-separator',
             html: 'Service Apps'.t()
         }, {
-            xtype: 'container',
+            xtype: 'dataview',
             margin: 10,
-            reference: 'services',
+            // tpl: '<tpl for="."><div>{displayName}</div></tpl>',
+
+            tpl: '<tpl for=".">' +
+                    '<tpl if="type == \'SERVICE\'">' +
+                        '<a class="app-item" href="#apps/{policyId}/{name}">' +
+                            '<span class="app-icon"><img src="' + resourcesBaseHref + '/skins/modern-rack/images/admin/apps/{name}_80x80.png" width=80 height=80/>' +
+                            '<span class="app-name">{displayName}</span>' +
+                            '</span>' +
+                            '<tpl if="hasPowerButton"><span class="app-state {state}"><i class="material-icons">power_settings_new</i></span></tpl>' +
+                        '</a>' +
+                    '</tpl>' +
+                '</tpl>',
+            itemSelector: 'a',
+            bind: {
+                store: '{nodesStore}'
+            },
             style: {
                 display: 'inline-block'
             }
-
         }]
     }],
     listeners: {

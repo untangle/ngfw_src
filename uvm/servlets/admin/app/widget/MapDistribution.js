@@ -7,6 +7,7 @@ Ext.define('Ung.widget.MapDistribution', {
     hidden: true,
     border: false,
     baseCls: 'widget',
+    cls: 'adding',
 
     layout: {
         type: 'vbox',

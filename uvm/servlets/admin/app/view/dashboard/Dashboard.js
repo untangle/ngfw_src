@@ -217,9 +217,9 @@ Ext.define('Ung.view.dashboard.Dashboard', {
             tbar: [{
                 itemId: 'addWidgetBtn',
                 text: Ung.Util.iconTitle('Add'.t(), 'add_circle-16'),
-                menu: Ext.create('Ext.menu.Menu', {
-                    mouseLeaveDelay: 0
-                })
+                // menu: Ext.create('Ext.menu.Menu', {
+                //     mouseLeaveDelay: 0
+                // })
             }, '->', {
                 text: Ung.Util.iconTitle('Import'.t(), 'file_download-16'),
                 // handler: 'applyChanges'

@@ -46,7 +46,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
     initDashboard: function () {
         var me = this,
             vm = me.getViewModel();
-        me.populateMenus();
+        //me.populateMenus();
         // load the dashboard settings
 
         // Rpc.loadDashboardSettings().then(function(settings) {
@@ -401,7 +401,8 @@ Ext.define('Ung.view.dashboard.DashboardController', {
     },
 
     resetDashboard: function () {
-        var me = this;
+        var me = this,
+            vm = this.getViewModel();
         Ext.MessageBox.confirm('Warning'.t(),
             'This will overwrite the current dashboard settings with the defaults.'.t() + '<br/><br/>' +
             'Do you want to continue?'.t(),
@@ -410,7 +411,23 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                     rpc.dashboardManager.resetSettingsToDefault(function (result, ex) {
                         if (ex) { Ung.Util.exceptionToast(ex); return; }
                         Ung.Util.successToast('Dashboard reset done!');
-                        me.initDashboard();
+                        Rpc.getDashboardSettings().then(function(settings) {
+                            Ung.dashboardSettings = settings;
+                            if (vm.get('reportsInstalled')) {
+                                // load unavailable apps needed for showing the widgets
+                                rpc.reportsManager.getUnavailableApplicationsMap(function (result, ex) {
+                                    if (ex) { Ung.Util.exceptionToast(ex); return false; }
+
+                                    Ext.getStore('unavailableApps').loadRawData(result.map);
+                                    Ext.getStore('widgets').loadData(settings.widgets.list);
+                                    me.loadWidgets();
+                                });
+                            } else {
+                                Ext.getStore('widgets').loadData(settings.widgets.list);
+                                me.loadWidgets();
+                            }
+                            me.populateMenus();
+                        });
                     });
                 }
             });
@@ -467,7 +484,10 @@ Ext.define('Ung.view.dashboard.DashboardController', {
     populateMenus: function () {
         var addWidgetBtn = this.getView().down('#addWidgetBtn'), categories, categoriesMenu = [], reportsMenu = [];
 
-        addWidgetBtn.getMenu().removeAll();
+        if (addWidgetBtn.getMenu()) {
+            addWidgetBtn.getMenu().remove();
+        }
+
         categoriesMenu.push({
             text: 'Common',
             icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_hosts.png',
@@ -517,7 +537,6 @@ Ext.define('Ung.view.dashboard.DashboardController', {
 
         if (rpc.reportsManager) {
             rpc.reportsManager.getCurrentApplications(function (result, ex) {
-                console.log('here');
                 categories = [
                     { displayName: 'Hosts', icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_hosts.png' },
                     { displayName: 'Devices', icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_devices.png' },
@@ -577,10 +596,16 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                         }
                     });
                 });
-                addWidgetBtn.getMenu().add(categoriesMenu);
+                addWidgetBtn.setMenu({
+                    items: categoriesMenu,
+                    mouseLeaveDelay: 0
+                });
             });
         } else {
-            addWidgetBtn.getMenu().add(categoriesMenu);
+            addWidgetBtn.setMenu({
+                items: categoriesMenu,
+                mouseLeaveDelay: 0
+            });
         }
     }
 });

@@ -88,9 +88,6 @@
     }
   </style>
 
-  <style>
-  </style>
-
 </head>
 <body>
 
@@ -133,6 +130,16 @@
     // connect to RPC using forwarded 8000 port to bypass authentication for it
     var rpc = new JSONRpcClient('http://localhost:8000/webui/JSON-RPC');
 
+    // Disable Ext Area to avoid unwanted debug messages
+    Ext.supports.MouseWheel = false;
+    Ext.enableAria = false;
+    Ext.enableAriaButtons = false;
+    Ext.enableAriaPanels = false;
+
+    // important! override the default models ext idProperty so it does not interfere with backend 'id'
+    Ext.data.Model.prototype.idProperty = '_id';
+
+
     Ext.onReady(function () {
       console.timeEnd('resources');
       // Ext.get('app-message').setHtml('Fetching data ...');
@@ -148,6 +155,7 @@
       String.prototype.t = function() {
           return rpc.translations[this.valueOf()] || '<cite>' + this.valueOf() + '</cite>';
       };
+
 
       Ext.application({
           name: 'Ung',
@@ -167,16 +175,6 @@
           }
       });
       */
-
-      // Disable Ext Area to avoid unwanted debug messages
-      Ext.supports.MouseWheel = false;
-      Ext.enableAria = false;
-      Ext.enableAriaButtons = false;
-      Ext.enableAriaPanels = false;
-
-      // important! override the default models ext idProperty so it does not interfere with backend 'id'
-      Ext.data.Model.prototype.idProperty = '_id';
-
     });
 
 
