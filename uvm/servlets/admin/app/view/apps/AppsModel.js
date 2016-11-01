@@ -3,10 +3,18 @@ Ext.define('Ung.view.apps.AppsModel', {
 
     alias: 'viewmodel.apps',
 
+    data: {
+        nodes: []
+    },
+
     stores: {
-        //policies: {
-            //autoLoad: true
-        //}
+        nodesStore: {
+            data: '{nodes}',
+            sorters: [{
+                property: 'viewPosition',
+                direction: 'ASC'
+            }]
+        }
     }
 
 });

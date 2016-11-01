@@ -27,19 +27,21 @@ Ext.define('Ung.view.apps.install.Install', {
             align: 'middle'
         },
         items: [{
+            xtype: 'button',
+            baseCls: 'heading-btn',
+            html: Ung.Util.iconTitle('Back to Apps', 'arrow_back-16'),
+            hrefTarget: '_self',
+            bind: {
+                href: '#apps/{policyId}'
+            }
+        }, {
             xtype: 'component',
+            hidden: true,
             style: {
                 color: '#CCC'
             },
             flex: 1,
             html: 'Select Apps and Services to Install'.t()
-        }, {
-            xtype: 'button',
-            html: 'Done'.t(),
-            hrefTarget: '_self',
-            bind: {
-                href: '#apps/{policyId}'
-            }
         }]
     }, {
         region: 'center',

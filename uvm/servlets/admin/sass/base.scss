@@ -351,10 +351,10 @@ cite {
         height: 16px;
         border-radius: 50%;
         text-align: center;
-        line-height: 1.1;
+        line-height: 1.2;
         background: #999;
         z-index: 10;
-        &.on {
+        &.running {
             background: #53b432;
         }
         i {

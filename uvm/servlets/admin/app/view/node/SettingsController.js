@@ -108,6 +108,8 @@ Ext.define('Ung.view.node.SettingsController', {
                     }
 
                     Ung.Util.successToast(vm.get('powerMessage'));
+
+                    Ext.GlobalEvents.fireEvent('nodestatechange', result2, vm.get('nodeInstance'));
                 });
             });
         } else {
@@ -129,6 +131,7 @@ Ext.define('Ung.view.node.SettingsController', {
                     }
 
                     Ung.Util.successToast(vm.get('powerMessage'));
+                    Ext.GlobalEvents.fireEvent('nodestatechange', result2, vm.get('nodeInstance'));
                 });
             });
         }

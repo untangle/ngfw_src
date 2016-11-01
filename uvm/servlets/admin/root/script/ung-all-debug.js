@@ -670,6 +670,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
     initDashboard: function () {
         var me = this,
             vm = me.getViewModel();
+        //me.populateMenus();
         // load the dashboard settings
 
         // Rpc.loadDashboardSettings().then(function(settings) {
@@ -773,6 +774,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         }
         // dashboard.add(widgetComponents);
         console.timeEnd('all');
+        this.populateMenus();
     },
 
     /**
@@ -877,13 +879,14 @@ Ext.define('Ung.view.dashboard.DashboardController', {
      * Method which sends modified dashboard settings to backend to be saved
      */
     applyChanges: function () {
+        console.log('apply');
         // because of the drag/drop reorder the settins widgets are updated to respect new ordering
-        this.getView().getSettings().widgets.list = Ext.Array.pluck(Ext.getStore('widgets').getRange(), 'data');
+        Ung.dashboardSettings.widgets.list = Ext.Array.pluck(Ext.getStore('widgets').getRange(), 'data');
         rpc.dashboardManager.setSettings(function (result, ex) {
             if (ex) { Ung.Util.exceptionToast(ex); return; }
-            Ung.Util.successToast('<span style="color: yellow;">Dashboard Saved!</span>');
+            Ung.Util.successToast('<span style="color: yellow; font-weight: 600;">Dashboard Saved!</span>');
             Ext.getStore('widgets').sync();
-        }, this.getView().getSettings());
+        }, Ung.dashboardSettings);
 
     },
 
@@ -962,16 +965,15 @@ Ext.define('Ung.view.dashboard.DashboardController', {
             }
         }
 
-        /*
-        if (cellIndex === 2) {
-            // remove widget
-            record.drop();
-        }
-        */
+        // if (cellIndex === 3) {
+        //     // remove widget
+        //     record.drop();
+        // }
     },
 
     removeWidget: function (table, rowIndex, colIndex, item, e, record) {
-        console.log(record);
+        record.drop();
+        // console.log(record);
     },
 
     /**
@@ -1023,7 +1025,8 @@ Ext.define('Ung.view.dashboard.DashboardController', {
     },
 
     resetDashboard: function () {
-        var me = this;
+        var me = this,
+            vm = this.getViewModel();
         Ext.MessageBox.confirm('Warning'.t(),
             'This will overwrite the current dashboard settings with the defaults.'.t() + '<br/><br/>' +
             'Do you want to continue?'.t(),
@@ -1032,7 +1035,23 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                     rpc.dashboardManager.resetSettingsToDefault(function (result, ex) {
                         if (ex) { Ung.Util.exceptionToast(ex); return; }
                         Ung.Util.successToast('Dashboard reset done!');
-                        me.initDashboard();
+                        Rpc.getDashboardSettings().then(function(settings) {
+                            Ung.dashboardSettings = settings;
+                            if (vm.get('reportsInstalled')) {
+                                // load unavailable apps needed for showing the widgets
+                                rpc.reportsManager.getUnavailableApplicationsMap(function (result, ex) {
+                                    if (ex) { Ung.Util.exceptionToast(ex); return false; }
+
+                                    Ext.getStore('unavailableApps').loadRawData(result.map);
+                                    Ext.getStore('widgets').loadData(settings.widgets.list);
+                                    me.loadWidgets();
+                                });
+                            } else {
+                                Ext.getStore('widgets').loadData(settings.widgets.list);
+                                me.loadWidgets();
+                            }
+                            me.populateMenus();
+                        });
                     });
                 }
             });
@@ -1048,17 +1067,30 @@ Ext.define('Ung.view.dashboard.DashboardController', {
 
     onAddWidget: function (widget, entry) {
         var dashboard = this.getView().lookupReference('dashboard');
-        dashboard.add({
-            xtype: 'reportwidget',
-            itemId: widget.get('entryId'),
-            refreshIntervalSec: widget.get('refreshIntervalSec'),
-            viewModel: {
-                data: {
-                    widget: widget,
-                    entry: entry
+        if (entry) {
+            dashboard.add({
+                xtype: 'reportwidget',
+                itemId: widget.get('entryId'),
+                refreshIntervalSec: widget.get('refreshIntervalSec'),
+                viewModel: {
+                    data: {
+                        widget: widget,
+                        entry: entry
+                    }
                 }
-            }
-        });
+            });
+        } else {
+            console.log(widget);
+            dashboard.add({
+                xtype: widget.get('type').toLowerCase() + 'widget',
+                itemId: widget.get('type'),
+                viewModel: {
+                    data: {
+                        widget: widget
+                    }
+                }
+            });
+        }
     },
 
     onStatsUpdate: function() {
@@ -1075,10 +1107,61 @@ Ext.define('Ung.view.dashboard.DashboardController', {
 
     populateMenus: function () {
         var addWidgetBtn = this.getView().down('#addWidgetBtn'), categories, categoriesMenu = [], reportsMenu = [];
-        if (rpc.reportsEnabled) {
+
+        if (addWidgetBtn.getMenu()) {
+            addWidgetBtn.getMenu().remove();
+        }
+
+        categoriesMenu.push({
+            text: 'Common',
+            icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_hosts.png',
+            iconCls: 'menu-icon',
+            menu: {
+                plain: true,
+                items: [{
+                    text: 'Information',
+                    type: 'Information'
+                }, {
+                    text: 'Resources',
+                    type: 'Resources'
+                }, {
+                    text: 'CPU Load',
+                    type: 'CPULoad'
+                }, {
+                    text: 'Network Information',
+                    type: 'NetworkInformation'
+                }, {
+                    text: 'Network Layout',
+                    type: 'NetworkLayout'
+                }, {
+                    text: 'Map Distribution',
+                    type: 'MapDistribution'
+                }],
+                listeners: {
+                    click: function (menu, item) {
+                        if (Ext.getStore('widgets').findRecord('type', item.type)) {
+                            Ung.Util.successToast('<span style="color: yellow; font-weight: 600;">' + item.text + '</span>' + ' is already in Dashboard!');
+                            return;
+                        }
+                        var newWidget = Ext.create('Ung.model.Widget', {
+                            displayColumns: null,
+                            enabled: true,
+                            entryId: null,
+                            javaClass: 'com.untangle.uvm.DashboardWidgetSettings',
+                            refreshIntervalSec: 0,
+                            timeframe: null,
+                            type: item.type
+                        });
+                        Ext.getStore('widgets').add(newWidget);
+                        Ext.GlobalEvents.fireEvent('addwidget', newWidget, null);
+                    }
+                }
+            }
+        });
+
+        if (rpc.reportsManager) {
             rpc.reportsManager.getCurrentApplications(function (result, ex) {
                 categories = [
-                    { displayName: 'Common', icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_hosts.png' },
                     { displayName: 'Hosts', icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_hosts.png' },
                     { displayName: 'Devices', icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_devices.png' },
                     { displayName: 'Network', icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_network.png' },
@@ -1086,7 +1169,6 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                     { displayName: 'System', icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_system.png' },
                     { displayName: 'Shield', icon: resourcesBaseHref + '/skins/modern-rack/images/admin/apps/untangle-node-shield_17x17.png' }
                 ];
-                categoriesMenu = [];
                 result.list.forEach(function (app) {
                     categories.push({
                         displayName: app.displayName,
@@ -1138,7 +1220,15 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                         }
                     });
                 });
-                addWidgetBtn.getMenu().add(categoriesMenu);
+                addWidgetBtn.setMenu({
+                    items: categoriesMenu,
+                    mouseLeaveDelay: 0
+                });
+            });
+        } else {
+            addWidgetBtn.setMenu({
+                items: categoriesMenu,
+                mouseLeaveDelay: 0
             });
         }
     }
@@ -1635,6 +1725,7 @@ Ext.define('Ung.widget.MapDistribution', {
     hidden: true,
     border: false,
     baseCls: 'widget',
+    cls: 'adding',
 
     layout: {
         type: 'vbox',
@@ -1691,7 +1782,16 @@ Ext.define('Ung.view.apps.AppsController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.apps',
 
+    control: {
+        '#': {
+            beforeactivate: 'updateNodes'
+        }
+    },
+
     listen: {
+        global: {
+            nodestatechange: 'updateNodes'
+        },
         store: {
             '#policies': {
                 datachanged: 'updateNodes'
@@ -1705,73 +1805,44 @@ Ext.define('Ung.view.apps.AppsController', {
         }, this.onPolicy, this);
     },
 
+    onNodeStateChange: function (state, instance) {
+        console.log(instance);
+    },
+
     updateNodes: function () {
-        var filtersRef = this.getView().lookupReference('filters');
-        var servicesRef = this.getView().lookupReference('services');
+        var vm = this.getViewModel(),
+            nodeInstance, i;
 
-        var i, node, instance, ref,
-            policy = Ext.getStore('policies').findRecord('policyId', this.getViewModel().get('policyId')),
-            nodes = policy.get('nodeProperties').list,
-            instances = policy.get('instances').list;
-
-        nodes.sort(function (a, b) {
-            return a.viewPosition - b.viewPosition;
-        });
-
-        for (i = 0; i < nodes.length; i += 1) {
-            node = nodes[i];
-            instance = instances.filter(function (instance) {
-                return instance.nodeName === node.name;
+        rpc.nodeManager.getAppsViews(function(result, exception) {
+            var policy = result.filter(function (p) {
+                return parseInt(p.policyId) === parseInt(vm.get('policyId'));
             })[0];
 
-            ref = node.type === 'FILTER' ? filtersRef : servicesRef;
-            if (!ref.down('#' + node.name)) {
-                ref.insert(i, {
-                    xtype: 'ung.appitem',
-                    itemId: node.name,
-                    // cls: 'insert',
-                    node: node,
-                    state: instance.targetState === 'RUNNING' ? 'on' : '',
-                    href: '#apps/' + this.getViewModel().get('policyId') + '/' + node.name
-                });
-            }
-        }
+            var nodes = policy.nodeProperties.list,
+                instances = policy.instances.list;
 
-        // remove uninstalled nodes
-        filtersRef.query('button').forEach(function (nodeCmp) {
-            if (instances.filter(function (instance) {
-                return instance.nodeName === nodeCmp.itemId;
-            }).length === 0) {
-                // nodeCmp.addCls('insert');
-                Ext.defer(function () {
-                    filtersRef.remove(nodeCmp);
-                    Ung.Util.successToast(nodeCmp.node.displayName + ' removed successfully!');
-                }, 500);
+            for (i = 0; i < nodes.length; i += 1) {
+                nodeInstance = instances.filter(function (instance) {
+                    return instance.nodeName === nodes[i].name;
+                })[0];
+                // console.log(nodeInstance.targetState);
+                nodes[i].policyId = vm.get('policyId');
+                nodes[i].state = nodeInstance.targetState.toLowerCase();
             }
-        });
-
-        servicesRef.query('button').forEach(function (nodeCmp) {
-            if (instances.filter(function (instance) {
-                return instance.nodeName === nodeCmp.itemId;
-            }).length === 0) {
-                // nodeCmp.addCls('insert');
-                Ext.defer(function () {
-                    servicesRef.remove(nodeCmp);
-                    Ung.Util.successToast(nodeCmp.node.displayName + ' removed successfully!');
-                }, 500);
-            }
+            vm.set('nodes', nodes);
         });
     },
 
     onPolicy: function () {
-        this.getView().lookupReference('filters').removeAll();
-        this.getView().lookupReference('services').removeAll();
-        this.updateNodes();
+        // this.getView().lookupReference('filters').removeAll();
+        // this.getView().lookupReference('services').removeAll();
+        // this.updateNodes();
     },
 
     setPolicy: function (combo, newValue, oldValue) {
         if (oldValue !== null) {
             this.redirectTo('#apps/' + newValue, false);
+            this.updateNodes();
         }
     },
 
@@ -1788,10 +1859,18 @@ Ext.define('Ung.view.apps.AppsModel', {
 
     alias: 'viewmodel.apps',
 
+    data: {
+        nodes: []
+    },
+
     stores: {
-        //policies: {
-            //autoLoad: true
-        //}
+        nodesStore: {
+            data: '{nodes}',
+            sorters: [{
+                property: 'viewPosition',
+                direction: 'ASC'
+            }]
+        }
     }
 
 });
@@ -1863,6 +1942,17 @@ Ext.define('Ung.view.apps.Apps', {
             align: 'middle'
         },
         items: [{
+            xtype: 'button',
+            baseCls: 'heading-btn',
+            html: Ung.Util.iconTitle('Install Apps'.t(), 'file_download-16'),
+            hrefTarget: '_self',
+            bind: {
+                href: '#apps/{policyId}/install'
+            }
+        }, {
+            xtype: 'component',
+            flex: 1
+        }, {
             xtype: 'combobox',
             editable: false,
             multiSelect: false,
@@ -1876,13 +1966,6 @@ Ext.define('Ung.view.apps.Apps', {
             listeners: {
                 change: 'setPolicy'
             }
-        }, {
-            xtype: 'button',
-            html: 'Install Apps'.t(),
-            hrefTarget: '_self',
-            bind: {
-                href: '#apps/{policyId}/install'
-            }
         }]
     }, {
         region: 'center',
@@ -1893,10 +1976,25 @@ Ext.define('Ung.view.apps.Apps', {
             background: 'transparent'
         },
         items: [{
-            xtype: 'container',
+            xtype: 'dataview',
+            itemId: 'filters',
             margin: 10,
-            reference: 'filters',
+            // tpl: '<tpl for="."><div>{displayName}</div></tpl>',
 
+            tpl: '<tpl for=".">' +
+                    '<tpl if="type == \'FILTER\'">' +
+                        '<a class="app-item" href="#apps/{policyId}/{name}">' +
+                            '<span class="app-icon"><img src="' + resourcesBaseHref + '/skins/modern-rack/images/admin/apps/{name}_80x80.png" width=80 height=80/>' +
+                            '<span class="app-name">{displayName}</span>' +
+                            '</span>' +
+                            '<span class="app-state {state}"><i class="material-icons">power_settings_new</i></span>' +
+                        '</a>' +
+                    '</tpl>' +
+                '</tpl>',
+            itemSelector: 'a',
+            bind: {
+                store: '{nodesStore}'
+            },
             style: {
                 display: 'inline-block'
             }
@@ -1905,13 +2003,27 @@ Ext.define('Ung.view.apps.Apps', {
             cls: 'apps-separator',
             html: 'Service Apps'.t()
         }, {
-            xtype: 'container',
+            xtype: 'dataview',
             margin: 10,
-            reference: 'services',
+            // tpl: '<tpl for="."><div>{displayName}</div></tpl>',
+
+            tpl: '<tpl for=".">' +
+                    '<tpl if="type == \'SERVICE\'">' +
+                        '<a class="app-item" href="#apps/{policyId}/{name}">' +
+                            '<span class="app-icon"><img src="' + resourcesBaseHref + '/skins/modern-rack/images/admin/apps/{name}_80x80.png" width=80 height=80/>' +
+                            '<span class="app-name">{displayName}</span>' +
+                            '</span>' +
+                            '<tpl if="hasPowerButton"><span class="app-state {state}"><i class="material-icons">power_settings_new</i></span></tpl>' +
+                        '</a>' +
+                    '</tpl>' +
+                '</tpl>',
+            itemSelector: 'a',
+            bind: {
+                store: '{nodesStore}'
+            },
             style: {
                 display: 'inline-block'
             }
-
         }]
     }],
     listeners: {
@@ -2017,6 +2129,7 @@ Ext.define('Ung.view.apps.install.InstallController', {
                             reportsInstalled: true,
                             reportsRunning: rpc.nodeManager.node('untangle-node-reports').getRunState() === 'RUNNING'
                         });
+                        vm.getParent().notify();
                         Ext.GlobalEvents.fireEvent('reportsinstall');
                     });
                 }
@@ -2098,19 +2211,21 @@ Ext.define('Ung.view.apps.install.Install', {
             align: 'middle'
         },
         items: [{
+            xtype: 'button',
+            baseCls: 'heading-btn',
+            html: Ung.Util.iconTitle('Back to Apps', 'arrow_back-16'),
+            hrefTarget: '_self',
+            bind: {
+                href: '#apps/{policyId}'
+            }
+        }, {
             xtype: 'component',
+            hidden: true,
             style: {
                 color: '#CCC'
             },
             flex: 1,
             html: 'Select Apps and Services to Install'.t()
-        }, {
-            xtype: 'button',
-            html: 'Done'.t(),
-            hrefTarget: '_self',
-            bind: {
-                href: '#apps/{policyId}'
-            }
         }]
     }, {
         region: 'center',
@@ -2288,7 +2403,7 @@ Ext.define('Ung.view.reports.ReportsController', {
     },
 
     control: {
-        '#': { beforeactivate: 'onBeforeActivate', beforedeactivate: 'onBeforeDeactivate', beforerender: 'onBeforeRender' },
+        '#': { beforeactivate: 'onBeforeActivate', beforedeactivate: 'onBeforeDeactivate' },
         '#categoriesGrid': { selectionchange: 'onCategorySelect' },
         '#reportsGrid': { selectionchange: 'onReportSelect' },
         '#chart': { afterrender: 'fetchReportData' },
@@ -2321,14 +2436,6 @@ Ext.define('Ung.view.reports.ReportsController', {
         }
     },
     */
-
-    onBeforeRender: function () {
-        var me = this;
-        rpc.dashboardManager.getSettings(function (settings, ex) {
-            if (ex) { Ung.Util.exceptionToast(ex); return false; }
-            me.getView().setDashboardSettings(settings);
-        });
-    },
 
     onBeforeActivate: function () {
         var vm = this.getViewModel();
@@ -2689,14 +2796,14 @@ Ext.define('Ung.view.reports.ReportsController', {
             record = Ext.getStore('widgets').findRecord('entryId', vm.get('report.uniqueId'));
             if (record) {
                 Ext.getStore('widgets').remove(record);
-                this.getView().getDashboardSettings().widgets.list = Ext.Array.pluck(Ext.getStore('widgets').getRange(), 'data');
+                Ung.dashboardSettings.widgets.list = Ext.Array.pluck(Ext.getStore('widgets').getRange(), 'data');
                 rpc.dashboardManager.setSettings(function (result, ex) {
                     if (ex) { Ung.Util.exceptionToast(ex); return; }
                     Ung.Util.successToast('<span style="color: yellow; font-weight: 600;">' + vm.get('report.title') + '</span> was removed from dashboard!');
                     Ext.GlobalEvents.fireEvent('removewidget', vm.get('report.uniqueId'));
                     vm.set('isWidget', !vm.get('isWidget'));
                     me.getView().down('#reportsGrid').getView().refresh();
-                }, this.getView().getDashboardSettings());
+                }, Ung.dashboardSettings);
             } else {
                 Ung.Util.exceptionToast('<span style="color: yellow; font-weight: 600;">' + vm.get('report.title') + '</span> was not found on Dashboard!');
             }
@@ -2713,14 +2820,14 @@ Ext.define('Ung.view.reports.ReportsController', {
             });
             Ext.getStore('widgets').add(record);
 
-            this.getView().getDashboardSettings().widgets.list = Ext.Array.pluck(Ext.getStore('widgets').getRange(), 'data');
+            Ung.dashboardSettings.widgets.list = Ext.Array.pluck(Ext.getStore('widgets').getRange(), 'data');
             rpc.dashboardManager.setSettings(function (result, ex) {
                 if (ex) { Ung.Util.exceptionToast(ex); return; }
                 Ung.Util.successToast('<span style="color: yellow; font-weight: 600;">' + vm.get('report.title') + '</span> was added to dashboard!');
                 Ext.GlobalEvents.fireEvent('addwidget', record, vm.get('report'));
                 vm.set('isWidget', !vm.get('isWidget'));
                 me.getView().down('#reportsGrid').getView().refresh();
-            }, this.getView().getDashboardSettings());
+            }, Ung.dashboardSettings);
         }
     }
 
@@ -2853,8 +2960,7 @@ Ext.define('Ung.view.reports.Reports', {
 
     config: {
         // initial category used for reports inside nodes
-        initCategory: null,
-        dashboardSettings: null
+        initCategory: null
     },
 
     items: [{
@@ -3585,6 +3691,8 @@ Ext.define('Ung.view.node.SettingsController', {
                     }
 
                     Ung.Util.successToast(vm.get('powerMessage'));
+
+                    Ext.GlobalEvents.fireEvent('nodestatechange', result2, vm.get('nodeInstance'));
                 });
             });
         } else {
@@ -3606,6 +3714,7 @@ Ext.define('Ung.view.node.SettingsController', {
                     }
 
                     Ung.Util.successToast(vm.get('powerMessage'));
+                    Ext.GlobalEvents.fireEvent('nodestatechange', result2, vm.get('nodeInstance'));
                 });
             });
         }
@@ -3678,6 +3787,7 @@ Ext.define('Ung.view.node.SettingsController', {
                         delete rpc.reportsManager;
                         vm.getParent().set('reportsInstalled', false);
                         vm.getParent().set('reportsRunning', false);
+                        vm.getParent().notify();
                         Ext.GlobalEvents.fireEvent('reportsinstall');
                     }
 
@@ -6358,13 +6468,12 @@ Ext.define('Ung.view.dashboard.Dashboard', {
             tbar: [{
                 itemId: 'addWidgetBtn',
                 text: Ung.Util.iconTitle('Add'.t(), 'add_circle-16'),
-                menu: Ext.create('Ext.menu.Menu', {
-                    mouseLeaveDelay: 0
-                })
-                //handler: 'resetDashboard'
+                // menu: Ext.create('Ext.menu.Menu', {
+                //     mouseLeaveDelay: 0
+                // })
             }, '->', {
-                text: Ung.Util.iconTitle('Import'.t(), 'file_download-16')
-                //handler: 'applyChanges'
+                text: Ung.Util.iconTitle('Import'.t(), 'file_download-16'),
+                // handler: 'applyChanges'
             }, {
                 text: Ung.Util.iconTitle('Export'.t(), 'file_upload-16')
                 //handler: 'applyChanges'
@@ -7804,16 +7913,9 @@ Ext.define ('Ung.model.Policy', {
 
 Ext.define('Ung.store.Policies', {
     extend: 'Ext.data.Store',
+    alias: 'store.policies',
     storeId: 'policies',
-    model: 'Ung.model.Policy',
-    //fields: ['policyId'],
-    proxy: {
-        type: 'memory',
-        reader: {
-            type: 'json'
-            //rootProperty: 'list'
-        }
-    }
+    model: 'Ung.model.Policy'
 });
 Ext.define ('Ung.model.Stat', {
     extend: 'Ext.data.Model' ,
@@ -8063,6 +8165,7 @@ Ext.define('Ung.Application', {
             Rpc.getReports,
             Rpc.getUnavailableApps
         ]).then(function (result) {
+            Ung.dashboardSettings = result[0];
             Ext.getStore('widgets').loadData(result[0].widgets.list);
             if (result[1]) {
                 Ext.getStore('reports').loadData(result[1].list);
