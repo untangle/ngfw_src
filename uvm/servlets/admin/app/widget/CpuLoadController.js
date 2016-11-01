@@ -18,6 +18,10 @@ Ext.define('Ung.widget.CpuLoadController', {
     },
 
     onAfterRender: function (view) {
+        setTimeout(function () {
+            view.removeCls('adding');
+        }, 100);
+
         this.lineChart = new Highcharts.Chart({
             chart: {
                 type: 'areaspline',
@@ -262,6 +266,9 @@ Ext.define('Ung.widget.CpuLoadController', {
     },
 
     addPoint: function () {
+        if (!this.gaugeChart || !this.lineChart) {
+            return;
+        }
         var store = Ext.getStore('stats');
         var vm = this.getViewModel(),
             stats = store.first().getData(),

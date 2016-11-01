@@ -90,12 +90,14 @@ Ext.define('Ung.view.apps.install.InstallController', {
 
                 if (nodeItem.node.name === 'untangle-node-reports') {
                     rpc.reportsManager = rpc.nodeManager.node('untangle-node-reports').getReportsManager();
-                    Rpc.loadReports().then(function (reports) {
+                    Rpc.getReports().then(function (reports) {
                         Ext.getStore('reports').loadData(reports.list);
                         vm.getParent().set({
                             reportsInstalled: true,
                             reportsRunning: rpc.nodeManager.node('untangle-node-reports').getRunState() === 'RUNNING'
                         });
+                        vm.getParent().notify();
+                        Ext.GlobalEvents.fireEvent('reportsinstall');
                     });
                 }
 

@@ -133,9 +133,7 @@ Ext.define('Ung.view.dashboard.Dashboard', {
             viewModel: {
                 stores: {
                     wg: {
-                        source: {
-                            type: 'widgets' // chained store
-                        }
+                        source: 'widgets'
                     }
                 }
             },
@@ -222,10 +220,9 @@ Ext.define('Ung.view.dashboard.Dashboard', {
                 menu: Ext.create('Ext.menu.Menu', {
                     mouseLeaveDelay: 0
                 })
-                //handler: 'resetDashboard'
             }, '->', {
-                text: Ung.Util.iconTitle('Import'.t(), 'file_download-16')
-                //handler: 'applyChanges'
+                text: Ung.Util.iconTitle('Import'.t(), 'file_download-16'),
+                // handler: 'applyChanges'
             }, {
                 text: Ung.Util.iconTitle('Export'.t(), 'file_upload-16')
                 //handler: 'applyChanges'

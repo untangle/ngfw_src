@@ -16,8 +16,7 @@ Ext.define('Ung.view.reports.Reports', {
 
     config: {
         // initial category used for reports inside nodes
-        initCategory: null,
-        dashboardSettings: null
+        initCategory: null
     },
 
     items: [{

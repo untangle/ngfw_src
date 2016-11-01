@@ -11,7 +11,8 @@ Ext.define('Ung.widget.CpuLoad', {
 
     hidden: true,
     border: false,
-    baseCls: 'widget small adding',
+    baseCls: 'widget',
+    cls: 'small adding',
 
     bind: {
         hidden: '{!widget.enabled}'

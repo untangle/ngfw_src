@@ -24,7 +24,6 @@ Ext.define('Ung.util.Metrics', {
         rpc.metricManager.getMetricsAndStats(Ext.bind(function(result, exception) {
             if (exception) { console.log(exception); }
 
-            //console.log(result.metrics);
             data = [];
 
             Ext.getStore('stats').loadRawData(result.systemStats);

@@ -158,11 +158,3 @@ gulp.task('watch', function() {
     gulp.watch('./sass/*.scss', ['sass']);
     gulp.watch('./app/**/*.js', ['js-sync']);
 });
-//////////////////////////////////////
-
-var extb = require('./extbuild.js');
-
-gulp.task('ext', function () {
-    extb.resolve('Application.js');
-});
-

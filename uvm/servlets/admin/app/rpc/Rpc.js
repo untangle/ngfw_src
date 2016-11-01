@@ -2,51 +2,36 @@ Ext.define('Ung.rpc.Rpc', {
     alternateClassName: 'Rpc',
     singleton: true,
 
-    loadWebUi: function() {
-        var deferred = new Ext.Deferred(), me = this;
-        this.getWebuiStartupInfo(function (result, exception) {
-            if (exception) { deferred.reject(exception); }
-            Ext.apply(me, result);
-            console.log('hahaha');
+    // loadWebUi: function() {
+    //     var deferred = new Ext.Deferred(), me = this;
+    //     this.getWebuiStartupInfo(function (result, exception) {
+    //         if (exception) { deferred.reject(exception); }
+    //         Ext.apply(me, result);
+    //         console.log('hahaha');
 
 
-            String.prototype.translate = function() {
-                var record = Rpc.rpc.translations[this.valueOf()], value;
-                if (record === null) {
-                    alert('Missing translation for: ' + this.valueOf()); // Key is not found in the corresponding messages_<locale>.properties file.
-                    return this.valueOf(); // Return key name as placeholder
-                }
-                return value;
-            };
+    //         String.prototype.translate = function() {
+    //             var record = Rpc.rpc.translations[this.valueOf()], value;
+    //             if (record === null) {
+    //                 alert('Missing translation for: ' + this.valueOf()); // Key is not found in the corresponding messages_<locale>.properties file.
+    //                 return this.valueOf(); // Return key name as placeholder
+    //             }
+    //             return value;
+    //         };
 
-            //console.log('Dashboard'.translate());
+    //         //console.log('Dashboard'.translate());
 
-            if (me.nodeManager.node('untangle-node-reports')) {
-                me.reportsManager = me.nodeManager.node('untangle-node-reports').getReportsManager();
-            }
-            deferred.resolve();
-        });
-        return deferred.promise;
-    },
+    //         if (me.nodeManager.node('untangle-node-reports')) {
+    //             me.reportsManager = me.nodeManager.node('untangle-node-reports').getReportsManager();
+    //         }
+    //         deferred.resolve();
+    //     });
+    //     return deferred.promise;
+    // },
 
-    loadReports: function () {
-        console.time('loadReports');
-        var deferred = new Ext.Deferred();
-        if (this.rpc.nodeManager.node('untangle-node-reports')) {
-            this.rpc.reportsManager = this.rpc.nodeManager.node('untangle-node-reports').getReportsManager();
-            this.rpc.reportsManager.getReportEntries(function (result, exception) {
-                console.timeEnd('loadReports');
-                if (exception) { deferred.reject(exception); }
-                deferred.resolve(result);
-            });
 
-        } else {
-            deferred.reject('Reports not installed!');
-        }
-        return deferred.promise;
-    },
 
-    loadDashboardSettings: function () {
+    getDashboardSettings: function () {
         console.time('dashboardSettings');
         var deferred = new Ext.Deferred();
         this.rpc.dashboardManager.getSettings(function (settings, exception) {
@@ -60,6 +45,47 @@ Ext.define('Ung.rpc.Rpc', {
         });
         return deferred.promise;
     },
+
+    getReports: function () {
+        console.time('loadReports');
+        var deferred = new Ext.Deferred();
+        if (this.rpc.nodeManager.node('untangle-node-reports')) {
+            this.rpc.reportsManager = this.rpc.nodeManager.node('untangle-node-reports').getReportsManager();
+            this.rpc.reportsManager.getReportEntries(function (result, exception) {
+                console.timeEnd('loadReports');
+                if (exception) { deferred.reject(exception); }
+                // deferred.reject('aaa');
+                deferred.resolve(result);
+            });
+
+        } else {
+            deferred.resolve(null);
+        }
+        return deferred.promise;
+    },
+
+    getUnavailableApps: function () {
+        console.time('unavailApps');
+        var deferred = new Ext.Deferred();
+        if (rpc.reportsManager) {
+            rpc.reportsManager.getUnavailableApplicationsMap(function (result, exception) {
+                console.timeEnd('unavailApps');
+                if (exception) { deferred.reject(exception); }
+                deferred.resolve(result);
+                // Ext.getStore('unavailableApps').loadRawData(result.map);
+                // Ext.getStore('widgets').loadData(settings.widgets.list);
+                // me.loadWidgets();
+            });
+        } else {
+            // Ext.getStore('widgets').loadData(settings.widgets.list);
+            // me.loadWidgets();
+            deferred.resolve(null);
+        }
+        return deferred.promise;
+    },
+
+
+
 
     getReportData: function (entry, timeframe) {
         var deferred = new Ext.Deferred();

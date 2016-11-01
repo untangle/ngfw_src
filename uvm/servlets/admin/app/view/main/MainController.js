@@ -43,7 +43,7 @@ Ext.define('Ung.view.main.MainController', {
         if (rpc.nodeManager.node('untangle-node-reports')) {
             vm.set('reportsRunning', rpc.nodeManager.node('untangle-node-reports').getRunState() === 'RUNNING');
         }
-
+        vm.notify();
         /*
         setTimeout(function () {
             vm.set('reportsInstalled', false);
@@ -65,6 +65,7 @@ Ext.define('Ung.view.main.MainController', {
     },
 
     onApps: function (policyId, node) {
+        console.log('on apps');
         var vm = this.getViewModel();
         var _policyId = policyId || 1,
             _currentPolicy = vm.get('policyId'),
