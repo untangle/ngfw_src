@@ -22,8 +22,8 @@ tunnelUp = False
 
 # hardcoded for ats testing
 radiusHost = "10.112.56.71"
-l2tpServerHosts = ["10.111.56.61","10.111.56.49","10.111.56.56","10.112.11.53","10.112.11.55","10.111.56.91"]
-l2tpClientHost = "10.111.56.57"  # Windows running freeSSHd
+l2tpServerHosts = ["10.111.56.61","10.111.56.49","10.111.56.56","10.112.11.53","10.112.11.55","10.111.56.91","10.111.56.94"]
+l2tpClientHost = "10.111.56.83"  # Windows running freeSSHd
 l2tpLocalUser = "test"
 l2tpLocalPassword = "passwd"
 l2tpRadiusUser = "normal"
@@ -34,7 +34,8 @@ ipsecHostLAN = "192.168.235.0/24"
 configuredHostIPs = [('10.112.11.55','192.168.2.1','192.168.2.0/24'), # ATS
                      ('10.111.56.49','192.168.10.49','192.168.10.0/24'), # QA 1
                      ('10.111.56.61','192.168.10.61','192.168.10.0/24'), # QA 2
-                     ('10.111.56.56','10.111.56.56','10.111.56.15/32')] # QA 3 Bridged
+                     ('10.111.56.56','10.111.56.56','10.111.56.15/32'), # QA 3 Bridged
+                     ('10.111.56.94','10.111.56.94','192.168.10.0/24')] # QA 4 Dual WAN
 
 # pdb.set_trace()
 
