@@ -56,7 +56,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private static final String TIMESYNC_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-force-time-sync";
     
     private static final String PROPERTY_STORE_URL = "uvm.store.url";
-    private static final String DEFAULT_STORE_URL = "https://www.untangle.com/store/open.php";
+    private static final String DEFAULT_STORE_URL = "https://www.untangle.com/api/v1";
     private static final String PROPERTY_HELP_URL = "uvm.help.url";
     private static final String DEFAULT_HELP_URL = "http://wiki.untangle.com/get.php";
     private static final String PROPERTY_LEGAL_URL = "uvm.legal.url";
@@ -96,6 +96,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private ConntrackMonitorImpl conntrackMonitor;
     private BackupManagerImpl backupManager;
     private HookManagerImpl hookManager;
+    private CloudManagerImpl cloudManager;
     private PluginManagerImpl pluginManager;
     private LocalDirectoryImpl localDirectory;
     private ExecManagerImpl execManager;
@@ -250,6 +251,11 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     public HookManager hookManager()
     {
         return this.hookManager;
+    }
+
+    public CloudManager cloudManager()
+    {
+        return this.cloudManager;
     }
 
     public PluginManager pluginManager()
@@ -817,7 +823,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         createUID();
 
         this.hookManager = HookManagerImpl.getInstance();
-        
+
         this.certCacheManager = new CertCacheManagerImpl();
 
         this.sessionMonitor = new SessionMonitorImpl();
@@ -826,6 +832,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         this.hostTableImpl = new HostTableImpl();
         
+        this.cloudManager = CloudManagerImpl.getInstance();
+
         this.servletFileManager = new ServletFileManagerImpl();
 
         this.languageManager = new LanguageManagerImpl();
