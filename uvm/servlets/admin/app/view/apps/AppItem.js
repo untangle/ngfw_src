@@ -26,6 +26,6 @@ Ext.define('Ung.view.apps.AppItem', {
     },
 
     listeners: {
-        afterrender: 'onItemAfterRender'
+        // afterrender: 'onItemAfterRender'
     }
 });

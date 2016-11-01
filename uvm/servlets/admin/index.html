@@ -10,9 +10,10 @@
 
   <script>console.time('all');</script>
 
+
   <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300,600,700' rel='stylesheet' type='text/css'>
   <link href="https://fonts.googleapis.com/css?family=PT+Sans:400,700" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
 
   <style type="text/css">
     #app-loader {
@@ -24,7 +25,7 @@
         background: #282828;
         opacity: 1;
         z-index: 9998;
-        transition: opacity .2s ease-in-out;
+        transition: opacity 1s ease-out;
     }
     #app-loader.removing {
         opacity: 0;
@@ -134,7 +135,7 @@
 
     Ext.onReady(function () {
       console.timeEnd('resources');
-      Ext.get('app-message').setHtml('Fetching data ...');
+      // Ext.get('app-message').setHtml('Fetching data ...');
       try {
           var startUpInfo = rpc.UvmContext.getWebuiStartupInfo();
       } catch (ex) {
@@ -148,13 +149,11 @@
           return rpc.translations[this.valueOf()] || '<cite>' + this.valueOf() + '</cite>';
       };
 
-
       Ext.application({
           name: 'Ung',
           extend: 'Ung.Application',
           rpc: rpc
       });
-
 
       /*
       Ext.Loader.loadScript({

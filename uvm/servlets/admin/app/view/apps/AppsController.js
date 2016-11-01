@@ -40,7 +40,7 @@ Ext.define('Ung.view.apps.AppsController', {
                 ref.insert(i, {
                     xtype: 'ung.appitem',
                     itemId: node.name,
-                    cls: 'insert',
+                    // cls: 'insert',
                     node: node,
                     state: instance.targetState === 'RUNNING' ? 'on' : '',
                     href: '#apps/' + this.getViewModel().get('policyId') + '/' + node.name
@@ -53,7 +53,7 @@ Ext.define('Ung.view.apps.AppsController', {
             if (instances.filter(function (instance) {
                 return instance.nodeName === nodeCmp.itemId;
             }).length === 0) {
-                nodeCmp.addCls('insert');
+                // nodeCmp.addCls('insert');
                 Ext.defer(function () {
                     filtersRef.remove(nodeCmp);
                     Ung.Util.successToast(nodeCmp.node.displayName + ' removed successfully!');
@@ -65,7 +65,7 @@ Ext.define('Ung.view.apps.AppsController', {
             if (instances.filter(function (instance) {
                 return instance.nodeName === nodeCmp.itemId;
             }).length === 0) {
-                nodeCmp.addCls('insert');
+                // nodeCmp.addCls('insert');
                 Ext.defer(function () {
                     servicesRef.remove(nodeCmp);
                     Ung.Util.successToast(nodeCmp.node.displayName + ' removed successfully!');

@@ -201,6 +201,8 @@ Ext.define('Ung.view.node.SettingsController', {
                         delete rpc.reportsManager;
                         vm.getParent().set('reportsInstalled', false);
                         vm.getParent().set('reportsRunning', false);
+                        vm.getParent().notify();
+                        Ext.GlobalEvents.fireEvent('reportsinstall');
                     }
 
                     if (rpc.reportsManager) {

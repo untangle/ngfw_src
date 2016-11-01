@@ -7,7 +7,7 @@ Ext.define('Ung.view.reports.ReportsController', {
     },
 
     control: {
-        '#': { beforeactivate: 'onBeforeActivate', beforedeactivate: 'onBeforeDeactivate', beforerender: 'onBeforeRender' },
+        '#': { beforeactivate: 'onBeforeActivate', beforedeactivate: 'onBeforeDeactivate' },
         '#categoriesGrid': { selectionchange: 'onCategorySelect' },
         '#reportsGrid': { selectionchange: 'onReportSelect' },
         '#chart': { afterrender: 'fetchReportData' },
@@ -40,14 +40,6 @@ Ext.define('Ung.view.reports.ReportsController', {
         }
     },
     */
-
-    onBeforeRender: function () {
-        var me = this;
-        rpc.dashboardManager.getSettings(function (settings, ex) {
-            if (ex) { Ung.Util.exceptionToast(ex); return false; }
-            me.getView().setDashboardSettings(settings);
-        });
-    },
 
     onBeforeActivate: function () {
         var vm = this.getViewModel();
@@ -408,14 +400,14 @@ Ext.define('Ung.view.reports.ReportsController', {
             record = Ext.getStore('widgets').findRecord('entryId', vm.get('report.uniqueId'));
             if (record) {
                 Ext.getStore('widgets').remove(record);
-                this.getView().getDashboardSettings().widgets.list = Ext.Array.pluck(Ext.getStore('widgets').getRange(), 'data');
+                Ung.dashboardSettings.widgets.list = Ext.Array.pluck(Ext.getStore('widgets').getRange(), 'data');
                 rpc.dashboardManager.setSettings(function (result, ex) {
                     if (ex) { Ung.Util.exceptionToast(ex); return; }
                     Ung.Util.successToast('<span style="color: yellow; font-weight: 600;">' + vm.get('report.title') + '</span> was removed from dashboard!');
                     Ext.GlobalEvents.fireEvent('removewidget', vm.get('report.uniqueId'));
                     vm.set('isWidget', !vm.get('isWidget'));
                     me.getView().down('#reportsGrid').getView().refresh();
-                }, this.getView().getDashboardSettings());
+                }, Ung.dashboardSettings);
             } else {
                 Ung.Util.exceptionToast('<span style="color: yellow; font-weight: 600;">' + vm.get('report.title') + '</span> was not found on Dashboard!');
             }
@@ -432,14 +424,14 @@ Ext.define('Ung.view.reports.ReportsController', {
             });
             Ext.getStore('widgets').add(record);
 
-            this.getView().getDashboardSettings().widgets.list = Ext.Array.pluck(Ext.getStore('widgets').getRange(), 'data');
+            Ung.dashboardSettings.widgets.list = Ext.Array.pluck(Ext.getStore('widgets').getRange(), 'data');
             rpc.dashboardManager.setSettings(function (result, ex) {
                 if (ex) { Ung.Util.exceptionToast(ex); return; }
                 Ung.Util.successToast('<span style="color: yellow; font-weight: 600;">' + vm.get('report.title') + '</span> was added to dashboard!');
                 Ext.GlobalEvents.fireEvent('addwidget', record, vm.get('report'));
                 vm.set('isWidget', !vm.get('isWidget'));
                 me.getView().down('#reportsGrid').getView().refresh();
-            }, this.getView().getDashboardSettings());
+            }, Ung.dashboardSettings);
         }
     }
 

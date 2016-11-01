@@ -17,6 +17,8 @@ Ext.define('Ung.widget.NetworkInformation', {
         hidden: '{!widget.enabled}'
     },
 
+    viewModel: true,
+
     refreshIntervalSec: 3,
 
     items: [{
@@ -57,11 +59,15 @@ Ext.define('Ung.widget.NetworkInformation', {
     }],
 
     fetchData: function () {
-        var me = this;
-        rpc.sessionMonitor.getSessionStats(function (result, exception) {
-            me.getViewModel().set('sessions', result);
-            //console.log(result);
-            me.fireEvent('afterdata');
-        });
+        var me = this,
+            vm = this.getViewModel();
+
+        if (vm) {
+            rpc.sessionMonitor.getSessionStats(function (result, exception) {
+                vm.set('sessions', result);
+                //console.log(result);
+                me.fireEvent('afterdata');
+            });
+        }
     }
 });

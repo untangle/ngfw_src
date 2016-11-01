@@ -1,14 +1,13 @@
-/*
 @font-face {
     font-family: 'Material Icons';
     font-style: normal;
     font-weight: 400;
-    src: url(images/fonts/material-icons/MaterialIcons-Regular.eot);
+    src: url(root/res/material-icons/MaterialIcons-Regular.eot);
     src: local('Material Icons'),
     local('MaterialIcons-Regular'),
-    url(images/fonts/material-icons/MaterialIcons-Regular.woff2) format('woff2'),
-    url(images/fonts/material-icons/MaterialIcons-Regular.woff) format('woff'),
-    url(images/fonts/material-icons/MaterialIcons-Regular.ttf) format('truetype');
+    url(material-icons/MaterialIcons-Regular.woff2) format('woff2'),
+    url(material-icons/MaterialIcons-Regular.woff) format('woff'),
+    url(material-icons/MaterialIcons-Regular.ttf) format('truetype');
 }
 
 @font-face {
@@ -18,7 +17,7 @@
     src: url(fonts/sourcesanspro/);
     src: local('PT Sans'), local('PTSans-Regular'),
 }
-*/
+
 .material-icons {
     font-family: 'Material Icons';
     font-weight: normal;
