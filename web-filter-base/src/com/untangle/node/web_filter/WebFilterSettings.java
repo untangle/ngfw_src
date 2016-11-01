@@ -41,12 +41,11 @@ public class WebFilterSettings implements Serializable
     private Boolean passReferers = true;
     private Boolean restrictGoogleApps = false;
     private String restrictGoogleAppsDomain = "";
-    
+
+    private List<WebFilterRule> filterRules = new LinkedList<WebFilterRule>();
     private List<GenericRule> passedClients = new LinkedList<GenericRule>();
     private List<GenericRule> passedUrls = new LinkedList<GenericRule>();
     private List<GenericRule> blockedUrls = new LinkedList<GenericRule>();
-    private List<GenericRule> blockedMimeTypes = new LinkedList<GenericRule>();
-    private List<GenericRule> blockedExtensions = new LinkedList<GenericRule>();
     private List<GenericRule> categories = new LinkedList<GenericRule>();
 
     // constructors -----------------------------------------------------------
@@ -58,6 +57,9 @@ public class WebFilterSettings implements Serializable
     public Integer getVersion() { return this.version; }
     public void setVersion( Integer version ) { this.version = version; }
 
+    public List<WebFilterRule> getFilterRules() { return filterRules; }
+    public void setFilterRules( List<WebFilterRule> filterRules ) { this.filterRules = filterRules; }
+
     public List<GenericRule> getPassedClients() { return passedClients; }
     public void setPassedClients( List<GenericRule > passedClients) { this.passedClients = passedClients; }
 
@@ -66,12 +68,6 @@ public class WebFilterSettings implements Serializable
 
     public List<GenericRule> getBlockedUrls() { return blockedUrls; }
     public void setBlockedUrls( List<GenericRule > blockedUrls) { this.blockedUrls = blockedUrls; }
-
-    public List<GenericRule> getBlockedMimeTypes() { return blockedMimeTypes; }
-    public void setBlockedMimeTypes( List<GenericRule > blockedMimeTypes) { this.blockedMimeTypes = blockedMimeTypes; }
-
-    public List<GenericRule> getBlockedExtensions() { return blockedExtensions; }
-    public void setBlockedExtensions( List<GenericRule > blockedExtensions) { this.blockedExtensions = blockedExtensions; }
 
     public List<GenericRule> getCategories() { return this.categories; }
     public void setCategories( List<GenericRule > categories) { this.categories = categories; }
@@ -171,5 +167,4 @@ public class WebFilterSettings implements Serializable
         JSONObject jO = new JSONObject(this);
         return jO.toString();
     }
-
 }

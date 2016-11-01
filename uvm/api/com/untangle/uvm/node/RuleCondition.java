@@ -100,6 +100,11 @@ public class RuleCondition implements JSONString, Serializable
             WEB_FILTER_CATEGORY, /* "Pornography" or "Porn*" */ 
             WEB_FILTER_CATEGORY_DESCRIPTION, /* *Nudity* */
             WEB_FILTER_FLAGGED, /* boolean */
+            WEB_FILTER_REQUEST_FILEPATH, /* /some/locaion/somefile.txt */
+            WEB_FILTER_REQUEST_FILENAME, /* somefile.txt */
+            WEB_FILTER_REQUEST_FILEEXT, /* txt */
+            WEB_FILTER_RESPONSE_CONTENT_TYPE, /* video/mp4 */
+            WEB_FILTER_RESPONSE_FILENAME, /* somefile.exe */
             SSL_INSPECTOR_SNI_HOSTNAME, /* "microsoft.com" */
             SSL_INSPECTOR_SUBJECT_DN, /* "CN=dropbox.com" */
             SSL_INSPECTOR_ISSUER_DN, /* "O=Thawte" */
@@ -345,6 +350,11 @@ public class RuleCondition implements JSONString, Serializable
         case PROTOCOL_CONTROL_DESCRIPTION:
         case WEB_FILTER_CATEGORY:
         case WEB_FILTER_CATEGORY_DESCRIPTION:
+        case WEB_FILTER_REQUEST_FILEPATH:
+        case WEB_FILTER_REQUEST_FILENAME:
+        case WEB_FILTER_REQUEST_FILEEXT:
+        case WEB_FILTER_RESPONSE_CONTENT_TYPE:
+        case WEB_FILTER_RESPONSE_FILENAME:
         case APPLICATION_CONTROL_APPLICATION:
         case APPLICATION_CONTROL_CATEGORY:
         case APPLICATION_CONTROL_PROTOCHAIN:
@@ -590,6 +600,26 @@ public class RuleCondition implements JSONString, Serializable
             if (flagged == null)
                 return false;
             return flagged.booleanValue();
+
+        case WEB_FILTER_REQUEST_FILEPATH:
+            attachment = (String) sess.globalAttachment(NodeSession.KEY_WEB_FILTER_REQUEST_FILEPATH);
+            return globMatcher.isMatch( attachment );
+
+        case WEB_FILTER_REQUEST_FILENAME:
+            attachment = (String) sess.globalAttachment(NodeSession.KEY_WEB_FILTER_REQUEST_FILENAME);
+            return globMatcher.isMatch( attachment );
+
+        case WEB_FILTER_REQUEST_FILEEXT:
+            attachment = (String) sess.globalAttachment(NodeSession.KEY_WEB_FILTER_REQUEST_FILEEXT);
+            return globMatcher.isMatch( attachment );
+
+        case WEB_FILTER_RESPONSE_CONTENT_TYPE:
+            attachment = (String) sess.globalAttachment(NodeSession.KEY_WEB_FILTER_RESPONSE_CONTENT_TYPE);
+            return globMatcher.isMatch( attachment );
+
+        case WEB_FILTER_RESPONSE_FILENAME:
+            attachment = (String) sess.globalAttachment(NodeSession.KEY_WEB_FILTER_RESPONSE_FILENAME);
+            return globMatcher.isMatch( attachment );
 
         case USERNAME:
             attachment = (String) sess.globalAttachment(NodeSession.KEY_PLATFORM_USERNAME);
