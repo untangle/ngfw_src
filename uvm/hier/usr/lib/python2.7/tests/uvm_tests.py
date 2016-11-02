@@ -23,6 +23,7 @@ from uvm import Uvm
 import test_registry
 import remote_control
 import system_properties
+import global_functions
 
 node = None
 nodeFW = None
@@ -175,5 +176,17 @@ class UvmTests(unittest2.TestCase):
         nodeSP.setSmtpNodeSettingsWithoutSafelists(origNodeDataSP)
         result = remote_control.runCommand("grep -q 'Untangle Server Test Message' /tmp/test@example.com.1")
         assert(result==0)
+
+    def test_040_account_login(self):
+        untangleEmail, untanglePassword = global_functions.getLiveAccountInfo("Untangle")
+        if untangleEmail == "message":
+            raise unittest2.SkipTest('Skipping no accound found:' + str(untanglePassword))
+
+        result = uvmContext.cloudManager().accountLogin( untangleEmail, untanglePassword )
+        assert result.get('success')
+
+    def test_041_account_login_invalid(self):
+        result = uvmContext.cloudManager().accountLogin( "foobar@untangle.com", "badpassword" )
+        assert not result.get('success')
 
 test_registry.registerNode("uvm", UvmTests)
