@@ -18,7 +18,7 @@ defaultRackId = 1
 node = None
 testsite = "test.untangle.com"
 testsiteIP = socket.gethostbyname("test.untangle.com")
-dnsServer = "74.123.31.4"
+dnsServer = "74.123.28.4"
 
 def createSingleConditionRule( conditionType, value, blocked=True, flagged=True, invert=False ):
     conditionTypeStr = str(conditionType)
