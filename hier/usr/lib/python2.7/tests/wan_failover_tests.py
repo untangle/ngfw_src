@@ -23,29 +23,6 @@ orig_netsettings = None
 indexOfWans = []
 defaultRackId = 1
 
-def foundWans():
-    myWANs = []
-    netsettings = uvmContext.networkManager().getNetworkSettings()
-    for interface in netsettings['interfaces']['list']:
-        wanIP = ""
-        wanGateway = ""
-        if interface['isWan']:
-            if interface['v4ConfigType'] == "STATIC":
-                wanIndex =  interface['interfaceId']
-                wanIP =  interface['v4StaticAddress']
-                wanGateway =  interface['v4StaticGateway']
-            elif interface['v4ConfigType'] == "AUTO":
-                nicDevice = str(interface['symbolicDev'])
-                wanIndex =  interface['interfaceId']
-                wanIP =  system_properties.__get_ip_address(nicDevice)
-                wanGateway =  system_properties.__get_gateway(nicDevice)
-            if wanIP:
-                wanExtIP = global_functions.getIpAddress(extra_options="--bind-address=" + wanIP,localcall=True)
-                wanExtIP = wanExtIP.rstrip()
-                wanTup = (wanIndex,wanIP,wanExtIP,wanGateway)
-                myWANs.append(wanTup)
-    return myWANs
-
 def allWansOnline():
     onlineCount = 0
     wanStatus = node.getWanStatus()
@@ -145,7 +122,7 @@ class WanFailoverTests(unittest2.TestCase):
         node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
         node.start()
         nodeData = node.getSettings()
-        indexOfWans = foundWans()
+        indexOfWans = global_functions.foundWans()
 
     def setUp(self):
         pass
