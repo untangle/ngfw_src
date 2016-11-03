@@ -143,8 +143,8 @@ if [ -z "${IPTABLES}" ] ; then
     IPTABLES="iptables_debug_onerror"
 fi
 
-${IPTABLES} -t filter -N shield >/dev/null 2>&1
-${IPTABLES} -t filter -F shield
+${IPTABLES} -t filter -N shield-scan >/dev/null 2>&1
+${IPTABLES} -t filter -F shield-scan
 
 ${IPTABLES} -t filter -N shield-rules >/dev/null 2>&1
 ${IPTABLES} -t filter -F shield-rules
@@ -165,14 +165,21 @@ modprobe xt_recent ip_list_tot=${TABLE_SIZE} ip_pkt_list_tot=${LIST_SIZE}
     
     file.write("""
     
-${IPTABLES} -D FORWARD -t filter -p udp -m comment --comment "Shield scan" -m state --state NEW -j shield >/dev/null 2>&1
-${IPTABLES} -A FORWARD -t filter -p udp -m comment --comment "Shield scan" -m state --state NEW -j shield
-${IPTABLES} -D FORWARD -t filter -p tcp -m comment --comment "Shield scan" -m state --state NEW -j shield >/dev/null 2>&1
-${IPTABLES} -A FORWARD -t filter -p tcp -m comment --comment "Shield scan" -m state --state NEW -j shield
+${IPTABLES} -D FORWARD -t filter -p udp -m comment --comment "Shield scan" -m state --state NEW -j shield-scan >/dev/null 2>&1
+${IPTABLES} -A FORWARD -t filter -p udp -m comment --comment "Shield scan" -m state --state NEW -j shield-scan
+${IPTABLES} -D FORWARD -t filter -p tcp -m comment --comment "Shield scan" -m state --state NEW -j shield-scan >/dev/null 2>&1
+${IPTABLES} -A FORWARD -t filter -p tcp -m comment --comment "Shield scan" -m state --state NEW -j shield-scan
 
-${IPTABLES} -t filter -A shield -m comment --comment "Only process new sessions" -m state ! --state NEW -j RETURN
-${IPTABLES} -t filter -A shield -m comment --comment "Only process scanned sessions" -m connmark --mark 0x01000000/0x01000000 -j RETURN
-${IPTABLES} -t filter -A shield -m comment --comment "Process shield rules" -j shield-rules
+# We do not want to rate limit UDP because DNS lookups to dnsmasq might be affected
+# ${IPTABLES} -D INPUT -t filter -p udp -m comment --comment "Shield scan" -m state --state NEW -j shield-scan >/dev/null 2>&1
+# ${IPTABLES} -A INPUT -t filter -p udp -m comment --comment "Shield scan" -m state --state NEW -j shield-scan
+${IPTABLES} -D INPUT -t filter -p tcp -m comment --comment "Shield scan" -m state --state NEW -j shield-scan >/dev/null 2>&1
+${IPTABLES} -A INPUT -t filter -p tcp -m comment --comment "Shield scan" -m state --state NEW -j shield-scan
+
+${IPTABLES} -t filter -A shield-scan -m comment --comment "Only process new sessions" -m state ! --state NEW -j RETURN
+${IPTABLES} -t filter -A shield-scan -m comment --comment "Do not process reinjected packets" -i utun -j RETURN
+${IPTABLES} -t filter -A shield-scan -m comment --comment "Do not process bypassed sessions" -m connmark --mark 0x01000000/0x01000000 -j RETURN
+${IPTABLES} -t filter -A shield-scan -m comment --comment "Process shield rules" -j shield-rules
 
 ${IPTABLES} -t filter -A shield-process -m comment --comment "Block sessions over limit" -m recent --name shield --rcheck --seconds 1 --reap --hitcount ${MAX_RATE} -j shield-block
 ${IPTABLES} -t filter -A shield-process -m comment --comment "Update shield table" -m recent --name shield --set -j RETURN
