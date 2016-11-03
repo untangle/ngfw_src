@@ -1,168 +1,263 @@
 Ext.define('Webui.config.accountRegistration', {
-    extend: 'Ung.StatusWin',
+    extend: 'Ext.window.Window',
     name: 'accountRegistration',
     helpSource: 'account_registration',
-    doSize: function() {
-        var objSize = Ung.Main.viewport.getSize();
-        var width = Math.min(770, objSize.width);
-        var height = Math.min(650, objSize.height);
-        var x = Math.round((objSize.width - width)/2);
-        var y = Math.round((objSize.height-height)/2);
-        this.setPosition(x, y);
-        this.setSize({width:width, height: height});
-    },
-    initComponent: function() {
-        this.breadcrumbs = [{
-            title: i18n._('Account Registration')
-        }];
-        this.storeApiUrl = rpc.storeUrl.replace("/store/open.php","/api/v1");
-        var forgotPasswordUrl = rpc.storeUrl + "?" + "action=forgot_password" + "&" + Ung.Main.about();
 
-        this.expirationMonths = Ext.create('Ext.data.ArrayStore', {
-            fields: ['id', 'value'],
-            data: [
-                ["01", "01 - " + i18n._("January")],
-                ["02", "02 - " + i18n._("February")],
-                ["03", "03 - " + i18n._("March")],
-                ["04", "04 - " + i18n._("April")],
-                ["05", "05 - " + i18n._("May")],
-                ["06", "06 - " + i18n._("June")],
-                ["07", "07 - " + i18n._("July")],
-                ["08", "08 - " + i18n._("August")],
-                ["09", "09 - " + i18n._("September")],
-                ["10", "10 - " + i18n._("October)")],
-                ["11", "11 - " + i18n._("November")],
-                ["12", "12 - " + i18n._("December")]
-            ]
-        });
-        this.cardTypes = Ext.create('Ext.data.ArrayStore', {
-            fields: ['id', 'value'],
-            data: [
-                ["MC", i18n._("Mastercard")],
-                ["VISA", i18n._("VISA")],
-                ["DISC", i18n._("Discover")],
-                ["AMEX", i18n._("American Express")]
-            ]
-        });
-        this.defaultFocusButton = function(buttonName){
-            return function(me, event, eOpts) {
-                    var scope = this.up("container");
-                    this.keyNav = Ext.create('Ext.util.KeyNav', this.el, {
-                        enter: scope.down("button[name="+buttonName+"]"),
-                        scope: scope
-                    });
-                };
-        };
-        this.renewDefaultChecked = true;
-        this.items = {
-            xtype: 'panel',
-            layout: { type: 'vbox', align: 'stretch'},
+    controller: 'registration',
+    viewModel: {
+        data: {
+            error: null
+        }
+    },
+
+    modal: true,
+    monitorResize: true,
+    width: '100%',
+    height: '100%',
+    constrain: true,
+    frame: false,
+    frameHeader: false,
+    header: false,
+    bodyBorder: false,
+    border: false,
+    shadow: false,
+    resizable: false,
+    draggable: false,
+    collapsible: false,
+    baseCls: 'reg',
+    bodyCls: 'reg-body',
+
+    bodyStyle: {
+        borderRadius: '5px',
+        boxShadow: '0 0 30px rgba(0, 0, 0, 0.8)'
+    },
+
+    layout: {
+        type: 'vbox',
+        align: 'stretch'
+    },
+
+    defaults: {
+        border: false
+    },
+
+    plugins: 'responsive',
+    responsiveConfig: {
+        'width < 768': {
+            padding: 0
+        },
+        'width >= 768': {
+            padding: 30
+        }
+    },
+
+    initComponent: function () {
+        this.cloudManager = rpc.jsonrpc.UvmContext.cloudManager();
+        this.forgotPasswordUrl = (rpc.storeUrl.indexOf('develop') > 0 ? 'https://develop.untangle.com' : 'https://untangle.com') + '/shop/account/?recover';
+
+        this.storeApiUrl = rpc.storeUrl.replace('/store/open.php', '/api/v1');
+        this.items = [{
+            xtype: 'container',
+            defaults: {
+                border: false
+            },
+            items: [{
+                height: 100,
+                bodyCls: 'branding',
+                html: '<img src="/images/BrandingLogo.png?' + (new Date()).getTime() + '" border=0/>'
+            }, {
+                xtype: 'button',
+                baseCls: 'reg-close',
+                html: '<span style="vertical-align: middle;">' + i18n._('Skip') + '</span> <i class="material-icons">close</i>',
+                handler: 'closeWindow'
+            }]
+        }, {
+            layout: 'card',
+            itemId: 'cards',
             items: [{
                 xtype: 'container',
-                layout: 'center',
-                items: {
-                    xtype: 'component',
-                    html: '<img src="/images/BrandingLogo.png?'+(new Date()).getTime()+'" border="0"/>',
-                    width: 166,
-                    height: 100
+                itemId: 'congrats',
+                cls: 'card',
+                border: false,
+                padding: 20,
+                maxWidth: 650,
+                layout: {
+                    type: 'vbox',
+                    align: 'stretch',
+                    pack: 'middle'
                 },
-                height: 118,
-                flex: 0
+                items: [{
+                    xtype: 'component',
+                    cls: 'welcome',
+                    bind: {
+                        html: '<h1>' + Ext.String.format(i18n._('Congratulations! {0} is ready to be configured.'), rpc.companyName) + '</h1>' +
+                            '<p>' + i18n._('Please register with an untangle.com account before continuing.') + '<br/>' + i18n._('Registering gets you the following benefits:') + '</p>' +
+                            '<ul>' +
+                                '<li>' + i18n._('Access to your account on untangle.com') + '</li>' +
+                                '<li>' + i18n._('Manage your licences, renewals, servers, and contact info all from one dashboard.') + '</li>' +
+                                '<li>' + i18n._('Easily transfer licences between servers.') + '</li>' +
+                            '</ul>' +
+                            '<p>' + i18n._('Registration only takes a second and it is required before installing applications.') + '<br/>' +
+                            i18n._('Rest assured, we will never spam you or share your contact information with anyone.') + '</p>'
+                    }
+                }, {
+                    xtype: 'button',
+                    text: i18n._('Continue'),
+                    maxWidth: 200,
+                    baseCls: 'reg-btn',
+                    margin: '20 0 0 0',
+                    handler: 'showLogin'
+                }]
             }, {
-                xtype: 'container',
-                name: 'cardsContainer',
-                layout: 'card',
-                flex: 1,
-                items: [
-                //Welcome Step
-                {
-                    xtype: 'container',
-                    itemId: 'step1',
-                    autoScroll: true,
+                cls: 'card',
+                itemId: 'auth',
+                layout: 'column',
+                plugins: 'responsive',
+                responsiveConfig: {
+                    'width < 960': {
+                        maxWidth: 480
+                    },
+                    'width >= 960': {
+                        maxWidth: 960
+                    }
+                },
+                border: false,
+                defaults: {
+                    border: false
+                },
+                items: [{
+                    xtype: 'component',
+                    columnWidth: 1,
+                    cls: 'title',
+                    html: i18n._('Login or Create an Account')
+                }, {
+                    xtype: 'component',
+                    columnWidth: 1,
+                    cls: 'login-error',
+                    hidden: true,
+                    border: true,
+                    bind: {
+                        html: '<i class="material-icons" style="font-size: 20px;">warning</i> <span style="vertical-align: middle;">{error}</span>',
+                        hidden: '{!error}'
+                    }
+                }, {
+                    xtype: 'panel',
+                    margin: 10,
+                    plugins: 'responsive',
+                    responsiveConfig: {
+                        'width < 960': {
+                            columnWidth: 1,
+                            minHeight: 'auto'
+                        },
+                        'width >= 960': {
+                            columnWidth: 0.5,
+                            minHeight: 250
+                        }
+                    },
+                    cls: 'reg-panel',
+                    title: 'NEW CUSTOMERS',
+                    layout: 'column',
                     items: [{
                         xtype: 'component',
-                        html: Ext.String.format(i18n._("Congratulations! {0} is ready to be configured."), rpc.companyName),
-                        margin: '10 20 0 150'
-                    }, {
-                        xtype: 'component',
-                        html: i18n._("Please register with an untangle.com account before continuing."),
-                        margin: '10 20 0 150'
-                    }, {
-                        xtype: 'component',
-                        html: i18n._("Registering gets you the following benefits:"),
-                        margin: '10 20 0 150'
-                    }, {
-                        xtype: 'component',
-                        html: "<li>" + i18n._("Access to your account on untangle.com") + "</li>",
-                        margin: '0 20 0 180'
-                    }, {
-                        xtype: 'component',
-                        html: "<li>" + i18n._("Manage your licences, renewals, servers, and contact info all from one dashboard.") + "</li>",
-                        margin: '0 20 0 180'
-                    }, {
-                        xtype: 'component',
-                        html: "<li>" + i18n._("Easily transfer licences between servers.") + "</li>",
-                        margin: '0 20 0 180'
-                    }, {
-                        xtype: 'component',
-                        html: i18n._("Registration only takes a second and it is required before installing applications."),
-                        margin: '10 20 0 150'
-                    }, {
-                        xtype: 'component',
-                        html: i18n._("Rest assured, we will never spam you or share your contact information with anyone."),
-                        margin: '10 20 0 150'
+                        padding: 10,
+                        html: '<img src="/skins/modern-rack/images/admin/icons/icon_new_customer.png"/>',
+                        style: {
+                            textAlign: 'center'
+                        },
+                        plugins: 'responsive',
+                        responsiveConfig: {
+                            'width < 450': {
+                                columnWidth: 1,
+                                width: 'auto',
+                                hidden: true
+                            },
+                            'width >= 450': {
+                                columnWidth: 0,
+                                width: 140,
+                                hidden: false
+                            }
+                        },
                     }, {
                         xtype: 'container',
-                        layout: 'center',
-                        height: 70,
-                        items: {
-                            xtype: 'button',
-                            text: i18n._('Continue'),
-                            padding: '7 30 7 30',
-                            handler: function() {
-                                this.down("container[name=cardsContainer]").setActiveItem("step2");
-                            },
-                            scope: this
-                        }
-                    }]
-                },
-                {
-                    xtype: 'container',
-                    itemId: 'step2',
-                    layout: { type: 'hbox', align: 'stretch'},
-                    style: {borderTop: '1px solid #D0D0D0'},
-                    items: [{
-                        xtype: 'form',
-                        flex: 7,
-                        border: false,
-                        autoScroll: true,
-                        name: 'loginForm',
-                        layout: { type: 'vbox', align: 'stretch'},
+                        columnWidth: 1,
+                        padding: 10,
+                        layout: {
+                            type: 'vbox',
+                            align: 'stretch'
+                        },
                         items: [{
-                            xtype: 'container',
-                            layout: 'center',
-                            width: '100%',
-                            height: 36,
-                            items: {
-                                xtype: 'component',
-                                style: {fontSize: '16px'},
-                                html: i18n._('Login')
-                            }
+                            xtype: 'component',
+                            flex: 1,
+                            html: i18n._("If you are a new Untangle Customer, simply click Continue With Checkout below. We'll create an account for you as you checkout.")
                         }, {
-                            xtype:'textfield',
-                            width: 300,
-                            margin: '0 40 0 20',
-                            name: 'emailAddress',
-                            //vtype: 'email',
+                            xtype: 'button',
+                            baseCls: 'reg-btn',
+                            margin: '20 0 0 0',
+                            text: i18n._('Create an Account'),
+                            handler: 'showRegister'
+                        }]
+                    }]
+                }, {
+                    xtype: 'panel',
+                    margin: 10,
+                    minHeight: 250,
+                    plugins: 'responsive',
+                    responsiveConfig: {
+                        'width < 960': {
+                            columnWidth: 1,
+                        },
+                        'width >= 960': {
+                            columnWidth: 0.5,
+                        }
+                    },
+                    cls: 'reg-panel',
+                    title: 'REGISTERED CUSTOMERS',
+                    layout: 'column',
+                    items: [{
+                        xtype: 'component',
+                        padding: 10,
+                        html: '<img src="/skins/modern-rack/images/admin/icons/icon_registred_customer.png"/>',
+                        style: {
+                            textAlign: 'center'
+                        },
+                        plugins: 'responsive',
+                        responsiveConfig: {
+                            'width < 450': {
+                                columnWidth: 1,
+                                width: 'auto',
+                                hidden: true
+                            },
+                            'width >= 450': {
+                                columnWidth: 0,
+                                width: 140,
+                                hidden: false
+                            }
+                        },
+                    }, {
+                        columnWidth: 1,
+                        xtype: 'form',
+                        itemId: 'loginForm',
+                        name: 'loginForm',
+                        border: false,
+                        layout: {
+                            type: 'vbox',
+                            align: 'stretch'
+                        },
+                        defaults: {
+                            xtype: 'textfield',
+                            baseCls: 'reg-field',
                             labelAlign: 'top',
-                            fieldLabel: i18n._("Email Address")+ " *",
-                            cls: 'reg-field',
                             msgTarget: 'under',
                             errorMsgCls: 'reg-field-error',
-                            //validateOnChange: false,
-                            listeners: {
-                                focus: this.defaultFocusButton("loginButton")
-                            },
+                            enableKeyEvents: true
+                        },
+                        items: [{
+                            xtype: 'component',
+                            padding: 10,
+                            html: i18n._("If you have an account with us, please log in.")
+                        }, {
+                            name: 'email',
+                            fieldLabel: i18n._('Email Address') + ' *',
                             validator: function (email) {
                                 if (!/^(")?(?:[^\."\s])(?:(?:[\.])?(?:[\w\-!#$%&'*+/=?^_`{|}~]))*\1@(\w[\-\w]*\.){1,5}([A-Za-z]){2,6}$/.test(email)) {
                                     return i18n._('You must provide a valid login name or email address.');
@@ -170,136 +265,136 @@ Ext.define('Webui.config.accountRegistration', {
                                 return true;
                             }
                         }, {
-                            xtype:'textfield',
-                            width: 300,
-                            margin: '0 40 0 20',
-                            labelAlign: 'top',
-                            inputType: 'password',
                             name: 'password',
-                            fieldLabel: i18n._("Password")+ " *",
-                            cls: 'reg-field',
+                            fieldLabel: i18n._('Password') + ' *',
+                            inputType: 'password',
+                            validator: function (pass) {
+                                return !pass ? 'You must provide a password.' : true;
+                            }
+                        }],
+                        buttons: [{
+                            baseCls: 'html-btn',
+                            text: i18n._('Forgot your password?'),
+                            href: this.forgotPasswordUrl
+                        }, '->', {
+                            baseCls: 'reg-btn',
+                            itemId: 'loginBtn',
+                            formBind: true,
+                            margin: '0 10 0 0',
+                            text: i18n._('Login'),
+                            handler: 'login'
+                        }]
+                    }]
+                }]
+            }, {
+                xtype: 'form',
+                itemId: 'register',
+                name: 'registerForm',
+                cls: 'card',
+                layout: {
+                    type: 'vbox',
+                    align: 'stretch'
+                },
+                // scrollable: true,
+                plugins: 'responsive',
+                responsiveConfig: {
+                    'width < 960': {
+                        maxWidth: 480
+                    },
+                    'width >= 960': {
+                        maxWidth: 960
+                    }
+                },
+                border: false,
+                items: [{
+                    xtype: 'component',
+                    cls: 'title',
+                    html: i18n._('Create an Account')
+                }, {
+                    xtype: 'component',
+                    cls: 'login-error',
+                    hidden: true,
+                    bind: {
+                        html: '<i class="material-icons" style="font-size: 20px;">warning</i> <span style="vertical-align: middle;">{error}</span>',
+                        hidden: '{!error}'
+                    }
+                }, {
+                    title: 'CONTACT INFORMATION',
+                    border: false,
+                    cls: 'reg-panel small',
+                    padding: 10,
+                    layout: 'column',
+                    items: [{
+                        xtype: 'component',
+                        padding: 10,
+                        style: {
+                            textAlign: 'center'
+                        },
+                        html: '<img src="/skins/modern-rack/images/admin/icons/icon_new_customer.png"/>',
+                        plugins: 'responsive',
+                        responsiveConfig: {
+                            'width < 450': {
+                                columnWidth: 1,
+                                width: 'auto',
+                                hidden: true
+                            },
+                            'width >= 450': {
+                                columnWidth: 0,
+                                width: 140,
+                                hidden: false
+                            }
+                        },
+                    }, {
+                        columnWidth: 1,
+                        padding: '10 0',
+                        border: false,
+                        layout: 'column',
+                        defaults: {
+                            xtype: 'textfield',
+                            baseCls: 'reg-field',
+                            labelAlign: 'top',
+                            labelSeparator: '',
                             msgTarget: 'under',
                             errorMsgCls: 'reg-field-error',
-                            listeners: {
-                                focus: this.defaultFocusButton("loginButton")
+                            enableKeyEvents: true,
+                            plugins: 'responsive',
+                            responsiveConfig: {
+                                'width < 960': {
+                                    columnWidth: 1,
+                                },
+                                'width >= 960': {
+                                    columnWidth: 0.5,
+                                }
                             },
-                            validator: function (pass) {
-                                if (!pass) {
-                                    return i18n._('Please specify your password.');
+                        },
+                        items: [{
+                            name: 'firstName',
+                            columnWidth: 0.5,
+                            fieldLabel: i18n._('First Name') + ' *',
+                            validator: function (fname) {
+                                if (!fname) {
+                                    return i18n._('Please specify your first name.');
                                 }
                                 return true;
                             }
                         }, {
-                            xtype: 'container',
-                            layout: 'center',
-                            height: 70,
-                            items: {
-                                xtype: 'button',
-                                formBind: true,
-                                name: "loginButton",
-                                text: i18n._('Login'),
-                                padding: '7 30 7 30',
-                                handler: function() {
-                                    this.login();
-                                },
-                                scope: this
-                            }
-                        }, {
-                            xtype: 'container',
-                            layout: 'center',
-                            width: '100%',
-                            height: 30,
-                            items: {
-                                xtype: 'component',
-                                html: '<a class="forgot-password" href="'+forgotPasswordUrl+'" target="_blank">'+i18n._('Forgot your password?')+'</a>'
-                            }
-                        }]
-                    }, {
-                        xtype: 'form',
-                        border: false,
-                        flex: 10,
-                        autoScroll: true,
-                        style: {borderLeft: '1px solid #D0D0D0'},
-                        layout: { type: 'vbox', align: 'stretch'},
-                        name: 'registerForm',
-                        items: [{
-                            xtype: 'container',
-                            layout: 'center',
-                            width: '100%',
-                            height: 36,
-                            items: {
-                                xtype: 'component',
-                                style: {fontSize: '16px'},
-                                html: i18n._('Create an Account')
-                            }
-                        }, {
-                            xtype: 'container',
-                            layout: 'column',
-                            items:[{
-                                xtype:'textfield',
-                                columnWidth: 0.5,
-                                margin: '0 10 0 20',
-                                labelAlign: 'top',
-                                name: 'firstName',
-                                fieldLabel: i18n._("First Name")+ " *",
-                                cls: 'reg-field',
-                                msgTarget: 'under',
-                                errorMsgCls: 'reg-field-error',
-                                listeners: {
-                                    focus: this.defaultFocusButton("registerButton")
-                                },
-                                validator: function (fname) {
-                                    if (!fname) {
-                                        return i18n._('Please specify your first name.');
-                                    }
-                                    return true;
+                            name: 'lastName',
+                            columnWidth: 0.5,
+                            fieldLabel: i18n._('Last Name') + ' *',
+                            validator: function (lname) {
+                                if (!lname) {
+                                    return i18n._('Please specify your last name.');
                                 }
-                            }, {
-                                xtype:'textfield',
-                                columnWidth: 0.5,
-                                margin: '0 20 0 10',
-                                labelAlign: 'top',
-                                name: 'lastName',
-                                fieldLabel: i18n._("Last Name")+ " *",
-                                cls: 'reg-field',
-                                msgTarget: 'under',
-                                errorMsgCls: 'reg-field-error',
-                                listeners: {
-                                    focus: this.defaultFocusButton("registerButton")
-                                },
-                                validator: function (lname) {
-                                    if (!lname) {
-                                        return i18n._('Please specify your last name.');
-                                    }
-                                    return true;
-                                }
-                            }]
+                                return true;
+                            }
                         }, {
-                            xtype:'textfield',
-                            margin: '0 50 0 20',
-                            labelAlign: 'top',
                             name: 'companyName',
-                            fieldLabel: i18n._("Company Name"),
-                            cls: 'reg-field',
-                            msgTarget: 'under',
-                            errorMsgCls: 'reg-field-error',
-                            listeners: {
-                                focus: this.defaultFocusButton("registerButton")
-                            }
+                            columnWidth: 0.5,
+                            fieldLabel: i18n._('Company Name')
                         }, {
-                            xtype:'textfield',
-                            //vtype: 'email',
-                            margin: '0 50 0 20',
-                            labelAlign: 'top',
-                            name: 'emailAddress',
-                            fieldLabel: i18n._("Email Address")+ " *",
-                            cls: 'reg-field',
-                            msgTarget: 'under',
-                            errorMsgCls: 'reg-field-error',
-                            //validateOnChange: false,
-                            listeners: {
-                                focus: this.defaultFocusButton("registerButton")
-                            },
+                            name: 'email',
+                            columnWidth: 0.5,
+                            fieldLabel: i18n._('Email Address') + ' *',
                             validator: function (email) {
                                 if (!email) {
                                     return i18n._('We need your email address to contact you.');
@@ -309,718 +404,255 @@ Ext.define('Webui.config.accountRegistration', {
                                 }
                                 return true;
                             }
-                        }, {
-                            xtype: 'container',
-                            layout: 'column',
-                            items:[{
-                                xtype:'textfield',
-                                inputType: 'password',
-                                columnWidth: 0.5,
-                                margin: '0 10 0 20',
-                                labelAlign: 'top',
-                                name: 'password',
-                                fieldLabel: i18n._("Password")+ " *",
-                                cls: 'reg-field',
-                                msgTarget: 'under',
-                                errorMsgCls: 'reg-field-error',
-                                listeners: {
-                                    focus: this.defaultFocusButton("registerButton")
-                                },
-                                validator: function (pass) {
-                                    if (!pass) {
-                                        return i18n._('Please specify your password.');
-                                    }
-                                    if (pass.length < 6) {
-                                        return i18n._('Your password is too short.');
-                                    }
-                                    return true;
-                                }
-                            }, {
-                                xtype:'textfield',
-                                inputType: 'password',
-                                margin: '0 20 0 10',
-                                labelAlign: 'top',
-                                columnWidth: 0.5,
-                                name: 'confirmPassword',
-                                fieldLabel: i18n._("Confirm Password")+ " *",
-                                cls: 'reg-field',
-                                msgTarget: 'under',
-                                errorMsgCls: 'reg-field-error',
-                                listeners: {
-                                    focus: this.defaultFocusButton("registerButton")
-                                },
-                                validator: function (pass) {
-                                    if (!pass) {
-                                        return i18n._('Please retype your password.');
-                                    }
-                                    return true;
-                                }
-                            }]
-                        }, {
-                            xtype: 'container',
-                            layout: 'center',
-                            margin: '10 0 0 0',
-                            height: 40,
-                            items: {
-                                xtype: 'button',
-                                formBind: true,
-                                name: "registerButton",
-                                text: i18n._('Register'),
-                                padding: '7 30 7 30',
-                                handler: function() {
-                                    this.register();
-                                },
-                                scope: this
-                            }
                         }]
                     }]
-                },
-                //Subscriptions step
-                {
-                    xtype: 'container',
-                    itemId: 'step3',
-                    autoScroll: true,
+                }, {
+                    title: 'LOGIN INFORMATION',
+                    border: false,
+                    cls: 'reg-panel small',
+                    padding: 10,
+                    layout: 'column',
                     items: [{
                         xtype: 'component',
-                        html: i18n._("Your untangle.com account has subscriptions that are not assigned to any server."),
-                        margin: '10 120 0 150'
-                    }, {
-                        xtype: 'component',
-                        html: i18n._("If you wish to assign a subscription to this server visit your account and transfer the subscription to this server."),
-                        margin: '10 120 0 150'
-                    }, {
-                        xtype: 'component',
-                        html: i18n._("If you do not wish to do this, you can skip this and do this at any time in the future by visiting your account at untangle.com"),
-                        margin: '10 120 0 150'
-                    }, {
-                        xtype: 'container',
-                        layout: 'center',
-                        height: 70,
-                        items: {
-                            xtype: 'container',
-                            layout: 'hbox',
-                            items: [{
-                                xtype: 'button',
-                                text: i18n._('Open My Account'),
-                                padding: '7 10 7 10',
-                                width: 150,
-                                href: Ung.Main.getMyAccountLink()
-                            }, {
-                                xtype: 'button',
-                                text: i18n._('Skip'),
-                                style: {marginLeft: '150px'},
-                                padding: '7 10 7 10',
-                                width: 150,
-                                handler: function() {
-                                    this.checkActivationCode();
-                                },
-                                scope: this
-                            }]
-                        }
-                    }]
-                },
-                //Activation Code step
-                {
-                    xtype: 'container',
-                    itemId: 'step4',
-                    autoScroll: true,
-                    items: [{
-                        xtype: 'component',
-                        margin: '0 120 0 150',
-                        html: Ext.String.format(i18n._("If your {0} appliance came with an activation code to redem your subscription please enter it now. Otherwise simply skip this step."), rpc.companyName)
-                    }, {
-                        xtype:'textfield',
-                        margin: '0 0 0 150',
-                        width: 350,
-                        name: "activationCode",
-                        labelAlign: 'top',
-                        fieldLabel: i18n._("Activation Code")+ " *"
-                    }, {
-                        xtype:'checkbox',
-                        margin: '0 0 0 150',
-                        name: "renew",
-                        width: 350,
-                        checked: this.renewDefaultChecked,
-                        boxLabel: i18n._("Automatically renew my subscription"),
-                        listeners: {
-                            change: {
-                                fn: function(elem, newValue, oldValue, eOpts) {
-                                    this.down("container[name=creditContainer]").setVisible(newValue);
-                                    this.down("container[name=creditNoContainer]").setVisible(!newValue);
-                                },
-                                scope: this
-                            }
-                        }
-                    },{
-                        // Credit card information.  If we determine the customer already has an associated
-                        // credit card, we will hide these sections.
-                        xtype: 'container',
-                        margin: '0 120 0 150',
-                        name: 'creditNoContainer',
-                        hidden: this.renewDefaultChecked == true,
-                        html: i18n._("If you opt out of automatic renewal, services and protection will lapse at the end of the subscription period.") +
-                        '  <i>'+i18n._("It is highly recommended that you enable automatic renewal.")+'</i>'
-                    },{
-                        xtype: 'container',
-                        name: 'creditContainer',
-                        hidden: this.renewDefaultChecked == false,
-                        items:[{
-                            xtype:'textfield',
-                            margin: '0 0 0 150',
-                            width: 350,
-                            name: "creditAddress1",
-                            labelAlign: 'top',
-                            fieldLabel: i18n._("Billing Address 1")+ " *"
-                        }, {
-                            xtype:'textfield',
-                            margin: '0 0 0 150',
-                            width: 350,
-                            name: "creditAddress2",
-                            labelAlign: 'top',
-                            fieldLabel: i18n._("Billing Address 2")
-                        }, {
-                            xtype: 'container',
-                            margin: '0 0 0 150',
-                            width: 400,
-                            layout: 'column',
-                            items:[{
-                                xtype:'textfield',
-                                name: "creditCity",
-                                labelAlign: 'top',
-                                fieldLabel: i18n._("City")+ " *"
-                            },{
-                                xtype:'textfield',
-                                name: "creditState",
-                                labelAlign: 'top',
-                                margin: "0 0 0 20",
-                                fieldLabel: i18n._("State or Province")+ " *"
-                            }]
-                        }, {
-                            xtype: 'container',
-                            margin: '0 0 0 150',
-                            width: 400,
-                            layout: 'column',
-                            items:[{
-                                xtype:'textfield',
-                                name: "creditPostal",
-                                labelAlign: 'top',
-                                fieldLabel: i18n._("Postal Code")+ " *"
-                            },{
-                                xtype:'textfield',
-                                name: "creditCountry",
-                                labelAlign: 'top',
-                                margin: "0 0 0 20",
-                                fieldLabel: i18n._("Country")+ " *"
-                            }]
-                        }, {
-                            xtype:'textfield',
-                            margin: '0 0 0 150',
-                            width: 350,
-                            name: "creditNumber",
-                            labelAlign: 'top',
-                            fieldLabel: i18n._("Credit Card Number")+ " *",
-                            listeners: {
-                                change: {
-                                    fn: function(elem, creditNumber, oldValue, eOpts) {
-                                        // Determine credit card type for those supported (AMEX, MC, DISC, VISA).
-                                        // In theory we could do this silently but we would risk
-                                        // future changes to credit card algorithms.
-                                        // To be safe, we provide a combobox to select the type but
-                                        // aid in changing that value automatically when the number has changed
-                                        // using the current card algoritm.
-                                        creditNumber = creditNumber.replace(/\-/g, '');
-                                        if( (creditNumber.length < 14) || !/^\d+$/.test(creditNumber)){
-                                            return;
-                                        }
-                                        var creditType = "MC";
-                                        var creditPrefix = creditNumber.substring(0,2);
-                                        switch(creditPrefix){
-                                            case "34":
-                                            case "37":
-                                                creditType = "AMEX";
-                                                break;
-                                            case "51":
-                                            case "52":
-                                            case "53":
-                                            case "54":
-                                            case "55":
-                                                creditType = "MC";
-                                                break;
-                                            default:
-                                                creditPrefix = creditNumber.substring(0,4);
-                                                switch(creditPrefix){
-                                                    case "6011":
-                                                        creditType = "DISC";
-                                                        break;
-                                                    default:
-                                                        creditType ="VISA";
-                                                }
-                                        }
-                                        this.down("combo[name=creditType]").setValue(creditType);
-                                    },
-                                    scope: this,
-                                    buffer: 400
-                                }
-                            }
-                        }, {
-                            xtype: 'container',
-                            margin: '0 0 0 150',
-                            width: 400,
-                            layout: 'column',
-                            items:[{
-                                xtype:'combo',
-                                name: "creditType",
-                                labelAlign: 'top',
-                                width: 130,
-                                fieldLabel: i18n._("Card Type")+ " *",
-                                queryMode: "local",
-                                valueField: "id",
-                                displayField: "value",
-                                store: this.cardTypes,
-                                value: "MC"
-                            },{
-                                xtype:'combo',
-                                name: "creditMonth",
-                                labelAlign: 'top',
-                                width: 110,
-                                margin: "0 0 0 20",
-                                fieldLabel: i18n._("Expiration Month")+ " *",
-                                queryMode: "local",
-                                valueField: "id",
-                                displayField: "value",
-                                store: this.expirationMonths,
-                                value: "01"
-                            }, {
-                                xtype:'textfield',
-                                name: "creditYear",
-                                labelAlign: 'top',
-                                width: 100,
-                                margin: "0 0 0 20",
-                                maxLength: 4,
-                                enforceMaxLength: true,
-                                fieldLabel: i18n._("Expiration Year")+ " *"
-                            }]
-                        }]
-                    }, {
-                        xtype: 'container',
-                        layout: 'center',
-                        height: 70,
-                        items: {
-                            xtype: 'container',
-                            layout: 'hbox',
-                            items: [{
-                                xtype: 'button',
-                                text: i18n._('Redeem Activation Code'),
-                                padding: '7 10 7 10',
-                                width: 150,
-                                handler: function() {
-                                    if( this.updatePaymentMethod() == true ){
-                                        this.redeemActivationCode();
-                                    }
-                                },
-                                scope: this
-                            }, {
-                                xtype: 'button',
-                                text: i18n._('Skip'),
-                                style: {marginLeft: '150px'},
-                                padding: '7 10 7 10',
-                                width: 150,
-                                handler: function() {
-                                    this.finished = true;
-                                    this.down("container[name=cardsContainer]").setActiveItem("step5");
-                                },
-                                scope: this
-                            }]
-                        }
-                    }]
-                },
-                //Finish step
-                {
-                    xtype: 'container',
-                    itemId: 'step5',
-                    autoScroll: true,
-                    items: [{
-                        xtype: 'component',
-                        html: i18n._("All done!"),
-                        margin: '10 20 0 150'
-                    }, {
-                        xtype: 'component',
-                        html: Ext.String.format(i18n._("Your account is configured and {0} is ready to be configured."), rpc.companyName),
-                        margin: '10 20 0 150'
-                    }, {
-                        xtype: 'container',
-                        layout: 'center',
-                        height: 70,
-                        items: {
-                            xtype: 'button',
-                            text: i18n._('Continue'),
-                            padding: '7 30 7 30',
-                            handler: function() {
-                                this.finished = true;
-                                this.closeWindow();
+                        padding: 10,
+                        html: '<img src="/skins/modern-rack/images/admin/icons/icon_lock.png"/>',
+                        style: {
+                            textAlign: 'center'
+                        },
+                        plugins: 'responsive',
+                        responsiveConfig: {
+                            'width < 450': {
+                                columnWidth: 1,
+                                width: 'auto',
+                                hidden: true
                             },
-                            scope: this
-                        }
-                    }]
-                }
-                ]
-            }]
-        };
-        this.callParent(arguments);
-    },
-    login: function() {
-        var form = this.down("container[name=loginForm]");
-        var emailAddress = form.down("textfield[name=emailAddress]");
-        var password = form.down("textfield[name=password]");
-        var errors = [];
-        if(!emailAddress.isValid()) {
-            errors.push(i18n._("The Email Address is not valid."));
-        } else if(Ext.isEmpty(emailAddress.getValue())) {
-            errors.push(Ext.String.format(i18n._("The {0} is required."), i18n._("Email Address")));
-        }
-        if(Ext.isEmpty(password.getValue())) {
-            errors.push(Ext.String.format(i18n._("The {0} is required."), i18n._("Password")));
-        }
-        if(errors.length>0) {
-            Ext.MessageBox.alert(i18n._("Warning"), errors.join("<br/>"));
-            return;
-        }
-        this.setLoading(i18n._("Logging in..."));
-        Ext.data.JsonP.request({
-            url: this.storeApiUrl+"/account/login",
-            scope: this,
-            params: {
-                email: emailAddress.getValue(),
-                password: password.getValue(),
-                uid: rpc.serverUID,
-                applianceModel: rpc.applianceModel,
-                majorVersion: rpc.version
-            },
-            success: function(response, opts) {
-                this.setLoading(false);
-                if( response!=null) {
-                    if(!response.success) {
-                        Ext.MessageBox.alert(i18n._("Warning"), response.customerMessage);
-                        return;
-                    }
-                    if(response.token) {
-                        this.email = emailAddress.getValue();
-                        this.token = response.token;
-                        this.checkAccount();
-                    }
-                }
-            },
-            failure: function(response, opts) {
-                this.setLoading(false);
-                Ext.MessageBox.alert(i18n._("Warning"), i18n._("Failed to access the store to login"));
-            }
-        });
-    },
-    register: function() {
-        var form = this.down("container[name=registerForm]");
-        var firstName = form.down("textfield[name=firstName]").getValue().trim();
-        var lastName = form.down("textfield[name=lastName]").getValue().trim();
-        var companyName = form.down("textfield[name=companyName]").getValue().trim();
-        var emailAddress = form.down("textfield[name=emailAddress]");
-        var password = form.down("textfield[name=password]");
-        var confirmPassword = form.down("textfield[name=confirmPassword]");
-
-        var errors = [];
-        if(Ext.isEmpty(firstName)) {
-            errors.push(Ext.String.format(i18n._("The {0} is required."), i18n._("First Name")));
-        }
-        if(Ext.isEmpty(lastName)) {
-            errors.push(Ext.String.format(i18n._("The {0} is required."), i18n._("Last Name")));
-        }
-        if(!emailAddress.isValid()) {
-            errors.push(i18n._("The Email Address is not valid."));
-        } else if(Ext.isEmpty(emailAddress.getValue())) {
-            errors.push(Ext.String.format(i18n._("The {0} is required."), i18n._("Email Address")));
-        }
-        if(Ext.isEmpty(password.getValue())) {
-            errors.push(Ext.String.format(i18n._("The {0} is required."), i18n._("Password")));
-        }
-        if(password.getValue() != confirmPassword.getValue()) {
-            errors.push(i18n._("Passwords do not match."));
-        }
-        if(errors.length>0) {
-            Ext.MessageBox.alert(i18n._("Warning"), errors.join("<br/>"));
-            return;
-        }
-        this.setLoading(i18n._("Creating account..."));
-        Ext.data.JsonP.request({
-            url: this.storeApiUrl+"/account/create",
-            scope: this,
-            params: {
-                email: emailAddress.getValue(),
-                password: password.getValue(),
-                fname: firstName,
-                lname: lastName,
-                cname: companyName,
-                uid: rpc.serverUID,
-                applianceModel: rpc.applianceModel,
-                majorVersion: rpc.version
-            },
-            success: function(response, opts) {
-                this.setLoading(false);
-                if( response!=null) {
-                    if(!response.success) {
-                        Ext.MessageBox.alert(i18n._("Warning"), response.customerMessage);
-                        return;
-                    }
-                    if(response.token) {
-                        this.email = emailAddress.getValue();
-                        this.token = response.token;
-                        this.checkAccount();
-                    }
-                }
-            },
-            failure: function(response, opts) {
-                this.setLoading(false);
-                Ext.MessageBox.alert(i18n._("Warning"), i18n._("Failed to access the store to create the account"));
-            }
-
-        });
-    },
-    checkAccount: function() {
-        this.setLoading(true);
-        Ext.data.JsonP.request({
-            url: this.storeApiUrl+"/account",
-            params: {
-                email: this.email,
-                token: this.token,
-                uid: rpc.serverUID,
-                applianceModel: rpc.applianceModel,
-                majorVersion: rpc.version
-            },
-            success: function(response, opts) {
-                this.setLoading(false);
-                if( response!=null) {
-                    if(!response.success) {
-                        Ext.MessageBox.alert(i18n._("Warning"), response.customerMessage);
-                        return;
-                    }
-                    var paymentMethodDefined = typeof(response.paymentMethod.length) == 'undefined' ? true: false;
-                    // If credit card information is associated with account, disable credit card fields
-                    this.down("container[itemId=step4]").down("checkbox[name=renew]").setVisible(paymentMethodDefined == false);
-                    if(paymentMethodDefined){
-                        this.down("container[itemId=step4]").down("container[name=creditNoContainer]").setVisible(false);
-                        this.down("container[itemId=step4]").down("container[name=creditContainer]").setVisible(false);
-                    }
-                    this.checkSubscriptions();
-                }
-
-            },
-            failure: function(response, opts) {
-                this.setLoading(false);
-                Ext.MessageBox.alert(i18n._("Warning"), i18n._("Failed to access the store to check the subscriptions"));
-            },
-            scope: this
-        });
-    },
-    checkSubscriptions: function() {
-        this.setLoading(true);
-        Ext.data.JsonP.request({
-            url: this.storeApiUrl+"/subscriptions",
-            params: {
-                email: this.email,
-                token: this.token,
-                uid: rpc.serverUID,
-                applianceModel: rpc.applianceModel,
-                majorVersion: rpc.version
-            },
-            success: function(response, opts) {
-                this.setLoading(false);
-                if( response!=null) {
-                    if(!response.success) {
-                        Ext.MessageBox.alert(i18n._("Warning"), response.customerMessage);
-                        return;
-                    }
-                    var unbound = false;
-                    if( response.subscriptions && response.subscriptions.length>0) {
-                        for( var i = 0; i < response.subscriptions.length; i++){
-                            if(response.subscriptions[i].uid == ""){
-                                unbound = true;
-                                break;
+                            'width >= 450': {
+                                columnWidth: 0,
+                                width: 140,
+                                hidden: false
                             }
-                        }
-                    }
-                    if(unbound == true){
-                        this.down("container[name=cardsContainer]").setActiveItem("step3");
-                    }else{
-                        this.checkActivationCode();
-                    }
+                        },
+                    }, {
+                        columnWidth: 1,
+                        padding: '10 0',
+                        border: false,
+                        layout: 'column',
+                        defaults: {
+                            xtype: 'textfield',
+                            baseCls: 'reg-field',
+                            labelAlign: 'top',
+                            labelSeparator: '',
+                            inputType: 'password',
+                            msgTarget: 'under',
+                            errorMsgCls: 'reg-field-error',
+                            enableKeyEvents: true,
+                            plugins: 'responsive',
+                            responsiveConfig: {
+                                'width < 960': {
+                                    columnWidth: 1,
+                                },
+                                'width >= 960': {
+                                    columnWidth: 0.5,
+                                }
+                            },
+                        },
+                        items: [{
+                            name: 'password',
+                            columnWidth: 0.5,
+                            fieldLabel: i18n._('Password') + ' *',
+                            validator: function (pass) {
+                                if (!pass) {
+                                    return i18n._('Please specify your password.');
+                                }
+                                if (pass.length < 6) {
+                                    return i18n._('Your password is too short.');
+                                }
+                                return true;
+                            }
+                        }, {
+                            name: 'passwordConfirm',
+                            columnWidth: 0.5,
+                            fieldLabel: i18n._('Confirm Password') + ' *',
+                            validator: function (pass) {
+                                if (!pass) {
+                                    return i18n._('Please retype your password.');
+                                }
+                                if (pass.length < 6) {
+                                    return i18n._('Your password is too short.');
+                                }
+                                return true;
+                            }
+                        }]
+                    }]
+                }],
+                buttons: [{
+                    baseCls: 'html-btn',
+                    text: '<i class="material-icons">keyboard_arrow_left</i><span style="vertical-align: middle;">' + i18n._('Back') + '</span>',
+                    handler: 'showLogin'
+                }, '->', {
+                    baseCls: 'reg-btn',
+                    itemId: 'registerBtn',
+                    formBind: true,
+                    text: i18n._('Register'),
+                    handler: 'createAccount'
+                }]
+            }, {
+                xtype: 'container',
+                itemId: 'finish',
+                cls: 'card',
+                border: false,
+                layout: {
+                    type: 'vbox',
+                    align: 'middle',
+                    pack: 'center'
+                },
+                items: [{
+                    xtype: 'component',
+                    cls: 'title',
+                    html: i18n._('Done!')
+                }, {
+                    xtype: 'component',
+                    margin: 20,
+                    html: '<p style="font-size: 14px;">' + Ext.String.format(i18n._("Your account is configured and {0} is ready to be configured."), rpc.companyName) + '</p>',
+                }, {
+                    xtype: 'button',
+                    text: i18n._('Continue'),
+                    baseCls: 'reg-btn',
+                    margin: '20 0 0 0',
+                    handler: 'closeWindow'
+                }]
+            }]
+        }];
+        this.callParent(arguments);
+    }
+
+});
+
+Ext.define('Webui.config.accountRegistrationController', {
+    extend: 'Ext.app.ViewController',
+    alias: 'controller.registration',
+
+    control: {
+        '#auth': {
+            beforeactivate: 'onBeforeActivateAuth'
+        },
+        '#register': {
+            beforeactivate: 'onBeforeActivateRegister'
+        },
+        'textfield': {
+            keyup: 'submitForm'
+        }
+    },
+
+    onBeforeActivateAuth: function (auth) {
+        this.getViewModel().set('error', null);
+        auth.down('#loginForm').reset();
+    },
+
+    onBeforeActivateRegister: function (form) {
+        this.getViewModel().set('error', null);
+        form.reset();
+    },
+
+    submitForm: function (field, e) {
+        var me = this;
+        if (e.getCharCode() === 13) {
+            var formCmp = field.up('form');
+            if (formCmp.getForm().isValid()) {
+                if (formCmp.name === 'loginForm') {
+                    me.login(formCmp.down('#loginBtn'));
                 }
-
-            },
-            failure: function(response, opts) {
-                this.setLoading(false);
-                Ext.MessageBox.alert(i18n._("Warning"), i18n._("Failed to access the store to check the subscriptions"));
-            },
-            scope: this
-        });
+                if (formCmp.name === 'registerForm') {
+                    me.createAccount(formCmp.down('#registerBtn'));
+                }
+            }
+        }
     },
-    checkActivationCode: function() {
-        this.setLoading(true);
-        rpc.jsonrpc.UvmContext.isActivationCode(Ext.bind(function(result, exception) {
-            this.setLoading(false);
-            if(Ung.Util.handleException(exception)) return;
-            if(result) {
-                this.down("container[name=cardsContainer]").setActiveItem("step4");
-            } else {
-                this.finished = true;
-                this.down("container[name=cardsContainer]").setActiveItem("step5");
-            }
-        }, this));
+
+    closeWindow: function () {
+        this.getView().close();
     },
-    updatePaymentMethod: function(){
 
-        var renew = this.down("container[itemId=step4]").down("checkbox[name=renew]");
-        if((renew.isVisible() == false) ||
-           (renew.getValue() == false)){
-            return true;
-        }
+    showLogin: function () {
+        this.getView().down('#cards').setActiveItem(1);
+    },
 
-        var form = this.down("container[itemId=step4]");
-        var creditAddress1 = form.down("textfield[name=creditAddress1]").getValue().trim();
-        var creditAddress2 = form.down("textfield[name=creditAddress2]").getValue().trim();
-        var creditCity = form.down("textfield[name=creditCity]").getValue().trim();
-        var creditState = form.down("textfield[name=creditState]").getValue().trim();
-        var creditPostal = form.down("textfield[name=creditPostal]").getValue().trim();
-        var creditCountry = form.down("textfield[name=creditCountry]").getValue().trim();
-        var creditNumber = form.down("textfield[name=creditNumber]").getValue().trim();
-        var creditType = form.down("textfield[name=creditType]").getValue().trim();
-        var creditMonth = form.down("textfield[name=creditMonth]").getValue().trim();
-        var creditYear = form.down("textfield[name=creditYear]").getValue().trim();
+    showRegister: function () {
+        this.getView().down('#cards').setActiveItem(2);
+    },
 
-        var errors = [];
-        if(Ext.isEmpty(creditAddress1)) {
-            errors.push(Ext.String.format(i18n._("{0} is required."), i18n._("Address 1")));
-        }
-        if(Ext.isEmpty(creditCity)) {
-            errors.push(Ext.String.format(i18n._("The {0} is required."), i18n._("City")));
-        }
-        if(Ext.isEmpty(creditState)) {
-            errors.push(Ext.String.format(i18n._("The {0} is required."), i18n._("State")));
-        }
-        if(Ext.isEmpty(creditPostal)) {
-            errors.push(Ext.String.format(i18n._("The {0} is required."), i18n._("Postal Code")));
-        }
-        if(Ext.isEmpty(creditCountry)) {
-            errors.push(Ext.String.format(i18n._("The {0} is required."), i18n._("Country")));
-        }
-        if(Ext.isEmpty(creditNumber)) {
-            errors.push(Ext.String.format(i18n._("The {0} is required."), i18n._("Credit Card Number")));
-        }else{
-            creditNumber = creditNumber.replace(/\-/g, '');
-            if( (creditNumber.length < 14) || !/^\d+$/.test(creditNumber)){
-                errors.push(Ext.String.format(i18n._("The {0} is invalid."), i18n._("Credit Card Number")));
-            }
-        }
-        if(Ext.isEmpty(creditYear)) {
-            errors.push(Ext.String.format(i18n._("The {0} is required."), i18n._("Expiration Year")));
-        }else{
-            if( (creditYear.length < 4) || !/^\d+$/.test(creditYear)){
-                errors.push(Ext.String.format(i18n._("The {0} is invalid."), i18n._("Credit Year")));
-            }
-        }
-        if(errors.length>0) {
-            Ext.MessageBox.alert(i18n._("Warning"), errors.join("<br/>"));
-            return false;
-        }
+    login: function (btn) {
+        var me = this,
+            vm = me.getViewModel(),
+            form = this.getView().down('#loginForm').getForm();
 
-        this.setLoading(i18n._("Updating payment..."));
-        Ext.data.JsonP.request({
-            url: this.storeApiUrl+"/account/updatePaymentMethod",
-            params: {
-                email: this.email,
-                token: this.token,
-                ccType: creditType,
-                ccNumber: creditNumber,
-                ccExpMonth: creditMonth,
-                ccExpYear: creditYear,
-                address1: creditAddress1,
-                address2: creditAddress2,
-                city: creditCity,
-                state: creditState,
-                postCode: creditPostal,
-                country: creditCountry,
-                uid: rpc.serverUID,
-                applianceModel: rpc.applianceModel,
-                majorVersion: rpc.version
-            },
-            success: function(response, opts) {
-                this.setLoading(false);
-                if( response!=null) {
-                    if(!response.success) {
-                        Ext.MessageBox.alert(i18n._("Warning"), response.customerMessage);
+        vm.set('error', null);
+        btn.setDisabled(true);
+
+        if (form.isValid()) {
+            me.getView().cloudManager.accountLogin(function(response, exception) {
+                    btn.setDisabled(false);
+                    if (exception) {
+                        console.log(ex);
+                        vm.set('error', ex);
                         return;
                     }
-                }
-
-            },
-            failure: function(response, opts) {
-                this.setLoading(false);
-                Ext.MessageBox.alert(i18n._("Warning"), i18n._("Failed to access the store to update the payment method"));
-            },
-            scope: this
-        });
-        return true;
-    },
-    redeemActivationCode: function() {
-        var form = this.down("container[itemId=step4]");
-        var activationCode = form.down("textfield[name=activationCode]").getValue().trim();
-        var errors = [];
-        if(Ext.isEmpty(activationCode)) {
-            errors.push(Ext.String.format(i18n._("The {0} is required."), i18n._("Activation Code")));
-        }
-        if(errors.length>0) {
-            Ext.MessageBox.alert(i18n._("Warning"), errors.join("<br/>"));
-            return false;
-        }
-
-        this.setLoading(i18n._("Redeeming activation code..."));
-        Ext.data.JsonP.request({
-            url: this.storeApiUrl+"/appliance/create",
-            params: {
-                email: this.email,
-                token: this.token,
-                version: rpc.version,
-                activationCode: activationCode,
-                uid: rpc.serverUID,
-                uidName: rpc.jsonrpc.UvmContext.networkManager().getNetworkSettings().hostName + "." + rpc.jsonrpc.UvmContext.networkManager().getNetworkSettings().domainName,
-                applianceModel: rpc.applianceModel,
-                majorVersion: rpc.version
-            },
-            success: function(response, opts) {
-                this.setLoading(false);
-                if( response!=null) {
-                    if(!response.success) {
-                        Ext.MessageBox.alert(i18n._("Warning"), response.customerMessage);
+                    if (!response.success) {
+                        vm.set('error', i18n._(response.customerMessage));
                         return;
                     }
-                    this.finished = true;
-                    this.down("container[name=cardsContainer]").setActiveItem("step5");
-                }
-            },
-            failure: function(response, opts) {
-                this.setLoading(false);
-                Ext.MessageBox.alert(i18n._("Warning"), i18n._("Failed to access the store to update the payment method"));
-            },
-            scope: this
-        });
-        return true;
-    },
-    closeWindow: function() {
-        if(this.finished) {
-            rpc.jsonrpc.UvmContext.setRegistered(function(result, exception) {
-                if(Ung.Util.handleException(exception)) return;
-                rpc.isRegistered = true;
-                Ung.Main.showPostRegistrationPopup();
-            });
+                    if (response.token) {
+                        me.getView().email = form.findField('email').getValue();
+                        me.getView().token = response.token;
+                        me.getView().down('#cards').setActiveItem(3);
+                        // me.closeWindow();
+                    }
+                },
+                form.findField('email').getValue(),
+                form.findField('password').getValue()
+            );
         }
-        this.hide();
-        Ext.destroy(this);
+    },
+
+    createAccount: function (btn) {
+        var me = this,
+            vm = me.getViewModel(),
+            form = me.getView().down('#register').getForm();
+
+        vm.set('error', null);
+
+        if (form.isValid()) {
+            if (form.findField('password').getValue() !== form.findField('passwordConfirm').getValue()) {
+                vm.set('error', i18n._('"Confirm password" must match the "Password" field.'));
+                return;
+            }
+            btn.setDisabled(true);
+            me.getView().cloudManager.accountCreate(function(response, exception) {
+                    btn.setDisabled(false);
+                    if (exception) {
+                        console.log(ex);
+                        vm.set('error', ex);
+                        return;
+                    }
+                    if (!response.success) {
+                        vm.set('error', i18n._(response.customerMessage));
+                        return;
+                    }
+                    if (response.token) {
+                        me.getView().email = form.findField('email').getValue();
+                        me.getView().token = response.token;
+                        me.getView().down('#cards').setActiveItem(3);
+                    }
+                },
+                form.findField('email').getValue(),
+                form.findField('password').getValue(),
+                form.findField('firstName').getValue(),
+                form.findField('lastName').getValue(),
+                form.findField('companyName').getValue(),
+                rpc.serverUID,
+                rpc.applianceModel,
+                rpc.version
+            );
+        }
     }
 });
-//# sourceURL=accountRegistration.js
