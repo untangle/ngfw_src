@@ -266,3 +266,25 @@ def getLiveAccountInfo(accounttype):
             return (account[1], account[2])
     return ("message",accounttype + " account not found")
 
+def foundWans():
+    myWANs = []
+    netsettings = uvmContext.networkManager().getNetworkSettings()
+    for interface in netsettings['interfaces']['list']:
+        wanIP = ""
+        wanGateway = ""
+        if interface['isWan']:
+            if interface['v4ConfigType'] == "STATIC":
+                wanIndex =  interface['interfaceId']
+                wanIP =  interface['v4StaticAddress']
+                wanGateway =  interface['v4StaticGateway']
+            elif interface['v4ConfigType'] == "AUTO":
+                nicDevice = str(interface['symbolicDev'])
+                wanIndex =  interface['interfaceId']
+                wanIP =  system_properties.__get_ip_address(nicDevice)
+                wanGateway =  system_properties.__get_gateway(nicDevice)
+            if wanIP:
+                wanExtIP = getIpAddress(extra_options="--bind-address=" + wanIP,localcall=True)
+                wanExtIP = wanExtIP.rstrip()
+                wanTup = (wanIndex,wanIP,wanExtIP,wanGateway)
+                myWANs.append(wanTup)
+    return myWANs
