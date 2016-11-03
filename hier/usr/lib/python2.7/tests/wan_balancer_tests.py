@@ -29,29 +29,6 @@ indexOfWans = []
 ruleCounter = 0
 defaultRackId = 1
 
-def foundWans():
-    myWANs = []
-    netsettings = uvmContext.networkManager().getNetworkSettings()
-    for interface in netsettings['interfaces']['list']:
-        wanIP = ""
-        wanGateway = ""
-        if interface['isWan']:
-            if interface['v4ConfigType'] == "STATIC":
-                wanIndex =  interface['interfaceId']
-                wanIP =  interface['v4StaticAddress']
-                wanGateway =  interface['v4StaticGateway']
-            elif interface['v4ConfigType'] == "AUTO":
-                nicDevice = str(interface['symbolicDev'])
-                wanIndex =  interface['interfaceId']
-                wanIP =  system_properties.__get_ip_address(nicDevice)
-                wanGateway =  system_properties.__get_gateway(nicDevice)
-            if wanIP:
-                wanExtIP = global_functions.getIpAddress(extra_options="--bind-address=" + wanIP,localcall=True)
-                wanExtIP = wanExtIP.rstrip()
-                wanTup = (wanIndex,wanIP,wanExtIP,wanGateway)
-                myWANs.append(wanTup)
-    return myWANs
-    
 def setWeightOfWan(interfaceId, weight):
     if interfaceId == None or interfaceId == 0:
         print "Invalid interface: " + str(interfaceId)
@@ -213,7 +190,7 @@ class WanBalancerTests(unittest2.TestCase):
         nodeWanFailover.start()
         nodeWanFailoverData = nodeWanFailover.getSettings()
 
-        indexOfWans = foundWans()
+        indexOfWans = global_functions.foundWans()
         orig_netsettings = uvmContext.networkManager().getNetworkSettings()
         ip_address_testdestination =  socket.gethostbyname("test.untangle.com")
 
