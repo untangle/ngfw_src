@@ -303,7 +303,14 @@ class FirewallTests(unittest2.TestCase):
     # verify dst intf number rule works
     def test_051_intfDst(self):
         nukeRules()
-        appendRule( createSingleConditionRule( "DST_INTF", remote_control.interfaceExternal ) )
+        # check if a multi-wan box.
+        indexOfWans = global_functions.foundWans()
+        if (len(indexOfWans) < 2):
+            appendRule( createSingleConditionRule( "DST_INTF", remote_control.interfaceExternal ) )
+        else:
+            for wanIndexTup in indexOfWans:
+                wanIndex = wanIndexTup[0]
+                appendRule( createSingleConditionRule( "DST_INTF", wanIndex ) )
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
@@ -317,7 +324,16 @@ class FirewallTests(unittest2.TestCase):
     # verify dst intf with commas blocks
     def test_053_intfCommas(self):
         nukeRules()
-        appendRule( createSingleConditionRule( "DST_INTF", "99," + str(remote_control.interfaceExternal) +  ", 100" ) )
+        # check if a multi-wan box.
+        indexOfWans = global_functions.foundWans()
+        if (len(indexOfWans) < 2):
+            appendRule( createSingleConditionRule( "DST_INTF", "99," + str(remote_control.interfaceExternal) +  ", 100" ) )
+        else:
+            interfaces_str = "99"
+            for wanIndexTup in indexOfWans:
+                interfaces_str += "," + str(wanIndexTup[0])
+            interfaces_str += ",100"
+            appendRule( createSingleConditionRule( "DST_INTF", interfaces_str ) )
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
