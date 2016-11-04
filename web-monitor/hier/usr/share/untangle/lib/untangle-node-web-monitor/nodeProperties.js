@@ -9,7 +9,6 @@
         "parents" : {
             "javaClass": "java.util.LinkedList",
             "list": [
-                "untangle-node-license",
                 "untangle-casing-http"
             ]
         }
