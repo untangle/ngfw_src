@@ -249,7 +249,7 @@ public class OpenVpnManager
         String cmdStr;
         ExecManagerResult result;
 
-        String publicAddress = UvmContextFactory.context().systemManager().getPublicUrl();
+        String publicAddress = UvmContextFactory.context().networkManager().getPublicUrl();
 
         /* Strip off the port, (This guarantees if they set it to a hostname the value will be correct) */
         publicAddress = publicAddress.split( ":" )[0];
@@ -352,7 +352,7 @@ public class OpenVpnManager
         sb.append( "key"  + " " + KEY_DIR + "/" + siteName + "-" + name + ".key" + "\n");
         sb.append( "ca"   + " " + KEY_DIR + "/" + siteName + "-" + name + "-ca.crt" + "\n");
 
-        String publicAddress = UvmContextFactory.context().systemManager().getPublicUrl();
+        String publicAddress = UvmContextFactory.context().networkManager().getPublicUrl();
 
         /* Strip off the port, (This guarantees if they set it to a hostname the value will be correct) */
         publicAddress = publicAddress.split( ":" )[0];

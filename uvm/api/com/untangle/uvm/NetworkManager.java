@@ -24,8 +24,6 @@ public interface NetworkManager
 
     void renewDhcpLease( int interfaceId );
     
-    /* convenience methods */
-
     List<InterfaceSettings> getEnabledInterfaces();
     
     InetAddress getFirstWanAddress();
@@ -51,4 +49,6 @@ public interface NetworkManager
     List<Integer> getWirelessChannels( String systemDev );
 
     String getUpnpManager(String command, String arguments);
+
+    String getPublicUrl();
 }
