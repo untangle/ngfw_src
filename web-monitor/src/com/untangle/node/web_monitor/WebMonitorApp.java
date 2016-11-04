@@ -23,7 +23,6 @@ import com.untangle.uvm.vnet.Subscription;
 import com.untangle.uvm.node.PortRange;
 import com.untangle.uvm.node.IPMaskedAddress;
 import com.untangle.uvm.vnet.Protocol;
-import com.untangle.uvm.node.License;
 import com.untangle.uvm.node.GenericRule;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.node.web_filter.DecisionEngine;
@@ -38,7 +37,7 @@ import com.untangle.node.web_filter.WebFilterHandler;
 
 public class WebMonitorApp extends WebFilterBase
 {
-    private static int web_filter_deployCount = 0;
+    private static int web_monitor_deployCount = 0;
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -150,10 +149,6 @@ public class WebMonitorApp extends WebFilterBase
     @Override
     protected void preStart( boolean isPermanentTransition )
     {
-        if ( ! isLicenseValid() ) {
-            throw new RuntimeException( "invalid license" );
-        }
-
         engine.getDiaKey();
         
         super.preStart( isPermanentTransition );
@@ -190,19 +185,19 @@ public class WebMonitorApp extends WebFilterBase
     @Override
     public String getNodeTitle()
     {
-        return "Web Filter";
+        return "Web Monitor";
     }
 
     @Override
     public String getName()
     {
-        return "web_filter";
+        return "web_monitor";
     }
 
     @Override
     public String getAppName()
     {
-        return "web-filter";
+        return "web-monitor";
     }
 
     @Override
@@ -222,8 +217,8 @@ public class WebMonitorApp extends WebFilterBase
 
     private static synchronized void e_deployWebAppIfRequired(Logger logger)
     {
-        web_filter_deployCount = web_filter_deployCount + 1;
-        if (web_filter_deployCount != 1) {
+        web_monitor_deployCount = web_monitor_deployCount + 1;
+        if (web_monitor_deployCount != 1) {
             return;
         }
 
@@ -236,8 +231,8 @@ public class WebMonitorApp extends WebFilterBase
 
     private static synchronized void e_unDeployWebAppIfRequired(Logger logger)
     {
-        web_filter_deployCount = web_filter_deployCount - 1;
-        if (web_filter_deployCount != 0) {
+        web_monitor_deployCount = web_monitor_deployCount - 1;
+        if (web_monitor_deployCount != 0) {
             return;
         }
 
@@ -246,14 +241,5 @@ public class WebMonitorApp extends WebFilterBase
         } else {
             logger.warn("Unable to unload WebFilter WebApp");
         }
-    }
-
-    private boolean isLicenseValid()
-    {
-        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.WEB_FILTER))
-            return true;
-        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.WEB_FILTER_OLDNAME))
-            return true;
-        return false;
     }
 }
