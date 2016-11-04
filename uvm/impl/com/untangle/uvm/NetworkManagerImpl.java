@@ -126,11 +126,23 @@ public class NetworkManagerImpl implements NetworkManager
             checkForNewDevices( readSettings );
             
             this.networkSettings = readSettings;
-            /* 13.0 conversion */
-            if(this.networkSettings.getVersion() < 3){
-                this.networkSettings.setUpnpSettings( defaultUpnpSettings() );
+            /* 12.2 conversion */
+            if ( this.networkSettings.getVersion() < 3 ) {
+                try {
+                    this.networkSettings.setUpnpSettings( defaultUpnpSettings() );
+                    this.networkSettings.setPublicUrlMethod( UvmContextFactory.context().systemManager().getSettings().deprecated_getPublicUrlMethod() );
+                    if ( this.networkSettings.getPublicUrlMethod() == null )
+                        this.networkSettings.setPublicUrlMethod( NetworkSettings.PUBLIC_URL_EXTERNAL_IP );
+                    this.networkSettings.setPublicUrlAddress( UvmContextFactory.context().systemManager().getSettings().deprecated_getPublicUrlAddress() );
+                    if ( this.networkSettings.getPublicUrlAddress() == null )
+                        this.networkSettings.setPublicUrlAddress( "hostname.example.com" );
+                    this.networkSettings.setPublicUrlPort( UvmContextFactory.context().systemManager().getSettings().deprecated_getPublicUrlPort() );
+                } catch (Exception e) {
+                    logger.warn("Exception converting Networking Settings",e);
+                }
+
                 this.networkSettings.setVersion( 3 );
-                this.setNetworkSettings( this.networkSettings);
+                this.setNetworkSettings( this.networkSettings, false );
             }
             logger.debug( "Loading Settings: " + this.networkSettings.toJSONString() );
         }
@@ -753,12 +765,16 @@ public class NetworkManagerImpl implements NetworkManager
         NetworkSettings newSettings = new NetworkSettings();
         
         try {
-            newSettings.setVersion( 3 ); // Currently on v3 (as of v13.0)
+            newSettings.setVersion( 3 ); // Currently on v3 (as of v12.2)
             newSettings.setHostName( UvmContextFactory.context().oemManager().getOemName().toLowerCase() );
             newSettings.setDomainName( "example.com" );
             newSettings.setHttpPort( 80 );
             newSettings.setHttpsPort( 443 );
-        
+
+            newSettings.setPublicUrlMethod( NetworkSettings.PUBLIC_URL_EXTERNAL_IP );
+            newSettings.setPublicUrlAddress( "hostname.example.com" );
+            newSettings.setPublicUrlPort( 443 );
+
             LinkedList<String> deviceNames = getEthernetDeviceNames();
 
             String devName = null;
@@ -2229,6 +2245,44 @@ public class NetworkManagerImpl implements NetworkManager
             return intf.getWirelessEncryption();
         else
             return null;
+    }
+
+    /**
+     * @return the public url for the box, this is the address (may be hostname or ip address)
+     */
+    public String getPublicUrl()
+    {
+        String httpsPortStr = Integer.toString( UvmContextFactory.context().networkManager().getNetworkSettings().getHttpsPort() );
+        String primaryAddressStr = "unconfigured.example.com";
+
+        if ( NetworkSettings.PUBLIC_URL_EXTERNAL_IP.equals( this.networkSettings.getPublicUrlMethod() ) ) {
+            InetAddress primaryAddress = UvmContextFactory.context().networkManager().getFirstWanAddress();
+            if ( primaryAddress == null ) {
+                logger.warn("No WAN IP found");
+            } else {
+                primaryAddressStr = primaryAddress.getHostAddress();
+            }
+        } else if ( NetworkSettings.PUBLIC_URL_HOSTNAME.equals( this.networkSettings.getPublicUrlMethod() ) ) {
+            if ( UvmContextFactory.context().networkManager().getNetworkSettings().getHostName() == null ) {
+                logger.warn("No hostname is configured");
+            } else {
+                primaryAddressStr = UvmContextFactory.context().networkManager().getNetworkSettings().getHostName();
+                String domainName = UvmContextFactory.context().networkManager().getNetworkSettings().getDomainName();
+                if ( domainName != null )
+                    primaryAddressStr = primaryAddressStr + "." + domainName;
+            }
+        } else if ( NetworkSettings.PUBLIC_URL_ADDRESS_AND_PORT.equals( this.networkSettings.getPublicUrlMethod() ) ) {
+            if ( this.networkSettings.getPublicUrlAddress() == null ) {
+                logger.warn("No public address configured");
+            } else {
+                primaryAddressStr = this.networkSettings.getPublicUrlAddress();
+                httpsPortStr = Integer.toString( this.networkSettings.getPublicUrlPort() );
+            }
+        } else {
+            logger.warn("Unknown public URL method: " + this.networkSettings.getPublicUrlMethod() );
+        }
+        
+        return primaryAddressStr + ":" + httpsPortStr;
     }
 
     

@@ -850,6 +850,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         this.adminManager = new AdminManagerImpl();
 
+        this.systemManager = new SystemManagerImpl();
+
         this.networkManager = new NetworkManagerImpl();
 
         this.conntrackMonitor = ConntrackMonitorImpl.getInstance();
@@ -865,8 +867,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         this.brandingManager = new BrandingManagerImpl();
 
         this.skinManager = new SkinManagerImpl();
-
-        this.systemManager = new SystemManagerImpl();
 
         this.dashboardManager = new DashboardManagerImpl();
         

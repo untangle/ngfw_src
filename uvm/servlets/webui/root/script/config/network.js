@@ -2683,6 +2683,115 @@ Ext.define('Webui.config.network', {
                         }
                     }
                 }]
+            }, {
+                xtype: 'fieldset',
+                title: i18n._('Public Address Configuration'),
+                items: [{
+                    xtype: 'component',
+                    margin: '0 0 10 0',
+                    html: Ext.String.format(i18n._('The Public Address is the address/URL that provides a public location for the {0} Server. This address will be used in emails sent by the {0} Server to link back to services hosted on the {0} Server such as Quarantine Digests and OpenVPN Client emails.'), rpc.companyName)
+                },{
+                    xtype: 'radio',
+                    boxLabel: i18n._('Use IP address from External interface (default)'),
+                    hideLabel: true,
+                    name: 'publicUrl',
+                    checked: this.settings.publicUrlMethod == "external",
+                    listeners: {
+                        "change": {
+                            fn: Ext.bind(function(elem, checked) {
+                                if (checked) {
+                                    this.settings.publicUrlMethod = "external";
+                                    this.panelHostName.down('textfield[name="publicUrlAddress"]').disable();
+                                    this.panelHostName.down('numberfield[name="publicUrlPort"]').disable();
+                                }
+                            }, this)
+                        }
+                    }
+                },{
+                    xtype: 'component',
+                    margin: '0 0 10 25',
+                    html: Ext.String.format(i18n._('This works if your {0} Server has a routable public static IP address.'), rpc.companyName)
+                },{
+                    xtype: 'radio',
+                    boxLabel: i18n._('Use Hostname'),
+                    hideLabel: true,
+                    name: 'publicUrl',
+                    checked: this.settings.publicUrlMethod == "hostname",
+                    listeners: {
+                        "change": {
+                            fn: Ext.bind(function(elem, checked) {
+                                if (checked) {
+                                    this.settings.publicUrlMethod = "hostname";
+                                    this.panelHostName.down('textfield[name="publicUrlAddress"]').disable();
+                                    this.panelHostName.down('numberfield[name="publicUrlPort"]').disable();
+                                }
+                            }, this)
+                        }
+                    }
+                },{
+                    xtype: 'component',
+                    margin: '0 0 5 25',
+                    html: Ext.String.format(i18n._('This is recommended if the {0} Server\'s fully qualified domain name looks up to its IP address both internally and externally.'), rpc.companyName)
+                }, {
+                    xtype: 'component',
+                    margin: '0 0 10 25',
+                    html: Ext.String.format( i18n._( 'Current Hostname: {0}'), '<i>' + this.settings.hostName + '</i>' )
+                }, {
+                    xtype: 'radio',
+                    boxLabel: i18n._('Use Manually Specified Address'),
+                    hideLabel: true,
+                    name: 'publicUrl',
+                    checked: this.settings.publicUrlMethod == "address_and_port",
+                    listeners: {
+                        "afterrender": {
+                            fn: Ext.bind(function(elem) {
+                                if(elem.getValue()) {
+                                    this.panelHostName.down('textfield[name="publicUrlAddress"]').enable();
+                                    this.panelHostName.down('numberfield[name="publicUrlPort"]').enable();
+                                } else {
+                                    this.panelHostName.down('textfield[name="publicUrlAddress"]').disable();
+                                    this.panelHostName.down('numberfield[name="publicUrlPort"]').disable();
+                                }
+                            }, this)
+                        },
+                        "change": {
+                            fn: Ext.bind(function(elem, checked) {
+                                if (checked) {
+                                    this.settings.publicUrlMethod = "address_and_port";
+                                    this.panelHostName.down('textfield[name="publicUrlAddress"]').enable();
+                                    this.panelHostName.down('numberfield[name="publicUrlPort"]').enable();
+                                }
+                            }, this)
+                        }
+                    }
+                },{
+                    xtype: 'component',
+                    margin: '0 0 10 25',
+                    html: Ext.String.format(i18n._('This is recommended if the {0} Server is installed behind another firewall with a port forward from the specified hostname/IP that redirects traffic to the {0} Server.'), rpc.companyName)
+                },{
+                    xtype: 'textfield',
+                    margin: '0 0 5 25',
+                    fieldLabel: i18n._('IP/Hostname'),
+                    name: 'publicUrlAddress',
+                    value: this.settings.publicUrlAddress,
+                    allowBlank: false,
+                    width: 400,
+                    blankText: i18n._("You must provide a valid IP Address or hostname."),
+                    disabled: this.settings.publicUrlMethod != "address_and_port"
+                },{
+                    xtype: 'numberfield',
+                    margin: '0 0 5 25',
+                    fieldLabel: i18n._('Port'),
+                    name: 'publicUrlPort',
+                    value: this.settings.publicUrlPort,
+                    allowDecimals: false,
+                    minValue: 0,
+                    allowBlank: false,
+                    width: 210,
+                    blankText: i18n._("You must provide a valid port."),
+                    vtype: 'port',
+                    disabled: this.settings.publicUrlMethod != "address_and_port"
+                }]
             }]
         });
     },

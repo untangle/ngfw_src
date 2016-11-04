@@ -511,7 +511,7 @@ public class Quarantine implements QuarantineNodeView, QuarantineMaintenenceView
     {
         Map<String, String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle");
         I18nUtil i18nUtil = new I18nUtil(i18nMap);
-        String internalHost = UvmContextFactory.context().systemManager().getPublicUrl();
+        String internalHost = UvmContextFactory.context().networkManager().getPublicUrl();
 
         if (internalHost == null) {
             logger.warn("Unable to determine internal interface");
