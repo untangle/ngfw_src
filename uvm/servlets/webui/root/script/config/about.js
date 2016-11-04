@@ -15,7 +15,7 @@ Ext.define('Webui.config.about', {
         this.buildServer();
         this.buildLicenses();
         this.buildLicenseAgreement();
-        
+
         // builds the tab panel with the tabs
         var pageTabs = [this.panelServer, this.panelLicenses, this.panelLicenseAgreement];
         this.buildTabPanel(pageTabs);
@@ -61,7 +61,7 @@ Ext.define('Webui.config.about', {
                     style: 'font-weight: bold;',
                     width: 600,
                     height: 300,
-                    value: i18n._('Build') + ": " + rpc.fullVersionAndRevision + "\n" + 
+                    value: i18n._('Build') + ": " + rpc.fullVersionAndRevision + "\n" +
                         i18n._('Kernel') + ": " + kernelVersion + "\n" +
                         i18n._('History') + ": " + modificationState + "\n" +
                         i18n._('Reboots') + ": " + rebootCount + "\n" +
@@ -74,7 +74,7 @@ Ext.define('Webui.config.about', {
         // if the UID looks valid update the account info from the store
         if ( rpc.serverUID && rpc.serverUID.length == 19 ) {
             Ext.data.JsonP.request({
-                url: rpc.storeUrl + "?" + "action=find_account&uid="+rpc.serverUID,
+                url: Ung.Main.storeUrl + '?action=find_account&uid=' + rpc.serverUID,
                 type: 'GET',
                 success: function(response, opts) {
                     if( response!=null && response.account) {
@@ -107,7 +107,7 @@ Ext.define('Webui.config.about', {
                     Ung.Main.openLegal();
                 }
             }]
-            
+
        });
     },
     buildLicenses: function() {

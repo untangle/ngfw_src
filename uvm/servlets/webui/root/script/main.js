@@ -62,6 +62,8 @@ Ext.define("Ung.Main", {
             }, this), true);
         }
 
+        // non API store URL used for links like: My Account, Forgot Password
+        this.storeUrl = rpc.storeUrl.replace('/api/v1', '/store/open.php');
         this.startApplication();
     },
     startApplication: function () {
@@ -90,9 +92,6 @@ Ext.define("Ung.Main", {
         Ung.VTypes.init(i18n);
         Ext.tip.QuickTipManager.init();
         Ext.on("resize", Ung.Util.resizeWindows);
-        // initialize viewport object
-
-        //this.reportsView = Ext.create("Ung._reports", {});
 
         this.viewport = Ext.create('Ext.container.Viewport', {
             layout: 'border',
@@ -893,7 +892,7 @@ Ext.define("Ung.Main", {
         console.log("Help link:", url);
     },
     openSupportScreen: function () {
-        var url = rpc.storeUrl + "?" + "action=support" + "&" + this.about();
+        var url = Ung.Main.storeUrl + '?action=support&' + this.about();
         window.open(url); // open a new window
         Ung.LicenseLoader.check();
     },
@@ -910,10 +909,10 @@ Ext.define("Ung.Main", {
         }, this);
     },
     getMyAccountLink: function () {
-        return rpc.storeUrl + "?" + "action=my_account" + "&" + this.about();
+        return Ung.Main.storeUrl + '?action=my_account&' + this.about();
     },
     openLibItemStore: function (libItemName) {
-        var url = rpc.storeUrl + "?" + "action=buy" + "&" + "libitem=" + libItemName + "&" + this.about();
+        var url = Ung.Main.storeUrl + '?action=buy&libitem=' + libItemName + '&' + this.about();
         window.open(url);
         console.log("Open Url   :", url);
         Ung.LicenseLoader.check();
