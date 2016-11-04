@@ -367,10 +367,18 @@ public class EventWriterImpl implements Runnable
         java.util.Set<Map.Entry<String,PreparedStatement>> entries = statementCache.entrySet();
 
         /**
+         * Ideally we would write all events in the order that they are logged.
+         * However, since all events of the same type grouped as a batch, we must decide what order to write events by their type.
+         *
+         * We could add a rank by each event type and sort, however the below hack is relatively simple
+         * First write all INSERTS. Then write all UPDATES. We want to write all INSERT type events first because
+         * the UPDATE type events rely on the data being present in the table to update it.
+         * Lastly write SessionMinutesEvents, despite being an INSERT it relies on the data being present and current in sessions.
+         *
          * We do three iterations on the list
-         * 1) write all inserts - we must write these first because updates will update existing entries
-         * 2) write all updates - we write these second because they update the previously inserted values
-         * 3) write all SessionMinuteEvents - write these last because despite being inserts they refer to inserted and update values in the sessions table
+         * 1) write inserts type events - we must write these first because updates will update existing entries
+         * 2) write update type events - we write these second because they update the previously inserted values
+         * 3) write SessionMinuteEvents - write these last because despite being inserts they refer to inserted and update values in the sessions table
          */
         for (int i=0;i<3;i++) {
             for (Iterator<Map.Entry<String,PreparedStatement>> j = entries.iterator(); j.hasNext(); ) {

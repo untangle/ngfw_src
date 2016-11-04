@@ -52,8 +52,6 @@ public interface SystemManager
 
     void setTimeSource();
 
-    String getPublicUrl();
-
     boolean downloadUpgrades();
 
     org.json.JSONObject getDownloadStatus();

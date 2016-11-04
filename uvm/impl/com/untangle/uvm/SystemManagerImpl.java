@@ -393,44 +393,6 @@ public class SystemManagerImpl implements SystemManager
         return 0;
     }
 
-    /**
-     * @return the public url for the box, this is the address (may be hostname or ip address)
-     */
-    public String getPublicUrl()
-    {
-        String httpsPortStr = Integer.toString( UvmContextFactory.context().networkManager().getNetworkSettings().getHttpsPort() );
-        String primaryAddressStr = "unconfigured.example.com";
-        
-        if ( SystemSettings.PUBLIC_URL_EXTERNAL_IP.equals( this.settings.getPublicUrlMethod() ) ) {
-            InetAddress primaryAddress = UvmContextFactory.context().networkManager().getFirstWanAddress();
-            if ( primaryAddress == null ) {
-                logger.warn("No WAN IP found");
-            } else {
-                primaryAddressStr = primaryAddress.getHostAddress();
-            }
-        } else if ( SystemSettings.PUBLIC_URL_HOSTNAME.equals( this.settings.getPublicUrlMethod() ) ) {
-            if ( UvmContextFactory.context().networkManager().getNetworkSettings().getHostName() == null ) {
-                logger.warn("No hostname is configured");
-            } else {
-                primaryAddressStr = UvmContextFactory.context().networkManager().getNetworkSettings().getHostName();
-                String domainName = UvmContextFactory.context().networkManager().getNetworkSettings().getDomainName();
-                if ( domainName != null )
-                    primaryAddressStr = primaryAddressStr + "." + domainName;
-            }
-        } else if ( SystemSettings.PUBLIC_URL_ADDRESS_AND_PORT.equals( this.settings.getPublicUrlMethod() ) ) {
-            if ( this.settings.getPublicUrlAddress() == null ) {
-                logger.warn("No public address configured");
-            } else {
-                primaryAddressStr = this.settings.getPublicUrlAddress();
-                httpsPortStr = Integer.toString( this.settings.getPublicUrlPort() );
-            }
-        } else {
-            logger.warn("Unknown public URL method: " + this.settings.getPublicUrlMethod() );
-        }
-        
-        return primaryAddressStr + ":" + httpsPortStr;
-    }
-
     public boolean downloadUpgrades()
     {
         LinkedList<String> downloadUrls = new LinkedList<String>();
@@ -557,10 +519,6 @@ public class SystemManagerImpl implements SystemManager
     {
         SystemSettings newSettings = new SystemSettings();
         newSettings.setVersion(3);
-
-        newSettings.setPublicUrlMethod( SystemSettings.PUBLIC_URL_EXTERNAL_IP );
-        newSettings.setPublicUrlAddress( "hostname.example.com" );
-        newSettings.setPublicUrlPort( 443 );
 
         SnmpSettings snmpSettings = new SnmpSettings();
         snmpSettings.setEnabled(false);
