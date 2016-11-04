@@ -77,16 +77,16 @@ Ext.define("Ung.I18N", {
     },
     // formats a date
     dateFormat: function(v) {
-        if (v==null) {
+        if (!v || typeof v === 'string') {
             return "";
         }
         var date = new Date();
         date.setTime((v.time == null ? v+this.timeoffset : v.time+this.timeoffset));
         return Ext.util.Format.date(date, this.map['date_fmt']);
     },
-    // formats a timestamp
+    // formats a timestamp - expects a timestamp integer or an onject literal with 'time' property
     timestampFormat: function(v) {
-        if (v==null) {
+        if (!v || typeof v === 'string') {
             return "";
         }
         var date = new Date();
