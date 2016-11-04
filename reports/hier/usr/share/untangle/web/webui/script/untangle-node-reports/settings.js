@@ -16,7 +16,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
             ["TEXT", i18n._("Text")],
             ["PIE_GRAPH", i18n._("Pie Graph")],
             ["TIME_GRAPH", i18n._("Time Graph")],
-            ["TIME_GRAPH_DYNAMIC", i18n._("Time Graph Dynamic")], 
+            ["TIME_GRAPH_DYNAMIC", i18n._("Time Graph Dynamic")],
             ["EVENT_LIST", i18n._("Event List")]
     ]),
     emailChartTypes: ["TEXT", "PIE_GRAPH", "TIME_GRAPH", "TIME_GRAPH_DYNAMIC"],
@@ -38,10 +38,16 @@ Ext.define('Webui.untangle-node-reports.settings', {
 
         this.buildTabPanel(panels);
 
-        this.buildAvailableAppCategories();
-
         this.callParent(arguments);
     },
+
+    listeners: {
+        beforeshow: function () {
+            this.buildAvailableAppCategories();
+        }
+    },
+
+
     /*
      * From array of report identifiers, return comma separated string of report titles.
      */
@@ -55,13 +61,13 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 if(value.list[i] == entry.uniqueId){
                     reportNames.push(entry.title);
                 }else if(
-                    (value.list.indexOf("_all") > -1) && 
+                    (value.list.indexOf("_all") > -1) &&
                     (allAdded == false)){
                     /* Special case: _all */
                     reportNames.push(i18n._("All reports"));
                     allAdded = true;
                 }else if(
-                    (value.list.indexOf("_type=" + entry.type) > -1) && 
+                    (value.list.indexOf("_type=" + entry.type) > -1) &&
                     (typeAdded.indexOf(entry.type) == -1)){
                     /* Matching type */
                     reportNames.push(i18n._("Type") + ":" + this.chartTypeMap[entry.type]);
@@ -83,14 +89,14 @@ Ext.define('Webui.untangle-node-reports.settings', {
         return this.chartTypeMap[value] ? this.chartTypeMap[value] : value;
     },
     viewRenderer: function (value, metaData, record) {
-        if ((this.configCategories.indexOf(record.getData().category) < 0) && 
+        if ((this.configCategories.indexOf(record.getData().category) < 0) &&
             (this.appCategories.indexOf(record.getData().category) < 0)) {
             return '<div style="font-size: 10px; line-height: 1; text-align: center; color: coral;">not installed</div>';
         }
         return '<div style="text-align: center;"><i role="button" class="x-action-col-icon x-action-col-0 material-icons" style="font-size: 16px;">visibility</i></div>';
     },
     chartRenderer: function (value) {
-        if ((this.configCategories.indexOf(value) < 0) && 
+        if ((this.configCategories.indexOf(value) < 0) &&
             (this.appCategories.indexOf(value) < 0)) {
             return value + ' (<span style="color: coral;">' + i18n._('not installed') + '</span>)';
         }
@@ -99,23 +105,14 @@ Ext.define('Webui.untangle-node-reports.settings', {
     /*
      * Build array of category names based on whether applications are installed.
      */
-    buildAvailableAppCategories: function(){
-        rpc.reportsManager.getUnavailableApplicationsMap(Ext.bind(function (results,exception){
+    buildAvailableAppCategories: function() {
+        this.appCategories = [];
+        rpc.reportsManager.getCurrentApplications(Ext.bind(function (result, exception) {
             if (Ung.Util.handleException(exception)) {
                 return;
             }
-            var category;
-            var unavailableCategories = [];
-            for(category in results.map){
-                unavailableCategories.push(category);
-            }
-            for(var i = 0; i < this.settings["reportEntries"].list.length; i++){
-                category = this.settings["reportEntries"].list[i].category;
-                if((unavailableCategories.indexOf(category) == -1) &&
-                    (this.appCategories.indexOf(category) == -1) &&
-                    (this.configCategories.indexOf(category) == -1)){
-                    this.appCategories.push(category);
-                }
+            for (var i = 0; i < result.list.length; i++) {
+                this.appCategories.push(result.list[i].displayName);
             }
         }, this));
     },
@@ -302,8 +299,8 @@ Ext.define('Webui.untangle-node-reports.settings', {
                         dataIndex: "onlineAccess",
                         width: 100,
                         resizable: false
-                    }, 
-                    changePasswordColumn 
+                    },
+                    changePasswordColumn
                     ]
                 })]
             }]
@@ -1225,7 +1222,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
                     var entry = settings["reportEntries"].list[i];
 
 
-                    if((categories.indexOf(entry.category) != -1) && 
+                    if((categories.indexOf(entry.category) != -1) &&
                         (this.settingsCmp.emailChartTypes.indexOf(entry.type) != -1)){
 
                         var enabled = false;
