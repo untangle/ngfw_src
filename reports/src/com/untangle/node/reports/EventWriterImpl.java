@@ -365,7 +365,14 @@ public class EventWriterImpl implements Runnable
         int statementCount = statementCache.size();
         logger.debug("Executing PreparedStatement(s)... (statement count: " + statementCache.size() + ")");
         java.util.Set<Map.Entry<String,PreparedStatement>> entries = statementCache.entrySet();
-        for (int i=0;i<2;i++) {
+
+        /**
+         * We do three iterations on the list
+         * 1) write all inserts - we must write these first because updates will update existing entries
+         * 2) write all updates - we write these second because they update the previously inserted values
+         * 3) write all SessionMinuteEvents - write these last because despite being inserts they refer to inserted and update values in the sessions table
+         */
+        for (int i=0;i<3;i++) {
             for (Iterator<Map.Entry<String,PreparedStatement>> j = entries.iterator(); j.hasNext(); ) {
                 Map.Entry<String,PreparedStatement> entry = j.next();
 
@@ -379,9 +386,25 @@ public class EventWriterImpl implements Runnable
                     logger.warn("Invalid Key: " + sql);
 
                 // only handle INSERTS on first 
-                if ( i == 0 && !sql.substring(0,10).contains("INSERT") ) continue;
+                if ( i == 0 ) {
+                    if ( "com.untangle.uvm.node.SessionMinuteEvent".equals(className) ) {
+                        continue;
+                    }
+                    if (!sql.substring(0,10).contains("INSERT") ) {
+                        continue;
+                    }
+                }
                 // only handle UPDATES on second 
-                if ( i == 1 && !sql.substring(0,10).contains("UPDATE") ) continue;
+                if ( i == 1 ) {
+                    if ( !sql.substring(0,10).contains("UPDATE") )
+                        continue;
+                }
+                // only handle SessionMinuteEvent on third
+                if ( i == 2 ) {
+                    if ( !"com.untangle.uvm.node.SessionMinuteEvent".equals(className) ) {
+                        logger.warn("Unknown event in third run: " + className);
+                    }
+                }
                 
                 // remove it from the list
                 j.remove();
