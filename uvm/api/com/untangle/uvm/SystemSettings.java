@@ -20,17 +20,9 @@ public class SystemSettings implements Serializable, JSONString
     private int version = 3;
     private int httpsPort;
 
-    public static final String PUBLIC_URL_EXTERNAL_IP = "external";
-    public static final String PUBLIC_URL_HOSTNAME = "hostname";
-    public static final String PUBLIC_URL_ADDRESS_AND_PORT = "address_and_port";
-    
     private boolean supportEnabled = true;
     private boolean cloudEnabled = true;
     private boolean httpAdministrationAllowed = true;
-
-    private String publicUrlMethod;
-    private String publicUrlAddress;
-    private int publicUrlPort;
 
     private boolean autoUpgrade;
     private DayOfWeekMatcher autoUpgradeDays;
@@ -76,24 +68,6 @@ public class SystemSettings implements Serializable, JSONString
      */
     public boolean getSupportEnabled() { return this.supportEnabled; }
     public void setSupportEnabled( boolean newValue ) { this.supportEnabled = newValue; }
-
-    /**
-     * This determines the method used to calculate the publicy available URL used to reach Untangle resources
-     */
-    public String getPublicUrlMethod() { return this.publicUrlMethod; }
-    public void setPublicUrlMethod( String newValue ) { this.publicUrlMethod = newValue; }
-
-    /**
-     * This stores the hostname/IP used to reach Untangle publicly (if specified)
-     */
-    public String getPublicUrlAddress() { return this.publicUrlAddress; }
-    public void setPublicUrlAddress( String newValue ) { this.publicUrlAddress = newValue; }
-
-    /**
-     * This stores the port used to reach Untangle publicly (if specified)
-     */
-    public int getPublicUrlPort() { return this.publicUrlPort; }
-    public void setPublicUrlPort( int newValue ) { this.publicUrlPort = newValue; }
 
     /**
      * The SMNP settings
@@ -148,4 +122,20 @@ public class SystemSettings implements Serializable, JSONString
     public void setWebCertificate(String newValue) { this.webCertificate = newValue; }
     public void setMailCertificate(String newValue) { this.mailCertificate = newValue; }
     public void setIpsecCertificate(String newValue) { this.ipsecCertificate = newValue; }
+
+    /* DEPRECATED in 12.1 - moved to network settings */
+    /* DEPRECATED in 12.1 - moved to network settings */
+    /* DEPRECATED in 12.1 - moved to network settings */
+    private String publicUrlMethod;
+    private String publicUrlAddress;
+    private int publicUrlPort = 443;
+    public String deprecated_getPublicUrlMethod() { return this.publicUrlMethod; }
+    public void setPublicUrlMethod( String newValue ) { this.publicUrlMethod = newValue; }
+    public String deprecated_getPublicUrlAddress() { return this.publicUrlAddress; }
+    public void setPublicUrlAddress( String newValue ) { this.publicUrlAddress = newValue; }
+    public int deprecated_getPublicUrlPort() { return this.publicUrlPort; }
+    public void setPublicUrlPort( int newValue ) { this.publicUrlPort = newValue; }
+    /* DEPRECATED in 12.1 - moved to network settings */
+    /* DEPRECATED in 12.1 - moved to network settings */
+    /* DEPRECATED in 12.1 - moved to network settings */
 }

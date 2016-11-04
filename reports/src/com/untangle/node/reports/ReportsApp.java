@@ -191,7 +191,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         
         synchronized (this) {
             FixedReports fixedReports = new FixedReports();
-            String url = "https://" + UvmContextFactory.context().systemManager().getPublicUrl() + "/reports/";
+            String url = "https://" + UvmContextFactory.context().networkManager().getPublicUrl() + "/reports/";
             for( EmailProfile emailProfile : settings.getEmailProfiles() ){
                 List<ReportsUser> users = new LinkedList<ReportsUser>();
                 for ( ReportsUser user : settings.getReportsUsers() ) {

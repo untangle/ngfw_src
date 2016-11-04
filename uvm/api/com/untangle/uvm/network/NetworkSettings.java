@@ -22,6 +22,10 @@ import com.untangle.uvm.network.StaticRoute;
 @SuppressWarnings("serial")
 public class NetworkSettings implements Serializable, JSONString
 {
+    public static final String PUBLIC_URL_EXTERNAL_IP = "external";
+    public static final String PUBLIC_URL_HOSTNAME = "hostname";
+    public static final String PUBLIC_URL_ADDRESS_AND_PORT = "address_and_port";
+
     private Integer version;
 
     private List<InterfaceSettings> interfaces = null;
@@ -65,6 +69,10 @@ public class NetworkSettings implements Serializable, JSONString
     private DnsSettings dnsSettings;
 
     private String dnsmasqOptions;
+
+    private String  publicUrlMethod;
+    private String  publicUrlAddress;
+    private Integer publicUrlPort;
     
     public NetworkSettings() { }
 
@@ -176,6 +184,24 @@ public class NetworkSettings implements Serializable, JSONString
     public boolean getVlansEnabled() { return this.vlansEnabled; }
     public void setVlansEnabled( boolean newValue ) { this.vlansEnabled = newValue; }
     
+    /**
+     * This determines the method used to calculate the publicy available URL used to reach Untangle resources
+     */
+    public String getPublicUrlMethod() { return this.publicUrlMethod; }
+    public void setPublicUrlMethod( String newValue ) { this.publicUrlMethod = newValue; }
+
+    /**
+     * This stores the hostname/IP used to reach Untangle publicly (if specified)
+     */
+    public String getPublicUrlAddress() { return this.publicUrlAddress; }
+    public void setPublicUrlAddress( String newValue ) { this.publicUrlAddress = newValue; }
+
+    /**
+     * This stores the port used to reach Untangle publicly (if specified)
+     */
+    public Integer getPublicUrlPort() { return this.publicUrlPort; }
+    public void setPublicUrlPort( Integer newValue ) { this.publicUrlPort = newValue; }
+
     public String toJSONString()
     {
         JSONObject jO = new JSONObject(this);
