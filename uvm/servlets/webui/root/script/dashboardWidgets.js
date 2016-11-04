@@ -692,9 +692,9 @@ Ext.define('Ung.dashboard.NetworkLayout', {
             '<span class="up">{tx} kB/s</span>' +
             '<span class="down">{rx} kB/s</span>' +
             '</div>' +
+            '<br/><span class="connection ext"></span>' +
             '</div>' +
             '</tpl>' +
-            '<br/><span class="connection ext"></span>' +
             '</div>' +
             '</div>' +
             '<div class="wire"></div>' +
