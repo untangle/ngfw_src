@@ -130,6 +130,12 @@ def createReportsUser(profile_email=testEmailAddress):
             "emailAddress": profile_email,
             "emailSummaries": True,
             "emailAlerts": True,
+            "emailProfileIds": {
+                "javaClass": "java.util.LinkedList",
+                "list": [
+                    1
+                ]
+            },
             "javaClass": "com.untangle.node.reports.ReportsUser",
             "onlineAccess": False,
             "passwordHashBase64": ""
