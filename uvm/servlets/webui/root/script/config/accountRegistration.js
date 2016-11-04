@@ -53,9 +53,7 @@ Ext.define('Webui.config.accountRegistration', {
 
     initComponent: function () {
         this.cloudManager = rpc.jsonrpc.UvmContext.cloudManager();
-        this.forgotPasswordUrl = (rpc.storeUrl.indexOf('develop') > 0 ? 'https://develop.untangle.com' : 'https://untangle.com') + '/shop/account/?recover';
-
-        this.storeApiUrl = rpc.storeUrl.replace('/store/open.php', '/api/v1');
+        this.forgotPasswordUrl = Ung.Main.storeUrl + '?action=forgot_password&' + Ung.Main.about();
         this.items = [{
             xtype: 'container',
             defaults: {
