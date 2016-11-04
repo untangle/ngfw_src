@@ -27,7 +27,6 @@ import java.net.URLEncoder;
 
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
-import java.nio.file.Path;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -61,7 +60,10 @@ public class FixedReports
     public static final String REPORTS_FIXED_TEMPLATE_FILENAME =  System.getProperty("uvm.lib.dir") + "/untangle-node-reports/templates/reports.html";
         
     private StringBuilder messageText = null;
-    private StringBuilder messageHtml = null;
+
+    private StringBuilder currentInputLine = null;
+    private StringBuilder currentOutputLine = null;
+
     private List<Map<MailSender.MessagePartsField,String>> messageParts;
     private WebBrowser webbrowser = null;
     private Date startDate = null;
@@ -69,6 +71,12 @@ public class FixedReports
 
     I18nUtil i18nUtil = null;
     private static final DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+
+    public enum ParsePass{
+        PRE,
+        POST
+    }
+    ParsePass currentParsePass;
 
     public enum Tag {
         _SYSTEM,
@@ -98,6 +106,7 @@ public class FixedReports
     private static final Map<Filter, Pattern> FilterPatterns;
     private static final Pattern NonGreedyVariablePattern;
     private static final Pattern NumericOnlyPattern;
+    private static final Map<ParsePass, String> ParsePassActiveVariables;
 
     static {
         TagPatterns = new HashMap<Tag, Pattern>();
@@ -126,6 +135,9 @@ public class FixedReports
         NonGreedyVariablePattern = Pattern.compile("\\{\\{\\s*(.+?)\\s*\\}\\}");
 
         NumericOnlyPattern = Pattern.compile("-?\\d+(.\\d+)?");
+
+        ParsePassActiveVariables = new HashMap<ParsePass, String>();
+        ParsePassActiveVariables.put(ParsePass.POST, "url");
     }
 
     private static final Pattern Conditional = Pattern.compile("(.+?)\\s*(\\=\\=|\\!\\=)\\s*(.+)");
@@ -327,8 +339,9 @@ public class FixedReports
     }
 
     /*
+     * Create and send fixed reports
      */
-    public void send(ArrayList<String> recipientsList, String reportsUrl)
+    public void generate(EmailProfile emailProfile, List<ReportsUser> users, String reportsUrl)
     {
         webbrowser = new WebBrowser(1, 5, 250, 250, 8);
 
@@ -336,41 +349,33 @@ public class FixedReports
         Map<String, String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle");
         i18nUtil = new I18nUtil(i18nMap);
 
-        parseContextStack = new ArrayList<parseContext>();
-        parseContext context = new parseContext();
-        parseContextStack.add(context);
-
         messageParts = new ArrayList<Map<MailSender.MessagePartsField,String>>();
-
-        Calendar c = Calendar.getInstance();
-        c.add(Calendar.DATE, - 1);
-        c.set(Calendar.HOUR_OF_DAY, 0);
-        c.set(Calendar.MINUTE, 0);
-        c.set(Calendar.SECOND, 0);
-        c.set(Calendar.MILLISECOND, 0);
-        startDate = c.getTime();
-        c.add(Calendar.DAY_OF_MONTH, 1);
-        endDate = c.getTime();
-
-        context.addVariable(Tag._SYSTEM, "startDate", startDate);
-        context.addVariable(Tag._SYSTEM, "endDate", endDate);
-        context.addVariable(Tag._SYSTEM, "title", I18nUtil.marktr("Daily Report") + ": " + dateFormatter.format(startDate));
-        context.addVariable(Tag._SYSTEM, "url", reportsUrl);
-
         messageText = new StringBuilder();
-        messageHtml = new StringBuilder();
+        messageText.append(I18nUtil.marktr("HTML Report enclosed.") + "\n\n");
 
+        // Determine users lists with/without online access for url inclusion
+        List<String> recipientsWithoutOnlineAccess = new ArrayList<String>();
+        List<String> recipientsWithOnlineAccess = new ArrayList<String>();
+        for(ReportsUser user: users){
+            if(user.getOnlineAccess() == true){
+                recipientsWithOnlineAccess.add(user.getEmailAddress());
+            }else{
+                recipientsWithoutOnlineAccess.add(user.getEmailAddress());
+            }
+        }
+
+        List<StringBuilder> inputLines = new ArrayList<StringBuilder>();
+        List<StringBuilder> outputLines = new ArrayList<StringBuilder>();
+
+        // Read template to input
         BufferedReader reader = null;
         try {
             reader = new BufferedReader(new InputStreamReader(new FileInputStream(fixedReportTemplateFile), "UTF-8"));
 
-            messageText.append(I18nUtil.marktr("HTML Report enclosed.") + "\n\n");
-
             String line;
             while ((line = reader.readLine()) != null) {
-                parse(line);
+                inputLines.add(new StringBuilder(line));
             }
-            messageHtml.append("\n\n");
 
         } catch (IOException e) {
             logger.warn("IOException: ",e);
@@ -385,6 +390,53 @@ public class FixedReports
             }
         }
 
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.DATE, - 1);
+        c.set(Calendar.HOUR_OF_DAY, 0);
+        c.set(Calendar.MINUTE, 0);
+        c.set(Calendar.SECOND, 0);
+        c.set(Calendar.MILLISECOND, 0);
+        startDate = c.getTime();
+        c.add(Calendar.DAY_OF_MONTH, 1);
+        endDate = c.getTime();
+
+        Map<String,Object> variableKeyValues = new HashMap<String, Object>();
+        variableKeyValues.put("startDate", startDate);
+        variableKeyValues.put("endDate", endDate);
+        variableKeyValues.put("title", emailProfile.getTitle() + ": " + dateFormatter.format(startDate));
+
+        currentParsePass = ParsePass.PRE;
+        parseBuffer(inputLines, outputLines, variableKeyValues);
+        inputLines = outputLines;
+        logger.warn(inputLines.size());
+
+        currentParsePass = ParsePass.POST;
+        if(recipientsWithoutOnlineAccess.size() > 0 ){
+            outputLines = new ArrayList<StringBuilder>();
+            parseBuffer(inputLines, outputLines, variableKeyValues);
+            sendEmail(recipientsWithoutOnlineAccess, outputLines);
+        }
+
+        if(recipientsWithOnlineAccess.size() > 0 ){
+            variableKeyValues.put("url", reportsUrl);
+            outputLines = new ArrayList<StringBuilder>();
+            parseBuffer(inputLines, outputLines, variableKeyValues);
+            sendEmail(recipientsWithOnlineAccess, outputLines);
+        }
+
+        webbrowser.close();
+    }
+
+    /*
+     * Send report email to recipients
+     */
+    void sendEmail(List<String> recipientsList, List<StringBuilder> htmlOutput){
+        StringBuilder messageHtml = new StringBuilder();
+        for(StringBuilder s: htmlOutput){
+            messageHtml.append(s + "\n");
+        }
+        messageHtml.append("\n\n");
+
         String[] recipients = new String[recipientsList.size()];
         recipients = recipientsList.toArray(recipients);
 
@@ -394,19 +446,44 @@ public class FixedReports
 
         String subject = getVariable(new selector("title")).toString() + " [" + fullName + "]";
 
+        List<Map<MailSender.MessagePartsField,String>> mp = new ArrayList<Map<MailSender.MessagePartsField,String>>();
+        for(int i = 0; i < messageParts.size(); i++ ){
+            mp.add(messageParts.get(i));
+        }
+
         Map<MailSender.MessagePartsField,String> part = new HashMap<MailSender.MessagePartsField,String>();
         part.put(MailSender.MessagePartsField.TEXT, messageText.toString());
-        messageParts.add(part);
+        mp.add(part);
         part = new HashMap<MailSender.MessagePartsField,String>();
         part.put(MailSender.MessagePartsField.HTML, messageHtml.toString());
-        messageParts.add(part);
+        mp.add(part);
 
-        UvmContextFactory.context().mailSender().sendMessage(recipients, subject, messageParts);
+        UvmContextFactory.context().mailSender().sendMessage(recipients, subject, mp);
 
-        webbrowser.close();
     }
 
     /*
+     * Process the current buffer in a new context instance.
+     */
+    void parseBuffer(List<StringBuilder> inputLines, List<StringBuilder> outputLines, Map<String,Object> variableKeyValues){
+        parseContextStack = new ArrayList<parseContext>();
+        parseContext context = new parseContext();
+        parseContextStack.add(context);
+
+        for(Map.Entry<String, Object> variable : variableKeyValues.entrySet()) {
+            context.addVariable(Tag._SYSTEM, variable.getKey(), variable.getValue());
+        }
+ 
+        for( StringBuilder line : inputLines ){
+            currentInputLine = line;
+            currentOutputLine = new StringBuilder();
+            parse(line.toString());
+            outputLines.add(currentOutputLine);
+        }
+    }
+
+    /*
+     * Process buffer within current context stack.
      */
     void parse(String buffer)
     {
@@ -461,11 +538,12 @@ public class FixedReports
                             case VARIABLE:
                                 if(parseContext.allowOutput && 
                                     parseContext.ignoreLine == false && 
-                                    parseContext.buildLoopBuffer == false){
+                                    parseContext.buildLoopBuffer == false && 
+                                    isVariableParseActive(tag.group(1).trim()) != false){
                                     try{
-                                        messageHtml.append(line.substring(0,line.indexOf(tag.group())));
+                                        currentOutputLine.append(line.substring(0,line.indexOf(tag.group())));
                                         insertVariable(line, new selector(tag.group(1).trim()));
-                                        messageHtml.append(line.substring(line.indexOf(tag.group()) + tag.group().length()) + "\n");
+                                        currentOutputLine.append(line.substring(line.indexOf(tag.group()) + tag.group().length()));
                                     }catch(Exception e){
                                         logger.warn("Unable to insert variable:" + tag.group(1).trim() );
                                     }
@@ -504,22 +582,29 @@ public class FixedReports
                                 break;
                             case IF:
                                 if( parseContext.buildLoopBuffer == false){
+                                    // See what conditional match is; if null consider it a mode delay
                                     parseContext.pushConditional(parseConditional(tag.group(1)));
-                                    parseContext.allowOutput = parseContext.getCurrentConditionalMatch(true);
-                                    parseContext.ignoreLine = true;
+                                    if(parseContext.getCurrentConditionalMatch(null) == false){
+                                        parseContext.allowOutput = parseContext.getCurrentConditionalMatch(true);
+                                        parseContext.ignoreLine = true;
+                                    }
                                 }
                                 break;
                             case ELSE:
                                 if( parseContext.buildLoopBuffer == false){
-                                    parseContext.allowOutput = parseContext.getCurrentConditionalMatch(false);
-                                    parseContext.ignoreLine = true;
+                                    if(parseContext.getCurrentConditionalMatch(null) == false){
+                                        parseContext.allowOutput = parseContext.getCurrentConditionalMatch(false);
+                                        parseContext.ignoreLine = true;
+                                    }
                                 }
                                 break;
                             case ENDIF:
                                 if( parseContext.buildLoopBuffer == false){
-                                    parseContext.ignoreLine = true;
-                                    parseContext.popConditional();
-                                    parseContext.allowOutput = parseContext.getCurrentConditionalMatch(true);
+                                    if(parseContext.getCurrentConditionalMatch(null) == false){
+                                        parseContext.ignoreLine = true;
+                                        parseContext.popConditional();
+                                        parseContext.allowOutput = parseContext.getCurrentConditionalMatch(true);
+                                    }
                                 }
                                 break;
 
@@ -572,11 +657,25 @@ public class FixedReports
                     parseContext.addToBuffer(line + "\n");
                 }else{
                     if(!parseContext.getInComment()){
-                        messageHtml.append(line+"\n");
+                        currentOutputLine.append(line);
                     }
                 }
             }
         }
+    }
+
+    /*
+     * Determine if variable is active in this pass.
+     * If defined and not in this pass, return false. Return true otherwise.
+     */
+    private Boolean isVariableParseActive(String name){
+        Boolean active = true;
+        for(Map.Entry<ParsePass, String> ParsePassVariable : ParsePassActiveVariables.entrySet()) {
+            if(ParsePassVariable.getValue().equals(name)){
+                active = (ParsePassVariable.getKey() == currentParsePass);
+            }
+        }
+        return active;
     }
 
     /*
@@ -594,6 +693,7 @@ public class FixedReports
         Matcher tag = Conditional.matcher(condition);
         while(tag.find()){
             left = tag.group(1);
+
             operation = tag.group(2);
             right = tag.group(3);
 
@@ -609,8 +709,11 @@ public class FixedReports
             }
 
             List<String> fields = new ArrayList<String>(Arrays.asList(left.split("\\.")));
-            String object = fields.get(0);
             fields.remove(0);
+            if(isVariableParseActive(left) == false){
+                // Variable non-active for this pass
+                return null;
+            }
             selector collectionVariableSelector = new selector(left);
             Object leftVariable = getVariable(collectionVariableSelector);
 
@@ -651,7 +754,7 @@ public class FixedReports
         }else{
             Object variable = getVariable(variableSelector);
             try{
-                messageHtml.append(variable.toString());
+                currentOutputLine.append(variable.toString());
             }catch(Exception e){
                 logger.warn("Unable to insert variable:" + variableSelector );
             }
@@ -698,7 +801,7 @@ public class FixedReports
             attachment.put(MailSender.MessagePartsField.FILENAME, filename);
             if(id != null){
                 attachment.put(MailSender.MessagePartsField.CID, id);
-                messageHtml.append("cid:" + id);
+                currentOutputLine.append("cid:" + id);
             }
             messageParts.add(attachment);
         }

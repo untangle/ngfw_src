@@ -187,56 +187,21 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
 
     public void runFixedReport() throws Exception
     {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(new Date()); // now
-        cal.add(Calendar.DATE, 1); // tomorrow
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-        String ts = df.format(cal.getTime());
-
-        logger.info("Running fixed report...");
-        boolean tryAgain = false;
-        int tries = 0;
-
         flushEvents();
         
         synchronized (this) {
-            ArrayList<String> fixedReportAddressesWithUrl = new ArrayList<String>();
-            ArrayList<String> fixedReportAddressesWithoutUrl = new ArrayList<String>();
-            if ( settings.getReportsUsers() != null) {
+            FixedReports fixedReports = new FixedReports();
+            String url = "https://" + UvmContextFactory.context().systemManager().getPublicUrl() + "/reports/";
+            for( EmailProfile emailProfile : settings.getEmailProfiles() ){
+                List<ReportsUser> users = new LinkedList<ReportsUser>();
                 for ( ReportsUser user : settings.getReportsUsers() ) {
-                    if ( user.getEmailAddress() == null || "".equals( user.getEmailAddress() ) )
-                        continue;
-                    if ( ! user.getEmailSummaries() )
-                        continue;
-
-                    if (user.getOnlineAccess()) {
-                        fixedReportAddressesWithUrl.add(user.getEmailAddress());
-                    } else {
-                        fixedReportAddressesWithoutUrl.add(user.getEmailAddress());
+                    if( user.getEmailSummaries() && user.getEmailProfileIds().contains(emailProfile.getProfileId()) ){
+                        users.add(user);
                     }
                 }
-            }
-            if ( UvmContextFactory.context().adminManager().getSettings().getUsers() != null ) {
-                for ( AdminUserSettings admin : UvmContextFactory.context().adminManager().getSettings().getUsers() ) {
-                    if ( admin.getEmailAddress() == null || "".equals( admin.getEmailAddress() ) )
-                        continue;
-                    if ( ! admin.getEmailSummaries() )
-                        continue;
-                    if ( admin.getEmailSummaries() )
-                        fixedReportAddressesWithUrl.add(admin.getEmailAddress());
+                if( users.size() > 0){
+                    fixedReports.generate(emailProfile, users, url);
                 }
-            }
-            
-            FixedReports fixedReports = new FixedReports();
-            if (fixedReportAddressesWithoutUrl.size() > 0) {
-                for ( String address : fixedReportAddressesWithoutUrl )
-                    logger.info("Sending Summary Reports: (no link)" + address);
-                fixedReports.send(fixedReportAddressesWithoutUrl, "");
-            }
-            if (fixedReportAddressesWithUrl.size() > 0) {
-                for ( String address : fixedReportAddressesWithUrl )
-                    logger.info("Sending Summary Reports (with link): " + address);
-                fixedReports.send(fixedReportAddressesWithUrl, "https://" + UvmContextFactory.context().systemManager().getPublicUrl() + "/reports/");
             }
         }        
     }
