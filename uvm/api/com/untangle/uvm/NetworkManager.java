@@ -46,6 +46,8 @@ public interface NetworkManager
 
     boolean isVrrpMaster( int interfaceId );
 
+    boolean isWanInterface( int interfaceId );
+
     List<Integer> getWirelessChannels( String systemDev );
 
     String getUpnpManager(String command, String arguments);

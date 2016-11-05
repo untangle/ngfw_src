@@ -58,6 +58,8 @@ CREATE TABLE reports.sessions (
         username text,
         policy_id int2,
         policy_rule_id int2,
+        local_addr inet,
+        remote_addr inet,
         c_client_addr inet,
         c_server_addr inet,
         c_server_port int4,
@@ -122,8 +124,10 @@ CREATE TABLE reports.sessions (
         sql_helper.add_column('sessions','server_latitude','real') # 12.1
         sql_helper.add_column('sessions','server_longitude','real') # 12.1
 
-        sql_helper.drop_column('sessions','shield_blocked') # 13.0
-        
+        sql_helper.add_column('sessions','local_addr','inet') # 12.2
+        sql_helper.add_column('sessions','remote_addr','inet') # 12.2
+        sql_helper.drop_column('sessions','shield_blocked') # 12.2
+
     @sql_helper.print_timing
     def __build_session_minutes_table( self ):
         sql_helper.create_table("""\
@@ -142,6 +146,8 @@ CREATE TABLE reports.session_minutes (
         username text,
         policy_id int2,
         policy_rule_id int2,
+        local_addr inet,
+        remote_addr inet,
         c_client_addr inet,
         c_server_addr inet,
         c_server_port int4,
@@ -192,7 +198,9 @@ CREATE TABLE reports.session_minutes (
                                  "server_intf",
                                  "application_control_application"])
 
-        sql_helper.drop_column('session_minutes','shield_blocked') # 13.0
+        sql_helper.add_column('session_minutes','local_addr','inet') # 12.2
+        sql_helper.add_column('session_minutes','remote_addr','inet') # 12.2
+        sql_helper.drop_column('session_minutes','shield_blocked') # 12.2
         
 
     @sql_helper.print_timing

@@ -34,7 +34,6 @@ import com.untangle.uvm.node.SessionStatsEvent;
 import com.untangle.uvm.node.PolicyManager;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.node.HostnameLookup;
-import com.untangle.uvm.network.InterfaceSettings;
 
 /**
  * Helper class for the IP session hooks.
@@ -148,9 +147,7 @@ public abstract class NetcapHook implements Runnable
             String hostname = null;
 
             if ( hostEntry == null ) {
-                /* if its not in the host table and is a non-WAN client, create a host table entry */
-                InterfaceSettings intfSettings = UvmContextFactory.context().networkManager().findInterfaceId( netcapSession.clientSide().interfaceId() );
-                if ( intfSettings != null && ! intfSettings.getIsWan() ) {
+                if ( ! UvmContextFactory.context().networkManager().isWanInterface( clientIntf ) ) {
                     hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( clientAddr, true ); /* create/get host */
                 }
                 /* include OpenVPN, L2TP, Xauth, and GRE clients in host table */
@@ -267,9 +264,16 @@ public abstract class NetcapHook implements Runnable
             sessionEvent.setSServerAddr( serverSide.getServerAddr() );
             sessionEvent.setSServerPort( serverSide.getServerPort() );
 
+            if ( UvmContextFactory.context().networkManager().isWanInterface( clientIntf ) ) {
+                sessionEvent.setLocalAddr( serverSide.getServerAddr() );
+                sessionEvent.setRemoteAddr( clientSide.getClientAddr() );
+            } else {
+                sessionEvent.setLocalAddr( clientSide.getClientAddr() );
+                sessionEvent.setRemoteAddr( serverSide.getServerAddr() );
+            }
+
             // lookup the country, latitude, and longitude for WAN clients
-            InterfaceSettings clientIntfSettings = UvmContextFactory.context().networkManager().findInterfaceId( clientIntf );
-            if ( clientIntfSettings != null && clientIntfSettings.getIsWan() ) {
+            if ( UvmContextFactory.context().networkManager().isWanInterface( clientIntf ) ) {
                 GeographyManager.Coordinates clientGeoip = UvmContextFactory.context().geographyManager().getCoordinates(clientSide.getClientAddr().getHostAddress());
                 if (clientGeoip != null) {
                     sessionEvent.setClientCountry(clientGeoip.country);
@@ -279,8 +283,7 @@ public abstract class NetcapHook implements Runnable
             }
 
             // lookup the country, latitude, and longitude for WAN servers
-            InterfaceSettings serverIntfSettings = UvmContextFactory.context().networkManager().findInterfaceId( serverIntf );
-            if ( serverIntfSettings != null && serverIntfSettings.getIsWan() ) {
+            if ( UvmContextFactory.context().networkManager().isWanInterface( serverIntf ) ) {
                 GeographyManager.Coordinates serverGeoip = UvmContextFactory.context().geographyManager().getCoordinates(serverSide.getServerAddr().getHostAddress());
                 if (serverGeoip != null) {
                     sessionEvent.setServerCountry(serverGeoip.country);

@@ -72,7 +72,16 @@ public class NetworkManagerImpl implements NetworkManager
     private final String settingsFilename = System.getProperty("uvm.settings.dir") + "/untangle-vm/" + "network.js";
     private final String settingsFilenameBackup = "/etc/untangle-netd/network.js";
     
+    /**
+     * The current network settings
+     */
     private NetworkSettings networkSettings;
+
+    /**
+     * This array holds the current interface Settings indexed by the interface ID.
+     * This enabled fast lookups with iterating the list in findInterfaceId()
+     */
+    private InterfaceSettings[] interfaceSettingsById = new InterfaceSettings[255];
 
     protected NetworkManagerImpl()
     {
@@ -126,6 +135,8 @@ public class NetworkManagerImpl implements NetworkManager
             checkForNewDevices( readSettings );
             
             this.networkSettings = readSettings;
+            configureInterfaceSettingsArray();
+
             /* 12.2 conversion */
             if ( this.networkSettings.getVersion() < 3 ) {
                 try {
@@ -220,9 +231,8 @@ public class NetworkManagerImpl implements NetworkManager
          * Change current settings
          */
         this.networkSettings = newSettings;
+        configureInterfaceSettingsArray();
         try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.networkSettings).toString(2));} catch (Exception e) {}
-
-        this.reconfigure();
 
         /**
          * Now that the settings have been successfully saved
@@ -358,15 +368,17 @@ public class NetworkManagerImpl implements NetworkManager
      */
     public InterfaceSettings findInterfaceId( int interfaceId )
     {
-        if ( this.networkSettings == null || this.networkSettings.getInterfaces() == null)
+        if ( this.networkSettings == null || this.networkSettings.getInterfaces() == null) {
+            logger.warn( "Missing network settings." );
             return null;
-        
-        for ( InterfaceSettings intf : this.networkSettings.getInterfaces() ) {
-            if ( intf.getInterfaceId() == interfaceId )
-                return intf;
         }
 
-        return null;
+        if ( interfaceId < 0 || interfaceId > 250 ) {
+            logger.warn( "Invalid interface ID: " + interfaceId );
+            return null;
+        }
+
+        return interfaceSettingsById[ interfaceId ];
     }
 
     /**
@@ -399,6 +411,29 @@ public class NetworkManagerImpl implements NetworkManager
         }
 
         return null;
+    }
+
+    public boolean isWanInterface( int interfaceId )
+    {
+        /**
+         * 250 - openvpn
+         * 251 - l2tp
+         * 252 - xauth
+         * 253 - gre
+         */
+        if ( interfaceId >= 250 && interfaceId <= 253 )
+            return false;
+
+        InterfaceSettings intfSettings = findInterfaceId( interfaceId );
+        if ( intfSettings == null ) {
+            logger.warn("Unknown interface: " + interfaceId, new Exception());
+            return false;
+        }
+
+        if ( intfSettings.getIsWan() )
+            return true;
+        else
+            return false;
     }
 
     /**
@@ -687,6 +722,19 @@ public class NetworkManagerImpl implements NetworkManager
         } catch (Exception e) {}
     }
 
+    private void configureInterfaceSettingsArray()
+    {
+        /**
+         * Set interfaceSettingsById array for fast lookups
+         */
+        for ( int i = 0 ; i < interfaceSettingsById.length ; i++ ) {
+            interfaceSettingsById[i] = null;
+        }
+        for ( InterfaceSettings intf : this.networkSettings.getInterfaces() ) {
+            interfaceSettingsById[intf.getInterfaceId()] = intf;
+        }
+    }
+
     private void checkForNewDevices( NetworkSettings netSettings )
     {
         LinkedList<String> deviceNames = getEthernetDeviceNames();
@@ -879,11 +927,6 @@ public class NetworkManagerImpl implements NetworkManager
         }
         
         return newSettings;
-    }
-
-    private void reconfigure()
-    {
-        logger.info("reconfigure()");
     }
 
     private void sanityCheckNetworkSettings( NetworkSettings networkSettings )
