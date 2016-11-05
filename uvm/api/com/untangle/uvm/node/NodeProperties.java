@@ -35,11 +35,12 @@ public class NodeProperties implements Serializable, JSONString, Comparable<Node
     private boolean autoStart = true;
     private boolean autoLoad = false;
     private boolean invisible = false;
+    private int     viewPosition = -1;
 
     private List<String> parents = new LinkedList<String>();
-    private List<String> supportedArchitectures = Arrays.asList("any");
 
-    private int viewPosition = -1;
+    private List<String> supportedArchitectures = Arrays.asList("any");
+    private Long         minimumMemory;
 
     public NodeProperties() {}
     
@@ -66,6 +67,12 @@ public class NodeProperties implements Serializable, JSONString, Comparable<Node
      */
     public List<String> getSupportedArchitectures() { return supportedArchitectures; }
     public void setSupportedArchitectures( List<String> newValue ) { this.supportedArchitectures = newValue; }
+
+    /**
+     * Get minimum memory requirements (null if none)
+     */
+    public Long getMinimumMemory() { return minimumMemory; }
+    public void setMinimumMemory( Long newValue ) { this.minimumMemory = newValue; }
 
     /**
      * The name of the node, for display purposes.
