@@ -26,6 +26,7 @@ import java.sql.SQLException;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.HookManager;
 import com.untangle.uvm.logging.LogEvent;
 
 
@@ -266,6 +267,11 @@ public class EventWriterImpl implements Runnable
         if (!inputQueue.offer(event)) {
             logger.warn("dropping logevent: " + event);
         }
+
+        /**
+         * Call the event logged hook
+         */
+        UvmContextFactory.context().hookManager().callCallbacks( HookManager.REPORTS_EVENT_LOGGED, event );
 
         /**
          * Send it to syslog (make best attempt - ignore errors)
