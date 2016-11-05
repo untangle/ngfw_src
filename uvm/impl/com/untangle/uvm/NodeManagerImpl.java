@@ -240,6 +240,17 @@ public class NodeManagerImpl implements NodeManager
             if ( ! checkArchitecture( nodeProperties.getSupportedArchitectures() ) ) {
                 throw new Exception("Unsupported Architecture " + System.getProperty("os.arch"));
             }
+
+            if ( nodeProperties.getMinimumMemory() != null ) {
+                Long requiredMemory = nodeProperties.getMinimumMemory();
+                Long actualMemory = UvmContextFactory.context().metricManager().getMemTotal();
+                if ( actualMemory < requiredMemory ) {
+                    float requiredGig = ((float)(requiredMemory/(1024*1024))) / (1024.0f);
+                    float actualGig = ((float)(actualMemory/(1024*1024))) / (1024.0f);
+                    String message = "This app requires more memory (required: " + (Math.round(10.0*requiredGig)/10.0) + "G actual: " + (Math.round(10.0*actualGig)/10.0) + "G)";
+                    throw new Exception(message);
+                }
+            }
             
             if (nodeProperties.getType() == NodeProperties.Type.SERVICE )
                 policyId = null;
