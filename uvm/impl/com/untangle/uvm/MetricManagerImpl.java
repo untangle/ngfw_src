@@ -107,6 +107,19 @@ public class MetricManagerImpl implements MetricManager
         }
     }
 
+    public Long getMemTotal()
+    {
+        Map<String, Object> m = new HashMap<String, Object>();
+
+        try {
+            readMeminfo(m);
+            return Long.parseLong(m.get("MemTotal").toString());
+        } catch (Exception e) {
+            logger.warn("Failed to get MemTotal",e);
+            return null;
+        }
+    }
+
     // private methods --------------------------------------------------------
 
     private Map<String, List<NodeMetric>> getMetrics( List<Long> nodeIds )
@@ -118,6 +131,367 @@ public class MetricManagerImpl implements MetricManager
         }
 
         return stats;
+    }
+
+    private void readMeminfo(Map<String, Object> m) throws IOException
+    {
+        readProcFile("/proc/meminfo", MEMINFO_PATTERN, MEMINFO_KEEPERS, m, 1024);
+
+        Long memFree = (Long)m.get("MemFree");
+        if (null == memFree) {
+            memFree = 0L;
+        }
+
+        Long i = (Long)m.get("Cached");
+        if ( i != null ) {
+            memFree += i;
+        }
+
+        i = (Long)m.get("Buffers");
+        if ( i != null ) {
+            memFree += i;
+        }
+
+        m.put("MemFree", memFree);
+    }
+
+    private void readVmstat(Map<String, Object> m) throws IOException
+    {
+        readProcFile("/proc/vmstat", VMSTAT_PATTERN, VMSTAT_KEEPERS, m, 1);
+    }
+
+    private void readProcFile(String filename, Pattern p, Set<String> keepers, Map<String, Object> m, int multiple) throws IOException
+    {
+        BufferedReader br = null;
+        try {
+            br = new BufferedReader(new FileReader(filename));
+            for (String l = br.readLine(); null != l; l = br.readLine()) {
+                Matcher matcher = p.matcher(l);
+                if (matcher.find()) {
+                    String n = matcher.group(1);
+                    if (keepers.contains(n)) {
+                        String s = matcher.group(2);
+                        try {
+                            m.put(n, Long.parseLong(s) * multiple);
+                        } catch (NumberFormatException exn) {
+                            logger.warn("could not add value for: " + n);
+                        }
+                    }
+                }
+            }
+        } finally {
+            if (null != br) {
+                br.close();
+            }
+        }
+    }
+
+    private void readCpuinfo(Map<String, Object> m) throws IOException
+    {
+        String cpuModel = null;
+        double cpuSpeed = 0;
+        int numCpus = 0;
+
+        BufferedReader br = null;
+        try {
+            br = new BufferedReader(new FileReader("/proc/cpuinfo"));
+            for (String l = br.readLine(); null != l; l = br.readLine()) {
+                Matcher matcher = CPUINFO_PATTERN.matcher(l);
+                if (matcher.find()) {
+                    String n = matcher.group(1);
+                    if (n.equals("model name") || n.equals("Processor")) {
+                        cpuModel = matcher.group(2);
+                    } else if (n.equals("processor")) {
+                        numCpus++;
+                    } else if (n.equals("cpu MHz")) {
+                        String v = matcher.group(2);
+                        try {
+                            cpuSpeed = Double.parseDouble(v);
+                        } catch (NumberFormatException exn) {
+                            logger.warn("could not parse cpu speed: " + v);
+                        }
+                    }
+                }
+            }
+        } finally {
+            if (null != br) {
+                br.close();
+            }
+        }
+
+        m.put("cpuModel", cpuModel);
+        m.put("cpuSpeed", cpuSpeed);
+        m.put("numCpus", numCpus);
+    }
+
+    private void readArchinfo(Map<String, Object> m) throws IOException
+    {
+        m.put("architecture", System.getProperty("os.arch", "unknown"));
+    }
+
+    private void readUptime(Map<String, Object> m) throws IOException
+    {
+        BufferedReader br = null;
+        try {
+            br = new BufferedReader(new FileReader("/proc/uptime"));
+
+            String l = br.readLine();
+            if (null != l) {
+                String s = l.split(" ")[0];
+                try {
+                    m.put("uptime", Double.parseDouble(s));
+                } catch (NumberFormatException exn) {
+                    logger.warn("could not parse uptime: " + s);
+                }
+            }
+        } finally {
+            if (null != br) {
+                br.close();
+            }
+        }
+    }
+
+    private void readLoadAverage(Map<String, Object> m) throws IOException
+    {
+        BufferedReader br = null;
+        try {
+            br = new BufferedReader(new FileReader("/proc/loadavg"));
+            String l = br.readLine();
+            if (null != l) {
+                String[] s = l.split(" ");
+                if (s.length >= 3) {
+                    try {
+                        m.put("oneMinuteLoadAvg", Double.parseDouble(s[0]));
+                        m.put("fiveMinuteLoadAvg", Double.parseDouble(s[1]));
+                        m.put("fifteenMinuteLoadAvg", Double.parseDouble(s[2]));
+                    } catch (NumberFormatException exn) {
+                        logger.warn("could not parse loadavg: " + l);
+                    }
+                }
+            }
+        } finally {
+            if (null != br) {
+                br.close();
+            }
+        }
+    }
+
+    private void getNumProcs(Map<String, Object> m)
+    {
+        int numProcs = 0;
+
+        File dir = new File("/proc");
+        if (dir.isDirectory()) {
+            for (File f : dir.listFiles()) {
+                try {
+                    Integer.parseInt(f.getName());
+                    numProcs++;
+                } catch (NumberFormatException exn) { }
+            }
+        }
+
+        m.put("numProcs", numProcs);
+    }
+
+    private synchronized void getNetDevUsage(Map<String, Object> m) throws IOException
+    {
+        long totalRxBytesOldValue = 0, totalRxBytesNewValue = 0;
+        long totalTxBytesOldValue = 0, totalTxBytesNewValue = 0;
+        long wansRxBytesOldValue = 0, wansRxBytesNewValue = 0;
+        long wansTxBytesOldValue = 0, wansTxBytesNewValue = 0;
+
+        NetcapManager nm = UvmContextImpl.getInstance().netcapManager();
+
+        m.put( "uvmSessions", nm.getSessionCount() );
+        m.put( "uvmTCPSessions", nm.getSessionCount(SessionTuple.PROTO_TCP) );
+        m.put( "uvmUDPSessions", nm.getSessionCount(SessionTuple.PROTO_UDP) );
+        m.put( "activeHosts", UvmContextFactory.context().hostTable().getCurrentActiveSize() );
+        m.put( "maxActiveHosts", UvmContextFactory.context().hostTable().getMaxActiveSize() );
+        m.put( "knownDevices", UvmContextFactory.context().deviceTable().size() );
+
+        long currentTime = System.currentTimeMillis();
+
+        BufferedReader br = null;
+        try {
+            br = new BufferedReader(new FileReader("/proc/net/dev"));
+            Integer i = new Integer(0);
+
+            for (String l = br.readLine(); null != l; l = br.readLine(), i += 1) {
+                Matcher matcher = NET_DEV_PATTERN.matcher(l);
+                if (matcher.find()) {
+                    String iface = matcher.group(1);
+
+                    InterfaceSettings intfSettings = UvmContextFactory.context().networkManager().findInterfaceSystemDev( iface );
+                    // Restrict to only the WAN interfaces (bug 5616)
+                    if ( intfSettings == null )
+                        continue;
+                    int intfId = intfSettings.getInterfaceId();
+
+                    // get stored previous values or initialize them to 0
+                    Long rxBytesOld = rxtxBytesStore.get("rx"+intfId);
+                    if (rxBytesOld == null) rxBytesOld = 0L;
+                    Long txBytesOld = rxtxBytesStore.get("tx"+intfId);
+                    if (txBytesOld == null) txBytesOld = 0L;
+
+                    try {
+                        // parse new incoming values w/64-bit correction for 32-bit rollover
+                        long rxBytesNew = Long.parseLong(matcher.group(2));
+                        long txBytesNew = Long.parseLong(matcher.group(3));
+                        if ( rxBytesNew < rxBytesOld ) {
+                            // either an overflow has happened or the interfaces have been reset
+                            // unfortunately we can't tell which
+                            rxBytesOld = 0L;
+                        }
+                        if ( txBytesNew < txBytesOld ) {
+                            // either an overflow has happened or the interfaces have been reset
+                            // unfortunately we can't tell which
+                            txBytesOld = 0L;
+                        }
+
+                        // accumulate old values
+                        totalRxBytesOldValue += rxBytesOld;
+                        totalTxBytesOldValue += txBytesOld;
+                        if (intfSettings.getIsWan()) {
+                            wansRxBytesOldValue += rxBytesOld;
+                            wansTxBytesOldValue += txBytesOld;
+                        }
+
+                        // accumulate new values
+                        totalRxBytesNewValue += rxBytesNew;
+                        totalTxBytesNewValue += txBytesNew;
+                        if (intfSettings.getIsWan()) {
+                            wansRxBytesNewValue += rxBytesNew;
+                            wansTxBytesNewValue += txBytesNew;
+                        }
+
+                        // update stored old values
+                        rxtxBytesStore.put("rx"+intfId, rxBytesNew);
+                        rxtxBytesStore.put("tx"+intfId, txBytesNew);
+
+                        // store the new values
+                        String key = "interface_" + intfSettings.getInterfaceId() + "_";
+                        double dt = (currentTime - lastNetDevUpdate) / 1000.0;
+                        if (Math.abs(dt) < 5.0e-5) {
+                            m.put(key + "rxBps", 0.0);
+                            m.put(key + "txBps", 0.0);
+                        } else {
+                            double rd = (( rxBytesNew - rxBytesOld ) / dt );
+                            double td = (( txBytesNew - txBytesOld ) / dt );
+                            if ( rd > 100000000 ) {
+                                logger.warn("Suspicious rxBytes value: " + rd);
+                                logger.warn("New bytes          value: " + rxBytesNew);
+                                logger.warn("Old bytes          value: " + rxBytesOld);
+                                logger.warn("Diff bytes         value: " + (rxBytesNew - rxBytesOld));
+                                logger.warn("Diff time          value: " + dt);
+                            }
+                            m.put(key + "rxBps", rd);
+                            m.put(key + "txBps", td);
+                        }
+                    } catch (NumberFormatException exn) {
+                        logger.warn("could not add interface info for: " + iface, exn);
+                    }
+                }
+            }
+        } finally {
+            if (null != br) {
+                br.close();
+            }
+        }
+
+        double dt = (currentTime - lastNetDevUpdate) / 1000.0;
+        if (Math.abs(dt) < 5.0e-5) {
+            m.put("interface_wans_rxBps", 0.0);
+            m.put("interface_wans_txBps", 0.0);
+        } else {
+            m.put("interface_wans_rxBps", (wansRxBytesNewValue - wansRxBytesOldValue) / dt);
+            m.put("interface_wans_txBps", (wansTxBytesNewValue - wansTxBytesOldValue) / dt);
+        }
+        if (Math.abs(dt) < 5.0e-5) {
+            m.put("interface_total_rxBps", 0.0);
+            m.put("interface_total_txBps", 0.0);
+        } else {
+            m.put("interface_total_rxBps", (totalRxBytesNewValue - totalRxBytesOldValue) / dt);
+            m.put("interface_total_txBps", (totalTxBytesNewValue - totalTxBytesOldValue) / dt);
+        }
+        lastNetDevUpdate = currentTime;
+    }
+
+    private synchronized void getDiskUsage(Map<String, Object> m) throws IOException
+    {
+        File root = new File("/");
+        m.put("totalDiskSpace", root.getTotalSpace());
+        m.put("freeDiskSpace", root.getFreeSpace());
+
+        long diskReads0 = 0, diskReads1 = 0;
+        long diskWrites0 = 0, diskWrites1 = 0;
+
+        long currentTime = System.currentTimeMillis();
+
+        BufferedReader br = null;
+        try {
+            br = new BufferedReader(new FileReader("/proc/diskstats"));
+            Integer i = new Integer(0);
+            for (String l = br.readLine(); null != l; l = br.readLine(), i += 1) {
+                Matcher matcher = DISK_STATS_PATTERN.matcher(l);
+                if (matcher.find()) {
+                    Long diskreads0 = diskRW0.get("dr"+i);
+                    if (diskreads0 == null) diskreads0 = 0L;
+                    Long diskwrites0 = diskRW0.get("dw"+i);
+                    if (diskwrites0 == null) diskwrites0 = 0L;
+
+                    try {
+                        // accumulate previous values
+                        diskReads0 += diskreads0;
+                        diskWrites0 += diskwrites0;
+                        // parse new incoming values w/64-bit correction for 32-bit rollover
+                        long diskreads1 = incrementCount(diskreads0.longValue(), Long.parseLong(matcher.group(1)));
+                        long diskwrites1 = incrementCount(diskwrites0.longValue(), Long.parseLong(matcher.group(2)));
+                        // accumulate 64-bit corrected values
+                        diskReads1 += diskreads1;
+                        diskWrites1 += diskwrites1;
+                        // update stored previous values w/new 64 corrected values
+                        diskRW0.put("dr"+i, diskreads1);
+                        diskRW0.put("dw"+i, diskwrites1);
+                    } catch (NumberFormatException exn) {
+                        logger.warn("could not get disk data", exn);
+                    }
+                }
+            }
+        } finally {
+            if (null != br) {
+                br.close();
+            }
+        }
+
+        m.put("diskReads", diskReads1);
+        m.put("diskWrites", diskWrites1);
+
+        double dt = (currentTime - lastDiskUpdate) / 1000.0;
+        if (Math.abs(dt) < 5.0e-5) {
+            m.put("diskReadsPerSecond", 0.0);
+            m.put("diskWritesPerSecond", 0.0);
+        } else {
+            m.put("diskReadsPerSecond", (diskReads1 - diskReads0) / dt);
+            m.put("diskWritesPerSecond", (diskWrites1 - diskWrites0) / dt);
+        }
+        lastDiskUpdate = currentTime;
+    }
+
+    /**
+     * This takes the previous number and the current number
+     * If the current number is less than the previous number, then we can assume it has wrapped
+     * This function ORs the higher bit values with the new value so we dont lose the high value bit value
+     */
+    private long incrementCount(long previousCount, long kernelCount)
+    {
+        /* If the kernel is counting in 64-bits, just return the
+         * kernel count */
+        if (kernelCount >= (1L << 32)) return kernelCount;
+
+        long previousKernelCount = previousCount & 0xFFFFFFFFL;
+        if (previousKernelCount > kernelCount) previousCount += (1L << 32);
+
+        return ((previousCount & 0x7FFFFFFF00000000L) + kernelCount);
     }
 
     // private classes --------------------------------------------------------
@@ -196,167 +570,6 @@ public class MetricManagerImpl implements MetricManager
             systemStats = Collections.unmodifiableMap(m);
         }
 
-        private void readMeminfo(Map<String, Object> m) throws IOException
-        {
-
-            readProcFile("/proc/meminfo", MEMINFO_PATTERN, MEMINFO_KEEPERS, m, 1024);
-
-            Long memFree = (Long)m.get("MemFree");
-            if (null == memFree) {
-                memFree = 0L;
-            }
-
-            Long i = (Long)m.get("Cached");
-            if ( i != null ) {
-                memFree += i;
-            }
-
-            i = (Long)m.get("Buffers");
-            if ( i != null ) {
-                memFree += i;
-            }
-
-            m.put("MemFree", memFree);
-        }
-
-        private void readVmstat(Map<String, Object> m) throws IOException
-        {
-            readProcFile("/proc/vmstat", VMSTAT_PATTERN, VMSTAT_KEEPERS, m, 1);
-        }
-
-        private void readProcFile(String filename, Pattern p, Set<String> keepers, Map<String, Object> m, int multiple) throws IOException
-        {
-            BufferedReader br = null;
-            try {
-                br = new BufferedReader(new FileReader(filename));
-                for (String l = br.readLine(); null != l; l = br.readLine()) {
-                    Matcher matcher = p.matcher(l);
-                    if (matcher.find()) {
-                        String n = matcher.group(1);
-                        if (keepers.contains(n)) {
-                            String s = matcher.group(2);
-                            try {
-                                m.put(n, Long.parseLong(s) * multiple);
-                            } catch (NumberFormatException exn) {
-                                logger.warn("could not add value for: " + n);
-                            }
-                        }
-                    }
-                }
-            } finally {
-                if (null != br) {
-                    br.close();
-                }
-            }
-        }
-
-        private void readCpuinfo(Map<String, Object> m) throws IOException
-        {
-            String cpuModel = null;
-            double cpuSpeed = 0;
-            int numCpus = 0;
-
-            BufferedReader br = null;
-            try {
-                br = new BufferedReader(new FileReader("/proc/cpuinfo"));
-                for (String l = br.readLine(); null != l; l = br.readLine()) {
-                    Matcher matcher = CPUINFO_PATTERN.matcher(l);
-                    if (matcher.find()) {
-                        String n = matcher.group(1);
-                        if (n.equals("model name") || n.equals("Processor")) {
-                            cpuModel = matcher.group(2);
-                        } else if (n.equals("processor")) {
-                            numCpus++;
-                        } else if (n.equals("cpu MHz")) {
-                            String v = matcher.group(2);
-                            try {
-                                cpuSpeed = Double.parseDouble(v);
-                            } catch (NumberFormatException exn) {
-                                logger.warn("could not parse cpu speed: " + v);
-                            }
-                        }
-                    }
-                }
-            } finally {
-                if (null != br) {
-                    br.close();
-                }
-            }
-
-            m.put("cpuModel", cpuModel);
-            m.put("cpuSpeed", cpuSpeed);
-            m.put("numCpus", numCpus);
-        }
-
-        private void readArchinfo(Map<String, Object> m) throws IOException
-        {
-            m.put("architecture", System.getProperty("os.arch", "unknown"));
-        }
-
-        private void readUptime(Map<String, Object> m) throws IOException
-        {
-            BufferedReader br = null;
-            try {
-                br = new BufferedReader(new FileReader("/proc/uptime"));
-
-                String l = br.readLine();
-                if (null != l) {
-                    String s = l.split(" ")[0];
-                    try {
-                        m.put("uptime", Double.parseDouble(s));
-                    } catch (NumberFormatException exn) {
-                        logger.warn("could not parse uptime: " + s);
-                    }
-                }
-            } finally {
-                if (null != br) {
-                    br.close();
-                }
-            }
-        }
-
-        private void readLoadAverage(Map<String, Object> m) throws IOException
-        {
-            BufferedReader br = null;
-            try {
-                br = new BufferedReader(new FileReader("/proc/loadavg"));
-                String l = br.readLine();
-                if (null != l) {
-                    String[] s = l.split(" ");
-                    if (s.length >= 3) {
-                        try {
-                            m.put("oneMinuteLoadAvg", Double.parseDouble(s[0]));
-                            m.put("fiveMinuteLoadAvg", Double.parseDouble(s[1]));
-                            m.put("fifteenMinuteLoadAvg", Double.parseDouble(s[2]));
-                        } catch (NumberFormatException exn) {
-                            logger.warn("could not parse loadavg: " + l);
-                        }
-                    }
-                }
-            } finally {
-                if (null != br) {
-                    br.close();
-                }
-            }
-        }
-
-        private void getNumProcs(Map<String, Object> m)
-        {
-            int numProcs = 0;
-
-            File dir = new File("/proc");
-            if (dir.isDirectory()) {
-                for (File f : dir.listFiles()) {
-                    try {
-                        Integer.parseInt(f.getName());
-                        numProcs++;
-                    } catch (NumberFormatException exn) { }
-                }
-            }
-
-            m.put("numProcs", numProcs);
-        }
-
         private void getCpuUsage(Map<String, Object> m) throws IOException
         {
             BufferedReader br = null;
@@ -404,206 +617,6 @@ public class MetricManagerImpl implements MetricManager
             }
         }
 
-        private synchronized void getNetDevUsage(Map<String, Object> m) throws IOException
-        {
-            long totalRxBytesOldValue = 0, totalRxBytesNewValue = 0;
-            long totalTxBytesOldValue = 0, totalTxBytesNewValue = 0;
-            long wansRxBytesOldValue = 0, wansRxBytesNewValue = 0;
-            long wansTxBytesOldValue = 0, wansTxBytesNewValue = 0;
-
-            NetcapManager nm = UvmContextImpl.getInstance().netcapManager();
-
-            m.put( "uvmSessions", nm.getSessionCount() );
-            m.put( "uvmTCPSessions", nm.getSessionCount(SessionTuple.PROTO_TCP) );
-            m.put( "uvmUDPSessions", nm.getSessionCount(SessionTuple.PROTO_UDP) );
-            m.put( "activeHosts", UvmContextFactory.context().hostTable().getCurrentActiveSize() );
-            m.put( "maxActiveHosts", UvmContextFactory.context().hostTable().getMaxActiveSize() );
-            m.put( "knownDevices", UvmContextFactory.context().deviceTable().size() );
-            
-            long currentTime = System.currentTimeMillis();
-
-            BufferedReader br = null;
-            try {
-                br = new BufferedReader(new FileReader("/proc/net/dev"));
-                Integer i = new Integer(0);
-
-                for (String l = br.readLine(); null != l; l = br.readLine(), i += 1) {
-                    Matcher matcher = NET_DEV_PATTERN.matcher(l);
-                    if (matcher.find()) {
-                        String iface = matcher.group(1);
-                        
-                        InterfaceSettings intfSettings = UvmContextFactory.context().networkManager().findInterfaceSystemDev( iface );
-                        // Restrict to only the WAN interfaces (bug 5616)
-                        if ( intfSettings == null )
-                            continue;
-                        int intfId = intfSettings.getInterfaceId();
-
-                        // get stored previous values or initialize them to 0
-                        Long rxBytesOld = rxtxBytesStore.get("rx"+intfId);
-                        if (rxBytesOld == null) rxBytesOld = 0L;
-                        Long txBytesOld = rxtxBytesStore.get("tx"+intfId);
-                        if (txBytesOld == null) txBytesOld = 0L;
-
-                        try {
-                            // parse new incoming values w/64-bit correction for 32-bit rollover
-                            long rxBytesNew = Long.parseLong(matcher.group(2));
-                            long txBytesNew = Long.parseLong(matcher.group(3));
-                            if ( rxBytesNew < rxBytesOld ) {
-                                // either an overflow has happened or the interfaces have been reset
-                                // unfortunately we can't tell which
-                                rxBytesOld = 0L;
-                            }
-                            if ( txBytesNew < txBytesOld ) {
-                                // either an overflow has happened or the interfaces have been reset
-                                // unfortunately we can't tell which
-                                txBytesOld = 0L;
-                            }
-
-                            // accumulate old values
-                            totalRxBytesOldValue += rxBytesOld;
-                            totalTxBytesOldValue += txBytesOld;
-                            if (intfSettings.getIsWan()) {
-                                wansRxBytesOldValue += rxBytesOld;
-                                wansTxBytesOldValue += txBytesOld;
-                            }
-                            
-                            // accumulate new values
-                            totalRxBytesNewValue += rxBytesNew;
-                            totalTxBytesNewValue += txBytesNew;
-                            if (intfSettings.getIsWan()) {
-                                wansRxBytesNewValue += rxBytesNew;
-                                wansTxBytesNewValue += txBytesNew;
-                            }
-
-                            // update stored old values
-                            rxtxBytesStore.put("rx"+intfId, rxBytesNew);
-                            rxtxBytesStore.put("tx"+intfId, txBytesNew);
-
-                            // store the new values
-                            String key = "interface_" + intfSettings.getInterfaceId() + "_";
-                            double dt = (currentTime - lastNetDevUpdate) / 1000.0;
-                            if (Math.abs(dt) < 5.0e-5) {
-                                m.put(key + "rxBps", 0.0);
-                                m.put(key + "txBps", 0.0);
-                            } else {
-                                double rd = (( rxBytesNew - rxBytesOld ) / dt );
-                                double td = (( txBytesNew - txBytesOld ) / dt );
-                                if ( rd > 100000000 ) {
-                                    logger.warn("Suspicious rxBytes value: " + rd);
-                                    logger.warn("New bytes          value: " + rxBytesNew);
-                                    logger.warn("Old bytes          value: " + rxBytesOld);
-                                    logger.warn("Diff bytes         value: " + (rxBytesNew - rxBytesOld));
-                                    logger.warn("Diff time          value: " + dt);
-                                }
-                                m.put(key + "rxBps", rd);
-                                m.put(key + "txBps", td);
-                            }
-                        } catch (NumberFormatException exn) {
-                            logger.warn("could not add interface info for: " + iface, exn);
-                        }
-                    }
-                }
-            } finally {
-                if (null != br) {
-                    br.close();
-                }
-            }
-
-            double dt = (currentTime - lastNetDevUpdate) / 1000.0;
-            if (Math.abs(dt) < 5.0e-5) {
-                m.put("interface_wans_rxBps", 0.0);
-                m.put("interface_wans_txBps", 0.0);
-            } else {
-                m.put("interface_wans_rxBps", (wansRxBytesNewValue - wansRxBytesOldValue) / dt);
-                m.put("interface_wans_txBps", (wansTxBytesNewValue - wansTxBytesOldValue) / dt);
-            }
-            if (Math.abs(dt) < 5.0e-5) {
-                m.put("interface_total_rxBps", 0.0);
-                m.put("interface_total_txBps", 0.0);
-            } else {
-                m.put("interface_total_rxBps", (totalRxBytesNewValue - totalRxBytesOldValue) / dt);
-                m.put("interface_total_txBps", (totalTxBytesNewValue - totalTxBytesOldValue) / dt);
-            }
-            lastNetDevUpdate = currentTime;
-        }
-
-        private synchronized void getDiskUsage(Map<String, Object> m) throws IOException
-        {
-            File root = new File("/");
-            m.put("totalDiskSpace", root.getTotalSpace());
-            m.put("freeDiskSpace", root.getFreeSpace());
-
-            long diskReads0 = 0, diskReads1 = 0;
-            long diskWrites0 = 0, diskWrites1 = 0;
-
-            long currentTime = System.currentTimeMillis();
-
-            BufferedReader br = null;
-            try {
-                br = new BufferedReader(new FileReader("/proc/diskstats"));
-                Integer i = new Integer(0);
-                for (String l = br.readLine(); null != l; l = br.readLine(), i += 1) {
-                    Matcher matcher = DISK_STATS_PATTERN.matcher(l);
-                    if (matcher.find()) {
-                        Long diskreads0 = diskRW0.get("dr"+i);
-                        if (diskreads0 == null) diskreads0 = 0L;
-                        Long diskwrites0 = diskRW0.get("dw"+i);
-                        if (diskwrites0 == null) diskwrites0 = 0L;
-
-                        try {
-                            // accumulate previous values
-                            diskReads0 += diskreads0;
-                            diskWrites0 += diskwrites0;
-                            // parse new incoming values w/64-bit correction for 32-bit rollover
-                            long diskreads1 = incrementCount(diskreads0.longValue(), Long.parseLong(matcher.group(1)));
-                            long diskwrites1 = incrementCount(diskwrites0.longValue(), Long.parseLong(matcher.group(2)));
-                            // accumulate 64-bit corrected values
-                            diskReads1 += diskreads1;
-                            diskWrites1 += diskwrites1;
-                            // update stored previous values w/new 64 corrected values
-                            diskRW0.put("dr"+i, diskreads1);
-                            diskRW0.put("dw"+i, diskwrites1);
-                        } catch (NumberFormatException exn) {
-                            logger.warn("could not get disk data", exn);
-                        }
-                    }
-                }
-            } finally {
-                if (null != br) {
-                    br.close();
-                }
-            }
-
-            m.put("diskReads", diskReads1);
-            m.put("diskWrites", diskWrites1);
-
-            double dt = (currentTime - lastDiskUpdate) / 1000.0;
-            if (Math.abs(dt) < 5.0e-5) {
-                m.put("diskReadsPerSecond", 0.0);
-                m.put("diskWritesPerSecond", 0.0);
-            } else {
-                m.put("diskReadsPerSecond", (diskReads1 - diskReads0) / dt);
-                m.put("diskWritesPerSecond", (diskWrites1 - diskWrites0) / dt);
-            }
-            lastDiskUpdate = currentTime;
-        }
-
-        /**
-         * This takes the previous number and the current number
-         * If the current number is less than the previous number, then we can assume it has wrapped
-         * This function ORs the higher bit values with the new value so we dont lose the high value bit value
-         */
-        private long incrementCount(long previousCount, long kernelCount)
-        {
-            /* If the kernel is counting in 64-bits, just return the
-             * kernel count */
-            if (kernelCount >= (1L << 32)) return kernelCount;
-
-            long previousKernelCount = previousCount & 0xFFFFFFFFL;
-            if (previousKernelCount > kernelCount) previousCount += (1L << 32);
-
-            return ((previousCount & 0x7FFFFFFF00000000L) + kernelCount);
-        }
     }
 
     static {
