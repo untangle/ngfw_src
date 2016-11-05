@@ -58,6 +58,8 @@ public class SessionMinuteEvent extends LogEvent
             "username, " + 
             "policy_id, " + 
             "policy_rule_id, " + 
+            "local_addr, " + 
+            "remote_addr, " + 
             "c_client_addr, " + 
             "c_server_addr, " + 
             "c_server_port, " + 
@@ -108,6 +110,8 @@ public class SessionMinuteEvent extends LogEvent
             "username, " + 
             "policy_id, " + 
             "policy_rule_id, " + 
+            "local_addr, " + 
+            "remote_addr, " + 
             "c_client_addr, " + 
             "c_server_addr, " + 
             "c_server_port, " + 

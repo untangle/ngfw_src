@@ -253,6 +253,14 @@ public class NetFilterLogger
                 event.setClientIntf(new Integer(srcIntf));
                 event.setServerIntf(new Integer(dstIntf));
 
+                if ( srcIntf != 0 && UvmContextFactory.context().networkManager().isWanInterface( srcIntf ) ) {
+                    event.setLocalAddr( dstAddress );
+                    event.setRemoteAddr( srcAddress );
+                } else {
+                    event.setLocalAddr( srcAddress );
+                    event.setRemoteAddr( dstAddress );
+                }
+
                 event.setFilterPrefix(logPrefix);
 
                 // log the event

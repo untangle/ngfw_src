@@ -116,10 +116,20 @@ public class SessionMonitorImpl implements SessionMonitor
             SessionMonitorEntry session = i.next();
 
             session.setPolicy("");             
-            if (session.getClientIntf() == null || session.getClientIntf() == 0 )
+            if (session.getClientIntf() == null || session.getClientIntf() == 0 ) {
                 session.setClientIntf(Integer.valueOf(-1));
-            if (session.getServerIntf() == null || session.getServerIntf() == 0 )
+            } else {
+                if ( UvmContextFactory.context().networkManager().isWanInterface( session.getClientIntf() ) ) {
+                    session.setLocalAddr( session.getPostNatServer() );
+                    session.setRemoteAddr( session.getPreNatClient() );
+                } else {
+                    session.setLocalAddr( session.getPreNatClient() );
+                    session.setRemoteAddr( session.getPostNatServer() );
+                }
+            }
+            if (session.getServerIntf() == null || session.getServerIntf() == 0 ) {
                 session.setServerIntf(Integer.valueOf(-1));
+            }
             session.setPriority(session.getQosPriority()); 
 
             SessionTuple tuple = _makeTuple( session );

@@ -119,14 +119,14 @@ public class HookManagerImpl implements HookManager
         
         LinkedList<HookCallback> callbacks = registeredCallbacks.get( hookName );
         if ( callbacks == null ) {
-            logger.info( "Calling hook[" + hookName + "] callbacks (0 hooks)" );
+            logger.debug( "Calling hook[" + hookName + "] callbacks (0 hooks)" );
             return 0;
         }
 
-        logger.info( "Calling hook[" + hookName + "] callbacks (" + callbacks.size() + " hooks)" );
+        logger.debug( "Calling hook[" + hookName + "] callbacks (" + callbacks.size() + " hooks)" );
         for ( HookCallback cb : callbacks ) {
             try {
-                logger.info( "Calling hook[" + hookName + "] callback " + cb.getName() );
+                logger.debug( "Calling hook[" + hookName + "] callback " + cb.getName() );
                 cb.callback( o );
             } catch (Exception e) {
                 logger.warn( "Exception calling HookCallback[" + cb.getName() + "]:", e );

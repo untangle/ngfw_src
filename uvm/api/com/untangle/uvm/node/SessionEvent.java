@@ -30,6 +30,8 @@ public class SessionEvent extends LogEvent
     private String serverCountry;
     private Double serverLatitude;
     private Double serverLongitude;
+    private InetAddress localAddr;
+    private InetAddress remoteAddr;
     private InetAddress cClientAddr;
     private InetAddress sClientAddr;
     private InetAddress cServerAddr;
@@ -114,6 +116,18 @@ public class SessionEvent extends LogEvent
     
     public Double getServerLongitude() { return serverLongitude; }
     public void setServerLongitude(Double serverLongitude) { this.serverLongitude = serverLongitude; }
+
+    /**
+     * The local (non-WAN address) address - the client address if ambigiuous
+     */
+    public InetAddress getLocalAddr() { return localAddr; }
+    public void setLocalAddr(InetAddress newValue) { this.localAddr = newValue; }
+
+    /**
+     * The remote (WAN address) address - the server address if ambigiuous
+     */
+    public InetAddress getRemoteAddr() { return remoteAddr; }
+    public void setRemoteAddr(InetAddress newValue) { this.remoteAddr = newValue; }
 
     /**
      * Client address, at the client side.
@@ -206,9 +220,9 @@ public class SessionEvent extends LogEvent
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
         String sql = "INSERT INTO reports.sessions" + getPartitionTablePostfix() + " " +
-            "(session_id, bypassed, entitled, time_stamp, protocol, icmp_type, end_time, hostname, username, filter_prefix, policy_id, policy_rule_id, c_client_addr, c_client_port, c_server_addr, c_server_port, s_client_addr, s_client_port, s_server_addr, s_server_port, client_intf, server_intf, client_country, client_latitude, client_longitude, server_country, server_latitude, server_longitude) " +
+            "(session_id, bypassed, entitled, time_stamp, protocol, icmp_type, end_time, hostname, username, filter_prefix, policy_id, policy_rule_id, local_addr, remote_addr, c_client_addr, c_client_port, c_server_addr, c_server_port, s_client_addr, s_client_port, s_server_addr, s_server_port, client_intf, server_intf, client_country, client_latitude, client_longitude, server_country, server_latitude, server_longitude) " +
             "values " +
-            "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?); ";
+            "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?); ";
 
         java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
         
@@ -225,6 +239,8 @@ public class SessionEvent extends LogEvent
         pstmt.setString(++i, getFilterPrefix());
         pstmt.setInt(++i, (getPolicyId() == null ? 1 : getPolicyId() ));
         pstmt.setInt(++i, (getPolicyRuleId() == null ? 0 : getPolicyRuleId() ));
+        pstmt.setObject(++i, getLocalAddr().getHostAddress(), java.sql.Types.OTHER);
+        pstmt.setObject(++i, getRemoteAddr().getHostAddress(), java.sql.Types.OTHER);
         pstmt.setObject(++i, getCClientAddr().getHostAddress(), java.sql.Types.OTHER);
         pstmt.setInt(++i, getCClientPort());
         pstmt.setObject(++i, getCServerAddr().getHostAddress(), java.sql.Types.OTHER);
