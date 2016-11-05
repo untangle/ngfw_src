@@ -507,9 +507,11 @@ class NetworkTests(unittest2.TestCase):
         events = global_functions.get_events('Network','Port Forwarded Sessions',None,5)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
-                                            "s_server_addr", test_untangle_com_ip,
-                                            "c_client_addr", remote_control.clientIP,
-                                            "s_server_port", 80)
+                                               "s_server_addr", test_untangle_com_ip,
+                                               "c_client_addr", remote_control.clientIP,
+                                               "local_addr", remote_control.clientIP,
+                                               "remote_addr", test_untangle_com_ip,
+                                               "s_server_port", 80)
         assert(found)
 
     # test basic port forward (tcp port 443)
@@ -677,9 +679,11 @@ class NetworkTests(unittest2.TestCase):
 
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 100,
-                                            "s_server_addr", test_untangle_com_ip,
-                                            "c_client_addr", remote_control.clientIP,
-                                            "s_server_port", 80)
+                                               "s_server_addr", test_untangle_com_ip,
+                                               "c_client_addr", remote_control.clientIP,
+                                               "local_addr", remote_control.clientIP,
+                                               "remote_addr", test_untangle_com_ip,
+                                               "s_server_port", 80)
         assert(found)
 
     # Test FTP (outbound) in active and passive modes
@@ -1238,6 +1242,8 @@ class NetworkTests(unittest2.TestCase):
             found = global_functions.check_events( events.get('list'), 100,
                                                    "s_server_addr", test_untangle_com_ip,
                                                    "c_client_addr", remote_control.clientIP,
+                                                   "local_addr", remote_control.clientIP,
+                                                   "remote_addr", test_untangle_com_ip,
                                                    "s_server_port", 80)
             if found:
                 break
