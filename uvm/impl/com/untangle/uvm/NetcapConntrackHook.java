@@ -147,6 +147,19 @@ public class NetcapConntrackHook implements NetcapCallback
                     sessionEvent.setSClientPort( sClientPort );
                     sessionEvent.setSServerAddr( sServerAddr );
                     sessionEvent.setSServerPort( sServerPort );
+
+                    /**
+                     * If the client is on a WAN, the the local address is the server address
+                     * If not, then the local address is the client
+                     */
+                    if ( clientIntf != 0 && UvmContextFactory.context().networkManager().isWanInterface( clientIntf ) ) {
+                        sessionEvent.setLocalAddr( sServerAddr );
+                        sessionEvent.setRemoteAddr( cClientAddr );
+                    } else {
+                        sessionEvent.setLocalAddr( cClientAddr );
+                        sessionEvent.setRemoteAddr( sServerAddr );
+                    }
+
                     UvmContextFactory.context().logEvent( sessionEvent );
                 }
                 

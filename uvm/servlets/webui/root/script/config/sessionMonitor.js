@@ -51,6 +51,8 @@ Ext.define('Webui.config.sessionMonitor', {
                         "pipeline": "str",
                         "postNatClient": "50.193.63."+((ii+1)%10),
                         "postNatClientPort": (ii+1000),
+                        "localAddr": "10.0.0."+((t+2)%10),
+                        "remoteAddr": "184.27.239."+((t+3)%10),
                         "preNatClient": "10.0.0."+((t+2)%10),
                         "preNatServer": "184.27.239."+((t+3)%10),
                         "clientCountry" : null,
@@ -202,6 +204,22 @@ Ext.define('Webui.config.sessionMonitor', {
             header: i18n._("Hostname"),
             dataIndex: "platform-hostname",
             width: 100,
+            filter: {
+                type: 'string'
+            }
+        },{
+            hidden: true,
+            header: i18n._("Local Address"),
+            dataIndex: "localAddr",
+            width: Ung.TableConfig.ipFieldWidth,
+            filter: {
+                type: 'string'
+            }
+        },{
+            hidden: true,
+            header: i18n._("Remote Address"),
+            dataIndex: "remoteAddr",
+            width: Ung.TableConfig.ipFieldWidth,
             filter: {
                 type: 'string'
             }
@@ -612,6 +630,14 @@ Ext.define('Webui.config.sessionMonitor', {
                 convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "policy",
+                convert: Ung.Util.preventEmptyValueConverter
+            },{
+                name: "localAddr",
+                sortType: 'asIp',
+                convert: Ung.Util.preventEmptyValueConverter
+            },{
+                name: "remoteAddr",
+                sortType: 'asIp',
                 convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "preNatClient",
