@@ -18,6 +18,7 @@ public class SessionMonitorEntry implements Serializable, JSONString
     private String protocol;
     private String state;
 
+    private String hostname;
     private InetAddress localAddr;
     private InetAddress remoteAddr;
 
@@ -49,6 +50,8 @@ public class SessionMonitorEntry implements Serializable, JSONString
     public String getState() {return state;}
     public void   setState( String state ) {this.state = state;}
 
+    public String getHostname() {return hostname;}
+    public void   setHostname( String hostname ) {this.hostname = hostname;}
     public InetAddress getLocalAddr() { return localAddr; }
     public void setLocalAddr(InetAddress newValue) { this.localAddr = newValue; }
     public InetAddress getRemoteAddr() { return remoteAddr; }

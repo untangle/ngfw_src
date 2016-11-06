@@ -114,8 +114,9 @@ public class NetcapConntrackHook implements NetcapCallback
                 hostname = entry.getHostname();
             }
 
-            if ((hostname == null || hostname.length() == 0))
-                hostname = cClientAddr.getHostAddress();
+            if ( hostname == null || hostname.length() == 0 ) {
+                hostname = SessionEvent.determineBestHostname( cClientAddr, clientIntf, sServerAddr, serverIntf );
+            }
         
             if ( type == CONNTRACK_TYPE_NEW ) { /* New Session */
                 long sessionId = com.untangle.jnetcap.Netcap.nextSessionId(); /* create new session ID */
