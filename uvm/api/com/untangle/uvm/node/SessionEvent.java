@@ -8,6 +8,8 @@ import java.net.InetAddress;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.node.SessionTuple;
 import com.untangle.uvm.util.I18nUtil;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.HostTableEntry;
 
 /**
  * Used to record the Session endpoints at session end time.
@@ -216,6 +218,46 @@ public class SessionEvent extends LogEvent
         }
     }
     
+    public static String determineBestHostname( InetAddress clientAddr, int clientIntf, InetAddress serverAddr, int serverIntf )
+    {
+        try {
+
+            /**
+             * 1) If the host table entry for the client exists and already knows the hostname use it
+             */
+            HostTableEntry clientEntry = null;
+            if ( clientAddr != null )
+                clientEntry = UvmContextFactory.context().hostTable().getHostTableEntry( clientAddr );
+            if ( clientEntry != null && clientEntry.isHostnameKnown() ) {
+                return clientEntry.getHostname();
+            }
+
+            /**
+             * 2) If the client is on a WAN - check for the hostname of the server (the local address)
+             */
+            if ( clientIntf != 0 && UvmContextFactory.context().networkManager().isWanInterface( clientIntf ) ) {
+                HostTableEntry serverEntry = null;
+                if ( serverAddr != null )
+                    serverEntry = UvmContextFactory.context().hostTable().getHostTableEntry( serverAddr );
+                if ( serverEntry != null && serverEntry.isHostnameKnown() ) {
+                    return serverEntry.getHostname();
+                }
+            }
+
+            /**
+             * 3) If neither is known just use the address if fallbackToIp otherwise null
+             */
+            if ( clientIntf != 0 && UvmContextFactory.context().networkManager().isWanInterface( clientIntf ) ) {
+                return serverAddr.getHostAddress();
+            } else {
+                return clientAddr.getHostAddress();
+            }
+        } catch (Exception e) {
+            logger.warn( "Exception determing hostname", e );
+            return null;
+        }
+    }
+
     @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {

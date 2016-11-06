@@ -226,7 +226,9 @@ public class NetFilterLogger
                     hostname = entry.getHostname();
                 }
 
-                if ((hostname == null || hostname.length() == 0)) hostname = srcAddress.getHostAddress();
+                if ( hostname == null || hostname.length() == 0 ) {
+                    hostname = SessionEvent.determineBestHostname( srcAddress, srcIntf, dstAddress, dstIntf );
+                }
 
                 // Since zero is a valid ICMP type, both the untangle-nflogd daemon as well
                 // as this code use the value 999 to indicate empty or unknown.  If icmpType

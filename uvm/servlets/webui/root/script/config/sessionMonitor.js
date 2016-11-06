@@ -53,6 +53,7 @@ Ext.define('Webui.config.sessionMonitor', {
                         "postNatClientPort": (ii+1000),
                         "localAddr": "10.0.0."+((t+2)%10),
                         "remoteAddr": "184.27.239."+((t+3)%10),
+                        "hostname": "hostname"+t,
                         "preNatClient": "10.0.0."+((t+2)%10),
                         "preNatServer": "184.27.239."+((t+3)%10),
                         "clientCountry" : null,
@@ -68,7 +69,6 @@ Ext.define('Webui.config.sessionMonitor', {
                                 "web-filter-best-category-description": "Social Networking",
                                 "web-filter-best-category-blocked": false,
                                 "web-filter-flagged": false,
-                                "platform-hostname": "acct07-wxp"+t,
                                 "web-filter-best-category-flagged": (ii%2==1),
                                 "web-filter-best-category-id": null,
                                 "http-uri": "/t.gif",
@@ -202,7 +202,7 @@ Ext.define('Webui.config.sessionMonitor', {
             }
         },{
             header: i18n._("Hostname"),
-            dataIndex: "platform-hostname",
+            dataIndex: "hostname",
             width: 100,
             filter: {
                 type: 'string'
@@ -640,6 +640,9 @@ Ext.define('Webui.config.sessionMonitor', {
                 sortType: 'asIp',
                 convert: Ung.Util.preventEmptyValueConverter
             },{
+                name: "hostname",
+                convert: Ung.Util.preventEmptyValueConverter
+            },{
                 name: "preNatClient",
                 sortType: 'asIp',
                 convert: Ung.Util.preventEmptyValueConverter
@@ -682,9 +685,6 @@ Ext.define('Webui.config.sessionMonitor', {
                 convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "portForwarded",
-                convert: Ung.Util.preventEmptyValueConverter
-            },{
-                name: "platform-hostname",
                 convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "platform-username",
