@@ -108,6 +108,7 @@ public abstract class NetcapHook implements Runnable
             int clientIntf = netcapSession.clientSide().interfaceId();
             int serverIntf = netcapSession.serverSide().interfaceId();
             InetAddress clientAddr = netcapSession.clientSide().client().host();
+            InetAddress serverAddr = netcapSession.serverSide().server().host();
             long sessionId = sessionGlobalState.id();
             
             if ( logger.isDebugEnabled()) {
@@ -145,7 +146,7 @@ public abstract class NetcapHook implements Runnable
             DeviceTableEntry deviceEntry = null;
             String username = null;
             String hostname = null;
-
+            
             if ( hostEntry == null ) {
                 if ( ! UvmContextFactory.context().networkManager().isWanInterface( clientIntf ) ) {
                     hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( clientAddr, true ); /* create/get host */
@@ -182,7 +183,7 @@ public abstract class NetcapHook implements Runnable
                 
                 username = hostEntry.getUsername();
                 /* if we don't know the username from the host table, check the device table */
-                if (username == null && deviceEntry != null) {
+                if ( username == null && deviceEntry != null ) {
                     String deviceUsername = deviceEntry.getDeviceUsername();
                     if ( deviceUsername != null ) {
                         hostEntry.setUsernameDevice( deviceUsername );
@@ -190,40 +191,25 @@ public abstract class NetcapHook implements Runnable
                     }
                 }
                 /* if we know the username, set the username on the session */
-                if (username != null && username.length() > 0 ) { 
+                if ( username != null && username.length() > 0 ) { 
                     logger.debug( "user information: " + username );
                     sessionGlobalState.setUser( username );
                     sessionGlobalState.attach( NodeSession.KEY_PLATFORM_USERNAME, username );
                 }
-                /* lookup the hostname information */
-                HostnameLookup router = (HostnameLookup) UvmContextFactory.context().nodeManager().node("untangle-node-router");
-                HostnameLookup reports = (HostnameLookup) UvmContextFactory.context().nodeManager().node("untangle-node-reports");
-                hostname = hostEntry.getHostname();
-                if ((hostname == null || hostname.length() == 0) && reports != null)
-                    hostname = reports.lookupHostname( clientAddr );
-                if ((hostname == null || hostname.length() == 0) && router != null)
-                    hostname = router.lookupHostname( clientAddr );
-                if ((hostname == null || hostname.length() == 0))
-                    hostname = clientAddr.getHostAddress();
-                if (hostname != null && hostname.length() > 0 ) {
-                    sessionGlobalState.attach( NodeSession.KEY_PLATFORM_HOSTNAME, hostname );
-                    /* If the hostname isn't known in the host table then set hostname */
-                    if ( !hostEntry.isHostnameKnown()) {
-                        hostEntry.setHostname( hostname );
-                    }
-                    /* If the hostname isn't known in the device table then set hostname */
-                    if ( deviceEntry != null && !deviceEntry.isHostnameKnown()) {
-                        deviceEntry.setHostname( hostname );
-                    }
+
+                if ( !hostEntry.isHostnameKnown() ) {
+                    hostname = lookupAndUpdateHostname( hostEntry, deviceEntry, clientAddr );
                 }
-            } else {
-                /**
-                 * no host (probably an external host)
-                 * still need to set hostname
-                 */
-                if ((hostname == null || hostname.length() == 0))
-                    hostname = clientAddr.getHostAddress();
             }
+
+            /**
+             * If at this point the hostname is not known, determine it by all methods
+             * but do not update host table.
+             */
+            if ( hostname == null || hostname.length() == 0 ) {
+                hostname = SessionEvent.determineBestHostname( clientAddr, clientIntf, serverAddr, serverIntf );
+            }
+            sessionGlobalState.attach( NodeSession.KEY_PLATFORM_HOSTNAME, hostname );
             
             PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().nodeManager().node("untangle-node-policy-manager");
             if ( policyManager != null && entitled ) {
@@ -853,6 +839,36 @@ public abstract class NetcapHook implements Runnable
                 logger.debug( "" + relay.source() + " --> " + relay.sink());
             }
         }
+    }
+
+    /**
+     * Update the hostname if its known
+     */
+    private String lookupAndUpdateHostname( HostTableEntry hostEntry, DeviceTableEntry deviceEntry, InetAddress clientAddr )
+    {
+        String hostname = null;
+
+        HostnameLookup reports = (HostnameLookup) UvmContextFactory.context().nodeManager().node("untangle-node-reports");
+        if ( reports != null ) {
+            hostname = reports.lookupHostname( clientAddr );
+        }
+        if ( hostname != null && hostname.length() > 0 ) {
+            if ( hostEntry != null && !hostEntry.isHostnameKnown() ) hostEntry.setHostname( hostname );
+            if ( deviceEntry != null && !deviceEntry.isHostnameKnown() ) deviceEntry.setHostname( hostname );
+            return hostname;
+        }
+
+        HostnameLookup router = (HostnameLookup) UvmContextFactory.context().nodeManager().node("untangle-node-router");
+        if ( router != null ) {
+            hostname = router.lookupHostname( clientAddr );
+        }
+        if ( hostname != null && hostname.length() > 0 ) {
+            if ( hostEntry != null && !hostEntry.isHostnameKnown() ) hostEntry.setHostname( hostname );
+            if ( deviceEntry != null && !deviceEntry.isHostnameKnown() ) deviceEntry.setHostname( hostname );
+            return hostname;
+        }
+
+        return hostname;
     }
 
     /* Get the desired timeout for the vectoring machine */
