@@ -26,6 +26,7 @@ import com.untangle.uvm.node.SessionTuple;
 import com.untangle.uvm.node.SessionTuple;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.node.NodeSettings;
+import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.network.InterfaceSettings;
 
 /**
@@ -127,8 +128,11 @@ public class SessionMonitorImpl implements SessionMonitor
                     session.setRemoteAddr( session.getPostNatServer() );
                 }
             }
-            if (session.getServerIntf() == null || session.getServerIntf() == 0 ) {
+            if ( session.getServerIntf() == null || session.getServerIntf() == 0 ) {
                 session.setServerIntf(Integer.valueOf(-1));
+            }
+            if ( session.getHostname() == null || session.getHostname().length() == 0 ) {
+                session.setHostname( SessionEvent.determineBestHostname( session.getPreNatClient(), session.getClientIntf(), session.getPostNatServer(), session.getServerIntf() ) );
             }
             session.setPriority(session.getQosPriority()); 
 
@@ -170,6 +174,7 @@ public class SessionMonitorImpl implements SessionMonitor
                     session.setBypassed(Boolean.FALSE);
                     session.setClientIntf(new Integer(sessionState.getClientIntf()));
                     session.setServerIntf(new Integer(sessionState.getServerIntf()));
+                    session.setHostname(sessionState.getSessionEvent().getHostname());
 
                     session.setClientCountry(sessionState.getSessionEvent().getClientCountry());
                     session.setClientLatitude(sessionState.getSessionEvent().getClientLatitude());                    
