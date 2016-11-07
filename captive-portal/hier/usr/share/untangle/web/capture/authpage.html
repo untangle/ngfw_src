@@ -1,108 +1,53 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html>
 <head>
+<meta name="viewport" content="initial-scale=1.0, width=device-width">
 <link href="/images/favicon-captive-portal.png" type="image/png" rel="icon"></link>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<script type="text/javascript"> function FocusOnInput() { document.getElementById("username").focus(); } </script>
-<script type="text/javascript" src="/capture/secure.js"></script>
+
 <title>$.CompanyName.$ | $.PageTitle.$</title>
 <style type="text/css">
-.styleTitle {
-	font-family: "Myriad Pro", "Myriad Web Pro", Myriad, Arial, Helvetica, sans-serif;
-	font-weight: bold;
-	font-size: 34px;
-	color: #4c4c4c;
-	margin-left: 40px;
-	}
-.styleSubTitle {
-	font-size: 22px;
-	margin-left: 0;
+/* <![CDATA[ */
+@import url(/images/base.css);
+/* ]]> */
+input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 1000px white inset;
 }
-.styleNormal {
-	font-family: "Myriad Pro", "Myriad Web Pro", Myriad, Arial, Helvetica, sans-serif;
-	color: #4c4c4c;
-}
-.styleProblem {
-	font-family: "Myriad Pro", "Myriad Web Pro", Myriad, Arial, Helvetica, sans-serif;
-	color: rgb(255,0,0);
-}
-.button {
-	border:1px solid #519737;
-	-webkit-box-shadow: #B4B5B5 2px 2px 2px;
-	-moz-box-shadow: #B4B5B5 2px 2px 2px ;
-	box-shadow: #B4B5B5 2px 2px 2px  ;
-	-webkit-border-radius: 3px;
-	-moz-border-radius: 3px;
-	border-radius: 3px;font-size:17px;
-	font-family: "Myriad Pro", "Myriad Web Pro", Myriad, Arial, Helvetica, sans-serif;
-	padding: 5px 10px 5px 10px;
-	text-shadow: -1px -1px 0 rgba(0,0,0,0.3);
-	font-weight:bold;
-	text-align: center;
-	color: #FFFFFF;
-	background-color: #68BD49;
-	background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #68BD49), color-stop(100%, #008c00));
-	background-image: -webkit-linear-gradient(top, #68BD49, #008c00);
-	background-image: -moz-linear-gradient(top, #68BD49, #008c00);
-	background-image: -ms-linear-gradient(top, #68BD49, #008c00);
-	background-image: -o-linear-gradient(top, #68BD49, #008c00);
-	background-image: linear-gradient(top, #68BD49, #008c00);filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#68BD49, endColorstr=#008c00);
-}
-
-.button:hover{
-	border:1px solid #3f752b;
-	background-color: #539b38;
-	background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#539b38), color-stop(100%, #005900));
-	background-image: -webkit-linear-gradient(top, #539b38, #005900);
-	background-image: -moz-linear-gradient(top, #539b38, #005900);
-	background-image: -ms-linear-gradient(top, #539b38, #005900);
-	background-image: -o-linear-gradient(top, #539b38, #005900);
-	background-image: linear-gradient(top, #539b38, #005900);filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#539b38, endColorstr=#005900);
-}
-
 </style>
-<script language="JavaScript">
+
+<script type="text/javascript" src="/capture/secure.js"></script>
+
+<script language="javascript">
     $.SecureEndpointCheck.$
 </script>
+
 </head>
-<body style="background-color: #fff; background: #4c4c4c;" onload="FocusOnInput()">
-<br />
-<div style="margin: 0 auto; width: 600px; text-align: left; background: #fff; padding: 0px; -webkit-border-radius: 10px; -moz-border-radius: 10px; border-radius: 10px;">
-<div style="padding: 20px 60px 40px 80px;">
-<table border=0><tr>
-	<td><img src="/images/BrandingLogo.png" alt="BrandingLogo" title="BrandingLogo" /></td>
-	<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-	<td><h1 class="styleTitle">$.PageTitle.$</h1></td>
-</tr><tr>
-	<td colspan=3>&nbsp;</td>
-</tr><tr>
-	<td colspan=3><center><img src="/capture/door.jpg" alt="Captive Portal" title="Captive Portal" /></center></td>
-</tr></table>
+<body>
 
-<table border=0>
-<tr><td><h3 class="styleTitle styleSubTitle">$.WelcomeText.$</h3></td></tr>
-<tr><td style="width: 480px" class="styleNormal">
-<p>$.MessageText.$</p>
-</td></tr>
-</table>
+<header>
+    <img src="/images/BrandingLogo.png"><br/>
+    <h1 style="letter-spacing: normal; color: #CCC; font-weight: bold;">$.PageTitle.$</h1>
+</header>
 
-<form autocomplete="off" method="post" action="/capture/handler.py/authpost">
-<table border=0 cellpadding=8>
-	<tr><td><span class="styleNormal">$.UserLabel.$</span></td><td><input name="username" id="username" style="width: 200px" type="text" autocapitalize="off" /></td></tr>
-	<tr><td><span class="styleNormal">$.PassLabel.$</span></td><td><input name="password" id="password" style="width: 200px" type="password" autocomplete="off" /></td></tr>
-	<tr><td colspan=2 style="text-align: right;"><button type="submit" class="button" title="Login" name="submit" id="submit">Log In</button></td></tr>
-</table>
-	<input name="method" id="method" type="hidden" value="$.method.$" />
-	<input name="nonce" id="nonce" type="hidden" value="$.nonce.$" />
-	<input name="appid" id="appid" type="hidden" value="$.appid.$" />
-	<input name="host" id="host" type="hidden" value="$.host.$" />
-	<input name="uri" id="uri" type="hidden" value="$.uri.$" />
-</form>
-<table border=0>
-<tr><td class="styleProblem">$.ProblemText.$</td></tr>
-<tr><td class="styleNormal">$.FooterText.$</td></tr>
-</table>
-</div>
+<div class="form-login" style="padding: 15px;">
+    <form autocomplete="off" method="post" action="/capture/handler.py/authpost">
+        <h2>$.WelcomeText.$</h2>
+        <p style="text-align: center; font-weight: bold; margin: 20px 0;">$.MessageText.$</p>
+        <input name="method" id="method" type="hidden" value="$.method.$" />
+        <input name="nonce" id="nonce" type="hidden" value="$.nonce.$" />
+        <input name="appid" id="appid" type="hidden" value="$.appid.$" />
+        <input name="host" id="host" type="hidden" value="$.host.$" />
+        <input name="uri" id="uri" type="hidden" value="$.uri.$" />
+
+        <p style="text-align: center; color: red; font-size: 11px; margin: 0; line-height: 30px;">$.ProblemText.$</p>
+
+        <input id="username" type="text" name="username" autocapitalize="off" placeholder="$.UserLabel.$"/>
+        <input id="password" type="password" name="password" autocomplete="off" placeholder="$.PassLabel.$"/>
+
+        <button id="submit" type="submit" name="submit" title="Login">Log In</button>
+        <br/><br/>
+        <p style="text-align: center; font-size: 11px; line-height: normal;">$.FooterText.$</p>
+
+    </form>
 </div>
 <!--DEBUG-->
 </body>
