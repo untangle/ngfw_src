@@ -1,39 +1,40 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html>
 <head>
+<meta name="viewport" content="initial-scale=1.0, width=device-width">
 <link href="/images/favicon-captive-portal.png" type="image/png" rel="icon"></link>
-<meta content="en-us" http-equiv="Content-Language" />
-<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+
 <title>$.CompanyName.$ | $.PageTitle.$</title>
 <style type="text/css">
+/* <![CDATA[ */
+@import url(/images/base.css);
+/* ]]> */
+</style>
+
+<style type="text/css">
 .styleTitle {
-	font-family: "Myriad Pro", "Myriad Web Pro", Myriad, Arial, Helvetica, sans-serif;
-	font-weight: bold;
-	font-size: 34px;
-	color: #4c4c4c;
-	margin-left: 40px;
+    font-size: 20px !important;
 }
 .styleNormal {
-	font-family: "Myriad Pro", "Myriad Web Pro", Myriad, Arial, Helvetica, sans-serif;
-	color: #4c4c4c;
+    color: #4c4c4c !important;
+    font-weight: normal !important;
 }
 .styleProblem {
-	font-family: "Myriad Pro", "Myriad Web Pro", Myriad, Arial, Helvetica, sans-serif;
-	color: rgb(255,0,0);
+    color: rgb(255,0,0) !important;
+    font-weight: normal !important;
 }
 </style>
 </head>
-<body style="background-color: #F4F4F4">
-<table border=0><tr>
-	<td><img src="/images/BrandingLogo.png" /></td>
-	<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-	<td><h1 class="styleTitle">$.PageTitle.$</h1></td>
-</tr><tr>
-	<td colspan=3>&nbsp;</td>
-</tr><tr>
-	<td colspan=3><center><img src="/capture/nodeicon.png" /></center></td>
-</tr><tr>
-    <td colspan=3><center><h2 class="$.ExitStyle.$">$.ExitMessage.$</h2></center></td>
-</table>
+<body>
+
+<header>
+    <img src="/images/BrandingLogo.png"><br/>
+    <h1 style="letter-spacing: normal; color: #CCC; font-weight: bold;">$.PageTitle.$</h1>
+</header>
+
+<div class="form-login" style="padding: 15px;">
+    <h2 class="$.ExitStyle.$" style="border: 0; padding: 10px; margin: 30px 0; font-weight: bold; letter-spacing: normal;">$.ExitMessage.$</h2>
+</div>
+<!--DEBUG-->
 </body>
 </html>
