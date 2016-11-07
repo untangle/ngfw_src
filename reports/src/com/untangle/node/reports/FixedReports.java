@@ -107,6 +107,7 @@ public class FixedReports
     private static final Pattern NonGreedyVariablePattern;
     private static final Pattern NumericOnlyPattern;
     private static final Map<ParsePass, String> ParsePassActiveVariables;
+    private static final ArrayList<String> ConfigCategories;
 
     static {
         TagPatterns = new HashMap<Tag, Pattern>();
@@ -138,9 +139,19 @@ public class FixedReports
 
         ParsePassActiveVariables = new HashMap<ParsePass, String>();
         ParsePassActiveVariables.put(ParsePass.POST, "url");
+
+        ConfigCategories = new ArrayList<String>();
+        ConfigCategories.add("Hosts");
+        ConfigCategories.add("Devices");
+        ConfigCategories.add("Network");
+        ConfigCategories.add("Administration");
+        ConfigCategories.add("System");
+        ConfigCategories.add("Shield");
+
     }
 
     private static final Pattern Conditional = Pattern.compile("(.+?)\\s*(\\=\\=|\\!\\=)\\s*(.+)");
+    private static final Pattern LogicalOperators = Pattern.compile("(.+?)\\s+(and|or)\\s+(.+)");
 
     /*
      * Variable context
@@ -404,11 +415,11 @@ public class FixedReports
         variableKeyValues.put("startDate", startDate);
         variableKeyValues.put("endDate", endDate);
         variableKeyValues.put("title", emailProfile.getTitle() + ": " + dateFormatter.format(startDate));
+        variableKeyValues.put("emailProfile", emailProfile);
 
         currentParsePass = ParsePass.PRE;
         parseBuffer(inputLines, outputLines, variableKeyValues);
         inputLines = outputLines;
-        logger.warn(inputLines.size());
 
         currentParsePass = ParsePass.POST;
         if(recipientsWithoutOnlineAccess.size() > 0 ){
@@ -582,8 +593,7 @@ public class FixedReports
                                 break;
                             case IF:
                                 if( parseContext.buildLoopBuffer == false){
-                                    // See what conditional match is; if null consider it a mode delay
-                                    parseContext.pushConditional(parseConditional(tag.group(1)));
+                                    parseContext.pushConditional(parseCondition(tag.group(1)));
                                     if(parseContext.getCurrentConditionalMatch(null) == false){
                                         parseContext.allowOutput = parseContext.getCurrentConditionalMatch(true);
                                         parseContext.ignoreLine = true;
@@ -682,8 +692,45 @@ public class FixedReports
      * Proces conditional for IF statements
      */
     // !!! ?? try to merge code with filter conditional
-    private Boolean parseConditional(String condition)
+    private Boolean parseCondition(String condition)
     {
+        Boolean match = false;
+
+        String left;
+        String operation;
+        String right;
+
+        Boolean leftConditionalMatch = true;
+        Boolean rightConditionalMatch = true;
+
+        Matcher logicalTags = LogicalOperators.matcher(condition);
+        Boolean logicalProcessing = false;
+        while(logicalTags.find()){
+            logicalProcessing = true;
+            left = logicalTags.group(1);
+            operation = logicalTags.group(2);
+            right = logicalTags.group(3);
+
+            // logger.warn("parseConditional, logical: left=[" + left + "], operation=[" + operation + "], right=[" + right + "]");
+            leftConditionalMatch = parseConditional(left);
+            rightConditionalMatch = parseConditional(left);
+            // logger.warn("parseConditional, logical: leftConditionalMatch=" + leftConditionalMatch + ", rightConditionalMatch=" + rightConditionalMatch);
+
+            if(operation.equals("and")){
+                match = (leftConditionalMatch && rightConditionalMatch);
+            }else if(operation.equals("or")){
+                match = (leftConditionalMatch || rightConditionalMatch);
+            }
+
+        }
+        // logger.warn("logical parseCondition: match="+match);
+        if(logicalProcessing == false){
+            match = parseConditional(condition);
+        }
+        return match;
+    }
+
+    private Boolean parseConditional(String condition){
         Boolean match = false;
 
         String left;
@@ -693,9 +740,10 @@ public class FixedReports
         Matcher tag = Conditional.matcher(condition);
         while(tag.find()){
             left = tag.group(1);
-
             operation = tag.group(2);
             right = tag.group(3);
+
+            // logger.warn("parseConditional, conditional: left=[" + left + "], operation=[" + operation + "], right=[" + right + "]");
 
             if(right.equals("\"\"")){
                 /* Empty string */
@@ -740,7 +788,9 @@ public class FixedReports
         }
 
         return match;
+
     }
+
 
     /*
      * Add variables as buffered writes.  
@@ -993,7 +1043,7 @@ public class FixedReports
          * If selector has defined variables, process them
          */
         if(object != null &&
-            variableSelector.filters.size() > 0){
+           variableSelector.filters.size() > 0){
             if(object.getClass().getName().contains(".LinkedList") || 
                 object.getClass().getName().contains(".ArrayList")){
 
