@@ -160,7 +160,19 @@ def nukeFailoverRules():
     nodeDataWanFailover = nodeWanFailover.getSettings()
     nodeDataWanFailover["tests"]["list"] = []
     nodeWanFailover.setSettings(nodeDataWanFailover)
-        
+    
+def sameWanNetwork(indexWANs):
+    previousExtIP = None
+    wan_match = False
+    for wanIndexTup in indexWANs:
+        currentExtIP = wanIndexTup[2]
+        if (previousExtIP == currentExtIP):
+            wan_match = True
+            break
+        else:
+            previousExtIP = currentExtIP    
+    return wan_match
+            
 class WanBalancerTests(unittest2.TestCase):
     
     @staticmethod
@@ -397,6 +409,8 @@ class WanBalancerTests(unittest2.TestCase):
             raise unittest2.SkipTest('Skipping a time consuming test')
         if (len(indexOfWans) < 2):
             raise unittest2.SkipTest("Need at least two WANS for combination of wan-balancer and wan failover tests")
+        if sameWanNetwork(indexOfWans):
+            raise unittest2.SkipTest("WANS on same network")
 
         netsettings = uvmContext.networkManager().getNetworkSettings()
         for wanIndexTup in indexOfWans:
