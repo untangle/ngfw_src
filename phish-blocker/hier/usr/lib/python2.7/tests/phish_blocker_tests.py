@@ -163,20 +163,27 @@ class PhishBlockerTests(unittest2.TestCase):
         nodeData['smtpConfig']['msgAction'] = "MARK"
         node.setSettings(nodeData)
         # Get the IP address of test.untangle.com
-        result = remote_control.runCommand("host "+smtpServerHost, stdout=True)
-        match = re.search(r'\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
-        ip_address_testuntangle = match.group()
+        ip_address_testuntangle = socket.gethostbyname(smtpServerHost)
 
-        sendPhishMail(mailfrom="test030")
+        timeout = 12
+        found = False
+        email_index = 20;
+        while (not found and timeout > 0):
+            time.sleep(3)
+            email_index += 1
+            from_address = "test0" + str(email_index)
+            sendPhishMail(mailfrom=from_address)
 
-        events = global_functions.get_events('Phish Blocker','All Phish Events',None,1)
-        assert(events != None)
-        found = global_functions.check_events( events.get('list'), 5,
-                                            'c_server_addr', ip_address_testuntangle,
-                                            's_server_port', 25,
-                                            'addr', 'qa@example.com',
-                                            'c_client_addr', remote_control.clientIP,
-                                            'phish_blocker_action', 'M')
+            events = global_functions.get_events('Phish Blocker','All Phish Events',None,1)
+            assert(events != None)
+            found = global_functions.check_events( events.get('list'), 5,
+                                                'c_server_addr', ip_address_testuntangle,
+                                                's_server_port', 25,
+                                                'addr', 'qa@example.com',
+                                                'c_client_addr', remote_control.clientIP,
+                                                'phish_blocker_action', 'M')
+            timeout -= 1
+
         assert( found )
 
     def test_040_smtpDropPhishBlockerTest(self):
@@ -187,10 +194,7 @@ class PhishBlockerTests(unittest2.TestCase):
         nodeData['smtpConfig']['msgAction'] = "DROP"
         node.setSettings(nodeData)
         # Get the IP address of test.untangle.com
-        result = remote_control.runCommand("host "+smtpServerHost, stdout=True)
-        match = re.search(r'\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
-        ip_address_testuntangle = match.group()
-
+        ip_address_testuntangle = socket.gethostbyname(smtpServerHost)
         sendPhishMail(mailfrom="test040")
 
         events = global_functions.get_events('Phish Blocker','All Phish Events',None,1)
