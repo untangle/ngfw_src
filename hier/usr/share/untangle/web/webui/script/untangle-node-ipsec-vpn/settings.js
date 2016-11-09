@@ -997,6 +997,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                 },{
                     xtype: 'textfield',
                     name: 'virtualSecret',
+                    allowBlank: false,
                     width: 500,
                     padding: '0 0 0 0',
                     dataIndex: 'virtualSecret',
@@ -1278,6 +1279,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                     dataIndex: 'virtualNetworkPool',
                     fieldLabel: i18n._("GRE Address Pool"),
                     labelWidth: 150,
+                    allowBlank: false,
                     value: this.getSettings().virtualNetworkPool,
                     vtype: 'cidrBlock',
                     listeners: {
