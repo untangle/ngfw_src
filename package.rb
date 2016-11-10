@@ -13,6 +13,3 @@ web_filter = HadesBuildEnv['untangle-node-web-filter']
 NodeBuilder.makeNode(HadesBuildEnv, 'untangle-node-web-filter', 'web-filter', deps )
 deps << web_filter['src']
 
-ServletBuilder.new(web_filter, 'com.untangle.node.web_filter.jsp', "./web-filter/servlets/web-filter", [], deps, [], [BuildEnv::SERVLET_COMMON])
-
-
