@@ -13,9 +13,6 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.AdminSettings;
-import com.untangle.uvm.PasswordUtil;
-import com.untangle.uvm.AdminUserSettings;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipelineConnector;
@@ -34,8 +31,6 @@ import com.untangle.node.web_filter.WebFilterEvent;
 
 public class WebFilterApp extends WebFilterBase
 {
-    private static int web_filter_deployCount = 0;
-
     private final Logger logger = Logger.getLogger(getClass());
 
     private final WebFilterDecisionEngine engine = new WebFilterDecisionEngine(this);
@@ -55,22 +50,7 @@ public class WebFilterApp extends WebFilterBase
     {
         super( nodeSettings, nodeProperties );
     }
-    
-    public boolean unblockSite(String nonce, boolean global, String password)
-    {
-        if ( !this.verifyPassword(password)) {
-            if ( this.logger.isInfoEnabled()) {
-                logger.info( "Unable to verify the password for nonce: '" + nonce + "'" );
-            }
-            return false;
-        } else {
-            if ( this.logger.isInfoEnabled()) {
-                logger.info( "Verified the password for nonce: '" + nonce + "'" );
-            }
-            return super.unblockSite(nonce, global);
-        }
-    }
-    
+
     public void clearCache( boolean expireAll )
     {
         this.engine.clearCache( expireAll );
@@ -97,45 +77,6 @@ public class WebFilterApp extends WebFilterBase
     {
         return this.engine.encodeDnsQuery( domain, uri );
     }
-    
-    private boolean verifyPassword( String password )
-    {
-        WebFilterSettings settings = getSettings();
-        
-        if (settings == null) {
-            logger.info( "Settings are null, assuming password is not required." );
-            return true;
-        }
-
-        if (!settings.getUnblockPasswordEnabled()) {
-            return true;
-        }
-        
-        if (password==null) {
-            return false;
-        }
-
-        if (settings.getUnblockPasswordAdmin()) {
-            AdminSettings as = UvmContextFactory.context().adminManager().getSettings();
-            for( AdminUserSettings user : as.getUsers()) {
-                if ( user.getUsername().equals("admin")) {
-                    if ( PasswordUtil.check(password,user.trans_getPasswordHash())) {
-                        return true;
-                    }
-
-                    return false;
-                }
-            }
-
-            return false;                                    
-        }
-        
-        if ( password.equals( settings.getUnblockPassword())) {
-            return true;
-        } else {
-            return false;
-        }
-    }
 
     @Override
     public DecisionEngine getDecisionEngine()
@@ -153,22 +94,6 @@ public class WebFilterApp extends WebFilterBase
         engine.getDiaKey();
         
         super.preStart( isPermanentTransition );
-    }
-
-    @Override
-    protected void postStart( boolean isPermanentTransition )
-    {
-        super.postStart( isPermanentTransition );
-
-        e_deployWebAppIfRequired(logger);
-    }
-    
-    @Override
-    protected void postStop( boolean isPermanentTransition )
-    {
-        super.postStop( isPermanentTransition );
-
-        e_unDeployWebAppIfRequired(logger);
     }
 
     @Override
@@ -214,34 +139,6 @@ public class WebFilterApp extends WebFilterBase
 
         addCategories(categories);
         settings.setCategories(categories);
-    }
-
-    private static synchronized void e_deployWebAppIfRequired(Logger logger)
-    {
-        web_filter_deployCount = web_filter_deployCount + 1;
-        if (web_filter_deployCount != 1) {
-            return;
-        }
-
-        if ( UvmContextFactory.context().tomcatManager().loadServlet("/web-filter", "web-filter") != null ) {
-            logger.debug("Deployed WebFilter WebApp");
-        } else {
-            logger.error("Unable to deploy WebFilter WebApp");
-        }
-    }
-
-    private static synchronized void e_unDeployWebAppIfRequired(Logger logger)
-    {
-        web_filter_deployCount = web_filter_deployCount - 1;
-        if (web_filter_deployCount != 0) {
-            return;
-        }
-
-        if (UvmContextFactory.context().tomcatManager().unloadServlet("/web-filter")) {
-            logger.debug("Unloaded WebFilter WebApp");
-        } else {
-            logger.warn("Unable to unload WebFilter WebApp");
-        }
     }
 
     private boolean isLicenseValid()
