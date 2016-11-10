@@ -3,11 +3,6 @@
 url='http://localhost/'
 wh=$(xdpyinfo | awk '/dimensions:/ { gsub(/x/, ",", $2) ; print $2 }')
 
-# prefer chromium
-if [ -f /usr/bin/chromium ] ; then
-    # --no-first-run to hide first run popup dialog
-    # https://techblog.willshouse.com/2014/06/18/hide-you-can-search-from-here-with-google-in-chromium/
-    /usr/bin/chromium --window-size=$wh --no-first-run $url 
-else
-    /usr/bin/firefox -width ${wh/,*} -height ${wh/*,} $url
-fi
+# --no-first-run to hide first run popup dialog
+# https://techblog.willshouse.com/2014/06/18/hide-you-can-search-from-here-with-google-in-chromium/
+/usr/bin/chromium --window-size=$wh --no-first-run $url 
