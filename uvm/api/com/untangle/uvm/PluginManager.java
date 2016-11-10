@@ -7,4 +7,7 @@ import java.io.File;
 
 public interface PluginManager
 {
+    void loadPlugins();
+
+    void unloadPlugin( String className );
 }

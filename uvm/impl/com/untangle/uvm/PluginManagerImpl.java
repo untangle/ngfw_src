@@ -58,13 +58,9 @@ public class PluginManagerImpl implements PluginManager
     }
 
     /**
-     * This loads the specified class name
-     * It will call the instance method to create an instance, then create a thread and call run()
-     *
-     * If the class has already been loaded it will stop the previous instance
+     * Unload the plugin (if it exists)
      */
-    @SuppressWarnings({"rawtypes","unchecked"})
-    private void loadPlugin( String className )
+    public void unloadPlugin( String className )
     {
         try {
             Plugin previousInstance = loadedPlugins.get( className );
@@ -77,6 +73,18 @@ public class PluginManagerImpl implements PluginManager
         } catch (Throwable t) {
             logger.warn("Extension exception: ", t);
         }
+    }
+    
+    /**
+     * This loads the specified class name
+     * It will call the instance method to create an instance, then create a thread and call run()
+     *
+     * If the class has already been loaded it will stop the previous instance
+     */
+    @SuppressWarnings({"rawtypes","unchecked"})
+    private void loadPlugin( String className )
+    {
+        unloadPlugin( className );
 
         try {
             logger.info("Loading   plugin: " + className);
@@ -89,7 +97,7 @@ public class PluginManagerImpl implements PluginManager
                 logger.info("Starting  plugin: " + className + "@" + plugin.hashCode());
                 Thread thread = new Thread(plugin);
                 thread.start();
-                logger.info("Started   plugin: " + className + "@" + plugin.hashCode());
+                logger.info("Started   plugin: " + className + "@" + plugin.hashCode() + " " + thread);
 
                 loadedPlugins.put( className, plugin );
             }
