@@ -7,3 +7,6 @@ NodeBuilder.makeBase(BuildEnv::SRC, 'untangle-base-web-filter', 'web-filter-base
 
 deps = [web_filter['src'], http['src']]
 
+ServletBuilder.new(web_filter, 'com.untangle.node.web_filter.jsp', "./web-filter-base/servlets/web-filter", [], deps, [], [BuildEnv::SERVLET_COMMON])
+
+
