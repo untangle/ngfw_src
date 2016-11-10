@@ -18,7 +18,7 @@ ENV['JAVA_HOME'] = "/usr/lib/jvm/#{jvm}"
 
 $DevelBuild = ARGV.grep(/install/).empty?
 
-POTENTIAL_SRC_HOMES = [  ENV['SRC_HOME'], '../../work/src', '../../src', '../ngfw_src' ]
+POTENTIAL_SRC_HOMES = [  ENV['SRC_HOME'], '../ngfw_src' ]
 POTENTIAL_SRC_HOMES << '.' unless `pwd` =~ /hades/
 SRC_HOME = POTENTIAL_SRC_HOMES.compact.find do |d|
   File.exist?(d)
