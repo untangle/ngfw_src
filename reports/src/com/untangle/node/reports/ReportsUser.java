@@ -19,7 +19,7 @@ public class ReportsUser implements Serializable
     private boolean emailSummaries = true;
     private byte[] passwordHash = null;
     private boolean onlineAccess;
-    private List<Integer> emailProfileIds;
+    private List<Integer> emailTemplateIds;
 
     public ReportsUser() {}
 
@@ -38,8 +38,8 @@ public class ReportsUser implements Serializable
     public byte[] trans_getPasswordHash() { return this.passwordHash; }
     public void setPasswordHash( byte[] newValue ) { this.passwordHash = newValue; }
 
-    public List<Integer> getEmailProfileIds() { return this.emailProfileIds; }
-    public void setEmailProfileIds( List<Integer> newValue ) { this.emailProfileIds = newValue; }
+    public List<Integer> getEmailTemplateIds() { return this.emailTemplateIds; }
+    public void setEmailTemplateIds( List<Integer> newValue ) { this.emailTemplateIds = newValue; }
 
     public String getPassword()
     {
