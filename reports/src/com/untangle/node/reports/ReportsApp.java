@@ -70,7 +70,6 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
     protected static EventReaderImpl eventReader = null;
 
     private ReportsSettings settings;
-    private FixedReports fixedreports;
     
     public ReportsApp( NodeSettings nodeSettings, NodeProperties nodeProperties )
     {
@@ -190,9 +189,9 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         flushEvents();
         
         synchronized (this) {
-            FixedReports fixedReports = new FixedReports();
             String url = "https://" + UvmContextFactory.context().networkManager().getPublicUrl() + "/reports/";
             for( EmailTemplate emailTemplate : settings.getEmailTemplates() ){
+                FixedReports fixedReports = new FixedReports();
                 List<ReportsUser> users = new LinkedList<ReportsUser>();
                 for ( ReportsUser user : settings.getReportsUsers() ) {
                     if( user.getEmailSummaries() && user.getEmailTemplateIds().contains(emailTemplate.getTemplateId()) ){
