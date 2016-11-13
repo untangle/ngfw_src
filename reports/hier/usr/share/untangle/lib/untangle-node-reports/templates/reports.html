@@ -146,7 +146,6 @@ Summary
 		{% for report in reportsNode.getReportsManager.getReportEntries,category %}
 			{% for uniqueId in emailTemplate.getEnabledConfigIds %}
 				{% if uniqueId == "_all" or report.getUniqueId == uniqueId %}
-					After IF {{ uniqueId }}
 					{% if report.getType != EVENT_LIST %}
 						{% cycle rowColors %}
 						<tr style="background-color:{{ rowColors }};">
