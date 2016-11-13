@@ -173,6 +173,10 @@ img.icon-drag {
     background-image: url(../images/admin/icons/icon_edit_row.gif);
 }
 
+.x-btn .icon-copy {
+    background-image: url(../images/admin/icons/icon_copy_row.gif);
+}
+
 /* import row button icon */
 .x-btn .icon-import {
     background-image: url(../images/admin/icons/icon_import.gif);
@@ -196,6 +200,13 @@ img.icon-drag {
 /* edit row icon */
 .icon-edit-row {
     background: transparent url(../images/admin/icons/icon_edit_row.gif) no-repeat center center;
+    width: 100%;
+    cursor: pointer;
+    height: 16px;
+}
+/* copy row icon */
+.icon-copy-row {
+    background: transparent url(../images/admin/icons/icon_copy_row.gif) no-repeat center center;
     width: 100%;
     cursor: pointer;
     height: 16px;
