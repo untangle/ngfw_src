@@ -1321,6 +1321,8 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 flex: 1,
                 name: 'Email Templates',
                 settingsCmp: this,
+                hasCopy: true,
+                copyField: 'title',
                 addAtTop: false,
                 title: i18n._("Email Templates"),
                 hasReadOnly: true,
