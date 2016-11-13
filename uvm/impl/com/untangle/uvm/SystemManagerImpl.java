@@ -492,6 +492,9 @@ public class SystemManagerImpl implements SystemManager
 
     public void upgrade()
     {
+        // Call pre-upgrade hook
+        UvmContextFactory.context().hookManager().callCallbacks( HookManager.UVM_PRE_UPGRADE, null );
+
         try {
             ExecManagerResultReader reader = UvmContextFactory.context().execManager().execEvil( UPGRADE_SCRIPT + " -q");
             reader.waitFor();

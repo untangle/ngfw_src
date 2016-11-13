@@ -350,8 +350,10 @@ public class SettingsManagerImpl implements SettingsManager
                     if (fileWriter != null) {
                         fileWriter.close();
                     }
-                } catch (Exception e) {
-                }
+                } catch (Exception e) {}
+
+                // call settings change hook
+                UvmContextFactory.context().hookManager().callCallbacks( HookManager.UVM_SETTINGS_CHANGE, outputFileName );
             }
             return;
         }
