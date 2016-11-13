@@ -37,6 +37,11 @@ public interface ReportsManager
     ReportEntry getReportEntry( String category, String title );
     
     /**
+     * Get the report entry via its unique id
+     */
+    ReportEntry getReportEntry( String uniqueId );
+
+    /**
      * Save an individual report entry
      * If an entry exists with the same uniqueId in the current entries, it will be overwritten.
      * If an entry does not exist with the same uniqueId, it will be appended to the existing entries
