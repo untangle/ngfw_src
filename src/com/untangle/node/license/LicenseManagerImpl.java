@@ -35,6 +35,7 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
+import com.untangle.uvm.HookManager;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.util.Pulse;
@@ -856,6 +857,10 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
          */
         this.settings = newSettings;
 
+        /**
+         * Licenses are only saved when changed - call license changed hook
+         */
+        UvmContextFactory.context().hookManager().callCallbacks( HookManager.LICENSE_CHANGE, null );
     }
     
     /**
