@@ -100,38 +100,38 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         }
 
         /**
-         * Set the Email Profile Ids
+         * Set the Email Template Ids
          */
-        HashMap<Integer,Integer> mapOldNewEmailProfileIds = new HashMap<Integer,Integer>();
+        HashMap<Integer,Integer> mapOldNewEmailTemplateIds = new HashMap<Integer,Integer>();
         idx = 0;
-        for (EmailProfile profile : newSettings.getEmailProfiles()) {
+        for (EmailTemplate template : newSettings.getEmailTemplates()) {
             idx = ++idx;
-            mapOldNewEmailProfileIds.put(profile.getProfileId(), idx);
-            profile.setProfileId(idx);
+            mapOldNewEmailTemplateIds.put(template.getTemplateId(), idx);
+            template.setTemplateId(idx);
         }
 
         /* Manage id changes for users with email report flag. */
         if ( newSettings.getReportsUsers().size() > 0){
             for ( ReportsUser user : newSettings.getReportsUsers() ) {
                 if (user.getEmailSummaries()){
-                    if(user.getEmailProfileIds().size() > 0) {
+                    if(user.getEmailTemplateIds().size() > 0) {
                         /* Walk existing list and map to new values. */
-                        List<Integer> oldEmailProfileIds = user.getEmailProfileIds();
-                        LinkedList<Integer> newEmailProfileIds = new LinkedList<Integer>();
-                        Integer newEmailProfileId;
-                        for(int i = 0; i < oldEmailProfileIds.size(); i++){
-                            newEmailProfileId = mapOldNewEmailProfileIds.get(oldEmailProfileIds.get(i));
-                            if(newEmailProfileId != null){
-                                newEmailProfileIds.push(newEmailProfileId);
+                        List<Integer> oldEmailTemplateIds = user.getEmailTemplateIds();
+                        LinkedList<Integer> newEmailTemplateIds = new LinkedList<Integer>();
+                        Integer newEmailTemplateId;
+                        for(int i = 0; i < oldEmailTemplateIds.size(); i++){
+                            newEmailTemplateId = mapOldNewEmailTemplateIds.get(oldEmailTemplateIds.get(i));
+                            if(newEmailTemplateId != null){
+                                newEmailTemplateIds.push(newEmailTemplateId);
                             }
                         }
-                        user.setEmailProfileIds(newEmailProfileIds);
+                        user.setEmailTemplateIds(newEmailTemplateIds);
                     }
-                    if(user.getEmailProfileIds().size() == 0) {
+                    if(user.getEmailTemplateIds().size() == 0) {
                         /* If never set or all removed, add the default. */
-                        LinkedList<Integer> emailProfileIds = new LinkedList<Integer>();
-                        emailProfileIds.push(1);
-                        user.setEmailProfileIds(emailProfileIds);
+                        LinkedList<Integer> emailTemplateIds = new LinkedList<Integer>();
+                        emailTemplateIds.push(1);
+                        user.setEmailTemplateIds(emailTemplateIds);
                     }
                 }
             }
@@ -192,15 +192,15 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         synchronized (this) {
             FixedReports fixedReports = new FixedReports();
             String url = "https://" + UvmContextFactory.context().networkManager().getPublicUrl() + "/reports/";
-            for( EmailProfile emailProfile : settings.getEmailProfiles() ){
+            for( EmailTemplate emailTemplate : settings.getEmailTemplates() ){
                 List<ReportsUser> users = new LinkedList<ReportsUser>();
                 for ( ReportsUser user : settings.getReportsUsers() ) {
-                    if( user.getEmailSummaries() && user.getEmailProfileIds().contains(emailProfile.getProfileId()) ){
+                    if( user.getEmailSummaries() && user.getEmailTemplateIds().contains(emailTemplate.getTemplateId()) ){
                         users.add(user);
                     }
                 }
                 if( users.size() > 0){
-                    fixedReports.generate(emailProfile, users, url);
+                    fixedReports.generate(emailTemplate, users, url);
                 }
             }
         }        
@@ -532,11 +532,11 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         return rules;
     }
 
-    private LinkedList<EmailProfile> defaultEmailProfiles()
+    private LinkedList<EmailTemplate> defaultEmailTemplates()
     {
-        LinkedList<EmailProfile> profiles = new LinkedList<EmailProfile>();
+        LinkedList<EmailTemplate> templates = new LinkedList<EmailTemplate>();
 
-        EmailProfile emailProfile;
+        EmailTemplate emailTemplate;
         LinkedList<String> enabledConfigIds;
         LinkedList<String> enabledAppIds;
 
@@ -544,19 +544,19 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         enabledConfigIds.add("_all");
         enabledAppIds = new LinkedList<String>();
         enabledAppIds.add("_all");
-        emailProfile = new EmailProfile( I18nUtil.marktr("Reports"), I18nUtil.marktr("All available reports (default)"), enabledConfigIds, enabledAppIds);
-        emailProfile.setReadOnly(true);
-        profiles.add( emailProfile );
+        emailTemplate = new EmailTemplate( I18nUtil.marktr("Reports"), I18nUtil.marktr("All available reports (default)"), enabledConfigIds, enabledAppIds);
+        emailTemplate.setReadOnly(true);
+        templates.add( emailTemplate );
 
         enabledConfigIds = new LinkedList<String>();
         enabledConfigIds.add("_type=TEXT");
         enabledAppIds = new LinkedList<String>();
         enabledAppIds.add("_type=TEXT");
-        emailProfile = new EmailProfile( I18nUtil.marktr("Report Summary"), I18nUtil.marktr("Text only reports"), enabledConfigIds, enabledAppIds);
-        emailProfile.setReadOnly(true);
-        profiles.add( emailProfile );
+        emailTemplate = new EmailTemplate( I18nUtil.marktr("Report Summary"), I18nUtil.marktr("Text only reports"), enabledConfigIds, enabledAppIds);
+        emailTemplate.setReadOnly(true);
+        templates.add( emailTemplate );
 
-        return profiles;
+        return templates;
 
     }
 
@@ -565,7 +565,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         ReportsSettings settings = new ReportsSettings();
         settings.setVersion( 3 );
         settings.setAlertRules( defaultAlertRules() );
-        settings.setEmailProfiles( defaultEmailProfiles() );
+        settings.setEmailTemplates( defaultEmailTemplates() );
         return settings;
     }
     
@@ -741,7 +741,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         settings.setVersion( 4 );
 
         try {
-            settings.setEmailProfiles( defaultEmailProfiles() );
+            settings.setEmailTemplates( defaultEmailTemplates() );
         } catch (Exception e) {
             logger.warn("Conversion Exception",e);
         }
