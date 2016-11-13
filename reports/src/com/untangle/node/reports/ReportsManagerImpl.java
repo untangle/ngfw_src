@@ -212,6 +212,21 @@ public class ReportsManagerImpl implements ReportsManager
 
         return null;
     }
+
+    public ReportEntry getReportEntry( String uniqueId )
+    {
+        LinkedList<ReportEntry> entries = node.getSettings().getReportEntries();
+
+        if ( uniqueId == null)
+            return null;
+
+        for ( ReportEntry entry : entries ) {
+            if ( uniqueId.equals(entry.getUniqueId()) )
+                return entry;
+        }
+
+        return null;
+    }
     
     public void saveReportEntry( ReportEntry entry )
     {
