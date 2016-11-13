@@ -48,6 +48,10 @@ public class WebFilterSettings implements Serializable
     private List<GenericRule> blockedUrls = new LinkedList<GenericRule>();
     private List<GenericRule> categories = new LinkedList<GenericRule>();
 
+    // these are needed during V1 to V2 settings conversion 
+    private List<GenericRule> blockedMimeTypes = new LinkedList<GenericRule>();
+    private List<GenericRule> blockedExtensions = new LinkedList<GenericRule>();
+
     // constructors -----------------------------------------------------------
 
     public WebFilterSettings() { }
@@ -71,6 +75,12 @@ public class WebFilterSettings implements Serializable
 
     public List<GenericRule> getCategories() { return this.categories; }
     public void setCategories( List<GenericRule > categories) { this.categories = categories; }
+
+    public List<GenericRule> V1_getBlockedMimeTypes() { return blockedMimeTypes; }
+    public void setBlockedMimeTypes( List<GenericRule > blockedMimeTypes) { this.blockedMimeTypes = blockedMimeTypes; }
+
+    public List<GenericRule> V1_getBlockedExtensions() { return blockedExtensions; }
+    public void setBlockedExtensions( List<GenericRule > blockedExtensions) { this.blockedExtensions = blockedExtensions; }
 
     /**
      * Block all requests to hosts identified only by an IP address.
