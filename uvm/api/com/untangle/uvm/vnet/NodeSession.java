@@ -135,11 +135,11 @@ h     * <code>id</code> returns the session's unique identifier, a positive inte
     public final String KEY_WEB_FILTER_BEST_CATEGORY_BLOCKED = "web-filter-best-category-blocked"; /* String */
     public final String KEY_WEB_FILTER_FLAGGED = "web-filter-flagged"; /* Boolean */
     public final String KEY_WEB_FILTER_CATEGORIES = "web-filter-categories"; /* List<String> */
-    public final String KEY_WEB_FILTER_REQUEST_FILEPATH = "web-filter-request-filepath"; /* String */
-    public final String KEY_WEB_FILTER_REQUEST_FILENAME = "web-filter-request-filename"; /* String */
-    public final String KEY_WEB_FILTER_REQUEST_FILEEXT = "web-filter-request-extension"; /* String */
-    public final String KEY_WEB_FILTER_RESPONSE_CONTENT_TYPE = "web-filter-content-type"; /* String */
-    public final String KEY_WEB_FILTER_RESPONSE_FILENAME = "web-filter-response-filename"; /* String */
+    public final String KEY_WEB_FILTER_REQUEST_FILE_PATH = "web-filter-request-file-path"; /* String */
+    public final String KEY_WEB_FILTER_REQUEST_FILE_NAME = "web-filter-request-file-name"; /* String */
+    public final String KEY_WEB_FILTER_REQUEST_FILE_EXTENSION = "web-filter-request-file-extension"; /* String */
+    public final String KEY_WEB_FILTER_RESPONSE_CONTENT_TYPE = "web-filter-response-content-type"; /* String */
+    public final String KEY_WEB_FILTER_RESPONSE_FILE_NAME = "web-filter-response-file-name"; /* String */
 
     public final String KEY_APPLICATION_CONTROL_APPLICATION = "application-control-application"; /* String */
     public final String KEY_APPLICATION_CONTROL_CATEGORY = "application-control-category"; /* String */
