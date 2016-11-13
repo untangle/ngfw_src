@@ -209,31 +209,35 @@ Summary
 					</tr>
 					</table></td></tr>
 					{% for report in reports %}
-						{% if report.getType != EVENT_LIST %}
-							{% cycle rowColors %}
-							<tr style="background-color:{{ rowColors }};">
-							<td><table>
-							<tr><td valign="top" class="title">
-							{{ report.getTitle }}
-							</td></tr>
-							<tr><td valign="top" class="description">
-							{{ report.getDescription }}
-							</td></tr>
-							<tr><td align="center">
-							{% if report.getType == TEXT %}
-								{% with reportRows=reportsNode.getReportsManager.getDataForReportEntry,report,startDate,endDate,null,-1 %}
-									{% with reportRow=reportRows|first %}
-										{{ report.getTextString|format=reportRow,report.getTextColumns }}
-									{% endwith %}
-								{% endwith %}
-							{% else %}
-								<img src="{{ attachment,chart,report.getCategory,report.getTitle|id={{report.getUniqueId}}@untangle.com }}" width="640" style="display:block;width:100% !important;" >
+						{% for uniqueId in emailTemplate.getEnabledAppIds %}
+							{% if uniqueId == "_all" or report.getUniqueId == uniqueId %}
+								{% if report.getType != EVENT_LIST %}
+									{% cycle rowColors %}
+									<tr style="background-color:{{ rowColors }};">
+									<td><table>
+									<tr><td valign="top" class="title">
+									{{ report.getTitle }}
+									</td></tr>
+									<tr><td valign="top" class="description">
+									{{ report.getDescription }}
+									</td></tr>
+									<tr><td align="center">
+									{% if report.getType == TEXT %}
+										{% with reportRows=reportsNode.getReportsManager.getDataForReportEntry,report,startDate,endDate,null,-1 %}
+											{% with reportRow=reportRows|first %}
+												{{ report.getTextString|format=reportRow,report.getTextColumns }}
+											{% endwith %}
+										{% endwith %}
+									{% else %}
+										<img src="{{ attachment,chart,report.getCategory,report.getTitle|id={{report.getUniqueId}}@untangle.com }}" width="640" style="display:block;width:100% !important;" >
+									{% endif %}
+									</td></tr>
+									</table>
+									</td>
+									</tr>
+								{% endif %}
 							{% endif %}
-							</td></tr>
-							</table>
-							</td>
-							</tr>
-						{% endif %}
+						{% endfor %}
 					{% endfor %}
 				{% endif %}
 			{% endwith %}
