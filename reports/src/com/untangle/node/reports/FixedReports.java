@@ -381,7 +381,7 @@ public class FixedReports
     /*
      * Create and send fixed reports
      */
-    public void generate(EmailProfile emailProfile, List<ReportsUser> users, String reportsUrl)
+    public void generate(EmailTemplate emailTemplate, List<ReportsUser> users, String reportsUrl)
     {
         webbrowser = new WebBrowser(1, 5, 250, 250, 8);
 
@@ -437,14 +437,14 @@ public class FixedReports
         c.set(Calendar.SECOND, 0);
         c.set(Calendar.MILLISECOND, 0);
         startDate = c.getTime();
-        c.add(Calendar.DAY_OF_MONTH, 1);
+        c.add(Calendar.DAY_OF_MONTH, 1);    
         endDate = c.getTime();
 
         Map<String,Object> variableKeyValues = new HashMap<String, Object>();
         variableKeyValues.put("startDate", startDate);
         variableKeyValues.put("endDate", endDate);
-        variableKeyValues.put("title", emailProfile.getTitle() + ": " + dateFormatter.format(startDate));
-        variableKeyValues.put("emailProfile", emailProfile);
+        variableKeyValues.put("title", emailTemplate.getTitle() + ": " + dateFormatter.format(startDate));
+        variableKeyValues.put("emailTemplate", emailTemplate);
         variableKeyValues.put("FixedReports", this);
 
         currentParsePass = ParsePass.PRE;
@@ -754,7 +754,9 @@ public class FixedReports
                 negation = (tags.group(2).trim().isEmpty() == false);
                 operation = tags.group(3).trim();
                 right = tags.group(4).trim();
-                // logger.warn("parseCondition, left=[" + left + "], negation=[" + negation + "], operation=[" + operation + "], right=[" + right + "]");
+                // if(condition.indexOf("uniqueId") > -1){
+                //     logger.warn("parseCondition, left=[" + left + "], negation=[" + negation + "], operation=[" + operation + "], right=[" + right + "]");
+                // }
                 switch(syntax.getKey()){
                     case LOGICAL:
                         Boolean leftLogicalMatch = true;
@@ -829,6 +831,9 @@ public class FixedReports
             logger.warn("parseConditional: Unknown conditional syntax ["+condition+", startPosition="+startPosition+"]");
         }
 
+        // if(condition.indexOf("uniqueId") > -1){
+        //     logger.warn("parseCondition, match=" + match);
+        // }
         return match;
     }
 

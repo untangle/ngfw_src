@@ -144,8 +144,9 @@ Summary
 {% with reportsNode=nodeManager.node,untangle-node-reports %}
 	{% for category in FixedReports.getConfigCategories %} 
 		{% for report in reportsNode.getReportsManager.getReportEntries,category %}
-			{% for uniqueId in emailProfile.getEnabledConfigIds %}
+			{% for uniqueId in emailTemplate.getEnabledConfigIds %}
 				{% if uniqueId == "_all" or report.getUniqueId == uniqueId %}
+					After IF {{ uniqueId }}
 					{% if report.getType != EVENT_LIST %}
 						{% cycle rowColors %}
 						<tr style="background-color:{{ rowColors }};">
