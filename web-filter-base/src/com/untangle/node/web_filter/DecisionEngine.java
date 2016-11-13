@@ -122,9 +122,9 @@ public abstract class DecisionEngine
                 loc = fname.lastIndexOf(".");
                 if (loc != -1) fext = fname.substring(loc + 1);
 
-                if (fpath != null) sess.globalAttach(NodeSession.KEY_WEB_FILTER_REQUEST_FILEPATH, fpath);
-                if (fname != null) sess.globalAttach(NodeSession.KEY_WEB_FILTER_REQUEST_FILENAME, fname);
-                if (fext != null) sess.globalAttach(NodeSession.KEY_WEB_FILTER_REQUEST_FILEEXT, fext);
+                if (fpath != null) sess.globalAttach(NodeSession.KEY_WEB_FILTER_REQUEST_FILE_PATH, fpath);
+                if (fname != null) sess.globalAttach(NodeSession.KEY_WEB_FILTER_REQUEST_FILE_NAME, fname);
+                if (fext != null) sess.globalAttach(NodeSession.KEY_WEB_FILTER_REQUEST_FILE_EXTENSION, fext);
 
             } catch (URISyntaxException e) {
             }
@@ -322,7 +322,7 @@ public abstract class DecisionEngine
         String fileName = HttpEventHandler.findContentDispositionFilename(header);
         if (sess != null) {
             if (contentType != null) sess.globalAttach(NodeSession.KEY_WEB_FILTER_RESPONSE_CONTENT_TYPE, contentType);
-            if (fileName != null) sess.globalAttach(NodeSession.KEY_WEB_FILTER_RESPONSE_FILENAME, fileName);
+            if (fileName != null) sess.globalAttach(NodeSession.KEY_WEB_FILTER_RESPONSE_FILE_NAME, fileName);
         }
 
         URI uri = null;
