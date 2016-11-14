@@ -525,6 +525,19 @@ Ext.define("Ung.Main", {
                     layout: 'border',
                     //scrollable: true,
                     items: [{
+                            xtype: 'button',
+                            margin: '0 0 0 10',
+                            scale: 'medium',
+                            cls: 'action-button material-button',
+                            plugins: 'responsive',
+                            responsiveConfig: {
+                                'width <= 520': {
+                                    text: '<i class="material-icons">get_app</i>'
+                                },
+                                'width > 520': {
+                                    text: '<i class="material-icons">get_app</i> <span>' + i18n._("Install Apps") + '</span>'
+                                }
+                            }{
                         xtype: 'container',
                         cls: 'top-container',
                         region: 'north',
@@ -534,13 +547,13 @@ Ext.define("Ung.Main", {
                             xtype: 'button',
                             margin: '0 0 0 10',
                             scale: 'medium',
-                            width: 150,
+                            width: auto,
                             text: '',
                             textAlign: 'left',
                             name: 'policySelector',
                             menu: Ext.create('Ext.menu.Menu', {
                                 hideDelay: 0,
-                                width: 150,
+                                width: auto,
                                 plain: true,
                                 shadow: false,
                                 cls: 'policy-menu-dd',
@@ -556,20 +569,7 @@ Ext.define("Ung.Main", {
                                 color: '#FFF',
                                 lineHeight: '22px'
                             }
-                        }, {
-                            xtype: 'button',
-                            margin: '0 0 0 10',
-                            scale: 'medium',
-                            cls: 'action-button material-button',
-                            plugins: 'responsive',
-                            responsiveConfig: {
-                                'width <= 520': {
-                                    text: '<i class="material-icons">get_app</i>'
-                                },
-                                'width > 520': {
-                                    text: '<i class="material-icons">get_app</i> <span>' + i18n._("Install Apps") + '</span>'
-                                }
-                            },
+                        },
                             handler: function () {
                                 Ung.Main.buildApps(); // when moving to App, rebuild them
                                 Ung.Main.openInstallApps();
