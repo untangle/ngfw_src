@@ -10,6 +10,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
     gridAlertEventLog: null,
     gridEmailTemplates: null,
 
+    // pull from backend
     configCategories: ['Hosts', 'Devices', 'Network', 'Administration', 'System', 'Shield'],
     appCategories: [],
     chartTypeMap: Ung.Util.createStoreMap([
@@ -20,7 +21,12 @@ Ext.define('Webui.untangle-node-reports.settings', {
             ["EVENT_LIST", i18n._("Event List")]
     ]),
     emailChartTypes: ["TEXT", "PIE_GRAPH", "TIME_GRAPH", "TIME_GRAPH_DYNAMIC"],
-
+    // Look at retention days: this.getSettings().dbRetention
+    emailIntervals: [
+        [816400, i18n._("Daily")],
+        [604800, i18n._("Weekly")],
+        [2419200, i18n._("Monthly")]
+    ],
     getAppSummary: function() {
         return i18n._("Reports records network events to provide administrators the visibility and data necessary to investigate network activity.");
     },
@@ -1350,6 +1356,8 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 }, {
                     name: 'description'
                 }, {
+                    name: 'interval'
+                }, {
                     name: 'readOnly'
                 }, {
                     name: 'enabledConfigIds'
@@ -1392,6 +1400,27 @@ Ext.define('Webui.untangle-node-reports.settings', {
                         blankText: i18n._("The description cannot be blank.")
                     },
                 }, {
+                    header: i18n._("Interval"),
+                    width: 200,
+                    dataIndex: 'interval',
+                    flex: 1,
+                    editor: {
+                        xtype: 'combo',
+                        editable: false,
+                        queryMode: 'local',
+                        store: this.emailIntervals,
+                        dataIndex: 'interval'
+                    },
+                    renderer: Ext.bind(function(value, metaData){
+                        for(var i = 0; i < this.emailIntervals.length;i++){
+                            if(this.emailIntervals[i][0] == value){
+                                console.log("Found it");
+                                value = this.emailIntervals[i][1];
+                            }
+                        }
+                        return value;
+                    }, this)
+                }, {
                     header: i18n._("Config"),
                     width: 200,
                     dataIndex: 'enabledConfigIds',
@@ -1423,6 +1452,14 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 fieldLabel: i18n._("Description"),
                 emptyText: i18n._("[no description]"),
                 width: 500
+            },{
+                xtype: 'combo',
+                name: 'Interval',
+                editable: false,
+                fieldLabel: i18n._("Interval"),
+                queryMode: 'local',
+                store: this.emailIntervals,
+                dataIndex: 'interval'
             }, {
                 xtype: 'label',
                 html: i18n._('Config'),
