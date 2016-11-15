@@ -1413,13 +1413,16 @@ Ext.define('Ung.panel.Reports', {
 
             if (this.entry.type === 'TIME_GRAPH' || this.entry.type === 'TIME_GRAPH_DYNAMIC') {
                 this.chart = Ung.charts.timeSeriesChart(this.entry, this.chartData, this.down('#highchart').body, false, false);
-                this.loadReportData(this.chartData);
             } else {
                 Ung.charts.setCategoriesSeries(this.entry, this.chartData, this.chart);
             }
-            //this.loadReportData(result.list);
+
             if (this != null && this.rendered && this.autoRefreshEnabled) {
                 Ext.Function.defer(this.autoRefresh, this.autoRefreshInterval * 1000, this);
+            }
+
+            if (this.entry.type !== 'EVENT_LIST') {
+                this.loadReportData(this.chartData);
             }
         }, this), this.entry, this.startDateWindow.serverDate, this.endDateWindow.serverDate, this.extraConditions, -1);
     },

@@ -8,7 +8,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
     gridHostnameMap: null,
     gridReportEntries: null,
     gridAlertEventLog: null,
-    gridEmailProfiles: null,
+    gridEmailTemplates: null,
 
     configCategories: ['Hosts', 'Devices', 'Network', 'Administration', 'System', 'Shield'],
     appCategories: [],
@@ -32,9 +32,9 @@ Ext.define('Webui.untangle-node-reports.settings', {
         this.buildReportEntries();
         this.buildAlertRules();
         this.buildData();
-        this.buildEmailProfiles();
+        this.buildEmailTemplates();
 
-        var panels = [this.gridReportEntries, this.panelData, this.panelAlertRules, this.panelEmailProfiles, this.panelUsers, this.panelSyslog, this.gridHostnameMap ];
+        var panels = [this.gridReportEntries, this.panelData, this.panelAlertRules, this.panelEmailTemplates, this.panelUsers, this.panelSyslog, this.gridHostnameMap ];
 
         this.buildTabPanel(panels);
 
@@ -230,7 +230,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
                         emailAddress: "",
                         emailAlerts: true,
                         emailSummaries: true,
-                        emailProfileIds : {
+                        emailTemplateIds : {
                             javaClass: "java.util.LinkedList",
                             list: []
                         },
@@ -246,7 +246,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
                     },{
                         name: "emailSummaries"
                     },{
-                        name: "emailProfileIds",
+                        name: "emailTemplateIds",
                     },{
                         name: "onlineAccess"
                     },{
@@ -279,16 +279,16 @@ Ext.define('Webui.untangle-node-reports.settings', {
                         width: 100,
                         resizable: false
                     }, {
-                        header: i18n._("Email Profiles"),
-                        dataIndex: "emailProfileIds",
+                        header: i18n._("Email Templates"),
+                        dataIndex: "emailTemplateIds",
                         width: 150,
                         resizable: false,
                         renderer: Ext.bind(function(value){
                             var titles = [];
-                            for(var i = 0; i < this.settings["emailProfiles"].list.length; i++){
-                                var profile = this.settings["emailProfiles"].list[i];
-                                if(value.list.indexOf(profile.profileId) > -1){
-                                    titles.push(profile.title);
+                            for(var i = 0; i < this.settings["emailTemplates"].list.length; i++){
+                                var template = this.settings["emailTemplates"].list[i];
+                                if(value.list.indexOf(template.templateId) > -1){
+                                    titles.push(template.title);
                                 }
                             }
                             return titles.join(", ");
@@ -363,9 +363,9 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 width: 300
             },{
                 xtype: 'checkboxgroup',
-                name: 'emailProfiles',
-                dataIndex: "emailProfileIds",
-                fieldLabel: i18n._("Email Profiles"),
+                name: 'emailTemplates',
+                dataIndex: "emailTemplateIds",
+                fieldLabel: i18n._("Email Templates"),
                 columns: 1,
                 vertical: true,
                 items:[],
@@ -419,20 +419,20 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 validator: this.passwordValidator
             }],
             syncComponents: function () {
-                /* Rebuild email profile checkbox group with available profiles*/
+                /* Rebuild email template checkbox group with available template */
                 var settings = this.pageOwner.settings;
-                var emailProfilesCheckboxes = this.down("[name=emailProfiles]");
-                var items = emailProfilesCheckboxes.items;
-                var userEmailProfiles = this.record.get("emailProfileIds") || {list:[]};
-                emailProfilesCheckboxes.removeAll();
-                for(var i = 0; i < settings["emailProfiles"].list.length; i++){
-                    var profile = settings["emailProfiles"].list[i];
-                    var profileChecked = (userEmailProfiles.list.indexOf(profile.profileId) > -1) ? true : false;
+                var emailTemplatesCheckboxes = this.down("[name=emailTemplates]");
+                var items = emailTemplatesCheckboxes.items;
+                var userEmailTemplates = this.record.get("emailTemplateIds") || {list:[]};
+                emailTemplatesCheckboxes.removeAll();
+                for(var i = 0; i < settings["emailTemplates"].list.length; i++){
+                    var template = settings["emailTemplates"].list[i];
+                    var templateChecked = (userEmailTemplates.list.indexOf(template.templateId) > -1) ? true : false;
                     items.add(new Ext.form.Checkbox({
-                        boxLabel: profile.title + " (" + profile.description + ")",
+                        boxLabel: template.title + " (" + template.description + ")",
                         name: "list",
-                        inputValue: profile.profileId,
-                        checked: profileChecked
+                        inputValue: template.templateId,
+                        checked: templateChecked
                     }));
                 }
             },
@@ -1185,7 +1185,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
             }
         }));
     },
-    // EmailProfiles Panel
+    // Email Templates Panel
     buildEmailReportGrid: function(dataIndex){
         return Ext.create('Ung.grid.Panel',{
             helpSource: 'reports_manage_reports',
@@ -1305,29 +1305,31 @@ Ext.define('Webui.untangle-node-reports.settings', {
             }]
         });
     },
-    buildEmailProfiles: function() {
-        this.panelEmailProfiles = Ext.create('Ext.panel.Panel',{
-            name: 'emailProfiles',
-            helpSource: 'reports_email_profiles',
-            title: i18n._('Email Profiles'),
+    buildEmailTemplates: function() {
+        this.panelEmailTemplates = Ext.create('Ext.panel.Panel',{
+            name: 'emailTemplates',
+            helpSource: 'reports_email_templates',
+            title: i18n._('Email Templates'),
             layout: { type: 'vbox', align: 'stretch' },
             cls: 'ung-panel',
             items: [{
                 xtype: 'fieldset',
                 title: i18n._('Note'),
                 flex: 0,
-                html: " " + i18n._("<b>Email Profiles</b> must be associated with Users.")
-            },  this.gridEmailProfiles= Ext.create('Ung.grid.Panel',{
+                html: " " + i18n._("<b>Email Templates</b> must be associated with Users.")
+            },  this.gridEmailTemplates = Ext.create('Ung.grid.Panel',{
                 flex: 1,
-                name: 'Email Profiles',
+                name: 'Email Templates',
                 settingsCmp: this,
+                hasCopy: true,
+                copyField: 'title',
                 addAtTop: false,
-                title: i18n._("Email Profiles"),
+                title: i18n._("Email Templates"),
                 hasReadOnly: true,
-                dataProperty:'emailProfiles',
-                recordJavaClass: "com.untangle.node.reports.EmailProfile",
+                dataProperty:'emailTemplates',
+                recordJavaClass: "com.untangle.node.reports.EmailTemplate",
                 emptyRow: {
-                    "profileId": -1,
+                    "templateId": -1,
                     "title": "",
                     "description": "",
                     "readOnly": false,
@@ -1342,7 +1344,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
                     }
                 },
                 fields: [{
-                    name: 'profileId'
+                    name: 'templateId'
                 }, {
                     name: 'title'
                 }, {
@@ -1357,9 +1359,9 @@ Ext.define('Webui.untangle-node-reports.settings', {
                     name: 'javaClass'
                 }],
                 columns: [{
-                    header: i18n._("Profile Id"),
+                    header: i18n._("Template Id"),
                     width: 65,
-                    dataIndex: 'profileId',
+                    dataIndex: 'templateId',
                     renderer: function(value) {
                         if (value < 0) {
                             return i18n._("new");
@@ -1404,7 +1406,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 }]
             })]
         });
-        this.gridEmailProfiles.setRowEditor( Ext.create('Ung.RowEditorWindow',{
+        this.gridEmailTemplates.setRowEditor( Ext.create('Ung.RowEditorWindow',{
             name: "edit",
             pageOwner: this,
             inputLines: [{
@@ -1443,7 +1445,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
         this.getSettings().hostnameMap.list = this.gridHostnameMap.getList();
         this.getSettings().reportEntries.list = this.gridReportEntries.getList();
         this.getSettings().alertRules.list = this.gridAlertRules.getList();
-        this.getSettings().emailProfiles.list = this.gridEmailProfiles.getList();
+        this.getSettings().emailTemplates.list = this.gridEmailTemplates.getList();
 
         this.getSettings().syslogHost = this.panelSyslog.down("textfield[name=syslogHost]").getValue();
         this.getSettings().syslogPort = this.panelSyslog.down("numberfield[name=syslogPort]").getValue();

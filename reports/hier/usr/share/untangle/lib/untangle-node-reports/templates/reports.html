@@ -122,8 +122,6 @@ Summary
 </td>
 </tr>
 
-<!--
--->
 {% cycle rowColors %}
 <tr style="background-color:{{ rowColors }};">
 <td>
@@ -144,56 +142,39 @@ Summary
 </tr>
 
 {% with reportsNode=nodeManager.node,untangle-node-reports %}
-	{% for name in ["Network" "Administration" "Hosts" "Devices" "System" "Shield" "Reports"] %} 
-
-	{% with reports=reportsNode.getReportsManager.getReportEntries,name %}
-	{% if reports.size != 0 %}
-		{% for report in reports %}
-		{% if report.getType != EVENT_LIST %}
-
-		{% if report.getTitle == "CPU Load" %}
-<!--
--->
-		{% cycle rowColors %}
-		<tr style="background-color:{{ rowColors }};">
-		<td><table>
-		<tr><td valign="top" class="title">
-{{ report.getTitle }}
-		</td></tr>
-		<tr><td valign="top" class="description">
-{{ report.getDescription }}
-		</td></tr>
-		<tr><td align="center">
-		{% with reportRows=reportsNode.getReportsManager.getDataForReportEntry,report,startDate,endDate,null,-1 %}
-
-
-		{% if report.getType == TEXT %}
-
-		{% with reportRow=reportRows|first %}
-{{ report.getTextString|format=reportRow,report.getTextColumns }}
-		{% endwith %}
-
-		{% else %}
-
-<img src="{{ attachment,chart,report.getCategory,report.getTitle|id={{report.getUniqueId}}@untangle.com }}" width="640" style="display:block;width:100% !important;" >
-
-		{% endif %}
-
-
-		{% endwith %}
-		</td></tr>
-		</table>
-		</td>
-		</tr>
-<!--
--->
-		{% endif %}
-
-		{% endif %}
+	{% for category in FixedReports.getConfigCategories %} 
+		{% for report in reportsNode.getReportsManager.getReportEntries,category %}
+			{% for uniqueId in emailTemplate.getEnabledConfigIds %}
+				{% if uniqueId == "_all" or report.getUniqueId == uniqueId %}
+					{% if report.getType != EVENT_LIST %}
+						{% cycle rowColors %}
+						<tr style="background-color:{{ rowColors }};">
+						<td><table>
+						<tr><td valign="top" class="title">
+						{{ report.getTitle }}
+						</td></tr>
+						<tr><td valign="top" class="description">
+						{{ report.getDescription }}
+						</td></tr>
+						<tr><td align="center">
+						{% if report.getType == TEXT %}
+							{% with reportRows=reportsNode.getReportsManager.getDataForReportEntry,report,startDate,endDate,null,-1 %}
+								{% with reportRow=reportRows|first %}
+									{{ report.getTextString|format=reportRow,report.getTextColumns }}
+								{% endwith %}
+							{% endwith %}
+						{% else %}
+							<img src="{{ attachment,chart,report.getCategory,report.getTitle|id={{report.getUniqueId}}@untangle.com }}" width="640" style="display:block;width:100% !important;" >
+						{% endif %}
+						</td></tr>
+						</table>
+						</td>
+						</tr>
+					{% endif %}
+				{% endif %}
+			{% endfor %}
 		{% endfor %}
-	{% endif %}
-	{% endwith %}
-{% endfor %}
+	{% endfor %}
 {% endwith %}
 
 <tr>
@@ -211,62 +192,57 @@ Summary
 </td>
 </tr>
 
-<tr>
-<td>
-
 {% with reportsNode=nodeManager.node,untangle-node-reports %}
-{% for node in nodeManager.nodeInstances|distinct=getNodeProperties.getDisplayName %}
-	{% with reports=reportsNode.getReportsManager.getReportEntries,node.getNodeProperties.getDisplayName|getType==TEXT %}
-	{% if reports.size != 0 %}
-<table>
-	<tr><td><table>
-	<tr style="background-color:#d0d0d0;">
-		<td style="width:48px;">
-		<img src="{{ attachment,/usr/share/untangle/web/skins/common/images/admin/apps/{{ node.getNodeProperties.getName }}_42x42.png|id=icon-{{ node.getNodeProperties.getName }}@untangle.com }}" />
-		</td>
-		<td style="font-size:20px; color:#444444; font-weight:bold;">
-		{{ node.getNodeProperties.getDisplayName }}
-		</td>
-	</tr>
-	</table></td></tr>
-		{% for report in reports %}
-		{% if report.getType != EVENT_LIST %}
-
-		{% cycle rowColors %}
-	<tr>
-		<td class="title">{{ report.getTitle }}</td>
-	</tr>
-	<tr>
-		<td class="description">{{ report.getDescription }}</td>
-	</tr>
-	<tr>
-		{% with reportRows=reportsNode.getReportsManager.getDataForReportEntry,report,startDate,endDate,null,-1 %}
-		{% if report.getType == TEXT %}
-
-		{% with reportRow=reportRows|first %}
-		<td style="font-size:12px; font-weight:normal;">{{ report.getTextString|format=reportRow,report.getTextColumns }}</td>
-		{% endwith %}
-		{% else %}
-		<td>
-<img src="{{ attachment,chart,report.getCategory,report.getTitle|id={{report.getUniqueId}}@untangle.com }}" width="640" style="display:block;width:100% !important;" >
-		</td>
-
+	{% for node in nodeManager.nodeInstances|distinct=getNodeProperties.getDisplayName %}
+		{% if node.getNodeProperties.getDisplayName not in FixedReports.getConfigCategories %}
+			{% with reports=reportsNode.getReportsManager.getReportEntries,node.getNodeProperties.getDisplayName %}
+				{% if reports.size != 0 %}
+					<tr><td><table>
+					<tr style="background-color:#d0d0d0;">
+						<td style="width:48px;">
+						<img src="{{ attachment,/usr/share/untangle/web/skins/common/images/admin/apps/{{ node.getNodeProperties.getName }}_42x42.png|id=icon-{{ node.getNodeProperties.getName }}@untangle.com }}" />
+						</td>
+						<td style="font-size:20px; color:#444444; font-weight:bold;">
+						{{ node.getNodeProperties.getDisplayName }}
+						</td>
+					</tr>
+					</table></td></tr>
+					{% for report in reports %}
+						{% for uniqueId in emailTemplate.getEnabledAppIds %}
+							{% if uniqueId == "_all" or report.getUniqueId == uniqueId %}
+								{% if report.getType != EVENT_LIST %}
+									{% cycle rowColors %}
+									<tr style="background-color:{{ rowColors }};">
+									<td><table>
+									<tr><td valign="top" class="title">
+									{{ report.getTitle }}
+									</td></tr>
+									<tr><td valign="top" class="description">
+									{{ report.getDescription }}
+									</td></tr>
+									<tr><td align="center">
+									{% if report.getType == TEXT %}
+										{% with reportRows=reportsNode.getReportsManager.getDataForReportEntry,report,startDate,endDate,null,-1 %}
+											{% with reportRow=reportRows|first %}
+												{{ report.getTextString|format=reportRow,report.getTextColumns }}
+											{% endwith %}
+										{% endwith %}
+									{% else %}
+										<img src="{{ attachment,chart,report.getCategory,report.getTitle|id={{report.getUniqueId}}@untangle.com }}" width="640" style="display:block;width:100% !important;" >
+									{% endif %}
+									</td></tr>
+									</table>
+									</td>
+									</tr>
+								{% endif %}
+							{% endif %}
+						{% endfor %}
+					{% endfor %}
+				{% endif %}
+			{% endwith %}
 		{% endif %}
-
-		{% endwith %}
-	</tr>
-
-		{% endif %}	
-		{% endfor %}
-</table>
-	{% endif %}
-	{% endwith %}
-{% endfor %}
+	{% endfor %}
 {% endwith %}
-
-</td>
-</tr>
-
 
 </table>
 

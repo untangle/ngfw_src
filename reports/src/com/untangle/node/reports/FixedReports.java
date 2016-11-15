@@ -102,12 +102,18 @@ public class FixedReports
         FORMAT
     }
 
+    public enum ConditionalE {
+        LOGICAL,
+        EQUALITY
+    }
+
     private static final Map<Tag, Pattern> TagPatterns;
     private static final Map<Filter, Pattern> FilterPatterns;
     private static final Pattern NonGreedyVariablePattern;
     private static final Pattern NumericOnlyPattern;
     private static final Map<ParsePass, String> ParsePassActiveVariables;
     private static final ArrayList<String> ConfigCategories;
+    private static final Map<ConditionalE,Pattern> ConditionalPatterns;
 
     static {
         TagPatterns = new HashMap<Tag, Pattern>();
@@ -148,10 +154,13 @@ public class FixedReports
         ConfigCategories.add("System");
         ConfigCategories.add("Shield");
 
+        ConditionalPatterns = new HashMap<ConditionalE,Pattern>();
+        ConditionalPatterns.put(ConditionalE.LOGICAL, Pattern.compile("(.+?)\\s+(not\\s+|)(and|or)\\s+(.+)"));
+        ConditionalPatterns.put(ConditionalE.EQUALITY, Pattern.compile("(.+?)\\s+(not\\s+|\\!|)(in|\\=|\\=\\=)\\s+(.+)"));
     }
 
-    private static final Pattern Conditional = Pattern.compile("(.+?)\\s*(\\=\\=|\\!\\=)\\s*(.+)");
-    private static final Pattern LogicalOperators = Pattern.compile("(.+?)\\s+(and|or)\\s+(.+)");
+    private static final Pattern Conditional = Pattern.compile("(.+?)\\s+(not\\s+|\\!\\s+)(\\=\\=|in)\\s+(.+)");
+    private static final Pattern ConditionalLogical = Pattern.compile("(.+?)\\s+(not\\s+|)(and|or)\\s+(.+)");
 
     /*
      * Variable context
@@ -169,6 +178,10 @@ public class FixedReports
             this.name = name;
             this.object = object;
             this.index = -1;
+        }
+
+        public String toString(){
+            return tag + ":" + name;
         }
     }
 
@@ -309,6 +322,17 @@ public class FixedReports
     }
     private List<parseContext> parseContextStack;
 
+    private boolean getParseContextStackMatch(Boolean wantMatch)
+    {
+        Boolean match = true;
+
+        for(parseContext pc: parseContextStack){
+            match &= pc.getCurrentConditionalMatch(wantMatch);
+        }
+
+        return match;
+    }
+
     /*
      */
     class selector
@@ -349,10 +373,15 @@ public class FixedReports
 
     }
 
+    public List<String> getConfigCategories()
+    {
+        return FixedReports.ConfigCategories;
+    }
+
     /*
      * Create and send fixed reports
      */
-    public void generate(EmailProfile emailProfile, List<ReportsUser> users, String reportsUrl)
+    public void generate(EmailTemplate emailTemplate, List<ReportsUser> users, String reportsUrl)
     {
         webbrowser = new WebBrowser(1, 5, 250, 250, 8);
 
@@ -408,21 +437,24 @@ public class FixedReports
         c.set(Calendar.SECOND, 0);
         c.set(Calendar.MILLISECOND, 0);
         startDate = c.getTime();
-        c.add(Calendar.DAY_OF_MONTH, 1);
+        c.add(Calendar.DAY_OF_MONTH, 1);    
         endDate = c.getTime();
 
         Map<String,Object> variableKeyValues = new HashMap<String, Object>();
         variableKeyValues.put("startDate", startDate);
         variableKeyValues.put("endDate", endDate);
-        variableKeyValues.put("title", emailProfile.getTitle() + ": " + dateFormatter.format(startDate));
-        variableKeyValues.put("emailProfile", emailProfile);
+        variableKeyValues.put("title", emailTemplate.getTitle() + ": " + dateFormatter.format(startDate));
+        variableKeyValues.put("emailTemplate", emailTemplate);
+        variableKeyValues.put("FixedReports", this);
 
         currentParsePass = ParsePass.PRE;
         parseBuffer(inputLines, outputLines, variableKeyValues);
         inputLines = outputLines;
 
         currentParsePass = ParsePass.POST;
+
         if(recipientsWithoutOnlineAccess.size() > 0 ){
+            variableKeyValues.put("url", "");
             outputLines = new ArrayList<StringBuilder>();
             parseBuffer(inputLines, outputLines, variableKeyValues);
             sendEmail(recipientsWithoutOnlineAccess, outputLines);
@@ -444,7 +476,10 @@ public class FixedReports
     void sendEmail(List<String> recipientsList, List<StringBuilder> htmlOutput){
         StringBuilder messageHtml = new StringBuilder();
         for(StringBuilder s: htmlOutput){
-            messageHtml.append(s + "\n");
+            if(s.toString().trim().isEmpty()){
+                continue;
+            }
+            messageHtml.append(s.toString().trim() + "\n");
         }
         messageHtml.append("\n\n");
 
@@ -578,15 +613,18 @@ public class FixedReports
                                     parseContext.buildLoopBuffer = false;
                                 
                                     variableContext vc = parseContext.getVariableContext(Tag.FOR);
-                                    int collectionSize = ((List) vc.object).size();
+                                    int collectionSize = (vc.object == null)  ? 0 : ((List) vc.object).size();
                                     for(int i = 0; i < collectionSize; i++){
                                         vc.index = i;
 
                                         parseContext newContext = new parseContext();
                                         parseContextStack.add(newContext);
                                         parse(parseContext.loopBuffer.toString());
+
                                         parseContextStack.remove(parseContextStack.size()-1);
                                     }
+                                    parseContext.loopBuffer = null;
+                                    parseContext.loopBuffer = new StringBuilder();
                                     parseContext.removeVariable(Tag.FOR);
                                 }
 
@@ -594,26 +632,29 @@ public class FixedReports
                             case IF:
                                 if( parseContext.buildLoopBuffer == false){
                                     parseContext.pushConditional(parseCondition(tag.group(1)));
-                                    if(parseContext.getCurrentConditionalMatch(null) == false){
-                                        parseContext.allowOutput = parseContext.getCurrentConditionalMatch(true);
+                                    if(getParseContextStackMatch(null) == false){
+                                        parseContext.allowOutput = getParseContextStackMatch(true);
                                         parseContext.ignoreLine = true;
                                     }
                                 }
                                 break;
                             case ELSE:
                                 if( parseContext.buildLoopBuffer == false){
-                                    if(parseContext.getCurrentConditionalMatch(null) == false){
-                                        parseContext.allowOutput = parseContext.getCurrentConditionalMatch(false);
+                                    if(getParseContextStackMatch(null) == false){
+                                        parseContext.conditionals.get(parseContext.conditionals.size()-1).match = !parseContext.conditionals.get(parseContext.conditionals.size()-1).match;
+                                        parseContext.allowOutput = getParseContextStackMatch(true);
                                         parseContext.ignoreLine = true;
                                     }
                                 }
                                 break;
                             case ENDIF:
                                 if( parseContext.buildLoopBuffer == false){
-                                    if(parseContext.getCurrentConditionalMatch(null) == false){
+                                    if(getParseContextStackMatch(null) == false){
                                         parseContext.ignoreLine = true;
                                         parseContext.popConditional();
-                                        parseContext.allowOutput = parseContext.getCurrentConditionalMatch(true);
+                                        parseContext.allowOutput = getParseContextStackMatch(true);
+                                    }else{
+                                        parseContext.popConditional();                                        
                                     }
                                 }
                                 break;
@@ -697,100 +738,104 @@ public class FixedReports
         Boolean match = false;
 
         String left;
+        Boolean negation;
         String operation;
         String right;
 
-        Boolean leftConditionalMatch = true;
-        Boolean rightConditionalMatch = true;
+        Matcher tags = null;
+        int startPosition = 0;
+        Boolean tagFound = false;
+        for(Map.Entry<ConditionalE, Pattern> syntax : ConditionalPatterns.entrySet()) {
+            tags = syntax.getValue().matcher(condition);
+            if(tags.find(startPosition) == true){
+                tagFound = true;
+                startPosition = tags.end();
+                left = tags.group(1).trim();
+                negation = (tags.group(2).trim().isEmpty() == false);
+                operation = tags.group(3).trim();
+                right = tags.group(4).trim();
+                // if(condition.indexOf("uniqueId") > -1){
+                //     logger.warn("parseCondition, left=[" + left + "], negation=[" + negation + "], operation=[" + operation + "], right=[" + right + "]");
+                // }
+                switch(syntax.getKey()){
+                    case LOGICAL:
+                        Boolean leftLogicalMatch = true;
+                        Boolean rightLogicalMatch = true;
 
-        Matcher logicalTags = LogicalOperators.matcher(condition);
-        Boolean logicalProcessing = false;
-        while(logicalTags.find()){
-            logicalProcessing = true;
-            left = logicalTags.group(1);
-            operation = logicalTags.group(2);
-            right = logicalTags.group(3);
+                        leftLogicalMatch = parseCondition(left);
+                        rightLogicalMatch = parseCondition(right);
+                        // logger.warn("parseConditional, logical: leftConditionalMatch=" + leftLogicalMatch + ", rightConditionalMatch=" + rightLogicalMatch);
 
-            // logger.warn("parseConditional, logical: left=[" + left + "], operation=[" + operation + "], right=[" + right + "]");
-            leftConditionalMatch = parseConditional(left);
-            rightConditionalMatch = parseConditional(left);
-            // logger.warn("parseConditional, logical: leftConditionalMatch=" + leftConditionalMatch + ", rightConditionalMatch=" + rightConditionalMatch);
-
-            if(operation.equals("and")){
-                match = (leftConditionalMatch && rightConditionalMatch);
-            }else if(operation.equals("or")){
-                match = (leftConditionalMatch || rightConditionalMatch);
-            }
-
-        }
-        // logger.warn("logical parseCondition: match="+match);
-        if(logicalProcessing == false){
-            match = parseConditional(condition);
-        }
-        return match;
-    }
-
-    private Boolean parseConditional(String condition){
-        Boolean match = false;
-
-        String left;
-        String operation;
-        String right;
-
-        Matcher tag = Conditional.matcher(condition);
-        while(tag.find()){
-            left = tag.group(1);
-            operation = tag.group(2);
-            right = tag.group(3);
-
-            // logger.warn("parseConditional, conditional: left=[" + left + "], operation=[" + operation + "], right=[" + right + "]");
-
-            if(right.equals("\"\"")){
-                /* Empty string */
-                right = "";
-            }else if(
-                (right.length() > 3) &&
-                (right.charAt(0) == '"') && 
-                (right.charAt(right.length()-1) == '"') ){
-                /* Quoted string */
-                right = right.substring(1,right.length() -1);
-            }
-
-            List<String> fields = new ArrayList<String>(Arrays.asList(left.split("\\.")));
-            fields.remove(0);
-            if(isVariableParseActive(left) == false){
-                // Variable non-active for this pass
-                return null;
-            }
-            selector collectionVariableSelector = new selector(left);
-            Object leftVariable = getVariable(collectionVariableSelector);
-
-            if(leftVariable != null){
-                if( operation.equals("==") ){
-                    // !!! is this comparision hokey/bad form?
-                    if(leftVariable.getClass().getName().equals("java.lang.Boolean")){
-                        if((Boolean) leftVariable.equals(Boolean.valueOf(right))){
-                            match = true;
+                        if(operation.equals("and")){
+                            match = (leftLogicalMatch && rightLogicalMatch);
+                        }else if(operation.equals("or")){
+                            match = (leftLogicalMatch || rightLogicalMatch);
                         }
-                    }else{
-                        if(leftVariable.toString().equals(right)){
-                            match = true;
+                        break;
+
+                    case EQUALITY:
+                        // logger.warn("parseCondition, conditional: left=[" + left + "], negation=["+negation+"], operation=[" + operation + "], right=[" + right + "]");
+
+                        if(right.equals("\"\"")){
+                            /* Empty string */
+                            right = "";
+                        }else if(
+                            (right.length() > 3) &&
+                            (right.charAt(0) == '"') && 
+                            (right.charAt(right.length()-1) == '"') ){
+                            /* Quoted string */
+                            right = right.substring(1,right.length() -1);
                         }
 
-                        // !!! Also numeric checks.
-                    }
-                }else if(operation.equals("!=")){
-                    if(!leftVariable.toString().equals(right)){
-                        match = true;
-                    }
+                        List<String> fields = new ArrayList<String>(Arrays.asList(left.split("\\.")));
+                        fields.remove(0);
+                        if(isVariableParseActive(left) == false){
+                            // Variable non-active for this pass.  It's proper to short circult everything here.
+                            return null;
+                        }
+                        Object leftVariable = getVariable(new selector(left));
+                        Object rightVariable = getVariable(new selector(right));
+
+                        if(leftVariable != null){
+                            if( operation.equals("==") || operation.equals("=") ){
+                                // !!! is this comparision hokey/bad form?
+                                if(leftVariable.getClass().getName().equals("java.lang.Boolean")){
+                                    if((Boolean) leftVariable.equals(Boolean.valueOf(right))){
+                                        match = true;
+                                    }
+                                }else{
+                                    if(leftVariable.toString().equals(right)){
+                                        match = true;
+                                    }
+
+                                // !!! Also numeric checks.
+                                }
+                            }else if(operation.equals("in")){
+                                if(((List) rightVariable).indexOf((String) leftVariable) > -1){
+                                    match = true;
+                                }
+                            }
+                        }
+                        break;
+
+                }
+                if(negation){
+                    match = !match;
                 }
             }
+            if(startPosition == condition.length()){
+                break;
+            }
+        }
+        if(tagFound == false){
+            logger.warn("parseConditional: Unknown conditional syntax ["+condition+", startPosition="+startPosition+"]");
         }
 
+        // if(condition.indexOf("uniqueId") > -1){
+        //     logger.warn("parseCondition, match=" + match);
+        // }
         return match;
-
     }
-
 
     /*
      * Add variables as buffered writes.  
@@ -905,7 +950,12 @@ public class FixedReports
         Class<?>[] argumentTypes = null;
         Object[] argumentValues = null;
 
-        if(variableSelector.fields.get(0).charAt(0) == '[' &&
+        // if(variableSelector.fields.get(0).isEmpty()){
+        //     return null;
+        // }
+
+        if(!variableSelector.fields.get(0).isEmpty() &&
+            variableSelector.fields.get(0).charAt(0) == '[' &&
             variableSelector.fields.get(0).charAt(variableSelector.fields.get(0).length() - 1) == ']' ){
             /* 
              * Create arbitary list variable.
@@ -930,13 +980,11 @@ public class FixedReports
                 }
             }
         }
-        // !!! another catch here.  Return null
 
         /*
          * Walk the field list on the current object.
          */
         for(; fieldIndex < variableSelector.fields.size(); fieldIndex++){
-
             /*
              * If about to try final field, process arguments.
              */

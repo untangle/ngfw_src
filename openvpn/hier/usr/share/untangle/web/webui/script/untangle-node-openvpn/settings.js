@@ -830,7 +830,7 @@ Ext.define('Webui.untangle-node-openvpn.settings', {
 
         var publicUrl;
         try {
-            publicUrl = rpc.systemManager.getPublicUrl();
+            publicUrl = rpc.networkManager.getPublicUrl();
         } catch (e) {
             Ung.Util.rpcExHandler(e);
         }
