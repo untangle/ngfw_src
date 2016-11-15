@@ -30,4 +30,6 @@ public interface CertificateManager
     boolean generateServerCertificate(String certSubject, String altNames);
 
     public void removeServerCertificate(String fileName);
+
+    public String validateActiveInspectorCertificates();
 }
