@@ -928,7 +928,11 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         // load any plugins
         pluginManager.loadPlugins();
 
+        // write status
         writeStatusFile( "running" );
+
+        // call startup hook
+        UvmContextFactory.context().hookManager().callCallbacks( HookManager.UVM_STARTUP_COMPLETE, null );
     }
 
     @Override

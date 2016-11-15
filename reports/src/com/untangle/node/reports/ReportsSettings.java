@@ -27,7 +27,7 @@ public class ReportsSettings implements Serializable, JSONString
     private LinkedList<ReportsHostnameMapEntry> hostnameMap = new LinkedList<ReportsHostnameMapEntry>();
     private LinkedList<ReportsUser> reportsUsers = new LinkedList<ReportsUser>();
     private LinkedList<AlertRule> alertRules = null;
-    private LinkedList<EmailProfile> emailProfiles = new LinkedList<EmailProfile>();
+    private LinkedList<EmailTemplate> emailTemplates = new LinkedList<EmailTemplate>();
     
     private String dbHost = "localhost";
     private int    dbPort = 5432;
@@ -69,8 +69,8 @@ public class ReportsSettings implements Serializable, JSONString
     public LinkedList<AlertRule> getAlertRules() { return this.alertRules; }
     public void setAlertRules( LinkedList<AlertRule> newValue ) { this.alertRules = newValue; }
     
-    public LinkedList<EmailProfile> getEmailProfiles() { return this.emailProfiles; }
-    public void setEmailProfiles( LinkedList<EmailProfile> newValue ) { this.emailProfiles = newValue; }
+    public LinkedList<EmailTemplate> getEmailTemplates() { return this.emailTemplates; }
+    public void setEmailTemplates( LinkedList<EmailTemplate> newValue ) { this.emailTemplates = newValue; }
 
     public boolean getSyslogEnabled() { return syslogEnabled; }
     public void setSyslogEnabled( boolean syslogEnabled ) { this.syslogEnabled = syslogEnabled; }

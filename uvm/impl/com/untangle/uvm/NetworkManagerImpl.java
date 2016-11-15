@@ -415,6 +415,8 @@ public class NetworkManagerImpl implements NetworkManager
 
     public boolean isWanInterface( int interfaceId )
     {
+        if ( interfaceId <= 0 )
+            return false;
         /**
          * 250 - openvpn
          * 251 - l2tp

@@ -22,22 +22,22 @@ import org.json.JSONString;
  * The settings for an individual report entry (graph)
  */
 @SuppressWarnings("serial")
-public class EmailProfile implements JSONString, Serializable
+public class EmailTemplate implements JSONString, Serializable
 {
-    private static final Logger logger = Logger.getLogger( EmailProfile.class );
+    private static final Logger logger = Logger.getLogger( EmailTemplate.class );
 
-    private Integer profileId;
+    private Integer templateId;
     private String title;
     private String description;
     private Boolean readOnly = null; /* If the rule is read-only (built-in) */
     private List<String> enabledConfigIds;
     private List<String> enabledAppIds;
 
-    public EmailProfile()
+    public EmailTemplate()
     {
     }
 
-    public EmailProfile( String title, String description, List<String> enabledConfigIds, List<String> enabledAppIds)
+    public EmailTemplate( String title, String description, List<String> enabledConfigIds, List<String> enabledAppIds)
     {
         this.setTitle( title );
         this.setDescription( description );
@@ -45,8 +45,8 @@ public class EmailProfile implements JSONString, Serializable
         this.setEnabledAppIds( enabledAppIds );
     }
     
-    public Integer getProfileId() { return this.profileId; }
-    public void setProfileId( Integer newValue ) { this.profileId = newValue; }
+    public Integer getTemplateId() { return this.templateId; }
+    public void setTemplateId( Integer newValue ) { this.templateId = newValue; }
 
     public String getTitle() { return this.title; }
     public void setTitle( String newValue ) { this.title = newValue; }

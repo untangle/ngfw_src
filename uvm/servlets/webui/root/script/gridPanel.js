@@ -75,6 +75,29 @@ Ext.define('Ung.grid.ReorderColumn', {
     tpl:'<img src="'+Ext.BLANK_IMAGE_URL+'" class="icon-drag"/>'
 });
 
+// Grid copy column
+Ext.define('Ung.grid.CopyColumn', {
+    extend:'Ext.grid.column.Action',
+    menuDisabled: true,
+    resizable: false,
+    hideable: false,
+    iconCls: 'icon-copy-row',
+    hasReadOnly: false,
+    constructor: function(config) {
+        Ext.applyIf(config, {
+            header: i18n._("Copy"),
+            width: 55
+        });
+        this.callParent(arguments);
+    },
+    init:function(grid) {
+        this.grid=grid;
+    },
+    handler: function(view, rowIndex, colIndex, item, e, record) {
+        this.grid.copyHandler(record);
+    }
+});
+
 // Editor Grid class
 Ext.define('Ung.grid.Panel', {
     extend:'Ext.grid.Panel',
@@ -90,6 +113,9 @@ Ext.define('Ung.grid.Panel', {
     hasImportExport: null,
     // has Edit button on each record
     hasEdit: true,
+    // has Edit button on each record
+    hasCopy: false,
+    copyField: null,
     // has Delete button on each record
     hasDelete: true,
     // the default Empty record for a new row
@@ -194,6 +220,11 @@ Ext.define('Ung.grid.Panel', {
             var editColumn = Ext.create('Ung.grid.EditColumn', {hasReadOnly: this.hasReadOnly});
             this.plugins.push(editColumn);
             this.columns.push(editColumn);
+        }
+        if (this.hasCopy) {
+            var copyColumn = Ext.create('Ung.grid.CopyColumn', {hasReadOnly: this.hasReadOnly});
+            this.plugins.push(copyColumn);
+            this.columns.push(copyColumn);
         }
         if (this.hasDelete) {
             var deleteColumn = Ext.create('Ung.grid.DeleteColumn', {hasReadOnly: this.hasReadOnly});
@@ -515,6 +546,22 @@ Ext.define('Ung.grid.Panel', {
     deleteHandler: function(record) {
         this.stopEditing();
         this.updateChangedData(record, "deleted");
+    },
+    copyHandler: function(record) {
+        var copyRecord = record.copy(null);
+        copyRecord.set("internalId", this.genAddedId());
+        var fields = copyRecord.getFields();
+        for(var i = 0; i < fields.length; i++){
+            if(fields[i].getName() == "readOnly"){
+                copyRecord.set(fields[i].getName(), "false");
+            }
+            if(fields[i].getName() == this.copyField){
+                copyRecord.set(fields[i].getName(), copyRecord.get(fields[i].getName()) + " ("+i18n._("copy") +")");
+            }
+        }
+        this.stopEditing();
+        this.getStore().add([copyRecord]);
+        this.updateChangedData(copyRecord, "added");
     },
     importHandler: function() {
         if(!this.importSettingsWindow) {
