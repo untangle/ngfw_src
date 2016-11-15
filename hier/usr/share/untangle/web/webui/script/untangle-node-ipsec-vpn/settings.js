@@ -935,6 +935,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                     fieldLabel: i18n._("L2TP Address Pool"),
                     value: this.getSettings().virtualAddressPool,
                     vtype: 'cidrBlock',
+                    allowBlank: false,
                     listeners: {
                         "change": Ext.bind(function( elem, newValue ) {
                             this.getSettings().virtualAddressPool = newValue;
@@ -949,6 +950,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                     fieldLabel: i18n._("Xauth/IKEv2 Address Pool"),
                     value: this.getSettings().virtualXauthPool,
                     vtype: 'cidrBlock',
+                    allowBlank: false,
                     listeners: {
                         "change": Ext.bind(function( elem, newValue ) {
                             this.getSettings().virtualXauthPool = newValue;
@@ -1467,6 +1469,26 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
         handler.call(this, isApply);
     },
     validate: function(isApply) {
+        var garbage = 0;
+
+        chk = this.panelVPNConfig.down('textfield[dataIndex=virtualAddressPool]');
+        if (chk.isValid() === false) garbage++;
+
+        chk = this.panelVPNConfig.down('textfield[dataIndex=virtualXauthPool]');
+        if (chk.isValid() === false) garbage++;
+
+        chk = this.panelVPNConfig.down('textfield[dataIndex=virtualSecret]');
+        if (chk.isValid() === false) garbage++;
+
+        chk = this.panelGRENetworks.down('textfield[dataIndex=virtualNetworkPool]');
+        if (chk.isValid() === false) garbage++;
+
+        if (garbage != 0)
+        {
+            Ext.MessageBox.alert(i18n._('IPsec Configuration Warning'), i18n._("One or more fields have empty or invalid values. Check the VPN Config and GRE Networks tabs for missing or incorrect data."));
+            return(false);
+        }
+
         if (this.warningDisplayed == true) return(true);
         var tlist = this.gridTunnels.getList();
         var regexp = /^[0-9\.]+$/;
