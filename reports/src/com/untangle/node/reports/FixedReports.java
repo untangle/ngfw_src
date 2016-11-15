@@ -37,6 +37,7 @@ import java.util.List;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -154,7 +155,8 @@ public class FixedReports
         ConfigCategories.add("System");
         ConfigCategories.add("Shield");
 
-        ConditionalPatterns = new HashMap<ConditionalE,Pattern>();
+        // Order matters when processing
+        ConditionalPatterns = new LinkedHashMap<ConditionalE,Pattern>();
         ConditionalPatterns.put(ConditionalE.LOGICAL, Pattern.compile("(.+?)\\s+(not\\s+|)(and|or)\\s+(.+)"));
         ConditionalPatterns.put(ConditionalE.EQUALITY, Pattern.compile("(.+?)\\s+(not\\s+|\\!|)(in|\\=|\\=\\=)\\s+(.+)"));
     }
@@ -383,11 +385,47 @@ public class FixedReports
      */
     public void generate(EmailTemplate emailTemplate, List<ReportsUser> users, String reportsUrl)
     {
+        Map<String, String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle");
+        i18nUtil = new I18nUtil(i18nMap);
+
+        String interval = "";
+        Calendar c = Calendar.getInstance();
+        c.set(Calendar.HOUR_OF_DAY, 0);
+        c.set(Calendar.MINUTE, 0);
+        c.set(Calendar.SECOND, 0);
+        c.set(Calendar.MILLISECOND, 0);
+        Date currentDate = c.getTime();
+        if(emailTemplate.getInterval() == 2419200){
+            // Monthly
+            interval = I18nUtil.marktr("Monthly");
+            c.set(Calendar.DAY_OF_MONTH, 1);
+            endDate = c.getTime();
+            c.add(Calendar.DATE, -1);
+            c.set(Calendar.DAY_OF_MONTH, 1);
+            startDate = c.getTime();
+        }else if(emailTemplate.getInterval() == 604800){
+            // Weekly, Sunday through Sunday
+            interval = I18nUtil.marktr("Weekly");
+            c.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+            endDate = c.getTime();
+            c.add(Calendar.DATE, -7);
+            startDate = c.getTime();
+        }else{
+            // Daily
+            interval = I18nUtil.marktr("Daily");
+            c.add(Calendar.DATE, - 1);
+            startDate = c.getTime();
+            c.add(Calendar.DAY_OF_MONTH, 1);
+            endDate = c.getTime();
+        }
+
+        if(currentDate.compareTo(endDate) != 0){
+            return;
+        }
+
         webbrowser = new WebBrowser(1, 5, 250, 250, 8);
 
         File fixedReportTemplateFile = new File(REPORTS_FIXED_TEMPLATE_FILENAME);
-        Map<String, String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle");
-        i18nUtil = new I18nUtil(i18nMap);
 
         messageParts = new ArrayList<Map<MailSender.MessagePartsField,String>>();
         messageText = new StringBuilder();
@@ -430,20 +468,10 @@ public class FixedReports
             }
         }
 
-        Calendar c = Calendar.getInstance();
-        c.add(Calendar.DATE, - 1);
-        c.set(Calendar.HOUR_OF_DAY, 0);
-        c.set(Calendar.MINUTE, 0);
-        c.set(Calendar.SECOND, 0);
-        c.set(Calendar.MILLISECOND, 0);
-        startDate = c.getTime();
-        c.add(Calendar.DAY_OF_MONTH, 1);    
-        endDate = c.getTime();
-
         Map<String,Object> variableKeyValues = new HashMap<String, Object>();
         variableKeyValues.put("startDate", startDate);
         variableKeyValues.put("endDate", endDate);
-        variableKeyValues.put("title", emailTemplate.getTitle() + ": " + dateFormatter.format(startDate));
+        variableKeyValues.put("title", emailTemplate.getTitle() + ": " + interval + " (" + dateFormatter.format(startDate) + "-" + dateFormatter.format(endDate) + ")");
         variableKeyValues.put("emailTemplate", emailTemplate);
         variableKeyValues.put("FixedReports", this);
 
@@ -452,7 +480,6 @@ public class FixedReports
         inputLines = outputLines;
 
         currentParsePass = ParsePass.POST;
-
         if(recipientsWithoutOnlineAccess.size() > 0 ){
             variableKeyValues.put("url", "");
             outputLines = new ArrayList<StringBuilder>();
@@ -804,7 +831,9 @@ public class FixedReports
                                         match = true;
                                     }
                                 }else{
-                                    if(leftVariable.toString().equals(right)){
+                                    if(rightVariable != null && leftVariable.toString().equals(rightVariable)){
+                                        match = true;
+                                    }else if(leftVariable.toString().equals(right)){
                                         match = true;
                                     }
 
