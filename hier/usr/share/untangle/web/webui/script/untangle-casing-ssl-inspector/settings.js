@@ -6,7 +6,8 @@ Ext.define('Webui.untangle-casing-ssl-inspector.settings', {
     gridIgnoreRules: null,
     gridEventLog: null,
     getAppSummary: function() {
-        return i18n._("SSL Inspector allows for full decryption of HTTPS and SMTPS so that other applications can process the encrytped streams.");
+        var certStatus = Ung.Main.getCertificateManager().validateActiveInspectorCertificates();
+        return i18n._("SSL Inspector allows for full decryption of HTTPS and SMTPS so that other applications can process the encrytped streams.<BR><BR>" + certStatus);
     },
     initComponent: function() {
         this.buildPanelConfiguration();
