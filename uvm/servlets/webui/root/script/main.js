@@ -534,13 +534,11 @@ Ext.define("Ung.Main", {
                             xtype: 'button',
                             margin: '0 0 0 10',
                             scale: 'medium',
-                            width: 150,
                             text: '',
                             textAlign: 'left',
                             name: 'policySelector',
                             menu: Ext.create('Ext.menu.Menu', {
                                 hideDelay: 0,
-                                width: 150,
                                 plain: true,
                                 shadow: false,
                                 cls: 'policy-menu-dd',
