@@ -221,15 +221,15 @@ Ext.define('Ung.grid.Panel', {
             this.plugins.push(editColumn);
             this.columns.push(editColumn);
         }
-        if (this.hasCopy) {
-            var copyColumn = Ext.create('Ung.grid.CopyColumn', {hasReadOnly: this.hasReadOnly});
-            this.plugins.push(copyColumn);
-            this.columns.push(copyColumn);
-        }
         if (this.hasDelete) {
             var deleteColumn = Ext.create('Ung.grid.DeleteColumn', {hasReadOnly: this.hasReadOnly});
             this.plugins.push(deleteColumn);
             this.columns.push(deleteColumn);
+        }
+        if (this.hasCopy) {
+            var copyColumn = Ext.create('Ung.grid.CopyColumn', {hasReadOnly: this.hasReadOnly});
+            this.plugins.push(copyColumn);
+            this.columns.push(copyColumn);
         }
         //Use internal ids for all operations
         this.fields.push({
