@@ -835,7 +835,7 @@ public class CaptivePortalApp extends NodeBase
 
                 if (checker == 0) {
                     tempFile.delete();
-                    return new ExecManagerResult(1, "The uploaded ZIP file does not contain custom.html or custom.py");
+                    return new ExecManagerResult(1, "The uploaded ZIP file does not contain custom.html or custom.py in the base/parent directory");
                 }
 
             } catch (ZipException zip) {
