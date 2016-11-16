@@ -397,7 +397,7 @@ public class FixedReports
         Date currentDate = c.getTime();
         if(emailTemplate.getInterval() == 2419200){
             // Monthly
-            interval = I18nUtil.marktr("Monthly");
+            interval = i18nUtil.tr("Monthly");
             c.set(Calendar.DAY_OF_MONTH, 1);
             endDate = c.getTime();
             c.add(Calendar.DATE, -1);
@@ -405,14 +405,14 @@ public class FixedReports
             startDate = c.getTime();
         }else if(emailTemplate.getInterval() == 604800){
             // Weekly, Sunday through Sunday
-            interval = I18nUtil.marktr("Weekly");
+            interval = i18nUtil.tr("Weekly");
             c.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
             endDate = c.getTime();
             c.add(Calendar.DATE, -7);
             startDate = c.getTime();
         }else{
             // Daily
-            interval = I18nUtil.marktr("Daily");
+            interval = i18nUtil.tr("Daily");
             c.add(Calendar.DATE, - 1);
             startDate = c.getTime();
             c.add(Calendar.DAY_OF_MONTH, 1);
@@ -423,13 +423,25 @@ public class FixedReports
             return;
         }
 
-        webbrowser = new WebBrowser(1, 5, 250, 250, 8);
+        String title = emailTemplate.getTitle() + 
+            ": " + interval + " (" + dateFormatter.format(startDate) + ")" + 
+            (emailTemplate.getMobile() == true ? " " + i18nUtil.tr("Mobile") : "");
+
+        logger.warn("Generating report for \"" + title + "\"");
+
+        Integer browserWidth = 800;
+        Integer browserHeight = 400;
+        if(emailTemplate.getMobile() == true){
+            browserWidth = 250;
+            browserHeight = 250;
+        }
+        webbrowser = new WebBrowser(1, 5, browserWidth, browserHeight, 8);
 
         File fixedReportTemplateFile = new File(REPORTS_FIXED_TEMPLATE_FILENAME);
 
         messageParts = new ArrayList<Map<MailSender.MessagePartsField,String>>();
         messageText = new StringBuilder();
-        messageText.append(I18nUtil.marktr("HTML Report enclosed.") + "\n\n");
+        messageText.append(i18nUtil.tr("HTML Report enclosed.") + "\n\n");
 
         // Determine users lists with/without online access for url inclusion
         List<String> recipientsWithoutOnlineAccess = new ArrayList<String>();
@@ -471,7 +483,7 @@ public class FixedReports
         Map<String,Object> variableKeyValues = new HashMap<String, Object>();
         variableKeyValues.put("startDate", startDate);
         variableKeyValues.put("endDate", endDate);
-        variableKeyValues.put("title", emailTemplate.getTitle() + ": " + interval + " (" + dateFormatter.format(startDate) + "-" + dateFormatter.format(endDate) + ")");
+        variableKeyValues.put("title", title);
         variableKeyValues.put("emailTemplate", emailTemplate);
         variableKeyValues.put("FixedReports", this);
 
@@ -618,7 +630,7 @@ public class FixedReports
                                         insertVariable(line, new selector(tag.group(1).trim()));
                                         currentOutputLine.append(line.substring(line.indexOf(tag.group()) + tag.group().length()));
                                     }catch(Exception e){
-                                        logger.warn("Unable to insert variable:" + tag.group(1).trim() );
+                                        logger.warn("parse: Unable to insert variable:" + tag.group(1).trim() );
                                     }
                                     parseContext.ignoreLine = true;
                                 }
@@ -880,7 +892,7 @@ public class FixedReports
             try{
                 currentOutputLine.append(variable.toString());
             }catch(Exception e){
-                logger.warn("Unable to insert variable:" + variableSelector );
+                logger.warn("insertVariable: Unable to insert variable:" + variableSelector );
             }
         }
     }
