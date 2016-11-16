@@ -39,6 +39,29 @@ public class HookManagerImpl implements HookManager
         return INSTANCE;
     }
 
+    public boolean isRegistered( String hookName, HookCallback callback )
+    {
+        if ( callback == null || hookName == null ) {
+            logger.warn( "Invalid argument: " + hookName + "," + callback );
+            return false;
+        }
+        String callbackName = callback.getName();
+        if ( callbackName == null ) {
+            logger.warn( "Invalid callback name: " + callbackName );
+            return false;
+        }
+
+        LinkedList<HookCallback> callbacks = registeredCallbacks.get( hookName );
+        if ( callbacks == null )
+            return false;
+        for ( HookCallback cb : callbacks ) {
+            if ( callbackName.equals( cb.getName() ) ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     public boolean registerCallback( String hookName, HookCallback callback )
     {

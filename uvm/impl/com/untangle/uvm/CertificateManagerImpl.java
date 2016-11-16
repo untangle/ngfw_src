@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.io.ByteArrayInputStream;
 import java.io.BufferedReader;
@@ -27,6 +28,8 @@ import java.io.File;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.naming.ldap.LdapName;
+import javax.naming.ldap.Rdn;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.log4j.Logger;
@@ -36,6 +39,8 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.servlet.DownloadHandler;
+import com.untangle.uvm.network.InterfaceSettings;
+import com.untangle.uvm.util.I18nUtil;
 
 public class CertificateManagerImpl implements CertificateManager
 {
@@ -665,5 +670,97 @@ public class CertificateManagerImpl implements CertificateManager
         killFile.delete();
         killFile = new File(CERT_STORE_PATH + fileBase + ".pfx");
         killFile.delete();
+    }
+
+    /*
+     * For apps and services that depend on certificates to work properly, the
+     * certificates must have all names and addresses that are configured on the
+     * server. Here we grab that list and then check all of the certs to make
+     * sure everything is good. We return our result as a chunk of HTML that is
+     * displayed on the SSL inspector status page in the UI.
+     */
+    public String validateActiveInspectorCertificates()
+    {
+        Map<String, String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle");
+        I18nUtil i18nUtil = new I18nUtil(i18nMap);
+        List<String> machineList = new LinkedList<String>();
+        CertificateInformation certInfo = null;
+        String httpsInfo = null;
+        String smtpsInfo = null;
+        String ipsecInfo = null;
+        String certFile = null;
+        int problem = 0;
+
+        String goodMessage = i18nUtil.tr("No problems detected");
+        String failMessage = i18nUtil.tr("Missing hostname and/or one or more IP addresses");
+
+        // grab the hostname and all IP addresses assigned to this server
+        String hostName = UvmContextFactory.context().networkManager().getNetworkSettings().getHostName();
+        if (hostName != null) machineList.add(hostName);
+
+        for (InterfaceSettings iset : UvmContextFactory.context().networkManager().getNetworkSettings().getInterfaces()) {
+            if (iset.getV4StaticAddress() == null) continue;
+            machineList.add(iset.getV4StaticAddress().getHostAddress());
+        }
+
+        // check the WEB certificate
+        certFile = CertificateManager.CERT_STORE_PATH + UvmContextFactory.context().systemManager().getSettings().getWebCertificate().replaceAll("\\.pem", "\\.crt");
+        certInfo = getServerCertificateInformation(certFile);
+        problem = 0;
+
+        for (String item : machineList) {
+            if (certInfo.getCertSubject().toLowerCase().contains(item.toLowerCase())) continue;
+            if (certInfo.getCertNames().toLowerCase().contains(item.toLowerCase())) continue;
+            problem++;
+        }
+
+        if (problem != 0) httpsInfo = failMessage;
+        else httpsInfo = goodMessage;
+
+        // check the MAIL certificate
+        certFile = CertificateManager.CERT_STORE_PATH + UvmContextFactory.context().systemManager().getSettings().getMailCertificate().replaceAll("\\.pem", "\\.crt");
+        certInfo = getServerCertificateInformation(certFile);
+        problem = 0;
+
+        for (String item : machineList) {
+            if (certInfo.getCertSubject().toLowerCase().contains(item.toLowerCase())) continue;
+            if (certInfo.getCertNames().toLowerCase().contains(item.toLowerCase())) continue;
+            problem++;
+        }
+
+        if (problem != 0) smtpsInfo = failMessage;
+        else smtpsInfo = goodMessage;
+
+        // check the IPSEC certificate
+        certFile = CertificateManager.CERT_STORE_PATH + UvmContextFactory.context().systemManager().getSettings().getIpsecCertificate().replaceAll("\\.pem", "\\.crt");
+        certInfo = getServerCertificateInformation(certFile);
+        problem = 0;
+
+        for (String item : machineList) {
+            if (certInfo.getCertSubject().toLowerCase().contains(item.toLowerCase())) continue;
+            if (certInfo.getCertNames().toLowerCase().contains(item.toLowerCase())) continue;
+            problem++;
+        }
+
+        if (problem != 0) ipsecInfo = failMessage;
+        else {
+            // IPsec IKEv2 will not work properly without this OID
+            if (certInfo.getCertUsage().contains("ikeIntermediate") == false) ipsecInfo = "Missing OID 1.3.6.1.5.5.8.2.2 (ikeIntermediate)";
+            else ipsecInfo = goodMessage;
+
+        }
+
+// THIS IS FOR ECLIPSE - @formatter:off
+
+        String statusInfo = "<TABLE BORDER=1 CELLSPACING=0 CELLPADDING=5>"
+                + "<TR><TD COLSPAN=2><CENTER><STRONG>Server Certificate Verification</STRONG></CENTER></TD></TR>"
+                + "<TR><TD WIDTH=120>HTTPS Certificate</TD><TD>" + httpsInfo + "</TD></TR>"
+                + "<TR><TD WIDTH=120>SMTPS Certificate</TD><TD>" + smtpsInfo + "</TD></TR>"
+                + "<TR><TD WIDTH=120>IPSEC Certificate</TD><TD>" + ipsecInfo + "</TD></TR>"
+                + "</TABLE>";
+
+// THIS IS FOR ECLIPSE - @formatter:on
+
+        return (statusInfo);
     }
 }
