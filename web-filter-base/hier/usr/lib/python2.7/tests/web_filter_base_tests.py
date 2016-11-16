@@ -297,7 +297,7 @@ class WebFilterBaseTests(unittest2.TestCase):
     # verify that an entry in the pass list overrides a blocked category
     def test_052_passedUrlOverridesBlockedMimeType(self):
         nukeWebFilterRules()
-        addWebFilterRule("WEB_FILTER_RESPONSE_CONTENT_TYPE", "text/plain")
+        addWebFilterRule("WEB_FILTER_RESPONSE_CONTENT_TYPE","text/plain")
         addPassedUrl("test.untangle.com/test/")
         # this test URL should NOT be blocked
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/test.txt 2>&1 | grep -q text123")
@@ -308,7 +308,7 @@ class WebFilterBaseTests(unittest2.TestCase):
     # verify that an entry in the pass list overrides a blocked category
     def test_053_passedUrlOverridesBlockedExtension(self):
         nukeWebFilterRules()
-        addWebFilterRule("WEB_FILTER_REQUEST_FILEEXT", "txt")
+        addWebFilterRule("WEB_FILTER_REQUEST_FILE_EXTENSION","txt")
         addPassedUrl("test.untangle.com/test/")
         # this test URL should NOT be blocked
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/test.txt 2>&1 | grep -q text123")
@@ -337,7 +337,7 @@ class WebFilterBaseTests(unittest2.TestCase):
     # verify that an entry in the file extension block list functions
     def test_070_blockedExtension(self):
         nukeWebFilterRules()
-        addWebFilterRule("WEB_FILTER_REQUEST_FILEEXT","txt")
+        addWebFilterRule("WEB_FILTER_REQUEST_FILE_EXTENSION","txt")
         # this test URL should be blocked
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/test.txt 2>&1 | grep -q blockpage")
         nukeWebFilterRules()
@@ -346,7 +346,7 @@ class WebFilterBaseTests(unittest2.TestCase):
     # verify that an entry in the file extension block list doesn't overmatch
     def test_071_blockedExtension(self):
         nukeWebFilterRules()
-        addWebFilterRule("WEB_FILTER_REQUEST_FILEEXT","txt")
+        addWebFilterRule("WEB_FILTER_REQUEST_FILE_EXTENSION","txt")
         # this test URL should NOT be blocked (its text/html not text/plain)
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/test.html 2>&1 | grep -q text123")
         nukeWebFilterRules()
@@ -355,7 +355,7 @@ class WebFilterBaseTests(unittest2.TestCase):
     # verify that an entry in the file extension block list doesn't overmatch
     def test_072_blockedExtension(self):
         nukeWebFilterRules()
-        addWebFilterRule("WEB_FILTER_REQUEST_FILEEXT","tml") # not this should only block ".tml" not ".html"
+        addWebFilterRule("WEB_FILTER_REQUEST_FILE_EXTENSION","tml") # not this should only block ".tml" not ".html"
         # this test URL should NOT be blocked (its text/html not text/plain)
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/test.html 2>&1 | grep -q text123")
         nukeWebFilterRules()
@@ -364,7 +364,7 @@ class WebFilterBaseTests(unittest2.TestCase):
     # verify that an entry in the file extension block list functions
     def test_073_blockedExtensionWithArgument(self):
         nukeWebFilterRules()
-        addWebFilterRule("WEB_FILTER_REQUEST_FILEEXT","txt")
+        addWebFilterRule("WEB_FILTER_REQUEST_FILE_EXTENSION","txt")
         # this test URL should be blocked
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/test.txt?argument 2>&1 | grep -q blockpage")
         nukeWebFilterRules()
