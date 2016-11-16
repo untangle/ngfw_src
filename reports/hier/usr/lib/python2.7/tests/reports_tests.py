@@ -130,7 +130,7 @@ def createReportsUser(profile_email=testEmailAddress):
             "emailAddress": profile_email,
             "emailSummaries": True,
             "emailAlerts": True,
-            "emailProfileIds": {
+            "emailTemplateIds": {
                 "javaClass": "java.util.LinkedList",
                 "list": [
                     1
