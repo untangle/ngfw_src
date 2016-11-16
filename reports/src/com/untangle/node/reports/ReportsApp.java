@@ -543,7 +543,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         enabledConfigIds.add("_all");
         enabledAppIds = new LinkedList<String>();
         enabledAppIds.add("_all");
-        emailTemplate = new EmailTemplate( I18nUtil.marktr("Daily Reports"), I18nUtil.marktr("All available reports (default)"), 86400, enabledConfigIds, enabledAppIds);
+        emailTemplate = new EmailTemplate( I18nUtil.marktr("Daily Reports"), I18nUtil.marktr("All available reports (default)"), 86400, false, enabledConfigIds, enabledAppIds);
         emailTemplate.setReadOnly(true);
         templates.add( emailTemplate );
 
@@ -551,7 +551,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         enabledConfigIds.add("_type=TEXT");
         enabledAppIds = new LinkedList<String>();
         enabledAppIds.add("_type=TEXT");
-        emailTemplate = new EmailTemplate( I18nUtil.marktr("Daily Reports Summary"), I18nUtil.marktr("Text only reports"), 86400, enabledConfigIds, enabledAppIds);
+        emailTemplate = new EmailTemplate( I18nUtil.marktr("Daily Reports Summary"), I18nUtil.marktr("Text only reports"), 86400, false, enabledConfigIds, enabledAppIds);
         emailTemplate.setReadOnly(true);
         templates.add( emailTemplate );
 
