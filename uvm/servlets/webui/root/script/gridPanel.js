@@ -216,6 +216,11 @@ Ext.define('Ung.grid.Panel', {
             }
         }
 
+        if (this.hasCopy) {
+            var copyColumn = Ext.create('Ung.grid.CopyColumn', {hasReadOnly: this.hasReadOnly});
+            this.plugins.push(copyColumn);
+            this.columns.push(copyColumn);
+        }
         if (this.hasEdit) {
             var editColumn = Ext.create('Ung.grid.EditColumn', {hasReadOnly: this.hasReadOnly});
             this.plugins.push(editColumn);
@@ -225,11 +230,6 @@ Ext.define('Ung.grid.Panel', {
             var deleteColumn = Ext.create('Ung.grid.DeleteColumn', {hasReadOnly: this.hasReadOnly});
             this.plugins.push(deleteColumn);
             this.columns.push(deleteColumn);
-        }
-        if (this.hasCopy) {
-            var copyColumn = Ext.create('Ung.grid.CopyColumn', {hasReadOnly: this.hasReadOnly});
-            this.plugins.push(copyColumn);
-            this.columns.push(copyColumn);
         }
         //Use internal ids for all operations
         this.fields.push({
