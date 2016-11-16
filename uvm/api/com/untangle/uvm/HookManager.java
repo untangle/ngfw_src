@@ -14,6 +14,8 @@ public interface HookManager
     public static String UVM_PRE_UPGRADE = "uvm-pre-upgrade";
     public static String UVM_SETTINGS_CHANGE = "uvm-settings-change";
 
+    public boolean isRegistered( String hookName, HookCallback callback );
+
     public boolean registerCallback( String groupName, HookCallback callback );
 
     public boolean unregisterCallback( String groupName, HookCallback callback );
