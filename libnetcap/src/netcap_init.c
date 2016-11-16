@@ -83,7 +83,6 @@ int netcap_init()
 static int _netcap_init()
 {
     struct utsname utsn;
-    int nfconntrack_num_handles = 10;
     
     if ( pthread_key_create( &_init.tls_key, uthread_tls_free ) != 0 )
         return perrlog( "pthread_key_create\n" );
@@ -161,7 +160,7 @@ static int _netcap_init()
         return perrlog("netcap_icmp_init");    
     if (netcap_server_init()<0) 
         return perrlog("netcap_server_init");
-    if (netcap_nfconntrack_init( nfconntrack_num_handles )<0)
+    if (netcap_nfconntrack_init()<0)
         return errlog( ERR_CRITICAL, "netcap_nfconntrack_init\n" );
     if (netcap_conntrack_init( )<0)
         return errlog( ERR_CRITICAL, "netcap_conntrack_init\n" );
