@@ -952,12 +952,14 @@ public class RuleCondition implements JSONString, Serializable
 
         case CLIENT_COUNTRY:
             attachment = UvmContextFactory.context().geographyManager().getCountryCode(srcAddress.getHostAddress());
-            if (attachment == null) attachment = "--";
+            if (attachment == null)
+                return false;
             return globMatcher.isMatch( attachment );
 
         case SERVER_COUNTRY:
             attachment = UvmContextFactory.context().geographyManager().getCountryCode(dstAddress.getHostAddress());
-            if (attachment == null) attachment = "--";
+            if (attachment == null)
+                return false;
             return globMatcher.isMatch( attachment );
 
         default:
