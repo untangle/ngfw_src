@@ -641,7 +641,7 @@ Ext.define('Webui.config.email', {
 
         var publicUrl;
         try {
-            publicUrl = rpc.systemManager.getPublicUrl();
+            publicUrl = rpc.networkManager.getPublicUrl();
         } catch (e) {
             Ung.Util.rpcExHandler(e);
         }

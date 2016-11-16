@@ -29,6 +29,7 @@ public class EmailTemplate implements JSONString, Serializable
     private Integer templateId;
     private String title;
     private String description;
+    private Integer interval;
     private Boolean readOnly = null; /* If the rule is read-only (built-in) */
     private List<String> enabledConfigIds;
     private List<String> enabledAppIds;
@@ -37,10 +38,11 @@ public class EmailTemplate implements JSONString, Serializable
     {
     }
 
-    public EmailTemplate( String title, String description, List<String> enabledConfigIds, List<String> enabledAppIds)
+    public EmailTemplate( String title, String description, Integer interval, List<String> enabledConfigIds, List<String> enabledAppIds)
     {
         this.setTitle( title );
         this.setDescription( description );
+        this.setInterval( interval );
         this.setEnabledConfigIds( enabledConfigIds );
         this.setEnabledAppIds( enabledAppIds );
     }
@@ -53,6 +55,9 @@ public class EmailTemplate implements JSONString, Serializable
 
     public String getDescription() { return this.description; }
     public void setDescription( String newValue ) { this.description = newValue; }
+
+    public Integer getInterval() { return this.interval; }
+    public void setInterval( Integer newValue ) { this.interval = newValue; }
 
     public Boolean getReadOnly() { return this.readOnly; }
     public void setReadOnly( Boolean newValue ) { this.readOnly = newValue; }
