@@ -268,6 +268,8 @@ public abstract class NetcapHook implements Runnable
                 } else {
                     sessionEvent.setClientCountry("XU");
                 }
+            } else {
+                sessionEvent.setClientCountry("XL");
             }
 
             // lookup the country, latitude, and longitude for WAN servers
@@ -280,6 +282,8 @@ public abstract class NetcapHook implements Runnable
                 } else {
                     sessionEvent.setServerCountry("XU");
                 }
+            } else {
+                sessionEvent.setServerCountry("XL");
             }
 
             sessionGlobalState.setSessionEvent( sessionEvent );
