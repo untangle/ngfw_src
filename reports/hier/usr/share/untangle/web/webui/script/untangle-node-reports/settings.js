@@ -23,7 +23,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
     emailChartTypes: ["TEXT", "PIE_GRAPH", "TIME_GRAPH", "TIME_GRAPH_DYNAMIC"],
     // Look at retention days: this.getSettings().dbRetention
     emailIntervals: [
-        [816400, i18n._("Daily")],
+        [86400, i18n._("Daily")],
         [604800, i18n._("Weekly")],
         [2419200, i18n._("Monthly")]
     ],
@@ -1358,6 +1358,8 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 }, {
                     name: 'interval'
                 }, {
+                    name: 'mobile'
+                }, {
                     name: 'readOnly'
                 }, {
                     name: 'enabledConfigIds'
@@ -1414,10 +1416,23 @@ Ext.define('Webui.untangle-node-reports.settings', {
                     renderer: Ext.bind(function(value, metaData){
                         for(var i = 0; i < this.emailIntervals.length;i++){
                             if(this.emailIntervals[i][0] == value){
-                                console.log("Found it");
-                                value = this.emailIntervals[i][1];
+                                return this.emailIntervals[i][1];
                             }
                         }
+                        return value;
+                    }, this)
+                }, {
+                    header: i18n._("Mobile"),
+                    width: 50,
+                    dataIndex: 'mobile',
+                    flex: 1,
+                    editor: {
+                        xtype: 'checkbox',
+                        editable: false,
+                        dataIndex: 'mobile'
+                    },
+                    renderer: Ext.bind(function(value, metaData){
+                        value = ( value == true ? i18n._("Yes") : i18n._("No"));
                         return value;
                     }, this)
                 }, {
@@ -1460,6 +1475,12 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 queryMode: 'local',
                 store: this.emailIntervals,
                 dataIndex: 'interval'
+            },{
+                xtype: 'checkbox',
+                name: 'Mobile',
+                editable: false,
+                fieldLabel: i18n._("Mobile"),
+                dataIndex: 'mobile'
             }, {
                 xtype: 'label',
                 html: i18n._('Config'),
