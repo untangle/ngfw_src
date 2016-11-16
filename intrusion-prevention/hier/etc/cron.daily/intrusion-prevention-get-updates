@@ -92,7 +92,39 @@ class Update:
         """
         if self.debug == True:
             print ":".join( [self.__class__.__name__ , sys._getframe().f_code.co_name, "get rule set" ] )
-            
+
+        ## Get file size to determine if we need to download
+        if os.path.isfile( self.live_rules_file_name  ) == True:
+            live_rules_file_size = os.path.getsize( self.live_rules_file_name )
+        else:
+            live_rules_file_size = 0
+
+        try:
+            r = urllib2.Request(self.url)
+            r.get_method = lambda: 'HEAD'
+            response = urllib2.urlopen(r)
+            meta = response.info()
+            headers = meta.getheaders( "Content-length" )
+        except:
+            self.errors.append( {
+                'msg': "Cannot open url=" + self.url,
+                'error': "\n".join( str(v) for v in sys.exc_info() )
+            })
+            return False
+
+        url_file_size = int( headers[0] )
+        if url_file_size == 0:
+            self.errors.append( {
+                'msg': "Content length",
+                'error': "Content length is 0"
+            })
+            return False
+
+        if live_rules_file_size == url_file_size:
+            if self.debug:
+                print ":".join( [self.__class__.__name__ , sys._getframe().f_code.co_name, "live and url sizes are the same=" + str( live_rules_file_size ) ] )
+            return False
+
         try:
             url = urllib2.urlopen( self.url )
         except:
@@ -100,32 +132,6 @@ class Update:
 		        'msg': "Cannot open url=" + self.url,
 			    'error': "\n".join( str(v) for v in sys.exc_info() )
             })
-            return False
-
-        if os.path.isfile( self.live_rules_file_name  ) == True:
-            live_rules_file_size = os.path.getsize( self.live_rules_file_name )
-        else:
-            live_rules_file_size = 0
-        
-        meta = url.info()
-        headers = meta.getheaders( "Content-length" )
-        if len(headers) == 0:
-            self.errors.append( {
-			    'msg': "Get headers",
-			    'error': "Unable to get Content-Length header"
-		    })
-            return False
-        url_file_size = int( headers[0] )
-        if url_file_size == 0:
-            self.errors.append( {
-			    'msg': "Content length",
-			    'error': "Content length is 0"
-		    })
-            return False
-
-        if live_rules_file_size == url_file_size:
-            if self.debug:
-                print ":".join( [self.__class__.__name__ , sys._getframe().f_code.co_name, "live and url sizes are the same=" + str( live_rules_file_size ) ] )
             return False
         
         try:
