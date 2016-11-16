@@ -22,7 +22,7 @@ public class NetcapManagerImpl implements NetcapManager
     static final int SHUTDOWN_PAUSE    = 2000;
 
     /* Singleton */
-    private static final NetcapManagerImpl INSTANCE = new NetcapManagerImpl();
+    private static NetcapManagerImpl INSTANCE = null;
 
     int netcapDebugLevel    = 1;
     int jnetcapDebugLevel   = 1;
@@ -39,9 +39,7 @@ public class NetcapManagerImpl implements NetcapManager
     private final Logger logger = Logger.getLogger( this.getClass());
 
     /* Singleton */
-    private NetcapManagerImpl() { }
-
-    public void run()
+    private NetcapManagerImpl()
     {
         /* Parse all of the properties */
         parseProperties();
@@ -52,7 +50,10 @@ public class NetcapManagerImpl implements NetcapManager
             logger.fatal( "Error initializing netcap", e );
             throw new IllegalStateException( "Unable to initialize netcap", e );
         }
+    }
 
+    public void run()
+    {
         registerHooks();
     }
 
@@ -162,6 +163,9 @@ public class NetcapManagerImpl implements NetcapManager
 
     public static NetcapManagerImpl getInstance()
     {
+        if ( INSTANCE == null )
+            INSTANCE = new NetcapManagerImpl();
+
         return INSTANCE;
     }
 

@@ -79,6 +79,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private NodeManagerImpl nodeManager;
     private CertificateManagerImpl certificateManager;
     private GeographyManagerImpl geographyManager;
+    private NetcapManagerImpl netcapManager;
     private DaemonManagerImpl daemonManager;
     private BrandingManagerImpl brandingManager;
     private SkinManagerImpl skinManager;
@@ -215,7 +216,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
     public NetcapManager netcapManager()
     {
-        return NetcapManagerImpl.getInstance();
+        return this.netcapManager;
     }
 
     public ServletFileManager servletFileManager()
@@ -820,6 +821,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             throw new IllegalStateException("register serializers should never fail!", e);
         }
 
+        this.netcapManager = NetcapManagerImpl.getInstance();
+        
         createUID();
 
         this.hookManager = HookManagerImpl.getInstance();
