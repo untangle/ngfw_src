@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.LinkedList;
 import java.util.Iterator;
 
-import org.apache.catalina.Valve;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.SettingsManager;
@@ -37,8 +36,6 @@ import com.untangle.node.web_filter.WebFilterHandler;
 
 public class WebMonitorApp extends WebFilterBase
 {
-    private static int web_monitor_deployCount = 0;
-
     private final Logger logger = Logger.getLogger(getClass());
 
     private final WebFilterDecisionEngine engine = new WebFilterDecisionEngine(this);
@@ -158,16 +155,12 @@ public class WebMonitorApp extends WebFilterBase
     protected void postStart( boolean isPermanentTransition )
     {
         super.postStart( isPermanentTransition );
-
-        e_deployWebAppIfRequired(logger);
     }
     
     @Override
     protected void postStop( boolean isPermanentTransition )
     {
         super.postStop( isPermanentTransition );
-
-        e_unDeployWebAppIfRequired(logger);
     }
 
     @Override
@@ -203,7 +196,7 @@ public class WebMonitorApp extends WebFilterBase
     @Override
     public boolean isPremium()
     {
-        return true;
+        return false;
     }
     
     @Override
@@ -213,33 +206,5 @@ public class WebMonitorApp extends WebFilterBase
 
         addCategories(categories);
         settings.setCategories(categories);
-    }
-
-    private static synchronized void e_deployWebAppIfRequired(Logger logger)
-    {
-        web_monitor_deployCount = web_monitor_deployCount + 1;
-        if (web_monitor_deployCount != 1) {
-            return;
-        }
-
-        if ( UvmContextFactory.context().tomcatManager().loadServlet("/web-filter", "web-filter") != null ) {
-            logger.debug("Deployed WebFilter WebApp");
-        } else {
-            logger.error("Unable to deploy WebFilter WebApp");
-        }
-    }
-
-    private static synchronized void e_unDeployWebAppIfRequired(Logger logger)
-    {
-        web_monitor_deployCount = web_monitor_deployCount - 1;
-        if (web_monitor_deployCount != 0) {
-            return;
-        }
-
-        if (UvmContextFactory.context().tomcatManager().unloadServlet("/web-filter")) {
-            logger.debug("Unloaded WebFilter WebApp");
-        } else {
-            logger.warn("Unable to unload WebFilter WebApp");
-        }
     }
 }

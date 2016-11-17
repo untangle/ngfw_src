@@ -95,6 +95,7 @@ public abstract class DecisionEngine
                                          * for the flag/block
                                          */
         GenericRule bestCategory = null;
+        String requestMethod = null;
         URI uri = null;
 
         try {
@@ -104,6 +105,10 @@ public abstract class DecisionEngine
         }
 
         if (sess != null) {
+            // first we attach the request method
+            String rmethod = requestLine.getMethod().toString();
+            if (rmethod != null) sess.globalAttach(NodeSession.KEY_WEB_FILTER_REQUEST_METHOD, rmethod);
+
             // start with the URI from the request
             String furi = uri.toString();
             String fpath = null;
