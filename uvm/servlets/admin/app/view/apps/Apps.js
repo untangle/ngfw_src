@@ -33,17 +33,6 @@ Ext.define('Ung.view.apps.Apps', {
             align: 'middle'
         },
         items: [{
-            xtype: 'button',
-            baseCls: 'heading-btn',
-            html: Ung.Util.iconTitle('Install Apps'.t(), 'file_download-16'),
-            hrefTarget: '_self',
-            bind: {
-                href: '#apps/{policyId}/install'
-            }
-        }, {
-            xtype: 'component',
-            flex: 1
-        }, {
             xtype: 'combobox',
             editable: false,
             multiSelect: false,
@@ -57,6 +46,35 @@ Ext.define('Ung.view.apps.Apps', {
             listeners: {
                 change: 'setPolicy'
             }
+        }, {
+            xtype: 'button',
+            baseCls: 'heading-btn',
+            html: Ung.Util.iconTitle('Install Apps'.t(), 'file_download-16'),
+            hrefTarget: '_self',
+            bind: {
+                href: '#apps/{policyId}/install'
+            }
+        }, {
+            xtype: 'component',
+            flex: 1
+        }, {
+            xtype: 'button',
+            baseCls: 'heading-btn',
+            html: 'Sessions'.t(),
+            href: '#sessions',
+            hrefTarget: '_self'
+        }, {
+            xtype: 'button',
+            baseCls: 'heading-btn',
+            html: 'Hosts'.t(),
+            href: '#hosts',
+            hrefTarget: '_self'
+        }, {
+            xtype: 'button',
+            baseCls: 'heading-btn',
+            html: 'Devices'.t(),
+            href: '#devices',
+            hrefTarget: '_self'
         }]
     }, {
         region: 'center',

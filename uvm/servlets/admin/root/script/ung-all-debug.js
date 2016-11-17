@@ -271,11 +271,13 @@ Ext.define('Ung.util.Util', {
      * Helper method that lists the order in which classes are loaded
      */
     getClassOrder: function () {
-        var classes = [];
+        var classes = [], extClasses = [];
 
         Ext.Loader.history.forEach(function (cls) {
             if (cls.indexOf('Ung') === 0) {
                 classes.push(cls.replace('Ung', 'app').replace(/\./g, '/') + '.js');
+            } else {
+                extClasses.push(cls);
             }
         });
 
@@ -283,7 +285,7 @@ Ext.define('Ung.util.Util', {
 
         Ext.create('Ext.Window', {
             title: 'Untangle Classes Load Order',
-            width: 400,
+            width: 600,
             height: 600,
 
             // Constraining will pull the Window leftwards so that it's within the parent Window
@@ -291,15 +293,17 @@ Ext.define('Ung.util.Util', {
             draggable: false,
             resizable: false,
             layout: {
-                type: 'vbox',
+                type: 'hbox',
                 align: 'stretch',
                 pack: 'end'
             },
-            items: [{
-                xtype: 'component',
-                padding: 10,
-                html: 'Copy this list into <strong>.buildorder</strong> file!'
-            }, {
+            items: [
+            // {
+            //     xtype: 'component',
+            //     padding: 10,
+            //     html: 'Copy this list into <strong>.buildorder</strong> file!'
+            // }, {
+                {
                 xtype: 'textarea',
                 border: false,
                 flex: 1,
@@ -309,6 +313,16 @@ Ext.define('Ung.util.Util', {
                     fontSize: '11px'
                 },
                 value: classes.join('\r\n')
+            }, {
+                xtype: 'textarea',
+                border: false,
+                flex: 1,
+                editable: false,
+                fieldStyle: {
+                    background: '#FFF',
+                    fontSize: '11px'
+                },
+                value: extClasses.join('\r\n')
             }]
         }).show();
     }
@@ -516,7 +530,11 @@ Ext.define('Ung.view.main.MainController', {
         'apps/:policyId': 'onApps',
         'apps/:policyId/:node': 'onApps',
         'config': 'onConfig',
-        'reports': 'onReports'
+        'config/:configName': 'onConfig',
+        'reports': 'onReports',
+        'sessions': 'onSessions',
+        'hosts': 'onHosts',
+        'devices': 'onDevices'
     },
 
     onBeforeRender: function(view) {
@@ -583,12 +601,38 @@ Ext.define('Ung.view.main.MainController', {
         }
     },
 
-    onConfig: function () {
-        this.getViewModel().set('activeItem', 'config');
+    onConfig: function (configName) {
+        if (!configName) {
+            this.getViewModel().set('activeItem', 'config');
+        } else {
+            console.log('conf settings');
+            this.getViewModel().set('activeItem', 'configsettings');
+        }
     },
 
     onReports: function () {
         this.getViewModel().set('activeItem', 'reports');
+    },
+
+
+    // sessions, hosts, devices
+
+    onSessions: function () {
+        this.setShd('sessions');
+    },
+
+    onHosts: function () {
+        this.setShd('hosts');
+    },
+
+    onDevices: function () {
+        this.setShd('devices');
+    },
+
+    setShd: function (viewName) {
+        this.getViewModel().set('activeItem', 'shd');
+        this.getViewModel().set('shdActiveItem', viewName);
+        this.getView().down('#shdcenter').setActiveItem(viewName);
     }
 
 });
@@ -618,10 +662,49 @@ Ext.define('Ung.view.main.MainModel', {
         },
         isReports: function(get) {
             return get('activeItem') === 'reports';
+        },
+        isSessions: function(get) {
+            return get('shdActiveItem') === 'sessions';
+        },
+        isHosts: function(get) {
+            return get('shdActiveItem') === 'hosts';
+        },
+        isDevices: function(get) {
+            return get('shdActiveItem') === 'devices';
         }
     }
 });
 
+Ext.define('Ung.view.shd.Devices', {
+    extend: 'Ext.panel.Panel',
+    // extend: 'Ext.grid.Panel',
+    xtype: 'ung.devices',
+    // layout: 'border',
+    requires: [
+        // 'Ung.view.sessions.SessionsController'
+    ],
+
+    // controller: 'sessions',
+
+    viewModel: {
+        data: {
+            autoRefresh: false
+        }
+    },
+
+    layout: 'border',
+
+    defaults: {
+        border: false
+    },
+
+    title: 'Devices'.t(),
+
+    items: [{
+        region: 'center',
+        html: 'devices'
+    }]
+});
 /**
  * Dashboard Controller which displays and manages the Dashboard Widgets
  * Widgets can be affected by following actions:
@@ -774,7 +857,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         }
         // dashboard.add(widgetComponents);
         console.timeEnd('all');
-        this.populateMenus();
+        // this.populateMenus();
     },
 
     /**
@@ -1942,17 +2025,6 @@ Ext.define('Ung.view.apps.Apps', {
             align: 'middle'
         },
         items: [{
-            xtype: 'button',
-            baseCls: 'heading-btn',
-            html: Ung.Util.iconTitle('Install Apps'.t(), 'file_download-16'),
-            hrefTarget: '_self',
-            bind: {
-                href: '#apps/{policyId}/install'
-            }
-        }, {
-            xtype: 'component',
-            flex: 1
-        }, {
             xtype: 'combobox',
             editable: false,
             multiSelect: false,
@@ -1966,6 +2038,35 @@ Ext.define('Ung.view.apps.Apps', {
             listeners: {
                 change: 'setPolicy'
             }
+        }, {
+            xtype: 'button',
+            baseCls: 'heading-btn',
+            html: Ung.Util.iconTitle('Install Apps'.t(), 'file_download-16'),
+            hrefTarget: '_self',
+            bind: {
+                href: '#apps/{policyId}/install'
+            }
+        }, {
+            xtype: 'component',
+            flex: 1
+        }, {
+            xtype: 'button',
+            baseCls: 'heading-btn',
+            html: 'Sessions'.t(),
+            href: '#sessions',
+            hrefTarget: '_self'
+        }, {
+            xtype: 'button',
+            baseCls: 'heading-btn',
+            html: 'Hosts'.t(),
+            href: '#hosts',
+            hrefTarget: '_self'
+        }, {
+            xtype: 'button',
+            baseCls: 'heading-btn',
+            html: 'Devices'.t(),
+            href: '#devices',
+            hrefTarget: '_self'
         }]
     }, {
         region: 'center',
@@ -2341,13 +2442,21 @@ Ext.define('Ung.view.config.ConfigItem', {
         return data;
     }
 });
-Ext.define('Ung.view.config.Config', {
+Ext.define('Ung.view.config.ConfigSettings', {
     extend: 'Ext.container.Container',
+    xtype: 'ung.configsettings',
+
+    html: 'config settings'
+
+
+});
+Ext.define('Ung.view.config.Config', {
+    extend: 'Ext.panel.Panel',
     xtype: 'ung.config',
-    layout: 'fit',
     requires: [
         'Ung.view.config.ConfigController',
-        'Ung.view.config.ConfigItem'
+        'Ung.view.config.ConfigItem',
+        'Ung.view.config.ConfigSettings'
     ],
 
     controller: 'config',
@@ -3643,7 +3752,7 @@ Ext.define('Ung.view.node.SettingsController', {
                         itemId: 'settings'
                         //manager: nodeManager
                     });
-                    //console.log(settings);
+                    console.log(settings);
                     vm.set('settings', settings);
                     mask.hide();
                 });
@@ -3923,6 +4032,440 @@ Ext.define ('Ung.model.GenericRule', {
             //rootProperty: 'list'
         }
     }
+});
+Ext.define('Ung.view.shd.SessionsController', {
+    extend: 'Ext.app.ViewController',
+
+    alias: 'controller.sessions',
+
+    control: {
+        '#': {
+            beforeactivate: 'getSessions'
+        },
+        '#list': {
+            select: 'onSelect'
+        },
+        'toolbar textfield': {
+            change: 'globalFilter'
+        }
+    },
+
+    refreshInterval: null,
+
+    setAutoRefresh: function (btn) {
+        var me = this,
+            vm = this.getViewModel();
+        vm.set('autoRefresh', btn.pressed);
+
+        console.log(btn.pressed);
+
+        if (btn.pressed) {
+            me.getSessions();
+            this.refreshInterval = setInterval(function () {
+                me.getSessions();
+            }, 5000);
+        } else {
+            clearInterval(this.refreshInterval);
+        }
+
+    },
+
+    getSessions: function () {
+        console.log('get sessions');
+        var me = this,
+            grid = me.getView().down('#list');
+        grid.getView().setLoading(true);
+        rpc.sessionMonitor.getMergedSessions(function (result, exception) {
+            grid.getView().setLoading(false);
+            if (exception) {
+                Ung.Util.exceptionToast(exception);
+                return;
+            }
+            Ext.getStore('sessions').loadData(result.list);
+            grid.getSelectionModel().select(0);
+            // grid.getStore().setData(result.list);
+        });
+    },
+
+    onSelect: function (grid, record) {
+        var vm = this.getViewModel(),
+            props = record.getData();
+
+        delete props._id;
+        delete props.javaClass;
+        delete props.mark;
+        delete props.localAddr;
+        delete props.remoteAddr;
+        vm.set('selectedSession', props);
+    },
+
+    globalFilter: function (field, value) {
+        var list = this.getView().down('#list'),
+            re = new RegExp(value, 'gi');
+        if (value.length > 0) {
+            list.getStore().clearFilter();
+            list.getStore().filterBy(function (record) {
+                return re.test(record.get('protocol')) ||
+                       re.test(record.get('preNatClient')) ||
+                       re.test(record.get('postNatServer')) ||
+                       re.test(record.get('preNatClientPort')) ||
+                       re.test(record.get('postNatServerPort'));
+            });
+
+            // list.getStore().filter([
+            //     { property: 'protocol', value: value }
+            // ]);
+        } else {
+            list.getStore().clearFilter();
+        }
+        list.getSelectionModel().select(0);
+    }
+
+});
+
+Ext.define('Ung.view.shd.Sessions', {
+    extend: 'Ext.panel.Panel',
+    // extend: 'Ext.grid.Panel',
+    xtype: 'ung.sessions',
+    // layout: 'border',
+    requires: [
+        'Ung.view.shd.SessionsController'
+    ],
+
+    controller: 'sessions',
+
+    viewModel: {
+        data: {
+            autoRefresh: false
+        }
+    },
+
+    layout: 'border',
+
+    defaults: {
+        border: false
+    },
+
+    title: 'Current Sessions'.t(),
+
+    items: [{
+        region: 'center',
+        xtype: 'grid',
+        itemId: 'list',
+        store: 'sessions',
+        // forceFit: true,
+
+        plugins: 'gridfilters',
+        columnLines: true,
+        columns: [{
+            header: 'Creation Time'.t(),
+            dataIndex: 'creationTime',
+            hidden: true
+        }, {
+            header: 'Protocol'.t(),
+            dataIndex: 'protocol',
+            width: 70,
+            filter: {
+                type: 'list',
+                options: ['TCP', 'UDP']
+            }
+        }, {
+            header: 'Bypassed'.t(),
+            dataIndex: 'bypassed',
+            width: 70
+        }, {
+            header: 'Policy'.t(),
+            dataIndex: 'policy',
+            hidden: true
+        }, {
+            header: 'Hostname'.t(),
+            dataIndex: 'platform-hostname',
+            flex: 1
+        }, {
+            header: 'NATd'.t(),
+            dataIndex: 'natted',
+            hidden: true
+        }, {
+            header: 'Port Forwarded'.t(),
+            dataIndex: 'portForwarded',
+            hidden: true
+        }, {
+            header: 'Username'.t(),
+            dataIndex: 'platform-username',
+            hidden: true
+        }, {
+            header: 'Client'.t(),
+            columns: [{
+                header: 'Interface'.t(),
+                dataIndex: 'clientIntf'
+            }, {
+                header: 'Pre-NAT'.t(),
+                dataIndex: 'preNatClient'
+            }, {
+                header: 'Port (Pre-NAT)'.t(),
+                dataIndex: 'preNatClientPort'
+            }, {
+                header: 'Post-NAT'.t(),
+                dataIndex: 'postNatClient',
+                hidden: true
+            }, {
+                header: 'Port (Post-NAT)'.t(),
+                dataIndex: 'postNatClientPort',
+                hidden: true
+            }, {
+                header: 'Country'.t(),
+                dataIndex: 'clientCountry',
+                hidden: true
+            }, {
+                header: 'Latitude'.t(),
+                dataIndex: 'clientLatitude',
+                hidden: true
+            }, {
+                header: 'Longitude'.t(),
+                dataIndex: 'clientLlongitude',
+                hidden: true
+            }]
+        }, {
+            header: 'Server'.t(),
+            columns: [{
+                header: 'Interface'.t(),
+                dataIndex: 'serverIntf'
+            }, {
+                header: 'Pre-NAT'.t(),
+                dataIndex: 'preNatServer',
+                hidden: true
+            }, {
+                header: 'Port (Pre-NAT)'.t(),
+                dataIndex: 'preNatServerPort',
+                hidden: true
+            }, {
+                header: 'Post-NAT'.t(),
+                dataIndex: 'postNatServer'
+            }, {
+                header: 'Port (Post-NAT)'.t(),
+                dataIndex: 'postNatServerPort'
+            }, {
+                header: 'Country'.t(),
+                dataIndex: 'serverCountry',
+                hidden: true
+            }, {
+                header: 'Latitude'.t(),
+                dataIndex: 'serverLatitude',
+                hidden: true
+            }, {
+                header: 'Longitude'.t(),
+                dataIndex: 'serverLlongitude',
+                hidden: true
+            }]
+        }, {
+            header: 'Speed (KB/s)'.t(),
+            columns: [{
+                header: 'Client'.t(),
+                dataIndex: 'clientKBps',
+                filter: 'number',
+                align: 'right'
+            }, {
+                header: 'Server'.t(),
+                dataIndex: 'serverKBps',
+                filter: 'number',
+                align: 'right'
+            }, {
+                header: 'Total'.t(),
+                dataIndex: 'totalKBps',
+                filter: 'number',
+                align: 'right'
+            }]
+        }]
+    }, {
+        region: 'east',
+        xtype: 'propertygrid',
+        itemId: 'details',
+        editable: false,
+        width: 400,
+        title: 'Session Details'.t(),
+        split: true,
+        collapsible: true,
+        resizable: true,
+        shadow: false,
+        animCollapse: false,
+        titleCollapse: true,
+
+        // columnLines: false,
+
+        cls: 'prop-grid',
+
+        viewConfig: {
+            stripeRows: false,
+            getRowClass: function(record) {
+                if (record.get('value') === null || record.get('value') === '') {
+                    return 'empty';
+                }
+                return;
+            }
+        },
+
+        nameColumnWidth: 150,
+        bind: {
+            source: '{selectedSession}'
+        },
+        sourceConfig: {
+            attachments:       { displayName: 'Attachments'.t() },
+            bypassed:          { displayName: 'Bypassed'.t() },
+            clientCountry:     { displayName: 'Client Country'.t() },
+            clientIntf:        { displayName: 'Client Interface'.t() },
+            clientKBps:        { displayName: 'Client KB/s'.t() },
+            clientLatitude:    { displayName: 'Client Latitude'.t() },
+            clientLongitude:   { displayName: 'Client Longitude'.t() },
+            creationTime:      { displayName: 'Creation Time'.t() },
+            hostname:          { displayName: 'Hostname'.t() },
+            natted:            { displayName: 'NATd'.t() },
+            pipeline:          { displayName: 'Pipeline'.t() },
+            policy:            { displayName: 'Policy'.t() },
+            portForwarded:     { displayName: 'Port Forwarded'.t() },
+            postNatClient:     { displayName: 'Client (Post-NAT)'.t() },
+            postNatClientPort: { displayName: 'Client Port (Post-NAT)'.t() },
+            postNatServer:     { displayName: 'Server (Post-NAT)'.t() },
+            postNatServerPort: { displayName: 'Server Port (Post-NAT)'.t() },
+            preNatClient:      { displayName: 'Client (Pre-NAT)'.t() },
+            preNatClientPort:  { displayName: 'Client Port (Pre-NAT)'.t() },
+            preNatServer:      { displayName: 'Server (Pre-NAT)'.t() },
+            preNatServerPort:  { displayName: 'Server Port (Pre-NAT)'.t() },
+            priority:          { displayName: 'Priority'.t() },
+            protocol:          { displayName: 'Protocol'.t() },
+            qosPriority:       { displayName: 'Priority'.t() + '(QoS)' },
+            serverCountry:     { displayName: 'Server Country'.t() },
+            serverIntf:        { displayName: 'Server Interface'.t() },
+            serverKBps:        { displayName: 'Server KB/s'.t() },
+            serverLatitude:    { displayName: 'Server Latitude'.t() },
+            serverLongitude:   { displayName: 'Server Longitude'.t() },
+            sessionId:         { displayName: 'Session ID'.t() },
+            state:             { displayName: 'State'.t() },
+            totalKBps:         { displayName: 'Total KB/s'.t() }
+        },
+        listeners: {
+            beforeedit: function () {
+                return false;
+            }
+        }
+    }],
+    tbar: [{
+        xtype: 'button',
+        text: Ung.Util.iconTitle('Refresh'.t(), 'refresh-16'),
+        handler: 'getSessions',
+        bind: {
+            disabled: '{autoRefresh}'
+        }
+    }, {
+        xtype: 'button',
+        text: Ung.Util.iconTitle('Auto Refresh'.t(), 'autorenew-16'),
+        enableToggle: true,
+        toggleHandler: 'setAutoRefresh'
+    }, '-', 'Filter:'.t(), {
+        xtype: 'textfield',
+        checkChangeBuffer: 200
+    }]
+});
+Ext.define('Ung.view.shd.HostsController', {
+    extend: 'Ext.app.ViewController',
+
+    alias: 'controller.hosts',
+
+    control: {
+        '#': {
+            beforeactivate: 'onBeforeActivate'
+        },
+        '#hostsgrid': {
+            beforerender: 'onBeforeRenderHostsGrid'
+        }
+    },
+
+    onBeforeActivate: function (view) {
+        view.setActiveItem(0);
+    },
+
+    onBeforeRenderHostsGrid: function (grid) {
+        this.getHosts();
+    },
+
+    getHosts: function () {
+        console.log('get hosts');
+        var me = this,
+            grid = me.getView().down('#hostsgrid');
+        grid.getView().setLoading(true);
+        rpc.hostTable.getHosts(function (result, exception) {
+            grid.getView().setLoading(false);
+            if (exception) {
+                Ung.Util.exceptionToast(exception);
+                return;
+            }
+            Ext.getStore('hosts').loadData(result.list);
+            // grid.getSelectionModel().select(0);
+            // grid.getStore().setData(result.list);
+        });
+    }
+
+});
+
+Ext.define('Ung.view.shd.Hosts', {
+    extend: 'Ext.tab.Panel',
+    xtype: 'ung.hosts',
+    // layout: 'border',
+    requires: [
+        'Ung.view.shd.HostsController'
+    ],
+
+    controller: 'hosts',
+
+    layout: 'border',
+
+    defaults: {
+        border: false
+    },
+
+    items: [{
+        xtype: 'grid',
+        itemId: 'hostsgrid',
+        title: 'Current Hosts'.t(),
+        store: 'hosts',
+        columns: [
+            { header: 'IP'.t(), dataIndex: 'address' },
+            { header: 'MAC Address'.t(), dataIndex: 'macAddress' },
+            { header: 'MAC Vendor'.t(), dataIndex: 'macVendor' },
+            { header: 'Interface'.t(), dataIndex: 'interfaceId' },
+            { header: 'Last Access Time'.t(), dataIndex: 'lastAccessTimeDate', hidden: true },
+            { header: 'Last Session Time'.t(), dataIndex: 'lastSessionTimeDate', hidden: true },
+            { header: 'Last Completed TCP Session Time'.t(), dataIndex: 'lastCompletedTcpSessionTime', hidden: true },
+            { header: 'Entitled Status'.t(), dataIndex: 'entitledStatus', hidden: true },
+            { header: 'Active'.t(), dataIndex: 'active' },
+            { header: 'Hostname'.t(), dataIndex: 'hostname' },
+            { header: 'User Name'.t(), dataIndex: 'username' },
+            {
+                header: 'Penalty'.t(),
+                columns: [
+                    { header: 'Boxed'.t(), dataIndex: 'penaltyBoxed' },
+                    { header: 'Entry Time'.t(), dataIndex: 'penaltyBoxEntryTime', hidden: true },
+                    { header: 'Exit Time'.t(), dataIndex: 'penaltyBoxExitTime', hidden: true }
+                ]
+            }, {
+                header: 'Quota'.t(),
+                columns: [
+                    { header: 'Size'.t(), dataIndex: 'quotaSize' },
+                    { header: 'Remaining'.t(), dataIndex: 'quotaRemaining' },
+                    { header: 'Issue Time'.t(), dataIndex: 'quotaIssueTime', hidden: true },
+                    { header: 'Expiration Time'.t(), dataIndex: 'quotaExpirationTime', hidden: true }
+                ]
+            }
+        ]
+    }, {
+        title: 'Penalty Box Hosts'.t(),
+        html: 'penalty hosts'
+    }, {
+        title: 'Current Quotas'.t(),
+        html: 'quotas'
+    }, {
+        title: 'Reports'.t(),
+        html: 'reports'
+    }]
 });
 Ext.define('Ung.widget.ReportModel', {
     extend: 'Ext.app.ViewModel',
@@ -6314,15 +6857,15 @@ Ext.define('Ung.view.dashboard.Dashboard', {
         }, {
             html: 'Sessions'.t(),
             href: '#sessions',
-            hrafTarget: '_self'
+            hrefTarget: '_self'
         }, {
             html: 'Hosts'.t(),
             href: '#hosts',
-            hrafTarget: '_self'
+            hrefTarget: '_self'
         }, {
             html: 'Devices'.t(),
             href: '#devices',
-            hrafTarget: '_self'
+            hrefTarget: '_self'
         }]
     }, {
         region: 'west',
@@ -6381,17 +6924,8 @@ Ext.define('Ung.view.dashboard.Dashboard', {
             // disableSelection: true,
             // trackMouseOver: false,
 
-            viewModel: {
-                stores: {
-                    wg: {
-                        source: 'widgets'
-                    }
-                }
-            },
+            store: 'widgets',
 
-            bind: {
-                store: '{wg}'
-            },
             bodyStyle: {
                 border: 0
             },
@@ -7776,7 +8310,11 @@ Ext.define('Ung.view.main.Main', {
         'Ung.view.apps.install.Install',
         'Ung.view.config.Config',
         'Ung.view.reports.Reports',
-        'Ung.view.node.Settings'
+        'Ung.view.node.Settings',
+
+        'Ung.view.shd.Sessions',
+        'Ung.view.shd.Hosts',
+        'Ung.view.shd.Devices'
     ],
 
 
@@ -7799,11 +8337,13 @@ Ext.define('Ung.view.main.Main', {
             layout: { type: 'hbox', align: 'middle' },
             defaults: {
                 xtype: 'button',
+                enableToggle: true,
                 baseCls: 'nav-item',
                 height: 30,
                 hrefTarget: '_self'
             },
             items: [{
+                enableToggle: false,
                 html: '<img src="' + resourcesBaseHref + '/images/BrandingLogo.png" style="height: 40px;"/>',
                 width: 100,
                 height: 40,
@@ -7845,22 +8385,90 @@ Ext.define('Ung.view.main.Main', {
         bind: {
             activeItem: '{activeItem}'
         },
-        items: [{
-            xtype: 'ung.dashboard',
-            itemId: 'dashboard'
-        }, {
-            xtype: 'ung.apps',
-            itemId: 'apps'
-        }, {
-            xtype: 'ung.config',
-            itemId: 'config'
-        }, {
-            xtype: 'ung.appsinstall',
-            itemId: 'appsinstall'
-        }, {
-            xtype: 'ung.nodesettings',
-            itemId: 'settings'
-        }]
+        items: [
+        // {
+        //     xtype: 'ung.apps',
+        //     itemId: 'apps'
+        // }, {
+        //     xtype: 'ung.config',
+        //     itemId: 'config'
+        // }, {
+        //     xtype: 'ung.configsettings',
+        //     itemId: 'configsettings'
+        // }, {
+        //     xtype: 'ung.appsinstall',
+        //     itemId: 'appsinstall'
+        // }, {
+        //     xtype: 'ung.nodesettings',
+        //     itemId: 'settings'
+        // },
+        // {
+        //     layout: 'border',
+        //     itemId: 'shd', // sessions hosts devices
+        //     border: false,
+        //     items: [{
+        //         region: 'north',
+        //         weight: 20,
+        //         border: false,
+        //         height: 44,
+        //         bodyStyle: {
+        //             background: '#555',
+        //             padding: '0 5px'
+        //         },
+        //         layout: {
+        //             type: 'hbox',
+        //             align: 'middle'
+        //         },
+        //         defaults: {
+        //             xtype: 'button',
+        //             enableToggle: true,
+        //             baseCls: 'heading-btn',
+        //             hrefTarget: '_self'
+        //         },
+        //         items: [{
+        //             html: Ung.Util.iconTitle('Back to Dashboard', 'keyboard_arrow_left-16'),
+        //             enableToggle: false,
+        //             href: '#',
+        //             hrefTarget: '_self'
+        //         }, {
+        //             xtype: 'component',
+        //             flex: 1
+        //         }, {
+        //             html: 'Sessions'.t(),
+        //             href: '#sessions',
+        //             bind: {
+        //                 pressed: '{isSessions}'
+        //             }
+        //         }, {
+        //             html: 'Hosts'.t(),
+        //             href: '#hosts',
+        //             bind: {
+        //                 pressed: '{isHosts}'
+        //             }
+        //         }, {
+        //             html: 'Devices'.t(),
+        //             href: '#devices',
+        //             bind: {
+        //                 pressed: '{isDevices}'
+        //             }
+        //         }]
+        //     }, {
+        //         region: 'center',
+        //         layout: 'card',
+        //         itemId: 'shdcenter',
+        //         items: [{
+        //             xtype: 'ung.sessions',
+        //             itemId: 'sessions'
+        //         }, {
+        //             xtype: 'ung.hosts',
+        //             itemId: 'hosts'
+        //         }, {
+        //             xtype: 'ung.devices',
+        //             itemId: 'devices'
+        //         }]
+        //     }]
+        // }
+        ]
     }]
 });
 
@@ -7874,6 +8482,23 @@ Ext.define('Ung.store.Metrics', {
             //rootProperty: 'users'
         }
     }
+});
+Ext.define('Ung.store.Hosts', {
+    extend: 'Ext.data.Store',
+    storeId: 'hosts',
+    // model: 'Ung.model.Session'
+    fields: [
+        { name: 'address', type: 'string' }
+    ],
+    proxy: {
+        autoLoad: true,
+        type: 'memory',
+        reader: {
+            type: 'json'
+            // rootProperty: 'list'
+        }
+    }
+
 });
 Ext.define('Ung.store.Categories', {
     extend: 'Ext.data.Store',
@@ -8122,6 +8747,40 @@ Ext.define('Ung.store.Widgets', {
     storeId: 'widgets',
     model: 'Ung.model.Widget'
 });
+Ext.define ('Ung.model.Session', {
+    extend: 'Ext.data.Model',
+    fields: [
+        { name: 'protocol', type: 'string' },
+        { name: 'clientKBps', type: 'number', convert: function (val) { return val ? Math.round(val*1000)/1000 : null; } },
+        { name: 'serverKBps', convert: function (val) { return val ? Math.round(val*1000)/1000 : null; } },
+        { name: 'totalKBps', convert: function (val) { return val ? Math.round(val*1000)/1000 : null ; } },
+        { name: 'clientIntf', convert: function (val) {
+            if (!val || val < 0) {
+                return '';
+            }
+            return val;
+        } },
+        { name: 'serverIntf', convert: function (val) {
+            if (!val || val < 0) {
+                return '';
+            }
+            return val;
+        } }
+    ],
+    proxy: {
+        autoLoad: true,
+        type: 'memory',
+        reader: {
+            type: 'json'
+            // rootProperty: 'list'
+        }
+    }
+});
+Ext.define('Ung.store.Sessions', {
+    extend: 'Ext.data.Store',
+    storeId: 'sessions',
+    model: 'Ung.model.Session'
+});
 // test
 Ext.define('Ung.Application', {
     extend: 'Ext.app.Application',
@@ -8140,7 +8799,17 @@ Ext.define('Ung.Application', {
 
 
     stores: [
-        'Policies', 'Metrics', 'Stats', 'Reports', 'Widgets', 'Conditions', 'Countries', 'Categories', 'UnavailableApps'
+        'Policies',
+        'Metrics',
+        'Stats',
+        'Reports',
+        'Widgets',
+        'Sessions',
+        'Hosts',
+        'Conditions',
+        'Countries',
+        'Categories',
+        'UnavailableApps'
     ],
 
     defaultToken : '',
@@ -8165,6 +8834,7 @@ Ext.define('Ung.Application', {
             Rpc.getReports,
             Rpc.getUnavailableApps
         ]).then(function (result) {
+            Ext.get('app-loader').destroy();
             Ung.dashboardSettings = result[0];
             Ext.getStore('widgets').loadData(result[0].widgets.list);
             if (result[1]) {
@@ -8233,7 +8903,7 @@ Ext.define('Ung.Application', {
         }
 
         // start metrics
-        Ext.get('app-loader').destroy();
+        // Ext.get('app-loader').destroy();
 
         // destroy app loader
         // Ext.get('app-loader').addCls('removing');

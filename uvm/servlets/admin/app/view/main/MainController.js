@@ -22,7 +22,11 @@ Ext.define('Ung.view.main.MainController', {
         'apps/:policyId': 'onApps',
         'apps/:policyId/:node': 'onApps',
         'config': 'onConfig',
-        'reports': 'onReports'
+        'config/:configName': 'onConfig',
+        'reports': 'onReports',
+        'sessions': 'onSessions',
+        'hosts': 'onHosts',
+        'devices': 'onDevices'
     },
 
     onBeforeRender: function(view) {
@@ -89,12 +93,38 @@ Ext.define('Ung.view.main.MainController', {
         }
     },
 
-    onConfig: function () {
-        this.getViewModel().set('activeItem', 'config');
+    onConfig: function (configName) {
+        if (!configName) {
+            this.getViewModel().set('activeItem', 'config');
+        } else {
+            console.log('conf settings');
+            this.getViewModel().set('activeItem', 'configsettings');
+        }
     },
 
     onReports: function () {
         this.getViewModel().set('activeItem', 'reports');
+    },
+
+
+    // sessions, hosts, devices
+
+    onSessions: function () {
+        this.setShd('sessions');
+    },
+
+    onHosts: function () {
+        this.setShd('hosts');
+    },
+
+    onDevices: function () {
+        this.setShd('devices');
+    },
+
+    setShd: function (viewName) {
+        this.getViewModel().set('activeItem', 'shd');
+        this.getViewModel().set('shdActiveItem', viewName);
+        this.getView().down('#shdcenter').setActiveItem(viewName);
     }
 
 });

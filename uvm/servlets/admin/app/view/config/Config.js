@@ -1,10 +1,10 @@
 Ext.define('Ung.view.config.Config', {
-    extend: 'Ext.container.Container',
+    extend: 'Ext.panel.Panel',
     xtype: 'ung.config',
-    layout: 'fit',
     requires: [
         'Ung.view.config.ConfigController',
-        'Ung.view.config.ConfigItem'
+        'Ung.view.config.ConfigItem',
+        'Ung.view.config.ConfigSettings'
     ],
 
     controller: 'config',

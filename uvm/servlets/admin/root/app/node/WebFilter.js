@@ -22,7 +22,7 @@ Ext.define('Ung.node.WebFilter', {
             }
         }
     }, {
-        title: 'Block Categories'.t(),
+        title: 'Categories'.t(),
         layout: {
             type: 'vbox',
             align: 'stretch'
@@ -180,156 +180,6 @@ Ext.define('Ung.node.WebFilter', {
             }]
         }]
     }, {
-        title: 'Block File Types'.t(),
-        layout: {
-            type: 'vbox',
-            align: 'stretch'
-        },
-        items: [{
-            xtype: 'component',
-            padding: 10,
-            cls: 'grid-description',
-            html: '<h3>' + 'Block File Types'.t() + '</h3><p>' + 'Block or flag access to files associated with the specified file type.'.t() + '</p>'
-        }, {
-            xtype: 'ung.grid',
-            flex: 1,
-
-            toolbarFeatures: ['add', 'importexport'],
-            columnFeatures: ['edit', 'delete'],
-            inlineEdit: 'cell',
-            dataProperty: 'blockedExtensions',
-
-            viewModel: {
-                stores: {
-                    store: {
-                        model: 'Ung.model.GenericRule',
-                        data: '{settings.blockedExtensions.list}',
-                        listeners: {
-                            update: 'checkChanges',
-                            datachanged: 'checkChanges'
-                        }
-                    }
-                }
-            },
-
-            columns: [{
-                text: 'File Type'.t(),
-                dataIndex: 'string',
-                width: 80,
-                hideable: false,
-                editorField: 'textfield',
-                editor: {
-                    allowBlank: false,
-                    emptyText: 'File Type'.t()
-                }
-            }, {
-                xtype: 'checkcolumn',
-                text: 'Block'.t(),
-                dataIndex: 'blocked',
-                width: 80,
-                resizable: false,
-                hideable: false,
-                menuDisabled: true,
-                editorField: 'checkbox'
-            }, {
-                xtype: 'checkcolumn',
-                text: 'Flag'.t(),
-                dataIndex: 'flagged',
-                width: 80,
-                resizable: false,
-                hideable: false,
-                menuDisabled: true,
-                editorField: 'checkbox'
-            }, {
-                text: 'Category'.t(),
-                dataIndex: 'category',
-                width: 200,
-                editorField: 'textfield',
-                editor: true
-            }, {
-                text: 'Description'.t(),
-                dataIndex: 'description',
-                flex: 1,
-                editorField: 'textarea',
-                editor: true
-            }]
-        }]
-    }, {
-        title: 'Block Mime Types'.t(),
-        layout: {
-            type: 'vbox',
-            align: 'stretch'
-        },
-        items: [{
-            xtype: 'component',
-            padding: 10,
-            cls: 'grid-description',
-            html: '<h3>' + 'Block MIME Types'.t() + '</h3><p>' + 'Block or flag access to files associated with the specified MIME type.'.t() + '</p>'
-        }, {
-            xtype: 'ung.grid',
-            flex: 1,
-
-            toolbarFeatures: ['add', 'importexport'],
-            columnFeatures: ['edit', 'delete'],
-            inlineEdit: 'cell',
-            dataProperty: 'blockedMimeTypes',
-
-            viewModel: {
-                stores: {
-                    store: {
-                        model: 'Ung.model.GenericRule',
-                        data: '{settings.blockedMimeTypes.list}',
-                        listeners: {
-                            update: 'checkChanges',
-                            datachanged: 'checkChanges'
-                        }
-                    }
-                }
-            },
-
-            columns: [{
-                text: 'MIME Type'.t(),
-                dataIndex: 'string',
-                width: 200,
-                hideable: false,
-                editorField: 'textfield',
-                editor: {
-                    allowBlank: false,
-                    emptyText: 'File Type'.t()
-                }
-            }, {
-                xtype: 'checkcolumn',
-                text: 'Block'.t(),
-                dataIndex: 'blocked',
-                width: 80,
-                resizable: false,
-                hideable: false,
-                menuDisabled: true,
-                editorField: 'checkbox'
-            }, {
-                xtype: 'checkcolumn',
-                text: 'Flag'.t(),
-                dataIndex: 'flagged',
-                width: 80,
-                resizable: false,
-                hideable: false,
-                menuDisabled: true,
-                editorField: 'checkbox'
-            }, {
-                text: 'Category'.t(),
-                dataIndex: 'category',
-                width: 200,
-                editorField: 'textfield',
-                editor: true
-            }, {
-                text: 'Description'.t(),
-                dataIndex: 'description',
-                flex: 1,
-                editorField: 'textarea',
-                editor: true
-            }]
-        }]
-    }, {
         title: 'Pass Sites'.t(),
         layout: {
             type: 'vbox',
@@ -465,6 +315,101 @@ Ext.define('Ung.node.WebFilter', {
                 editorField: 'textarea',
                 editor: {
                     emptyText: 'Site description'.t()
+                }
+            }]
+        }]
+    }, {
+        title: 'Rules'.t(),
+        layout: {
+            type: 'hbox',
+            align: 'stretch'
+        },
+        viewModel: {
+            formulas: {
+                currentRule: {
+                    bind: '{rules.selection}',
+                    get: function (rule) {
+                        this.set('current.rule', rule);
+                        return rule;
+                    }
+                }
+            }
+        },
+        items: [{
+            xtype: 'grid',
+            reference: 'rules',
+            flex: 1,
+            bind: {
+                store: {
+                    // model: 'Ung.model.GenericRule',
+                    data: '{settings.filterRules.list}'
+                }
+            },
+            columns: [{
+                xtype: 'checkcolumn',
+                text: 'Enabled'.t(),
+                dataIndex: 'enabled',
+                width: 80,
+                resizable: false,
+                hideable: false,
+                menuDisabled: true,
+                editorField: 'checkbox',
+                editor: {
+                    xtype: 'checkbox'
+                }
+            }, {
+                text: 'Rule ID'.t(),
+                dataIndex: 'ruleId',
+                menuDisabled: true
+            }, {
+                xtype: 'checkcolumn',
+                text: 'Flagged'.t(),
+                dataIndex: 'flagged',
+                width: 80,
+                resizable: false,
+                hideable: false,
+                menuDisabled: true,
+                editorField: 'checkbox',
+                editor: {
+                    xtype: 'checkbox'
+                }
+            }, {
+                xtype: 'checkcolumn',
+                text: 'Blocked'.t(),
+                dataIndex: 'blocked',
+                width: 80,
+                resizable: false,
+                hideable: false,
+                menuDisabled: true,
+                editorField: 'checkbox',
+                editor: {
+                    xtype: 'checkbox'
+                }
+            }, {
+                text: 'Description'.t(),
+                dataIndex: 'description',
+                flex: 1,
+                menuDisabled: true,
+                editorField: 'textarea',
+                editor: {
+                    emptyText: 'Site description'.t()
+                }
+            }]
+        }, {
+            xtype: 'form',
+            title: 'Customer',
+            width: 400,
+            items: [{
+                bind: {
+                    html: '{current.rule.description}'
+                }
+            }, {
+                xtype: 'textfield',
+                fieldLabel: 'Description'.t(),
+                name: 'description',
+                bind: {
+                    value: '{current.rule.description}',
+                    disabled: '{!current.rule}'
                 }
             }]
         }]
