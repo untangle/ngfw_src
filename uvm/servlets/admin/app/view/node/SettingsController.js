@@ -60,7 +60,7 @@ Ext.define('Ung.view.node.SettingsController', {
                         itemId: 'settings'
                         //manager: nodeManager
                     });
-                    //console.log(settings);
+                    console.log(settings);
                     vm.set('settings', settings);
                     mask.hide();
                 });

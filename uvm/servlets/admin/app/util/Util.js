@@ -134,11 +134,13 @@ Ext.define('Ung.util.Util', {
      * Helper method that lists the order in which classes are loaded
      */
     getClassOrder: function () {
-        var classes = [];
+        var classes = [], extClasses = [];
 
         Ext.Loader.history.forEach(function (cls) {
             if (cls.indexOf('Ung') === 0) {
                 classes.push(cls.replace('Ung', 'app').replace(/\./g, '/') + '.js');
+            } else {
+                extClasses.push(cls);
             }
         });
 
@@ -146,7 +148,7 @@ Ext.define('Ung.util.Util', {
 
         Ext.create('Ext.Window', {
             title: 'Untangle Classes Load Order',
-            width: 400,
+            width: 600,
             height: 600,
 
             // Constraining will pull the Window leftwards so that it's within the parent Window
@@ -154,15 +156,17 @@ Ext.define('Ung.util.Util', {
             draggable: false,
             resizable: false,
             layout: {
-                type: 'vbox',
+                type: 'hbox',
                 align: 'stretch',
                 pack: 'end'
             },
-            items: [{
-                xtype: 'component',
-                padding: 10,
-                html: 'Copy this list into <strong>.buildorder</strong> file!'
-            }, {
+            items: [
+            // {
+            //     xtype: 'component',
+            //     padding: 10,
+            //     html: 'Copy this list into <strong>.buildorder</strong> file!'
+            // }, {
+                {
                 xtype: 'textarea',
                 border: false,
                 flex: 1,
@@ -172,6 +176,16 @@ Ext.define('Ung.util.Util', {
                     fontSize: '11px'
                 },
                 value: classes.join('\r\n')
+            }, {
+                xtype: 'textarea',
+                border: false,
+                flex: 1,
+                editable: false,
+                fieldStyle: {
+                    background: '#FFF',
+                    fontSize: '11px'
+                },
+                value: extClasses.join('\r\n')
             }]
         }).show();
     }

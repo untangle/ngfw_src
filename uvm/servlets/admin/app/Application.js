@@ -16,7 +16,17 @@ Ext.define('Ung.Application', {
 
 
     stores: [
-        'Policies', 'Metrics', 'Stats', 'Reports', 'Widgets', 'Conditions', 'Countries', 'Categories', 'UnavailableApps'
+        'Policies',
+        'Metrics',
+        'Stats',
+        'Reports',
+        'Widgets',
+        'Sessions',
+        'Hosts',
+        'Conditions',
+        'Countries',
+        'Categories',
+        'UnavailableApps'
     ],
 
     defaultToken : '',
@@ -41,6 +51,7 @@ Ext.define('Ung.Application', {
             Rpc.getReports,
             Rpc.getUnavailableApps
         ]).then(function (result) {
+            Ext.get('app-loader').destroy();
             Ung.dashboardSettings = result[0];
             Ext.getStore('widgets').loadData(result[0].widgets.list);
             if (result[1]) {
@@ -109,7 +120,7 @@ Ext.define('Ung.Application', {
         }
 
         // start metrics
-        Ext.get('app-loader').destroy();
+        // Ext.get('app-loader').destroy();
 
         // destroy app loader
         // Ext.get('app-loader').addCls('removing');

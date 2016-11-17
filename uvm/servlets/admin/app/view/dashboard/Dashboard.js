@@ -63,15 +63,15 @@ Ext.define('Ung.view.dashboard.Dashboard', {
         }, {
             html: 'Sessions'.t(),
             href: '#sessions',
-            hrafTarget: '_self'
+            hrefTarget: '_self'
         }, {
             html: 'Hosts'.t(),
             href: '#hosts',
-            hrafTarget: '_self'
+            hrefTarget: '_self'
         }, {
             html: 'Devices'.t(),
             href: '#devices',
-            hrafTarget: '_self'
+            hrefTarget: '_self'
         }]
     }, {
         region: 'west',
@@ -130,17 +130,8 @@ Ext.define('Ung.view.dashboard.Dashboard', {
             // disableSelection: true,
             // trackMouseOver: false,
 
-            viewModel: {
-                stores: {
-                    wg: {
-                        source: 'widgets'
-                    }
-                }
-            },
+            store: 'widgets',
 
-            bind: {
-                store: '{wg}'
-            },
             bodyStyle: {
                 border: 0
             },

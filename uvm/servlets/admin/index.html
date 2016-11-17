@@ -108,9 +108,11 @@
   <script src="http://localhost/jsonrpc/jsonrpc.js"></script>
   <script src="http://localhost/highcharts/highstock.js"></script>
   <script src="http://localhost/highcharts/highcharts-extra.js"></script>
-  <script src="http://localhost/ext6/ext-all.js"></script>
-  <script src="http://localhost/ext6/classic/theme-gray/theme-gray.js"></script>
-  <link rel="stylesheet" href="http://localhost/ext6/classic/theme-gray/resources/theme-gray-all.css" />
+
+  <script src="http://localhost/ext-6.2.0/ext-all-debug.js"></script>
+  <!--<script src="http://localhost/ext-6.2.0/ext-all.js"></script>-->
+  <script src="http://localhost/ext-6.2.0/classic/theme-gray/theme-gray.js"></script>
+  <link rel="stylesheet" href="http://localhost/ext-6.2.0/classic/theme-gray/resources/theme-gray-all.css" />
 
 
   <!-- load the compiled CSS resource from location where is built -->
@@ -155,7 +157,6 @@
       String.prototype.t = function() {
           return rpc.translations[this.valueOf()] || '<cite>' + this.valueOf() + '</cite>';
       };
-
 
       Ext.application({
           name: 'Ung',

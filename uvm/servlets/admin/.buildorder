@@ -4,6 +4,7 @@ app/util/Metrics.js
 app/overrides/form/field/VTypes.js
 app/view/main/MainController.js
 app/view/main/MainModel.js
+app/view/shd/Devices.js
 app/view/dashboard/DashboardController.js
 app/view/dashboard/Queue.js
 app/view/grid/ActionColumn.js
@@ -21,6 +22,7 @@ app/view/apps/install/Item.js
 app/view/apps/install/Install.js
 app/view/config/ConfigController.js
 app/view/config/ConfigItem.js
+app/view/config/ConfigSettings.js
 app/view/config/Config.js
 app/view/reports/ReportsController.js
 app/view/reports/ReportsModel.js
@@ -31,6 +33,10 @@ app/view/node/SettingsModel.js
 app/view/node/Reports.js
 app/model/NodeMetric.js
 app/model/GenericRule.js
+app/view/shd/SessionsController.js
+app/view/shd/Sessions.js
+app/view/shd/HostsController.js
+app/view/shd/Hosts.js
 app/widget/ReportModel.js
 app/widget/CpuLoadController.js
 app/widget/CpuLoad.js
@@ -63,6 +69,7 @@ app/view/grid/Conditions.js
 app/view/node/Settings.js
 app/view/main/Main.js
 app/store/Metrics.js
+app/store/Hosts.js
 app/store/Categories.js
 app/store/UnavailableApps.js
 app/model/Policy.js
@@ -73,4 +80,6 @@ app/model/Report.js
 app/store/Reports.js
 app/model/Widget.js
 app/store/Widgets.js
+app/model/Session.js
+app/store/Sessions.js
 app/Application.js

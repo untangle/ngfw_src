@@ -23,6 +23,15 @@ Ext.define('Ung.view.main.MainModel', {
         },
         isReports: function(get) {
             return get('activeItem') === 'reports';
+        },
+        isSessions: function(get) {
+            return get('shdActiveItem') === 'sessions';
+        },
+        isHosts: function(get) {
+            return get('shdActiveItem') === 'hosts';
+        },
+        isDevices: function(get) {
+            return get('shdActiveItem') === 'devices';
         }
     }
 });

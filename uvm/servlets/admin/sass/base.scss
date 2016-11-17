@@ -689,4 +689,17 @@ i.draggable {
 }
 
 
-
+.prop-grid .x-grid-row.empty {
+    color: #CCC;
+}
+.prop-grid .x-grid-cell-first .x-grid-cell-inner {
+    text-align: right !important;
+    // font-family: 'Courier New';
+    // font-size: 12px;
+    // font-weight: 600;
+}
+.prop-grid .x-grid-cell-last {
+    // font-family: 'Courier New';
+    font-size: 12px;
+    // font-weight: 600;
+}
