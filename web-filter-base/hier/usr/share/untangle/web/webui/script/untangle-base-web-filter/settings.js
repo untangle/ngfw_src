@@ -687,7 +687,7 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
                     hidden: !this.settings.restrictGoogleApps,
                     items: [{
                         xtype: 'displayfield',
-                        value: i18n._("NOTE:") + "&nbsp;" + "<i>HTTPS Inspector</i> " + i18n._("must be installed and running with the Inspect Google Traffic configured to Inspect."),
+                        value: i18n._("NOTE:") + "&nbsp;" + "<i>SSL Inspector</i> " + i18n._("must be installed and running with the Inspect Google Traffic configured to Inspect."),
                         style: {
                             marginBottom: '10px'
                         }
