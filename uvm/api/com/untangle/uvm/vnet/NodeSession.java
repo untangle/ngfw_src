@@ -135,6 +135,7 @@ h     * <code>id</code> returns the session's unique identifier, a positive inte
     public final String KEY_WEB_FILTER_BEST_CATEGORY_BLOCKED = "web-filter-best-category-blocked"; /* String */
     public final String KEY_WEB_FILTER_FLAGGED = "web-filter-flagged"; /* Boolean */
     public final String KEY_WEB_FILTER_CATEGORIES = "web-filter-categories"; /* List<String> */
+    public final String KEY_WEB_FILTER_REQUEST_METHOD = "web-filter-request-method"; /* String */
     public final String KEY_WEB_FILTER_REQUEST_FILE_PATH = "web-filter-request-file-path"; /* String */
     public final String KEY_WEB_FILTER_REQUEST_FILE_NAME = "web-filter-request-file-name"; /* String */
     public final String KEY_WEB_FILTER_REQUEST_FILE_EXTENSION = "web-filter-request-file-extension"; /* String */

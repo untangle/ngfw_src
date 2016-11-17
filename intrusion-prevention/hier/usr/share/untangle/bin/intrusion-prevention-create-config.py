@@ -90,6 +90,8 @@ def main(argv):
     if snort_conf.get_variable('HOME_NET') == None:
         snort_conf.set_variable( "HOME_NET", default_home_net )
 
+    snort_conf.set_variable("EXTERNAL_NET", "!$HOME_NET");
+
     interfaces = settings.get_interfaces()
     interfaces = None
     if interfaces == None:

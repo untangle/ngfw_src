@@ -265,7 +265,11 @@ public abstract class NetcapHook implements Runnable
                     sessionEvent.setClientCountry(clientGeoip.country);
                     sessionEvent.setClientLatitude(clientGeoip.latitude);
                     sessionEvent.setClientLongitude(clientGeoip.longitude);
+                } else {
+                    sessionEvent.setClientCountry("XU");
                 }
+            } else {
+                sessionEvent.setClientCountry("XL");
             }
 
             // lookup the country, latitude, and longitude for WAN servers
@@ -275,7 +279,11 @@ public abstract class NetcapHook implements Runnable
                     sessionEvent.setServerCountry(serverGeoip.country);
                     sessionEvent.setServerLatitude(serverGeoip.latitude);
                     sessionEvent.setServerLongitude(serverGeoip.longitude);
+                } else {
+                    sessionEvent.setServerCountry("XU");
                 }
+            } else {
+                sessionEvent.setServerCountry("XL");
             }
 
             sessionGlobalState.setSessionEvent( sessionEvent );
