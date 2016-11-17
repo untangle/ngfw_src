@@ -13,6 +13,8 @@ public interface HookManager
     public static String UVM_STARTUP_COMPLETE = "uvm-startup-complete";
     public static String UVM_PRE_UPGRADE = "uvm-pre-upgrade";
     public static String UVM_SETTINGS_CHANGE = "uvm-settings-change";
+    public static String HOST_TABLE_REMOVE = "host-table-remove";
+    public static String HOST_TABLE_ADD = "host-table-add";
 
     public boolean isRegistered( String hookName, HookCallback callback );
 

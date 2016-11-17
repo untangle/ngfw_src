@@ -14,7 +14,7 @@ public class CaptivePortalUserEvent extends LogEvent
 {
     public enum EventType
     {
-        LOGIN, FAILED, TIMEOUT, INACTIVE, USER_LOGOUT, ADMIN_LOGOUT
+        LOGIN, FAILED, TIMEOUT, INACTIVE, USER_LOGOUT, ADMIN_LOGOUT, HOST_CHANGE
     };
 
     private InetAddress clientAddr;

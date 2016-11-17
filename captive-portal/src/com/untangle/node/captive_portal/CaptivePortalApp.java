@@ -28,6 +28,7 @@ import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.BrandingManager;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.SessionMatcher;
+import com.untangle.uvm.HookCallback;
 import com.untangle.uvm.node.DirectoryConnector;
 import com.untangle.uvm.node.IPMaskedAddress;
 import com.untangle.uvm.node.NodeMetric;
@@ -88,6 +89,7 @@ public class CaptivePortalApp extends NodeBase
     private CaptivePortalSettings captureSettings;
     private CaptivePortalTimer captureTimer;
     private Timer timer;
+    private HostRemovedHookCallback hostRemovedCallback = new HostRemovedHookCallback();
 
 // THIS IS FOR ECLIPSE - @formatter:off
 
@@ -347,6 +349,8 @@ public class CaptivePortalApp extends NodeBase
         captureTimer = new CaptivePortalTimer(this);
         timer = new Timer();
         timer.schedule(captureTimer, CLEANUP_INTERVAL, CLEANUP_INTERVAL);
+
+        UvmContextFactory.context().hookManager().registerCallback( com.untangle.uvm.HookManager.HOST_TABLE_REMOVE, this.hostRemovedCallback );
     }
 
     @Override
@@ -356,6 +360,9 @@ public class CaptivePortalApp extends NodeBase
         logger.debug("Destroying session cleanup timer task");
         timer.cancel();
 
+        // unregister hook
+        UvmContextFactory.context().hookManager().unregisterCallback( com.untangle.uvm.HookManager.HOST_TABLE_REMOVE, this.hostRemovedCallback );
+        
         // shutdown any active sessions
         killAllSessions();
 
@@ -869,4 +876,31 @@ public class CaptivePortalApp extends NodeBase
             return new ExecManagerResult(0, "The custom captive portal page has been removed");
         }
     }
+
+    private class HostRemovedHookCallback implements HookCallback
+    {
+        public String getName()
+        {
+            return "captive-portal-host-removed-hook";
+        }
+
+        /**
+         * This hook is called when a host is removed from the host table.
+         * If the user is logged into captive portal the host table entry should never be removed.
+         *
+         * However it is removed if the MAC address changes (a different host) or something drastic occurs.
+         * In this case we should log the host out.
+         */
+        public void callback( Object o )
+        {
+            if ( !(o instanceof InetAddress) ) {
+                logger.warn( "Invalid argument: " + o );
+                    return;
+            }
+            InetAddress addr = (InetAddress) o;
+            if ( isClientAuthenticated( addr ) )
+                userLogout( addr, CaptivePortalUserEvent.EventType.HOST_CHANGE );
+        }
+    }
+
 }
