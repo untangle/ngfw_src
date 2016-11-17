@@ -59,6 +59,7 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
             {name:"WEB_FILTER_CATEGORY",displayName: i18n._("Web Filter: Category"), type: "text", visible: true},
             {name:"WEB_FILTER_CATEGORY_DESCRIPTION",displayName: i18n._("Web Filter: Category Description"), type: "text", visible: true},
             {name:"WEB_FILTER_FLAGGED",displayName: i18n._("Web Filter: Website is Flagged"), type: "boolean", visible: true},
+            {name:"WEB_FILTER_REQUEST_METHOD",displayName: i18n._("Web Filter: Request Method"), type: "text", visible: true},
             {name:"WEB_FILTER_REQUEST_FILE_PATH",displayName: i18n._("Web Filter: Request File Path"), type: "text", visible: true},
             {name:"WEB_FILTER_REQUEST_FILE_NAME",displayName: i18n._("Web Filter: Request File Name"), type: "text", visible: true},
             {name:"WEB_FILTER_REQUEST_FILE_EXTENSION",displayName: i18n._("Web Filter: Request File Extension"), type: "text", visible: true},

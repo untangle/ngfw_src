@@ -1666,6 +1666,8 @@ Ext.define("Ung.Main", {
     getCountryList: function() {
         if (Ung.Main.countryList.length != 0) return(Ung.Main.countryList);
         var data = [];
+        data.push({ code:"XU", name:i18n._("Unknown") });
+        data.push({ code:"XL", name:i18n._("Local") });
         data.push({ code:"AF", name:i18n._("Afghanistan") });
         data.push({ code:"AX", name:i18n._("Aland Islands") });
         data.push({ code:"AL", name:i18n._("Albania") });
