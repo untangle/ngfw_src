@@ -698,14 +698,16 @@ public class HostTableImpl implements HostTable
                             String macAddress1 = entry.getMacAddress();
                             if ( macAddress1 != null && !"".equals(macAddress1) ) {
                                 String macAddress2 = UvmContextFactory.context().netcapManager().arpLookup( addressStr );
-                                if ( ! macAddress1.equals(macAddress2) ) {
-                                    logger.warn("Host " + addressStr + " changed MAC address " + macAddress1 + " -> " + macAddress2 + ". Deleting host entry...");
+                                if ( macAddress2 != null && !macAddress2.equals("") ) {
+                                    if ( !macAddress1.equals(macAddress2) ) {
+                                        logger.warn("Host " + addressStr + " changed MAC address " + macAddress1 + " -> " + macAddress2 + ". Deleting host entry...");
 
-                                    HostTableEvent event = new HostTableEvent( address, "remove", null );
-                                    UvmContextFactory.context().logEvent(event);
+                                        HostTableEvent event = new HostTableEvent( address, "remove", null );
+                                        UvmContextFactory.context().logEvent(event);
 
-                                    hostTable.remove( address );
-                                    continue;
+                                        hostTable.remove( address );
+                                        continue;
+                                    }
                                 }
                             }
                         } catch (Exception e) {
