@@ -4,6 +4,29 @@ Ext.define('Webui.untangle-node-web-monitor.settings',{
     getAppSummary: function() {
         return i18n._("Web monitor scans and categorizes web traffic to monitor and enforce network usage policies.");
     },
+
+    buildPanelCategories: function() {
+        this.callParent(arguments);
+        this.gridCategories.down('[dataIndex=blocked]').setVisible(false);
+        this.gridCategories.rowEditorInputLines[1].hidden = true;
+        return this.categoriesPanel;
+    },
+
+    buildPanelBlockedSites: function() {
+        this.callParent(arguments);
+        this.blockedSitesPanel.title = i18n._('Flag Sites');
+        this.gridBlockedSites.down('[dataIndex=blocked]').setVisible(false);
+        this.gridBlockedSites.rowEditorInputLines[1].hidden = true;
+        return this.blockedSitesPanel;
+    },
+
+    buildGridFilterRules: function() {
+        this.callParent(arguments);
+        this.gridFilterRules.down('[dataIndex=blocked]').setVisible(false);
+        this.gridFilterRules.rowEditorInputLines[3].items[1].hidden = true;
+        return this.gridFilterRules;
+    },
+
     buildPanelAdvanced: function() {
         this.callParent(arguments);
         var fieldSet = this.panelAdvanced.down('fieldset[name="fieldset_miscellaneous"]');
