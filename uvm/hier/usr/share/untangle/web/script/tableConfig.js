@@ -148,6 +148,7 @@ Ext.define('Ung.TableConfig', {
           case 'R': return i18n._("referer in Site Pass list") + " (R)";
           case 'C': return i18n._("in Clients Pass list") + " (C)";
           case 'B': return i18n._("in Unblocked list") + " (B)";
+          case 'F': return i18n._("in Rules list") + " (F)";
           case 'N': return i18n._("no rule applied") + " (N)";
         default: return i18n._("no rule applied");
         }
