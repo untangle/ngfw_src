@@ -143,6 +143,12 @@ public interface HostTable
      * save the hosts to disk
      */
     void saveHosts();
+
+    /**
+     * Remove a host table entry
+     * returns the entry removed (or null if not found)
+     */
+    HostTableEntry removeHostTableEntry( InetAddress addr );
     
     /**
      * A penalty box listener is a hook called when hosts enter or exit the penalty box
