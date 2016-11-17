@@ -496,8 +496,10 @@ public class ReportEntry implements Serializable, JSONString
             "$$ SELECT CASE WHEN value IS NULL THEN 'None'::text ELSE value::text END FROM tempDistinctTable $$" + ") " + " as " +
             "( \"time_trunc\" timestamp ";
         for ( String s : distinctValues ) {
-            if ( "".equals(s) ) s = " ";
-            s = s.replaceAll("\"","\"\""); // double quote quote characters
+            if ( "".equals(s) )
+                s = " ";
+            if ( s != null )
+                s = s.replaceAll("\"","\"\""); // double quote quote characters
             crosstabQuery = crosstabQuery + ", \"" + ( s == null ? "None" : s ) + "\" numeric ";
         }
         crosstabQuery = crosstabQuery + ")";
