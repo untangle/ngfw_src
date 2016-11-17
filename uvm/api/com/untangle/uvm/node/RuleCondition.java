@@ -100,6 +100,7 @@ public class RuleCondition implements JSONString, Serializable
             WEB_FILTER_CATEGORY, /* "Pornography" or "Porn*" */ 
             WEB_FILTER_CATEGORY_DESCRIPTION, /* *Nudity* */
             WEB_FILTER_FLAGGED, /* boolean */
+            WEB_FILTER_REQUEST_METHOD, /* GET, PUT, OPTIONS, etc */
             WEB_FILTER_REQUEST_FILE_PATH, /* /some/locaion/somefile.txt */
             WEB_FILTER_REQUEST_FILE_NAME, /* somefile.txt */
             WEB_FILTER_REQUEST_FILE_EXTENSION, /* txt */
@@ -350,6 +351,7 @@ public class RuleCondition implements JSONString, Serializable
         case PROTOCOL_CONTROL_DESCRIPTION:
         case WEB_FILTER_CATEGORY:
         case WEB_FILTER_CATEGORY_DESCRIPTION:
+        case WEB_FILTER_REQUEST_METHOD:
         case WEB_FILTER_REQUEST_FILE_PATH:
         case WEB_FILTER_REQUEST_FILE_NAME:
         case WEB_FILTER_REQUEST_FILE_EXTENSION:
@@ -600,6 +602,10 @@ public class RuleCondition implements JSONString, Serializable
             if (flagged == null)
                 return false;
             return flagged.booleanValue();
+
+        case WEB_FILTER_REQUEST_METHOD:            
+            attachment = (String) sess.globalAttachment(NodeSession.KEY_WEB_FILTER_REQUEST_METHOD);
+            return globMatcher.isMatch( attachment );
 
         case WEB_FILTER_REQUEST_FILE_PATH:
             attachment = (String) sess.globalAttachment(NodeSession.KEY_WEB_FILTER_REQUEST_FILE_PATH);
