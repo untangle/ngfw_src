@@ -550,6 +550,11 @@ Ext.define('Webui.config.administration', {
                         this.certGeneratorPopup("CSR", this.getHostname(true), i18n._("Create Certificate Signing Request"));
                     }, this)
                 }]
+            },{
+                xtype: 'component',
+                name: 'validateMessage',
+                margin: '10 0 0 20',
+                html: Ung.Main.getCertificateManager().validateActiveInspectorCertificates()
             }]
         });
     },
@@ -1640,12 +1645,14 @@ Ext.define('Webui.config.administration', {
             // access settings should be saved last as saving these changes may disconnect the user from the Untangle box
             rpc.systemManager.setSettings(Ext.bind(function(result, exception) {
                 if(Ung.Util.handleException(exception)) return;
-                //If skin changed it needs a refresh
+
                 if(this.initialSkin != this.getSkinSettings().skinName) {
                     Ung.Util.goToStartPage();
                     return;
                 }
                 if(isApply) {
+                    var vmess = this.panelCertificates.down('component[name="validateMessage"]');
+                    vmess.update(Ung.Main.getCertificateManager().validateActiveInspectorCertificates());
                     this.getAdminSettings(true);
                     this.getRootCertificateInformation(true);
                     this.getServerCertificateList(true);
