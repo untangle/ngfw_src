@@ -9,15 +9,18 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.DaemonManager;
 import com.untangle.uvm.node.License;
+import com.untangle.uvm.node.NodeSettings;
+import com.untangle.uvm.node.NodeProperties;
 import com.untangle.node.virus_blocker.VirusBlockerBaseApp;
 
 public class VirusBlockerApp extends VirusBlockerBaseApp
 {
     private final Logger logger = Logger.getLogger(VirusBlockerApp.class);
 
-    public VirusBlockerApp(com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties)
+    public VirusBlockerApp( NodeSettings nodeSettings, NodeProperties nodeProperties )
     {
-        super(nodeSettings, nodeProperties, new VirusBlockerScanner());
+        super( nodeSettings, nodeProperties );
+        this.setScanner( new VirusBlockerScanner(this) );
     }
 
     @Override

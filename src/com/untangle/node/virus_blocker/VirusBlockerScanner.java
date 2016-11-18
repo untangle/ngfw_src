@@ -23,8 +23,11 @@ public class VirusBlockerScanner implements VirusScanner
 
     private static final int timeout = 29500; /* 29.5 sec */
 
-    public VirusBlockerScanner()
+    private VirusBlockerApp app;
+
+    public VirusBlockerScanner(VirusBlockerApp app)
     {
+        this.app = app;
     }
 
     public String getVendorName()
@@ -92,7 +95,7 @@ public class VirusBlockerScanner implements VirusScanner
             return VirusScannerResult.ERROR;
         }
 
-        VirusBlockerScannerLauncher scan = new VirusBlockerScannerLauncher(scanfile, session);
+        VirusBlockerScannerLauncher scan = new VirusBlockerScannerLauncher( scanfile, session, app.getSettings().getEnableCloudScan(), app.getSettings().getEnableLocalScan() );
         return scan.doScan(VirusBlockerScanner.timeout);
     }
 

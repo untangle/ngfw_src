@@ -25,19 +25,25 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
     private static final String BDAM_SCANNER_HOST = "127.0.0.1";
     private static final int BDAM_SCANNER_PORT = 1344;
 
-    private boolean memoryMode = false;
+    private final boolean cloudScan;
+    private final boolean localScan;
 
     /**
      * Create a Launcher for the give file
      */
-    public VirusBlockerScannerLauncher(File scanfile, NodeSession session)
+    public VirusBlockerScannerLauncher( File scanfile, NodeSession session, boolean cloudScan, boolean localScan )
     {
         super(scanfile, session);
 
-        // if memory scanning mode is active scanfile will be null
+        this.cloudScan = cloudScan;
+
         if (scanfile == null) {
-            memoryMode = true;
-            }
+            // if memory scanning mode is active scanfile will be null
+            // disable local scan as there is no file on disk
+            this.localScan = false;
+        } else {
+            this.localScan = localScan;
+        }
     }
 
     /**
@@ -53,7 +59,7 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
         File scanFile = null;
         long scanFileLength = 0;
 
-        if (memoryMode == false) {
+        if ( localScan ) {
             scanFile = new File(scanfilePath);
             scanFileLength = scanFile.length();
         } else {
@@ -65,13 +71,13 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
         logger.debug("Scanning FILE: " + scanfilePath + " MD5: " + virusState.fileHash);
 
         // if we have a good MD5 hash then spin up the cloud checker
-        if (virusState.fileHash != null) {
+        if ( this.cloudScan && virusState.fileHash != null ) {
             cloudScanner = new VirusCloudScanner(virusState);
             cloudScanner.start();
         }
 
-        // if not in memory only mode then use the file scanner
-        if (memoryMode == false) {
+        // if localScan is enabled, run the scan
+        if ( localScan ) {
             DataOutputStream txstream = null;
             DataInputStream rxstream = null;
             Socket socket = null;
@@ -161,20 +167,22 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
             cloudResult = cloudScanner.getCloudResult();
         }
 
-        VirusCloudFeedback feedback = null;
+        if ( this.cloudScan ) {
+            VirusCloudFeedback feedback = null;
 
-        // if BD returned positive result we send the feedback
-        if ((retcode == 222) || (retcode == 223)) {
-            feedback = new VirusCloudFeedback(virusState, "BD", threatName, threatType, scanFileLength, nodeSession, cloudResult);
+            // if BD returned positive result we send the feedback
+            if ((retcode == 222) || (retcode == 223)) {
+                feedback = new VirusCloudFeedback(virusState, "BD", threatName, threatType, scanFileLength, nodeSession, cloudResult);
+            }
+
+            // if no BD feedback and cloud returned positive result we also send feedback
+            if ((feedback == null) && (cloudResult != null) && (cloudResult.getItemCategory() != null) && (cloudResult.getItemClass() != null) && (cloudResult.getItemConfidence() == 100)) {
+                feedback = new VirusCloudFeedback(virusState, "UT", cloudResult.getItemCategory(), cloudResult.getItemClass(), scanFileLength, nodeSession, cloudResult);
+            }
+
+            // if we have a feedback object start it up now
+            if (feedback != null) feedback.start();
         }
-
-        // if no BD feedback and cloud returned positive result we also send feedback
-        if ((feedback == null) && (cloudResult != null) && (cloudResult.getItemCategory() != null) && (cloudResult.getItemClass() != null) && (cloudResult.getItemConfidence() == 100)) {
-            feedback = new VirusCloudFeedback(virusState, "UT", cloudResult.getItemCategory(), cloudResult.getItemClass(), scanFileLength, nodeSession, cloudResult);
-        }
-
-        // if we have a feedback object start it up now
-        if (feedback != null) feedback.start();
 
         // if the cloud says it is infected we set the result and return now
         if ((cloudResult != null) && (cloudResult.getItemCategory() != null) && (cloudResult.getItemConfidence() == 100)) {
@@ -183,8 +191,7 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
         }
 
         // no action on the cloud feedback so we use whatever BD gave us
-        switch (retcode)
-        {
+        switch (retcode) {
         case 227: // clean
             setResult(VirusScannerResult.CLEAN);
             break;
