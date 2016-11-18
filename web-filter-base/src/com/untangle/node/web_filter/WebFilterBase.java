@@ -401,7 +401,7 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
                     rule.setBlocked(org.getBlocked() == null ? false : org.getBlocked());
                     rule.setFlagged(org.getFlagged() == null ? false : org.getFlagged());
                     rule.setRuleId(ruleNumber++);
-                    clist.add(new WebFilterRuleCondition(RuleCondition.ConditionType.WEB_FILTER_REQUEST_FILE_EXTENSION, org.getString()));
+                    clist.add(new WebFilterRuleCondition(RuleCondition.ConditionType.WEB_FILTER_RESPONSE_FILE_EXTENSION, org.getString()));
                     rule.setConditions(clist);
                     rlist.add(rule);
                     logger.debug("Converted file ext rule: " + rule.toString());
