@@ -65,6 +65,7 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
             {name:"WEB_FILTER_REQUEST_FILE_EXTENSION",displayName: i18n._("Web Filter: Request File Extension"), type: "text", visible: true},
             {name:"WEB_FILTER_RESPONSE_CONTENT_TYPE",displayName: i18n._("Web Filter: Response Content Type"), type: "text", visible: true},
             {name:"WEB_FILTER_RESPONSE_FILE_NAME",displayName: i18n._("Web Filter: Response File Name"), type: "text", visible: true},
+            {name:"WEB_FILTER_RESPONSE_FILE_EXTENSION",displayName: i18n._("Web Filter: Response File Extension"), type: "text", visible: true},
             {name:"DIRECTORY_CONNECTOR_GROUP",displayName: i18n._("Directory Connector: User in Group"), type: "editor", editor: Ext.create('Ung.GroupEditorWindow',{}), visible: true},
             {name:"CLIENT_COUNTRY",displayName: i18n._("Client Country"), type: "editor", editor: Ext.create('Ung.CountryEditorWindow',{}), visible: true},
             {name:"SERVER_COUNTRY",displayName: i18n._("Server Country"), type: "editor", editor: Ext.create('Ung.CountryEditorWindow',{}), visible: true}

@@ -328,6 +328,10 @@ public abstract class DecisionEngine
         if (sess != null) {
             if (contentType != null) sess.globalAttach(NodeSession.KEY_WEB_FILTER_RESPONSE_CONTENT_TYPE, contentType);
             if (fileName != null) sess.globalAttach(NodeSession.KEY_WEB_FILTER_RESPONSE_FILE_NAME, fileName);
+
+            // find the last dot to extract the file extension
+            int loc = fileName.lastIndexOf(".");
+            if (loc != -1) sess.globalAttach(NodeSession.KEY_WEB_FILTER_RESPONSE_FILE_EXTENSION, fileName.substring(loc + 1));
         }
 
         URI uri = null;

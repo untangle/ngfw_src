@@ -106,6 +106,7 @@ public class RuleCondition implements JSONString, Serializable
             WEB_FILTER_REQUEST_FILE_EXTENSION, /* txt */
             WEB_FILTER_RESPONSE_CONTENT_TYPE, /* video/mp4 */
             WEB_FILTER_RESPONSE_FILE_NAME, /* somefile.exe */
+            WEB_FILTER_RESPONSE_FILE_EXTENSION, /* zip */
             SSL_INSPECTOR_SNI_HOSTNAME, /* "microsoft.com" */
             SSL_INSPECTOR_SUBJECT_DN, /* "CN=dropbox.com" */
             SSL_INSPECTOR_ISSUER_DN, /* "O=Thawte" */
@@ -357,6 +358,7 @@ public class RuleCondition implements JSONString, Serializable
         case WEB_FILTER_REQUEST_FILE_EXTENSION:
         case WEB_FILTER_RESPONSE_CONTENT_TYPE:
         case WEB_FILTER_RESPONSE_FILE_NAME:
+        case WEB_FILTER_RESPONSE_FILE_EXTENSION:
         case APPLICATION_CONTROL_APPLICATION:
         case APPLICATION_CONTROL_CATEGORY:
         case APPLICATION_CONTROL_PROTOCHAIN:
@@ -625,6 +627,10 @@ public class RuleCondition implements JSONString, Serializable
 
         case WEB_FILTER_RESPONSE_FILE_NAME:
             attachment = (String) sess.globalAttachment(NodeSession.KEY_WEB_FILTER_RESPONSE_FILE_NAME);
+            return globMatcher.isMatch( attachment );
+
+        case WEB_FILTER_RESPONSE_FILE_EXTENSION:
+            attachment = (String) sess.globalAttachment(NodeSession.KEY_WEB_FILTER_RESPONSE_FILE_EXTENSION);
             return globMatcher.isMatch( attachment );
 
         case USERNAME:
