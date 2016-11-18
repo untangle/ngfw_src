@@ -376,10 +376,6 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
                 if ( response != null ) { response.close(); response = null; }
             }
 
-            /**
-             * Disable old names for now
-             */
-            /*
             if ( urlStr3 != null ) {
                 logger.info("Requesting Trial: " + urlStr3);
                 url = new URL(urlStr3);
@@ -395,8 +391,6 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
                 response = httpClient.execute(get);
                 if ( response != null ) { response.close(); response = null; }
             }
-            */
-
         } catch ( java.net.UnknownHostException e ) {
             logger.warn("Exception requesting trial license:" + e.toString());
             throw ( new Exception( "Unable to fetch trial license: DNS lookup failed.", e ) );
