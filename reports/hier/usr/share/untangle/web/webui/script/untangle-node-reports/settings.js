@@ -1312,6 +1312,14 @@ Ext.define('Webui.untangle-node-reports.settings', {
         });
     },
     buildEmailTemplates: function() {
+        var emailIntervals = [];
+        for(var i = 0; i < this.emailIntervals.length; i++){
+            if(this.emailIntervals[i][0] <= (this.getSettings().dbRetention * 86400)){
+                emailIntervals.push(this.emailIntervals[i]);
+            }
+        }
+        console.log(emailIntervals);
+
         this.panelEmailTemplates = Ext.create('Ext.panel.Panel',{
             name: 'emailTemplates',
             helpSource: 'reports_email_templates',
@@ -1473,7 +1481,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 editable: false,
                 fieldLabel: i18n._("Interval"),
                 queryMode: 'local',
-                store: this.emailIntervals,
+                store: emailIntervals,
                 dataIndex: 'interval'
             },{
                 xtype: 'checkbox',
