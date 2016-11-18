@@ -301,6 +301,13 @@ public class LanguageManagerImpl implements LanguageManager
                 }
             }
 
+            if(getLanguageSettings().getRegionalFormats().equals("override")){
+                map.put("decimal_sep", getLanguageSettings().getOverrideDecimalSep());
+                map.put("thousand_sep", getLanguageSettings().getOverrideThousandSep());
+                map.put("date_fmt", getLanguageSettings().getOverrideDateFmt());
+                map.put("timestamp_fmt", getLanguageSettings().getOverrideTimestampFmt());
+            }
+
             translationsLastAccessed.put(translationKey, System.currentTimeMillis());
             return map;
         }

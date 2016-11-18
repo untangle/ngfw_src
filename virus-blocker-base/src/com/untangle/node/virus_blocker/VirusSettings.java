@@ -24,6 +24,9 @@ public class VirusSettings implements Serializable
     private boolean scanFtp = true;
     private boolean scanSmtp = true;
 
+    private boolean enableCloudScan = true;
+    private boolean enableLocalScan = true;
+    
     private String  smtpAction= "remove" ; /* "pass" "remove" or "block" */
     private boolean smtpAllowTls = true;
     
@@ -38,11 +41,7 @@ public class VirusSettings implements Serializable
      */
     private boolean forceMemoryMode = false;
 
-    // constructors -----------------------------------------------------------
-
     public VirusSettings() { }
-
-    // accessors --------------------------------------------------------------
 
     public boolean getScanHttp() { return scanHttp; }
     public void setScanHttp(boolean scanHttp) { this.scanHttp = scanHttp; }
@@ -53,6 +52,12 @@ public class VirusSettings implements Serializable
     public boolean getScanSmtp() { return scanSmtp; }
     public void setScanSmtp(boolean scanSmtp) { this.scanSmtp = scanSmtp; }
 
+    public boolean getEnableCloudScan() { return enableCloudScan; }
+    public void setEnableCloudScan(boolean scanSmtp) { this.enableCloudScan = scanSmtp; }
+
+    public boolean getEnableLocalScan() { return enableLocalScan; }
+    public void setEnableLocalScan(boolean scanSmtp) { this.enableLocalScan = scanSmtp; }
+    
     public String getSmtpAction() { return smtpAction; }
     public void setSmtpAction(String smtpAction) { this.smtpAction = smtpAction; }
 

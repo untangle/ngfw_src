@@ -567,7 +567,7 @@ Ext.define('Ung.TableConfig', {
                         noText: i18n._('false')
                     }
                 }, {
-                    header: i18n._('Rule Id') + ' (HTTPS Inspector)',
+                    header: i18n._('Rule Id') + ' (SSL Inspector)',
                     width: 70,
                     sortable: true,
                     dataIndex: 'ssl_inspector_ruleid',
@@ -575,12 +575,12 @@ Ext.define('Ung.TableConfig', {
                         type: 'numeric'
                     }
                 }, {
-                    header: i18n._('Status') + ' (HTTPS Inspector)',
+                    header: i18n._('Status') + ' (SSL Inspector)',
                     width: 100,
                     sortable: true,
                     dataIndex: 'ssl_inspector_status'
                 }, {
-                    header: i18n._('Detail') + ' (HTTPS Inspector)',
+                    header: i18n._('Detail') + ' (SSL Inspector)',
                     width: 250,
                     sortable: true,
                     dataIndex: 'ssl_inspector_detail'
@@ -1066,7 +1066,7 @@ Ext.define('Ung.TableConfig', {
                         noText: i18n._('false')
                     }
                 }, {
-                    header: i18n._('Rule Id') + ' (HTTPS Inspector)',
+                    header: i18n._('Rule Id') + ' (SSL Inspector)',
                     width: 70,
                     sortable: true,
                     dataIndex: 'ssl_inspector_ruleid',
@@ -1074,12 +1074,12 @@ Ext.define('Ung.TableConfig', {
                         type: 'numeric'
                     }
                 }, {
-                    header: i18n._('Status') + ' (HTTPS Inspector)',
+                    header: i18n._('Status') + ' (SSL Inspector)',
                     width: 100,
                     sortable: true,
                     dataIndex: 'ssl_inspector_status'
                 }, {
-                    header: i18n._('Detail') + ' (HTTPS Inspector)',
+                    header: i18n._('Detail') + ' (SSL Inspector)',
                     width: 250,
                     sortable: true,
                     dataIndex: 'ssl_inspector_detail'

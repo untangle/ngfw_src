@@ -17,6 +17,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.HostTableEntry;
+import com.untangle.uvm.DeviceTableEntry;
 import org.apache.log4j.Logger;
 
 /**
@@ -264,7 +266,27 @@ class DhcpMonitor implements Runnable
             }
         }
 
+        /**
+         * Update nextExpiration
+         */
         if ( lease.isActive() && nextExpiration.after( eol ))
             nextExpiration = eol;
+
+        /**
+         * Lets do some sanity checks
+         * Lookup the host entry for this IP and check the mac address.
+         * If it has changed go ahead and forget all state about that host.
+         */
+        HostTableEntry hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( ip );
+        //DeviceTableEntry deviceEntry = UvmContextFactory.context().deviceTable().getDevice( mac );
+        if ( hostEntry != null ) {
+            String currentMac = hostEntry.getMacAddress();
+            if ( currentMac != null && !currentMac.equals("") ) {
+                if ( !currentMac.equals( mac ) ) {
+                    logger.warn("Host " + ip + " changed MAC address " + currentMac + " -> " + mac + ". Deleting host entry...");
+                    UvmContextFactory.context().hostTable().removeHostTableEntry( ip );
+                }
+            }
+        }
     }
 }

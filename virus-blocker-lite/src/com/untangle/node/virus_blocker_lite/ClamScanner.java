@@ -32,8 +32,11 @@ public class ClamScanner implements VirusScanner
 
     private static final String VERSION_ARG = "-V";
 
-    public ClamScanner()
+    private final VirusBlockerLiteApp app;
+
+    public ClamScanner( VirusBlockerLiteApp app )
     {
+        this.app = app;
     }
 
     public String getVendorName()
@@ -46,16 +49,20 @@ public class ClamScanner implements VirusScanner
         VirusBlockerState virusState = (VirusBlockerState) session.attachment();
 
         // if we have a good MD5 hash then spin up the cloud checker
-        if (virusState.fileHash != null) {
+        // this is effectively feedback as we never check the response
+        if ( app.getSettings().getEnableCloudScan() && virusState.fileHash != null ) {
             VirusCloudScanner cloudScanner = new VirusCloudScanner(virusState);
             cloudScanner.start();
         }
 
-        ClamScannerClientLauncher scan = new ClamScannerClientLauncher(scanfile);
-        VirusScannerResult result = scan.doScan(timeout);
+        VirusScannerResult result = VirusScannerResult.CLEAN;
+        if ( app.getSettings().getEnableLocalScan() ) {
+            ClamScannerClientLauncher scan = new ClamScannerClientLauncher(scanfile);
+            result = scan.doScan(timeout);
+        }
 
         // if we found an infection then pass along the feedback
-        if (!result.isClean()) {
+        if ( app.getSettings().getEnableCloudScan() && !result.isClean() ) {
             VirusCloudFeedback feedback = new VirusCloudFeedback(virusState, "CLAM", result.getVirusName(), "U", scanfile.length(), session, null);
             feedback.start();
         }
