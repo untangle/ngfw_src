@@ -709,8 +709,8 @@ public class CertificateManagerImpl implements CertificateManager
         problem = 0;
 
         for (String item : machineList) {
-            if (certInfo.getCertSubject().toLowerCase().contains(item.toLowerCase())) continue;
-            if (certInfo.getCertNames().toLowerCase().contains(item.toLowerCase())) continue;
+            if ((certInfo.getCertSubject() != null) && (certInfo.getCertSubject().toLowerCase().contains(item.toLowerCase()))) continue;
+            if ((certInfo.getCertNames() != null) && (certInfo.getCertNames().toLowerCase().contains(item.toLowerCase()))) continue;
             problem++;
         }
 
@@ -723,8 +723,8 @@ public class CertificateManagerImpl implements CertificateManager
         problem = 0;
 
         for (String item : machineList) {
-            if (certInfo.getCertSubject().toLowerCase().contains(item.toLowerCase())) continue;
-            if (certInfo.getCertNames().toLowerCase().contains(item.toLowerCase())) continue;
+            if ((certInfo.getCertSubject() != null) && (certInfo.getCertSubject().toLowerCase().contains(item.toLowerCase()))) continue;
+            if ((certInfo.getCertNames() != null) && (certInfo.getCertNames().toLowerCase().contains(item.toLowerCase()))) continue;
             problem++;
         }
 
@@ -737,8 +737,8 @@ public class CertificateManagerImpl implements CertificateManager
         problem = 0;
 
         for (String item : machineList) {
-            if (certInfo.getCertSubject().toLowerCase().contains(item.toLowerCase())) continue;
-            if (certInfo.getCertNames().toLowerCase().contains(item.toLowerCase())) continue;
+            if ((certInfo.getCertSubject() != null) && (certInfo.getCertSubject().toLowerCase().contains(item.toLowerCase()))) continue;
+            if ((certInfo.getCertNames() != null) && (certInfo.getCertNames().toLowerCase().contains(item.toLowerCase()))) continue;
             problem++;
         }
 

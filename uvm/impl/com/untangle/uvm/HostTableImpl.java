@@ -120,6 +120,7 @@ public class HostTableImpl implements HostTable
             entry = createNewHostTableEntry( addr );
             hostTable.put( addr, entry );
             this.reverseLookupSemaphore.release(); /* wake up thread to force hostname lookup */
+            UvmContextFactory.context().hookManager().callCallbacks( HookManager.HOST_TABLE_ADD, addr );
         }
 
         return entry;
@@ -526,6 +527,22 @@ public class HostTableImpl implements HostTable
     {
         this.hostTable.clear();
     }
+
+    public HostTableEntry removeHostTableEntry( InetAddress address )
+    {
+        if ( address == null ) {
+            logger.warn( "Invalid argument: " + address );
+            return null;
+        }
+        logger.info("Removing host table entry: " + address.getHostAddress());
+
+        HostTableEvent event = new HostTableEvent( address, "remove", null );
+        UvmContextFactory.context().logEvent(event);
+
+        HostTableEntry removed =  hostTable.remove( address );
+        UvmContextFactory.context().hookManager().callCallbacks( HookManager.HOST_TABLE_REMOVE, address );
+        return removed;
+    }
     
     private synchronized HostTableEntry createNewHostTableEntry( InetAddress address )
     {
@@ -702,10 +719,7 @@ public class HostTableImpl implements HostTable
                                     if ( !macAddress1.equals(macAddress2) ) {
                                         logger.warn("Host " + addressStr + " changed MAC address " + macAddress1 + " -> " + macAddress2 + ". Deleting host entry...");
 
-                                        HostTableEvent event = new HostTableEvent( address, "remove", null );
-                                        UvmContextFactory.context().logEvent(event);
-
-                                        hostTable.remove( address );
+                                        removeHostTableEntry( address );
                                         continue;
                                     }
                                 }
@@ -767,10 +781,7 @@ public class HostTableImpl implements HostTable
                             else {
                                 logger.debug("HostTableCleaner: Removing " + address.getHostAddress());
 
-                                HostTableEvent event = new HostTableEvent( address, "remove", null );
-                                UvmContextFactory.context().logEvent(event);
-
-                                hostTable.remove(address);
+                                removeHostTableEntry( address );
                                 continue;
                             }
                         }

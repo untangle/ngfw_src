@@ -5,13 +5,16 @@ package com.untangle.node.virus_blocker_lite;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.DaemonManager;
+import com.untangle.uvm.node.NodeSettings;
+import com.untangle.uvm.node.NodeProperties;
 import com.untangle.node.virus_blocker.VirusBlockerBaseApp;
 
 public class VirusBlockerLiteApp extends VirusBlockerBaseApp
 {
-    public VirusBlockerLiteApp( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
+    public VirusBlockerLiteApp( NodeSettings nodeSettings, NodeProperties nodeProperties )
     {
-        super( nodeSettings, nodeProperties, new ClamScanner() );
+        super( nodeSettings, nodeProperties );
+        this.setScanner( new ClamScanner(this) );
     }
 
     @Override

@@ -863,6 +863,11 @@ Ext.define('Webui.config.system', {
             }
         }
 
+        this.initialRegionalFormats = this.getLanguageSettings().initialRegionalFormats;
+        this.initialOverrideDecimalSep = this.getLanguageSettings().overrideDecimalSep;
+        this.initialOverrideThousandSep = this.getLanguageSettings().overrideThousandSep;
+        this.initialOverrideDateFmt = this.getLanguageSettings().overrideDateFmt;
+        this.initialOverrideTimestampFmt = this.getLanguageSettings().overrideTimestampFmt;
         this.panelRegional = Ext.create('Ext.panel.Panel',{
             name: "Regional",
             helpSource: "system_regional",
@@ -918,6 +923,9 @@ Ext.define('Webui.config.system', {
                 }]
             }, {
                 title: i18n._("Language"),
+                defaults: {
+                    xtype: "fieldset"
+                },
                 items: [{
                     id: "system_language_combo",
                     xtype: "combo",
@@ -978,6 +986,115 @@ Ext.define('Webui.config.system', {
                             }, this)
                         }
                     }
+                },{
+                    title: i18n._("Regional Formats"),
+                    defaults: {
+                        xtype: "fieldset"
+                    },
+                    items: [{
+                        xtype: 'radiofield',
+                        boxLabel: i18n._("Use defaults"),
+                        hideLabel: true,
+                        name: "regionalformats",
+                        inputValue: 'default',
+                        checked: this.getLanguageSettings().regionalFormats == "default",
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, checked) {
+                                    if(checked){
+                                        this.getLanguageSettings().regionalFormats = "default";
+                                        this.down("[name=regionalformatsoverrides]").setVisible(false);
+                                        this.down("[name=overrideDecimalSep]").setValue(i18n._("decimal_sep"));
+                                        this.down("[name=overrideThousandSep]").setValue(i18n._("thousand_sep"));
+                                        this.down("[name=overrideDateFmt]").setValue(i18n._("date_fmt"));
+                                        this.down("[name=overrideTimestampFmt]").setValue(i18n._("timestamp_fmt"));
+                                    }
+                                }, this)
+                            }
+                        }
+                    },{
+                        xtype: 'radiofield',
+                        boxLabel: i18n._("Override"),
+                        hideLabel: true,
+                        name: "regionalformats",
+                        inputValue: 'override',
+                        checked: this.getLanguageSettings().regionalFormats == "override",
+                        listeners: {
+                            "change": {
+                                fn: Ext.bind(function(elem, checked) {
+                                    if(checked){
+                                        this.getLanguageSettings().regionalFormats = "override";
+                                        this.down("[name=regionalformatsoverrides]").setVisible(true);
+                                    }
+                                }, this)
+                            }
+                        },
+                    },{
+                        hidden: (this.getLanguageSettings().regionalFormats != "override") ? true : false,
+                        name: 'regionalformatsoverrides',
+                        defaults: {
+                            labelWidth: 150
+                        },
+                        items:[{
+                            xtype:'textfield',
+                            name: "overrideDecimalSep",
+                            fieldLabel: i18n._("Decimal Separator"),
+                            emptyText: i18n._("[enter decimal separator]"),
+                            allowBlank: true,
+                            value: this.getLanguageSettings().overrideDecimalSep || i18n._("decimal_sep"),
+                            listeners: {
+                                "change": {
+                                    fn: Ext.bind(function(elem, newValue) {
+                                        this.getLanguageSettings().overrideDecimalSep = newValue;
+                                    }, this)
+                                }
+                            }
+                        },{
+                            xtype:'textfield',
+                            name: "overrideThousandSep",
+                            fieldLabel: i18n._("Thousand Separator"),
+                            emptyText: i18n._("[enter thousand separator]"),
+                            allowBlank: true,
+                            value: this.getLanguageSettings().overrideThousandSep || i18n._("thousand_sep"),
+                            listeners: {
+                                "change": {
+                                    fn: Ext.bind(function(elem, newValue) {
+                                        this.getLanguageSettings().overrideThousandSep = newValue;
+                                    }, this)
+                                }
+                            }
+                        },{
+                            xtype:'textfield',
+                            name: "overrideDateFmt",
+                            fieldLabel: i18n._("Date Format"),
+                            emptyText: i18n._("[enter date format]"),
+                            allowBlank: false,
+                            blankText: i18n._("The date format name cannot be blank."),
+                            value: this.getLanguageSettings().overrideDateFmt || i18n._("date_fmt"),
+                            listeners: {
+                                "change": {
+                                    fn: Ext.bind(function(elem, newValue) {
+                                        this.getLanguageSettings().overrideDateFmt = newValue;
+                                    }, this)
+                                }
+                            }
+                        },{
+                            xtype:'textfield',
+                            name: "overrideTimestampFmt",
+                            fieldLabel: i18n._("Timestamp Format"),
+                            emptyText: i18n._("[enter timestamp format]"),
+                            allowBlank: false,
+                            blankText: i18n._("The time format name cannot be blank."),
+                            value: this.getLanguageSettings().overrideTimestampFmt || i18n._("timestamp_fmt"),
+                            listeners: {
+                                "change": {
+                                    fn: Ext.bind(function(elem, newValue) {
+                                        this.getLanguageSettings().overrideTimestampFmt = newValue;
+                                    }, this)
+                                }
+                            }
+                        }]
+                    }]
                 },{
                     xtype: "button",
                     margin: '10 0 0 0',
@@ -1309,7 +1426,16 @@ Ext.define('Webui.config.system', {
 
         this.saveSemaphore--;
         if (this.saveSemaphore === 0) {
-            var needRefresh = this.initialLanguage != this.getLanguageSettings().source + "-" + this.getLanguageSettings().language;
+            var needRefresh =
+                ( this.initialLanguage != this.getLanguageSettings().source + "-" + this.getLanguageSettings().language ) ||
+                ( this.initialRegionalFormats != this.getLanguageSettings().regionalFormats ) ||
+                ( ( this.getLanguageSettings().regionalFormats == "override") &&
+                   ( ( this.initialOverrideDecimalSep != this.getLanguageSettings().overrideDecimalSep ) ||
+                     ( this.initialOverrideThousandSep != this.getLanguageSettings().overrideThousandSep ) ||
+                     ( this.initialOverrideDateFmt != this.getLanguageSettings().overrideDateFmt ) ||
+                     ( this.initialOverrideTimestampFmt != this.getLanguageSettings().overrideTimestampFmt ) 
+                   )
+                );
 
             if( this.initialTimeSource != this.getSystemSettings().timeSource ){
                 rpc.systemManager.setTimeSource(Ext.bind(function(result, exception) {
