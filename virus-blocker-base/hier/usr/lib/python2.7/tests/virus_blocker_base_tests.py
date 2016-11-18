@@ -396,6 +396,22 @@ class VirusBlockerBaseTests(unittest2.TestCase):
                                             min_date=startTime)
         assert( found )
 
+    def test_300_disableAllScans(self):
+        virusSettings = self.node.getSettings()
+
+        self.node.clearAllEventHandlerCaches()
+
+        virusSettings['enableCloudScan'] = False
+        virusSettings['enableLocalScan'] = False
+        self.node.setSettings(virusSettings)
+
+        result = remote_control.runCommand("wget -q -O - http://test.untangle.com/virus/eicar.zip 2>&1 | grep -q blocked")
+
+        virusSettings['enableCloudScan'] = True
+        virusSettings['enableLocalScan'] = True
+        self.node.setSettings(virusSettings)
+        assert (result != 0)
+
     @staticmethod
     def finalTearDown(self):
         global node, nodeSSL
