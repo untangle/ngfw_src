@@ -752,7 +752,7 @@ public class CertificateManagerImpl implements CertificateManager
 
 // THIS IS FOR ECLIPSE - @formatter:off
 
-        String statusInfo = "<TABLE BORDER=1 CELLSPACING=0 CELLPADDING=5>"
+        String statusInfo = "<TABLE BORDER=1 CELLSPACING=0 CELLPADDING=5 STYLE=border-collapse:collapse;>"
                 + "<TR><TD COLSPAN=2><CENTER><STRONG>Server Certificate Verification</STRONG></CENTER></TD></TR>"
                 + "<TR><TD WIDTH=120>HTTPS Certificate</TD><TD>" + httpsInfo + "</TD></TR>"
                 + "<TR><TD WIDTH=120>SMTPS Certificate</TD><TD>" + smtpsInfo + "</TD></TR>"
