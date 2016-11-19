@@ -630,7 +630,16 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
         }
 
         // return the result as a string
-        return (new String(rxbuffer.array(), 0, rxbuffer.position()));
+        String result = new String(rxbuffer.array(), 0, rxbuffer.position());
+
+        // check the that string contains only ascii
+        // NGFW-9482
+        String result2 = result.replaceAll("[^\\x01-\\x7F]", "");
+        if ( !result.equals(result2) ) {
+            logger.warn("classd daemon return non-ascii bytes[" + rxbuffer.position() + "]: " + result);
+        }
+
+        return result;
     }
 
     // find the first matching classification rule
