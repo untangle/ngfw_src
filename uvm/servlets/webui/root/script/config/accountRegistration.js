@@ -341,7 +341,7 @@ Ext.define('Webui.config.accountRegistration', {
                                 width: 140,
                                 hidden: false
                             }
-                        },
+                        }
                     }, {
                         columnWidth: 1,
                         padding: '10 0',
@@ -358,12 +358,12 @@ Ext.define('Webui.config.accountRegistration', {
                             plugins: 'responsive',
                             responsiveConfig: {
                                 'width < 960': {
-                                    columnWidth: 1,
+                                    columnWidth: 1
                                 },
                                 'width >= 960': {
-                                    columnWidth: 0.5,
+                                    columnWidth: 0.5
                                 }
-                            },
+                            }
                         },
                         items: [{
                             name: 'firstName',
@@ -429,7 +429,7 @@ Ext.define('Webui.config.accountRegistration', {
                                 width: 140,
                                 hidden: false
                             }
-                        },
+                        }
                     }, {
                         columnWidth: 1,
                         padding: '10 0',
@@ -447,12 +447,12 @@ Ext.define('Webui.config.accountRegistration', {
                             plugins: 'responsive',
                             responsiveConfig: {
                                 'width < 960': {
-                                    columnWidth: 1,
+                                    columnWidth: 1
                                 },
                                 'width >= 960': {
-                                    columnWidth: 0.5,
+                                    columnWidth: 0.5
                                 }
-                            },
+                            }
                         },
                         items: [{
                             name: 'password',
@@ -511,13 +511,13 @@ Ext.define('Webui.config.accountRegistration', {
                 }, {
                     xtype: 'component',
                     margin: 20,
-                    html: '<p style="font-size: 14px;">' + Ext.String.format(i18n._("Your account is configured and {0} is ready to be configured."), rpc.companyName) + '</p>',
+                    html: '<p style="font-size: 14px;">' + Ext.String.format(i18n._("Your account is configured and {0} is ready to be configured."), rpc.companyName) + '</p>'
                 }, {
                     xtype: 'button',
                     text: i18n._('Continue'),
                     baseCls: 'reg-btn',
                     margin: '20 0 0 0',
-                    handler: 'closeWindow'
+                    handler: 'closeWindowReg'
                 }]
             }]
         }];
@@ -568,6 +568,11 @@ Ext.define('Webui.config.accountRegistrationController', {
     },
 
     closeWindow: function () {
+        this.getView().close();
+    },
+
+    closeWindowReg: function () {
+        rpc.jsonrpc.UvmContext.setRegistered();
         this.getView().close();
     },
 
