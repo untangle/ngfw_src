@@ -5657,9 +5657,13 @@ Ext.define('Webui.config.network', {
                         style : "margin-left: 10px",
                         width : 500,
                         value : "http://cachefly.cachefly.net/5mb.test",
-                        store : [['http://cachefly.cachefly.net/5mb.test','http://cachefly.cachefly.net/5mb.test'],
-                                 ['http://download.thinkbroadband.com/5MB.zip','http://download.thinkbroadband.com/5MB.zip'],
-                                 ['http://download.untangle.com/data.php','http://download.untangle.com/data.php']],
+                        store : [
+                            ['http://cachefly.cachefly.net/50mb.test','http://cachefly.cachefly.net/50mb.test'],
+                            ['http://cachefly.cachefly.net/5mb.test','http://cachefly.cachefly.net/5mb.test'],
+                            ['http://download.thinkbroadband.com/50MB.zip','http://download.thinkbroadband.com/50MB.zip'],
+                            ['http://download.thinkbroadband.com/5MB.zip','http://download.thinkbroadband.com/5MB.zip'],
+                            ['http://download.untangle.com/data.php','http://download.untangle.com/data.php']
+                        ],
                         listeners: {
                             specialkey: function(field, e){
                                 if (e.getKey() == e.ENTER) {
