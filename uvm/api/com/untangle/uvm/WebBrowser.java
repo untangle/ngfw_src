@@ -4,6 +4,7 @@
 package com.untangle.uvm;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -54,6 +55,7 @@ public class WebBrowser
      * @param screenDepth Screen depth to use
     */
 	public WebBrowser(Integer displaySequence, Integer displayScreen, Integer screenWidth, Integer screenHeight, Integer screenDepth)
+    throws java.io.FileNotFoundException
 	{
 		this.displaySequence = displaySequence;
 		this.displayScreen = displayScreen;
@@ -80,6 +82,10 @@ public class WebBrowser
 		System.setProperty("webdriver.chrome.logfile", tempDirectory + "/chrome.log");
 		System.setProperty("webdriver.chrome.verboseLogging", "true");
         
+        if(!WebBrowser.exists()){
+            throw new FileNotFoundException("Chrome driver does not exist: " + chromeDriver);
+        }
+
         try{
             UvmContextFactory.context().execManager().exec("pkill -f \"" + this.xCommand+ "\"");
             UvmContextFactory.context().execManager().execOutput("nohup " + this.xCommand + " >/dev/null 2>&1 &");
@@ -120,6 +126,14 @@ public class WebBrowser
         // debug option to not remove
        IOUtil.rmDir(new File(tempDirectory));
 	}
+
+    /**
+     * Allow others to determine what we know without forcing an exception check.
+     */
+    static public Boolean exists(){
+        File f = new File(chromeDriver);
+        return f.exists();
+    }
 
     /**
      * Open the web browser to the specified URL
