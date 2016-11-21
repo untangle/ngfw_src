@@ -21,6 +21,7 @@ import org.json.JSONObject;
 
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.WebBrowser;
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.NodeSettings;
@@ -556,6 +557,11 @@ public class ReportsManagerImpl implements ReportsManager
         }
         return interfacesInfo;
     }
+
+    public Boolean fixedReportsAllowGraphs(){
+        return WebBrowser.exists();
+    }
+
 
     protected void updateSystemReportEntries( List<ReportEntry> existingEntries, boolean saveIfChanged )
     {

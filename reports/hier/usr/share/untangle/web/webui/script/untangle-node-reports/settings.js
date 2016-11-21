@@ -21,12 +21,12 @@ Ext.define('Webui.untangle-node-reports.settings', {
             ["EVENT_LIST", i18n._("Event List")]
     ]),
     emailChartTypes: ["TEXT", "PIE_GRAPH", "TIME_GRAPH", "TIME_GRAPH_DYNAMIC"],
-    // Look at retention days: this.getSettings().dbRetention
     emailIntervals: [
         [86400, i18n._("Daily")],
         [604800, i18n._("Weekly")],
         [2419200, i18n._("Monthly")]
     ],
+    fixedReportsAllowGraphs: true,
     getAppSummary: function() {
         return i18n._("Reports records network events to provide administrators the visibility and data necessary to investigate network activity.");
     },
@@ -50,9 +50,9 @@ Ext.define('Webui.untangle-node-reports.settings', {
     listeners: {
         beforeshow: function () {
             this.buildAvailableAppCategories();
+            this.buildFixedReportsAllowGraphs();
         }
     },
-
 
     /*
      * From array of report identifiers, return comma separated string of report titles.
@@ -132,6 +132,14 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 return result;
             }}
         ];
+    },
+    buildFixedReportsAllowGraphs: function(){
+        rpc.reportsManager.fixedReportsAllowGraphs(Ext.bind(function (result, exception) {
+            if (Ung.Util.handleException(exception)) {
+                return;
+            }
+            this.fixedReportsAllowGraphs = result;
+        }, this));
     },
     buildPasswordValidator: function() {
         this.passwordValidator = function( fieldValue ){
@@ -1222,12 +1230,17 @@ Ext.define('Webui.untangle-node-reports.settings', {
                     list: []
                 };
 
+                console.log("buildEmaillReportsGrid, dataFn:" + this.settingsCmp.fixedReportsAllowGraphs);
+
                 var enabledIds = this.up("[name=edit]").record.get(this.dataIndex);
                 var categories = this.dataIndex.match(/config/i) ? this.settingsCmp.configCategories : this.settingsCmp.appCategories;
                 for(var i = 0; i < settings["reportEntries"].list.length; i++){
                     var entry = settings["reportEntries"].list[i];
 
-
+                    if(this.settingsCmp.fixedReportsAllowGraphs == false &&
+                        entry.type.indexOf("_GRAPH") != -1){
+                        continue;
+                    }
                     if((categories.indexOf(entry.category) != -1) &&
                         (this.settingsCmp.emailChartTypes.indexOf(entry.type) != -1)){
 
@@ -1318,7 +1331,6 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 emailIntervals.push(this.emailIntervals[i]);
             }
         }
-        console.log(emailIntervals);
 
         this.panelEmailTemplates = Ext.create('Ext.panel.Panel',{
             name: 'emailTemplates',
