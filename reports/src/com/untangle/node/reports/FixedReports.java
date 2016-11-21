@@ -100,7 +100,8 @@ public class FixedReports
     public enum Filter{
         FIRST,
         DISTINCT,
-        FORMAT
+        FORMAT,
+        IN
     }
 
     public enum ConditionalE {
@@ -139,6 +140,7 @@ public class FixedReports
         FilterPatterns.put(Filter.FIRST, Pattern.compile("first"));
         FilterPatterns.put(Filter.DISTINCT, Pattern.compile("distinct\\=([^,]+)"));
         FilterPatterns.put(Filter.FORMAT, Pattern.compile("format\\=([^,]+),(.+)"));
+        FilterPatterns.put(Filter.IN, Pattern.compile("in\\=([^,]+),(.+)"));
 
         NonGreedyVariablePattern = Pattern.compile("\\{\\{\\s*(.+?)\\s*\\}\\}");
 
@@ -435,9 +437,25 @@ public class FixedReports
             browserWidth = 250;
             browserHeight = 250;
         }
-        webbrowser = new WebBrowser(1, 5, browserWidth, browserHeight, 8);
+
+        webbrowser = null;
+        try{
+            webbrowser = new WebBrowser(1, 5, browserWidth, browserHeight, 8);
+        }catch(Exception e){}
 
         File fixedReportTemplateFile = new File(REPORTS_FIXED_TEMPLATE_FILENAME);
+
+        List<String> allowedReportTypes = new ArrayList<String>();
+        for(ReportEntry.ReportEntryType r : ReportEntry.ReportEntryType.values()){
+            if(r.name().equals("EVENT_LIST")){
+                continue;
+            }
+            if(webbrowser == null &&
+                r.name().indexOf("_GRAPH") > -1 ){
+                continue;
+            }
+            allowedReportTypes.add(r.name());
+        }
 
         messageParts = new ArrayList<Map<MailSender.MessagePartsField,String>>();
         messageText = new StringBuilder();
@@ -486,6 +504,7 @@ public class FixedReports
         variableKeyValues.put("title", title);
         variableKeyValues.put("emailTemplate", emailTemplate);
         variableKeyValues.put("FixedReports", this);
+        variableKeyValues.put("allowedReportTypes", allowedReportTypes);
 
         currentParsePass = ParsePass.PRE;
         parseBuffer(inputLines, outputLines, variableKeyValues);
@@ -506,7 +525,9 @@ public class FixedReports
             sendEmail(recipientsWithOnlineAccess, outputLines);
         }
 
-        webbrowser.close();
+        if(webbrowser != null){
+            webbrowser.close();
+        }
     }
 
     /*
@@ -836,6 +857,10 @@ public class FixedReports
                         Object rightVariable = getVariable(new selector(right));
 
                         if(leftVariable != null){
+                            if(leftVariable.getClass().isEnum()){
+                                // All enums will be string comparisions
+                                leftVariable = leftVariable.toString();
+                            }
                             if( operation.equals("==") || operation.equals("=") ){
                                 // !!! is this comparision hokey/bad form?
                                 if(leftVariable.getClass().getName().equals("java.lang.Boolean")){
@@ -849,7 +874,7 @@ public class FixedReports
                                         match = true;
                                     }
 
-                                // !!! Also numeric checks.
+                                // !!! Also non-equality numeric checks.
                                 }
                             }else if(operation.equals("in")){
                                 if(((List) rightVariable).indexOf((String) leftVariable) > -1){
@@ -1252,6 +1277,9 @@ public class FixedReports
                             case FORMAT:
                                 object = filterProcessFormat(object, (JSONObject) getVariable(new selector(filterMatcher.group(1))), getVariable(new selector(filterMatcher.group(2))));
                                 break;
+                            case IN:
+                                object = filterProcessIn(object, new selector(filterMatcher.group(1)), getVariable(new selector(filterMatcher.group(2))));
+                                break;
                         }
                     }
                 }catch(Exception e){
@@ -1368,6 +1396,38 @@ public class FixedReports
                 outgoings.add(((List) incomings).get(i));
             }
 
+        }
+
+        return (Object) outgoings;
+    }
+
+    /*
+     * Process the list and include only those in the specified list.
+     *
+     * One use for this is to pull only reports within the allowed report type list.
+     */
+    Object filterProcessIn(Object incomings, selector filterSelector, Object checklist){
+        List<Object> outgoings = new ArrayList<Object>();
+
+        Method method = null;
+        Object object = null;
+
+        int fieldIndex;
+        for(int i = 0; i < ((List) incomings).size(); i++){
+            object = ((List) incomings).get(i);
+            for(fieldIndex = 0; fieldIndex < filterSelector.fields.size(); fieldIndex++){
+                try{
+                    /* No arguments allowed at this time. */
+                    method = object.getClass().getMethod(filterSelector.fields.get(fieldIndex));
+                    object = method.invoke(object);
+                }catch(Exception e){
+                    logger.warn("Unable to get variable: " + filterSelector );
+                    break;
+                }
+            }
+            if( ((List) checklist).indexOf(object.toString()) > -1 ){
+                outgoings.add(((List) incomings).get(i));
+            }
         }
 
         return (Object) outgoings;

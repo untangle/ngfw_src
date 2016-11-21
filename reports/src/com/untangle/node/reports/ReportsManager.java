@@ -139,4 +139,8 @@ public interface ReportsManager
      * Get the list of interfaces ids and names
      */
     List<JSONObject> getInterfacesInfo();
+
+    /*
+    */
+    Boolean fixedReportsAllowGraphs();
 }
