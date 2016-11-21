@@ -83,11 +83,15 @@ def verifyIperf(wanIP):
     return True
 
 def findSmtpServer(wan_IP):
+    smtp_IP = ""
+    smtp_domain = "";
     for smtpServerHostIP in listFakeSmtpServerHosts:
         interfaceNet = smtpServerHostIP[0] + "/" + str(smtpServerHostIP[1])
         if ipaddr.IPAddress(wan_IP) in ipaddr.IPv4Network(interfaceNet):
-            return smtpServerHostIP[0],smtpServerHostIP[2]
-        return None,None
+            smtp_IP = smtpServerHostIP[0]
+            smtp_domain = smtpServerHostIP[2]
+            break
+    return smtp_IP,smtp_domain
 
 def getUDPSpeed( receiverIP, senderIP, targetIP=None, targetRate=None ):
     if targetIP == None:
