@@ -395,42 +395,6 @@ Ext.define('Webui.untangle-node-reports.settings', {
                     });
                     return values;
                 }
-            },{
-                xtype:'checkbox',
-                dataIndex: "onlineAccess",
-                id: "add_reports_online_reports_" + fieldID,
-                fieldLabel: i18n._("Online Access"),
-                width: 300
-            },{
-                xtype: 'container',
-                layout: 'column',
-                margin: '0 0 5 0',
-                items: [{
-                    xtype:'textfield',
-                    inputType: "password",
-                    name: "Password",
-                    dataIndex: "password",
-                    id: "add_reports_user_password_" + fieldID,
-                    msgTarget: "title",
-                    fieldLabel: i18n._("Password"),
-                    width: 300,
-                    minLength: 3,
-                    minLengthText: Ext.String.format(i18n._("The password is shorter than the minimum {0} characters."), 3),
-                    validator: this.passwordValidator
-                },{
-                    xtype: 'label',
-                    html: i18n._("(required for Online Access)"),
-                    cls: 'boxlabel'
-                }]
-            }, {
-                xtype:'textfield',
-                inputType: "password",
-                name: "Confirm Password",
-                dataIndex: "password",
-                id: "add_reports_confirm_password_" + fieldID,
-                fieldLabel: i18n._("Confirm Password"),
-                width: 300,
-                validator: this.passwordValidator
             }],
             syncComponents: function () {
                 /* Rebuild email template checkbox group with available template */
