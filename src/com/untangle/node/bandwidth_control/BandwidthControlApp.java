@@ -14,6 +14,8 @@ import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.HostTable;
 import com.untangle.uvm.HostTableEntry;
+import com.untangle.uvm.HookCallback;
+import com.untangle.uvm.HookManager;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.node.License;
 import com.untangle.uvm.node.NodeMetric;
@@ -38,13 +40,15 @@ public class BandwidthControlApp extends NodeBase
     private final PipelineConnector connector;
     private final PipelineConnector[] connectors;
 
-    private final ReprioritizeHandler listener;
+    private final PenaltyBoxEnterHook penaltyBoxEnterHook = new PenaltyBoxEnterHook();
+    private final PenaltyBoxExitHook penaltyBoxExitHook = new PenaltyBoxExitHook();
+    private final QuotaGivenHook quotaGivenHook = new QuotaGivenHook();
+    private final QuotaExceededHook quotaExceededHook = new QuotaExceededHook();
+    private final QuotaRemovedHook quotaRemovedHook = new QuotaRemovedHook();
     
     public BandwidthControlApp( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
     {
         super( nodeSettings, nodeProperties );
-
-        this.listener = new ReprioritizeHandler();
 
         this.addMetric(new NodeMetric(STAT_PRIORITIZE, I18nUtil.marktr("Session prioritized")));
         this.addMetric(new NodeMetric(STAT_PENALTY_BOXED, I18nUtil.marktr("Penalty boxed")));
@@ -95,13 +99,21 @@ public class BandwidthControlApp extends NodeBase
                                         i18nUtil.tr( "This can be done using the Setup Wizard (in the settings)." ));
         }
 
-        UvmContextFactory.context().hostTable().registerListener( this.listener );
+        UvmContextFactory.context().hookManager().registerCallback( com.untangle.uvm.HookManager.HOST_TABLE_PENALTY_BOX_ENTER, this.penaltyBoxEnterHook );
+        UvmContextFactory.context().hookManager().registerCallback( com.untangle.uvm.HookManager.HOST_TABLE_PENALTY_BOX_EXIT, this.penaltyBoxExitHook );
+        UvmContextFactory.context().hookManager().registerCallback( com.untangle.uvm.HookManager.HOST_TABLE_QUOTA_GIVEN, this.quotaGivenHook );
+        UvmContextFactory.context().hookManager().registerCallback( com.untangle.uvm.HookManager.HOST_TABLE_QUOTA_EXCEEDED, this.quotaExceededHook );
+        UvmContextFactory.context().hookManager().registerCallback( com.untangle.uvm.HookManager.HOST_TABLE_QUOTA_REMOVED, this.quotaRemovedHook );
     }
 
     @Override
     protected void preStop( boolean isPermanentTransition ) 
     {
-        UvmContextFactory.context().hostTable().unregisterListener( this.listener );
+        UvmContextFactory.context().hookManager().unregisterCallback( com.untangle.uvm.HookManager.HOST_TABLE_PENALTY_BOX_ENTER, this.penaltyBoxEnterHook );
+        UvmContextFactory.context().hookManager().unregisterCallback( com.untangle.uvm.HookManager.HOST_TABLE_PENALTY_BOX_EXIT, this.penaltyBoxExitHook );
+        UvmContextFactory.context().hookManager().unregisterCallback( com.untangle.uvm.HookManager.HOST_TABLE_QUOTA_GIVEN, this.quotaGivenHook );
+        UvmContextFactory.context().hookManager().unregisterCallback( com.untangle.uvm.HookManager.HOST_TABLE_QUOTA_EXCEEDED, this.quotaExceededHook );
+        UvmContextFactory.context().hookManager().unregisterCallback( com.untangle.uvm.HookManager.HOST_TABLE_QUOTA_REMOVED, this.quotaRemovedHook );
     }
 
     @Override
@@ -240,6 +252,9 @@ public class BandwidthControlApp extends NodeBase
      */
     public void reprioritizeHostSessions(InetAddress addr, String reason)
     {
+        if ( addr == null )
+            return;
+        logger.info("Reproritizing sessions for host " + addr.getHostAddress() + " because \"" + reason + "\"");
         this.handler.reprioritizeHostSessions(addr, reason);
     }
 
@@ -304,15 +319,35 @@ public class BandwidthControlApp extends NodeBase
         }
     }
 
-    private class ReprioritizeHandler implements HostTable.HostTableListener
+    private class PenaltyBoxEnterHook implements HookCallback
     {
-        public void enteringPenaltyBox( InetAddress address ) { reprioritizeHostSessions(address, "enter penalty box"); }
-        public void exitingPenaltyBox( InetAddress address ) { reprioritizeHostSessions(address, "exit penalty box"); }
-        public void quotaGiven( InetAddress address ) { reprioritizeHostSessions(address, "quota given"); }
-        public void quotaExceeded( InetAddress address ) { reprioritizeHostSessions(address, "quota exceeded"); }
-        public void quotaRemoved( InetAddress address ) { reprioritizeHostSessions(address, "quota removed"); }
+        public String getName() { return "bandwidth-control-penalty-box--hook"; }
+        public void callback( Object o ) { reprioritizeHostSessions((InetAddress)o, "enter penalty box"); }
     }
 
+    private class PenaltyBoxExitHook implements HookCallback
+    {
+        public String getName() { return "bandwidth-control-penalty-box-exit-hook"; }
+        public void callback( Object o ) { reprioritizeHostSessions((InetAddress)o, "exit penalty box"); }
+    }
+
+    private class QuotaGivenHook implements HookCallback
+    {
+        public String getName() { return "bandwidth-control-quota-given-hook"; }
+        public void callback( Object o ) { reprioritizeHostSessions((InetAddress)o, "quota given"); }
+    }
+
+    private class QuotaExceededHook implements HookCallback
+    {
+        public String getName() { return "bandwidth-control-quota-exceeded-hook"; }
+        public void callback( Object o ) { reprioritizeHostSessions((InetAddress)o, "quota exceeded"); }
+    }
+
+    private class QuotaRemovedHook implements HookCallback
+    {
+        public String getName() { return "bandwidth-control-quota-removed-hook"; }
+        public void callback( Object o ) { reprioritizeHostSessions((InetAddress)o, "quota removed"); }
+    }
 }
 
     
