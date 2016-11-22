@@ -93,8 +93,6 @@ case "$1" in
             exit
         fi
 
-        echo `uvmStatus`
-        
         if [ "`uvmStatus`" == "running" ] || [ "`uvmStatus`" == "launching" ] || [ "`uvmStatus`" == "booting" ]; then
             echo "untangle-vm already running."
 		    log_end_msg 0
