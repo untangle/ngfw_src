@@ -18,5 +18,6 @@
     "timeDataInterval": "AUTO",
     "timeStyle": "AREA",
     "title": "Memory Usage",
-    "type": "TIME_GRAPH"
+    "type": "TIME_GRAPH",
+    "approximation": "high"
 }

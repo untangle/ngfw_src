@@ -18,5 +18,6 @@
     "timeDataInterval": "HOUR",
     "timeStyle": "AREA",
     "title": "Disk Usage",
-    "type": "TIME_GRAPH"
+    "type": "TIME_GRAPH",
+    "approximation": "high"
 }

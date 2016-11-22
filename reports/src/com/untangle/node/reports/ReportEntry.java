@@ -107,6 +107,9 @@ public class ReportEntry implements Serializable, JSONString
     private Boolean orderDesc = null; /* The direction to order, True is DESC, False is regular, null is neither */
 
     private String[] defaultColumns; /* The default columns for an event list report entry */
+
+    /* http://api.highcharts.com/highstock/plotOptions.area.dataGrouping */
+    private String approximation; /* The data-approximation technique: average, open, high, low, close, sum */
     
     public String toJSONString()
     {
@@ -219,6 +222,9 @@ public class ReportEntry implements Serializable, JSONString
     public String[] getDefaultColumns() { return this.defaultColumns; }
     public void setDefaultColumns( String[] newValue ) { this.defaultColumns = newValue; }
 
+    public String getApproximation() { return this.approximation; }
+    public void setApproximation( String newValue ) { this.approximation = newValue; }
+    
     public PreparedStatement toSql( Connection conn, Date startDate, Date endDate )
     {
         return toSql( conn, startDate, endDate, null, null );
