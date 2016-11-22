@@ -408,7 +408,7 @@ public class FixedReports
         }else if(emailTemplate.getInterval() == 604800){
             // Weekly, Sunday through Sunday
             interval = i18nUtil.tr("Weekly");
-            c.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+            c.set(Calendar.DAY_OF_WEEK, emailTemplate.getIntervalWeekStart());
             endDate = c.getTime();
             c.add(Calendar.DATE, -7);
             startDate = c.getTime();

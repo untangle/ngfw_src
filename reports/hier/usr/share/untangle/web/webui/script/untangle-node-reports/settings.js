@@ -1230,8 +1230,6 @@ Ext.define('Webui.untangle-node-reports.settings', {
                     list: []
                 };
 
-                console.log("buildEmaillReportsGrid, dataFn:" + this.settingsCmp.fixedReportsAllowGraphs);
-
                 var enabledIds = this.up("[name=edit]").record.get(this.dataIndex);
                 var categories = this.dataIndex.match(/config/i) ? this.settingsCmp.configCategories : this.settingsCmp.appCategories;
                 for(var i = 0; i < settings["reportEntries"].list.length; i++){
@@ -1358,6 +1356,8 @@ Ext.define('Webui.untangle-node-reports.settings', {
                     "templateId": -1,
                     "title": "",
                     "description": "",
+                    "interval": 86400,
+                    "intervalWeekStart": 1,
                     "readOnly": false,
                     "enabledConfigIds" : {
                         "javaClass": "java.util.LinkedList",
@@ -1377,6 +1377,8 @@ Ext.define('Webui.untangle-node-reports.settings', {
                     name: 'description'
                 }, {
                     name: 'interval'
+                }, {
+                    name: 'intervalWeekStart'
                 }, {
                     name: 'mobile'
                 }, {
@@ -1488,13 +1490,34 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 emptyText: i18n._("[no description]"),
                 width: 500
             },{
-                xtype: 'combo',
-                name: 'Interval',
-                editable: false,
-                fieldLabel: i18n._("Interval"),
-                queryMode: 'local',
-                store: emailIntervals,
-                dataIndex: 'interval'
+                xtype: 'container',
+                layout: 'hbox',
+                items: [{
+                    xtype: 'combo',
+                    name: 'Interval',
+                    editable: false,
+                    fieldLabel: i18n._("Interval"),
+                    queryMode: 'local',
+                    store: emailIntervals,
+                    dataIndex: 'interval',
+                    listeners: {
+                        "change": {
+                            fn: Ext.bind( function(combo, newValue){
+                                combo.up("[name=edit]").down("[name=IntervalWeekStart]").setVisible(newValue ==604800);
+                            }, this)
+                        },
+                    }
+                },{
+                    xtype: 'combo',
+                    name: 'IntervalWeekStart',
+                    editable: false,
+                    fieldLabel: i18n._("Start of week"),
+                    queryMode: 'local',
+                    store: Ung.Util.getDayOfWeekList(),
+                    dataIndex: 'intervalWeekStart',
+                    margin: '0 0 0 10',
+                    hidden: true
+                }]
             },{
                 xtype: 'checkbox',
                 name: 'Mobile',
@@ -1515,6 +1538,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
             syncComponents: function () {
                 this.down("[dataIndex=enabledConfigIds]").clearDirty();
                 this.down("[dataIndex=enabledAppIds]").clearDirty();
+                this.down("[name=IntervalWeekStart]").setVisible(this.down("[name=Interval]").getValue() == 604800);
             },
         }));
     },
