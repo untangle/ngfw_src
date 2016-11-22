@@ -53,7 +53,6 @@ public class HostTableImpl implements HostTable
 
     private ConcurrentHashMap<InetAddress, HostTableEntry> hostTable;
 
-    private Set<HostTable.HostTableListener> listeners = new HashSet<HostTableListener>();
 
     private volatile Thread cleanerThread;
     private HostTableCleaner cleaner = new HostTableCleaner();
@@ -177,18 +176,8 @@ public class HostTableImpl implements HostTable
         PenaltyBoxEvent evt = new PenaltyBoxEvent( action, address, new Date(currentEntryTime), new Date(currentExitTime), reason ) ;
         UvmContextFactory.context().logEvent(evt);
 
-        /**
-         * Call listeners
-         */
-        if (action == PenaltyBoxEvent.ACTION_ENTER) {
-            for ( HostTableListener listener : this.listeners ) {
-                try {
-                    listener.enteringPenaltyBox( address );
-                } catch ( Exception e ) {
-                    logger.error( "Exception calling listener", e );
-                }
-            }
-        }
+        /* Call hook listeners */
+        UvmContextFactory.context().hookManager().callCallbacks( HookManager.HOST_TABLE_PENALTY_BOX_ENTER, address );
         
         return;
     }
@@ -211,10 +200,6 @@ public class HostTableImpl implements HostTable
         entry.setPenaltyBoxEntryTime( 0 );
         entry.setPenaltyBoxExitTime( 0 );
         
-        /**
-         * If the host was in the penalty box, we must log the event and call the listeners
-         */
-
         if ( !currentFlag ) {
             return;
         }
@@ -239,16 +224,8 @@ public class HostTableImpl implements HostTable
             
         UvmContextFactory.context().logEvent( new PenaltyBoxEvent( PenaltyBoxEvent.ACTION_EXIT, address, new Date(currentEntryTime), new Date(currentExitTime), null ) );
 
-        /**
-         * Call listeners
-         */
-        for ( HostTableListener listener : this.listeners ) {
-            try {
-                listener.exitingPenaltyBox( address );
-            } catch ( Exception e ) {
-                logger.error( "Exception calling listener", e );
-            }
-        }
+        /* Call hook listeners */
+        UvmContextFactory.context().hookManager().callCallbacks( HookManager.HOST_TABLE_PENALTY_BOX_EXIT, address );
         
         return;
     }
@@ -268,16 +245,8 @@ public class HostTableImpl implements HostTable
         entry.setQuotaIssueTime( now );
         entry.setQuotaExpirationTime( now + (((long)time_sec)*1000L) );
 
-        /**
-         * Call listeners
-         */
-        for ( HostTableListener listener : this.listeners ) {
-            try {
-                listener.quotaGiven( address );
-            } catch ( Exception e ) {
-                logger.error( "Exception calling listener", e );
-            }
-        }
+        /* Call hook listeners */
+        UvmContextFactory.context().hookManager().callCallbacks( HookManager.HOST_TABLE_QUOTA_GIVEN, address );
 
         UvmContextFactory.context().logEvent( new QuotaEvent( QuotaEvent.ACTION_GIVEN, address, reason, quotaBytes ) );
         
@@ -299,16 +268,8 @@ public class HostTableImpl implements HostTable
         entry.setQuotaIssueTime( 0 );
         entry.setQuotaExpirationTime( 0 );
 
-        /**
-         * Call listeners
-         */
-        for ( HostTableListener listener : this.listeners ) {
-            try {
-                listener.quotaRemoved( address );
-            } catch ( Exception e ) {
-                logger.error( "Exception calling listener", e );
-            }
-        }
+        /* Call hook listeners */
+        UvmContextFactory.context().hookManager().callCallbacks( HookManager.HOST_TABLE_QUOTA_REMOVED, address );
     }
 
     public boolean hostQuotaExceeded( InetAddress address )
@@ -382,13 +343,8 @@ public class HostTableImpl implements HostTable
 
         entry.setQuotaRemaining( entry.getQuotaSize() );
 
-        for ( HostTableListener listener : this.listeners ) {
-            try {
-                listener.quotaGiven( address );
-            } catch ( Exception e ) {
-                logger.error( "Exception calling listener", e );
-            }
-        }
+        /* Call hook listeners */
+        UvmContextFactory.context().hookManager().callCallbacks( HookManager.HOST_TABLE_QUOTA_GIVEN, address );
     }
 
     public synchronized boolean decrementQuota( InetAddress address, long bytes )
@@ -414,14 +370,9 @@ public class HostTableImpl implements HostTable
         if ( remaining > 0 && newRemaning <= 0 ) {
             logger.info("Host " + address.getHostAddress() + " exceeded quota.");
 
-            for ( HostTableListener listener : this.listeners ) {
-                try {
-                    listener.quotaExceeded( address );
-                } catch ( Exception e ) {
-                    logger.error( "Exception calling listener", e );
-                }
-            }
-            
+            /* Call hook listeners */
+            UvmContextFactory.context().hookManager().callCallbacks( HookManager.HOST_TABLE_QUOTA_EXCEEDED, address );
+
             UvmContextFactory.context().logEvent( new QuotaEvent( QuotaEvent.ACTION_EXCEEDED, address, null, entry.getQuotaSize()) );
             return true;
         }
@@ -481,16 +432,6 @@ public class HostTableImpl implements HostTable
         return list;
     }
     
-    public void registerListener( HostTable.HostTableListener listener )
-    {
-        this.listeners.add( listener );
-    }
-
-    public void unregisterListener( HostTable.HostTableListener listener )
-    {
-        this.listeners.remove( listener );
-    }
-
     public int getCurrentSize()
     {
         return this.hostTable.size();

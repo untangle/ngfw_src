@@ -26,6 +26,8 @@ import org.json.JSONObject;
 
 import com.untangle.uvm.Plugin;
 import com.untangle.uvm.node.License;
+import com.untangle.uvm.HookCallback;
+import com.untangle.uvm.HookManager;
 import com.untangle.node.reports.AlertEvent;
 import com.untangle.uvm.logging.LogEvent;
 
@@ -52,26 +54,26 @@ public class AlertPluginImpl implements Plugin
 
         registerCallback();
 
-        UvmContextFactory.context().hookManager().registerCallback( com.untangle.uvm.HookManager.UVM_SETTINGS_CHANGE, this.settingsCallback );
-        UvmContextFactory.context().hookManager().registerCallback( com.untangle.uvm.HookManager.LICENSE_CHANGE, this.licenseCallback );
+        UvmContextFactory.context().hookManager().registerCallback( HookManager.UVM_SETTINGS_CHANGE, this.settingsCallback );
+        UvmContextFactory.context().hookManager().registerCallback( HookManager.LICENSE_CHANGE, this.licenseCallback );
     }
 
     public final void stop()
     {
         unregisterCallback();
 
-        UvmContextFactory.context().hookManager().unregisterCallback( com.untangle.uvm.HookManager.UVM_SETTINGS_CHANGE, this.settingsCallback );
-        UvmContextFactory.context().hookManager().unregisterCallback( com.untangle.uvm.HookManager.LICENSE_CHANGE, this.licenseCallback );
+        UvmContextFactory.context().hookManager().unregisterCallback( HookManager.UVM_SETTINGS_CHANGE, this.settingsCallback );
+        UvmContextFactory.context().hookManager().unregisterCallback( HookManager.LICENSE_CHANGE, this.licenseCallback );
     }
 
     private void registerCallback()
     {
-        UvmContextFactory.context().hookManager().registerCallback( com.untangle.uvm.HookManager.REPORTS_EVENT_LOGGED, this.alertCallback );
+        UvmContextFactory.context().hookManager().registerCallback( HookManager.REPORTS_EVENT_LOGGED, this.alertCallback );
     }
 
     private void unregisterCallback()
     {
-        UvmContextFactory.context().hookManager().unregisterCallback( com.untangle.uvm.HookManager.REPORTS_EVENT_LOGGED, this.alertCallback );
+        UvmContextFactory.context().hookManager().unregisterCallback( HookManager.REPORTS_EVENT_LOGGED, this.alertCallback );
     }
 
     private boolean isEnabled()
@@ -102,7 +104,7 @@ public class AlertPluginImpl implements Plugin
 
     private void resumeProperState()
     {
-        boolean callbackRegistered = UvmContextFactory.context().hookManager().isRegistered( com.untangle.uvm.HookManager.REPORTS_EVENT_LOGGED, this.alertCallback );
+        boolean callbackRegistered = UvmContextFactory.context().hookManager().isRegistered( HookManager.REPORTS_EVENT_LOGGED, this.alertCallback );
 
         if ( isEnabled() ) {
             if ( callbackRegistered ) {
