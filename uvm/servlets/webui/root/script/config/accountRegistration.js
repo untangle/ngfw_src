@@ -67,7 +67,7 @@ Ext.define('Webui.config.accountRegistration', {
                 xtype: 'button',
                 baseCls: 'reg-close',
                 html: '<span style="vertical-align: middle;">' + i18n._('Skip') + '</span> <i class="material-icons">close</i>',
-                handler: 'closeWindow'
+                handler: 'skipReg'
             }]
         }, {
             layout: 'card',
@@ -517,7 +517,7 @@ Ext.define('Webui.config.accountRegistration', {
                     text: i18n._('Continue'),
                     baseCls: 'reg-btn',
                     margin: '20 0 0 0',
-                    handler: 'closeWindowReg'
+                    handler: 'finishReg'
                 }]
             }]
         }];
@@ -567,13 +567,18 @@ Ext.define('Webui.config.accountRegistrationController', {
         }
     },
 
-    closeWindow: function () {
+    skipReg: function () {
         this.getView().close();
     },
 
-    closeWindowReg: function () {
-        rpc.jsonrpc.UvmContext.setRegistered();
+    finishReg: function() {
+        rpc.jsonrpc.UvmContext.setRegistered(function(result, exception) {
+            if(Ung.Util.handleException(exception)) return;
+            rpc.isRegistered = true;
+            Ung.Main.showPostRegistrationPopup();
+        });
         this.getView().close();
+        Ext.destroy(this.getView());
     },
 
     showLogin: function () {
@@ -608,7 +613,6 @@ Ext.define('Webui.config.accountRegistrationController', {
                         me.getView().email = form.findField('email').getValue();
                         me.getView().token = response.token;
                         me.getView().down('#cards').setActiveItem(3);
-                        // me.closeWindow();
                     }
                 },
                 form.findField('email').getValue(),
