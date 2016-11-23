@@ -460,7 +460,7 @@ Ext.define('Ung.charts', {
                     //shadow: true,
                     animation: false,
                     dataGrouping: {
-                        approximation: 'high'
+                        approximation: entry.approximation || 'sum'
                     },
                     marker: {
                         enabled: false,
