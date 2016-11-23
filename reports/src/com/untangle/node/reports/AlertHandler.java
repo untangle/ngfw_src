@@ -12,7 +12,6 @@ import java.util.LinkedList;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.AdminUserSettings;
 
 /**
  * This contains the logic for handling the alert rules.
@@ -99,21 +98,6 @@ public class AlertHandler
             "\r\n\r\n" +
             I18nUtil.marktr("This is an automated message sent because the event matched the configured Alert Rules.");
                               
-        if ( UvmContextFactory.context().adminManager().getSettings().getUsers() != null ) {
-            for( AdminUserSettings admin : UvmContextFactory.context().adminManager().getSettings().getUsers() ) {
-                if ( admin.getEmailAddress() == null || "".equals( admin.getEmailAddress() ) )
-                    continue;
-                if ( ! admin.getEmailAlerts() )
-                    continue;
-                try {
-                    String[] recipients = new String[]{ admin.getEmailAddress() };
-                    logger.warn("Sending alert to " + admin.getEmailAddress());
-                    UvmContextFactory.context().mailSender().sendMessage( recipients, subject, messageBody);
-                } catch ( Exception e) {
-                    logger.warn("Failed to send mail.",e);
-                }
-            }
-        }
         if ( reports.getSettings().getReportsUsers() != null ) {
             for ( ReportsUser user : reports.getSettings().getReportsUsers() ) {
                 if ( user.getEmailAddress() == null || "".equals( user.getEmailAddress() ) )
