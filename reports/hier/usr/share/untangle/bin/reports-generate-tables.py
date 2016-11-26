@@ -29,7 +29,6 @@ logger = getLogger(__name__)
 os.system("createuser -U postgres -dSR untangle >/dev/null 2>&1")
 os.system("createdb -O postgres -U postgres uvm >/dev/null 2>&1");
 os.system("createlang -U postgres plpgsql uvm >/dev/null 2>&1");
-os.system("psql -U postgres -c \"CREATE EXTENSION tablefunc\" uvm >/dev/null 2>&1");
 
 reports.engine.init_engine(NODE_MODULE_DIR)
 

@@ -352,15 +352,15 @@ public class ReportEntry implements Serializable, JSONString
     {
         String dataInterval = calculateTimeDataInterval( startDate, endDate ).toString().toLowerCase();
         String dateCondition = " time_stamp >= '" + dateFormatter.format(startDate) + "' " + " and " + " time_stamp <= '" + dateFormatter.format(endDate) + "' ";
-            
-        String generate_series;
+        String generateSeriesQuery;
+
         if ( dataInterval.equals("tenminute") )
-            generate_series = " SELECT generate_series( " +
+            generateSeriesQuery = " SELECT generate_series( " +
                 " date_trunc( 'hour', '" + dateFormatter.format(startDate) + "'::timestamp ) + INTERVAL '10 min' * ROUND(date_part('minute', '" + dateFormatter.format(startDate) + "'::timestamp)/10.0), " + 
                 " '" + dateFormatter.format(endDate)   + "'::timestamp , " +
                 " '10 minute' ) as time_trunc ";
         else
-            generate_series = " SELECT generate_series( " +
+            generateSeriesQuery = " SELECT generate_series( " +
                 " date_trunc( '" + dataInterval + "', '" + dateFormatter.format(startDate) + "'::timestamp), " + 
                 " '" + dateFormatter.format(endDate)   + "'::timestamp , " +
                 " '1 " + dataInterval + "' ) as time_trunc ";
@@ -384,22 +384,21 @@ public class ReportEntry implements Serializable, JSONString
                 
         timeQuery += " GROUP BY time_trunc ";
 
-        String final_query = "SELECT * FROM " +
-            " ( " + generate_series + " ) as t1 " +
+        String finalQuery = "SELECT * FROM " +
+            " ( " + generateSeriesQuery + " ) as t1 " +
             "LEFT JOIN " +
             " ( " + timeQuery + " ) as t2 " +
             " USING (time_trunc) " +
             " ORDER BY time_trunc " + ( getOrderDesc() ? " DESC " : "" );
-        return sqlToStatement( conn, final_query, allConditions );
+        return sqlToStatement( conn, finalQuery, allConditions );
     }
 
     private PreparedStatement toSqlTimeGraphDynamic( Connection conn, Date startDate, Date endDate, LinkedList<SqlCondition> allConditions )
     {
         String dataInterval = calculateTimeDataInterval( startDate, endDate ).toString().toLowerCase();
         String dateCondition = " time_stamp >= '" + dateFormatter.format(startDate) + "' " + " and " + " time_stamp <= '" + dateFormatter.format(endDate) + "' ";
-            
         String generateSeriesQuery;
-        Date endDateSeries = endDate;
+
         if ( endDate.getTime() > System.currentTimeMillis() ) {
             /**
              * when endDate = null, we assume now+1minute.
@@ -407,7 +406,7 @@ public class ReportEntry implements Serializable, JSONString
              * we do this because otherwise it adds an extra minute onto the range. usually you want that, but in this case it ends up adding a datapoint to the series
              * which when joined with the actual data just results in a null point at the end which looks poor in the graph
              */
-            endDateSeries = new Date( endDate.getTime() - (60*1000) );
+            endDate = new Date( endDate.getTime() - (60*1000) );
         }
 
         /**
@@ -418,18 +417,17 @@ public class ReportEntry implements Serializable, JSONString
         if ( dataInterval.equals("tenminute") )
             generateSeriesQuery = " SELECT generate_series( " +
                 " date_trunc( 'hour', '" + dateFormatter.format(startDate) + "'::timestamp ) + INTERVAL '10 min' * ROUND(date_part('minute', '" + dateFormatter.format(startDate) + "'::timestamp)/10.0), " + 
-                " '" + dateFormatter.format(endDateSeries)   + "'::timestamp , " +
+                " '" + dateFormatter.format(endDate)   + "'::timestamp , " +
                 " '10 minute' ) as time_trunc ";
         else
             generateSeriesQuery = " SELECT generate_series( " +
                 " date_trunc( '" + dataInterval + "', '" + dateFormatter.format(startDate) + "'::timestamp), " + 
-                " '" + dateFormatter.format(endDateSeries)   + "'::timestamp , " +
+                " '" + dateFormatter.format(endDate)   + "'::timestamp , " +
                 " '1 " + dataInterval + "' ) as time_trunc ";
             
         /**
          * distinctQuery
          * This querys the distinct values that will be used to detemine the columns in the final result
-         * This will be run now, because we need the distinct values to write the crosstab query (select * from crosstab() AS distinct values...)
          */
         String distinctQuery = "SELECT DISTINCT(" + getTimeDataDynamicColumn() + ") as value, " + getTimeDataDynamicAggregationFunction() + "(" + getTimeDataDynamicValue() + ")" +
             " FROM " + "reports." + getTable() +
@@ -439,14 +437,6 @@ public class ReportEntry implements Serializable, JSONString
             " GROUP BY " + getTimeDataDynamicColumn() + 
             " ORDER BY 2 DESC " + 
             ( getTimeDataDynamicLimit() != null ? " LIMIT " + getTimeDataDynamicLimit() : "" );
-        /**
-         * createDistinctTempTableQuery
-         * This creates a temp table with the results of the crosstab query.
-         * We create a temp table because the crosstab query takes literal strings, so PreparedStatement arguments
-         * do not work. As such we create a temp table with a regular query and then reference the temp table
-         * inside the crosstab function
-         */
-        String createDistinctTempTableQuery = "CREATE TEMP TABLE tempDistinctTable AS " + distinctQuery;
         
         /**
          * Fetch the distinct values (with conditions and all)
@@ -463,79 +453,42 @@ public class ReportEntry implements Serializable, JSONString
             return sqlToStatement( conn, "select null", null);
         }
         
-        /**
-         * createDataTempTableQuery
-         * This creates a temp table with the actual data to be transposed with crosstab
-         * We use a temp table, because we can't specify conditions inside literal strings inside the crosstab function
-         * So we create the temp table and then select the temp table inside the crosstab function
-         */
-        String createDataTempTableQuery;
-        if ( dataInterval.equals("tenminute") ) {
-            createDataTempTableQuery = "SELECT " +
-                " date_trunc( 'hour', time_stamp ) + INTERVAL '10 min' * ROUND(date_part('minute', time_stamp)/10.0) as time_trunc, ";
-        } else {
-            createDataTempTableQuery = "SELECT " +
-                " date_trunc( '" + dataInterval + "', time_stamp ) as time_trunc, ";
+        String timeQuery;
+        if ( dataInterval.equals("tenminute") )
+            timeQuery = "SELECT " +
+                " date_trunc( 'hour', time_stamp ) + INTERVAL '10 min' * ROUND(date_part('minute', time_stamp)/10.0) as time_trunc ";
+        else
+            timeQuery = "SELECT " +
+                " date_trunc( '" + dataInterval + "', time_stamp ) as time_trunc ";
+
+        for ( String distinctValue : distinctValues ) {
+            if ( distinctValue == null ) {
+                timeQuery += ", COALESCE(" +
+                    getTimeDataDynamicAggregationFunction() + "(CASE WHEN " + getTimeDataDynamicColumn() + " IS NULL THEN " + getTimeDataDynamicValue() + " END), null) " + 
+                    "AS \"None\"";
+            }
+            else {
+                timeQuery += ", COALESCE(" +
+                    getTimeDataDynamicAggregationFunction() + "(CASE WHEN " + getTimeDataDynamicColumn() + " = '" + distinctValue.replaceAll("'","") + "' THEN " + getTimeDataDynamicValue() + " END), null) " + 
+                    "AS \"" + distinctValue.replaceAll("\"","") + "\"";
+            }
         }
-        createDataTempTableQuery += "COALESCE(" + getTimeDataDynamicColumn() + "::text,'None') AS " + getTimeDataDynamicColumn() + ", ";
-        createDataTempTableQuery += "COALESCE(" + getTimeDataDynamicAggregationFunction() + "(" + getTimeDataDynamicValue() + "),0) AS value ";
-        createDataTempTableQuery += "FROM " +
+
+        timeQuery += " FROM " +
             " reports." + getTable() +
             " WHERE " + dateCondition;
-        createDataTempTableQuery += conditionsToString( allConditions );
-        createDataTempTableQuery += " GROUP BY time_trunc, " + getTimeDataDynamicColumn() + " ";
-        createDataTempTableQuery = "SELECT * FROM " +
+
+        timeQuery += conditionsToString( allConditions );
+
+        timeQuery += " GROUP BY time_trunc ";
+
+        String finalQuery = "SELECT * FROM " +
             " ( " + generateSeriesQuery + " ) as t1 " +
             "LEFT JOIN " +
-            " ( " + createDataTempTableQuery + " ) as t2 " +
+            " ( " + timeQuery + " ) as t2 " +
             " USING (time_trunc) " +
             " ORDER BY time_trunc " + ( getOrderDesc() ? " DESC " : "" );
-        createDataTempTableQuery = "CREATE TEMP TABLE tempTimeTable AS " + createDataTempTableQuery;
-        
-        /**
-         * crosstabQuery
-         * Now create the actualy crosstab query
-         * basically we "select * from crossTab( temp data table, temp distinct table) as distinct values"
-         */
-        String crosstabQuery = "SELECT * FROM crosstab( " +
-            "$$ SELECT * FROM tempTimeTable $$" + " , " +
-            "$$ SELECT CASE WHEN value IS NULL THEN 'None'::text ELSE value::text END FROM tempDistinctTable $$" + ") " + " as " +
-            "( \"time_trunc\" timestamp ";
-        for ( String s : distinctValues ) {
-            if ( "".equals(s) )
-                s = " ";
-            if ( s != null )
-                s = s.replaceAll("\"","\"\""); // double quote quote characters
-            crosstabQuery = crosstabQuery + ", \"" + ( s == null ? "None" : s ) + "\" numeric ";
-        }
-        crosstabQuery = crosstabQuery + ")";
-
-        /**
-         * finalQuery
-         * The final query is just the statement to create the two temp tables
-         * plus crosstabQuery to actually return the results
-         */
-        String finalQuery = createDistinctTempTableQuery + " ; " +
-            createDataTempTableQuery + " ; " +
-            crosstabQuery;
-            
-        if ( logger.isDebugEnabled() ) {
-            logger.debug("createDistinctTempTableQuery QUERY: " + createDistinctTempTableQuery);
-            logger.debug("distinctQuery                QUERY: " + distinctQuery);
-            logger.debug("createDataTempTableQuery     QUERY: " + createDataTempTableQuery);
-            logger.debug("crosstabQuery                QUERY: " + crosstabQuery);
-            logger.debug("finalQuery                   QUERY: " + finalQuery);
-        }
-        // try {
-        //     java.io.PrintWriter out = new java.io.PrintWriter("/tmp/query.txt");
-        //     out.println(finalQuery);
-        //     out.close();
-        // } catch (Exception e) {}
-        
-        LinkedList<SqlCondition> doubleConditions = new LinkedList<SqlCondition>(allConditions);
-        doubleConditions.addAll(allConditions);
-        
-        return sqlToStatement( conn, finalQuery, doubleConditions );
+        return sqlToStatement( conn, finalQuery, allConditions );
     }
     
     /**
