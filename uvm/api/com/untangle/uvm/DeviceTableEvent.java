@@ -48,7 +48,7 @@ public class DeviceTableEvent extends LogEvent
     @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
-        String sql = "INSERT INTO reports.device_table_updates" + getPartitionTablePostfix() + " " +
+        String sql = "INSERT INTO " + getSchemaPrefix() + "device_table_updates" + getPartitionTablePostfix() + " " +
             "(time_stamp, mac_address, key, value) " +
             "values " +
             "(?, ?, ?, ?); ";

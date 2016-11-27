@@ -28,6 +28,9 @@ public abstract class LogEvent implements Serializable, JSONString
 {
     protected static final Logger logger = Logger.getLogger(LogEvent.class);
 
+    protected static String schemaPrefix = "reports.";
+    protected static boolean partitionsSupported = true;
+    
     protected Timestamp timeStamp = new Timestamp((new Date()).getTime());
     private String tag; /* syslog tag */
 
@@ -89,11 +92,17 @@ public abstract class LogEvent implements Serializable, JSONString
     
     public String getPartitionTablePostfix()
     {
+        if ( !partitionsSupported )
+            return "";
+        
         return getPartitionTablePostfix( this.timeStamp );
     }
 
     public String getPartitionTablePostfix( Timestamp ts )
     {
+        if ( !partitionsSupported )
+            return "";
+
         Calendar cal = UvmContextFactory.context().systemManager().getCalendar();
 
         // in theory this should be synchronized
@@ -110,6 +119,12 @@ public abstract class LogEvent implements Serializable, JSONString
 
         //}
     }
+
+    public static void setSchemaPrefix( String newValue ) { schemaPrefix = newValue; }
+    public static String getSchemaPrefix() { return schemaPrefix; }
+
+    public static void setPartitionsSupported( boolean newValue ) { partitionsSupported = newValue; }
+    public static boolean getPartitionsSupported() { return partitionsSupported; }
 
     public String toJSONString()
     {

@@ -46,7 +46,7 @@ public class ApplicationControlLiteEvent extends LogEvent
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
         String sql =
-            "UPDATE reports.sessions" + sessionEvent.getPartitionTablePostfix() + " " +
+            "UPDATE " + getSchemaPrefix() + "sessions" + sessionEvent.getPartitionTablePostfix() + " " +
             "SET application_control_lite_protocol = ?, " + 
             "    application_control_lite_blocked = ? " +
             "WHERE session_id = ? ";

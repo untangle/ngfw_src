@@ -54,7 +54,6 @@ public class EventReaderImpl
         try {
             logger.debug("getEventsResultSet( statement: " + statement + " )");
 
-            statement.setFetchDirection( ResultSet.FETCH_FORWARD );
             
             /* If this is an unlimited query - set a fetch size so we don't load all into memory */
             if (limit < 0 || limit > 100000)
@@ -76,6 +75,7 @@ public class EventReaderImpl
                 boolean execResult = statement.execute();
 
                 resultSet = statement.getResultSet();
+                
                 // if the statement is a list of statements, then we may have to check additional results
                 // for the actual results, because the first statements may return no results
                 while ( resultSet == null ) {
@@ -87,7 +87,7 @@ public class EventReaderImpl
                         break;
                     resultSet = statement.getResultSet();
                 }
-                
+
                 return new ResultSetReader( resultSet, dbConnection, statement );
             } catch (InterruptedException e) {
                 logger.warn("Interrupted",e);
@@ -148,7 +148,6 @@ public class EventReaderImpl
             logger.debug("getEventsResultSet( sql: " + sql + " )");
             
             java.sql.PreparedStatement statement = dbConnection.prepareStatement( sql );
-            statement.setFetchDirection( ResultSet.FETCH_FORWARD );
             
             return getEventsResultSet( dbConnection, statement, table, conditions, limit );
         } catch ( Exception e ) {
@@ -217,7 +216,7 @@ public class EventReaderImpl
         if ( dbConnection == null ) {
             throw new RuntimeException("Database connection failed.");
         }
-        
+
         java.sql.PreparedStatement statement = null;
         ResultSet resultSet = null;
         
