@@ -462,12 +462,37 @@ public class ReportEntry implements Serializable, JSONString
         EventReaderImpl.checkConnection( conn );
 
         /**
-         * sqlite transform
+         * If we are using the SQLite driver
+         * Transfrom the SQL syntax to a SQLite compatible version
          */
         if ( ReportsApp.dbDriver.equals("sqlite") ) {
+            /**
+             * Postgres uses x::y to cast. SQLite uses CAST(x as y)
+             * x::y -> CAST(x as y)
+             * (a b)::y -> CAST((a b) as y)
+             */
             sql = sql.replaceAll("([a-z_]+)::([a-z]+)","CAST($1 AS $2)");
             sql = sql.replaceAll("(\\([a-z_ ]+\\))::([a-z]+)","CAST($1 AS $2)");
+
+            /**
+             * Postgres uses date_trunc. SQLite just stores dates as long and doesn't support date_trunc - use division
+             * date_trunc( 'minute', x ) -> x/60000*60000
+             * date_trunc( 'hour', x ) -> x/3600000*3600000
+             */
+            sql = sql.replaceAll("date_trunc\\(\\s*'second'\\s*,\\s*([a-z_]+)\\s*\\)","$1/1000*1000");
             sql = sql.replaceAll("date_trunc\\(\\s*'minute'\\s*,\\s*([a-z_]+)\\s*\\)","$1/60000*60000");
+            sql = sql.replaceAll("date_trunc\\(\\s*'hour'\\s*,\\s*([a-z_]+)\\s*\\)","$1/3600000*3600000");
+            sql = sql.replaceAll("date_trunc\\(\\s*'day'\\s*,\\s*([a-z_]+)\\s*\\)","$1/86400000*86400000");
+            sql = sql.replaceAll("date_trunc\\(\\s*'week'\\s*,\\s*([a-z_]+)\\s*\\)","$1/604800000*604800000");
+            sql = sql.replaceAll("date_trunc\\(\\s*'month'\\s*,\\s*([a-z_]+)\\s*\\)","$1/18144000000*18144000000");
+
+            /**
+             * Postgres uses "is true" and "is false." SQLite uses "= 1" and "= 0"
+             * is true -> = 1
+             * IS FALSE -> 0
+             */
+            sql = sql.replaceAll("\\s+[iI][sS]\\s+[tT][rR][uU][eE]\\s+"," = 1 ");
+            sql = sql.replaceAll("\\s+[iI][sS]\\s+[fF][aA][lL][sS][eE]\\s+"," = 0 ");
         }
 
         try {

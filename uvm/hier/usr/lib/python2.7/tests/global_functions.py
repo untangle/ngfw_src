@@ -183,7 +183,11 @@ def check_events( events, num_events, *args, **kwargs):
 
         # if event has a date and its too old - ignore the event
         if event.get('time_stamp') != None:
-            ts = datetime.datetime.fromtimestamp((event['time_stamp']['time'])/1000)
+            time_stamp = event.get('time_stamp')
+            if type(time_stamp) is int:
+                ts = datetime.datetime.fromtimestamp(time_stamp/1000)
+            else:
+                ts = datetime.datetime.fromtimestamp(time_stamp['time']/1000)
             if ts < min_date:
                 print "ignoring old event: %s < %s " % (ts.isoformat(),min_date.isoformat())
                 continue
@@ -193,11 +197,18 @@ def check_events( events, num_events, *args, **kwargs):
         # if all match, return True
         allMatched = True
         for i in range(0, len(args)/2):
-            key=args[i*2]
-            expectedValue=args[i*2+1]
+            key = args[i*2]
+            expectedValue = args[i*2+1]
             actualValue = event.get(key)
+            alternateValue = expectedValue
+            # If the type is a boolean, accept 1/0 also
+            if type(expectedValue) is bool:
+                if expectedValue:
+                    alternateValue = 1
+                else:
+                    alternateValue = 0
             #print "key %s expectedValue %s actualValue %s " % ( key, str(expectedValue), str(actualValue) )
-            if str(expectedValue) != str(actualValue):
+            if str(expectedValue) != str(actualValue) and str(alternateValue) != str(actualValue):
                 print "mismatch event[%s] expectedValue %s != actualValue %s " % ( key, str(expectedValue), str(actualValue) )
                 allMatched = False
                 break
