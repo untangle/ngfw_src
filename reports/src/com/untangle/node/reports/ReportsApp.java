@@ -176,8 +176,8 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
                 /**
                  * Run the script to generate/update the tables
                  */
-                String cmd = REPORTS_GENERATE_TABLES_SCRIPT;
-                ExecManagerResult result = UvmContextFactory.context().execManager().exec(cmd);
+                String cmd = REPORTS_GENERATE_TABLES_SCRIPT  + " -d postgresql";
+                ExecManagerResult result = UvmContextFactory.context().execManager().exec( cmd );
                 if (result.getResult() != 0) {
                     logger.warn("Failed to create schemas: \"" + cmd + "\" -> "  + result.getResult());
                 }
@@ -201,16 +201,17 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
                 /**
                  * Run the script to generate/update the tables
                  */
-                try {
-                    Connection conn = getDbConnection();
-                    java.sql.Statement stmt = conn.createStatement();
-                    stmt.executeUpdate("CREATE TABLE sessions ( session_id int8 NOT NULL, time_stamp timestamp NOT NULL, end_time timestamp, bypassed boolean, entitled boolean, protocol int2, icmp_type int2, hostname text, username text, policy_id int2, policy_rule_id int2, local_addr inet, remote_addr inet, c_client_addr inet, c_server_addr inet, c_server_port int4, c_client_port int4, s_client_addr inet, s_server_addr inet, s_server_port int4, s_client_port int4, client_intf int2, server_intf int2, client_country text, client_latitude real, client_longitude real, server_country text, server_latitude real, server_longitude real, c2p_bytes int8 default 0, p2c_bytes int8 default 0, s2p_bytes int8 default 0, p2s_bytes int8 default 0, filter_prefix text, firewall_blocked boolean, firewall_flagged boolean, firewall_rule_index integer, application_control_lite_protocol text, application_control_lite_blocked boolean, captive_portal_blocked boolean, captive_portal_rule_index integer, application_control_application text, application_control_protochain text, application_control_category text, application_control_blocked boolean, application_control_flagged boolean, application_control_confidence integer, application_control_ruleid integer, application_control_detail text, bandwidth_control_priority integer, bandwidth_control_rule integer, ssl_inspector_ruleid integer, ssl_inspector_status text, ssl_inspector_detail text)");
-
-                    stmt.executeUpdate("CREATE TABLE reports.session_minutes ( session_id int8 NOT NULL, time_stamp timestamp NOT NULL, c2s_bytes int8 default 0, s2c_bytes int8 default 0, start_time timestamp, end_time timestamp, bypassed boolean, entitled boolean, protocol int2, icmp_type int2, hostname text, username text, policy_id int2, policy_rule_id int2, local_addr inet, remote_addr inet, c_client_addr inet, c_server_addr inet, c_server_port int4, c_client_port int4, s_client_addr inet, s_server_addr inet, s_server_port int4, s_client_port int4, client_intf int2, server_intf int2, client_country text, client_latitude real, client_longitude real, server_country text, server_latitude real, server_longitude real, filter_prefix text, firewall_blocked boolean, firewall_flagged boolean, firewall_rule_index integer, application_control_lite_protocol text, application_control_lite_blocked boolean, captive_portal_blocked boolean, captive_portal_rule_index integer, application_control_application text, application_control_protochain text, application_control_category text, application_control_blocked boolean, application_control_flagged boolean, application_control_confidence integer, application_control_ruleid integer, application_control_detail text, bandwidth_control_priority integer, bandwidth_control_rule integer, ssl_inspector_ruleid integer, ssl_inspector_status text, ssl_inspector_detail text)");
-                    
-                } catch (Exception e) {
-                    logger.warn("Exception",e);
+                String cmd = REPORTS_GENERATE_TABLES_SCRIPT + " -d sqlite";
+                ExecManagerResult result = UvmContextFactory.context().execManager().exec( cmd );
+                if (result.getResult() != 0) {
+                    logger.warn("Failed to create schemas: \"" + cmd + "\" -> "  + result.getResult());
                 }
+                try {
+                    String lines[] = result.getOutput().split("\\r?\\n");
+                    logger.info("Creating Schema: ");
+                    for ( String line : lines )
+                        logger.info("Schema: " + line);
+                } catch (Exception e) {}
 
                 /**
                  * Set global properties
