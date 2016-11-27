@@ -160,7 +160,7 @@ public class ApplicationControlLogEvent extends LogEvent
     @Override
     public void compileStatements(java.sql.Connection conn, java.util.Map<String, java.sql.PreparedStatement> statementCache) throws Exception
     {
-        String sql = "UPDATE reports.sessions" + sessionEvent.getPartitionTablePostfix() + " " + "SET ";
+        String sql = "UPDATE " + getSchemaPrefix() + "sessions" + sessionEvent.getPartitionTablePostfix() + " " + "SET ";
         String app = null;
         String pc = null;
         if (application != null) {
