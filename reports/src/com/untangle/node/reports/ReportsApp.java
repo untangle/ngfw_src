@@ -178,6 +178,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
                  */
                 String cmd = REPORTS_GENERATE_TABLES_SCRIPT  + " -d postgresql";
                 ExecManagerResult result = UvmContextFactory.context().execManager().exec( cmd );
+
                 if (result.getResult() != 0) {
                     logger.warn("Failed to create schemas: \"" + cmd + "\" -> "  + result.getResult());
                 }
