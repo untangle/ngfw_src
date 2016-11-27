@@ -88,7 +88,7 @@ public class SessionStatsEvent extends LogEvent
     @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
-        String sql = "UPDATE reports.sessions" + getPostfix() + " " +
+        String sql = "UPDATE " + getSchemaPrefix() + "sessions" + getPostfix() + " " +
             "SET " +
             ( endTime != 0 ? " end_time = ?, " : "" ) +
             " c2p_bytes = ?, " +

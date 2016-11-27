@@ -122,7 +122,7 @@ public class IntrusionPreventionLogEvent extends LogEvent
     {
         Timestamp ts = new Timestamp( ( getEventSecond() * 1000 ) + ( getEventMicrosecond() / 1000 ) );
 
-        String sql = "INSERT INTO reports.intrusion_prevention_events" + getPartitionTablePostfix(ts) + " " +
+        String sql = "INSERT INTO " + getSchemaPrefix() + "intrusion_prevention_events" + getPartitionTablePostfix(ts) + " " +
             "( time_stamp, sig_id, gen_id, class_id, source_addr, source_port, dest_addr, dest_port, protocol, blocked, category, classtype, msg)" +
             " values " +
             "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ); ";

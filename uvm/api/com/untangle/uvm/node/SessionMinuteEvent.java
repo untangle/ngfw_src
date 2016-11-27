@@ -45,7 +45,7 @@ public class SessionMinuteEvent extends LogEvent
     @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
-        String sql = "INSERT INTO reports.session_minutes" + getPartitionTablePostfix() + " " +
+        String sql = "INSERT INTO " + getSchemaPrefix() + "session_minutes" + getPartitionTablePostfix() + " " +
             "(time_stamp,c2s_bytes,s2c_bytes," + 
             "session_id, " + 
             "start_time, " + 
@@ -149,7 +149,7 @@ public class SessionMinuteEvent extends LogEvent
             "ssl_inspector_ruleid, " + 
             "ssl_inspector_status, " + 
             "ssl_inspector_detail " + 
-            "FROM reports.sessions" + getSessionTablePostfix() + " as s WHERE s.session_id = ?";
+            "FROM " + getSchemaPrefix() + "sessions" + getSessionTablePostfix() + " as s WHERE s.session_id = ?";
 
         java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
 

@@ -18,6 +18,8 @@ import org.apache.log4j.Logger;
 import org.json.JSONObject;
 import org.json.JSONString;
 
+import com.untangle.uvm.logging.LogEvent;
+
 /**
  * The settings for an individual report entry (graph)
  */
@@ -25,7 +27,6 @@ import org.json.JSONString;
 public class ReportEntry implements Serializable, JSONString
 {
     private static final Logger logger = Logger.getLogger(ReportEntry.class);
-    private static final DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public static enum ReportEntryType {
         TEXT, /* A text entry */
@@ -239,11 +240,11 @@ public class ReportEntry implements Serializable, JSONString
     {
         if ( endDate == null ) {
             endDate = new Date(System.currentTimeMillis() + 60*1000); // now + 1-minute
-            logger.info("endDate not specified, using now plus 1 min: " + dateFormatter.format(endDate));
+            logger.info("endDate not specified, using now plus 1 min: " + dateFormat(endDate));
         }
         if ( startDate == null ) {
             startDate = new Date((new Date()).getTime() - (1000 * 60 * 60 * 24));
-            logger.info("startDate not specified, using 1 day ago: " + dateFormatter.format(startDate));
+            logger.info("startDate not specified, using 1 day ago: " + dateFormat(startDate));
         }
 
         LinkedList<SqlCondition> allConditions = new LinkedList<SqlCondition>();
@@ -299,8 +300,8 @@ public class ReportEntry implements Serializable, JSONString
     private PreparedStatement toSqlEventList( Connection conn, Date startDate, Date endDate, LinkedList<SqlCondition> allConditions, Integer limit )
     {
         String query = ""; 
-        String dateCondition = " time_stamp >= '" + dateFormatter.format(startDate) + "' " + " and " + " time_stamp <= '" + dateFormatter.format(endDate) + "' ";
-        query +=  "SELECT * FROM reports." + this.table + " WHERE " + dateCondition;
+        String dateCondition = " time_stamp >= " + dateFormat(startDate) + " " + " and " + " time_stamp <= " + dateFormat(endDate) + " ";
+        query +=  "SELECT * FROM " + LogEvent.getSchemaPrefix() + this.table + " WHERE " + dateCondition;
         query += conditionsToString( allConditions );
         query += " ORDER BY time_stamp DESC";
         if ( limit != null && limit > 0 )
@@ -311,11 +312,11 @@ public class ReportEntry implements Serializable, JSONString
 
     private PreparedStatement toSqlPieGraph( Connection conn, Date startDate, Date endDate, LinkedList<SqlCondition> allConditions )
     {
-        String dateCondition = " time_stamp >= '" + dateFormatter.format(startDate) + "' " + " and " + " time_stamp <= '" + dateFormatter.format(endDate) + "' ";
+        String dateCondition = " time_stamp >= " + dateFormat(startDate) + " " + " and " + " time_stamp <= " + dateFormat(endDate) + " ";
         String pieQuery = "SELECT " +
             getPieGroupColumn() + ", " + getPieSumColumn() + " as value " +
             " FROM " +
-            " reports." + getTable() +
+            LogEvent.getSchemaPrefix() + getTable() +
             " WHERE " + dateCondition;
 
         pieQuery += conditionsToString( allConditions );
@@ -328,7 +329,7 @@ public class ReportEntry implements Serializable, JSONString
     private PreparedStatement toSqlText( Connection conn, Date startDate, Date endDate, LinkedList<SqlCondition> allConditions )
     {
         String textQuery = "SELECT ";
-        String dateCondition = " time_stamp >= '" + dateFormatter.format(startDate) + "' " + " and " + " time_stamp <= '" + dateFormatter.format(endDate) + "' ";
+        String dateCondition = " time_stamp >= " + dateFormat(startDate) + " " + " and " + " time_stamp <= " + dateFormat(endDate) + " ";
 
         boolean first = true;
         for ( String s : getTextColumns() ) {
@@ -340,7 +341,7 @@ public class ReportEntry implements Serializable, JSONString
         }
 
         textQuery += " FROM " +
-            " reports." + getTable() +
+            LogEvent.getSchemaPrefix() + getTable() +
             " WHERE " + dateCondition;
             
         textQuery += conditionsToString( allConditions );
@@ -351,18 +352,18 @@ public class ReportEntry implements Serializable, JSONString
     private PreparedStatement toSqlTimeGraph( Connection conn, Date startDate, Date endDate, LinkedList<SqlCondition> allConditions )
     {
         String dataInterval = calculateTimeDataInterval( startDate, endDate ).toString().toLowerCase();
-        String dateCondition = " time_stamp >= '" + dateFormatter.format(startDate) + "' " + " and " + " time_stamp <= '" + dateFormatter.format(endDate) + "' ";
+        String dateCondition = " time_stamp >= " + dateFormat(startDate) + " " + " and " + " time_stamp <= " + dateFormat(endDate) + " ";
         String generateSeriesQuery;
 
         if ( dataInterval.equals("tenminute") )
             generateSeriesQuery = " SELECT generate_series( " +
-                " date_trunc( 'hour', '" + dateFormatter.format(startDate) + "'::timestamp ) + INTERVAL '10 min' * ROUND(date_part('minute', '" + dateFormatter.format(startDate) + "'::timestamp)/10.0), " + 
-                " '" + dateFormatter.format(endDate)   + "'::timestamp , " +
+                " date_trunc( 'hour', " + dateFormat(startDate) + "::timestamp ) + INTERVAL '10 min' * ROUND(date_part('minute', " + dateFormat(startDate) + "::timestamp)/10.0), " + 
+                " " + dateFormat(endDate)   + "::timestamp , " +
                 " '10 minute' ) as time_trunc ";
         else
             generateSeriesQuery = " SELECT generate_series( " +
-                " date_trunc( '" + dataInterval + "', '" + dateFormatter.format(startDate) + "'::timestamp), " + 
-                " '" + dateFormatter.format(endDate)   + "'::timestamp , " +
+                " date_trunc( '" + dataInterval + "', " + dateFormat(startDate) + "::timestamp), " + 
+                " " + dateFormat(endDate)   + "::timestamp , " +
                 " '1 " + dataInterval + "' ) as time_trunc ";
             
         String timeQuery;
@@ -377,7 +378,7 @@ public class ReportEntry implements Serializable, JSONString
             timeQuery += ", " + s;
 
         timeQuery += " FROM " +
-            " reports." + getTable() +
+            LogEvent.getSchemaPrefix() + getTable() +
             " WHERE " + dateCondition;
 
         timeQuery += conditionsToString( allConditions );
@@ -396,7 +397,7 @@ public class ReportEntry implements Serializable, JSONString
     private PreparedStatement toSqlTimeGraphDynamic( Connection conn, Date startDate, Date endDate, LinkedList<SqlCondition> allConditions )
     {
         String dataInterval = calculateTimeDataInterval( startDate, endDate ).toString().toLowerCase();
-        String dateCondition = " time_stamp >= '" + dateFormatter.format(startDate) + "' " + " and " + " time_stamp <= '" + dateFormatter.format(endDate) + "' ";
+        String dateCondition = " time_stamp >= " + dateFormat(startDate) + " " + " and " + " time_stamp <= " + dateFormat(endDate) + " ";
         String generateSeriesQuery;
 
         if ( endDate.getTime() > System.currentTimeMillis() ) {
@@ -416,13 +417,13 @@ public class ReportEntry implements Serializable, JSONString
          */
         if ( dataInterval.equals("tenminute") )
             generateSeriesQuery = " SELECT generate_series( " +
-                " date_trunc( 'hour', '" + dateFormatter.format(startDate) + "'::timestamp ) + INTERVAL '10 min' * ROUND(date_part('minute', '" + dateFormatter.format(startDate) + "'::timestamp)/10.0), " + 
-                " '" + dateFormatter.format(endDate)   + "'::timestamp , " +
+                " date_trunc( 'hour', " + dateFormat(startDate) + "::timestamp ) + INTERVAL '10 min' * ROUND(date_part('minute', " + dateFormat(startDate) + "::timestamp)/10.0), " + 
+                " " + dateFormat(endDate)   + "::timestamp , " +
                 " '10 minute' ) as time_trunc ";
         else
             generateSeriesQuery = " SELECT generate_series( " +
-                " date_trunc( '" + dataInterval + "', '" + dateFormatter.format(startDate) + "'::timestamp), " + 
-                " '" + dateFormatter.format(endDate)   + "'::timestamp , " +
+                " date_trunc( '" + dataInterval + "', " + dateFormat(startDate) + "::timestamp), " + 
+                " " + dateFormat(endDate)   + "::timestamp , " +
                 " '1 " + dataInterval + "' ) as time_trunc ";
             
         /**
@@ -430,7 +431,7 @@ public class ReportEntry implements Serializable, JSONString
          * This querys the distinct values that will be used to detemine the columns in the final result
          */
         String distinctQuery = "SELECT DISTINCT(" + getTimeDataDynamicColumn() + ") as value, " + getTimeDataDynamicAggregationFunction() + "(" + getTimeDataDynamicValue() + ")" +
-            " FROM " + "reports." + getTable() +
+            " FROM " + LogEvent.getSchemaPrefix() + getTable() +
             " WHERE " + dateCondition +
             conditionsToString( allConditions ) + 
             ( getTimeDataDynamicAllowNull() == null || getTimeDataDynamicAllowNull() == Boolean.FALSE ? (" AND " + getTimeDataDynamicColumn() + " IS NOT NULL") : "" ) +
@@ -475,7 +476,7 @@ public class ReportEntry implements Serializable, JSONString
         }
 
         timeQuery += " FROM " +
-            " reports." + getTable() +
+            LogEvent.getSchemaPrefix() + getTable() +
             " WHERE " + dateCondition;
 
         timeQuery += conditionsToString( allConditions );
@@ -500,8 +501,8 @@ public class ReportEntry implements Serializable, JSONString
 
         try {
             java.sql.PreparedStatement statement = conn.prepareStatement( sql );
-            statement.setFetchDirection( java.sql.ResultSet.FETCH_FORWARD );
 
+            logger.warn("XXX sql: " + sql);
             SqlCondition.setPreparedStatementValues( statement, conditions, getTable() );
 
             return statement;
@@ -560,5 +561,13 @@ public class ReportEntry implements Serializable, JSONString
             return null;
         }
     }
-    
+
+    private static final DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private String dateFormat( Date date )
+    {
+        if ( ReportsApp.dbDriver.equals("sqlite") )
+            return Long.toString(date.getTime());
+        else
+            return "'" + dateFormatter.format(date) + "'";
+    }
 }

@@ -51,7 +51,7 @@ public class QuotaEvent extends LogEvent implements Serializable
     @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
-        String sql = "INSERT INTO reports.quotas" + getPartitionTablePostfix() + " " +
+        String sql = "INSERT INTO " + getSchemaPrefix() + "quotas" + getPartitionTablePostfix() + " " +
             "(time_stamp, address, action, reason, size ) " + 
             "values " +
             "( ?, ?, ?, ?, ? )";

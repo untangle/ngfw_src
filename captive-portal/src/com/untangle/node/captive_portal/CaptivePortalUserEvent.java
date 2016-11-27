@@ -60,7 +60,7 @@ public class CaptivePortalUserEvent extends LogEvent
     @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
-        String sql = "INSERT INTO reports.captive_portal_user_events" + getPartitionTablePostfix() + " " +
+        String sql = "INSERT INTO " + getSchemaPrefix() + "captive_portal_user_events" + getPartitionTablePostfix() + " " +
             "(time_stamp, policy_id, login_name, event_info, auth_type, client_addr) " +
             "values ( ?, ?, ?, ?, ?, ? )";
 

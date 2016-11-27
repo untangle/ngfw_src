@@ -74,6 +74,8 @@ class Jars
 
     const_set(:DnsJava, [ Jars.downloadTarget('dnsjava-2.1.6/dnsjava-2.1.6.jar') ])
 
+    const_set(:SqlLite, [ Jars.downloadTarget('sqlite-jdbc-3.15.1/sqlite-jdbc-3.15.1.jar') ])
+    
     const_set(:HttpClient, [ Jars.downloadTarget('httpcomponents-client-4.5.1/lib/httpclient-4.5.1.jar'),
                              Jars.downloadTarget('httpcomponents-client-4.5.1/lib/httpcore-4.4.3.jar'),
                              Jars.downloadTarget('httpcomponents-client-4.5.1/lib/commons-codec-1.9.jar'),
@@ -100,7 +102,7 @@ class Jars
     const_set(:Base, Jars.makeGroup(Log4j, Postgres, JavaMailApi,
                                    GetText, JavaMail, TomcatEmb, Velocity, 
                                    HttpClient, Jstl, Json, Jabsorb,
-                                   Slf4j, DnsJava, Selenium, GeoIP))
+                                   Slf4j, DnsJava, Selenium, GeoIP, SqlLite))
 
     const_set(:JDKTools, [ ThirdpartyJar.get("#{ENV['JAVA_HOME']}/lib/tools.jar") ])
   end
