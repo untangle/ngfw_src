@@ -519,7 +519,12 @@ public class ReportsManagerImpl implements ReportsManager
         long t1 = System.currentTimeMillis();
 
         logger.info("Query Time         : " + String.format("%5d",(t1 - t0)) + " ms");
-
+        try {
+            result.getResultSet().next();
+        } catch (Exception e) {
+            logger.warn("Exception",e);
+        }
+        
         return result;
     }
 

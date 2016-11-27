@@ -39,6 +39,15 @@ public class ResultSetReader implements Runnable
         this.connection = connection;
         this.statement = statement;
 
+        if ( this.resultSet != null ) {
+            try {
+                this.resultSet.setFetchDirection( ResultSet.FETCH_FORWARD );
+            }
+            catch (Exception e) {
+                logger.warn( "Exception", e );
+            }
+        }
+        
         this.thread = UvmContextFactory.context().newThread( this, "ResultSetReader" );
         thread.start();
     }
@@ -52,14 +61,25 @@ public class ResultSetReader implements Runnable
     {
         return this.connection;
     }
+
+    public boolean isClosed()
+    {
+        try {
+            return this.resultSet.isClosed();
+        } catch (Exception e) {
+            logger.warn( "Exception", e );
+            return true;
+        }
+    }
     
     public ArrayList<Object> getNextChunk( int chunkSize )
     {
         ArrayList<Object> newList = new ArrayList<Object>( chunkSize );
 
         try {
-            if ( resultSet.isClosed() )
+            if ( resultSet.isClosed() ) {
                 return newList;
+            }
 
             ResultSetMetaData metadata = this.resultSet.getMetaData();
             int numColumns = metadata.getColumnCount();

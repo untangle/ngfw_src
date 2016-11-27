@@ -51,7 +51,7 @@ public class WebFilterEvent extends LogEvent
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
         String sql =
-            "UPDATE reports.http_events" + requestLine.getHttpRequestEvent().getPartitionTablePostfix() + " " +
+            "UPDATE " + getSchemaPrefix() + "http_events" + requestLine.getHttpRequestEvent().getPartitionTablePostfix() + " " +
             "SET " +
             _getDatabaseColumnNamePrefix() + "_blocked  = ?, " + 
             _getDatabaseColumnNamePrefix() + "_flagged  = ?, " +

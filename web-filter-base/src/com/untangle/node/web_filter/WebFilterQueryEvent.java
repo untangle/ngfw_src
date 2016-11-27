@@ -70,7 +70,7 @@ public class WebFilterQueryEvent extends LogEvent
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
         String sql =
-        "INSERT INTO reports.http_query_events" + getPartitionTablePostfix() + " " +
+        "INSERT INTO " + getSchemaPrefix() + "http_query_events" + getPartitionTablePostfix() + " " +
         "(" + 
             "time_stamp, " +
             "session_id, " + 

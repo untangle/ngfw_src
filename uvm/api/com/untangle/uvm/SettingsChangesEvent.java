@@ -42,7 +42,7 @@ public class SettingsChangesEvent extends LogEvent
     @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
-        String sql = "INSERT INTO reports.settings_changes" + getPartitionTablePostfix() + " " +
+        String sql = "INSERT INTO " + getSchemaPrefix() + "settings_changes" + getPartitionTablePostfix() + " " +
             "( time_stamp, settings_file, username, hostname)" +
             " values " +
             "( ?, ?, ?, ?); ";
