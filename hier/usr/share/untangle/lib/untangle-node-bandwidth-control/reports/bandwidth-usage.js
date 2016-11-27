@@ -19,7 +19,7 @@
         "#0099ff",
         "#6600ff"
     ],
-    "timeDataInterval": "TENMINUTE",
+    "timeDataInterval": "MINUTE",
     "timeStyle": "AREA",
     "title": "Bandwidth Usage",
     "type": "TIME_GRAPH"
