@@ -461,7 +461,6 @@ Ext.define("Ung.window.ReportEditor", {
                 ["AUTO", i18n._("Auto")],
                 ["SECOND", i18n._("Second")],
                 ["MINUTE", i18n._("Minute")],
-                ["TENMINUTE", i18n._("10 Minutes")],
                 ["HOUR", i18n._("Hour")],
                 ["DAY", i18n._("Day")],
                 ["WEEK", i18n._("Week")],
