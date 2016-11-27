@@ -7,6 +7,7 @@ import re
 import string
 import sys
 import time
+import sqlite3
 from psycopg2.extensions import DateFromMx
 
 from reports.log import *
@@ -18,7 +19,9 @@ HOURLY_REQUIRED_TIME_POINTS = [float(s) for s in range(0, 24 * 60 * 60, 60 * 60)
 DEFAULT_TIME_FIELD = 'time_stamp'
 DEFAULT_SLICES = 150
 
+DBDRIVER = 'postgresql'
 SCHEMA = 'reports'
+
 UNLOGGED_ENABLED = False
 EXTRA_INDEXES_ENABLED = True
 CONNECTION_STRING = "dbname=uvm user=postgres"
@@ -68,9 +71,12 @@ __conn = None
 
 def get_connection():
     global __conn
+    global DBDRIVER
 
-    if not __conn:
+    if not __conn and ( DBDRIVER == None or DBDRIVER == "postgresql" ):
         __conn = psycopg2.connect(CONNECTION_STRING, connection_factory=Connection)
+    if not __conn and ( DBDRIVER == "sqlite" ):
+        __conn = sqlite3.connect('/var/lib/sqlite/reports.db')
 
     try:
         __conn.commit()
@@ -93,6 +99,7 @@ def get_connection():
 #
 def run_sql_one(sql):
     conn = get_connection()
+
     try:
         curs = conn.cursor()
         curs.execute(sql)
@@ -131,7 +138,7 @@ def run_sql(sql, args=None, connection=None, auto_commit=True, force_propagate=F
         if re.search(r'^\s*(DROP) ', sql, re.I):
             show_error = False
         if re.search(r'^\s*(CREATE|ALTER) ', sql, re.I):
-            show_error = False
+            show_error = True
             
         if show_error:
             raise e
@@ -142,7 +149,14 @@ def run_sql(sql, args=None, connection=None, auto_commit=True, force_propagate=F
             pass
 
 def column_exists( tablename, columnname ):
-    column_exists = run_sql_one("select 1 from information_schema.columns where table_schema = '%s' and table_name = '%s' and  column_name = '%s'" % (SCHEMA, tablename, columnname))
+    if DBDRIVER == "sqlite":
+        try:
+            run_sql_one("select 1 from %s where %s is null limit 1" % (tablename, columnname))
+            column_exists = True
+        except:
+            column_exists = False
+    else:
+        column_exists = run_sql_one("select 1 from information_schema.columns where table_schema = '%s' and table_name = '%s' and  column_name = '%s'" % (SCHEMA, tablename, columnname))
     if column_exists:
         return True
     return False
@@ -157,7 +171,7 @@ def add_column( tablename, columnname, type ):
 def drop_column( tablename, columnname ):
     if not column_exists( tablename, columnname ):
         return
-    sql = "ALTER TABLE %s.%s DROP COLUMN %s" % (SCHEMA, tablename, columnname)
+    sql = "ALTER TABLE %s.%s DROP COLUMN %s" % (SCHEMA+".", tablename, columnname)
     logger.info(sql)
     run_sql(sql)
 
@@ -190,6 +204,8 @@ def convert_column( tablename, columnname, oldtype, newtype ):
     run_sql(sql);
 
 def index_exists( tablename, columnname, unique=False ):
+    if DBDRIVER == "sqlite":
+        return True
     if unique:
         uniqueStr1="unique_"
     else:
@@ -197,6 +213,8 @@ def index_exists( tablename, columnname, unique=False ):
     return run_sql_one("select 1 from pg_class where relname = '%s_%s_%sidx'" % (tablename, columnname, uniqueStr1))
 
 def create_index( tablename, columnname, unique=False ):
+    if DBDRIVER == "sqlite":
+        return
     if (index_exists( tablename, columnname, unique )):
         return
     if unique:
@@ -210,6 +228,8 @@ def create_index( tablename, columnname, unique=False ):
     run_sql(sql)
 
 def drop_index( tablename, columnname, unique=False ):
+    if DBDRIVER == "sqlite":
+        return True
     if (not index_exists( tablename, columnname, unique)):
         return
     if unique:
@@ -229,6 +249,8 @@ def rename_index( oldname, newname ):
     run_sql(sql)
 
 def create_schema(schema):
+    if DBDRIVER == "sqlite":
+        return
     already_exists = run_sql_one("select 1 from pg_namespace where nspname = '%s'" % (schema))
     if already_exists:
         return
@@ -263,16 +285,18 @@ def create_view( view_sql ):
         
 def create_table( table_sql, unique_index_columns=[], other_index_columns=[], create_partitions=True ):
     (schema, tablename) = __get_tablename(table_sql)
-    
+
     if schema:
-        full_tablename = "%s.%s" % (schema, tablename)
+        full_tablename = "%s.%s" % (SCHEMA, tablename)
+        if DBDRIVER == "sqlite":
+            table_sql = table_sql.replace("reports."+tablename,full_tablename)
     else:
         full_tablename = tablename
 
     # if extra indexes not enabled, just set the list to empty    
     if not EXTRA_INDEXES_ENABLED:
         other_index_columns=[]
-        
+
     # create root table
     if not table_exists( tablename ):
         logger.info("CREATE %s TABLE %s" % ((UNLOGGED_ENABLED == True and "UNLOGGED" or ""),full_tablename))
@@ -287,6 +311,11 @@ def create_table( table_sql, unique_index_columns=[], other_index_columns=[], cr
         for column in other_index_columns:
             if not index_exists( tablename, column, unique=False ):
                 create_index( tablename, column, unique=False );
+
+
+    # sqlite does not support partitions
+    if DBDRIVER == "sqlite":
+        return
 
     # for importing old data and testing
     # now = mx.DateTime.strptime(mx.DateTime.now().strftime('%Y-%m-%d'),'%Y-%m-%d') - mx.DateTime.RelativeDateTime(days=30)
@@ -357,7 +386,10 @@ def drop_table( table ):
         conn.commit()
 
 def table_exists( tablename ):
-    return run_sql_one("SELECT 1 FROM pg_catalog.pg_tables WHERE schemaname = '%s' AND tablename = '%s'" % (SCHEMA, tablename))
+    if DBDRIVER == "sqlite":
+        return run_sql_one("SELECT 1 FROM sqlite_master where name = '%s'" % (tablename))
+    else:
+        return run_sql_one("SELECT 1 FROM pg_catalog.pg_tables WHERE schemaname = '%s' AND tablename = '%s'" % (SCHEMA, tablename))
 
 def get_tables( prefix ):
     conn = get_connection()
