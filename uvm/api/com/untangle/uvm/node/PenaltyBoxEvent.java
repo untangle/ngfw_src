@@ -60,7 +60,7 @@ public class PenaltyBoxEvent extends LogEvent implements Serializable
         switch(action) {
         case ACTION_ENTER:
             sql =
-                "INSERT INTO reports.penaltybox" + getPartitionTablePostfix( this.entryTime ) + " " +
+                "INSERT INTO " + getSchemaPrefix() + "penaltybox" + getPartitionTablePostfix( this.entryTime ) + " " +
                 "(start_time, end_time, address, time_stamp, reason) " +
                 "values " +
                 "( ?, ?, ?, ?, ?) ";
@@ -74,7 +74,7 @@ public class PenaltyBoxEvent extends LogEvent implements Serializable
             return;
         case ACTION_EXIT:
             sql =
-                "UPDATE reports.penaltybox" + getPartitionTablePostfix( this.entryTime ) + " " +
+                "UPDATE " + getSchemaPrefix() + "penaltybox" + getPartitionTablePostfix( this.entryTime ) + " " +
                 "SET end_time = ? " +
                 "WHERE start_time = ? ";
             pstmt = getStatementFromCache( sql, statementCache, conn );        
@@ -84,7 +84,7 @@ public class PenaltyBoxEvent extends LogEvent implements Serializable
             return;
         case ACTION_REENTER:
             sql =
-                "UPDATE reports.penaltybox" + getPartitionTablePostfix( this.entryTime ) + " " +
+                "UPDATE " + getSchemaPrefix() + "penaltybox" + getPartitionTablePostfix( this.entryTime ) + " " +
                 "SET end_time = ? " + 
                 "WHERE start_time = ? ";
             pstmt = getStatementFromCache( sql, statementCache, conn );        

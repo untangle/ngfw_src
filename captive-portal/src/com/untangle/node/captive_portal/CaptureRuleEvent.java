@@ -44,7 +44,7 @@ public class CaptureRuleEvent extends LogEvent
     @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
-        String sql = "UPDATE reports.sessions" + sessionEvent.getPartitionTablePostfix() + " " +
+        String sql = "UPDATE " + getSchemaPrefix() + "sessions" + sessionEvent.getPartitionTablePostfix() + " " +
             " SET " + 
             " captive_portal_rule_index = ?, " + 
             " captive_portal_blocked = ? " + 

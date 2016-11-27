@@ -68,7 +68,8 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
 
     protected static EventWriterImpl eventWriter = null;
     protected static EventReaderImpl eventReader = null;
-
+    protected static String dbDriver = "postgresql";
+    
     private ReportsSettings settings;
     
     public ReportsApp( NodeSettings nodeSettings, NodeProperties nodeProperties )
@@ -170,17 +171,55 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
     public void initializeDB()
     {
         synchronized (this) {
-            String cmd = REPORTS_GENERATE_TABLES_SCRIPT;
-            ExecManagerResult result = UvmContextFactory.context().execManager().exec(cmd);
-            if (result.getResult() != 0) {
-                logger.warn("Failed to create schemas: \"" + cmd + "\" -> "  + result.getResult());
+            if ( "postgresql".equals(settings.getDbDriver()) ) {
+
+                /**
+                 * Run the script to generate/update the tables
+                 */
+                String cmd = REPORTS_GENERATE_TABLES_SCRIPT;
+                ExecManagerResult result = UvmContextFactory.context().execManager().exec(cmd);
+                if (result.getResult() != 0) {
+                    logger.warn("Failed to create schemas: \"" + cmd + "\" -> "  + result.getResult());
+                }
+                try {
+                    String lines[] = result.getOutput().split("\\r?\\n");
+                    logger.info("Creating Schema: ");
+                    for ( String line : lines )
+                        logger.info("Schema: " + line);
+                } catch (Exception e) {}
+
+                /**
+                 * Set global properties
+                 * Postgres uses the "reports" schema and supports partitions
+                 */
+                ReportsApp.dbDriver = "postgresql";
+                LogEvent.setSchemaPrefix("reports.");
+                LogEvent.setPartitionsSupported(true);
             }
-            try {
-                String lines[] = result.getOutput().split("\\r?\\n");
-                logger.info("Creating Schema: ");
-                for ( String line : lines )
-                    logger.info("Schema: " + line);
-            } catch (Exception e) {}
+            else if ( "sqlite".equals(settings.getDbDriver()) ) {
+
+                /**
+                 * Run the script to generate/update the tables
+                 */
+                try {
+                    Connection conn = getDbConnection();
+                    java.sql.Statement stmt = conn.createStatement();
+                    stmt.executeUpdate("CREATE TABLE sessions ( session_id int8 NOT NULL, time_stamp timestamp NOT NULL, end_time timestamp, bypassed boolean, entitled boolean, protocol int2, icmp_type int2, hostname text, username text, policy_id int2, policy_rule_id int2, local_addr inet, remote_addr inet, c_client_addr inet, c_server_addr inet, c_server_port int4, c_client_port int4, s_client_addr inet, s_server_addr inet, s_server_port int4, s_client_port int4, client_intf int2, server_intf int2, client_country text, client_latitude real, client_longitude real, server_country text, server_latitude real, server_longitude real, c2p_bytes int8 default 0, p2c_bytes int8 default 0, s2p_bytes int8 default 0, p2s_bytes int8 default 0, filter_prefix text, firewall_blocked boolean, firewall_flagged boolean, firewall_rule_index integer, application_control_lite_protocol text, application_control_lite_blocked boolean, captive_portal_blocked boolean, captive_portal_rule_index integer, application_control_application text, application_control_protochain text, application_control_category text, application_control_blocked boolean, application_control_flagged boolean, application_control_confidence integer, application_control_ruleid integer, application_control_detail text, bandwidth_control_priority integer, bandwidth_control_rule integer, ssl_inspector_ruleid integer, ssl_inspector_status text, ssl_inspector_detail text)");
+
+                    stmt.executeUpdate("CREATE TABLE reports.session_minutes ( session_id int8 NOT NULL, time_stamp timestamp NOT NULL, c2s_bytes int8 default 0, s2c_bytes int8 default 0, start_time timestamp, end_time timestamp, bypassed boolean, entitled boolean, protocol int2, icmp_type int2, hostname text, username text, policy_id int2, policy_rule_id int2, local_addr inet, remote_addr inet, c_client_addr inet, c_server_addr inet, c_server_port int4, c_client_port int4, s_client_addr inet, s_server_addr inet, s_server_port int4, s_client_port int4, client_intf int2, server_intf int2, client_country text, client_latitude real, client_longitude real, server_country text, server_latitude real, server_longitude real, filter_prefix text, firewall_blocked boolean, firewall_flagged boolean, firewall_rule_index integer, application_control_lite_protocol text, application_control_lite_blocked boolean, captive_portal_blocked boolean, captive_portal_rule_index integer, application_control_application text, application_control_protochain text, application_control_category text, application_control_blocked boolean, application_control_flagged boolean, application_control_confidence integer, application_control_ruleid integer, application_control_detail text, bandwidth_control_priority integer, bandwidth_control_rule integer, ssl_inspector_ruleid integer, ssl_inspector_status text, ssl_inspector_detail text)");
+                    
+                } catch (Exception e) {
+                    logger.warn("Exception",e);
+                }
+
+                /**
+                 * Set global properties
+                 * SQlite does not use a schema and does not support partitions
+                 */
+                ReportsApp.dbDriver = "sqlite";
+                LogEvent.setSchemaPrefix("");
+                LogEvent.setPartitionsSupported(false);
+            }
         }
     }
 
@@ -265,13 +304,26 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
     public Connection getDbConnection()
     {
         try {
-            Class.forName("org.postgresql.Driver");
-            String url = "jdbc:postgresql://" + settings.getDbHost() + ":" + settings.getDbPort() + "/" + settings.getDbName();
+            String url = null;
             Properties props = new Properties();
-            props.setProperty( "user", settings.getDbUser() );
-            props.setProperty( "password", settings.getDbPassword() );
-            props.setProperty( "charset", "unicode" );
-            //props.setProperty( "logUnclosedConnections", "true" );
+
+            if ( "postgresql".equals(settings.getDbDriver()) ) {
+                Class.forName("org.postgresql.Driver");
+                url = "jdbc:" + settings.getDbDriver() + "://" + settings.getDbHost() + ":" + settings.getDbPort() + "/" + settings.getDbName();
+
+                props.setProperty( "user", settings.getDbUser() );
+                props.setProperty( "password", settings.getDbPassword() );
+                props.setProperty( "charset", "unicode" );
+                //props.setProperty( "logUnclosedConnections", "true" );
+            }
+            else if ( "sqlite".equals(settings.getDbDriver()) ) {
+                UvmContextFactory.context().execManager().execResult( "mkdir -p /var/lib/sqlite");
+                Class.forName("org.sqlite.JDBC");
+                url = "jdbc:" + settings.getDbDriver() + ":" + "/var/lib/sqlite/reports.db";
+            } else {
+                logger.warn("Unknown driver: " + settings.getDbDriver());
+                return null;
+            }
 
             return DriverManager.getConnection(url,props);
         }
