@@ -42,7 +42,7 @@ public class PrioritizeEvent extends LogEvent implements Serializable
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
         String sql =
-            "UPDATE reports.sessions" + sessionEvent.getPartitionTablePostfix() + " " +
+            "UPDATE " + getSchemaPrefix() + "sessions" + sessionEvent.getPartitionTablePostfix() + " " +
             "SET bandwidth_control_priority = ?, " +
             "    bandwidth_control_rule = ? " + 
             "WHERE session_id = ? ";
