@@ -48,7 +48,7 @@ public class LoginEvent extends LogEvent
     @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
-        String sql = "INSERT INTO reports.directory_connector_login_events" + getPartitionTablePostfix() + " " +
+        String sql = "INSERT INTO " + getSchemaPrefix() + "directory_connector_login_events" + getPartitionTablePostfix() + " " +
             "(time_stamp, login_name, domain, type, client_addr) " + 
             "values " +
             "( ?, ?, ?, ?, ?)";
