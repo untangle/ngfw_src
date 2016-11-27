@@ -40,7 +40,7 @@ public class TunnelStatusEvent extends LogEvent implements Serializable
     @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
-        String sql = "INSERT INTO reports.ipsec_tunnel_stats" + getPartitionTablePostfix() + " " +
+        String sql = "INSERT INTO " + getSchemaPrefix() + "ipsec_tunnel_stats" + getPartitionTablePostfix() + " " +
             "(time_stamp, tunnel_name, in_bytes, out_bytes) " +
             "values " +
             "( ?, ?, ?, ? )";
