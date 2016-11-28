@@ -9,10 +9,35 @@ from uvm.settings_reader import get_node_settings
 
 def usage():
      print """\
-usage: %s [num days of data to keep]
+usage: %s [options]
 Options:
+    -d <driver>     : "postgresql" or "sqlite"
 """ % sys.argv[0]
 
+class ArgumentParser(object):
+    def __init__(self):
+        pass
+
+    def set_driver( self, arg ):
+        global DRIVER
+        DRIVER = arg
+        
+    def parse_args( self ):
+        handlers = {
+            '-d' : self.set_driver,
+        }
+
+        try:
+             (optlist, args) = getopt.getopt(sys.argv[1:], 'd:')
+             for opt in optlist:
+                  handlers[opt[0]](opt[1])
+             return args
+        except getopt.GetoptError, exc:
+             print exc
+             usage()
+             exit(1)
+
+DRIVER = 'postgresql'
 PREFIX = '@PREFIX@'
 REPORTS_PYTHON_DIR = '%s/usr/lib/python%d.%d' % (PREFIX, sys.version_info[0], sys.version_info[1])
 NODE_MODULE_DIR = '%s/reports/node' % REPORTS_PYTHON_DIR
@@ -22,17 +47,29 @@ if (PREFIX != ''):
 
 import reports.engine
 import reports.sql_helper as sql_helper
-
 from reports.log import *
 logger = getLogger(__name__)
 
-if len(sys.argv) < 2:
+parser = ArgumentParser()
+args = parser.parse_args()
+
+sql_helper.DBDRIVER = DRIVER
+
+if DRIVER == "postgresql":
+     sql_helper.SCHEMA = "reports"
+elif DRIVER == "sqlite":
+     sql_helper.SCHEMA = "main"
+else:
+     logger.warn("Unknown driver: " + driver)
+     sys.exit(1)
+
+if len(args) < 1:
      usage()
      sys.exit(1)
 
 db_retention = None
 try:
-     db_retention = float(sys.argv[1])
+     db_retention = float(args[0])
 except:
      usage()
      

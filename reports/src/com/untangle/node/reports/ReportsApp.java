@@ -247,10 +247,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
 
     public void flushEvents()
     {
-        long currentTime  = System.currentTimeMillis();
-
-        if (ReportsApp.eventWriter != null)
-            ReportsApp.eventWriter.forceFlush();
+        forceFlush();
     }
 
     protected int getEventsPendingCount()
@@ -289,7 +286,9 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
 
     public void forceFlush()
     {
-        ReportsApp.eventWriter.forceFlush();
+        logger.warn("forceFlush() ...");
+        if (ReportsApp.eventWriter != null)
+            ReportsApp.eventWriter.forceFlush();
     }
 
     public double getAvgWriteTimePerEvent()
@@ -318,7 +317,9 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
                 //props.setProperty( "logUnclosedConnections", "true" );
             }
             else if ( "sqlite".equals(settings.getDbDriver()) ) {
-                UvmContextFactory.context().execManager().execResult( "mkdir -p /var/lib/sqlite");
+                File dir = new File("/var/lib/sqlite");
+                if ( !dir.exists() )
+                    UvmContextFactory.context().execManager().execResult( "mkdir -p /var/lib/sqlite");
                 Class.forName("org.sqlite.JDBC");
                 url = "jdbc:" + settings.getDbDriver() + ":" + "/var/lib/sqlite/reports.db";
             } else {

@@ -34,7 +34,7 @@ class ArgumentParser(object):
              return args
         except getopt.GetoptError, exc:
              print exc
-             printUsage()
+             usage()
              exit(1)
 
 DRIVER = 'postgresql'
@@ -47,6 +47,8 @@ if (PREFIX != ''):
 
 import reports.engine
 import reports.sql_helper as sql_helper
+from reports.log import *
+logger = getLogger(__name__)
 
 parser = ArgumentParser()
 parser.parse_args()
@@ -60,9 +62,6 @@ elif DRIVER == "sqlite":
 else:
      logger.warn("Unknown driver: " + driver)
      sys.exit(1)
-
-from reports.log import *
-logger = getLogger(__name__)
 
 os.system("createuser -U postgres -dSR untangle >/dev/null 2>&1")
 os.system("createdb -O postgres -U postgres uvm >/dev/null 2>&1");
