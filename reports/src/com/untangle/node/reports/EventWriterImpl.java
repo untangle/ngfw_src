@@ -35,16 +35,13 @@ import com.untangle.uvm.logging.LogEvent;
  */
 public class EventWriterImpl implements Runnable
 {
+    private static final Logger logger = Logger.getLogger(EventWriterImpl.class);
+
     /**
      * The amount of time for the event write to sleep
      * if there is not a lot of work to be done
      */
-    private static final int SYNC_TIME = 30*1000; /* 30 seconds */
-
-    /**
-     * Maximum number of events to write per work cycle
-     */
-    private static final int MAX_EVENTS_PER_CYCLE = 10000; 
+    private static int SYNC_TIME = 30*1000; /* 30 seconds */
 
     /**
      * If the event queue length reaches the high water mark
@@ -57,19 +54,22 @@ public class EventWriterImpl implements Runnable
      * If overloadedFlag is set to true and the queue shrinks to this size
      * then overloadedFlag will be set to false
      */
-    private static final int LOW_WATER_MARK = 100000;
-
-    private static final Logger logger = Logger.getLogger(EventWriterImpl.class);
+    private static int LOW_WATER_MARK = 100000;
 
     private static boolean forceFlush = false;
 
     private volatile Thread thread;
 
-    private ReportsApp node;
+    private ReportsApp app;
 
     private Connection dbConnection;
 
     private long lastLoggedWarningTime = System.currentTimeMillis();
+
+    /**
+     * Maximum number of events to write per work cycle
+     */
+    private int maxEventsPerCycle; 
 
     /**
      * If true then the eventWriter is considered "overloaded" and can not keep up with demand
@@ -106,20 +106,21 @@ public class EventWriterImpl implements Runnable
     private final BlockingQueue<LogEvent> inputQueue = new LinkedBlockingQueue<LogEvent>();
 
     static {
-        try {
-            String temp;
-            if (( temp = System.getProperty( "reports.max_queue_len" )) != null ) {
+        String temp;
+        if (( temp = System.getProperty( "reports.max_queue_len" )) != null ) {
+            try {
                 HIGH_WATER_MARK = Integer.parseInt( temp );
+            } catch (Exception e) {
+                HIGH_WATER_MARK = 1000000;
             }
-        }
-        catch (Exception e) {
-            logger.warn("Failed to set max queue length.",e);
+        } else {
+            HIGH_WATER_MARK = 1000000;
         }
     }
 
-    public EventWriterImpl( ReportsApp node )
+    public EventWriterImpl( ReportsApp app )
     {
-        this.node = node;
+        this.app = app;
         this.dbConnection = null;
     }
 
@@ -129,6 +130,11 @@ public class EventWriterImpl implements Runnable
 
         LinkedList<LogEvent> logQueue = new LinkedList<LogEvent>();
         LogEvent event = null;
+
+        if ( "sqlite".equals(app.getSettings().getDbDriver()) )
+            this.maxEventsPerCycle = 500;
+        else
+            this.maxEventsPerCycle = 20000;
 
         /**
          * Loop indefinitely and continue logging events
@@ -141,9 +147,11 @@ public class EventWriterImpl implements Runnable
              * If events are significantly delayed (more than 2x SYNC_TIME), don't sleep
              */
             if ( forceFlush ||
-                 (inputQueue.size() > MAX_EVENTS_PER_CYCLE) ||
+                 (inputQueue.size() > maxEventsPerCycle) ||
                  (writeDelaySec*1000 >  SYNC_TIME*2) ) {
                 logger.debug("persist(): skipping sleep");
+                // minor sleep to let other threads that my want to synchronize on this run
+                try {Thread.sleep(100);} catch (Exception e) {}
             } else {
                 try {Thread.sleep(SYNC_TIME);} catch (Exception e) {}
             }
@@ -151,7 +159,7 @@ public class EventWriterImpl implements Runnable
             synchronized( this ) {
                 try {
                     if ( dbConnection == null || dbConnection.isClosed() ) {
-                        dbConnection = this.node.getDbConnection();
+                        dbConnection = this.app.getDbConnection();
                     }
                     if ( dbConnection == null || dbConnection.isClosed() ) {
                         logger.warn("Unable to get connection to DB, dropping events...");
@@ -162,7 +170,7 @@ public class EventWriterImpl implements Runnable
                     /**
                      * Copy all events out of the queue
                      */
-                    while ((event = inputQueue.poll()) != null && logQueue.size() < MAX_EVENTS_PER_CYCLE) {
+                    while ((event = inputQueue.poll()) != null && logQueue.size() < maxEventsPerCycle) {
                         logQueue.add(event);
                     }
 
@@ -181,7 +189,7 @@ public class EventWriterImpl implements Runnable
                     /**
                      * Run alert rules
                      */
-                    AlertHandler.runAlertRules( node.getSettings().getAlertRules(), logQueue, node );
+                    AlertHandler.runAlertRules( app.getSettings().getAlertRules(), logQueue, app );
                     
                     /**
                      * If there is anything to log, log it to the database
@@ -245,7 +253,7 @@ public class EventWriterImpl implements Runnable
     {
         if ( this.thread == null ) {
             if ( System.currentTimeMillis() - this.lastLoggedWarningTime > 10000 ) {
-                logger.warn("Reports node not running, discarding event");
+                logger.warn("Reports app not running, discarding event");
                 this.lastLoggedWarningTime = System.currentTimeMillis();
             }
             return;
@@ -525,9 +533,9 @@ public class EventWriterImpl implements Runnable
         return inputQueue.size();
     }
 
-    protected void start( ReportsApp node )
+    protected void start( ReportsApp app )
     {
-        this.node = node;
+        this.app = app;
         UvmContextFactory.context().newThread(this).start();
     }
 
