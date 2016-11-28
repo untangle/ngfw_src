@@ -42,84 +42,84 @@ public class WebMonitorApp extends WebFilterBase
 
     private final WebFilterHttpsSniHandler sniHandler = new WebFilterHttpsSniHandler(this);
     private final WebFilterQuicHandler quicHandler = new WebFilterQuicHandler(this);
-    
-    private final Subscription httpsSub = new Subscription(Protocol.TCP,IPMaskedAddress.anyAddr,PortRange.ANY,IPMaskedAddress.anyAddr,new PortRange(443,443));
-    private final Subscription quicSub = new Subscription(Protocol.UDP,IPMaskedAddress.anyAddr,PortRange.ANY,IPMaskedAddress.anyAddr,new PortRange(443,443));
-    
-    private final PipelineConnector httpConnector = UvmContextFactory.context().pipelineFoundry().create("web-filter-http", this, null, new WebFilterHandler(this), Fitting.HTTP_TOKENS, Fitting.HTTP_TOKENS, Affinity.CLIENT, 2, true );
-    private final PipelineConnector httpsSniConnector = UvmContextFactory.context().pipelineFoundry().create("web-filter-https-sni", this, httpsSub, sniHandler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, 2, true );
-    private final PipelineConnector quicConnector = UvmContextFactory.context().pipelineFoundry().create("web-filter-quic", this, quicSub, quicHandler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, 2, true );
+
+    private final Subscription httpsSub = new Subscription(Protocol.TCP, IPMaskedAddress.anyAddr, PortRange.ANY, IPMaskedAddress.anyAddr, new PortRange(443, 443));
+    private final Subscription quicSub = new Subscription(Protocol.UDP, IPMaskedAddress.anyAddr, PortRange.ANY, IPMaskedAddress.anyAddr, new PortRange(443, 443));
+
+    private final PipelineConnector httpConnector = UvmContextFactory.context().pipelineFoundry().create("web-filter-http", this, null, new WebFilterHandler(this), Fitting.HTTP_TOKENS, Fitting.HTTP_TOKENS, Affinity.CLIENT, 2, true);
+    private final PipelineConnector httpsSniConnector = UvmContextFactory.context().pipelineFoundry().create("web-filter-https-sni", this, httpsSub, sniHandler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, 2, true);
+    private final PipelineConnector quicConnector = UvmContextFactory.context().pipelineFoundry().create("web-filter-quic", this, quicSub, quicHandler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, 2, true);
     private final PipelineConnector[] connectors = new PipelineConnector[] { httpConnector, httpsSniConnector, quicConnector };
 
     public WebMonitorApp(com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties)
     {
-        super( nodeSettings, nodeProperties );
+        super(nodeSettings, nodeProperties);
     }
-    
+
     public boolean unblockSite(String nonce, boolean global, String password)
     {
-        if ( !this.verifyPassword(password)) {
-            if ( this.logger.isInfoEnabled()) {
-                logger.info( "Unable to verify the password for nonce: '" + nonce + "'" );
+        if (!this.verifyPassword(password)) {
+            if (this.logger.isInfoEnabled()) {
+                logger.info("Unable to verify the password for nonce: '" + nonce + "'");
             }
             return false;
         } else {
-            if ( this.logger.isInfoEnabled()) {
-                logger.info( "Verified the password for nonce: '" + nonce + "'" );
+            if (this.logger.isInfoEnabled()) {
+                logger.info("Verified the password for nonce: '" + nonce + "'");
             }
             return super.unblockSite(nonce, global);
         }
     }
-    
-    public void clearCache( boolean expireAll )
+
+    public void clearCache(boolean expireAll)
     {
-        this.engine.clearCache( expireAll );
+        this.engine.clearCache(expireAll);
     }
 
-    public List<String> lookupSite( String url )
+    public List<String> lookupSite(String url)
     {
-        return this.engine.lookupSite( url );
+        return this.engine.lookupSite(url);
     }
 
-    public int recategorizeSite( String url, int category )
+    public int recategorizeSite(String url, int category)
     {
-        return this.engine.recategorizeSite( url, category );
-    }
-
-    // this is used for the UI alert test
-    public String encodeDnsQuery( String domain, String uri, String command )
-    {
-        return this.engine.encodeDnsQuery( domain, uri, command );
+        return this.engine.recategorizeSite(url, category);
     }
 
     // this is used for the UI alert test
-    public String encodeDnsQuery( String domain, String uri )
+    public String encodeDnsQuery(String domain, String uri, String command)
     {
-        return this.engine.encodeDnsQuery( domain, uri );
+        return this.engine.encodeDnsQuery(domain, uri, command);
     }
-    
-    private boolean verifyPassword( String password )
+
+    // this is used for the UI alert test
+    public String encodeDnsQuery(String domain, String uri)
+    {
+        return this.engine.encodeDnsQuery(domain, uri);
+    }
+
+    private boolean verifyPassword(String password)
     {
         WebFilterSettings settings = getSettings();
-        
+
         if (settings == null) {
-            logger.info( "Settings are null, assuming password is not required." );
+            logger.info("Settings are null, assuming password is not required.");
             return true;
         }
 
         if (!settings.getUnblockPasswordEnabled()) {
             return true;
         }
-        
-        if (password==null) {
+
+        if (password == null) {
             return false;
         }
 
         if (settings.getUnblockPasswordAdmin()) {
             AdminSettings as = UvmContextFactory.context().adminManager().getSettings();
-            for( AdminUserSettings user : as.getUsers()) {
-                if ( user.getUsername().equals("admin")) {
-                    if ( PasswordUtil.check(password,user.trans_getPasswordHash())) {
+            for (AdminUserSettings user : as.getUsers()) {
+                if (user.getUsername().equals("admin")) {
+                    if (PasswordUtil.check(password, user.trans_getPasswordHash())) {
                         return true;
                     }
 
@@ -127,10 +127,10 @@ public class WebMonitorApp extends WebFilterBase
                 }
             }
 
-            return false;                                    
+            return false;
         }
-        
-        if ( password.equals( settings.getUnblockPassword())) {
+
+        if (password.equals(settings.getUnblockPassword())) {
             return true;
         } else {
             return false;
@@ -144,23 +144,23 @@ public class WebMonitorApp extends WebFilterBase
     }
 
     @Override
-    protected void preStart( boolean isPermanentTransition )
+    protected void preStart(boolean isPermanentTransition)
     {
         engine.getDiaKey();
-        
-        super.preStart( isPermanentTransition );
+
+        super.preStart(isPermanentTransition);
     }
 
     @Override
-    protected void postStart( boolean isPermanentTransition )
+    protected void postStart(boolean isPermanentTransition)
     {
-        super.postStart( isPermanentTransition );
+        super.postStart(isPermanentTransition);
     }
-    
+
     @Override
-    protected void postStop( boolean isPermanentTransition )
+    protected void postStop(boolean isPermanentTransition)
     {
-        super.postStop( isPermanentTransition );
+        super.postStop(isPermanentTransition);
     }
 
     @Override
@@ -184,13 +184,15 @@ public class WebMonitorApp extends WebFilterBase
     @Override
     public String getName()
     {
-        return "web_monitor";
+        // need to use the base app name here so we don't break reporting
+        return "web_filter";
     }
 
     @Override
     public String getAppName()
     {
-        return "web-monitor";
+        // need to use the base app name here so we don't break reporting
+        return "web-filter";
     }
 
     @Override
@@ -198,13 +200,21 @@ public class WebMonitorApp extends WebFilterBase
     {
         return false;
     }
-    
+
     @Override
     public void initializeSettings(WebFilterSettings settings)
     {
         LinkedList<GenericRule> categories = new LinkedList<GenericRule>();
-
         addCategories(categories);
+
+        // for web monitor we change all blocked to flagged only
+        for (GenericRule item : categories) {
+            if (item.getBlocked()) {
+                item.setBlocked(false);
+                item.setFlagged(true);
+            }
+        }
+
         settings.setCategories(categories);
     }
 }
