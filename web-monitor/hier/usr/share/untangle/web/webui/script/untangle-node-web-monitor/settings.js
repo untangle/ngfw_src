@@ -30,6 +30,7 @@ Ext.define('Webui.untangle-node-web-monitor.settings',{
     buildPanelAdvanced: function() {
         this.callParent(arguments);
         var fieldSet = this.panelAdvanced.down('fieldset[name="fieldset_miscellaneous"]');
+
         //Insert new fields at the beginning of the default fieldset.
         fieldSet.insert(0,[{
             //HTTPS options
@@ -94,20 +95,6 @@ Ext.define('Webui.untangle-node-web-monitor.settings',{
                 }
             }
         },{
-            //Safe search
-            xtype: "checkbox",
-            boxLabel: i18n._("Enforce safe search on popular search engines"),
-            hideLabel: true,
-            name: "Enforce safe search",
-            checked: this.settings.enforceSafeSearch,
-            listeners: {
-                "change": {
-                    fn: Ext.bind(function(elem, checked) {
-                        this.settings.enforceSafeSearch = checked;
-                    }, this)
-                }
-            }
-        },{
             xtype: "checkbox",
             boxLabel: i18n._("Block QUIC (UDP port 443)"),
             hideLabel: true,
@@ -121,68 +108,20 @@ Ext.define('Webui.untangle-node-web-monitor.settings',{
                 }
             }
         }]);
-        //Extend bypass to allow optional passworded access.
-        var combo = this.panelAdvanced.down('combo[name="user_bypass"]');
-        combo.addListener("select", this.onSelectBypass, this);
-        var userByPass = this.panelAdvanced.down('combo[name="user_bypass"]');
-        fieldSet.insert(
-            userByPass.ownerCt.items.indexOf( userByPass) + 1, {
-            xtype: 'fieldset',
-            name: 'password',
-            hidden: this.settings.unblockMode == "None",
-            items: [{
-                xtype: "checkbox",
-                boxLabel: i18n._("Require Password"),
-                hideLabel: true,
-                checked: this.settings.unblockPasswordEnabled,
-                listeners: {
-                    "change": {
-                        fn: this.onCheckPasswordEnable,
-                        scope: this
-                    }
-                }
-            },{
-                xtype: "radio",
-                disabled: !this.settings.unblockPasswordEnabled,
-                passwordField: true,
-                boxLabel: "Administrator Password",
-                hideLabel: true,
-                name: "unblockPasswordAdmin",
-                checked: this.settings.unblockPasswordAdmin
-            },{
-                xtype: "radio",
-                disabled: !this.settings.unblockPasswordEnabled,
-                boxLabel: "Custom Password",
-                passwordField: true,
-                hideLabel: true,
-                name: "unblockPasswordAdmin",
-                checked: !this.settings.unblockPasswordAdmin,
-                listeners: {
-                    "change": {
-                        fn: function(elem,checked) {
-                            this.settings.unblockPasswordAdmin = !checked;
-                            this.down('textfield[name="unblockPassword"]').setDisabled( !checked );
-                        },
-                        scope: this
-                    }
-                }
-            },{
-                xtype: "textfield",
-                disabled: !this.settings.unblockPasswordEnabled || this.settings.unblockPasswordAdmin,
-                fieldLabel: "Password",
-                passwordField: true,
-                name: "unblockPassword",
-                value: this.settings.unblockPassword,
-                listeners: {
-                    "change": {
-                        fn: function(elem,newValue,oldValue) {
-                            this.settings.unblockPassword = newValue;
-                        },
-                        scope: this
-                    }
-                }
-            }]
-        });
+
+        //Remove stuff we don't need
+        item = this.panelAdvanced.down('checkbox[name="Block IPHost"]');
+        item.hidden = true;
+
+        item = this.panelAdvanced.down('checkbox[name="Pass Referers"]');
+        item.hidden = true;
+
+        item = this.panelAdvanced.down('checkbox[name="restrictGoogleApps"]');
+        item.hidden = true;
+
+        item = this.panelAdvanced.down('combo[name="user_bypass"]');
+        item.hidden = true;
+
         //Clear cache button at the end.
         fieldSet.add({
             xtype: "button",
