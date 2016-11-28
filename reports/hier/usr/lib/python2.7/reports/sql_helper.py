@@ -148,6 +148,15 @@ def run_sql(sql, args=None, connection=None, auto_commit=True, force_propagate=F
         except:
             pass
 
+def fullname( tablename ):
+    if DBDRIVER == "sqlite":
+        return tablename
+    else:
+        if tablename.startswith(SCHEMA):
+            return tablename
+        else:
+            return SCHEMA+"."+tablename
+
 def column_exists( tablename, columnname ):
     if DBDRIVER == "sqlite":
         try:
@@ -164,25 +173,25 @@ def column_exists( tablename, columnname ):
 def add_column( tablename, columnname, type ):
     if column_exists( tablename, columnname ):
         return
-    sql = "ALTER TABLE %s.%s ADD COLUMN %s %s" % (SCHEMA, tablename, columnname, type)
+    sql = "ALTER TABLE %s ADD COLUMN %s %s" % (fullname(tablename), columnname, type)
     logger.info(sql)
     run_sql(sql)
 
 def drop_column( tablename, columnname ):
     if not column_exists( tablename, columnname ):
         return
-    sql = "ALTER TABLE %s.%s DROP COLUMN %s" % (SCHEMA+".", tablename, columnname)
+    sql = "ALTER TABLE %s DROP COLUMN %s" % (fullname(tablename), columnname)
     logger.info(sql)
     run_sql(sql)
 
 def rename_column( tablename, oldname, newname ):
     if column_exists( tablename, newname ):
-        #logger.debug("rename failed, column already exists: %s.%s" % (tablename, newname))
+        #logger.debug("rename failed, column already exists: %s %s" % (tablename, newname))
         return
     if not column_exists( tablename, oldname ):
-        #logger.debug("rename failed, column missing: %s.%s" % (tablename, oldname))
+        #logger.debug("rename failed, column missing: %s %s" % (tablename, oldname))
         return
-    sql = "ALTER TABLE %s.%s RENAME COLUMN %s to %s" % (SCHEMA, tablename, oldname, newname)
+    sql = "ALTER TABLE %s RENAME COLUMN %s to %s" % (fullname(tablename), oldname, newname)
     logger.info(sql)
     run_sql(sql)
 
@@ -191,7 +200,7 @@ def rename_table( oldname, newname ):
         return
     if not table_exists( oldname ):
         return
-    sql = "ALTER TABLE %s.%s RENAME TO %s" % (SCHEMA, oldname, newname)
+    sql = "ALTER TABLE %s RENAME TO %s" % (fullname(oldname), newname)
     logger.info(sql)
     run_sql(sql)
 
@@ -199,22 +208,21 @@ def convert_column( tablename, columnname, oldtype, newtype ):
     column_type_exists = run_sql_one("select 1 from information_schema.columns where table_schema = '%s' and table_name = '%s' and  column_name = '%s' and data_type = '%s'" % (SCHEMA, tablename, columnname, oldtype))
     if not column_type_exists:
         return
-    sql = "ALTER TABLE %s.%s ALTER COLUMN %s TYPE %s" % (SCHEMA, tablename, columnname, newtype)
+    sql = "ALTER TABLE %s ALTER COLUMN %s TYPE %s" % (fullname(tablename), columnname, newtype)
     logger.info(sql)
     run_sql(sql);
 
 def index_exists( tablename, columnname, unique=False ):
-    if DBDRIVER == "sqlite":
-        return True
     if unique:
         uniqueStr1="unique_"
     else:
         uniqueStr1=""
-    return run_sql_one("select 1 from pg_class where relname = '%s_%s_%sidx'" % (tablename, columnname, uniqueStr1))
+    if DBDRIVER == "sqlite":
+        return run_sql_one("SELECT 1 FROM sqlite_master where type = 'index' and name = '%s_%s_%sidx'" % (tablename, columnname, uniqueStr1))
+    else:
+        return run_sql_one("select 1 from pg_class where relname = '%s_%s_%sidx'" % (tablename, columnname, uniqueStr1))
 
 def create_index( tablename, columnname, unique=False ):
-    if DBDRIVER == "sqlite":
-        return
     if (index_exists( tablename, columnname, unique )):
         return
     if unique:
@@ -223,20 +231,18 @@ def create_index( tablename, columnname, unique=False ):
     else:
         uniqueStr1=""
         uniqueStr2=""
-    sql = 'CREATE %sINDEX %s_%s_%sidx ON %s.%s(%s)' % (uniqueStr2, tablename, columnname, uniqueStr1, SCHEMA, tablename, columnname)
+    sql = 'CREATE %sINDEX %s_%s_%sidx ON %s(%s)' % (uniqueStr2, tablename, columnname, uniqueStr1, fullname(tablename), columnname)
     logger.info(sql)
     run_sql(sql)
 
 def drop_index( tablename, columnname, unique=False ):
-    if DBDRIVER == "sqlite":
-        return True
     if (not index_exists( tablename, columnname, unique)):
         return
     if unique:
         uniqueStr1="unique_"
     else:
         uniqueStr1=""
-    sql = 'DROP INDEX %s.%s_%s_%sidx' % (SCHEMA, tablename, columnname, uniqueStr1 )
+    sql = 'DROP INDEX %s_%s_%sidx' % (fullname(tablename), columnname, uniqueStr1 )
     logger.info(sql)
     run_sql(sql)
                                     
@@ -244,7 +250,7 @@ def rename_index( oldname, newname ):
     already_exists = run_sql_one("select 1 from pg_class where relname = '%s'" % (oldname))
     if not already_exists:
         return
-    sql = 'ALTER INDEX %s.%s RENAME TO %s' % (SCHEMA, oldname, newname)
+    sql = 'ALTER INDEX %s RENAME TO %s' % (fullname(oldname), newname)
     logger.info(sql)
     run_sql(sql)
 
@@ -269,25 +275,25 @@ def clean_table(tablename, cutoff):
             logger.info("DROP TABLE " + str(t))
             drop_table( t )
 
-    # delete any old events from existing tables
-    # this is kept because we used to store events directly in the master table
-    # also this is inexpensive because of the partition checks it will only be run
-    # on relevent partitions
+    # delete old events from the main table
     if column_exists( tablename, "time_stamp" ):
-        sql = "DELETE FROM %s.%s WHERE time_stamp < %%s;" % (SCHEMA, tablename)
-        logger.debug( sql % cutoff )
-        run_sql(sql, (cutoff,))
+        if DBDRIVER == "sqlite":
+            cutoff = str(long(cutoff.strftime("%s"))*1000)
+            sql = "DELETE FROM %s WHERE time_stamp < %s;" % (tablename, cutoff)
+            logger.debug( sql )
+            run_sql(sql)
+        else:
+            sql = "DELETE FROM %s WHERE time_stamp < %%s;" % (fullname(tablename))
+            logger.debug( sql % cutoff )
+            run_sql(sql, (cutoff,))
     else: 
         logger.warn("Table %s missing time_stamp column!" % tablename)
 
-def create_view( view_sql ):
-    run_sql(view_sql)
-        
 def create_table( table_sql, unique_index_columns=[], other_index_columns=[], create_partitions=True ):
     (schema, tablename) = __get_tablename(table_sql)
 
     if schema:
-        full_tablename = "%s.%s" % (SCHEMA, tablename)
+        full_tablename = fullname(tablename)
         if DBDRIVER == "sqlite":
             table_sql = table_sql.replace("reports."+tablename,full_tablename)
     else:
@@ -359,29 +365,15 @@ def create_table( table_sql, unique_index_columns=[], other_index_columns=[], cr
             trigger_times.insert(0, (now - mx.DateTime.RelativeDateTime(days=1)))
 
         __make_trigger( tablename, 'time_stamp', trigger_times )
-
-def drop_view( view ):
-    tn = '%s.%s' % (SCHEMA, view)
-    conn = get_connection()
-    try:
-        curs = conn.cursor()
-        curs.execute('DROP VIEW %s' % (tn,))
-        logger.debug("dropped view '%s'" % (view,))
-    except psycopg2.ProgrammingError:
-        logger.debug('cannot drop view: %s' % (view,))
-    finally:
-        conn.commit()
         
 def drop_table( table ):
-    tn = '%s.%s' % (SCHEMA, table)
-
     conn = get_connection()
     try:
         curs = conn.cursor()
-        curs.execute('DROP TABLE %s' % (tn,))
-        logger.debug("dropped table '%s'" % (table,))
+        curs.execute('DROP TABLE %s' % fullname(table))
+        logger.debug("dropped table '%s'" % (table))
     except psycopg2.ProgrammingError:
-        logger.debug('cannot drop table: %s' % (table,))
+        logger.debug('cannot drop table: %s' % (table))
     finally:
         conn.commit()
 
@@ -407,6 +399,9 @@ def get_tables( prefix ):
     return rv
 
 def find_table_partitions(tablename=None):
+    if DBDRIVER == "sqlite":
+        return []
+
     if not tablename:
         prefix = ''
     else:
@@ -516,8 +511,6 @@ def __sub_tablename(sql,new_name):
       raise ValueError("Cannot find table in: %s" % table_ddl)
 
 def __make_trigger( tablename, timestamp_column, all_dates ):
-    full_tablename = '%s.%s' % (SCHEMA, tablename)
-
     trigger_function_name = '%s_insert_trigger()' % tablename
 
     trigger_function = """\
@@ -554,9 +547,9 @@ LANGUAGE plpgsql;""" % timestamp_column
     if not __trigger_exists( tablename, trigger_name ):
         run_sql("""\
 CREATE TRIGGER %s
-    BEFORE INSERT ON %s.%s
+    BEFORE INSERT ON %s
     FOR EACH ROW EXECUTE PROCEDURE %s
-""" % (trigger_name, SCHEMA, tablename, trigger_function_name))
+""" % (trigger_name, fullname(tablename), trigger_function_name))
 
 def __trigger_exists( tablename, trigger_name ):
     conn = get_connection()
