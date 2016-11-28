@@ -80,8 +80,8 @@ insert_snort_iptables_rules()
     ${IPTABLES} -t ${TABLE_NAME_MANGLE} -A ${CHAIN_NAME} -s 127.0.0.0/8 -j RETURN -m comment --comment "Bypass loopback traffic"
     ${IPTABLES} -t ${TABLE_NAME_MANGLE} -A ${CHAIN_NAME} -d 127.0.0.0/8 -j RETURN -m comment --comment "Bypass loopback traffic"
 
-    # mangle: We also don't want to look at any traffic owned by the local machine
-    ${IPTABLES} -t ${TABLE_NAME_MANGLE} -A ${CHAIN_NAME} -m mark --mark 0x1000000/0x1000000 -j RETURN -m comment --comment "Ignore local traffic"
+    # mangle: We also don't want to look at any bypassed traffic
+    ${IPTABLES} -t ${TABLE_NAME_MANGLE} -A ${CHAIN_NAME} -m mark --mark 0x1000000/0x1000000 -j RETURN -m comment --comment "Ignore bypassed traffic"
 
     # mangle: Ignore UDP/domain traffic
     ${IPTABLES} -t ${TABLE_NAME_MANGLE} -A ${CHAIN_NAME} -p udp --dport 53 -j RETURN -m comment --comment "Ignore UDP/domain traffic"
@@ -104,8 +104,8 @@ insert_snort_iptables_rules()
     ${IPTABLES} -t ${TABLE_NAME_RAW} -A ${CHAIN_NAME} -s 127.0.0.0/8 -j RETURN -m comment --comment "Bypass loopback traffic"
     ${IPTABLES} -t ${TABLE_NAME_RAW} -A ${CHAIN_NAME} -d 127.0.0.0/8 -j RETURN -m comment --comment "Bypass loopback traffic"
 
-    # raw: we also don't want to look at any traffic owned by the local machine
-    ${IPTABLES} -t ${TABLE_NAME_RAW} -A ${CHAIN_NAME} -m mark --mark 0x1000000/0x1000000 -j RETURN -m comment --comment "Ignore local traffic"
+    # raw: we also don't want to look at any bypassed traffic
+    ${IPTABLES} -t ${TABLE_NAME_RAW} -A ${CHAIN_NAME} -m mark --mark 0x1000000/0x1000000 -j RETURN -m comment --comment "Ignore bypassed traffic"
 
     # raw: special hook to allow bypass of a development machine or network
     if [ ! -z ${SNORT_DEV_NETWORK} ]; then
