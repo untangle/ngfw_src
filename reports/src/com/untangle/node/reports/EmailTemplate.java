@@ -33,8 +33,8 @@ public class EmailTemplate implements JSONString, Serializable
     private Integer intervalWeekStart = 1;
     private Boolean mobile;
     private Boolean readOnly = null; /* If the rule is read-only (built-in) */
-    private List<String> enabledConfigIds;
-    private List<String> enabledAppIds;
+    private List<String> enabledConfigIds = null;
+    private List<String> enabledAppIds = null;
 
     public EmailTemplate()
     {
