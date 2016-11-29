@@ -160,7 +160,7 @@ public class FixedReports
         // Order matters when processing
         ConditionalPatterns = new LinkedHashMap<ConditionalE,Pattern>();
         ConditionalPatterns.put(ConditionalE.LOGICAL, Pattern.compile("(.+?)\\s+(not\\s+|)(and|or)\\s+(.+)"));
-        ConditionalPatterns.put(ConditionalE.EQUALITY, Pattern.compile("(.+?)\\s+(not\\s+|\\!|)(in|\\=|\\=\\=)\\s+(.+)"));
+        ConditionalPatterns.put(ConditionalE.EQUALITY, Pattern.compile("(.+?)\\s+(not\\s+|\\!|)(in|\\=|\\=\\=|\\<|\\>)\\s+(.+)"));
     }
 
     private static final Pattern Conditional = Pattern.compile("(.+?)\\s+(not\\s+|\\!\\s+)(\\=\\=|in)\\s+(.+)");
@@ -231,6 +231,17 @@ public class FixedReports
         List<conditionalContext> conditionals = new ArrayList<conditionalContext>();
 
         public void addVariable(Tag tag, String name, Object object){
+
+            /* Replace if found */
+            variableContext vc = null;
+            for( int i = 0; i < variables.size(); i ++){
+                vc = variables.get(i);
+                if(vc.tag == tag && vc.name.equals(name)){
+                    variables.set(i, new variableContext(tag, name, object));
+                    return;
+                }
+            }
+            /* Otherwise, add*/
             variables.add(new variableContext(tag, name, object));
         }
 
@@ -382,11 +393,15 @@ public class FixedReports
         return FixedReports.ConfigCategories;
     }
 
+    private ReportsManager reportsManager;
+
     /*
      * Create and send fixed reports
      */
-    public void generate(EmailTemplate emailTemplate, List<ReportsUser> users, String reportsUrl)
+    public void generate(EmailTemplate emailTemplate, List<ReportsUser> users, String reportsUrl, ReportsManager reportsManager)
     {
+        this.reportsManager = reportsManager;
+
         Map<String, String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle");
         i18nUtil = new I18nUtil(i18nMap);
 
@@ -802,6 +817,10 @@ public class FixedReports
         String operation;
         String right;
 
+        // if(condition.indexOf("uniqueId") > -1){
+        //     logger.warn("parseCondition, condition="+ condition);
+        // }
+
         Matcher tags = null;
         int startPosition = 0;
         Boolean tagFound = false;
@@ -824,7 +843,9 @@ public class FixedReports
 
                         leftLogicalMatch = parseCondition(left);
                         rightLogicalMatch = parseCondition(right);
-                        // logger.warn("parseConditional, logical: leftConditionalMatch=" + leftLogicalMatch + ", rightConditionalMatch=" + rightLogicalMatch);
+                        // if(condition.indexOf("uniqueId") > -1){
+                        //     logger.warn("parseConditional, logical: leftConditionalMatch=" + leftLogicalMatch + ", rightConditionalMatch=" + rightLogicalMatch);
+                        // }
 
                         if(operation.equals("and")){
                             match = (leftLogicalMatch && rightLogicalMatch);
@@ -834,7 +855,9 @@ public class FixedReports
                         break;
 
                     case EQUALITY:
-                        // logger.warn("parseCondition, conditional: left=[" + left + "], negation=["+negation+"], operation=[" + operation + "], right=[" + right + "]");
+                        // if(condition.indexOf("uniqueId") > -1){
+                        //     logger.warn("parseCondition, conditional: left=[" + left + "], negation=["+negation+"], operation=[" + operation + "], right=[" + right + "]");
+                        // }
 
                         if(right.equals("\"\"")){
                             /* Empty string */
@@ -855,6 +878,7 @@ public class FixedReports
                         }
                         Object leftVariable = getVariable(new selector(left));
                         Object rightVariable = getVariable(new selector(right));
+                        // logger.warn("parseConditional: left=" + left + ", leftVariable=" + leftVariable);
 
                         if(leftVariable != null){
                             if(leftVariable.getClass().isEnum()){
@@ -873,11 +897,24 @@ public class FixedReports
                                     }else if(leftVariable.toString().equals(right)){
                                         match = true;
                                     }
+                                    // logger.warn("parseConditional: leftVariable=" + leftVariable + ", right=" + right + ", match=" +match );
 
                                 // !!! Also non-equality numeric checks.
                                 }
                             }else if(operation.equals("in")){
                                 if(((List) rightVariable).indexOf((String) leftVariable) > -1){
+                                    match = true;
+                                }
+                            }else if(operation.equals("<")){
+                                if(rightVariable == null){
+                                    rightVariable = right;
+                                }
+                                if(Integer.parseInt((String)leftVariable) < Integer.parseInt((String)rightVariable)){
+                                    match = true;
+                                }
+                                // logger.warn("parseCondition: ["+condition+"] leftVariable=" + leftVariable + ", rightVariable=" + rightVariable + ", match=" + match);
+                            }else if(operation.equals(">")){
+                                if((Integer) rightVariable > (Integer) leftVariable){
                                     match = true;
                                 }
                             }
@@ -973,7 +1010,16 @@ public class FixedReports
      */
     private void insertVariableCycle(Matcher argumentValues)
     {
-        ArrayList<String> values = new ArrayList<String>(Arrays.asList(argumentValues.group(1).split("\\s")));
+        ArrayList<String> values = null;
+        if(argumentValues.group(1).indexOf("...") > -1){
+            ArrayList<String> startEnd = new ArrayList<String>(Arrays.asList(argumentValues.group(1).split("\\.\\.\\.")));
+            values = new ArrayList<String>(Integer.parseInt(startEnd.get(1)) - Integer.parseInt(startEnd.get(0)));
+            for(Integer i = Integer.parseInt(startEnd.get(0)); i < Integer.parseInt(startEnd.get(1)); i++){
+                values.add(Integer.toString(i));
+            }
+        }else{
+            values = new ArrayList<String>(Arrays.asList(argumentValues.group(1).split("\\s")));
+        }
         String variableName = argumentValues.group(2);
 
         int contextIndex = parseContextStack.size() - 1;
