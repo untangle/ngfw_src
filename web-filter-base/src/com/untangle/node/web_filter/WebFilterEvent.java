@@ -53,10 +53,10 @@ public class WebFilterEvent extends LogEvent
         String sql =
             "UPDATE reports.http_events" + requestLine.getHttpRequestEvent().getPartitionTablePostfix() + " " +
             "SET " +
-            fixupNodeName() + "_blocked  = ?, " + 
-            fixupNodeName() + "_flagged  = ?, " +
-            fixupNodeName() + "_reason   = ?, " +
-            fixupNodeName() + "_category = ? " +
+            _getDatabaseColumnNamePrefix() + "_blocked  = ?, " + 
+            _getDatabaseColumnNamePrefix() + "_flagged  = ?, " +
+            _getDatabaseColumnNamePrefix() + "_reason   = ?, " +
+            _getDatabaseColumnNamePrefix() + "_category = ? " +
             "WHERE " +
             "request_id = ? ";
 
@@ -80,6 +80,7 @@ public class WebFilterEvent extends LogEvent
         switch ( getNodeName().toLowerCase() ) {
         case "web_filter_lite": appName = "Web Filter Lite"; break;
         case "web_filter": appName = "Web Filter"; break;
+        case "web_monitor": appName = "Web Monitor"; break;
         default: appName = "Web Filter"; break;
         }
 
@@ -93,13 +94,19 @@ public class WebFilterEvent extends LogEvent
         return summary;
     }
 
-    private String fixupNodeName()
+    private String _getDatabaseColumnNamePrefix()
     {
         String node = getNodeName().toLowerCase();
+
         if ("web-filter-lite".equals(node))
             return "web_filter_lite";
         if ("web-filter".equals(node))
             return "web_filter";
+        if ("web-monitor".equals(node))
+            return "web_filter"; // use the same DB columns as web filter
+        if ("web_monitor".equals(node))
+            return "web_filter"; // use the same DB columns as web filter
+
         return node;
     }
 }

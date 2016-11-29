@@ -184,15 +184,13 @@ public class WebMonitorApp extends WebFilterBase
     @Override
     public String getName()
     {
-        // need to use the base app name here so we don't break reporting
-        return "web_filter";
+        return "web_monitor";
     }
 
     @Override
     public String getAppName()
     {
-        // need to use the base app name here so we don't break reporting
-        return "web-filter";
+        return "web-monitor";
     }
 
     @Override
