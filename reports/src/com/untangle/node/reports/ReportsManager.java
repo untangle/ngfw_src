@@ -147,4 +147,8 @@ public interface ReportsManager
     /*
     */
     List<String> getAdminEmailAddresses();
+
+    /*
+    */
+    List<String> getRecommendedReportIds();
 }
