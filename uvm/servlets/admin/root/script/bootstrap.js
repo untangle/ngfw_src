@@ -28,7 +28,7 @@ try {
 
     // Create Untangle application
     Ext.Loader.loadScript({
-        url: 'script/ung-all-debug.js',
+        url: 'script/ung-all.js',
         onLoad: function () {
             Ext.application({
                 name: 'Ung',

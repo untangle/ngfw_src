@@ -14,6 +14,8 @@ Ext.define('Ung.view.config.Config', {
         border: false
     },
 
+    layout: 'card',
+
     items: [{
         border: false,
         scrollable: true,
@@ -47,7 +49,7 @@ Ext.define('Ung.view.config.Config', {
         }]
     }],
     listeners: {
-        beforerender: 'onBeforeRender'
+        afterrender: 'onBeforeRender'
         //onPolicyChange: 'onPolicyChange'
     }
 });

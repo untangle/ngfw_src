@@ -94,12 +94,19 @@ Ext.define('Ung.view.main.MainController', {
     },
 
     onConfig: function (configName) {
-        if (!configName) {
-            this.getViewModel().set('activeItem', 'config');
-        } else {
-            console.log('conf settings');
-            this.getViewModel().set('activeItem', 'configsettings');
-        }
+        // this.getViewModel().set('activeItem', 'config');
+        // var view = this.getView();
+        // this.getViewModel().set('activeItem', 'config');
+        // if (configName) {
+        //     Ext.require('Ung.view.config.network.Network', function () {
+        //         view.down('#config').add({
+        //             xtype: 'ung.config.network'
+        //         });
+        //         view.down('#config').setActiveItem(1);
+        //     });
+        // } else {
+        //     view.down('#config').setActiveItem(0);
+        // }
     },
 
     onReports: function () {

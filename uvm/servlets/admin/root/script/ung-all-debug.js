@@ -8385,89 +8385,92 @@ Ext.define('Ung.view.main.Main', {
         bind: {
             activeItem: '{activeItem}'
         },
-        items: [
-        // {
-        //     xtype: 'ung.apps',
-        //     itemId: 'apps'
-        // }, {
-        //     xtype: 'ung.config',
-        //     itemId: 'config'
-        // }, {
-        //     xtype: 'ung.configsettings',
-        //     itemId: 'configsettings'
-        // }, {
-        //     xtype: 'ung.appsinstall',
-        //     itemId: 'appsinstall'
-        // }, {
-        //     xtype: 'ung.nodesettings',
-        //     itemId: 'settings'
-        // },
-        // {
-        //     layout: 'border',
-        //     itemId: 'shd', // sessions hosts devices
-        //     border: false,
-        //     items: [{
-        //         region: 'north',
-        //         weight: 20,
-        //         border: false,
-        //         height: 44,
-        //         bodyStyle: {
-        //             background: '#555',
-        //             padding: '0 5px'
-        //         },
-        //         layout: {
-        //             type: 'hbox',
-        //             align: 'middle'
-        //         },
-        //         defaults: {
-        //             xtype: 'button',
-        //             enableToggle: true,
-        //             baseCls: 'heading-btn',
-        //             hrefTarget: '_self'
-        //         },
-        //         items: [{
-        //             html: Ung.Util.iconTitle('Back to Dashboard', 'keyboard_arrow_left-16'),
-        //             enableToggle: false,
-        //             href: '#',
-        //             hrefTarget: '_self'
-        //         }, {
-        //             xtype: 'component',
-        //             flex: 1
-        //         }, {
-        //             html: 'Sessions'.t(),
-        //             href: '#sessions',
-        //             bind: {
-        //                 pressed: '{isSessions}'
-        //             }
-        //         }, {
-        //             html: 'Hosts'.t(),
-        //             href: '#hosts',
-        //             bind: {
-        //                 pressed: '{isHosts}'
-        //             }
-        //         }, {
-        //             html: 'Devices'.t(),
-        //             href: '#devices',
-        //             bind: {
-        //                 pressed: '{isDevices}'
-        //             }
-        //         }]
-        //     }, {
-        //         region: 'center',
-        //         layout: 'card',
-        //         itemId: 'shdcenter',
-        //         items: [{
-        //             xtype: 'ung.sessions',
-        //             itemId: 'sessions'
-        //         }, {
-        //             xtype: 'ung.hosts',
-        //             itemId: 'hosts'
-        //         }, {
-        //             xtype: 'ung.devices',
-        //             itemId: 'devices'
-        //         }]
-        //     }]
-        // }
+        items: [{
+            xtype: 'ung.dashboard',
+            itemId: 'dashboard'
+        },
+        {
+            xtype: 'ung.apps',
+            itemId: 'apps'
+        }, {
+            xtype: 'ung.config',
+            itemId: 'config'
+        }, {
+            xtype: 'ung.configsettings',
+            itemId: 'configsettings'
+        }, {
+            xtype: 'ung.appsinstall',
+            itemId: 'appsinstall'
+        }, {
+            xtype: 'ung.nodesettings',
+            itemId: 'settings'
+        },
+        {
+            layout: 'border',
+            itemId: 'shd', // sessions hosts devices
+            border: false,
+            items: [{
+                region: 'north',
+                weight: 20,
+                border: false,
+                height: 44,
+                bodyStyle: {
+                    background: '#555',
+                    padding: '0 5px'
+                },
+                layout: {
+                    type: 'hbox',
+                    align: 'middle'
+                },
+                defaults: {
+                    xtype: 'button',
+                    enableToggle: true,
+                    baseCls: 'heading-btn',
+                    hrefTarget: '_self'
+                },
+                items: [{
+                    html: Ung.Util.iconTitle('Back to Dashboard', 'keyboard_arrow_left-16'),
+                    enableToggle: false,
+                    href: '#',
+                    hrefTarget: '_self'
+                }, {
+                    xtype: 'component',
+                    flex: 1
+                }, {
+                    html: 'Sessions'.t(),
+                    href: '#sessions',
+                    bind: {
+                        pressed: '{isSessions}'
+                    }
+                }, {
+                    html: 'Hosts'.t(),
+                    href: '#hosts',
+                    bind: {
+                        pressed: '{isHosts}'
+                    }
+                }, {
+                    html: 'Devices'.t(),
+                    href: '#devices',
+                    bind: {
+                        pressed: '{isDevices}'
+                    }
+                }]
+            }, {
+                region: 'center',
+                layout: 'card',
+                itemId: 'shdcenter',
+                items: [{
+                    xtype: 'ung.sessions',
+                    itemId: 'sessions'
+                }, {
+                    xtype: 'ung.hosts',
+                    itemId: 'hosts'
+                }, {
+                    xtype: 'ung.devices',
+                    itemId: 'devices'
+                }]
+            }]
+        }
         ]
     }]
 });
