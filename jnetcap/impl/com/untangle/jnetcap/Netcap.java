@@ -23,7 +23,7 @@ public final class Netcap
 
     private static final Netcap INSTANCE = new Netcap();
 
-    private static final int longArrayLength = 1024*64;
+    private static final int longArrayLength = 1024*256;
     private final long[] longArray = new long[longArrayLength];
     
     /* Singleton */
