@@ -20,6 +20,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
+import com.untangle.uvm.AdminUserSettings;
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.WebBrowser;
@@ -542,6 +543,31 @@ public class ReportsManagerImpl implements ReportsManager
         return WebBrowser.exists();
     }
 
+    public List<String> getAdminEmailAddresses(){
+        LinkedList<String> adminEmailAddresses = new LinkedList<String>();
+
+        LinkedList<ReportsUser> reportsUsers = node.getSettings().getReportsUsers();
+        Boolean reportsUserFound;
+        for(AdminUserSettings adminUser : UvmContextFactory.context().adminManager().getSettings().getUsers()){
+            if( adminUser.getEmailAddress().isEmpty() ){
+                continue;
+            }
+            reportsUserFound = false;
+            for(ReportsUser reportUser: reportsUsers){
+                if(reportUser.getEmailAddress().equals( adminUser.getEmailAddress() ) ){
+                    reportsUserFound = true;
+                }
+            }
+            if(reportsUserFound == false){
+                adminEmailAddresses.add(adminUser.getEmailAddress());
+            }
+        }
+
+        // String[] addresses = new String[adminEmailAddresses.size()];
+        // addresses = adminEmailAddresses.toArray(addresses);
+        // return addresses;
+        return adminEmailAddresses;
+    }
 
     protected void updateSystemReportEntries( List<ReportEntry> existingEntries, boolean saveIfChanged )
     {

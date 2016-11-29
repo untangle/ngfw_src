@@ -8,6 +8,7 @@ import org.json.JSONObject;
 import org.apache.log4j.Logger;
 
 import java.util.LinkedList;
+import java.util.List;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.logging.LogEvent;
@@ -105,7 +106,17 @@ public class AlertHandler
                 if ( ! user.getEmailAlerts() )
                     continue;
                 try {
-                    String[] recipients = new String[]{ user.getEmailAddress() };
+                    String[] recipients = null;
+                    if(user.getEmailAddress().equals("admin")){
+                        List<String> adminEmailAddresses = ReportsManagerImpl.getInstance().getAdminEmailAddresses();
+                        if(adminEmailAddresses.size() == 0){
+                            continue;
+                        }
+                        recipients = new String[adminEmailAddresses.size()];
+                        recipients = adminEmailAddresses.toArray(recipients);
+                    }else{
+                        recipients = new String[]{ user.getEmailAddress() };
+                    }
                     logger.warn("Sending alert to " + user.getEmailAddress());
                     UvmContextFactory.context().mailSender().sendMessage( recipients, subject, messageBody);
                 } catch ( Exception e) {

@@ -143,4 +143,8 @@ public interface ReportsManager
     /*
     */
     Boolean fixedReportsAllowGraphs();
+
+    /*
+    */
+    List<String> getAdminEmailAddresses();
 }

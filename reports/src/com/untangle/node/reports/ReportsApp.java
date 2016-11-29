@@ -227,7 +227,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
     public void runFixedReport() throws Exception
     {
         flushEvents();
-        
+
         synchronized (this) {
             String url = "https://" + UvmContextFactory.context().networkManager().getPublicUrl() + "/reports/";
             for( EmailTemplate emailTemplate : settings.getEmailTemplates() ){
@@ -605,12 +605,39 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
 
     }
 
+    private LinkedList<ReportsUser> defaultReportsUsers(LinkedList<ReportsUser> reportsUsers){
+        if(reportsUsers == null){
+            reportsUsers = new LinkedList<ReportsUser>();
+        }
+
+        Boolean adminUserFound = false;
+        for(ReportsUser reportsUser : reportsUsers){
+            if(reportsUser.getEmailAddress().equals("admin")){
+                adminUserFound = true;
+            }
+        }
+
+        if( adminUserFound == false ){
+            ReportsUser adminUser = new ReportsUser();
+            adminUser.setEmailAddress("admin");
+            adminUser.setEmailAlerts(true);
+            adminUser.setEmailSummaries(true);
+            List<Integer> templateIds = new LinkedList<Integer>();
+            templateIds.add(0);
+            adminUser.setEmailTemplateIds(templateIds);
+            reportsUsers.add(adminUser);
+        }
+
+        return reportsUsers;
+    }
+
     private ReportsSettings defaultSettings()
     {
         ReportsSettings settings = new ReportsSettings();
         settings.setVersion( 3 );
         settings.setAlertRules( defaultAlertRules() );
         settings.setEmailTemplates( defaultEmailTemplates() );
+        settings.setReportsUsers( defaultReportsUsers( null ) );
         return settings;
     }
     
@@ -791,37 +818,10 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
             logger.warn("Conversion Exception",e);
         }
 
-        // Convert admin addresses
-        Boolean found = false;
-        if ( UvmContextFactory.context().adminManager().getSettings().getUsers() != null ){
-            LinkedList<ReportsUser> reportsUsers = settings.getReportsUsers();
-            List<Integer> templateIds = new LinkedList<Integer>();
-            templateIds.add(0);
-            for(AdminUserSettings adminUser : UvmContextFactory.context().adminManager().getSettings().getUsers()){
-                if( adminUser.getEmailAddress().trim().isEmpty() ){
-                    continue;
-                }
-                found = false;
-                for ( ReportsUser reportsUser : settings.getReportsUsers() ) {
-                    if(reportsUser.getEmailAddress().equals(adminUser.getEmailAddress())){
-                        found = true;
-                        break;
-                    }
-                }
-                if(found == false &&
-                    (adminUser.getEmailAlerts() == true ||
-                     adminUser.getEmailSummaries() == true) ){
-                    ReportsUser newReportsUser = new ReportsUser();
-                    newReportsUser.setEmailAddress(adminUser.getEmailAddress());
-                    newReportsUser.setEmailAlerts(adminUser.getEmailAlerts());
-                    newReportsUser.setEmailSummaries(adminUser.getEmailSummaries());
-                    if(newReportsUser.getEmailSummaries() == true){
-                        newReportsUser.setEmailTemplateIds(templateIds);
-                    }
-                    reportsUsers.add(newReportsUser);
-                }
-            }
-            settings.setReportsUsers(reportsUsers);
+        try {
+            settings.setReportsUsers( defaultReportsUsers(settings.getReportsUsers()) );
+        } catch (Exception e) {
+            logger.warn("Conversion Exception",e);
         }
 
         setSettings( settings );
