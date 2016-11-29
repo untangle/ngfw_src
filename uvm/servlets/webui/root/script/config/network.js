@@ -488,10 +488,10 @@ Ext.define('Webui.config.network', {
         });
 
         this.gridArpLists = Ext.create( 'Ung.grid.Panel', {
-            name: 'ARP Lists',
+            name: 'ARP Table',
             margin: 5,
             flex: 2,
-            title: i18n._('ARP Entry List'),
+            title: i18n._('ARP Table'),
             settingsCmp: this,
             hasAdd: false,
             hasDelete: false,
@@ -540,10 +540,10 @@ Ext.define('Webui.config.network', {
         });
         
         this.gridWirelessLists = Ext.create( 'Ung.grid.Panel', {
-            name: 'Wireless Lists',
+            name: 'Wireless Connections',
             margin: 5,
             flex: 3,
-            title: i18n._('Wireless Connections List'),
+            title: i18n._('Wireless Connections'),
             settingsCmp: this,
             hasAdd: false,
             hasDelete: false,
@@ -5152,7 +5152,7 @@ Ext.define('Webui.config.network', {
                     }
                 }, {
                     xtype: 'fieldset',
-                    title: i18n._('Access Control List'),
+                    title: i18n._('Access Control Rules'),
                     items: [
                     this.gridUpnpRules
                     ]
