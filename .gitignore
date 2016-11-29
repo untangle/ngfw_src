@@ -76,6 +76,8 @@ debian/untangle-node-virus-blocker-lite/
 debian/untangle-node-web-filter-lite.debhelper.log
 debian/untangle-node-web-filter-lite.substvars
 debian/untangle-node-web-filter-lite/
+debian/untangle-node-web-monitor.debhelper.log
+debian/untangle-node-web-monitor.substvars
 debian/untangle-node-web-monitor/
 debian/untangle-pyconnector.init
 debian/untangle-vm.debhelper.log
