@@ -483,7 +483,7 @@ JNIEXPORT jint JNICALL JF_Netcap( conntrackDump )
     list_t* list = netcap_nfconntrack_dump( (struct nf_conntrack**)arr_body, arr_length );
 
     struct nf_conntrack* entry;
-    while ( list_length( list ) > 0 ) {
+    while ( list_length( list ) > 0 && count < arr_length ) {
         if ( list_pop_head( list, (void**)&entry ) < 0 )
             break;
         if ( entry == NULL ) {
