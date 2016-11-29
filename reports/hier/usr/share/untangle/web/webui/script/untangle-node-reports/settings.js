@@ -21,6 +21,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
             ["EVENT_LIST", i18n._("Event List")]
     ]),
     emailChartTypes: ["TEXT", "PIE_GRAPH", "TIME_GRAPH", "TIME_GRAPH_DYNAMIC"],
+    emailRecommendedReportIds: [],
     emailIntervals: [
         [86400, i18n._("Daily")],
         [604800, i18n._("Weekly")],
@@ -51,6 +52,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
         beforeshow: function () {
             this.buildAvailableAppCategories();
             this.buildFixedReportsAllowGraphs();
+            this.buildRecommendedReportIds();
         }
     },
 
@@ -133,6 +135,14 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 return;
             }
             this.fixedReportsAllowGraphs = result;
+        }, this));
+    },
+    buildRecommendedReportIds: function(){
+        rpc.reportsManager.getRecommendedReportIds(Ext.bind(function (result, exception) {
+            if (Ung.Util.handleException(exception)) {
+                return;
+            }
+            this.emailRecommendedReportIds = result.list;
         }, this));
     },
     buildPasswordValidator: function() {
@@ -1202,10 +1212,10 @@ Ext.define('Webui.untangle-node-reports.settings', {
                             if(enabledIds.list.indexOf(entry.uniqueId) > -1){
                                 /* Standard checkbox */
                                 enabled = true;
-                            }else if(enabledIds.list.indexOf("_recommended") > -1){
+                            }else if(enabledIds.list.indexOf("_recommended") > -1 &&
+                                this.settingsCmp.emailRecommendedReportIds.indexOf(entry.uniqueId) > -1 ){
                                 /* Special case: _recommended */
                                 enabled = true;
-                                // !!! get real recommended
                             }
                         }
 

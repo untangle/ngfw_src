@@ -116,7 +116,7 @@ public class FixedReports
     private static final Map<ParsePass, String> ParsePassActiveVariables;
     private static final ArrayList<String> ConfigCategories;
     private static final Map<ConditionalE,Pattern> ConditionalPatterns;
-    private static final ArrayList<String> ReservedReports;
+    public static final ArrayList<String> ReservedReports;
 
     static {
         TagPatterns = new HashMap<Tag, Pattern>();
