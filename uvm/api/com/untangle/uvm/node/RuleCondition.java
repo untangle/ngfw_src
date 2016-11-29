@@ -963,15 +963,26 @@ public class RuleCondition implements JSONString, Serializable
             return globMatcher.isMatch( attachment );
 
         case CLIENT_COUNTRY:
-            attachment = UvmContextFactory.context().geographyManager().getCountryCode(srcAddress.getHostAddress());
-            if (attachment == null)
-                return false;
+            // for WAN interfaces lookup the client country using source address
+            if (UvmContextFactory.context().networkManager().isWanInterface( srcIntf ) ) {
+                attachment = UvmContextFactory.context().geographyManager().getCountryCode(srcAddress.getHostAddress());
+                // if nothing returned use the Unknown country code
+                if (attachment == null) attachment = "XU";
+            } else {
+                // not a WAN interface so use the Local country code
+                attachment = "XL";
+            }
             return globMatcher.isMatch( attachment );
 
         case SERVER_COUNTRY:
-            attachment = UvmContextFactory.context().geographyManager().getCountryCode(dstAddress.getHostAddress());
-            if (attachment == null)
-                return false;
+            // for WAN interfaces lookup the server country using destination address
+            if (UvmContextFactory.context().networkManager().isWanInterface( dstIntf ) ) {
+                attachment = UvmContextFactory.context().geographyManager().getCountryCode(dstAddress.getHostAddress());
+                // if nothing returned use the Unknown country code
+                if (attachment == null) attachment = "XU";
+            } else {
+                attachment = "XL";
+            }
             return globMatcher.isMatch( attachment );
 
         default:
