@@ -156,11 +156,6 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 confirmPwd.markInvalid();
                 return i18n._('Passwords do not match');
             }
-            // validate password not empty if onlineAccess checked
-            var onlineAccess=Ext.getCmp("add_reports_online_reports_" + suffix );
-            if(onlineAccess.getValue() &&  pwd.getValue().length==0) {
-                return i18n._("A password must be set to enable Online Access!");
-            }
             pwd.clearInvalid();
             confirmPwd.clearInvalid();
             return true;
@@ -194,10 +189,11 @@ Ext.define('Webui.untangle-node-reports.settings', {
     buildUsers: function() {
         var fieldID = "" + Math.round( Math.random() * 1000000 );
 
-        var emailTime=new Date();
-        emailTime.setTime(0);
-        emailTime.setHours(this.getSettings().generationHour);
-        emailTime.setMinutes(this.getSettings().generationMinute);
+        for(var i = 0; i < this.getSettings().reportsUsers.list.length; i++){
+            if(this.getSettings().reportsUsers.list[i].emailAddress == "admin"){
+                this.getSettings().reportsUsers.list[i].readOnly = true;
+            }
+        }
 
         // Change the password for a user.
         var changePasswordColumn = Ext.create('Ung.grid.EditColumn',{
@@ -230,6 +226,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
                     title: i18n._("Reports Users"),
                     height: 350,
                     hasEdit: true,
+                    hasReadOnly: true,
                     settingsCmp: this,
                     plugins:[changePasswordColumn],
                     dataProperty: 'reportsUsers',

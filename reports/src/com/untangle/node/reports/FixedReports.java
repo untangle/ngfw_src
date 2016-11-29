@@ -31,8 +31,8 @@ import java.nio.file.Files;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 import java.util.Map;
@@ -480,10 +480,17 @@ public class FixedReports
         List<String> recipientsWithoutOnlineAccess = new ArrayList<String>();
         List<String> recipientsWithOnlineAccess = new ArrayList<String>();
         for(ReportsUser user: users){
-            if(user.getOnlineAccess() == true){
-                recipientsWithOnlineAccess.add(user.getEmailAddress());
+            List<String> emailAddresses = null;
+            if(user.getEmailAddress().equals("admin")){
+                emailAddresses = reportsManager.getAdminEmailAddresses();
             }else{
-                recipientsWithoutOnlineAccess.add(user.getEmailAddress());
+                emailAddresses = new ArrayList<String>();
+                emailAddresses.add(user.getEmailAddress());
+            }
+            if(user.getOnlineAccess() == true){
+                recipientsWithOnlineAccess.addAll(emailAddresses);
+            }else{
+                recipientsWithoutOnlineAccess.addAll(emailAddresses);
             }
         }
 
