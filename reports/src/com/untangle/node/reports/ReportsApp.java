@@ -199,7 +199,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
                     }
                 }
                 if( users.size() > 0){
-                    fixedReports.generate(emailTemplate, users, url);
+                    fixedReports.generate(emailTemplate, users, url, ReportsManagerImpl.getInstance());
                 }
             }
         }        
@@ -540,18 +540,10 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         LinkedList<String> enabledAppIds;
 
         enabledConfigIds = new LinkedList<String>();
-        enabledConfigIds.add("_all");
+        enabledConfigIds.add("_recommended");
         enabledAppIds = new LinkedList<String>();
-        enabledAppIds.add("_all");
-        emailTemplate = new EmailTemplate( I18nUtil.marktr("Daily Reports"), I18nUtil.marktr("All available reports (default)"), 86400, false, enabledConfigIds, enabledAppIds);
-        emailTemplate.setReadOnly(true);
-        templates.add( emailTemplate );
-
-        enabledConfigIds = new LinkedList<String>();
-        enabledConfigIds.add("_type=TEXT");
-        enabledAppIds = new LinkedList<String>();
-        enabledAppIds.add("_type=TEXT");
-        emailTemplate = new EmailTemplate( I18nUtil.marktr("Daily Reports Summary"), I18nUtil.marktr("Text only reports"), 86400, false, enabledConfigIds, enabledAppIds);
+        enabledAppIds.add("_recommended");
+        emailTemplate = new EmailTemplate( I18nUtil.marktr("Daily Reports"), I18nUtil.marktr("Recommended daily reports (default)"), 86400, false, enabledConfigIds, enabledAppIds);
         emailTemplate.setReadOnly(true);
         templates.add( emailTemplate );
 

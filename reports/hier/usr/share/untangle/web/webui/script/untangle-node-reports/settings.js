@@ -67,17 +67,11 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 if(value.list[i] == entry.uniqueId){
                     reportNames.push(entry.title);
                 }else if(
-                    (value.list.indexOf("_all") > -1) &&
+                    (value.list.indexOf("_recommended") > -1) &&
                     (allAdded == false)){
-                    /* Special case: _all */
-                    reportNames.push(i18n._("All reports"));
+                    /* Special case: _recommended */
+                    reportNames.push(i18n._("Recommended"));
                     allAdded = true;
-                }else if(
-                    (value.list.indexOf("_type=" + entry.type) > -1) &&
-                    (typeAdded.indexOf(entry.type) == -1)){
-                    /* Matching type */
-                    reportNames.push(i18n._("Type") + ":" + this.chartTypeMap[entry.type]);
-                    typeAdded.push(entry.type);
                 }
             }
         }
@@ -1211,12 +1205,10 @@ Ext.define('Webui.untangle-node-reports.settings', {
                             if(enabledIds.list.indexOf(entry.uniqueId) > -1){
                                 /* Standard checkbox */
                                 enabled = true;
-                            }else if(enabledIds.list.indexOf("_all") > -1){
-                                /* Special case: _all */
+                            }else if(enabledIds.list.indexOf("_recommended") > -1){
+                                /* Special case: _recommended */
                                 enabled = true;
-                            }else if(enabledIds.list.indexOf("_type=" + entry.type) > -1){
-                                /* Matching type*/
-                                enabled = true;
+                                // !!! get real recommended
                             }
                         }
 

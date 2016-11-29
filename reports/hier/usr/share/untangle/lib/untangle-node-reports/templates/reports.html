@@ -122,6 +122,7 @@ Summary
 </td>
 </tr>
 
+<!--
 {% cycle rowColors %}
 <tr style="background-color:{{ rowColors }};">
 <td>
@@ -134,6 +135,7 @@ Summary
 {% endif%}
 </td>
 </tr>
+-->
 
 </td>
 </tr>
@@ -143,9 +145,14 @@ Summary
 
 {% with reportsNode=nodeManager.node,untangle-node-reports %}
 	{% for category in FixedReports.getConfigCategories %} 
+		{% if emailTemplate.getEnabledConfigIds.get,0 == "_recommended" %}
+			{% cycle 0...1000 as counter %}
+		{% endif %}
+
 		{% for report in reportsNode.getReportsManager.getReportEntries,category|in=getType,allowedReportTypes %}
+			{% cycle counter %}
 			{% for uniqueId in emailTemplate.getEnabledConfigIds %}
-				{% if uniqueId == "_all" or report.getUniqueId == uniqueId %}
+				{% if counter < 3 or report.getUniqueId == uniqueId %}
 					{% cycle rowColors %}
 					<tr style="background-color:{{ rowColors }};">
 					<td><table>
@@ -197,6 +204,9 @@ Summary
 {% with reportsNode=nodeManager.node,untangle-node-reports %}
 	{% for node in nodeManager.nodeInstances|distinct=getNodeProperties.getDisplayName %}
 		{% if node.getNodeProperties.getDisplayName not in FixedReports.getConfigCategories %}
+			{% if emailTemplate.getEnabledConfigIds.get,0 == "_recommended" %}
+				{% cycle 0...1000 as counter %}
+			{% endif %}
 			{% with reports=reportsNode.getReportsManager.getReportEntries,node.getNodeProperties.getDisplayName|in=getType,allowedReportTypes %}
 				{% if reports.size != 0 %}
 					<tr><td><table>
@@ -210,8 +220,9 @@ Summary
 					</tr>
 					</table></td></tr>
 					{% for report in reports %}
+						{% cycle counter %}
 						{% for uniqueId in emailTemplate.getEnabledAppIds %}
-							{% if uniqueId == "_all" or report.getUniqueId == uniqueId %}
+							{% if counter < 3 or report.getUniqueId == uniqueId %}
 								{% cycle rowColors %}
 								<tr style="background-color:{{ rowColors }};">
 								<td><table>
