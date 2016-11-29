@@ -1371,7 +1371,8 @@ public class NetworkManagerImpl implements NetworkManager
         /**
          * If DHCP settings are enabled, but settings arent picked, fill in reasonable defaults
          */
-        if ( interfaceSettings.getDhcpEnabled() != null &&
+        if ( interfaceSettings.getConfigType() == InterfaceSettings.ConfigType.ADDRESSED &&
+             interfaceSettings.getDhcpEnabled() != null &&
              interfaceSettings.getDhcpEnabled() == Boolean.TRUE &&
              interfaceSettings.getDhcpRangeStart() == null ) {
             initializeDhcpDefaults( interfaceSettings );
@@ -1383,7 +1384,7 @@ public class NetworkManagerImpl implements NetworkManager
          * It will not have its previous configuration, but this is safer because is many places
          * we check the value of isWan without checking the configuration
          */
-        if (interfaceSettings.getConfigType() !=  InterfaceSettings.ConfigType.ADDRESSED)
+        if (interfaceSettings.getConfigType() != InterfaceSettings.ConfigType.ADDRESSED)
             interfaceSettings.setIsWan( false );
     }
 
@@ -1399,8 +1400,9 @@ public class NetworkManagerImpl implements NetworkManager
             InetAddress addr = interfaceSettings.getV4StaticAddress();
             InetAddress mask = interfaceSettings.getV4StaticNetmask();
             if (addr == null || mask == null) {
-                logger.warn("Missing interface settings, disabling DHCP");
+                logger.warn("Missing interface[" + interfaceSettings.getName() + "] settings (" + addr + ", " + mask + "). Disabling DHCP.");
                 interfaceSettings.setDhcpEnabled( false );
+                return;
             }
 
             InetAddress start;
