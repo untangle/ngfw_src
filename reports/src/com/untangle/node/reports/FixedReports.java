@@ -116,6 +116,7 @@ public class FixedReports
     private static final Map<ParsePass, String> ParsePassActiveVariables;
     private static final ArrayList<String> ConfigCategories;
     private static final Map<ConditionalE,Pattern> ConditionalPatterns;
+    private static final ArrayList<String> ReservedReports;
 
     static {
         TagPatterns = new HashMap<Tag, Pattern>();
@@ -156,6 +157,144 @@ public class FixedReports
         ConfigCategories.add("Administration");
         ConfigCategories.add("System");
         ConfigCategories.add("Shield");
+
+        // This would be better as an external file for easier modification and not
+        // hanging onto the memory.
+        ReservedReports = new ArrayList<String>();
+        // Ad Blocker Summary
+        ReservedReports.add("ad-blocker-WvH1wCQQ0D");
+        // Ads Blocked
+        ReservedReports.add("ad-blocker-nvhtmu6LXi");
+        // Admin Logins
+        ReservedReports.add("Administration-tFb0iLvxHE");
+        // Application Control Summary
+        ReservedReports.add("application-control-upl31dqKb1");
+        // Scanned Sessions (all)
+        ReservedReports.add("application-control-GlzEJqEcXv");
+        // Application Control Lite Summary
+        ReservedReports.add("application-control-lite-upl31dqKb1");
+        // Detection Statistics
+        ReservedReports.add("application-control-lite-9Yyq8iXZJ5");
+        // Bandwidth Control Summary
+        ReservedReports.add("bandwidth-control-upl31dqKb1");
+        // Bandwidth Usage
+        ReservedReports.add("bandwidth-control-StzlzfZAp8");
+        // Captive Portal Summary
+        ReservedReports.add("captive-portal-upl31dqKb1");
+        // Activity Summary
+        ReservedReports.add("captive-portal-psXTQbdE");
+        // Configuration Backup Summary
+        ReservedReports.add("configuration-backup-eN8Ot9wh");
+        // Backup Usage (all)
+        ReservedReports.add("configuration-backup-HF3qFZ9M");
+        // Devices Additions
+        ReservedReports.add("device-table-UkYvElV11f");
+        // Devices Updates
+        ReservedReports.add("device-table-WGQUSYhIck");
+        // Directory Connector Summary
+        ReservedReports.add("directory-connector-upl31dqKb1");
+        // User Notification API Events
+        ReservedReports.add("directory-connector-D6IabIxIrC");
+        // Firewall Summary
+        ReservedReports.add("firewall-upl31dqKb1");
+        // Scanned Sessions
+        ReservedReports.add("firewall-8bTqxKxxUK");
+        // Hosts Additions
+        ReservedReports.add("host-viewer-UkYvElV11f");
+        // Hosts Updates
+        ReservedReports.add("host-viewer-WGQUSYhIck");
+        // IPsec VPN Summary
+        ReservedReports.add("ipsec-vpn-upl31dqKb1");
+        // Hourly Tunnel Traffic
+        ReservedReports.add("ipsec-7y1o6zC1Ez");
+        // Intrusion Prevention Summary
+        ReservedReports.add("intrusion-prevention-kt095LB6");
+        // Intrusion Detection (all)
+        ReservedReports.add("intrusion-prevention-pYviv7Cg");
+        // Network Summary
+        ReservedReports.add("network-tn9iaE74pK");
+        // Sessions
+        ReservedReports.add("network-8bTqxKxxUK");
+        // Bandwidth Usage
+        ReservedReports.add("network-StzlzfZAp8");
+        // OpenVPN Summary
+        ReservedReports.add("openvpn-upl31dqKb1");
+        // OpenVPN Bandwidth Usage
+        ReservedReports.add("openvpn-StzlzfZAp8");
+        // Phish Blocker Summary
+        ReservedReports.add("phish-blocker-DniRBEni");
+        // Email Usage (all)
+        ReservedReports.add("phish-blocker-iZV0Z13m");
+        // Policy Manager Summary
+        ReservedReports.add("policy-manager-upl31dqKb1");
+        // Alerts
+        ReservedReports.add("reporting-498VRSufOw");
+        // SSL Inspector Summary
+        ReservedReports.add("ssl-inspector-ggDy9pSApA");
+        // Scanned Sessions
+        ReservedReports.add("ssl-inspector-F10QTQJPXF");
+        // Scanned Sessions
+        ReservedReports.add("shield-2ObNkapIEq");
+        // Spam Blocker Summary
+        ReservedReports.add("spam-blocker-gnmDTFRS");
+        // Email Usage (all)
+        ReservedReports.add("spam-blocker-exreIeeR");
+        // Spam Blocker Lite Summary
+        ReservedReports.add("spam-blocker-lite-DniRBEni");
+        // Email Usage (all)
+        ReservedReports.add("spam-blocker-lite-iZV0Z13m");
+        // CPU Load
+        ReservedReports.add("system-LJnwhWuJiN");
+        // Memory Usage
+        ReservedReports.add("system-fgQnUn1Tle");
+        // Disk Usage
+        ReservedReports.add("system-6iYMGsnldQ");
+        // Highest Active Hosts
+        ReservedReports.add("system-lL959lz7qu");
+        // Virus Blocker FTP Summary
+        ReservedReports.add("virus-blocker-ugosjuGk");
+        // Virus Blocker Email Summary
+        ReservedReports.add("virus-blocker-dR0pxxoH");
+        // Virus Blocker Web Summary
+        ReservedReports.add("virus-blocker-bCgxepqj");
+        // Web Usage (all)
+        ReservedReports.add("virus-blocker-9gTFTMGF");
+        // FTP Usage (all)
+        ReservedReports.add("virus-blocker-JJ05hQYG");
+        // Email Usage (all)
+        ReservedReports.add("virus-blocker-R61SMfc9");
+        // Virus Blocker Lite FTP Summary
+        ReservedReports.add("virus-blocker-lite-pi3IfwzM");
+        // Virus Blocker Lite Email Summary
+        ReservedReports.add("virus-blocker-lite-CRxmUhVM");
+        // Virus Blocker Lite Web Summary
+        ReservedReports.add("virus-blocker-lite-omMJnSjI");
+        // Web Usage (all)
+        ReservedReports.add("virus-blocker-lite-Zj70iUtK");
+        // FTP Usage (all)
+        ReservedReports.add("virus-blocker-lite-4v7yTaQa");
+        // Email Usage (all)
+        ReservedReports.add("virus-blocker-lite-lBdJV59j");
+        // WAN Balancer Summary
+        ReservedReports.add("wan-balance-upl31dqKb1");
+        // WAN Failover Summary
+        ReservedReports.add("wan-failover-upl31dqKb1");
+        // Web Cache Summary
+        ReservedReports.add("web-cache-q97vptQHbv");
+        // Cache Hit/Miss Statistics
+        ReservedReports.add("webcache-sYa4T0zsOs");
+        // Web Filter Summary
+        ReservedReports.add("web-filter-q97vptQHbv");
+        // Web Usage
+        ReservedReports.add("web-filter-h0jelsttGp");
+        // Web Filter Lite Summary
+        ReservedReports.add("web-filter-lite-q97vptQHbv");
+        // Web Usage
+        ReservedReports.add("web-filter-lite-9dIdqhMNva");
+        // Web Monitor Summary
+        ReservedReports.add("web-monitor-q97vptQHbv");
+        // Web Usage
+        ReservedReports.add("web-monitor-h0jelsttGp");
 
         // Order matters when processing
         ConditionalPatterns = new LinkedHashMap<ConditionalE,Pattern>();
@@ -527,6 +666,20 @@ public class FixedReports
         variableKeyValues.put("emailTemplate", emailTemplate);
         variableKeyValues.put("FixedReports", this);
         variableKeyValues.put("allowedReportTypes", allowedReportTypes);
+
+        // It would be "better" if the template language could process this directly from the objects...
+        List<String> enabledConfigIds = emailTemplate.getEnabledConfigIds();
+        if(enabledConfigIds != null && enabledConfigIds.size() > 0 && enabledConfigIds.get(0).equals("_recommended")){
+            variableKeyValues.put("enabledConfigIds", ReservedReports);
+        }else{
+            variableKeyValues.put("enabledConfigIds", enabledConfigIds);
+        }
+        List<String> enabledAppIds = emailTemplate.getEnabledAppIds();
+        if(enabledAppIds != null && enabledAppIds.size() > 0 && enabledAppIds.get(0).equals("_recommended")){
+            variableKeyValues.put("enabledAppIds", ReservedReports);
+        }else{
+            variableKeyValues.put("enabledAppIds", enabledAppIds);
+        }
 
         currentParsePass = ParsePass.PRE;
         parseBuffer(inputLines, outputLines, variableKeyValues);
