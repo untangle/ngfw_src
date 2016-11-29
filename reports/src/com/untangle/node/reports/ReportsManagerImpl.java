@@ -539,11 +539,13 @@ public class ReportsManagerImpl implements ReportsManager
         return interfacesInfo;
     }
 
-    public Boolean fixedReportsAllowGraphs(){
+    public Boolean fixedReportsAllowGraphs()
+    {
         return WebBrowser.exists();
     }
 
-    public List<String> getAdminEmailAddresses(){
+    public List<String> getAdminEmailAddresses()
+    {
         LinkedList<String> adminEmailAddresses = new LinkedList<String>();
 
         LinkedList<ReportsUser> reportsUsers = node.getSettings().getReportsUsers();
@@ -563,10 +565,12 @@ public class ReportsManagerImpl implements ReportsManager
             }
         }
 
-        // String[] addresses = new String[adminEmailAddresses.size()];
-        // addresses = adminEmailAddresses.toArray(addresses);
-        // return addresses;
         return adminEmailAddresses;
+    }
+
+    public List<String> getRecommendedReportIds()
+    {
+        return FixedReports.ReservedReports;
     }
 
     protected void updateSystemReportEntries( List<ReportEntry> existingEntries, boolean saveIfChanged )
