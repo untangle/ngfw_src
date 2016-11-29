@@ -499,10 +499,10 @@ JNIEXPORT jint JNICALL JF_Netcap( conntrackDump )
     int count = 0;
     jlong* arr_body = (*env)->GetLongArrayElements(env, arr, 0);
     
-    list_t* list = netcap_nfconntrack_dump( (struct nf_conntrack**)arr_body, arr_length );
+    list_t* list = netcap_nfconntrack_dump();
 
     struct nf_conntrack* entry;
-    while ( list_length( list ) > 0 ) {
+    while ( list_length( list ) > 0 && count < arr_length ) {
         if ( list_pop_head( list, (void**)&entry ) < 0 )
             break;
         if ( entry == NULL ) {
