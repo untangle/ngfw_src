@@ -45,6 +45,12 @@ Depends: untangle-vm, untangle-casing-http, untangle-base-web-filter, untangle-w
 Description: Web Filter Lite
  The Web Filter Lite application.
 
+Package: untangle-node-web-monitor
+Architecture: all
+Depends: untangle-vm, untangle-casing-http, untangle-base-web-filter
+Description: Web Monitor
+ The Web Monitor application.
+
 Package: untangle-node-virus-blocker-lite
 Architecture: all
 Conflicts: untangle-node-clam
