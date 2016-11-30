@@ -231,7 +231,16 @@ public class VirusFileManager extends OutputStream
 
     public void position(int location)
     {
-        if (memoryMode == true) return;
+        /*
+         * This is only called when the HTTP handler switches to trickle mode to
+         * position the input stream at the end of the file. In memory mode we
+         * clear our buffer since it has already been streamed to the client.
+         */
+
+        if (memoryMode == true) {
+            memoryBuffer.clear();
+            return;
+        }
 
         try {
             fileInChannel.position(location);
