@@ -153,6 +153,20 @@ Ext.define('Webui.config.network', {
             {name:"PROTOCOL",displayName: i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true}
         ];
     },
+    getHostname: function() {
+        var host = "";
+        var domain = "";
+        try {
+            host = this.settings.hostName;
+            domain = this.settings.domainName;
+        } catch (e) {
+            Ung.Util.rpcExHandler(e);
+        }
+        if ( domain !== null && domain !== "" )
+            return host + "." + domain;
+        else
+            return host;
+    },
     //asynchronous load of device status and interface status
     loadDeviceAndInterfaceStatus: function(refresh) {
         if(refresh) {
@@ -2735,7 +2749,7 @@ Ext.define('Webui.config.network', {
                 }, {
                     xtype: 'component',
                     margin: '0 0 10 25',
-                    html: Ext.String.format( i18n._( 'Current Hostname: {0}'), '<i>' + this.settings.hostName + '</i>' )
+                    html: i18n._( 'Current Hostname' ) + ':<i>' + this.getHostname() + '</i>'
                 }, {
                     xtype: 'radio',
                     boxLabel: i18n._('Use Manually Specified Address'),
