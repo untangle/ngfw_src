@@ -14,9 +14,10 @@ import remote_control
 import test_registry
 import global_functions
 
-# we have two special files with known MD5's that we use for testing the cloud scanner
-md5SmallFile = "0f14ddcbb42bd6a8af5b820a4f52572b"
-md5LargeFile = "e223ff196471639c8cc4b8d3d1d444a9"
+# we have three special files with known MD5's that we use for testing the cloud scanner and memory mode
+md5SmallVirus = "0f14ddcbb42bd6a8af5b820a4f52572b"
+md5LargeVirus = "e223ff196471639c8cc4b8d3d1d444a9"
+md5LargeClean = "b3215c06647bc550406a9c8ccc378756"
 
 #
 # Just extends the virus base tests
@@ -85,8 +86,8 @@ class VirusBlockTests(VirusBlockerBaseTests):
         result = remote_control.runCommand("wget -q -O /tmp/temp_230_httpVirusBlocked_file http://test.untangle.com/test/UntangleVirus.exe")
         assert (result == 0)
         md5TestNum = remote_control.runCommand("\"md5sum /tmp/temp_230_httpVirusBlocked_file | awk '{print $1}'\"", stdout=True)
-        print "md5SmallFile <%s> vs md5TestNum <%s>" % (md5SmallFile, md5TestNum)
-        assert (md5SmallFile != md5TestNum)
+        print "md5SmallVirus <%s> vs md5TestNum <%s>" % (md5SmallVirus, md5TestNum)
+        assert (md5SmallVirus != md5TestNum)
 
     # test the cloud scanner with http using our special large test virus
     def test_240_httpCloudLargeBlocked(self):
@@ -94,8 +95,8 @@ class VirusBlockTests(VirusBlockerBaseTests):
         result = remote_control.runCommand("wget -q -O /tmp/temp_240_httpVirusBlocked_file http://test.untangle.com/test/UntangleLargeVirus.exe")
         assert (result == 0)
         md5TestNum = remote_control.runCommand("\"md5sum /tmp/temp_240_httpVirusBlocked_file | awk '{print $1}'\"", stdout=True)
-        print "md5LargeFile <%s> vs md5TestNum <%s>" % (md5LargeFile, md5TestNum)
-        assert (md5LargeFile != md5TestNum)
+        print "md5LargeVirus <%s> vs md5TestNum <%s>" % (md5LargeVirus, md5TestNum)
+        assert (md5LargeVirus != md5TestNum)
 
     # test the cloud scanner with ftp using our special small test virus
     def test_250_ftpCloudSmallBlocked(self):
@@ -106,8 +107,8 @@ class VirusBlockTests(VirusBlockerBaseTests):
         result = remote_control.runCommand("wget -q -O /tmp/temp_250_ftpVirusBlocked_file ftp://" + global_functions.ftpServer + "/test/UntangleVirus.exe")
         assert (result == 0)
         md5TestNum = remote_control.runCommand("\"md5sum /tmp/temp_250_ftpVirusBlocked_file | awk '{print $1}'\"", stdout=True)
-        print "md5SmallFile <%s> vs md5TestNum <%s>" % (md5SmallFile, md5TestNum)
-        assert (md5SmallFile != md5TestNum)
+        print "md5SmallVirus <%s> vs md5TestNum <%s>" % (md5SmallVirus, md5TestNum)
+        assert (md5SmallVirus != md5TestNum)
 
     # test the cloud scanner with ftp using our special large test virus
     def test_260_ftpCloudLargeBlocked(self):
@@ -118,11 +119,20 @@ class VirusBlockTests(VirusBlockerBaseTests):
         result = remote_control.runCommand("wget -q -O /tmp/temp_260_ftpVirusBlocked_file ftp://" + global_functions.ftpServer + "/test/UntangleLargeVirus.exe")
         assert (result == 0)
         md5TestNum = remote_control.runCommand("\"md5sum /tmp/temp_260_ftpVirusBlocked_file | awk '{print $1}'\"", stdout=True)
-        print "md5LargeFile <%s> vs md5TestNum <%s>" % (md5LargeFile, md5TestNum)
-        assert (md5LargeFile != md5TestNum)
+        print "md5LargeVirus <%s> vs md5TestNum <%s>" % (md5LargeVirus, md5TestNum)
+        assert (md5LargeVirus != md5TestNum)
+
+    # test the cloud scanner with http using our special large clean file
+    def test_270_httpMemoryLargeClean(self):
+        remote_control.runCommand("rm -f /tmp/temp_270_httpMemoryClean_file")
+        result = remote_control.runCommand("wget -q -O /tmp/temp_270_httpMemoryClean_file http://test.untangle.com/5MB.zip")
+        assert (result == 0)
+        md5TestNum = remote_control.runCommand("\"md5sum /tmp/temp_270_httpMemoryClean_file | awk '{print $1}'\"", stdout=True)
+        print "md5LargeClean <%s> vs md5TestNum <%s>" % (md5LargeClean, md5TestNum)
+        assert (md5LargeClean == md5TestNum)
 
     # turn off forceMemoryMode when we are finished
-    def test_270_disableForceMemoryScanMode(self):
+    def test_280_disableForceMemoryScanMode(self):
         virusSettings = self.node.getSettings()
         assert (virusSettings['forceMemoryMode'] == True)
 
