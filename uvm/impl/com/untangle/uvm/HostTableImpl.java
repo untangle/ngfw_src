@@ -739,15 +739,23 @@ public class HostTableImpl implements HostTable
                     }
                     if ( UvmContextFactory.context().licenseManager() != null ) {
                         int seatLimit = UvmContextFactory.context().licenseManager().getSeatLimit();
-                        int excess = hostTable.size() - seatLimit;
-                        // if there number of unlicensed hosts is more than it should be - reduce it
-                        if ( numUnlicensed > excess ) {
-                            int reduction = numUnlicensed - excess;
+                        int available = seatLimit - getCurrentActiveSize();
+                        // if there are unlicensed hosts
+                        // and there are unused licenses available
+                        // reassign the unused licenses to hosts that need them
+                        if ( numUnlicensed > 0 && available > 0 ) {
+
+                            int reassignCount = 0;
+                            if ( numUnlicensed > available )
+                                reassignCount = available;
+                            else
+                                reassignCount = numUnlicensed;
+                            
                             for (HostTableEntry entry : entries) {
                                 if (!entry.getEntitled()) {
                                     entry.setEntitled( true );
-                                    reduction--;
-                                    if ( reduction < 1 )
+                                    reassignCount--;
+                                    if ( reassignCount < 1 )
                                         break;
                                 }
                             }
