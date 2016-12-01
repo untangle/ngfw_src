@@ -744,6 +744,7 @@ public class HostTableImpl implements HostTable
                         // and there are unused licenses available
                         // reassign the unused licenses to hosts that need them
                         if ( numUnlicensed > 0 && available > 0 ) {
+                            logger.debug( "Redistributing licenses: " + numUnlicensed + " unlicensed hosts and " + available + " licenses available." );
 
                             int reassignCount = 0;
                             if ( numUnlicensed > available )
@@ -753,6 +754,7 @@ public class HostTableImpl implements HostTable
                             
                             for (HostTableEntry entry : entries) {
                                 if (!entry.getEntitled()) {
+                                    logger.debug( "Granting host " + entry.getAddress() + " entitlement." );
                                     entry.setEntitled( true );
                                     reassignCount--;
                                     if ( reassignCount < 1 )
