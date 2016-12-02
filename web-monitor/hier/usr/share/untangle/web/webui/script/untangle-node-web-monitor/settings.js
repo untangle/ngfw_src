@@ -1,6 +1,6 @@
 Ext.define('Webui.untangle-node-web-monitor.settings',{
     extend:'Webui.untangle-base-web-filter.settings',
-    helpSourceName: 'web_filter',
+    helpSourceName: 'web_monitor',
     getAppSummary: function() {
         return i18n._("Web monitor scans and categorizes web traffic to monitor and enforce network usage policies.");
     },

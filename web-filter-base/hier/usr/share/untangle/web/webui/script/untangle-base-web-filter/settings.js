@@ -521,7 +521,9 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
     buildGridFilterRules: function() {
         this.gridFilterRules = Ext.create('Ung.grid.Panel',{
             name: "gridFilterRules",
-            helpSource: 'web_filter_rules',
+            //helpSource: 'web_filter_rules',
+            //helpSource: 'web_filter_lite_rules',
+            helpSource: this.helpSourceName + '_rules',
             settingsCmp: this,
             height: 500,
             hasReorder: true,
@@ -636,7 +638,6 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
             //helpSource: 'web_filter_advanced',
             //helpSource: 'web_filter_lite_advanced',
             helpSource: this.helpSourceName + '_advanced',
-
             title: i18n._('Advanced'),
             cls: 'ung-panel',
             autoScroll: true,
