@@ -223,6 +223,7 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
                 align: 'stretch'
             },
             items: [{
+                name: 'categoriesPanelHeader',
                 title: i18n . _("Categories"),
                 html: i18n . _("Block or flag access to sites associated with the specified category.")
             }, this.gridCategories ]
@@ -328,6 +329,7 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
                 align: 'stretch'
             },
             items: [{
+                name: 'blockedSitesPanelHeader',
                 title: i18n . _("Blocked Sites"),
                 html: i18n . _("Block or flag access to the specified site.")
             }, this.gridBlockedSites ]
@@ -417,6 +419,7 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
                 align: 'stretch'
             },
             items: [{
+                name: 'allowedSitesPanelHeader',
                 title: i18n . _("Pass Sites"),
                 html: i18n . _("Allow access to the specified site regardless of matching block policies.")
             }, this.gridAllowedSites ]
@@ -506,6 +509,7 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
                 align: 'stretch'
             },
             items: [{
+                name: 'allowedClientsPanelHeader',
                 title: i18n . _("Pass Clients"),
                 html: i18n . _("Allow access for client networks regardless of matching block policies.")
             }, this.gridAllowedClients ]
