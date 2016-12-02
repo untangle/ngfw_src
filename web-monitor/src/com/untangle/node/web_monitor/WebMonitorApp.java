@@ -29,6 +29,7 @@ import com.untangle.node.web_filter.WebFilterBase;
 import com.untangle.node.web_filter.WebFilterReplacementGenerator;
 import com.untangle.node.web_filter.WebFilterSettings;
 import com.untangle.node.web_filter.WebFilterEvent;
+import com.untangle.node.web_filter.WebFilterRule;
 import com.untangle.node.web_filter.WebFilterDecisionEngine;
 import com.untangle.node.web_filter.WebFilterHttpsSniHandler;
 import com.untangle.node.web_filter.WebFilterQuicHandler;
@@ -203,9 +204,31 @@ public class WebMonitorApp extends WebFilterBase
     public void initializeSettings(WebFilterSettings settings)
     {
         LinkedList<GenericRule> categories = new LinkedList<GenericRule>();
-        addCategories(categories);
 
-        // for web monitor we change all blocked to flagged only
+        addCategories(categories);
+        settings.setCategories(categories);
+    }
+
+    @Override
+    public void fixupSetSettings(WebFilterSettings argSettings)
+    {
+        super.fixupSetSettings(argSettings);
+
+        /*
+         * This hook function is called just before the base app writes and
+         * activates new settings, so this is where we look for and disable the
+         * block flag on all rules since we do monitoring only.
+         */
+
+        List<WebFilterRule> filterRules = argSettings.getFilterRules();
+        for (WebFilterRule item : filterRules) {
+            if (item.getBlocked()) {
+                item.setBlocked(false);
+                item.setFlagged(true);
+            }
+        }
+
+        List<GenericRule> categories = argSettings.getCategories();
         for (GenericRule item : categories) {
             if (item.getBlocked()) {
                 item.setBlocked(false);
@@ -213,6 +236,12 @@ public class WebMonitorApp extends WebFilterBase
             }
         }
 
-        settings.setCategories(categories);
+        List<GenericRule> blockedUrls = argSettings.getBlockedUrls();
+        for (GenericRule item : blockedUrls) {
+            if (item.getBlocked()) {
+                item.setBlocked(false);
+                item.setFlagged(true);
+            }
+        }
     }
 }
