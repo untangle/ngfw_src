@@ -37,27 +37,36 @@ def get_keys(module):
     module_source_directory = ngfw.get_module_directory(module)
 
     full_file_name = None
+    process_json_file = None
     for root, dir_names, file_names in os.walk(module_source_directory):
         for file_name in fnmatch.filter(file_names, '*.js'):
             full_file_name = root + "/" + file_name
 
             report_event_match = re.search(ngfw.regex_json_parse, full_file_name)
+            process_json_file = False
             if report_event_match:
+                # Attempt to pull known fields  from a json file
+                process_json_file = True
                 report_file = open(full_file_name)
-                settings = json.load(report_file)
-                report_file.close()
+                try:
+                    settings = json.load(report_file)
+                    report_file.close()
 
-                pot.load()
+                    pot.load()
 
-                for report_field in ngfw.report_fields:
-                    if report_field in settings:
-                        record = i18n.PoRecord()
-                        record.add_msg_id(settings[report_field])
-                        record.add_comment(": " + full_file_name)
-                        pot.add_record(record)
+                    for report_field in ngfw.report_fields:
+                        if report_field in settings:
+                            record = i18n.PoRecord()
+                            record.add_msg_id(settings[report_field])
+                            record.add_comment(": " + full_file_name)
+                            pot.add_record(record)
 
-                pot.save()
-            else:
+                    pot.save()
+                except:
+                    report_file.close()
+                    process_json_file = False
+
+            if process_json_file == False:
                 call([
                     "xgettext",
                     "-j",

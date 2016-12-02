@@ -1,8 +1,10 @@
 {
     "copyright": "Untangle, Inc.",
     "directories": [
-		"work",
-		"hades"
+        "ngfw_pkgs",
+        "ngfw_src",
+		"ngfw_hades-pkgs",
+		"ngfw_hades-src"
 	],
     "json_parse_directories":[
         "reports",
