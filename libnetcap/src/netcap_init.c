@@ -100,12 +100,12 @@ static int _netcap_init()
         ip_saddr = 22;
         ip_sendnfmark = 24;
     }
-    else if ( strstr(utsn.release,"3.0.35") != NULL ) {
+    else if ( strstr(utsn.release,"3.0") != NULL ) {
         ip_transparent = 19;
         ip_saddr = 24;
         ip_sendnfmark = 25;
     }
-    else if ( strstr(utsn.release,"3.2.0") != NULL ) {
+    else if ( strstr(utsn.release,"3.2") != NULL ) {
         ip_transparent = 19;
         ip_saddr = 24;
         ip_sendnfmark = 25;
@@ -122,24 +122,26 @@ static int _netcap_init()
         ip_sendnfmark = 25;
         is_new_kernel = 316;
     }
-    else if ( strstr(utsn.release,"4.4.3") != NULL ) {
-        ip_transparent = 19;
-        ip_saddr = 24;
-        ip_sendnfmark = 25;
-        is_new_kernel = 443;
-    }
     else if ( strstr(utsn.release,"3.18") != NULL ) {
         ip_transparent = 19;
         ip_saddr = 24;
         ip_sendnfmark = 25;
         is_new_kernel = 318;
     }
+    else if ( strstr(utsn.release,"4.4.3") != NULL ) {
+        ip_transparent = 19;
+        ip_saddr = 24;
+        ip_sendnfmark = 25;
+        is_new_kernel = 443;
+    }
     else {
         errlog( ERR_WARNING, "Unknown kernel: %s\n", utsn.release );
+        errlog( ERR_WARNING, "Assuming 4.0.0\n" );
         /* unknown kernel */ 
         ip_transparent = 19;
         ip_saddr = 24;
         ip_sendnfmark = 25;
+        is_new_kernel = 400;
     }
     
     if (netcap_sesstable_init()<0)
