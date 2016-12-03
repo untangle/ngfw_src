@@ -128,7 +128,7 @@ static int _netcap_init()
         ip_sendnfmark = 25;
         is_new_kernel = 443;
     }
-    else if ( strstr(utsn.release,"3.18.38") != NULL ) {
+    else if ( strstr(utsn.release,"3.18") != NULL ) {
         ip_transparent = 19;
         ip_saddr = 24;
         ip_sendnfmark = 25;
