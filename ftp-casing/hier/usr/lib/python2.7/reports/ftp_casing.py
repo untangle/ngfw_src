@@ -1,23 +1,16 @@
-import reports.engine
 import reports.sql_helper as sql_helper
-import mx
-import sys
 
-from reports.engine import Node
+@sql_helper.print_timing
+def generate_tables():
+    __create_ftp_events()
 
-class FtpCasing(Node):
-    def __init__(self):
-        Node.__init__(self, 'untangle-casing-ftp', 'FTP')
-
-    def parents(self):
-        return ['untangle-vm']
-
-    def create_tables(self):
-        self.__create_ftp_events()
-
-    @sql_helper.print_timing
-    def __create_ftp_events(self):
-        sql_helper.create_table("""\
+@sql_helper.print_timing
+def cleanup_tables(cutoff):
+    sql_helper.clean_table("ftp_events", cutoff)
+    
+@sql_helper.print_timing
+def __create_ftp_events():
+    sql_helper.create_table("""\
 CREATE TABLE reports.ftp_events (
     event_id bigserial,
     time_stamp timestamp without time zone,
@@ -49,12 +42,3 @@ CREATE TABLE reports.ftp_events (
                                  "virus_blocker_clean",
                                  "virus_blocker_lite_clean"])
 
-        sql_helper.rename_column('ftp_events','clam_clean','virus_blocker_lite_clean') # 11.2
-        sql_helper.rename_column('ftp_events','clam_name','virus_blocker_lite_name') # 11.2
-        sql_helper.rename_column('ftp_events','virusblocker_clean','virus_blocker_clean') # 11.2
-        sql_helper.rename_column('ftp_events','virusblocker_name','virus_blocker_name') # 11.2
-
-    def reports_cleanup(self, cutoff):
-        sql_helper.clean_table("ftp_events", cutoff)
-
-reports.engine.register_node(FtpCasing())
