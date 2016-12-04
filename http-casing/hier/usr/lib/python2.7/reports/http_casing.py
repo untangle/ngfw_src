@@ -1,23 +1,16 @@
-import reports.engine
 import reports.sql_helper as sql_helper
-import mx
-import sys
 
-from reports.engine import Node
+@sql_helper.print_timing
+def generate_tables():
+    __create_http_events()
 
-class HttpCasing(Node):
-    def __init__(self):
-        Node.__init__(self, 'untangle-casing-http', 'HTTP')
-
-    def parents(self):
-        return ['untangle-vm']
-
-    def create_tables(self):
-        self.__create_http_events()
-
-    @sql_helper.print_timing
-    def __create_http_events(self):
-        sql_helper.create_table("""\
+@sql_helper.print_timing
+def cleanup_tables(cutoff):
+    sql_helper.clean_table("http_events", cutoff)
+    
+@sql_helper.print_timing
+def __create_http_events():
+    sql_helper.create_table("""\
 CREATE TABLE reports.http_events (
     request_id bigint NOT NULL,
     time_stamp timestamp NOT NULL,
@@ -78,7 +71,4 @@ CREATE TABLE reports.http_events (
                                  "virus_blocker_lite_clean",
                                  "ad_blocker_action"])
 
-    def reports_cleanup(self, cutoff):
-        sql_helper.clean_table("http_events", cutoff)
 
-reports.engine.register_node(HttpCasing())
