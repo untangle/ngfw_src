@@ -54,16 +54,8 @@ import reports.sql_helper as sql_helper
 
 parser = ArgumentParser()
 parser.parse_args()
-
 sql_helper.DBDRIVER = DRIVER
-
-if DRIVER == "postgresql":
-     sql_helper.SCHEMA = "reports"
-elif DRIVER == "sqlite":
-     sql_helper.SCHEMA = "main"
-else:
-     print("Unknown driver: " + driver)
-     sys.exit(1)
+#sql_helper.PRINT_TIMINGS = True
 
 if DRIVER == "postgresql":
      os.system("createuser -U postgres -dSR untangle >/dev/null 2>&1")
@@ -71,7 +63,7 @@ if DRIVER == "postgresql":
      os.system("createlang -U postgres plpgsql uvm >/dev/null 2>&1");
 
 try:
-     sql_helper.create_schema(sql_helper.SCHEMA);
+     sql_helper.create_schema(sql_helper.schema());
 except Exception:
      print("Failed to create schema")
      traceback.print_exc()
@@ -87,7 +79,7 @@ for f in os.listdir(REPORTS_PYTHON_DIR):
           #obj = eval(name)
           try:
                if "generate_tables" in dir(app):
-                    print "%s.generate_tables()" % name
+                    # print "%s.generate_tables()" % name
                     app.generate_tables()
           except:
                print "%s.generate_tables() Exception:" % name
