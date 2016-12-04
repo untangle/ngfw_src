@@ -9,7 +9,7 @@ from uvm.settings_reader import get_node_settings
 
 def usage():
      print """\
-usage: %s [options]
+usage: %s [options] <retention in days>
 Options:
     -d <driver>     : "postgresql" or "sqlite"
 """ % sys.argv[0]
@@ -39,16 +39,13 @@ class ArgumentParser(object):
 
 DRIVER = 'postgresql'
 PREFIX = '@PREFIX@'
-REPORTS_PYTHON_DIR = '%s/usr/lib/python%d.%d' % (PREFIX, sys.version_info[0], sys.version_info[1])
-NODE_MODULE_DIR = '%s/reports/node' % REPORTS_PYTHON_DIR
+PYTHON_DIR = '%s/usr/lib/python%d.%d' % (PREFIX, sys.version_info[0], sys.version_info[1])
+REPORTS_PYTHON_DIR = '%s/reports' % (PYTHON_DIR)
 
 if (PREFIX != ''):
-     sys.path.insert(0, REPORTS_PYTHON_DIR)
+     sys.path.insert(0, PYTHON_DIR)
 
-import reports.engine
 import reports.sql_helper as sql_helper
-from reports.log import *
-logger = getLogger(__name__)
 
 parser = ArgumentParser()
 args = parser.parse_args()
@@ -60,7 +57,7 @@ if DRIVER == "postgresql":
 elif DRIVER == "sqlite":
      sql_helper.SCHEMA = "main"
 else:
-     logger.warn("Unknown driver: " + driver)
+     print("Unknown driver: " + driver)
      sys.exit(1)
 
 if len(args) < 1:
@@ -73,9 +70,23 @@ try:
 except:
      usage()
      
-reports_cutoff = mx.DateTime.today() - mx.DateTime.DateTimeDelta(db_retention)
+cutoff = mx.DateTime.today() - mx.DateTime.DateTimeDelta(db_retention)
 
-reports.engine.init_engine(NODE_MODULE_DIR)
-reports.engine.reports_cleanup(reports_cutoff)     
+for f in os.listdir(REPORTS_PYTHON_DIR):
+     if f.endswith('py'):
+          (m, e) = os.path.splitext(f)
+          if "__init__" == m:
+               continue
+          name = 'reports.%s' % m
+          obj = __import__('reports.%s' % m)
+          app = getattr(obj,m)
+          #obj = eval(name)
+          try:
+               if "cleanup_tables" in dir(app):
+                    print "%s.cleanup_tables()" % name
+                    app.cleanup_tables( cutoff )
+          except:
+               print "%s.cleanup_tables() Exception:" % name
+               traceback.print_exc()
     
 

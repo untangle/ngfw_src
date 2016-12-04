@@ -393,22 +393,6 @@ public class ReportEntry implements Serializable, JSONString
         String generateSeriesQuery = generateSeriesQuery( startDate, endDate, dataInterval );
 
         /**
-         * generateSeriesQuery
-         * generateSeriesQuery is just a list of times to be used to left join
-         * to ensure that all times have rows, even if there is no data for them
-         */
-        if ( dataInterval.equals("tenminute") )
-            generateSeriesQuery = " SELECT generate_series( " +
-                " date_trunc( 'hour', " + dateFormat(startDate) + "::timestamp ) + INTERVAL '10 min' * ROUND(date_part('minute', " + dateFormat(startDate) + "::timestamp)/10.0), " + 
-                " " + dateFormat(endDate)   + "::timestamp , " +
-                " '10 minute' ) as time_trunc ";
-        else
-            generateSeriesQuery = " SELECT generate_series( " +
-                " date_trunc( '" + dataInterval + "', " + dateFormat(startDate) + "::timestamp), " + 
-                " " + dateFormat(endDate)   + "::timestamp , " +
-                " '1 " + dataInterval + "' ) as time_trunc ";
-            
-        /**
          * distinctQuery
          * This querys the distinct values that will be used to detemine the columns in the final result
          */
@@ -514,13 +498,11 @@ public class ReportEntry implements Serializable, JSONString
         try {
             logger.info("XXX sql: " + sql);
             java.sql.PreparedStatement statement = conn.prepareStatement( sql );
-
-            logger.warn("XXX sql: " + sql);
             SqlCondition.setPreparedStatementValues( statement, conditions, getTable() );
 
             return statement;
         } catch ( Exception e) {
-            logger.warn("SQL Exception:", e);
+            logger.warn("SQL Exception. Query: " + sql, e);
             throw new RuntimeException("SqlException",e);
         }
 
