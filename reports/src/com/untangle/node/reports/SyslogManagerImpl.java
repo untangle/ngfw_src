@@ -91,7 +91,9 @@ public class SyslogManagerImpl
         }
 
         // restart syslog
-        UvmContextFactory.context().execManager().exec( RSYSLOG + " " + "restart" );
+        File pidFile = new File("/var/run/rsyslogd.pid");
+        if (pidFile.exists())
+            UvmContextFactory.context().execManager().exec( RSYSLOG + " " + "restart" );
     }
     
     public static void setEnabled(ReportsSettings reportsSettings)
