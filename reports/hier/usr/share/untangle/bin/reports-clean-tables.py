@@ -49,16 +49,8 @@ import reports.sql_helper as sql_helper
 
 parser = ArgumentParser()
 args = parser.parse_args()
-
 sql_helper.DBDRIVER = DRIVER
-
-if DRIVER == "postgresql":
-     sql_helper.SCHEMA = "reports"
-elif DRIVER == "sqlite":
-     sql_helper.SCHEMA = "main"
-else:
-     print("Unknown driver: " + driver)
-     sys.exit(1)
+#sql_helper.PRINT_TIMINGS = True
 
 if len(args) < 1:
      usage()
@@ -83,7 +75,7 @@ for f in os.listdir(REPORTS_PYTHON_DIR):
           #obj = eval(name)
           try:
                if "cleanup_tables" in dir(app):
-                    print "%s.cleanup_tables()" % name
+                    # print "%s.cleanup_tables()" % name
                     app.cleanup_tables( cutoff )
           except:
                print "%s.cleanup_tables() Exception:" % name

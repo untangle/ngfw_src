@@ -840,6 +840,13 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
             logger.warn("Conversion Exception",e);
         }
 
+        /**
+         * If this is a diskless install, switch to sqlite (now support in 12.2)
+         */
+        if (UvmContextFactory.context().isDiskless()) {
+            settings.setDbDriver( "sqlite" );
+        }
+
         setSettings( settings );
     }
 

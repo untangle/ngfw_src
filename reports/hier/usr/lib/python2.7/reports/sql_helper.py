@@ -17,11 +17,11 @@ DEFAULT_TIME_FIELD = 'time_stamp'
 DEFAULT_SLICES = 150
 
 DBDRIVER = 'postgresql'
-SCHEMA = 'reports'
 
 UNLOGGED_ENABLED = False
 EXTRA_INDEXES_ENABLED = True
 CONNECTION_STRING = "dbname=uvm user=postgres"
+PRINT_TIMINGS = False
 
 class Cursor(psycopg2.extensions.cursor):
     def execute(self, sql, args=None):
@@ -42,6 +42,7 @@ class Connection(psycopg2.extensions.connection):
 
 def print_timing(func):
     def wrapper(*arg):
+        global PRINT_TIMINGS
         filename = 'unknown'
         line_number = '?'
 
@@ -57,7 +58,8 @@ def print_timing(func):
         res = func(*arg)
         t2 = time.time()
 
-        print('%s took %0.1f ms' % (fun_name, (t2-t1)*1000))
+        if PRINT_TIMINGS:
+            print('%s took %0.1f ms' % (fun_name, (t2-t1)*1000))
         return res
 
     return wrapper
@@ -143,14 +145,20 @@ def run_sql(sql, args=None, connection=None, auto_commit=True, force_propagate=F
         except:
             pass
 
+def schema():
+    if DBDRIVER == "sqlite":
+        return "main"
+    else:
+        return "reports"
+
 def fullname( tablename ):
     if DBDRIVER == "sqlite":
         return tablename
     else:
-        if tablename.startswith(SCHEMA):
+        if tablename.startswith(schema()):
             return tablename
         else:
-            return SCHEMA+"."+tablename
+            return schema()+"."+tablename
 
 def column_exists( tablename, columnname ):
     if DBDRIVER == "sqlite":
@@ -160,7 +168,7 @@ def column_exists( tablename, columnname ):
         except:
             column_exists = False
     else:
-        column_exists = run_sql_one("select 1 from information_schema.columns where table_schema = '%s' and table_name = '%s' and  column_name = '%s'" % (SCHEMA, tablename, columnname))
+        column_exists = run_sql_one("select 1 from information_schema.columns where table_schema = '%s' and table_name = '%s' and  column_name = '%s'" % (schema(), tablename, columnname))
     if column_exists:
         return True
     return False
@@ -200,7 +208,7 @@ def rename_table( oldname, newname ):
     run_sql(sql)
 
 def convert_column( tablename, columnname, oldtype, newtype ):
-    column_type_exists = run_sql_one("select 1 from information_schema.columns where table_schema = '%s' and table_name = '%s' and  column_name = '%s' and data_type = '%s'" % (SCHEMA, tablename, columnname, oldtype))
+    column_type_exists = run_sql_one("select 1 from information_schema.columns where table_schema = '%s' and table_name = '%s' and  column_name = '%s' and data_type = '%s'" % (schema(), tablename, columnname, oldtype))
     if not column_type_exists:
         return
     sql = "ALTER TABLE %s ALTER COLUMN %s TYPE %s" % (fullname(tablename), columnname, newtype)
@@ -275,11 +283,9 @@ def clean_table(tablename, cutoff):
         if DBDRIVER == "sqlite":
             cutoff = str(long(cutoff.strftime("%s"))*1000)
             sql = "DELETE FROM %s WHERE time_stamp < %s;" % (tablename, cutoff)
-            print( sql )
             run_sql(sql)
         else:
             sql = "DELETE FROM %s WHERE time_stamp < %%s;" % (fullname(tablename))
-            print( sql % cutoff )
             run_sql(sql, (cutoff,))
     else: 
         print("Table %s missing time_stamp column!" % tablename)
@@ -377,7 +383,7 @@ def table_exists( tablename ):
     if DBDRIVER == "sqlite":
         return run_sql_one("SELECT 1 FROM sqlite_master where name = '%s'" % (tablename))
     else:
-        return run_sql_one("SELECT 1 FROM pg_catalog.pg_tables WHERE schemaname = '%s' AND tablename = '%s'" % (SCHEMA, tablename))
+        return run_sql_one("SELECT 1 FROM pg_catalog.pg_tables WHERE schemaname = '%s' AND tablename = '%s'" % (schema(), tablename))
 
 def get_tables( prefix ):
     conn = get_connection()
@@ -444,7 +450,7 @@ BEGIN
 
     first = True
     for d in all_dates:
-        partition_table_name = SCHEMA + "." + tablename + "_" + d.strftime('%Y_%m_%d')
+        partition_table_name = schema() + "." + tablename + "_" + d.strftime('%Y_%m_%d')
 
         trigger_function += """\
     %s (NEW.%s >= '%s' AND NEW.%s < '%s') THEN
@@ -483,7 +489,7 @@ def __trigger_exists( tablename, trigger_name ):
         curs.execute("""
 SELECT 1 FROM information_schema.triggers
 WHERE trigger_schema = %s AND event_object_table = %s AND trigger_name = %s
-""", (SCHEMA, tablename, trigger_name))
+""", (schema(), tablename, trigger_name))
 
         rv = curs.rowcount
     finally:
