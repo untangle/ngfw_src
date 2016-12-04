@@ -160,6 +160,7 @@ class WebMonitorTests(unittest2.TestCase):
                                             'web_filter_flagged', False )
         assert( found )
         nukePassedUrls()
+        assert (result == 0)
 
     @staticmethod
     def finalTearDown(self):
