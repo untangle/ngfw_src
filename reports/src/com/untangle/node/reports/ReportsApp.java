@@ -193,7 +193,6 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
                  * Set global properties
                  * Postgres uses the "reports" schema and supports partitions
                  */
-                ReportsApp.dbDriver = "postgresql";
                 LogEvent.setSchemaPrefix("reports.");
                 LogEvent.setPartitionsSupported(true);
             }
@@ -218,7 +217,6 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
                  * Set global properties
                  * SQlite does not use a schema and does not support partitions
                  */
-                ReportsApp.dbDriver = "sqlite";
                 LogEvent.setSchemaPrefix("");
                 LogEvent.setPartitionsSupported(false);
             }
@@ -370,9 +368,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         }
         else {
             logger.info("Loading Settings...");
-
             this.settings = readSettings;
-
             logger.debug("Settings: " + this.settings.toJSONString());
         }
 
@@ -398,13 +394,20 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
             conversion_12_1_1();
         }
         /**
-         * 12.2.1 conversion
+         * 12.2 conversion
          */
         if ( settings.getVersion() == 3 ) {
-            logger.warn("Running v12.2.1 conversion...");
-            conversion_12_2_1();
+            logger.warn("Running v12.2 conversion...");
+            conversion_12_2_0();
         }
-        
+
+        /**
+         * Start the database
+         */
+        ReportsApp.dbDriver = this.settings.getDbDriver();
+        if ( "postgresql".equals( ReportsApp.dbDriver ) )
+            UvmContextFactory.context().daemonManager().incrementUsageCount( "postgresql" );
+
         /**
          * Report updates
          */
@@ -442,6 +445,9 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
     protected void postStop( boolean isPermanentTransition )
     {
         ReportsApp.eventWriter.stop();
+
+        if ( "postgresql".equals( ReportsApp.dbDriver ) )
+            UvmContextFactory.context().daemonManager().decrementUsageCount( "postgresql" );
     }
 
     @Override
@@ -635,10 +641,19 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
     private ReportsSettings defaultSettings()
     {
         ReportsSettings settings = new ReportsSettings();
-        settings.setVersion( 3 );
+        settings.setVersion( 4 );
         settings.setAlertRules( defaultAlertRules() );
         settings.setEmailTemplates( defaultEmailTemplates() );
         settings.setReportsUsers( defaultReportsUsers( null ) );
+
+        if (UvmContextFactory.context().isDiskless()) {
+            settings.setDbDriver("sqlite");
+            settings.setDbRetention( 1 );
+        } else {
+            settings.setDbDriver("postgresql");
+            settings.setDbRetention( 7 );
+        }
+
         return settings;
     }
     
@@ -648,7 +663,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         // FIXME we should not write to log file directly - we should use logger/syslog
         String cronStr = "#!/bin/sh" + "\n" +
             REPORTS_GENERATE_TABLES_SCRIPT + " >> /var/log/uvm/reports.log 2>&1" + "\n" +
-            REPORTS_CLEAN_TABLES_SCRIPT + " " + settings.getDbRetention() + " >> /var/log/uvm/reports.log 2>&1" + "\n" +
+            REPORTS_CLEAN_TABLES_SCRIPT + " -d " + ReportsApp.dbDriver + " " + settings.getDbRetention() + " >> /var/log/uvm/reports.log 2>&1" + "\n" +
             REPORTS_VACUUM_TABLES_SCRIPT + " >> /var/log/uvm/reports.log 2>&1" + "\n" + 
             REPORTS_GENERATE_FIXED_REPORTS_SCRIPT + " >> /var/log/uvm/reports.log 2>&1" + "\n";
 
@@ -809,7 +824,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         setSettings( settings );
     }
 
-    private void conversion_12_2_1()
+    private void conversion_12_2_0()
     {
         settings.setVersion( 4 );
 
