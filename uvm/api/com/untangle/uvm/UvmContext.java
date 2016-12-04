@@ -370,6 +370,16 @@ public interface UvmContext
     void    setRegistered();
 
     /**
+     * True if the system is running without media
+     * that can withstand heavy writes
+     * SSD -> true
+     * HD -> true
+     * flash -> false
+     * USB -> false
+     */
+    boolean isDiskless();
+
+    /**
      * Returns true if this server is installed on an official Untangle appliance
      *
      * @return a <code>boolean</code> value
@@ -380,13 +390,6 @@ public interface UvmContext
      * Returns the appliance model "u50" (if it exists) 
      */
     String getApplianceModel();
-
-    /**
-     * Returns true if this server was has an activation code
-     *
-     * @return a <code>boolean</code> value
-     */
-    boolean isActivationCode();
 
     /**
      * blocks until startup is complete
