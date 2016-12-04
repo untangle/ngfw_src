@@ -10,9 +10,6 @@ import time
 import sqlite3
 from psycopg2.extensions import DateFromMx
 
-from reports.log import *
-logger = getLogger(__name__)
-
 REQUIRED_TIME_POINTS = [float(s) for s in range(0, 24 * 60 * 60, 30 * 60)]
 HOURLY_REQUIRED_TIME_POINTS = [float(s) for s in range(0, 24 * 60 * 60, 60 * 60)]
 
@@ -56,13 +53,11 @@ def print_timing(func):
 
         fun_name = "%s (%s:%s)" % (func.func_name, filename, line_number)
 
-        #logger.debug('%s running...' % (fun_name))
-
         t1 = time.time()
         res = func(*arg)
         t2 = time.time()
 
-        logger.debug('%s took %0.1f ms' % (fun_name, (t2-t1)*1000))
+        print('%s took %0.1f ms' % (fun_name, (t2-t1)*1000))
         return res
 
     return wrapper
@@ -84,8 +79,8 @@ def get_connection():
         curs.execute("SELECT 1")
         __conn.commit()
     except:
-        logger.warn("could not access database, getting new connection",
-                     exc_info=True)
+        print("could not access database, getting new connection")
+        traceback.print_exc()
         try:
             __conn.close()
         except:
@@ -118,11 +113,11 @@ def run_sql(sql, args=None, connection=None, auto_commit=True, force_propagate=F
         curs = connection.cursor()
         if args:
             if debug:
-                logger.debug("Executing: %s" % re.sub(r'\n', ' ', curs.mogrify(sql, args)))
+                print("Executing: %s" % re.sub(r'\n', ' ', curs.mogrify(sql, args)))
             curs.execute(sql, args)
         else:
             if debug:
-                logger.warn("Executing: %s" % re.sub(r'\n', ' ', sql))
+                print("Executing: %s" % re.sub(r'\n', ' ', sql))
             curs.execute(sql)
 
         if auto_commit:
@@ -174,14 +169,14 @@ def add_column( tablename, columnname, type ):
     if column_exists( tablename, columnname ):
         return
     sql = "ALTER TABLE %s ADD COLUMN %s %s" % (fullname(tablename), columnname, type)
-    logger.info(sql)
+    print(sql)
     run_sql(sql)
 
 def drop_column( tablename, columnname ):
     if not column_exists( tablename, columnname ):
         return
     sql = "ALTER TABLE %s DROP COLUMN %s" % (fullname(tablename), columnname)
-    logger.info(sql)
+    print(sql)
     run_sql(sql)
 
 def rename_column( tablename, oldname, newname ):
@@ -192,7 +187,7 @@ def rename_column( tablename, oldname, newname ):
         #logger.debug("rename failed, column missing: %s %s" % (tablename, oldname))
         return
     sql = "ALTER TABLE %s RENAME COLUMN %s to %s" % (fullname(tablename), oldname, newname)
-    logger.info(sql)
+    print(sql)
     run_sql(sql)
 
 def rename_table( oldname, newname ):
@@ -201,7 +196,7 @@ def rename_table( oldname, newname ):
     if not table_exists( oldname ):
         return
     sql = "ALTER TABLE %s RENAME TO %s" % (fullname(oldname), newname)
-    logger.info(sql)
+    print(sql)
     run_sql(sql)
 
 def convert_column( tablename, columnname, oldtype, newtype ):
@@ -209,7 +204,7 @@ def convert_column( tablename, columnname, oldtype, newtype ):
     if not column_type_exists:
         return
     sql = "ALTER TABLE %s ALTER COLUMN %s TYPE %s" % (fullname(tablename), columnname, newtype)
-    logger.info(sql)
+    print(sql)
     run_sql(sql);
 
 def index_exists( tablename, columnname, unique=False ):
@@ -232,7 +227,7 @@ def create_index( tablename, columnname, unique=False ):
         uniqueStr1=""
         uniqueStr2=""
     sql = 'CREATE %sINDEX %s_%s_%sidx ON %s(%s)' % (uniqueStr2, tablename, columnname, uniqueStr1, fullname(tablename), columnname)
-    logger.info(sql)
+    print(sql)
     run_sql(sql)
 
 def drop_index( tablename, columnname, unique=False ):
@@ -243,7 +238,7 @@ def drop_index( tablename, columnname, unique=False ):
     else:
         uniqueStr1=""
     sql = 'DROP INDEX %s_%s_%sidx' % (fullname(tablename), columnname, uniqueStr1 )
-    logger.info(sql)
+    print(sql)
     run_sql(sql)
                                     
 def rename_index( oldname, newname ):
@@ -251,7 +246,7 @@ def rename_index( oldname, newname ):
     if not already_exists:
         return
     sql = 'ALTER INDEX %s RENAME TO %s' % (fullname(oldname), newname)
-    logger.info(sql)
+    print(sql)
     run_sql(sql)
 
 def create_schema(schema):
@@ -261,18 +256,18 @@ def create_schema(schema):
     if already_exists:
         return
     sql = "CREATE SCHEMA %s" % (schema)
-    logger.info(sql)
+    print(sql)
     run_sql(sql)
 
 def clean_table(tablename, cutoff):
-    logger.info("clean_table " + str(tablename) + " < " + str(cutoff))
+    print("clean_table " + str(tablename) + " < " + str(cutoff))
     
     for t, date in find_table_partitions(tablename):
         # if the entire table is before the date specified, just drop it
         # but only if the *entire* table is before the the cutoff
         day_cutoff = mx.DateTime.Parser.DateTimeFromString("%d-%d-%d"%cutoff.timetuple()[:3])
         if date < day_cutoff:
-            logger.info("DROP TABLE " + str(t))
+            print("DROP TABLE " + str(t))
             drop_table( t )
 
     # delete old events from the main table
@@ -280,14 +275,14 @@ def clean_table(tablename, cutoff):
         if DBDRIVER == "sqlite":
             cutoff = str(long(cutoff.strftime("%s"))*1000)
             sql = "DELETE FROM %s WHERE time_stamp < %s;" % (tablename, cutoff)
-            logger.debug( sql )
+            print( sql )
             run_sql(sql)
         else:
             sql = "DELETE FROM %s WHERE time_stamp < %%s;" % (fullname(tablename))
-            logger.debug( sql % cutoff )
+            print( sql % cutoff )
             run_sql(sql, (cutoff,))
     else: 
-        logger.warn("Table %s missing time_stamp column!" % tablename)
+        print("Table %s missing time_stamp column!" % tablename)
 
 def create_table( table_sql, unique_index_columns=[], other_index_columns=[], create_partitions=True ):
     (schema, tablename) = __get_tablename(table_sql)
@@ -305,7 +300,7 @@ def create_table( table_sql, unique_index_columns=[], other_index_columns=[], cr
 
     # create root table
     if not table_exists( tablename ):
-        logger.info("CREATE %s TABLE %s" % ((UNLOGGED_ENABLED == True and "UNLOGGED" or ""),full_tablename))
+        print("CREATE %s TABLE %s" % ((UNLOGGED_ENABLED == True and "UNLOGGED" or ""),full_tablename))
         run_sql(table_sql)
         # always create time_stamp index
         if column_exists( tablename, "time_stamp") and not index_exists( tablename, "time_stamp", unique=False):
@@ -342,7 +337,7 @@ def create_table( table_sql, unique_index_columns=[], other_index_columns=[], cr
                 start_time = table_start_time
                 end_time = table_start_time + mx.DateTime.RelativeDateTime(days=1)
                 partition_table_sql = "CREATE %s TABLE %s (CHECK (time_stamp >= '%s' AND time_stamp < '%s')) INHERITS (%s)" % ((UNLOGGED_ENABLED == True and "UNLOGGED" or ""), partition_full_tablename, start_time, end_time, full_tablename)
-                logger.info(partition_table_sql)
+                print(partition_table_sql)
                 run_sql(partition_table_sql)
 
                 # always create time_stamp index
@@ -371,9 +366,10 @@ def drop_table( table ):
     try:
         curs = conn.cursor()
         curs.execute('DROP TABLE %s' % fullname(table))
-        logger.debug("dropped table '%s'" % (table))
+        print("dropped table '%s'" % (table))
     except psycopg2.ProgrammingError:
-        logger.debug('cannot drop table: %s' % (table))
+        print('cannot drop table: %s' % (table))
+        traceback.print_exc()
     finally:
         conn.commit()
 
@@ -415,79 +411,6 @@ def find_table_partitions(tablename=None):
             tables.append((t, d))
     return tables
     
-def get_date_range(start_date, hours):
-    #mx.DateTime.today() + mx.DateTime.RelativeDateTime(days=1)
-    #l = int(round((end_date - start_date).days+1))
-    return [start_date + mx.DateTime.RelativeDateTime(hours=i) for i in range(hours)]
-
-def get_required_points(start, end, interval):
-    a = []
-    v = start
-    while v < end:
-        a.append(datetime.datetime.fromtimestamp(v))
-        v = v + interval
-    return a
-
-def get_result_dictionary(curs):
-    row = curs.fetchone()
-
-    i = 0
-    h = {}
-    for desc in curs.description:
-        h[desc[0]] = row[i]
-        i += 1
-
-    return h
-
-def get_averaged_query(sums, table_name, start_date, end_date,
-                       extra_where = [],
-                       extra_fields = [],
-                       time_field = DEFAULT_TIME_FIELD,
-                       time_interval = 60,
-                       debug = False):
-#     time_interval = time.mktime(end_date.timetuple()) - time.mktime(start_date.timetuple())
-#     time_interval = time_interval / slices
-
-    params_regular = { 'table_name' : table_name,
-                       'time_field' : time_field }
-    params_to_quote =  { 'start_date' : DateFromMx(start_date),
-                         'end_date' : DateFromMx(end_date),
-                         'time_interval' : time_interval }
-    
-    query = """
-SELECT date(%%(start_date)s) +
-       date_trunc('second',
-                  (%(time_field)s - %%(start_date)s) / %%(time_interval)s) * %%(time_interval)s
-       AS time"""
-
-    for e in extra_fields:
-        query += ", " + e
-    for s in sums:
-        query += ", " + s
-
-    query += """
-FROM %(table_name)s
-WHERE %(table_name)s.%(time_field)s >= %%(start_date)s AND %(table_name)s.%(time_field)s < %%(end_date)s"""
-
-    for ex in extra_where: # of the form (strTemplate, dictionary)
-        template, h = ex
-        query += "\nAND " + template.replace("%(", "%%(")
-        params_to_quote.update(h)
-
-    query += """
-GROUP by time"""
-
-    for e in extra_fields:
-        query += ", " + e
-
-    query += """
-ORDER BY time ASC"""
-
-    if debug:
-        logger.debug((query % params_regular) % params_to_quote)
-    
-    return query % params_regular, params_to_quote
-
 def __tablename_for_date(tablename, date):
     return "%s_%d_%02d_%02d" % ((tablename,) + date.timetuple()[0:3])
 
@@ -567,9 +490,3 @@ WHERE trigger_schema = %s AND event_object_table = %s AND trigger_name = %s
         conn.commit()
 
     return rv
-
-def date_convert(t, delay=0):
-    try:
-        return mx.DateTime.DateTime(t.year,t.month,t.day,t.hour,t.minute,t.second+1e-6*t.microsecond) + mx.DateTime.DateTimeDeltaFromSeconds(delay)
-    except Exception, e:
-        return t + mx.DateTime.DateTimeDeltaFromSeconds(delay)
