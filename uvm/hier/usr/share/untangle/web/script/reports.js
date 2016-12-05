@@ -889,6 +889,9 @@ Ext.define('Ung.panel.Reports', {
         var i, j, panels = [], reports, me = this;
         for (i = 1; i < categories.length; i += 1) {
             reports = this.allReports[categories[i].getData().category];
+            if(reports === undefined){
+                continue;
+            }
             for (j = 0; j < reports.length; j += 1) {
                 reports[j].icon = this.setEntryIcon(reports[j]);
             }
