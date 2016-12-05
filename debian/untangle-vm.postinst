@@ -56,5 +56,6 @@ fi
 
 # 12.2 upgrade
 rm -rf /usr/share/untangle/web/reports/data
+rm -rf /usr/lib/python2.7/reports/node
 
 exit 0
