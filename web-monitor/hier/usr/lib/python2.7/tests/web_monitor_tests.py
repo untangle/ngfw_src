@@ -104,6 +104,7 @@ class WebMonitorTests(unittest2.TestCase):
 
     # verify flagged site url list works
     def test_023_flaggedUrl(self):
+        raise unittest2.SkipTest("Flag stats not yet enabled")
         pre_events_scan = global_functions.getStatusValue(node, "scan")
         pre_events_flagged = global_functions.getStatusValue(node, "flagged")
 
