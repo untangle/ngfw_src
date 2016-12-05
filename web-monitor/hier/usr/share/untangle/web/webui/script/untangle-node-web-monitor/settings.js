@@ -7,6 +7,7 @@ Ext.define('Webui.untangle-node-web-monitor.settings',{
 
     buildPanelCategories: function() {
         this.callParent(arguments);
+        this.categoriesPanel.helpSource = this.helpSourceName + '_categories';
         this.gridCategories.down('component[dataIndex=blocked]').setVisible(false);
         this.gridCategories.rowEditorInputLines[1].hidden = true;
         var item = this.categoriesPanel.down('component[name=categoriesPanelHeader]');
