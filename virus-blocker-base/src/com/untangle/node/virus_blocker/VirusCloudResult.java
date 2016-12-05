@@ -61,4 +61,9 @@ public class VirusCloudResult implements Serializable, JSONString
         JSONObject jO = new JSONObject(this);
         return jO.toString();
     }
+
+    public String toString()
+    {
+        return toJSONString();
+    }
 }
