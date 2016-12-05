@@ -212,7 +212,7 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
             title: i18n._('Categories'),
             //helpSource: 'web_filter_block_categories',
             //helpSource: 'web_filter_lite_block_categories',
-            helpSource: this.helpSourceName + '_categories',
+            helpSource: this.helpSourceName + '_block_categories',
             cls: 'ung-panel',
             autoScroll: true,
             defaults: {
