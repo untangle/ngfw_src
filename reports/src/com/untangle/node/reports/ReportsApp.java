@@ -114,7 +114,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         if ( newSettings.getReportsUsers().size() > 0){
             for ( ReportsUser user : newSettings.getReportsUsers() ) {
                 if (user.getEmailSummaries()){
-                    if(user.getEmailTemplateIds().size() > 0) {
+                    if( user.getEmailTemplateIds() != null && user.getEmailTemplateIds().size() > 0 ) {
                         /* Walk existing list and map to new values. */
                         List<Integer> oldEmailTemplateIds = user.getEmailTemplateIds();
                         LinkedList<Integer> newEmailTemplateIds = new LinkedList<Integer>();
@@ -612,7 +612,8 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
 
     }
 
-    private LinkedList<ReportsUser> defaultReportsUsers(LinkedList<ReportsUser> reportsUsers){
+    private LinkedList<ReportsUser> defaultReportsUsers(LinkedList<ReportsUser> reportsUsers)
+    {
         List<Integer> templateIds = new LinkedList<Integer>();
         templateIds.add(0);
 

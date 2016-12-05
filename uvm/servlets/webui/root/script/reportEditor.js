@@ -103,8 +103,10 @@ Ext.define("Ung.window.ReportEditor", {
                 return;
             }
             var tables = [], i;
-            for (i = 0; i < result.length;  i += 1) {
-                tables.push({ name: result[i]});
+            if ( result != null && result.length != null ) {
+                for (i = 0; i < result.length;  i += 1) {
+                    tables.push({ name: result[i]});
+                }
             }
             tablesStore.loadData(tables);
         }, this));
