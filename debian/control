@@ -119,7 +119,7 @@ Architecture: all
 Conflicts: untangle-node-reporting
 Replaces: untangle-node-reporting
 Provides: untangle-node-reporting
-Depends: untangle-vm, untangle-postgresql-config
+Depends: untangle-vm, untangle-postgresql-config, sqlite3, python-sqlite
 Description: Reports
  The Reports application.
 
