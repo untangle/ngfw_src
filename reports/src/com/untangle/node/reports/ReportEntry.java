@@ -38,6 +38,7 @@ public class ReportEntry implements Serializable, JSONString
 
     public static enum TimeDataInterval {
         SECOND,
+        TENMINUTE,
         MINUTE,
         HOUR,
         DAY,
