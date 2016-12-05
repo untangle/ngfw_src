@@ -613,8 +613,17 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
     }
 
     private LinkedList<ReportsUser> defaultReportsUsers(LinkedList<ReportsUser> reportsUsers){
+        List<Integer> templateIds = new LinkedList<Integer>();
+        templateIds.add(0);
+
         if(reportsUsers == null){
             reportsUsers = new LinkedList<ReportsUser>();
+        }else{
+            for(ReportsUser reportsUser : reportsUsers){
+                if(reportsUser.getEmailSummaries() && reportsUser.getEmailTemplateIds() == null){
+                    reportsUser.setEmailTemplateIds(templateIds);
+                }
+            }
         }
 
         Boolean adminUserFound = false;
@@ -629,8 +638,6 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
             adminUser.setEmailAddress("admin");
             adminUser.setEmailAlerts(true);
             adminUser.setEmailSummaries(true);
-            List<Integer> templateIds = new LinkedList<Integer>();
-            templateIds.add(0);
             adminUser.setEmailTemplateIds(templateIds);
             reportsUsers.add(adminUser);
         }
