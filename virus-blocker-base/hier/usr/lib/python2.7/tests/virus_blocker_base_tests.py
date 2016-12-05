@@ -6,6 +6,7 @@ import sys
 import os
 import subprocess
 import socket
+import platform
 
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
@@ -137,6 +138,8 @@ class VirusBlockerBaseTests(unittest2.TestCase):
 
     # test that client can block virus http download zip
     def test_015_httpEicarBlocked(self):
+        if platform.machine().startswith('arm'):
+            raise unittest2.SkipTest("local scanner not available on ARM")
         pre_events_scan = global_functions.getStatusValue(node,"scan")
         pre_events_block = global_functions.getStatusValue(node,"block")
 
@@ -151,16 +154,22 @@ class VirusBlockerBaseTests(unittest2.TestCase):
 
     # test that client can block virus http download zip
     def test_016_httpVirusBlocked(self):
+        if platform.machine().startswith('arm'):
+            raise unittest2.SkipTest("local scanner not available on ARM")
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/virus/virus.exe 2>&1 | grep -q blocked")
         assert (result == 0)
 
     # test that client can block virus http download zip
     def test_017_httpVirusZipBlocked(self):
+        if platform.machine().startswith('arm'):
+            raise unittest2.SkipTest("local scanner not available on ARM")
         result = remote_control.runCommand("wget -q -O - http://" + testsite + "/virus/fedexvirus.zip 2>&1 | grep -q blocked")
         assert (result == 0)
 
     # test that client can block a partial fetch after full fetch (using cache)
     def test_018_httpPartialVirusBlockedWithCache(self):
+        if platform.machine().startswith('arm'):
+            raise unittest2.SkipTest("local scanner not available on ARM")
         result = remote_control.runCommand("curl -L http://" + testsite + "/virus/virus.exe 2>&1 | grep -q blocked")
         assert (result == 0)
         result = remote_control.runCommand("curl -L -r '5-' http://" + testsite + "/virus/virus.exe 2>&1 | grep -q blocked")
@@ -191,6 +200,8 @@ class VirusBlockerBaseTests(unittest2.TestCase):
 
     # test that client can block virus ftp download zip
     def test_025_ftpVirusBlocked(self):
+        if platform.machine().startswith('arm'):
+            raise unittest2.SkipTest("local scanner not available on ARM")
         ftp_result = subprocess.call(["ping","-c","1",global_functions.ftpServer ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (ftp_result != 0):
             raise unittest2.SkipTest("FTP server not available")
@@ -218,22 +229,15 @@ class VirusBlockerBaseTests(unittest2.TestCase):
         addPassSite(global_functions.ftpServer)
         remote_control.runCommand("rm -f /tmp/temp_022_ftpVirusBlocked_file")
         result = remote_control.runCommand("wget -q -O /tmp/temp_022_ftpVirusPassSite_file ftp://" + global_functions.ftpServer + "/virus/fedexvirus.zip")
+        nukePassSites()
         assert (result == 0)
         md5TestNum = remote_control.runCommand("\"md5sum /tmp/temp_022_ftpVirusPassSite_file | awk '{print $1}'\"", stdout=True)
         print "md5StdNum <%s> vs md5TestNum <%s>" % (md5StdNum, md5TestNum)
         assert (md5StdNum == md5TestNum)
 
-        events = global_functions.get_events(self.displayName(),'Infected Ftp Events',None,1)
-        assert(events != None)
-        found = global_functions.check_events( events.get('list'), 5,
-                                            "s_server_addr", global_functions.ftpServer,
-                                            "c_client_addr", remote_control.clientIP,
-                                            "uri", "fedexvirus.zip",
-                                            self.shortName() + '_clean', False )
-        assert( found )
-        nukePassSites()
-
     def test_100_eventlog_httpVirus(self):
+        if platform.machine().startswith('arm'):
+            raise unittest2.SkipTest("local scanner not available on ARM")
         fname = sys._getframe().f_code.co_name
         result = remote_control.runCommand("wget -q -O - http://" + testsite + "/virus/eicar.zip?arg=%s 2>&1 | grep -q blocked" % fname)
         assert (result == 0)
@@ -260,6 +264,8 @@ class VirusBlockerBaseTests(unittest2.TestCase):
         assert( found )
 
     def test_102_eventlog_ftpVirus(self):
+        if platform.machine().startswith('arm'):
+            raise unittest2.SkipTest("local scanner not available on ARM")
         ftp_result = subprocess.call(["ping","-c","1",global_functions.ftpServer ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (ftp_result != 0):
             raise unittest2.SkipTest("FTP server not available")
@@ -290,6 +296,8 @@ class VirusBlockerBaseTests(unittest2.TestCase):
         assert( found )
 
     def test_104_eventlog_smtpVirus(self):
+        if platform.machine().startswith('arm'):
+            raise unittest2.SkipTest("local scanner not available on ARM")
         if (not canRelay):
             raise unittest2.SkipTest('Unable to relay through test.untangle.com')
         startTime = datetime.now()
@@ -345,14 +353,21 @@ class VirusBlockerBaseTests(unittest2.TestCase):
         startTime = datetime.now()
         fname = sys._getframe().f_code.co_name
         result = remote_control.runCommand("echo '%s' > /tmp/attachment-%s" % (fname, fname))
-        assert (result == 0)
+        if result != 0:
+            nukePassSites()
+            assert( False )
         # download the email script
         result = remote_control.runCommand("wget -q -O /tmp/email_script.py http://" + testsite + "/test/email_script.py")
-        assert (result == 0)
+        if result != 0:
+            nukePassSites()
+            assert( False )
         result = remote_control.runCommand("chmod 775 /tmp/email_script.py")
-        assert (result == 0)
+        if result != 0:
+            nukePassSites()
+            assert( False )
         # email the file
         result = remote_control.runCommand("/tmp/email_script.py --server=%s --from=junk@test.untangle.com --to=junk@test.untangle.com --subject='%s' --body='body' --file=/tmp/eicar" % (testsiteIP, fname))
+        nukePassSites()
         assert (result == 0)
 
         events = global_functions.get_events(self.displayName(),'Clean Email Events',None,1)
@@ -363,9 +378,10 @@ class VirusBlockerBaseTests(unittest2.TestCase):
                                             self.shortName() + '_clean', True,
                                             min_date=startTime )
         assert( found )
-        nukePassSites()
 
     def test_110_eventlog_smtpSSLVirus(self):
+        if platform.machine().startswith('arm'):
+            raise unittest2.SkipTest("local scanner not available on ARM")
         if (not canRelayTLS):
             raise unittest2.SkipTest('Unable to relay through ' + global_functions.tlsSmtpServerHost)
         startTime = datetime.now()
