@@ -186,6 +186,8 @@ def check_events( events, num_events, *args, **kwargs):
             time_stamp = event.get('time_stamp')
             if type(time_stamp) is int:
                 ts = datetime.datetime.fromtimestamp(time_stamp/1000)
+            elif type(time_stamp) is long:
+                ts = datetime.datetime.fromtimestamp(time_stamp/1000)
             else:
                 ts = datetime.datetime.fromtimestamp(time_stamp['time']/1000)
             if ts < min_date:
