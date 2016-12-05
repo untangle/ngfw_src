@@ -601,8 +601,7 @@ Ext.define('Webui.config.accountRegistrationController', {
             me.getView().cloudManager.accountLogin(function(response, exception) {
                     btn.setDisabled(false);
                     if (exception) {
-                        console.log(ex);
-                        vm.set('error', ex);
+                        vm.set('error', exception);
                         return;
                     }
                     if (!response.success) {
