@@ -19,7 +19,7 @@ public class ReportsUser implements Serializable
     private boolean emailSummaries = true;
     private byte[] passwordHash = null;
     private boolean onlineAccess;
-    private List<Integer> emailTemplateIds;
+    private List<Integer> emailTemplateIds = null;
 
     public ReportsUser() {}
 
