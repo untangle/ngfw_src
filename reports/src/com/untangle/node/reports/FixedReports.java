@@ -583,6 +583,28 @@ public class FixedReports
             ": " + interval + " (" + dateFormatter.format(startDate) + ")" + 
             (emailTemplate.getMobile() == true ? " " + i18nUtil.tr("Mobile") : "");
 
+        // Determine users lists with/without online access for url inclusion
+        List<String> recipientsWithoutOnlineAccess = new ArrayList<String>();
+        List<String> recipientsWithOnlineAccess = new ArrayList<String>();
+        for(ReportsUser user: users){
+            List<String> emailAddresses = null;
+            if(user.getEmailAddress().equals("admin")){
+                emailAddresses = reportsManager.getAdminEmailAddresses();
+            }else{
+                emailAddresses = new ArrayList<String>();
+                emailAddresses.add(user.getEmailAddress());
+            }
+            if(user.getOnlineAccess() == true){
+                recipientsWithOnlineAccess.addAll(emailAddresses);
+            }else{
+                recipientsWithoutOnlineAccess.addAll(emailAddresses);
+            }
+        }
+        if( (recipientsWithOnlineAccess.size() == 0 ) && 
+            (recipientsWithoutOnlineAccess.size() == 0) ){
+            return;
+        }
+
         logger.warn("Generating report for \"" + title + "\"");
 
         Integer browserWidth = 800;
@@ -614,24 +636,6 @@ public class FixedReports
         messageParts = new ArrayList<Map<MailSender.MessagePartsField,String>>();
         messageText = new StringBuilder();
         messageText.append(i18nUtil.tr("HTML Report enclosed.") + "\n\n");
-
-        // Determine users lists with/without online access for url inclusion
-        List<String> recipientsWithoutOnlineAccess = new ArrayList<String>();
-        List<String> recipientsWithOnlineAccess = new ArrayList<String>();
-        for(ReportsUser user: users){
-            List<String> emailAddresses = null;
-            if(user.getEmailAddress().equals("admin")){
-                emailAddresses = reportsManager.getAdminEmailAddresses();
-            }else{
-                emailAddresses = new ArrayList<String>();
-                emailAddresses.add(user.getEmailAddress());
-            }
-            if(user.getOnlineAccess() == true){
-                recipientsWithOnlineAccess.addAll(emailAddresses);
-            }else{
-                recipientsWithoutOnlineAccess.addAll(emailAddresses);
-            }
-        }
 
         List<StringBuilder> inputLines = new ArrayList<StringBuilder>();
         List<StringBuilder> outputLines = new ArrayList<StringBuilder>();
@@ -1660,7 +1664,9 @@ public class FixedReports
             webbrowser.openUrl(url);
             webbrowser.waitForElement("highcharts-0");
             webbrowser.takeScreenshot(filename);
-
+        } catch (org.openqa.selenium.TimeoutException e) {
+            webbrowser.waitForElement("label-1016");
+            webbrowser.takeScreenshot(filename);
         } catch (Exception e) {
             logger.warn("Exception",e);
             return "";
