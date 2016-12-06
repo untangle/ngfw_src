@@ -85,12 +85,28 @@ def verifyIperf(wanIP):
 def findSmtpServer(wan_IP):
     smtp_IP = ""
     smtp_domain = "";
+    match = False
     for smtpServerHostIP in listFakeSmtpServerHosts:
         interfaceNet = smtpServerHostIP[0] + "/" + str(smtpServerHostIP[1])
         if ipaddr.IPAddress(wan_IP) in ipaddr.IPv4Network(interfaceNet):
-            smtp_IP = smtpServerHostIP[0]
-            smtp_domain = smtpServerHostIP[2]
+            match = True
             break
+
+        # Verify that it will pass through our WAN network
+        result = subprocess.check_output("traceroute -n -w 1 -q 1 " + smtpServerHostIP[0], shell=True)
+        space_split = result.split("\n")[1].strip().split()
+        if len(space_split) > 1:
+            try:
+                if ipaddr.IPAddress(space_split[1]) in ipaddr.IPv4Network(wan_IP + "/24"):
+                    match = True
+                    break
+            except Exception,e:
+                continue
+
+    if match is True:
+        smtp_IP = smtpServerHostIP[0]
+        smtp_domain = smtpServerHostIP[2]
+
     return smtp_IP,smtp_domain
 
 def getUDPSpeed( receiverIP, senderIP, targetIP=None, targetRate=None ):
