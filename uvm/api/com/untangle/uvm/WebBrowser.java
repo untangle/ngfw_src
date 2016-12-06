@@ -160,7 +160,7 @@ public class WebBrowser
 	public Boolean waitForElement(String elementId)
 	{
 		Boolean found = false;
-        wait.until(new ExpectedCondition<Boolean>() {
+        found = wait.until(new ExpectedCondition<Boolean>() {
         	public Boolean apply(WebDriver driver) {
             	return driver.findElement(By.id(elementId)) != null;
             }
