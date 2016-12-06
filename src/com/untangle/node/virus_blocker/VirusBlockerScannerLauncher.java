@@ -159,12 +159,16 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
         if (cloudScanner != null) {
             try {
                 synchronized (cloudScanner) {
-                    cloudScanner.wait(CLOUD_SCAN_MAX_MILLISECONDS);
+                    cloudResult = cloudScanner.getCloudResult();
+                    // if the result is not known, wait up to CLOUD_SCAN_MAX_MILLISECONDS for a result
+                    if ( cloudResult == null )  {
+                        cloudScanner.wait(CLOUD_SCAN_MAX_MILLISECONDS);
+                        cloudResult = cloudScanner.getCloudResult();
+                    }
                 }
             } catch (Exception exn) {
                 logger.debug("Exception waiting for CloudScanner: ", exn);
             }
-            cloudResult = cloudScanner.getCloudResult();
         }
 
         if ( this.cloudScan ) {
