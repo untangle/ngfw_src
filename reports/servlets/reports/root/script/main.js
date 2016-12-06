@@ -3,6 +3,7 @@
  */
 var rpc = {}; // the main json rpc object
 var testMode = false;
+var interactiveMode = true;
 
 // Main object class
 Ext.define("Ung.Main", {
@@ -34,6 +35,7 @@ Ext.define("Ung.Main", {
             this.loadTranslations
         ]).then(Ext.bind(function () {
             if(config.reportChart){
+                interactiveMode = false;
                 this.startReportChart(config);
             }else{
                 this.startApplication();
@@ -218,7 +220,6 @@ Ext.define("Ung.Main", {
             var entry = {};
             rpc.reportsManager.getReportEntry(Ext.bind(function (result, exception) {
                 if (Ung.Util.handleException(exception)) {
-                    console.log("nope");
                     return;
                 }
                 this.entry = result;
@@ -241,8 +242,6 @@ Ext.define("Ung.Main", {
                             break;
                         case 'TIME_GRAPH':
                         case 'TIME_GRAPH_DYNAMIC':
-                            console.log(this.entry);
-                            console.log(result.list);
                             this.chart = Ung.charts.timeSeriesChart(this.entry, result.list, this.viewport.down('#highchart').body, false, true);
                             break;
                         default:
