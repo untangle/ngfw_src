@@ -526,7 +526,7 @@ Ext.define('Ung.GroupEditorWindow', {
 Ext.define('Ung.FieldConditionWindow', {
     extend:'Ung.MatcherEditorWindow',
     height: 150,
-    width: 500,
+    width: 530,
     initComponent: function() {
         this.inputLines = [{
             xtype: 'panel',
