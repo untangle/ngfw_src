@@ -25,6 +25,7 @@ Ext.define('Webui.config.hostMonitor', {
         }
         this.gridCurrentHosts.stopAutoRefresh(true);
         this.hide();
+        Ext.destroy(this);
     },
     getHosts: function(handler) {
         if (!this.isVisible()) {
