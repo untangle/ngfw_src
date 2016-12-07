@@ -1466,7 +1466,7 @@ Ext.define('Ung.TableConfig', {
                     sortable: true,
                     dataIndex: 'web_filter_reason'
                 }, {
-                    header: i18n._("Category") + " (Web Filter)",
+                    header: i18n._("Web Category"),
                     width: 120,
                     sortable: true,
                     dataIndex: 'web_filter_category'
