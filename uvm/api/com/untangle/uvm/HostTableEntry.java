@@ -148,6 +148,7 @@ public class HostTableEntry implements Serializable, JSONString
     public boolean getEntitled() { return this.entitled; }
     public void setEntitled( boolean newValue )
     {
+        updateEvent("entitled",this.hostname, (newValue ? "true" : "false"));
         this.entitled = newValue;
         updateAccessTime();
     }
