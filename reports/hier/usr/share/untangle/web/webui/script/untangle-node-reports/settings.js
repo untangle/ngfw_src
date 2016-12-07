@@ -247,7 +247,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
                         emailSummaries: true,
                         emailTemplateIds : {
                             javaClass: "java.util.LinkedList",
-                            list: []
+                            list: [1]
                         },
                         onlineAccess: false,
                         password: null,
