@@ -430,8 +430,11 @@ public class ReportEntry implements Serializable, JSONString
                 timeQuery += ", COALESCE(" +
                     getTimeDataDynamicAggregationFunction() + "(CASE WHEN " + getTimeDataDynamicColumn() + " IS NULL THEN " + getTimeDataDynamicValue() + " END), null) " + 
                     "AS \"None\"";
-            }
-            else {
+            } else if ( distinctValue.trim().equals("") ) {
+                timeQuery += ", COALESCE(" +
+                    getTimeDataDynamicAggregationFunction() + "(CASE WHEN " + getTimeDataDynamicColumn() + " = '" + distinctValue.replaceAll("'","") + "' THEN " + getTimeDataDynamicValue() + " END), null) " + 
+                    "AS \" \"";
+            } else {
                 timeQuery += ", COALESCE(" +
                     getTimeDataDynamicAggregationFunction() + "(CASE WHEN " + getTimeDataDynamicColumn() + " = '" + distinctValue.replaceAll("'","") + "' THEN " + getTimeDataDynamicValue() + " END), null) " + 
                     "AS \"" + distinctValue.replaceAll("\"","") + "\"";
@@ -497,7 +500,7 @@ public class ReportEntry implements Serializable, JSONString
         }
 
         try {
-            logger.info("XXX sql: " + sql);
+            logger.debug("SQL: " + sql);
             java.sql.PreparedStatement statement = conn.prepareStatement( sql );
             SqlCondition.setPreparedStatementValues( statement, conditions, getTable() );
 
