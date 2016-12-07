@@ -57,6 +57,7 @@ public class WebFilterDecisionEngine extends DecisionEngine
     private static String serialNum;
 
     private final Logger logger = Logger.getLogger(getClass());
+    private WebFilterBase ourNode = null;
 
     private static String diaKey = null;
     private int failures = 0;
@@ -66,7 +67,8 @@ public class WebFilterDecisionEngine extends DecisionEngine
     public WebFilterDecisionEngine(WebFilterBase node)
     {
         super(node);
-
+        ourNode = node;
+        
         synchronized (WebFilterDecisionEngine.class) {
             if (null == serialNum) {
                 String uid = UvmContextFactory.context().getServerUID();
@@ -576,6 +578,8 @@ public class WebFilterDecisionEngine extends DecisionEngine
 
     private boolean isLicenseValid()
     {
+        if (ourNode.getAppName().equals("web-monitor")) return true;
+
         if (UvmContextFactory.context().licenseManager().isLicenseValid(License.WEB_FILTER))
             return true;
         if (UvmContextFactory.context().licenseManager().isLicenseValid(License.WEB_FILTER_OLDNAME))
