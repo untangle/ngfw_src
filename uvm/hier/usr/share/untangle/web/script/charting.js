@@ -537,9 +537,10 @@ Ext.define('Ung.charts', {
             };
 
             _data = [];
+            console.log(data);
             for (j = 0; j < data.length; j += 1) {
                 _data.push([
-                    data[j].time,
+                    data[j].time || data[j].time_trunc, // for sqlite db, time_trunc represents the actual timestamp
                     data[j][_seriesOptions[i].id] || 0
                 ]);
             }
