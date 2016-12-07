@@ -373,7 +373,7 @@ public class NetworkManagerImpl implements NetworkManager
             return null;
         }
 
-        if ( interfaceId < 0 || interfaceId > 250 ) {
+        if ( interfaceId < 0 || interfaceId > 255 ) {
             logger.warn( "Invalid interface ID: " + interfaceId );
             return null;
         }
