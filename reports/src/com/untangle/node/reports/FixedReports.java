@@ -35,6 +35,7 @@ import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -101,7 +102,8 @@ public class FixedReports
         FIRST,
         DISTINCT,
         FORMAT,
-        IN
+        IN,
+        ORDER
     }
 
     public enum ConditionalE {
@@ -142,6 +144,7 @@ public class FixedReports
         FilterPatterns.put(Filter.DISTINCT, Pattern.compile("distinct\\=([^,]+)"));
         FilterPatterns.put(Filter.FORMAT, Pattern.compile("format\\=([^,]+),(.+)"));
         FilterPatterns.put(Filter.IN, Pattern.compile("in\\=([^,]+),(.+)"));
+        FilterPatterns.put(Filter.ORDER, Pattern.compile("order\\=([^,]+),(.+)"));
 
         NonGreedyVariablePattern = Pattern.compile("\\{\\{\\s*(.+?)\\s*\\}\\}");
 
@@ -1490,6 +1493,9 @@ public class FixedReports
                             case IN:
                                 object = filterProcessIn(object, new selector(filterMatcher.group(1)), getVariable(new selector(filterMatcher.group(2))));
                                 break;
+                            case ORDER:
+                                object = filterProcessOrder(object, new selector(filterMatcher.group(1)), new selector(filterMatcher.group(2)));
+                                break;
                         }
                     }
                 }catch(Exception e){
@@ -1640,6 +1646,76 @@ public class FixedReports
             }
         }
 
+        return (Object) outgoings;
+    }
+
+    /*
+     * Process the list to order by the specified field.
+     *
+     * One use is to sort all reports so that TEXT types are first.
+     * Another it to sort by category order
+     *
+     */
+    @SuppressWarnings("unchecked")
+    Object filterProcessOrder(Object incomings, selector filterSelector, selector orderSelector){
+        ArrayList<?> orderList = (ArrayList<?>) getVariable(orderSelector);
+        if(orderList == null){
+            orderList = new ArrayList<String>();
+            ((ArrayList<String>) orderList).add(orderSelector.fields.get(0));
+        }
+        Collections.sort((ArrayList<String>)orderList);
+
+        LinkedHashMap<String,ArrayList<Object>> sortedOutgoings = new LinkedHashMap<String,ArrayList<Object>>();
+        for(String orderString: (ArrayList<String>) orderList){
+            sortedOutgoings.put(orderString, new ArrayList<Object>());
+        }
+
+        List<Object> otherOutgoings = new ArrayList<Object>();
+
+        Method method = null;
+        Object object = null;
+
+        int fieldIndex;
+        Boolean sortedMatch = false;
+        String orderKey;
+        ArrayList<Object> orderedList;
+        for(int i = 0; i < ((List) incomings).size(); i++){
+            object = ((List) incomings).get(i);
+            for(fieldIndex = 0; fieldIndex < filterSelector.fields.size(); fieldIndex++){
+                try{
+                    /* No arguments allowed at this time. */
+                    method = object.getClass().getMethod(filterSelector.fields.get(fieldIndex));
+                    object = method.invoke(object);
+                }catch(Exception e){
+                    logger.warn("Unable to get variable: " + filterSelector );
+                    break;
+                }
+            }
+
+            sortedMatch = false;
+            for(Map.Entry<String,ArrayList<Object>> entry : sortedOutgoings.entrySet()){
+                orderKey = entry.getKey();
+                if(orderKey.equals(object.toString())){
+                    sortedMatch = true;
+                    orderedList = entry.getValue();
+                    orderedList.add(((List) incomings).get(i));
+                    break;
+                }
+            }
+            if(sortedMatch == false){
+                otherOutgoings.add(((List) incomings).get(i));
+            }
+        }
+
+        List<Object> outgoings = new ArrayList<Object>();
+        for(Map.Entry<String,ArrayList<Object>> entry : sortedOutgoings.entrySet()){
+            if(entry.getValue().size() > 0){
+                outgoings.addAll(entry.getValue());
+            }
+        }
+        if(otherOutgoings.size() > 0){
+            outgoings.addAll(otherOutgoings);
+        }
         return (Object) outgoings;
     }
 
