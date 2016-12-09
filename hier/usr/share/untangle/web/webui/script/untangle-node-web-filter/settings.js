@@ -169,9 +169,9 @@ Ext.define('Webui.untangle-node-web-filter.settings',{
         return this.panelAdvanced;
     },
 
-    buildPanelBlockedCategories: function() {
+    buildPanelCategories: function() {
         this.callParent(arguments);
-        this.blockedCategoriesPanel.add({
+        this.categoriesPanel.add({
             xtype: 'container',
             layout: 'hbox',
             style: {
@@ -193,7 +193,7 @@ Ext.define('Webui.untangle-node-web-filter.settings',{
                 }
             }]
         });
-        return this.blockedCategoriesPanel;
+        return this.categoriesPanel;
     },
     onSelectBypass: function(elem, record, options) {
         var newValue = record.get("field1");
