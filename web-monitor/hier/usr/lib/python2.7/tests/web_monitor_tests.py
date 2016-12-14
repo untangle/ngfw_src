@@ -104,9 +104,9 @@ class WebMonitorTests(unittest2.TestCase):
 
     # verify flagged site url list works
     def test_023_flaggedUrl(self):
-        raise unittest2.SkipTest("Flag stats not yet enabled")
-        pre_events_scan = global_functions.getStatusValue(node, "scan")
-        pre_events_flagged = global_functions.getStatusValue(node, "flagged")
+        # raise unittest2.SkipTest("Flag stats not yet enabled")
+        # pre_events_scan = global_functions.getStatusValue(node, "scan")
+        # pre_events_flagged = global_functions.getStatusValue(node, "flagged")
 
         addBlockedUrl("test.untangle.com/test/testPage1.html")
         # this test URL should now be blocked
@@ -115,11 +115,19 @@ class WebMonitorTests(unittest2.TestCase):
         assert ( "blockpage" not in result )
 
         # Check to see if the faceplate counters have incremented.
-        post_events_scan = global_functions.getStatusValue(node, "scan")
-        post_events_flagged = global_functions.getStatusValue(node, "flagged")
+        # post_events_scan = global_functions.getStatusValue(node, "scan")
+        # post_events_flagged = global_functions.getStatusValue(node, "flagged")
         # print "Pre flagged: " + str(pre_events_flagged) + " Post flagged: " + str(post_events_flagged)
-        assert(pre_events_scan < post_events_scan)
-        assert(pre_events_flagged < post_events_flagged)
+        # assert(pre_events_scan < post_events_scan)
+        # assert(pre_events_flagged < post_events_flagged)
+        events = global_functions.get_events("Web Monitor", "All Web Events", None, 1)
+        assert(events != None)
+        found = global_functions.check_events( events.get('list'), 5,
+                                            "host","test.untangle.com",
+                                            "uri", "/test/testPage1.html",
+                                            'web_filter_blocked', False,
+                                            'web_filter_flagged', True )
+        assert( found )
 
     # verify that a flagged list entry does not match when the URI doesnt match exactly
     def test_024_flaggedUrl2(self):
