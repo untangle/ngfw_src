@@ -7,7 +7,9 @@ import sys
 
 import json
 import pycurl
+import ssl
 import urllib
+import urllib2
 from StringIO import StringIO
 
 from jsonrpc import JSONRPCException
@@ -28,7 +30,7 @@ class IntrusionPreventionInterface:
     """
     Intrusion Prevention management object
     """
-    config_url = "http://localhost/webui/download?"
+    config_url = "https://localhost/webui/download?"
     config_request_arguments_template = {
         "type": "IntrusionPreventionSettings",
         "arg1": "load",
@@ -52,14 +54,6 @@ class IntrusionPreventionInterface:
     }
 
     def __init__(self, node_id, timeout=120 ):
-        self.__curl = pycurl.Curl()
-        self.__curl.setopt( pycurl.POST, 1 )
-        self.__curl.setopt( pycurl.NOSIGNAL, 1 )
-        self.__curl.setopt( pycurl.CONNECTTIMEOUT, 60 )
-        self.__curl.setopt( pycurl.TIMEOUT, timeout )
-        self.__curl.setopt( pycurl.COOKIEFILE, "" )
-        self.__curl.setopt( pycurl.FOLLOWLOCATION, 0 )
-
         self.node_id = node_id
 
     def config_request(self, action, patch = ""):
@@ -74,30 +68,30 @@ class IntrusionPreventionInterface:
 
         patch = json.dumps(patch)
 
-        self.__curl.setopt( pycurl.URL, IntrusionPreventionInterface.config_url + urllib.urlencode(request_arguments)) 
-        self.__curl.setopt( pycurl.POST, 1 )
-        self.__curl.setopt( pycurl.HTTPHEADER, ["Content-type: ", "text/plain; charset=utf-8"])
-        self.__curl.setopt( pycurl.VERBOSE, False )
-        self.__curl.setopt( pycurl.POSTFIELDS, patch.encode('utf-8'))
-        self.__curl.setopt( pycurl.WRITEFUNCTION, response.write )
+        ctx = ssl.create_default_context()
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE
+
+        method = "POST"
+        handler = urllib2.HTTPSHandler(context=ctx)
+        opener = urllib2.build_opener(handler)
+        data = patch.encode('utf-8')
+        request = urllib2.Request(IntrusionPreventionInterface.config_url + urllib.urlencode(request_arguments), data=data)
+        request.add_header("Content-Type","text/plain; charset=utf-8")
+        request.get_method = lambda: method
         try:
-            self.__curl.perform()
+            connection = opener.open(request)
         except Exception, e:
-            print "Problem while asking for " + IntrusionPreventionInterface.config_url + urllib.urlencode(request_arguments)
-            raise e
+            print e
+            connection = e
 
-        http_code = self.__curl.getinfo( pycurl.HTTP_CODE ) 
-        if ( http_code != 200 ): 
-            if http_code == 302:
-                raise JSONRPCException( "Invalid username or password [code: %i]" % http_code )
-            elif http_code == 500:
-                raise JSONRPCException( "Internal server error [code: %i]" % http_code )
-            elif http_code == 502 or http_code == 503:
-                raise JSONRPCException( "Service unavailable [code: %i]" % http_code )
-            else:
-                raise JSONRPCException( "An error occurred [code: %i] response: %s" % (http_code, response.getvalue()) )
+        if connection.code == 200:
+            data = connection.read()
+            return data
+        else:
+            raise JSONRPCException( "Unable to get data.  Failed with code [%i]" % connection.code)
 
-        return response.getvalue()
+        return False
 
     def create_patch(self, type = None, action = None, extended = None ):
         """
