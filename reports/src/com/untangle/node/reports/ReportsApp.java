@@ -114,24 +114,26 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         if ( newSettings.getReportsUsers().size() > 0){
             for ( ReportsUser user : newSettings.getReportsUsers() ) {
                 if (user.getEmailSummaries()){
-                    if( user.getEmailTemplateIds() != null && user.getEmailTemplateIds().size() > 0 ) {
-                        /* Walk existing list and map to new values. */
-                        List<Integer> oldEmailTemplateIds = user.getEmailTemplateIds();
-                        LinkedList<Integer> newEmailTemplateIds = new LinkedList<Integer>();
-                        Integer newEmailTemplateId;
-                        for(int i = 0; i < oldEmailTemplateIds.size(); i++){
-                            newEmailTemplateId = mapOldNewEmailTemplateIds.get(oldEmailTemplateIds.get(i));
-                            if(newEmailTemplateId != null){
-                                newEmailTemplateIds.push(newEmailTemplateId);
+                    if( user.getEmailTemplateIds() != null ){
+                        if( user.getEmailTemplateIds().size() > 0 ) {
+                            /* Walk existing list and map to new values. */
+                            List<Integer> oldEmailTemplateIds = user.getEmailTemplateIds();
+                            LinkedList<Integer> newEmailTemplateIds = new LinkedList<Integer>();
+                            Integer newEmailTemplateId;
+                            for(int i = 0; i < oldEmailTemplateIds.size(); i++){
+                                newEmailTemplateId = mapOldNewEmailTemplateIds.get(oldEmailTemplateIds.get(i));
+                                if(newEmailTemplateId != null){
+                                    newEmailTemplateIds.push(newEmailTemplateId);
+                                }
                             }
+                            user.setEmailTemplateIds(newEmailTemplateIds);
                         }
-                        user.setEmailTemplateIds(newEmailTemplateIds);
-                    }
-                    if(user.getEmailTemplateIds().size() == 0) {
-                        /* If never set or all removed, add the default. */
-                        LinkedList<Integer> emailTemplateIds = new LinkedList<Integer>();
-                        emailTemplateIds.push(1);
-                        user.setEmailTemplateIds(emailTemplateIds);
+                        if( user.getEmailTemplateIds().size() == 0) {
+                            /* If never set or all removed, add the default. */
+                            LinkedList<Integer> emailTemplateIds = new LinkedList<Integer>();
+                            emailTemplateIds.push(1);
+                            user.setEmailTemplateIds(emailTemplateIds);
+                        }
                     }
                 }
             }
