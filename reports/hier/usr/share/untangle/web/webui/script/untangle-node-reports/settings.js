@@ -408,7 +408,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
                     var template = settings["emailTemplates"].list[i];
                     var templateChecked = (userEmailTemplates.list.indexOf(template.templateId) > -1) ? true : false;
                     items.add(new Ext.form.Checkbox({
-                        boxLabel: template.title + " (" + template.description + ")",
+                        boxLabel: template.title + ( (template.description != "") ? " (" + template.description + ")" : ""),
                         name: "list",
                         inputValue: template.templateId,
                         checked: templateChecked
