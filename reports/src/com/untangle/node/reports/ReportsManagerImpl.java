@@ -553,13 +553,17 @@ public class ReportsManagerImpl implements ReportsManager
         LinkedList<AdminUserSettings> adminUsers = UvmContextFactory.context().adminManager().getSettings().getUsers();
         if((reportsUsers != null) && (adminUsers != null)){
             for(AdminUserSettings adminUser : adminUsers ){
-                if( (adminUser.getEmailAddress() == null) || (adminUser.getEmailAddress().isEmpty()) ){
+                if( (adminUser == null) ||
+                    (adminUser.getEmailAddress() == null) || 
+                    (adminUser.getEmailAddress().isEmpty()) ){
                     // Ignore if admin email address is empty.
                     continue;
                 }
                 reportsUserFound = false;
                 for(ReportsUser reportUser: reportsUsers){
-                    if(reportUser.getEmailAddress().equals( adminUser.getEmailAddress() ) ){
+                    if( (reportUser != null) &&
+                        (reportUser.getEmailAddress() != null) &&
+                        reportUser.getEmailAddress().equals( adminUser.getEmailAddress() ) ){
                         reportsUserFound = true;
                     }
                 }
