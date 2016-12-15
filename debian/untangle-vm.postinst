@@ -57,5 +57,6 @@ fi
 # 12.2 upgrade
 rm -rf /usr/share/untangle/web/reports/data
 rm -rf /usr/lib/python2.7/reports/node
+sed -e 's/stable-121\s/stable-122 /g' -i /etc/apt/sources.list.d/untangle.list
 
 exit 0
