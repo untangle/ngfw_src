@@ -6,6 +6,7 @@ package com.untangle.node.reports;
 import java.io.Serializable;
 
 import java.util.List;
+import java.util.LinkedList;
 
 import org.apache.commons.codec.binary.Base64;
 
@@ -19,7 +20,7 @@ public class ReportsUser implements Serializable
     private boolean emailSummaries = true;
     private byte[] passwordHash = null;
     private boolean onlineAccess;
-    private List<Integer> emailTemplateIds = null;
+    private List<Integer> emailTemplateIds = new LinkedList<Integer>();
 
     public ReportsUser() {}
 
