@@ -29,7 +29,6 @@ public class ReportsSettings implements Serializable, JSONString
     private LinkedList<AlertRule> alertRules = null;
     private LinkedList<EmailTemplate> emailTemplates = new LinkedList<EmailTemplate>();
     
-    private String dbDriver = "postgresql";
     private String dbHost = "localhost";
     private int    dbPort = 5432;
     private String dbUser = "postgres";
@@ -97,9 +96,6 @@ public class ReportsSettings implements Serializable, JSONString
     public String getSyslogProtocol() { return syslogProtocol; }
     public void setSyslogProtocol( String syslogProtocol ) { this.syslogProtocol = syslogProtocol; }
 
-    public String getDbDriver() { return dbDriver; }
-    public void setDbDriver( String dbDriver ) { this.dbDriver = dbDriver; }
-
     public String getDbHost() { return dbHost; }
     public void setDbHost( String dbHost ) { this.dbHost = dbHost; }
 
@@ -123,6 +119,12 @@ public class ReportsSettings implements Serializable, JSONString
     
     public String getGoogleDriveDirectory() { return googleDriveDirectory; }
     public void setGoogleDriveDirectory( String newValue ) { this.googleDriveDirectory = newValue; }
+
+    /**
+     * DEPRECATED
+     */
+    public String getDbDriver() { return null; }
+    public void setDbDriver( String dbDriver ) { return; }
 
     public String toJSONString()
     {

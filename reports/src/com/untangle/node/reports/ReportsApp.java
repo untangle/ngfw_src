@@ -4,8 +4,10 @@
 package com.untangle.node.reports;
 
 import java.io.BufferedWriter;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetAddress;
@@ -62,6 +64,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
     private static final String REPORTS_GENERATE_FIXED_REPORTS_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-generate-fixed-reports.py";
     private static final String REPORTS_RESTORE_DATA_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-restore-backup.sh";
     private static final String REPORTS_LOG = System.getProperty("uvm.log.dir") + "/reports.log";
+    private static final String REPORTS_DB_DRIVER_FILE = System.getProperty("uvm.conf.dir") + "/database-driver";
 
     private static final File CRON_FILE = new File("/etc/cron.daily/reports-cron");
     private static final File SYSLOG_CONF_FILE = new File("/etc/rsyslog.d/untangle-remote.conf");
@@ -75,6 +78,8 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
     public ReportsApp( NodeSettings nodeSettings, NodeProperties nodeProperties )
     {
         super( nodeSettings, nodeProperties );
+
+        determineDbDriver();
 
         if (eventWriter == null)
             eventWriter = new EventWriterImpl( this );
@@ -173,7 +178,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
     public void initializeDB()
     {
         synchronized (this) {
-            if ( "postgresql".equals(settings.getDbDriver()) ) {
+            if ( "postgresql".equals( ReportsApp.dbDriver ) ) {
 
                 /**
                  * Run the script to generate/update the tables
@@ -182,13 +187,13 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
                 ExecManagerResult result = UvmContextFactory.context().execManager().exec( cmd );
 
                 if (result.getResult() != 0) {
-                    logger.warn("Failed to create schemas: \"" + cmd + "\" -> "  + result.getResult());
+                    logger.warn("Failed to create tables: \"" + cmd + "\" -> "  + result.getResult());
                 }
                 try {
                     String lines[] = result.getOutput().split("\\r?\\n");
-                    logger.info("Creating Schema: ");
+                    logger.info("Creating Tables: ");
                     for ( String line : lines )
-                        logger.info("Schema: " + line);
+                        logger.info("Tables: " + line);
                 } catch (Exception e) {}
 
                 /**
@@ -198,7 +203,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
                 LogEvent.setSchemaPrefix("reports.");
                 LogEvent.setPartitionsSupported(true);
             }
-            else if ( "sqlite".equals(settings.getDbDriver()) ) {
+            else if ( "sqlite".equals( ReportsApp.dbDriver ) ) {
 
                 /**
                  * Run the script to generate/update the tables
@@ -206,13 +211,13 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
                 String cmd = REPORTS_GENERATE_TABLES_SCRIPT + " -d sqlite";
                 ExecManagerResult result = UvmContextFactory.context().execManager().exec( cmd );
                 if (result.getResult() != 0) {
-                    logger.warn("Failed to create schemas: \"" + cmd + "\" -> "  + result.getResult());
+                    logger.warn("Failed to create tables: \"" + cmd + "\" -> "  + result.getResult());
                 }
                 try {
                     String lines[] = result.getOutput().split("\\r?\\n");
-                    logger.info("Creating Schema: ");
+                    logger.info("Creating Tables: ");
                     for ( String line : lines )
-                        logger.info("Schema: " + line);
+                        logger.info("Tables: " + line);
                 } catch (Exception e) {}
 
                 /**
@@ -308,23 +313,23 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
             String url = null;
             Properties props = new Properties();
 
-            if ( "postgresql".equals(settings.getDbDriver()) ) {
+            if ( "postgresql".equals( ReportsApp.dbDriver ) ) {
                 Class.forName("org.postgresql.Driver");
-                url = "jdbc:" + settings.getDbDriver() + "://" + settings.getDbHost() + ":" + settings.getDbPort() + "/" + settings.getDbName();
+                url = "jdbc:" + ReportsApp.dbDriver + "://" + settings.getDbHost() + ":" + settings.getDbPort() + "/" + settings.getDbName();
 
                 props.setProperty( "user", settings.getDbUser() );
                 props.setProperty( "password", settings.getDbPassword() );
                 props.setProperty( "charset", "unicode" );
                 //props.setProperty( "logUnclosedConnections", "true" );
             }
-            else if ( "sqlite".equals(settings.getDbDriver()) ) {
+            else if ( "sqlite".equals( ReportsApp.dbDriver ) ) {
                 File dir = new File("/var/lib/sqlite");
                 if ( !dir.exists() )
                     UvmContextFactory.context().execManager().execResult( "mkdir -p /var/lib/sqlite");
                 Class.forName("org.sqlite.JDBC");
-                url = "jdbc:" + settings.getDbDriver() + ":" + "/var/lib/sqlite/reports.db";
+                url = "jdbc:" + ReportsApp.dbDriver + ":" + "/var/lib/sqlite/reports.db";
             } else {
-                logger.warn("Unknown driver: " + settings.getDbDriver());
+                logger.warn("Unknown driver: " + ReportsApp.dbDriver );
                 return null;
             }
 
@@ -406,10 +411,9 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         /**
          * Start the database
          */
-        ReportsApp.dbDriver = this.settings.getDbDriver();
         if ( "postgresql".equals( ReportsApp.dbDriver ) )
             UvmContextFactory.context().daemonManager().incrementUsageCount( "postgresql" );
-
+        
         /**
          * Report updates
          */
@@ -656,17 +660,43 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         settings.setEmailTemplates( defaultEmailTemplates() );
         settings.setReportsUsers( defaultReportsUsers( null ) );
 
-        if (UvmContextFactory.context().isDiskless()) {
-            settings.setDbDriver("sqlite");
+        if ( "sqlite".equals( ReportsApp.dbDriver ) ) {
             settings.setDbRetention( 1 );
         } else {
-            settings.setDbDriver("postgresql");
             settings.setDbRetention( 7 );
         }
 
         return settings;
     }
     
+    private String determineDbDriver()
+    {
+        try {
+            File keyFile = new File(REPORTS_DB_DRIVER_FILE);
+            if (keyFile.exists()) {
+                BufferedReader reader = new BufferedReader(new FileReader(keyFile));
+                String value = reader.readLine();
+
+                switch( value ) {
+                case "sqlite":
+                    break;
+                case "postgresql":
+                    break;
+                default:
+                    logger.warn("Unknown database driver: " + value);
+                    logger.warn("Using postgresql driver...");
+                    value = "postgresql";
+                }
+
+                ReportsApp.dbDriver = value;
+                return ReportsApp.dbDriver;
+            }
+        } catch (IOException x) {
+            logger.error("Unable to read DB driver", x);
+        }
+        return ReportsApp.dbDriver;
+    }
+
     private void writeCronFile()
     {
         // write the cron file for nightly runs
@@ -848,13 +878,6 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
             settings.setReportsUsers( defaultReportsUsers(settings.getReportsUsers()) );
         } catch (Exception e) {
             logger.warn("Conversion Exception",e);
-        }
-
-        /**
-         * If this is a diskless install, switch to sqlite (now support in 12.2)
-         */
-        if (UvmContextFactory.context().isDiskless()) {
-            settings.setDbDriver( "sqlite" );
         }
 
         setSettings( settings );
