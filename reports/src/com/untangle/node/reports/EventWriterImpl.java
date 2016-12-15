@@ -131,7 +131,7 @@ public class EventWriterImpl implements Runnable
         LinkedList<LogEvent> logQueue = new LinkedList<LogEvent>();
         LogEvent event = null;
 
-        if ( "sqlite".equals(app.getSettings().getDbDriver()) )
+        if ( "sqlite".equals( ReportsApp.dbDriver ) )
             this.maxEventsPerCycle = 500;
         else
             this.maxEventsPerCycle = 20000;

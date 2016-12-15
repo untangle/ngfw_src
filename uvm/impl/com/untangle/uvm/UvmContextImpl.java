@@ -541,7 +541,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
                     UvmContextImpl.applianceModel = "";
                 }
             } catch (IOException x) {
-                logger.error("Unable to get pop id: ", x);
+                logger.error("Unable to get UID", x);
             }
         }
         return UvmContextImpl.applianceModel;
