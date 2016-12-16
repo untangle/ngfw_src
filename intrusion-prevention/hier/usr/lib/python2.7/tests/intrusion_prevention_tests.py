@@ -11,6 +11,7 @@ import ssl
 import urllib
 import urllib2
 import copy
+import socket
 from StringIO import StringIO
 
 from jsonrpc import JSONRPCException
@@ -699,6 +700,37 @@ class IntrusionPreventionTests(unittest2.TestCase):
         assert(pre_events_block < post_events_block)
 
     def test_060_bypass_udp_block(self):
+        global node
+        if remote_control.quickTestsOnly:
+            raise unittest2.SkipTest('Skipping a time consuming test')
+        tracerouteExists = remote_control.runCommand("test -x /usr/sbin/traceroute")
+        if tracerouteExists != 0:
+            raise unittest2.SkipTest("Traceroute app needs to be installed on client")
+
+        # use IP address instead of hostname to avoid false positive with DNS IPS block.
+        orig_netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings = copy.deepcopy( orig_netsettings )
+        netsettings['bypassRules']['list'].append( createBypassConditionRule("SRC_ADDR",remote_control.clientIP) )
+        # netsettings['logBypassedSessions'] = True
+        uvmContext.networkManager().setNetworkSettings(netsettings)
+        test_untangle_com_ip = socket.gethostbyname("test.untangle.com")
+
+        rule = self.intrusion_prevention_interface.create_rule(msg="UDP Block", type="udp", block=True, directive="ttl:1;")
+        self.intrusion_prevention_interface.config_request( "save", self.intrusion_prevention_interface.create_patch( "rule", "add", rule ) )
+        node.reconfigure()
+
+        result = remote_control.runCommand("/usr/sbin/traceroute " + test_untangle_com_ip)
+        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+        event = self.intrusion_prevention_interface.get_log_event(rule)
+        events = global_functions.get_events('Intrusion Prevention','All Events',None,1)
+        assert(events != None)
+        found = global_functions.check_events( events.get('list'), 5,
+                                               "source_addr", remote_control.clientIP,
+                                               "dest_addr", test_untangle_com_ip,
+                                               "blocked", True)
+        assert(not found)
+
+    def test_065_bypass_tcp_block(self):
         """
         Functional, UDP block
         """
@@ -711,17 +743,23 @@ class IntrusionPreventionTests(unittest2.TestCase):
         netsettings['bypassRules']['list'].append( createBypassConditionRule("SRC_ADDR",remote_control.clientIP) )
         # netsettings['logBypassedSessions'] = True
         uvmContext.networkManager().setNetworkSettings(netsettings)
+        test_untangle_com_ip = socket.gethostbyname("test.untangle.com")
 
-        rule = self.intrusion_prevention_interface.create_rule(msg="UDP Block", type="udp", block=True, directive="content:\"CompanySecret\"; nocase;")
+        rule = self.intrusion_prevention_interface.create_rule(msg="TCP Block", type="tcp", block=True, directive="content:\"untangle\"; nocase;")
 
         self.intrusion_prevention_interface.config_request( "save", self.intrusion_prevention_interface.create_patch( "rule", "add", rule ) )
         node.reconfigure()
 
-        result = remote_control.runCommand("host www.companysecret.com 4.2.2.1 > /dev/null")
+        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
 
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
-        event = self.intrusion_prevention_interface.get_log_event(rule)
-        assert( event != None and event["blocked"] != True )
+        events = global_functions.get_events('Intrusion Prevention','All Events',None,1)
+        assert(events != None)
+        found = global_functions.check_events( events.get('list'), 5,
+                                               "source_addr", remote_control.clientIP,
+                                               "dest_addr", test_untangle_com_ip,
+                                               "blocked", True)
+        assert(not found)
 
     @staticmethod
     def finalTearDown(self):
