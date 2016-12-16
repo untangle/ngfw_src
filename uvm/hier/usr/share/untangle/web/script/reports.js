@@ -1417,15 +1417,14 @@ Ext.define('Ung.panel.Reports', {
             var i;
             this.chartData = result.list;
 
-            // add a new time prop because the datagrid alters the time_trunc, causing charting issues
-            for (i = 0; i < this.chartData.length; i += 1) {
-                if ( this.chartData[i].time_trunc.time != null )
-                    this.chartData[i].time = this.chartData[i].time_trunc.time;
-                else
-                    this.chartData[i].time = this.chartData[i].time_trunc;
-            }
-
             if (this.entry.type === 'TIME_GRAPH' || this.entry.type === 'TIME_GRAPH_DYNAMIC') {
+                // add a new time prop because the datagrid alters the time_trunc, causing charting issues
+                for (i = 0; i < this.chartData.length; i += 1) {
+                    if ( this.chartData[i].time_trunc.time != null )
+                        this.chartData[i].time = this.chartData[i].time_trunc.time;
+                    else
+                        this.chartData[i].time = this.chartData[i].time_trunc;
+                }
                 this.chart = Ung.charts.timeSeriesChart(this.entry, this.chartData, this.down('#highchart').body, false, false);
             } else {
                 Ung.charts.setCategoriesSeries(this.entry, this.chartData, this.chart);
