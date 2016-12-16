@@ -10,6 +10,7 @@ import pycurl
 import ssl
 import urllib
 import urllib2
+import copy
 from StringIO import StringIO
 
 from jsonrpc import JSONRPCException
@@ -232,6 +233,32 @@ def flush_events():
     reports = uvmContext.nodeManager().node("untangle-node-reports")
     if (reports != None):
         reports.flushEvents()
+
+def createBypassConditionRule( conditionType, value ):
+    return {
+        "bypass": True,
+        "description": "test bypass " + str(conditionType) + " " + str(value),
+        "enabled": True,
+        "javaClass": "com.untangle.uvm.network.BypassRule",
+        "conditions": {
+            "javaClass": "java.util.LinkedList",
+            "list": [
+                {
+                    "invert": False,
+                    "javaClass": "com.untangle.uvm.network.BypassRuleCondition",
+                    "conditionType": str(conditionType),
+                    "value": str(value)
+                },
+                {
+                    "invert": False,
+                    "javaClass": "com.untangle.uvm.network.BypassRuleCondition",
+                    "conditionType": "PROTOCOL",
+                    "value": "TCP,UDP"
+                }
+            ]
+        },
+        "ruleId": 1
+    }
 
 class IntrusionPreventionTests(unittest2.TestCase):
     """
@@ -670,7 +697,32 @@ class IntrusionPreventionTests(unittest2.TestCase):
         assert(pre_events_detect < post_events_detect)
         print "pre_events_block: %s post_events_block: %s"%(str(pre_events_block),str(post_events_block))
         assert(pre_events_block < post_events_block)
-        
+
+    def test_060_bypass_udp_block(self):
+        """
+        Functional, UDP block
+        """
+        global node
+        if remote_control.quickTestsOnly:
+            raise unittest2.SkipTest('Skipping a time consuming test')
+
+        orig_netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings = copy.deepcopy( orig_netsettings )
+        netsettings['bypassRules']['list'].append( createBypassConditionRule("SRC_ADDR",remote_control.clientIP) )
+        # netsettings['logBypassedSessions'] = True
+        uvmContext.networkManager().setNetworkSettings(netsettings)
+
+        rule = self.intrusion_prevention_interface.create_rule(msg="UDP Block", type="udp", block=True, directive="content:\"CompanySecret\"; nocase;")
+
+        self.intrusion_prevention_interface.config_request( "save", self.intrusion_prevention_interface.create_patch( "rule", "add", rule ) )
+        node.reconfigure()
+
+        result = remote_control.runCommand("host www.companysecret.com 4.2.2.1 > /dev/null")
+
+        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+        event = self.intrusion_prevention_interface.get_log_event(rule)
+        assert( event != None and event["blocked"] != True )
+
     @staticmethod
     def finalTearDown(self):
         """
