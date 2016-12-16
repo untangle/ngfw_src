@@ -420,7 +420,7 @@ public class HostTableEntry implements Serializable, JSONString
     private void updateEvent( String key, String oldValue, String newValue )
     {
         if ( this.address == null ) {
-            logger.warn("updateEvent will null address: " + oldValue + " -> " + newValue );
+            //logger.warn("updateEvent with null address: " + oldValue + " -> " + newValue );
             return;
         }
         if ( newValue == null ) 
