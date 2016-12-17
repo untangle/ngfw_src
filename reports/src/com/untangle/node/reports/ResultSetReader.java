@@ -39,15 +39,15 @@ public class ResultSetReader implements Runnable
         this.connection = connection;
         this.statement = statement;
 
-        if ( this.resultSet != null ) {
-            try {
+        try {
+            if ( this.resultSet != null && ! this.resultSet.isClosed() ) {
                 this.resultSet.setFetchDirection( ResultSet.FETCH_FORWARD );
             }
-            catch (Exception e) {
-                logger.warn( "Exception", e );
-            }
         }
-        
+        catch (Exception e) {
+            logger.warn( "Exception", e );
+        }
+
         this.thread = UvmContextFactory.context().newThread( this, "ResultSetReader" );
         thread.start();
     }
