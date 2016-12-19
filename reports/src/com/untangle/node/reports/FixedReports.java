@@ -1735,8 +1735,8 @@ public class FixedReports
             String url = "http://127.0.0.1/reports/?reportChart=1" + 
                 "&reportCategory=" + URLEncoder.encode((String) reportCategory, "UTF-8") + 
                 "&reportTitle=" + URLEncoder.encode((String) reportTitle, "UTF-8") + 
-                "&startDate=" + URLEncoder.encode(startDate.toString(), "UTF-8") + 
-                "&endDate=" + URLEncoder.encode(endDate.toString(), "UTF-8");
+                "&startDate=" + URLEncoder.encode(Long.toString(startDate.getTime()), "UTF-8") + 
+                "&endDate=" + URLEncoder.encode(Long.toString(endDate.getTime()), "UTF-8");
             webbrowser.openUrl(url);
             webbrowser.waitForElement("highcharts-0");
             webbrowser.takeScreenshot(filename);
