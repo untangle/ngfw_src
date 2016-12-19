@@ -247,7 +247,7 @@ Ext.define("Ung.Main", {
                         default:
                             this.chart = Ung.charts.categoriesChart(this.entry, result.list, this.viewport.down('#highchart').body, false, true);
                     }
-                }, this), this.entry, new Date(decodeURI(config.startDate)), new Date(decodeURI(config.endDate)), [], -1);
+                }, this), this.entry, new Date(parseInt(decodeURI(config.startDate))), new Date(parseInt(decodeURI(config.endDate))), [], -1);
             }
             }, this), decodeURI(config.reportCategory), decodeURI(config.reportTitle));
 
