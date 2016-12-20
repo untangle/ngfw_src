@@ -87,6 +87,11 @@ Ext.define("Ung.Main", {
             if (exception) { deferred.reject(exception); }
 
             rpc.timeZoneOffset = result;
+            Highcharts.setOptions({
+                global: {
+                    timezoneOffset: -(result / 60000)
+                }
+            });
             deferred.resolve();
         }, this));
         return deferred.promise;
@@ -201,6 +206,9 @@ Ext.define("Ung.Main", {
      */
     startReportChart: function (config) {
 
+        var startDate = new Date(parseInt(decodeURI(config.startDate)));
+        var endDate = new Date(parseInt(decodeURI(config.endDate)));
+
         this.viewport = Ext.create('Ext.container.Viewport', {
             layout: 'border',
             items: [{
@@ -247,7 +255,7 @@ Ext.define("Ung.Main", {
                         default:
                             this.chart = Ung.charts.categoriesChart(this.entry, result.list, this.viewport.down('#highchart').body, false, true);
                     }
-                }, this), this.entry, new Date(parseInt(decodeURI(config.startDate))), new Date(parseInt(decodeURI(config.endDate))), [], -1);
+                }, this), this.entry, startDate, endDate, [], -1);
             }
             }, this), decodeURI(config.reportCategory), decodeURI(config.reportTitle));
 
