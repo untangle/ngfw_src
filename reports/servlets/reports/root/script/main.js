@@ -199,8 +199,7 @@ Ext.define("Ung.Main", {
     /**
      * Specialized chart-only mode used by fixed reports to generate charts
      * for reports.  Expects the following parameters in config object:
-     @param {String}    reportCategory - Category report belongs to
-     @param {String}    reportTitle    - Report title
+     @param {String}    reportUniqueId - Report's unique id
      @param {Date}      startDate      - Start date
      @param {Date}      startDate      - End date
      */
@@ -257,7 +256,7 @@ Ext.define("Ung.Main", {
                     }
                 }, this), this.entry, startDate, endDate, [], -1);
             }
-            }, this), decodeURI(config.reportCategory), decodeURI(config.reportTitle));
+            }, this), decodeURI(config.reportUniqueId));
 
 
         } else {

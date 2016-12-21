@@ -1146,7 +1146,7 @@ public class FixedReports
         String filename = variableSelector.arguments.get(0);
 
         if(variableSelector.arguments.get(0).equals("chart")){
-            filename = getChart(getVariable(new selector(variableSelector.arguments.get(1))), getVariable(new selector(variableSelector.arguments.get(2))), id);
+            filename = getChart(getVariable(new selector(variableSelector.arguments.get(1))), id);
         }
 
         File f = new File(filename);
@@ -1719,13 +1719,13 @@ public class FixedReports
         return (Object) outgoings;
     }
 
-    String getChart(Object reportCategory, Object reportTitle, String id){
+    String getChart(Object reportUniqueId, String id){
         String filename;
         if(id != null){
             filename = webbrowser.getTempDirectory() + "/" + id + ".png";
         }else{
             try{
-                filename = webbrowser.getTempDirectory() + "/" + URLEncoder.encode((String) reportCategory, "UTF-8") + "_" + URLEncoder.encode((String) reportTitle, "UTF-8") + ".png";
+                filename = webbrowser.getTempDirectory() + "/" + URLEncoder.encode((String) reportUniqueId, "UTF-8") + ".png";
             }catch(Exception e){
                 filename = webbrowser.getTempDirectory() + "/image.png";
             }
@@ -1733,8 +1733,7 @@ public class FixedReports
 
         try {
             String url = "http://127.0.0.1/reports/?reportChart=1" + 
-                "&reportCategory=" + URLEncoder.encode((String) reportCategory, "UTF-8") + 
-                "&reportTitle=" + URLEncoder.encode((String) reportTitle, "UTF-8") + 
+                "&reportUniqueId=" + URLEncoder.encode((String) reportUniqueId, "UTF-8") + 
                 "&startDate=" + URLEncoder.encode(Long.toString(startDate.getTime()), "UTF-8") + 
                 "&endDate=" + URLEncoder.encode(Long.toString(endDate.getTime()), "UTF-8");
             webbrowser.openUrl(url);
