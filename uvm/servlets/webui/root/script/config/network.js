@@ -2794,7 +2794,14 @@ Ext.define('Webui.config.network', {
                     allowBlank: false,
                     width: 400,
                     blankText: i18n._("You must provide a valid IP Address or hostname."),
-                    disabled: this.settings.publicUrlMethod != "address_and_port"
+                    disabled: this.settings.publicUrlMethod != "address_and_port",
+                    listeners: {
+                        "change": {
+                            fn: Ext.bind(function(elem, newValue) {
+                                this.settings.publicUrlAddress = newValue;
+                            }, this)
+                        }
+                    }
                 },{
                     xtype: 'numberfield',
                     margin: '0 0 5 25',
@@ -2807,7 +2814,14 @@ Ext.define('Webui.config.network', {
                     width: 210,
                     blankText: i18n._("You must provide a valid port."),
                     vtype: 'port',
-                    disabled: this.settings.publicUrlMethod != "address_and_port"
+                    disabled: this.settings.publicUrlMethod != "address_and_port",
+                    listeners: {
+                        "change": {
+                            fn: Ext.bind(function(elem, newValue) {
+                                this.settings.publicUrlPort = newValue;
+                            }, this)
+                        }
+                    }
                 }]
             }]
         });
