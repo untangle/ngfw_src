@@ -486,6 +486,7 @@ class ReportsTests(unittest2.TestCase):
 
         fname = sys._getframe().f_code.co_name
         settings = node.getSettings()
+        orig_nodesettings = copy.deepcopy(settings)
         # set email address and alert for downloads
         settings["reportsUsers"]["list"].append(createReportsUser(profile_email=testEmailAddress))
         settings["alertRules"]["list"] = []
@@ -504,7 +505,8 @@ class ReportsTests(unittest2.TestCase):
         # restore admin settings and network settings
         uvmContext.adminManager().setSettings(orig_adminsettings)
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
-
+        node.setSettings(orig_nodesettings)
+        
         assert(emailFound)
         assert(("Server Alert" in emailContext) and (fname in emailContext2))
 
