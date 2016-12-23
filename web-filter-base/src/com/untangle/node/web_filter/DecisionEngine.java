@@ -323,6 +323,8 @@ public abstract class DecisionEngine
      */
     public String checkResponse(NodeTCPSession sess, InetAddress clientIp, RequestLineToken requestLine, HeaderToken header)
     {
+        String catStr = null;
+
         if (requestLine == null) {
             return null;
         }
@@ -359,7 +361,10 @@ public abstract class DecisionEngine
 
         // not in any of the block or pass lists so check the filter rules
         WebFilterRule filterRule = checkFilterRules(sess, "RESPONSE");
-        String catStr = (String) sess.globalAttachment(NodeSession.KEY_WEB_FILTER_BEST_CATEGORY_NAME);
+
+        if (sess != null) {
+            catStr = (String) sess.globalAttachment(NodeSession.KEY_WEB_FILTER_BEST_CATEGORY_NAME);
+        }
 
         if ((filterRule != null) && (filterRule.getBlocked())) {
             if (catStr == null) catStr = filterRule.getDescription();
@@ -476,12 +481,17 @@ public abstract class DecisionEngine
      */
     private GenericRule checkUrlList(NodeTCPSession sess, String host, String uri, RequestLineToken requestLine)
     {
+        String catStr = null;
+
         logger.debug("checkUrlList( " + host + " , " + uri + " ...)");
         GenericRule rule = UrlMatchingUtil.checkSiteList(host, uri, node.getSettings().getBlockedUrls());
 
         if (rule == null) return null;
 
-        String catStr = (String) sess.globalAttachment(NodeSession.KEY_WEB_FILTER_BEST_CATEGORY_NAME);
+        if (sess != null) {
+            catStr = (String) sess.globalAttachment(NodeSession.KEY_WEB_FILTER_BEST_CATEGORY_NAME);
+        }
+
         if (catStr == null) catStr = rule.getDescription();
 
         if (rule.getBlocked()) {
