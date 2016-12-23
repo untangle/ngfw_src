@@ -237,6 +237,16 @@
 }
 
 {
+   param_is_reachable_sendto
+   Memcheck:Param
+   socketcall.sendto(msg)
+   obj:/lib/x86_64-linux-gnu/libpthread-2.19.so
+   obj:/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/libnet.so
+   fun:Java_java_net_Inet4AddressImpl_isReachable0
+   ...
+}
+
+{
    leak_jvm
    Memcheck:Leak
    match-leak-kinds: possible
