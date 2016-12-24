@@ -230,15 +230,16 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
          */
         HttpRequestEvent evt = new HttpRequestEvent(requestLine, domain, null, 0);
         requestLine.setHttpRequestEvent(evt);
-
         this.node.logEvent(evt);
+
+        // attach the hostname we extracted to the session
+        sess.globalAttach(NodeSession.KEY_HTTP_HOSTNAME, domain);
 
         HeaderToken h = new HeaderToken();
         h.addField("host", domain);
 
-        String nonce = node.getDecisionEngine().checkRequest(null, sess.getClientAddr(), 443, rlt, h);
-
-        sess.globalAttach(NodeSession.KEY_HTTP_HOSTNAME, domain);
+        // pass the info to the decision engine to see if we should block
+        String nonce = node.getDecisionEngine().checkRequest(sess, sess.getClientAddr(), 443, rlt, h);
 
         // we have decided to block so we create the SSL engine and start
         // by passing it all the client data received thus far
