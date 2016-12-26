@@ -27,49 +27,50 @@ public class ExtensionImpl implements Runnable
 
     private ExtensionImpl()
     {
-        classDescriptions.put("HostTableEvent","These events are created by the base system and inserted to the [[Global_DB_schema#host_table_updates|host_table_updates]] table when the host table is modified.");
-        classDescriptions.put("DeviceTableEvent","These events are created by the base system and inserted to the [[Global_DB_schema#device_table_updates|device_table_updates]] table when the device list is modified.");
-        classDescriptions.put("PenaltyBoxEvent","These events are created by the [[Bandwidth Control]] and inserted to the [[Global_DB_schema#penaltybox|penaltybox]] table.");
-        classDescriptions.put("SessionStatsEvent","These events are created by the base system and update the [[Global_DB_schema#sessions|sessions]] table when a session ends with the updated stats.");
-        classDescriptions.put("SessionEvent","These events are created by the base system and update the [[Global_DB_schema#sessions|sessions]] table each time a session is created.");
-        classDescriptions.put("SessionNatEvent","These events are created by the base system and update the [[Global_DB_schema#sessions|sessions]] table each time a session is NATd with the post-NAT information.");
-        classDescriptions.put("QuotaEvent","These events are created by the [[Bandwidth Control]] and inserted or update the [[Global_DB_schema#quotas|quotas]] table when quotas are given or exceeded.");
-        classDescriptions.put("PrioritizeEvent","These events are created by the [[Bandwidth Control]] and update the [[Global_DB_schema#sessions|session]] table when a session is prioritized.");
-        classDescriptions.put("SettingsChangesEvent","These events are created by the base system and inserted to the [[Global_DB_schema#settings_changes|settings_changes]] table when settings are changed.");
+        classDescriptions.put("HostTableEvent","These events are created by the base system and inserted to the [[Database_Schema#host_table_updates|host_table_updates]] table when the host table is modified.");
+        classDescriptions.put("DeviceTableEvent","These events are created by the base system and inserted to the [[Database_Schema#device_table_updates|device_table_updates]] table when the device list is modified.");
+        classDescriptions.put("PenaltyBoxEvent","These events are created by the [[Bandwidth Control]] and inserted to the [[Database_Schema#penaltybox|penaltybox]] table.");
+        classDescriptions.put("SessionStatsEvent","These events are created by the base system and update the [[Database_Schema#sessions|sessions]] table when a session ends with the updated stats.");
+        classDescriptions.put("SessionEvent","These events are created by the base system and update the [[Database_Schema#sessions|sessions]] table each time a session is created.");
+        classDescriptions.put("SessionMinuteEvent","These events are created by the base system and update the [[Database_Schema#sessions|session_minutes]] table each minute a session exists.");
+        classDescriptions.put("SessionNatEvent","These events are created by the base system and update the [[Database_Schema#sessions|sessions]] table each time a session is NATd with the post-NAT information.");
+        classDescriptions.put("QuotaEvent","These events are created by the [[Bandwidth Control]] and inserted or update the [[Database_Schema#quotas|quotas]] table when quotas are given or exceeded.");
+        classDescriptions.put("PrioritizeEvent","These events are created by the [[Bandwidth Control]] and update the [[Database_Schema#sessions|session]] table when a session is prioritized.");
+        classDescriptions.put("SettingsChangesEvent","These events are created by the base system and inserted to the [[Database_Schema#settings_changes|settings_changes]] table when settings are changed.");
         classDescriptions.put("LogEvent","These base class for all events.");
-        classDescriptions.put("InterfaceStatEvent","These events are created by the base system and inserted to the [[Global_DB_schema#settings_changes|interface_stat_events]] table periodically with interface stats.");
-        classDescriptions.put("StatisticEvent","These events are created by the base system and inserted to the the [[Global_DB_schema#settings_changes|interface_stat_events]] table periodically with interface stats.");
-        classDescriptions.put("SystemStatEvent","These events are created by the base system and inserted to the [[Global_DB_schema#server_events|server_events]] table periodically.");
-        classDescriptions.put("TunnelStatusEvent","These events are created by [[IPsec VPN]] and inserted to the [[Global_DB_schema#ipsec_tunnel_stats|ipsec_tunnel_stats]] table periodically.");
-        classDescriptions.put("VirtualUserEvent","These events are created by [[IPsec VPN]] and inserted to the [[Global_DB_schema#ipsec_user_events|ipsec_user_events]] table when a user event occurs.");
-        classDescriptions.put("AlertEvent","These events are created by [[Reports]] and inserted to the [[Global_DB_schema#alerts|alerts]] table when an alert fires.");
-        classDescriptions.put("ConfigurationBackupEvent","These events are created by [[Configuration Backup]] and inserted to the [[Global_DB_schema#configuratio_backup_events|configuratio_backup_events]] table when a backup occurs.");
-        classDescriptions.put("WebCacheEvent","These events are created by [[Web Cache]] and inserted to the [[Global_DB_schema#web_cache_stats|web_cache_stats]] table periodically.");
-        classDescriptions.put("HttpResponseEvent","These events are created by HTTP subsystem and update the [[Global_DB_schema#http_events|http_events]] table when a web response happens.");
-        classDescriptions.put("HttpRequestEvent","These events are created by HTTP subsystem and inserted to the [[Global_DB_schema#http_events|http_events]] table when a web request happens.");
-        classDescriptions.put("ApplicationControlLiteEvent","These events are created by [[Application Control Lite]] and update the [[Global_DB_schema#sessions|sessions]] table when application control lite identifies a session.");
-        classDescriptions.put("ApplicationControlLogEvent","These events are created by [[Application Control]] and update the [[Global_DB_schema#sessions|sessions]] table when application control identifies a session.");
-        classDescriptions.put("FirewallEvent","These events are created by [[Firewall]] and update the [[Global_DB_schema#sessions|sessions]] table when a firewall rule matches a session.");
-        classDescriptions.put("WebFilterEvent","These events are created by [[Web Filter]] and update the [[Global_DB_schema#http_events|http_events]] table when web filter processes a web request.");
-        classDescriptions.put("WebFilterQueryEvent","These events are created by [[Web Filter]] and inserted to the [[Global_DB_schema#http_query_events|http_query_events]] table when web filter processes a search engine search.");
-        classDescriptions.put("SslInspectorLogEvent","These events are created by [[SSL Inspector]] and update the [[Global_DB_schema#sessions|sessions]] table when a session is processed by SSL Inspector.");
-        classDescriptions.put("SpamSmtpTarpitEvent","These events are created by [[Spam Blocker]] and inserted to the [[Global_DB_schema#smtp_tarpit_events|smtp_tarpit_events]] table when a session is tarpitted.");
-        classDescriptions.put("SpamLogEvent","These events are created by [[Spam Blocker]] and update the [[Global_DB_schema#mail_msgs|mail_msgs]] table when an email is scanned.");
-        classDescriptions.put("CookieEvent","These events are created by [[Ad Blocker]] and update the [[Global_DB_schema#http_events|http_events]] table when a cookie is blocked.");
-        classDescriptions.put("AdBlockerEvent","These events are created by [[Ad Blocker]] and update the [[Global_DB_schema#http_events|http_events]] table when an ad is blocked.");
-        classDescriptions.put("IntrusionPreventionLogEvent","These events are created by [[Intrusion Prevention]] and inserted to the [[Global_DB_schema#intrusion_prevention_events|intrusion_prevention_events]] table when a rule matches.");
-        classDescriptions.put("WanFailoverTestEvent","These events are created by [[WAN Failover]] and inserted to the [[Global_DB_schema#wan_failover_test_events|wan_failover_test_events]] table when a test is run.");
-        classDescriptions.put("WanFailoverEvent","These events are created by [[WAN Failover]] and inserted to the [[Global_DB_schema#wan_failover_action_events|wan_failover_action_events]] table when WAN Failover takes an action.");
-        classDescriptions.put("CaptivePortalUserEvent","These events are created by [[Captive Portal]] and inserted to the [[Global_DB_schema#captive_portal_user_events|captive_portal_user_events]] table when Captive Portal user takes an action.");
-        classDescriptions.put("CaptureRuleEvent","These events are created by [[Captive Portal]] and update the [[Global_DB_schema#sessions|sessions]] table when Captive Portal processes a session.");
-        classDescriptions.put("VirusSmtpEvent","These events are created by [[Virus Blocker]] and update the [[Global_DB_schema#mail_msgs|mail_msgs]] table when Virus Blocker scans an email.");
-        classDescriptions.put("VirusFtpEvent","These events are created by [[Virus Blocker]] and update the [[Global_DB_schema#ftp_events|ftp_events]] table when Virus Blocker scans an FTP transfer.");
-        classDescriptions.put("VirusHttpEvent","These events are created by [[Virus Blocker]] and update the [[Global_DB_schema#http_events|http_events]] table when Virus Blocker scans an HTTP transfer.");
-        classDescriptions.put("OpenVpnEvent","These events are created by [[OpenVPN]] and update the [[Global_DB_schema#openvpn_events|openvpn_events]] table when OpenVPN processes a client action.");
-        classDescriptions.put("OpenVpnStatusEvent","These events are created by [[OpenVPN]] and update the [[Global_DB_schema#openvpn_stats|openvpn_stats]] table periodically.");
-        classDescriptions.put("SmtpMessageAddressEvent","These events are created by SMTP subsystem and inserted to the [[Global_DB_schema#mail_addrs|mail_addrs]] table for each address on each email.");
-        classDescriptions.put("SmtpMessageEvent","These events are created by SMTP subsystem and inserted to the [[Global_DB_schema#mail_msgs|mail_msgs]] table for each email.");
-        classDescriptions.put("LoginEvent","These events are created by [[Directory Connector]] and inserted to the [[Global_DB_schema#directory_connector_login_events|directory_connector_login_events]] table for each login.");
+        classDescriptions.put("InterfaceStatEvent","These events are created by the base system and inserted to the [[Database_Schema#settings_changes|interface_stat_events]] table periodically with interface stats.");
+        classDescriptions.put("StatisticEvent","These events are created by the base system and inserted to the the [[Database_Schema#settings_changes|interface_stat_events]] table periodically with interface stats.");
+        classDescriptions.put("SystemStatEvent","These events are created by the base system and inserted to the [[Database_Schema#server_events|server_events]] table periodically.");
+        classDescriptions.put("TunnelStatusEvent","These events are created by [[IPsec VPN]] and inserted to the [[Database_Schema#ipsec_tunnel_stats|ipsec_tunnel_stats]] table periodically.");
+        classDescriptions.put("VirtualUserEvent","These events are created by [[IPsec VPN]] and inserted to the [[Database_Schema#ipsec_user_events|ipsec_user_events]] table when a user event occurs.");
+        classDescriptions.put("AlertEvent","These events are created by [[Reports]] and inserted to the [[Database_Schema#alerts|alerts]] table when an alert fires.");
+        classDescriptions.put("ConfigurationBackupEvent","These events are created by [[Configuration Backup]] and inserted to the [[Database_Schema#configuratio_backup_events|configuratio_backup_events]] table when a backup occurs.");
+        classDescriptions.put("WebCacheEvent","These events are created by [[Web Cache]] and inserted to the [[Database_Schema#web_cache_stats|web_cache_stats]] table periodically.");
+        classDescriptions.put("HttpResponseEvent","These events are created by HTTP subsystem and update the [[Database_Schema#http_events|http_events]] table when a web response happens.");
+        classDescriptions.put("HttpRequestEvent","These events are created by HTTP subsystem and inserted to the [[Database_Schema#http_events|http_events]] table when a web request happens.");
+        classDescriptions.put("ApplicationControlLiteEvent","These events are created by [[Application Control Lite]] and update the [[Database_Schema#sessions|sessions]] table when application control lite identifies a session.");
+        classDescriptions.put("ApplicationControlLogEvent","These events are created by [[Application Control]] and update the [[Database_Schema#sessions|sessions]] table when application control identifies a session.");
+        classDescriptions.put("FirewallEvent","These events are created by [[Firewall]] and update the [[Database_Schema#sessions|sessions]] table when a firewall rule matches a session.");
+        classDescriptions.put("WebFilterEvent","These events are created by [[Web Filter]] and update the [[Database_Schema#http_events|http_events]] table when web filter processes a web request.");
+        classDescriptions.put("WebFilterQueryEvent","These events are created by [[Web Filter]] and inserted to the [[Database_Schema#http_query_events|http_query_events]] table when web filter processes a search engine search.");
+        classDescriptions.put("SslInspectorLogEvent","These events are created by [[SSL Inspector]] and update the [[Database_Schema#sessions|sessions]] table when a session is processed by SSL Inspector.");
+        classDescriptions.put("SpamSmtpTarpitEvent","These events are created by [[Spam Blocker]] and inserted to the [[Database_Schema#smtp_tarpit_events|smtp_tarpit_events]] table when a session is tarpitted.");
+        classDescriptions.put("SpamLogEvent","These events are created by [[Spam Blocker]] and update the [[Database_Schema#mail_msgs|mail_msgs]] table when an email is scanned.");
+        classDescriptions.put("CookieEvent","These events are created by [[Ad Blocker]] and update the [[Database_Schema#http_events|http_events]] table when a cookie is blocked.");
+        classDescriptions.put("AdBlockerEvent","These events are created by [[Ad Blocker]] and update the [[Database_Schema#http_events|http_events]] table when an ad is blocked.");
+        classDescriptions.put("IntrusionPreventionLogEvent","These events are created by [[Intrusion Prevention]] and inserted to the [[Database_Schema#intrusion_prevention_events|intrusion_prevention_events]] table when a rule matches.");
+        classDescriptions.put("WanFailoverTestEvent","These events are created by [[WAN Failover]] and inserted to the [[Database_Schema#wan_failover_test_events|wan_failover_test_events]] table when a test is run.");
+        classDescriptions.put("WanFailoverEvent","These events are created by [[WAN Failover]] and inserted to the [[Database_Schema#wan_failover_action_events|wan_failover_action_events]] table when WAN Failover takes an action.");
+        classDescriptions.put("CaptivePortalUserEvent","These events are created by [[Captive Portal]] and inserted to the [[Database_Schema#captive_portal_user_events|captive_portal_user_events]] table when Captive Portal user takes an action.");
+        classDescriptions.put("CaptureRuleEvent","These events are created by [[Captive Portal]] and update the [[Database_Schema#sessions|sessions]] table when Captive Portal processes a session.");
+        classDescriptions.put("VirusSmtpEvent","These events are created by [[Virus Blocker]] and update the [[Database_Schema#mail_msgs|mail_msgs]] table when Virus Blocker scans an email.");
+        classDescriptions.put("VirusFtpEvent","These events are created by [[Virus Blocker]] and update the [[Database_Schema#ftp_events|ftp_events]] table when Virus Blocker scans an FTP transfer.");
+        classDescriptions.put("VirusHttpEvent","These events are created by [[Virus Blocker]] and update the [[Database_Schema#http_events|http_events]] table when Virus Blocker scans an HTTP transfer.");
+        classDescriptions.put("OpenVpnEvent","These events are created by [[OpenVPN]] and update the [[Database_Schema#openvpn_events|openvpn_events]] table when OpenVPN processes a client action.");
+        classDescriptions.put("OpenVpnStatusEvent","These events are created by [[OpenVPN]] and update the [[Database_Schema#openvpn_stats|openvpn_stats]] table periodically.");
+        classDescriptions.put("SmtpMessageAddressEvent","These events are created by SMTP subsystem and inserted to the [[Database_Schema#mail_addrs|mail_addrs]] table for each address on each email.");
+        classDescriptions.put("SmtpMessageEvent","These events are created by SMTP subsystem and inserted to the [[Database_Schema#mail_msgs|mail_msgs]] table for each email.");
+        classDescriptions.put("LoginEvent","These events are created by [[Directory Connector]] and inserted to the [[Database_Schema#directory_connector_login_events|directory_connector_login_events]] table for each login.");
         
         attributeDescriptions.put("partitionTablePostfix","");
         attributeDescriptions.put("tag","");
@@ -84,6 +85,8 @@ public class ExtensionImpl implements Runnable
         attributeDescriptions.put("entryTime","The entry time");
         attributeDescriptions.put("exitTime","The exit time");
         attributeDescriptions.put("action","The action");
+        attributeDescriptions.put("c2sBytes","The number of bytes sent from the client to the server");
+        attributeDescriptions.put("s2cBytes","The number of bytes sent from the server to the client");
         attributeDescriptions.put("c2pBytes","The number of bytes sent from the client to Untangle");
         attributeDescriptions.put("c2pChunks","The number of chunks/packets sent from the client to Untangle");
         attributeDescriptions.put("p2cBytes","The number of bytes sent to the client from Untangle");
@@ -120,6 +123,8 @@ public class ExtensionImpl implements Runnable
         attributeDescriptions.put("activeHosts","The active host count");
         attributeDescriptions.put("cpuSystem","The system CPU utilization");
         attributeDescriptions.put("cpuUser","The user CPU utilization");
+        attributeDescriptions.put("diskUsed","The amount of disk used");
+        attributeDescriptions.put("diskUsedPercent","The percentage of disk used");
         attributeDescriptions.put("diskFree","The amount of disk free");
         attributeDescriptions.put("diskFreePercent","The percentage of disk free");
         attributeDescriptions.put("diskTotal","The total size of the disk");
@@ -128,10 +133,15 @@ public class ExtensionImpl implements Runnable
         attributeDescriptions.put("load5","The 5-minute CPU load");
         attributeDescriptions.put("memBuffers","The amount of memory used by buffers");
         attributeDescriptions.put("memCache","The amount of memory used by cache");
+        attributeDescriptions.put("memUsed","The amount of used memory");
+        attributeDescriptions.put("memUsedPercent","The percentage of total memory that is used");
         attributeDescriptions.put("memFree","The amount of free memory");
         attributeDescriptions.put("memFreePercent","The percentage of total memory that is free");
         attributeDescriptions.put("memTotal","The total amount of memory");
+        attributeDescriptions.put("swapUsed","The amount of used swap");
+        attributeDescriptions.put("swapUsedPercent","The percentage of total swap that is used");
         attributeDescriptions.put("swapFree","The amount of free swap");
+        attributeDescriptions.put("swapFreePercent","The percentage of total swap that is free");
         attributeDescriptions.put("swapTotal","The total size of swap");
         attributeDescriptions.put("inBytes","The number of bytes received from this tunnel");
         attributeDescriptions.put("outBytes","The number of bytes sent in this tunnel");
@@ -182,12 +192,18 @@ public class ExtensionImpl implements Runnable
         attributeDescriptions.put("vendorName","The application name");
         attributeDescriptions.put("clientAddr","The client address");
         attributeDescriptions.put("clientPort","The client port");
+        attributeDescriptions.put("clientCountry","The client country");
+        attributeDescriptions.put("clientLatitude","The client latitude");
+        attributeDescriptions.put("clientLongitude","The client longitude");
         attributeDescriptions.put("messageId","The message ID");
         attributeDescriptions.put("receiver","The receiver");
         attributeDescriptions.put("score","The score");
         attributeDescriptions.put("sender","The sender");
         attributeDescriptions.put("serverAddr","The server address");
         attributeDescriptions.put("serverPort","The server port");
+        attributeDescriptions.put("serverCountry","The server country");
+        attributeDescriptions.put("serverLatitude","The server latitude");
+        attributeDescriptions.put("serverLongitude","The server longitude");
         attributeDescriptions.put("smtpMessageEvent","The parent SMTP message event");
         attributeDescriptions.put("isSpam","True if spam, false otherwise");
         attributeDescriptions.put("subject","The subject");
@@ -240,6 +256,12 @@ public class ExtensionImpl implements Runnable
         attributeDescriptions.put("envelopeFromAddress","The envelop FROM address");
         attributeDescriptions.put("envelopeToAddress","The envelope TO address");
         attributeDescriptions.put("tmpFile","The /tmp file");
+        attributeDescriptions.put("endTime","The end time/date");
+        attributeDescriptions.put("localAddr","The local host address");
+        attributeDescriptions.put("remoteAddr","The remote host address");
+        attributeDescriptions.put("policyRuleId","The policy rule ID");
+        attributeDescriptions.put("settingsFile","The settings file");
+        attributeDescriptions.put("httpRequestEvent","The corresponding HTTP request event");
 
         HashMap<String,String> specificDescriptions;
         
@@ -286,20 +308,19 @@ public class ExtensionImpl implements Runnable
                 printClassDescription( line );
             }
         } catch (Exception e) {
-            System.out.println(e);
+            System.out.println(e + " " + e.getMessage());
         }
     }
 
+    @SuppressWarnings("rawtypes")
     public void printClassDescription( String fullName )
     {
         String shortName = fullName.replaceAll(".*\\.","");
 
-        boolean failed = false;
-
         String classDescription = classDescriptions.get(shortName);
         if (classDescription == null ) {
             System.out.println("Missing class description: " + shortName);
-            failed = true;
+            throw new RuntimeException("Missing class description: " + shortName);
         }
 
         //System.out.println(fullName);
@@ -346,7 +367,7 @@ public class ExtensionImpl implements Runnable
                     description = attributeDescriptions.get(methodName);
                 if (description == null ) {
                     System.out.println("Missing attribute description: " + methodName + " " + shortName);
-                    failed = true;
+                    throw new RuntimeException("Missing attribute description: " + methodName + " " + shortName);
                 }
                 if ("".equals(description))
                     continue;
@@ -363,9 +384,6 @@ public class ExtensionImpl implements Runnable
         System.out.println("<section end='" + shortName + "' />");
         System.out.println("");
         System.out.println("");
-
-        if ( failed )
-            throw new RuntimeException();
     }
 }
 
