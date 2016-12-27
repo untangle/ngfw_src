@@ -199,7 +199,6 @@ public class EventWriterImpl implements Runnable
                     else
                         try {Thread.sleep(1000);} catch (Exception e) {}
 
-                
                 } catch (Exception e) {
                     logger.warn("Failed to write events.", e);
                 } finally {
@@ -446,6 +445,12 @@ public class EventWriterImpl implements Runnable
                         Throwable t = e;
                         while ( ( t = t.getCause() ) != null ) {
                             logger.warn("Cause: " + t, t);
+                        }
+                    } finally {
+                        try {
+                            statement.close();
+                        } catch (Exception e) {
+                            logger.warn("Failed to close statement", e);
                         }
                     }
                     long write_t1 = System.currentTimeMillis();
