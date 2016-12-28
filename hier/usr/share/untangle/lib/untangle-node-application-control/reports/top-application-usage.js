@@ -2,7 +2,7 @@
     "uniqueId": "application-control-OAI5zmhxOM",
     "category": "Application Control",
     "description": "The amount of bandwidth per top application.",
-    "displayOrder": 210,
+    "displayOrder": 100,
     "enabled": true,
     "javaClass": "com.untangle.node.reports.ReportEntry",
     "orderDesc": false,

@@ -2,7 +2,7 @@
     "uniqueId": "application-control-GlzEJqEcXv",
     "category": "Application Control",
     "description": "The amount of scanned, flagged, and blocked sessions over time.",
-    "displayOrder": 100,
+    "displayOrder": 101,
     "enabled": true,
     "javaClass": "com.untangle.node.reports.ReportEntry",
     "orderDesc": false,
