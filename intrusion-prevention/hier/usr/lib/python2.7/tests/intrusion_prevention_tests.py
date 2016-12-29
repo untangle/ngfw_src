@@ -12,6 +12,7 @@ import urllib
 import urllib2
 import copy
 import socket
+from datetime import datetime
 from StringIO import StringIO
 
 from jsonrpc import JSONRPCException
@@ -715,19 +716,27 @@ class IntrusionPreventionTests(unittest2.TestCase):
         uvmContext.networkManager().setNetworkSettings(netsettings)
         test_untangle_com_ip = socket.gethostbyname("test.untangle.com")
 
-        rule = self.intrusion_prevention_interface.create_rule(msg="UDP Block", type="udp", block=True, directive="ttl:1;")
+        startTime = datetime.now()
+
+        rule = self.intrusion_prevention_interface.create_rule(msg="UDP Block", type="udp", block=True, directive="")
         self.intrusion_prevention_interface.config_request( "save", self.intrusion_prevention_interface.create_patch( "rule", "add", rule ) )
         node.reconfigure()
 
-        result = remote_control.runCommand("/usr/sbin/traceroute " + test_untangle_com_ip)
+        result = remote_control.runCommand("/usr/sbin/traceroute -U -p 1234 " + test_untangle_com_ip)
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
-        event = self.intrusion_prevention_interface.get_log_event(rule)
-        events = global_functions.get_events('Intrusion Prevention','All Events',None,1)
+
+        time.sleep(35)
+        events = global_functions.get_events('Intrusion Prevention','All Events',None,500)
         assert(events != None)
-        found = global_functions.check_events( events.get('list'), 5,
+        found = global_functions.check_events( events.get('list'), 500,
                                                "source_addr", remote_control.clientIP,
                                                "dest_addr", test_untangle_com_ip,
-                                               "blocked", True)
+                                               "dest_port", 1234,
+                                               "protocol", 17,
+                                               "blocked", True,
+                                               min_date=startTime )
+
+        print "found: %s"%str(found)
         assert(not found)
 
     def test_065_bypass_tcp_block(self):
@@ -745,20 +754,28 @@ class IntrusionPreventionTests(unittest2.TestCase):
         uvmContext.networkManager().setNetworkSettings(netsettings)
         test_untangle_com_ip = socket.gethostbyname("test.untangle.com")
 
-        rule = self.intrusion_prevention_interface.create_rule(msg="TCP Block", type="tcp", block=True, directive="content:\"untangle\"; nocase;")
+        startTime = datetime.now()
+
+        rule = self.intrusion_prevention_interface.create_rule(msg="TCP Block", type="tcp", block=True, directive="")
 
         self.intrusion_prevention_interface.config_request( "save", self.intrusion_prevention_interface.create_patch( "rule", "add", rule ) )
         node.reconfigure()
 
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
-
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
-        events = global_functions.get_events('Intrusion Prevention','All Events',None,1)
+
+        time.sleep(35)
+        events = global_functions.get_events('Intrusion Prevention','All Events',None,500)
         assert(events != None)
-        found = global_functions.check_events( events.get('list'), 5,
+        found = global_functions.check_events( events.get('list'), 500,
                                                "source_addr", remote_control.clientIP,
                                                "dest_addr", test_untangle_com_ip,
-                                               "blocked", True)
+                                               "dest_port", 80,
+                                               "protocol", 6,
+                                               "blocked", True,
+                                               min_date=startTime )
+
+        print "found: %s"%str(found)
         assert(not found)
 
     @staticmethod
