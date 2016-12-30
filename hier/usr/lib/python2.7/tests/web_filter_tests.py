@@ -27,6 +27,17 @@ def nukeBlockedUrls(node):
     rules["list"] = []
     node.setBlockedUrls(rules)
 
+    def addPassedUrl(node, url, enabled=True, description="description"):
+    newRule =  { "enabled": enabled, "description": description, "javaClass": "com.untangle.uvm.node.GenericRule", "string": url }
+    rules = node.getPassedUrls()
+    rules["list"].append(newRule)
+    node.setPassedUrls(rules)
+
+def nukePassedUrls(node):
+    rules = node.getPassedUrls()
+    rules["list"] = []
+    node.setPassedUrls(rules)
+    
 #
 # Just extends the web filter tests
 #
@@ -118,6 +129,55 @@ class WebFilterTests(WebFilterBaseTests):
         addBlockedUrl(self.node, "playboy.com")
         result = remote_control.runCommand("wget -q -4 -t 2 --timeout=8 --no-check-certificate -O - https://www.playboy.com/ 2>&1 | grep -q blockpage")
         nukeBlockedUrls(self.node)
+        assert (result == 0)
+
+    # verify that a block list glob * doesnt overmatch
+    def test_560_blockedUrlGlobStarWithSNI(self):
+        addBlockedUrl(self.node, "*st.untangle.com")
+        result = remote_control.runCommand("wget -q -4 -t 2 --timeout=8 --no-check-certificate -O - https://test.untangle.com/test/testPage1.html 2>&1 | grep -q blockpage")
+        nukeBlockedUrls(self.node)
+        assert (result == 0)
+
+    # verify that a block list glob ? matches a single character
+    def test_561_blockedUrlGlobQuestionMarkWithSNI(self):
+        addBlockedUrl(self.node, "t?st.untangle.com")
+        result = remote_control.runCommand("wget -q -4 -t 2 --timeout=8 --no-check-certificate -O - https://test.untangle.com/test/testPage1.html 2>&1 | grep -q blockpage")
+        nukeBlockedUrls(self.node)
+        assert (result == 0)
+
+    # verify that untangle.com block rule also blocks test.untangle.com
+    def test_562_blockedUrlSubdomainWithSNI(self):
+        addBlockedUrl(self.node,"untangle.com")
+        # this test URL should NOT be blocked
+        result = remote_control.runCommand("wget -q -4 -t 2 --timeout=8 --no-check-certificate -O - https://test.untangle.com/test/testPage1.html 2>&1 | grep -q blockpage")
+        nukeBlockedUrls(self.node)
+        assert (result == 0)
+
+     # verify that t.untangle.com block rule DOES NOT block test.untangle.com ( it should block foo.t.untangle.com though )
+    def test_563_blockedUrlSubdomain2WithSNI(self):
+        addBlockedUrl(self.node,"t.untangle.com")
+        # this test URL should NOT be blocked
+        result = remote_control.runCommand("wget -q -4 -t 2 --timeout=8 --no-check-certificate -O - https://test.untangle.com/test/testPage1.html 2>&1 | grep -q text123")
+        nukeBlockedUrls(self.node)
+        assert (result == 0)
+
+     # verify that an entry in the pass list overrides a blocked category
+    def test_564_passedUrlOverridesBlockedCategoryWithSNI(self):
+        addPassedUrl(self.node,"playboy.com")
+        # this test URL should NOT be blocked (porn is blocked by default, but playboy.com now on pass list
+        result = remote_control.runCommand("wget -q -4 -t 2 --timeout=8 --no-check-certificate -O - https://playboy.com/ 2>&1 | grep -q blockpage")
+        assert (result != 0)
+        result = remote_control.runCommand("wget -q -4 -t 2 --timeout=8 --no-check-certificate -O - https://www.playboy.com/ 2>&1 | grep -q blockpage")
+        assert (result != 0)
+        nukePassedUrls(self.node)
+
+    def test_565_passedUrlOverridesBlockedUrlWithSNI(self):
+        addBlockedUrl(self.node,"untangle.com")
+        addPassedUrl(self.node,"test.untangle.com")
+        # this test URL should NOT be blocked
+        result = remote_control.runCommand("wget -q -4 -t 2 --timeout=8 --no-check-certificate -O - https://test.untangle.com/test/testPage1.html 2>&1 | grep -q text123")
+        nukeBlockedUrls(self.node)
+        nukePassedUrls(self.node)
         assert (result == 0)
 
     # Query eventlog
