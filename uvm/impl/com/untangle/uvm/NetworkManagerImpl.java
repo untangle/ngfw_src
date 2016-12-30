@@ -139,21 +139,7 @@ public class NetworkManagerImpl implements NetworkManager
 
             /* 12.2 conversion */
             if ( this.networkSettings.getVersion() < 3 ) {
-                try {
-                    this.networkSettings.setUpnpSettings( defaultUpnpSettings() );
-                    this.networkSettings.setPublicUrlMethod( UvmContextFactory.context().systemManager().getSettings().deprecated_getPublicUrlMethod() );
-                    if ( this.networkSettings.getPublicUrlMethod() == null )
-                        this.networkSettings.setPublicUrlMethod( NetworkSettings.PUBLIC_URL_EXTERNAL_IP );
-                    this.networkSettings.setPublicUrlAddress( UvmContextFactory.context().systemManager().getSettings().deprecated_getPublicUrlAddress() );
-                    if ( this.networkSettings.getPublicUrlAddress() == null )
-                        this.networkSettings.setPublicUrlAddress( "hostname.example.com" );
-                    this.networkSettings.setPublicUrlPort( UvmContextFactory.context().systemManager().getSettings().deprecated_getPublicUrlPort() );
-                } catch (Exception e) {
-                    logger.warn("Exception converting Networking Settings",e);
-                }
-
-                this.networkSettings.setVersion( 3 );
-                this.setNetworkSettings( this.networkSettings, false );
+                convertSettingsV3();
             }
             logger.debug( "Loading Settings: " + this.networkSettings.toJSONString() );
         }
@@ -1763,6 +1749,28 @@ public class NetworkManagerImpl implements NetworkManager
         ruleSnmpConditions.add(ruleSnmpMatcher3);
         filterRuleSnmp.setConditions( ruleSnmpConditions );
 
+        FilterRule filterRuleUpnp = new FilterRule();
+        filterRuleUpnp.setReadOnly( true );
+        filterRuleUpnp.setEnabled( true );
+        filterRuleUpnp.setIpv6Enabled( true );
+        filterRuleUpnp.setDescription( "Allow UPnP on non-WANs" );
+        filterRuleUpnp.setBlocked( false );
+        filterRuleUpnp.setReadOnly( true );
+        List<FilterRuleCondition> ruleUpnpConditions = new LinkedList<FilterRuleCondition>();
+        FilterRuleCondition ruleUpnpMatcher1 = new FilterRuleCondition();
+        ruleUpnpMatcher1.setConditionType(FilterRuleCondition.ConditionType.DST_PORT);
+        ruleUpnpMatcher1.setValue("1900");
+        FilterRuleCondition ruleUpnpMatcher2 = new FilterRuleCondition();
+        ruleUpnpMatcher2.setConditionType(FilterRuleCondition.ConditionType.PROTOCOL);
+        ruleUpnpMatcher2.setValue("UDP");
+        FilterRuleCondition ruleUpnpMatcher3 = new FilterRuleCondition();
+        ruleUpnpMatcher3.setConditionType(FilterRuleCondition.ConditionType.SRC_INTF);
+        ruleUpnpMatcher3.setValue("non_wan");
+        ruleUpnpConditions.add(ruleUpnpMatcher1);
+        ruleUpnpConditions.add(ruleUpnpMatcher2);
+        ruleUpnpConditions.add(ruleUpnpMatcher3);
+        filterRuleUpnp.setConditions( ruleUpnpConditions );
+
         FilterRule filterRuleAhEsp = new FilterRule();
         filterRuleAhEsp.setReadOnly( true );
         filterRuleAhEsp.setEnabled( true );
@@ -1871,6 +1879,7 @@ public class NetworkManagerImpl implements NetworkManager
         rules.add( filterRuleDhcp );
         rules.add( filterRuleHttp );
         rules.add( filterRuleSnmp );
+        rules.add( filterRuleUpnp );
         rules.add( filterRuleAhEsp );
         rules.add( filterRuleIke );
         rules.add( filterRuleNatT );
@@ -2332,6 +2341,60 @@ public class NetworkManagerImpl implements NetworkManager
         return primaryAddressStr + ":" + httpsPortStr;
     }
 
+    private void convertSettingsV3()
+    {
+        try {
+            this.networkSettings.setUpnpSettings( defaultUpnpSettings() );
+            this.networkSettings.setPublicUrlMethod( UvmContextFactory.context().systemManager().getSettings().deprecated_getPublicUrlMethod() );
+            if ( this.networkSettings.getPublicUrlMethod() == null )
+                this.networkSettings.setPublicUrlMethod( NetworkSettings.PUBLIC_URL_EXTERNAL_IP );
+            this.networkSettings.setPublicUrlAddress( UvmContextFactory.context().systemManager().getSettings().deprecated_getPublicUrlAddress() );
+            if ( this.networkSettings.getPublicUrlAddress() == null )
+                this.networkSettings.setPublicUrlAddress( "hostname.example.com" );
+            this.networkSettings.setPublicUrlPort( UvmContextFactory.context().systemManager().getSettings().deprecated_getPublicUrlPort() );
+        } catch (Exception e) {
+            logger.warn("Exception converting Networking Settings",e);
+        }
+
+        try {
+            List<FilterRule> inputFilterRules = this.networkSettings.getInputFilterRules();
+            int pos = 1;
+            for( FilterRule rule : inputFilterRules ) {
+                if ("Allow SNMP on non-WANs".equals(rule.getDescription())) {
+                    FilterRule filterRuleUpnp = new FilterRule();
+                    filterRuleUpnp.setReadOnly( true );
+                    filterRuleUpnp.setEnabled( true );
+                    filterRuleUpnp.setIpv6Enabled( true );
+                    filterRuleUpnp.setDescription( "Allow UPnP on non-WANs" );
+                    filterRuleUpnp.setBlocked( false );
+                    filterRuleUpnp.setReadOnly( true );
+                    List<FilterRuleCondition> ruleUpnpConditions = new LinkedList<FilterRuleCondition>();
+                    FilterRuleCondition ruleUpnpMatcher1 = new FilterRuleCondition();
+                    ruleUpnpMatcher1.setConditionType(FilterRuleCondition.ConditionType.DST_PORT);
+                    ruleUpnpMatcher1.setValue("1900");
+                    FilterRuleCondition ruleUpnpMatcher2 = new FilterRuleCondition();
+                    ruleUpnpMatcher2.setConditionType(FilterRuleCondition.ConditionType.PROTOCOL);
+                    ruleUpnpMatcher2.setValue("UDP");
+                    FilterRuleCondition ruleUpnpMatcher3 = new FilterRuleCondition();
+                    ruleUpnpMatcher3.setConditionType(FilterRuleCondition.ConditionType.SRC_INTF);
+                    ruleUpnpMatcher3.setValue("non_wan");
+                    ruleUpnpConditions.add(ruleUpnpMatcher1);
+                    ruleUpnpConditions.add(ruleUpnpMatcher2);
+                    ruleUpnpConditions.add(ruleUpnpMatcher3);
+                    filterRuleUpnp.setConditions( ruleUpnpConditions );
+
+                    inputFilterRules.add( pos, filterRuleUpnp );
+                    break;
+                }
+                pos++;
+            }
+        } catch (Exception e) {
+            logger.warn("Exception converting Networking Settings",e);
+        }
+
+        this.networkSettings.setVersion( 3 );
+        this.setNetworkSettings( this.networkSettings, false );
+    }
     
     private class NetworkTestDownloadHandler implements DownloadHandler
     {
