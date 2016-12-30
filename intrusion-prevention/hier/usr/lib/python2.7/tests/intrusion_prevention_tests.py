@@ -722,7 +722,7 @@ class IntrusionPreventionTests(unittest2.TestCase):
         self.intrusion_prevention_interface.config_request( "save", self.intrusion_prevention_interface.create_patch( "rule", "add", rule ) )
         node.reconfigure()
 
-        result = remote_control.runCommand("/usr/sbin/traceroute -U -p 1234 " + test_untangle_com_ip)
+        result = remote_control.runCommand("/usr/sbin/traceroute -U -m 3 -p 1234 " + test_untangle_com_ip)
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
         time.sleep(35)
