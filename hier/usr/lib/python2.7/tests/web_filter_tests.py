@@ -27,7 +27,7 @@ def nukeBlockedUrls(node):
     rules["list"] = []
     node.setBlockedUrls(rules)
 
-    def addPassedUrl(node, url, enabled=True, description="description"):
+def addPassedUrl(node, url, enabled=True, description="description"):
     newRule =  { "enabled": enabled, "description": description, "javaClass": "com.untangle.uvm.node.GenericRule", "string": url }
     rules = node.getPassedUrls()
     rules["list"].append(newRule)
