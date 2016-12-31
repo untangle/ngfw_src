@@ -191,9 +191,9 @@ public class FixedReports
         // Backup Usage (all)
         ReservedReports.add("configuration-backup-HF3qFZ9M");
         // Devices Additions
-        ReservedReports.add("device-table-UkYvElV11f");
+        //ReservedReports.add("device-table-UkYvElV11f");
         // Devices Updates
-        ReservedReports.add("device-table-WGQUSYhIck");
+        //ReservedReports.add("device-table-WGQUSYhIck");
         // Directory Connector Summary
         ReservedReports.add("directory-connector-upl31dqKb1");
         // User Notification API Events
@@ -202,10 +202,12 @@ public class FixedReports
         ReservedReports.add("firewall-upl31dqKb1");
         // Scanned Sessions
         ReservedReports.add("firewall-8bTqxKxxUK");
+        // Hosts Active
+        ReservedReports.add("host-viewer-pfRvYDKKQx");
         // Hosts Additions
-        ReservedReports.add("host-viewer-UkYvElV11f");
+        //ReservedReports.add("host-viewer-UkYvElV11f");
         // Hosts Updates
-        ReservedReports.add("host-viewer-WGQUSYhIck");
+        //ReservedReports.add("host-viewer-WGQUSYhIck");
         // IPsec VPN Summary
         ReservedReports.add("ipsec-vpn-upl31dqKb1");
         // Hourly Tunnel Traffic
@@ -230,6 +232,10 @@ public class FixedReports
         ReservedReports.add("phish-blocker-iZV0Z13m");
         // Policy Manager Summary
         ReservedReports.add("policy-manager-upl31dqKb1");
+        // Session By Policy
+        //ReservedReports.add("policy-manager-jGmqEl0H2Z");
+        // Traffic By Policy
+        ReservedReports.add("policy-manager-lwvWGzNwHf");
         // Alerts
         ReservedReports.add("reporting-498VRSufOw");
         // SSL Inspector Summary
@@ -237,21 +243,27 @@ public class FixedReports
         // Scanned Sessions
         ReservedReports.add("ssl-inspector-F10QTQJPXF");
         // Scanned Sessions
-        ReservedReports.add("shield-2ObNkapIEq");
+        //ReservedReports.add("shield-2ObNkapIEq");
         // Spam Blocker Summary
         ReservedReports.add("spam-blocker-gnmDTFRS");
         // Email Usage (all)
         ReservedReports.add("spam-blocker-exreIeeR");
+        // Spam Ratio
+        ReservedReports.add("spam-blocker-QuhTJ1ude8");
         // Spam Blocker Lite Summary
         ReservedReports.add("spam-blocker-lite-DniRBEni");
         // Email Usage (all)
         ReservedReports.add("spam-blocker-lite-iZV0Z13m");
+        // Spam Ratio
+        ReservedReports.add("spam-blocker-lite-QuhTJ1ude8");
         // CPU Load
         ReservedReports.add("system-LJnwhWuJiN");
         // Memory Usage
         ReservedReports.add("system-fgQnUn1Tle");
         // Disk Usage
         ReservedReports.add("system-6iYMGsnldQ");
+        // Swap Usage Ratio
+        ReservedReports.add("system-N63OfrLqbS");
         // Highest Active Hosts
         ReservedReports.add("system-lL959lz7qu");
         // Virus Blocker FTP Summary
