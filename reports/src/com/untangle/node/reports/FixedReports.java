@@ -172,8 +172,8 @@ public class FixedReports
         ReservedReports.add("Administration-tFb0iLvxHE");
         // Application Control Summary
         ReservedReports.add("application-control-upl31dqKb1");
-        // Scanned Sessions (all)
-        ReservedReports.add("application-control-GlzEJqEcXv");
+        // Top Applications Usage
+        ReservedReports.add("application-control-OAI5zmhxOM");
         // Application Control Lite Summary
         ReservedReports.add("application-control-lite-upl31dqKb1");
         // Detection Statistics
