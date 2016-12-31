@@ -302,6 +302,8 @@ public class FixedReports
         ReservedReports.add("web-filter-q97vptQHbv");
         // Web Usage
         ReservedReports.add("web-filter-h0jelsttGp");
+        // Top Domains Usage
+        ReservedReports.add("web-filter-2nx8FA4VCB");
         // Web Filter Lite Summary
         ReservedReports.add("web-filter-lite-q97vptQHbv");
         // Web Usage
@@ -310,6 +312,8 @@ public class FixedReports
         ReservedReports.add("web-monitor-q97vptQHbv");
         // Web Usage
         ReservedReports.add("web-monitor-h0jelsttGp");
+        // Top Domains Usage
+        ReservedReports.add("web-monitor-2nx8FA4VCB");
 
         // Order matters when processing
         ConditionalPatterns = new LinkedHashMap<ConditionalE,Pattern>();
