@@ -2,7 +2,7 @@
     "uniqueId": "policy-manager-jGmqEl0H2Z",
     "category": "Policy Manager",
     "description": "The number of sessions for each policy.",
-    "displayOrder": 100,
+    "displayOrder": 200,
     "enabled": true,
     "javaClass": "com.untangle.node.reports.ReportEntry",
     "orderByColumn": "policy_id",
@@ -13,6 +13,7 @@
     "readOnly": true,
     "table": "sessions",
     "title": "Sessions By Policy",
+    "seriesRenderer": "policy_id",
     "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }
