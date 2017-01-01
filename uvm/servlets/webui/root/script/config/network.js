@@ -2657,7 +2657,8 @@ Ext.define('Webui.config.network', {
                             ['dslreports','DSL-Reports'],
                             ['dnspark','DNSPark'],
                             ['no-ip','No-IP'],
-                            ['dnsomatic','DNS-O-Matic']],
+                            ['dnsomatic','DNS-O-Matic'],
+                            ['cloudflare','Cloudflare']],
                     listeners: {
                         "change": {
                             fn: Ext.bind(function(elem, newValue) {
