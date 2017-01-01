@@ -232,10 +232,8 @@ public class FixedReports
         ReservedReports.add("phish-blocker-iZV0Z13m");
         // Policy Manager Summary
         ReservedReports.add("policy-manager-upl31dqKb1");
-        // Session By Policy
-        //ReservedReports.add("policy-manager-jGmqEl0H2Z");
-        // Traffic By Policy
-        ReservedReports.add("policy-manager-lwvWGzNwHf");
+        // Top Policy Usage
+        ReservedReports.add("policy-manager-hWC6KjOc8Y");
         // Alerts
         ReservedReports.add("reporting-498VRSufOw");
         // SSL Inspector Summary

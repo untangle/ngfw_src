@@ -1755,7 +1755,7 @@ Ext.define('Ung.panel.Reports', {
                         if (Ung.Main.webuiMode) {
                             var name = Ung.Main.getPolicyName(value);
                             if (name != null) {
-                                return name + " (" + value + ")";
+                                return name;
                             }
                             return value;
                         }
