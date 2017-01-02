@@ -56,7 +56,7 @@ public class WanFailoverEvent extends LogEvent
     @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
-        String sql = "INSERT INTO " + getSchemaPrefix() + "wan_failover_action_events" + getPartitionTablePostfix() + " " +
+        String sql = "INSERT INTO " + schemaPrefix() + "wan_failover_action_events" + getPartitionTablePostfix() + " " +
             "(time_stamp, interface_id, name, os_name, action) " + 
             "values " +
             "( ?, ?, ?, ?, ? )";
