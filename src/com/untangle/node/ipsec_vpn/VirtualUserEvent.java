@@ -153,11 +153,11 @@ public class VirtualUserEvent extends LogEvent
     @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
-        String insert = "INSERT INTO " + getSchemaPrefix() + "ipsec_user_events" + getPartitionTablePostfix() + " " +
+        String insert = "INSERT INTO " + schemaPrefix() + "ipsec_user_events" + getPartitionTablePostfix() + " " +
             "(event_id, time_stamp, connect_stamp, client_address, client_protocol, client_username, net_interface, net_process) " +
             "values ( ?, ?, ?, ?, ?, ?, ?, ? )";
 
-        String update = "UPDATE " + getSchemaPrefix() + "ipsec_user_events" + getPartitionTablePostfix() + " " +
+        String update = "UPDATE " + schemaPrefix() + "ipsec_user_events" + getPartitionTablePostfix() + " " +
             "SET goodbye_stamp = ?, elapsed_time = ?, rx_bytes = ?, tx_bytes = ? " +
             "WHERE event_id = ?";
 
