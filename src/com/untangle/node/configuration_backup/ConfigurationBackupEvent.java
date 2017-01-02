@@ -37,7 +37,7 @@ public class ConfigurationBackupEvent extends LogEvent
     @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
-        String sql = "INSERT INTO " + getSchemaPrefix() + "configuration_backup_events" + getPartitionTablePostfix() + " " +
+        String sql = "INSERT INTO " + schemaPrefix() + "configuration_backup_events" + getPartitionTablePostfix() + " " +
             "(time_stamp, success, description, destination) " + 
             "values " +
             "( ?, ?, ?, ? )";
