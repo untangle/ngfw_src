@@ -87,10 +87,12 @@ public class WebFilterEvent extends LogEvent
         String actionStr;
         if ( getBlocked() )
             actionStr = I18nUtil.marktr("blocked");
+        else if ( getFlagged() )
+            actionStr = I18nUtil.marktr("flagged");
         else
-            actionStr = I18nUtil.marktr("passed");
+            actionStr = I18nUtil.marktr("logged");
 
-        String summary = appName + " " + actionStr + " " + requestLine.getUrl() + " (" + getCategory() + " " + getReason() + ")";
+        String summary = appName + " " + actionStr + " " + requestLine.getUrl() + " (" + getCategory() + ")";
         return summary;
     }
 
