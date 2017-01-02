@@ -31,7 +31,7 @@ public class InterfaceStatEvent extends LogEvent
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
         String sql =
-            "INSERT INTO " + getSchemaPrefix() + "interface_stat_events" + getPartitionTablePostfix() + " " +
+            "INSERT INTO " + schemaPrefix() + "interface_stat_events" + getPartitionTablePostfix() + " " +
             "(time_stamp, interface_id, rx_rate, tx_rate) " +
             " values " +
             "( ?, ?, ?, ? )";

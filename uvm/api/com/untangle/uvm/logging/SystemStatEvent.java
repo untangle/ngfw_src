@@ -125,7 +125,7 @@ public class SystemStatEvent extends LogEvent
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
         String sql =
-            "INSERT INTO " + getSchemaPrefix() + "server_events" + getPartitionTablePostfix() + " " +
+            "INSERT INTO " + schemaPrefix() + "server_events" + getPartitionTablePostfix() + " " +
             "(time_stamp, mem_total, mem_free, load_1, load_5, load_15, cpu_user, cpu_system, disk_total, disk_free, swap_total, swap_free, active_hosts) " +
             " values " +
             "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";

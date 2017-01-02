@@ -48,7 +48,7 @@ public class VirusFtpEvent extends LogEvent
     @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
-        String sql = "INSERT INTO " + getSchemaPrefix() + "ftp_events" + getPartitionTablePostfix() + " " +
+        String sql = "INSERT INTO " + schemaPrefix() + "ftp_events" + getPartitionTablePostfix() + " " +
             "(time_stamp, session_id, client_intf, server_intf, " + "c_client_addr, c_server_addr, " + 
             "s_client_addr, s_server_addr, policy_id, username, " + 
             " hostname, uri, " + 

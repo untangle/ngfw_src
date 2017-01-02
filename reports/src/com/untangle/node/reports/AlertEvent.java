@@ -46,7 +46,7 @@ public class AlertEvent extends LogEvent
    @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
-        String sql = "INSERT INTO " + getSchemaPrefix() + "alerts" + getPartitionTablePostfix() + " " +
+        String sql = "INSERT INTO " + schemaPrefix() + "alerts" + getPartitionTablePostfix() + " " +
             "(time_stamp, description, summary_text, json) " +
             "values " +
             "(?, ?, ?, ?); ";

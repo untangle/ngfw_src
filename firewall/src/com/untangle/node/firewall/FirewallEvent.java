@@ -44,7 +44,7 @@ public class FirewallEvent extends LogEvent
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
         String sql =
-            "UPDATE " + getSchemaPrefix() + "sessions" + sessionEvent.getPartitionTablePostfix() + " " +
+            "UPDATE " + schemaPrefix() + "sessions" + sessionEvent.getPartitionTablePostfix() + " " +
             "SET firewall_blocked = ?, " +
             "    firewall_flagged = ?, " + 
             "    firewall_rule_index = ? " + 
