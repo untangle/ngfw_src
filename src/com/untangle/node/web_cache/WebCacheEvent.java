@@ -59,7 +59,7 @@ public class WebCacheEvent extends LogEvent implements Serializable
     @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
-        String sql = "INSERT INTO " + getSchemaPrefix() + "web_cache_stats" + getPartitionTablePostfix() + " " +
+        String sql = "INSERT INTO " + schemaPrefix() + "web_cache_stats" + getPartitionTablePostfix() + " " +
             "(time_stamp, hits, misses, bypasses, systems, hit_bytes, miss_bytes) " + 
             "values " +
             "( ?, ?, ?, ?, ?, ?, ? )";
