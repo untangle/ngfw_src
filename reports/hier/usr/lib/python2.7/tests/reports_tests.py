@@ -544,7 +544,7 @@ class ReportsTests(unittest2.TestCase):
         subprocess.call([prefix+"/usr/share/untangle/bin/reports-generate-fixed-reports.py"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
 
         # look for alert email
-        emailFound, emailContext, emailContext2, measureLength = findEmailContent('Daily Reports','Administration-tFb0iLvxHE')
+        emailFound, emailContext, emailContext2, measureLength = findEmailContent('Daily Reports','Content-Type: image/png; name=')
 
         # Kill the mail sink
         remote_control.runCommand("sudo pkill -INT python",host=fakeSmtpServerHost)
