@@ -120,12 +120,6 @@ public abstract class LogEvent implements Serializable, JSONString
         //}
     }
 
-    public static void setSchemaPrefix( String newValue ) { schemaPrefix = newValue; }
-    public static String getSchemaPrefix() { return schemaPrefix; }
-
-    public static void setPartitionsSupported( boolean newValue ) { partitionsSupported = newValue; }
-    public static boolean getPartitionsSupported() { return partitionsSupported; }
-
     public String toJSONString()
     {
         JSONObject jO = new JSONObject(this);
@@ -137,4 +131,25 @@ public abstract class LogEvent implements Serializable, JSONString
         JSONObject jO = new JSONObject(this);
         return jO;
     }
+
+    public static void setSchemaPrefix( String newValue )
+    {
+        schemaPrefix = newValue;
+    }
+
+    public static String schemaPrefix()
+    {
+        return schemaPrefix;
+    }
+
+    public static void setPartitionsSupported( boolean newValue )
+    {
+        partitionsSupported = newValue;
+    }
+    
+    public static boolean partitionsSupported()
+    {
+        return partitionsSupported;
+    }
+    
 }

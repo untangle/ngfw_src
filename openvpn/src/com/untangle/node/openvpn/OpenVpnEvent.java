@@ -63,7 +63,7 @@ public class OpenVpnEvent extends LogEvent implements Serializable
     @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
-        String sql = "INSERT INTO " + getSchemaPrefix() + "openvpn_events" + getPartitionTablePostfix() + " " +
+        String sql = "INSERT INTO " + schemaPrefix() + "openvpn_events" + getPartitionTablePostfix() + " " +
         "(time_stamp, remote_address, pool_address, client_name, type) " +
         "values " +
         "( ?, ?, ?, ?, ? ) ";

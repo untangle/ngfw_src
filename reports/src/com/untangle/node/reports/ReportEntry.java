@@ -299,7 +299,7 @@ public class ReportEntry implements Serializable, JSONString
     {
         String query = ""; 
         String dateCondition = " time_stamp >= " + dateFormat(startDate) + " " + " and " + " time_stamp <= " + dateFormat(endDate) + " ";
-        query +=  "SELECT * FROM " + LogEvent.getSchemaPrefix() + this.table + " WHERE " + dateCondition;
+        query +=  "SELECT * FROM " + LogEvent.schemaPrefix() + this.table + " WHERE " + dateCondition;
         query += conditionsToString( allConditions );
         query += " ORDER BY time_stamp DESC";
         if ( limit != null && limit > 0 )
@@ -314,7 +314,7 @@ public class ReportEntry implements Serializable, JSONString
         String pieQuery = "SELECT " +
             getPieGroupColumn() + ", " + getPieSumColumn() + " as value " +
             " FROM " +
-            LogEvent.getSchemaPrefix() + getTable() +
+            LogEvent.schemaPrefix() + getTable() +
             " WHERE " + dateCondition;
 
         pieQuery += conditionsToString( allConditions );
@@ -339,7 +339,7 @@ public class ReportEntry implements Serializable, JSONString
         }
 
         textQuery += " FROM " +
-            LogEvent.getSchemaPrefix() + getTable() +
+            LogEvent.schemaPrefix() + getTable() +
             " WHERE " + dateCondition;
             
         textQuery += conditionsToString( allConditions );
@@ -360,7 +360,7 @@ public class ReportEntry implements Serializable, JSONString
             timeQuery += ", " + s;
 
         timeQuery += " FROM " +
-            LogEvent.getSchemaPrefix() + getTable() +
+            LogEvent.schemaPrefix() + getTable() +
             " WHERE " + dateCondition;
 
         timeQuery += conditionsToString( allConditions );
@@ -398,7 +398,7 @@ public class ReportEntry implements Serializable, JSONString
          * This querys the distinct values that will be used to detemine the columns in the final result
          */
         String distinctQuery = "SELECT DISTINCT(" + getTimeDataDynamicColumn() + ") as value, " + getTimeDataDynamicAggregationFunction() + "(" + getTimeDataDynamicValue() + ")" +
-            " FROM " + LogEvent.getSchemaPrefix() + getTable() +
+            " FROM " + LogEvent.schemaPrefix() + getTable() +
             " WHERE " + dateCondition +
             conditionsToString( allConditions ) + 
             ( getTimeDataDynamicAllowNull() == null || getTimeDataDynamicAllowNull() == Boolean.FALSE ? (" AND " + getTimeDataDynamicColumn() + " IS NOT NULL") : "" ) +
@@ -442,7 +442,7 @@ public class ReportEntry implements Serializable, JSONString
         }
 
         timeQuery += " FROM " +
-            LogEvent.getSchemaPrefix() + getTable() +
+            LogEvent.schemaPrefix() + getTable() +
             " WHERE " + dateCondition;
 
         timeQuery += conditionsToString( allConditions );

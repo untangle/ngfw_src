@@ -53,7 +53,7 @@ public class HttpResponseEvent extends LogEvent
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
         String sql =
-            "UPDATE " + getSchemaPrefix() + "http_events" + requestLine.getHttpRequestEvent().getPartitionTablePostfix() + " " +
+            "UPDATE " + schemaPrefix() + "http_events" + requestLine.getHttpRequestEvent().getPartitionTablePostfix() + " " +
             "SET " +
             "s2c_content_length = ?, " +
             "s2c_content_type = ? " +
