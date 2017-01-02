@@ -469,6 +469,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         LinkedList<AlertRuleCondition> matchers;
         AlertRuleCondition matcher1;
         AlertRuleCondition matcher2;
+        AlertRuleCondition matcher3;
         AlertRule alertRule;
         
         matchers = new LinkedList<AlertRuleCondition>();
@@ -533,6 +534,66 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "entitled", "=", "false" ) );
         matchers.add( matcher2 );
         alertRule = new AlertRule( true, matchers, true, true, "License limit exceeded. Session not entitled", true, 60*24 );
+        rules.add( alertRule );
+
+        matchers = new LinkedList<AlertRuleCondition>();
+        matcher1 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "class", "=", "*WebFilterEvent*" ) );
+        matchers.add( matcher1 );
+        matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "blocked", "=", "False" ) );
+        matchers.add( matcher2 );
+        matcher3 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "category", "=", "Malware Distribution Point" ) );
+        matchers.add( matcher3 );
+        alertRule = new AlertRule( true, matchers, true, true, "Malware Distribution Point website visit detected", false, 10 );
+        rules.add( alertRule );
+
+        matchers = new LinkedList<AlertRuleCondition>();
+        matcher1 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "class", "=", "*WebFilterEvent*" ) );
+        matchers.add( matcher1 );
+        matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "blocked", "=", "True" ) );
+        matchers.add( matcher2 );
+        matcher3 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "category", "=", "Malware Distribution Point" ) );
+        matchers.add( matcher3 );
+        alertRule = new AlertRule( true, matchers, true, true, "Malware Distribution Point website visit blocked", false, 10 );
+        rules.add( alertRule );
+
+        matchers = new LinkedList<AlertRuleCondition>();
+        matcher1 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "class", "=", "*WebFilterEvent*" ) );
+        matchers.add( matcher1 );
+        matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "blocked", "=", "False" ) );
+        matchers.add( matcher2 );
+        matcher3 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "category", "=", "Botnet" ) );
+        matchers.add( matcher3 );
+        alertRule = new AlertRule( true, matchers, true, true, "Botnet website visit detected", false, 10 );
+        rules.add( alertRule );
+
+        matchers = new LinkedList<AlertRuleCondition>();
+        matcher1 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "class", "=", "*WebFilterEvent*" ) );
+        matchers.add( matcher1 );
+        matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "blocked", "=", "True" ) );
+        matchers.add( matcher2 );
+        matcher3 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "category", "=", "Botnet" ) );
+        matchers.add( matcher3 );
+        alertRule = new AlertRule( true, matchers, true, true, "Botnet website visit blocked", false, 10 );
+        rules.add( alertRule );
+
+        matchers = new LinkedList<AlertRuleCondition>();
+        matcher1 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "class", "=", "*WebFilterEvent*" ) );
+        matchers.add( matcher1 );
+        matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "blocked", "=", "False" ) );
+        matchers.add( matcher2 );
+        matcher3 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "category", "=", "Phishing/Fraud" ) );
+        matchers.add( matcher3 );
+        alertRule = new AlertRule( true, matchers, true, true, "Phishing/Fraud website visit detected", false, 10 );
+        rules.add( alertRule );
+
+        matchers = new LinkedList<AlertRuleCondition>();
+        matcher1 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "class", "=", "*WebFilterEvent*" ) );
+        matchers.add( matcher1 );
+        matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "blocked", "=", "True" ) );
+        matchers.add( matcher2 );
+        matcher3 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "category", "=", "Phishing/Fraud" ) );
+        matchers.add( matcher3 );
+        alertRule = new AlertRule( true, matchers, true, true, "Phishing/Fraud website visit blocked", false, 10 );
         rules.add( alertRule );
 
         matchers = new LinkedList<AlertRuleCondition>();
