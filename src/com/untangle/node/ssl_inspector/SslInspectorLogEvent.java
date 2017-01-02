@@ -43,7 +43,7 @@ public class SslInspectorLogEvent extends LogEvent
     @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
-        String sql = "UPDATE " + getSchemaPrefix() + "sessions" + sessionEvent.getPartitionTablePostfix() + " " +"SET ";
+        String sql = "UPDATE " + schemaPrefix() + "sessions" + sessionEvent.getPartitionTablePostfix() + " " +"SET ";
         if (ruleid != null)
             sql += " ssl_inspector_ruleid = ?, ";
         sql += " ssl_inspector_status = ?, ";
