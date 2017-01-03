@@ -412,6 +412,21 @@ class VirusBlockerBaseTests(unittest2.TestCase):
                                             min_date=startTime)
         assert( found )
 
+    # test ftp using large test file
+    def test_120_ftpLargeClean(self):
+        if remote_control.quickTestsOnly:
+            raise unittest2.SkipTest('Skipping a time consuming test')
+        ftp_result = subprocess.call(["ping","-c","1",global_functions.ftpServer ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        if (ftp_result != 0):
+            raise unittest2.SkipTest("FTP server not available")
+        md5LargePDFClean = "06b3cc0a1430c2aaf449b46c72fecee5"
+        remote_control.runCommand("rm -f /tmp/temp_120_ftpVirusClean_file")
+        result = remote_control.runCommand("wget -q -O /tmp/temp_120_ftpVirusClean_file ftp://" + global_functions.ftpServer + "/debian-live-8.6.0-amd64-standard.iso")
+        assert (result == 0)
+        md5TestNum = remote_control.runCommand("\"md5sum /tmp/temp_120_ftpVirusClean_file | awk '{print $1}'\"", stdout=True)
+        print "md5LargePDFClean <%s> vs md5TestNum <%s>" % (md5LargePDFClean, md5TestNum)
+        assert (md5LargePDFClean == md5TestNum)
+
     def test_300_disableAllScans(self):
         virusSettings = self.node.getSettings()
 
