@@ -126,7 +126,7 @@ def _valid_token(req, token):
         curl.setopt( pycurl.CONNECTTIMEOUT, 30 )
         curl.setopt( pycurl.TIMEOUT, 30 )
         #curl.setopt( pycurl.URL, "http://54.152.2.165:1337/AuthenticationService/1/CheckTokenAccess")
-        curl.setopt( pycurl.URL, "https://auth.untangle.com/AuthenticationService/1/CheckTokenAccess")
+        curl.setopt( pycurl.URL, "https://auth.untangle.com/v1/CheckTokenAccess")
         curl.setopt( pycurl.HTTPHEADER, ["Content-type: application/json", "Accept: application/json", "AuthRequest: 4E6FAB77-B2DF-4DEA-B6BD-2B434A3AE981"])
         #curl.setopt( pycurl.VERBOSE, True )
         curl.setopt( pycurl.WRITEDATA, buffer )
