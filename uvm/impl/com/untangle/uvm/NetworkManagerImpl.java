@@ -141,6 +141,10 @@ public class NetworkManagerImpl implements NetworkManager
             if ( this.networkSettings.getVersion() < 3 ) {
                 convertSettingsV3();
             }
+            /* 12.2 conversion */
+            if ( this.networkSettings.getVersion() < 4 ) {
+                convertSettingsV4();
+            }
             logger.debug( "Loading Settings: " + this.networkSettings.toJSONString() );
         }
 
@@ -801,7 +805,7 @@ public class NetworkManagerImpl implements NetworkManager
         NetworkSettings newSettings = new NetworkSettings();
         
         try {
-            newSettings.setVersion( 3 ); // Currently on v3 (as of v12.2)
+            newSettings.setVersion( 4 ); // Currently on v4 (as of v12.2)
             newSettings.setHostName( UvmContextFactory.context().oemManager().getOemName().toLowerCase() );
             newSettings.setDomainName( "example.com" );
             newSettings.setHttpPort( 80 );
@@ -2356,26 +2360,65 @@ public class NetworkManagerImpl implements NetworkManager
             logger.warn("Exception converting Networking Settings",e);
         }
 
+        this.networkSettings.setVersion( 3 );
+
+        //we are about to upgrade to v4 and then save settings
+        //do not do this here
+        //this.setNetworkSettings( this.networkSettings, false );
+    }
+
+    private void convertSettingsV4()
+    {
         try {
             List<FilterRule> inputFilterRules = this.networkSettings.getInputFilterRules();
             int pos = 1;
             for( FilterRule rule : inputFilterRules ) {
                 if ("Allow SNMP on non-WANs".equals(rule.getDescription())) {
-                    FilterRule filterRuleUpnp = new FilterRule();
+                    FilterRule filterRuleUpnp;
+                    List<FilterRuleCondition> ruleUpnpConditions;
+                    FilterRuleCondition ruleUpnpMatcher1;
+                    FilterRuleCondition ruleUpnpMatcher2;
+                    FilterRuleCondition ruleUpnpMatcher3;
+
+                    filterRuleUpnp = new FilterRule();
                     filterRuleUpnp.setReadOnly( true );
                     filterRuleUpnp.setEnabled( true );
                     filterRuleUpnp.setIpv6Enabled( true );
-                    filterRuleUpnp.setDescription( "Allow UPnP on non-WANs" );
+                    filterRuleUpnp.setDescription( "Allow UPnP (TCP/5000) on non-WANs" );
                     filterRuleUpnp.setBlocked( false );
                     filterRuleUpnp.setReadOnly( true );
-                    List<FilterRuleCondition> ruleUpnpConditions = new LinkedList<FilterRuleCondition>();
-                    FilterRuleCondition ruleUpnpMatcher1 = new FilterRuleCondition();
+                    ruleUpnpConditions = new LinkedList<FilterRuleCondition>();
+                    ruleUpnpMatcher1 = new FilterRuleCondition();
+                    ruleUpnpMatcher1.setConditionType(FilterRuleCondition.ConditionType.DST_PORT);
+                    ruleUpnpMatcher1.setValue("5000");
+                    ruleUpnpMatcher2 = new FilterRuleCondition();
+                    ruleUpnpMatcher2.setConditionType(FilterRuleCondition.ConditionType.PROTOCOL);
+                    ruleUpnpMatcher2.setValue("TCP");
+                    ruleUpnpMatcher3 = new FilterRuleCondition();
+                    ruleUpnpMatcher3.setConditionType(FilterRuleCondition.ConditionType.SRC_INTF);
+                    ruleUpnpMatcher3.setValue("non_wan");
+                    ruleUpnpConditions.add(ruleUpnpMatcher1);
+                    ruleUpnpConditions.add(ruleUpnpMatcher2);
+                    ruleUpnpConditions.add(ruleUpnpMatcher3);
+                    filterRuleUpnp.setConditions( ruleUpnpConditions );
+
+                    inputFilterRules.add( pos, filterRuleUpnp );
+
+                    filterRuleUpnp = new FilterRule();
+                    filterRuleUpnp.setReadOnly( true );
+                    filterRuleUpnp.setEnabled( true );
+                    filterRuleUpnp.setIpv6Enabled( true );
+                    filterRuleUpnp.setDescription( "Allow UPnP (UDP/1900) on non-WANs" );
+                    filterRuleUpnp.setBlocked( false );
+                    filterRuleUpnp.setReadOnly( true );
+                    ruleUpnpConditions = new LinkedList<FilterRuleCondition>();
+                    ruleUpnpMatcher1 = new FilterRuleCondition();
                     ruleUpnpMatcher1.setConditionType(FilterRuleCondition.ConditionType.DST_PORT);
                     ruleUpnpMatcher1.setValue("1900");
-                    FilterRuleCondition ruleUpnpMatcher2 = new FilterRuleCondition();
+                    ruleUpnpMatcher2 = new FilterRuleCondition();
                     ruleUpnpMatcher2.setConditionType(FilterRuleCondition.ConditionType.PROTOCOL);
                     ruleUpnpMatcher2.setValue("UDP");
-                    FilterRuleCondition ruleUpnpMatcher3 = new FilterRuleCondition();
+                    ruleUpnpMatcher3 = new FilterRuleCondition();
                     ruleUpnpMatcher3.setConditionType(FilterRuleCondition.ConditionType.SRC_INTF);
                     ruleUpnpMatcher3.setValue("non_wan");
                     ruleUpnpConditions.add(ruleUpnpMatcher1);
@@ -2392,7 +2435,7 @@ public class NetworkManagerImpl implements NetworkManager
             logger.warn("Exception converting Networking Settings",e);
         }
 
-        this.networkSettings.setVersion( 3 );
+        this.networkSettings.setVersion( 4 );
         this.setNetworkSettings( this.networkSettings, false );
     }
     
