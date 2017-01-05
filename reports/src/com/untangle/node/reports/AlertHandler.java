@@ -42,10 +42,12 @@ public class AlertHandler
                         if ( rule.isMatch( jsonObject ) ) {
                             logger.info( "alert match: " + rule.getDescription() + " matches " + jsonObject.toString() );
 
-                            if ( rule.getLog() )
-                                UvmContextFactory.context().logEvent( new AlertEvent( rule.getDescription(), event.toSummaryString(), jsonObject, event ) );
+                            boolean alertSent = false;
+                            AlertEvent alertEvent = new AlertEvent( rule.getDescription(), event.toSummaryString(), jsonObject, event, rule, false );
                             if ( rule.getAlert() ) 
-                                sendAlertForEvent( rule, event, reports );
+                                alertSent = sendAlertForEvent( rule, event, reports );
+                            if ( rule.getLog() )
+                                UvmContextFactory.context().logEvent( alertEvent );
                         } 
                     }
                 }
@@ -54,7 +56,7 @@ public class AlertHandler
             }
     }
 
-    private static void sendAlertForEvent( AlertRule rule, LogEvent event, ReportsApp reports )
+    private static boolean sendAlertForEvent( AlertRule rule, LogEvent event, ReportsApp reports )
     {
         if ( rule.getAlertLimitFrequency() && rule.getAlertLimitFrequencyMinutes() > 0 ) {
             long currentTime = System.currentTimeMillis();
@@ -62,7 +64,7 @@ public class AlertHandler
             long secondsSinceLastAlert = ( currentTime - lastAlertTime ) / 1000;
             // if not enough time has elapsed, just return
             if ( secondsSinceLastAlert < ( rule.getAlertLimitFrequencyMinutes() * 60 ) )
-                return;
+                return false;
         }
 
         rule.updateAlertTime();
@@ -124,6 +126,8 @@ public class AlertHandler
                 }
             }
         }
+
+        return true;
     }
 
     @SuppressWarnings("unchecked")
