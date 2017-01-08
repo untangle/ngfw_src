@@ -146,15 +146,24 @@ public class HookManagerImpl implements HookManager
             return 0;
         }
 
-        logger.debug( "Calling hook[" + hookName + "] callbacks (" + callbacks.size() + " hooks)" );
-        for ( HookCallback cb : callbacks ) {
-            try {
-                logger.debug( "Calling hook[" + hookName + "] callback " + cb.getName() );
-                cb.callback( o );
-            } catch (Exception e) {
-                logger.warn( "Exception calling HookCallback[" + cb.getName() + "]:", e );
-            }
-        }
+        /**
+         * Call all callbacks sequentially, but in a new thread.
+         * Since callbacks can be arbitrary we can not assume anything about their behavior when called
+         * We should assume they may block for a very long time and return the calling thread to the caller
+         */
+        new Thread( new Runnable() {
+                public void run() {
+                    logger.debug( "Calling hook[" + hookName + "] callbacks (" + callbacks.size() + " hooks)" );
+                    for ( HookCallback cb : callbacks ) {
+                        try {
+                            logger.debug( "Calling hook[" + hookName + "] callback " + cb.getName() );
+                            cb.callback( o );
+                        } catch (Exception e) {
+                            logger.warn( "Exception calling HookCallback[" + cb.getName() + "]:", e );
+                        }
+                    }
+                }
+            }).run();
 
         return callbacks.size();
     }
