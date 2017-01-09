@@ -115,7 +115,8 @@ Ext.define('Ung.grid.Panel', {
     hasEdit: true,
     // has Edit button on each record
     hasCopy: false,
-    copyField: null,
+    copyNameField: null,
+    copyIdField: null,
     // has Delete button on each record
     hasDelete: true,
     // the default Empty record for a new row
@@ -555,8 +556,13 @@ Ext.define('Ung.grid.Panel', {
             if(fields[i].getName() == "readOnly"){
                 copyRecord.set(fields[i].getName(), "false");
             }
-            if(fields[i].getName() == this.copyField){
+            if( (this.copyNameField != null) && 
+                (fields[i].getName() == this.copyNameField)){
                 copyRecord.set(fields[i].getName(), copyRecord.get(fields[i].getName()) + " ("+i18n._("copy") +")");
+            }
+            if( (this.copyIdField != null) && 
+                (fields[i].getName() == this.copyIdField)){
+                copyRecord.set(fields[i].getName(), copyRecord.get("internalId"));
             }
         }
         this.stopEditing();
