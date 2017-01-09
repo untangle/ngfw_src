@@ -212,7 +212,7 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
             title: i18n._('Categories'),
             //helpSource: 'web_filter_block_categories',
             //helpSource: 'web_filter_lite_block_categories',
-            helpSource: this.helpSourceName + '_categories',
+            helpSource: this.helpSourceName + '_block_categories',
             cls: 'ung-panel',
             autoScroll: true,
             defaults: {
@@ -223,6 +223,7 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
                 align: 'stretch'
             },
             items: [{
+                name: 'categoriesPanelHeader',
                 title: i18n . _("Categories"),
                 html: i18n . _("Block or flag access to sites associated with the specified category.")
             }, this.gridCategories ]
@@ -328,6 +329,7 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
                 align: 'stretch'
             },
             items: [{
+                name: 'blockedSitesPanelHeader',
                 title: i18n . _("Blocked Sites"),
                 html: i18n . _("Block or flag access to the specified site.")
             }, this.gridBlockedSites ]
@@ -417,6 +419,7 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
                 align: 'stretch'
             },
             items: [{
+                name: 'allowedSitesPanelHeader',
                 title: i18n . _("Pass Sites"),
                 html: i18n . _("Allow access to the specified site regardless of matching block policies.")
             }, this.gridAllowedSites ]
@@ -506,6 +509,7 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
                 align: 'stretch'
             },
             items: [{
+                name: 'allowedClientsPanelHeader',
                 title: i18n . _("Pass Clients"),
                 html: i18n . _("Allow access for client networks regardless of matching block policies.")
             }, this.gridAllowedClients ]
@@ -517,7 +521,9 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
     buildGridFilterRules: function() {
         this.gridFilterRules = Ext.create('Ung.grid.Panel',{
             name: "gridFilterRules",
-            helpSource: 'web_filter_rules',
+            //helpSource: 'web_filter_rules',
+            //helpSource: 'web_filter_lite_rules',
+            helpSource: this.helpSourceName + '_rules',
             settingsCmp: this,
             height: 500,
             hasReorder: true,
@@ -632,7 +638,6 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
             //helpSource: 'web_filter_advanced',
             //helpSource: 'web_filter_lite_advanced',
             helpSource: this.helpSourceName + '_advanced',
-
             title: i18n._('Advanced'),
             cls: 'ung-panel',
             autoScroll: true,

@@ -19,10 +19,12 @@ public class AlertEvent extends LogEvent
     private String summaryText;
     private JSONObject json;
     private LogEvent cause;
+    private Boolean alertSent;
+    private AlertRule causalRule;
     
     public AlertEvent() { }
 
-    public AlertEvent( String description, String summaryText, JSONObject json, LogEvent cause )
+    public AlertEvent( String description, String summaryText, JSONObject json, LogEvent cause, AlertRule causalRule, Boolean alertSent )
     {
         this.description = description;
         this.summaryText = summaryText;
@@ -43,10 +45,16 @@ public class AlertEvent extends LogEvent
     public LogEvent getCause() { return cause; }
     public void setCause( LogEvent newValue ) { this.cause = newValue; }
 
-   @Override
+    public Boolean getAlertSent() { return alertSent; }
+    public void setAlertSent( Boolean newValue ) { this.alertSent = newValue; }
+
+    public AlertRule getCausalRule() { return causalRule; }
+    public void setCausalRule( AlertRule newValue ) { this.causalRule = newValue; }
+
+    @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
-        String sql = "INSERT INTO reports.alerts" + getPartitionTablePostfix() + " " +
+        String sql = "INSERT INTO " + schemaPrefix() + "alerts" + getPartitionTablePostfix() + " " +
             "(time_stamp, description, summary_text, json) " +
             "values " +
             "(?, ?, ?, ?); ";

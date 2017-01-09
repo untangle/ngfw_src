@@ -261,7 +261,7 @@ public class SessionEvent extends LogEvent
     @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
-        String sql = "INSERT INTO reports.sessions" + getPartitionTablePostfix() + " " +
+        String sql = "INSERT INTO " + schemaPrefix() + "sessions" + getPartitionTablePostfix() + " " +
             "(session_id, bypassed, entitled, time_stamp, protocol, icmp_type, end_time, hostname, username, filter_prefix, policy_id, policy_rule_id, local_addr, remote_addr, c_client_addr, c_client_port, c_server_addr, c_server_port, s_client_addr, s_client_port, s_server_addr, s_server_port, client_intf, server_intf, client_country, client_latitude, client_longitude, server_country, server_latitude, server_longitude) " +
             "values " +
             "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?); ";

@@ -142,36 +142,34 @@ Summary
 </tr>
 
 {% with reportsNode=nodeManager.node,untangle-node-reports %}
-	{% for category in FixedReports.getConfigCategories %} 
-		{% for report in reportsNode.getReportsManager.getReportEntries,category|in=getType,allowedReportTypes|in=getUniqueId,enabledConfigIds %}
-			{% cycle rowColors %}
-			<tr style="background-color:{{ rowColors }};">
-			<td><table>
-			<tr><td valign="top" class="title">
-			{{ report.getTitle }}
-			</td></tr>
-			<tr><td valign="top" class="description">
-			{{ report.getDescription }}
-			</td></tr>
-			<tr>
-			{% if report.getType == TEXT %}
-				{% with reportRows=reportsNode.getReportsManager.getDataForReportEntry,report,startDate,endDate,null,-1 %}
-					{% with reportRow=reportRows|first %}
-						<td>
-						{{ report.getTextString|format=reportRow,report.getTextColumns }}
-						</td>
-					{% endwith %}
+	{% for report in reportsNode.getReportsManager.getReportEntries|in=getCategory,FixedReports.getConfigCategories|in=getType,allowedReportTypes|in=getUniqueId,enabledConfigIds|order=getCategory,FixedReports.getConfigCategories|order=getType,TEXT %}
+		{% cycle rowColors %}
+		<tr style="background-color:{{ rowColors }};">
+		<td><table>
+		<tr><td valign="top" class="title">
+		{{ report.getTitle }}
+		</td></tr>
+		<tr><td valign="top" class="description">
+		{{ report.getDescription }}
+		</td></tr>
+		<tr>
+		{% if report.getType == TEXT %}
+			{% with reportRows=reportsNode.getReportsManager.getDataForReportEntry,report,startDate,endDate,null,-1 %}
+				{% with reportRow=reportRows|first %}
+					<td>
+					{{ report.getTextString|format=reportRow,report.getTextColumns }}
+					</td>
 				{% endwith %}
-			{% else %}
-				<td align="center">
-				<img src="{{ attachment,chart,report.getCategory,report.getTitle|id={{report.getUniqueId}}@untangle.com }}" style="display:block;width:100% !important;" >
-				</td>
-			{% endif %}
-			</tr>
-			</table>
+			{% endwith %}
+		{% else %}
+			<td align="center">
+			<img src="{{ attachment,chart,report.getUniqueId|id={{report.getUniqueId}}@untangle.com }}" style="display:block;width:100%;max-width:780px;float:left !important;" >
 			</td>
-			</tr>
-		{% endfor %}
+		{% endif %}
+		</tr>
+		</table>
+		</td>
+		</tr>
 	{% endfor %}
 {% endwith %}
 
@@ -193,7 +191,7 @@ Summary
 {% with reportsNode=nodeManager.node,untangle-node-reports %}
 	{% for node in nodeManager.nodeInstances|distinct=getNodeProperties.getDisplayName %}
 		{% if node.getNodeProperties.getDisplayName not in FixedReports.getConfigCategories %}
-			{% with reports=reportsNode.getReportsManager.getReportEntries,node.getNodeProperties.getDisplayName|in=getType,allowedReportTypes|in=getUniqueId,enabledAppIds %}
+			{% with reports=reportsNode.getReportsManager.getReportEntries,node.getNodeProperties.getDisplayName|in=getType,allowedReportTypes|in=getUniqueId,enabledAppIds|order=getType,TEXT %}
 				{% if reports.size != 0 %}
 					<tr><td><table>
 					<tr style="background-color:#d0d0d0;">
@@ -206,7 +204,6 @@ Summary
 					</tr>
 					</table></td></tr>
 					{% for report in reports %}
-					{{ report.getUniqueId }}
 						{% cycle rowColors %}
 						<tr style="background-color:{{ rowColors }};">
 						<td><table>
@@ -227,7 +224,7 @@ Summary
 							{% endwith %}
 						{% else %}
 							<td align="center">
-							<img src="{{ attachment,chart,report.getCategory,report.getTitle|id={{report.getUniqueId}}@untangle.com }}" style="display:block;width:100% !important;" >
+							<img src="{{ attachment,chart,report.getUniqueId|id={{report.getUniqueId}}@untangle.com }}" style="display:block;width:100%;max-width:780px;float:left !important;" >
 							</td>
 						{% endif %}
 						</tr>

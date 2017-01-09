@@ -20,7 +20,7 @@
         "#3399ff"
     ],
     "timeDataInterval": "AUTO",
-    "timeStyle": "BAR_OVERLAPPED",
+    "timeStyle": "BAR",
     "title": "Sessions",
     "type": "TIME_GRAPH"
 }

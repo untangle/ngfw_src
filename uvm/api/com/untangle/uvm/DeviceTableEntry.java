@@ -5,6 +5,7 @@ package com.untangle.uvm;
 
 import java.io.Serializable;
 import java.net.InetAddress;
+import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
@@ -45,14 +46,11 @@ public class DeviceTableEntry implements Serializable, JSONString
     private boolean     logChanges = false;
     
     public DeviceTableEntry() {}
+
     public DeviceTableEntry( String macAddress )
     {
-        String tmp = sanitizeMacAddress(macAddress);
-        if ( tmp == null )
-            throw new RuntimeException("Invalid MAC: " + macAddress );
-        this.macAddress = tmp;
-
         enableLogging(); //since this was instantiated by hand, enabling logging
+        setMacAddress( macAddress );
     }
 
     public void copy( DeviceTableEntry other )
@@ -66,18 +64,38 @@ public class DeviceTableEntry implements Serializable, JSONString
     }
     
     public String getMacAddress() { return this.macAddress; }
-    public void setMacAddress( String newValue ) { this.macAddress = newValue; }
+    public void setMacAddress( String newValue )
+    {
+        if ( Objects.equals( newValue, this.macAddress ) )
+            return;
+        this.macAddress = newValue;
+        updateEvent( "macAddress", this.macAddress, newValue );
+    }
 
     public long getLastSeenTime() { return this.lastSeenTime; }
-    public void setLastSeenTime( long newValue ) { this.lastSeenTime = newValue; }
+    public void setLastSeenTime( long newValue )
+    {
+        if ( newValue == this.lastSeenTime )
+            return;
+        this.lastSeenTime = newValue;
+        //updateEvent( "lastSeenTime", this.lastSeenTime, newValue );
+    }
 
     public long getLastSeenInterfaceId() { return this.lastSeenInterfaceId; }
-    public void setLastSeenInterfaceId( int newValue ) { this.lastSeenInterfaceId = newValue; }
+    public void setLastSeenInterfaceId( int newValue )
+    {
+        if ( newValue == this.lastSeenInterfaceId )
+            return;
+        this.lastSeenInterfaceId = newValue;
+        updateEvent( "lastSeenInterfaceId", String.valueOf(this.lastSeenInterfaceId), String.valueOf(newValue) );
+    }
     
     public String getMacVendor() { return this.macVendor; }
     public void setMacVendor( String newValue )
     {
-        updateEvent("macVendor",this.macVendor,newValue);
+        if ( Objects.equals( newValue, this.macVendor ) )
+            return;
+        updateEvent( "macVendor", this.macVendor, newValue );
         this.macVendor = newValue;
     }
 
@@ -91,14 +109,18 @@ public class DeviceTableEntry implements Serializable, JSONString
             }
         }
 
-        updateEvent("hostname",this.hostname,newValue);
+        if ( Objects.equals( newValue, this.hostname ) )
+            return;
+        updateEvent( "hostname", this.hostname, newValue );
         this.hostname = newValue;
     }
 
     public String getHttpUserAgent() { return this.httpUserAgent; }
     public void setHttpUserAgent( String newValue )
     {
-        updateEvent("httpUserAgent",String.valueOf(this.httpUserAgent),String.valueOf(newValue));
+        if ( Objects.equals( newValue, this.httpUserAgent ) )
+            return;
+        updateEvent( "httpUserAgent", String.valueOf(this.httpUserAgent), String.valueOf(newValue) );
         this.httpUserAgent = newValue;
     }
     
@@ -113,7 +135,9 @@ public class DeviceTableEntry implements Serializable, JSONString
     {
         if ( "".equals(newValue) )
             newValue = null;
-        updateEvent("deviceUsername",this.deviceUsername,newValue);
+        if ( Objects.equals( newValue, this.deviceUsername ) )
+            return;
+        updateEvent( "deviceUsername", this.deviceUsername, newValue );
         this.deviceUsername = newValue;
     }
     
@@ -164,12 +188,8 @@ public class DeviceTableEntry implements Serializable, JSONString
             return;
         if ( this.macAddress == null )
             return;
-        if ( oldValue == null && newValue == null ) //no change
-            return;
         if ( newValue == null ) 
             newValue = "null";
-        if ( newValue.equals(oldValue) ) // no change
-            return;
 
         DeviceTableEvent event = new DeviceTableEvent( this, this.macAddress, key, newValue );
         UvmContextFactory.context().logEvent(event);

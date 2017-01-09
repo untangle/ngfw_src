@@ -70,7 +70,7 @@ public class SessionNatEvent extends LogEvent
     @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
-        String sql = "UPDATE reports.sessions" + sessionEvent.getPartitionTablePostfix() + " " +
+        String sql = "UPDATE " + schemaPrefix() + "sessions" + sessionEvent.getPartitionTablePostfix() + " " +
             "SET server_intf = ?, " +
             "    s_client_addr = ?, " +
             "    s_client_port = ?, " +

@@ -119,7 +119,7 @@ Architecture: all
 Conflicts: untangle-node-reporting
 Replaces: untangle-node-reporting
 Provides: untangle-node-reporting
-Depends: untangle-vm, untangle-postgresql-config
+Depends: untangle-vm, untangle-postgresql-config, sqlite3, python-sqlite
 Description: Reports
  The Reports application.
 
@@ -161,7 +161,7 @@ Description: Spam Blocker Base
 
 Package: untangle-base-web-filter
 Architecture: all
-Conflicts: untangle-base-webfilter
+Conflicts: untangle-base-webfilter, untangle-node-web-filter (<= 12.2.0~vcs2016~)
 Replaces: untangle-base-webfilter
 Provides: untangle-base-webfilter
 Depends: untangle-vm, untangle-casing-http
@@ -176,7 +176,7 @@ Description: Platform Thirdparty Libraries
 Package: untangle-vm
 Architecture: all
 Conflicts: untangle-libnetfilter-queue-dev, untangle-libnetfilter-queue0
-Depends: untangle-libuvm, conntrack, untangle-keyring, oracle-java8-jdk | openjdk-8-jre, ca-certificates-java, untangle-libuvm, untangle-libuvmcore (>= 11.1), untangle-libuvmthirdparty, sudo, psmisc, iptables (> 1.4.2-6), at, ebtables, mime-support, untangle-nsis-addons, dnsmasq, pppoe, bridge-utils, iputils-ping, curl, wget, untangle-system-config, untangle-linux-config, untangle-hardware-config, exim4-daemon-light | mail-transport-agent, gettext, ethtool, net-tools, dnsutils, rsyslog, untangle-netd (>= 11.1), untangle-node-router, untangle-node-shield, dash, untangle-apache2-config, perl, zip, unzip, tofrodos, tidy, dpkg-dev, python-pycurl, python-unittest2, python-psycopg2, python-egenix-mxdatetime, python-lxml, python-simplejson, python-py | python-codespeak-lib, python-reportlab, python-imaging, untangle-nflogd, untangle-stunnel-config, libsnmp-dev, untangle-geoip-database, miniupnpd
+Depends: untangle-libuvm, conntrack, untangle-keyring, oracle-java8-jdk | openjdk-8-jre, oracle-java8-jdk | ca-certificates-java, untangle-libuvm, untangle-libuvmcore (>= 11.1), untangle-libuvmthirdparty, sudo, psmisc, iptables (> 1.4.2-6), at, ebtables, mime-support, untangle-nsis-addons, dnsmasq, pppoe, bridge-utils, iputils-ping, curl, wget, untangle-system-config, untangle-linux-config, untangle-hardware-config, exim4-daemon-light | mail-transport-agent, gettext, ethtool, net-tools, dnsutils, rsyslog, untangle-netd (>= 11.1), untangle-node-router, untangle-node-shield, dash, untangle-apache2-config, perl, zip, unzip, tofrodos, tidy, dpkg-dev, python-pycurl, python-unittest2, python-psycopg2, python-egenix-mxdatetime, python-simplejson, python-py | python-codespeak-lib, untangle-nflogd, untangle-stunnel-config, libsnmp-dev, untangle-geoip-database, miniupnpd
 Description: Platform
  The Platform.
 

@@ -1,28 +1,48 @@
 Ext.define('Webui.untangle-node-web-monitor.settings',{
     extend:'Webui.untangle-base-web-filter.settings',
-    helpSourceName: 'web_filter',
+    helpSourceName: 'web_monitor',
     getAppSummary: function() {
         return i18n._("Web monitor scans and categorizes web traffic to monitor and enforce network usage policies.");
     },
 
     buildPanelCategories: function() {
         this.callParent(arguments);
-        this.gridCategories.down('[dataIndex=blocked]').setVisible(false);
+        this.categoriesPanel.helpSource = this.helpSourceName + '_categories';
+        this.gridCategories.down('component[dataIndex=blocked]').setVisible(false);
         this.gridCategories.rowEditorInputLines[1].hidden = true;
+        var item = this.categoriesPanel.down('component[name=categoriesPanelHeader]');
+        item.update(i18n . _("Flag access to sites associated with the specified category."));
         return this.categoriesPanel;
     },
 
     buildPanelBlockedSites: function() {
         this.callParent(arguments);
         this.blockedSitesPanel.title = i18n._('Flag Sites');
-        this.gridBlockedSites.down('[dataIndex=blocked]').setVisible(false);
+        this.gridBlockedSites.down('component[dataIndex=blocked]').setVisible(false);
         this.gridBlockedSites.rowEditorInputLines[1].hidden = true;
+        var item = this.blockedSitesPanel.down('component[name=blockedSitesPanelHeader]');
+        item.setTitle(i18n._('Flag Sites'));
+        item.update(i18n . _("Flag access to the specified site."));
         return this.blockedSitesPanel;
+    },
+
+    buildPanelPassedSites: function() {
+        this.callParent(arguments);
+        var item = this.allowedSitesPanel.down('component[name=allowedSitesPanelHeader]');
+        item.update(i18n . _("Allow unflagged access to the specified site regardless of matching policies."));
+        return this.allowedSitesPanel;
+    },
+
+    buildPanelPassedClients: function() {
+        this.callParent(arguments);
+        var item = this.allowedClientsPanel.down('component[name=allowedClientsPanelHeader]');
+        item.update(i18n . _("Allow unflagged access for client networks regardless of matching policies."));
+        return this.allowedClientsPanel;
     },
 
     buildGridFilterRules: function() {
         this.callParent(arguments);
-        this.gridFilterRules.down('[dataIndex=blocked]').setVisible(false);
+        this.gridFilterRules.down('component[dataIndex=blocked]').setVisible(false);
         this.gridFilterRules.rowEditorInputLines[3].items[1].hidden = true;
         return this.gridFilterRules;
     },

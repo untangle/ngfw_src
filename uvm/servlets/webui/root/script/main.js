@@ -1930,9 +1930,7 @@ Ext.define("Ung.Main", {
     },
     showHosts: function () {
         Ext.require(['Webui.config.hostMonitor'], function () {
-            if (Ung.Main.hostMonitorWin == null) {
-                Ung.Main.hostMonitorWin = Ext.create('Webui.config.hostMonitor', {});
-            }
+            Ung.Main.hostMonitorWin = Ext.create('Webui.config.hostMonitor', {});
             Ung.Main.hostMonitorWin.show();
             Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
             Ext.Function.defer(function () {

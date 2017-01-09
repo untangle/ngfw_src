@@ -33,25 +33,28 @@ public class WebFilterEvent extends LogEvent
     }
 
     public Boolean getBlocked() { return blocked; }
-    public void setBlocked( Boolean blocked ) { this.blocked = blocked; }
+    public void setBlocked( Boolean newValue ) { this.blocked = newValue; }
 
     public Boolean getFlagged() { return flagged; }
-    public void setFlagged( Boolean flagged ) { this.flagged = flagged; }
+    public void setFlagged( Boolean newValue ) { this.flagged = newValue; }
 
     public Reason getReason() { return reason; }
-    public void setReason( Reason reason ) { this.reason = reason; }
+    public void setReason( Reason newValue ) { this.reason = newValue; }
 
     public String getCategory() { return category; }
-    public void setCategory( String category ) { this.category = category; }
+    public void setCategory( String newValue ) { this.category = newValue; }
 
     public String getNodeName() { return nodeName; }
-    public void setNodeName(String nodeName) { this.nodeName = nodeName; }
+    public void setNodeName(String newValue) { this.nodeName = newValue; }
 
+    public RequestLine getRequestLine() { return requestLine; }
+    public void setRequestLine(RequestLine newValue) { this.requestLine = newValue; }
+    
     @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
         String sql =
-            "UPDATE reports.http_events" + requestLine.getHttpRequestEvent().getPartitionTablePostfix() + " " +
+            "UPDATE " + schemaPrefix() + "http_events" + requestLine.getHttpRequestEvent().getPartitionTablePostfix() + " " +
             "SET " +
             _getDatabaseColumnNamePrefix() + "_blocked  = ?, " + 
             _getDatabaseColumnNamePrefix() + "_flagged  = ?, " +
@@ -87,10 +90,12 @@ public class WebFilterEvent extends LogEvent
         String actionStr;
         if ( getBlocked() )
             actionStr = I18nUtil.marktr("blocked");
+        else if ( getFlagged() )
+            actionStr = I18nUtil.marktr("flagged");
         else
-            actionStr = I18nUtil.marktr("passed");
+            actionStr = I18nUtil.marktr("logged");
 
-        String summary = appName + " " + actionStr + " " + requestLine.getUrl() + " (" + getCategory() + " " + getReason() + ")";
+        String summary = appName + " " + actionStr + " " + requestLine.getUrl() + " (" + getCategory() + ")";
         return summary;
     }
 
