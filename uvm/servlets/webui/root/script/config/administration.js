@@ -167,7 +167,7 @@ Ext.define('Webui.config.administration', {
     },
     buildAdmin: function() {
         var changePasswordColumn = Ext.create("Ung.grid.EditColumn",{
-            header: i18n._("change password"),
+            header: i18n._("Change Password"),
             width: 130,
             iconClass: 'icon-edit-row',
             handler: function(view, rowIndex, colIndex, item, e, record) {
@@ -232,8 +232,8 @@ Ext.define('Webui.config.administration', {
                 "username": "",
                 "description": "",
                 "emailAddress": "",
-                "emailAlerts": true,
-                "emailSummaries": true,
+                // "emailAlerts": true,
+                // "emailSummaries": true,
                 "passwordHashBase64": null,
                 "passwordHashShadow": null,
                 "password": null
@@ -246,10 +246,10 @@ Ext.define('Webui.config.administration', {
                 name: 'description'
             }, {
                 name: 'emailAddress'
-            },{
-                name: 'emailAlerts'
-            },{
-                name: 'emailSummaries'
+            // },{
+            //     name: 'emailAlerts'
+            // },{
+            //     name: 'emailSummaries'
             }, {
                 name: 'passwordHashBase64'
             }, {
@@ -285,19 +285,20 @@ Ext.define('Webui.config.administration', {
                     emptyText: i18n._("[no email]"),
                     vtype: 'email'
                 }
-            }, {
-                xtype:'checkcolumn',
-                header: i18n._("Email Alerts"),
-                dataIndex: "emailAlerts",
-                width: 150,
-                resizable: false
-            }, {
-                xtype:'checkcolumn',
-                header: i18n._("Email Summaries"),
-                dataIndex: "emailSummaries",
-                width: 150,
-                resizable: false
-            }, changePasswordColumn],
+            // }, {
+            //     xtype:'checkcolumn',
+            //     header: i18n._("Email Alerts"),
+            //     dataIndex: "emailAlerts",
+            //     width: 150,
+            //     resizable: false
+            // }, {
+            //     xtype:'checkcolumn',
+            //     header: i18n._("Email Summaries"),
+            //     dataIndex: "emailSummaries",
+            //     width: 150,
+            //     resizable: false
+            }, 
+            changePasswordColumn],
             rowEditorInputLines: [{
                 xtype: "textfield",
                 name: "Username",
@@ -322,16 +323,16 @@ Ext.define('Webui.config.administration', {
                 emptyText: i18n._("[no email address]"),
                 vtype: 'email',
                 width: 400
-            },{
-                xtype:'checkbox',
-                dataIndex: "emailAlerts",
-                fieldLabel: i18n._("Email Alerts"),
-                width: 300
-            },{
-                xtype:'checkbox',
-                dataIndex: "emailSummaries",
-                fieldLabel: i18n._("Email Summaries"),
-                width: 300
+            // },{
+            //     xtype:'checkbox',
+            //     dataIndex: "emailAlerts",
+            //     fieldLabel: i18n._("Email Alerts"),
+            //     width: 300
+            // },{
+            //     xtype:'checkbox',
+            //     dataIndex: "emailSummaries",
+            //     fieldLabel: i18n._("Email Summaries"),
+            //     width: 300
             },{
                 xtype: "textfield",
                 inputType: 'password',
@@ -550,6 +551,11 @@ Ext.define('Webui.config.administration', {
                         this.certGeneratorPopup("CSR", this.getHostname(true), i18n._("Create Certificate Signing Request"));
                     }, this)
                 }]
+            },{
+                xtype: 'component',
+                name: 'validateMessage',
+                margin: '10 0 0 20',
+                html: Ung.Main.getCertificateManager().validateActiveInspectorCertificates()
             }]
         });
     },
@@ -1640,12 +1646,14 @@ Ext.define('Webui.config.administration', {
             // access settings should be saved last as saving these changes may disconnect the user from the Untangle box
             rpc.systemManager.setSettings(Ext.bind(function(result, exception) {
                 if(Ung.Util.handleException(exception)) return;
-                //If skin changed it needs a refresh
+
                 if(this.initialSkin != this.getSkinSettings().skinName) {
                     Ung.Util.goToStartPage();
                     return;
                 }
                 if(isApply) {
+                    var vmess = this.panelCertificates.down('component[name="validateMessage"]');
+                    vmess.update(Ung.Main.getCertificateManager().validateActiveInspectorCertificates());
                     this.getAdminSettings(true);
                     this.getRootCertificateInformation(true);
                     this.getServerCertificateList(true);

@@ -34,10 +34,5 @@ int  netcap_nfconntrack_cleanup( void );
  */
 int netcap_nfconntrack_del_entry_tuple( netcap_nfconntrack_ipv4_tuple_t* tuple, int ignore_noent );
 
-/**
- * Dump all of conntrack
- */
-list_t* netcap_nfconntrack_dump( struct nf_conntrack** array, int limit );
-
 #endif // #ifndef __NETCAP_NFCONNTRACK_H
 

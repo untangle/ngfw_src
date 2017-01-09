@@ -74,16 +74,6 @@ public interface HostTable
     LinkedList<HostTableEntry> getPenaltyBoxedHosts();
 
     /**
-     * Register a penalty box listener
-     */
-    void registerListener( HostTableListener listener );
-
-    /**
-     * Unregister a penalty box listener
-     */
-    void unregisterListener( HostTableListener listener );
-
-    /**
      * Give an address a quota
      * Utility function to set the appropriate attachment values
      */
@@ -149,18 +139,5 @@ public interface HostTable
      * returns the entry removed (or null if not found)
      */
     HostTableEntry removeHostTableEntry( InetAddress addr );
-    
-    /**
-     * A penalty box listener is a hook called when hosts enter or exit the penalty box
-     */
-    public interface HostTableListener
-    {
-        public void enteringPenaltyBox( InetAddress addr );
-        public void exitingPenaltyBox( InetAddress addr );
-        public void quotaExceeded( InetAddress addr );
-        public void quotaGiven( InetAddress addr );
-        public void quotaRemoved( InetAddress addr );
-    }
-    
 }
 

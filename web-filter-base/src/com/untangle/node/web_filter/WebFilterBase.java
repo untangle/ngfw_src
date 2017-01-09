@@ -369,10 +369,13 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
             if (readSettings.V1_getBlockedMimeTypes() != null) {
 
                 for (GenericRule org : readSettings.V1_getBlockedMimeTypes()) {
+                    // we don't care about rules that aren't doing anything
+                    if ((org.getBlocked() == false) && (org.getFlagged() == false)) continue;
+
                     rule = new WebFilterRule();
                     clist = new LinkedList<WebFilterRuleCondition>();
                     rule.setDescription(org.getDescription());
-                    rule.setEnabled(org.getEnabled() == null ? false : org.getEnabled());
+                    rule.setEnabled(true);
                     rule.setBlocked(org.getBlocked() == null ? false : org.getBlocked());
                     rule.setFlagged(org.getFlagged() == null ? false : org.getFlagged());
                     rule.setRuleId(ruleNumber++);
@@ -388,14 +391,17 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
                 if (rlist == null) rlist = new LinkedList<WebFilterRule>();
 
                 for (GenericRule org : readSettings.V1_getBlockedExtensions()) {
+                    // we don't care about rules that aren't doing anything
+                    if ((org.getBlocked() == false) && (org.getFlagged() == false)) continue;
+
                     rule = new WebFilterRule();
                     clist = new LinkedList<WebFilterRuleCondition>();
                     rule.setDescription(org.getDescription());
-                    rule.setEnabled(org.getEnabled() == null ? false : org.getEnabled());
+                    rule.setEnabled(true);
                     rule.setBlocked(org.getBlocked() == null ? false : org.getBlocked());
                     rule.setFlagged(org.getFlagged() == null ? false : org.getFlagged());
                     rule.setRuleId(ruleNumber++);
-                    clist.add(new WebFilterRuleCondition(RuleCondition.ConditionType.WEB_FILTER_REQUEST_FILE_EXTENSION, org.getString()));
+                    clist.add(new WebFilterRuleCondition(RuleCondition.ConditionType.WEB_FILTER_RESPONSE_FILE_EXTENSION, org.getString()));
                     rule.setConditions(clist);
                     rlist.add(rule);
                     logger.debug("Converted file ext rule: " + rule.toString());

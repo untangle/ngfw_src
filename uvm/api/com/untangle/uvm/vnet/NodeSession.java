@@ -141,6 +141,7 @@ h     * <code>id</code> returns the session's unique identifier, a positive inte
     public final String KEY_WEB_FILTER_REQUEST_FILE_EXTENSION = "web-filter-request-file-extension"; /* String */
     public final String KEY_WEB_FILTER_RESPONSE_CONTENT_TYPE = "web-filter-response-content-type"; /* String */
     public final String KEY_WEB_FILTER_RESPONSE_FILE_NAME = "web-filter-response-file-name"; /* String */
+    public final String KEY_WEB_FILTER_RESPONSE_FILE_EXTENSION = "web-filter-response-file-extension"; /* String */
 
     public final String KEY_APPLICATION_CONTROL_APPLICATION = "application-control-application"; /* String */
     public final String KEY_APPLICATION_CONTROL_CATEGORY = "application-control-category"; /* String */
