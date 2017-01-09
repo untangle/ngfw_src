@@ -32,16 +32,16 @@ Ext.define('Ung.view.main.MainController', {
     onBeforeRender: function(view) {
         var vm = view.getViewModel();
 
-        vm.bind('{reportsEnabled}', function(enabled) {
-            if (enabled) {
-                view.down('#main').insert(3, {
-                    xtype: 'ung.reports',
-                    itemId: 'reports'
-                });
-            } else {
-                view.down('#main').remove('reports');
-            }
-        });
+        // vm.bind('{reportsEnabled}', function(enabled) {
+        //     if (enabled) {
+        //         view.down('#main').insert(3, {
+        //             xtype: 'ung.reports',
+        //             itemId: 'reports'
+        //         });
+        //     } else {
+        //         view.down('#main').remove('reports');
+        //     }
+        // });
 
         vm.set('reportsInstalled', rpc.nodeManager.node('untangle-node-reports') !== null);
         if (rpc.nodeManager.node('untangle-node-reports')) {
@@ -94,19 +94,19 @@ Ext.define('Ung.view.main.MainController', {
     },
 
     onConfig: function (configName) {
-        // this.getViewModel().set('activeItem', 'config');
-        // var view = this.getView();
-        // this.getViewModel().set('activeItem', 'config');
-        // if (configName) {
-        //     Ext.require('Ung.view.config.network.Network', function () {
-        //         view.down('#config').add({
-        //             xtype: 'ung.config.network'
-        //         });
-        //         view.down('#config').setActiveItem(1);
-        //     });
-        // } else {
-        //     view.down('#config').setActiveItem(0);
-        // }
+        this.getViewModel().set('activeItem', 'config');
+        var view = this.getView();
+        this.getViewModel().set('activeItem', 'config');
+        if (configName) {
+            Ext.require('Ung.view.config.network.Network', function () {
+                view.down('#config').add({
+                    xtype: 'ung.config.network'
+                });
+                view.down('#config').setActiveItem(1);
+            });
+        } else {
+            view.down('#config').setActiveItem(0);
+        }
     },
 
     onReports: function () {
@@ -117,7 +117,8 @@ Ext.define('Ung.view.main.MainController', {
     // sessions, hosts, devices
 
     onSessions: function () {
-        this.setShd('sessions');
+        // this.setShd('sessions');
+        this.getViewModel().set('activeItem', 'sessions');
     },
 
     onHosts: function () {
