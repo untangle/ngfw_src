@@ -703,3 +703,59 @@ i.draggable {
     font-size: 12px;
     // font-weight: 600;
 }
+
+
+.x-toolbar-navigation {
+    background: #1b1e26;
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
+    z-index: 9999;
+}
+
+.x-toolbar-navigation .x-btn {
+    padding: 10px 7px;
+    background: transparent;
+    transition: background .3s cubic-bezier(0.23, 1, 0.32, 1);
+    &.logo {
+        padding: 6px 7px 2px 7px;
+    }
+    &.upper {
+        .x-btn-inner {
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+    }
+    .x-btn-inner {
+        font-family: 'Source Sans Pro', sans-serif;
+        font-size: 12px;
+        color: #CCC;
+        transition: color .3s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+    &.x-btn-over {
+        background: transparent;
+        .x-btn-inner {
+            color: #FFF;
+        }
+        .x-btn-icon-el {
+            color: #FFF;
+        }
+    }
+
+    .x-btn-icon-el {
+        color: #CCC;
+        margin-bottom: 0 !important;
+        transition: color .3s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    &.x-btn-focus {
+        box-shadow: none;
+    }
+    &.x-btn-pressed {
+        background: #000;
+        .x-btn-inner {
+            color: #FFF;
+        }
+        .x-btn-icon-el {
+            color: #FFF;
+        }
+    }
+}
