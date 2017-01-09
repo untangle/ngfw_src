@@ -488,10 +488,10 @@ Ext.define('Webui.config.network', {
         });
 
         this.gridArpLists = Ext.create( 'Ung.grid.Panel', {
-            name: 'ARP Lists',
+            name: 'ARP Table',
             margin: 5,
             flex: 2,
-            title: i18n._('ARP Entry List'),
+            title: i18n._('ARP Table'),
             settingsCmp: this,
             hasAdd: false,
             hasDelete: false,
@@ -540,10 +540,10 @@ Ext.define('Webui.config.network', {
         });
         
         this.gridWirelessLists = Ext.create( 'Ung.grid.Panel', {
-            name: 'Wireless Lists',
+            name: 'Wireless Connections',
             margin: 5,
             flex: 3,
-            title: i18n._('Wireless Connections List'),
+            title: i18n._('Wireless Connections'),
             settingsCmp: this,
             hasAdd: false,
             hasDelete: false,
@@ -5152,7 +5152,7 @@ Ext.define('Webui.config.network', {
                     }
                 }, {
                     xtype: 'fieldset',
-                    title: i18n._('Access Control List'),
+                    title: i18n._('Access Control Rules'),
                     items: [
                     this.gridUpnpRules
                     ]
@@ -5657,9 +5657,13 @@ Ext.define('Webui.config.network', {
                         style : "margin-left: 10px",
                         width : 500,
                         value : "http://cachefly.cachefly.net/5mb.test",
-                        store : [['http://cachefly.cachefly.net/5mb.test','http://cachefly.cachefly.net/5mb.test'],
-                                 ['http://download.thinkbroadband.com/5MB.zip','http://download.thinkbroadband.com/5MB.zip'],
-                                 ['http://download.untangle.com/data.php','http://download.untangle.com/data.php']],
+                        store : [
+                            ['http://cachefly.cachefly.net/50mb.test','http://cachefly.cachefly.net/50mb.test'],
+                            ['http://cachefly.cachefly.net/5mb.test','http://cachefly.cachefly.net/5mb.test'],
+                            ['http://download.thinkbroadband.com/50MB.zip','http://download.thinkbroadband.com/50MB.zip'],
+                            ['http://download.thinkbroadband.com/5MB.zip','http://download.thinkbroadband.com/5MB.zip'],
+                            ['http://download.untangle.com/data.php','http://download.untangle.com/data.php']
+                        ],
                         listeners: {
                             specialkey: function(field, e){
                                 if (e.getKey() == e.ENTER) {

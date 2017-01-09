@@ -19,8 +19,10 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
+import com.untangle.uvm.AdminUserSettings;
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.WebBrowser;
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.NodeSettings;
@@ -555,6 +557,40 @@ public class ReportsManagerImpl implements ReportsManager
             }
         }
         return interfacesInfo;
+    }
+
+    public Boolean fixedReportsAllowGraphs()
+    {
+        return WebBrowser.exists();
+    }
+
+    public List<String> getAdminEmailAddresses()
+    {
+        LinkedList<String> adminEmailAddresses = new LinkedList<String>();
+
+        LinkedList<ReportsUser> reportsUsers = node.getSettings().getReportsUsers();
+        Boolean reportsUserFound;
+        for(AdminUserSettings adminUser : UvmContextFactory.context().adminManager().getSettings().getUsers()){
+            if( adminUser.getEmailAddress().isEmpty() ){
+                continue;
+            }
+            reportsUserFound = false;
+            for(ReportsUser reportUser: reportsUsers){
+                if(reportUser.getEmailAddress().equals( adminUser.getEmailAddress() ) ){
+                    reportsUserFound = true;
+                }
+            }
+            if(reportsUserFound == false){
+                adminEmailAddresses.add(adminUser.getEmailAddress());
+            }
+        }
+
+        return adminEmailAddresses;
+    }
+
+    public List<String> getRecommendedReportIds()
+    {
+        return FixedReports.ReservedReports;
     }
 
     protected void updateSystemReportEntries( List<ReportEntry> existingEntries, boolean saveIfChanged )

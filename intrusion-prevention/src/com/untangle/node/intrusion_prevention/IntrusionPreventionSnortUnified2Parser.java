@@ -158,7 +158,7 @@ public class IntrusionPreventionSnortUnified2Parser
         ipsEventMap = newIntrusionPreventionEventMap;
     }
     
-    public long parse( File file, long startPosition, IntrusionPreventionApp ipsNode )
+    public long parse( File file, long startPosition, IntrusionPreventionApp ipsNode, long currentTime )
     {
         fc = null;
         RandomAccessFile f = null;
@@ -200,6 +200,10 @@ public class IntrusionPreventionSnortUnified2Parser
                         }catch( Exception e ){
                             logger.debug( "parse: Unable to parse event:" + e );
                             abort = true;
+                            break;
+                        }
+                        if((ipsEvent.getEventSecond() * 1000 ) < (currentTime - IntrusionPreventionEventMonitor.SLEEP_TIME_MSEC)){
+                            // Snort log can contain older events.  Ignore these.
                             break;
                         }
                         ipsNode.logEvent( ipsEvent );

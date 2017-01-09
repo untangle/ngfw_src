@@ -24,19 +24,19 @@ def createSingleConditionRule( conditionType, value, blocked=True, flagged=True,
     conditionTypeStr = str(conditionType)
     valueStr = str(value)
     return {
-        "javaClass": "com.untangle.node.firewall.FirewallRule", 
-        "id": 1, 
-        "enabled": True, 
-        "description": "Single Matcher: " + conditionTypeStr + " = " + valueStr, 
-        "flag": flagged, 
-        "block": blocked, 
+        "javaClass": "com.untangle.node.firewall.FirewallRule",
+        "id": 1,
+        "enabled": True,
+        "description": "Single Matcher: " + conditionTypeStr + " = " + valueStr,
+        "flag": flagged,
+        "block": blocked,
         "conditions": {
-            "javaClass": "java.util.LinkedList", 
+            "javaClass": "java.util.LinkedList",
             "list": [
                 {
-                    "invert": invert, 
-                    "javaClass": "com.untangle.node.firewall.FirewallRuleCondition", 
-                    "conditionType": conditionTypeStr, 
+                    "invert": invert,
+                    "javaClass": "com.untangle.node.firewall.FirewallRuleCondition",
+                    "conditionType": conditionTypeStr,
                     "value": valueStr
                     }
                 ]
@@ -49,25 +49,25 @@ def createDualConditionRule( conditionType, value, conditionType2, value2, block
     conditionTypeStr2 = str(conditionType2)
     valueStr2 = str(value2)
     return {
-        "javaClass": "com.untangle.node.firewall.FirewallRule", 
-        "id": 1, 
-        "enabled": True, 
-        "description": "Dual Matcher: " + conditionTypeStr + " = " + valueStr + " && " + conditionTypeStr2 + " = " + valueStr2, 
-        "flag": flagged, 
-        "block": blocked, 
+        "javaClass": "com.untangle.node.firewall.FirewallRule",
+        "id": 1,
+        "enabled": True,
+        "description": "Dual Matcher: " + conditionTypeStr + " = " + valueStr + " && " + conditionTypeStr2 + " = " + valueStr2,
+        "flag": flagged,
+        "block": blocked,
         "conditions": {
-            "javaClass": "java.util.LinkedList", 
+            "javaClass": "java.util.LinkedList",
             "list": [
                 {
-                    "invert": invert, 
-                    "javaClass": "com.untangle.node.firewall.FirewallRuleCondition", 
-                    "conditionType": conditionTypeStr, 
+                    "invert": invert,
+                    "javaClass": "com.untangle.node.firewall.FirewallRuleCondition",
+                    "conditionType": conditionTypeStr,
                     "value": valueStr
                     },
                 {
-                    "invert": invert, 
-                    "javaClass": "com.untangle.node.firewall.FirewallRuleCondition", 
-                    "conditionType": conditionTypeStr2, 
+                    "invert": invert,
+                    "javaClass": "com.untangle.node.firewall.FirewallRuleCondition",
+                    "conditionType": conditionTypeStr2,
                     "value": valueStr2
                     }
 
@@ -101,7 +101,7 @@ class FirewallTests(unittest2.TestCase):
         if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
             raise Exception('node %s already instantiated' % self.nodeName())
         node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
-        
+
     def setUp(self):
         pass
 
@@ -478,7 +478,7 @@ class FirewallTests(unittest2.TestCase):
         appendRule( createSingleConditionRule( "CLIENT_HOSTNAME", hostname ) )
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
 
-        entry['hostname'] = None 
+        entry['hostname'] = None
         uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
         assert (result != 0)
 
@@ -496,12 +496,12 @@ class FirewallTests(unittest2.TestCase):
         nukeRules()
         appendRule( createSingleConditionRule( "CLIENT_HOSTNAME", "foobar," + hostname ) )
         result2 = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
-        
+
         entry['hostname'] = None
         uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
         assert (result1 != 0)
         assert (result2 != 0)
-        
+
     # verify bogus username match not blocked
     def test_140_clientUsername(self):
         nukeRules()
@@ -556,7 +556,7 @@ class FirewallTests(unittest2.TestCase):
         uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
         assert (result1 != 0)
         assert (result2 != 0)
-        
+
     # verify username matcher works despite rule & username being different case
     def test_144_clientUsernameWrongCase1(self):
         username = remote_control.runCommand("hostname -s", stdout=True)
@@ -708,7 +708,7 @@ class FirewallTests(unittest2.TestCase):
         appendRule( createSingleConditionRule( "SRC_MAC", mac + ",11:22:33:44:55:66" ) )
         result2 = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result2 != 0)
-        
+
     # verify rules that a rule with two matching matchers works
     def test_700_ruleConditionDual(self):
         nukeRules()
@@ -772,7 +772,7 @@ class FirewallTests(unittest2.TestCase):
                                             'firewall_flagged', True)
         assert( found )
 
-        # Check to see if the faceplate counters have incremented. 
+        # Check to see if the faceplate counters have incremented.
         post_events_block = global_functions.getStatusValue(node,"block")
         assert(pre_events_block < post_events_block)
 
@@ -791,13 +791,51 @@ class FirewallTests(unittest2.TestCase):
                                             'firewall_blocked', False,
                                             'firewall_flagged', True)
         assert( found )
-        
+
+    # verify a blocked local session event
+    def test_903_blockLocalEventLog(self):
+        nukeRules()
+        appendRule(createSingleConditionRule("CLIENT_COUNTRY","XL"))
+        pre_events_block = global_functions.getStatusValue(node,"block")
+
+        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        assert (result != 0)
+
+        events = global_functions.get_events('Firewall','Blocked Events',None,1)
+        assert(events != None)
+        found = global_functions.check_events( events.get('list'), 5,
+                                            'c_client_addr', remote_control.clientIP,
+                                            'client_country', "XL",
+                                            'firewall_blocked', True,
+                                            'firewall_flagged', True)
+        assert( found )
+
+        # Check to see if the faceplate counters have incremented.
+        post_events_block = global_functions.getStatusValue(node,"block")
+        assert(pre_events_block < post_events_block)
+
+    # verify a flagged local sesion event
+    def test_904_flagLocalEventLog(self):
+        nukeRules()
+        appendRule(createSingleConditionRule("CLIENT_COUNTRY","XL",blocked=False,flagged=True))
+        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        assert (result == 0)
+
+        events = global_functions.get_events('Firewall','Flagged Events',None,1)
+        assert(events != None)
+        found = global_functions.check_events( events.get('list'), 5,
+                                            'c_client_addr', remote_control.clientIP,
+                                            'client_country', "XL",
+                                            'firewall_blocked', False,
+                                            'firewall_flagged', True)
+        assert( found )
+
     @staticmethod
     def finalTearDown(self):
         global node
         if node != None:
             uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
         node = None
-        
+
 test_registry.registerNode("firewall", FirewallTests)
 

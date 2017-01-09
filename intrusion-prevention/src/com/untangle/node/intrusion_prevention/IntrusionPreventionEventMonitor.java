@@ -41,10 +41,10 @@ import com.untangle.node.intrusion_prevention.IntrusionPreventionSnortUnified2Pa
 
 class IntrusionPreventionEventMonitor implements Runnable
 {
-    private static final long   SLEEP_TIME_MSEC = 30 * 1000;
+    public static final long SLEEP_TIME_MSEC = 30 * 1000;
 
     /* Delay a second while the thread is joining */
-    private static final long   THREAD_JOIN_TIME_MSEC = 1000;
+    private static final long THREAD_JOIN_TIME_MSEC = 1000;
 
     protected static final Logger logger = Logger.getLogger( IntrusionPreventionEventMonitor.class );
 
@@ -170,7 +170,7 @@ class IntrusionPreventionEventMonitor implements Runnable
                     ? fileLastPositions.get(f.getCanonicalFile())
                     : 0;
                 logger.debug("processSnortLogFiles: parse file=" + f.getCanonicalFile() +", startPosition="+startPosition);
-                lastPosition = unified2Parser.parse( f, startPosition, node );
+                lastPosition = unified2Parser.parse( f, startPosition, node, currentTime );
                     
                 fileLastPositions.put( f.getCanonicalFile(), lastPosition );
             }catch( Exception e) {

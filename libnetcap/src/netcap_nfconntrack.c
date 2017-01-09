@@ -220,7 +220,7 @@ int netcap_nfconntrack_del_entry_tuple( netcap_nfconntrack_ipv4_tuple_t* tuple, 
 /**
  * Dump all of conntrack
  */
-list_t* netcap_nfconntrack_dump( struct nf_conntrack** array, int limit )
+list_t* netcap_nfconntrack_dump()
 {
     int ret;
 

@@ -59,7 +59,7 @@ public class WebFilterBlockPageServlet extends com.untangle.node.web_filter.Bloc
         /* Return the name of the script file to load, or null if there is not a script. */
         public String getScriptFile()
         {
-            return "web-filter.js";
+            return "web-filter-base.js";
         }
 
         public String getAdditionalFields( Map<String,String> i18n_map )

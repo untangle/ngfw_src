@@ -30,10 +30,11 @@ public class EmailTemplate implements JSONString, Serializable
     private String title;
     private String description;
     private Integer interval;
+    private Integer intervalWeekStart = 1;
     private Boolean mobile;
     private Boolean readOnly = null; /* If the rule is read-only (built-in) */
-    private List<String> enabledConfigIds;
-    private List<String> enabledAppIds;
+    private List<String> enabledConfigIds = null;
+    private List<String> enabledAppIds = null;
 
     public EmailTemplate()
     {
@@ -60,6 +61,9 @@ public class EmailTemplate implements JSONString, Serializable
 
     public Integer getInterval() { return this.interval; }
     public void setInterval( Integer newValue ) { this.interval = newValue; }
+
+    public Integer getIntervalWeekStart() { return this.intervalWeekStart; }
+    public void setIntervalWeekStart( Integer newValue ) { this.intervalWeekStart = newValue; }
 
     public Boolean getMobile() { return this.mobile; }
     public void setMobile( Boolean newValue ) { this.mobile = newValue; }

@@ -187,7 +187,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
     public void runFixedReport() throws Exception
     {
         flushEvents();
-        
+
         synchronized (this) {
             String url = "https://" + UvmContextFactory.context().networkManager().getPublicUrl() + "/reports/";
             for( EmailTemplate emailTemplate : settings.getEmailTemplates() ){
@@ -199,7 +199,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
                     }
                 }
                 if( users.size() > 0){
-                    fixedReports.generate(emailTemplate, users, url);
+                    fixedReports.generate(emailTemplate, users, url, ReportsManagerImpl.getInstance());
                 }
             }
         }        
@@ -540,23 +540,41 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         LinkedList<String> enabledAppIds;
 
         enabledConfigIds = new LinkedList<String>();
-        enabledConfigIds.add("_all");
+        enabledConfigIds.add("_recommended");
         enabledAppIds = new LinkedList<String>();
-        enabledAppIds.add("_all");
-        emailTemplate = new EmailTemplate( I18nUtil.marktr("Daily Reports"), I18nUtil.marktr("All available reports (default)"), 86400, false, enabledConfigIds, enabledAppIds);
-        emailTemplate.setReadOnly(true);
-        templates.add( emailTemplate );
-
-        enabledConfigIds = new LinkedList<String>();
-        enabledConfigIds.add("_type=TEXT");
-        enabledAppIds = new LinkedList<String>();
-        enabledAppIds.add("_type=TEXT");
-        emailTemplate = new EmailTemplate( I18nUtil.marktr("Daily Reports Summary"), I18nUtil.marktr("Text only reports"), 86400, false, enabledConfigIds, enabledAppIds);
+        enabledAppIds.add("_recommended");
+        emailTemplate = new EmailTemplate( I18nUtil.marktr("Daily Reports"), I18nUtil.marktr("Recommended daily reports (default)"), 86400, false, enabledConfigIds, enabledAppIds);
         emailTemplate.setReadOnly(true);
         templates.add( emailTemplate );
 
         return templates;
 
+    }
+
+    private LinkedList<ReportsUser> defaultReportsUsers(LinkedList<ReportsUser> reportsUsers){
+        if(reportsUsers == null){
+            reportsUsers = new LinkedList<ReportsUser>();
+        }
+
+        Boolean adminUserFound = false;
+        for(ReportsUser reportsUser : reportsUsers){
+            if(reportsUser.getEmailAddress().equals("admin")){
+                adminUserFound = true;
+            }
+        }
+
+        if( adminUserFound == false ){
+            ReportsUser adminUser = new ReportsUser();
+            adminUser.setEmailAddress("admin");
+            adminUser.setEmailAlerts(true);
+            adminUser.setEmailSummaries(true);
+            List<Integer> templateIds = new LinkedList<Integer>();
+            templateIds.add(0);
+            adminUser.setEmailTemplateIds(templateIds);
+            reportsUsers.add(adminUser);
+        }
+
+        return reportsUsers;
     }
 
     private ReportsSettings defaultSettings()
@@ -565,6 +583,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         settings.setVersion( 3 );
         settings.setAlertRules( defaultAlertRules() );
         settings.setEmailTemplates( defaultEmailTemplates() );
+        settings.setReportsUsers( defaultReportsUsers( null ) );
         return settings;
     }
     
@@ -741,6 +760,12 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
 
         try {
             settings.setEmailTemplates( defaultEmailTemplates() );
+        } catch (Exception e) {
+            logger.warn("Conversion Exception",e);
+        }
+
+        try {
+            settings.setReportsUsers( defaultReportsUsers(settings.getReportsUsers()) );
         } catch (Exception e) {
             logger.warn("Conversion Exception",e);
         }
