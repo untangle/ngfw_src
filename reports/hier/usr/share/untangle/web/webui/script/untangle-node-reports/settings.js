@@ -199,11 +199,11 @@ Ext.define('Webui.untangle-node-reports.settings', {
     buildUsers: function() {
         var fieldID = "" + Math.round( Math.random() * 1000000 );
 
-        for(var i = 0; i < this.getSettings().reportsUsers.list.length; i++){
-            if(this.getSettings().reportsUsers.list[i].emailAddress == "admin"){
-                this.getSettings().reportsUsers.list[i].readOnly = true;
-            }
-        }
+        //for(var i = 0; i < this.getSettings().reportsUsers.list.length; i++){
+        //    if(this.getSettings().reportsUsers.list[i].emailAddress == "admin"){
+        //        this.getSettings().reportsUsers.list[i].readOnly = true;
+        //    }
+        //}
 
         // Change the password for a user.
         var changePasswordColumn = Ext.create('Ung.grid.EditColumn',{
@@ -247,7 +247,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
                         emailSummaries: true,
                         emailTemplateIds : {
                             javaClass: "java.util.LinkedList",
-                            list: []
+                            list: [1]
                         },
                         onlineAccess: false,
                         password: null,
@@ -261,7 +261,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
                     },{
                         name: "emailSummaries"
                     },{
-                        name: "emailTemplateIds",
+                        name: "emailTemplateIds"
                     },{
                         name: "onlineAccess"
                     },{
@@ -275,7 +275,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
                         width: 200,
                         editor: {
                             xtype:'textfield',
-                            vtype: 'email',
+                            //vtype: 'email', // disabled because we allow "admin"
                             emptyText: i18n._("[enter email address]"),
                             allowBlank: false,
                             blankText: i18n._("The email address cannot be blank.")
@@ -361,7 +361,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 xtype:'textfield',
                 dataIndex: "emailAddress",
                 fieldLabel: i18n._("Email Address (username)"),
-                vtype: 'email',
+                //vtype: 'email', // disabled because we allow "admin"
                 emptyText: i18n._("[enter email address]"),
                 allowBlank: false,
                 blankText: i18n._("The email address name cannot be blank."),
@@ -408,7 +408,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
                     var template = settings["emailTemplates"].list[i];
                     var templateChecked = (userEmailTemplates.list.indexOf(template.templateId) > -1) ? true : false;
                     items.add(new Ext.form.Checkbox({
-                        boxLabel: template.title + " (" + template.description + ")",
+                        boxLabel: template.title + ( (template.description != "") ? " (" + template.description + ")" : ""),
                         name: "list",
                         inputValue: template.templateId,
                         checked: templateChecked

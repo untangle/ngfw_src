@@ -61,9 +61,12 @@ def headerparserhandler(req):
     # if the token is in the URL, extract it and send it to the login page
     token = None
     if req.args != None:
-        dict = util.FieldStorage(req)
-        if dict.has_key('token'):
-            token = dict['token']
+        try:
+            dict = util.FieldStorage(req)
+            if dict.has_key('token'):
+                token = dict['token']
+        except:
+            pass
 
     sess = Session.Session(req, lock=0)
     sess.set_timeout(SESSION_TIMEOUT)

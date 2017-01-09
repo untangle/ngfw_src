@@ -7,7 +7,12 @@ import sys
 
 import json
 import pycurl
+import ssl
 import urllib
+import urllib2
+import copy
+import socket
+from datetime import datetime
 from StringIO import StringIO
 
 from jsonrpc import JSONRPCException
@@ -28,7 +33,7 @@ class IntrusionPreventionInterface:
     """
     Intrusion Prevention management object
     """
-    config_url = "http://localhost/webui/download?"
+    config_url = "https://localhost/webui/download?"
     config_request_arguments_template = {
         "type": "IntrusionPreventionSettings",
         "arg1": "load",
@@ -52,14 +57,6 @@ class IntrusionPreventionInterface:
     }
 
     def __init__(self, node_id, timeout=120 ):
-        self.__curl = pycurl.Curl()
-        self.__curl.setopt( pycurl.POST, 1 )
-        self.__curl.setopt( pycurl.NOSIGNAL, 1 )
-        self.__curl.setopt( pycurl.CONNECTTIMEOUT, 60 )
-        self.__curl.setopt( pycurl.TIMEOUT, timeout )
-        self.__curl.setopt( pycurl.COOKIEFILE, "" )
-        self.__curl.setopt( pycurl.FOLLOWLOCATION, 0 )
-
         self.node_id = node_id
 
     def config_request(self, action, patch = ""):
@@ -74,30 +71,30 @@ class IntrusionPreventionInterface:
 
         patch = json.dumps(patch)
 
-        self.__curl.setopt( pycurl.URL, IntrusionPreventionInterface.config_url + urllib.urlencode(request_arguments)) 
-        self.__curl.setopt( pycurl.POST, 1 )
-        self.__curl.setopt( pycurl.HTTPHEADER, ["Content-type: ", "text/plain; charset=utf-8"])
-        self.__curl.setopt( pycurl.VERBOSE, False )
-        self.__curl.setopt( pycurl.POSTFIELDS, patch.encode('utf-8'))
-        self.__curl.setopt( pycurl.WRITEFUNCTION, response.write )
+        ctx = ssl.create_default_context()
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE
+
+        method = "POST"
+        handler = urllib2.HTTPSHandler(context=ctx)
+        opener = urllib2.build_opener(handler)
+        data = patch.encode('utf-8')
+        request = urllib2.Request(IntrusionPreventionInterface.config_url + urllib.urlencode(request_arguments), data=data)
+        request.add_header("Content-Type","text/plain; charset=utf-8")
+        request.get_method = lambda: method
         try:
-            self.__curl.perform()
+            connection = opener.open(request)
         except Exception, e:
-            print "Problem while asking for " + IntrusionPreventionInterface.config_url + urllib.urlencode(request_arguments)
-            raise e
+            print e
+            connection = e
 
-        http_code = self.__curl.getinfo( pycurl.HTTP_CODE ) 
-        if ( http_code != 200 ): 
-            if http_code == 302:
-                raise JSONRPCException( "Invalid username or password [code: %i]" % http_code )
-            elif http_code == 500:
-                raise JSONRPCException( "Internal server error [code: %i]" % http_code )
-            elif http_code == 502 or http_code == 503:
-                raise JSONRPCException( "Service unavailable [code: %i]" % http_code )
-            else:
-                raise JSONRPCException( "An error occurred [code: %i] response: %s" % (http_code, response.getvalue()) )
+        if connection.code == 200:
+            data = connection.read()
+            return data
+        else:
+            raise JSONRPCException( "Unable to get data.  Failed with code [%i]" % connection.code)
 
-        return response.getvalue()
+        return False
 
     def create_patch(self, type = None, action = None, extended = None ):
         """
@@ -238,6 +235,32 @@ def flush_events():
     reports = uvmContext.nodeManager().node("untangle-node-reports")
     if (reports != None):
         reports.flushEvents()
+
+def createBypassConditionRule( conditionType, value ):
+    return {
+        "bypass": True,
+        "description": "test bypass " + str(conditionType) + " " + str(value),
+        "enabled": True,
+        "javaClass": "com.untangle.uvm.network.BypassRule",
+        "conditions": {
+            "javaClass": "java.util.LinkedList",
+            "list": [
+                {
+                    "invert": False,
+                    "javaClass": "com.untangle.uvm.network.BypassRuleCondition",
+                    "conditionType": str(conditionType),
+                    "value": str(value)
+                },
+                {
+                    "invert": False,
+                    "javaClass": "com.untangle.uvm.network.BypassRuleCondition",
+                    "conditionType": "PROTOCOL",
+                    "value": "TCP,UDP"
+                }
+            ]
+        },
+        "ruleId": 1
+    }
 
 class IntrusionPreventionTests(unittest2.TestCase):
     """
@@ -676,7 +699,85 @@ class IntrusionPreventionTests(unittest2.TestCase):
         assert(pre_events_detect < post_events_detect)
         print "pre_events_block: %s post_events_block: %s"%(str(pre_events_block),str(post_events_block))
         assert(pre_events_block < post_events_block)
-        
+
+    def test_060_bypass_udp_block(self):
+        global node
+        if remote_control.quickTestsOnly:
+            raise unittest2.SkipTest('Skipping a time consuming test')
+        tracerouteExists = remote_control.runCommand("test -x /usr/sbin/traceroute")
+        if tracerouteExists != 0:
+            raise unittest2.SkipTest("Traceroute app needs to be installed on client")
+
+        # use IP address instead of hostname to avoid false positive with DNS IPS block.
+        orig_netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings = copy.deepcopy( orig_netsettings )
+        netsettings['bypassRules']['list'].append( createBypassConditionRule("SRC_ADDR",remote_control.clientIP) )
+        # netsettings['logBypassedSessions'] = True
+        uvmContext.networkManager().setNetworkSettings(netsettings)
+        test_untangle_com_ip = socket.gethostbyname("test.untangle.com")
+
+        startTime = datetime.now()
+
+        rule = self.intrusion_prevention_interface.create_rule(msg="UDP Block", type="udp", block=True, directive="")
+        self.intrusion_prevention_interface.config_request( "save", self.intrusion_prevention_interface.create_patch( "rule", "add", rule ) )
+        node.reconfigure()
+
+        result = remote_control.runCommand("/usr/sbin/traceroute -U -m 3 -p 1234 " + test_untangle_com_ip)
+        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+
+        time.sleep(35)
+        events = global_functions.get_events('Intrusion Prevention','All Events',None,500)
+        assert(events != None)
+        found = global_functions.check_events( events.get('list'), 500,
+                                               "source_addr", remote_control.clientIP,
+                                               "dest_addr", test_untangle_com_ip,
+                                               "dest_port", 1234,
+                                               "protocol", 17,
+                                               "blocked", True,
+                                               min_date=startTime )
+
+        print "found: %s"%str(found)
+        assert(not found)
+
+    def test_065_bypass_tcp_block(self):
+        """
+        Functional, UDP block
+        """
+        global node
+        if remote_control.quickTestsOnly:
+            raise unittest2.SkipTest('Skipping a time consuming test')
+
+        orig_netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings = copy.deepcopy( orig_netsettings )
+        netsettings['bypassRules']['list'].append( createBypassConditionRule("SRC_ADDR",remote_control.clientIP) )
+        # netsettings['logBypassedSessions'] = True
+        uvmContext.networkManager().setNetworkSettings(netsettings)
+        test_untangle_com_ip = socket.gethostbyname("test.untangle.com")
+
+        startTime = datetime.now()
+
+        rule = self.intrusion_prevention_interface.create_rule(msg="TCP Block", type="tcp", block=True, directive="")
+
+        self.intrusion_prevention_interface.config_request( "save", self.intrusion_prevention_interface.create_patch( "rule", "add", rule ) )
+        node.reconfigure()
+
+        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+
+        time.sleep(35)
+        events = global_functions.get_events('Intrusion Prevention','All Events',None,500)
+        assert(events != None)
+        found = global_functions.check_events( events.get('list'), 500,
+                                               "source_addr", remote_control.clientIP,
+                                               "dest_addr", test_untangle_com_ip,
+                                               "dest_port", 80,
+                                               "protocol", 6,
+                                               "blocked", True,
+                                               min_date=startTime )
+
+        print "found: %s"%str(found)
+        assert(not found)
+
     @staticmethod
     def finalTearDown(self):
         """

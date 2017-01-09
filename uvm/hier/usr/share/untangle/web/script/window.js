@@ -154,7 +154,7 @@ Ext.define("Ung.SettingsWin", {
         this.callParent(arguments);
     },
     buildTabPanel: function(itemsArray) {
-        if(this.hasReports) {
+        if(this.hasReports && rpc.reportsEnabled) {
             var reportCategory = this.reportCategory;
             if ( reportCategory == null ) reportCategory = this.displayName;
             itemsArray.push(Ext.create('Ung.panel.Reports',{
@@ -173,7 +173,7 @@ Ext.define("Ung.SettingsWin", {
                 }
             }));
         }
-        
+
         this.tabs = Ext.create('Ext.tab.Panel',{
             activeTab: 0,
             deferredRender: false,

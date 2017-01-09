@@ -116,6 +116,11 @@ public class SqlCondition implements Serializable, JSONString
         }
     }
 
+    public String toString()
+    {
+        return "SqlCondition[ " + getColumn() + " " + getOperator() + " " + getValue() + " ]";
+    }
+
     public static void setPreparedStatementValues( PreparedStatement statement, SqlCondition[] conditions, String table )
     {
         if ( conditions == null )
@@ -144,13 +149,16 @@ public class SqlCondition implements Serializable, JSONString
                 }
 
                 switch (columnType) {
-                case "int8":
-                case "bigint":
-                case "int4":
-                case "int":
+                case "numeric":
                 case "integer":
+                case "int":
                 case "int2":
+                case "int4":
+                case "int8":
+                case "tinyint":
                 case "smallint":
+                case "mediumint":
+                case "bigint":
                     if ("null".equalsIgnoreCase(value))
                         statement.setNull(i, java.sql.Types.INTEGER);
                     else {
@@ -163,6 +171,7 @@ public class SqlCondition implements Serializable, JSONString
                 break;
 
                 case "real":
+                case "float":
                 case "float4":
                 case "float8":
                     if ("null".equalsIgnoreCase(value))
@@ -191,6 +200,7 @@ public class SqlCondition implements Serializable, JSONString
                     break;
                     
                 case "bool":
+                case "boolean":
                     if ("null".equalsIgnoreCase(value))
                         statement.setNull(i, java.sql.Types.BOOLEAN);
                     else if ( value.toLowerCase().contains("true") || value.toLowerCase().contains("1") )

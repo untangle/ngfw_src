@@ -289,6 +289,10 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
 
     public abstract void initializeSettings(WebFilterSettings settings);
 
+    public void fixupSetSettings(WebFilterSettings settings)
+    {
+    }
+
     public void initializeCommonSettings(WebFilterSettings settings)
     {
         if (logger.isDebugEnabled()) {
@@ -485,6 +489,8 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
                 if (rule.getBlocked()) rule.setFlagged(Boolean.TRUE);
             }
         }
+
+        fixupSetSettings(newSettings);
 
         /**
          * Save the settings

@@ -49,7 +49,6 @@ public class License implements Serializable
     public static final String SSL_INSPECTOR_OLDNAME = "untangle-casing-https";
     public static final String LIVE_SUPPORT = "untangle-node-live-support";
     public static final String LIVE_SUPPORT_OLDNAME = "untangle-node-support";
-    public static final String CLOUD_COMMAND = "cloud-command";
     
     /** Identifier for the product this license is for */
     private String name;

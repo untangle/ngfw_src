@@ -7,10 +7,8 @@ import re
 import string
 import sys
 import time
+import sqlite3
 from psycopg2.extensions import DateFromMx
-
-from reports.log import *
-logger = getLogger(__name__)
 
 REQUIRED_TIME_POINTS = [float(s) for s in range(0, 24 * 60 * 60, 30 * 60)]
 HOURLY_REQUIRED_TIME_POINTS = [float(s) for s in range(0, 24 * 60 * 60, 60 * 60)]
@@ -18,10 +16,12 @@ HOURLY_REQUIRED_TIME_POINTS = [float(s) for s in range(0, 24 * 60 * 60, 60 * 60)
 DEFAULT_TIME_FIELD = 'time_stamp'
 DEFAULT_SLICES = 150
 
-SCHEMA = 'reports'
+DBDRIVER = 'postgresql'
+
 UNLOGGED_ENABLED = False
 EXTRA_INDEXES_ENABLED = True
 CONNECTION_STRING = "dbname=uvm user=postgres"
+PRINT_TIMINGS = False
 
 class Cursor(psycopg2.extensions.cursor):
     def execute(self, sql, args=None):
@@ -42,6 +42,7 @@ class Connection(psycopg2.extensions.connection):
 
 def print_timing(func):
     def wrapper(*arg):
+        global PRINT_TIMINGS
         filename = 'unknown'
         line_number = '?'
 
@@ -53,13 +54,12 @@ def print_timing(func):
 
         fun_name = "%s (%s:%s)" % (func.func_name, filename, line_number)
 
-        #logger.debug('%s running...' % (fun_name))
-
         t1 = time.time()
         res = func(*arg)
         t2 = time.time()
 
-        logger.debug('%s took %0.1f ms' % (fun_name, (t2-t1)*1000))
+        if PRINT_TIMINGS:
+            print('%s took %0.1f ms' % (fun_name, (t2-t1)*1000))
         return res
 
     return wrapper
@@ -68,9 +68,12 @@ __conn = None
 
 def get_connection():
     global __conn
+    global DBDRIVER
 
-    if not __conn:
+    if not __conn and ( DBDRIVER == None or DBDRIVER == "postgresql" ):
         __conn = psycopg2.connect(CONNECTION_STRING, connection_factory=Connection)
+    if not __conn and ( DBDRIVER == "sqlite" ):
+        __conn = sqlite3.connect('/var/lib/sqlite/reports.db')
 
     try:
         __conn.commit()
@@ -78,8 +81,8 @@ def get_connection():
         curs.execute("SELECT 1")
         __conn.commit()
     except:
-        logger.warn("could not access database, getting new connection",
-                     exc_info=True)
+        print("could not access database, getting new connection")
+        traceback.print_exc()
         try:
             __conn.close()
         except:
@@ -93,6 +96,7 @@ def get_connection():
 #
 def run_sql_one(sql):
     conn = get_connection()
+
     try:
         curs = conn.cursor()
         curs.execute(sql)
@@ -111,11 +115,11 @@ def run_sql(sql, args=None, connection=None, auto_commit=True, force_propagate=F
         curs = connection.cursor()
         if args:
             if debug:
-                logger.debug("Executing: %s" % re.sub(r'\n', ' ', curs.mogrify(sql, args)))
+                print("Executing: %s" % re.sub(r'\n', ' ', curs.mogrify(sql, args)))
             curs.execute(sql, args)
         else:
             if debug:
-                logger.warn("Executing: %s" % re.sub(r'\n', ' ', sql))
+                print("Executing: %s" % re.sub(r'\n', ' ', sql))
             curs.execute(sql)
 
         if auto_commit:
@@ -131,7 +135,7 @@ def run_sql(sql, args=None, connection=None, auto_commit=True, force_propagate=F
         if re.search(r'^\s*(DROP) ', sql, re.I):
             show_error = False
         if re.search(r'^\s*(CREATE|ALTER) ', sql, re.I):
-            show_error = False
+            show_error = True
             
         if show_error:
             raise e
@@ -141,8 +145,30 @@ def run_sql(sql, args=None, connection=None, auto_commit=True, force_propagate=F
         except:
             pass
 
+def schema():
+    if DBDRIVER == "sqlite":
+        return "main"
+    else:
+        return "reports"
+
+def fullname( tablename ):
+    if DBDRIVER == "sqlite":
+        return tablename
+    else:
+        if tablename.startswith(schema()):
+            return tablename
+        else:
+            return schema()+"."+tablename
+
 def column_exists( tablename, columnname ):
-    column_exists = run_sql_one("select 1 from information_schema.columns where table_schema = '%s' and table_name = '%s' and  column_name = '%s'" % (SCHEMA, tablename, columnname))
+    if DBDRIVER == "sqlite":
+        try:
+            run_sql_one("select 1 from %s where %s is null limit 1" % (tablename, columnname))
+            column_exists = True
+        except:
+            column_exists = False
+    else:
+        column_exists = run_sql_one("select 1 from information_schema.columns where table_schema = '%s' and table_name = '%s' and  column_name = '%s'" % (schema(), tablename, columnname))
     if column_exists:
         return True
     return False
@@ -150,26 +176,26 @@ def column_exists( tablename, columnname ):
 def add_column( tablename, columnname, type ):
     if column_exists( tablename, columnname ):
         return
-    sql = "ALTER TABLE %s.%s ADD COLUMN %s %s" % (SCHEMA, tablename, columnname, type)
-    logger.info(sql)
+    sql = "ALTER TABLE %s ADD COLUMN %s %s" % (fullname(tablename), columnname, type)
+    print(sql)
     run_sql(sql)
 
 def drop_column( tablename, columnname ):
     if not column_exists( tablename, columnname ):
         return
-    sql = "ALTER TABLE %s.%s DROP COLUMN %s" % (SCHEMA, tablename, columnname)
-    logger.info(sql)
+    sql = "ALTER TABLE %s DROP COLUMN %s" % (fullname(tablename), columnname)
+    print(sql)
     run_sql(sql)
 
 def rename_column( tablename, oldname, newname ):
     if column_exists( tablename, newname ):
-        #logger.debug("rename failed, column already exists: %s.%s" % (tablename, newname))
+        #logger.debug("rename failed, column already exists: %s %s" % (tablename, newname))
         return
     if not column_exists( tablename, oldname ):
-        #logger.debug("rename failed, column missing: %s.%s" % (tablename, oldname))
+        #logger.debug("rename failed, column missing: %s %s" % (tablename, oldname))
         return
-    sql = "ALTER TABLE %s.%s RENAME COLUMN %s to %s" % (SCHEMA, tablename, oldname, newname)
-    logger.info(sql)
+    sql = "ALTER TABLE %s RENAME COLUMN %s to %s" % (fullname(tablename), oldname, newname)
+    print(sql)
     run_sql(sql)
 
 def rename_table( oldname, newname ):
@@ -177,16 +203,16 @@ def rename_table( oldname, newname ):
         return
     if not table_exists( oldname ):
         return
-    sql = "ALTER TABLE %s.%s RENAME TO %s" % (SCHEMA, oldname, newname)
-    logger.info(sql)
+    sql = "ALTER TABLE %s RENAME TO %s" % (fullname(oldname), newname)
+    print(sql)
     run_sql(sql)
 
 def convert_column( tablename, columnname, oldtype, newtype ):
-    column_type_exists = run_sql_one("select 1 from information_schema.columns where table_schema = '%s' and table_name = '%s' and  column_name = '%s' and data_type = '%s'" % (SCHEMA, tablename, columnname, oldtype))
+    column_type_exists = run_sql_one("select 1 from information_schema.columns where table_schema = '%s' and table_name = '%s' and  column_name = '%s' and data_type = '%s'" % (schema(), tablename, columnname, oldtype))
     if not column_type_exists:
         return
-    sql = "ALTER TABLE %s.%s ALTER COLUMN %s TYPE %s" % (SCHEMA, tablename, columnname, newtype)
-    logger.info(sql)
+    sql = "ALTER TABLE %s ALTER COLUMN %s TYPE %s" % (fullname(tablename), columnname, newtype)
+    print(sql)
     run_sql(sql);
 
 def index_exists( tablename, columnname, unique=False ):
@@ -194,7 +220,10 @@ def index_exists( tablename, columnname, unique=False ):
         uniqueStr1="unique_"
     else:
         uniqueStr1=""
-    return run_sql_one("select 1 from pg_class where relname = '%s_%s_%sidx'" % (tablename, columnname, uniqueStr1))
+    if DBDRIVER == "sqlite":
+        return run_sql_one("SELECT 1 FROM sqlite_master where type = 'index' and name = '%s_%s_%sidx'" % (tablename, columnname, uniqueStr1))
+    else:
+        return run_sql_one("select 1 from pg_class where relname = '%s_%s_%sidx'" % (tablename, columnname, uniqueStr1))
 
 def create_index( tablename, columnname, unique=False ):
     if (index_exists( tablename, columnname, unique )):
@@ -205,8 +234,8 @@ def create_index( tablename, columnname, unique=False ):
     else:
         uniqueStr1=""
         uniqueStr2=""
-    sql = 'CREATE %sINDEX %s_%s_%sidx ON %s.%s(%s)' % (uniqueStr2, tablename, columnname, uniqueStr1, SCHEMA, tablename, columnname)
-    logger.info(sql)
+    sql = 'CREATE %sINDEX %s_%s_%sidx ON %s(%s)' % (uniqueStr2, tablename, columnname, uniqueStr1, fullname(tablename), columnname)
+    print(sql)
     run_sql(sql)
 
 def drop_index( tablename, columnname, unique=False ):
@@ -216,66 +245,68 @@ def drop_index( tablename, columnname, unique=False ):
         uniqueStr1="unique_"
     else:
         uniqueStr1=""
-    sql = 'DROP INDEX %s.%s_%s_%sidx' % (SCHEMA, tablename, columnname, uniqueStr1 )
-    logger.info(sql)
+    sql = 'DROP INDEX %s_%s_%sidx' % (fullname(tablename), columnname, uniqueStr1 )
+    print(sql)
     run_sql(sql)
                                     
 def rename_index( oldname, newname ):
     already_exists = run_sql_one("select 1 from pg_class where relname = '%s'" % (oldname))
     if not already_exists:
         return
-    sql = 'ALTER INDEX %s.%s RENAME TO %s' % (SCHEMA, oldname, newname)
-    logger.info(sql)
+    sql = 'ALTER INDEX %s RENAME TO %s' % (fullname(oldname), newname)
+    print(sql)
     run_sql(sql)
 
 def create_schema(schema):
+    if DBDRIVER == "sqlite":
+        return
     already_exists = run_sql_one("select 1 from pg_namespace where nspname = '%s'" % (schema))
     if already_exists:
         return
     sql = "CREATE SCHEMA %s" % (schema)
-    logger.info(sql)
+    print(sql)
     run_sql(sql)
 
 def clean_table(tablename, cutoff):
-    logger.info("clean_table " + str(tablename) + " < " + str(cutoff))
+    print("clean_table " + str(tablename) + " < " + str(cutoff))
     
     for t, date in find_table_partitions(tablename):
         # if the entire table is before the date specified, just drop it
         # but only if the *entire* table is before the the cutoff
         day_cutoff = mx.DateTime.Parser.DateTimeFromString("%d-%d-%d"%cutoff.timetuple()[:3])
         if date < day_cutoff:
-            logger.info("DROP TABLE " + str(t))
+            print("DROP TABLE " + str(t))
             drop_table( t )
 
-    # delete any old events from existing tables
-    # this is kept because we used to store events directly in the master table
-    # also this is inexpensive because of the partition checks it will only be run
-    # on relevent partitions
+    # delete old events from the main table
     if column_exists( tablename, "time_stamp" ):
-        sql = "DELETE FROM %s.%s WHERE time_stamp < %%s;" % (SCHEMA, tablename)
-        logger.debug( sql % cutoff )
-        run_sql(sql, (cutoff,))
+        if DBDRIVER == "sqlite":
+            cutoff = str(long(cutoff.strftime("%s"))*1000)
+            sql = "DELETE FROM %s WHERE time_stamp < %s;" % (tablename, cutoff)
+            run_sql(sql)
+        else:
+            sql = "DELETE FROM %s WHERE time_stamp < %%s;" % (fullname(tablename))
+            run_sql(sql, (cutoff,))
     else: 
-        logger.warn("Table %s missing time_stamp column!" % tablename)
+        print("Table %s missing time_stamp column!" % tablename)
 
-def create_view( view_sql ):
-    run_sql(view_sql)
-        
 def create_table( table_sql, unique_index_columns=[], other_index_columns=[], create_partitions=True ):
     (schema, tablename) = __get_tablename(table_sql)
-    
+
     if schema:
-        full_tablename = "%s.%s" % (schema, tablename)
+        full_tablename = fullname(tablename)
+        if DBDRIVER == "sqlite":
+            table_sql = table_sql.replace("reports."+tablename,full_tablename)
     else:
         full_tablename = tablename
 
     # if extra indexes not enabled, just set the list to empty    
     if not EXTRA_INDEXES_ENABLED:
         other_index_columns=[]
-        
+
     # create root table
     if not table_exists( tablename ):
-        logger.info("CREATE %s TABLE %s" % ((UNLOGGED_ENABLED == True and "UNLOGGED" or ""),full_tablename))
+        print("CREATE %s TABLE %s" % ((UNLOGGED_ENABLED == True and "UNLOGGED" or ""),full_tablename))
         run_sql(table_sql)
         # always create time_stamp index
         if column_exists( tablename, "time_stamp") and not index_exists( tablename, "time_stamp", unique=False):
@@ -287,6 +318,11 @@ def create_table( table_sql, unique_index_columns=[], other_index_columns=[], cr
         for column in other_index_columns:
             if not index_exists( tablename, column, unique=False ):
                 create_index( tablename, column, unique=False );
+
+
+    # sqlite does not support partitions
+    if DBDRIVER == "sqlite":
+        return
 
     # for importing old data and testing
     # now = mx.DateTime.strptime(mx.DateTime.now().strftime('%Y-%m-%d'),'%Y-%m-%d') - mx.DateTime.RelativeDateTime(days=30)
@@ -307,7 +343,7 @@ def create_table( table_sql, unique_index_columns=[], other_index_columns=[], cr
                 start_time = table_start_time
                 end_time = table_start_time + mx.DateTime.RelativeDateTime(days=1)
                 partition_table_sql = "CREATE %s TABLE %s (CHECK (time_stamp >= '%s' AND time_stamp < '%s')) INHERITS (%s)" % ((UNLOGGED_ENABLED == True and "UNLOGGED" or ""), partition_full_tablename, start_time, end_time, full_tablename)
-                logger.info(partition_table_sql)
+                print(partition_table_sql)
                 run_sql(partition_table_sql)
 
                 # always create time_stamp index
@@ -330,34 +366,24 @@ def create_table( table_sql, unique_index_columns=[], other_index_columns=[], cr
             trigger_times.insert(0, (now - mx.DateTime.RelativeDateTime(days=1)))
 
         __make_trigger( tablename, 'time_stamp', trigger_times )
-
-def drop_view( view ):
-    tn = '%s.%s' % (SCHEMA, view)
-    conn = get_connection()
-    try:
-        curs = conn.cursor()
-        curs.execute('DROP VIEW %s' % (tn,))
-        logger.debug("dropped view '%s'" % (view,))
-    except psycopg2.ProgrammingError:
-        logger.debug('cannot drop view: %s' % (view,))
-    finally:
-        conn.commit()
         
 def drop_table( table ):
-    tn = '%s.%s' % (SCHEMA, table)
-
     conn = get_connection()
     try:
         curs = conn.cursor()
-        curs.execute('DROP TABLE %s' % (tn,))
-        logger.debug("dropped table '%s'" % (table,))
+        curs.execute('DROP TABLE %s' % fullname(table))
+        print("dropped table '%s'" % (table))
     except psycopg2.ProgrammingError:
-        logger.debug('cannot drop table: %s' % (table,))
+        print('cannot drop table: %s' % (table))
+        traceback.print_exc()
     finally:
         conn.commit()
 
 def table_exists( tablename ):
-    return run_sql_one("SELECT 1 FROM pg_catalog.pg_tables WHERE schemaname = '%s' AND tablename = '%s'" % (SCHEMA, tablename))
+    if DBDRIVER == "sqlite":
+        return run_sql_one("SELECT 1 FROM sqlite_master where name = '%s'" % (tablename))
+    else:
+        return run_sql_one("SELECT 1 FROM pg_catalog.pg_tables WHERE schemaname = '%s' AND tablename = '%s'" % (schema(), tablename))
 
 def get_tables( prefix ):
     conn = get_connection()
@@ -375,6 +401,9 @@ def get_tables( prefix ):
     return rv
 
 def find_table_partitions(tablename=None):
+    if DBDRIVER == "sqlite":
+        return []
+
     if not tablename:
         prefix = ''
     else:
@@ -388,79 +417,6 @@ def find_table_partitions(tablename=None):
             tables.append((t, d))
     return tables
     
-def get_date_range(start_date, hours):
-    #mx.DateTime.today() + mx.DateTime.RelativeDateTime(days=1)
-    #l = int(round((end_date - start_date).days+1))
-    return [start_date + mx.DateTime.RelativeDateTime(hours=i) for i in range(hours)]
-
-def get_required_points(start, end, interval):
-    a = []
-    v = start
-    while v < end:
-        a.append(datetime.datetime.fromtimestamp(v))
-        v = v + interval
-    return a
-
-def get_result_dictionary(curs):
-    row = curs.fetchone()
-
-    i = 0
-    h = {}
-    for desc in curs.description:
-        h[desc[0]] = row[i]
-        i += 1
-
-    return h
-
-def get_averaged_query(sums, table_name, start_date, end_date,
-                       extra_where = [],
-                       extra_fields = [],
-                       time_field = DEFAULT_TIME_FIELD,
-                       time_interval = 60,
-                       debug = False):
-#     time_interval = time.mktime(end_date.timetuple()) - time.mktime(start_date.timetuple())
-#     time_interval = time_interval / slices
-
-    params_regular = { 'table_name' : table_name,
-                       'time_field' : time_field }
-    params_to_quote =  { 'start_date' : DateFromMx(start_date),
-                         'end_date' : DateFromMx(end_date),
-                         'time_interval' : time_interval }
-    
-    query = """
-SELECT date(%%(start_date)s) +
-       date_trunc('second',
-                  (%(time_field)s - %%(start_date)s) / %%(time_interval)s) * %%(time_interval)s
-       AS time"""
-
-    for e in extra_fields:
-        query += ", " + e
-    for s in sums:
-        query += ", " + s
-
-    query += """
-FROM %(table_name)s
-WHERE %(table_name)s.%(time_field)s >= %%(start_date)s AND %(table_name)s.%(time_field)s < %%(end_date)s"""
-
-    for ex in extra_where: # of the form (strTemplate, dictionary)
-        template, h = ex
-        query += "\nAND " + template.replace("%(", "%%(")
-        params_to_quote.update(h)
-
-    query += """
-GROUP by time"""
-
-    for e in extra_fields:
-        query += ", " + e
-
-    query += """
-ORDER BY time ASC"""
-
-    if debug:
-        logger.debug((query % params_regular) % params_to_quote)
-    
-    return query % params_regular, params_to_quote
-
 def __tablename_for_date(tablename, date):
     return "%s_%d_%02d_%02d" % ((tablename,) + date.timetuple()[0:3])
 
@@ -484,8 +440,6 @@ def __sub_tablename(sql,new_name):
       raise ValueError("Cannot find table in: %s" % table_ddl)
 
 def __make_trigger( tablename, timestamp_column, all_dates ):
-    full_tablename = '%s.%s' % (SCHEMA, tablename)
-
     trigger_function_name = '%s_insert_trigger()' % tablename
 
     trigger_function = """\
@@ -496,7 +450,7 @@ BEGIN
 
     first = True
     for d in all_dates:
-        partition_table_name = SCHEMA + "." + tablename + "_" + d.strftime('%Y_%m_%d')
+        partition_table_name = schema() + "." + tablename + "_" + d.strftime('%Y_%m_%d')
 
         trigger_function += """\
     %s (NEW.%s >= '%s' AND NEW.%s < '%s') THEN
@@ -522,9 +476,9 @@ LANGUAGE plpgsql;""" % timestamp_column
     if not __trigger_exists( tablename, trigger_name ):
         run_sql("""\
 CREATE TRIGGER %s
-    BEFORE INSERT ON %s.%s
+    BEFORE INSERT ON %s
     FOR EACH ROW EXECUTE PROCEDURE %s
-""" % (trigger_name, SCHEMA, tablename, trigger_function_name))
+""" % (trigger_name, fullname(tablename), trigger_function_name))
 
 def __trigger_exists( tablename, trigger_name ):
     conn = get_connection()
@@ -535,16 +489,10 @@ def __trigger_exists( tablename, trigger_name ):
         curs.execute("""
 SELECT 1 FROM information_schema.triggers
 WHERE trigger_schema = %s AND event_object_table = %s AND trigger_name = %s
-""", (SCHEMA, tablename, trigger_name))
+""", (schema(), tablename, trigger_name))
 
         rv = curs.rowcount
     finally:
         conn.commit()
 
     return rv
-
-def date_convert(t, delay=0):
-    try:
-        return mx.DateTime.DateTime(t.year,t.month,t.day,t.hour,t.minute,t.second+1e-6*t.microsecond) + mx.DateTime.DateTimeDeltaFromSeconds(delay)
-    except Exception, e:
-        return t + mx.DateTime.DateTimeDeltaFromSeconds(delay)

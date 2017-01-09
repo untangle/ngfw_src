@@ -32,29 +32,32 @@ public class AlertHandler
     
     public static void runAlertRules( LinkedList<AlertRule> alertRules, LogEvent event, ReportsApp reports )
     {
-            try {
-                JSONObject jsonObject = event.toJSONObject();
-                if ( ! ( event instanceof AlertEvent ) ) {
-                    for ( AlertRule rule : alertRules ) {
-                        if ( ! rule.getEnabled() )
-                            continue;
+        try {
+            JSONObject jsonObject = event.toJSONObject();
+            if ( event instanceof AlertEvent )
+                return;
                 
-                        if ( rule.isMatch( jsonObject ) ) {
-                            logger.info( "alert match: " + rule.getDescription() + " matches " + jsonObject.toString() );
+            for ( AlertRule rule : alertRules ) {
+                if ( ! rule.getEnabled() )
+                    continue;
 
-                            if ( rule.getLog() )
-                                UvmContextFactory.context().logEvent( new AlertEvent( rule.getDescription(), event.toSummaryString(), jsonObject, event ) );
-                            if ( rule.getAlert() ) 
-                                sendAlertForEvent( rule, event, reports );
-                        } 
-                    }
+                if ( rule.isMatch( jsonObject ) ) {
+                    logger.info( "alert match: " + rule.getDescription() + " matches " + jsonObject.toString() );
+
+                    boolean alertSent = false;
+                    AlertEvent alertEvent = new AlertEvent( rule.getDescription(), event.toSummaryString(), jsonObject, event, rule, false );
+                    if ( rule.getAlert() )
+                        alertSent = sendAlertForEvent( rule, event, reports );
+                    if ( rule.getLog() )
+                        UvmContextFactory.context().logEvent( alertEvent );
                 }
-            } catch ( Exception e ) {
-                logger.warn("Failed to evaluate alert rules.", e);
             }
+        } catch ( Exception e ) {
+            logger.warn("Failed to evaluate alert rules.", e);
+        }
     }
 
-    private static void sendAlertForEvent( AlertRule rule, LogEvent event, ReportsApp reports )
+    private static boolean sendAlertForEvent( AlertRule rule, LogEvent event, ReportsApp reports )
     {
         if ( rule.getAlertLimitFrequency() && rule.getAlertLimitFrequencyMinutes() > 0 ) {
             long currentTime = System.currentTimeMillis();
@@ -62,7 +65,7 @@ public class AlertHandler
             long secondsSinceLastAlert = ( currentTime - lastAlertTime ) / 1000;
             // if not enough time has elapsed, just return
             if ( secondsSinceLastAlert < ( rule.getAlertLimitFrequencyMinutes() * 60 ) )
-                return;
+                return false;
         }
 
         rule.updateAlertTime();
@@ -124,6 +127,8 @@ public class AlertHandler
                 }
             }
         }
+
+        return true;
     }
 
     @SuppressWarnings("unchecked")

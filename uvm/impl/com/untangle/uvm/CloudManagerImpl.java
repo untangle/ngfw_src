@@ -51,6 +51,7 @@ public class CloudManagerImpl implements CloudManager
 
             URIBuilder builder = new URIBuilder(UvmContextImpl.getInstance().getStoreUrl() + "/account/login");
             builder.addParameter( "email" , email );
+            builder.addParameter( "uid" , UvmContextImpl.getInstance().getServerUID() );
             String url = builder.build().toString();
 
             LinkedList<NameValuePair> bodyParams = new LinkedList<NameValuePair>();

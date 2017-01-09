@@ -39,7 +39,7 @@ public class HostTableEvent extends LogEvent
     @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
-        String sql = "INSERT INTO reports.host_table_updates" + getPartitionTablePostfix() + " " +
+        String sql = "INSERT INTO " + schemaPrefix() + "host_table_updates" + getPartitionTablePostfix() + " " +
             "(time_stamp, address, key, value) " +
             "values " +
             "(?, ?, ?, ?); ";

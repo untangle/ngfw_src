@@ -743,7 +743,7 @@ public class CertificateManagerImpl implements CertificateManager
         }
 
         // IPsec IKEv2 will not work properly without this OID
-        if (certInfo.getCertUsage().contains("ikeIntermediate") == false) {
+        if ((certInfo.getCertUsage() == null) || (certInfo.getCertUsage().contains("ikeIntermediate") == false)) {
             if (ipsecInfo == null) ipsecInfo = (new String(failMessage) + " ");
             else ipsecInfo += ", ";
             ipsecInfo += "OID 1.3.6.1.5.5.8.2.2 (ikeIntermediate)";

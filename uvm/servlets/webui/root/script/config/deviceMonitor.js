@@ -14,6 +14,9 @@ Ext.define('Webui.config.deviceMonitor', {
         this.callParent(arguments);
     },
     closeWindow: function() {
+        if (this.down('tabpanel')) {
+            this.down('tabpanel').setActiveItem(0);
+        }
         this.hide();
         Ext.destroy(this);
     },
@@ -154,7 +157,7 @@ Ext.define('Webui.config.deviceMonitor', {
                         }, this)
                     );
                 }
-                
+
             }
         });
         this.gridCurrentDevices.setRowEditor( Ext.create('Ung.RowEditorWindow',{

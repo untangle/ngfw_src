@@ -32,8 +32,7 @@ String extjsTheme = uvm.skinManager().getSkinInfo().getExtjsTheme();
             if(request.getParameter("reportChart") != null){
         %>
             config.reportChart = '<%=request.getParameter("reportChart")%>';
-            config.reportCategory = '<%=request.getParameter("reportCategory")%>';
-            config.reportTitle = '<%=request.getParameter("reportTitle")%>';
+            config.reportUniqueId = '<%=request.getParameter("reportUniqueId")%>';
             config.startDate = '<%=request.getParameter("startDate")%>';
             config.endDate = '<%=request.getParameter("endDate")%>';
         <%

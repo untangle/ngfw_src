@@ -889,6 +889,9 @@ Ext.define('Ung.panel.Reports', {
         var i, j, panels = [], reports, me = this;
         for (i = 1; i < categories.length; i += 1) {
             reports = this.allReports[categories[i].getData().category];
+            if(reports === undefined){
+                continue;
+            }
             for (j = 0; j < reports.length; j += 1) {
                 reports[j].icon = this.setEntryIcon(reports[j]);
             }
@@ -1138,9 +1141,12 @@ Ext.define('Ung.panel.Reports', {
             this.chartData = result.list;
 
             // add a new time prop because the datagrid alters the time_trunc, causing charting issues
-            for (i = 0; i < this.chartData.length; i += 1) {
+            for (var i = 0; i < this.chartData.length; i += 1) {
                 if (this.chartData[i].time_trunc) {
-                    this.chartData[i].time = this.chartData[i].time_trunc.time;
+                    if ( this.chartData[i].time_trunc.time != null )
+                        this.chartData[i].time = this.chartData[i].time_trunc.time;
+                    else
+                        this.chartData[i].time = this.chartData[i].time_trunc;
                 }
             }
 
@@ -1235,7 +1241,7 @@ Ext.define('Ung.panel.Reports', {
                 return (val == null) ? 0 : val;
             };
             var timeFn = function (val) {
-                return (val == null || val.time == null) ? 0 : i18n.timestampFormat(val);
+                return (val == null) ? 0 : i18n.timestampFormat(val);
             };
 
             var storeFields = [{name: 'time_trunc', convert: timeFn}];
@@ -1246,7 +1252,14 @@ Ext.define('Ung.panel.Reports', {
                 width: 130,
                 flex: this.entry.timeDataColumns.length > 2 ? 0 : 1,
                 sorter: function (rec1, rec2) {
-                    var t1 = rec1.getData().time, t2 = rec2.getData().time;
+                    var t1, t2;
+                    if ( rec1.getData().time != null && rec2.getData().time != null ) {
+                        t1 = rec1.getData().time;
+                        t2 = rec2.getData().time;
+                    } else {
+                        t1 = rec1.getData();
+                        t2 = rec2.getData();
+                    }
                     return (t1 > t2) ? 1 : (t1 === t2) ? 0 : -1;
                 }
             }];
@@ -1404,14 +1417,14 @@ Ext.define('Ung.panel.Reports', {
             var i;
             this.chartData = result.list;
 
-            // add a new time prop because the datagrid alters the time_trunc, causing charting issues
-            for (i = 0; i < this.chartData.length; i += 1) {
-                if (this.chartData[i].time_trunc) {
-                    this.chartData[i].time = this.chartData[i].time_trunc.time;
-                }
-            }
-
             if (this.entry.type === 'TIME_GRAPH' || this.entry.type === 'TIME_GRAPH_DYNAMIC') {
+                // add a new time prop because the datagrid alters the time_trunc, causing charting issues
+                for (i = 0; i < this.chartData.length; i += 1) {
+                    if ( this.chartData[i].time_trunc.time != null )
+                        this.chartData[i].time = this.chartData[i].time_trunc.time;
+                    else
+                        this.chartData[i].time = this.chartData[i].time_trunc;
+                }
                 this.chart = Ung.charts.timeSeriesChart(this.entry, this.chartData, this.down('#highchart').body, false, false);
             } else {
                 Ung.charts.setCategoriesSeries(this.entry, this.chartData, this.chart);
@@ -1742,7 +1755,7 @@ Ext.define('Ung.panel.Reports', {
                         if (Ung.Main.webuiMode) {
                             var name = Ung.Main.getPolicyName(value);
                             if (name != null) {
-                                return name + " (" + value + ")";
+                                return name;
                             }
                             return value;
                         }
