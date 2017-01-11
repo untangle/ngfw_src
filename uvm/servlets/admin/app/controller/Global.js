@@ -57,7 +57,7 @@ Ext.define('Ung.controller.Global', {
     },
 
     onBeforeRender: function () {
-        console.log('init');
+        // console.log('init');
     },
 
     onActivate: function () {
@@ -90,5 +90,12 @@ Ext.define('Ung.controller.Global', {
 
         // console.log(this);
         // console.log(this.getAppsView());
+    },
+
+    onConfig: function () {
+        this.getMainView().setActiveItem('config');
+        // this.getMainView().setActiveItem('#dashboard');
+        // this.getViewModel().set('activeItem', 'dashboard');
     }
+
 });

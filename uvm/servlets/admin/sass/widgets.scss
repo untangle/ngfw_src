@@ -409,7 +409,7 @@
     .drag-handle {
         background: url(/root/drag-handle.png) no-repeat center right;
         cursor: move;
-        opacity: .2;
+        opacity: 0;
         transition: opacity .3s cubic-bezier(0.23, 1, 0.32, 1);
         .x-grid-cell-inner {
             padding: 0;

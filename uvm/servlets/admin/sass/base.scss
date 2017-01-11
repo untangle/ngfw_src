@@ -50,7 +50,7 @@ cite {
 
 
 .dashboard {
-    background: #e0e0e0;
+    // background: #FFF;
     &.highlight {
         .widget {
             opacity: 0.3;
@@ -735,3 +735,52 @@ i.draggable {
         }
     }
 }
+
+
+
+
+
+  .loader,
+  .loader:after {
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+  }
+  .loader {
+    margin: 20px auto;
+    font-size: 10px;
+    position: absolute;
+    left: 30px;
+    text-indent: -9999em;
+    box-sizing: border-box;
+    border-top: 3px solid rgba(0, 0, 0, 0.2);
+    border-right: 3px solid rgba(0, 0, 0, 0.2);
+    border-bottom: 3px solid rgba(0, 0, 0, 0.2);
+    border-left: 3px solid green;
+    -webkit-transform: translateZ(0);
+    -ms-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-animation: install 1.1s infinite linear;
+    animation: install 1.1s infinite linear;
+  }
+  @-webkit-keyframes install {
+    0% {
+      -webkit-transform: rotate(0deg);
+      transform: rotate(0deg);
+    }
+    100% {
+      -webkit-transform: rotate(360deg);
+      transform: rotate(360deg);
+    }
+  }
+  @keyframes install {
+    0% {
+      -webkit-transform: rotate(0deg);
+      transform: rotate(0deg);
+    }
+    100% {
+      -webkit-transform: rotate(360deg);
+      transform: rotate(360deg);
+    }
+  }
+

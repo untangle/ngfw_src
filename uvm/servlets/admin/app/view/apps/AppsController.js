@@ -95,6 +95,7 @@ Ext.define('Ung.view.apps.AppsController', {
      * the nodes store is filtered to reflect current applications
      */
     filterInstalled: function () {
+        this.getViewModel().set('onInstalledApps', true);
         console.log('filter installed');
         var appsStore = this.getViewModel().getStore('apps');
 
@@ -105,6 +106,7 @@ Ext.define('Ung.view.apps.AppsController', {
     },
 
     filterInstallable: function () {
+        this.getViewModel().set('onInstalledApps', false);
         var appsStore = this.getViewModel().getStore('apps');
 
         // initially, after install the nide item is kept on the Install Apps, having status 'installed'

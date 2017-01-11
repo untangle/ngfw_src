@@ -12,12 +12,13 @@ Ext.define('Ung.view.dashboard.DashboardController', {
     viewModel: true,
     control: {
         '#': {
-            afterrender: 'loadWidgets'
+            // afterrender: 'loadWidgets'
         }
     },
 
     listen: {
         global: {
+            init: 'loadWidgets',
             nodeinstall: 'onNodeInstall',
             removewidget: 'onRemoveWidget',
             addwidget: 'onAddWidget',
@@ -44,6 +45,10 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         //     // me.loadWidgets();
         // });
         vm.set('managerOpen', false);
+    },
+
+    onInit: function () {
+        console.log('oninit');
     },
 
     /**
@@ -104,13 +109,11 @@ Ext.define('Ung.view.dashboard.DashboardController', {
             dashboard = this.getView().lookupReference('dashboard'),
             widgets = Ext.getStore('widgets').getRange(),
             i, widget, widgetComponents = [], entry;
-        console.log(widgets);
+
         // refresh the dashboard manager grid if the widgets were affected
         this.getView().lookupReference('dashboardNav').getView().refresh();
 
         dashboard.removeAll(true);
-
-        console.log(Ext.getStore('reports'));
 
         for (i = 0; i < widgets.length; i += 1 ) {
             widget = widgets[i];
@@ -127,10 +130,8 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                 });
             }
             else {
-                console.log(vm.get('reportsEnabled'));
                 if (vm.get('reportsEnabled')) {
                     entry = Ext.getStore('reports').findRecord('uniqueId', widget.get('entryId'));
-                    console.log(entry);
                     if (entry && !Ext.getStore('unavailableApps').first().get(entry.get('category')) && widget.get('enabled')) {
                         dashboard.add({
                             xtype: 'reportwidget',
