@@ -40,7 +40,7 @@ Ext.define('Ung.view.dashboard.Dashboard', {
         // weight: 30,
         width: 300,
         collapsible: true,
-        //border: false,
+        bodyBorder: true,
         // shadow: false,
         animCollapse: false,
         collapsed: true,
@@ -111,7 +111,7 @@ Ext.define('Ung.view.dashboard.Dashboard', {
             menuDisabled: true,
             handler: 'removeWidget',
             renderer: function (value, meta, record) {
-                return '<i class="material-icons" style="color: #999; font-size: 20px;">close</i>';
+                return '<i class="fa fa-times" style="color: #999; font-size: 20px;"></i>';
             }
         }/*, {
             xtype: 'actioncolumn',
@@ -135,26 +135,26 @@ Ext.define('Ung.view.dashboard.Dashboard', {
         tbar: [{
             itemId: 'addWidgetBtn',
             text: 'Add'.t(),
-            iconCls: 'fa fa-plus-circle fa-lg'
+            iconCls: 'fa fa-plus-circle'
             // menu: Ext.create('Ext.menu.Menu', {
             //     mouseLeaveDelay: 0
             // })
         }, '->', {
             text: 'Import'.t(),
-            iconCls: 'fa fa-download fa-lg'
+            iconCls: 'fa fa-download'
             // handler: 'applyChanges'
         }, {
             text: 'Export'.t(),
-            iconCls: 'fa fa-upload fa-lg'
+            iconCls: 'fa fa-upload'
             //handler: 'applyChanges'
         }],
         bbar: [{
             text: 'Reset'.t(),
-            iconCls: 'fa fa-rotate-left fa-lg',
+            iconCls: 'fa fa-rotate-left',
             handler: 'resetDashboard'
         }, '->', {
             text: 'Apply'.t(),
-            iconCls: 'fa fa-floppy-o fa-lg',
+            iconCls: 'fa fa-floppy-o',
             handler: 'applyChanges'
         }]
     }, {

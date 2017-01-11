@@ -12,16 +12,14 @@ Ext.define('Ung.Application', {
 
     defaultToken : '',
 
-    // mainView: 'Ung.view.main.Main',
+    mainView: 'Ung.view.main.Main',
 
     init: function () {
-        console.log('init');
         console.timeEnd('resources');
         // Ext.get('app-loader').destroy();
     },
 
     launch: function () {
-        console.log('launch');
         var me = this;
         Rpc.rpc = me.rpc;
 
@@ -29,12 +27,14 @@ Ext.define('Ung.Application', {
 
         Ung.util.Metrics.start();
 
+        Ext.get('app-loader').destroy();
+
         Ext.Deferred.parallel([
             Rpc.getDashboardSettings,
             Rpc.getReports,
             Rpc.getUnavailableApps
         ]).then(function (result) {
-            Ext.get('app-loader').destroy();
+            // Ext.get('app-loader').destroy();
             Ung.dashboardSettings = result[0];
             Ext.getStore('widgets').loadData(result[0].widgets.list);
             if (result[1]) {
@@ -43,7 +43,9 @@ Ext.define('Ung.Application', {
             if (result[2]) {
                 Ext.getStore('unavailableApps').loadRawData(result[2].map);
             }
-            me.loadMainView();
+
+            Ext.fireEvent('init');
+            // me.loadMainView();
             //console.log(reports);
             //this.setWidgets();
         }, function (exception) {

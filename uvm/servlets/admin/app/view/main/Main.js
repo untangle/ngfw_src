@@ -12,9 +12,8 @@ Ext.define('Ung.view.main.Main', {
         'Ung.view.main.MainController',
         'Ung.view.main.MainModel',
         'Ung.view.dashboard.Dashboard',
-        'Ung.view.apps.Apps'
-        // 'Ung.view.apps.install.Install',
-        // 'Ung.view.config.Config',
+        'Ung.view.apps.Apps',
+        'Ung.view.config.Config',
         // 'Ung.view.reports.Reports',
         // 'Ung.view.node.Settings',
 
@@ -25,7 +24,6 @@ Ext.define('Ung.view.main.Main', {
 
 
     controller: 'main',
-    itemId: 'main',
     // viewModel: true,
     viewModel: {
         type: 'main'
@@ -43,8 +41,7 @@ Ext.define('Ung.view.main.Main', {
     }, {
         xtype: 'ung.apps'
     }, {
-        // xtype: 'ung.config',
-        // itemId: 'config'
+        xtype: 'ung.config'
     }, {
         // xtype: 'ung.sessions',
         // itemId: 'sessions'

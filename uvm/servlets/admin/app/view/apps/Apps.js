@@ -9,6 +9,9 @@ Ext.define('Ung.view.apps.Apps', {
 
     controller: 'apps',
     viewModel: {
+        data: {
+            onInstalledApps: false
+        },
         stores: {
             apps: {
                 // data: '{appsData}',
@@ -38,9 +41,11 @@ Ext.define('Ung.view.apps.Apps', {
             editable: false,
             multiSelect: false,
             queryMode: 'local',
+            hidden: true,
             bind: {
                 value: '{policyId}',
-                store: '{policies}'
+                store: '{policies}',
+                hidden: '{!onInstalledApps}'
             },
             valueField: 'policyId',
             displayField: 'displayName',
@@ -50,9 +55,22 @@ Ext.define('Ung.view.apps.Apps', {
         }, {
             xtype: 'button',
             html: 'Install Apps'.t(),
+            iconCls: 'fa fa-download',
             hrefTarget: '_self',
+            hidden: true,
             bind: {
-                href: '#apps/{policyId}/install'
+                href: '#apps/{policyId}/install',
+                hidden: '{!onInstalledApps}'
+            }
+        }, {
+            xtype: 'button',
+            html: 'Back to Apps'.t(),
+            iconCls: 'fa fa-arrow-circle-left',
+            hrefTarget: '_self',
+            hidden: true,
+            bind: {
+                href: '#apps/{policyId}',
+                hidden: '{onInstalledApps}'
             }
         }]
     }],
