@@ -9,7 +9,7 @@
 Ext.define('Ung.view.dashboard.DashboardController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.dashboard',
-
+    viewModel: true,
     control: {
         '#': {
             afterrender: 'loadWidgets'
@@ -26,6 +26,12 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         store: {
             '#stats': {
                 datachanged: 'onStatsUpdate'
+            },
+            '#widgets': {
+                // datachanged: 'loadWidgets'
+            },
+            '#reports': {
+                // datachanged: 'loadWidgets'
             }
         }
     },
@@ -93,15 +99,18 @@ Ext.define('Ung.view.dashboard.DashboardController', {
      * Load initial dashboard widgets
      */
     loadWidgets: function() {
+        // console.log('loadWidgets');
         var vm = this.getViewModel(),
             dashboard = this.getView().lookupReference('dashboard'),
             widgets = Ext.getStore('widgets').getRange(),
             i, widget, widgetComponents = [], entry;
-
+        console.log(widgets);
         // refresh the dashboard manager grid if the widgets were affected
         this.getView().lookupReference('dashboardNav').getView().refresh();
 
         dashboard.removeAll(true);
+
+        console.log(Ext.getStore('reports'));
 
         for (i = 0; i < widgets.length; i += 1 ) {
             widget = widgets[i];
@@ -118,8 +127,10 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                 });
             }
             else {
+                console.log(vm.get('reportsEnabled'));
                 if (vm.get('reportsEnabled')) {
                     entry = Ext.getStore('reports').findRecord('uniqueId', widget.get('entryId'));
+                    console.log(entry);
                     if (entry && !Ext.getStore('unavailableApps').first().get(entry.get('category')) && widget.get('enabled')) {
                         dashboard.add({
                             xtype: 'reportwidget',
@@ -198,14 +209,14 @@ Ext.define('Ung.view.dashboard.DashboardController', {
     enableRenderer: function (value, meta, record) {
         var vm = this.getViewModel();
         if (record.get('type') !== 'ReportEntry') {
-            return '<i class="material-icons">' + (value ? 'check_box' : 'check_box_outline_blank') + '</i>';
+            return '<i class="fa ' + (value ? 'fa-check-circle-o' : 'fa-circle-o') + '"></i>';
         }
         var entry = Ext.getStore('reports').findRecord('uniqueId', record.get('entryId'));
 
         if (!entry || Ext.getStore('unavailableApps').first().get(entry.get('category')) || !vm.get('reportsRunning')) {
-            return '<i class="material-icons" style="color: #F00;">info_outline</i>';
+            return '<i class="fa fa-info-circle" style="color: #a91f1f;"></i>';
         }
-        return '<i class="material-icons">' + (value ? 'check_box' : 'check_box_outline_blank') + '</i>';
+        return '<i class="fa ' + (value ? 'fa-check-circle-o' : 'fa-circle-o') + '"></i>';
     },
 
     settingsRenderer: function () {
@@ -220,21 +231,21 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         enabled = record.get('enabled');
 
         if (!value) {
-            return '<span style="font-weight: 600; ' + (!enabled ? 'color: #999;' : '') + '">' + record.get('type') + '</span><br/><span style="font-size: 10px; color: #AAA;">Common</span>';
+            return '<span style="font-weight: 500; ' + (!enabled ? 'color: #999;' : '') + '">' + record.get('type') + '</span><br/><span style="font-size: 10px; color: #777;">Common</span>';
         }
         if (vm.get('reportsInstalled')) {
             entry = Ext.getStore('reports').findRecord('uniqueId', value);
             if (entry) {
                 unavailApp = Ext.getStore('unavailableApps').first().get(entry.get('category'));
-                title = '<span style="font-weight: 600; ' + ((unavailApp || !enabled) ? 'color: #999;' : '') + '">' + (entry.get('readOnly') ? entry.get('title').t() : entry.get('title')) + '</span>';
+                title = '<span style="font-weight: 500; ' + ((unavailApp || !enabled) ? 'color: #999;' : '') + '">' + (entry.get('readOnly') ? entry.get('title').t() : entry.get('title')) + '</span>';
 
                 if (entry.get('timeDataInterval') && entry.get('timeDataInterval') !== 'AUTO') {
-                    title += '<span style="text-transform: lowercase; color: #333; font-weight: 300;"> per ' + entry.get('timeDataInterval') + '</span>';
+                    title += '<span style="text-transform: lowercase; color: #999; font-weight: 300;"> per ' + entry.get('timeDataInterval') + '</span>';
                 }
                 if (unavailApp) {
-                    title += '<br/><span style="font-size: 10px; color: #AAA;">' + entry.get('category') + '</span>';
+                    title += '<br/><span style="font-size: 10px; color: #777;">' + entry.get('category') + '</span>';
                 } else {
-                    title += '<br/><span style="font-size: 10px; color: #AAA;">' + entry.get('category') + '</span>';
+                    title += '<br/><span style="font-size: 10px; color: #777;">' + entry.get('category') + '</span>';
                 }
                 /*
                 if (entry.get('readOnly')) {

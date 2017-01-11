@@ -1,5 +1,6 @@
 Ext.define('Ung.view.main.Main', {
     extend: 'Ext.panel.Panel',
+    itemId: 'main',
     //xtype: 'ung-main',
 
     // plugins: [
@@ -7,23 +8,25 @@ Ext.define('Ung.view.main.Main', {
     // ],
 
     requires: [
-        'Ext.plugin.Viewport',
+        // 'Ext.plugin.Viewport',
         'Ung.view.main.MainController',
         'Ung.view.main.MainModel',
         'Ung.view.dashboard.Dashboard',
-        'Ung.view.apps.Apps',
-        'Ung.view.apps.install.Install',
-        'Ung.view.config.Config',
-        'Ung.view.reports.Reports',
-        'Ung.view.node.Settings',
+        'Ung.view.apps.Apps'
+        // 'Ung.view.apps.install.Install',
+        // 'Ung.view.config.Config',
+        // 'Ung.view.reports.Reports',
+        // 'Ung.view.node.Settings',
 
-        'Ung.view.shd.Sessions',
-        'Ung.view.shd.Hosts',
-        'Ung.view.shd.Devices'
+        // 'Ung.view.shd.Sessions',
+        // 'Ung.view.shd.Hosts',
+        // 'Ung.view.shd.Devices'
     ],
 
 
     controller: 'main',
+    itemId: 'main',
+    // viewModel: true,
     viewModel: {
         type: 'main'
     },
@@ -36,23 +39,21 @@ Ext.define('Ung.view.main.Main', {
     },
 
     items: [{
-        xtype: 'ung.dashboard',
-        itemId: 'dashboard'
+        xtype: 'ung.dashboard'
     }, {
-        xtype: 'ung.apps',
-        itemId: 'apps'
+        xtype: 'ung.apps'
     }, {
-        xtype: 'ung.config',
-        itemId: 'config'
+        // xtype: 'ung.config',
+        // itemId: 'config'
     }, {
-        xtype: 'ung.sessions',
-        itemId: 'sessions'
+        // xtype: 'ung.sessions',
+        // itemId: 'sessions'
     }, {
-        xtype: 'ung.hosts',
-        itemId: 'hosts'
+        // xtype: 'ung.hosts',
+        // itemId: 'hosts'
     }, {
-        xtype: 'ung.devices',
-        itemId: 'devices'
+        // xtype: 'ung.devices',
+        // itemId: 'devices'
     }],
 
     dockedItems: [{

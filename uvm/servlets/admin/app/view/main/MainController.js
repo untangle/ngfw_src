@@ -16,18 +16,18 @@ Ext.define('Ung.view.main.MainController', {
         vm.set('policyId', 1);
     },
 
-    routes: {
-        '': 'onDashboard',
-        'apps': 'onApps',
-        'apps/:policyId': 'onApps',
-        'apps/:policyId/:node': 'onApps',
-        'config': 'onConfig',
-        'config/:configName': 'onConfig',
-        'reports': 'onReports',
-        'sessions': 'onSessions',
-        'hosts': 'onHosts',
-        'devices': 'onDevices'
-    },
+    // routes: {
+    //     '': 'onDashboard',
+    //     'apps': 'onApps',
+    //     'apps/:policyId': 'onApps',
+    //     'apps/:policyId/:node': 'onApps',
+    //     'config': 'onConfig',
+    //     'config/:configName': 'onConfig',
+    //     'reports': 'onReports',
+    //     'sessions': 'onSessions',
+    //     'hosts': 'onHosts',
+    //     'devices': 'onDevices'
+    // },
 
     onBeforeRender: function(view) {
         var vm = view.getViewModel();
@@ -59,9 +59,9 @@ Ext.define('Ung.view.main.MainController', {
         //this.getViewModel().set('activeItem', Ext.util.History.getHash());
     },
 
-    afterRender: function () {
-        this.redirectTo(Ext.util.History.getHash(), true);
-    },
+    // afterRender: function () {
+    //     this.redirectTo(Ext.util.History.getHash(), true);
+    // },
 
     onDashboard: function () {
         console.log('on dashboard');
@@ -80,6 +80,8 @@ Ext.define('Ung.view.main.MainController', {
 
         vm.set('policyId', policyId);
         //}
+        // var view = 'Ung.view.apps.Apps';
+        // var ctrl = Ung.app.getController('Ung.view.apps.AppsController');
 
         if (node) {
             if (node === 'install') {
@@ -89,7 +91,7 @@ Ext.define('Ung.view.main.MainController', {
                 vm.set('activeItem', 'settings');
             }
         } else {
-            vm.set('activeItem', 'apps', true);
+            vm.set('activeItem', 'apps');
         }
     },
 

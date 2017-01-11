@@ -1,0 +1,292 @@
+// @import 'vars';
+
+.apps-title {
+    font-size: 18px;
+    margin: 10px 0 0 30px;
+    color: #777;
+}
+
+.app {
+    float: left;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    border-radius: 3px;
+    padding: 10;
+    background: rgba(0, 0, 0, 0.05);
+    h2 {
+        font-family: $custom-font;
+        font-weight: 700;
+        margin: 0;
+    }
+}
+
+/*app install item*/
+.app-item {
+    display: inline-block;
+    cursor: pointer;
+    position: relative;
+    // float: left;
+    height: 120px;
+    width: 120px;
+    margin: 10px;
+    // border-radius: 50%;
+    font-family: $custom-font;
+    // box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+    // background: #EEE;
+    text-decoration: none;
+    overflow: hidden;
+    text-align: center;
+    // padding: 10px;
+    transition: background .3s cubic-bezier(0.23, 1, 0.32, 1), transform .2s cubic-bezier(0.23, 1, 0.32, 1);
+    i {
+        // font-size: 70px;
+        display: block;
+        position: relative;
+        margin: 20px auto 0 auto;
+        text-align: center;
+        z-index: 10;
+        color: #999;
+        -webkit-font-smoothing: antialiased;
+        -webkit-backface-visibility: hidden;
+    }
+    &:hover {
+        transform: translate3d( 0, 0, 0) scale(1.1);
+        i {
+            color: green;
+            // transform: translate3d( 0, 0, 0) scale(1.2);
+        }
+        // background: #EEE;
+        .app-install {
+            opacity: 1;
+            bottom: 3px;
+        }
+        .app-install i {
+            opacity: 1;
+        }
+    }
+    &.install {
+        &:hover {
+            .app-icon {
+                transform-origin: top;
+                transform: scale(0.9);
+            }
+        }
+    }
+    &.remove {
+        background: rgba(255, 0, 0, 0.32);
+        /*
+        animation: shakeremoval 0.8s infinite;
+        transform-origin: 50% 50%;
+        animation-timing-function: linear;
+        transform: translate3d(0, 0, 0);
+        backface-visibility: hidden;
+        perspective: 1000px;
+        */
+    }
+    &.insert {
+        transform: scale(0)
+    }
+    &.progress {
+        background: #EEE;
+        .app-icon {
+            transform-origin: top;
+            transform: scale(0.9);
+            img {
+                filter: grayscale(100%);
+            }
+        }
+        .spinner {
+            display: block;
+        }
+    }
+    &.installed {
+        background: transparent;
+        box-shadow: none;
+        .app-icon {
+            transform-origin: top;
+            transform: scale(0.9);
+            img {
+                //opacity: 0.7
+            }
+        }
+        .app-name {
+            color: green;
+        }
+        .app-done {
+            opacity: 1;
+        }
+        .app-install {
+            opacity: 0;
+        }
+    }
+    .app-icon {
+        display: block;
+        position: relative;
+        margin: 20px auto 0 auto;
+        text-align: center;
+        transition: all .3s cubic-bezier(0.23, 1, 0.32, 1);
+        z-index: 10;
+    }
+    .app-name {
+        display: block;
+        line-height: 1;
+        text-align: center;
+        margin-top: 5px;
+        color: #4E4C4C;
+        font-weight: 700;
+        font-size: 14px;
+        font-family: $custom-font-condensed;
+    }
+    img {
+        width: 80px;
+        height: 80px;
+        transition: all .3s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+    .app-install, {
+        opacity: 0;
+        color: #67bd4a;
+        position: absolute;
+        bottom: 10px;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-size: 11px;
+        transition: all .3s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+    .app-done {
+        opacity: 0;
+        color: #333;
+        position: absolute;
+        width: 24px;
+        height: 24px;
+        //border-radius: 50%;
+        bottom: 5px;
+        left: 58px;
+        right: 0;
+        text-align: center;
+        font-size: 11px;
+        z-index: 10;
+        transition: all .3s cubic-bezier(0.23, 1, 0.32, 1);
+        //background: #FFF;
+        //box-shadow: 0 0 10px rgba(0, 0, 0, 1);
+        i {
+            color: green;
+            font-size: 24px;
+        }
+    }
+    .app-state {
+        position: absolute;
+        right: 24px;
+        top: 15px;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 1.2;
+        background: #999;
+        z-index: 10;
+        &.running {
+            background: #53b432;
+        }
+        i {
+            color: #FFF;
+            font-size: 14px;
+        }
+    }
+    .spinner {
+        display: none;
+        position: absolute;
+        bottom: 10px;
+        left: 0px;
+        width: 100%;
+        transform: scale(0.7);
+    }
+}
+
+.node-install-item {
+    display: inline-block;
+    cursor: pointer;
+    position: relative;
+    // float: left;
+    height: 120px;
+    width: 280px;
+    margin: 10px 20px;
+    border-radius: 3px;
+    font-family: $custom-font-condensed;
+    // box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+    // background: #EEE;
+    text-decoration: none;
+    overflow: hidden;
+    // text-align: center;
+    padding: 10px 15px 10px 100px;
+    transition: background .3s cubic-bezier(0.23, 1, 0.32, 1);
+    img {
+        position: absolute;
+        left: 10px;
+        top: 10px;
+        transition: opacity .3s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+    h3 {
+        margin: 0;
+        font-size: 14px;
+        color: #555;
+    }
+    p {
+        margin: 3px 0;
+        line-height: 1;
+        font-weight: 400;
+        font-size: 12px;
+        color: #555;
+    }
+    &:hover {
+        h3 {
+            color: #000;
+        }
+        // background: rgba(0, 0, 0, 0.1);
+        img {
+            opacity: 0.1;
+        }
+        i.fa-download {
+            opacity: 1;
+        }
+    }
+
+    i {
+        opacity: 0;
+        position: absolute;
+        top: 35px;
+        left: 32px;
+        color: rgba(0, 0, 0, 0.8);
+        transition: opacity .3s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    .loader {
+        display: none;
+    }
+
+    &.installing {
+        img {
+            opacity: 0.1;
+        }
+        i {
+            opacity: 0;
+        }
+        .loader {
+            display: block;
+        }
+        &:hover i.fa-download {
+            opacity: 0;
+        }
+    }
+
+    &.installed {
+        img {
+            opacity: 0.1;
+        }
+        i.fa-check {
+            opacity: 1;
+        }
+        &:hover i.fa-download {
+            opacity: 0;
+        }
+    }
+}

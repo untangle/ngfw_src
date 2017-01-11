@@ -1,44 +1,27 @@
 // test
 Ext.define('Ung.Application', {
     extend: 'Ext.app.Application',
+    namespace: 'Ung',
+
     autoCreateViewport: false,
     name: 'Ung',
 
     rpc: null,
 
-    requires: [
-        'Ung.rpc.Rpc',
-        'Ung.util.Util',
-        'Ung.util.Metrics',
-        'Ung.view.main.Main',
-        'Ung.overrides.form.field.VTypes'
-    ],
-
-
-    stores: [
-        'Policies',
-        'Metrics',
-        'Stats',
-        'Reports',
-        'Widgets',
-        'Sessions',
-        'Hosts',
-        'Conditions',
-        'Countries',
-        'Categories',
-        'UnavailableApps'
-    ],
+    controllers: ['Global'],
 
     defaultToken : '',
 
     // mainView: 'Ung.view.main.Main',
 
     init: function () {
-
+        console.log('init');
+        console.timeEnd('resources');
+        // Ext.get('app-loader').destroy();
     },
 
     launch: function () {
-
+        console.log('launch');
         var me = this;
         Rpc.rpc = me.rpc;
 

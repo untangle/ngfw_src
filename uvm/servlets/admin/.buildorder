@@ -82,4 +82,5 @@ app/model/Widget.js
 app/store/Widgets.js
 app/model/Session.js
 app/store/Sessions.js
+app/controller/Global.js
 app/Application.js

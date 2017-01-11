@@ -4,7 +4,7 @@
 Ext.define('Ung.view.dashboard.Dashboard', {
     extend: 'Ext.container.Container',
     xtype: 'ung.dashboard',
-
+    itemId: 'dashboard',
     requires: [
         'Ung.view.dashboard.DashboardController',
         'Ung.view.dashboard.Queue',
@@ -43,11 +43,11 @@ Ext.define('Ung.view.dashboard.Dashboard', {
         //border: false,
         // shadow: false,
         animCollapse: false,
-        // collapsed: false,
+        collapsed: true,
         // collapseMode: 'mini',
         titleCollapse: true,
         floatable: false,
-        // cls: 'widget-manager',
+        cls: 'widget-manager',
         split: false,
         xtype: 'grid',
         reference: 'dashboardNav',
@@ -134,22 +134,27 @@ Ext.define('Ung.view.dashboard.Dashboard', {
         },
         tbar: [{
             itemId: 'addWidgetBtn',
-            text: Ung.Util.iconTitle('Add'.t(), 'add_circle-16'),
+            text: 'Add'.t(),
+            iconCls: 'fa fa-plus-circle fa-lg'
             // menu: Ext.create('Ext.menu.Menu', {
             //     mouseLeaveDelay: 0
             // })
         }, '->', {
-            text: Ung.Util.iconTitle('Import'.t(), 'file_download-16'),
+            text: 'Import'.t(),
+            iconCls: 'fa fa-download fa-lg'
             // handler: 'applyChanges'
         }, {
-            text: Ung.Util.iconTitle('Export'.t(), 'file_upload-16')
+            text: 'Export'.t(),
+            iconCls: 'fa fa-upload fa-lg'
             //handler: 'applyChanges'
         }],
         bbar: [{
-            text: Ung.Util.iconTitle('Reset'.t(), 'replay-16'),
+            text: 'Reset'.t(),
+            iconCls: 'fa fa-rotate-left fa-lg',
             handler: 'resetDashboard'
         }, '->', {
-            text: Ung.Util.iconTitle('Apply'.t(), 'save-16'),
+            text: 'Apply'.t(),
+            iconCls: 'fa fa-floppy-o fa-lg',
             handler: 'applyChanges'
         }]
     }, {
@@ -158,7 +163,7 @@ Ext.define('Ung.view.dashboard.Dashboard', {
         reference: 'dashboard',
         cls: 'dashboard',
         padding: 8,
-        // scrollable: true,
+        scrollable: true
         // dockedItems: [{
         //     xtype: 'toolbar',
         //     dock: 'top',
