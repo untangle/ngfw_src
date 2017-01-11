@@ -524,32 +524,32 @@ Ext.define('Ung.view.main.MainController', {
         vm.set('policyId', 1);
     },
 
-    routes: {
-        '': 'onDashboard',
-        'apps': 'onApps',
-        'apps/:policyId': 'onApps',
-        'apps/:policyId/:node': 'onApps',
-        'config': 'onConfig',
-        'config/:configName': 'onConfig',
-        'reports': 'onReports',
-        'sessions': 'onSessions',
-        'hosts': 'onHosts',
-        'devices': 'onDevices'
-    },
+    // routes: {
+    //     '': 'onDashboard',
+    //     'apps': 'onApps',
+    //     'apps/:policyId': 'onApps',
+    //     'apps/:policyId/:node': 'onApps',
+    //     'config': 'onConfig',
+    //     'config/:configName': 'onConfig',
+    //     'reports': 'onReports',
+    //     'sessions': 'onSessions',
+    //     'hosts': 'onHosts',
+    //     'devices': 'onDevices'
+    // },
 
     onBeforeRender: function(view) {
         var vm = view.getViewModel();
 
-        vm.bind('{reportsEnabled}', function(enabled) {
-            if (enabled) {
-                view.down('#main').insert(3, {
-                    xtype: 'ung.reports',
-                    itemId: 'reports'
-                });
-            } else {
-                view.down('#main').remove('reports');
-            }
-        });
+        // vm.bind('{reportsEnabled}', function(enabled) {
+        //     if (enabled) {
+        //         view.down('#main').insert(3, {
+        //             xtype: 'ung.reports',
+        //             itemId: 'reports'
+        //         });
+        //     } else {
+        //         view.down('#main').remove('reports');
+        //     }
+        // });
 
         vm.set('reportsInstalled', rpc.nodeManager.node('untangle-node-reports') !== null);
         if (rpc.nodeManager.node('untangle-node-reports')) {
@@ -567,9 +567,9 @@ Ext.define('Ung.view.main.MainController', {
         //this.getViewModel().set('activeItem', Ext.util.History.getHash());
     },
 
-    afterRender: function () {
-        this.redirectTo(Ext.util.History.getHash(), true);
-    },
+    // afterRender: function () {
+    //     this.redirectTo(Ext.util.History.getHash(), true);
+    // },
 
     onDashboard: function () {
         console.log('on dashboard');
@@ -588,6 +588,8 @@ Ext.define('Ung.view.main.MainController', {
 
         vm.set('policyId', policyId);
         //}
+        // var view = 'Ung.view.apps.Apps';
+        // var ctrl = Ung.app.getController('Ung.view.apps.AppsController');
 
         if (node) {
             if (node === 'install') {
@@ -597,16 +599,23 @@ Ext.define('Ung.view.main.MainController', {
                 vm.set('activeItem', 'settings');
             }
         } else {
-            vm.set('activeItem', 'apps', true);
+            vm.set('activeItem', 'apps');
         }
     },
 
     onConfig: function (configName) {
-        if (!configName) {
-            this.getViewModel().set('activeItem', 'config');
+        this.getViewModel().set('activeItem', 'config');
+        var view = this.getView();
+        this.getViewModel().set('activeItem', 'config');
+        if (configName) {
+            Ext.require('Ung.view.config.network.Network', function () {
+                view.down('#config').add({
+                    xtype: 'ung.config.network'
+                });
+                view.down('#config').setActiveItem(1);
+            });
         } else {
-            console.log('conf settings');
-            this.getViewModel().set('activeItem', 'configsettings');
+            view.down('#config').setActiveItem(0);
         }
     },
 
@@ -618,7 +627,8 @@ Ext.define('Ung.view.main.MainController', {
     // sessions, hosts, devices
 
     onSessions: function () {
-        this.setShd('sessions');
+        // this.setShd('sessions');
+        this.getViewModel().set('activeItem', 'sessions');
     },
 
     onHosts: function () {
@@ -716,7 +726,7 @@ Ext.define('Ung.view.shd.Devices', {
 Ext.define('Ung.view.dashboard.DashboardController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.dashboard',
-
+    viewModel: true,
     control: {
         '#': {
             afterrender: 'loadWidgets'
@@ -733,6 +743,12 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         store: {
             '#stats': {
                 datachanged: 'onStatsUpdate'
+            },
+            '#widgets': {
+                // datachanged: 'loadWidgets'
+            },
+            '#reports': {
+                // datachanged: 'loadWidgets'
             }
         }
     },
@@ -800,15 +816,18 @@ Ext.define('Ung.view.dashboard.DashboardController', {
      * Load initial dashboard widgets
      */
     loadWidgets: function() {
+        // console.log('loadWidgets');
         var vm = this.getViewModel(),
             dashboard = this.getView().lookupReference('dashboard'),
             widgets = Ext.getStore('widgets').getRange(),
             i, widget, widgetComponents = [], entry;
-
+        console.log(widgets);
         // refresh the dashboard manager grid if the widgets were affected
         this.getView().lookupReference('dashboardNav').getView().refresh();
 
         dashboard.removeAll(true);
+
+        console.log(Ext.getStore('reports'));
 
         for (i = 0; i < widgets.length; i += 1 ) {
             widget = widgets[i];
@@ -825,8 +844,10 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                 });
             }
             else {
+                console.log(vm.get('reportsEnabled'));
                 if (vm.get('reportsEnabled')) {
                     entry = Ext.getStore('reports').findRecord('uniqueId', widget.get('entryId'));
+                    console.log(entry);
                     if (entry && !Ext.getStore('unavailableApps').first().get(entry.get('category')) && widget.get('enabled')) {
                         dashboard.add({
                             xtype: 'reportwidget',
@@ -905,14 +926,14 @@ Ext.define('Ung.view.dashboard.DashboardController', {
     enableRenderer: function (value, meta, record) {
         var vm = this.getViewModel();
         if (record.get('type') !== 'ReportEntry') {
-            return '<i class="material-icons">' + (value ? 'check_box' : 'check_box_outline_blank') + '</i>';
+            return '<i class="fa ' + (value ? 'fa-check-circle-o' : 'fa-circle-o') + '"></i>';
         }
         var entry = Ext.getStore('reports').findRecord('uniqueId', record.get('entryId'));
 
         if (!entry || Ext.getStore('unavailableApps').first().get(entry.get('category')) || !vm.get('reportsRunning')) {
-            return '<i class="material-icons" style="color: #F00;">info_outline</i>';
+            return '<i class="fa fa-info-circle" style="color: #a91f1f;"></i>';
         }
-        return '<i class="material-icons">' + (value ? 'check_box' : 'check_box_outline_blank') + '</i>';
+        return '<i class="fa ' + (value ? 'fa-check-circle-o' : 'fa-circle-o') + '"></i>';
     },
 
     settingsRenderer: function () {
@@ -927,21 +948,21 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         enabled = record.get('enabled');
 
         if (!value) {
-            return '<span style="font-weight: 600; ' + (!enabled ? 'color: #999;' : '') + '">' + record.get('type') + '</span><br/><span style="font-size: 10px; color: #AAA;">Common</span>';
+            return '<span style="font-weight: 500; ' + (!enabled ? 'color: #999;' : '') + '">' + record.get('type') + '</span><br/><span style="font-size: 10px; color: #777;">Common</span>';
         }
         if (vm.get('reportsInstalled')) {
             entry = Ext.getStore('reports').findRecord('uniqueId', value);
             if (entry) {
                 unavailApp = Ext.getStore('unavailableApps').first().get(entry.get('category'));
-                title = '<span style="font-weight: 600; ' + ((unavailApp || !enabled) ? 'color: #999;' : '') + '">' + (entry.get('readOnly') ? entry.get('title').t() : entry.get('title')) + '</span>';
+                title = '<span style="font-weight: 500; ' + ((unavailApp || !enabled) ? 'color: #999;' : '') + '">' + (entry.get('readOnly') ? entry.get('title').t() : entry.get('title')) + '</span>';
 
                 if (entry.get('timeDataInterval') && entry.get('timeDataInterval') !== 'AUTO') {
-                    title += '<span style="text-transform: lowercase; color: #333; font-weight: 300;"> per ' + entry.get('timeDataInterval') + '</span>';
+                    title += '<span style="text-transform: lowercase; color: #999; font-weight: 300;"> per ' + entry.get('timeDataInterval') + '</span>';
                 }
                 if (unavailApp) {
-                    title += '<br/><span style="font-size: 10px; color: #AAA;">' + entry.get('category') + '</span>';
+                    title += '<br/><span style="font-size: 10px; color: #777;">' + entry.get('category') + '</span>';
                 } else {
-                    title += '<br/><span style="font-size: 10px; color: #AAA;">' + entry.get('category') + '</span>';
+                    title += '<br/><span style="font-size: 10px; color: #777;">' + entry.get('category') + '</span>';
                 }
                 /*
                 if (entry.get('readOnly')) {
@@ -1866,20 +1887,119 @@ Ext.define('Ung.view.apps.AppsController', {
     alias: 'controller.apps',
 
     control: {
-        '#': {
-            beforeactivate: 'updateNodes'
-        }
+        '#': { activate: 'getPolicies' },
+        '#installedApps': { activate: 'filterInstalled' },
+        '#installableApps': { activate: 'filterAvailable' },
+        // '#installView': { select: 'onInstallNode' }
     },
 
-    listen: {
-        global: {
-            nodestatechange: 'updateNodes'
-        },
-        store: {
-            '#policies': {
-                datachanged: 'updateNodes'
+    nodeDesc: {
+        'untangle-node-web-filter': 'Web Filter scans and categorizes web traffic to monitor and enforce network usage policies.'.t(),
+        'untangle-node-web-monitor': 'Web monitor scans and categorizes web traffic to monitor and enforce network usage policies.'.t(),
+        'untangle-node-virus-blocker': 'Virus Blocker detects and blocks malware before it reaches users desktops or mailboxes.'.t(),
+        'untangle-node-virus-blocker-lite': 'Virus Blocker Lite detects and blocks malware before it reaches users desktops or mailboxes.'.t(),
+        'untangle-node-spam-blocker': 'Spam Blocker detects, blocks, and quarantines spam before it reaches users mailboxes.'.t(),
+        'untangle-node-spam-blocker-lite': 'Spam Blocker Lite detects, blocks, and quarantines spam before it reaches users mailboxes.'.t(),
+        'untangle-node-phish-blocker': 'Phish Blocker detects and blocks phishing emails using signatures.'.t(),
+        'untangle-node-web-cache': 'Web Cache stores and serves web content from local cache for increased speed and reduced bandwidth usage.'.t(),
+        'untangle-node-bandwidth-control': 'Bandwidth Control monitors, manages, and shapes bandwidth usage on the network'.t(),
+        'untangle-casing-ssl-inspector': 'SSL Inspector allows for full decryption of HTTPS and SMTPS so that other applications can process the encrytped streams.'.t(),
+        'untangle-node-application-control': 'Application Control scans sessions and identifies the associated applications allowing each to be flagged and/or blocked.'.t(),
+        'untangle-node-application-control-lite': 'Application Control Lite identifies, logs, and blocks sessions based on the session content using custom signatures.'.t(),
+        'untangle-node-captive-portal': 'Captive Portal allows administrators to require network users to complete a defined process, such as logging in or accepting a network usage policy, before accessing the internet.'.t(),
+        'untangle-node-firewall': 'Firewall is a simple application that flags and blocks sessions based on rules.'.t(),
+        'untangle-node-ad-blocker': 'Ad Blocker blocks advertising content and tracking cookies for scanned web traffic.'.t(),
+        'untangle-node-reports': 'Reports records network events to provide administrators the visibility and data necessary to investigate network activity.'.t(),
+        'untangle-node-policy-manager': 'Policy Manager enables administrators to create different policies and handle different sessions with different policies based on rules.'.t(),
+        'untangle-node-directory-connector': 'Directory Connector allows integration with external directories and services, such as Active Directory, RADIUS, or Google.'.t(),
+        'untangle-node-wan-failover': 'WAN Failover detects WAN outages and re-routes traffic to any other available WANs to maximize network uptime.'.t(),
+        'untangle-node-wan-balancer': 'WAN Balancer spreads network traffic across multiple internet connections for better performance.'.t(),
+        'untangle-node-ipsec-vpn': 'IPsec VPN provides secure network access and tunneling to remote users and sites using IPsec, GRE, L2TP, Xauth, and IKEv2 protocols.'.t(),
+        'untangle-node-openvpn': 'OpenVPN provides secure network access and tunneling to remote users and sites using the OpenVPN protocol.'.t(),
+        'untangle-node-intrusion-prevention': 'Intrusion Prevention blocks scans, detects, and blocks attacks and suspicious traffic using signatures.'.t(),
+        'untangle-node-configuration-backup': 'Configuration Backup automatically creates backups of settings uploads them to My Account and Google Drive.'.t(),
+        'untangle-node-branding-manager': 'The Branding Settings are used to set the logo and contact information that will be seen by users (e.g. reports).'.t(),
+        'untangle-node-live-support': 'Live Support provides on-demand help for any technical issues.'.t()
+    },
+
+    refs: {
+        installedApps: '#installedApps',
+        installableApps: '#installableApps'
+    },
+
+    // listen: {
+    //     global: {
+    //         nodestatechange: 'updateNodes'
+    //     },
+    //     store: {
+    //         '#policies': {
+    //             datachanged: 'updateNodes'
+    //         }
+    //     }
+    // },
+
+    getPolicies: function () {
+        console.log('on activate');
+        var me = this;
+        var vm = this.getViewModel();
+        rpc.nodeManager.getAppsViews(function(result, ex) {
+            console.log(result);
+            var nodes = [];
+            vm.getStore('apps').removeAll();
+
+            Ext.Array.each(result[0].nodeProperties.list, function (node) {
+                nodes.push({
+                    name: node.name,
+                    displayName: node.displayName,
+                    type: node.type,
+                    viewPosition: node.viewPosition,
+                    status: null
+                });
+            });
+
+            Ext.Array.each(result[0].installable.list, function (node) {
+                nodes.push({
+                    name: node.name,
+                    displayName: node.displayName,
+                    type: node.type,
+                    viewPosition: node.viewPosition,
+                    desc: me.nodeDesc[node.name],
+                    status: 'available'
+                });
+            });
+            // Ext.toast('Data loaded');
+            vm.getStore('apps').loadData(nodes);
+        });
+    },
+
+    /**
+     * Based on which view is activated (Apps or Install Apps)
+     * the nodes store is filtered to reflect current applications
+     */
+    filterInstalled: function () {
+        console.log('filter installed');
+        var appsStore = this.getViewModel().getStore('apps');
+
+        appsStore.clearFilter();
+        appsStore.filterBy(function (rec) {
+            return !rec.get('status') || rec.get('status') === 'installing' || rec.get('status') === 'installed';
+        });
+    },
+
+    filterAvailable: function () {
+        var appsStore = this.getViewModel().getStore('apps');
+
+        // initially, after install the nide item is kept on the Install Apps, having status 'installed'
+        // when activating 'Install Apps', the 'installed' status is set as null so that app will not be shown
+        appsStore.each(function (rec) {
+            if (rec.get('status') === 'installed') {
+                rec.set('status', null);
             }
-        }
+        });
+        appsStore.clearFilter();
+        appsStore.filterBy(function (rec) {
+            return Ext.Array.contains(['available', 'installing', 'installed'], rec.get('status'));
+        });
     },
 
     init: function (view) {
@@ -1991,9 +2111,10 @@ Ext.define('Ung.view.apps.AppItem', {
 });
 
 Ext.define('Ung.view.apps.Apps', {
-    extend: 'Ext.container.Container',
+    extend: 'Ext.panel.Panel',
     xtype: 'ung.apps',
-    layout: 'border',
+    itemId: 'apps',
+    layout: 'card',
     requires: [
         'Ung.view.apps.AppsController',
         'Ung.view.apps.AppsModel',
@@ -2001,7 +2122,18 @@ Ext.define('Ung.view.apps.Apps', {
     ],
 
     controller: 'apps',
-    viewModel: 'apps',
+    viewModel: {
+        stores: {
+            apps: {
+                // data: '{appsData}',
+                fields: ['name', 'displayName', 'type', 'status'],
+                sorters: [{
+                    property: 'viewPosition',
+                    direction: 'ASC'
+                }]
+            }
+        }
+    },
 
     config: {
         policy: undefined
@@ -2011,19 +2143,10 @@ Ext.define('Ung.view.apps.Apps', {
         border: false
     },
 
-    items: [{
-        region: 'north',
+    dockedItems: [{
+        xtype: 'toolbar',
+        dock: 'top',
         border: false,
-        height: 44,
-        itemId: 'apps-topnav',
-        bodyStyle: {
-            background: '#555',
-            padding: '0 5px'
-        },
-        layout: {
-            type: 'hbox',
-            align: 'middle'
-        },
         items: [{
             xtype: 'combobox',
             editable: false,
@@ -2040,97 +2163,188 @@ Ext.define('Ung.view.apps.Apps', {
             }
         }, {
             xtype: 'button',
-            baseCls: 'heading-btn',
-            html: Ung.Util.iconTitle('Install Apps'.t(), 'file_download-16'),
+            html: 'Install Apps'.t(),
             hrefTarget: '_self',
             bind: {
                 href: '#apps/{policyId}/install'
             }
-        }, {
-            xtype: 'component',
-            flex: 1
-        }, {
-            xtype: 'button',
-            baseCls: 'heading-btn',
-            html: 'Sessions'.t(),
-            href: '#sessions',
-            hrefTarget: '_self'
-        }, {
-            xtype: 'button',
-            baseCls: 'heading-btn',
-            html: 'Hosts'.t(),
-            href: '#hosts',
-            hrefTarget: '_self'
-        }, {
-            xtype: 'button',
-            baseCls: 'heading-btn',
-            html: 'Devices'.t(),
-            href: '#devices',
-            hrefTarget: '_self'
-        }]
-    }, {
-        region: 'center',
-        itemId: 'apps-list',
-        border: false,
-        scrollable: true,
-        bodyStyle: {
-            background: 'transparent'
-        },
-        items: [{
-            xtype: 'dataview',
-            itemId: 'filters',
-            margin: 10,
-            // tpl: '<tpl for="."><div>{displayName}</div></tpl>',
-
-            tpl: '<tpl for=".">' +
-                    '<tpl if="type == \'FILTER\'">' +
-                        '<a class="app-item" href="#apps/{policyId}/{name}">' +
-                            '<span class="app-icon"><img src="' + resourcesBaseHref + '/skins/modern-rack/images/admin/apps/{name}_80x80.png" width=80 height=80/>' +
-                            '<span class="app-name">{displayName}</span>' +
-                            '</span>' +
-                            '<span class="app-state {state}"><i class="material-icons">power_settings_new</i></span>' +
-                        '</a>' +
-                    '</tpl>' +
-                '</tpl>',
-            itemSelector: 'a',
-            bind: {
-                store: '{nodesStore}'
-            },
-            style: {
-                display: 'inline-block'
-            }
-        }, {
-            xtype: 'component',
-            cls: 'apps-separator',
-            html: 'Service Apps'.t()
-        }, {
-            xtype: 'dataview',
-            margin: 10,
-            // tpl: '<tpl for="."><div>{displayName}</div></tpl>',
-
-            tpl: '<tpl for=".">' +
-                    '<tpl if="type == \'SERVICE\'">' +
-                        '<a class="app-item" href="#apps/{policyId}/{name}">' +
-                            '<span class="app-icon"><img src="' + resourcesBaseHref + '/skins/modern-rack/images/admin/apps/{name}_80x80.png" width=80 height=80/>' +
-                            '<span class="app-name">{displayName}</span>' +
-                            '</span>' +
-                            '<tpl if="hasPowerButton"><span class="app-state {state}"><i class="material-icons">power_settings_new</i></span></tpl>' +
-                        '</a>' +
-                    '</tpl>' +
-                '</tpl>',
-            itemSelector: 'a',
-            bind: {
-                store: '{nodesStore}'
-            },
-            style: {
-                display: 'inline-block'
-            }
         }]
     }],
-    listeners: {
-        //beforeRender: 'onBeforeRender'
-        //onPolicyChange: 'onPolicyChange'
-    }
+
+    items: [{
+        xtype: 'dataview',
+        itemId: 'installedApps',
+        bind: '{apps}',
+        tpl: '<tpl for=".">' +
+                '<tpl if="type === \'FILTER\'">' +
+                '<a href="#config" class="app-item">' +
+                '<img src="' + resourcesBaseHref + '/skins/modern-rack/images/admin/apps/{name}_80x80.png" width=80 height=80/>' +
+                '<span class="app-name">{displayName}</span>' +
+                '</a>' +
+                '</tpl>' +
+            '</tpl>' +
+            '<p class="apps-title">' + 'Service Apps'.t() + '</p>' +
+            '<tpl for=".">' +
+                '<tpl if="type === \'SERVICE\'">' +
+                '<a href="#config" class="app-item">' +
+                '<img src="' + resourcesBaseHref + '/skins/modern-rack/images/admin/apps/{name}_80x80.png" width=80 height=80/>' +
+                '<span class="app-name">{displayName}</span>' +
+                '</a>' +
+                '</tpl>' +
+            '</tpl>',
+        itemSelector: 'a'
+    }, {
+        xtype: 'dataview',
+        itemId: 'installableApps',
+        bind: {
+            store: '{apps}'
+        },
+        tpl: '<p class="apps-title">' + 'Apps'.t() + '</p>' +'<tpl for=".">' +
+            '<tpl if="type === \'FILTER\'">' +
+                '<div class="node-install-item {status}">' +
+                '<img src="' + resourcesBaseHref + '/skins/modern-rack/images/admin/apps/{name}_80x80.png" width=80 height=80/>' +
+                '<i class="fa fa-download fa-3x"></i>' +
+                '<i class="fa fa-check fa-3x"></i>' +
+                '<span class="loader">Loading...</span>' +
+                '<h3>{displayName}</h3>' + '<p>{desc}</p>' +
+                '</div>' +
+                '</tpl>' +
+            '</tpl>' +
+            '<p class="apps-title">' + 'Service Apps'.t() + '</p>' +
+            '<tpl for=".">' +
+                '<tpl if="type === \'SERVICE\'">' +
+                '<div class="node-install-item {status}">' +
+                '<img src="' + resourcesBaseHref + '/skins/modern-rack/images/admin/apps/{name}_80x80.png" width=80 height=80/>' +
+                '<i class="fa fa-download fa-3x"></i>' +
+                '<i class="fa fa-check fa-3x"></i>' +
+                '<span class="loader">Loading...</span>' +
+                '<h3>{displayName}</h3>' + '<p>{desc}</p>' +
+                '</div>' +
+                '</tpl>' +
+            '</tpl>',
+        itemSelector: 'div'
+    }]
+
+    // items: [{
+    //     region: 'north',
+    //     border: false,
+    //     height: 44,
+    //     itemId: 'apps-topnav',
+    //     bodyStyle: {
+    //         background: '#555',
+    //         padding: '0 5px'
+    //     },
+    //     layout: {
+    //         type: 'hbox',
+    //         align: 'middle'
+    //     },
+    //     items: [{
+    //         xtype: 'combobox',
+    //         editable: false,
+    //         multiSelect: false,
+    //         queryMode: 'local',
+    //         bind: {
+    //             value: '{policyId}',
+    //             store: '{policies}'
+    //         },
+    //         valueField: 'policyId',
+    //         displayField: 'displayName',
+    //         listeners: {
+    //             change: 'setPolicy'
+    //         }
+    //     }, {
+    //         xtype: 'button',
+    //         baseCls: 'heading-btn',
+    //         html: Ung.Util.iconTitle('Install Apps'.t(), 'file_download-16'),
+    //         hrefTarget: '_self',
+    //         bind: {
+    //             href: '#apps/{policyId}/install'
+    //         }
+    //     }, {
+    //         xtype: 'component',
+    //         flex: 1
+    //     }, {
+    //         xtype: 'button',
+    //         baseCls: 'heading-btn',
+    //         html: 'Sessions'.t(),
+    //         href: '#sessions',
+    //         hrefTarget: '_self'
+    //     }, {
+    //         xtype: 'button',
+    //         baseCls: 'heading-btn',
+    //         html: 'Hosts'.t(),
+    //         href: '#hosts',
+    //         hrefTarget: '_self'
+    //     }, {
+    //         xtype: 'button',
+    //         baseCls: 'heading-btn',
+    //         html: 'Devices'.t(),
+    //         href: '#devices',
+    //         hrefTarget: '_self'
+    //     }]
+    // }, {
+    //     region: 'center',
+    //     itemId: 'apps-list',
+    //     border: false,
+    //     scrollable: true,
+    //     bodyStyle: {
+    //         background: 'transparent'
+    //     },
+    //     items: [{
+    //         xtype: 'dataview',
+    //         itemId: 'filters',
+    //         margin: 10,
+    //         // tpl: '<tpl for="."><div>{displayName}</div></tpl>',
+
+    //         tpl: '<tpl for=".">' +
+    //                 '<tpl if="type == \'FILTER\'">' +
+    //                     '<a class="app-item" href="#apps/{policyId}/{name}">' +
+    //                         '<span class="app-icon"><img src="' + resourcesBaseHref + '/skins/modern-rack/images/admin/apps/{name}_80x80.png" width=80 height=80/>' +
+    //                         '<span class="app-name">{displayName}</span>' +
+    //                         '</span>' +
+    //                         '<span class="app-state {state}"><i class="material-icons">power_settings_new</i></span>' +
+    //                     '</a>' +
+    //                 '</tpl>' +
+    //             '</tpl>',
+    //         itemSelector: 'a',
+    //         bind: {
+    //             store: '{nodesStore}'
+    //         },
+    //         style: {
+    //             display: 'inline-block'
+    //         }
+    //     }, {
+    //         xtype: 'component',
+    //         cls: 'apps-separator',
+    //         html: 'Service Apps'.t()
+    //     }, {
+    //         xtype: 'dataview',
+    //         margin: 10,
+    //         // tpl: '<tpl for="."><div>{displayName}</div></tpl>',
+
+    //         tpl: '<tpl for=".">' +
+    //                 '<tpl if="type == \'SERVICE\'">' +
+    //                     '<a class="app-item" href="#apps/{policyId}/{name}">' +
+    //                         '<span class="app-icon"><img src="' + resourcesBaseHref + '/skins/modern-rack/images/admin/apps/{name}_80x80.png" width=80 height=80/>' +
+    //                         '<span class="app-name">{displayName}</span>' +
+    //                         '</span>' +
+    //                         '<tpl if="hasPowerButton"><span class="app-state {state}"><i class="material-icons">power_settings_new</i></span></tpl>' +
+    //                     '</a>' +
+    //                 '</tpl>' +
+    //             '</tpl>',
+    //         itemSelector: 'a',
+    //         bind: {
+    //             store: '{nodesStore}'
+    //         },
+    //         style: {
+    //             display: 'inline-block'
+    //         }
+    //     }]
+    // }],
+    // listeners: {
+    //     //beforeRender: 'onBeforeRender'
+    //     //onPolicyChange: 'onPolicyChange'
+    // }
 });
 Ext.define('Ung.view.apps.install.InstallController', {
     extend: 'Ext.app.ViewController',
@@ -2466,6 +2680,8 @@ Ext.define('Ung.view.config.Config', {
         border: false
     },
 
+    layout: 'card',
+
     items: [{
         border: false,
         scrollable: true,
@@ -2499,7 +2715,7 @@ Ext.define('Ung.view.config.Config', {
         }]
     }],
     listeners: {
-        beforerender: 'onBeforeRender'
+        afterrender: 'onBeforeRender'
         //onPolicyChange: 'onPolicyChange'
     }
 });
@@ -4384,7 +4600,7 @@ Ext.define('Ung.view.shd.HostsController', {
     },
 
     onBeforeRenderHostsGrid: function (grid) {
-        this.getHosts();
+        // this.getHosts();
     },
 
     getHosts: function () {
@@ -6798,7 +7014,7 @@ Ext.define('Ung.widget.Report', {
 Ext.define('Ung.view.dashboard.Dashboard', {
     extend: 'Ext.container.Container',
     xtype: 'ung.dashboard',
-
+    itemId: 'dashboard',
     requires: [
         'Ung.view.dashboard.DashboardController',
         'Ung.view.dashboard.Queue',
@@ -6827,218 +7043,146 @@ Ext.define('Ung.view.dashboard.Dashboard', {
     defaults: {
         border: false
     },
+
     items: [{
-        region: 'north',
-        weight: 20,
-        border: false,
-        height: 44,
-        itemId: 'apps-topnav',
-        bodyStyle: {
-            background: '#555',
-            padding: '0 5px'
-        },
-        layout: {
-            type: 'hbox',
-            align: 'middle'
-        },
-        defaults: {
-            xtype: 'button',
-            baseCls: 'heading-btn'
-        },
-        items: [{
-            html: Ung.Util.iconTitle('Manage Widgets'.t(), 'settings-16'),
-            handler: 'managerHandler',
-            bind: {
-                hidden: '{managerOpen}'
-            }
-        }, {
-            xtype: 'component',
-            flex: 1
-        }, {
-            html: 'Sessions'.t(),
-            href: '#sessions',
-            hrefTarget: '_self'
-        }, {
-            html: 'Hosts'.t(),
-            href: '#hosts',
-            hrefTarget: '_self'
-        }, {
-            html: 'Devices'.t(),
-            href: '#devices',
-            hrefTarget: '_self'
-        }]
-    }, {
         region: 'west',
-        weight: 30,
+        title: 'Manage Widgets'.t(),
+        // weight: 30,
+        width: 300,
         collapsible: true,
-        layout: {
-            type: 'vbox',
-            align: 'stretch'
-        },
         //border: false,
-        header: false,
-        shadow: false,
+        // shadow: false,
         animCollapse: false,
         collapsed: true,
-        collapseMode: 'mini',
-        bind: {
-            collapsed: '{!managerOpen}'
-        },
-        //titleCollapse: true,
+        // collapseMode: 'mini',
+        titleCollapse: true,
         floatable: false,
         cls: 'widget-manager',
-        split: {
-            size: 0
+        split: false,
+        xtype: 'grid',
+        reference: 'dashboardNav',
+        // forceFit: true,
+        hideHeaders: true,
+        // disableSelection: true,
+        // trackMouseOver: false,
+
+        store: 'widgets',
+
+        bodyStyle: {
+            border: 0
         },
-        items: [{
-            xtype: 'container',
-            cls: 'heading',
-            height: 44,
-            border: false,
-            layout: {
-                type: 'hbox',
-                align: 'stretch',
-                pack: 'center'
-            },
-            items: [{
-                xtype: 'component',
-                flex: 1,
-                padding: 10,
-                html: 'Manage Widgets'.t()
-            }, {
-                xtype: 'button',
-                width: 44,
-                baseCls: 'manager-close-btn',
-                html: '<i class="material-icons">close</i>',
-                handler: 'managerHandler'
-            }]
-        }, {
-            xtype: 'grid',
-            reference: 'dashboardNav',
-            forceFit: true,
-            flex: 1,
-            width: 300,
-            border: false,
-            header: false,
-            hideHeaders: true,
-            // disableSelection: true,
-            // trackMouseOver: false,
-
-            store: 'widgets',
-
-            bodyStyle: {
-                border: 0
-            },
-            viewConfig: {
-                plugins: {
-                    ptype: 'gridviewdragdrop',
-                    dragText: 'Drag and drop to reorganize'.t(),
-                    dragZone: {
-                        onBeforeDrag: function (data, e) {
-                            return Ext.get(e.target).hasCls('drag-handle');
-                        }
+        viewConfig: {
+            plugins: {
+                ptype: 'gridviewdragdrop',
+                dragText: 'Drag and drop to reorganize'.t(),
+                dragZone: {
+                    onBeforeDrag: function (data, e) {
+                        return Ext.get(e.target).hasCls('drag-handle');
                     }
-                },
-                stripeRows: false,
-                getRowClass: function (record) {
-                    return !record.get('enabled') ? 'disabled' : '';
-                },
-                listeners: {
-                    drop: 'onDrop'
                 }
             },
-            columns: [{
-                width: 14,
-                align: 'center',
-                sortable: false,
-                hideable: false,
-                resizable: false,
-                menuDisabled: true,
-                tdCls: 'drag-handle'
-            }, {
-                width: 30,
-                align: 'center',
-                sortable: false,
-                hideable: false,
-                resizable: false,
-                menuDisabled: true,
-                //handler: 'toggleWidgetEnabled',
-                dataIndex: 'enabled',
-                renderer: 'enableRenderer'
-            }, {
-                dataIndex: 'entryId',
-                renderer: 'widgetTitleRenderer'
-            }, {
-                xtype: 'actioncolumn',
-                width: 30,
-                align: 'center',
-                sortable: false,
-                hideable: false,
-                resizable: false,
-                menuDisabled: true,
-                handler: 'removeWidget',
-                renderer: function (value, meta, record) {
-                    return '<i class="material-icons" style="color: #999; font-size: 20px;">close</i>';
-                }
-            }/*, {
-                xtype: 'actioncolumn',
-                align: 'center',
-                width: 25,
-                sortable: false,
-                hideable: false,
-                resizable: false,
-                menuDisabled: true,
-                renderer: function (value, meta, record) {
-                    if (record.get('type') !== 'ReportEntry') {
-                        return '';
-                    }
-                    return '<i style="font-size: 16px; color: #777; padding-top: 4px;" class="material-icons">settings</i>';
-                }
-            }*/],
+            stripeRows: false,
+            getRowClass: function (record) {
+                return !record.get('enabled') ? 'disabled' : '';
+            },
             listeners: {
-                itemmouseleave : 'onItemLeave',
-                cellclick: 'onItemClick'
-            },
-            tbar: [{
-                itemId: 'addWidgetBtn',
-                text: Ung.Util.iconTitle('Add'.t(), 'add_circle-16'),
-                // menu: Ext.create('Ext.menu.Menu', {
-                //     mouseLeaveDelay: 0
-                // })
-            }, '->', {
-                text: Ung.Util.iconTitle('Import'.t(), 'file_download-16'),
-                // handler: 'applyChanges'
-            }, {
-                text: Ung.Util.iconTitle('Export'.t(), 'file_upload-16')
-                //handler: 'applyChanges'
-            }],
-            bbar: [{
-                text: Ung.Util.iconTitle('Reset'.t(), 'replay-16'),
-                handler: 'resetDashboard'
-            }, '->', {
-                text: Ung.Util.iconTitle('Apply'.t(), 'save-16'),
-                handler: 'applyChanges'
-            }]
-        }, /*{
-            xtype: 'component',
-            html: '<table>' +
-                    '<tr><td style="text-align: right;"><i class="material-icons" style="color: #999; font-size: 16px; vertical-align: middle;">info</i></td><td>' + 'drag widgets to sort them'.t() + '</td></tr>' +
-                    '</table>',
-            style: {
-                color: '#555',
-                fontSize: '11px',
-                background: '#efefef'
-            },
-            padding: 5,
-            border: false
-        }*/]
+                drop: 'onDrop'
+            }
+        },
+        columns: [{
+            width: 14,
+            align: 'center',
+            sortable: false,
+            hideable: false,
+            resizable: false,
+            menuDisabled: true,
+            tdCls: 'drag-handle'
+        }, {
+            width: 30,
+            align: 'center',
+            sortable: false,
+            hideable: false,
+            resizable: false,
+            menuDisabled: true,
+            //handler: 'toggleWidgetEnabled',
+            dataIndex: 'enabled',
+            renderer: 'enableRenderer'
+        }, {
+            dataIndex: 'entryId',
+            renderer: 'widgetTitleRenderer',
+            flex: 1
+        }, {
+            xtype: 'actioncolumn',
+            width: 30,
+            align: 'center',
+            sortable: false,
+            hideable: false,
+            resizable: false,
+            menuDisabled: true,
+            handler: 'removeWidget',
+            renderer: function (value, meta, record) {
+                return '<i class="material-icons" style="color: #999; font-size: 20px;">close</i>';
+            }
+        }/*, {
+            xtype: 'actioncolumn',
+            align: 'center',
+            width: 25,
+            sortable: false,
+            hideable: false,
+            resizable: false,
+            menuDisabled: true,
+            renderer: function (value, meta, record) {
+                if (record.get('type') !== 'ReportEntry') {
+                    return '';
+                }
+                return '<i style="font-size: 16px; color: #777; padding-top: 4px;" class="material-icons">settings</i>';
+            }
+        }*/],
+        listeners: {
+            itemmouseleave : 'onItemLeave',
+            cellclick: 'onItemClick'
+        },
+        tbar: [{
+            itemId: 'addWidgetBtn',
+            text: 'Add'.t(),
+            iconCls: 'fa fa-plus-circle fa-lg'
+            // menu: Ext.create('Ext.menu.Menu', {
+            //     mouseLeaveDelay: 0
+            // })
+        }, '->', {
+            text: 'Import'.t(),
+            iconCls: 'fa fa-download fa-lg'
+            // handler: 'applyChanges'
+        }, {
+            text: 'Export'.t(),
+            iconCls: 'fa fa-upload fa-lg'
+            //handler: 'applyChanges'
+        }],
+        bbar: [{
+            text: 'Reset'.t(),
+            iconCls: 'fa fa-rotate-left fa-lg',
+            handler: 'resetDashboard'
+        }, '->', {
+            text: 'Apply'.t(),
+            iconCls: 'fa fa-floppy-o fa-lg',
+            handler: 'applyChanges'
+        }]
     }, {
         xtype: 'container',
         region: 'center',
         reference: 'dashboard',
-        baseCls: 'dashboard',
+        cls: 'dashboard',
         padding: 8,
         scrollable: true
+        // dockedItems: [{
+        //     xtype: 'toolbar',
+        //     dock: 'top',
+        //     border: false,
+        //     items: [{
+        //         xtype: 'button',
+        //         text: 'Manage Widgets'.t()
+        //     }]
+        // }]
     }],
     listeners: {
         //afterrender: 'onAfterRender',
@@ -8294,185 +8438,239 @@ Ext.define('Ung.view.node.Settings', {
     }]
 });
 Ext.define('Ung.view.main.Main', {
-    extend: 'Ext.container.Viewport',
+    extend: 'Ext.panel.Panel',
     //xtype: 'ung-main',
 
-    plugins: [
-        'viewport'
-    ],
+    // plugins: [
+    //     'viewport'
+    // ],
 
     requires: [
-        'Ext.plugin.Viewport',
+        // 'Ext.plugin.Viewport',
         'Ung.view.main.MainController',
         'Ung.view.main.MainModel',
         'Ung.view.dashboard.Dashboard',
         'Ung.view.apps.Apps',
-        'Ung.view.apps.install.Install',
-        'Ung.view.config.Config',
-        'Ung.view.reports.Reports',
-        'Ung.view.node.Settings',
+        // 'Ung.view.apps.install.Install',
+        // 'Ung.view.config.Config',
+        // 'Ung.view.reports.Reports',
+        // 'Ung.view.node.Settings',
 
-        'Ung.view.shd.Sessions',
-        'Ung.view.shd.Hosts',
-        'Ung.view.shd.Devices'
+        // 'Ung.view.shd.Sessions',
+        // 'Ung.view.shd.Hosts',
+        // 'Ung.view.shd.Devices'
     ],
 
 
     controller: 'main',
+    itemId: 'main',
+    // viewModel: true,
     viewModel: {
         type: 'main'
     },
 
-    layout: 'border',
+    layout: 'card',
     border: false,
 
+    bind: {
+        activeItem: '{activeItem}'
+    },
+
     items: [{
-        region: 'north',
-        layout: { type: 'hbox', align: 'middle' },
-        border: false,
-        height: 66,
-        ui: 'navigation',
-        items: [{
-            xtype: 'container',
-            layout: { type: 'hbox', align: 'middle' },
-            defaults: {
-                xtype: 'button',
-                enableToggle: true,
-                baseCls: 'nav-item',
-                height: 30,
-                hrefTarget: '_self'
-            },
-            items: [{
-                enableToggle: false,
-                html: '<img src="' + resourcesBaseHref + '/images/BrandingLogo.png" style="height: 40px;"/>',
-                width: 100,
-                height: 40,
-                href: '#'
-            }, {
-                html: Ung.Util.iconTitle('Dashboard'.t(), 'home-16'),
-                href: '#',
-                bind: {
-                    pressed: '{isDashboard}'
-                }
-            }, {
-                html: Ung.Util.iconTitle('Apps'.t(), 'apps-16'),
-                bind: {
-                    href: '#apps/{policyId}',
-                    pressed: '{isApps}'
-                }
-            }, {
-                html: Ung.Util.iconTitle('Config'.t(), 'tune-16'),
-                href: '#config',
-                bind: {
-                    pressed: '{isConfig}'
-                }
-            }, {
-                html: Ung.Util.iconTitle('Reports'.t(), 'show_chart-16'),
-                href: '#reports',
-                bind: {
-                    //html: '{reportsEnabled}',
-                    hidden: '{!reportsEnabled}',
-                    pressed: '{isReports}'
-                }
-            }]
-        }]
+        xtype: 'ung.dashboard'
     }, {
-        xtype: 'container',
-        region: 'center',
-        layout: 'card',
-        itemId: 'main',
+        xtype: 'ung.apps'
+    }, {
+        // xtype: 'ung.config',
+        // itemId: 'config'
+    }, {
+        // xtype: 'ung.sessions',
+        // itemId: 'sessions'
+    }, {
+        // xtype: 'ung.hosts',
+        // itemId: 'hosts'
+    }, {
+        // xtype: 'ung.devices',
+        // itemId: 'devices'
+    }],
+
+    dockedItems: [{
+        xtype: 'toolbar',
+        ui: 'navigation',
+        dock: 'top',
         border: false,
-        bind: {
-            activeItem: '{activeItem}'
-        },
-        items: [{
-            xtype: 'ung.dashboard',
-            itemId: 'dashboard'
-        },
-        {
-            xtype: 'ung.apps',
-            itemId: 'apps'
-        }, {
-            xtype: 'ung.config',
-            itemId: 'config'
-        }, {
-            xtype: 'ung.configsettings',
-            itemId: 'configsettings'
-        }, {
-            xtype: 'ung.appsinstall',
-            itemId: 'appsinstall'
-        }, {
-            xtype: 'ung.nodesettings',
-            itemId: 'settings'
-        },
-        {
-            layout: 'border',
-            itemId: 'shd', // sessions hosts devices
+        defaults: {
+            xtype: 'button',
             border: false,
-            items: [{
-                region: 'north',
-                weight: 20,
-                border: false,
-                height: 44,
-                bodyStyle: {
-                    background: '#555',
-                    padding: '0 5px'
-                },
-                layout: {
-                    type: 'hbox',
-                    align: 'middle'
-                },
-                defaults: {
-                    xtype: 'button',
-                    enableToggle: true,
-                    baseCls: 'heading-btn',
-                    hrefTarget: '_self'
-                },
-                items: [{
-                    html: Ung.Util.iconTitle('Back to Dashboard', 'keyboard_arrow_left-16'),
-                    enableToggle: false,
-                    href: '#',
-                    hrefTarget: '_self'
-                }, {
-                    xtype: 'component',
-                    flex: 1
-                }, {
-                    html: 'Sessions'.t(),
-                    href: '#sessions',
-                    bind: {
-                        pressed: '{isSessions}'
-                    }
-                }, {
-                    html: 'Hosts'.t(),
-                    href: '#hosts',
-                    bind: {
-                        pressed: '{isHosts}'
-                    }
-                }, {
-                    html: 'Devices'.t(),
-                    href: '#devices',
-                    bind: {
-                        pressed: '{isDevices}'
-                    }
-                }]
-            }, {
-                region: 'center',
-                layout: 'card',
-                itemId: 'shdcenter',
-                items: [{
-                    xtype: 'ung.sessions',
-                    itemId: 'sessions'
-                }, {
-                    xtype: 'ung.hosts',
-                    itemId: 'hosts'
-                }, {
-                    xtype: 'ung.devices',
-                    itemId: 'devices'
-                }]
-            }]
-        }
+            enableToggle: true,
+            iconAlign: 'top',
+            hrefTarget: '_self'
+        },
+        items: [
+            { html: '<img src="' + resourcesBaseHref + '/images/BrandingLogo.png" style="height: 40px;"/>', cls: 'logo' },
+            { text: 'Dashboard'.t(), iconCls: 'fa fa-home', cls: 'upper', href: '#', bind: { pressed: '{isDashboard}' } },
+            { text: 'Apps'.t(), iconCls: 'fa fa-th', cls: 'upper', bind: { href: '#apps/{policyId}', pressed: '{isApps}' } },
+            { text: 'Config'.t(), iconCls: 'fa fa-cog', cls: 'upper', href: '#config', bind: { pressed: '{isConfig}' } },
+            { text: 'Reports'.t(), iconCls: 'fa fa-line-chart', cls: 'upper' },
+            '->',
+            { text: 'Sessions'.t(), iconCls: 'fa fa-list', href: '#sessions' },
+            { text: 'Hosts'.t(), iconCls: 'fa fa-list' },
+            { text: 'Devices'.t(), iconCls: 'fa fa-laptop' },
+            '-',
+            { text: 'Help'.t(), iconCls: 'fa fa-question-circle' },
+            { text: 'Account'.t(), iconCls: 'fa fa-user-circle' }
         ]
     }]
+
+
+    // items: [{
+    //     region: 'north',
+    //     layout: { type: 'hbox', align: 'middle' },
+    //     border: false,
+    //     height: 66,
+    //     // ui: 'navigation',
+    //     items: [{
+    //         xtype: 'container',
+    //         layout: { type: 'hbox', align: 'middle' },
+    //         defaults: {
+    //             xtype: 'button',
+    //             enableToggle: true,
+    //             baseCls: 'nav-item',
+    //             height: 30,
+    //             hrefTarget: '_self'
+    //         },
+    //         items: [{
+    //             enableToggle: false,
+    //             html: '<img src="' + resourcesBaseHref + '/images/BrandingLogo.png" style="height: 40px;"/>',
+    //             width: 100,
+    //             height: 40,
+    //             href: '#'
+    //         }, {
+    //             text: 'Dashboard',
+    //             iconCls: 'fa fa-home',
+    //             href: '#',
+    //             bind: {
+    //                 pressed: '{isDashboard}'
+    //             }
+    //         }, {
+    //             html: Ung.Util.iconTitle('Apps'.t(), 'apps-16'),
+    //             bind: {
+    //                 href: '#apps/{policyId}',
+    //                 pressed: '{isApps}'
+    //             }
+    //         }, {
+    //             html: Ung.Util.iconTitle('Config'.t(), 'tune-16'),
+    //             href: '#config',
+    //             bind: {
+    //                 pressed: '{isConfig}'
+    //             }
+    //         }, {
+    //             html: Ung.Util.iconTitle('Reports'.t(), 'show_chart-16'),
+    //             href: '#reports',
+    //             bind: {
+    //                 //html: '{reportsEnabled}',
+    //                 hidden: '{!reportsEnabled}',
+    //                 pressed: '{isReports}'
+    //             }
+    //         }]
+    //     }]
+    // }, {
+    //     xtype: 'container',
+    //     region: 'center',
+    //     layout: 'card',
+    //     itemId: 'main',
+    //     border: false,
+    //     bind: {
+    //         activeItem: '{activeItem}'
+    //     },
+    //     items: [{
+    //         xtype: 'ung.dashboard',
+    //         itemId: 'dashboard'
+    //     },
+    //     {
+    //         xtype: 'ung.apps',
+    //         itemId: 'apps'
+    //     }, {
+    //         xtype: 'ung.config',
+    //         itemId: 'config'
+    //     }, {
+    //         xtype: 'ung.configsettings',
+    //         itemId: 'configsettings'
+    //     }, {
+    //         xtype: 'ung.appsinstall',
+    //         itemId: 'appsinstall'
+    //     }, {
+    //         xtype: 'ung.nodesettings',
+    //         itemId: 'settings'
+    //     },
+    //     {
+    //         layout: 'border',
+    //         itemId: 'shd', // sessions hosts devices
+    //         border: false,
+    //         items: [{
+    //             region: 'north',
+    //             weight: 20,
+    //             border: false,
+    //             height: 44,
+    //             bodyStyle: {
+    //                 background: '#555',
+    //                 padding: '0 5px'
+    //             },
+    //             layout: {
+    //                 type: 'hbox',
+    //                 align: 'middle'
+    //             },
+    //             defaults: {
+    //                 xtype: 'button',
+    //                 enableToggle: true,
+    //                 baseCls: 'heading-btn',
+    //                 hrefTarget: '_self'
+    //             },
+    //             items: [{
+    //                 html: Ung.Util.iconTitle('Back to Dashboard', 'keyboard_arrow_left-16'),
+    //                 enableToggle: false,
+    //                 href: '#',
+    //                 hrefTarget: '_self'
+    //             }, {
+    //                 xtype: 'component',
+    //                 flex: 1
+    //             }, {
+    //                 html: 'Sessions'.t(),
+    //                 href: '#sessions',
+    //                 bind: {
+    //                     pressed: '{isSessions}'
+    //                 }
+    //             }, {
+    //                 html: 'Hosts'.t(),
+    //                 href: '#hosts',
+    //                 bind: {
+    //                     pressed: '{isHosts}'
+    //                 }
+    //             }, {
+    //                 html: 'Devices'.t(),
+    //                 href: '#devices',
+    //                 bind: {
+    //                     pressed: '{isDevices}'
+    //                 }
+    //             }]
+    //         }, {
+    //             region: 'center',
+    //             layout: 'card',
+    //             itemId: 'shdcenter',
+    //             items: [{
+    //                 xtype: 'ung.sessions',
+    //                 itemId: 'sessions'
+    //             }, {
+    //                 xtype: 'ung.hosts',
+    //                 itemId: 'hosts'
+    //             }, {
+    //                 xtype: 'ung.devices',
+    //                 itemId: 'devices'
+    //             }]
+    //         }]
+    //     }
+    //     ]
+    // }]
 });
 
 Ext.define('Ung.store.Metrics', {
@@ -8784,13 +8982,9 @@ Ext.define('Ung.store.Sessions', {
     storeId: 'sessions',
     model: 'Ung.model.Session'
 });
-// test
-Ext.define('Ung.Application', {
-    extend: 'Ext.app.Application',
-    autoCreateViewport: false,
-    name: 'Ung',
-
-    rpc: null,
+Ext.define('Ung.controller.Global', {
+    extend: 'Ext.app.Controller',
+    namespace: 'Ung',
 
     requires: [
         'Ung.rpc.Rpc',
@@ -8815,16 +9009,90 @@ Ext.define('Ung.Application', {
         'UnavailableApps'
     ],
 
+    config: {
+        control: {
+            '#apps': {
+                activate: 'onActivate'
+            }
+        },
+
+        refs: {
+            mainView: '#main',
+            appsView: '#apps'
+        },
+
+        routes: {
+            '': 'onDashboard',
+            // 'apps': 'onApps',
+            'apps/:policyId': 'onApps',
+            'apps/:policyId/:node': 'onApps',
+            'config': 'onConfig',
+            'config/:configName': 'onConfig',
+            'reports': 'onReports',
+            'sessions': 'onSessions',
+            'hosts': 'onHosts',
+            'devices': 'onDevices'
+        },
+
+        reportsEnabled: true
+    },
+
+    onActivate: function () {
+        console.log('activate');
+    },
+
+    onDashboard: function () {
+        this.getMainView().setActiveItem('dashboard');
+        // this.getMainView().setActiveItem('#dashboard');
+        // this.getViewModel().set('activeItem', 'dashboard');
+    },
+
+    onApps: function (policyId, node) {
+        console.log(node);
+        // console.log(this.getMainView());
+        this.getMainView().setActiveItem('apps');
+
+        if (node) {
+            if (node === 'install') {
+                console.log(this.getAppsView());
+                this.getAppsView().setActiveItem('installableApps');
+            } else {
+                // vm.set('nodeName', node);
+                // vm.set('activeItem', 'settings');
+            }
+        } else {
+            this.getAppsView().setActiveItem('installedApps');
+            // vm.set('activeItem', 'apps');
+        }
+
+        // console.log(this);
+        // console.log(this.getAppsView());
+    }
+});
+// test
+Ext.define('Ung.Application', {
+    extend: 'Ext.app.Application',
+    namespace: 'Ung',
+
+    autoCreateViewport: false,
+    name: 'Ung',
+
+    rpc: null,
+
+    controllers: ['Global'],
+
     defaultToken : '',
 
     // mainView: 'Ung.view.main.Main',
 
     init: function () {
-
+        console.log('init');
+        console.timeEnd('resources');
+        // Ext.get('app-loader').destroy();
     },
 
     launch: function () {
-
+        console.log('launch');
         var me = this;
         Rpc.rpc = me.rpc;
 

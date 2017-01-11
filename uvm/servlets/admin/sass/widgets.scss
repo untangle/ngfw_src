@@ -1,6 +1,6 @@
 .widget {
     .header {
-        font-family: 'Source Sans Pro', sans-serif;
+        font-family: 'Roboto Condensed', sans-serif;
         height: 40px;
         position: relative;
         h1 {
@@ -375,12 +375,12 @@
         }
     }
     .x-grid-cell-inner {
-        font-family: 'Source Sans Pro', sans-serif;
+        font-family: 'Roboto Condensed', sans-serif;
         font-size: 13px;
         padding: 5px 6px 3px;
         i {
             font-size: 20px;
-            height: auto;
+            // height: auto;
             cursor: pointer;
             padding-top: 3px;
         }
@@ -389,23 +389,6 @@
     .x-grid-cell-inner-action-col {
         padding-top: 5px;
         height: 35px;
-    }
-
-    .heading {
-        font-size: 18px;
-        font-family: 'Source Sans Pro', sans-serif;
-        color: #FFF;
-        background: rgb(85, 85, 85);
-        .manager-close-btn {
-            cursor: pointer;
-            i {
-                color: #CCC;
-                font-size: 20px;
-            }
-            &:hover i {
-                color: #FFF;
-            }
-        }
     }
 
     .x-grid-cell-last {

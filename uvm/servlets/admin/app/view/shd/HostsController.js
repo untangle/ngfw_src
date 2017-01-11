@@ -17,7 +17,7 @@ Ext.define('Ung.view.shd.HostsController', {
     },
 
     onBeforeRenderHostsGrid: function (grid) {
-        this.getHosts();
+        // this.getHosts();
     },
 
     getHosts: function () {

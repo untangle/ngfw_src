@@ -10,10 +10,13 @@
 
   <script>console.time('all');</script>
 
-
+  <!--
   <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300,600,700' rel='stylesheet' type='text/css'>
   <link href="https://fonts.googleapis.com/css?family=PT+Sans:400,700" rel="stylesheet">
+  -->
 
+  <link href="root/res/fonts/roboto/css/fonts.css" rel="stylesheet">
+  <link href="root/res/fonts/roboto-condensed/css/fonts.css" rel="stylesheet">
 
   <style type="text/css">
     #app-loader {
@@ -31,61 +34,49 @@
         opacity: 0;
     }
 
-    #app-message {
-      font-family: 'Source Sans Pro', sans-serif;
-      color: #FFF;
-      font-size: 12px;
-      text-align: center;
-      line-height: 1;
+  .loader,
+  .loader:after {
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+  }
+  .loader {
+    margin: 20px auto;
+    font-size: 10px;
+    font-family: 'tahoma';
+    position: relative;
+    text-indent: -9999em;
+    box-sizing: border-box;
+    border-top: 3px solid rgba(255, 255, 255, 0.2);
+    border-right: 3px solid rgba(255, 255, 255, 0.2);
+    border-bottom: 3px solid rgba(255, 255, 255, 0.2);
+    border-left: 3px solid #ffffff;
+    -webkit-transform: translateZ(0);
+    -ms-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-animation: load8 1.1s infinite linear;
+    animation: load8 1.1s infinite linear;
+  }
+  @-webkit-keyframes load8 {
+    0% {
+      -webkit-transform: rotate(0deg);
+      transform: rotate(0deg);
     }
-
-    #app-message span {
-      color: #ff6161;
-      font-weight: bold;
-      font-size: 14px;
+    100% {
+      -webkit-transform: rotate(360deg);
+      transform: rotate(360deg);
     }
-
-    .spinner {
-      margin: 10px auto 0;
-      width: 70px;
-      text-align: center;
+  }
+  @keyframes load8 {
+    0% {
+      -webkit-transform: rotate(0deg);
+      transform: rotate(0deg);
     }
-
-    .spinner > div {
-      width: 10px;
-      height: 10px;
-      background-color: #31c734;
-
-      border-radius: 100%;
-      display: inline-block;
-      -webkit-animation: sk-bouncedelay 1.4s infinite ease-in-out both;
-      animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+    100% {
+      -webkit-transform: rotate(360deg);
+      transform: rotate(360deg);
     }
-
-    .spinner .bounce1 {
-      -webkit-animation-delay: -0.32s;
-      animation-delay: -0.32s;
-    }
-
-    .spinner .bounce2 {
-      -webkit-animation-delay: -0.16s;
-      animation-delay: -0.16s;
-    }
-
-    @-webkit-keyframes sk-bouncedelay {
-      0%, 80%, 100% { -webkit-transform: scale(0) }
-      40% { -webkit-transform: scale(1.0) }
-    }
-
-    @keyframes sk-bouncedelay {
-      0%, 80%, 100% {
-        -webkit-transform: scale(0);
-        transform: scale(0);
-      } 40% {
-          -webkit-transform: scale(1.0);
-          transform: scale(1.0);
-        }
-    }
+  }
   </style>
 
 </head>
@@ -95,12 +86,7 @@
   <div id="app-loader">
     <div style="position: absolute; left: 50%; top: 30%; margin-left: -75px; margin-top: -60px; width: 150px; height: 140px; font-size: 16px;">
       <img src="http://localhost/images/BrandingLogo.png"/>
-      <div id="app-spinner" class="spinner">
-        <div class="bounce1"></div>
-        <div class="bounce2"></div>
-        <div class="bounce3"></div>
-      </div>
-      <p id="app-message">Loading ...</p>
+      <div class="loader">Loading ...</div>
     </div>
   </div>
 
@@ -109,7 +95,7 @@
   <script src="http://localhost/highcharts/highstock.js"></script>
   <script src="http://localhost/highcharts/highcharts-extra.js"></script>
 
-  <script src="http://localhost/ext-6.2.0/ext-all.js"></script>
+  <script src="http://localhost/ext-6.2.0/ext-all-debug.js"></script>
 
   <!--
   <script src="root/res/themes/theme-triton/theme-triton.js"></script>
@@ -150,9 +136,14 @@
     Ext.data.Model.prototype.idProperty = '_id';
 
 
+    // Ext.application({
+    //     name: 'Ung',
+    //     extend: 'Ung.Application',
+    //     rpc: rpc
+    // });
+
     Ext.onReady(function () {
-      console.timeEnd('resources');
-      // Ext.get('app-message').setHtml('Fetching data ...');
+      // // Ext.get('app-message').setHtml('Fetching data ...');
       try {
           var startUpInfo = rpc.UvmContext.getWebuiStartupInfo();
       } catch (ex) {
@@ -166,13 +157,11 @@
           return rpc.translations[this.valueOf()] || '<cite>' + this.valueOf() + '</cite>';
       };
 
-
       Ext.application({
           name: 'Ung',
           extend: 'Ung.Application',
           rpc: rpc
       });
-
 
       /*
       Ext.Loader.loadScript({
@@ -186,6 +175,7 @@
           }
       });
       */
+
     });
 
 
