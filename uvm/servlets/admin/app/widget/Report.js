@@ -36,7 +36,7 @@ Ext.define('Ung.widget.Report', {
         itemId: 'header',
         bind: {
             html: '{title}' +
-                '<button class="action-btn"><i class="material-icons" data-action="refresh">refresh</i></button>'
+                '<button class="action-btn"><i class="fa fa-refresh" data-action="refresh"></i></button>'
         }
     }],
     // {

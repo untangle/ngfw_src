@@ -1,0 +1,28 @@
+@font-face {
+  font-family: 'Open Sans Condensed';
+  font-weight: 300;
+  font-style: normal;
+  src: url('../fonts/Open-Sans-Condensed-300/Open-Sans-Condensed-300.eot');
+  src: url('../fonts/Open-Sans-Condensed-300/Open-Sans-Condensed-300.eot?#iefix') format('embedded-opentype'),
+       local('Open Sans Cond Light'),
+       local('Open-Sans-Condensed-300'),
+       url('../fonts/Open-Sans-Condensed-300/Open-Sans-Condensed-300.woff2') format('woff2'),
+       url('../fonts/Open-Sans-Condensed-300/Open-Sans-Condensed-300.woff') format('woff'),
+       url('../fonts/Open-Sans-Condensed-300/Open-Sans-Condensed-300.ttf') format('truetype'),
+       url('../fonts/Open-Sans-Condensed-300/Open-Sans-Condensed-300.svg#OpenSansCondensed') format('svg');
+}
+
+@font-face {
+  font-family: 'Open Sans Condensed';
+  font-weight: 700;
+  font-style: normal;
+  src: url('../fonts/Open-Sans-Condensed-700/Open-Sans-Condensed-700.eot');
+  src: url('../fonts/Open-Sans-Condensed-700/Open-Sans-Condensed-700.eot?#iefix') format('embedded-opentype'),
+       local('Open Sans Condensed Bold'),
+       local('Open-Sans-Condensed-700'),
+       url('../fonts/Open-Sans-Condensed-700/Open-Sans-Condensed-700.woff2') format('woff2'),
+       url('../fonts/Open-Sans-Condensed-700/Open-Sans-Condensed-700.woff') format('woff'),
+       url('../fonts/Open-Sans-Condensed-700/Open-Sans-Condensed-700.ttf') format('truetype'),
+       url('../fonts/Open-Sans-Condensed-700/Open-Sans-Condensed-700.svg#OpenSansCondensed') format('svg');
+}
+

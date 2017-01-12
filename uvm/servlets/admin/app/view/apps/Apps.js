@@ -79,8 +79,7 @@ Ext.define('Ung.view.apps.Apps', {
         xtype: 'dataview',
         itemId: 'installedApps',
         bind: '{apps}',
-        tpl: '<p class="apps-title">&nbsp;</p>' +
-            '<tpl for=".">' +
+        tpl: '<tpl for=".">' +
                 '<tpl if="type === \'FILTER\'">' +
                 '<a href="#config" class="app-item">' +
                 '<img src="' + resourcesBaseHref + '/skins/modern-rack/images/admin/apps/{name}_80x80.png" width=80 height=80/>' +

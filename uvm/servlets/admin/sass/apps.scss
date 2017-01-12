@@ -1,9 +1,16 @@
 // @import 'vars';
 
+.x-view-item-focused {
+    outline: none !important;
+}
+
 .apps-title {
+    font-family: $custom-font;
     font-size: 18px;
-    margin: 10px 0 0 30px;
     color: #777;
+    margin: 0;
+    padding: 10px;
+    background: #EEE;
 }
 
 .app {
@@ -14,7 +21,7 @@
     background: rgba(0, 0, 0, 0.05);
     h2 {
         font-family: $custom-font;
-        font-weight: 700;
+        font-weight: 400;
         margin: 0;
     }
 }
@@ -25,18 +32,17 @@
     cursor: pointer;
     position: relative;
     // float: left;
-    height: 120px;
-    width: 120px;
+    height: 140px;
+    width: 140px;
     margin: 10px;
-    // border-radius: 50%;
+    border-radius: 5px;
     font-family: $custom-font;
-    // box-shadow: 0 1px 3px rgba(0,0,0,0.4);
     // background: #EEE;
     text-decoration: none;
     overflow: hidden;
     text-align: center;
-    // padding: 10px;
-    transition: background .3s cubic-bezier(0.23, 1, 0.32, 1), transform .2s cubic-bezier(0.23, 1, 0.32, 1);
+    padding: 20px 10px 0;
+    transition: all .3s cubic-bezier(0.23, 1, 0.32, 1), transform .2s cubic-bezier(0.23, 1, 0.32, 1);
     i {
         // font-size: 70px;
         display: block;
@@ -48,8 +54,13 @@
         -webkit-font-smoothing: antialiased;
         -webkit-backface-visibility: hidden;
     }
+
     &:hover {
-        transform: translate3d( 0, 0, 0) scale(1.1);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+        background: #EEE;
+        img {
+            // transform: translate3d( 0, 0, 0) scale(1);
+        }
         i {
             color: green;
             // transform: translate3d( 0, 0, 0) scale(1.2);
@@ -131,14 +142,15 @@
         line-height: 1;
         text-align: center;
         margin-top: 5px;
-        color: #4E4C4C;
-        font-weight: 700;
+        color: #555;
+        font-weight: 600;
         font-size: 14px;
         font-family: $custom-font-condensed;
     }
     img {
         width: 80px;
         height: 80px;
+        // transform: translate3d( 0, 0, 0) scale(0.9);
         transition: all .3s cubic-bezier(0.23, 1, 0.32, 1);
     }
     .app-install, {
@@ -207,7 +219,7 @@
     cursor: pointer;
     position: relative;
     // float: left;
-    height: 120px;
+    height: 100px;
     width: 280px;
     margin: 10px 20px;
     border-radius: 3px;
@@ -232,10 +244,11 @@
     }
     p {
         margin: 3px 0;
-        line-height: 1;
+        line-height: 1.1;
         font-weight: 400;
-        font-size: 12px;
+        font-size: 11px;
         color: #555;
+        font-family: $custom-font;
     }
     &:hover {
         h3 {
