@@ -14,6 +14,7 @@ public class IpsecVpnTunnel implements JSONString, Serializable
 {
     private int id;
     private boolean active;
+    private int ikeVersion = 1;
     private String conntype;
     private String description;
     private String secret;
@@ -31,10 +32,12 @@ public class IpsecVpnTunnel implements JSONString, Serializable
     private String phase2Group = "modp1024";
     private String phase2Lifetime = "3600";
     private String left;
+    private String leftId;
     private String leftSubnet;
     private String leftProtoPort;
     private String leftNextHop;
     private String right;
+    private String rightId;
     private String rightSubnet;
     private String rightProtoPort;
     private String rightNextHop;
@@ -47,7 +50,10 @@ public class IpsecVpnTunnel implements JSONString, Serializable
 
     public int getId() { return (id); }
     public void setId(int id) { this.id = id; }
-    
+
+    public int getIkeVersion() { return (ikeVersion); }
+    public void setIkeVersion(int ikeVersion) { this.ikeVersion = ikeVersion; }
+
     public boolean getActive() { return (active); }
     public void setActive(boolean active) { this.active = active; }
     
@@ -104,6 +110,9 @@ public class IpsecVpnTunnel implements JSONString, Serializable
     public String getLeft() { return (left); }
     public void setLeft(String left) { this.left = left; }
 
+    public String getLeftId() { return (leftId); }
+    public void setLeftId(String leftId) { this.leftId = leftId; }
+
     public String getLeftSubnet() { return (leftSubnet); }
     public void setLeftSubnet(String leftSubnet) { this.leftSubnet = leftSubnet; }
 
@@ -115,6 +124,9 @@ public class IpsecVpnTunnel implements JSONString, Serializable
 
     public String getRight() { return (right); }
     public void setRight(String right) { this.right = right; }
+
+    public String getRightId() { return (rightId); }
+    public void setRightId(String rightId) { this.rightId = rightId; }
 
     public String getRightSubnet() { return (rightSubnet); }
     public void setRightSubnet(String rightSubnet) { this.rightSubnet = rightSubnet; }

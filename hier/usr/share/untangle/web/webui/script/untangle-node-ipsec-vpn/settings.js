@@ -350,6 +350,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
             recordJavaClass: 'com.untangle.node.ipsec_vpn.IpsecVpnTunnel',
             emptyRow: {
                 'active': true,
+                'ikeVersion': 1,
                 'conntype': 'tunnel',
                 'runmode': 'start',
                 'dpddelay': '30',
@@ -363,8 +364,10 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                 'phase2Group': 'modp1024',
                 'phase2Lifetime' : '3600',
                 'left': leftDefault,
+                'leftId': leftDefault,
                 'leftSubnet': leftSubnetDefault,
                 'right': '',
+                'rightId': '',
                 'rightSubnet': '',
                 'description': '',
                 'secret': ''
@@ -374,6 +377,8 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                 name: 'id'
             },{
                 name: 'active'
+            },{
+                name: 'ikeVersion'
             },{
                 name: 'conntype'
             },{
@@ -406,11 +411,15 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                 name: 'left',
                 sortType: 'asIp'
             },{
+                name: 'leftId'
+            },{
                 name: 'leftSubnet',
                 sortType: 'asIp'
             },{
                 name: 'right',
                 sortType: 'asIp'
+            },{
+                name: 'rightId'
             },{
                 name: 'rightSubnet',
                 sortType: 'asIp'
@@ -454,12 +463,14 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                 xtype:'checkbox',
                 name: 'active',
                 dataIndex: 'active',
-                fieldLabel: i18n._("Enable")
+                fieldLabel: i18n._("Enable"),
+                labelWidth: 120,
             },{
                 xtype:'textfield',
                 name: 'Description',
                 dataIndex: 'description',
                 fieldLabel: i18n._("Description"),
+                labelWidth: 120,
                 emptyText: i18n._("[enter description]"),
                 allowBlank: false,
                 width: 400
@@ -470,6 +481,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                 items: [{
                     xtype:'combo',
                     fieldLabel: i18n._("Connection Type"),
+                    labelWidth: 120,
                     editable: false,
                     dataIndex: 'conntype',
                     store:[['tunnel','Tunnel'],['transport','Transport']]
@@ -484,7 +496,30 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                 margin: '0 0 5 0',
                 items: [{
                     xtype:'combo',
+                    fieldLabel: i18n._("IKE Version"),
+                    labelWidth: 120,
+                    editable: false,
+                    name: 'ikeVersion',
+                    dataIndex: 'ikeVersion',
+                    store:[['1','IKEv1'],['2','IKEv2']],
+                    listeners: {
+                        "change": Ext.bind(function(field, newValue, oldValue, eOpts) {
+                            this.gridTunnels.rowEditor.syncComponents();
+                        }, this)
+                    }
+                },{
+                    xtype: 'label',
+                    html: i18n._("Both sides of the tunnel must be configured to use the same IKE version."),
+                    cls: 'boxlabel'
+                }]
+            },{
+                xtype: 'container',
+                layout: 'column',
+                margin: '0 0 5 0',
+                items: [{
+                    xtype:'combo',
                     fieldLabel: i18n._("Auto Mode"),
+                    labelWidth: 120,
                     dataIndex: 'runmode',
                     editable: false,
                     store:[['start','Start'],['add','Add']]
@@ -497,6 +532,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                 xtype: "combo",
                 name: 'interfaceCombo',
                 fieldLabel: i18n._("Interface"),
+                labelWidth: 120,
                 editable: false,
                 queryMode: 'local',
                 store: networks,
@@ -506,8 +542,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                         left.setValue(newValue);
                     }, this)
                 }
-            },
-            {
+            },{
                 xtype: 'container',
                 layout: 'column',
                 margin: '0 0 5 0',
@@ -515,6 +550,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                     xtype: "textfield",
                     dataIndex: 'left',
                     fieldLabel: i18n._("External IP"),
+                    labelWidth: 120,
                     emptyText: i18n._("[enter external IP]"),
                     width: 350,
                     allowBlank: false,
@@ -538,6 +574,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                     name: 'right',
                     dataIndex: 'right',
                     fieldLabel: i18n._("Remote Host"),
+                    labelWidth: 120,
                     emptyText: i18n._("[enter remote host]"),
                     width: 350,
                     allowBlank: false
@@ -550,11 +587,48 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                 xtype: 'container',
                 layout: 'column',
                 margin: '0 0 5 0',
+                name: 'leftIdContainer',
+                items: [{
+                    xtype:'textfield',
+                    dataIndex: 'leftId',
+                    fieldLabel: i18n._("Local Identifier"),
+                    labelWidth: 120,
+                    emptyText: i18n._("[enter local identifier]"),
+                    width: 350,
+                    allowBlank: true
+                },{
+                    xtype: 'label',
+                    html: i18n._("(The authentication ID of the local IPsec gateway.)"),
+                    cls: 'boxlabel'
+                }]
+            },{
+                xtype: 'container',
+                layout: 'column',
+                margin: '0 0 5 0',
+                name: 'rightIdContainer',
+                items: [{
+                    xtype:'textfield',
+                    dataIndex: 'rightId',
+                    fieldLabel: i18n._("Remote Identifier"),
+                    labelWidth: 120,
+                    emptyText: i18n._("[enter remote identifier]"),
+                    width: 350,
+                    allowBlank: true
+                },{
+                    xtype: 'label',
+                    html: i18n._("(The authentication ID of the remote IPsec gateway)"),
+                    cls: 'boxlabel'
+                }]
+            },{
+                xtype: 'container',
+                layout: 'column',
+                margin: '0 0 5 0',
                 items: [{
                     xtype:'textfield',
                     name: 'leftSubnet',
                     dataIndex: 'leftSubnet',
                     fieldLabel: i18n._("Local Network"),
+                    labelWidth: 120,
                     emptyText: i18n._("[enter local network]"),
                     width: 350,
                     allowBlank: false,
@@ -573,6 +647,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                     name: 'rightSubnet',
                     dataIndex: 'rightSubnet',
                     fieldLabel: i18n._("Remote Network"),
+                    labelWidth: 120,
                     emptyText: i18n._("[enter remote network]"),
                     width: 350,
                     allowBlank: false,
@@ -587,6 +662,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                 name: 'secret',
                 dataIndex: 'secret',
                 fieldLabel: i18n._("Shared Secret"),
+                labelWidth: 120,
                 emptyText: i18n._("[enter shared secret]"),
                 style: "font-family: monospace",
                 width: 700,
@@ -602,6 +678,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                     name: 'dpddelay',
                     dataIndex: 'dpddelay',
                     fieldLabel: i18n._("DPD Interval"),
+                    labelWidth: 120,
                     width: 250,
                     allowBlank: false,
                     allowDecimals: false,
@@ -621,6 +698,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                     name: 'dpdtimeout',
                     dataIndex: 'dpdtimeout',
                     fieldLabel: i18n._("DPD Timeout"),
+                    labelWidth: 120,
                     width: 250,
                     allowBlank: false,
                     allowDecimals: false,
@@ -850,11 +928,17 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                         phase2GroupContainer: this.down('container[name=phase2GroupContainer]'),
                         phase2LifetimeContainer: this.down('container[name=phase2LifetimeContainer]'),
 
+                        ikeVersionCombo: this.down('combo[name=ikeVersion]'),
+                        leftIdContainer: this.down('container[name=leftIdContainer]'),
+                        rightIdContainer: this.down('container[name=rightIdContainer]'),
+
                         interfaceCombo: this.down('combo[name=interfaceCombo]'),
                         left: this.down('textfield[dataIndex=left]')
                     };
                 }
                 var leftValue = this.cmps.left.getValue();
+                var ikeVersion = this.cmps.ikeVersionCombo.getValue();
+
                 this.cmps.interfaceCombo.suspendEvent("change");
                 this.cmps.interfaceCombo.setValue('');
 
@@ -864,7 +948,19 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                         break;
                     }
                 }
+
                 this.cmps.interfaceCombo.resumeEvent("change");
+
+                if (ikeVersion == 1)
+                {
+                    this.cmps.leftIdContainer.setVisible(false);
+                    this.cmps.rightIdContainer.setVisible(false);
+                }
+                if (ikeVersion == 2)
+                {
+                    this.cmps.leftIdContainer.setVisible(true);
+                    this.cmps.rightIdContainer.setVisible(true);
+                }
 
                 var phase1Manual = this.cmps.phase1Manual.getValue();
                 this.cmps.phase1CipherContainer.setVisible(phase1Manual);
