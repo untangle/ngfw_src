@@ -698,7 +698,7 @@ i.draggable {
         }
     }
     .x-btn-inner {
-        font-family: 'Roboto', sans-serif;
+        font-family: $custom-font;
         font-size: 12px;
         color: #999;
         transition: color .3s cubic-bezier(0.23, 1, 0.32, 1);

@@ -1,10 +1,10 @@
 .widget {
     .header {
-        font-family: 'Roboto Condensed', sans-serif;
+        font-family: $custom-font-condensed;
         height: 40px;
         position: relative;
         h1 {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 300;
             //line-height: 40px;
             padding: 5px 10px 0 10px;

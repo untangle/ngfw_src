@@ -106,10 +106,10 @@ Ext.define('Ung.chart.TimeChartController', {
                 gridLineColor: '#EEE',
                 labels: {
                     style: {
-                        fontFamily: 'Source Sans Pro',
+                        fontFamily: 'Open Sans Condensed',
                         color: '#555',
-                        fontSize: '11px',
-                        fontWeight: 600
+                        fontSize: '10px',
+                        fontWeight: 700
                     },
                     y: 12
                 },
@@ -141,9 +141,9 @@ Ext.define('Ung.chart.TimeChartController', {
                     useHTML: true,
                     padding: 0,
                     style: {
-                        fontFamily: 'Source Sans Pro',
+                        fontFamily: 'Open Sans Condensed',
                         color: '#555',
-                        fontSize: '11px',
+                        fontSize: '10px',
                         fontWeight: 600,
                         background: 'rgba(255, 255, 255, 0.6)',
                         padding: '0 1px',
