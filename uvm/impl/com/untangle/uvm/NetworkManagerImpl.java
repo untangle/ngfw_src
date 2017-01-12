@@ -145,6 +145,10 @@ public class NetworkManagerImpl implements NetworkManager
             if ( this.networkSettings.getVersion() < 4 ) {
                 convertSettingsV4();
             }
+            /* 12.2 conversion */
+            if ( this.networkSettings.getVersion() < 5 ) {
+                convertSettingsV5();
+            }
             logger.debug( "Loading Settings: " + this.networkSettings.toJSONString() );
         }
 
@@ -2436,6 +2440,55 @@ public class NetworkManagerImpl implements NetworkManager
         }
 
         this.networkSettings.setVersion( 4 );
+        this.setNetworkSettings( this.networkSettings, false );
+    }
+
+    private void convertSettingsV5()
+    {
+        try {
+            List<FilterRule> inputFilterRules = this.networkSettings.getInputFilterRules();
+            int pos = 1;
+            for( FilterRule rule : inputFilterRules ) {
+                if ("Allow SNMP on non-WANs".equals(rule.getDescription())) {
+                    FilterRule filterRuleUpnp;
+                    List<FilterRuleCondition> ruleUpnpConditions;
+                    FilterRuleCondition ruleUpnpMatcher1;
+                    FilterRuleCondition ruleUpnpMatcher2;
+                    FilterRuleCondition ruleUpnpMatcher3;
+
+                    filterRuleUpnp = new FilterRule();
+                    filterRuleUpnp.setReadOnly( true );
+                    filterRuleUpnp.setEnabled( true );
+                    filterRuleUpnp.setIpv6Enabled( true );
+                    filterRuleUpnp.setDescription( "Allow UPnP (UDP/5351) on non-WANs" );
+                    filterRuleUpnp.setBlocked( false );
+                    filterRuleUpnp.setReadOnly( true );
+                    ruleUpnpConditions = new LinkedList<FilterRuleCondition>();
+                    ruleUpnpMatcher1 = new FilterRuleCondition();
+                    ruleUpnpMatcher1.setConditionType(FilterRuleCondition.ConditionType.DST_PORT);
+                    ruleUpnpMatcher1.setValue("5351");
+                    ruleUpnpMatcher2 = new FilterRuleCondition();
+                    ruleUpnpMatcher2.setConditionType(FilterRuleCondition.ConditionType.PROTOCOL);
+                    ruleUpnpMatcher2.setValue("UDP");
+                    ruleUpnpMatcher3 = new FilterRuleCondition();
+                    ruleUpnpMatcher3.setConditionType(FilterRuleCondition.ConditionType.SRC_INTF);
+                    ruleUpnpMatcher3.setValue("non_wan");
+                    ruleUpnpConditions.add(ruleUpnpMatcher1);
+                    ruleUpnpConditions.add(ruleUpnpMatcher2);
+                    ruleUpnpConditions.add(ruleUpnpMatcher3);
+                    filterRuleUpnp.setConditions( ruleUpnpConditions );
+
+                    inputFilterRules.add( pos, filterRuleUpnp );
+
+                    break;
+                }
+                pos++;
+            }
+        } catch (Exception e) {
+            logger.warn("Exception converting Networking Settings",e);
+        }
+
+        this.networkSettings.setVersion( 5 );
         this.setNetworkSettings( this.networkSettings, false );
     }
     
