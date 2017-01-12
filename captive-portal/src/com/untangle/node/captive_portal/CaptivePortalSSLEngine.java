@@ -87,7 +87,6 @@ public class CaptivePortalSSLEngine
 
         // null result means something went haywire
         if (!success) {
-            logger.warn("Received null return from clientDataWorker");
             session.globalAttach(NodeSession.KEY_CAPTIVE_PORTAL_SSL_ENGINE, null);
             session.resetClient();
             session.resetServer();
