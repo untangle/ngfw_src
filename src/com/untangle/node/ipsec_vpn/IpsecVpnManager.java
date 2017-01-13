@@ -229,12 +229,17 @@ public class IpsecVpnManager
             ipsec_secrets.write("# " + workname + RET);
             ipsec_secrets.write(data.getLeft() + " " + data.getRight() + " : PSK 0x" + StringHexify(data.getSecret()) + RET);
 
-            // also add the secret using the leftid and rightid for IKEv2 tunnels
-            if ((data.getLeftId() != null) && (data.getLeftId().length() > 0) && (data.getRightId() != null) && (data.getRightId().length() > 0)) {
-                // but only if left != leftid OR right != rightid since we already have that
-                if ((!data.getLeft().equals(data.getLeftId())) || (!data.getRight().equals(data.getRightId()))) {
-                    ipsec_secrets.write(data.getLeftId() + " " + data.getRightId() + " : PSK 0x" + StringHexify(data.getSecret()) + RET);
-                }
+            // start with left but prefer leftid if not null and not empty
+            String lid = data.getLeft();
+            if ((data.getLeftId() != null) && (data.getLeftId().length() > 0)) lid = data.getLeftId();
+
+            // start with right but prefer rightid if not null and not empty
+            String rid = data.getRight();
+            if ((data.getRightId() != null) && (data.getRightId().length() > 0)) rid = data.getRightId();
+
+            // if lid != left or rid != right add another secret using those values
+            if ((!data.getLeft().equals(lid)) || (!data.getRight().equals(rid))) {
+                ipsec_secrets.write(lid + " " + rid + " : PSK 0x" + StringHexify(data.getSecret()) + RET);
             }
         }
 
