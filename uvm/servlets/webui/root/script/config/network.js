@@ -5115,11 +5115,11 @@ Ext.define('Webui.config.network', {
                         var v = value;
                         switch(value[value.length-1]){
                             case 'K':
-                                v = parseInt(value.substr(0,value.length - 1));
+                                v = parseInt(value.substr(0,value.length - 1), 10);
                                 value = v * 1024;
                                 break;
                             case 'M':
-                                v = parseInt(value.substr(0,value.length - 1));
+                                v = parseInt(value.substr(0,value.length - 1), 10);
                                 value = v * 1024 * 1024;
                                 break;
                         }
