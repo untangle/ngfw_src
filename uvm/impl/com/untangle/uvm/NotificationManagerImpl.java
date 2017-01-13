@@ -18,7 +18,7 @@ import java.lang.reflect.Method;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.AlertManager;
+import com.untangle.uvm.NotificationManager;
 import com.untangle.uvm.ExecManager;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.node.Node;
@@ -37,18 +37,18 @@ import org.xbill.DNS.Type;
 import org.xbill.DNS.SimpleResolver;
 
 /**
- * Implements AlertManager. This class runs a series of test and creates alerts
+ * Implements NotificationManager. This class runs a series of test and creates notifications
  * for important things the administrator should know about. The UI displays these
- * alerts when the admin logs into the UI.
+ * notifications when the admin logs into the UI.
  *
- * Possible future alerts to add:
+ * Possible future notifications to add:
  * recent high load?
  * frequent reboots?
  * semi-frequent power loss?
  * disk almost full?
  * modified sources.list?
  */
-public class AlertManagerImpl implements AlertManager
+public class NotificationManagerImpl implements NotificationManager
 {
     private final Logger logger = Logger.getLogger(this.getClass());
 
@@ -56,66 +56,66 @@ public class AlertManagerImpl implements AlertManager
 
     private ExecManager execManager = null;
 
-    public AlertManagerImpl()
+    public NotificationManagerImpl()
     {
         Map<String,String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle");
         this.i18nUtil = new I18nUtil(i18nMap);
     }
 
-    public synchronized List<String> getAlerts()
+    public synchronized List<String> getNotifications()
     {
-        LinkedList<String> alertList = new LinkedList<String>();
+        LinkedList<String> notificationList = new LinkedList<String>();
         boolean dnsWorking = false;
 
         this.execManager = UvmContextFactory.context().createExecManager();
 
-        try { testUpgrades(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
-        try { dnsWorking = testDNS(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
-        try { if (dnsWorking) testConnectivity(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
-        try { if (dnsWorking) testConnector(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
-        try { testDiskFree(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
-        try { testDiskErrors(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
-        try { testDupeApps(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
-        try { testRendundantApps(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
-        try { testBridgeBackwards(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
-        try { testInterfaceErrors(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
-        try { testSpamDNSServers(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
-        try { testZveloDNSServers(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
-        try { testEventWriteTime(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
-        try { testEventWriteDelay(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
-        try { testShieldEnabled(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
-        try { testRoutesToReachableAddresses(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
-        try { testServerConf(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
-        try { testLicenseCompliance(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
+        try { testUpgrades(notificationList); } catch (Exception e) { logger.warn("Notification test exception",e); }
+        try { dnsWorking = testDNS(notificationList); } catch (Exception e) { logger.warn("Notification test exception",e); }
+        try { if (dnsWorking) testConnectivity(notificationList); } catch (Exception e) { logger.warn("Notification test exception",e); }
+        try { if (dnsWorking) testConnector(notificationList); } catch (Exception e) { logger.warn("Notification test exception",e); }
+        try { testDiskFree(notificationList); } catch (Exception e) { logger.warn("Notification test exception",e); }
+        try { testDiskErrors(notificationList); } catch (Exception e) { logger.warn("Notification test exception",e); }
+        try { testDupeApps(notificationList); } catch (Exception e) { logger.warn("Notification test exception",e); }
+        try { testRendundantApps(notificationList); } catch (Exception e) { logger.warn("Notification test exception",e); }
+        try { testBridgeBackwards(notificationList); } catch (Exception e) { logger.warn("Notification test exception",e); }
+        try { testInterfaceErrors(notificationList); } catch (Exception e) { logger.warn("Notification test exception",e); }
+        try { testSpamDNSServers(notificationList); } catch (Exception e) { logger.warn("Notification test exception",e); }
+        try { testZveloDNSServers(notificationList); } catch (Exception e) { logger.warn("Notification test exception",e); }
+        try { testEventWriteTime(notificationList); } catch (Exception e) { logger.warn("Notification test exception",e); }
+        try { testEventWriteDelay(notificationList); } catch (Exception e) { logger.warn("Notification test exception",e); }
+        try { testShieldEnabled(notificationList); } catch (Exception e) { logger.warn("Notification test exception",e); }
+        try { testRoutesToReachableAddresses(notificationList); } catch (Exception e) { logger.warn("Notification test exception",e); }
+        try { testServerConf(notificationList); } catch (Exception e) { logger.warn("Notification test exception",e); }
+        try { testLicenseCompliance(notificationList); } catch (Exception e) { logger.warn("Notification test exception",e); }
 
         /**
          * Disabled Tests
          */
-        //try { testQueueFullMessages(alertList); } catch (Exception e) { logger.warn("Alert test exception",e); }
+        //try { testQueueFullMessages(notificationList); } catch (Exception e) { logger.warn("Notification test exception",e); }
 
         this.execManager.close();
         this.execManager = null;
 
-        return alertList;
+        return notificationList;
     }
 
     /**
      * This test tests to see if upgrades are available
      */
-    private void testUpgrades(List<String> alertList)
+    private void testUpgrades(List<String> notificationList)
     {
         try {
             if (UvmContextFactory.context().systemManager().upgradesAvailable(false)) {
-                alertList.add(i18nUtil.tr("Upgrades are available and ready to be installed."));
+                notificationList.add(i18nUtil.tr("Upgrades are available and ready to be installed."));
             }
         } catch (Exception e) {}
     }
 
     /**
      * This test iterates through the DNS settings on each WAN and tests them individually
-     * It creates an alert for each non-working DNS server
+     * It creates a notification for each non-working DNS server
      */
-    private boolean testDNS(List<String> alertList)
+    private boolean testDNS(List<String> notificationList)
     {
         ConnectivityTesterImpl connectivityTester = (ConnectivityTesterImpl)UvmContextFactory.context().getConnectivityTester();
         List<InetAddress> nonWorkingDns = new LinkedList<InetAddress>();
@@ -136,11 +136,11 @@ public class AlertManagerImpl implements AlertManager
         }
 
         if (nonWorkingDns.size() > 0) {
-            String alertText = i18nUtil.tr("DNS connectivity failed:") + " ";
+            String notificationText = i18nUtil.tr("DNS connectivity failed:") + " ";
             for (InetAddress ia : nonWorkingDns) {
-                alertText += ia.getHostAddress() + " ";
+                notificationText += ia.getHostAddress() + " ";
             }
-            alertList.add(alertText);
+            notificationList.add(notificationText);
             return false;
         }
 
@@ -150,7 +150,7 @@ public class AlertManagerImpl implements AlertManager
     /**
      * This test tests connectivity to key servers in the untangle datacenter
      */
-    private void testConnectivity(List<String> alertList)
+    private void testConnectivity(List<String> notificationList)
     {
         Socket socket = null;
 
@@ -158,7 +158,7 @@ public class AlertManagerImpl implements AlertManager
             socket = new Socket();
             socket.connect(new InetSocketAddress("updates.untangle.com",80), 7000);
         } catch ( Exception e ) {
-            alertList.add( i18nUtil.tr("Failed to connect to Untangle." +  " [updates.untangle.com:80]") );
+            notificationList.add( i18nUtil.tr("Failed to connect to Untangle." +  " [updates.untangle.com:80]") );
         } finally {
             try {if (socket != null) socket.close();} catch (Exception e) {}
         }
@@ -167,7 +167,7 @@ public class AlertManagerImpl implements AlertManager
             socket = new Socket();
             socket.connect(new InetSocketAddress("license.untangle.com",443), 7000);
         } catch ( Exception e ) {
-            alertList.add( i18nUtil.tr("Failed to connect to Untangle." +  " [license.untangle.com:443]") );
+            notificationList.add( i18nUtil.tr("Failed to connect to Untangle." +  " [license.untangle.com:443]") );
         } finally {
             try {if (socket != null) socket.close();} catch (Exception e) {}
         }
@@ -176,7 +176,7 @@ public class AlertManagerImpl implements AlertManager
     /**
      * This test that pyconnector is connected to cmd.untangle.com
      */
-    private void testConnector(List<String> alertList)
+    private void testConnector(List<String> notificationList)
     {
         try {
             if ( UvmContextFactory.context().isDevel() )
@@ -186,13 +186,13 @@ public class AlertManagerImpl implements AlertManager
 
             File pidFile = new File("/var/run/ut-pyconnector.pid");
             if ( !pidFile.exists() ) {
-                alertList.add( i18nUtil.tr("Failed to connect to Untangle." +  " [cmd.untangle.com]") );
+                notificationList.add( i18nUtil.tr("Failed to connect to Untangle." +  " [cmd.untangle.com]") );
                 return;
             }
 
             int result = this.execManager.execResult(System.getProperty("uvm.bin.dir") + "/ut-pyconnector-status");
             if (result != 0)
-                alertList.add( i18nUtil.tr("Failed to connect to Untangle." +  " [cmd.untangle.com]") );
+                notificationList.add( i18nUtil.tr("Failed to connect to Untangle." +  " [cmd.untangle.com]") );
         } catch (Exception e) {
 
         }
@@ -201,14 +201,14 @@ public class AlertManagerImpl implements AlertManager
     /*
      * This test that disk free % is less than 75%
      */
-    private void testDiskFree(List<String> alertList)
+    private void testDiskFree(List<String> notificationList)
     {
         String result = this.execManager.execOutput( "df -k / | awk '/\\//{printf(\"%d\",$5)}'");
 
         try {
             int percentUsed = Integer.parseInt(result);
             if (percentUsed > 75)
-                alertList.add( i18nUtil.tr("Free Disk space is low.") +  " [ " + (100 - percentUsed) + i18nUtil.tr("% free ]") );
+                notificationList.add( i18nUtil.tr("Free Disk space is low.") +  " [ " + (100 - percentUsed) + i18nUtil.tr("% free ]") );
         } catch (Exception e) {
             logger.warn("Unable to determine free disk space",e);
         }
@@ -218,18 +218,18 @@ public class AlertManagerImpl implements AlertManager
     /**
      * Looks for somewhat comman errors in kern.log related to problematic disks
      */
-    private void testDiskErrors(List<String> alertList)
+    private void testDiskErrors(List<String> notificationList)
     {
         ExecManagerResult result;
 
         result = this.execManager.exec( "tail -n 15000 /var/log/kern.log | grep -m1 -B3 'DRDY ERR'" );
         if ( result.getResult() == 0 ) {
-            alertList.add( i18nUtil.tr("Disk errors reported.") + "<br/>\n" + result.getOutput().replaceAll("\n","<br/>\n") );
+            notificationList.add( i18nUtil.tr("Disk errors reported.") + "<br/>\n" + result.getOutput().replaceAll("\n","<br/>\n") );
         }
 
         result = this.execManager.exec( "tail -n 15000 /var/log/kern.log | grep -m1 -B3 'I/O error'" );
         if ( result.getResult() == 0 ) {
-            alertList.add( i18nUtil.tr("Disk errors reported.") + "<br/>\n" + result.getOutput().replaceAll("\n","<br/>\n") );
+            notificationList.add( i18nUtil.tr("Disk errors reported.") + "<br/>\n" + result.getOutput().replaceAll("\n","<br/>\n") );
         }
     }
     
@@ -237,7 +237,7 @@ public class AlertManagerImpl implements AlertManager
      * This test for multiple instances of the same application in a given rack
      * This is never a good idea
      */
-    private void testDupeApps(List<String> alertList)
+    private void testDupeApps(List<String> notificationList)
     {
         LinkedList<NodeSettings> nodeSettingsList = UvmContextFactory.context().nodeManager().getSettings().getNodes();
 
@@ -255,10 +255,10 @@ public class AlertManagerImpl implements AlertManager
                  */
                 if (n1.getPolicyId() == null || n2.getPolicyId() == null) {
                     if (n1.getPolicyId() == n2.getPolicyId() && n1.getNodeName().equals(n2.getNodeName()))
-                        alertList.add( i18nUtil.tr("Services contains two or more") + " " + n1.getNodeName() );
+                        notificationList.add( i18nUtil.tr("Services contains two or more") + " " + n1.getNodeName() );
                 } else {
                     if (n1.getPolicyId().equals(n2.getPolicyId()) && n1.getNodeName().equals(n2.getNodeName()))
-                        alertList.add(i18nUtil.tr("A policy/rack") + " [" + n1.getPolicyId() + "] " + i18nUtil.tr("contains two or more") + " " + n1.getNodeName());
+                        notificationList.add(i18nUtil.tr("A policy/rack") + " [" + n1.getPolicyId() + "] " + i18nUtil.tr("contains two or more") + " " + n1.getNodeName());
                 }
             }
         }
@@ -266,13 +266,13 @@ public class AlertManagerImpl implements AlertManager
 
     /**
      * This test iterates through each rack and test for redundant applications
-     * It creates an alert for each redundant pair
+     * It creates a notification for each redundant pair
      * Currently the redundant apps are:
      * Web Filter and Web Filter Lite
      * Spam Blocker and Spam Blocker Lite
      * Web Filter and Web Monitor
      */
-    private void testRendundantApps(List<String> alertList)
+    private void testRendundantApps(List<String> notificationList)
     {
         /**
          * Check for redundant apps
@@ -289,7 +289,7 @@ public class AlertManagerImpl implements AlertManager
                     continue;
 
                 if (node1.getNodeSettings().getPolicyId().equals(node2.getNodeSettings().getPolicyId()))
-                    alertList.add(i18nUtil.tr("One or more racks contain redundant apps") + ": " + " Web Filter " + i18nUtil.tr("and") + " Web Filter Lite" );
+                    notificationList.add(i18nUtil.tr("One or more racks contain redundant apps") + ": " + " Web Filter " + i18nUtil.tr("and") + " Web Filter Lite" );
             }
         }
 
@@ -299,7 +299,7 @@ public class AlertManagerImpl implements AlertManager
                     continue;
 
                 if (node1.getNodeSettings().getPolicyId().equals(node2.getNodeSettings().getPolicyId()))
-                    alertList.add(i18nUtil.tr("One or more racks contain redundant apps") + ": " + " Web Filter " + i18nUtil.tr("and") + " Web Monitor" );
+                    notificationList.add(i18nUtil.tr("One or more racks contain redundant apps") + ": " + " Web Filter " + i18nUtil.tr("and") + " Web Monitor" );
             }
         }
 
@@ -309,7 +309,7 @@ public class AlertManagerImpl implements AlertManager
                     continue;
 
                 if (node1.getNodeSettings().getPolicyId().equals(node2.getNodeSettings().getPolicyId()))
-                    alertList.add(i18nUtil.tr("One or more racks contain redundant apps") + ": " + " Spam Blocker " + i18nUtil.tr("and") + " Spam Blocker Lite" );
+                    notificationList.add(i18nUtil.tr("One or more racks contain redundant apps") + ": " + " Spam Blocker " + i18nUtil.tr("and") + " Spam Blocker Lite" );
             }
         }
     }
@@ -319,7 +319,7 @@ public class AlertManagerImpl implements AlertManager
      * "plugged in backwards"
      * It does this by checking the location of the bridge's gateway
      */
-    private void testBridgeBackwards(List<String> alertList)
+    private void testBridgeBackwards(List<String> notificationList)
     {
         for ( InterfaceSettings intf : UvmContextFactory.context().networkManager().getEnabledInterfaces() ) {
             if (!InterfaceSettings.ConfigType.BRIDGED.equals( intf.getConfigType() ))
@@ -442,24 +442,24 @@ public class AlertManagerImpl implements AlertManager
              * Ideally, this is the WAN, however if its actually an interface bridged to a WAN, then the interfaces are probably backwards
              */
             if (!gatewayIntf.getIsWan()) {
-                String alertText = i18nUtil.tr("Bridge");
-                alertText += " (";
-                alertText += master.getName();
-                alertText += " <-> ";
-                alertText += intf.getName();
-                alertText += ") ";
-                alertText += i18nUtil.tr("may be backwards.");
-                alertText += " ";
-                alertText += i18nUtil.tr("Gateway");
-                alertText += " (";
-                alertText += gateway.getHostAddress();
-                alertText += ") ";
-                alertText += i18nUtil.tr("is on") + " ";
-                alertText += " ";
-                alertText += gatewayIntf.getName();
-                alertText += ".";
+                String notificationText = i18nUtil.tr("Bridge");
+                notificationText += " (";
+                notificationText += master.getName();
+                notificationText += " <-> ";
+                notificationText += intf.getName();
+                notificationText += ") ";
+                notificationText += i18nUtil.tr("may be backwards.");
+                notificationText += " ";
+                notificationText += i18nUtil.tr("Gateway");
+                notificationText += " (";
+                notificationText += gateway.getHostAddress();
+                notificationText += ") ";
+                notificationText += i18nUtil.tr("is on") + " ";
+                notificationText += " ";
+                notificationText += gatewayIntf.getName();
+                notificationText += ".";
 
-                alertList.add(alertText);
+                notificationList.add(notificationText);
             }
         }
     }
@@ -467,9 +467,9 @@ public class AlertManagerImpl implements AlertManager
     /**
      * This test iterates through each interface and tests for
      * TX and RX errors on each interface.
-     * It creates alert if there are a "high number" of errors
+     * It creates notification if there are a "high number" of errors
      */
-    private void testInterfaceErrors(List<String> alertList)
+    private void testInterfaceErrors(List<String> notificationList)
     {
         for ( InterfaceSettings intf : UvmContextFactory.context().networkManager().getEnabledInterfaces() ) {
             if ( intf.getSystemDev() == null )
@@ -495,18 +495,18 @@ public class AlertManagerImpl implements AlertManager
                  * errors sometimes happen in small numbers and should be ignored
                  */
                 if (errorsCount > 2500) {
-                    String alertText = "";
-                    alertText += intf.getName();
-                    alertText += " ";
-                    alertText += i18nUtil.tr("interface NIC card has a high number of");
-                    alertText += " " + type + " ";
-                    alertText += i18nUtil.tr("errors");
-                    alertText += " (";
-                    alertText += errorsCountStr;
-                    alertText += ")";
-                    alertText += ".";
+                    String notificationText = "";
+                    notificationText += intf.getName();
+                    notificationText += " ";
+                    notificationText += i18nUtil.tr("interface NIC card has a high number of");
+                    notificationText += " " + type + " ";
+                    notificationText += i18nUtil.tr("errors");
+                    notificationText += " (";
+                    notificationText += errorsCountStr;
+                    notificationText += ")";
+                    notificationText += ".";
 
-                    alertList.add(alertText);
+                    notificationList.add(notificationText);
                 }
 
                 type = "TX"; // second line is TX
@@ -518,7 +518,7 @@ public class AlertManagerImpl implements AlertManager
     /**
      * This test tests to make sure public DNS servers are not used if spam blocking applications are installed
      */
-    private void testSpamDNSServers(List<String> alertList)
+    private void testSpamDNSServers(List<String> notificationList)
     {
         List<Node> spamBlockerLiteList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-spam-blocker-lite");
         List<Node> spamblockerList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-spamblocker");
@@ -550,15 +550,15 @@ public class AlertManagerImpl implements AlertManager
                      "4.2.2.2".equals( dnsServer ) || /* level3 */
                      "208.67.222.222".equals( dnsServer ) || /* openDNS */
                      "208.67.222.220".equals( dnsServer ) /* openDNS */ ) {
-                    String alertText = "";
-                    alertText += nodeName + " " + i18nUtil.tr("is installed but an unsupported DNS server is used");
-                    alertText += " (";
-                    alertText += intf.getName();
-                    alertText += ", ";
-                    alertText += dnsServer;
-                    alertText += ").";
+                    String notificationText = "";
+                    notificationText += nodeName + " " + i18nUtil.tr("is installed but an unsupported DNS server is used");
+                    notificationText += " (";
+                    notificationText += intf.getName();
+                    notificationText += ", ";
+                    notificationText += dnsServer;
+                    notificationText += ").";
 
-                    alertList.add(alertText);
+                    notificationList.add(notificationText);
                 }
                 /* otherwise check each DNS against spamhaus */
                 else {
@@ -596,15 +596,15 @@ public class AlertManagerImpl implements AlertManager
                     }
 
                     if ( !found ) {
-                        String alertText = "";
-                        alertText += nodeName + " " + i18nUtil.tr("is installed but a DNS server");
-                        alertText += " (";
-                        alertText += intf.getName();
-                        alertText += ", ";
-                        alertText += dnsServer + ") ";
-                        alertText += i18nUtil.tr("fails to resolve DNSBL queries.");
+                        String notificationText = "";
+                        notificationText += nodeName + " " + i18nUtil.tr("is installed but a DNS server");
+                        notificationText += " (";
+                        notificationText += intf.getName();
+                        notificationText += ", ";
+                        notificationText += dnsServer + ") ";
+                        notificationText += i18nUtil.tr("fails to resolve DNSBL queries.");
 
-                        alertList.add(alertText);
+                        notificationList.add(notificationText);
                     }
                 }
             }
@@ -615,7 +615,7 @@ public class AlertManagerImpl implements AlertManager
      * Tests that zvelo queries can be resolved correctly
      */
     @SuppressWarnings("rawtypes")
-    private void testZveloDNSServers(List<String> alertList)
+    private void testZveloDNSServers(List<String> notificationList)
     {
         List<Node> webFilterList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-web-filter");
 
@@ -688,29 +688,29 @@ public class AlertManagerImpl implements AlertManager
                 }
 
                 if (!found) {
-                    String alertText = "";
-                    alertText += "Web Filter " + i18nUtil.tr("is installed but a DNS server");
-                    alertText += " (";
-                    alertText += intf.getName();
-                    alertText += ", ";
-                    alertText += dnsServer + ")";
-                    alertText += " " + i18nUtil.tr("fails to resolve categorization queries.");
+                    String notificationText = "";
+                    notificationText += "Web Filter " + i18nUtil.tr("is installed but a DNS server");
+                    notificationText += " (";
+                    notificationText += intf.getName();
+                    notificationText += ", ";
+                    notificationText += dnsServer + ")";
+                    notificationText += " " + i18nUtil.tr("fails to resolve categorization queries.");
 
                     logger.warn("DNS Lookup failed [" + dnsServer + ",TXT]: " + query);
-                    alertList.add(alertText);
+                    notificationList.add(notificationText);
                 } else if ( t1-t0 > 500 ) {
-                    String alertText = "";
-                    alertText += i18nUtil.tr("A DNS server responds slowly.");
-                    alertText += " (";
-                    alertText += intf.getName();
-                    alertText += ", ";
-                    alertText += dnsServer;
-                    alertText += ", ";
-                    alertText += (t1-t0) + " ms";
-                    alertText += ") ";
-                    alertText += i18nUtil.tr("This may negatively effect Web Filter performance.");
+                    String notificationText = "";
+                    notificationText += i18nUtil.tr("A DNS server responds slowly.");
+                    notificationText += " (";
+                    notificationText += intf.getName();
+                    notificationText += ", ";
+                    notificationText += dnsServer;
+                    notificationText += ", ";
+                    notificationText += (t1-t0) + " ms";
+                    notificationText += ") ";
+                    notificationText += i18nUtil.tr("This may negatively effect Web Filter performance.");
 
-                    alertList.add(alertText);
+                    notificationList.add(notificationText);
                 }
             }
         }
@@ -719,7 +719,7 @@ public class AlertManagerImpl implements AlertManager
     /**
      * This test that the event writing time on average is not "too" slow.
      */
-    private void testEventWriteTime(List<String> alertList)
+    private void testEventWriteTime(List<String> notificationList)
     {
         final double MAX_AVG_TIME_WARN = 50.0;
 
@@ -730,20 +730,20 @@ public class AlertManagerImpl implements AlertManager
 
         double avgTime = reports.getAvgWriteTimePerEvent();
         if (avgTime > MAX_AVG_TIME_WARN) {
-            String alertText = "";
-            alertText += i18nUtil.tr("Event processing is slow");
-            alertText += " (";
-            alertText += String.format("%.1f",avgTime) + " ms";
-            alertText += "). ";
+            String notificationText = "";
+            notificationText += i18nUtil.tr("Event processing is slow");
+            notificationText += " (";
+            notificationText += String.format("%.1f",avgTime) + " ms";
+            notificationText += "). ";
 
-            alertList.add(alertText);
+            notificationList.add(notificationText);
         }
     }
 
     /**
      * This test that the event writing delay is not too long
      */
-    private void testEventWriteDelay(List<String> alertList)
+    private void testEventWriteDelay(List<String> notificationList)
     {
         final long MAX_TIME_DELAY_SEC = 600; /* 10 minutes */
 
@@ -754,41 +754,41 @@ public class AlertManagerImpl implements AlertManager
 
         long delay = reports.getWriteDelaySec();
         if (delay > MAX_TIME_DELAY_SEC) {
-            String alertText = "";
-            alertText += i18nUtil.tr("Event processing is behind");
-            alertText += " (";
-            alertText += String.format("%.1f",(((float)delay)/60.0)) + " minute delay";
-            alertText += "). ";
+            String notificationText = "";
+            notificationText += i18nUtil.tr("Event processing is behind");
+            notificationText += " (";
+            notificationText += String.format("%.1f",(((float)delay)/60.0)) + " minute delay";
+            notificationText += "). ";
 
-            alertList.add(alertText);
+            notificationList.add(notificationText);
         }
     }
 
     /**
      * This test tests for "nf_queue full" messages in kern.log
      */
-    private void testQueueFullMessages(List<String> alertList)
+    private void testQueueFullMessages(List<String> notificationList)
     {
         int result = this.execManager.execResult("tail -n 20 /var/log/kern.log | grep -q 'nf_queue:.*dropping packets'");
         if ( result == 0 ) {
-            String alertText = "";
-            alertText += i18nUtil.tr("Packet processing recently overloaded.");
+            String notificationText = "";
+            notificationText += i18nUtil.tr("Packet processing recently overloaded.");
 
-            alertList.add(alertText);
+            notificationList.add(notificationText);
         }
     }
 
     /**
      * This test that the shield is enabled
      */
-    private void testShieldEnabled( List<String> alertList )
+    private void testShieldEnabled( List<String> notificationList )
     {
         Node shield = UvmContextFactory.context().nodeManager().node("untangle-node-shield");
-        String alertText = "";
-        alertText += i18nUtil.tr("The shield is disabled. This can cause performance and stability problems.");
+        String notificationText = "";
+        notificationText += i18nUtil.tr("The shield is disabled. This can cause performance and stability problems.");
 
         if ( shield.getRunState() != NodeSettings.NodeState.RUNNING ) {
-            alertList.add(alertText);
+            notificationList.add(notificationText);
             return;
         }
 
@@ -799,7 +799,7 @@ public class AlertManagerImpl implements AlertManager
             method = settings.getClass().getMethod( "isShieldEnabled" );
             Boolean result = (Boolean) method.invoke( settings );
             if (! result ) {
-                alertList.add(alertText);
+                notificationList.add(notificationText);
                 return;
             }
         } catch (Exception e) {
@@ -807,7 +807,7 @@ public class AlertManagerImpl implements AlertManager
         }
     }
 
-    private void testRoutesToReachableAddresses( List<String> alertList )
+    private void testRoutesToReachableAddresses( List<String> notificationList )
     {
         int result;
         List<StaticRoute> routes = UvmContextFactory.context().networkManager().getNetworkSettings().getStaticRoutes();
@@ -832,17 +832,17 @@ public class AlertManagerImpl implements AlertManager
             if ( result == 0 )
                 continue;
 
-            String alertText = "";
-            alertText += i18nUtil.tr("Route to unreachable address:");
-            alertText += " ";
-            alertText += route.getNextHop();
+            String notificationText = "";
+            notificationText += i18nUtil.tr("Route to unreachable address:");
+            notificationText += " ";
+            notificationText += route.getNextHop();
 
-            alertList.add(alertText);
+            notificationList.add(notificationText);
         }
 
     }
 
-    private void testServerConf( List<String> alertList )
+    private void testServerConf( List<String> notificationList )
     {
         try {
             String arch = System.getProperty("sun.arch.data.model") ;
@@ -861,23 +861,23 @@ public class AlertManagerImpl implements AlertManager
 
             int memTotal = Integer.parseInt( result );
             if ( memTotal < 1900000 ) {
-                String alertText = i18nUtil.tr("Running 64-bit with less than 2 gigabytes RAM is not suggested.");
-                alertList.add(alertText);
+                String notificationText = i18nUtil.tr("Running 64-bit with less than 2 gigabytes RAM is not suggested.");
+                notificationList.add(notificationText);
             }
         } catch (Exception e) {
             logger.warn("Exception testing system: ",e);
         }
     }
 
-    private void testLicenseCompliance( List<String> alertList )
+    private void testLicenseCompliance( List<String> notificationList )
     {
         int currentSize = UvmContextFactory.context().hostTable().getCurrentActiveSize();
         int seatLimit = UvmContextFactory.context().licenseManager().getSeatLimit( true );
         int actualSeatLimit = UvmContextFactory.context().licenseManager().getSeatLimit( false );
 
         if ( seatLimit > 0 && currentSize > seatLimit ) {
-            String alertText = i18nUtil.tr("Currently the number of devices significantly exceeds the number of licensed devices.") + " (" + currentSize + " > " + actualSeatLimit + ")";
-            alertList.add(alertText);
+            String notificationText = i18nUtil.tr("Currently the number of devices significantly exceeds the number of licensed devices.") + " (" + currentSize + " > " + actualSeatLimit + ")";
+            notificationList.add(notificationText);
         }
      }
         

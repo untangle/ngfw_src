@@ -92,7 +92,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private SettingsManagerImpl settingsManager;
     private CertCacheManagerImpl certCacheManager;
     private OemManagerImpl oemManager;
-    private AlertManagerImpl alertManager;
+    private NotificationManagerImpl notificationManager;
     private SessionMonitorImpl sessionMonitor;
     private ConntrackMonitorImpl conntrackMonitor;
     private BackupManagerImpl backupManager;
@@ -239,9 +239,9 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return this.oemManager;
     }
 
-    public AlertManager alertManager()
+    public NotificationManager notificationManager()
     {
-        return this.alertManager;
+        return this.notificationManager;
     }
 
     public BackupManager backupManager()
@@ -681,7 +681,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             json.put("languageManager", this.languageManager());
             json.put("skinManager", this.skinManager());
             json.put("nodeManager", this.nodeManager());
-            json.put("alertManager", this.alertManager());
+            json.put("notificationManager", this.notificationManager());
             json.put("adminManager", this.adminManager());
             json.put("systemManager", this.systemManager());
             json.put("dashboardManager", this.dashboardManager());
@@ -888,7 +888,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         this.daemonManager = new DaemonManagerImpl();
 
-        this.alertManager = new AlertManagerImpl();
+        this.notificationManager = new NotificationManagerImpl();
 
         this.pluginManager = PluginManagerImpl.getInstance();
 
