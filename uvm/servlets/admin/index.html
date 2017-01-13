@@ -93,17 +93,17 @@
 
   <div id="app-loader">
     <div style="position: absolute; left: 50%; top: 30%; margin-left: -75px; margin-top: -60px; width: 150px; height: 140px; font-size: 16px;">
-      <img src="http://localhost/images/BrandingLogo.png"/>
+      <img src="http://localhost:8002/images/BrandingLogo.png"/>
       <div class="ung-loader">Loading ...</div>
     </div>
   </div>
 
   <!-- load main resources from existing :80 running server (common location) -->
-  <script src="http://localhost/jsonrpc/jsonrpc.js"></script>
-  <script src="http://localhost/highcharts/highstock.js"></script>
-  <script src="http://localhost/highcharts/highcharts-extra.js"></script>
+  <script src="root/res/jsonrpc/jsonrpc.js"></script>
+  <script src="root/res/highcharts/highstock.js"></script>
+  <script src="root/res/highcharts/highcharts-extra.js"></script>
 
-  <script src="http://localhost/ext-6.2.0/ext-all-debug.js"></script>
+  <script src="root/res/ext-6.2.0/ext-all.js"></script>
 
   <!--
   <script src="root/res/themes/theme-triton/theme-triton.js"></script>
@@ -129,10 +129,10 @@
       }
     });
 
-    var resourcesBaseHref = 'http://localhost'; // this is used for development so images are loaded from :80 server default location
+    var resourcesBaseHref = 'http://localhost:8002'; // this is used for development so images are loaded from :80 server default location
 
     // connect to RPC using forwarded 8000 port to bypass authentication for it
-    var rpc = new JSONRpcClient('http://localhost:8000/webui/JSON-RPC');
+    var rpc = new JSONRpcClient('http://localhost:8002/webui/JSON-RPC');
 
     // Disable Ext Area to avoid unwanted debug messages
     Ext.supports.MouseWheel = false;
@@ -165,11 +165,13 @@
           return rpc.translations[this.valueOf()] || '<cite>' + this.valueOf() + '</cite>';
       };
 
+
       Ext.application({
           name: 'Ung',
           extend: 'Ung.Application',
           rpc: rpc
       });
+
 
       /*
       Ext.Loader.loadScript({

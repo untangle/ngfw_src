@@ -225,14 +225,16 @@ Ext.define('Ung.view.shd.Sessions', {
     }],
     tbar: [{
         xtype: 'button',
-        text: Ung.Util.iconTitle('Refresh'.t(), 'refresh-16'),
+        text: 'Refresh'.t(),
+        iconCls: 'fa fa-repeat',
         handler: 'getSessions',
         bind: {
             disabled: '{autoRefresh}'
         }
     }, {
         xtype: 'button',
-        text: Ung.Util.iconTitle('Auto Refresh'.t(), 'autorenew-16'),
+        text: 'Auto Refresh'.t(),
+        iconCls: 'fa fa-refresh',
         enableToggle: true,
         toggleHandler: 'setAutoRefresh'
     }, '-', 'Filter:'.t(), {

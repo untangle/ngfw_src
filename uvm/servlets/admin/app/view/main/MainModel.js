@@ -8,6 +8,9 @@ Ext.define('Ung.view.main.MainModel', {
         reportsRunning: false
     },
     formulas: {
+        // selected: function () {
+        //     return 'dashboard';
+        // },
         // reports are enabled only if are installed and has running state
         reportsEnabled: function (get) {
             return (get('reportsInstalled') && get('reportsRunning'));

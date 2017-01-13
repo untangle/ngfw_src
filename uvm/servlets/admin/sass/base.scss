@@ -1,3 +1,5 @@
+@import 'vars';
+
 cite {
     //border-bottom: 1px red dotted;
     background: yellow;
@@ -80,56 +82,6 @@ cite {
 
 .dashboard.temp .widget {
     opacity: 0.3;
-}
-
-.widget {
-    font-family: 'PT Sans', sans-serif;
-    margin: 5px 8px 11px 8px;
-    border: 3px transparent solid;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.4);
-    border-radius: 3px;
-    box-sizing: border-box;
-
-    /*background: rgb(249,249,249);*/
-    background: #FFF;
-
-    /*
-    background: rgb(249,249,249);
-    background: -moz-linear-gradient(top,  rgba(249,249,249,1) 0%, rgba(255,255,255,1) 50%, rgba(249,249,249,1) 100%);
-    background: -webkit-linear-gradient(top,  rgba(249,249,249,1) 0%,rgba(255,255,255,1) 50%,rgba(249,249,249,1) 100%);
-    background: linear-gradient(to bottom,  rgba(249,249,249,1) 0%,rgba(255,255,255,1) 50%,rgba(249,249,249,1) 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f9f9f9', endColorstr='#f0f0f0',GradientType=0 );
-    */
-    width: 450px;
-    height: 300px;
-    flex-grow: 1;
-    //overflow: hidden;
-    position: relative;
-    transition: transform .3s cubic-bezier(0.23, 1, 0.32, 1), opacity 1s cubic-bezier(0.23, 1, 0.32, 1);
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
-    &.highlight-item {
-        opacity: 1 !important;
-        box-shadow: 0 0 15px 0 #FFF;
-        /*transform: scale(0.98);*/
-    }
-
-}
-
-.widget.small {
-    width: 250px;
-}
-
-.widget.medium {
-    width: 350px;
-}
-
-.widget.large {
-    width: 450px;
-}
-
-.widget.x-large {
-    width: 550px;
 }
 
 /*
@@ -687,6 +639,7 @@ i.draggable {
 .x-toolbar-navigation .x-btn {
     padding: 10px 7px;
     background: transparent;
+    border-radius: 0;
     transition: background .3s cubic-bezier(0.23, 1, 0.32, 1);
     &.logo {
         padding: 6px 7px 2px 7px;
@@ -700,7 +653,7 @@ i.draggable {
     .x-btn-inner {
         font-family: $custom-font;
         font-size: 12px;
-        color: #999;
+        color: #AAA;
         transition: color .3s cubic-bezier(0.23, 1, 0.32, 1);
     }
     &.x-btn-over {
@@ -715,6 +668,7 @@ i.draggable {
 
     .x-btn-icon-el {
         color: #999;
+        font-size: 14px;
         margin-bottom: 0 !important;
         transition: color .3s cubic-bezier(0.23, 1, 0.32, 1);
     }
@@ -726,12 +680,14 @@ i.draggable {
         }
     }
     &.x-btn-pressed {
-        background: #000;
+        // background: #3a3a3a;
+        background: transparent;
         .x-btn-inner {
-            color: #FFF;
+            color: #8efb6c;
         }
         .x-btn-icon-el {
-            color: #FFF;
+            // color: #6abc50;
+            color: #8efb6c;
         }
     }
 }
