@@ -685,36 +685,6 @@ Ext.define('Ung.view.main.MainModel', {
     }
 });
 
-Ext.define('Ung.view.shd.Devices', {
-    extend: 'Ext.panel.Panel',
-    // extend: 'Ext.grid.Panel',
-    xtype: 'ung.devices',
-    // layout: 'border',
-    requires: [
-        // 'Ung.view.sessions.SessionsController'
-    ],
-
-    // controller: 'sessions',
-
-    viewModel: {
-        data: {
-            autoRefresh: false
-        }
-    },
-
-    layout: 'border',
-
-    defaults: {
-        border: false
-    },
-
-    title: 'Devices'.t(),
-
-    items: [{
-        region: 'center',
-        html: 'devices'
-    }]
-});
 /**
  * Dashboard Controller which displays and manages the Dashboard Widgets
  * Widgets can be affected by following actions:
@@ -729,12 +699,13 @@ Ext.define('Ung.view.dashboard.DashboardController', {
     viewModel: true,
     control: {
         '#': {
-            afterrender: 'loadWidgets'
+            // afterrender: 'loadWidgets'
         }
     },
 
     listen: {
         global: {
+            init: 'loadWidgets',
             nodeinstall: 'onNodeInstall',
             removewidget: 'onRemoveWidget',
             addwidget: 'onAddWidget',
@@ -761,6 +732,10 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         //     // me.loadWidgets();
         // });
         vm.set('managerOpen', false);
+    },
+
+    onInit: function () {
+        console.log('oninit');
     },
 
     /**
@@ -821,13 +796,11 @@ Ext.define('Ung.view.dashboard.DashboardController', {
             dashboard = this.getView().lookupReference('dashboard'),
             widgets = Ext.getStore('widgets').getRange(),
             i, widget, widgetComponents = [], entry;
-        console.log(widgets);
+
         // refresh the dashboard manager grid if the widgets were affected
         this.getView().lookupReference('dashboardNav').getView().refresh();
 
         dashboard.removeAll(true);
-
-        console.log(Ext.getStore('reports'));
 
         for (i = 0; i < widgets.length; i += 1 ) {
             widget = widgets[i];
@@ -844,10 +817,8 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                 });
             }
             else {
-                console.log(vm.get('reportsEnabled'));
                 if (vm.get('reportsEnabled')) {
                     entry = Ext.getStore('reports').findRecord('uniqueId', widget.get('entryId'));
-                    console.log(entry);
                     if (entry && !Ext.getStore('unavailableApps').first().get(entry.get('category')) && widget.get('enabled')) {
                         dashboard.add({
                             xtype: 'reportwidget',
@@ -948,13 +919,13 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         enabled = record.get('enabled');
 
         if (!value) {
-            return '<span style="font-weight: 500; ' + (!enabled ? 'color: #999;' : '') + '">' + record.get('type') + '</span><br/><span style="font-size: 10px; color: #777;">Common</span>';
+            return '<span style="font-weight: 700; ' + (!enabled ? 'color: #999;' : '') + '">' + record.get('type') + '</span><br/><span style="font-size: 10px; color: #777;">Common</span>';
         }
         if (vm.get('reportsInstalled')) {
             entry = Ext.getStore('reports').findRecord('uniqueId', value);
             if (entry) {
                 unavailApp = Ext.getStore('unavailableApps').first().get(entry.get('category'));
-                title = '<span style="font-weight: 500; ' + ((unavailApp || !enabled) ? 'color: #999;' : '') + '">' + (entry.get('readOnly') ? entry.get('title').t() : entry.get('title')) + '</span>';
+                title = '<span style="font-weight: 700; ' + ((unavailApp || !enabled) ? 'color: #999;' : '') + '">' + (entry.get('readOnly') ? entry.get('title').t() : entry.get('title')) + '</span>';
 
                 if (entry.get('timeDataInterval') && entry.get('timeDataInterval') !== 'AUTO') {
                     title += '<span style="text-transform: lowercase; color: #999; font-weight: 300;"> per ' + entry.get('timeDataInterval') + '</span>';
@@ -1889,8 +1860,10 @@ Ext.define('Ung.view.apps.AppsController', {
     control: {
         '#': { activate: 'getPolicies' },
         '#installedApps': { activate: 'filterInstalled' },
-        '#installableApps': { activate: 'filterAvailable' },
-        // '#installView': { select: 'onInstallNode' }
+        '#installableApps': {
+            activate: 'filterInstallable',
+            select: 'onInstallNode'
+        }
     },
 
     nodeDesc: {
@@ -1977,6 +1950,7 @@ Ext.define('Ung.view.apps.AppsController', {
      * the nodes store is filtered to reflect current applications
      */
     filterInstalled: function () {
+        this.getViewModel().set('onInstalledApps', true);
         console.log('filter installed');
         var appsStore = this.getViewModel().getStore('apps');
 
@@ -1986,7 +1960,8 @@ Ext.define('Ung.view.apps.AppsController', {
         });
     },
 
-    filterAvailable: function () {
+    filterInstallable: function () {
+        this.getViewModel().set('onInstalledApps', false);
         var appsStore = this.getViewModel().getStore('apps');
 
         // initially, after install the nide item is kept on the Install Apps, having status 'installed'
@@ -2002,45 +1977,45 @@ Ext.define('Ung.view.apps.AppsController', {
         });
     },
 
-    init: function (view) {
-        view.getViewModel().bind({
-            bindTo: '{policyId}'
-        }, this.onPolicy, this);
-    },
+    // init: function (view) {
+    //     view.getViewModel().bind({
+    //         bindTo: '{policyId}'
+    //     }, this.onPolicy, this);
+    // },
 
-    onNodeStateChange: function (state, instance) {
-        console.log(instance);
-    },
+    // onNodeStateChange: function (state, instance) {
+    //     console.log(instance);
+    // },
 
-    updateNodes: function () {
-        var vm = this.getViewModel(),
-            nodeInstance, i;
+    // updateNodes: function () {
+    //     var vm = this.getViewModel(),
+    //         nodeInstance, i;
 
-        rpc.nodeManager.getAppsViews(function(result, exception) {
-            var policy = result.filter(function (p) {
-                return parseInt(p.policyId) === parseInt(vm.get('policyId'));
-            })[0];
+    //     rpc.nodeManager.getAppsViews(function(result, exception) {
+    //         var policy = result.filter(function (p) {
+    //             return parseInt(p.policyId) === parseInt(vm.get('policyId'));
+    //         })[0];
 
-            var nodes = policy.nodeProperties.list,
-                instances = policy.instances.list;
+    //         var nodes = policy.nodeProperties.list,
+    //             instances = policy.instances.list;
 
-            for (i = 0; i < nodes.length; i += 1) {
-                nodeInstance = instances.filter(function (instance) {
-                    return instance.nodeName === nodes[i].name;
-                })[0];
-                // console.log(nodeInstance.targetState);
-                nodes[i].policyId = vm.get('policyId');
-                nodes[i].state = nodeInstance.targetState.toLowerCase();
-            }
-            vm.set('nodes', nodes);
-        });
-    },
+    //         for (i = 0; i < nodes.length; i += 1) {
+    //             nodeInstance = instances.filter(function (instance) {
+    //                 return instance.nodeName === nodes[i].name;
+    //             })[0];
+    //             // console.log(nodeInstance.targetState);
+    //             nodes[i].policyId = vm.get('policyId');
+    //             nodes[i].state = nodeInstance.targetState.toLowerCase();
+    //         }
+    //         vm.set('nodes', nodes);
+    //     });
+    // },
 
-    onPolicy: function () {
-        // this.getView().lookupReference('filters').removeAll();
-        // this.getView().lookupReference('services').removeAll();
-        // this.updateNodes();
-    },
+    // onPolicy: function () {
+    //     // this.getView().lookupReference('filters').removeAll();
+    //     // this.getView().lookupReference('services').removeAll();
+    //     // this.updateNodes();
+    // },
 
     setPolicy: function (combo, newValue, oldValue) {
         if (oldValue !== null) {
@@ -2049,65 +2024,27 @@ Ext.define('Ung.view.apps.AppsController', {
         }
     },
 
-    onItemAfterRender: function (item) {
-        Ext.defer(function () {
-            item.removeCls('insert');
-        }, 50);
+    // onItemAfterRender: function (item) {
+    //     Ext.defer(function () {
+    //         item.removeCls('insert');
+    //     }, 50);
+    // },
+
+    /**
+     * method which initialize the node installation
+     */
+    onInstallNode: function (view, record) {
+        record.set('status', 'installing');
+        rpc.nodeManager.instantiate(function (result, ex) {
+            if (ex) {
+                record.set('status', 'available');
+                console.log(ex);
+                return;
+            }
+            record.set('status', 'installed');
+        }, record.get('name'), 1);
     }
 
-});
-
-Ext.define('Ung.view.apps.AppsModel', {
-    extend: 'Ext.app.ViewModel',
-
-    alias: 'viewmodel.apps',
-
-    data: {
-        nodes: []
-    },
-
-    stores: {
-        nodesStore: {
-            data: '{nodes}',
-            sorters: [{
-                property: 'viewPosition',
-                direction: 'ASC'
-            }]
-        }
-    }
-
-});
-
-Ext.define('Ung.view.apps.AppItem', {
-    extend: 'Ext.Button',
-    xtype: 'ung.appitem',
-    baseCls: 'app-item',
-
-    viewModel: true,
-
-    hrefTarget: '_self',
-
-    renderTpl: [
-        '<span id="{id}-btnWrap" data-ref="btnWrap" role="presentation" unselectable="on" style="{btnWrapStyle}" ' +
-                '<span class="app-icon"><img src="' + resourcesBaseHref + '/skins/modern-rack/images/admin/apps/{node.name}_80x80.png" width=80 height=80/>' +
-                '<span class="app-name">{node.displayName}</span>' +
-                '</span>' +
-            '<span class="app-state {state}"><i class="material-icons">power_settings_new</i></span>' +
-        '</span>'
-    ],
-
-    initRenderData: function() {
-        var data = this.callParent();
-        Ext.apply(data, {
-            node: this.node,
-            state: this.state
-        });
-        return data;
-    },
-
-    listeners: {
-        // afterrender: 'onItemAfterRender'
-    }
 });
 
 Ext.define('Ung.view.apps.Apps', {
@@ -2116,13 +2053,14 @@ Ext.define('Ung.view.apps.Apps', {
     itemId: 'apps',
     layout: 'card',
     requires: [
-        'Ung.view.apps.AppsController',
-        'Ung.view.apps.AppsModel',
-        'Ung.view.apps.AppItem'
+        'Ung.view.apps.AppsController'
     ],
 
     controller: 'apps',
     viewModel: {
+        data: {
+            onInstalledApps: false
+        },
         stores: {
             apps: {
                 // data: '{appsData}',
@@ -2152,9 +2090,11 @@ Ext.define('Ung.view.apps.Apps', {
             editable: false,
             multiSelect: false,
             queryMode: 'local',
+            hidden: true,
             bind: {
                 value: '{policyId}',
-                store: '{policies}'
+                store: '{policies}',
+                hidden: '{!onInstalledApps}'
             },
             valueField: 'policyId',
             displayField: 'displayName',
@@ -2164,9 +2104,22 @@ Ext.define('Ung.view.apps.Apps', {
         }, {
             xtype: 'button',
             html: 'Install Apps'.t(),
+            iconCls: 'fa fa-download',
             hrefTarget: '_self',
+            hidden: true,
             bind: {
-                href: '#apps/{policyId}/install'
+                href: '#apps/{policyId}/install',
+                hidden: '{!onInstalledApps}'
+            }
+        }, {
+            xtype: 'button',
+            html: 'Back to Apps'.t(),
+            iconCls: 'fa fa-arrow-circle-left',
+            hrefTarget: '_self',
+            hidden: true,
+            bind: {
+                href: '#apps/{policyId}',
+                hidden: '{onInstalledApps}'
             }
         }]
     }],
@@ -2346,2342 +2299,165 @@ Ext.define('Ung.view.apps.Apps', {
     //     //onPolicyChange: 'onPolicyChange'
     // }
 });
-Ext.define('Ung.view.apps.install.InstallController', {
+Ext.define('Ung.view.config.ConfigController', {
     extend: 'Ext.app.ViewController',
-    alias: 'controller.appsinstall',
+
+    alias: 'controller.config',
 
     control: {
         '#': {
-            beforeactivate: 'onPolicy'
+            deactivate: 'onDeactivate'
+        },
+        '#subNav': {
+            selectionchange: 'onSelect'
         }
     },
 
     listen: {
-        store: {
-            '#policies': {
-                //datachanged: 'onPolicy'
-            }
+        global: {
+            loadconfig: 'onLoadConfig'
         }
     },
 
-    init: function (view) {
-        view.getViewModel().bind({
-            bindTo: '{policyId}'
-        }, this.onPolicy, this);
+    onSelect: function (el, sel) {
+        // console.log(selected);
+        sel.selected = true;
     },
 
-    onPolicy: function () {
-        var policy = Ext.getStore('policies').findRecord('policyId', this.getViewModel().get('policyId')),
-            installable = policy.get('installable').list, i, node, filters = [], services = [];
 
-        for (i = 0; i < installable.length; i += 1) {
-            node = installable[i];
-            if (node.type === 'FILTER') {
-                filters.push({
-                    xtype: 'ung.appinstallitem',
-                    node: node
-                });
-            }
-            if (node.type === 'SERVICE') {
-                services.push({
-                    xtype: 'ung.appinstallitem',
-                    node: node
-                });
-            }
+    onLoadConfig: function (configName, configTab) {
+        var view = this.getView();
+        if (!configName) {
+            view.setActiveItem(1);
+            return;
         }
 
-        this.getView().lookupReference('filters').removeAll(true);
-        this.getView().lookupReference('filters').add(filters);
-        this.getView().lookupReference('services').removeAll(true);
-        this.getView().lookupReference('services').add(services);
-    },
-
-    setPolicy: function (combo, newValue, oldValue) {
-        if (oldValue !== null) {
-            this.redirectTo('#apps/' + newValue + '/install', true);
+        if (view.down('#configCard')) {
+            view.down('#configCard').destroy();
         }
-    },
 
-    installNode: function (nodeItem) {
-        var vm = this.getViewModel();
-        var policyId = this.getViewModel().get('policyId'),
-            nodeName = nodeItem.node.name;
+        var cfgName = configName.charAt(0).toUpperCase() + configName.slice(1).toLowerCase();
 
-        if (!nodeItem.hasCls('installed')) {
-            nodeItem.setDisabled(true);
-            nodeItem.addCls('progress');
-
-            rpc.nodeManager.instantiate(function (result, ex) {
-                if (ex) { Ung.Util.exceptionToast(ex); return; }
-
-                try {
-                    nodeItem.removeCls('progress');
-                    nodeItem.addCls('installed');
-                    nodeItem.setDisabled(false);
-                    //nodeItem.removeListener('click', this.installnoi);
-                    //nodeItem.setHref('#apps/' + policyId + '/' + nodeName);
-                } catch (exception) {
-                    console.log(exception);
-                }
-
-                Ung.Util.successToast(nodeItem.node.displayName + ' installed successfully!');
-
-                // update policies
-                rpc.nodeManager.getAppsViews(function (result, ex) {
-                    if (ex) { Ung.Util.exceptionToast(ex); return; }
-                    Ext.getStore('policies').loadData(result);
-                });
-
-                // update unavailable apps if reports are enabled
-
-                //console.log(vm.getParent());
-
-                if (nodeItem.node.name === 'untangle-node-reports') {
-                    rpc.reportsManager = rpc.nodeManager.node('untangle-node-reports').getReportsManager();
-                    Rpc.getReports().then(function (reports) {
-                        Ext.getStore('reports').loadData(reports.list);
-                        vm.getParent().set({
-                            reportsInstalled: true,
-                            reportsRunning: rpc.nodeManager.node('untangle-node-reports').getRunState() === 'RUNNING'
-                        });
-                        vm.getParent().notify();
-                        Ext.GlobalEvents.fireEvent('reportsinstall');
-                    });
-                }
-
-                if (rpc.reportsManager) {
-                    rpc.reportsManager.getUnavailableApplicationsMap(function (result, ex) {
-                        if (ex) { Ung.Util.exceptionToast(ex); return; }
-                        Ext.getStore('unavailableApps').loadRawData(result.map);
-
-                        // fire nodeinstall event to update widgets on dashboard
-                        Ext.GlobalEvents.fireEvent('nodeinstall', 'install', nodeItem.node);
-                    });
-                }
-
-            }, nodeName, policyId);
-        } else {
-            Ung.app.redirectTo('#apps/' + policyId + '/' + nodeName);
-        }
-    }
-
-});
-
-Ext.define('Ung.view.apps.install.Item', {
-    extend: 'Ext.Button',
-    xtype: 'ung.appinstallitem',
-
-    baseCls: 'app-item install',
-
-    hrefTarget: '_self',
-
-    renderTpl: [
-        '<span id="{id}-btnWrap" data-ref="btnWrap" role="presentation" unselectable="on" style="{btnWrapStyle}" ' +
-                'class="{btnWrapCls} {btnWrapCls}-{ui} {splitCls}{childElCls}">' +
-                '<span class="app-icon"><img src="' + resourcesBaseHref + '/skins/modern-rack/images/admin/apps/{node.name}_80x80.png" width=80 height=80/>' +
-                '<span class="app-name">{node.displayName}</span>' +
-                '</span>' +
-                '<div class="app-install"><i class="material-icons">get_app</i></div>' +
-                '<div class="spinner"><div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div></div>' +
-                '<div class="app-done"><i class="material-icons">check</i></div>' +
-        '</span>'
-    ],
-
-    initRenderData: function() {
-        var data = this.callParent();
-        data.node = this.node;
-        return data;
-    },
-    listeners: {
-        click: 'installNode'
-    }
-});
-
-Ext.define('Ung.view.apps.install.Install', {
-    extend: 'Ext.container.Container',
-    xtype: 'ung.appsinstall',
-    layout: 'border',
-    requires: [
-        'Ung.view.apps.install.InstallController',
-        'Ung.view.apps.install.Item'
-    ],
-
-    controller: 'appsinstall',
-    viewModel: true,
-
-    defaults: {
-        border: false
-    },
-    items: [{
-        region: 'north',
-        border: false,
-        height: 44,
-        itemId: 'apps-topnav',
-        bodyStyle: {
-            background: '#555',
-            padding: '0 5px'
-        },
-        layout: {
-            type: 'hbox',
-            align: 'middle'
-        },
-        items: [{
-            xtype: 'button',
-            baseCls: 'heading-btn',
-            html: Ung.Util.iconTitle('Back to Apps', 'arrow_back-16'),
-            hrefTarget: '_self',
-            bind: {
-                href: '#apps/{policyId}'
+        view.down('#subNav').getStore().each(function (item) {
+            if (item.get('url') === configName) {
+                item.set('selected', 'x-item-selected');
+            } else {
+                item.set('selected', '');
             }
-        }, {
-            xtype: 'component',
-            hidden: true,
-            style: {
-                color: '#CCC'
-            },
-            flex: 1,
-            html: 'Select Apps and Services to Install'.t()
-        }]
-    }, {
-        region: 'center',
-        itemId: 'apps-list',
-        bodyStyle: {
-            background: 'transparent'
-        },
-        scrollable: true,
-        items: [{
-            xtype: 'component',
-            cls: 'apps-separator',
-            html: Ung.Util.iconTitle('Apps'.t(), 'apps')
-        }, {
-            xtype: 'container',
-            margin: 10,
-            reference: 'filters',
-            style: {
-                display: 'inline-block'
-            }
-        }, {
-            xtype: 'component',
-            cls: 'apps-separator',
-            html: Ung.Util.iconTitle('Service Apps'.t(), 'build')
-        }, {
-            xtype: 'container',
-            margin: 10,
-            reference: 'services',
-            style: {
-                display: 'inline-block'
-            }
-
-        }]
-    }]
-});
-Ext.define('Ung.view.config.ConfigController', {
-    extend: 'Ext.app.ViewController',
-    alias: 'controller.config',
-
-    init: function () {
-        this.configItems = [
-            { name: 'Network', icon: 'icon_config_network.png' },
-            { name: 'Administration', icon: 'icon_config_admin.png' },
-            { name: 'Email', icon: 'icon_config_email.png' },
-            { name: 'Local Directory', icon: 'icon_config_directory.png' },
-            { name: 'Upgrade', icon: 'icon_config_upgrade.png' },
-            { name: 'System', icon: 'icon_config_system.png' },
-            { name: 'About', icon: 'icon_config_about.png' }
-        ];
-        this.toolItems = [
-            { name: 'Sessions', icon: 'icon_config_sessions.png' },
-            { name: 'Hosts', icon: 'icon_config_hosts.png' },
-            { name: 'Devices', icon: 'icon_config_devices.png' }
-        ];
-    },
-
-    onBeforeRender: function () {
-        var config, tool, i, configs = [], tools = [];
-
-        for (i = 0; i < this.configItems.length; i += 1) {
-            config = this.configItems[i];
-            configs.push({
-                xtype: 'ung.configitem',
-                name: config.name.t(),
-                icon: config.icon,
-                href: '#config/' + config.name.toLowerCase().replace(/ /g, '')
-            });
-        }
-
-        for (i = 0; i < this.toolItems.length; i += 1) {
-            tool = this.toolItems[i];
-            tools.push({
-                xtype: 'ung.configitem',
-                name: tool.name.t(),
-                icon: tool.icon,
-                href: '#' + tool.name.toLowerCase().replace(/ /g, '')
-            });
-        }
-
-        this.getView().lookupReference('configs').removeAll(true);
-        this.getView().lookupReference('configs').add(configs);
-        this.getView().lookupReference('tools').removeAll(true);
-        this.getView().lookupReference('tools').add(tools);
-
-    },
-
-    onItemBeforeRender: function (item) {
-        item.el.on('click', function () {
-            Ung.app.redirectTo('#config/' + item.getViewModel().get('name'), true);
         });
-    }
 
-});
 
-Ext.define('Ung.view.config.ConfigItem', {
-    extend: 'Ext.Button',
-    xtype: 'ung.configitem',
-    baseCls: 'app-item',
-
-    viewModel: true,
-
-    hrefTarget: '_self',
-
-    renderTpl:
-            '<span class="app-icon"><img src="' + resourcesBaseHref + '/skins/modern-rack/images/admin/config/{icon}" width=80 height=80/></span>' +
-            '<span class="app-name">{name}</span>',
-
-    initRenderData: function() {
-        var data = this.callParent();
-        Ext.apply(data, {
-            name: this.name,
-            icon: this.icon
+        view.setLoading('Loading ' + cfgName.t() + '...');
+        Ext.require('Ung.view.config.' + cfgName.toLowerCase() + '.' + cfgName, function () {
+            view.down('#configWrapper').add({
+                xtype: 'ung.config.' + cfgName.toLowerCase(),
+                region: 'center',
+                itemId: 'configCard'
+            });
+            view.setLoading(false);
+            view.setActiveItem(2);
+            console.log(configTab);
+            if (configTab) {
+                view.down('#configCard').setActiveItem(configTab);
+            }
+            // view.getViewModel().set('currentView', cfgName.toLowerCase());
+            // console.log(view.down('#subNav'));
         });
-        return data;
-    }
-});
-Ext.define('Ung.view.config.ConfigSettings', {
-    extend: 'Ext.container.Container',
-    xtype: 'ung.configsettings',
+    },
 
-    html: 'config settings'
+    onDeactivate: function (view) {
+        if (view.down('#configCard')) {
+            view.setActiveItem(0);
+            view.down('#configCard').destroy();
+        }
+        // view.remove('configCard');
+    }
 
 
 });
 Ext.define('Ung.view.config.Config', {
-    extend: 'Ext.panel.Panel',
+    extend: 'Ext.container.Container',
     xtype: 'ung.config',
+    itemId: 'config',
+
     requires: [
         'Ung.view.config.ConfigController',
-        'Ung.view.config.ConfigItem',
-        'Ung.view.config.ConfigSettings'
+        // 'Ung.view.config.ConfigModel'
     ],
 
     controller: 'config',
-    //viewModel: 'apps',
-
-    defaults: {
-        border: false
-    },
-
-    layout: 'card',
-
-    items: [{
-        border: false,
-        scrollable: true,
-        bodyStyle: {
-            background: 'transparent'
-        },
-        items: [{
-            xtype: 'component',
-            cls: 'apps-separator',
-            html: Ung.Util.iconTitle('Configuration'.t(), 'tune')
-        }, {
-            xtype: 'container',
-            margin: 10,
-            reference: 'configs',
-
-            style: {
-                display: 'inline-block'
-            }
-        }, {
-            xtype: 'component',
-            cls: 'apps-separator',
-            html: Ung.Util.iconTitle('Tools'.t(), 'build')
-        }, {
-            xtype: 'container',
-            margin: 10,
-            reference: 'tools',
-            style: {
-                display: 'inline-block'
-            }
-
-        }]
-    }],
-    listeners: {
-        afterrender: 'onBeforeRender'
-        //onPolicyChange: 'onPolicyChange'
-    }
-});
-Ext.define('Ung.view.reports.ReportsController', {
-    extend: 'Ext.app.ViewController',
-    alias: 'controller.reports',
-
-    init: function () {
-        this.getAvailableTables();
-    },
-
-    control: {
-        '#': { beforeactivate: 'onBeforeActivate', beforedeactivate: 'onBeforeDeactivate' },
-        '#categoriesGrid': { selectionchange: 'onCategorySelect' },
-        '#reportsGrid': { selectionchange: 'onReportSelect' },
-        '#chart': { afterrender: 'fetchReportData' },
-
-        '#startDate': { select: 'onSelectStartDate' },
-        '#startTime': { select: 'onSelectStartTime' },
-        '#startDateTimeBtn': { click: 'setStartDateTime' },
-        '#endDate': { select: 'onSelectEndDate' },
-        '#endTime': { select: 'onSelectEndTime' },
-        '#endtDateTimeBtn': { click: 'setEndDateTime' },
-
-        '#refreshBtn': { click: 'fetchReportData' },
-        '#applyBtn': { click: 'fetchReportData' },
-        '#chartStyleBtn': { toggle: 'fetchReportData' },
-        '#timeIntervalBtn': { toggle: 'fetchReportData' },
-
-        '#saveNewBtn': { click: 'saveReport' },
-        '#updateBtn': { click: 'updateReport' },
-        '#removeBtn': { click: 'removeReport' },
-
-        '#dashboardBtn': { click: 'toggleDashboardWidget' }
-    },
-
-    /*
-    listen: {
-        store: {
-            '#reports': {
-                remove: 'onRemoveReport'
-            }
-        }
-    },
-    */
-
-    onBeforeActivate: function () {
-        var vm = this.getViewModel();
-
-        // if Reports inside Node settings
-        if (this.getView().getInitCategory()) {
-            vm.set({
-                isNodeReporting: true,
-                activeCard: 'categoryCard',
-                category: null,
-                report: null,
-                categoriesData: null,
-                startDateTime: null,
-                endDateTime: null
-            });
-
-            this.getView().down('#categoriesGrid').setCollapsed(false); // expand categories panel if collapsed
-
-            // filter reports based on selected category
-            Ext.getStore('reports').filter({
-                property: 'category',
-                value: this.getView().getInitCategory().categoryName,
-                exactMatch: true
-            });
-            this.buildReportsList();
-            return;
-        }
-
-        // if main Reports view
-        vm.set({
-            isNodeReporting: false,
-            activeCard: 'allCategoriesCard',
-            category: null,
-            report: null,
-            categoriesData: null,
-            startDateTime: null,
-            endDateTime: null
-        });
-
-        this.getCurrentApplications();
-    },
-
-    onBeforeDeactivate: function () {
-        this.getView().down('#categoriesGrid').getSelectionModel().deselectAll();
-        this.getView().down('#reportsGrid').getSelectionModel().deselectAll();
-        Ext.getStore('reports').clearFilter();
-    },
-
-    getCurrentApplications: function () {
-        var app, i, vm = this.getViewModel(), me = this;
-        var categories = [
-            { categoryName: 'Hosts', displayName: 'Hosts'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_hosts.png' },
-            { categoryName: 'Devices', displayName: 'Devices'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_devices.png' },
-            { categoryName: 'Network', displayName: 'Network'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_network.png' },
-            { categoryName: 'Administration', displayName: 'Administration'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_admin.png' },
-            { categoryName: 'System', displayName: 'System'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_system.png' },
-            { categoryName: 'Shield', displayName: 'Shield'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/apps/untangle-node-shield_17x17.png' }
-        ];
-
-        rpc.reportsManager.getCurrentApplications(function (result, ex) {
-            if (ex) { Ung.Util.exceptionToast(ex); return false; }
-
-            for (i = 0; i < result.list.length; i += 1) {
-                app = result.list[i];
-                if (app.name !== 'untangle-node-branding-manager' && app.name !== 'untangle-node-live-support') {
-                    categories.push({
-                        categoryName: app.displayName,
-                        appName: app.name,
-                        displayName: app.displayName, // t()
-                        icon: resourcesBaseHref + '/skins/modern-rack/images/admin/apps/' + app.name + '_80x80.png'
-                    });
-                }
-            }
-            Ext.getStore('categories').loadData(categories);
-            vm.set('categoriesData', Ext.getStore('categories').getRange());
-            //me.getView().down('#categoriesGrid').getSelectionModel().select(0);
-
-            var allCategItems = [];
-            categories.forEach(function (category, idx) {
-                allCategItems.push({
-                    xtype: 'button',
-                    baseCls: 'category-btn',
-                    html: '<img src="' + category.icon + '"/><br/><span>' + category.displayName + '</span>',
-                    index: idx,
-                    handler: function () {
-                        me.getView().down('#categoriesGrid').getSelectionModel().select(this.index);
-                    }
-                });
-            });
-            me.getView().down('#allCategoriesList').removeAll();
-
-            if (me.getView().down('#categoriesLoader')) {
-                me.getView().down('#categoriesLoader').destroy();
-            }
-
-            me.getView().down('#allCategoriesList').add(allCategItems);
-        });
-    },
-
-    getAvailableTables: function() {
-        var me = this;
-        if (rpc.reportsManager) {
-            rpc.reportsManager.getTables(function (result, ex) {
-                if (ex) { Ung.Util.exceptionToast(ex); return false; }
-                me.getViewModel().set('tableNames', result);
-            });
-        }
-    },
-
-    onCategorySelect: function (selModel, records) {
-        if (records.length === 0) {
-            return false;
-        }
-
-        this.getViewModel().set('activeCard', 'categoryCard'); // set category view card as active
-        this.getViewModel().set('category', records[0]);
-        this.getViewModel().set('report', null);
-        this.getView().down('#categoriesGrid').setCollapsed(false); // expand categories panel if collapsed
-
-        this.getView().down('#reportsGrid').getSelectionModel().deselectAll();
-
-        // filter reports based on selected category
-        Ext.getStore('reports').filter({
-            property: 'category',
-            value: records[0].get('categoryName'),
-            exactMatch: true
-        });
-        this.buildReportsList();
-    },
-
-    buildReportsList: function () {
-        var me = this;
-        var entries = [], entryHtml = '';
-
-        // add reports list in category view card
-        this.getView().down('#categoryReportsList').removeAll();
-        Ext.getStore('reports').getRange().forEach(function (report) {
-
-            entryHtml = Ung.Util.iconReportTitle(report);
-            entryHtml += '<span class="ttl">' + (report.get('readOnly') ? report.get('title').t() : report.get('title')) + '</span><p>' +
-                          (report.get('readOnly') ? report.get('description').t() : report.get('description')) + '</p>';
-            entries.push({
-                xtype: 'button',
-                html: entryHtml,
-                baseCls: 'entry-btn',
-                //cls: (!entries[i].readOnly && entries[i].type !== 'EVENT_LIST') ? 'entry-btn custom' : 'entry-btn',
-                border: false,
-                textAlign: 'left',
-                item: report,
-                handler: function () {
-                    //console.log('handler');
-                    me.getView().down('#reportsGrid').getSelectionModel().select(this.item);
-                    //_that.entryList.getSelectionModel().select(this.item);
-                }
-            });
-        });
-        this.getView().down('#categoryReportsList').add(entries);
-    },
-
-    onReportSelect: function (selModel, records) {
-        if (records.length === 0) {
-            this.getViewModel().set({
-                activeCard: 'categoryCard'
-            });
-            return;
-        }
-        var report = records[0],
-            chartContainer = this.getView().down('#report');
-
-        this.getViewModel().set({
-            activeCard: 'reportCard',
-            report: report
-        });
-
-        this.getView().down('#customization').setActiveItem(0);
-        chartContainer.remove('chart');
-
-        if (report.get('type') === 'TIME_GRAPH' || report.get('type') === 'TIME_GRAPH_DYNAMIC') {
-            chartContainer.add({
-                xtype: 'timechart',
-                itemId: 'chart',
-                entry: report
-            });
-        }
-
-        if (report.get('type') === 'PIE_GRAPH') {
-            chartContainer.add({
-                xtype: 'piechart',
-                itemId: 'chart',
-                entry: report
-            });
-        }
-
-        if (report.get('type') === 'EVENT_LIST') {
-            chartContainer.add({
-                xtype: 'eventchart',
-                itemId: 'chart',
-                entry: report
-            });
-        }
-
-        if (report.get('type') === 'TEXT') {
-            chartContainer.add({
-                xtype: 'component',
-                itemId: 'chart',
-                html: 'Not Implemented'
-            });
-        }
-
-
-    },
-
-    fetchReportData: function () {
-        var me = this,
-            vm = me.getViewModel(),
-            chart = me.getView().down('#chart');
-
-        chart.fireEvent('beginfetchdata');
-
-        if (vm.get('report.type') !== 'EVENT_LIST') {
-            rpc.reportsManager.getDataForReportEntry(function (result, ex) {
-                if (ex) { Ung.Util.exceptionToast(ex); return false; }
-                chart.fireEvent('setseries', result.list);
-            }, chart.getEntry().getData(), vm.get('startDateTime'), vm.get('endDateTime'), -1);
-        } else {
-            var extraCond = null, limit = 100;
-            rpc.reportsManager.getEventsForDateRangeResultSet(function (result, ex) {
-                if (ex) { Ung.Util.exceptionToast(ex); return false; }
-                //console.log(result);
-                //this.loadResultSet(result);
-                result.getNextChunk(function (result2, ex2) {
-                    if (ex2) { Ung.Util.exceptionToast(ex2); return false; }
-                    console.log(result2);
-                    chart.fireEvent('setdata', result2.list);
-                }, 100);
-
-            }, chart.getEntry().getData(), extraCond, limit,  vm.get('startDateTime'), vm.get('endDateTime'));
-        }
-    },
-
-    onSelectStartDate: function (picker, date) {
-        var vm = this.getViewModel(), _date;
-        if (!vm.get('startDateTime')) {
-            this.getViewModel().set('startDateTime', date);
-        } else {
-            _date = new Date(vm.get('startDateTime'));
-            _date.setDate(date.getDate());
-            _date.setMonth(date.getMonth());
-            vm.set('startDateTime', _date);
-        }
-    },
-
-    onSelectStartTime: function (combo, record) {
-        var vm = this.getViewModel(), _date;
-        if (!vm.get('startDateTime')) {
-            _date = new Date();
-            //_date = _date.setDate(_date.getDate() - 1);
-        } else {
-            _date = new Date(vm.get('startDateTime'));
-        }
-        _date.setHours(record.get('date').getHours());
-        _date.setMinutes(record.get('date').getMinutes());
-        vm.set('startDateTime', _date);
-    },
-
-    setStartDateTime: function () {
-        var view = this.getView();
-        console.log(this.getViewModel().get('startDateTime'));
-        view.down('#startDateTimeMenu').hide();
-    },
-
-    onSelectEndDate: function (picker, date) {
-        var vm = this.getViewModel(), _date;
-        if (!vm.get('endDateTime')) {
-            this.getViewModel().set('endDateTime', date);
-        } else {
-            _date = new Date(vm.get('endDateTime'));
-            _date.setDate(date.getDate());
-            _date.setMonth(date.getMonth());
-            vm.set('endDateTime', _date);
-        }
-    },
-
-    onSelectEndTime: function (combo, record) {
-        var vm = this.getViewModel(), _date;
-        if (!vm.get('endDateTime')) {
-            _date = new Date();
-            //_date = _date.setDate(_date.getDate() - 1);
-        } else {
-            _date = new Date(vm.get('endDateTime'));
-        }
-        _date.setHours(record.get('date').getHours());
-        _date.setMinutes(record.get('date').getMinutes());
-        vm.set('endDateTime', _date);
-    },
-
-    setEndDateTime: function () {
-        var view = this.getView();
-        view.down('#endDateTimeMenu').hide();
-    },
-
-    saveReport: function () {
-        var me = this, report,
-            vm = this.getViewModel();
-
-        report = vm.get('report').copy(null);
-        report.set('uniqueId', 'report-' + Math.random().toString(36).substr(2));
-        report.set('readOnly', false);
-
-        rpc.reportsManager.saveReportEntry(function (result, ex) {
-            if (ex) { Ung.Util.exceptionToast(ex); return false; }
-            vm.get('report').reject();
-            Ext.getStore('reports').add(report);
-            report.commit();
-            me.getView().down('#reportsGrid').getSelectionModel().select(report);
-            Ung.Util.successToast('<span style="color: yellow; font-weight: 600;">' + report.get('title') + ' report added!');
-        }, report.getData());
-    },
-
-    updateReport: function () {
-        var vm = this.getViewModel();
-
-        rpc.reportsManager.saveReportEntry(function (result, ex) {
-            if (ex) { Ung.Util.exceptionToast(ex); return false; }
-            vm.get('report').commit();
-            Ung.Util.successToast('<span style="color: yellow; font-weight: 600;">' + vm.get('report.title') + '</span> report updated!');
-        }, vm.get('report').getData());
-    },
-
-    removeReport: function () {
-        var me = this,
-            vm = this.getViewModel();
-
-        Ext.MessageBox.confirm('Warning'.t(),
-            'This will remove also the Widget from Dashboard'.t() + '<br/><br/>' +
-            'Do you want to continue?'.t(),
-            function (btn) {
-                if (btn === 'yes') {
-                    rpc.reportsManager.removeReportEntry(function (result, ex) {
-                        if (ex) { Ung.Util.exceptionToast(ex); return false; }
-
-                        Ext.getStore('reports').remove(vm.get('report'));
-                        me.buildReportsList();
-                        me.getView().down('#reportsGrid').getSelectionModel().deselectAll();
-
-                        Ung.Util.successToast('Report removed!');
-
-                        me.toggleDashboardWidget();
-                    }, vm.get('report').getData());
-                }
-            });
-    },
-
-    toggleDashboardWidget: function () {
-        var vm = this.getViewModel(), record, me = this;
-        if (vm.get('isWidget')) {
-            // remove from dashboard
-            record = Ext.getStore('widgets').findRecord('entryId', vm.get('report.uniqueId'));
-            if (record) {
-                Ext.getStore('widgets').remove(record);
-                Ung.dashboardSettings.widgets.list = Ext.Array.pluck(Ext.getStore('widgets').getRange(), 'data');
-                rpc.dashboardManager.setSettings(function (result, ex) {
-                    if (ex) { Ung.Util.exceptionToast(ex); return; }
-                    Ung.Util.successToast('<span style="color: yellow; font-weight: 600;">' + vm.get('report.title') + '</span> was removed from dashboard!');
-                    Ext.GlobalEvents.fireEvent('removewidget', vm.get('report.uniqueId'));
-                    vm.set('isWidget', !vm.get('isWidget'));
-                    me.getView().down('#reportsGrid').getView().refresh();
-                }, Ung.dashboardSettings);
-            } else {
-                Ung.Util.exceptionToast('<span style="color: yellow; font-weight: 600;">' + vm.get('report.title') + '</span> was not found on Dashboard!');
-            }
-        } else {
-            // add to dashboard
-            record = Ext.create('Ung.model.Widget', {
-                displayColumns: vm.get('report.displayColumns'),
-                enabled: true,
-                entryId: vm.get('report.uniqueId'),
-                javaClass: 'com.untangle.uvm.DashboardWidgetSettings',
-                refreshIntervalSec: 60,
-                timeframe: 3600,
-                type: 'ReportEntry'
-            });
-            Ext.getStore('widgets').add(record);
-
-            Ung.dashboardSettings.widgets.list = Ext.Array.pluck(Ext.getStore('widgets').getRange(), 'data');
-            rpc.dashboardManager.setSettings(function (result, ex) {
-                if (ex) { Ung.Util.exceptionToast(ex); return; }
-                Ung.Util.successToast('<span style="color: yellow; font-weight: 600;">' + vm.get('report.title') + '</span> was added to dashboard!');
-                Ext.GlobalEvents.fireEvent('addwidget', record, vm.get('report'));
-                vm.set('isWidget', !vm.get('isWidget'));
-                me.getView().down('#reportsGrid').getView().refresh();
-            }, Ung.dashboardSettings);
-        }
-    }
-
-});
-
-Ext.define('Ung.view.reports.ReportsModel', {
-    extend: 'Ext.app.ViewModel',
-
-    alias: 'viewmodel.reports',
-
-    data: {
-        isNodeReporting: false,
-        activeCard: 'allCategoriesCard', // allCategoriesCard, categoryCard, reportCard
-        category: null,
-        report: null,
-        categoriesData: null,
-        startDateTime: null,
-        endDateTime: null
-    },
-
-    formulas: {
-        isCategorySelected: function (get) {
-            return get('activeCard') !== 'allCategoriesCard';
-        },
-
-        areCategoriesHidden: function (get) {
-            return !get('isCategorySelected') || get('isNodeReporting');
-        },
-
-        reportHeading: function (get) {
-            if (get('report.readOnly')) {
-                return '<h2>' + get('report.title').t() + '</h2><p>' + get('report.description').t() + '</p>';
-            }
-            return '<h2>' + get('report.title') + '</h2><p>' + get('report.description') + '</p>';
-        },
-
-        isTimeGraph: function (get) {
-            if (!get('report.type')) {
-                return false;
-            }
-            return get('report.type').indexOf('TIME_GRAPH') >= 0;
-        },
-        isPieGraph: function (get) {
-            if (!get('report.type')) {
-                return false;
-            }
-            return get('report.type').indexOf('PIE_GRAPH') >= 0;
-        },
-
-        startDate: function (get) {
-            if (!get('startDateTime')) {
-                return 'One day ago'.t();
-            }
-            return Ext.Date.format(get('startDateTime'), 'M j, h:i a');
-        },
-        endDate: function (get) {
-            if (!get('endDateTime')) {
-                return 'Present'.t();
-            }
-            return Ext.Date.format(get('endDateTime'), 'M j, h:i a');
-        },
-        startTimeMax: function (get) {
-            var now = new Date(),
-                ref = new Date(get('startDateTime'));
-            if (now.getYear() === ref.getYear() && now.getMonth() === ref.getMonth() && now.getDate() === ref.getDate()) {
-                return now;
-            }
-        },
-
-        customizeTitle: function (get) {
-            if (get('report.readOnly')) {
-                return 'Customize'.t() + ' <span style="font-weight: 300; color: #777;">(' + 'Readonly report! Changes can be saved as a new custom report!' + ')</span>';
-            }
-            return 'Customize'.t();
-        },
-
-        isWidget: function (get) {
-            return Ext.getStore('widgets').findRecord('entryId', get('report.uniqueId')) ? true : false;
-        },
-
-        dashboardBtnLabel: function (get) {
-            if (get('isWidget')) {
-                return Ung.Util.iconTitle('Remove from Dashboard'.t(), 'home-16');
-            }
-            return Ung.Util.iconTitle('Add to Dashboard'.t(), 'home-16');
-        }
-    },
-
-    stores: {
-        categories: {
-            model: 'Ung.model.Category',
-            data: '{categoriesData}'
-        }
-        /*
-        tables: {
-            data: '{tablesData}'
-        }
-        */
-    }
-});
-Ext.define ('Ung.model.Category', {
-    extend: 'Ext.data.Model' ,
-    fields: [
-        { name: 'name', type: 'string' },
-        { name: 'displayName', type: 'string' },
-        { name: 'icon', type: 'string' }
-    ],
-    proxy: {
-        type: 'memory',
-        reader: {
-            type: 'json'
-        }
-    }
-});
-Ext.define('Ung.view.reports.Reports', {
-    extend: 'Ext.container.Container',
-    xtype: 'ung.reports',
-    layout: 'border',
-
-    requires: [
-        'Ung.view.reports.ReportsController',
-        'Ung.view.reports.ReportsModel',
-        'Ung.model.Category'
-    ],
-
-    controller: 'reports',
     viewModel: {
-        type: 'reports'
+        // data: {
+        //     confs: [
+        //         { name: 'Network'.t(), url: 'network', icon: 'icon_config_network.png' },
+        //         { name: 'Administration'.t(), url: 'administration', icon: 'icon_config_admin.png' },
+        //         { name: 'Email'.t(), url: 'email', icon: 'icon_config_email.png' },
+        //         { name: 'Local Directory'.t(), url: 'localdirectory', icon: 'icon_config_directory.png' },
+        //         { name: 'Upgrade'.t(), url: 'upgrade', icon: 'icon_config_upgrade.png' },
+        //         { name: 'System'.t(), url: 'system', icon: 'icon_config_system.png' },
+        //         { name: 'About'.t(), url: 'about', icon: 'icon_config_about.png' }
+        //     ]
+        // }
     },
 
-    config: {
-        // initial category used for reports inside nodes
-        initCategory: null
-    },
+    layout: 'fit',
 
     items: [{
-        region: 'west',
-        xtype: 'grid',
-        itemId: 'categoriesGrid',
-        title: 'Select Category'.t(),
-        width: 200,
-        hideHeaders: true,
-        shadow: false,
-        collapsible: true,
-        floatable: false,
-        titleCollapse: true,
-        animCollapse: false,
-        //allowDeselect: true,
-        viewConfig: {
-            stripeRows: false
-            /*
-            getRowClass: function(record) {
-                if (record.dirty) {
-                    return 'dirty';
-                }
-            }
-            */
+        xtype: 'dataview',
+        style: {
+            textAlign: 'center'
         },
-        hidden: true,
-        bind: {
-            hidden: '{areCategoriesHidden}',
-            store: '{categories}'
-        },
-        columns: [{
-            dataIndex: 'icon',
-            width: 20,
-            renderer: function (value, meta) {
-                meta.tdCls = 'app-icon';
-                return '<img src="' + value + '"/>';
-            }
-        }, {
-            dataIndex: 'displayName',
-            flex: 1
-            /*
-            renderer: function (value, meta) {
-                //meta.tdCls = 'app-icon';
-                return '<span style="font-weight: 600;">' + value + '</span>';
-            }
-            */
-        }]
-    }, {
-        region: 'center',
-        layout: 'border',
-        border: false,
-        items: [{
-            region: 'west',
-            xtype: 'grid',
-            itemId: 'reportsGrid',
-            title: 'Select Report'.t(),
-            width: 250,
-            hideHeaders: true,
-            shadow: false,
-            collapsible: true,
-            layout: 'fit',
-            animCollapse: false,
-            floatable: false,
-            titleCollapse: true,
-            viewConfig: {
-                stripeRows: false
-            },
-            bind: {
-                //hidden: '{!report}',
-                hidden: '{!isCategorySelected}',
-                store: '{reports}'
-            },
-            columns: [{
-                dataIndex: 'title',
-                width: 20,
-                renderer: function (value, meta, record) {
-                    meta.tdCls = 'app-icon';
-                    return Ung.Util.iconReportTitle(record);
-                }
-            }, {
-                dataIndex: 'title',
-                flex: 1,
-                renderer: function (value, meta, record) {
-                    return record.get('readOnly') ? value.t() : value;
-                }
-            }, {
-                dataIndex: 'readOnly',
-                width: 20,
-                align: 'center',
-                renderer: function (value, meta) {
-                    meta.tdCls = 'app-icon';
-                    return !value ? '<i class="material-icons" style="font-size: 14px; color: #999;">brush</i>' : '';
-                }
-            }, {
-                dataIndex: 'uniqueId',
-                width: 20,
-                align: 'center',
-                renderer: function (value, meta) {
-                    meta.tdCls = 'app-icon';
-                    if (Ext.getStore('widgets').findRecord('entryId', value)) {
-                        return '<i class="material-icons" style="font-size: 14px; color: #999;">home</i>';
-                    }
-                    return '';
-                }
-            }]
-        }, {
-            region: 'center',
-            border: false,
-            layout: 'card',
-            bind: {
-                activeItem: '{activeCard}'
-            },
-            defaults: {
-                border: false
-            },
-            items: [{
-                // initial view which displays all available categories / apps
-                itemId: 'allCategoriesCard',
-                scrollable: true,
-                layout: {
-                    type: 'vbox',
-                    align: 'stretch'
-                    //pack: 'center'
-                },
-                items: [{
-                    xtype: 'component',
-                    cls: 'headline',
-                    margin: '50 0',
-                    html: 'Please select a category first!'
-                }, {
-                    xtype: 'component',
-                    itemId: 'categoriesLoader',
-                    margin: '50 0',
-                    cls: 'loader',
-                    html: '<div class="spinner"><div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div></div>'
-                }, {
-                    xtype: 'container',
-                    itemId: 'allCategoriesList',
-                    //layout: 'fit',
-                    //maxWidth: 600,
-                    style: {
-                        textAlign: 'center'
-                    }
-                }]
-            }, {
-                // view which displays all reports from a specific category
-                itemId: 'categoryCard',
-                scrollable: true,
-                items: [{
-                    xtype: 'component',
-                    cls: 'headline',
-                    margin: '50 0',
-                    bind: {
-                        html: '<img src="{category.icon}" style="width: 80px; height: 80px;"/><br/>{category.displayName}'
-                    }
-                }, {
-                    xtype: 'container',
-                    style: {
-                        textAlign: 'center'
-                    },
-                    itemId: 'categoryReportsList'
-                }]
-            }, {
-                // report display
-                layout: 'border',
-                itemId: 'reportCard',
-                defaults: {
-                    border: false,
-                    bodyBorder: false
-                },
-                items: [{
-                    // report heading
-                    region: 'north',
-                    height: 60,
-                    items: [{
-                        xtype: 'component',
-                        cls: 'report-header',
-                        bind: {
-                            html: '{reportHeading}'
-                        }
-                    }]
-                }, {
-                    // report chart/event grid
-                    region: 'center',
-                    itemId: 'report',
-                    //height: 40,
-                    layout: 'fit',
-                    items: [],
-                    bbar: [{
-                        xtype: 'component',
-                        margin: '0 5 0 5',
-                        html: Ung.Util.iconTitle('', 'date_range-16')
-                    }, {
-                        xtype: 'button',
-                        bind: {
-                            text: '{startDate}'
-                        },
-                        menu: {
-                            itemId: 'startDateTimeMenu',
-                            plain: true,
-                            showSeparator: false,
-                            shadow: false,
-                            //xtype: 'form',
-                            layout: {
-                                type: 'vbox',
-                                align: 'stretch'
-                            },
-                            items: [{
-                                xtype: 'datepicker',
-                                maxDate: new Date(),
-                                itemId: 'startDate'
-                            }, {
-                                xtype: 'timefield',
-                                itemId: 'startTime',
-                                format: 'h:i a',
-                                increment: 30,
-                                margin: '5',
-                                fieldLabel: 'Time'.t(),
-                                labelAlign: 'right',
-                                labelWidth: 60,
-                                width: 160,
-                                plain: true,
-                                editable: false,
-                                value: '12:00 am',
-                                bind: {
-                                    maxValue: '{startTimeMax}'
-                                }
-                            }, {
-                                xtype: 'button',
-                                itemId: 'startDateTimeBtn',
-                                text: Ung.Util.iconTitle('OK'.t(), 'check-16')
-                            }]
-                        }
-                    }, {
-                        xtype: 'button',
-                        bind: {
-                            text: '{endDate}'
-                        },
-                        menu: {
-                            itemId: 'endDateTimeMenu',
-                            plain: true,
-                            showSeparator: false,
-                            shadow: false,
-                            //xtype: 'form',
-                            layout: {
-                                type: 'vbox',
-                                align: 'stretch'
-                            },
-                            items: [{
-                                xtype: 'datepicker',
-                                maxDate: new Date(),
-                                itemId: 'endDate',
-                                bind: {
-                                    minDate: '{startDateTime}'
-                                }
-                            }, {
-                                xtype: 'timefield',
-                                itemId: 'endTime',
-                                format: 'h:i a',
-                                increment: 30,
-                                margin: '5',
-                                fieldLabel: 'Time'.t(),
-                                labelAlign: 'right',
-                                labelWidth: 60,
-                                width: 160,
-                                plain: true,
-                                editable: false,
-                                value: '12:00 am',
-                                bind: {
-                                    maxValue: '{endTimeMax}'
-                                }
-                            }, {
-                                xtype: 'button',
-                                itemId: 'endDateTimeBtn',
-                                text: Ung.Util.iconTitle('OK'.t(), 'check-16')
-                            }]
-                        }
-                    }, '-' , {
-                        text: Ung.Util.iconTitle('Refresh'.t(), 'update-16'),
-                        itemId: 'refreshBtn'
-                    }, '->', {
-                        itemId: 'downloadBtn',
-                        text: Ung.Util.iconTitle('Download'.t(), 'file_download-16')
-                    }, '-', {
-                        itemId: 'dashboardBtn',
-                        bind: {
-                            text: '{dashboardBtnLabel}'
-                        }
-
-                    }]
-                }, {
-                    // report customization
-                    region: 'south',
-                    xtype: 'form',
-                    layout: 'fit',
-                    minHeight: 300,
-                    shadow: false,
-                    split: true,
-                    collapsible: true,
-                    collapsed: false,
-                    floatable: false,
-                    titleCollapse: true,
-                    animCollapse: false,
-                    border: false,
-                    bodyBorder: false,
-
-                    bind: {
-                        title: '{customizeTitle}'
-                    },
-
-                    items: [{
-                        xtype: 'tabpanel',
-                        itemId: 'customization',
-                        border: false,
-                        defaults: {
-                            border: false,
-                            bodyBorder: false,
-                            bodyPadding: 5
-                        },
-                        items: [{
-                            title: Ung.Util.iconTitle('Style'.t(), 'color_lens-16'),
-                            layout: {
-                                type: 'vbox',
-                                align: 'stretch'
-                            },
-                            items: [{
-                                // ALL - report title
-                                xtype: 'textfield',
-                                fieldLabel: 'Title'.t(),
-                                maxWidth: 400,
-                                labelWidth: 150,
-                                labelAlign: 'right',
-                                allowBlank: false,
-                                bind: {
-                                    value: '{report.title}'
-                                }
-                            }, {
-                                // ALL - report description
-                                xtype: 'textfield',
-                                fieldLabel: 'Description'.t(),
-                                labelWidth: 150,
-                                labelAlign: 'right',
-                                bind: {
-                                    value: '{report.description}'
-                                }
-                            }, {
-                                // ALL - report enabled
-                                xtype: 'container',
-                                layout: 'hbox',
-                                margin: '0 0 5 0',
-                                items: [{
-                                    xtype: 'label',
-                                    cls: 'x-form-item-label-default',
-                                    width: 155,
-                                    style: {
-                                        textAlign: 'right'
-                                    },
-                                    text: 'Enabled'.t() + ':'
-                                }, {
-                                    xtype: 'segmentedbutton',
-                                    bind: {
-                                        value: '{report.enabled}'
-                                    },
-                                    items: [
-                                        {text: 'YES'.t(), value: true },
-                                        {text: 'NO'.t(), value: false }
-                                    ]
-                                }]
-                            }, {
-                                // TIME_GRAPH - chart style
-                                xtype: 'container',
-                                layout: 'hbox',
-                                margin: '0 0 5 0',
-                                hidden: true,
-                                bind: {
-                                    disabled: '{!isTimeGraph}',
-                                    hidden: '{!isTimeGraph}'
-                                },
-                                items: [{
-                                    xtype: 'label',
-                                    cls: 'x-form-item-label-default',
-                                    width: 155,
-                                    style: {
-                                        textAlign: 'right'
-                                    },
-                                    text: 'Time Chart Style'.t() + ':'
-                                }, {
-                                    xtype: 'segmentedbutton',
-                                    itemId: 'chartStyleBtn',
-                                    bind: {
-                                        value: '{report.timeStyle}'
-                                    },
-                                    items: [
-                                        {text: 'Line'.t(), value: 'LINE', styleType: 'spline'},
-                                        {text: 'Area'.t(), value: 'AREA', styleType: 'areaspline'},
-                                        {text: 'Stacked Area'.t(), value: 'AREA_STACKED', styleType: 'areaspline', stacked: true},
-                                        {text: 'Column'.t(), value: 'BAR', styleType: 'column', grouped: true},
-                                        {text: 'Overlapped Columns'.t(), value: 'BAR_OVERLAPPED', styleType: 'column', overlapped: true},
-                                        {text: 'Stacked Columns'.t(), value: 'BAR_STACKED', styleType: 'column', stacked : true}
-                                    ]
-                                }]
-                            }, {
-                                // PIE_GRAPH - chart style
-                                xtype: 'container',
-                                layout: 'hbox',
-                                margin: '0 0 5 0',
-                                hidden: true,
-                                bind: {
-                                    disabled: '{!isPieGraph}',
-                                    hidden: '{!isPieGraph}'
-                                },
-                                items: [{
-                                    xtype: 'label',
-                                    cls: 'x-form-item-label-default',
-                                    width: 155,
-                                    style: {
-                                        textAlign: 'right'
-                                    },
-                                    text: 'Style'.t() + ':'
-                                }, {
-                                    xtype: 'segmentedbutton',
-                                    itemId: 'chartStyleBtn',
-                                    bind: {
-                                        value: '{report.pieStyle}'
-                                    },
-                                    items: [
-                                        {text: 'Pie', value: 'PIE', styleType: 'pie'},
-                                        //{text: 'Pie 3D', value: 'PIE_3D', styleType: 'pie'},
-                                        {text: 'Donut', value: 'DONUT', styleType: 'pie'},
-                                        //{text: 'Donut 3D', value: 'DONUT_3D', styleType: 'pie'},
-                                        {text: 'Column', value: 'COLUMN', styleType: 'column'}
-                                        //{text: 'Column 3D', value: 'COLUMN_3D', styleType: 'column'}
-                                    ]
-                                }]
-                            }, {
-                                // TIME_GRAPH - data interval
-                                xtype: 'container',
-                                layout: 'hbox',
-                                margin: '0 0 5 0',
-                                hidden: true,
-                                bind: {
-                                    disabled: '{!isTimeGraph}',
-                                    hidden: '{!isTimeGraph}'
-                                },
-                                items: [{
-                                    xtype: 'label',
-                                    cls: 'x-form-item-label-default',
-                                    width: 155,
-                                    style: {
-                                        textAlign: 'right'
-                                    },
-                                    text: 'Time Data Interval'.t() + ':'
-                                }, {
-                                    xtype: 'segmentedbutton',
-                                    itemId: 'timeIntervalBtn',
-                                    bind: {
-                                        value: '{report.timeDataInterval}'
-                                    },
-                                    items: [
-                                        {text: 'Auto'.t(), value: 'AUTO'},
-                                        {text: 'Second'.t(), value: 'SECOND', defaultTimeFrame: 60 },
-                                        {text: 'Minute'.t(), value: 'MINUTE', defaultTimeFrame: 60 },
-                                        {text: '10 Minutes'.t(), value: 'TENMINUTE', defaultTimeFrame: 600 },
-                                        {text: 'Hour'.t(), value: 'HOUR', defaultTimeFrame: 24 },
-                                        {text: 'Day'.t(), value: 'DAY', defaultTimeFrame: 7 },
-                                        {text: 'Week'.t(), value: 'WEEK', defaultTimeFrame: 12 },
-                                        {text: 'Month'.t(), value: 'MONTH', defaultTimeFrame: 6 }
-                                    ]
-                                }]
-                            }, {
-                                // PIE_GRAPH - number of pie slices
-                                xtype: 'numberfield',
-                                fieldLabel: 'Pie Slices Number'.t(),
-                                labelWidth: 150,
-                                maxWidth: 200,
-                                labelAlign: 'right',
-                                minValue: 1,
-                                maxValue: 25,
-                                allowBlank: false,
-                                hidden: true,
-                                bind: {
-                                    disabled: '{!isPieGraph}',
-                                    hidden: '{!isPieGraph}',
-                                    value: '{report.pieNumSlices}'
-                                }
-                            }]
-                        }, {
-                            title: Ung.Util.iconTitle('Conditions'.t(), 'find_in_page-16')
-                        }, {
-                            title: Ung.Util.iconTitle('Advanced'.t(), 'settings-16'),
-                            scrollable: true,
-                            layout: {
-                                type: 'vbox',
-                                align: 'stretch'
-                            },
-                            items: [{
-                                // TIME_GRAPH - table
-                                xtype: 'combobox',
-                                fieldLabel: 'Table'.t(),
-                                maxWidth: 400,
-                                labelWidth: 150,
-                                labelAlign: 'right',
-                                editable: false,
-                                hidden: true,
-                                bind: {
-                                    store: '{tableNames}',
-                                    disabled: '{!isTimeGraph}',
-                                    hidden: '{!isTimeGraph}',
-                                    value: '{report.table}'
-                                }
-                            }, {
-                                // TIME_GRAPH - units
-                                xtype: 'textfield',
-                                fieldLabel: 'Units'.t(),
-                                maxWidth: 305,
-                                labelWidth: 150,
-                                labelAlign: 'right',
-                                hidden: true,
-                                bind: {
-                                    disabled: '{!isTimeGraph}',
-                                    hidden: '{!isTimeGraph}',
-                                    value: '{report.units}'
-                                }
-                            }, {
-                                // TIME_GRAPH - time data columns
-                                xtype: 'textarea',
-                                fieldLabel: 'Time Data Columns'.t(),
-                                grow: true,
-                                maxWidth: 500,
-                                labelWidth: 150,
-                                labelAlign: 'right',
-                                hidden: true,
-                                bind: {
-                                    disabled: '{!isTimeGraph}',
-                                    hidden: '{!isTimeGraph}',
-                                    value: '{report.timeDataColumns}'
-                                }
-                            }, {
-                                // TIME_GRAPH - series renderer
-                                xtype: 'textfield',
-                                fieldLabel: 'Series Renderer'.t(),
-                                maxWidth: 305,
-                                labelWidth: 150,
-                                labelAlign: 'right',
-                                hidden: true,
-                                bind: {
-                                    disabled: '{!isTimeGraph}',
-                                    hidden: '{!isTimeGraph}',
-                                    value: '{report.seriesRenderer}'
-                                }
-                            }, {
-                                // ALL - column ordering
-                                xtype: 'container',
-                                layout: 'hbox',
-                                margin: '0 0 5 0',
-                                items: [{
-                                    xtype: 'label',
-                                    cls: 'x-form-item-label-default',
-                                    width: 155,
-                                    style: {
-                                        textAlign: 'right'
-                                    },
-                                    text: 'Order By Column'.t() + ':'
-                                }, {
-                                    xtype: 'textfield',
-                                    bind: {
-                                        value: '{report.orderByColumn}'
-                                    }
-                                }, {
-                                    xtype: 'segmentedbutton',
-                                    margin: '0 0 0 5',
-                                    bind: {
-                                        value: '{report.orderDesc}'
-                                    },
-                                    items: [
-                                        {text: Ung.Util.iconTitle('Ascending'.t(), 'arrow_upward-16'), value: true },
-                                        {text: Ung.Util.iconTitle('Descending'.t(), 'arrow_downward-16'), value: false }
-                                    ]
-                                }]
-                            }, {
-                                // ALL - display order
-                                xtype: 'numberfield',
-                                fieldLabel: 'Display Order'.t(),
-                                maxWidth: 220,
-                                labelWidth: 150,
-                                labelAlign: 'right',
-                                bind: {
-                                    value: '{report.displayOrder}'
-                                }
-                            }]
-                        }]
-                    }],
-                    fbar: [/*{
-                        text: Ung.Util.iconTitle('Preview'.t(), 'rotate_left-16'),
-                        itemId: 'applyBtn',
-                        formBind: true
-                    },*/ {
-                        text: Ung.Util.iconTitle('Remove'.t(), 'delete-16'),
-                        itemId: 'removeBtn',
-                        bind: {
-                            hidden: '{report.readOnly}'
-                        }
-                    }, {
-                        text: Ung.Util.iconTitle('Update'.t(), 'save-16'),
-                        itemId: 'updateBtn',
-                        formBind: true,
-                        bind: {
-                            hidden: '{report.readOnly}'
-                        }
-                    }, {
-                        text: Ung.Util.iconTitle('Save as New Report'.t(), 'add-16'),
-                        itemId: 'saveNewBtn',
-                        formBind: true
-                    }]
-                }]
-            }]
-
-        }]
-    }]
-});
-Ext.define('Ung.view.node.SettingsController', {
-    extend: 'Ext.app.ViewController',
-    alias: 'controller.nodesettings',
-
-    config: {
-        nodeManager: null
-    },
-
-    control: {
-        '#': { // main settings view listeners
-            beforeactivate: 'onBeforeActivate',
-            beforedeactivate: 'onBeforeDeactivate'
-        }
-    },
-
-    listen: {
         store: {
-            '#metrics': {
-                datachanged: 'updateMetrics'
-            }
-        }
-    },
-
-    onBeforeActivate: function () {
-        var me = this,
-            vm = this.getViewModel();
-
-        var policy = Ext.getStore('policies').findRecord('policyId', vm.get('policyId'));
-
-        // get node instance based on policy and node name
-
-        var nodeInstance = policy.get('instances').list.filter(function (node) {
-            return node.nodeName === vm.get('nodeName');
-        })[0];
-        // get node properties based on policy and node instance
-        var nodeProps = vm.get('policy.nodeProperties.list').filter(function (prop) {
-            return nodeInstance.nodeName === prop.name;
-        })[0];
-
-        vm.set('nodeInstance', nodeInstance);
-        vm.set('nodeProps', nodeProps);
-
-        var mask = new Ext.LoadMask({
-            msg: 'Loading...'.t(),
-            target: this.getView()
-        }).show();
-
-        // dynamic require node class
-        Ext.require(Ung.Util.nodeClassMapping[nodeInstance.nodeName], function () {
-            // get node manager
-            rpc.nodeManager.node(function (nodeManager, ex) {
-                if (ex) { Ung.Util.exceptionToast(ex); return false; }
-                me.setNodeManager(nodeManager);
-                // get node settings
-                nodeManager.getSettings(function (settings) {
-                    // add the node settings view, based on node type and instance
-                    me.getView().add({
-                        xtype: 'ung.' + nodeInstance.nodeName,
-                        region: 'center',
-                        itemId: 'settings'
-                        //manager: nodeManager
-                    });
-                    console.log(settings);
-                    vm.set('settings', settings);
-                    mask.hide();
-                });
-            }, nodeInstance.id);
-        });
-    },
-
-    /**
-     * Updates the node metrics everytime the global metrics store is changed
-     */
-    updateMetrics: function () {
-        //console.log('update metrics');
-        var vm = this.getViewModel();
-        var nodeMetrics = Ext.getStore('metrics').findRecord('nodeId', vm.get('nodeInstance.id'));
-        if (nodeMetrics) {
-            vm.set('metrics', nodeMetrics.get('metrics').list);
-        }
-
-        if (this.getView().down('nodechart')) {
-            this.getView().down('nodechart').fireEvent('addPoint');
-        }
-
-    },
-
-    /**
-     * methos called when starting/stopping the node
-     */
-    onPower: function (btn) {
-        var nodeManager = this.getNodeManager(),
-            vm = this.getViewModel();
-
-        btn.setDisabled(true);
-        if (vm.get('nodeInstance.targetState') === 'RUNNING') {
-            // stop node
-            nodeManager.stop(function (result, ex) {
-                if (ex) { Ung.Util.exceptionToast(ex); return false; }
-                nodeManager.getRunState(function (result2, ex2) {
-                    if (ex2) { Ung.Util.exceptionToast(ex2); return false; }
-                    vm.set('nodeInstance.targetState', result2);
-                    vm.notify();
-                    btn.setDisabled(false);
-
-                    if (nodeManager.getNodeProperties().name === 'untangle-node-reports') {
-                        vm.getParent().set('reportsRunning', false);
-                    }
-
-                    Ung.Util.successToast(vm.get('powerMessage'));
-
-                    Ext.GlobalEvents.fireEvent('nodestatechange', result2, vm.get('nodeInstance'));
-                });
-            });
-        } else {
-            // start node
-            nodeManager.start(function (result, ex) {
-                if (ex) {
-                    Ext.Msg.alert('Error', ex.message);
-                    btn.setDisabled(false);
-                    return false;
-                }
-                nodeManager.getRunState(function (result2, ex2) {
-                    if (ex2) { Ung.Util.exceptionToast(ex2); return false; }
-                    vm.set('nodeInstance.targetState', result2);
-                    vm.notify();
-                    btn.setDisabled(false);
-
-                    if (nodeManager.getNodeProperties().name === 'untangle-node-reports') {
-                        vm.getParent().set('reportsRunning', true);
-                    }
-
-                    Ung.Util.successToast(vm.get('powerMessage'));
-                    Ext.GlobalEvents.fireEvent('nodestatechange', result2, vm.get('nodeInstance'));
-                });
-            });
-        }
-    },
-
-    onBeforeDeactivate: function (view) {
-        console.log('on deactivate');
-        view.remove('settings', {destroy: true});
-    },
-
-    /**
-     * Saves the whole node settings object sending the new settings to backend via RPC
-     */
-    saveSettings: function () {
-        var me = this,
-            vm = this.getViewModel(),
-            nodeManager = this.getNodeManager();
-            //newSettings = me.getViewModel().get('settings');
-
-        // all outstanding changes made on grids are commited and transferred to the node settings
-        this.getView().query('grid').forEach(function(grid) {
-            grid.fireEvent('save');
-        });
-
-        var myMask = new Ext.LoadMask({
-            msg    : 'Saving ...',
-            target : this.getView()
-        }).show();
-
-        // send settings to backend
-        nodeManager.setSettings(function (result, ex) {
-            myMask.hide();
-            if (ex) { Ung.Util.exceptionToast(ex); return false; }
-
-            Ung.util.Util.successToast('Settings saved!');
-
-            // retreive again settings from backend as pushed changes might have extra effects on the data
-            nodeManager.getSettings(function (settings, ex) {
-                if (ex) { Ung.Util.exceptionToast(ex); return false; }
-                vm.set('settings', settings); // apply fresh settings on the viewmodel
-                me.getView().query('grid').forEach(function(grid) {
-                    grid.fireEvent('reloaded');
-                });
-            });
-        }, vm.get('settings'));
-    },
-
-    removeNode: function () {
-        var vm = this.getViewModel(), settingsView = this.getView();
-        var message = Ext.String.format('{0} will be uninstalled from this policy.'.t(), 'display name') + '<br/>' +
-            'All of its settings will be lost.'.t() + '\n' + '<br/>' + '<br/>' +
-            'Would you like to continue?'.t();
-
-        Ext.Msg.confirm('Warning:'.t(), message, function(btn) {
-            if (btn === 'yes') {
-                var nodeItem = settingsView.up('#main').down('#apps').down('#' + vm.get('nodeInstance.nodeName'));
-                //nodeItem.setDisabled(true);
-                nodeItem.addCls('remove');
-                Ung.app.redirectTo('#apps/' + vm.get('policyId'));
-
-                rpc.nodeManager.destroy(function (result, ex) {
-                    if (ex) { Ung.Util.exceptionToast(ex); return false; }
-
-                    rpc.nodeManager.getAppsViews(function (result2, ex2) {
-                        if (ex2) { Ung.Util.exceptionToast(ex2); return; }
-                        Ext.getStore('policies').loadData(result2);
-                    });
-
-                    if (nodeItem.node.name === 'untangle-node-reports') {
-                        delete rpc.reportsManager;
-                        vm.getParent().set('reportsInstalled', false);
-                        vm.getParent().set('reportsRunning', false);
-                        vm.getParent().notify();
-                        Ext.GlobalEvents.fireEvent('reportsinstall');
-                    }
-
-                    if (rpc.reportsManager) {
-                        rpc.reportsManager.getUnavailableApplicationsMap(function (result3, ex3) {
-                            if (ex3) { Ung.Util.exceptionToast(ex3); return; }
-                            Ext.getStore('unavailableApps').loadRawData(result3.map);
-
-                            // fire nodeinstall event to update widgets on dashboard
-                            Ext.GlobalEvents.fireEvent('nodeinstall', 'remove', nodeItem.node);
-                        });
-                    }
-                }, vm.get('nodeInstance.id'));
-            }
-        });
-    }
-});
-
-Ext.define('Ung.view.node.SettingsModel', {
-    extend: 'Ext.app.ViewModel',
-
-    alias: 'viewmodel.nodesettings',
-
-    data: {
-        nodeInstance: null,
-        nodeProps: null,
-        metrics: null,
-        nodeReports: null
-    },
-
-    formulas: {
-        powerMessage: function (get) {
-            if (get('nodeInstance.targetState') === 'RUNNING') {
-                return Ext.String.format('{0} is enabled.'.t(), get('nodeProps.displayName'));
-            }
-            return Ext.String.format('{0} is disabled.'.t(), get('nodeProps.displayName'));
+            data: [
+                { name: 'Network'.t(), url: 'network', icon: 'sitemap' },
+                { name: 'Administration'.t(), url: 'administration', icon: 'user-secret' },
+                { name: 'Email'.t(), url: 'email', icon: 'envelope' },
+                { name: 'Local Directory'.t(), url: 'localdirectory', icon: 'folder-open' },
+                { name: 'Upgrade'.t(), url: 'upgrade', icon: 'arrow-circle-up' },
+                { name: 'System'.t(), url: 'system', icon: 'cogs' },
+                { name: 'About'.t(), url: 'about', icon: 'info-circle' }
+            ]
         },
-        powerButton: function (get) {
-            if (get('nodeInstance.targetState') === 'RUNNING') {
-                return Ung.Util.iconTitle('Disable', 'power_settings_new-16');
-            }
-            return Ung.Util.iconTitle('Enable', 'power_settings_new-16');
-        }
-    },
-
-    stores: {
-        // holds the metrics for a specific node instance, which are rendered in Node Status
-        nodeMetrics: {
-            model: 'Ung.model.NodeMetric',
-            data: '{metrics}'
-        },
-        areports: {
-            model: 'Ung.model.Report',
-            data: '{nodeReports}'
-        }
-    }
-});
-Ext.define('Ung.view.node.Reports', {
-    extend: 'Ext.panel.Panel',
-    xtype: 'nodereports',
-
-    requires: [
-        //'Ung.chart.NodeChart'
-    ],
-
-    layout: 'border',
-
-    border: false,
-
-    title: 'Reports'.t(),
-    //scrollable: true,
-    items: [{
-        region: 'west',
-        xtype: 'grid',
-        width: 300,
-        border: false,
-        bodyBorder: false,
-        header: false,
-        hideHeaders: true,
-        trackMouseOver: false,
-        viewConfig: {
-            stripeRows: false
-        },
-        bind: {
-            store: '{reports}'
-        },
-        columns: [{
-            dataIndex: 'title',
-            flex: 1
-        }]
+        tpl: '<!--<p class="heading">Settings</p>-->' +
+             '<tpl for=".">' +
+                '<a href="#config/{url}" class="app-item">' +
+                '<i class="fa fa-{icon} fa-5x"></i>' +
+                '<span class="app-name">{name}</span>' +
+                '</a>' +
+            '</tpl>',
+        itemSelector: 'a'
     }, {
-        region: 'center',
-        html: 'center'
+        // xtype: 'container',
+        // layout: 'border',
+        // itemId: 'configWrapper',
+        // items: [{
+        //     xtype: 'dataview',
+        //     region: 'north',
+        //     itemId: 'subNav',
+        //     height: 32,
+        //     baseCls: 'sub-nav',
+        //     store: {
+        //         data: [
+        //             { name: 'Network'.t(), url: 'network', icon: 'sitemap' },
+        //             { name: 'Administration'.t(), url: 'administration', icon: 'user-secret' },
+        //             { name: 'Email'.t(), url: 'email', icon: 'envelope' },
+        //             { name: 'Local Directory'.t(), url: 'localdirectory', icon: 'folder-open' },
+        //             { name: 'Upgrade'.t(), url: 'upgrade', icon: 'arrow-circle-up' },
+        //             { name: 'System'.t(), url: 'system', icon: 'cogs' },
+        //             { name: 'About'.t(), url: 'about', icon: 'info-circle' }
+        //         ]
+        //     },
+        //     tpl: '<tpl for=".">' +
+        //             '<a href="#config/{url}" class="nav-item {selected}">' +
+        //             '<i class="fa fa-{icon}"></i> ' +
+        //             '<span class="app-name">{name}</span>' +
+        //             '</a>' +
+        //         '</tpl>',
+        //     itemSelector: 'a'
+        // }]
     }]
 
-});
-Ext.define ('Ung.model.NodeMetric', {
-    extend: 'Ext.data.Model' ,
-    fields: [
-        { name: 'displayName', type: 'string' },
-        { name: 'name', type: 'string' },
-        { name: 'value', type: 'int' },
-        { name: 'javaClass', type: 'string', defaultValue: 'com.untangle.uvm.node.NodeMetric' }
-    ],
-    proxy: {
-        autoLoad: true,
-        type: 'memory',
-        reader: {
-            type: 'json'
-            //rootProperty: 'list'
-        }
-    }
-});
-Ext.define ('Ung.model.GenericRule', {
-    extend: 'Ext.data.Model' ,
-    fields: [
-        { name: 'name', type: 'string', defaultValue: null },
-        { name: 'string', type: 'string', defaultValue: '' },
-        { name: 'blocked', type: 'boolean', defaultValue: true },
-        { name: 'flagged', type: 'boolean', defaultValue: true },
-        { name: 'category', type: 'string', defaultValue: null },
-        { name: 'description', type: 'string', defaultValue: '' },
-        { name: 'enabled', type: 'boolean', defaultValue: true },
-        { name: 'id', defaultValue: null },
-        { name: 'readOnly', type: 'boolean', defaultValue: null },
-        { name: 'javaClass', type: 'string', defaultValue: 'com.untangle.uvm.node.GenericRule' }
-    ],
-    proxy: {
-        autoLoad: true,
-        type: 'memory',
-        reader: {
-            type: 'json'
-            //rootProperty: 'list'
-        }
-    }
-});
-Ext.define('Ung.view.shd.SessionsController', {
-    extend: 'Ext.app.ViewController',
-
-    alias: 'controller.sessions',
-
-    control: {
-        '#': {
-            beforeactivate: 'getSessions'
-        },
-        '#list': {
-            select: 'onSelect'
-        },
-        'toolbar textfield': {
-            change: 'globalFilter'
-        }
-    },
-
-    refreshInterval: null,
-
-    setAutoRefresh: function (btn) {
-        var me = this,
-            vm = this.getViewModel();
-        vm.set('autoRefresh', btn.pressed);
-
-        console.log(btn.pressed);
-
-        if (btn.pressed) {
-            me.getSessions();
-            this.refreshInterval = setInterval(function () {
-                me.getSessions();
-            }, 5000);
-        } else {
-            clearInterval(this.refreshInterval);
-        }
-
-    },
-
-    getSessions: function () {
-        console.log('get sessions');
-        var me = this,
-            grid = me.getView().down('#list');
-        grid.getView().setLoading(true);
-        rpc.sessionMonitor.getMergedSessions(function (result, exception) {
-            grid.getView().setLoading(false);
-            if (exception) {
-                Ung.Util.exceptionToast(exception);
-                return;
-            }
-            Ext.getStore('sessions').loadData(result.list);
-            grid.getSelectionModel().select(0);
-            // grid.getStore().setData(result.list);
-        });
-    },
-
-    onSelect: function (grid, record) {
-        var vm = this.getViewModel(),
-            props = record.getData();
-
-        delete props._id;
-        delete props.javaClass;
-        delete props.mark;
-        delete props.localAddr;
-        delete props.remoteAddr;
-        vm.set('selectedSession', props);
-    },
-
-    globalFilter: function (field, value) {
-        var list = this.getView().down('#list'),
-            re = new RegExp(value, 'gi');
-        if (value.length > 0) {
-            list.getStore().clearFilter();
-            list.getStore().filterBy(function (record) {
-                return re.test(record.get('protocol')) ||
-                       re.test(record.get('preNatClient')) ||
-                       re.test(record.get('postNatServer')) ||
-                       re.test(record.get('preNatClientPort')) ||
-                       re.test(record.get('postNatServerPort'));
-            });
-
-            // list.getStore().filter([
-            //     { property: 'protocol', value: value }
-            // ]);
-        } else {
-            list.getStore().clearFilter();
-        }
-        list.getSelectionModel().select(0);
-    }
-
-});
-
-Ext.define('Ung.view.shd.Sessions', {
-    extend: 'Ext.panel.Panel',
-    // extend: 'Ext.grid.Panel',
-    xtype: 'ung.sessions',
-    // layout: 'border',
-    requires: [
-        'Ung.view.shd.SessionsController'
-    ],
-
-    controller: 'sessions',
-
-    viewModel: {
-        data: {
-            autoRefresh: false
-        }
-    },
-
-    layout: 'border',
-
-    defaults: {
-        border: false
-    },
-
-    title: 'Current Sessions'.t(),
-
-    items: [{
-        region: 'center',
-        xtype: 'grid',
-        itemId: 'list',
-        store: 'sessions',
-        // forceFit: true,
-
-        plugins: 'gridfilters',
-        columnLines: true,
-        columns: [{
-            header: 'Creation Time'.t(),
-            dataIndex: 'creationTime',
-            hidden: true
-        }, {
-            header: 'Protocol'.t(),
-            dataIndex: 'protocol',
-            width: 70,
-            filter: {
-                type: 'list',
-                options: ['TCP', 'UDP']
-            }
-        }, {
-            header: 'Bypassed'.t(),
-            dataIndex: 'bypassed',
-            width: 70
-        }, {
-            header: 'Policy'.t(),
-            dataIndex: 'policy',
-            hidden: true
-        }, {
-            header: 'Hostname'.t(),
-            dataIndex: 'platform-hostname',
-            flex: 1
-        }, {
-            header: 'NATd'.t(),
-            dataIndex: 'natted',
-            hidden: true
-        }, {
-            header: 'Port Forwarded'.t(),
-            dataIndex: 'portForwarded',
-            hidden: true
-        }, {
-            header: 'Username'.t(),
-            dataIndex: 'platform-username',
-            hidden: true
-        }, {
-            header: 'Client'.t(),
-            columns: [{
-                header: 'Interface'.t(),
-                dataIndex: 'clientIntf'
-            }, {
-                header: 'Pre-NAT'.t(),
-                dataIndex: 'preNatClient'
-            }, {
-                header: 'Port (Pre-NAT)'.t(),
-                dataIndex: 'preNatClientPort'
-            }, {
-                header: 'Post-NAT'.t(),
-                dataIndex: 'postNatClient',
-                hidden: true
-            }, {
-                header: 'Port (Post-NAT)'.t(),
-                dataIndex: 'postNatClientPort',
-                hidden: true
-            }, {
-                header: 'Country'.t(),
-                dataIndex: 'clientCountry',
-                hidden: true
-            }, {
-                header: 'Latitude'.t(),
-                dataIndex: 'clientLatitude',
-                hidden: true
-            }, {
-                header: 'Longitude'.t(),
-                dataIndex: 'clientLlongitude',
-                hidden: true
-            }]
-        }, {
-            header: 'Server'.t(),
-            columns: [{
-                header: 'Interface'.t(),
-                dataIndex: 'serverIntf'
-            }, {
-                header: 'Pre-NAT'.t(),
-                dataIndex: 'preNatServer',
-                hidden: true
-            }, {
-                header: 'Port (Pre-NAT)'.t(),
-                dataIndex: 'preNatServerPort',
-                hidden: true
-            }, {
-                header: 'Post-NAT'.t(),
-                dataIndex: 'postNatServer'
-            }, {
-                header: 'Port (Post-NAT)'.t(),
-                dataIndex: 'postNatServerPort'
-            }, {
-                header: 'Country'.t(),
-                dataIndex: 'serverCountry',
-                hidden: true
-            }, {
-                header: 'Latitude'.t(),
-                dataIndex: 'serverLatitude',
-                hidden: true
-            }, {
-                header: 'Longitude'.t(),
-                dataIndex: 'serverLlongitude',
-                hidden: true
-            }]
-        }, {
-            header: 'Speed (KB/s)'.t(),
-            columns: [{
-                header: 'Client'.t(),
-                dataIndex: 'clientKBps',
-                filter: 'number',
-                align: 'right'
-            }, {
-                header: 'Server'.t(),
-                dataIndex: 'serverKBps',
-                filter: 'number',
-                align: 'right'
-            }, {
-                header: 'Total'.t(),
-                dataIndex: 'totalKBps',
-                filter: 'number',
-                align: 'right'
-            }]
-        }]
-    }, {
-        region: 'east',
-        xtype: 'propertygrid',
-        itemId: 'details',
-        editable: false,
-        width: 400,
-        title: 'Session Details'.t(),
-        split: true,
-        collapsible: true,
-        resizable: true,
-        shadow: false,
-        animCollapse: false,
-        titleCollapse: true,
-
-        // columnLines: false,
-
-        cls: 'prop-grid',
-
-        viewConfig: {
-            stripeRows: false,
-            getRowClass: function(record) {
-                if (record.get('value') === null || record.get('value') === '') {
-                    return 'empty';
-                }
-                return;
-            }
-        },
-
-        nameColumnWidth: 150,
-        bind: {
-            source: '{selectedSession}'
-        },
-        sourceConfig: {
-            attachments:       { displayName: 'Attachments'.t() },
-            bypassed:          { displayName: 'Bypassed'.t() },
-            clientCountry:     { displayName: 'Client Country'.t() },
-            clientIntf:        { displayName: 'Client Interface'.t() },
-            clientKBps:        { displayName: 'Client KB/s'.t() },
-            clientLatitude:    { displayName: 'Client Latitude'.t() },
-            clientLongitude:   { displayName: 'Client Longitude'.t() },
-            creationTime:      { displayName: 'Creation Time'.t() },
-            hostname:          { displayName: 'Hostname'.t() },
-            natted:            { displayName: 'NATd'.t() },
-            pipeline:          { displayName: 'Pipeline'.t() },
-            policy:            { displayName: 'Policy'.t() },
-            portForwarded:     { displayName: 'Port Forwarded'.t() },
-            postNatClient:     { displayName: 'Client (Post-NAT)'.t() },
-            postNatClientPort: { displayName: 'Client Port (Post-NAT)'.t() },
-            postNatServer:     { displayName: 'Server (Post-NAT)'.t() },
-            postNatServerPort: { displayName: 'Server Port (Post-NAT)'.t() },
-            preNatClient:      { displayName: 'Client (Pre-NAT)'.t() },
-            preNatClientPort:  { displayName: 'Client Port (Pre-NAT)'.t() },
-            preNatServer:      { displayName: 'Server (Pre-NAT)'.t() },
-            preNatServerPort:  { displayName: 'Server Port (Pre-NAT)'.t() },
-            priority:          { displayName: 'Priority'.t() },
-            protocol:          { displayName: 'Protocol'.t() },
-            qosPriority:       { displayName: 'Priority'.t() + '(QoS)' },
-            serverCountry:     { displayName: 'Server Country'.t() },
-            serverIntf:        { displayName: 'Server Interface'.t() },
-            serverKBps:        { displayName: 'Server KB/s'.t() },
-            serverLatitude:    { displayName: 'Server Latitude'.t() },
-            serverLongitude:   { displayName: 'Server Longitude'.t() },
-            sessionId:         { displayName: 'Session ID'.t() },
-            state:             { displayName: 'State'.t() },
-            totalKBps:         { displayName: 'Total KB/s'.t() }
-        },
-        listeners: {
-            beforeedit: function () {
-                return false;
-            }
-        }
-    }],
-    tbar: [{
-        xtype: 'button',
-        text: Ung.Util.iconTitle('Refresh'.t(), 'refresh-16'),
-        handler: 'getSessions',
-        bind: {
-            disabled: '{autoRefresh}'
-        }
-    }, {
-        xtype: 'button',
-        text: Ung.Util.iconTitle('Auto Refresh'.t(), 'autorenew-16'),
-        enableToggle: true,
-        toggleHandler: 'setAutoRefresh'
-    }, '-', 'Filter:'.t(), {
-        xtype: 'textfield',
-        checkChangeBuffer: 200
-    }]
-});
-Ext.define('Ung.view.shd.HostsController', {
-    extend: 'Ext.app.ViewController',
-
-    alias: 'controller.hosts',
-
-    control: {
-        '#': {
-            beforeactivate: 'onBeforeActivate'
-        },
-        '#hostsgrid': {
-            beforerender: 'onBeforeRenderHostsGrid'
-        }
-    },
-
-    onBeforeActivate: function (view) {
-        view.setActiveItem(0);
-    },
-
-    onBeforeRenderHostsGrid: function (grid) {
-        // this.getHosts();
-    },
-
-    getHosts: function () {
-        console.log('get hosts');
-        var me = this,
-            grid = me.getView().down('#hostsgrid');
-        grid.getView().setLoading(true);
-        rpc.hostTable.getHosts(function (result, exception) {
-            grid.getView().setLoading(false);
-            if (exception) {
-                Ung.Util.exceptionToast(exception);
-                return;
-            }
-            Ext.getStore('hosts').loadData(result.list);
-            // grid.getSelectionModel().select(0);
-            // grid.getStore().setData(result.list);
-        });
-    }
-
-});
-
-Ext.define('Ung.view.shd.Hosts', {
-    extend: 'Ext.tab.Panel',
-    xtype: 'ung.hosts',
-    // layout: 'border',
-    requires: [
-        'Ung.view.shd.HostsController'
-    ],
-
-    controller: 'hosts',
-
-    layout: 'border',
-
-    defaults: {
-        border: false
-    },
-
-    items: [{
-        xtype: 'grid',
-        itemId: 'hostsgrid',
-        title: 'Current Hosts'.t(),
-        store: 'hosts',
-        columns: [
-            { header: 'IP'.t(), dataIndex: 'address' },
-            { header: 'MAC Address'.t(), dataIndex: 'macAddress' },
-            { header: 'MAC Vendor'.t(), dataIndex: 'macVendor' },
-            { header: 'Interface'.t(), dataIndex: 'interfaceId' },
-            { header: 'Last Access Time'.t(), dataIndex: 'lastAccessTimeDate', hidden: true },
-            { header: 'Last Session Time'.t(), dataIndex: 'lastSessionTimeDate', hidden: true },
-            { header: 'Last Completed TCP Session Time'.t(), dataIndex: 'lastCompletedTcpSessionTime', hidden: true },
-            { header: 'Entitled Status'.t(), dataIndex: 'entitledStatus', hidden: true },
-            { header: 'Active'.t(), dataIndex: 'active' },
-            { header: 'Hostname'.t(), dataIndex: 'hostname' },
-            { header: 'User Name'.t(), dataIndex: 'username' },
-            {
-                header: 'Penalty'.t(),
-                columns: [
-                    { header: 'Boxed'.t(), dataIndex: 'penaltyBoxed' },
-                    { header: 'Entry Time'.t(), dataIndex: 'penaltyBoxEntryTime', hidden: true },
-                    { header: 'Exit Time'.t(), dataIndex: 'penaltyBoxExitTime', hidden: true }
-                ]
-            }, {
-                header: 'Quota'.t(),
-                columns: [
-                    { header: 'Size'.t(), dataIndex: 'quotaSize' },
-                    { header: 'Remaining'.t(), dataIndex: 'quotaRemaining' },
-                    { header: 'Issue Time'.t(), dataIndex: 'quotaIssueTime', hidden: true },
-                    { header: 'Expiration Time'.t(), dataIndex: 'quotaExpirationTime', hidden: true }
-                ]
-            }
-        ]
-    }, {
-        title: 'Penalty Box Hosts'.t(),
-        html: 'penalty hosts'
-    }, {
-        title: 'Current Quotas'.t(),
-        html: 'quotas'
-    }, {
-        title: 'Reports'.t(),
-        html: 'reports'
-    }]
+    // initComponent:
 });
 Ext.define('Ung.widget.ReportModel', {
     extend: 'Ext.app.ViewModel',
@@ -5261,585 +3037,6 @@ Ext.define('Ung.widget.NetworkLayout', {
     //     });
     // }
 });
-Ext.define('Ung.view.grid.GridController', {
-    extend: 'Ext.app.ViewController',
-    alias: 'controller.ung.grid',
-
-    init: function (view) {
-        // add toolbar buttons
-        if (view.getToolbarFeatures()) {
-            var features = view.getToolbarFeatures(),
-                toolbar = Ext.create('Ext.toolbar.Toolbar');
-
-            if (Ext.Array.contains(features, 'add')) {
-                toolbar.add({
-                    text: Ung.Util.iconTitle('Add', 'add-16'),
-                    handler: 'addRecord'
-                });
-            }
-            if (Ext.Array.contains(features, 'revert')) {
-                toolbar.add({
-                    text: Ung.Util.iconTitle('Revert', 'undo-16'),
-                    handler: 'revertChanges'
-                });
-            }
-            if (Ext.Array.contains(features, 'delete')) {
-                toolbar.add({
-                    text: Ung.Util.iconTitle('Delete', 'delete-16'),
-                    handler: 'deleteRecords'
-                });
-            }
-            if (Ext.Array.contains(features, 'importexport')) {
-                toolbar.add('->', {
-                    text: Ung.Util.iconTitle('Import', 'arrow_downward-16')
-                }, {
-                    text: Ung.Util.iconTitle('Export', 'arrow_upward-16')
-                });
-            }
-            view.addDocked(toolbar);
-        }
-
-        // add celledit plugin
-        if (view.getInlineEdit() === 'cell') {
-            view.addPlugin({
-                ptype: 'cellediting',
-                clicksToEdit: 2
-            });
-        }
-
-        // add row plugin (not used)
-        if (view.getInlineEdit() === 'row') {
-            view.addPlugin({
-                ptype: 'rowediting',
-                clicksToEdit: 2,
-                clicksToMoveEditor: 1,
-                //autoCancel: true,
-                errorSummary: false,
-                //removeUnmodified: true,
-                pluginId: 'rowediting'
-            });
-        }
-    },
-
-    onBeforeDestory: function (view) {
-        //console.log('on before destroy');
-        //view.getPlugin('gridviewdragdrop').destroy();
-    },
-
-
-    checkChanges: function(store) {
-        //console.log('checkchanges');
-        this.getViewModel().set('isDirty', (store.getUpdatedRecords().length > 0 || store.getRemovedRecords().length > 0 || store.getModifiedRecords().length > 0));
-    },
-
-    /*
-    onBeforeRender: function (view) {
-        var vm = this.getViewModel();
-        if (!view.getSettings().reorderColumn && view.getSettings().initialSortData) {
-            vm.get('store').setSorters(view.getSettings().initialSortData);
-        }
-    },
-    */
-    addRecord: function () {
-        var me = this;
-        var vm = this.getViewModel();
-        var win = Ext.create('Ung.view.grid.Editor', {
-            title: 'Add'.t(),
-            width: 500,
-            y: 200,
-            //height: 250,
-            columns: me.getView().getColumns(),
-            viewModel: {
-                data: {
-                    record: Ext.create('Ung.model.GenericRule')
-                }
-            }
-        }).show();
-        win.on('close', function () {
-            if (win.getCloseAction() === 'save') {
-                //console.log(win.getViewModel().get('record'));
-                vm.get('store').add(win.getViewModel().get('record'));
-            }
-        });
-
-    },
-
-    deleteRecords: function () {
-        this.getViewModel().get('store').remove(this.getView().getSelectionModel().getSelection());
-    },
-
-    editRecord: function (view, rowIndex, colIndex, item, e, record, row) {
-        var vm = this.getViewModel();
-        var rec = record.copy(null);
-
-        var win = Ext.create('Ung.view.grid.Editor', {
-            title: 'Edit'.t(),
-            width: 800,
-            y: 200,
-            columns: item.up('grid').getColumns(),
-            //record: record
-
-            viewModel: {
-                data: {
-                    record: rec
-                }
-            }
-        }).show();
-        win.on('close', function () {
-            //record.copyFrom(win.getViewModel().get('record'));
-            //record.beginEdit();
-            record.copyFrom(win.getViewModel().get('record'));
-            record.dirty = true;
-
-            //console.log(win.getViewModel().get('record'));
-
-            //record.endEdit();
-            //record.set('string', 'hahahahah');
-            //record.setDirty(true);
-            record.commit();
-            vm.get('store').update();
-
-        });
-    },
-
-    deleteRecord: function (view, rowIndex, colIndex, item, e, record, row) {
-        record.drop();
-        //console.log(record);
-        //record.setConfig('markDelete', true);
-        //record.markDelete = true;
-        //console.log(record);
-    },
-
-    // applies changes into the settings object before pushing to server
-    onSave: function () {
-        var vm = this.getViewModel();
-        if (vm.get('store')) {
-            vm.set('settings.' + this.getView().getDataProperty() + '.list', Ext.Array.pluck(vm.get('store').getRange(), 'data'));
-        }
-    }
-
-
-    /*
-    onEdit: function (editor, e) {
-        console.log(e);
-    },
-
-    revertChanges: function () {
-        this.getViewModel().get('store').rejectChanges();
-    },
-
-    onSelectionChange: function (model, selected) {
-        this.getViewModel().set('selectedRecords', selected.length);
-    },
-
-    onSave: function () {
-        var vm = this.getViewModel();
-        console.log('onsave');
-        vm.set(this.getView().getSettings().dataPath, Ext.Array.pluck(vm.get('store').getRange(), 'data'));
-        //vm.get('store').commitChanges();
-    },
-
-    onReloaded: function () {
-        console.log('onreloaded');
-        this.getViewModel().get('store').commitChanges();
-        console.log(this.getViewModel().get('store'));
-    }
-    */
-});
-Ext.define('Ung.view.grid.ConditionsController', {
-    extend: 'Ext.app.ViewController',
-    alias: 'controller.ung.gridconditions',
-
-    init: function (view) {
-    },
-    onBeforeRender: function (view) {
-        var vm = view.getViewModel();
-        var conditions = vm.get('record.conditions.list');
-        //console.log(vm.get('record'));
-        /*
-        conditions.forEach(function (cond) {
-            console.log(cond);
-            view.add({
-                text: cond.conditionType,
-                columnWidth: 1
-            });
-        });
-        */
-    },
-    onChange: function () {
-        console.log('on change');
-    },
-    typeRenderer: function (value) {
-        return Ext.getStore('conditions').findRecord('name', value).get('displayName');
-    },
-    valueRenderer: function (value, metaData, record) {
-        var editorType = Ext.getStore('conditions').findRecord('name', record.get('conditionType')).get('editorType');
-        switch (editorType) {
-        case ('countryselector'):
-            var str = '';
-            value.split(',').forEach(function (iso) {
-                str += Ext.getStore('countries').findRecord('code', iso).get('name') + ', ';
-            });
-            return str;
-        }
-        return value;
-    },
-    onConditionSelect: function (row, record, index) {
-        var me = this;
-        var condEditorWin = Ext.create('Ung.view.grid.ConditionEditor', {
-            bind: {
-                title: 'Edit'.t()
-            },
-            width: 400,
-            y: 250,
-            //constrain: true,
-            //constrainTo: this.getView().getEl(),
-
-            viewModel: {
-                data: {
-                    condition: record
-                }
-            }
-
-        }).show();
-
-        condEditorWin.on('close', function () {
-            console.log(this.getViewModel().get('condition'));
-        });
-
-        me.getView().getSelectionModel().deselectAll();
-    },
-
-    onConditionTypeChange: function () {
-        console.log('cond chage');
-    },
-    onAddCondition: function () {
-        var rec = Ext.create('Ung.model.Condition');
-        var condEditorWin = Ext.create('Ung.view.grid.ConditionEditor', {
-            bind: {
-                title: 'Add Condition'.t()
-            },
-            width: 400,
-            y: 250,
-            viewModel: {
-                data: {
-                    condition: rec
-                }
-            }
-        }).show();
-    }
-
-});
-Ext.define('Ung.store.Conditions', {
-    extend: 'Ext.data.Store',
-    storeId: 'conditions',
-    fields: ['name', 'displayName', 'type'],
-    data: [
-        {name:'DST_ADDR', displayName: 'Destination Address'.t(), editorType: 'textfield', vtype:'ipall', visible: true },
-        {name:'DST_PORT',displayName: 'Destination Port'.t(), editorType: 'textfield', vtype:'port', visible: true },
-        {name:'DST_INTF',displayName: 'Destination Interface'.t(), editorType: 'checkgroup', /*values: Ung.Util.getInterfaceList(true, false),*/ visible: true},
-        {name:'SRC_ADDR',displayName: 'Source Address'.t(), editorType: 'textfield', visible: true, vtype:'ipall'},
-        {name:'SRC_PORT',displayName: 'Source Port'.t(), editorType: 'textfield', vtype:'portMatcher', visible: rpc.isExpertMode},
-        {name:'SRC_INTF',displayName: 'Source Interface'.t(), editorType: 'checkgroup', /*values: Ung.Util.getInterfaceList(true, false),*/ visible: true},
-        {name:'PROTOCOL',displayName: 'Protocol'.t(), editorType: 'checkgroup', values: [['TCP','TCP'],['UDP','UDP'],['any','any']], visible: true},
-        {name:'USERNAME',displayName: 'Username'.t(), editorType: 'userselection', /*editor: Ext.create('Ung.UserEditorWindow',{}),*/ visible: true},
-        {name:'CLIENT_HOSTNAME',displayName: 'Client Hostname'.t(), editorType: 'textfield', visible: true},
-        {name:'SERVER_HOSTNAME',displayName: 'Server Hostname'.t(), editorType: 'textfield', visible: rpc.isExpertMode},
-        {name:'SRC_MAC', displayName: 'Client MAC Address'.t(), editorType: 'textfield', visible: true },
-        {name:'DST_MAC', displayName: 'Server MAC Address'.t(), editorType: 'textfield', visible: true },
-        {name:'CLIENT_MAC_VENDOR',displayName: 'Client MAC Vendor'.t(), editorType: 'textfield', visible: true},
-        {name:'SERVER_MAC_VENDOR',displayName: 'Server MAC Vendor'.t(), editorType: 'textfield', visible: true},
-        {name:'CLIENT_IN_PENALTY_BOX',displayName: 'Client in Penalty Box'.t(), editorType: 'boolean', visible: true},
-        {name:'SERVER_IN_PENALTY_BOX',displayName: 'Server in Penalty Box'.t(), editorType: 'boolean', visible: true},
-        {name:'CLIENT_HAS_NO_QUOTA',displayName: 'Client has no Quota'.t(), editorType: 'boolean', visible: true},
-        {name:'SERVER_HAS_NO_QUOTA',displayName: 'Server has no Quota'.t(), editorType: 'boolean', visible: true},
-        {name:'CLIENT_QUOTA_EXCEEDED',displayName: 'Client has exceeded Quota'.t(), editorType: 'boolean', visible: true},
-        {name:'SERVER_QUOTA_EXCEEDED',displayName: 'Server has exceeded Quota'.t(), editorType: 'boolean', visible: true},
-        {name:'CLIENT_QUOTA_ATTAINMENT',displayName: 'Client Quota Attainment'.t(), editorType: 'textfield', visible: true},
-        {name:'SERVER_QUOTA_ATTAINMENT',displayName: 'Server Quota Attainment'.t(), editorType: 'textfield', visible: true},
-        {name:'HTTP_HOST',displayName: 'HTTP: Hostname'.t(), editorType: 'textfield', visible: true},
-        {name:'HTTP_REFERER',displayName: 'HTTP: Referer'.t(), editorType: 'textfield', visible: true},
-        {name:'HTTP_URI',displayName: 'HTTP: URI'.t(), editorType: 'textfield', visible: true},
-        {name:'HTTP_URL',displayName: 'HTTP: URL'.t(), editorType: 'textfield', visible: true},
-        {name:'HTTP_CONTENT_TYPE',displayName: 'HTTP: Content Type'.t(), editorType: 'textfield', visible: true},
-        {name:'HTTP_CONTENT_LENGTH',displayName: 'HTTP: Content Length'.t(), editorType: 'textfield', visible: true},
-        {name:'HTTP_USER_AGENT',displayName: 'HTTP: Client User Agent'.t(), editorType: 'textfield', visible: true},
-        {name:'HTTP_USER_AGENT_OS',displayName: 'HTTP: Client User OS'.t(), editorType: 'textfield', visible: false},
-        {name:'APPLICATION_CONTROL_APPLICATION',displayName: 'Application Control: Application'.t(), editorType: 'textfield', visible: true},
-        {name:'APPLICATION_CONTROL_CATEGORY',displayName: 'Application Control: Application Category'.t(), editorType: 'textfield', visible: true},
-        {name:'APPLICATION_CONTROL_PROTOCHAIN',displayName: 'Application Control: Protochain'.t(), editorType: 'textfield', visible: true},
-        {name:'APPLICATION_CONTROL_DETAIL',displayName: 'Application Control: Detail'.t(), editorType: 'textfield', visible: true},
-        {name:'APPLICATION_CONTROL_CONFIDENCE',displayName: 'Application Control: Confidence'.t(), editorType: 'textfield', visible: true},
-        {name:'APPLICATION_CONTROL_PRODUCTIVITY',displayName: 'Application Control: Productivity'.t(), editorType: 'textfield', visible: true},
-        {name:'APPLICATION_CONTROL_RISK',displayName: 'Application Control: Risk'.t(), editorType: 'textfield', visible: true},
-        {name:'PROTOCOL_CONTROL_SIGNATURE',displayName: 'Application Control Lite: Signature'.t(), editorType: 'textfield', visible: true},
-        {name:'PROTOCOL_CONTROL_CATEGORY',displayName: 'Application Control Lite: Category'.t(), editorType: 'textfield', visible: true},
-        {name:'PROTOCOL_CONTROL_DESCRIPTION',displayName: 'Application Control Lite: Description'.t(), editorType: 'textfield', visible: true},
-        {name:'WEB_FILTER_CATEGORY',displayName: 'Web Filter: Category'.t(), editorType: 'textfield', visible: true},
-        {name:'WEB_FILTER_CATEGORY_DESCRIPTION',displayName: 'Web Filter: Category Description'.t(), editorType: 'textfield', visible: true},
-        {name:'WEB_FILTER_FLAGGED',displayName: 'Web Filter: Website is Flagged'.t(), editorType: 'boolean', visible: true},
-        {name:'DIRECTORY_CONNECTOR_GROUP',displayName: 'Directory Connector: User in Group'.t(), type: 'editor', /*editor: Ext.create('Ung.GroupEditorWindow',{}),*/ visible: true},
-        {name:'CLIENT_COUNTRY',displayName: 'Client Country'.t(), editorType: 'countryselector', /*editor: Ext.create('Ung.CountryEditorWindow',{}),*/ visible: true},
-        {name:'SERVER_COUNTRY',displayName: 'Server Country'.t(), editorType: 'countryselector', /*editor: Ext.create('Ung.CountryEditorWindow',{}),*/ visible: true}
-    ]
-
-
-});
-Ext.define('Ung.store.Countries', {
-    extend: 'Ext.data.Store',
-    storeId: 'countries',
-    data: [
-        { code: 'AF', name: 'Afghanistan'.t() },
-        { code: 'AX', name: 'Aland Islands'.t() },
-        { code: 'AL', name: 'Albania'.t() },
-        { code: 'DZ', name: 'Algeria'.t() },
-        { code: 'AS', name: 'American Samoa'.t() },
-        { code: 'AD', name: 'Andorra'.t() },
-        { code: 'AO', name: 'Angola'.t() },
-        { code: 'AI', name: 'Anguilla'.t() },
-        { code: 'AQ', name: 'Antarctica'.t() },
-        { code: 'AG', name: 'Antigua and Barbuda'.t() },
-        { code: 'AR', name: 'Argentina'.t() },
-        { code: 'AM', name: 'Armenia'.t() },
-        { code: 'AW', name: 'Aruba'.t() },
-        { code: 'AU', name: 'Australia'.t() },
-        { code: 'AT', name: 'Austria'.t() },
-        { code: 'AZ', name: 'Azerbaijan'.t() },
-        { code: 'BS', name: 'Bahamas'.t() },
-        { code: 'BH', name: 'Bahrain'.t() },
-        { code: 'BD', name: 'Bangladesh'.t() },
-        { code: 'BB', name: 'Barbados'.t() },
-        { code: 'BY', name: 'Belarus'.t() },
-        { code: 'BE', name: 'Belgium'.t() },
-        { code: 'BZ', name: 'Belize'.t() },
-        { code: 'BJ', name: 'Benin'.t() },
-        { code: 'BM', name: 'Bermuda'.t() },
-        { code: 'BT', name: 'Bhutan'.t() },
-        { code: 'BO', name: 'Bolivia, Plurinational State of'.t() },
-        { code: 'BQ', name: 'Bonaire, Sint Eustatius and Saba'.t() },
-        { code: 'BA', name: 'Bosnia and Herzegovina'.t() },
-        { code: 'BW', name: 'Botswana'.t() },
-        { code: 'BV', name: 'Bouvet Island'.t() },
-        { code: 'BR', name: 'Brazil'.t() },
-        { code: 'IO', name: 'British Indian Ocean Territory'.t() },
-        { code: 'BN', name: 'Brunei Darussalam'.t() },
-        { code: 'BG', name: 'Bulgaria'.t() },
-        { code: 'BF', name: 'Burkina Faso'.t() },
-        { code: 'BI', name: 'Burundi'.t() },
-        { code: 'KH', name: 'Cambodia'.t() },
-        { code: 'CM', name: 'Cameroon'.t() },
-        { code: 'CA', name: 'Canada'.t() },
-        { code: 'CV', name: 'Cape Verde'.t() },
-        { code: 'KY', name: 'Cayman Islands'.t() },
-        { code: 'CF', name: 'Central African Republic'.t() },
-        { code: 'TD', name: 'Chad'.t() },
-        { code: 'CL', name: 'Chile'.t() },
-        { code: 'CN', name: 'China'.t() },
-        { code: 'CX', name: 'Christmas Island'.t() },
-        { code: 'CC', name: 'Cocos (Keeling) Islands'.t() },
-        { code: 'CO', name: 'Colombia'.t() },
-        { code: 'KM', name: 'Comoros'.t() },
-        { code: 'CG', name: 'Congo'.t() },
-        { code: 'CD', name: 'Congo, the Democratic Republic of the'.t() },
-        { code: 'CK', name: 'Cook Islands'.t() },
-        { code: 'CR', name: 'Costa Rica'.t() },
-        { code: 'CI', name: 'Cote d\'Ivoire'.t() },
-        { code: 'HR', name: 'Croatia'.t() },
-        { code: 'CU', name: 'Cuba'.t() },
-        { code: 'CW', name: 'Curacao'.t() },
-        { code: 'CY', name: 'Cyprus'.t() },
-        { code: 'CZ', name: 'Czech Republic'.t() },
-        { code: 'DK', name: 'Denmark'.t() },
-        { code: 'DJ', name: 'Djibouti'.t() },
-        { code: 'DM', name: 'Dominica'.t() },
-        { code: 'DO', name: 'Dominican Republic'.t() },
-        { code: 'EC', name: 'Ecuador'.t() },
-        { code: 'EG', name: 'Egypt'.t() },
-        { code: 'SV', name: 'El Salvador'.t() },
-        { code: 'GQ', name: 'Equatorial Guinea'.t() },
-        { code: 'ER', name: 'Eritrea'.t() },
-        { code: 'EE', name: 'Estonia'.t() },
-        { code: 'ET', name: 'Ethiopia'.t() },
-        { code: 'FK', name: 'Falkland Islands (Malvinas)'.t() },
-        { code: 'FO', name: 'Faroe Islands'.t() },
-        { code: 'FJ', name: 'Fiji'.t() },
-        { code: 'FI', name: 'Finland'.t() },
-        { code: 'FR', name: 'France'.t() },
-        { code: 'GF', name: 'French Guiana'.t() },
-        { code: 'PF', name: 'French Polynesia'.t() },
-        { code: 'TF', name: 'French Southern Territories'.t() },
-        { code: 'GA', name: 'Gabon'.t() },
-        { code: 'GM', name: 'Gambia'.t() },
-        { code: 'GE', name: 'Georgia'.t() },
-        { code: 'DE', name: 'Germany'.t() },
-        { code: 'GH', name: 'Ghana'.t() },
-        { code: 'GI', name: 'Gibraltar'.t() },
-        { code: 'GR', name: 'Greece'.t() },
-        { code: 'GL', name: 'Greenland'.t() },
-        { code: 'GD', name: 'Grenada'.t() },
-        { code: 'GP', name: 'Guadeloupe'.t() },
-        { code: 'GU', name: 'Guam'.t() },
-        { code: 'GT', name: 'Guatemala'.t() },
-        { code: 'GG', name: 'Guernsey'.t() },
-        { code: 'GN', name: 'Guinea'.t() },
-        { code: 'GW', name: 'Guinea-Bissau'.t() },
-        { code: 'GY', name: 'Guyana'.t() },
-        { code: 'HT', name: 'Haiti'.t() },
-        { code: 'HM', name: 'Heard Island and McDonald Islands'.t() },
-        { code: 'VA', name: 'Holy See (Vatican City State)'.t() },
-        { code: 'HN', name: 'Honduras'.t() },
-        { code: 'HK', name: 'Hong Kong'.t() },
-        { code: 'HU', name: 'Hungary'.t() },
-        { code: 'IS', name: 'Iceland'.t() },
-        { code: 'IN', name: 'India'.t() },
-        { code: 'ID', name: 'Indonesia'.t() },
-        { code: 'IR', name: 'Iran, Islamic Republic of'.t() },
-        { code: 'IQ', name: 'Iraq'.t() },
-        { code: 'IE', name: 'Ireland'.t() },
-        { code: 'IM', name: 'Isle of Man'.t() },
-        { code: 'IL', name: 'Israel'.t() },
-        { code: 'IT', name: 'Italy'.t() },
-        { code: 'JM', name: 'Jamaica'.t() },
-        { code: 'JP', name: 'Japan'.t() },
-        { code: 'JE', name: 'Jersey'.t() },
-        { code: 'JO', name: 'Jordan'.t() },
-        { code: 'KZ', name: 'Kazakhstan'.t() },
-        { code: 'KE', name: 'Kenya'.t() },
-        { code: 'KI', name: 'Kiribati'.t() },
-        { code: 'KP', name: 'Korea, Democratic People\'s Republic of'.t() },
-        { code: 'KR', name: 'Korea, Republic of'.t() },
-        { code: 'KW', name: 'Kuwait'.t() },
-        { code: 'KG', name: 'Kyrgyzstan'.t() },
-        { code: 'LA', name: 'Lao People\'s Democratic Republic'.t() },
-        { code: 'LV', name: 'Latvia'.t() },
-        { code: 'LB', name: 'Lebanon'.t() },
-        { code: 'LS', name: 'Lesotho'.t() },
-        { code: 'LR', name: 'Liberia'.t() },
-        { code: 'LY', name: 'Libya'.t() },
-        { code: 'LI', name: 'Liechtenstein'.t() },
-        { code: 'LT', name: 'Lithuania'.t() },
-        { code: 'LU', name: 'Luxembourg'.t() },
-        { code: 'MO', name: 'Macao'.t() },
-        { code: 'MK', name: 'Macedonia, the Former Yugoslav Republic of'.t() },
-        { code: 'MG', name: 'Madagascar'.t() },
-        { code: 'MW', name: 'Malawi'.t() },
-        { code: 'MY', name: 'Malaysia'.t() },
-        { code: 'MV', name: 'Maldives'.t() },
-        { code: 'ML', name: 'Mali'.t() },
-        { code: 'MT', name: 'Malta'.t() },
-        { code: 'MH', name: 'Marshall Islands'.t() },
-        { code: 'MQ', name: 'Martinique'.t() },
-        { code: 'MR', name: 'Mauritania'.t() },
-        { code: 'MU', name: 'Mauritius'.t() },
-        { code: 'YT', name: 'Mayotte'.t() },
-        { code: 'MX', name: 'Mexico'.t() },
-        { code: 'FM', name: 'Micronesia, Federated States of'.t() },
-        { code: 'MD', name: 'Moldova, Republic of'.t() },
-        { code: 'MC', name: 'Monaco'.t() },
-        { code: 'MN', name: 'Mongolia'.t() },
-        { code: 'ME', name: 'Montenegro'.t() },
-        { code: 'MS', name: 'Montserrat'.t() },
-        { code: 'MA', name: 'Morocco'.t() },
-        { code: 'MZ', name: 'Mozambique'.t() },
-        { code: 'MM', name: 'Myanmar'.t() },
-        { code: 'NA', name: 'Namibia'.t() },
-        { code: 'NR', name: 'Nauru'.t() },
-        { code: 'NP', name: 'Nepal'.t() },
-        { code: 'NL', name: 'Netherlands'.t() },
-        { code: 'NC', name: 'New Caledonia'.t() },
-        { code: 'NZ', name: 'New Zealand'.t() },
-        { code: 'NI', name: 'Nicaragua'.t() },
-        { code: 'NE', name: 'Niger'.t() },
-        { code: 'NG', name: 'Nigeria'.t() },
-        { code: 'NU', name: 'Niue'.t() },
-        { code: 'NF', name: 'Norfolk Island'.t() },
-        { code: 'MP', name: 'Northern Mariana Islands'.t() },
-        { code: 'NO', name: 'Norway'.t() },
-        { code: 'OM', name: 'Oman'.t() },
-        { code: 'PK', name: 'Pakistan'.t() },
-        { code: 'PW', name: 'Palau'.t() },
-        { code: 'PS', name: 'Palestine, State of'.t() },
-        { code: 'PA', name: 'Panama'.t() },
-        { code: 'PG', name: 'Papua New Guinea'.t() },
-        { code: 'PY', name: 'Paraguay'.t() },
-        { code: 'PE', name: 'Peru'.t() },
-        { code: 'PH', name: 'Philippines'.t() },
-        { code: 'PN', name: 'Pitcairn'.t() },
-        { code: 'PL', name: 'Poland'.t() },
-        { code: 'PT', name: 'Portugal'.t() },
-        { code: 'PR', name: 'Puerto Rico'.t() },
-        { code: 'QA', name: 'Qatar'.t() },
-        { code: 'RE', name: 'Reunion'.t() },
-        { code: 'RO', name: 'Romania'.t() },
-        { code: 'RU', name: 'Russian Federation'.t() },
-        { code: 'RW', name: 'Rwanda'.t() },
-        { code: 'BL', name: 'Saint Barthelemy'.t() },
-        { code: 'SH', name: 'Saint Helena, Ascension and Tristan da Cunha'.t() },
-        { code: 'KN', name: 'Saint Kitts and Nevis'.t() },
-        { code: 'LC', name: 'Saint Lucia'.t() },
-        { code: 'MF', name: 'Saint Martin (French part)'.t() },
-        { code: 'PM', name: 'Saint Pierre and Miquelon'.t() },
-        { code: 'VC', name: 'Saint Vincent and the Grenadines'.t() },
-        { code: 'WS', name: 'Samoa'.t() },
-        { code: 'SM', name: 'San Marino'.t() },
-        { code: 'ST', name: 'Sao Tome and Principe'.t() },
-        { code: 'SA', name: 'Saudi Arabia'.t() },
-        { code: 'SN', name: 'Senegal'.t() },
-        { code: 'RS', name: 'Serbia'.t() },
-        { code: 'SC', name: 'Seychelles'.t() },
-        { code: 'SL', name: 'Sierra Leone'.t() },
-        { code: 'SG', name: 'Singapore'.t() },
-        { code: 'SX', name: 'Sint Maarten (Dutch part)'.t() },
-        { code: 'SK', name: 'Slovakia'.t() },
-        { code: 'SI', name: 'Slovenia'.t() },
-        { code: 'SB', name: 'Solomon Islands'.t() },
-        { code: 'SO', name: 'Somalia'.t() },
-        { code: 'ZA', name: 'South Africa'.t() },
-        { code: 'GS', name: 'South Georgia and the South Sandwich Islands'.t() },
-        { code: 'SS', name: 'South Sudan'.t() },
-        { code: 'ES', name: 'Spain'.t() },
-        { code: 'LK', name: 'Sri Lanka'.t() },
-        { code: 'SD', name: 'Sudan'.t() },
-        { code: 'SR', name: 'Suriname'.t() },
-        { code: 'SJ', name: 'Svalbard and Jan Mayen'.t() },
-        { code: 'SZ', name: 'Swaziland'.t() },
-        { code: 'SE', name: 'Sweden'.t() },
-        { code: 'CH', name: 'Switzerland'.t() },
-        { code: 'SY', name: 'Syrian Arab Republic'.t() },
-        { code: 'TW', name: 'Taiwan, Province of China'.t() },
-        { code: 'TJ', name: 'Tajikistan'.t() },
-        { code: 'TZ', name: 'Tanzania, United Republic of'.t() },
-        { code: 'TH', name: 'Thailand'.t() },
-        { code: 'TL', name: 'Timor-Leste'.t() },
-        { code: 'TG', name: 'Togo'.t() },
-        { code: 'TK', name: 'Tokelau'.t() },
-        { code: 'TO', name: 'Tonga'.t() },
-        { code: 'TT', name: 'Trinidad and Tobago'.t() },
-        { code: 'TN', name: 'Tunisia'.t() },
-        { code: 'TR', name: 'Turkey'.t() },
-        { code: 'TM', name: 'Turkmenistan'.t() },
-        { code: 'TC', name: 'Turks and Caicos Islands'.t() },
-        { code: 'TV', name: 'Tuvalu'.t() },
-        { code: 'UG', name: 'Uganda'.t() },
-        { code: 'UA', name: 'Ukraine'.t() },
-        { code: 'AE', name: 'United Arab Emirates'.t() },
-        { code: 'GB', name: 'United Kingdom'.t() },
-        { code: 'US', name: 'United States'.t() },
-        { code: 'UM', name: 'United States Minor Outlying Islands'.t() },
-        { code: 'UY', name: 'Uruguay'.t() },
-        { code: 'UZ', name: 'Uzbekistan'.t() },
-        { code: 'VU', name: 'Vanuatu'.t() },
-        { code: 'VE', name: 'Venezuela, Bolivarian Republic of'.t() },
-        { code: 'VN', name: 'Viet Nam'.t() },
-        { code: 'VG', name: 'Virgin Islands, British'.t() },
-        { code: 'VI', name: 'Virgin Islands, U.S.'.t() },
-        { code: 'WF', name: 'Wallis and Futuna'.t() },
-        { code: 'EH', name: 'Western Sahara'.t() },
-        { code: 'YE', name: 'Yemen'.t() },
-        { code: 'ZM', name: 'Zambia'.t() },
-        { code: 'ZW', name: 'Zimbabwe'.t() }
-    ]
-});
 Ext.define('Ung.chart.TimeChartController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.timechart',
@@ -5948,10 +3145,10 @@ Ext.define('Ung.chart.TimeChartController', {
                 gridLineColor: '#EEE',
                 labels: {
                     style: {
-                        fontFamily: 'Source Sans Pro',
+                        fontFamily: 'Open Sans Condensed',
                         color: '#555',
-                        fontSize: '11px',
-                        fontWeight: 600
+                        fontSize: '10px',
+                        fontWeight: 700
                     },
                     y: 12
                 },
@@ -5983,9 +3180,9 @@ Ext.define('Ung.chart.TimeChartController', {
                     useHTML: true,
                     padding: 0,
                     style: {
-                        fontFamily: 'Source Sans Pro',
+                        fontFamily: 'Open Sans Condensed',
                         color: '#555',
-                        fontSize: '11px',
+                        fontSize: '10px',
                         fontWeight: 600,
                         background: 'rgba(255, 255, 255, 0.6)',
                         padding: '0 1px',
@@ -6906,7 +4103,7 @@ Ext.define('Ung.widget.Report', {
         itemId: 'header',
         bind: {
             html: '{title}' +
-                '<button class="action-btn"><i class="material-icons" data-action="refresh">refresh</i></button>'
+                '<button class="action-btn"><i class="fa fa-refresh" data-action="refresh"></i></button>'
         }
     }],
     // {
@@ -7050,7 +4247,7 @@ Ext.define('Ung.view.dashboard.Dashboard', {
         // weight: 30,
         width: 300,
         collapsible: true,
-        //border: false,
+        bodyBorder: true,
         // shadow: false,
         animCollapse: false,
         collapsed: true,
@@ -7121,7 +4318,7 @@ Ext.define('Ung.view.dashboard.Dashboard', {
             menuDisabled: true,
             handler: 'removeWidget',
             renderer: function (value, meta, record) {
-                return '<i class="material-icons" style="color: #999; font-size: 20px;">close</i>';
+                return '<i class="fa fa-times" style="color: #999; font-size: 20px;"></i>';
             }
         }/*, {
             xtype: 'actioncolumn',
@@ -7145,26 +4342,26 @@ Ext.define('Ung.view.dashboard.Dashboard', {
         tbar: [{
             itemId: 'addWidgetBtn',
             text: 'Add'.t(),
-            iconCls: 'fa fa-plus-circle fa-lg'
+            iconCls: 'fa fa-plus-circle'
             // menu: Ext.create('Ext.menu.Menu', {
             //     mouseLeaveDelay: 0
             // })
         }, '->', {
             text: 'Import'.t(),
-            iconCls: 'fa fa-download fa-lg'
+            iconCls: 'fa fa-download'
             // handler: 'applyChanges'
         }, {
             text: 'Export'.t(),
-            iconCls: 'fa fa-upload fa-lg'
+            iconCls: 'fa fa-upload'
             //handler: 'applyChanges'
         }],
         bbar: [{
             text: 'Reset'.t(),
-            iconCls: 'fa fa-rotate-left fa-lg',
+            iconCls: 'fa fa-rotate-left',
             handler: 'resetDashboard'
         }, '->', {
             text: 'Apply'.t(),
-            iconCls: 'fa fa-floppy-o fa-lg',
+            iconCls: 'fa fa-floppy-o',
             handler: 'applyChanges'
         }]
     }, {
@@ -7189,1256 +4386,9 @@ Ext.define('Ung.view.dashboard.Dashboard', {
         showwidgeteditor: 'showWidgetEditor'
     }
 });
-Ext.define('Ung.chart.NodeChartController', {
-    extend: 'Ext.app.ViewController',
-    alias: 'controller.nodechart',
-
-    init: function () {
-        this.defaultColors = ['#00b000', '#3030ff', '#009090', '#00ffff', '#707070', '#b000b0', '#fff000', '#b00000', '#ff0000', '#ff6347', '#c0c0c0'];
-    },
-
-    onAfterRender: function (view) {
-        this.chart = new Highcharts.Chart({
-            chart: {
-                type: 'areaspline',
-                //zoomType: 'x',
-                renderTo: view.lookupReference('nodechart').getEl().dom,
-                marginBottom: 15,
-                marginRight: 0,
-                //padding: [0, 0, 0, 0],
-                backgroundColor: 'transparent',
-                animation: true,
-                style: {
-                    fontFamily: 'Source Sans Pro',
-                    fontSize: '12px'
-                }
-            },
-            title: null,
-            credits: {
-                enabled: false
-            },
-            xAxis: [{
-                type: 'datetime',
-                crosshair: {
-                    width: 1,
-                    dashStyle: 'ShortDot',
-                    color: 'rgba(100, 100, 100, 0.3)'
-                },
-                lineColor: '#C0D0E0',
-                lineWidth: 1,
-                tickLength: 3,
-                gridLineWidth: 1,
-                gridLineDashStyle: 'dash',
-                gridLineColor: '#EEE',
-                labels: {
-                    style: {
-                        fontFamily: 'Source Sans Pro',
-                        color: '#555',
-                        fontSize: '11px',
-                        fontWeight: 600
-                    },
-                    y: 12
-                },
-                maxPadding: 0,
-                minPadding: 0
-            }],
-            yAxis: {
-                allowDecimals: false,
-                min: 0,
-                lineColor: '#C0D0E0',
-                lineWidth: 1,
-                gridLineWidth: 1,
-                gridLineDashStyle: 'dash',
-                gridLineColor: '#EEE',
-                minRange: 1,
-                tickPixelInterval: 30,
-                tickLength: 5,
-                tickWidth: 1,
-                //tickPosition: 'inside',
-                showFirstLabel: false,
-                showLastLabel: true,
-                maxPadding: 0,
-                opposite: false,
-                labels: {
-                    align: 'right',
-                    useHTML: true,
-                    padding: 0,
-                    style: {
-                        fontFamily: 'Source Sans Pro',
-                        color: '#555',
-                        fontSize: '11px',
-                        fontWeight: 600,
-                        background: 'rgba(255, 255, 255, 0.6)',
-                        padding: '0 1px',
-                        borderRadius: '2px',
-                        //textShadow: '1px 1px 1px #000'
-                        lineHeight: '11px'
-                    },
-                    x: -10,
-                    y: 5
-                },
-                title: {
-                    align: 'high',
-                    offset: -10,
-                    y: 3,
-                    //rotation: 0,
-                    //text: entry.units,
-                    text: 'sessions',
-                    //textAlign: 'left',
-                    style: {
-                        fontFamily: 'Source Sans Pro',
-                        color: '#555',
-                        fontSize: '10px',
-                        fontWeight: 600
-                    }
-                }
-            },
-            legend: {
-                enabled: false
-            },
-            tooltip: {
-                shared: true,
-                animation: true,
-                followPointer: true,
-                backgroundColor: 'rgba(255, 255, 255, 0.7)',
-                borderWidth: 1,
-                borderColor: 'rgba(0, 0, 0, 0.1)',
-                style: {
-                    textAlign: 'right',
-                    fontFamily: 'Source Sans Pro',
-                    padding: '5px',
-                    fontSize: '10px',
-                    marginBottom: '40px'
-                },
-                //useHTML: true,
-                hideDelay: 0,
-                shadow: false,
-                headerFormat: '<span style="font-size: 11px; line-height: 1.5; font-weight: bold;">{point.key}</span><br/>',
-                pointFormatter: function () {
-                    var str = '<span>' + this.series.name + '</span>';
-                    str += ': <span style="color: ' + this.color + '; font-weight: bold;">' + this.y + '</span> sessions';
-                    return str + '<br/>';
-                }
-            },
-            plotOptions: {
-                areaspline: {
-                    fillOpacity: 0.15,
-                    lineWidth: 1
-                },
-                spline: {
-                    lineWidth: 2,
-                    softThreshold: false
-                },
-                series: {
-                    marker: {
-                        enabled: true,
-                        radius: 0,
-                        states: {
-                            hover: {
-                                enabled: true,
-                                lineWidthPlus: 2,
-                                radius: 4,
-                                radiusPlus: 2
-                            }
-                        }
-                    },
-                    states: {
-                        hover: {
-                            enabled: true,
-                            lineWidthPlus: 0,
-                            halo: {
-                                size: 2
-                            }
-                        }
-                    }
-                }
-            },
-            series: [{
-                data: (function () {
-                    var data = [], time = Date.now(), i;
-                    try {
-                        time = rpc.systemManager.getMilliseconds();
-                    } catch (e) {
-                        console.log('Unable to get current millis.');
-                    }
-                    time = Math.round(time/1000) * 1000;
-                    for (i = -39; i <= 0; i += 1) {
-                        data.push({
-                            x: time + i * 3000,
-                            y: 0
-                        });
-                    }
-                    return data;
-                }())
-            }]
-        });
-    },
-
-    onResize: function () {
-        this.chart.reflow();
-    },
-
-    onAddPoint: function () {
-        var newVal = this.getViewModel().get('metrics').filter(function (metric) {
-            return metric.name === 'live-sessions';
-        })[0].value || 0;
-
-        this.chart.series[0].addPoint({
-            x: Date.now(),
-            y: newVal
-        }, true, true);
-
-    }
-});
-Ext.define('Ung.chart.NodeChart', {
-    extend: 'Ext.container.Container',
-    alias: 'widget.nodechart',
-    requires: [
-        'Ung.chart.NodeChartController'
-    ],
-
-    controller: 'nodechart',
-    viewModel: true,
-
-    listeners: {
-        afterrender: 'onAfterRender',
-        addPoint: 'onAddPoint'
-        //resize: 'onResize',
-        //setseries: 'onSetSeries',
-        //beginfetchdata: 'onBeginFetchData'
-    },
-
-    items: [{
-        xtype: 'component',
-        reference: 'nodechart',
-        width: 400,
-        height: 150
-    }]
-});
-Ext.define('Ung.view.node.Status', {
-    extend: 'Ext.panel.Panel',
-    xtype: 'nodestatus',
-
-    requires: [
-        'Ung.chart.NodeChart'
-    ],
-
-    layout: {
-        type: 'vbox'
-    },
-
-    config: {
-        summary: null,
-        hasChart: null,
-        hasMetrics: true
-    },
-
-    defaults: {
-        border: false,
-        xtype: 'panel',
-        baseCls: 'status-item',
-        padding: 10,
-        bodyPadding: '10 0 0 0'
-    },
-
-    title: 'Status'.t(),
-    scrollable: true,
-    items: [],
-
-    initComponent: function () {
-
-        var vm = this.getViewModel(),
-            items = [{
-                title: 'Summary'.t(),
-                //baseCls: 'status-item',
-                items: [{
-                    xtype: 'component',
-                    bind: '{summary}'
-                }]
-            }];
-
-        if (vm.get('nodeProps.hasPowerButton')) {
-            items.push({
-                title: 'Power'.t(),
-                //baseCls: 'status-item',
-                //cls: isRunning? 'app-on': 'app-off',
-                items: [{
-                    xtype: 'component',
-                    html: 'test',
-                    bind: {
-                        html: '{powerMessage}'
-                    }
-                }, {
-                    xtype: 'button',
-                    margin: '5 0',
-                    cls: 'power-btn',
-                    bind: {
-                        text: '{powerButton}',
-                        userCls: '{nodeInstance.targetState}'
-                    },
-                    handler: 'onPower'
-                }]
-            });
-        }
-
-        if (this.getHasChart()) {
-            items.push({
-                title: 'Sessions'.t(),
-                items: [{
-                    xtype: 'nodechart'
-                }]
-            });
-        }
-
-        if (this.getHasMetrics()) {
-            items.push({
-                title: 'Metrics'.t(),
-                baseCls: 'status-item',
-                items: [{
-                    xtype: 'grid',
-                    header: false,
-                    hideHeaders: true,
-                    baseCls: 'metrics-grid',
-                    focusable: false,
-                    width: 300,
-                    border: false,
-                    bodyBorder: false,
-                    disableSelection: true,
-                    trackMouseOver: false,
-                    viewConfig: {
-                        stripeRows: false
-                    },
-                    bind: {
-                        store: '{nodeMetrics}'
-                    },
-                    columns: [{
-                        dataIndex: 'displayName',
-                        flex: 1,
-                        align: 'right',
-                        renderer: function (value) {
-                            return value.t() + ':';
-                        }
-                    }, {
-                        dataIndex: 'value'
-                    }]
-                }]
-            });
-        }
-
-        Ext.apply(this, { items: items });
-        this.callParent(arguments);
-    }
-
-});
-Ext.define('Ung.view.grid.EditorController', {
-    extend: 'Ext.app.ViewController',
-    alias: 'controller.ung.grideditor',
-
-    onBeforeRender: function (view) {
-        var form = view.lookupReference('form');
-
-        var vm = view.getViewModel();
-
-        view.columns.forEach(function (column) {
-            if (column.editorField === 'textfield' || column.editorField === 'textarea') {
-                form.add({
-                    xtype: column.editorField,
-                    fieldLabel: column.text,
-                    labelAlign: 'right',
-                    labelWidth: 150,
-                    width: '100%',
-                    disabled: column.editDisabled,
-                    vtype: column.getEditor().vtype,
-                    allowBlank: column.getEditor() ? column.getEditor().allowBlank : true,
-                    emptyText  : column.text,
-                    //maskRe     : /[a-z]/i,
-                    msgTarget : 'under',
-                    bind: {
-                        value: '{record.' + column.dataIndex + '}'
-                    }
-                });
-            }
-
-            if (column.editorField === 'checkbox') {
-                form.add({
-                    xtype: column.editorField,
-                    fieldLabel: column.text,
-                    labelAlign: 'right',
-                    labelWidth: 150,
-                    disabled: column.editDisabled,
-                    msgTarget : 'under',
-                    bind: {
-                        value: '{record.' + column.dataIndex + '}'
-                    }
-                });
-            }
-
-            if (column.editorField === 'action') {
-                var formulas = {
-                    showPriority: {
-                        get: function (get) {
-                            return get('record.actionType') === 'SET_PRIORITY';
-                        }
-                    },
-                    showPenalty: {
-                        get: function (get) {
-                            return get('record.actionType') === 'PENALTY_BOX_CLIENT_HOST';
-                        }
-                    },
-                    showQuota: {
-                        get: function (get) {
-                            return get('record.actionType') === 'GIVE_CLIENT_HOST_QUOTA';
-                        }
-                    }
-                };
-                vm.setFormulas(formulas);
-
-                vm.bind({
-                    bindTo: '{record.actionType}'
-                }, function (val) {
-                    if (val === 'SET_PRIORITY') {
-                        vm.set('record.actionPriority', 1);
-                    }
-                    if (val === 'GIVE_CLIENT_HOST_QUOTA') {
-                        vm.set('record.actionQuotaTime', -3);
-                    }
-                });
-
-                form.add([{
-                    xtype: 'component',
-                    padding: '10 0 5 0',
-                    margin: '0 0 0 155',
-                    style: {
-                        fontWeight: 'bold'
-                    },
-                    html: 'Perform the following action:'.t()
-                }, {
-                    xtype: 'combo',
-                    fieldLabel: 'Action Type'.t(),
-                    labelAlign: 'right',
-                    labelWidth: 150,
-                    width: 400,
-                    displayField: 'displayName',
-                    valueField: 'name',
-                    msgTarget : 'under',
-                    editable: false,
-                    bind: '{record.actionType}',
-                    queryMode: 'local',
-                    store: Ext.create('Ext.data.Store', {
-                        fields: ['name', 'displayName'],
-                        data: [
-                            { name: 'SET_PRIORITY', displayName: 'Set Priority'.t() },
-                            { name: 'PENALTY_BOX_CLIENT_HOST', displayName: 'Send Client to Penalty Box'.t() },
-                            { name: 'GIVE_CLIENT_HOST_QUOTA', displayName: 'Give Client a Quota'.t() }
-                        ]
-                    })
-                }, {
-                    xtype: 'combo',
-                    fieldLabel: 'Priority'.t(),
-                    labelAlign: 'right',
-                    labelWidth: 150,
-                    width: 300,
-                    displayField: 'displayName',
-                    valueField: 'value',
-                    msgTarget : 'under',
-                    editable: false,
-                    hidden: true,
-                    bind: {
-                        value: '{record.actionPriority}',
-                        hidden: '{!showPriority}',
-                        disabled: '{!showPriority}'
-                    },
-                    store: Ext.create('Ext.data.Store', {
-                        fields: ['value', 'displayName'],
-                        data: [
-                            //{ value: 0, displayName: '' },
-                            { value: 1, displayName: 'Very High'.t() },
-                            { value: 2, displayName: 'High'.t() },
-                            { value: 3, displayName: 'Medium'.t() },
-                            { value: 4, displayName: 'Low'.t() },
-                            { value: 5, displayName: 'Limited'.t() },
-                            { value: 6, displayName: 'Limited More'.t() },
-                            { value: 7, displayName: 'Limited Severely'.t() }
-                        ]
-                    })
-                }, {
-                    xtype: 'numberfield',
-                    fieldLabel: 'Penalty Time'.t(),
-                    labelAlign: 'right',
-                    labelWidth: 150,
-                    width: 250,
-                    hidden: true,
-                    bind: {
-                        hidden: '{!showPenalty}',
-                        disabled: '{!showPenalty}',
-                        value: '{record.actionPenaltyTime}'
-                    }
-                }, {
-                    xtype: 'combo',
-                    fieldLabel: 'Quota Expiration'.t(),
-                    labelAlign: 'right',
-                    labelWidth: 150,
-                    displayField: 'displayName',
-                    valueField: 'value',
-                    msgTarget : 'under',
-                    editable: false,
-                    hidden: true,
-                    bind: {
-                        hidden: '{!showQuota}',
-                        disabled: '{!showQuota}',
-                        value: '{record.actionQuotaTime}'
-                    },
-                    store: Ext.create('Ext.data.Store', {
-                        fields: ['value', 'displayName'],
-                        data: [
-                            //{ value: 0, displayName: '' },
-                            { value: -3, displayName: 'End of Week'.t() },
-                            { value: -2, displayName: 'End of Day'.t() },
-                            { value: -1, displayName: 'End of Hour'.t() }
-                        ]
-                    })
-                }, {
-                    xtype: 'container',
-                    hidden: true,
-                    layout: {
-                        type: 'hbox'
-                    },
-                    bind: {
-                        hidden: '{!showQuota}',
-                        disabled: '{!showQuota}'
-                    },
-                    items: [{
-                        xtype: 'numberfield',
-                        fieldLabel: 'Quota Size'.t(),
-                        labelAlign: 'right',
-                        labelWidth: 150,
-                        width: 250,
-                        bind: {
-                            value: '{record.actionQuotaBytes}'
-                        }
-                    }, {
-                        xtype: 'combo',
-                        displayField: 'unit',
-                        valueField: 'value',
-                        editable: false,
-                        value: 1,
-                        width: 100,
-                        margin: '0 0 0 5',
-                        store: Ext.create('Ext.data.Store', {
-                            fields: ['value', 'unit'],
-                            data: [
-                                { value: 1, unit: 'bytes'.t() },
-                                { value: 1000, unit: 'Kilobytes'.t() },
-                                { value: 1000000, unit: 'Megabytes'.t() },
-                                { value: 1000000000, unit: 'Gigabytes'.t() },
-                                { value: 1000000000000, unit: 'Terrabytes'.t() }
-                            ]
-                        })
-                    }]
-                }]);
-            }
-
-            if (column.editorField === 'conditions') {
-                console.log(vm.get('record.conditions'));
-                form.add([{
-                    xtype: 'component',
-                    padding: '10 0 5 0',
-                    margin: '0 0 0 155',
-                    style: {
-                        fontWeight: 'bold'
-                    },
-                    html: 'If all of the following conditions are met:'.t()
-                }, {
-                    xtype: 'ung.gridconditions',
-                    margin: '0 0 0 155',
-                    viewModel: {
-                        stores: {
-                            store: {
-                                model: 'Ung.model.Condition',
-                                data: '{record.' + column.dataIndex + '}'
-                            }
-                        }
-                    }
-
-                }]);
-            }
-
-
-            /*
-            if (column.dataIndex && column.editorField) {
-                console.log(column.dataIndex);
-                if (column.editorField === 'ung.gridconditions') {
-                    form.add({
-                        xtype: 'ung.gridconditions',
-                        bind: {
-                            //record: '{record}',
-                            conditions: '{record.' + column.dataIndex + '}'
-                        },
-                        /*
-                        viewModel: {
-                            data: {
-                                conditions: '{record.' + column.dataIndex + '}'
-                            }
-                        }
-
-
-                        viewModel: {
-                            stores: {
-                                store: {
-                                    model: 'Ung.model.Rule',
-                                    data: '{record.' + column.dataIndex + '}'
-                                }
-                            }
-                        }
-
-                    });
-                } else {
-
-                }
-            }
-            */
-        });
-    },
-
-    /*
-    onBeforeRender: function () {
-        var vm = this.getViewModel();
-        vm.bind({
-            bindTo: '{record}',
-            single: true
-        }, function () {});
-    },
-    */
-
-    /*
-    onAfterRender: function (form) {
-        form.keyNav = Ext.create('Ext.util.KeyNav', form.el, {
-            enter: function () {
-                console.log('enter');
-            }
-        });
-    },
-    */
-
-    onSave: function () {
-        this.getView().setCloseAction('save');
-        this.getView().close();
-    },
-
-    onCancel: function () {
-        this.getView().setCloseAction('cancel');
-        this.getView().close();
-    }
-
-});
-Ext.define ('Ung.model.Rule', {
-    extend: 'Ext.data.Model' ,
-    fields: [
-        //{ name: 'conditions'},
-        { name: 'name', type: 'string', defaultValue: null },
-        { name: 'string', type: 'string', defaultValue: '' },
-        { name: 'blocked', type: 'boolean', defaultValue: true },
-        { name: 'flagged', type: 'boolean', defaultValue: true },
-        { name: 'category', type: 'string', defaultValue: null },
-        { name: 'description', type: 'string', defaultValue: '' },
-        { name: 'enabled', type: 'boolean', defaultValue: true },
-        { name: 'id', defaultValue: null },
-        { name: 'readOnly', type: 'boolean', defaultValue: null },
-        { name: 'javaClass', type: 'string', defaultValue: 'com.untangle.node.bandwidth_control.BandwidthControlRule' },
-        { name: 'ruleId', type: 'int', defaultValue: null },
-
-        { name: 'action', type: 'auto'},
-        { name: 'actionType', type: 'string', mapping: 'action.actionType', defaultValue: 'SET_PRIORITY' },
-        { name: 'actionPriority', type: 'int', mapping: 'action.priority', defaultValue: 1 },
-        { name: 'actionPenaltyTime', type: 'int', mapping: 'action.penaltyTime', defaultValue: 0 },
-        { name: 'actionQuotaBytes', type: 'int', mapping: 'action.quotaBytes', defaultValue: 1 },
-        { name: 'actionQuotaTime', type: 'int', mapping: 'action.quotaTime', defaultValue: -1 }
-    ],
-    hasMany: 'Ung.model.Condition',
-    proxy: {
-        autoLoad: true,
-        type: 'memory',
-        reader: {
-            type: 'json',
-            rootProperty: 'list'
-        }
-    }
-});
-Ext.define ('Ung.model.Condition', {
-    extend: 'Ext.data.Model' ,
-    fields: [
-        { name: 'conditionType', type: 'string', defaultValue: 'DST_ADDR' },
-        { name: 'invert', type: 'boolean', defaultValue: false },
-        { name: 'javaClass', type: 'string', defaultValue: 'com.untangle.node.bandwidth_control.BandwidthControlRuleCondition' },
-        { name: 'value', type: 'auto', defaultValue: ''}
-    ],
-    proxy: {
-        autoLoad: true,
-        type: 'memory',
-        reader: {
-            type: 'json',
-            rootProperty: 'list'
-        }
-    }
-});
-Ext.define('Ung.view.grid.Editor', {
-    extend: 'Ext.window.Window',
-
-    requires: [
-        'Ung.view.grid.EditorController',
-        'Ung.model.Rule',
-        'Ung.model.Condition'
-    ],
-
-    controller: 'ung.grideditor',
-    //viewModel: true,
-
-    config: {
-        closeAction: undefined
-    },
-
-    modal: true,
-    draggable: false,
-    resizable: false,
-    //bodyPadding: 10,
-    bodyStyle: {
-        background: '#FFF'
-    },
-    layout: 'fit',
-    items: [{
-        xtype: 'form',
-        padding: 10,
-        layout: {
-            type: 'anchor'
-            //align: 'stretch'
-        },
-        border: 0,
-        reference: 'form',
-        buttons: [{
-            text: Ung.Util.iconTitle('Cancel', 'cancel-16'),
-            handler: 'onCancel'
-        }, {
-            text: Ung.Util.iconTitle('Done', 'check-16'),
-            formBind: true,
-            disabled: true,
-            handler: 'onSave'
-        }],
-        listeners: {
-            //afterrender: 'onAfterRender'
-        }
-    }],
-    listeners: {
-        beforeRender: 'onBeforeRender'
-    }
-    /*
-    dockedItems: [{
-        xtype: 'toolbar',
-        dock: 'bottom',
-        items: ['->', {
-            bind: {
-                text: 'Cancel {record.dirty}'
-            }
-        }, {
-            text: Ung.Util.iconTitle('Save', 'save-16')
-        }]
-    }]
-    */
-});
-
-Ext.define('Ung.view.grid.Grid', {
-    extend: 'Ext.grid.Panel',
-    xtype: 'ung.grid',
-
-    requires: [
-        'Ung.view.grid.GridController',
-        'Ung.view.grid.Editor'
-    ],
-
-    controller: 'ung.grid',
-
-    config: {
-        toolbarFeatures: null, // ['add', 'delete', 'revert', 'importexport'] add specific buttons to top toolbar
-        columnFeatures: null, // ['delete', 'edit', 'reorder', 'select'] add specific actioncolumns to grid
-        inlineEdit: null, // 'cell' or 'row',
-        dataProperty: null // the settings data property, e.g. settings.dataProperty.list
-    },
-
-    bind: {
-        store: '{store}'
-    },
-
-    resizable: false,
-    //border: false,
-    bodyBorder: false,
-
-    viewConfig: {
-        plugins: [],
-        stripeRows: false,
-        getRowClass: function(record) {
-            //console.log(record);
-            if (record.markDelete) {
-                return 'delete';
-            }
-            //if (record.phantom) {
-            //    return 'added';
-            //}
-            if (record.dirty) {
-                return 'dirty';
-            }
-        }
-    },
-
-    listeners: {
-        beforedestroy: 'onBeforeDestory',
-        //beforerender: 'onBeforeRender',
-        //selectionchange: 'onSelectionChange',
-        //beforeedit: 'onBeforeEdit',
-        save: 'onSave'
-        //reloaded: 'onReloaded'
-        //edit: 'onEdit'
-    },
-
-    initComponent: function () {
-        // add any action columns
-        var columnFeatures = this.getColumnFeatures(),
-            actionColumns = [];
-
-        // Edit column
-        if (Ext.Array.contains(columnFeatures, 'edit')) {
-            actionColumns.push({
-                xtype: 'ung.actioncolumn',
-                text: 'Edit'.t(),
-                align: 'center',
-                width: 50,
-                sortable: false,
-                hideable: false,
-                resizable: false,
-                menuDisabled: true,
-                materialIcon: 'edit',
-                handler: 'editRecord',
-                editor: false,
-                type: 'edit'
-            });
-        }
-
-        // Delete column
-        if (Ext.Array.contains(columnFeatures, 'delete')) {
-            actionColumns.push({
-                xtype: 'ung.actioncolumn',
-                text: 'Delete'.t(),
-                align: 'center',
-                width: 50,
-                //tdCls: 'stripe-col',
-                sortable: false,
-                hideable: false,
-                resizable: false,
-                menuDisabled: true,
-                materialIcon: 'delete',
-                handler: 'deleteRecord',
-                type: 'delete'
-            });
-        }
-
-        // Select column which add checkboxes for each row
-        if (Ext.Array.contains(columnFeatures, 'select')) {
-            this.selModel = {
-                type: 'checkboxmodel'
-            };
-        }
-
-        // Reorder column, allows sorting columns, overriding any other sorters
-        if (Ext.Array.contains(columnFeatures, 'reorder')) {
-            this.sortableColumns = false; // disable column sorting as it would affect drag sorting
-
-            Ext.apply(this, {
-                viewConfig: {
-                    plugins: {
-                        ptype: 'gridviewdragdrop',
-                        dragText: 'Drag and drop to reorganize'.t(),
-                        // allow drag only from drag column icons
-                        dragZone: {
-                            onBeforeDrag: function(data, e) {
-                                return Ext.get(e.target).hasCls('draggable');
-                            }
-                        }
-                    }
-                }
-            });
-
-            // add the droag/drop sorting column as the first column
-            actionColumns.unshift({
-                xtype: 'ung.actioncolumn',
-                align: 'center',
-                width: 30,
-                sortable: false,
-                hideable: false,
-                resizable: false,
-                menuDisabled: true,
-
-                dragEnabled: true,
-                materialIcon: 'more_vert'
-            });
-        }
-
-        // set action columns
-        this.columns = this.columns.concat(actionColumns);
-
-        this.callParent(arguments);
-    }
-});
-Ext.define('Ung.view.grid.ConditionEditorController', {
-    extend: 'Ext.app.ViewController',
-    alias: 'controller.ung.conditioneditor',
-
-    init: function (view) {
-        console.log(this.getViewModel());
-        this.getViewModel().bind({
-            bindTo: '{condition}',
-            single: true
-        }, function (cond) {
-            console.log(cond);
-        });
-    },
-
-    onCancel: function () {
-        this.getView().close();
-    },
-
-    onConditionTypeChange: function (combo, newValue, oldValue) {
-        var vm = this.getViewModel(),
-            form = this.getView().lookupReference('form'),
-            comboRecord = combo.getStore().findRecord('name', newValue),
-            xtype = comboRecord.get('editorType'),
-            vtype = comboRecord.get('vtype');
-
-        if (form.down('#condType')) {
-            //form.lookupReference('condType').destroy();
-            form.remove('condType', true);
-        }
-
-        switch (xtype) {
-        case ('textfield'):
-            form.add({
-                xtype: xtype,
-                id: 'condType',
-                margin: '0 5 0 5',
-                //width: 400,
-                //fieldLabel: 'Value'.t(),
-                allowBlank: false,
-                vtype: vtype,
-                bind: {
-                    value: '{condition.value}'
-                }
-            });
-            break;
-
-        case ('countryselector'):
-            form.add({
-                xtype: 'tagfield',
-                id: 'condType',
-                margin: '0 5 0 5',
-                //width: 400,
-                //fieldLabel: 'Value'.t(),
-                store: 'countries',
-                queryMode: 'local',
-                typeAhead: true,
-                filterPickList: true,
-                displayField: 'name',
-                valueField: 'code',
-                clearFilterOnEnter: true,
-                bind: {
-                    value: '{condition.value}'
-                }
-
-            });
-            break;
-        }
-    }
-
-});
-Ext.define('Ung.view.grid.ConditionEditor', {
-    extend: 'Ext.window.Window',
-
-    requires: [
-        'Ung.view.grid.ConditionEditorController'
-    ],
-
-    controller: 'ung.conditioneditor',
-
-    modal: true,
-    draggable: false,
-    resizable: false,
-    layout: 'fit',
-
-    //header: false,
-    border: false,
-    bodyBorder: false,
-    bodyStyle: {
-        background: '#FFF'
-    },
-
-    items: [{
-        xtype: 'form',
-        reference: 'form',
-        padding: 0,
-        border: false,
-        layout: {
-            type: 'vbox',
-            align: 'stretch'
-        },
-        items: [{
-            xtype: 'combo',
-            store: 'conditions',
-            //fieldLabel: 'Type'.t(),
-            margin: 5,
-            valueField: 'name',
-            displayField: 'displayName',
-            editable: false,
-            //width: 400,
-            bind: {
-                value: '{condition.conditionType}'
-            },
-            listeners: {
-                change: 'onConditionTypeChange'
-            }
-        }, {
-            xtype: 'container',
-            items: [{
-                xtype: 'segmentedbutton',
-                margin: '0 0 5 5',
-                bind: {
-                    value: '{condition.invert}'
-                },
-                items: [{
-                    text: 'IS',
-                    value: false
-                }, {
-                    text: 'IS NOT',
-                    value: true
-                }]
-            }]
-        }],
-
-        buttons: [{
-            text: Ung.Util.iconTitle('Cancel', 'cancel-16'),
-            handler: 'onCancel'
-        }, {
-            text: Ung.Util.iconTitle('Done', 'check-16'),
-            formBind: true
-        }]
-    }]
-});
-Ext.define('Ung.view.grid.Conditions', {
-    extend: 'Ext.grid.Panel',
-    xtype: 'ung.gridconditions',
-    //viewType: 'tableview',
-
-    layout: 'column',
-
-    requires: [
-        'Ung.view.grid.ConditionsController',
-        'Ung.store.Conditions',
-        'Ung.store.Countries',
-        'Ung.view.grid.ConditionEditor'
-    ],
-
-    //height: 200,
-
-    controller: 'ung.gridconditions',
-    viewModel: true,
-
-    config: {
-        conditions: null
-    },
-
-
-    bind: {
-        store: '{store}'
-    },
-
-
-    /*
-    plugins: [{
-        ptype: 'rowediting',
-        clicksToEdit: 1,
-        clicksToMoveEditor: 1
-    }],
-    */
-
-    resizable: false,
-    //border: false,
-    bodyBorder: false,
-    //title: 'Conditions'.t(),
-    columns: [{
-        text: 'Type'.t(),
-        dataIndex: 'conditionType',
-        width: 250,
-        menuDisabled: true,
-        hideable: false,
-        sortable: false,
-        renderer: 'typeRenderer',
-        editor: {
-            xtype: 'combo',
-            store: 'conditions',
-            valueField: 'name',
-            displayField: 'displayName',
-            editable: false,
-            listeners: {
-                change: 'onChange'
-            }
-        }
-    }, {
-        //text: 'Value'.t(),
-        width: 80,
-        menuDisabled: true,
-        hideable: false,
-        sortable: false,
-        resizable: false,
-        dataIndex: 'invert',
-        renderer: function (value) {
-            return value ? 'is NOT'.t() : 'is'.t();
-        }
-    }, {
-        text: 'Value'.t(),
-        flex: 1,
-        menuDisabled: true,
-        hideable: false,
-        sortable: false,
-        dataIndex: 'value',
-        renderer: 'valueRenderer'
-
-    }, {
-        xtype: 'ung.actioncolumn',
-        text: 'Delete'.t(),
-        align: 'center',
-        width: 50,
-        sortable: false,
-        hideable: false,
-        resizable: false,
-        menuDisabled: true,
-        materialIcon: 'delete'
-    }],
-    tbar: [{
-        text: Ung.Util.iconTitle('Add Condition', 'add-16'),
-        handler: 'onAddCondition'
-    }],
-    listeners: {
-        select: 'onConditionSelect',
-        beforerender: 'onBeforeRender'
-    }
-
-    /*
-    initComponent: function () {
-        var str = Ext.create('Ung.store.Conditions');
-        this.columns.push({
-            header: 'Type'.t(),
-            width: 200,
-            dataIndex: 'conditionType',
-            editor: {
-                xtype: 'combo',
-                store: Ext.create('Ung.store.Conditions'),
-                displayField: 'displayName',
-                valueField: 'name'
-            },
-            renderer: function(value) {
-                return str.findRecord('name', value).get('displayName');
-            }
-        });
-
-        this.columns.push({
-            header: 'Value'.t(),
-            flex: 1,
-            dataIndex: 'conditionType',
-            editor: {
-                xtype: 'textfield'
-            },
-            renderer: function(value) {
-                return str.findRecord('name', value).get('displayName');
-            }
-        });
-        this.callParent(arguments);
-    }
-    */
-
-});
-/**
- * Holds the node settings and controls all the nodes
- */
-Ext.define('Ung.view.node.Settings', {
-    extend: 'Ext.panel.Panel',
-    xtype: 'ung.nodesettings',
-    layout: 'border',
-    requires: [
-        'Ung.view.node.SettingsController',
-        'Ung.view.node.SettingsModel',
-        'Ung.view.node.Status',
-        'Ung.view.node.Reports',
-        'Ung.util.Util',
-        'Ung.model.NodeMetric',
-        'Ung.view.grid.Grid',
-        'Ung.view.grid.Conditions',
-        'Ung.view.grid.ActionColumn',
-        'Ung.model.GenericRule'
-    ],
-
-    controller: 'nodesettings',
-    viewModel: {
-        type: 'nodesettings'
-    },
-
-    border: false,
-    defaults: {
-        border: false
-    },
-
-    //title: 'test',
-
-    items: [{
-        region: 'north',
-        border: false,
-        height: 44,
-        layout: {
-            type: 'hbox',
-            align: 'middle'
-        },
-        bodyStyle: {
-            background: '#555',
-            padding: '0 5px',
-            color: '#FFF',
-            lineHeight: '44px'
-        },
-        items: [{
-            xtype: 'button',
-            text: 'Back to Apps'.t(),
-            hrefTarget: '_self',
-            bind: {
-                href: '#apps/{policyId}'
-            }
-        }, {
-            xtype: 'component',
-            margin: '0 0 0 10',
-            bind: {
-                html: '{nodeProps.displayName}'
-            }
-        }]
-    }],
-
-    dockedItems: [{
-        xtype: 'toolbar',
-        dock: 'bottom',
-        items: [{
-            xtype: 'button',
-            text: Ung.Util.iconTitle('Remove', 'remove_circle-16'),
-            handler: 'removeNode'
-        }, {
-            xtype: 'button',
-            text: Ung.Util.iconTitle('Save', 'save-16'),
-            handler: 'saveSettings'
-        }]
-    }]
-});
 Ext.define('Ung.view.main.Main', {
     extend: 'Ext.panel.Panel',
+    itemId: 'main',
     //xtype: 'ung-main',
 
     // plugins: [
@@ -8451,8 +4401,7 @@ Ext.define('Ung.view.main.Main', {
         'Ung.view.main.MainModel',
         'Ung.view.dashboard.Dashboard',
         'Ung.view.apps.Apps',
-        // 'Ung.view.apps.install.Install',
-        // 'Ung.view.config.Config',
+        'Ung.view.config.Config',
         // 'Ung.view.reports.Reports',
         // 'Ung.view.node.Settings',
 
@@ -8463,7 +4412,6 @@ Ext.define('Ung.view.main.Main', {
 
 
     controller: 'main',
-    itemId: 'main',
     // viewModel: true,
     viewModel: {
         type: 'main'
@@ -8481,8 +4429,7 @@ Ext.define('Ung.view.main.Main', {
     }, {
         xtype: 'ung.apps'
     }, {
-        // xtype: 'ung.config',
-        // itemId: 'config'
+        xtype: 'ung.config'
     }, {
         // xtype: 'ung.sessions',
         // itemId: 'sessions'
@@ -8701,10 +4648,315 @@ Ext.define('Ung.store.Hosts', {
     }
 
 });
-Ext.define('Ung.store.Categories', {
+Ext.define('Ung.store.Conditions', {
     extend: 'Ext.data.Store',
-    storeId: 'categories',
-    model: 'Ung.model.Category'
+    storeId: 'conditions',
+    fields: ['name', 'displayName', 'type'],
+    data: [
+        {name:'DST_ADDR', displayName: 'Destination Address'.t(), editorType: 'textfield', vtype:'ipall', visible: true },
+        {name:'DST_PORT',displayName: 'Destination Port'.t(), editorType: 'textfield', vtype:'port', visible: true },
+        {name:'DST_INTF',displayName: 'Destination Interface'.t(), editorType: 'checkgroup', /*values: Ung.Util.getInterfaceList(true, false),*/ visible: true},
+        {name:'SRC_ADDR',displayName: 'Source Address'.t(), editorType: 'textfield', visible: true, vtype:'ipall'},
+        {name:'SRC_PORT',displayName: 'Source Port'.t(), editorType: 'textfield', vtype:'portMatcher', visible: rpc.isExpertMode},
+        {name:'SRC_INTF',displayName: 'Source Interface'.t(), editorType: 'checkgroup', /*values: Ung.Util.getInterfaceList(true, false),*/ visible: true},
+        {name:'PROTOCOL',displayName: 'Protocol'.t(), editorType: 'checkgroup', values: [['TCP','TCP'],['UDP','UDP'],['any','any']], visible: true},
+        {name:'USERNAME',displayName: 'Username'.t(), editorType: 'userselection', /*editor: Ext.create('Ung.UserEditorWindow',{}),*/ visible: true},
+        {name:'CLIENT_HOSTNAME',displayName: 'Client Hostname'.t(), editorType: 'textfield', visible: true},
+        {name:'SERVER_HOSTNAME',displayName: 'Server Hostname'.t(), editorType: 'textfield', visible: rpc.isExpertMode},
+        {name:'SRC_MAC', displayName: 'Client MAC Address'.t(), editorType: 'textfield', visible: true },
+        {name:'DST_MAC', displayName: 'Server MAC Address'.t(), editorType: 'textfield', visible: true },
+        {name:'CLIENT_MAC_VENDOR',displayName: 'Client MAC Vendor'.t(), editorType: 'textfield', visible: true},
+        {name:'SERVER_MAC_VENDOR',displayName: 'Server MAC Vendor'.t(), editorType: 'textfield', visible: true},
+        {name:'CLIENT_IN_PENALTY_BOX',displayName: 'Client in Penalty Box'.t(), editorType: 'boolean', visible: true},
+        {name:'SERVER_IN_PENALTY_BOX',displayName: 'Server in Penalty Box'.t(), editorType: 'boolean', visible: true},
+        {name:'CLIENT_HAS_NO_QUOTA',displayName: 'Client has no Quota'.t(), editorType: 'boolean', visible: true},
+        {name:'SERVER_HAS_NO_QUOTA',displayName: 'Server has no Quota'.t(), editorType: 'boolean', visible: true},
+        {name:'CLIENT_QUOTA_EXCEEDED',displayName: 'Client has exceeded Quota'.t(), editorType: 'boolean', visible: true},
+        {name:'SERVER_QUOTA_EXCEEDED',displayName: 'Server has exceeded Quota'.t(), editorType: 'boolean', visible: true},
+        {name:'CLIENT_QUOTA_ATTAINMENT',displayName: 'Client Quota Attainment'.t(), editorType: 'textfield', visible: true},
+        {name:'SERVER_QUOTA_ATTAINMENT',displayName: 'Server Quota Attainment'.t(), editorType: 'textfield', visible: true},
+        {name:'HTTP_HOST',displayName: 'HTTP: Hostname'.t(), editorType: 'textfield', visible: true},
+        {name:'HTTP_REFERER',displayName: 'HTTP: Referer'.t(), editorType: 'textfield', visible: true},
+        {name:'HTTP_URI',displayName: 'HTTP: URI'.t(), editorType: 'textfield', visible: true},
+        {name:'HTTP_URL',displayName: 'HTTP: URL'.t(), editorType: 'textfield', visible: true},
+        {name:'HTTP_CONTENT_TYPE',displayName: 'HTTP: Content Type'.t(), editorType: 'textfield', visible: true},
+        {name:'HTTP_CONTENT_LENGTH',displayName: 'HTTP: Content Length'.t(), editorType: 'textfield', visible: true},
+        {name:'HTTP_USER_AGENT',displayName: 'HTTP: Client User Agent'.t(), editorType: 'textfield', visible: true},
+        {name:'HTTP_USER_AGENT_OS',displayName: 'HTTP: Client User OS'.t(), editorType: 'textfield', visible: false},
+        {name:'APPLICATION_CONTROL_APPLICATION',displayName: 'Application Control: Application'.t(), editorType: 'textfield', visible: true},
+        {name:'APPLICATION_CONTROL_CATEGORY',displayName: 'Application Control: Application Category'.t(), editorType: 'textfield', visible: true},
+        {name:'APPLICATION_CONTROL_PROTOCHAIN',displayName: 'Application Control: Protochain'.t(), editorType: 'textfield', visible: true},
+        {name:'APPLICATION_CONTROL_DETAIL',displayName: 'Application Control: Detail'.t(), editorType: 'textfield', visible: true},
+        {name:'APPLICATION_CONTROL_CONFIDENCE',displayName: 'Application Control: Confidence'.t(), editorType: 'textfield', visible: true},
+        {name:'APPLICATION_CONTROL_PRODUCTIVITY',displayName: 'Application Control: Productivity'.t(), editorType: 'textfield', visible: true},
+        {name:'APPLICATION_CONTROL_RISK',displayName: 'Application Control: Risk'.t(), editorType: 'textfield', visible: true},
+        {name:'PROTOCOL_CONTROL_SIGNATURE',displayName: 'Application Control Lite: Signature'.t(), editorType: 'textfield', visible: true},
+        {name:'PROTOCOL_CONTROL_CATEGORY',displayName: 'Application Control Lite: Category'.t(), editorType: 'textfield', visible: true},
+        {name:'PROTOCOL_CONTROL_DESCRIPTION',displayName: 'Application Control Lite: Description'.t(), editorType: 'textfield', visible: true},
+        {name:'WEB_FILTER_CATEGORY',displayName: 'Web Filter: Category'.t(), editorType: 'textfield', visible: true},
+        {name:'WEB_FILTER_CATEGORY_DESCRIPTION',displayName: 'Web Filter: Category Description'.t(), editorType: 'textfield', visible: true},
+        {name:'WEB_FILTER_FLAGGED',displayName: 'Web Filter: Website is Flagged'.t(), editorType: 'boolean', visible: true},
+        {name:'DIRECTORY_CONNECTOR_GROUP',displayName: 'Directory Connector: User in Group'.t(), type: 'editor', /*editor: Ext.create('Ung.GroupEditorWindow',{}),*/ visible: true},
+        {name:'CLIENT_COUNTRY',displayName: 'Client Country'.t(), editorType: 'countryselector', /*editor: Ext.create('Ung.CountryEditorWindow',{}),*/ visible: true},
+        {name:'SERVER_COUNTRY',displayName: 'Server Country'.t(), editorType: 'countryselector', /*editor: Ext.create('Ung.CountryEditorWindow',{}),*/ visible: true}
+    ]
+
+
+});
+Ext.define('Ung.store.Countries', {
+    extend: 'Ext.data.Store',
+    storeId: 'countries',
+    data: [
+        { code: 'AF', name: 'Afghanistan'.t() },
+        { code: 'AX', name: 'Aland Islands'.t() },
+        { code: 'AL', name: 'Albania'.t() },
+        { code: 'DZ', name: 'Algeria'.t() },
+        { code: 'AS', name: 'American Samoa'.t() },
+        { code: 'AD', name: 'Andorra'.t() },
+        { code: 'AO', name: 'Angola'.t() },
+        { code: 'AI', name: 'Anguilla'.t() },
+        { code: 'AQ', name: 'Antarctica'.t() },
+        { code: 'AG', name: 'Antigua and Barbuda'.t() },
+        { code: 'AR', name: 'Argentina'.t() },
+        { code: 'AM', name: 'Armenia'.t() },
+        { code: 'AW', name: 'Aruba'.t() },
+        { code: 'AU', name: 'Australia'.t() },
+        { code: 'AT', name: 'Austria'.t() },
+        { code: 'AZ', name: 'Azerbaijan'.t() },
+        { code: 'BS', name: 'Bahamas'.t() },
+        { code: 'BH', name: 'Bahrain'.t() },
+        { code: 'BD', name: 'Bangladesh'.t() },
+        { code: 'BB', name: 'Barbados'.t() },
+        { code: 'BY', name: 'Belarus'.t() },
+        { code: 'BE', name: 'Belgium'.t() },
+        { code: 'BZ', name: 'Belize'.t() },
+        { code: 'BJ', name: 'Benin'.t() },
+        { code: 'BM', name: 'Bermuda'.t() },
+        { code: 'BT', name: 'Bhutan'.t() },
+        { code: 'BO', name: 'Bolivia, Plurinational State of'.t() },
+        { code: 'BQ', name: 'Bonaire, Sint Eustatius and Saba'.t() },
+        { code: 'BA', name: 'Bosnia and Herzegovina'.t() },
+        { code: 'BW', name: 'Botswana'.t() },
+        { code: 'BV', name: 'Bouvet Island'.t() },
+        { code: 'BR', name: 'Brazil'.t() },
+        { code: 'IO', name: 'British Indian Ocean Territory'.t() },
+        { code: 'BN', name: 'Brunei Darussalam'.t() },
+        { code: 'BG', name: 'Bulgaria'.t() },
+        { code: 'BF', name: 'Burkina Faso'.t() },
+        { code: 'BI', name: 'Burundi'.t() },
+        { code: 'KH', name: 'Cambodia'.t() },
+        { code: 'CM', name: 'Cameroon'.t() },
+        { code: 'CA', name: 'Canada'.t() },
+        { code: 'CV', name: 'Cape Verde'.t() },
+        { code: 'KY', name: 'Cayman Islands'.t() },
+        { code: 'CF', name: 'Central African Republic'.t() },
+        { code: 'TD', name: 'Chad'.t() },
+        { code: 'CL', name: 'Chile'.t() },
+        { code: 'CN', name: 'China'.t() },
+        { code: 'CX', name: 'Christmas Island'.t() },
+        { code: 'CC', name: 'Cocos (Keeling) Islands'.t() },
+        { code: 'CO', name: 'Colombia'.t() },
+        { code: 'KM', name: 'Comoros'.t() },
+        { code: 'CG', name: 'Congo'.t() },
+        { code: 'CD', name: 'Congo, the Democratic Republic of the'.t() },
+        { code: 'CK', name: 'Cook Islands'.t() },
+        { code: 'CR', name: 'Costa Rica'.t() },
+        { code: 'CI', name: 'Cote d\'Ivoire'.t() },
+        { code: 'HR', name: 'Croatia'.t() },
+        { code: 'CU', name: 'Cuba'.t() },
+        { code: 'CW', name: 'Curacao'.t() },
+        { code: 'CY', name: 'Cyprus'.t() },
+        { code: 'CZ', name: 'Czech Republic'.t() },
+        { code: 'DK', name: 'Denmark'.t() },
+        { code: 'DJ', name: 'Djibouti'.t() },
+        { code: 'DM', name: 'Dominica'.t() },
+        { code: 'DO', name: 'Dominican Republic'.t() },
+        { code: 'EC', name: 'Ecuador'.t() },
+        { code: 'EG', name: 'Egypt'.t() },
+        { code: 'SV', name: 'El Salvador'.t() },
+        { code: 'GQ', name: 'Equatorial Guinea'.t() },
+        { code: 'ER', name: 'Eritrea'.t() },
+        { code: 'EE', name: 'Estonia'.t() },
+        { code: 'ET', name: 'Ethiopia'.t() },
+        { code: 'FK', name: 'Falkland Islands (Malvinas)'.t() },
+        { code: 'FO', name: 'Faroe Islands'.t() },
+        { code: 'FJ', name: 'Fiji'.t() },
+        { code: 'FI', name: 'Finland'.t() },
+        { code: 'FR', name: 'France'.t() },
+        { code: 'GF', name: 'French Guiana'.t() },
+        { code: 'PF', name: 'French Polynesia'.t() },
+        { code: 'TF', name: 'French Southern Territories'.t() },
+        { code: 'GA', name: 'Gabon'.t() },
+        { code: 'GM', name: 'Gambia'.t() },
+        { code: 'GE', name: 'Georgia'.t() },
+        { code: 'DE', name: 'Germany'.t() },
+        { code: 'GH', name: 'Ghana'.t() },
+        { code: 'GI', name: 'Gibraltar'.t() },
+        { code: 'GR', name: 'Greece'.t() },
+        { code: 'GL', name: 'Greenland'.t() },
+        { code: 'GD', name: 'Grenada'.t() },
+        { code: 'GP', name: 'Guadeloupe'.t() },
+        { code: 'GU', name: 'Guam'.t() },
+        { code: 'GT', name: 'Guatemala'.t() },
+        { code: 'GG', name: 'Guernsey'.t() },
+        { code: 'GN', name: 'Guinea'.t() },
+        { code: 'GW', name: 'Guinea-Bissau'.t() },
+        { code: 'GY', name: 'Guyana'.t() },
+        { code: 'HT', name: 'Haiti'.t() },
+        { code: 'HM', name: 'Heard Island and McDonald Islands'.t() },
+        { code: 'VA', name: 'Holy See (Vatican City State)'.t() },
+        { code: 'HN', name: 'Honduras'.t() },
+        { code: 'HK', name: 'Hong Kong'.t() },
+        { code: 'HU', name: 'Hungary'.t() },
+        { code: 'IS', name: 'Iceland'.t() },
+        { code: 'IN', name: 'India'.t() },
+        { code: 'ID', name: 'Indonesia'.t() },
+        { code: 'IR', name: 'Iran, Islamic Republic of'.t() },
+        { code: 'IQ', name: 'Iraq'.t() },
+        { code: 'IE', name: 'Ireland'.t() },
+        { code: 'IM', name: 'Isle of Man'.t() },
+        { code: 'IL', name: 'Israel'.t() },
+        { code: 'IT', name: 'Italy'.t() },
+        { code: 'JM', name: 'Jamaica'.t() },
+        { code: 'JP', name: 'Japan'.t() },
+        { code: 'JE', name: 'Jersey'.t() },
+        { code: 'JO', name: 'Jordan'.t() },
+        { code: 'KZ', name: 'Kazakhstan'.t() },
+        { code: 'KE', name: 'Kenya'.t() },
+        { code: 'KI', name: 'Kiribati'.t() },
+        { code: 'KP', name: 'Korea, Democratic People\'s Republic of'.t() },
+        { code: 'KR', name: 'Korea, Republic of'.t() },
+        { code: 'KW', name: 'Kuwait'.t() },
+        { code: 'KG', name: 'Kyrgyzstan'.t() },
+        { code: 'LA', name: 'Lao People\'s Democratic Republic'.t() },
+        { code: 'LV', name: 'Latvia'.t() },
+        { code: 'LB', name: 'Lebanon'.t() },
+        { code: 'LS', name: 'Lesotho'.t() },
+        { code: 'LR', name: 'Liberia'.t() },
+        { code: 'LY', name: 'Libya'.t() },
+        { code: 'LI', name: 'Liechtenstein'.t() },
+        { code: 'LT', name: 'Lithuania'.t() },
+        { code: 'LU', name: 'Luxembourg'.t() },
+        { code: 'MO', name: 'Macao'.t() },
+        { code: 'MK', name: 'Macedonia, the Former Yugoslav Republic of'.t() },
+        { code: 'MG', name: 'Madagascar'.t() },
+        { code: 'MW', name: 'Malawi'.t() },
+        { code: 'MY', name: 'Malaysia'.t() },
+        { code: 'MV', name: 'Maldives'.t() },
+        { code: 'ML', name: 'Mali'.t() },
+        { code: 'MT', name: 'Malta'.t() },
+        { code: 'MH', name: 'Marshall Islands'.t() },
+        { code: 'MQ', name: 'Martinique'.t() },
+        { code: 'MR', name: 'Mauritania'.t() },
+        { code: 'MU', name: 'Mauritius'.t() },
+        { code: 'YT', name: 'Mayotte'.t() },
+        { code: 'MX', name: 'Mexico'.t() },
+        { code: 'FM', name: 'Micronesia, Federated States of'.t() },
+        { code: 'MD', name: 'Moldova, Republic of'.t() },
+        { code: 'MC', name: 'Monaco'.t() },
+        { code: 'MN', name: 'Mongolia'.t() },
+        { code: 'ME', name: 'Montenegro'.t() },
+        { code: 'MS', name: 'Montserrat'.t() },
+        { code: 'MA', name: 'Morocco'.t() },
+        { code: 'MZ', name: 'Mozambique'.t() },
+        { code: 'MM', name: 'Myanmar'.t() },
+        { code: 'NA', name: 'Namibia'.t() },
+        { code: 'NR', name: 'Nauru'.t() },
+        { code: 'NP', name: 'Nepal'.t() },
+        { code: 'NL', name: 'Netherlands'.t() },
+        { code: 'NC', name: 'New Caledonia'.t() },
+        { code: 'NZ', name: 'New Zealand'.t() },
+        { code: 'NI', name: 'Nicaragua'.t() },
+        { code: 'NE', name: 'Niger'.t() },
+        { code: 'NG', name: 'Nigeria'.t() },
+        { code: 'NU', name: 'Niue'.t() },
+        { code: 'NF', name: 'Norfolk Island'.t() },
+        { code: 'MP', name: 'Northern Mariana Islands'.t() },
+        { code: 'NO', name: 'Norway'.t() },
+        { code: 'OM', name: 'Oman'.t() },
+        { code: 'PK', name: 'Pakistan'.t() },
+        { code: 'PW', name: 'Palau'.t() },
+        { code: 'PS', name: 'Palestine, State of'.t() },
+        { code: 'PA', name: 'Panama'.t() },
+        { code: 'PG', name: 'Papua New Guinea'.t() },
+        { code: 'PY', name: 'Paraguay'.t() },
+        { code: 'PE', name: 'Peru'.t() },
+        { code: 'PH', name: 'Philippines'.t() },
+        { code: 'PN', name: 'Pitcairn'.t() },
+        { code: 'PL', name: 'Poland'.t() },
+        { code: 'PT', name: 'Portugal'.t() },
+        { code: 'PR', name: 'Puerto Rico'.t() },
+        { code: 'QA', name: 'Qatar'.t() },
+        { code: 'RE', name: 'Reunion'.t() },
+        { code: 'RO', name: 'Romania'.t() },
+        { code: 'RU', name: 'Russian Federation'.t() },
+        { code: 'RW', name: 'Rwanda'.t() },
+        { code: 'BL', name: 'Saint Barthelemy'.t() },
+        { code: 'SH', name: 'Saint Helena, Ascension and Tristan da Cunha'.t() },
+        { code: 'KN', name: 'Saint Kitts and Nevis'.t() },
+        { code: 'LC', name: 'Saint Lucia'.t() },
+        { code: 'MF', name: 'Saint Martin (French part)'.t() },
+        { code: 'PM', name: 'Saint Pierre and Miquelon'.t() },
+        { code: 'VC', name: 'Saint Vincent and the Grenadines'.t() },
+        { code: 'WS', name: 'Samoa'.t() },
+        { code: 'SM', name: 'San Marino'.t() },
+        { code: 'ST', name: 'Sao Tome and Principe'.t() },
+        { code: 'SA', name: 'Saudi Arabia'.t() },
+        { code: 'SN', name: 'Senegal'.t() },
+        { code: 'RS', name: 'Serbia'.t() },
+        { code: 'SC', name: 'Seychelles'.t() },
+        { code: 'SL', name: 'Sierra Leone'.t() },
+        { code: 'SG', name: 'Singapore'.t() },
+        { code: 'SX', name: 'Sint Maarten (Dutch part)'.t() },
+        { code: 'SK', name: 'Slovakia'.t() },
+        { code: 'SI', name: 'Slovenia'.t() },
+        { code: 'SB', name: 'Solomon Islands'.t() },
+        { code: 'SO', name: 'Somalia'.t() },
+        { code: 'ZA', name: 'South Africa'.t() },
+        { code: 'GS', name: 'South Georgia and the South Sandwich Islands'.t() },
+        { code: 'SS', name: 'South Sudan'.t() },
+        { code: 'ES', name: 'Spain'.t() },
+        { code: 'LK', name: 'Sri Lanka'.t() },
+        { code: 'SD', name: 'Sudan'.t() },
+        { code: 'SR', name: 'Suriname'.t() },
+        { code: 'SJ', name: 'Svalbard and Jan Mayen'.t() },
+        { code: 'SZ', name: 'Swaziland'.t() },
+        { code: 'SE', name: 'Sweden'.t() },
+        { code: 'CH', name: 'Switzerland'.t() },
+        { code: 'SY', name: 'Syrian Arab Republic'.t() },
+        { code: 'TW', name: 'Taiwan, Province of China'.t() },
+        { code: 'TJ', name: 'Tajikistan'.t() },
+        { code: 'TZ', name: 'Tanzania, United Republic of'.t() },
+        { code: 'TH', name: 'Thailand'.t() },
+        { code: 'TL', name: 'Timor-Leste'.t() },
+        { code: 'TG', name: 'Togo'.t() },
+        { code: 'TK', name: 'Tokelau'.t() },
+        { code: 'TO', name: 'Tonga'.t() },
+        { code: 'TT', name: 'Trinidad and Tobago'.t() },
+        { code: 'TN', name: 'Tunisia'.t() },
+        { code: 'TR', name: 'Turkey'.t() },
+        { code: 'TM', name: 'Turkmenistan'.t() },
+        { code: 'TC', name: 'Turks and Caicos Islands'.t() },
+        { code: 'TV', name: 'Tuvalu'.t() },
+        { code: 'UG', name: 'Uganda'.t() },
+        { code: 'UA', name: 'Ukraine'.t() },
+        { code: 'AE', name: 'United Arab Emirates'.t() },
+        { code: 'GB', name: 'United Kingdom'.t() },
+        { code: 'US', name: 'United States'.t() },
+        { code: 'UM', name: 'United States Minor Outlying Islands'.t() },
+        { code: 'UY', name: 'Uruguay'.t() },
+        { code: 'UZ', name: 'Uzbekistan'.t() },
+        { code: 'VU', name: 'Vanuatu'.t() },
+        { code: 'VE', name: 'Venezuela, Bolivarian Republic of'.t() },
+        { code: 'VN', name: 'Viet Nam'.t() },
+        { code: 'VG', name: 'Virgin Islands, British'.t() },
+        { code: 'VI', name: 'Virgin Islands, U.S.'.t() },
+        { code: 'WF', name: 'Wallis and Futuna'.t() },
+        { code: 'EH', name: 'Western Sahara'.t() },
+        { code: 'YE', name: 'Yemen'.t() },
+        { code: 'ZM', name: 'Zambia'.t() },
+        { code: 'ZW', name: 'Zimbabwe'.t() }
+    ]
 });
 Ext.define('Ung.store.UnavailableApps', {
     extend: 'Ext.data.Store',
@@ -8982,6 +5234,25 @@ Ext.define('Ung.store.Sessions', {
     storeId: 'sessions',
     model: 'Ung.model.Session'
 });
+Ext.define ('Ung.model.Category', {
+    extend: 'Ext.data.Model' ,
+    fields: [
+        { name: 'name', type: 'string' },
+        { name: 'displayName', type: 'string' },
+        { name: 'icon', type: 'string' }
+    ],
+    proxy: {
+        type: 'memory',
+        reader: {
+            type: 'json'
+        }
+    }
+});
+Ext.define('Ung.store.Categories', {
+    extend: 'Ext.data.Store',
+    storeId: 'categories',
+    model: 'Ung.model.Category'
+});
 Ext.define('Ung.controller.Global', {
     extend: 'Ext.app.Controller',
     namespace: 'Ung',
@@ -9011,6 +5282,9 @@ Ext.define('Ung.controller.Global', {
 
     config: {
         control: {
+            '#main': {
+                beforerender: 'onBeforeRender'
+            },
             '#apps': {
                 activate: 'onActivate'
             }
@@ -9035,6 +5309,10 @@ Ext.define('Ung.controller.Global', {
         },
 
         reportsEnabled: true
+    },
+
+    onBeforeRender: function () {
+        // console.log('init');
     },
 
     onActivate: function () {
@@ -9067,7 +5345,14 @@ Ext.define('Ung.controller.Global', {
 
         // console.log(this);
         // console.log(this.getAppsView());
+    },
+
+    onConfig: function () {
+        this.getMainView().setActiveItem('config');
+        // this.getMainView().setActiveItem('#dashboard');
+        // this.getViewModel().set('activeItem', 'dashboard');
     }
+
 });
 // test
 Ext.define('Ung.Application', {
@@ -9083,16 +5368,14 @@ Ext.define('Ung.Application', {
 
     defaultToken : '',
 
-    // mainView: 'Ung.view.main.Main',
+    mainView: 'Ung.view.main.Main',
 
     init: function () {
-        console.log('init');
         console.timeEnd('resources');
         // Ext.get('app-loader').destroy();
     },
 
     launch: function () {
-        console.log('launch');
         var me = this;
         Rpc.rpc = me.rpc;
 
@@ -9100,12 +5383,14 @@ Ext.define('Ung.Application', {
 
         Ung.util.Metrics.start();
 
+        Ext.get('app-loader').destroy();
+
         Ext.Deferred.parallel([
             Rpc.getDashboardSettings,
             Rpc.getReports,
             Rpc.getUnavailableApps
         ]).then(function (result) {
-            Ext.get('app-loader').destroy();
+            // Ext.get('app-loader').destroy();
             Ung.dashboardSettings = result[0];
             Ext.getStore('widgets').loadData(result[0].widgets.list);
             if (result[1]) {
@@ -9114,7 +5399,9 @@ Ext.define('Ung.Application', {
             if (result[2]) {
                 Ext.getStore('unavailableApps').loadRawData(result[2].map);
             }
-            me.loadMainView();
+
+            Ext.fireEvent('init');
+            // me.loadMainView();
             //console.log(reports);
             //this.setWidgets();
         }, function (exception) {

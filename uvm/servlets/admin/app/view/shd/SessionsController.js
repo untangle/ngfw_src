@@ -5,7 +5,7 @@ Ext.define('Ung.view.shd.SessionsController', {
 
     control: {
         '#': {
-            beforeactivate: 'getSessions'
+            afterrender: 'getSessions'
         },
         '#list': {
             select: 'onSelect'

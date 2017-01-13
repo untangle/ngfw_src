@@ -7,7 +7,9 @@ Ext.define('Ung.controller.Global', {
         'Ung.util.Util',
         'Ung.util.Metrics',
         'Ung.view.main.Main',
-        'Ung.overrides.form.field.VTypes'
+        'Ung.overrides.form.field.VTypes',
+        'Ung.view.shd.Sessions',
+        'Ung.view.shd.Hosts'
     ],
 
 
@@ -37,7 +39,8 @@ Ext.define('Ung.controller.Global', {
 
         refs: {
             mainView: '#main',
-            appsView: '#apps'
+            appsView: '#apps',
+            dashboardView: '#dashboard'
         },
 
         routes: {
@@ -66,13 +69,14 @@ Ext.define('Ung.controller.Global', {
 
     onDashboard: function () {
         this.getMainView().setActiveItem('dashboard');
+        this.getMainView().getViewModel().set('selectedNavItem', 'dashboard');
         // this.getMainView().setActiveItem('#dashboard');
         // this.getViewModel().set('activeItem', 'dashboard');
     },
 
     onApps: function (policyId, node) {
         console.log(node);
-        // console.log(this.getMainView());
+        this.getMainView().getViewModel().set('selectedNavItem', 'apps');
         this.getMainView().setActiveItem('apps');
 
         if (node) {
@@ -93,9 +97,53 @@ Ext.define('Ung.controller.Global', {
     },
 
     onConfig: function () {
+        this.getMainView().getViewModel().set('selectedNavItem', 'config');
         this.getMainView().setActiveItem('config');
         // this.getMainView().setActiveItem('#dashboard');
         // this.getViewModel().set('activeItem', 'dashboard');
+    },
+
+    // onBeforeSessions: function (id, action) {
+    //     rpc.sessionMonitor.getMergedSessions(function (result, exception) {
+    //         console.log(result);
+    //         // grid.getView().setLoading(false);
+    //         if (exception) {
+    //             Ung.Util.exceptionToast(exception);
+    //             return;
+    //         }
+    //         // Ext.getStore('sessions').loadData(result.list);
+    //         // grid.getSelectionModel().select(0);
+    //         // grid.getStore().setData(result.list);
+    //     });
+    // },
+
+    onSessions: function () {
+        var shd = this.getMainView().down('#shd');
+        if (shd) {
+            // this.getMainView().remove('#shd', true);
+            shd.destroy();
+        }
+        this.getMainView().add({
+            xtype: 'ung.sessions',
+            itemId: 'shd'
+        });
+        this.getMainView().getViewModel().set('selectedNavItem', 'sessions');
+        this.getMainView().setActiveItem('shd');
+    },
+
+    onHosts: function () {
+        var shd = this.getMainView().down('#shd');
+        if (shd) {
+            // this.getMainView().remove('#shd', true);
+            shd.destroy();
+        }
+        this.getMainView().add({
+            xtype: 'ung.hosts',
+            itemId: 'shd'
+        });
+        this.getMainView().getViewModel().set('selectedNavItem', 'hosts');
+        this.getMainView().setActiveItem('shd');
     }
+
 
 });
