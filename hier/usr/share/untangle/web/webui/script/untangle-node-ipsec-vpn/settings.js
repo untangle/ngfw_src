@@ -488,6 +488,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                 },{
                     xtype: 'label',
                     html: i18n._("(We recommended selecting <B>Tunnel</B> unless you have a specific reason to use <B>Transport</B>)"),
+                    margin: '0 0 0 10',
                     cls: 'boxlabel'
                 }]
             },{
@@ -510,6 +511,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                 },{
                     xtype: 'label',
                     html: i18n._("Both sides of the tunnel must be configured to use the same IKE version."),
+                    margin: '0 0 0 10',
                     cls: 'boxlabel'
                 }]
             },{
@@ -526,6 +528,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                 },{
                     xtype: 'label',
                     html: i18n._("(Select <B>Start</B> for an always connected tunnel, or <B>Add</B> for an on-demand tunnel)"),
+                    margin: '0 0 0 10',
                     cls: 'boxlabel'
                 }]
             },{
@@ -563,6 +566,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                 },{
                     xtype: 'label',
                     html: i18n._("(The external IP address of this server)"),
+                    margin: '0 0 0 10',
                     cls: 'boxlabel'
                 }]
             },{
@@ -581,6 +585,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                 },{
                     xtype: 'label',
                     html: i18n._("(The public hostname or IP address of the remote IPsec gateway)"),
+                    margin: '0 0 0 10',
                     cls: 'boxlabel'
                 }]
             },{
@@ -598,6 +603,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                 },{
                     xtype: 'label',
                     html: i18n._("(The authentication ID of the local IPsec gateway. Default = same as External IP)"),
+                    margin: '0 0 0 10',
                     cls: 'boxlabel'
                 }]
             },{
@@ -615,6 +621,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                 },{
                     xtype: 'label',
                     html: i18n._("(The authentication ID of the remote IPsec gateway. Default = same as Remote Host)"),
+                    margin: '0 0 0 10',
                     cls: 'boxlabel'
                 }]
             },{
@@ -634,6 +641,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                 },{
                     xtype: 'label',
                     html: i18n._("(The private network attached to the local side of the tunnel)"),
+                    margin: '0 0 0 10',
                     cls: 'boxlabel'
                 }]
             },{
@@ -653,6 +661,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                 },{
                     xtype: 'label',
                     html: i18n._("(The private network attached to the remote side of the tunnel)"),
+                    margin: '0 0 0 10',
                     cls: 'boxlabel'
                 }]
             },{
@@ -685,6 +694,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                 },{
                     xtype: 'label',
                     html: i18n._("The number of seconds between R_U_THERE messages.  Enter 0 to disable."),
+                    margin: '0 0 0 10',
                     cls: 'boxlabel'
                 }]
             },{
@@ -705,6 +715,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                 },{
                     xtype: 'label',
                     html: i18n._("The number of seconds for a dead peer tunnel to be restarted"),
+                    margin: '0 0 0 10',
                     cls: 'boxlabel'
                 }]
             },{
@@ -715,7 +726,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                 xtype: 'displayfield',
                 margin: '5 0 10 0',
                 value: i18n._("Usually IPsec will automatically negotiate the encryption protocol with the remote peer when creating the tunnel.") + "<br/>" +
-                    i18n._("However, some peers require specific settings. To configure specific settings, enable Manual Configuration and set the appropriate values below.")
+                       i18n._("However, some peers require specific settings. To configure specific settings, enable Manual Configuration and set the appropriate values below.")
             },{
                 xtype:'checkbox',
                 dataIndex: 'phase1Manual',
@@ -746,6 +757,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                 },{
                     xtype: 'label',
                     html: i18n._("Default = 3DES"),
+                    margin: '0 0 0 10',
                     cls: 'boxlabel'
                 }]
             },{
@@ -768,6 +780,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                 },{
                     xtype: 'label',
                     html: i18n._("Default = MD5"),
+                    margin: '0 0 0 10',
                     cls: 'boxlabel'
                 }]
             },{
@@ -790,6 +803,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                 },{
                     xtype: 'label',
                     html: i18n._("Default = 2 (1024 bit)"),
+                    margin: '0 0 0 10',
                     cls: 'boxlabel'
                 }]
             },{
@@ -811,6 +825,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                 },{
                     xtype: 'label',
                     html: i18n._("Default = 28800 seconds, min = 3600, max = 86400"),
+                    margin: '0 0 0 10',
                     cls: 'boxlabel'
                 }]
             },{
@@ -843,6 +858,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                 },{
                     xtype: 'label',
                     html: i18n._("Default = 3DES"),
+                    margin: '0 0 0 10',
                     cls: 'boxlabel'
                 }]
             },{
@@ -865,6 +881,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                 },{
                     xtype: 'label',
                     html: i18n._("Default = MD5"),
+                    margin: '0 0 0 10',
                     cls: 'boxlabel'
                 }]
             },{
@@ -887,6 +904,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                 },{
                     xtype: 'label',
                     html: i18n._("Default = 2 (1024 bit)"),
+                    margin: '0 0 0 10',
                     cls: 'boxlabel'
                 }]
             },{
@@ -908,6 +926,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                 },{
                     xtype: 'label',
                     html: i18n._("Default = 3600 seconds, min = 3600, max = 86400"),
+                    margin: '0 0 0 10',
                     cls: 'boxlabel'
                 }]
             }],
