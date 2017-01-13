@@ -364,7 +364,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                 'phase2Group': 'modp1024',
                 'phase2Lifetime' : '3600',
                 'left': leftDefault,
-                'leftId': leftDefault,
+                'leftId': '',
                 'leftSubnet': leftSubnetDefault,
                 'right': '',
                 'rightId': '',
@@ -587,36 +587,34 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                 xtype: 'container',
                 layout: 'column',
                 margin: '0 0 5 0',
-                name: 'leftIdContainer',
                 items: [{
                     xtype:'textfield',
                     dataIndex: 'leftId',
                     fieldLabel: i18n._("Local Identifier"),
                     labelWidth: 120,
-                    emptyText: i18n._("[enter local identifier]"),
+                    emptyText: i18n._("[leave blank for default]"),
                     width: 350,
                     allowBlank: true
                 },{
                     xtype: 'label',
-                    html: i18n._("(The authentication ID of the local IPsec gateway.)"),
+                    html: i18n._("(The authentication ID of the local IPsec gateway. Default = same as External IP)"),
                     cls: 'boxlabel'
                 }]
             },{
                 xtype: 'container',
                 layout: 'column',
                 margin: '0 0 5 0',
-                name: 'rightIdContainer',
                 items: [{
                     xtype:'textfield',
                     dataIndex: 'rightId',
                     fieldLabel: i18n._("Remote Identifier"),
                     labelWidth: 120,
-                    emptyText: i18n._("[enter remote identifier]"),
+                    emptyText: i18n._("[leave blank for default]"),
                     width: 350,
                     allowBlank: true
                 },{
                     xtype: 'label',
-                    html: i18n._("(The authentication ID of the remote IPsec gateway)"),
+                    html: i18n._("(The authentication ID of the remote IPsec gateway. Default = same as Remote Host)"),
                     cls: 'boxlabel'
                 }]
             },{
@@ -928,16 +926,11 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                         phase2GroupContainer: this.down('container[name=phase2GroupContainer]'),
                         phase2LifetimeContainer: this.down('container[name=phase2LifetimeContainer]'),
 
-                        ikeVersionCombo: this.down('combo[name=ikeVersion]'),
-                        leftIdContainer: this.down('container[name=leftIdContainer]'),
-                        rightIdContainer: this.down('container[name=rightIdContainer]'),
-
                         interfaceCombo: this.down('combo[name=interfaceCombo]'),
                         left: this.down('textfield[dataIndex=left]')
                     };
                 }
                 var leftValue = this.cmps.left.getValue();
-                var ikeVersion = this.cmps.ikeVersionCombo.getValue();
 
                 this.cmps.interfaceCombo.suspendEvent("change");
                 this.cmps.interfaceCombo.setValue('');
@@ -950,17 +943,6 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                 }
 
                 this.cmps.interfaceCombo.resumeEvent("change");
-
-                if (ikeVersion == 1)
-                {
-                    this.cmps.leftIdContainer.setVisible(false);
-                    this.cmps.rightIdContainer.setVisible(false);
-                }
-                if (ikeVersion == 2)
-                {
-                    this.cmps.leftIdContainer.setVisible(true);
-                    this.cmps.rightIdContainer.setVisible(true);
-                }
 
                 var phase1Manual = this.cmps.phase1Manual.getValue();
                 this.cmps.phase1CipherContainer.setVisible(phase1Manual);

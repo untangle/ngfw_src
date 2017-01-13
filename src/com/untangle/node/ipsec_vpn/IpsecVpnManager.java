@@ -204,18 +204,21 @@ public class IpsecVpnManager
 
             ipsec_conf.write(TAB + "left=" + data.getLeft() + RET);
 
-            if ((data.getIkeVersion() == 2) && (data.getLeftId() != null) && (data.getLeftId().length() > 0)) {
+            // use the configured leftid if available otherwise use left
+            if ((data.getLeftId() != null) && (data.getLeftId().length() > 0)) {
                 ipsec_conf.write(TAB + "leftid=" + data.getLeftId() + RET);
+            } else {
+                ipsec_conf.write(TAB + "leftid=" + data.getLeft() + RET);
             }
 
             ipsec_conf.write(TAB + "leftsubnet=" + leftString + RET);
             ipsec_conf.write(TAB + "right=" + data.getRight() + RET);
 
-            if (data.getIkeVersion() == 1) {
-                ipsec_conf.write(TAB + "rightid=%any" + RET);
-            }
-            if ((data.getIkeVersion() == 2) && (data.getRightId() != null) && (data.getRightId().length() > 0)) {
+            // use the configured rightid if available otherwise use right
+            if ((data.getRightId() != null) && (data.getRightId().length() > 0)) {
                 ipsec_conf.write(TAB + "rightid=" + data.getRightId() + RET);
+            } else {
+                ipsec_conf.write(TAB + "rightid=" + data.getRight() + RET);
             }
 
             ipsec_conf.write(TAB + "rightsubnet=" + rightString + RET);
@@ -227,7 +230,7 @@ public class IpsecVpnManager
             ipsec_secrets.write(data.getLeft() + " " + data.getRight() + " : PSK 0x" + StringHexify(data.getSecret()) + RET);
 
             // also add the secret using the leftid and rightid for IKEv2 tunnels
-            if ((data.getIkeVersion() == 2) && (data.getLeftId() != null) && (data.getLeftId().length() > 0) && (data.getRightId() != null) && (data.getRightId().length() > 0)) {
+            if ((data.getLeftId() != null) && (data.getLeftId().length() > 0) && (data.getRightId() != null) && (data.getRightId().length() > 0)) {
                 // but only if left != leftid OR right != rightid since we already have that
                 if ((!data.getLeft().equals(data.getLeftId())) || (!data.getRight().equals(data.getRightId()))) {
                     ipsec_secrets.write(data.getLeftId() + " " + data.getRightId() + " : PSK 0x" + StringHexify(data.getSecret()) + RET);
