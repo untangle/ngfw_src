@@ -602,7 +602,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                     allowBlank: true
                 },{
                     xtype: 'label',
-                    html: i18n._("(The authentication ID of the local IPsec gateway. Default = same as External IP)"),
+                    html: i18n._("(The authentication ID of the local IPsec gateway. Default = same as <B>External IP</B>)"),
                     margin: '0 0 0 10',
                     cls: 'boxlabel'
                 }]
@@ -620,7 +620,7 @@ Ext.define('Webui.untangle-node-ipsec-vpn.settings', {
                     allowBlank: true
                 },{
                     xtype: 'label',
-                    html: i18n._("(The authentication ID of the remote IPsec gateway. Default = same as Remote Host)"),
+                    html: i18n._("(The authentication ID of the remote IPsec gateway. Default = same as <B>Remote Host</B>)"),
                     margin: '0 0 0 10',
                     cls: 'boxlabel'
                 }]
