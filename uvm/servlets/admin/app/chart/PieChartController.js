@@ -40,14 +40,13 @@ Ext.define('Ung.chart.PieChartController', {
             },
             title: null,
             lang: {
-                noData: 'No data available yet!',
-                drillUpText: '< ' + 'Back'
+                noData: ''
             },
             noData: {
                 style: {
-                    fontSize: '16px',
+                    fontSize: '12px',
                     fontWeight: 'normal',
-                    color: '#999'
+                    color: '#CCC'
                 }
             },
             colors: (me.entry.get('colors') !== null && me.entry.get('colors') > 0) ? me.entry.get('colors') : this.defaultColors,

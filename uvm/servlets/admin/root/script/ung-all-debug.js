@@ -329,7 +329,7 @@ Ext.define('Ung.util.Util', {
 });
 Ext.define('Ung.util.Metrics', {
     singleton: true,
-    frequency: 3000,
+    frequency: 10000,
     interval: null,
     running: false,
 
@@ -657,6 +657,9 @@ Ext.define('Ung.view.main.MainModel', {
         reportsRunning: false
     },
     formulas: {
+        // selected: function () {
+        //     return 'dashboard';
+        // },
         // reports are enabled only if are installed and has running state
         reportsEnabled: function (get) {
             return (get('reportsInstalled') && get('reportsRunning'));
@@ -2126,9 +2129,11 @@ Ext.define('Ung.view.apps.Apps', {
 
     items: [{
         xtype: 'dataview',
+        scrollable: true,
         itemId: 'installedApps',
         bind: '{apps}',
-        tpl: '<tpl for=".">' +
+        tpl: '<p class="apps-title">' + 'Apps'.t() + '</p>' +
+            '<tpl for=".">' +
                 '<tpl if="type === \'FILTER\'">' +
                 '<a href="#config" class="app-item">' +
                 '<img src="' + resourcesBaseHref + '/skins/modern-rack/images/admin/apps/{name}_80x80.png" width=80 height=80/>' +
@@ -2148,6 +2153,7 @@ Ext.define('Ung.view.apps.Apps', {
         itemSelector: 'a'
     }, {
         xtype: 'dataview',
+        scrollable: true,
         itemId: 'installableApps',
         bind: {
             store: '{apps}'
@@ -2177,127 +2183,6 @@ Ext.define('Ung.view.apps.Apps', {
             '</tpl>',
         itemSelector: 'div'
     }]
-
-    // items: [{
-    //     region: 'north',
-    //     border: false,
-    //     height: 44,
-    //     itemId: 'apps-topnav',
-    //     bodyStyle: {
-    //         background: '#555',
-    //         padding: '0 5px'
-    //     },
-    //     layout: {
-    //         type: 'hbox',
-    //         align: 'middle'
-    //     },
-    //     items: [{
-    //         xtype: 'combobox',
-    //         editable: false,
-    //         multiSelect: false,
-    //         queryMode: 'local',
-    //         bind: {
-    //             value: '{policyId}',
-    //             store: '{policies}'
-    //         },
-    //         valueField: 'policyId',
-    //         displayField: 'displayName',
-    //         listeners: {
-    //             change: 'setPolicy'
-    //         }
-    //     }, {
-    //         xtype: 'button',
-    //         baseCls: 'heading-btn',
-    //         html: Ung.Util.iconTitle('Install Apps'.t(), 'file_download-16'),
-    //         hrefTarget: '_self',
-    //         bind: {
-    //             href: '#apps/{policyId}/install'
-    //         }
-    //     }, {
-    //         xtype: 'component',
-    //         flex: 1
-    //     }, {
-    //         xtype: 'button',
-    //         baseCls: 'heading-btn',
-    //         html: 'Sessions'.t(),
-    //         href: '#sessions',
-    //         hrefTarget: '_self'
-    //     }, {
-    //         xtype: 'button',
-    //         baseCls: 'heading-btn',
-    //         html: 'Hosts'.t(),
-    //         href: '#hosts',
-    //         hrefTarget: '_self'
-    //     }, {
-    //         xtype: 'button',
-    //         baseCls: 'heading-btn',
-    //         html: 'Devices'.t(),
-    //         href: '#devices',
-    //         hrefTarget: '_self'
-    //     }]
-    // }, {
-    //     region: 'center',
-    //     itemId: 'apps-list',
-    //     border: false,
-    //     scrollable: true,
-    //     bodyStyle: {
-    //         background: 'transparent'
-    //     },
-    //     items: [{
-    //         xtype: 'dataview',
-    //         itemId: 'filters',
-    //         margin: 10,
-    //         // tpl: '<tpl for="."><div>{displayName}</div></tpl>',
-
-    //         tpl: '<tpl for=".">' +
-    //                 '<tpl if="type == \'FILTER\'">' +
-    //                     '<a class="app-item" href="#apps/{policyId}/{name}">' +
-    //                         '<span class="app-icon"><img src="' + resourcesBaseHref + '/skins/modern-rack/images/admin/apps/{name}_80x80.png" width=80 height=80/>' +
-    //                         '<span class="app-name">{displayName}</span>' +
-    //                         '</span>' +
-    //                         '<span class="app-state {state}"><i class="material-icons">power_settings_new</i></span>' +
-    //                     '</a>' +
-    //                 '</tpl>' +
-    //             '</tpl>',
-    //         itemSelector: 'a',
-    //         bind: {
-    //             store: '{nodesStore}'
-    //         },
-    //         style: {
-    //             display: 'inline-block'
-    //         }
-    //     }, {
-    //         xtype: 'component',
-    //         cls: 'apps-separator',
-    //         html: 'Service Apps'.t()
-    //     }, {
-    //         xtype: 'dataview',
-    //         margin: 10,
-    //         // tpl: '<tpl for="."><div>{displayName}</div></tpl>',
-
-    //         tpl: '<tpl for=".">' +
-    //                 '<tpl if="type == \'SERVICE\'">' +
-    //                     '<a class="app-item" href="#apps/{policyId}/{name}">' +
-    //                         '<span class="app-icon"><img src="' + resourcesBaseHref + '/skins/modern-rack/images/admin/apps/{name}_80x80.png" width=80 height=80/>' +
-    //                         '<span class="app-name">{displayName}</span>' +
-    //                         '</span>' +
-    //                         '<tpl if="hasPowerButton"><span class="app-state {state}"><i class="material-icons">power_settings_new</i></span></tpl>' +
-    //                     '</a>' +
-    //                 '</tpl>' +
-    //             '</tpl>',
-    //         itemSelector: 'a',
-    //         bind: {
-    //             store: '{nodesStore}'
-    //         },
-    //         style: {
-    //             display: 'inline-block'
-    //         }
-    //     }]
-    // }],
-    // listeners: {
-    //     //beforeRender: 'onBeforeRender'
-    //     //onPolicyChange: 'onPolicyChange'
-    // }
 });
 Ext.define('Ung.view.config.ConfigController', {
     extend: 'Ext.app.ViewController',
@@ -2386,78 +2271,42 @@ Ext.define('Ung.view.config.Config', {
     ],
 
     controller: 'config',
-    viewModel: {
-        // data: {
-        //     confs: [
-        //         { name: 'Network'.t(), url: 'network', icon: 'icon_config_network.png' },
-        //         { name: 'Administration'.t(), url: 'administration', icon: 'icon_config_admin.png' },
-        //         { name: 'Email'.t(), url: 'email', icon: 'icon_config_email.png' },
-        //         { name: 'Local Directory'.t(), url: 'localdirectory', icon: 'icon_config_directory.png' },
-        //         { name: 'Upgrade'.t(), url: 'upgrade', icon: 'icon_config_upgrade.png' },
-        //         { name: 'System'.t(), url: 'system', icon: 'icon_config_system.png' },
-        //         { name: 'About'.t(), url: 'about', icon: 'icon_config_about.png' }
-        //     ]
-        // }
-    },
-
-    layout: 'fit',
 
     items: [{
         xtype: 'dataview',
-        style: {
-            textAlign: 'center'
-        },
-        store: {
-            data: [
-                { name: 'Network'.t(), url: 'network', icon: 'sitemap' },
-                { name: 'Administration'.t(), url: 'administration', icon: 'user-secret' },
-                { name: 'Email'.t(), url: 'email', icon: 'envelope' },
-                { name: 'Local Directory'.t(), url: 'localdirectory', icon: 'folder-open' },
-                { name: 'Upgrade'.t(), url: 'upgrade', icon: 'arrow-circle-up' },
-                { name: 'System'.t(), url: 'system', icon: 'cogs' },
-                { name: 'About'.t(), url: 'about', icon: 'info-circle' }
-            ]
-        },
-        tpl: '<!--<p class="heading">Settings</p>-->' +
+        store: {data: [
+                { name: 'Network'.t(), url: 'network', icon: 'icon_config_network.png' },
+                { name: 'Administration'.t(), url: 'administration', icon: 'icon_config_admin.png' },
+                { name: 'Email'.t(), url: 'email', icon: 'icon_config_email.png' },
+                { name: 'Local Directory'.t(), url: 'localdirectory', icon: 'icon_config_directory.png' },
+                { name: 'Upgrade'.t(), url: 'upgrade', icon: 'icon_config_upgrade.png' },
+                { name: 'System'.t(), url: 'system', icon: 'icon_config_system.png' },
+                { name: 'About'.t(), url: 'about', icon: 'icon_config_about.png' }
+        ]},
+        tpl: '<p class="apps-title">' + 'Configuration'.t() + '</p>' +
              '<tpl for=".">' +
                 '<a href="#config/{url}" class="app-item">' +
-                '<i class="fa fa-{icon} fa-5x"></i>' +
+                '<img src="' + resourcesBaseHref + '/skins/modern-rack/images/admin/config/{icon}" width=80 height=80/>' +
                 '<span class="app-name">{name}</span>' +
                 '</a>' +
             '</tpl>',
         itemSelector: 'a'
     }, {
-        // xtype: 'container',
-        // layout: 'border',
-        // itemId: 'configWrapper',
-        // items: [{
-        //     xtype: 'dataview',
-        //     region: 'north',
-        //     itemId: 'subNav',
-        //     height: 32,
-        //     baseCls: 'sub-nav',
-        //     store: {
-        //         data: [
-        //             { name: 'Network'.t(), url: 'network', icon: 'sitemap' },
-        //             { name: 'Administration'.t(), url: 'administration', icon: 'user-secret' },
-        //             { name: 'Email'.t(), url: 'email', icon: 'envelope' },
-        //             { name: 'Local Directory'.t(), url: 'localdirectory', icon: 'folder-open' },
-        //             { name: 'Upgrade'.t(), url: 'upgrade', icon: 'arrow-circle-up' },
-        //             { name: 'System'.t(), url: 'system', icon: 'cogs' },
-        //             { name: 'About'.t(), url: 'about', icon: 'info-circle' }
-        //         ]
-        //     },
-        //     tpl: '<tpl for=".">' +
-        //             '<a href="#config/{url}" class="nav-item {selected}">' +
-        //             '<i class="fa fa-{icon}"></i> ' +
-        //             '<span class="app-name">{name}</span>' +
-        //             '</a>' +
-        //         '</tpl>',
-        //     itemSelector: 'a'
-        // }]
+        xtype: 'dataview',
+        store: {data: [
+                { name: 'Sessions'.t(), url: 'network', icon: 'icon_config_sessions.png' },
+                { name: 'Hosts'.t(), url: 'administration', icon: 'icon_config_hosts.png' },
+                { name: 'Devices'.t(), url: 'email', icon: 'icon_config_devices.png' }
+        ]},
+        tpl: '<p class="apps-title">' + 'Tools'.t() + '</p>' +
+             '<tpl for=".">' +
+                '<a href="#config/{url}" class="app-item">' +
+                '<img src="' + resourcesBaseHref + '/skins/modern-rack/images/admin/config/{icon}" width=80 height=80/>' +
+                '<span class="app-name">{name}</span>' +
+                '</a>' +
+            '</tpl>',
+        itemSelector: 'a'
     }]
-
-    // initComponent:
 });
 Ext.define('Ung.widget.ReportModel', {
     extend: 'Ext.app.ViewModel',
@@ -2866,11 +2715,11 @@ Ext.define('Ung.widget.InterfaceItem', {
     bind: {
         html: '<p class="name" style="display: {displayWan};">{iface.name}</p>' +
             '<div class="speeds">' +
-            '<div class="speed_up"><i class="material-icons">arrow_drop_up</i><span>{tx} kB/s</span></div>' +
-            '<div class="speed_down"><i class="material-icons">arrow_drop_down</i><span>{rx} kB/s</span></div>' +
+            '<div class="speed_up"><i class="fa fa-caret-down fa-lg"></i> <span>{tx} kB/s</span></div>' +
+            '<div class="speed_down"><i class="fa fa-caret-up fa-lg"></i> <span>{rx} kB/s</span></div>' +
             '</div>' +
             '<p class="name" style="display: {displayNotWan};">{iface.name}</p>' +
-            '<i class="material-icons pointer">arrow_drop_down</i>'
+            '<i class="fa fa-caret-down fa-lg pointer"></i>'
     },
 
     viewModel: {
@@ -2932,7 +2781,7 @@ Ext.define('Ung.widget.NetworkLayout', {
         cls: 'header',
         itemId: 'header',
         html: '<h1>' + 'Network Layout'.t() + '</h1>' +
-            '<button class="action-btn"><i class="material-icons" data-action="refresh">refresh</i></button>'
+            '<button class="action-btn"><i class="fa fa-refresh" data-action="refresh"></i></button>'
     }, {
         //xtype: 'container',
         cls: 'net-layout',
@@ -3103,11 +2952,14 @@ Ext.define('Ung.chart.TimeChartController', {
                 }
             },
             title: null,
+            lang: {
+                noData: ''
+            },
             noData: {
                 style: {
-                    fontSize: '16px',
+                    fontSize: '12px',
                     fontWeight: 'normal',
-                    color: '#999'
+                    color: '#CCC'
                 }
             },
             colors: (me.entry.get('colors') !== null && me.entry.get('colors') > 0) ? me.entry.get('colors') : me.defaultColors,
@@ -3463,8 +3315,7 @@ Ext.define('Ung.chart.TimeChart', {
         xtype: 'component',
         reference: 'loader',
         cls: 'loader',
-        hideMode: 'visibility',
-        html: '<div class="spinner"><div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div></div>'
+        hideMode: 'visibility'
     }]
 });
 Ext.define('Ung.chart.PieChartController', {
@@ -3509,14 +3360,13 @@ Ext.define('Ung.chart.PieChartController', {
             },
             title: null,
             lang: {
-                noData: 'No data available yet!',
-                drillUpText: '< ' + 'Back'
+                noData: ''
             },
             noData: {
                 style: {
-                    fontSize: '16px',
+                    fontSize: '12px',
                     fontWeight: 'normal',
-                    color: '#999'
+                    color: '#CCC'
                 }
             },
             colors: (me.entry.get('colors') !== null && me.entry.get('colors') > 0) ? me.entry.get('colors') : this.defaultColors,
@@ -4402,7 +4252,7 @@ Ext.define('Ung.view.main.Main', {
         'Ung.view.dashboard.Dashboard',
         'Ung.view.apps.Apps',
         'Ung.view.config.Config',
-        // 'Ung.view.reports.Reports',
+        'Ung.view.reports.Reports',
         // 'Ung.view.node.Settings',
 
         // 'Ung.view.shd.Sessions',
@@ -4431,8 +4281,7 @@ Ext.define('Ung.view.main.Main', {
     }, {
         xtype: 'ung.config'
     }, {
-        // xtype: 'ung.sessions',
-        // itemId: 'sessions'
+        xtype: 'ung.reports'
     }, {
         // xtype: 'ung.hosts',
         // itemId: 'hosts'
@@ -4451,18 +4300,19 @@ Ext.define('Ung.view.main.Main', {
             border: false,
             enableToggle: true,
             iconAlign: 'top',
+            // border: '0 0 5 0',
             hrefTarget: '_self'
         },
         items: [
             { html: '<img src="' + resourcesBaseHref + '/images/BrandingLogo.png" style="height: 40px;"/>', cls: 'logo' },
-            { text: 'Dashboard'.t(), iconCls: 'fa fa-home', cls: 'upper', href: '#', bind: { pressed: '{isDashboard}' } },
-            { text: 'Apps'.t(), iconCls: 'fa fa-th', cls: 'upper', bind: { href: '#apps/{policyId}', pressed: '{isApps}' } },
-            { text: 'Config'.t(), iconCls: 'fa fa-cog', cls: 'upper', href: '#config', bind: { pressed: '{isConfig}' } },
-            { text: 'Reports'.t(), iconCls: 'fa fa-line-chart', cls: 'upper' },
+            { text: 'Dashboard'.t(), iconCls: 'fa fa-home', cls: 'upper', href: '#', bind: { pressed: '{selectedNavItem === "dashboard"}' } },
+            { text: 'Apps'.t(), iconCls: 'fa fa-th', cls: 'upper', bind: { href: '#apps/{policyId}', pressed: '{selectedNavItem === "apps"}' } },
+            { text: 'Config'.t(), iconCls: 'fa fa-sliders', cls: 'upper', href: '#config', bind: { pressed: '{selectedNavItem === "config"}' } },
+            { text: 'Reports'.t(), iconCls: 'fa fa-line-chart', cls: 'upper', href: '#reports', bind: { pressed: '{selectedNavItem === "reports"}' } },
             '->',
-            { text: 'Sessions'.t(), iconCls: 'fa fa-list', href: '#sessions' },
-            { text: 'Hosts'.t(), iconCls: 'fa fa-list' },
-            { text: 'Devices'.t(), iconCls: 'fa fa-laptop' },
+            { text: 'Sessions'.t(), iconCls: 'fa fa-list', href: '#sessions', bind: { pressed: '{selectedNavItem === "sessions"}' } },
+            { text: 'Hosts'.t(), iconCls: 'fa fa-th-list', href: '#hosts', bind: { pressed: '{selectedNavItem === "hosts"}' } },
+            { text: 'Devices'.t(), iconCls: 'fa fa-desktop', href: '#devices', bind: { pressed: '{selectedNavItem === "devices"}' } },
             '-',
             { text: 'Help'.t(), iconCls: 'fa fa-question-circle' },
             { text: 'Account'.t(), iconCls: 'fa fa-user-circle' }
@@ -5155,7 +5005,47 @@ Ext.define ('Ung.model.Report', {
         'title',
         'type',
         'uniqueId',
-        'units'
+        'units',
+
+
+        {
+            name: 'icon',
+            calculate: function (entry) {
+                var icon;
+                switch (entry.type) {
+                case 'TEXT':
+                    icon = 'fa-align-left';
+                    break;
+                case 'EVENT_LIST':
+                    icon = 'fa-list-ul';
+                    break;
+                case 'PIE_GRAPH':
+                    icon = 'fa-pie-chart';
+                    if (entry.pieStyle === 'COLUMN' || entry.pieStyle === 'COLUMN_3D') {
+                        icon = 'fa-bar-chart';
+                    } else {
+                        if (entry.pieStyle === 'DONUT' || entry.pieStyle === 'DONUT_3D') {
+                            icon = 'fa-pie-chart';
+                        }
+                    }
+                    break;
+                case 'TIME_GRAPH':
+                case 'TIME_GRAPH_DYNAMIC':
+                    icon = 'fa-line-chart';
+                    if (entry.timeStyle.indexOf('BAR') >= 0) {
+                        icon = 'fa-bar-chart';
+                    } else {
+                        if (entry.timeStyle.indexOf('AREA') >= 0) {
+                            icon = 'fa-area-chart';
+                        }
+                    }
+                    break;
+                default:
+                    icon = 'fa-align-left';
+                }
+                return icon;
+            }
+        }
     ],
     proxy: {
         type: 'memory',
@@ -5262,7 +5152,10 @@ Ext.define('Ung.controller.Global', {
         'Ung.util.Util',
         'Ung.util.Metrics',
         'Ung.view.main.Main',
-        'Ung.overrides.form.field.VTypes'
+        'Ung.overrides.form.field.VTypes',
+        'Ung.view.shd.Sessions',
+        'Ung.view.shd.Hosts',
+        'Ung.view.shd.Devices'
     ],
 
 
@@ -5292,7 +5185,9 @@ Ext.define('Ung.controller.Global', {
 
         refs: {
             mainView: '#main',
-            appsView: '#apps'
+            dashboardView: '#dashboard',
+            appsView: '#apps',
+            reportsView: '#reports',
         },
 
         routes: {
@@ -5303,6 +5198,8 @@ Ext.define('Ung.controller.Global', {
             'config': 'onConfig',
             'config/:configName': 'onConfig',
             'reports': 'onReports',
+            'reports/:category': 'onReports',
+            'reports/:category/:entry': 'onReports',
             'sessions': 'onSessions',
             'hosts': 'onHosts',
             'devices': 'onDevices'
@@ -5321,13 +5218,14 @@ Ext.define('Ung.controller.Global', {
 
     onDashboard: function () {
         this.getMainView().setActiveItem('dashboard');
+        this.getMainView().getViewModel().set('selectedNavItem', 'dashboard');
         // this.getMainView().setActiveItem('#dashboard');
         // this.getViewModel().set('activeItem', 'dashboard');
     },
 
     onApps: function (policyId, node) {
         console.log(node);
-        // console.log(this.getMainView());
+        this.getMainView().getViewModel().set('selectedNavItem', 'apps');
         this.getMainView().setActiveItem('apps');
 
         if (node) {
@@ -5348,9 +5246,63 @@ Ext.define('Ung.controller.Global', {
     },
 
     onConfig: function () {
+        this.getMainView().getViewModel().set('selectedNavItem', 'config');
         this.getMainView().setActiveItem('config');
         // this.getMainView().setActiveItem('#dashboard');
         // this.getViewModel().set('activeItem', 'dashboard');
+    },
+
+    onReports: function (category) {
+        if (category) {
+            this.getReportsView().getViewModel().set('category', category.replace(/-/g, ' '));
+        } else {
+            this.getReportsView().getViewModel().set('category', null);
+        }
+        this.getMainView().getViewModel().set('selectedNavItem', 'reports');
+        this.getMainView().setActiveItem('reports');
+        // console.log(this.getReportsView().getViewModel());
+    },
+
+    onSessions: function () {
+        var shd = this.getMainView().down('#shd');
+        if (shd) {
+            // this.getMainView().remove('#shd', true);
+            shd.destroy();
+        }
+        this.getMainView().add({
+            xtype: 'ung.sessions',
+            itemId: 'shd'
+        });
+        this.getMainView().getViewModel().set('selectedNavItem', 'sessions');
+        this.getMainView().setActiveItem('shd');
+    },
+
+    onHosts: function () {
+        var shd = this.getMainView().down('#shd');
+        if (shd) {
+            // this.getMainView().remove('#shd', true);
+            shd.destroy();
+        }
+        this.getMainView().add({
+            xtype: 'ung.hosts',
+            itemId: 'shd'
+        });
+        this.getMainView().getViewModel().set('selectedNavItem', 'hosts');
+        this.getMainView().setActiveItem('shd');
+    },
+
+    onDevices: function () {
+        var shd = this.getMainView().down('#shd');
+        if (shd) {
+            // this.getMainView().remove('#shd', true);
+            shd.destroy();
+        }
+        this.getMainView().add({
+            xtype: 'ung.devices',
+            itemId: 'shd'
+        });
+        this.getMainView().getViewModel().set('selectedNavItem', 'devices');
+        this.getMainView().setActiveItem('shd');
     }
 
 });

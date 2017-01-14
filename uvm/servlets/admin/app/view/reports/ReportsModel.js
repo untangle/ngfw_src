@@ -71,13 +71,6 @@ Ext.define('Ung.view.reports.ReportsModel', {
 
         isWidget: function (get) {
             return Ext.getStore('widgets').findRecord('entryId', get('report.uniqueId')) ? true : false;
-        },
-
-        dashboardBtnLabel: function (get) {
-            if (get('isWidget')) {
-                return Ung.Util.iconTitle('Remove from Dashboard'.t(), 'home-16');
-            }
-            return Ung.Util.iconTitle('Add to Dashboard'.t(), 'home-16');
         }
     },
 

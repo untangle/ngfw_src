@@ -21,7 +21,7 @@ Ext.define('Ung.view.config.Config', {
                 { name: 'System'.t(), url: 'system', icon: 'icon_config_system.png' },
                 { name: 'About'.t(), url: 'about', icon: 'icon_config_about.png' }
         ]},
-        tpl: '<p class="apps-title"><i class="fa fa-cogs"></i> ' + 'Configuration'.t() + '</p>' +
+        tpl: '<p class="apps-title">' + 'Configuration'.t() + '</p>' +
              '<tpl for=".">' +
                 '<a href="#config/{url}" class="app-item">' +
                 '<img src="' + resourcesBaseHref + '/skins/modern-rack/images/admin/config/{icon}" width=80 height=80/>' +
@@ -36,7 +36,7 @@ Ext.define('Ung.view.config.Config', {
                 { name: 'Hosts'.t(), url: 'administration', icon: 'icon_config_hosts.png' },
                 { name: 'Devices'.t(), url: 'email', icon: 'icon_config_devices.png' }
         ]},
-        tpl: '<p class="apps-title"><i class="fa fa-wrench"></i> ' + 'Tools'.t() + '</p>' +
+        tpl: '<p class="apps-title">' + 'Tools'.t() + '</p>' +
              '<tpl for=".">' +
                 '<a href="#config/{url}" class="app-item">' +
                 '<img src="' + resourcesBaseHref + '/skins/modern-rack/images/admin/config/{icon}" width=80 height=80/>' +
