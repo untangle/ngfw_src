@@ -14,7 +14,7 @@ Ext.define('Ung.view.main.Main', {
         'Ung.view.dashboard.Dashboard',
         'Ung.view.apps.Apps',
         'Ung.view.config.Config',
-        // 'Ung.view.reports.Reports',
+        'Ung.view.reports.Reports',
         // 'Ung.view.node.Settings',
 
         // 'Ung.view.shd.Sessions',
@@ -43,8 +43,7 @@ Ext.define('Ung.view.main.Main', {
     }, {
         xtype: 'ung.config'
     }, {
-        // xtype: 'ung.sessions',
-        // itemId: 'sessions'
+        xtype: 'ung.reports'
     }, {
         // xtype: 'ung.hosts',
         // itemId: 'hosts'
@@ -71,11 +70,11 @@ Ext.define('Ung.view.main.Main', {
             { text: 'Dashboard'.t(), iconCls: 'fa fa-home', cls: 'upper', href: '#', bind: { pressed: '{selectedNavItem === "dashboard"}' } },
             { text: 'Apps'.t(), iconCls: 'fa fa-th', cls: 'upper', bind: { href: '#apps/{policyId}', pressed: '{selectedNavItem === "apps"}' } },
             { text: 'Config'.t(), iconCls: 'fa fa-sliders', cls: 'upper', href: '#config', bind: { pressed: '{selectedNavItem === "config"}' } },
-            { text: 'Reports'.t(), iconCls: 'fa fa-line-chart', cls: 'upper' },
+            { text: 'Reports'.t(), iconCls: 'fa fa-line-chart', cls: 'upper', href: '#reports', bind: { pressed: '{selectedNavItem === "reports"}' } },
             '->',
             { text: 'Sessions'.t(), iconCls: 'fa fa-list', href: '#sessions', bind: { pressed: '{selectedNavItem === "sessions"}' } },
-            { text: 'Hosts'.t(), iconCls: 'fa fa-sitemap', href: '#hosts', bind: { pressed: '{selectedNavItem === "hosts"}' } },
-            { text: 'Devices'.t(), iconCls: 'fa fa-desktop' },
+            { text: 'Hosts'.t(), iconCls: 'fa fa-th-list', href: '#hosts', bind: { pressed: '{selectedNavItem === "hosts"}' } },
+            { text: 'Devices'.t(), iconCls: 'fa fa-desktop', href: '#devices', bind: { pressed: '{selectedNavItem === "devices"}' } },
             '-',
             { text: 'Help'.t(), iconCls: 'fa fa-question-circle' },
             { text: 'Account'.t(), iconCls: 'fa fa-user-circle' }

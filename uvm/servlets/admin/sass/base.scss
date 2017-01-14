@@ -96,7 +96,7 @@ cite {
 
 
 .apps-separator {
-    font-family: 'Source Sans Pro', sans-serif;
+    font-family: $custom-font;
     font-size: 14px;
     font-weight: 600;
     background-color: #CCCDCD;
@@ -322,7 +322,7 @@ cite {
     height: auto !important;
     z-index: 9999;
     &-body {
-        font-family: 'Source Sans Pro', sans-serif;
+        font-family: $custom-font;
         font-size: 12px;
         height: auto !important;
         color: #CCC;
@@ -373,7 +373,7 @@ i.draggable {
 }
 
 .grid-description {
-    font-family: 'Source Sans Pro', sans-serif;
+    font-family: $custom-font;
     background: #eaeaea;
     h3 {
         margin: 0;
@@ -391,7 +391,7 @@ i.draggable {
 }
 
 .status-item-header-title {
-    font-family: 'Source Sans Pro', sans-serif;
+    font-family: $custom-font;
     font-size: 14px;
     font-weight: 600;
 }
@@ -449,7 +449,7 @@ i.draggable {
 
 
 .report-header {
-    font-family: 'Source Sans Pro', sans-serif;
+    font-family: $custom-font;
     padding: 10px;
     h2 {
         margin: 0;
@@ -480,15 +480,15 @@ i.draggable {
     //min-height: 120px;
     transition: all 0.25s cubic-bezier(0.23, 1, 0.32, 1);
     .x-btn-inner-default-small {
-        font-family: 'Source Sans Pro', sans-serif;
+        font-family: $custom-font;
         padding: 10px 5px 10px 35px;
     }
     i {
-        font-size: 24px !important;
+        // font-size: 24px !important;
         position: absolute;
-        left: 5px;
-        top: 7px;
-        color: #777;
+        left: 10px;
+        top: 12px;
+        color: #555;
     }
     .ttl {
         font-size: 16px;
@@ -518,7 +518,7 @@ i.draggable {
     padding: 5px 0 0 0;
     //transition: box-shadow 0.35s cubic-bezier(0.23, 1, 0.32, 1);
     .x-btn-inner-default-small {
-        font-family: 'Source Sans Pro', sans-serif;
+        font-family: $custom-font;
         font-size: 12px;
         //line-height: 15px;
         font-weight: 600;
@@ -548,7 +548,7 @@ i.draggable {
 
 
 .headline {
-    font-family: 'Source Sans Pro', sans-serif;
+    font-family: $custom-font;
     text-align: center;
     font-size: 32px;
     font-weight: 100;
@@ -703,10 +703,14 @@ i.draggable {
     height: 40px;
   }
   .loader {
-    margin: 20px auto;
+    // margin: 20px auto;
+    // left: 50%;
     font-size: 10px;
     position: absolute;
-    left: 30px;
+    left: 50%;
+    top: 50%;
+    margin-left: -20px;
+    margin-top: -20px;
     text-indent: -9999em;
     box-sizing: border-box;
     border-top: 3px solid rgba(0, 0, 0, 0.2);

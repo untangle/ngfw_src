@@ -28,7 +28,7 @@ Ext.define('Ung.widget.NetworkLayout', {
         cls: 'header',
         itemId: 'header',
         html: '<h1>' + 'Network Layout'.t() + '</h1>' +
-            '<button class="action-btn"><i class="material-icons" data-action="refresh">refresh</i></button>'
+            '<button class="action-btn"><i class="fa fa-refresh" data-action="refresh"></i></button>'
     }, {
         //xtype: 'container',
         cls: 'net-layout',

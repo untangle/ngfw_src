@@ -1,6 +1,8 @@
 Ext.define('Ung.view.reports.Reports', {
     extend: 'Ext.container.Container',
     xtype: 'ung.reports',
+    itemId: 'reports',
+
     layout: 'border',
 
     requires: [
@@ -43,9 +45,9 @@ Ext.define('Ung.view.reports.Reports', {
             */
         },
         hidden: true,
+        store: 'categories',
         bind: {
             hidden: '{areCategoriesHidden}',
-            store: '{categories}'
         },
         columns: [{
             dataIndex: 'icon',
@@ -91,10 +93,11 @@ Ext.define('Ung.view.reports.Reports', {
             },
             columns: [{
                 dataIndex: 'title',
-                width: 20,
+                width: 25,
                 renderer: function (value, meta, record) {
-                    meta.tdCls = 'app-icon';
-                    return Ung.Util.iconReportTitle(record);
+                    // meta.tdCls = 'app-icon';
+                    // return Ung.Util.iconReportTitle(record);
+                    return '<i class="fa ' + record.get('icon') + ' fa-lg"></i>';
                 }
             }, {
                 dataIndex: 'title',
@@ -117,7 +120,7 @@ Ext.define('Ung.view.reports.Reports', {
                 renderer: function (value, meta) {
                     meta.tdCls = 'app-icon';
                     if (Ext.getStore('widgets').findRecord('entryId', value)) {
-                        return '<i class="material-icons" style="font-size: 14px; color: #999;">home</i>';
+                        return '<i class="fa fa-home" style="font-size: 14px; color: #999;"></i>';
                     }
                     return '';
                 }
@@ -133,35 +136,49 @@ Ext.define('Ung.view.reports.Reports', {
                 border: false
             },
             items: [{
-                // initial view which displays all available categories / apps
+                xtype: 'dataview',
                 itemId: 'allCategoriesCard',
-                scrollable: true,
-                layout: {
-                    type: 'vbox',
-                    align: 'stretch'
-                    //pack: 'center'
-                },
-                items: [{
-                    xtype: 'component',
-                    cls: 'headline',
-                    margin: '50 0',
-                    html: 'Please select a category first!'
-                }, {
-                    xtype: 'component',
-                    itemId: 'categoriesLoader',
-                    margin: '50 0',
-                    cls: 'loader',
-                    html: '<div class="spinner"><div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div></div>'
-                }, {
-                    xtype: 'container',
-                    itemId: 'allCategoriesList',
-                    //layout: 'fit',
-                    //maxWidth: 600,
-                    style: {
-                        textAlign: 'center'
-                    }
-                }]
-            }, {
+                store: 'categories',
+                tpl: '<p class="apps-title">' + 'Select Category'.t() + '</p>' +
+                    '<tpl for=".">' +
+                        '<a href="#reports/{url}" class="app-item">' +
+                        '<img src="{icon}" width=80 height=80/>' +
+                        '<span class="app-name">{displayName}</span>' +
+                        '</a>' +
+                    '</tpl>',
+                itemSelector: 'a'
+            },
+            // {
+            //     // initial view which displays all available categories / apps
+            //     itemId: 'allCategoriesCard',
+            //     scrollable: true,
+            //     layout: {
+            //         type: 'vbox',
+            //         align: 'stretch'
+            //         //pack: 'center'
+            //     },
+            //     items: [{
+            //         xtype: 'component',
+            //         cls: 'headline',
+            //         margin: '50 0',
+            //         html: 'Please select a category first!'
+            //     }, {
+            //         xtype: 'component',
+            //         itemId: 'categoriesLoader',
+            //         margin: '50 0',
+            //         cls: 'loader',
+            //         html: '<div class="spinner"><div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div></div>'
+            //     }, {
+            //         xtype: 'container',
+            //         itemId: 'allCategoriesList',
+            //         //layout: 'fit',
+            //         //maxWidth: 600,
+            //         style: {
+            //             textAlign: 'center'
+            //         }
+            //     }]
+            // }
+            , {
                 // view which displays all reports from a specific category
                 itemId: 'categoryCard',
                 scrollable: true,
