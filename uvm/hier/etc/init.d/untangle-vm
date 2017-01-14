@@ -51,7 +51,13 @@ uvmJavaPid() {
 uvmWrapperPid() { 
     ps awwx | awk '/.*python.*usr\/bin\/uvm/ {print $1}' 
 }
-# returns "running" or "stopped"
+# returns one of
+# stopped - not running
+# launching - uvm shell script has been launched
+# booting - uvm java process is booting
+# starting - uvm java process is starting apps
+# running - normal runnig status
+# unknown - status not known
 uvmStatus() { 
     if [ -z "`uvmWrapperPid`" ] && [ -z "`uvmJavaPid`" ] ; then
         echo "stopped"
@@ -87,13 +93,8 @@ case "$1" in
             exit
         fi
 
-        if [ "`uvmStatus`" == "running" ] ; then
+        if [ "`uvmStatus`" == "running" ] || [ "`uvmStatus`" == "launching" ] || [ "`uvmStatus`" == "booting" ]; then
             echo "untangle-vm already running."
-		    log_end_msg 0
-            exit
-        fi
-        if [ "`uvmStatus`" == "launching" ] ; then
-            echo "untangle-vm already launching."
 		    log_end_msg 0
             exit
         fi

@@ -65,6 +65,7 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
             {name:"WEB_FILTER_REQUEST_FILE_EXTENSION",displayName: i18n._("Web Filter: Request File Extension"), type: "text", visible: true},
             {name:"WEB_FILTER_RESPONSE_CONTENT_TYPE",displayName: i18n._("Web Filter: Response Content Type"), type: "text", visible: true},
             {name:"WEB_FILTER_RESPONSE_FILE_NAME",displayName: i18n._("Web Filter: Response File Name"), type: "text", visible: true},
+            {name:"WEB_FILTER_RESPONSE_FILE_EXTENSION",displayName: i18n._("Web Filter: Response File Extension"), type: "text", visible: true},
             {name:"DIRECTORY_CONNECTOR_GROUP",displayName: i18n._("Directory Connector: User in Group"), type: "editor", editor: Ext.create('Ung.GroupEditorWindow',{}), visible: true},
             {name:"CLIENT_COUNTRY",displayName: i18n._("Client Country"), type: "editor", editor: Ext.create('Ung.CountryEditorWindow',{}), visible: true},
             {name:"SERVER_COUNTRY",displayName: i18n._("Server Country"), type: "editor", editor: Ext.create('Ung.CountryEditorWindow',{}), visible: true}
@@ -211,7 +212,7 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
             title: i18n._('Categories'),
             //helpSource: 'web_filter_block_categories',
             //helpSource: 'web_filter_lite_block_categories',
-            helpSource: this.helpSourceName + '_categories',
+            helpSource: this.helpSourceName + '_block_categories',
             cls: 'ung-panel',
             autoScroll: true,
             defaults: {
@@ -222,6 +223,7 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
                 align: 'stretch'
             },
             items: [{
+                name: 'categoriesPanelHeader',
                 title: i18n . _("Categories"),
                 html: i18n . _("Block or flag access to sites associated with the specified category.")
             }, this.gridCategories ]
@@ -327,6 +329,7 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
                 align: 'stretch'
             },
             items: [{
+                name: 'blockedSitesPanelHeader',
                 title: i18n . _("Blocked Sites"),
                 html: i18n . _("Block or flag access to the specified site.")
             }, this.gridBlockedSites ]
@@ -416,6 +419,7 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
                 align: 'stretch'
             },
             items: [{
+                name: 'allowedSitesPanelHeader',
                 title: i18n . _("Pass Sites"),
                 html: i18n . _("Allow access to the specified site regardless of matching block policies.")
             }, this.gridAllowedSites ]
@@ -505,6 +509,7 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
                 align: 'stretch'
             },
             items: [{
+                name: 'allowedClientsPanelHeader',
                 title: i18n . _("Pass Clients"),
                 html: i18n . _("Allow access for client networks regardless of matching block policies.")
             }, this.gridAllowedClients ]
@@ -516,7 +521,9 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
     buildGridFilterRules: function() {
         this.gridFilterRules = Ext.create('Ung.grid.Panel',{
             name: "gridFilterRules",
-            helpSource: 'web_filter_rules',
+            //helpSource: 'web_filter_rules',
+            //helpSource: 'web_filter_lite_rules',
+            helpSource: this.helpSourceName + '_rules',
             settingsCmp: this,
             height: 500,
             hasReorder: true,
@@ -631,7 +638,6 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
             //helpSource: 'web_filter_advanced',
             //helpSource: 'web_filter_lite_advanced',
             helpSource: this.helpSourceName + '_advanced',
-
             title: i18n._('Advanced'),
             cls: 'ung-panel',
             autoScroll: true,
@@ -687,7 +693,7 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
                     hidden: !this.settings.restrictGoogleApps,
                     items: [{
                         xtype: 'displayfield',
-                        value: i18n._("NOTE:") + "&nbsp;" + "<i>HTTPS Inspector</i> " + i18n._("must be installed and running with the Inspect Google Traffic configured to Inspect."),
+                        value: i18n._("NOTE:") + "&nbsp;" + "<i>SSL Inspector</i> " + i18n._("must be installed and running with the Inspect Google Traffic configured to Inspect."),
                         style: {
                             marginBottom: '10px'
                         }

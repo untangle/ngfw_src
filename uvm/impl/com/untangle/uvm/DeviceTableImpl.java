@@ -24,7 +24,7 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.util.Pulse;
 
 /**
- * DevicTable stores a known "devices" (MAC addresses) that have ever been seen.
+ * DeviceTable stores a known "devices" (MAC addresses) that have ever been seen.
  * This table is useful for storing information know about the various devices
  *
  * Other Documentation in DeviceTable.java

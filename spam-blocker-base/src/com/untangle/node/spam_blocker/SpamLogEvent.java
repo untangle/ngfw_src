@@ -162,7 +162,7 @@ public class SpamLogEvent extends LogEvent
             throw new RuntimeException("Unknown vendor name: " + getVendorName());
         }
         
-        sql = "UPDATE reports.mail_msgs" + messageInfo.getPartitionTablePostfix() + " " +
+        sql = "UPDATE " + schemaPrefix() + "mail_msgs" + messageInfo.getPartitionTablePostfix() + " " +
             "SET " +
             prefix + "_is_spam = ?, " +
             prefix + "_score = ?, " + 
@@ -180,7 +180,7 @@ public class SpamLogEvent extends LogEvent
         pstmt.setLong(++i, getMessageId());
         pstmt.addBatch();
         
-        sql = "UPDATE reports.mail_addrs" + messageInfo.getPartitionTablePostfix() + " " + 
+        sql = "UPDATE " + schemaPrefix() + "mail_addrs" + messageInfo.getPartitionTablePostfix() + " " + 
             "SET " +
             prefix + "_is_spam = ?, " +
             prefix + "_score = ?, " +

@@ -471,7 +471,6 @@ Ext.define('Ung.view.reports.Reports', {
                                         {text: 'Auto'.t(), value: 'AUTO'},
                                         {text: 'Second'.t(), value: 'SECOND', defaultTimeFrame: 60 },
                                         {text: 'Minute'.t(), value: 'MINUTE', defaultTimeFrame: 60 },
-                                        {text: '10 Minutes'.t(), value: 'TENMINUTE', defaultTimeFrame: 600 },
                                         {text: 'Hour'.t(), value: 'HOUR', defaultTimeFrame: 24 },
                                         {text: 'Day'.t(), value: 'DAY', defaultTimeFrame: 7 },
                                         {text: 'Week'.t(), value: 'WEEK', defaultTimeFrame: 12 },

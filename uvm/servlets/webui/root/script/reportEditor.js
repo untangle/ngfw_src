@@ -103,8 +103,10 @@ Ext.define("Ung.window.ReportEditor", {
                 return;
             }
             var tables = [], i;
-            for (i = 0; i < result.length;  i += 1) {
-                tables.push({ name: result[i]});
+            if ( result != null && result.length != null ) {
+                for (i = 0; i < result.length;  i += 1) {
+                    tables.push({ name: result[i]});
+                }
             }
             tablesStore.loadData(tables);
         }, this));
@@ -461,7 +463,6 @@ Ext.define("Ung.window.ReportEditor", {
                 ["AUTO", i18n._("Auto")],
                 ["SECOND", i18n._("Second")],
                 ["MINUTE", i18n._("Minute")],
-                ["TENMINUTE", i18n._("10 Minutes")],
                 ["HOUR", i18n._("Hour")],
                 ["DAY", i18n._("Day")],
                 ["WEEK", i18n._("Week")],

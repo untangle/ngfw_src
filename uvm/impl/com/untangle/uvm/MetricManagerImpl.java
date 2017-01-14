@@ -96,6 +96,18 @@ public class MetricManagerImpl implements MetricManager
         return json;
     }
 
+    public org.json.JSONObject getStats()
+    {
+        org.json.JSONObject json = new org.json.JSONObject();
+        try {
+            json.put("systemStats", this.systemStats);
+        } catch (Exception e) {
+            logger.error( "Error generating metrics object", e );
+        }
+
+        return json;
+    }
+
     public List<NodeMetric> getMetrics( Long nodeId )
     {
         Node node = UvmContextFactory.context().nodeManager().node( nodeId );

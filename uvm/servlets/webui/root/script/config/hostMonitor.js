@@ -20,8 +20,12 @@ Ext.define('Webui.config.hostMonitor', {
         this.callParent(arguments);
     },
     closeWindow: function() {
+        if (this.down('tabpanel')) {
+            this.down('tabpanel').setActiveItem(0);
+        }
         this.gridCurrentHosts.stopAutoRefresh(true);
         this.hide();
+        Ext.destroy(this);
     },
     getHosts: function(handler) {
         if (!this.isVisible()) {

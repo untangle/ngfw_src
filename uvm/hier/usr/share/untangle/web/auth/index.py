@@ -4,6 +4,9 @@ import cgi
 import base64
 import sys
 import re
+import pycurl
+import json
+from StringIO import StringIO
 
 from mod_python import apache, Session, util
 from psycopg2 import connect
@@ -24,23 +27,36 @@ except ImportError:
 
 # pages -----------------------------------------------------------------------
 
-def login(req, url=None, realm='Administrator'):
+def login(req, url=None, realm='Administrator', token=None):
     uvm_login.setup_gettext()
 
     options = req.get_options()
 
     args = util.parse_qs(req.args or '')
 
+    error_msg = None
     if req.form.has_key('username') or req.form.has_key('password'):
-        is_error = True
-    else:
-        is_error = False
+        error_msg = '%s' % cgi.escape(_('Error: Username and Password do not match'))
+
+    if token != None:
+        if _valid_token(req, token):
+            sess = Session.Session(req)
+            sess.set_timeout(uvm_login.SESSION_TIMEOUT)
+            uvm_login.save_session_user(sess, realm, "token")
+            sess.save()
+            sess.unlock()
+
+            if url == None:
+                return apache.OK
+            else:
+                url = re.sub('[^A-Za-z0-9-_/.#?=]','',url) # sanitize input
+                util.redirect(req, url, text="Login Successful")
 
     if req.form.has_key('username') and req.form.has_key('password'):
         username = req.form['username']
         password = req.form['password']
         # debug
-        # assert False, ("User:Pass = %s %s" % (username,password))
+        # req.log_error("User:Pass = %s %s" % (username,password))
 
         if _valid_login(req, realm, username, password):
             sess = Session.Session(req)
@@ -52,7 +68,7 @@ def login(req, url=None, realm='Administrator'):
             if url == None:
                 return apache.OK
             else:
-                url = re.sub('[^A-Za-z0-9-_/.]','',url) # sanitize input
+                url = re.sub('[^A-Za-z0-9-_/.#?=]','',url) # sanitize input
                 util.redirect(req, url, text="Login Successful")
 
     company_name = uvm_login.get_company_name()
@@ -66,7 +82,7 @@ def login(req, url=None, realm='Administrator'):
 
     host = cgi.escape(req.hostname)
 
-    _write_login_form(req, title, host, is_error)
+    _write_login_form(req, title, host, error_msg)
 
 def logout(req, url=None, realm='Administrator'):
     sess = Session.Session(req)
@@ -78,7 +94,7 @@ def logout(req, url=None, realm='Administrator'):
     if url == None:
         return apache.OK
     else:
-        url = re.sub('[^A-Za-z0-9-_/.]','',url) # sanitize input
+        url = re.sub('[^A-Za-z0-9-_/.#?=]','',url) # sanitize input
         util.redirect(req, url, text="Logout Successfull")
 
 # internal methods ------------------------------------------------------------
@@ -92,6 +108,35 @@ def _valid_login(req, realm, username, password):
         else:
             return _reports_valid_login(req, realm, username, password)
     else:
+        return False
+
+def _valid_token(req, token):
+    try:
+        uid=None
+        with open('/usr/share/untangle/conf/uid', 'r') as uidfile:
+            uid=uidfile.read().replace('\n', '')
+
+        buffer = StringIO()
+        postdata = json.dumps({ "token": token, "resourceId": uid  })
+
+        curl = pycurl.Curl()
+        curl.setopt( pycurl.POST, 1 )
+        curl.setopt( pycurl.POSTFIELDS, postdata )
+        curl.setopt( pycurl.NOSIGNAL, 1 )
+        curl.setopt( pycurl.CONNECTTIMEOUT, 30 )
+        curl.setopt( pycurl.TIMEOUT, 30 )
+        #curl.setopt( pycurl.URL, "http://54.152.2.165:1337/AuthenticationService/1/CheckTokenAccess")
+        curl.setopt( pycurl.URL, "https://auth.untangle.com/v1/CheckTokenAccess")
+        curl.setopt( pycurl.HTTPHEADER, ["Content-type: application/json", "Accept: application/json", "AuthRequest: 4E6FAB77-B2DF-4DEA-B6BD-2B434A3AE981"])
+        #curl.setopt( pycurl.VERBOSE, True )
+        curl.setopt( pycurl.WRITEDATA, buffer )
+
+        curl.perform()
+
+        body = buffer.getvalue()
+        print (body)
+        return (body == "true")
+    except:
         return False
 
 def _reports_valid_login(req, realm, username, password, log=True):
@@ -144,14 +189,12 @@ def _admin_valid_login(req, realm, username, password, log=True):
         uvm_login.log_login(req, username, False, False, 'U')
     return False
 
-def _write_login_form(req, title, host, is_error):
+def _write_login_form(req, title, host, error_msg):
     login_url = cgi.escape(req.unparsed_uri)
     req.content_type = "text/html; charset=utf-8"
     req.send_http_header()
 
-    if is_error:
-        error_msg = '%s' % cgi.escape(_('Error: Username and Password do not match'))
-    else:
+    if error_msg == None:
         error_msg = ''
 
     server_str = cgi.escape(_("Server:"))

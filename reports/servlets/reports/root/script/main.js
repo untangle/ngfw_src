@@ -3,6 +3,7 @@
  */
 var rpc = {}; // the main json rpc object
 var testMode = false;
+var interactiveMode = true;
 
 // Main object class
 Ext.define("Ung.Main", {
@@ -34,6 +35,7 @@ Ext.define("Ung.Main", {
             this.loadTranslations
         ]).then(Ext.bind(function () {
             if(config.reportChart){
+                interactiveMode = false;
                 this.startReportChart(config);
             }else{
                 this.startApplication();
@@ -85,6 +87,11 @@ Ext.define("Ung.Main", {
             if (exception) { deferred.reject(exception); }
 
             rpc.timeZoneOffset = result;
+            Highcharts.setOptions({
+                global: {
+                    timezoneOffset: -(result / 60000)
+                }
+            });
             deferred.resolve();
         }, this));
         return deferred.promise;
@@ -192,12 +199,14 @@ Ext.define("Ung.Main", {
     /**
      * Specialized chart-only mode used by fixed reports to generate charts
      * for reports.  Expects the following parameters in config object:
-     @param {String}    reportCategory - Category report belongs to
-     @param {String}    reportTitle    - Report title
+     @param {String}    reportUniqueId - Report's unique id
      @param {Date}      startDate      - Start date
      @param {Date}      startDate      - End date
      */
     startReportChart: function (config) {
+
+        var startDate = new Date(parseInt(decodeURI(config.startDate)));
+        var endDate = new Date(parseInt(decodeURI(config.endDate)));
 
         this.viewport = Ext.create('Ext.container.Viewport', {
             layout: 'border',
@@ -218,7 +227,6 @@ Ext.define("Ung.Main", {
             var entry = {};
             rpc.reportsManager.getReportEntry(Ext.bind(function (result, exception) {
                 if (Ung.Util.handleException(exception)) {
-                    console.log("nope");
                     return;
                 }
                 this.entry = result;
@@ -241,16 +249,14 @@ Ext.define("Ung.Main", {
                             break;
                         case 'TIME_GRAPH':
                         case 'TIME_GRAPH_DYNAMIC':
-                            console.log(this.entry);
-                            console.log(result.list);
                             this.chart = Ung.charts.timeSeriesChart(this.entry, result.list, this.viewport.down('#highchart').body, false, true);
                             break;
                         default:
                             this.chart = Ung.charts.categoriesChart(this.entry, result.list, this.viewport.down('#highchart').body, false, true);
                     }
-                }, this), this.entry, new Date(decodeURI(config.startDate)), new Date(decodeURI(config.endDate)), [], -1);
+                }, this), this.entry, startDate, endDate, [], -1);
             }
-            }, this), decodeURI(config.reportCategory), decodeURI(config.reportTitle));
+            }, this), decodeURI(config.reportUniqueId));
 
 
         } else {

@@ -22,5 +22,6 @@
     "timeDataInterval": "MINUTE",
     "timeStyle": "AREA",
     "title": "CPU Load",
-    "type": "TIME_GRAPH"
+    "type": "TIME_GRAPH",
+    "approximation": "high"
 }

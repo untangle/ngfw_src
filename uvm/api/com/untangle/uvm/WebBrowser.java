@@ -4,6 +4,7 @@
 package com.untangle.uvm;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -54,6 +55,7 @@ public class WebBrowser
      * @param screenDepth Screen depth to use
     */
 	public WebBrowser(Integer displaySequence, Integer displayScreen, Integer screenWidth, Integer screenHeight, Integer screenDepth)
+    throws java.io.FileNotFoundException
 	{
 		this.displaySequence = displaySequence;
 		this.displayScreen = displayScreen;
@@ -80,6 +82,10 @@ public class WebBrowser
 		System.setProperty("webdriver.chrome.logfile", tempDirectory + "/chrome.log");
 		System.setProperty("webdriver.chrome.verboseLogging", "true");
         
+        if(!WebBrowser.exists()){
+            throw new FileNotFoundException("Chrome driver does not exist: " + chromeDriver);
+        }
+
         try{
             UvmContextFactory.context().execManager().exec("pkill -f \"" + this.xCommand+ "\"");
             UvmContextFactory.context().execManager().execOutput("nohup " + this.xCommand + " >/dev/null 2>&1 &");
@@ -122,6 +128,14 @@ public class WebBrowser
 	}
 
     /**
+     * Allow others to determine what we know without forcing an exception check.
+     */
+    static public Boolean exists(){
+        File f = new File(chromeDriver);
+        return f.exists();
+    }
+
+    /**
      * Open the web browser to the specified URL
      *
      */
@@ -146,7 +160,7 @@ public class WebBrowser
 	public Boolean waitForElement(String elementId)
 	{
 		Boolean found = false;
-        wait.until(new ExpectedCondition<Boolean>() {
+        found = wait.until(new ExpectedCondition<Boolean>() {
         	public Boolean apply(WebDriver driver) {
             	return driver.findElement(By.id(elementId)) != null;
             }

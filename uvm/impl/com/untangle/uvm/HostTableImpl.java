@@ -53,7 +53,6 @@ public class HostTableImpl implements HostTable
 
     private ConcurrentHashMap<InetAddress, HostTableEntry> hostTable;
 
-    private Set<HostTable.HostTableListener> listeners = new HashSet<HostTableListener>();
 
     private volatile Thread cleanerThread;
     private HostTableCleaner cleaner = new HostTableCleaner();
@@ -120,6 +119,7 @@ public class HostTableImpl implements HostTable
             entry = createNewHostTableEntry( addr );
             hostTable.put( addr, entry );
             this.reverseLookupSemaphore.release(); /* wake up thread to force hostname lookup */
+            UvmContextFactory.context().hookManager().callCallbacks( HookManager.HOST_TABLE_ADD, addr );
         }
 
         return entry;
@@ -176,18 +176,8 @@ public class HostTableImpl implements HostTable
         PenaltyBoxEvent evt = new PenaltyBoxEvent( action, address, new Date(currentEntryTime), new Date(currentExitTime), reason ) ;
         UvmContextFactory.context().logEvent(evt);
 
-        /**
-         * Call listeners
-         */
-        if (action == PenaltyBoxEvent.ACTION_ENTER) {
-            for ( HostTableListener listener : this.listeners ) {
-                try {
-                    listener.enteringPenaltyBox( address );
-                } catch ( Exception e ) {
-                    logger.error( "Exception calling listener", e );
-                }
-            }
-        }
+        /* Call hook listeners */
+        UvmContextFactory.context().hookManager().callCallbacks( HookManager.HOST_TABLE_PENALTY_BOX_ENTER, address );
         
         return;
     }
@@ -210,10 +200,6 @@ public class HostTableImpl implements HostTable
         entry.setPenaltyBoxEntryTime( 0 );
         entry.setPenaltyBoxExitTime( 0 );
         
-        /**
-         * If the host was in the penalty box, we must log the event and call the listeners
-         */
-
         if ( !currentFlag ) {
             return;
         }
@@ -238,16 +224,8 @@ public class HostTableImpl implements HostTable
             
         UvmContextFactory.context().logEvent( new PenaltyBoxEvent( PenaltyBoxEvent.ACTION_EXIT, address, new Date(currentEntryTime), new Date(currentExitTime), null ) );
 
-        /**
-         * Call listeners
-         */
-        for ( HostTableListener listener : this.listeners ) {
-            try {
-                listener.exitingPenaltyBox( address );
-            } catch ( Exception e ) {
-                logger.error( "Exception calling listener", e );
-            }
-        }
+        /* Call hook listeners */
+        UvmContextFactory.context().hookManager().callCallbacks( HookManager.HOST_TABLE_PENALTY_BOX_EXIT, address );
         
         return;
     }
@@ -267,16 +245,8 @@ public class HostTableImpl implements HostTable
         entry.setQuotaIssueTime( now );
         entry.setQuotaExpirationTime( now + (((long)time_sec)*1000L) );
 
-        /**
-         * Call listeners
-         */
-        for ( HostTableListener listener : this.listeners ) {
-            try {
-                listener.quotaGiven( address );
-            } catch ( Exception e ) {
-                logger.error( "Exception calling listener", e );
-            }
-        }
+        /* Call hook listeners */
+        UvmContextFactory.context().hookManager().callCallbacks( HookManager.HOST_TABLE_QUOTA_GIVEN, address );
 
         UvmContextFactory.context().logEvent( new QuotaEvent( QuotaEvent.ACTION_GIVEN, address, reason, quotaBytes ) );
         
@@ -298,16 +268,8 @@ public class HostTableImpl implements HostTable
         entry.setQuotaIssueTime( 0 );
         entry.setQuotaExpirationTime( 0 );
 
-        /**
-         * Call listeners
-         */
-        for ( HostTableListener listener : this.listeners ) {
-            try {
-                listener.quotaRemoved( address );
-            } catch ( Exception e ) {
-                logger.error( "Exception calling listener", e );
-            }
-        }
+        /* Call hook listeners */
+        UvmContextFactory.context().hookManager().callCallbacks( HookManager.HOST_TABLE_QUOTA_REMOVED, address );
     }
 
     public boolean hostQuotaExceeded( InetAddress address )
@@ -381,13 +343,8 @@ public class HostTableImpl implements HostTable
 
         entry.setQuotaRemaining( entry.getQuotaSize() );
 
-        for ( HostTableListener listener : this.listeners ) {
-            try {
-                listener.quotaGiven( address );
-            } catch ( Exception e ) {
-                logger.error( "Exception calling listener", e );
-            }
-        }
+        /* Call hook listeners */
+        UvmContextFactory.context().hookManager().callCallbacks( HookManager.HOST_TABLE_QUOTA_GIVEN, address );
     }
 
     public synchronized boolean decrementQuota( InetAddress address, long bytes )
@@ -413,14 +370,9 @@ public class HostTableImpl implements HostTable
         if ( remaining > 0 && newRemaning <= 0 ) {
             logger.info("Host " + address.getHostAddress() + " exceeded quota.");
 
-            for ( HostTableListener listener : this.listeners ) {
-                try {
-                    listener.quotaExceeded( address );
-                } catch ( Exception e ) {
-                    logger.error( "Exception calling listener", e );
-                }
-            }
-            
+            /* Call hook listeners */
+            UvmContextFactory.context().hookManager().callCallbacks( HookManager.HOST_TABLE_QUOTA_EXCEEDED, address );
+
             UvmContextFactory.context().logEvent( new QuotaEvent( QuotaEvent.ACTION_EXCEEDED, address, null, entry.getQuotaSize()) );
             return true;
         }
@@ -480,16 +432,6 @@ public class HostTableImpl implements HostTable
         return list;
     }
     
-    public void registerListener( HostTable.HostTableListener listener )
-    {
-        this.listeners.add( listener );
-    }
-
-    public void unregisterListener( HostTable.HostTableListener listener )
-    {
-        this.listeners.remove( listener );
-    }
-
     public int getCurrentSize()
     {
         return this.hostTable.size();
@@ -525,6 +467,22 @@ public class HostTableImpl implements HostTable
     public void clearTable()
     {
         this.hostTable.clear();
+    }
+
+    public HostTableEntry removeHostTableEntry( InetAddress address )
+    {
+        if ( address == null ) {
+            logger.warn( "Invalid argument: " + address );
+            return null;
+        }
+        logger.info("Removing host table entry: " + address.getHostAddress());
+
+        HostTableEvent event = new HostTableEvent( address, "remove", null );
+        UvmContextFactory.context().logEvent(event);
+
+        HostTableEntry removed =  hostTable.remove( address );
+        UvmContextFactory.context().hookManager().callCallbacks( HookManager.HOST_TABLE_REMOVE, address );
+        return removed;
     }
     
     private synchronized HostTableEntry createNewHostTableEntry( InetAddress address )
@@ -702,10 +660,7 @@ public class HostTableImpl implements HostTable
                                     if ( !macAddress1.equals(macAddress2) ) {
                                         logger.warn("Host " + addressStr + " changed MAC address " + macAddress1 + " -> " + macAddress2 + ". Deleting host entry...");
 
-                                        HostTableEvent event = new HostTableEvent( address, "remove", null );
-                                        UvmContextFactory.context().logEvent(event);
-
-                                        hostTable.remove( address );
+                                        removeHostTableEntry( address );
                                         continue;
                                     }
                                 }
@@ -767,10 +722,7 @@ public class HostTableImpl implements HostTable
                             else {
                                 logger.debug("HostTableCleaner: Removing " + address.getHostAddress());
 
-                                HostTableEvent event = new HostTableEvent( address, "remove", null );
-                                UvmContextFactory.context().logEvent(event);
-
-                                hostTable.remove(address);
+                                removeHostTableEntry( address );
                                 continue;
                             }
                         }
@@ -787,15 +739,25 @@ public class HostTableImpl implements HostTable
                     }
                     if ( UvmContextFactory.context().licenseManager() != null ) {
                         int seatLimit = UvmContextFactory.context().licenseManager().getSeatLimit();
-                        int excess = hostTable.size() - seatLimit;
-                        // if there number of unlicensed hosts is more than it should be - reduce it
-                        if ( numUnlicensed > excess ) {
-                            int reduction = numUnlicensed - excess;
+                        int available = seatLimit - getCurrentActiveSize();
+                        // if there are unlicensed hosts
+                        // and there are unused licenses available
+                        // reassign the unused licenses to hosts that need them
+                        if ( numUnlicensed > 0 && available > 0 ) {
+                            logger.debug( "Redistributing licenses: " + numUnlicensed + " unlicensed hosts and " + available + " licenses available." );
+
+                            int reassignCount = 0;
+                            if ( numUnlicensed > available )
+                                reassignCount = available;
+                            else
+                                reassignCount = numUnlicensed;
+                            
                             for (HostTableEntry entry : entries) {
                                 if (!entry.getEntitled()) {
+                                    logger.debug( "Granting host " + entry.getAddress() + " entitlement." );
                                     entry.setEntitled( true );
-                                    reduction--;
-                                    if ( reduction < 1 )
+                                    reassignCount--;
+                                    if ( reassignCount < 1 )
                                         break;
                                 }
                             }

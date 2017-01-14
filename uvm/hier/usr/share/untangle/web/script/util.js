@@ -118,6 +118,7 @@ Ext.define('Ung.Util', {
                     }]
                 }, {
                     xtype: "fieldset",
+                    hidden: (typeof(interactiveMode) != "undefined" && interactiveMode == false),
                     items: [{
                         xtype: "button",
                         name: "details_button",
@@ -152,6 +153,7 @@ Ext.define('Ung.Util', {
             },
             buttons: [{
                 text: i18n._('OK'),
+                hidden: (typeof(interactiveMode) != "undefined" && interactiveMode == false),
                 handler: function() {
                     if ( errorHandler) {
                         errorHandler();

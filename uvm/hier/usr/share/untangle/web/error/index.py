@@ -17,7 +17,7 @@ _ = gettext.gettext
 # pages -----------------------------------------------------------------------
 def isUvmStarting():
     try:
-        ret = os.system("ps aux | grep -v grep | grep 'init.d/untangle-vm'")
+        ret = os.system("/bin/egrep '(launching|booting|starting)' /var/run/uvm.status")
         if ret == 0:
             return True
     except:

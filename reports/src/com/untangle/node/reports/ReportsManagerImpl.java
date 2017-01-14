@@ -15,12 +15,15 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
+import com.untangle.uvm.AdminUserSettings;
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.WebBrowser;
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.NodeSettings;
@@ -38,7 +41,7 @@ public class ReportsManagerImpl implements ReportsManager
      * This stores the table column metadata lookup results so we don't have to frequently lookup metadata
      * which is slow
      */
-    private static HashMap<String,ResultSet> cacheColumnsResults = new HashMap<String,ResultSet>();
+    private static HashMap<String,HashMap<String,String>> cacheColumnsResults = new HashMap<String,HashMap<String,String>>();
 
     /**
      * This stores the tables metadata lookup results so we don't have to frequently lookup metadata
@@ -336,48 +339,19 @@ public class ReportsManagerImpl implements ReportsManager
     public String[] getColumnsForTable( String tableName )
     {
         ArrayList<String> columnNames = new ArrayList<String>();
-        try {
-            ResultSet rs = getColumnMetaData( tableName );
-            synchronized( rs ) {
-                rs.beforeFirst();
-                while(rs.next()) {
-                    String columnName = rs.getString(4);
-                    //String columnType = rs.getString(6);
-                    columnNames.add( columnName );
-                }
-            }
-        } catch ( Exception e ) {
-            logger.warn("Failed to retrieve column names", e);
-            return null;
-        }
+        HashMap<String,String> metadata = getColumnMetaData( tableName );
 
-        String[] array = new String[columnNames.size()];
-        array = columnNames.toArray(array);
+        Set<String> keys = metadata.keySet();
+        String[] array = new String[keys.size()];
+        array = keys.toArray(array);
         return array;
     }
 
     public String getColumnType( String tableName, String columnName )
     {
-        try {
+        HashMap<String,String> metadata = getColumnMetaData( tableName );
 
-            ResultSet rs = getColumnMetaData( tableName );
-            synchronized( rs ) {
-                rs.beforeFirst();
-                while(rs.next()){
-                    String name = rs.getString(4);
-
-                    if ( columnName.equals( name ) ) {
-                        return rs.getString(6);
-                    }
-                }
-            }
-        } catch ( Exception e ) {
-            logger.warn("Failed to retrieve column type", e);
-            return null;
-        }
-
-        logger.warn("Failed to find column \"" + columnName + "\" in \"" + tableName + "\"");
-        return null;
+        return metadata.get( columnName );
     }
 
     public boolean tableHasColumn( String tableName, String columnName )
@@ -395,7 +369,10 @@ public class ReportsManagerImpl implements ReportsManager
         try {
             ResultSet rs = cacheTablesResults;
             if ( rs == null ) {
-                cacheTablesResults = conn.getMetaData().getTables( null, "reports", null, null );
+                if (ReportsApp.dbDriver.equals("sqlite"))
+                    cacheTablesResults = conn.getMetaData().getTables( null, null, null, null );
+                else
+                    cacheTablesResults = conn.getMetaData().getTables( null, "reports", null, null );
                 rs = cacheTablesResults;
             } else {
                 rs.beforeFirst();
@@ -517,7 +494,12 @@ public class ReportsManagerImpl implements ReportsManager
         long t1 = System.currentTimeMillis();
 
         logger.info("Query Time         : " + String.format("%5d",(t1 - t0)) + " ms");
-
+        try {
+            result.getResultSet().next();
+        } catch (Exception e) {
+            logger.warn("Exception",e);
+        }
+        
         return result;
     }
 
@@ -555,6 +537,48 @@ public class ReportsManagerImpl implements ReportsManager
             }
         }
         return interfacesInfo;
+    }
+
+    public Boolean fixedReportsAllowGraphs()
+    {
+        return WebBrowser.exists();
+    }
+
+    public List<String> getAdminEmailAddresses()
+    {
+        LinkedList<String> adminEmailAddresses = new LinkedList<String>();
+
+        LinkedList<ReportsUser> reportsUsers = node.getSettings().getReportsUsers();
+        Boolean reportsUserFound;
+        LinkedList<AdminUserSettings> adminUsers = UvmContextFactory.context().adminManager().getSettings().getUsers();
+        if((reportsUsers != null) && (adminUsers != null)){
+            for(AdminUserSettings adminUser : adminUsers ){
+                if( (adminUser == null) ||
+                    (adminUser.getEmailAddress() == null) || 
+                    (adminUser.getEmailAddress().isEmpty()) ){
+                    // Ignore if admin email address is empty.
+                    continue;
+                }
+                reportsUserFound = false;
+                for(ReportsUser reportUser: reportsUsers){
+                    if( (reportUser != null) &&
+                        (reportUser.getEmailAddress() != null) &&
+                        reportUser.getEmailAddress().equals( adminUser.getEmailAddress() ) ){
+                        reportsUserFound = true;
+                    }
+                }
+                if(reportsUserFound == false){
+                    adminEmailAddresses.add(adminUser.getEmailAddress());
+                }
+            }
+        }
+
+        return adminEmailAddresses;
+    }
+
+    public List<String> getRecommendedReportIds()
+    {
+        return FixedReports.ReservedReports;
     }
 
     protected void updateSystemReportEntries( List<ReportEntry> existingEntries, boolean saveIfChanged )
@@ -651,23 +675,37 @@ public class ReportsManagerImpl implements ReportsManager
         return true;
     }
 
-    private ResultSet getColumnMetaData( String tableName )
+    private HashMap<String,String> getColumnMetaData( String tableName )
     {
         Connection conn = node.getDbConnection();
         if ( conn == null ) {
             logger.warn("Failed to get DB Connection");
             return null;
         }
-        
+
         try {
-            ResultSet rs = cacheColumnsResults.get( tableName );
-            if ( rs != null ) {
-                return rs;
+            HashMap<String,String> results = cacheColumnsResults.get( tableName );
+            if ( results != null ) {
+                return results;
+            }
+            results = new HashMap<String,String>();
+
+            ResultSet rs;
+            if (ReportsApp.dbDriver.equals("sqlite"))
+                rs = conn.getMetaData().getColumns( null, null, tableName, null );
+            else
+                rs = conn.getMetaData().getColumns( null, "reports", tableName, null );
+
+            synchronized( rs ) {
+                while(rs.next()) {
+                    String columnName = rs.getString(4);
+                    String columnType = rs.getString(6).toLowerCase();
+                    results.put(columnName, columnType);
+                }
             }
 
-            rs = conn.getMetaData().getColumns( null, "reports", tableName, null );
-            cacheColumnsResults.put( tableName, rs );
-            return rs;
+            cacheColumnsResults.put( tableName, results );
+            return results;
         } catch ( Exception e ) {
             logger.warn("Failed to fetch column meta data", e);
             return null;

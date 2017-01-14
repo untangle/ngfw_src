@@ -40,7 +40,7 @@ function unblockSite(global) {
                 if (button) {
                     button.disabled = false;
                 }
-                
+
                 button = document.getElementById("unblockGlobalButton");
                 if (button) {
                     button.disabled = false;
@@ -60,5 +60,5 @@ function unblockSite(global) {
     }
     req.open('POST', "unblock", true);
     req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    req.send("nonce=" + escape( nonce ) + "&tid=" + escape( tid ) + "&global=" + escape( global) + "&password=" + escape( password ));
+    req.send("nonce=" + escape( nonce ) + "&appid=" + escape( appid ) + "&global=" + escape( global) + "&password=" + escape( password ));
 }

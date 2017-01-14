@@ -410,13 +410,17 @@ Ext.define('Webui.untangle-base-virus-blocker.settings', {
                 xtype: 'fieldset',
                 flex: 0,
                 title: i18n._("Advanced"),
-                html: i18n._("Advanced settings require careful configuration.")
+                items: this.getExtraAdvancedOptions()
             }, {
-                xtype: 'tabpanel',
-                activeTab: 0,
-                deferredRender: false,
-                flex: 1,
-                items: [this.gridExtensions, this.gridMimeTypes]
+                xtype: 'fieldset',
+                flex: 0,
+                title: i18n._("HTTP Advanced"),
+            }, {
+                    xtype: 'tabpanel',
+                    activeTab: 0,
+                    deferredRender: false,
+                    flex: 1,
+                    items: [this.gridExtensions, this.gridMimeTypes]
             }]
         });
     }

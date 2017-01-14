@@ -79,7 +79,7 @@ Ext.define('Webui.config.network', {
 
         var blockReplayPacketsCheckbox = this.panelAdvanced.down('checkbox[name=blockReplayPacketsCheckbox]');
         blockReplayPacketsCheckbox.setVisible(rpc.isExpertMode);
-        
+
         this.callParent(arguments);
         Ext.defer(function() {
             this.loadDeviceAndInterfaceStatus(false);
@@ -152,6 +152,20 @@ Ext.define('Webui.config.network', {
             {name:"SRC_INTF",displayName: i18n._("Source Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, true), visible: true},
             {name:"PROTOCOL",displayName: i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true}
         ];
+    },
+    getHostname: function() {
+        var host = "";
+        var domain = "";
+        try {
+            host = this.settings.hostName;
+            domain = this.settings.domainName;
+        } catch (e) {
+            Ung.Util.rpcExHandler(e);
+        }
+        if ( domain !== null && domain !== "" )
+            return host + "." + domain;
+        else
+            return host;
     },
     //asynchronous load of device status and interface status
     loadDeviceAndInterfaceStatus: function(refresh) {
@@ -239,7 +253,7 @@ Ext.define('Webui.config.network', {
                 });
                 grid.getStore().resumeEvents();
                 grid.getView().refresh();
-                
+
                 //--Build port forward reservations warnings--
                 var portForwardWarningsHtml=[];
                 for (i = 0; i < this.settings.interfaces.list.length; i++) {
@@ -314,6 +328,7 @@ Ext.define('Webui.config.network', {
                 "132": [132, i18n._("132 - 5.660 GHz")],
                 "136": [136, i18n._("136 - 5.680 GHz")],
                 "140": [140, i18n._("140 - 5.700 GHz")],
+                "144": [144, i18n._("144 - 5.720 GHz")],
                 "149": [149, i18n._("149 - 5.745 GHz")],
                 "153": [153, i18n._("153 - 5.765 GHz")],
                 "157": [157, i18n._("157 - 5.785 GHz")],
@@ -378,10 +393,10 @@ Ext.define('Webui.config.network', {
                             txerr = lineparts[12].split(":")[1];
                             txdrop = lineparts[13].split(":")[1];
                         }
-                        
+
                         Ung.Main.getExecManager().execOutput(Ext.bind(function(result, exception) {
                             if(Ung.Util.handleException(exception)) return;
-    
+
                             var address = "";
                             var mask = "";
                             if(!Ext.isEmpty(result)) {
@@ -389,7 +404,7 @@ Ext.define('Webui.config.network', {
                                 address = linep[0].split(":")[1];
                                 mask = linep[2].split(":")[1];
                             }
-    
+
                             var config=[{
                                 intf: intf,
                                 macAddress: macAddress,
@@ -403,13 +418,13 @@ Ext.define('Webui.config.network', {
                                 txerr: txerr,
                                 txdrop: txdrop
                             }];
-    
+
                             handler({list: config});
-                            
+
                         }, this), command2);
                     }, this), command1);
                 }, this), command3);
-            }, 
+            },
             fields: [{
                 name: "intf"
             },{
@@ -488,10 +503,10 @@ Ext.define('Webui.config.network', {
         });
 
         this.gridArpLists = Ext.create( 'Ung.grid.Panel', {
-            name: 'ARP Lists',
+            name: 'ARP Table',
             margin: 5,
             flex: 2,
-            title: i18n._('ARP Entry List'),
+            title: i18n._('ARP Table'),
             settingsCmp: this,
             hasAdd: false,
             hasDelete: false,
@@ -538,12 +553,12 @@ Ext.define('Webui.config.network', {
                 width: 150
             }]
         });
-        
+
         this.gridWirelessLists = Ext.create( 'Ung.grid.Panel', {
-            name: 'Wireless Lists',
+            name: 'Wireless Connections',
             margin: 5,
             flex: 3,
-            title: i18n._('Wireless Connections List'),
+            title: i18n._('Wireless Connections'),
             settingsCmp: this,
             hasAdd: false,
             hasDelete: false,
@@ -601,7 +616,7 @@ Ext.define('Webui.config.network', {
                         handler({list: connections});
                     }, this), connectionsCommand);
                 }, this), arpCommand);
-            }, 
+            },
             fields: [{
                 name: "macAddress"
             },{
@@ -642,7 +657,7 @@ Ext.define('Webui.config.network', {
                 width: 150
             }]
         });
-        
+
         this.winInterfaceStatus = Ext.create('Ung.EditWindow', {
             helpSource: 'network_interface_status',
             breadcrumbs: [{
@@ -668,7 +683,7 @@ Ext.define('Webui.config.network', {
                     this.gridIfconfigLists.reload();
                     this.gridArpLists.reload();
                     this.gridWirelessLists.reload();
-                
+
                     this.winInterfaceStatus.show();
                 },
                 scope : this
@@ -688,7 +703,7 @@ Ext.define('Webui.config.network', {
                 items: [this.gridIfconfigLists, this.gridArpLists, this.gridWirelessLists]
             }]
         });
-        
+
         this.subCmps.push(this.winInterfaceStatus);
     },
     // Interfaces Panel
@@ -1052,18 +1067,18 @@ Ext.define('Webui.config.network', {
             }],
             onIntfStatus: Ext.bind(function(symbolicDev, systemDev, isWirelessInterface) {
                 this.buildInterfaceStatus();
-                
+
                 this.gridIfconfigLists.symbolicDev = symbolicDev;
                 this.gridArpLists.symbolicDev = symbolicDev;
                 this.gridWirelessLists.systemDev = systemDev;
                 this.gridWirelessLists.setVisible(isWirelessInterface);
-                
+
                 this.gridIfconfigLists.reload();
                 this.gridArpLists.reload();
                 if(isWirelessInterface) {
                     this.gridWirelessLists.reload();
                 }
-                
+
                 this.winInterfaceStatus.show();
             }, this),
             onMapDevices: Ext.bind(function() {
@@ -2278,7 +2293,7 @@ Ext.define('Webui.config.network', {
                         wirelessEncryption: this.down('combo[dataIndex="wirelessEncryption"]'),
                         wirelessPassword: this.down('textfield[dataIndex="wirelessPassword"]'),
                         wirelessChannel: this.down('combo[dataIndex="wirelessChannel"]'),
-                        
+
                         bridgedTo: this.down('combo[dataIndex="bridgedTo"]')
                     };
                     this.configType=this.down('combo[dataIndex="configType"]');
@@ -2296,7 +2311,7 @@ Ext.define('Webui.config.network', {
                 var isVlanInterfaceValue = this.cmps.isVlanInterface.getValue();
                 var isWanValue = this.cmps.isWan.getValue();
                 var isWirelessInterfaceValue = this.cmps.isWirelessInterface.getValue();
-                
+
                 if ( isVlanInterfaceValue ) {
                     this.cmps.isVlanInterface.status = true;
                     this.cmps.vlanParent.status = true;
@@ -2316,7 +2331,7 @@ Ext.define('Webui.config.network', {
                         this.cmps.wirelessPassword.status = false;
                     }
                 }
-                
+
                 if ( configTypeValue == "DISABLED") {
                     // if config disabled show nothing
                 } else if ( configTypeValue == "BRIDGED") {
@@ -2465,7 +2480,9 @@ Ext.define('Webui.config.network', {
                             var allChannelsMap = this.getWirelessChannelsMap();
                             for(var j=0; j<result.list.length; j++) {
                                 var item=result.list[j];
-                                availableChannels.push(allChannelsMap[item]);
+                                if (allChannelsMap[item]) {
+                                    availableChannels.push(allChannelsMap[item]);
+                                }
                             }
                         }
                         wirelessChannel.getStore().loadData(availableChannels);
@@ -2640,7 +2657,8 @@ Ext.define('Webui.config.network', {
                             ['dslreports','DSL-Reports'],
                             ['dnspark','DNSPark'],
                             ['no-ip','No-IP'],
-                            ['dnsomatic','DNS-O-Matic']],
+                            ['dnsomatic','DNS-O-Matic'],
+                            ['cloudflare','Cloudflare']],
                     listeners: {
                         "change": {
                             fn: Ext.bind(function(elem, newValue) {
@@ -2735,7 +2753,7 @@ Ext.define('Webui.config.network', {
                 }, {
                     xtype: 'component',
                     margin: '0 0 10 25',
-                    html: Ext.String.format( i18n._( 'Current Hostname: {0}'), '<i>' + this.settings.hostName + '</i>' )
+                    html: i18n._( 'Current Hostname' ) + ':<i>' + this.getHostname() + '</i>'
                 }, {
                     xtype: 'radio',
                     boxLabel: i18n._('Use Manually Specified Address'),
@@ -2777,7 +2795,14 @@ Ext.define('Webui.config.network', {
                     allowBlank: false,
                     width: 400,
                     blankText: i18n._("You must provide a valid IP Address or hostname."),
-                    disabled: this.settings.publicUrlMethod != "address_and_port"
+                    disabled: this.settings.publicUrlMethod != "address_and_port",
+                    listeners: {
+                        "change": {
+                            fn: Ext.bind(function(elem, newValue) {
+                                this.settings.publicUrlAddress = newValue;
+                            }, this)
+                        }
+                    }
                 },{
                     xtype: 'numberfield',
                     margin: '0 0 5 25',
@@ -2790,7 +2815,14 @@ Ext.define('Webui.config.network', {
                     width: 210,
                     blankText: i18n._("You must provide a valid port."),
                     vtype: 'port',
-                    disabled: this.settings.publicUrlMethod != "address_and_port"
+                    disabled: this.settings.publicUrlMethod != "address_and_port",
+                    listeners: {
+                        "change": {
+                            fn: Ext.bind(function(elem, newValue) {
+                                this.settings.publicUrlPort = newValue;
+                            }, this)
+                        }
+                    }
                 }]
             }]
         });
@@ -3107,7 +3139,7 @@ Ext.define('Webui.config.network', {
                     name: 'portForwardWarnings',
                     html: ' '
                 }]
-                
+
             }]
         });
         var settingsCmp = this;
@@ -5152,7 +5184,7 @@ Ext.define('Webui.config.network', {
                     }
                 }, {
                     xtype: 'fieldset',
-                    title: i18n._('Access Control List'),
+                    title: i18n._('Access Control Rules'),
                     items: [
                     this.gridUpnpRules
                     ]
@@ -5657,9 +5689,13 @@ Ext.define('Webui.config.network', {
                         style : "margin-left: 10px",
                         width : 500,
                         value : "http://cachefly.cachefly.net/5mb.test",
-                        store : [['http://cachefly.cachefly.net/5mb.test','http://cachefly.cachefly.net/5mb.test'],
-                                 ['http://download.thinkbroadband.com/5MB.zip','http://download.thinkbroadband.com/5MB.zip'],
-                                 ['http://download.untangle.com/data.php','http://download.untangle.com/data.php']],
+                        store : [
+                            ['http://cachefly.cachefly.net/50mb.test','http://cachefly.cachefly.net/50mb.test'],
+                            ['http://cachefly.cachefly.net/5mb.test','http://cachefly.cachefly.net/5mb.test'],
+                            ['http://download.thinkbroadband.com/50MB.zip','http://download.thinkbroadband.com/50MB.zip'],
+                            ['http://download.thinkbroadband.com/5MB.zip','http://download.thinkbroadband.com/5MB.zip'],
+                            ['http://download.untangle.com/data.php','http://download.untangle.com/data.php']
+                        ],
                         listeners: {
                             specialkey: function(field, e){
                                 if (e.getKey() == e.ENTER) {
@@ -5818,7 +5854,7 @@ Ext.define('Webui.config.network', {
                     var script = [
                         '/usr/share/untangle/bin/ut-network-tests-packet.py'+
                             ' --timeout ' + timeout  +
-                            ' --filename ' + filename + 
+                            ' --filename ' + filename +
                             ' --arguments \'' + traceCommand + '\''
                     ];
                     return ["/bin/bash","-c", script.join("")];
@@ -6007,7 +6043,7 @@ Ext.define('Webui.config.network', {
     save: function (isApply) {
         Ung.MetricManager.stop(); //stop all RPC calls
         Ung.Main.getNetworkManager().setNetworkSettings(Ext.bind(function(result, exception) {
-            Ung.MetricManager.start(false); //resume all RPC calls 
+            Ung.MetricManager.start(false); //resume all RPC calls
 
             if(Ung.Util.handleException(exception)) return;
             delete rpc.networkSettings; // clear cached settings object

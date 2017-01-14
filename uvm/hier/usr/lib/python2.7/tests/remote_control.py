@@ -95,6 +95,10 @@ def isOnline( tries=12, host=None ):
     onlineResults = -1
     while tries > 0 and onlineResults != 0:
         onlineResults = runCommand("wget -q -O /dev/null -4 -t 2 --timeout=5 http://test.untangle.com/", host=host)
+        if onlineResults != 0:
+            # check DNS and pings if offline
+            runCommand("host test.untangle.com", host=host)
+            runCommand("ping -c 1 test.untangle.com", host=host)
         tries -= 1
     return onlineResults
 

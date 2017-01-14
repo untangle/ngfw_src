@@ -242,10 +242,6 @@
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.web_filter">
-    <priority value="INFO"/>
-  </category>
-
   <category name="com.untangle.node.smtp">
     <priority value="INFO"/>
   </category>
@@ -291,6 +287,10 @@
   </category>
 
   <category name="com.untangle.node.web_filter">
+    <priority value="INFO"/>
+  </category>
+
+  <category name="com.untangle.node.web_monitor">
     <priority value="INFO"/>
   </category>
 

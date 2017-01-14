@@ -66,10 +66,10 @@ public abstract class VirusBlockerBaseApp extends NodeBase
 
     private static int deployCount = 0;
 
-    private final VirusScanner scanner;
+    private VirusScanner scanner = null;
+
     private final PipelineConnector[] connectors;
     private final VirusReplacementGenerator replacementGenerator;
-
     private final Logger logger = Logger.getLogger(VirusBlockerBaseApp.class);
 
     /*
@@ -113,11 +113,9 @@ public abstract class VirusBlockerBaseApp extends NodeBase
 
     // constructors -----------------------------------------------------------
 
-    public VirusBlockerBaseApp(com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties, VirusScanner scanner)
+    public VirusBlockerBaseApp(com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
     {
         super(nodeSettings, nodeProperties);
-
-        this.scanner = scanner;
 
         this.addMetric(new NodeMetric(STAT_SCAN, I18nUtil.marktr("Documents scanned")));
         this.addMetric(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Documents blocked")));
@@ -393,12 +391,17 @@ public abstract class VirusBlockerBaseApp extends NodeBase
 
     // package protected methods ----------------------------------------------
 
-    VirusScanner getScanner()
+    protected VirusScanner getScanner()
     {
         return scanner;
     }
 
-    int getTricklePercent()
+    protected void setScanner(VirusScanner scanner)
+    {
+        this.scanner = scanner;
+    }
+    
+    protected int getTricklePercent()
     {
         return TRICKLE_RATE;
     }

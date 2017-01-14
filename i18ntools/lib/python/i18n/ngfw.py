@@ -28,7 +28,7 @@ class Ngfw:
             directories = Utility.get_base_path().split("/")
             while found == False and len(directories) > 0:
                 check_path = "/".join(directories)
-                if os.path.isdir(check_path + "/work") and os.path.isdir(check_path + "/hades"):
+                if os.path.isdir(check_path + "/ngfw_src") and os.path.isdir(check_path + "/ngfw_hades-src"):
                     found = True
                     self.base_path = check_path
                 del directories[len(directories)-1]
@@ -37,12 +37,12 @@ class Ngfw:
                 self.base_path = Utility.get_base_path(self.path)
         else:
             self.base_path = base_path
+
         self.load()
 
         self.search_paths = []
         for directory in self.directories:
-            self.search_paths.append(self.base_path + "/" + directory + "/src")
-            self.search_paths.append(self.base_path + "/" + directory + "/pkgs")
+            self.search_paths.append(self.base_path + "/" + directory)
 
         self.__dict__["regex_comment_prefix"] = re.compile(r'' + self.base_path)
 
@@ -52,6 +52,7 @@ class Ngfw:
         """
         full_file_name = Utility.get_base_path() + "/" + self.file_name
         ngfw_file = open(full_file_name)
+
         try:
             settings = json.load(ngfw_file)
         except:
