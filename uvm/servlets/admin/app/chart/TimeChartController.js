@@ -64,11 +64,14 @@ Ext.define('Ung.chart.TimeChartController', {
                 }
             },
             title: null,
+            lang: {
+                noData: ''
+            },
             noData: {
                 style: {
-                    fontSize: '16px',
+                    fontSize: '12px',
                     fontWeight: 'normal',
-                    color: '#999'
+                    color: '#CCC'
                 }
             },
             colors: (me.entry.get('colors') !== null && me.entry.get('colors') > 0) ? me.entry.get('colors') : me.defaultColors,

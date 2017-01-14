@@ -107,20 +107,6 @@ Ext.define('Ung.controller.Global', {
         // this.getViewModel().set('activeItem', 'dashboard');
     },
 
-    // onBeforeSessions: function (id, action) {
-    //     rpc.sessionMonitor.getMergedSessions(function (result, exception) {
-    //         console.log(result);
-    //         // grid.getView().setLoading(false);
-    //         if (exception) {
-    //             Ung.Util.exceptionToast(exception);
-    //             return;
-    //         }
-    //         // Ext.getStore('sessions').loadData(result.list);
-    //         // grid.getSelectionModel().select(0);
-    //         // grid.getStore().setData(result.list);
-    //     });
-    // },
-
     onReports: function (category) {
         if (category) {
             this.getReportsView().getViewModel().set('category', category.replace(/-/g, ' '));
