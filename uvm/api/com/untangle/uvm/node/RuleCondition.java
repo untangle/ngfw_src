@@ -106,6 +106,7 @@ public class RuleCondition implements JSONString, Serializable
             WEB_FILTER_REQUEST_FILE_EXTENSION, /* txt */
             WEB_FILTER_RESPONSE_CONTENT_TYPE, /* video/mp4 */
             WEB_FILTER_RESPONSE_FILE_NAME, /* somefile.exe */
+            WEB_FILTER_RESPONSE_FILE_EXTENSION, /* zip */
             SSL_INSPECTOR_SNI_HOSTNAME, /* "microsoft.com" */
             SSL_INSPECTOR_SUBJECT_DN, /* "CN=dropbox.com" */
             SSL_INSPECTOR_ISSUER_DN, /* "O=Thawte" */
@@ -357,6 +358,7 @@ public class RuleCondition implements JSONString, Serializable
         case WEB_FILTER_REQUEST_FILE_EXTENSION:
         case WEB_FILTER_RESPONSE_CONTENT_TYPE:
         case WEB_FILTER_RESPONSE_FILE_NAME:
+        case WEB_FILTER_RESPONSE_FILE_EXTENSION:
         case APPLICATION_CONTROL_APPLICATION:
         case APPLICATION_CONTROL_CATEGORY:
         case APPLICATION_CONTROL_PROTOCHAIN:
@@ -625,6 +627,10 @@ public class RuleCondition implements JSONString, Serializable
 
         case WEB_FILTER_RESPONSE_FILE_NAME:
             attachment = (String) sess.globalAttachment(NodeSession.KEY_WEB_FILTER_RESPONSE_FILE_NAME);
+            return globMatcher.isMatch( attachment );
+
+        case WEB_FILTER_RESPONSE_FILE_EXTENSION:
+            attachment = (String) sess.globalAttachment(NodeSession.KEY_WEB_FILTER_RESPONSE_FILE_EXTENSION);
             return globMatcher.isMatch( attachment );
 
         case USERNAME:
@@ -957,15 +963,26 @@ public class RuleCondition implements JSONString, Serializable
             return globMatcher.isMatch( attachment );
 
         case CLIENT_COUNTRY:
-            attachment = UvmContextFactory.context().geographyManager().getCountryCode(srcAddress.getHostAddress());
-            if (attachment == null)
-                return false;
+            // for WAN interfaces lookup the client country using source address
+            if (UvmContextFactory.context().networkManager().isWanInterface( srcIntf ) ) {
+                attachment = UvmContextFactory.context().geographyManager().getCountryCode(srcAddress.getHostAddress());
+                // if nothing returned use the Unknown country code
+                if (attachment == null) attachment = "XU";
+            } else {
+                // not a WAN interface so use the Local country code
+                attachment = "XL";
+            }
             return globMatcher.isMatch( attachment );
 
         case SERVER_COUNTRY:
-            attachment = UvmContextFactory.context().geographyManager().getCountryCode(dstAddress.getHostAddress());
-            if (attachment == null)
-                return false;
+            // for WAN interfaces lookup the server country using destination address
+            if (UvmContextFactory.context().networkManager().isWanInterface( dstIntf ) ) {
+                attachment = UvmContextFactory.context().geographyManager().getCountryCode(dstAddress.getHostAddress());
+                // if nothing returned use the Unknown country code
+                if (attachment == null) attachment = "XU";
+            } else {
+                attachment = "XL";
+            }
             return globMatcher.isMatch( attachment );
 
         default:

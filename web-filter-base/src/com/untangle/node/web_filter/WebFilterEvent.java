@@ -33,30 +33,33 @@ public class WebFilterEvent extends LogEvent
     }
 
     public Boolean getBlocked() { return blocked; }
-    public void setBlocked( Boolean blocked ) { this.blocked = blocked; }
+    public void setBlocked( Boolean newValue ) { this.blocked = newValue; }
 
     public Boolean getFlagged() { return flagged; }
-    public void setFlagged( Boolean flagged ) { this.flagged = flagged; }
+    public void setFlagged( Boolean newValue ) { this.flagged = newValue; }
 
     public Reason getReason() { return reason; }
-    public void setReason( Reason reason ) { this.reason = reason; }
+    public void setReason( Reason newValue ) { this.reason = newValue; }
 
     public String getCategory() { return category; }
-    public void setCategory( String category ) { this.category = category; }
+    public void setCategory( String newValue ) { this.category = newValue; }
 
     public String getNodeName() { return nodeName; }
-    public void setNodeName(String nodeName) { this.nodeName = nodeName; }
+    public void setNodeName(String newValue) { this.nodeName = newValue; }
 
+    public RequestLine getRequestLine() { return requestLine; }
+    public void setRequestLine(RequestLine newValue) { this.requestLine = newValue; }
+    
     @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
         String sql =
-            "UPDATE reports.http_events" + requestLine.getHttpRequestEvent().getPartitionTablePostfix() + " " +
+            "UPDATE " + schemaPrefix() + "http_events" + requestLine.getHttpRequestEvent().getPartitionTablePostfix() + " " +
             "SET " +
-            fixupNodeName() + "_blocked  = ?, " + 
-            fixupNodeName() + "_flagged  = ?, " +
-            fixupNodeName() + "_reason   = ?, " +
-            fixupNodeName() + "_category = ? " +
+            _getDatabaseColumnNamePrefix() + "_blocked  = ?, " + 
+            _getDatabaseColumnNamePrefix() + "_flagged  = ?, " +
+            _getDatabaseColumnNamePrefix() + "_reason   = ?, " +
+            _getDatabaseColumnNamePrefix() + "_category = ? " +
             "WHERE " +
             "request_id = ? ";
 
@@ -80,26 +83,35 @@ public class WebFilterEvent extends LogEvent
         switch ( getNodeName().toLowerCase() ) {
         case "web_filter_lite": appName = "Web Filter Lite"; break;
         case "web_filter": appName = "Web Filter"; break;
+        case "web_monitor": appName = "Web Monitor"; break;
         default: appName = "Web Filter"; break;
         }
 
         String actionStr;
         if ( getBlocked() )
             actionStr = I18nUtil.marktr("blocked");
+        else if ( getFlagged() )
+            actionStr = I18nUtil.marktr("flagged");
         else
-            actionStr = I18nUtil.marktr("passed");
+            actionStr = I18nUtil.marktr("logged");
 
-        String summary = appName + " " + actionStr + " " + requestLine.getUrl() + " (" + getCategory() + " " + getReason() + ")";
+        String summary = appName + " " + actionStr + " " + requestLine.getUrl() + " (" + getCategory() + ")";
         return summary;
     }
 
-    private String fixupNodeName()
+    private String _getDatabaseColumnNamePrefix()
     {
         String node = getNodeName().toLowerCase();
+
         if ("web-filter-lite".equals(node))
             return "web_filter_lite";
         if ("web-filter".equals(node))
             return "web_filter";
+        if ("web-monitor".equals(node))
+            return "web_filter"; // use the same DB columns as web filter
+        if ("web_monitor".equals(node))
+            return "web_filter"; // use the same DB columns as web filter
+
         return node;
     }
 }

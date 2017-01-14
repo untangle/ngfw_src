@@ -4,8 +4,10 @@
 package com.untangle.node.reports;
 
 import java.io.BufferedWriter;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetAddress;
@@ -62,18 +64,22 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
     private static final String REPORTS_GENERATE_FIXED_REPORTS_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-generate-fixed-reports.py";
     private static final String REPORTS_RESTORE_DATA_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-restore-backup.sh";
     private static final String REPORTS_LOG = System.getProperty("uvm.log.dir") + "/reports.log";
+    private static final String REPORTS_DB_DRIVER_FILE = System.getProperty("uvm.conf.dir") + "/database-driver";
 
     private static final File CRON_FILE = new File("/etc/cron.daily/reports-cron");
     private static final File SYSLOG_CONF_FILE = new File("/etc/rsyslog.d/untangle-remote.conf");
 
     protected static EventWriterImpl eventWriter = null;
     protected static EventReaderImpl eventReader = null;
-
+    protected static String dbDriver = "postgresql";
+    
     private ReportsSettings settings;
     
     public ReportsApp( NodeSettings nodeSettings, NodeProperties nodeProperties )
     {
         super( nodeSettings, nodeProperties );
+
+        determineDbDriver();
 
         if (eventWriter == null)
             eventWriter = new EventWriterImpl( this );
@@ -113,24 +119,26 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         if ( newSettings.getReportsUsers().size() > 0){
             for ( ReportsUser user : newSettings.getReportsUsers() ) {
                 if (user.getEmailSummaries()){
-                    if(user.getEmailTemplateIds().size() > 0) {
-                        /* Walk existing list and map to new values. */
-                        List<Integer> oldEmailTemplateIds = user.getEmailTemplateIds();
-                        LinkedList<Integer> newEmailTemplateIds = new LinkedList<Integer>();
-                        Integer newEmailTemplateId;
-                        for(int i = 0; i < oldEmailTemplateIds.size(); i++){
-                            newEmailTemplateId = mapOldNewEmailTemplateIds.get(oldEmailTemplateIds.get(i));
-                            if(newEmailTemplateId != null){
-                                newEmailTemplateIds.push(newEmailTemplateId);
+                    if( user.getEmailTemplateIds() != null ){
+                        if( user.getEmailTemplateIds().size() > 0 ) {
+                            /* Walk existing list and map to new values. */
+                            List<Integer> oldEmailTemplateIds = user.getEmailTemplateIds();
+                            LinkedList<Integer> newEmailTemplateIds = new LinkedList<Integer>();
+                            Integer newEmailTemplateId;
+                            for(int i = 0; i < oldEmailTemplateIds.size(); i++){
+                                newEmailTemplateId = mapOldNewEmailTemplateIds.get(oldEmailTemplateIds.get(i));
+                                if(newEmailTemplateId != null){
+                                    newEmailTemplateIds.push(newEmailTemplateId);
+                                }
                             }
+                            user.setEmailTemplateIds(newEmailTemplateIds);
                         }
-                        user.setEmailTemplateIds(newEmailTemplateIds);
-                    }
-                    if(user.getEmailTemplateIds().size() == 0) {
-                        /* If never set or all removed, add the default. */
-                        LinkedList<Integer> emailTemplateIds = new LinkedList<Integer>();
-                        emailTemplateIds.push(1);
-                        user.setEmailTemplateIds(emailTemplateIds);
+                        if( user.getEmailTemplateIds().size() == 0) {
+                            /* If never set or all removed, add the default. */
+                            LinkedList<Integer> emailTemplateIds = new LinkedList<Integer>();
+                            emailTemplateIds.push(1);
+                            user.setEmailTemplateIds(emailTemplateIds);
+                        }
                     }
                 }
             }
@@ -170,24 +178,62 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
     public void initializeDB()
     {
         synchronized (this) {
-            String cmd = REPORTS_GENERATE_TABLES_SCRIPT;
-            ExecManagerResult result = UvmContextFactory.context().execManager().exec(cmd);
-            if (result.getResult() != 0) {
-                logger.warn("Failed to create schemas: \"" + cmd + "\" -> "  + result.getResult());
+            if ( "postgresql".equals( ReportsApp.dbDriver ) ) {
+
+                /**
+                 * Run the script to generate/update the tables
+                 */
+                String cmd = REPORTS_GENERATE_TABLES_SCRIPT  + " -d postgresql";
+                ExecManagerResult result = UvmContextFactory.context().execManager().exec( cmd );
+
+                if (result.getResult() != 0) {
+                    logger.warn("Failed to create tables: \"" + cmd + "\" -> "  + result.getResult());
+                }
+                try {
+                    String lines[] = result.getOutput().split("\\r?\\n");
+                    logger.info("Creating Tables: ");
+                    for ( String line : lines )
+                        logger.info("Tables: " + line);
+                } catch (Exception e) {}
+
+                /**
+                 * Set global properties
+                 * Postgres uses the "reports" schema and supports partitions
+                 */
+                LogEvent.setSchemaPrefix("reports.");
+                LogEvent.setPartitionsSupported(true);
             }
-            try {
-                String lines[] = result.getOutput().split("\\r?\\n");
-                logger.info("Creating Schema: ");
-                for ( String line : lines )
-                    logger.info("Schema: " + line);
-            } catch (Exception e) {}
+            else if ( "sqlite".equals( ReportsApp.dbDriver ) ) {
+
+                /**
+                 * Run the script to generate/update the tables
+                 */
+                String cmd = REPORTS_GENERATE_TABLES_SCRIPT + " -d sqlite";
+                ExecManagerResult result = UvmContextFactory.context().execManager().exec( cmd );
+                if (result.getResult() != 0) {
+                    logger.warn("Failed to create tables: \"" + cmd + "\" -> "  + result.getResult());
+                }
+                try {
+                    String lines[] = result.getOutput().split("\\r?\\n");
+                    logger.info("Creating Tables: ");
+                    for ( String line : lines )
+                        logger.info("Tables: " + line);
+                } catch (Exception e) {}
+
+                /**
+                 * Set global properties
+                 * SQlite does not use a schema and does not support partitions
+                 */
+                LogEvent.setSchemaPrefix("");
+                LogEvent.setPartitionsSupported(false);
+            }
         }
     }
 
     public void runFixedReport() throws Exception
     {
         flushEvents();
-        
+
         synchronized (this) {
             String url = "https://" + UvmContextFactory.context().networkManager().getPublicUrl() + "/reports/";
             for( EmailTemplate emailTemplate : settings.getEmailTemplates() ){
@@ -199,7 +245,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
                     }
                 }
                 if( users.size() > 0){
-                    fixedReports.generate(emailTemplate, users, url);
+                    fixedReports.generate(emailTemplate, users, url, ReportsManagerImpl.getInstance());
                 }
             }
         }        
@@ -207,10 +253,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
 
     public void flushEvents()
     {
-        long currentTime  = System.currentTimeMillis();
-
-        if (ReportsApp.eventWriter != null)
-            ReportsApp.eventWriter.forceFlush();
+        forceFlush();
     }
 
     protected int getEventsPendingCount()
@@ -249,7 +292,9 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
 
     public void forceFlush()
     {
-        ReportsApp.eventWriter.forceFlush();
+        logger.warn("forceFlush() ...");
+        if (ReportsApp.eventWriter != null)
+            ReportsApp.eventWriter.forceFlush();
     }
 
     public double getAvgWriteTimePerEvent()
@@ -265,13 +310,28 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
     public Connection getDbConnection()
     {
         try {
-            Class.forName("org.postgresql.Driver");
-            String url = "jdbc:postgresql://" + settings.getDbHost() + ":" + settings.getDbPort() + "/" + settings.getDbName();
+            String url = null;
             Properties props = new Properties();
-            props.setProperty( "user", settings.getDbUser() );
-            props.setProperty( "password", settings.getDbPassword() );
-            props.setProperty( "charset", "unicode" );
-            //props.setProperty( "logUnclosedConnections", "true" );
+
+            if ( "postgresql".equals( ReportsApp.dbDriver ) ) {
+                Class.forName("org.postgresql.Driver");
+                url = "jdbc:" + ReportsApp.dbDriver + "://" + settings.getDbHost() + ":" + settings.getDbPort() + "/" + settings.getDbName();
+
+                props.setProperty( "user", settings.getDbUser() );
+                props.setProperty( "password", settings.getDbPassword() );
+                props.setProperty( "charset", "unicode" );
+                //props.setProperty( "logUnclosedConnections", "true" );
+            }
+            else if ( "sqlite".equals( ReportsApp.dbDriver ) ) {
+                File dir = new File("/var/lib/sqlite");
+                if ( !dir.exists() )
+                    UvmContextFactory.context().execManager().execResult( "mkdir -p /var/lib/sqlite");
+                Class.forName("org.sqlite.JDBC");
+                url = "jdbc:" + ReportsApp.dbDriver + ":" + "/var/lib/sqlite/reports.db";
+            } else {
+                logger.warn("Unknown driver: " + ReportsApp.dbDriver );
+                return null;
+            }
 
             return DriverManager.getConnection(url,props);
         }
@@ -315,9 +375,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         }
         else {
             logger.info("Loading Settings...");
-
             this.settings = readSettings;
-
             logger.debug("Settings: " + this.settings.toJSONString());
         }
 
@@ -343,12 +401,18 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
             conversion_12_1_1();
         }
         /**
-         * 12.2.1 conversion
+         * 12.2 conversion
          */
         if ( settings.getVersion() == 3 ) {
-            logger.warn("Running v12.2.1 conversion...");
-            conversion_12_2_1();
+            logger.warn("Running v12.2 conversion...");
+            conversion_12_2_0();
         }
+
+        /**
+         * Start the database
+         */
+        if ( "postgresql".equals( ReportsApp.dbDriver ) )
+            UvmContextFactory.context().daemonManager().incrementUsageCount( "postgresql" );
         
         /**
          * Report updates
@@ -387,6 +451,9 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
     protected void postStop( boolean isPermanentTransition )
     {
         ReportsApp.eventWriter.stop();
+
+        if ( "postgresql".equals( ReportsApp.dbDriver ) )
+            UvmContextFactory.context().daemonManager().decrementUsageCount( "postgresql" );
     }
 
     @Override
@@ -402,6 +469,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         LinkedList<AlertRuleCondition> matchers;
         AlertRuleCondition matcher1;
         AlertRuleCondition matcher2;
+        AlertRuleCondition matcher3;
         AlertRule alertRule;
         
         matchers = new LinkedList<AlertRuleCondition>();
@@ -466,6 +534,66 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "entitled", "=", "false" ) );
         matchers.add( matcher2 );
         alertRule = new AlertRule( true, matchers, true, true, "License limit exceeded. Session not entitled", true, 60*24 );
+        rules.add( alertRule );
+
+        matchers = new LinkedList<AlertRuleCondition>();
+        matcher1 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "class", "=", "*WebFilterEvent*" ) );
+        matchers.add( matcher1 );
+        matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "blocked", "=", "False" ) );
+        matchers.add( matcher2 );
+        matcher3 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "category", "=", "Malware Distribution Point" ) );
+        matchers.add( matcher3 );
+        alertRule = new AlertRule( true, matchers, true, true, "Malware Distribution Point website visit detected", false, 10 );
+        rules.add( alertRule );
+
+        matchers = new LinkedList<AlertRuleCondition>();
+        matcher1 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "class", "=", "*WebFilterEvent*" ) );
+        matchers.add( matcher1 );
+        matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "blocked", "=", "True" ) );
+        matchers.add( matcher2 );
+        matcher3 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "category", "=", "Malware Distribution Point" ) );
+        matchers.add( matcher3 );
+        alertRule = new AlertRule( true, matchers, true, true, "Malware Distribution Point website visit blocked", false, 10 );
+        rules.add( alertRule );
+
+        matchers = new LinkedList<AlertRuleCondition>();
+        matcher1 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "class", "=", "*WebFilterEvent*" ) );
+        matchers.add( matcher1 );
+        matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "blocked", "=", "False" ) );
+        matchers.add( matcher2 );
+        matcher3 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "category", "=", "Botnet" ) );
+        matchers.add( matcher3 );
+        alertRule = new AlertRule( true, matchers, true, true, "Botnet website visit detected", false, 10 );
+        rules.add( alertRule );
+
+        matchers = new LinkedList<AlertRuleCondition>();
+        matcher1 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "class", "=", "*WebFilterEvent*" ) );
+        matchers.add( matcher1 );
+        matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "blocked", "=", "True" ) );
+        matchers.add( matcher2 );
+        matcher3 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "category", "=", "Botnet" ) );
+        matchers.add( matcher3 );
+        alertRule = new AlertRule( true, matchers, true, true, "Botnet website visit blocked", false, 10 );
+        rules.add( alertRule );
+
+        matchers = new LinkedList<AlertRuleCondition>();
+        matcher1 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "class", "=", "*WebFilterEvent*" ) );
+        matchers.add( matcher1 );
+        matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "blocked", "=", "False" ) );
+        matchers.add( matcher2 );
+        matcher3 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "category", "=", "Phishing/Fraud" ) );
+        matchers.add( matcher3 );
+        alertRule = new AlertRule( true, matchers, true, true, "Phishing/Fraud website visit detected", false, 10 );
+        rules.add( alertRule );
+
+        matchers = new LinkedList<AlertRuleCondition>();
+        matcher1 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "class", "=", "*WebFilterEvent*" ) );
+        matchers.add( matcher1 );
+        matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "blocked", "=", "True" ) );
+        matchers.add( matcher2 );
+        matcher3 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "category", "=", "Phishing/Fraud" ) );
+        matchers.add( matcher3 );
+        alertRule = new AlertRule( true, matchers, true, true, "Phishing/Fraud website visit blocked", false, 10 );
         rules.add( alertRule );
 
         matchers = new LinkedList<AlertRuleCondition>();
@@ -540,18 +668,10 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         LinkedList<String> enabledAppIds;
 
         enabledConfigIds = new LinkedList<String>();
-        enabledConfigIds.add("_all");
+        enabledConfigIds.add("_recommended");
         enabledAppIds = new LinkedList<String>();
-        enabledAppIds.add("_all");
-        emailTemplate = new EmailTemplate( I18nUtil.marktr("Daily Reports"), I18nUtil.marktr("All available reports (default)"), 86400, false, enabledConfigIds, enabledAppIds);
-        emailTemplate.setReadOnly(true);
-        templates.add( emailTemplate );
-
-        enabledConfigIds = new LinkedList<String>();
-        enabledConfigIds.add("_type=TEXT");
-        enabledAppIds = new LinkedList<String>();
-        enabledAppIds.add("_type=TEXT");
-        emailTemplate = new EmailTemplate( I18nUtil.marktr("Daily Reports Summary"), I18nUtil.marktr("Text only reports"), 86400, false, enabledConfigIds, enabledAppIds);
+        enabledAppIds.add("_recommended");
+        emailTemplate = new EmailTemplate( I18nUtil.marktr("Daily Reports"), I18nUtil.marktr("Recommended daily reports (default)"), 86400, false, enabledConfigIds, enabledAppIds);
         emailTemplate.setReadOnly(true);
         templates.add( emailTemplate );
 
@@ -559,22 +679,92 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
 
     }
 
+    private LinkedList<ReportsUser> defaultReportsUsers(LinkedList<ReportsUser> reportsUsers)
+    {
+        List<Integer> templateIds = new LinkedList<Integer>();
+        templateIds.add(0);
+
+        if(reportsUsers == null){
+            reportsUsers = new LinkedList<ReportsUser>();
+        }else{
+            for(ReportsUser reportsUser : reportsUsers){
+                if(reportsUser.getEmailSummaries() && reportsUser.getEmailTemplateIds() == null){
+                    reportsUser.setEmailTemplateIds(templateIds);
+                }
+            }
+        }
+
+        Boolean adminUserFound = false;
+        for(ReportsUser reportsUser : reportsUsers){
+            if(reportsUser.getEmailAddress().equals("admin")){
+                adminUserFound = true;
+            }
+        }
+
+        if( adminUserFound == false ){
+            ReportsUser adminUser = new ReportsUser();
+            adminUser.setEmailAddress("admin");
+            adminUser.setEmailAlerts(true);
+            adminUser.setEmailSummaries(true);
+            adminUser.setEmailTemplateIds(templateIds);
+            reportsUsers.add(adminUser);
+        }
+
+        return reportsUsers;
+    }
+
     private ReportsSettings defaultSettings()
     {
         ReportsSettings settings = new ReportsSettings();
-        settings.setVersion( 3 );
+        settings.setVersion( 4 );
         settings.setAlertRules( defaultAlertRules() );
         settings.setEmailTemplates( defaultEmailTemplates() );
+        settings.setReportsUsers( defaultReportsUsers( null ) );
+
+        if ( "sqlite".equals( ReportsApp.dbDriver ) ) {
+            settings.setDbRetention( 1 );
+        } else {
+            settings.setDbRetention( 7 );
+        }
+
         return settings;
     }
     
+    private String determineDbDriver()
+    {
+        try {
+            File keyFile = new File(REPORTS_DB_DRIVER_FILE);
+            if (keyFile.exists()) {
+                BufferedReader reader = new BufferedReader(new FileReader(keyFile));
+                String value = reader.readLine();
+
+                switch( value ) {
+                case "sqlite":
+                    break;
+                case "postgresql":
+                    break;
+                default:
+                    logger.warn("Unknown database driver: " + value);
+                    logger.warn("Using postgresql driver...");
+                    value = "postgresql";
+                }
+
+                ReportsApp.dbDriver = value;
+                return ReportsApp.dbDriver;
+            }
+        } catch (IOException x) {
+            logger.error("Unable to read DB driver", x);
+        }
+        return ReportsApp.dbDriver;
+    }
+
     private void writeCronFile()
     {
         // write the cron file for nightly runs
         // FIXME we should not write to log file directly - we should use logger/syslog
         String cronStr = "#!/bin/sh" + "\n" +
             REPORTS_GENERATE_TABLES_SCRIPT + " >> /var/log/uvm/reports.log 2>&1" + "\n" +
-            REPORTS_CLEAN_TABLES_SCRIPT + " " + settings.getDbRetention() + " >> /var/log/uvm/reports.log 2>&1" + "\n" +
+            REPORTS_CLEAN_TABLES_SCRIPT + " -d " + ReportsApp.dbDriver + " " + settings.getDbRetention() + " >> /var/log/uvm/reports.log 2>&1" + "\n" +
             REPORTS_VACUUM_TABLES_SCRIPT + " >> /var/log/uvm/reports.log 2>&1" + "\n" + 
             REPORTS_GENERATE_FIXED_REPORTS_SCRIPT + " >> /var/log/uvm/reports.log 2>&1" + "\n";
 
@@ -735,12 +925,18 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         setSettings( settings );
     }
 
-    private void conversion_12_2_1()
+    private void conversion_12_2_0()
     {
         settings.setVersion( 4 );
 
         try {
             settings.setEmailTemplates( defaultEmailTemplates() );
+        } catch (Exception e) {
+            logger.warn("Conversion Exception",e);
+        }
+
+        try {
+            settings.setReportsUsers( defaultReportsUsers(settings.getReportsUsers()) );
         } catch (Exception e) {
             logger.warn("Conversion Exception",e);
         }

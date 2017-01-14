@@ -51,11 +51,22 @@ SESSION_TIMEOUT = 1800
 def headerparserhandler(req):
     options = req.get_options()
 
+    realm = None
     if options.has_key('Realm'):
         realm = options['Realm']
     else:
         apache.log_error('no realm specified')
         return apache.DECLINED
+
+    # if the token is in the URL, extract it and send it to the login page
+    token = None
+    if req.args != None:
+        try:
+            dict = util.FieldStorage(req)
+            if dict.has_key('token'):
+                token = dict['token']
+        except:
+            pass
 
     sess = Session.Session(req, lock=0)
     sess.set_timeout(SESSION_TIMEOUT)
@@ -100,7 +111,7 @@ def headerparserhandler(req):
                     return apache.HTTP_FORBIDDEN
 
         apache.log_error('Auth failure [Username not specified]. Redirecting to auth page. (realm: %s)' % realm)
-        login_redirect(req, realm)
+        login_redirect(req, realm, token)
 
 def session_user(sess, realm):
     if sess.has_key('apache_realms') and sess['apache_realms'].has_key(realm):
@@ -199,7 +210,7 @@ def get_uvmlogin_uids():
     return s
 
 
-def login_redirect(req, realm):
+def login_redirect(req, realm, token=None):
     url = urllib.quote(req.unparsed_uri)
 
     if realm == "SetupWizard":
@@ -207,7 +218,10 @@ def login_redirect(req, realm):
 
     realm_str = urllib.quote(realm)
 
-    redirect_url = '/auth/login?url=%s&realm=%s' % (url, realm_str)
+    if token != None:
+        redirect_url = '/auth/login?url=%s&realm=%s&token=%s' % (url, realm_str, token)
+    else:
+        redirect_url = '/auth/login?url=%s&realm=%s' % (url, realm_str)
     util.redirect(req, redirect_url)
 
 def delete_session_user(sess, realm):

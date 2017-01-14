@@ -8,6 +8,7 @@ import copy
 import smtplib
 import re
 import ipaddr
+import inspect
 from datetime import datetime
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException
@@ -17,6 +18,8 @@ import remote_control
 import test_registry
 import global_functions
 from global_functions import uvmContext
+
+prefix = "@PREFIX@"
 
 defaultRackId = 1
 node = None
@@ -29,7 +32,6 @@ testEmailAddress = ""
 orig_settings = None
 orig_netsettings = None
 orig_mailsettings = None
-
 # pdb.set_trace()
 
 def sendTestmessage(smtpHost=global_functions.listFakeSmtpServerHosts[0]):
@@ -44,15 +46,14 @@ def sendTestmessage(smtpHost=global_functions.listFakeSmtpServerHosts[0]):
     This is a test e-mail message.
     """
     remote_control.runCommand("sudo python fakemail.py --host=" + smtpHost +" --log=/tmp/report_test.log --port 25 --background --path=/tmp/", host=smtpHost, stdout=False, nowait=True)
-    time.sleep(5) # its run in the background so wait for it to start
+    time.sleep(10) # its run in the background so wait for it to start
     
     try:
        smtpObj = smtplib.SMTP(smtpHost)
        smtpObj.sendmail(sender, receivers, message)
-       # print "Successfully sent email"
        relaySuccess = True
-    except smtplib.SMTPException, e:
-       # print "Error: unable to send email" + str(e)
+    # except smtplib.SMTPException, e:
+    except Exception, e:
        relaySuccess =  False
        
     remote_control.runCommand("sudo pkill -INT python",host=smtpHost)
@@ -84,10 +85,9 @@ def createFakeEmailEnvironment(emailLogFile="report_test.log"):
     remote_control.runCommand("sudo rm /tmp/" + testEmailAddress + "*", host=fakeSmtpServerHost)
     remote_control.runCommand("sudo python fakemail.py --host=" + fakeSmtpServerHost +" --log=/tmp/" + emailLogFile + " --port 25 --background --path=/tmp/", host=fakeSmtpServerHost, stdout=False, nowait=True)
 
-def findEmailContent(searchTerm1,searchTerm2):
+def findEmailContent(searchTerm1,searchTerm2,measureBegin=False,measureEnd=False):
     ifFound = False
     timeout = 30
-    print "Looking at email " + testEmailAddress
     while not ifFound and timeout > 0:
         timeout -= 1
         time.sleep(1)
@@ -99,7 +99,11 @@ def findEmailContent(searchTerm1,searchTerm2):
             subprocess.call(["exim","-qff"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
     grepContext=remote_control.runCommand("grep -i '" + searchTerm1 + "' /tmp/" + testEmailAddress + "*",host=fakeSmtpServerHost, stdout=True)
     grepContext2=remote_control.runCommand("grep -i '" + searchTerm2 + "' /tmp/" + testEmailAddress + "*",host=fakeSmtpServerHost, stdout=True)
-    return(ifFound, grepContext, grepContext2)
+
+    measureLength=0
+    if measureBegin != False and measureEnd != False:
+        measureLength=remote_control.runCommand("sed -n '/" + measureBegin.replace('/', '\/').replace('"', '\\"') + "/,/" + measureEnd.replace('/', '\/').replace('"', '\\"') + "/p' /tmp/" + testEmailAddress + "* | wc -l",host=fakeSmtpServerHost, stdout=True)
+    return(ifFound, grepContext, grepContext2, measureLength)
     
 def createFirewallSingleConditionRule( conditionType, value, blocked=True ):
     conditionTypeStr = str(conditionType)
@@ -124,8 +128,7 @@ def createFirewallSingleConditionRule( conditionType, value, blocked=True ):
             }
         }
 
-def createReportsUser(profile_email=testEmailAddress):
-    print "Email in createReportsUser " + profile_email
+def createReportsUser(profile_email=testEmailAddress, email_template_id=1):
     return  {
             "emailAddress": profile_email,
             "emailSummaries": True,
@@ -133,7 +136,7 @@ def createReportsUser(profile_email=testEmailAddress):
             "emailTemplateIds": {
                 "javaClass": "java.util.LinkedList",
                 "list": [
-                    1
+                    email_template_id
                 ]
             },
             "javaClass": "com.untangle.node.reports.ReportsUser",
@@ -201,6 +204,27 @@ def createAlertRule(description, matcherField, operator, value, matcherField2, o
             "ruleId": 1
         }
 
+def createEmailTemplate(mobile=False):
+    return {
+        "description": "Custom description",
+        "enabledAppIds": {
+            "javaClass": "java.util.LinkedList",
+            "list": []
+        },
+        "enabledConfigIds": {
+            "javaClass": "java.util.LinkedList",
+            "list": [
+                "Administration-VWuRol5uWw"
+            ]
+        },
+        "interval": 86400,
+        "intervalWeekStart": 1,
+        "javaClass": "com.untangle.node.reports.EmailTemplate",
+        "mobile": mobile,
+        "readOnly": False,
+        "templateId": 2,
+        "title": "Custom Report"
+    }
     
 class ReportsTests(unittest2.TestCase):
 
@@ -462,6 +486,7 @@ class ReportsTests(unittest2.TestCase):
 
         fname = sys._getframe().f_code.co_name
         settings = node.getSettings()
+        orig_nodesettings = copy.deepcopy(settings)
         # set email address and alert for downloads
         settings["reportsUsers"]["list"].append(createReportsUser(profile_email=testEmailAddress))
         settings["alertRules"]["list"] = []
@@ -472,15 +497,16 @@ class ReportsTests(unittest2.TestCase):
         result = remote_control.isOnline(tries=5)
 
         # look for alert email
-        emailFound, emailContext, emailContext2 = findEmailContent('alert',fname)
+        emailFound, emailContext, emailContext2, measureLength = findEmailContent('alert',fname)
 
         # Kill the mail sink
         remote_control.runCommand("sudo pkill -INT python",host=fakeSmtpServerHost)
-        
+
         # restore admin settings and network settings
         uvmContext.adminManager().setSettings(orig_adminsettings)
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
-
+        node.setSettings(orig_nodesettings)
+        
         assert(emailFound)
         assert(("Server Alert" in emailContext) and (fname in emailContext2))
 
@@ -490,6 +516,143 @@ class ReportsTests(unittest2.TestCase):
         found = global_functions.check_events( events.get('list'), 5, 'description', fname)
         assert(found)
         
+    def test_100_email_report_admin(self):
+        """
+        The "default" configuration test:
+        - Administrator email account gets
+        """
+        if (not canRelay):
+            raise unittest2.SkipTest('Unable to relay through ' + fakeSmtpServerHost)
+
+        current_method_name = inspect.stack()[0][3]
+
+        # Create settings to receive testEmailAddress 
+        createFakeEmailEnvironment( current_method_name + ".log")
+
+        # add administrator
+        adminsettings = uvmContext.adminManager().getSettings()
+        orig_adminsettings = copy.deepcopy(adminsettings)
+        adminsettings['users']['list'].append(createAdminUser(useremail=testEmailAddress))
+        uvmContext.adminManager().setSettings(adminsettings)
+
+        # Clear all report users
+        settings = node.getSettings()
+        settings["reportsUsers"]["list"] = settings["reportsUsers"]["list"][:1]
+        node.setSettings(settings)
+
+        # trigger alert
+        subprocess.call([prefix+"/usr/share/untangle/bin/reports-generate-fixed-reports.py"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+
+        # look for alert email
+        emailFound, emailContext, emailContext2, measureLength = findEmailContent('Daily Reports','Content-Type: image/png; name=')
+
+        # Kill the mail sink
+        remote_control.runCommand("sudo pkill -INT python",host=fakeSmtpServerHost)
+
+        # restore
+        uvmContext.adminManager().setSettings(orig_adminsettings)
+        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+
+        assert(emailFound)
+        print emailContext
+        print emailContext2
+        assert(('Daily Reports' in emailContext) and ('Content-Type: image/png; name=' in emailContext2))
+
+    def test_101_email_admin_override_custom_report(self):
+        """
+        1. Use reportuser
+        2. Reportuser overrides admin user address.
+        3. Custom repor with test not in default.
+        """
+        if (not canRelay):
+            raise unittest2.SkipTest('Unable to relay through ' + fakeSmtpServerHost)
+
+        current_method_name = inspect.stack()[0][3]
+
+        # Create settings to receive testEmailAddress 
+        createFakeEmailEnvironment( current_method_name + ".log")
+
+        # add administrator
+        adminsettings = uvmContext.adminManager().getSettings()
+        orig_adminsettings = copy.deepcopy(adminsettings)
+        adminsettings['users']['list'].append(createAdminUser(useremail=testEmailAddress))
+        uvmContext.adminManager().setSettings(adminsettings)
+
+        settings = node.getSettings()
+        # Add custom template with a test not in daily reports
+        settings["emailTemplates"]["list"] = settings["emailTemplates"]["list"][:1]
+        settings["emailTemplates"]["list"].append(createEmailTemplate())
+
+        # Add report user with testEmailAddress
+        settings["reportsUsers"]["list"] = settings["reportsUsers"]["list"][:1]
+        settings["reportsUsers"]["list"].append(createReportsUser(profile_email=testEmailAddress, email_template_id=2))
+        node.setSettings(settings)
+
+        # trigger alert
+        subprocess.call([prefix+"/usr/share/untangle/bin/reports-generate-fixed-reports.py"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+
+        # look for alert email
+        ## look for new template name, custom
+        emailFound, emailContext, emailContext2, measureLength = findEmailContent('Custom Report','Administration-VWuRol5uWw')
+
+        # Kill the mail sink
+        remote_control.runCommand("sudo pkill -INT python",host=fakeSmtpServerHost)
+
+        # restore
+        uvmContext.adminManager().setSettings(orig_adminsettings)
+        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+
+        assert(emailFound)
+        assert(('Custom Report' in emailContext) and ('Content-Type: image/png; name=' in emailContext2))
+
+    def test_101_mobile(self):
+        """
+        1. Use reportuser
+        2. Reportuser overrides admin user address.
+        3. Custom repor with test not in default.
+        4
+        """
+        if (not canRelay):
+            raise unittest2.SkipTest('Unable to relay through ' + fakeSmtpServerHost)
+
+        current_method_name = inspect.stack()[0][3]
+
+        # Create settings to receive testEmailAddress 
+        createFakeEmailEnvironment( current_method_name + ".log")
+
+        # add administrator
+        adminsettings = uvmContext.adminManager().getSettings()
+        orig_adminsettings = copy.deepcopy(adminsettings)
+        adminsettings['users']['list'].append(createAdminUser(useremail=testEmailAddress))
+        uvmContext.adminManager().setSettings(adminsettings)
+
+        settings = node.getSettings()
+        # Add custom template with a test not in daily reports
+        settings["emailTemplates"]["list"] = settings["emailTemplates"]["list"][:1]
+        settings["emailTemplates"]["list"].append(createEmailTemplate(mobile=True))
+
+        # Add report user with testEmailAddress
+        settings["reportsUsers"]["list"] = settings["reportsUsers"]["list"][:1]
+        settings["reportsUsers"]["list"].append(createReportsUser(profile_email=testEmailAddress, email_template_id=2))
+        node.setSettings(settings)
+
+        # trigger alert
+        subprocess.call([prefix+"/usr/share/untangle/bin/reports-generate-fixed-reports.py"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+
+        # look for alert email
+        ## look for new template name, custom
+        emailFound, emailContext, emailContext2, measureLength = findEmailContent('Custom Report','Administration-VWuRol5uWw', 'Content-Type: image/png; name="Administration-VWuRol5uWw@untangle.com.png"', '---')
+
+        # Kill the mail sink
+        remote_control.runCommand("sudo pkill -INT python",host=fakeSmtpServerHost)
+
+        # restore
+        uvmContext.adminManager().setSettings(orig_adminsettings)
+        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+
+        assert(emailFound)
+        assert(('Custom Report' in emailContext) and ('Content-Type: image/png; name=' in emailContext2) and (int(measureLength) < 80))
+
     @staticmethod
     def finalTearDown(self):
         global node

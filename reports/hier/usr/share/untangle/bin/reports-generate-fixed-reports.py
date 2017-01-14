@@ -1,4 +1,4 @@
-#!/usr/share/untangle/bin/ut-pycli -f 
+#!@PREFIX@/usr/share/untangle/bin/ut-pycli -f
 
 import sys
 

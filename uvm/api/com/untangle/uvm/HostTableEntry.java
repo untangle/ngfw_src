@@ -5,6 +5,7 @@ package com.untangle.uvm;
 
 import java.io.Serializable;
 import java.net.InetAddress;
+import java.util.Objects;
 
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
@@ -86,16 +87,19 @@ public class HostTableEntry implements Serializable, JSONString
     public InetAddress getAddress() { return this.address; }
     public void setAddress( InetAddress newValue )
     {
+        if ( Objects.equals( newValue, this.address ) )
+            return;
+        updateEvent( "address", (this.address!=null?this.address.getHostAddress():"null"), (newValue!=null?newValue.getHostAddress():"null") );
         this.address = newValue;
-        if ( newValue != null )
-            updateEvent( "address", null, newValue.getHostAddress() );
         updateAccessTime();
     }
 
     public String getMacAddress() { return this.macAddress; }
     public void setMacAddress( String newValue )
     {
-        updateEvent("macAddress",this.macAddress,newValue);
+        if ( Objects.equals( newValue, this.macAddress ) )
+            return;
+        updateEvent( "macAddress", this.macAddress, newValue );
         this.macAddress = newValue;
         updateAccessTime();
     }
@@ -103,7 +107,9 @@ public class HostTableEntry implements Serializable, JSONString
     public String getMacVendor() { return this.macVendor; }
     public void setMacVendor( String newValue )
     {
-        updateEvent("macVendor",this.macVendor,newValue);
+        if ( Objects.equals( newValue, this.macVendor ) )
+            return;
+        updateEvent( "macVendor", this.macVendor, newValue);
         this.macVendor = newValue;
         updateAccessTime();
     }
@@ -111,7 +117,9 @@ public class HostTableEntry implements Serializable, JSONString
     public int getInterfaceId() { return this.interfaceId; }
     public void setInterfaceId( int newValue )
     {
-        updateEvent("interfaceId",(new Integer(this.interfaceId)).toString(),new Integer(newValue).toString());
+        if ( newValue == this.interfaceId )
+            return;
+        updateEvent( "interfaceId", (new Integer(this.interfaceId)).toString(), new Integer(newValue).toString() );
         this.interfaceId = newValue;
         updateAccessTime();
     }
@@ -119,7 +127,9 @@ public class HostTableEntry implements Serializable, JSONString
     public long getCreationTime() { return this.creationTime; }
     public void setCreationTime( long newValue )
     {
-        updateEvent("creationTime",String.valueOf(this.creationTime),String.valueOf(newValue));
+        if ( newValue == this.creationTime )
+            return;
+        updateEvent( "creationTime", String.valueOf(this.creationTime), String.valueOf(newValue) );
         this.creationTime = newValue;
         updateAccessTime();
     }
@@ -127,6 +137,9 @@ public class HostTableEntry implements Serializable, JSONString
     public long getLastAccessTime() { return this.lastAccessTime; }
     public void setLastAccessTime( long newValue )
     {
+        if ( newValue == this.lastAccessTime )
+            return;
+        //updateEvent( "lastAccessTime", String.valueOf(this.lastAccessTime), String.valueOf(newValue) );
         this.lastAccessTime = newValue;
         updateAccessTime();
     }
@@ -134,6 +147,9 @@ public class HostTableEntry implements Serializable, JSONString
     public long getLastSessionTime() { return this.lastSessionTime; }
     public void setLastSessionTime( long newValue )
     {
+        if ( newValue == this.lastSessionTime )
+            return;
+        //updateEvent( "lastSessionTime", String.valueOf(this.lastSessionTime), String.valueOf(newValue) );
         this.lastSessionTime = newValue;
         updateAccessTime();
     }
@@ -141,6 +157,9 @@ public class HostTableEntry implements Serializable, JSONString
     public long getLastCompletedTcpSessionTime() { return this.lastCompletedTcpSessionTime; }
     public void setLastCompletedTcpSessionTime( long newValue )
     {
+        if ( newValue == this.lastCompletedTcpSessionTime )
+            return;
+        //updateEvent( "lastCompletedTcpSessionTime", String.valueOf(this.lastCompletedTcpSessionTime), String.valueOf(newValue) );
         this.lastCompletedTcpSessionTime = newValue;
         updateAccessTime();
     }
@@ -148,6 +167,9 @@ public class HostTableEntry implements Serializable, JSONString
     public boolean getEntitled() { return this.entitled; }
     public void setEntitled( boolean newValue )
     {
+        if ( newValue == this.entitled )
+            return;
+        updateEvent( "entitled", this.hostname, (newValue ? "true" : "false") );
         this.entitled = newValue;
         updateAccessTime();
     }
@@ -155,7 +177,9 @@ public class HostTableEntry implements Serializable, JSONString
     public String getHostname() { return this.hostname; }
     public void setHostname( String newValue )
     {
-        updateEvent("hostname",this.hostname,newValue);
+        if ( Objects.equals( newValue, this.hostname ) )
+            return;
+        updateEvent( "hostname", this.hostname, newValue );
         this.hostname = newValue;
         updateAccessTime();
     }
@@ -164,7 +188,10 @@ public class HostTableEntry implements Serializable, JSONString
     public void setUsernameAdConnector( String newValue )
     {
         newValue = (newValue == null ? null : newValue.toLowerCase());
-        updateEvent("usernameAdConnector",this.usernameAdConnector,newValue);
+
+        if ( Objects.equals( newValue, this.usernameAdConnector ) )
+            return;
+        updateEvent( "usernameAdConnector", this.usernameAdConnector, newValue );
         this.usernameAdConnector = newValue;
         updateAccessTime();
     }
@@ -173,7 +200,10 @@ public class HostTableEntry implements Serializable, JSONString
     public void setUsernameCapture( String newValue )
     {
         newValue = (newValue == null ? null : newValue.toLowerCase());
-        updateEvent("usernameCapture",this.usernameCapture,newValue);
+
+        if ( Objects.equals( newValue, this.usernameCapture ) )
+            return;
+        updateEvent( "usernameCapture", this.usernameCapture, newValue );
         this.usernameCapture = newValue;
         updateAccessTime();
     }
@@ -182,7 +212,10 @@ public class HostTableEntry implements Serializable, JSONString
     public void setUsernameDevice( String newValue )
     {
         newValue = (newValue == null ? null : newValue.toLowerCase());
-        updateEvent("usernameDevice",this.usernameDevice,newValue);
+
+        if ( Objects.equals( newValue, this.usernameDevice ) )
+            return;
+        updateEvent( "usernameDevice", this.usernameDevice, newValue);
         this.usernameDevice = newValue;
         updateAccessTime();
     }
@@ -190,7 +223,9 @@ public class HostTableEntry implements Serializable, JSONString
     public boolean getCaptivePortalAuthenticated() { return this.captivePortalAuthenticated; }
     public void setCaptivePortalAuthenticated( boolean newValue )
     {
-        updateEvent("captivePortalAuthenticated",String.valueOf(this.captivePortalAuthenticated),String.valueOf(newValue));
+        if ( newValue == this.captivePortalAuthenticated )
+            return;
+        updateEvent( "captivePortalAuthenticated", String.valueOf(this.captivePortalAuthenticated), String.valueOf(newValue) );
         this.captivePortalAuthenticated = newValue;
         updateAccessTime();
     }
@@ -199,7 +234,10 @@ public class HostTableEntry implements Serializable, JSONString
     public void setUsernameTunnel( String newValue )
     {
         newValue = (newValue == null ? null : newValue.toLowerCase());
-        updateEvent("usernameTunnel",this.usernameTunnel,newValue);
+
+        if ( Objects.equals( newValue, this.usernameTunnel ) )
+            return;
+        updateEvent( "usernameTunnel", this.usernameTunnel, newValue );
         this.usernameTunnel = newValue;
         updateAccessTime();
     }
@@ -208,7 +246,10 @@ public class HostTableEntry implements Serializable, JSONString
     public void setUsernameOpenvpn( String newValue )
     {
         newValue = (newValue == null ? null : newValue.toLowerCase());
-        updateEvent("usernameOpenvpn",this.usernameOpenvpn,newValue);
+
+        if ( Objects.equals( newValue, this.usernameOpenvpn ) )
+            return;
+        updateEvent( "usernameOpenvpn", this.usernameOpenvpn, newValue );
         this.usernameOpenvpn = newValue;
         updateAccessTime();
     }
@@ -216,7 +257,9 @@ public class HostTableEntry implements Serializable, JSONString
     public boolean getPenaltyBoxed() { return this.penaltyBoxed; }
     public void setPenaltyBoxed( boolean newValue )
     {
-        updateEvent("penaltyBoxed",String.valueOf(this.penaltyBoxed),String.valueOf(newValue));
+        if ( newValue == this.penaltyBoxed )
+            return;
+        updateEvent( "penaltyBoxed", String.valueOf(this.penaltyBoxed), String.valueOf(newValue) );
         this.penaltyBoxed = newValue;
         updateAccessTime();
     }
@@ -224,7 +267,9 @@ public class HostTableEntry implements Serializable, JSONString
     public long getPenaltyBoxExitTime() { return this.penaltyBoxExitTime; }
     public void setPenaltyBoxExitTime( long newValue )
     {
-        updateEvent("penaltyBoxExitTime",String.valueOf(this.penaltyBoxExitTime),String.valueOf(newValue));
+        if ( newValue == this.penaltyBoxExitTime )
+            return;
+        updateEvent( "penaltyBoxExitTime", String.valueOf(this.penaltyBoxExitTime), String.valueOf(newValue) );
         this.penaltyBoxExitTime = newValue;
         updateAccessTime();
     }
@@ -232,7 +277,9 @@ public class HostTableEntry implements Serializable, JSONString
     public long getPenaltyBoxEntryTime() { return this.penaltyBoxEntryTime; }
     public void setPenaltyBoxEntryTime( long newValue )
     {
-        updateEvent("penaltyBoxEntryTime",String.valueOf(this.penaltyBoxEntryTime),String.valueOf(newValue));
+        if ( newValue == this.penaltyBoxEntryTime )
+            return;
+        updateEvent( "penaltyBoxEntryTime", String.valueOf(this.penaltyBoxEntryTime), String.valueOf(newValue) );
         this.penaltyBoxEntryTime = newValue;
         updateAccessTime();
     }
@@ -240,7 +287,9 @@ public class HostTableEntry implements Serializable, JSONString
     public long getQuotaSize() { return this.quotaSize; }
     public void setQuotaSize( long newValue )
     {
-        updateEvent("quotaSize",String.valueOf(this.quotaSize),String.valueOf(newValue));
+        if ( newValue == this.quotaSize )
+            return;
+        updateEvent( "quotaSize", String.valueOf(this.quotaSize), String.valueOf(newValue) );
         this.quotaSize = newValue;
         updateAccessTime();
     }
@@ -248,6 +297,9 @@ public class HostTableEntry implements Serializable, JSONString
     public long getQuotaRemaining() { return this.quotaRemaining; }
     public void setQuotaRemaining( long newValue )
     {
+        if ( newValue == this.quotaRemaining )
+            return;
+        //updateEvent( "quotaRemaining", String.valueOf(this.quotaRemaining), String.valueOf(newValue) );
         this.quotaRemaining = newValue;
         updateAccessTime();
     }
@@ -255,7 +307,9 @@ public class HostTableEntry implements Serializable, JSONString
     public long getQuotaIssueTime() { return this.quotaIssueTime; }
     public void setQuotaIssueTime( long newValue )
     {
-        updateEvent("quotaIssueTime",String.valueOf(this.quotaIssueTime),String.valueOf(newValue));
+        if ( newValue == this.quotaIssueTime )
+            return;
+        updateEvent( "quotaIssueTime", String.valueOf(this.quotaIssueTime), String.valueOf(newValue) );
         this.quotaIssueTime = newValue;
         updateAccessTime();
     }
@@ -263,7 +317,9 @@ public class HostTableEntry implements Serializable, JSONString
     public long getQuotaExpirationTime() { return this.quotaExpirationTime; }
     public void setQuotaExpirationTime( long newValue )
     {
-        updateEvent("quotaExpirationTime",String.valueOf(this.quotaExpirationTime),String.valueOf(newValue));
+        if ( newValue == this.quotaExpirationTime )
+            return;
+        updateEvent( "quotaExpirationTime", String.valueOf(this.quotaExpirationTime), String.valueOf(newValue) );
         this.quotaExpirationTime = newValue;
         updateAccessTime();
     }
@@ -271,11 +327,17 @@ public class HostTableEntry implements Serializable, JSONString
     public String getHttpUserAgent() { return this.httpUserAgent; }
     public void setHttpUserAgent( String newValue )
     {
-        updateEvent("httpUserAgent",String.valueOf(this.httpUserAgent),String.valueOf(newValue));
+        if ( Objects.equals( newValue, this.httpUserAgent ) )
+            return;
+        updateEvent( "httpUserAgent", String.valueOf(this.httpUserAgent), String.valueOf(newValue) );
         this.httpUserAgent = newValue;
         updateAccessTime();
     }
 
+    /**
+     * Get the "best" username of all known sources
+     * Precedence defined below
+     */
     public String getUsername()
     {
         if (getUsernameCapture() != null)
@@ -291,6 +353,9 @@ public class HostTableEntry implements Serializable, JSONString
         return null;
     }
 
+    /**
+     * Get the source of the "best" username
+     */
     public String getUsernameSource()
     {
         if (getUsernameCapture() != null)
@@ -354,14 +419,12 @@ public class HostTableEntry implements Serializable, JSONString
 
     private void updateEvent( String key, String oldValue, String newValue )
     {
-        if ( this.address == null )
+        if ( this.address == null ) {
+            //logger.warn("updateEvent with null address: " + oldValue + " -> " + newValue );
             return;
-        if ( oldValue == null && newValue == null ) //no change
-            return;
+        }
         if ( newValue == null ) 
             newValue = "null";
-        if ( newValue.equals(oldValue) ) // no change
-            return;
 
         HostTableEvent event = new HostTableEvent( this.address, key, newValue );
         UvmContextFactory.context().logEvent(event);

@@ -21,12 +21,13 @@ Ext.define('Webui.untangle-node-reports.settings', {
             ["EVENT_LIST", i18n._("Event List")]
     ]),
     emailChartTypes: ["TEXT", "PIE_GRAPH", "TIME_GRAPH", "TIME_GRAPH_DYNAMIC"],
-    // Look at retention days: this.getSettings().dbRetention
+    emailRecommendedReportIds: [],
     emailIntervals: [
         [86400, i18n._("Daily")],
         [604800, i18n._("Weekly")],
         [2419200, i18n._("Monthly")]
     ],
+    fixedReportsAllowGraphs: true,
     getAppSummary: function() {
         return i18n._("Reports records network events to provide administrators the visibility and data necessary to investigate network activity.");
     },
@@ -50,9 +51,10 @@ Ext.define('Webui.untangle-node-reports.settings', {
     listeners: {
         beforeshow: function () {
             this.buildAvailableAppCategories();
+            this.buildFixedReportsAllowGraphs();
+            this.buildRecommendedReportIds();
         }
     },
-
 
     /*
      * From array of report identifiers, return comma separated string of report titles.
@@ -67,17 +69,11 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 if(value.list[i] == entry.uniqueId){
                     reportNames.push(entry.title);
                 }else if(
-                    (value.list.indexOf("_all") > -1) &&
+                    (value.list.indexOf("_recommended") > -1) &&
                     (allAdded == false)){
-                    /* Special case: _all */
-                    reportNames.push(i18n._("All reports"));
+                    /* Special case: _recommended */
+                    reportNames.push(i18n._("Recommended"));
                     allAdded = true;
-                }else if(
-                    (value.list.indexOf("_type=" + entry.type) > -1) &&
-                    (typeAdded.indexOf(entry.type) == -1)){
-                    /* Matching type */
-                    reportNames.push(i18n._("Type") + ":" + this.chartTypeMap[entry.type]);
-                    typeAdded.push(entry.type);
                 }
             }
         }
@@ -133,6 +129,22 @@ Ext.define('Webui.untangle-node-reports.settings', {
             }}
         ];
     },
+    buildFixedReportsAllowGraphs: function(){
+        rpc.reportsManager.fixedReportsAllowGraphs(Ext.bind(function (result, exception) {
+            if (Ung.Util.handleException(exception)) {
+                return;
+            }
+            this.fixedReportsAllowGraphs = result;
+        }, this));
+    },
+    buildRecommendedReportIds: function(){
+        rpc.reportsManager.getRecommendedReportIds(Ext.bind(function (result, exception) {
+            if (Ung.Util.handleException(exception)) {
+                return;
+            }
+            this.emailRecommendedReportIds = result.list;
+        }, this));
+    },
     buildPasswordValidator: function() {
         this.passwordValidator = function( fieldValue ){
             // Get field container
@@ -153,11 +165,6 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 pwd.markInvalid();
                 confirmPwd.markInvalid();
                 return i18n._('Passwords do not match');
-            }
-            // validate password not empty if onlineAccess checked
-            var onlineAccess=Ext.getCmp("add_reports_online_reports_" + suffix );
-            if(onlineAccess.getValue() &&  pwd.getValue().length==0) {
-                return i18n._("A password must be set to enable Online Access!");
             }
             pwd.clearInvalid();
             confirmPwd.clearInvalid();
@@ -192,10 +199,11 @@ Ext.define('Webui.untangle-node-reports.settings', {
     buildUsers: function() {
         var fieldID = "" + Math.round( Math.random() * 1000000 );
 
-        var emailTime=new Date();
-        emailTime.setTime(0);
-        emailTime.setHours(this.getSettings().generationHour);
-        emailTime.setMinutes(this.getSettings().generationMinute);
+        //for(var i = 0; i < this.getSettings().reportsUsers.list.length; i++){
+        //    if(this.getSettings().reportsUsers.list[i].emailAddress == "admin"){
+        //        this.getSettings().reportsUsers.list[i].readOnly = true;
+        //    }
+        //}
 
         // Change the password for a user.
         var changePasswordColumn = Ext.create('Ung.grid.EditColumn',{
@@ -228,6 +236,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
                     title: i18n._("Reports Users"),
                     height: 350,
                     hasEdit: true,
+                    hasReadOnly: true,
                     settingsCmp: this,
                     plugins:[changePasswordColumn],
                     dataProperty: 'reportsUsers',
@@ -238,7 +247,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
                         emailSummaries: true,
                         emailTemplateIds : {
                             javaClass: "java.util.LinkedList",
-                            list: []
+                            list: [1]
                         },
                         onlineAccess: false,
                         password: null,
@@ -252,7 +261,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
                     },{
                         name: "emailSummaries"
                     },{
-                        name: "emailTemplateIds",
+                        name: "emailTemplateIds"
                     },{
                         name: "onlineAccess"
                     },{
@@ -266,7 +275,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
                         width: 200,
                         editor: {
                             xtype:'textfield',
-                            vtype: 'email',
+                            //vtype: 'email', // disabled because we allow "admin"
                             emptyText: i18n._("[enter email address]"),
                             allowBlank: false,
                             blankText: i18n._("The email address cannot be blank.")
@@ -352,7 +361,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 xtype:'textfield',
                 dataIndex: "emailAddress",
                 fieldLabel: i18n._("Email Address (username)"),
-                vtype: 'email',
+                //vtype: 'email', // disabled because we allow "admin"
                 emptyText: i18n._("[enter email address]"),
                 allowBlank: false,
                 blankText: i18n._("The email address name cannot be blank."),
@@ -387,42 +396,6 @@ Ext.define('Webui.untangle-node-reports.settings', {
                     });
                     return values;
                 }
-            },{
-                xtype:'checkbox',
-                dataIndex: "onlineAccess",
-                id: "add_reports_online_reports_" + fieldID,
-                fieldLabel: i18n._("Online Access"),
-                width: 300
-            },{
-                xtype: 'container',
-                layout: 'column',
-                margin: '0 0 5 0',
-                items: [{
-                    xtype:'textfield',
-                    inputType: "password",
-                    name: "Password",
-                    dataIndex: "password",
-                    id: "add_reports_user_password_" + fieldID,
-                    msgTarget: "title",
-                    fieldLabel: i18n._("Password"),
-                    width: 300,
-                    minLength: 3,
-                    minLengthText: Ext.String.format(i18n._("The password is shorter than the minimum {0} characters."), 3),
-                    validator: this.passwordValidator
-                },{
-                    xtype: 'label',
-                    html: i18n._("(required for Online Access)"),
-                    cls: 'boxlabel'
-                }]
-            }, {
-                xtype:'textfield',
-                inputType: "password",
-                name: "Confirm Password",
-                dataIndex: "password",
-                id: "add_reports_confirm_password_" + fieldID,
-                fieldLabel: i18n._("Confirm Password"),
-                width: 300,
-                validator: this.passwordValidator
             }],
             syncComponents: function () {
                 /* Rebuild email template checkbox group with available template */
@@ -435,7 +408,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
                     var template = settings["emailTemplates"].list[i];
                     var templateChecked = (userEmailTemplates.list.indexOf(template.templateId) > -1) ? true : false;
                     items.add(new Ext.form.Checkbox({
-                        boxLabel: template.title + " (" + template.description + ")",
+                        boxLabel: template.title + ( (template.description != "") ? " (" + template.description + ")" : ""),
                         name: "list",
                         inputValue: template.templateId,
                         checked: templateChecked
@@ -1227,7 +1200,10 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 for(var i = 0; i < settings["reportEntries"].list.length; i++){
                     var entry = settings["reportEntries"].list[i];
 
-
+                    if(this.settingsCmp.fixedReportsAllowGraphs == false &&
+                        entry.type.indexOf("_GRAPH") != -1){
+                        continue;
+                    }
                     if((categories.indexOf(entry.category) != -1) &&
                         (this.settingsCmp.emailChartTypes.indexOf(entry.type) != -1)){
 
@@ -1236,11 +1212,9 @@ Ext.define('Webui.untangle-node-reports.settings', {
                             if(enabledIds.list.indexOf(entry.uniqueId) > -1){
                                 /* Standard checkbox */
                                 enabled = true;
-                            }else if(enabledIds.list.indexOf("_all") > -1){
-                                /* Special case: _all */
-                                enabled = true;
-                            }else if(enabledIds.list.indexOf("_type=" + entry.type) > -1){
-                                /* Matching type*/
+                            }else if(enabledIds.list.indexOf("_recommended") > -1 &&
+                                this.settingsCmp.emailRecommendedReportIds.indexOf(entry.uniqueId) > -1 ){
+                                /* Special case: _recommended */
                                 enabled = true;
                             }
                         }
@@ -1312,6 +1286,13 @@ Ext.define('Webui.untangle-node-reports.settings', {
         });
     },
     buildEmailTemplates: function() {
+        var emailIntervals = [];
+        for(var i = 0; i < this.emailIntervals.length; i++){
+            if(this.emailIntervals[i][0] <= (this.getSettings().dbRetention * 86400)){
+                emailIntervals.push(this.emailIntervals[i]);
+            }
+        }
+
         this.panelEmailTemplates = Ext.create('Ext.panel.Panel',{
             name: 'emailTemplates',
             helpSource: 'reports_email_templates',
@@ -1328,7 +1309,8 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 name: 'Email Templates',
                 settingsCmp: this,
                 hasCopy: true,
-                copyField: 'title',
+                copyNameField: 'title',
+                copyIdField: 'templateId',
                 addAtTop: false,
                 title: i18n._("Email Templates"),
                 hasReadOnly: true,
@@ -1338,6 +1320,8 @@ Ext.define('Webui.untangle-node-reports.settings', {
                     "templateId": -1,
                     "title": "",
                     "description": "",
+                    "interval": 86400,
+                    "intervalWeekStart": 1,
                     "readOnly": false,
                     "enabledConfigIds" : {
                         "javaClass": "java.util.LinkedList",
@@ -1357,6 +1341,8 @@ Ext.define('Webui.untangle-node-reports.settings', {
                     name: 'description'
                 }, {
                     name: 'interval'
+                }, {
+                    name: 'intervalWeekStart'
                 }, {
                     name: 'mobile'
                 }, {
@@ -1468,13 +1454,34 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 emptyText: i18n._("[no description]"),
                 width: 500
             },{
-                xtype: 'combo',
-                name: 'Interval',
-                editable: false,
-                fieldLabel: i18n._("Interval"),
-                queryMode: 'local',
-                store: this.emailIntervals,
-                dataIndex: 'interval'
+                xtype: 'container',
+                layout: 'hbox',
+                items: [{
+                    xtype: 'combo',
+                    name: 'Interval',
+                    editable: false,
+                    fieldLabel: i18n._("Interval"),
+                    queryMode: 'local',
+                    store: emailIntervals,
+                    dataIndex: 'interval',
+                    listeners: {
+                        "change": {
+                            fn: Ext.bind( function(combo, newValue){
+                                combo.up("[name=edit]").down("[name=IntervalWeekStart]").setVisible(newValue ==604800);
+                            }, this)
+                        },
+                    }
+                },{
+                    xtype: 'combo',
+                    name: 'IntervalWeekStart',
+                    editable: false,
+                    fieldLabel: i18n._("Start of week"),
+                    queryMode: 'local',
+                    store: Ung.Util.getDayOfWeekList(),
+                    dataIndex: 'intervalWeekStart',
+                    margin: '0 0 0 10',
+                    hidden: true
+                }]
             },{
                 xtype: 'checkbox',
                 name: 'Mobile',
@@ -1495,6 +1502,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
             syncComponents: function () {
                 this.down("[dataIndex=enabledConfigIds]").clearDirty();
                 this.down("[dataIndex=enabledAppIds]").clearDirty();
+                this.down("[name=IntervalWeekStart]").setVisible(this.down("[name=Interval]").getValue() == 604800);
             },
         }));
     },

@@ -95,7 +95,9 @@ public abstract class DecisionEngine
                                          * for the flag/block
                                          */
         GenericRule bestCategory = null;
+        String bestCategoryStr = null;
         String requestMethod = null;
+        String catStr = null;
         URI uri = null;
 
         try {
@@ -147,6 +149,7 @@ public abstract class DecisionEngine
 
         // start by getting the category for the request and attach to session
         bestCategory = checkCategory(sess, clientIp, host, port, requestLine);
+        if (bestCategory != null) bestCategoryStr = bestCategory.getName();
 
         // tag the session with the metadata
         if (sess != null) {
@@ -160,9 +163,10 @@ public abstract class DecisionEngine
         // check client IP pass list
         // If a client is on the pass list is is passed regardless of any other settings
         GenericRule rule = UrlMatchingUtil.checkClientList(clientIp, node.getSettings().getPassedClients());
-        String description = (rule != null) ? rule.getDescription() : null;
-        if (null != description) {
-            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.FALSE, Boolean.FALSE, Reason.PASS_CLIENT, description, node.getName());
+        if (rule != null) {
+            catStr = (bestCategoryStr == null ? rule.getDescription() : bestCategoryStr);
+            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.FALSE, Boolean.FALSE, Reason.PASS_CLIENT, catStr, node.getName());
+            logger.debug("LOG: in client pass list: " + requestLine.getRequestLine());
             node.logEvent(hbe);
             return null;
         }
@@ -170,10 +174,10 @@ public abstract class DecisionEngine
         // check server IP pass list
         // If a site/URL is on the pass list is is passed regardless of any other settings
         rule = UrlMatchingUtil.checkSiteList(host, uri.toString(), node.getSettings().getPassedUrls());
-        description = (rule != null) ? rule.getDescription() : null;
-        if (description != null) {
-            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.FALSE, Boolean.FALSE, Reason.PASS_URL, description, node.getName());
-            logger.debug("LOG: in pass list: " + requestLine.getRequestLine());
+        if (rule != null) {
+            catStr = (bestCategoryStr == null ? rule.getDescription() : bestCategoryStr);
+            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.FALSE, Boolean.FALSE, Reason.PASS_URL, catStr, node.getName());
+            logger.debug("LOG: in site pass list: " + requestLine.getRequestLine());
             node.logEvent(hbe);
             return null;
         }
@@ -198,9 +202,9 @@ public abstract class DecisionEngine
                 refererHost = UrlMatchingUtil.normalizeHostname(refererHost);
 
                 rule = UrlMatchingUtil.checkSiteList(refererHost, refererUri.getPath().toString(), node.getSettings().getPassedUrls());
-                description = (rule != null) ? rule.getDescription() : null;
-                if (description != null) {
-                    WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.FALSE, Boolean.FALSE, Reason.PASS_REFERER_URL, description, node.getName());
+                if (rule != null) {
+                    catStr = (bestCategoryStr == null ? rule.getDescription() : bestCategoryStr);
+                    WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.FALSE, Boolean.FALSE, Reason.PASS_REFERER_URL, catStr, node.getName());
                     logger.debug("LOG: Referer in pass list: " + requestLine.getRequestLine());
                     node.logEvent(hbe);
                     return null;
@@ -213,14 +217,12 @@ public abstract class DecisionEngine
         // check unblocks
         // if a site/URL is unblocked already for this specific IP it is passed regardless of any other settings
         if (checkUnblockedSites(host, uri, clientIp)) {
-            String bestCategoryStr = null;
-            if (bestCategory != null) bestCategoryStr = bestCategory.getName();
-            if (bestCategoryStr == null) {
+            catStr = bestCategoryStr;
+            if (catStr == null) {
                 updateI18nMap();
-                bestCategoryStr = I18nUtil.tr("Unblocked", i18nMap);
+                catStr = I18nUtil.tr("Unblocked", i18nMap);
             }
-
-            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.FALSE, Boolean.FALSE, Reason.PASS_UNBLOCK, bestCategoryStr, node.getName());
+            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.FALSE, Boolean.FALSE, Reason.PASS_UNBLOCK, catStr, node.getName());
             logger.debug("LOG: in unblock list: " + requestLine.getRequestLine());
             node.logEvent(hbe);
             return null;
@@ -230,7 +232,8 @@ public abstract class DecisionEngine
         if (port == 80 && node.getSettings().getBlockAllIpHosts()) {
             if (host == null || IP_PATTERN.matcher(host).matches()) {
                 updateI18nMap();
-                WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.TRUE, Boolean.TRUE, Reason.BLOCK_IP_HOST, host, node.getName());
+                catStr = (bestCategoryStr == null ? host : bestCategoryStr);
+                WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.TRUE, Boolean.TRUE, Reason.BLOCK_IP_HOST, catStr, node.getName());
                 logger.debug("LOG: block all IPs: " + requestLine.getRequestLine());
                 node.logEvent(hbe);
 
@@ -240,7 +243,7 @@ public abstract class DecisionEngine
         }
 
         // Check Block lists
-        GenericRule urlRule = checkUrlList(host, uri.toString(), requestLine);
+        GenericRule urlRule = checkUrlList(sess, host, uri.toString(), requestLine);
         if (urlRule != null) {
             if (urlRule.getBlocked()) {
                 WebFilterBlockDetails bd = new WebFilterBlockDetails(node.getSettings(), host, uri.toString(), urlRule.getDescription(), clientIp, node.getNodeTitle());
@@ -259,12 +262,14 @@ public abstract class DecisionEngine
          * flag rule we log the event and pass or block right here
          */
         if ((filterRule != null) && (filterRule.getBlocked())) {
-            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.TRUE, Boolean.TRUE, Reason.FILTER_RULE, filterRule.getDescription(), node.getName());
+            catStr = (bestCategoryStr == null ? filterRule.getDescription() : bestCategoryStr);
+            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.TRUE, Boolean.TRUE, Reason.FILTER_RULE, catStr, node.getName());
             node.logEvent(hbe);
             WebFilterBlockDetails bd = new WebFilterBlockDetails(node.getSettings(), host, uri.toString(), filterRule.getDescription(), clientIp, node.getNodeTitle());
             return node.generateNonce(bd);
         } else if ((filterRule != null) && (filterRule.getFlagged())) {
-            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.FALSE, Boolean.TRUE, Reason.FILTER_RULE, filterRule.getDescription(), node.getName());
+            catStr = (bestCategoryStr == null ? rule.getDescription() : bestCategoryStr);
+            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.FALSE, Boolean.TRUE, Reason.FILTER_RULE, catStr, node.getName());
             node.logEvent(hbe);
             return null;
         }
@@ -288,7 +293,7 @@ public abstract class DecisionEngine
             /**
              * Always log an event if the site was categorized
              */
-            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), bestCategory.getBlocked(), isFlagged, reason, bestCategory.getName(), node.getName());
+            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), (bestCategory.getBlocked() ? Boolean.TRUE : Boolean.FALSE), (isFlagged ? Boolean.TRUE : Boolean.FALSE), reason, bestCategory.getName(), node.getName());
             node.logEvent(hbe);
 
             /**
@@ -306,7 +311,7 @@ public abstract class DecisionEngine
 
         // No category was found (this should happen rarely as most will return an "Uncategorized" category)
         // Since nothing matched, just log it and return null to allow the visit
-        WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.FALSE, isFlagged, reason, I18nUtil.tr("None", i18nMap), node.getName());
+        WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.FALSE, (isFlagged ? Boolean.TRUE : Boolean.FALSE), reason, I18nUtil.tr("None", i18nMap), node.getName());
         node.logEvent(hbe);
         return null;
     }
@@ -318,6 +323,8 @@ public abstract class DecisionEngine
      */
     public String checkResponse(NodeTCPSession sess, InetAddress clientIp, RequestLineToken requestLine, HeaderToken header)
     {
+        String catStr = null;
+
         if (requestLine == null) {
             return null;
         }
@@ -327,7 +334,13 @@ public abstract class DecisionEngine
         String fileName = HttpEventHandler.findContentDispositionFilename(header);
         if (sess != null) {
             if (contentType != null) sess.globalAttach(NodeSession.KEY_WEB_FILTER_RESPONSE_CONTENT_TYPE, contentType);
-            if (fileName != null) sess.globalAttach(NodeSession.KEY_WEB_FILTER_RESPONSE_FILE_NAME, fileName);
+            if (fileName != null) {
+                sess.globalAttach(NodeSession.KEY_WEB_FILTER_RESPONSE_FILE_NAME, fileName);
+
+                // find the last dot to extract the file extension
+                int loc = fileName.lastIndexOf(".");
+                if (loc != -1) sess.globalAttach(NodeSession.KEY_WEB_FILTER_RESPONSE_FILE_EXTENSION, fileName.substring(loc + 1));
+            }
         }
 
         URI uri = null;
@@ -349,13 +362,19 @@ public abstract class DecisionEngine
         // not in any of the block or pass lists so check the filter rules
         WebFilterRule filterRule = checkFilterRules(sess, "RESPONSE");
 
+        if (sess != null) {
+            catStr = (String) sess.globalAttachment(NodeSession.KEY_WEB_FILTER_BEST_CATEGORY_NAME);
+        }
+
         if ((filterRule != null) && (filterRule.getBlocked())) {
-            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.TRUE, Boolean.TRUE, Reason.FILTER_RULE, filterRule.getDescription(), node.getName());
+            if (catStr == null) catStr = filterRule.getDescription();
+            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.TRUE, Boolean.TRUE, Reason.FILTER_RULE, catStr, node.getName());
             node.logEvent(hbe);
             WebFilterBlockDetails bd = new WebFilterBlockDetails(node.getSettings(), host, uri.toString(), filterRule.getDescription(), clientIp, node.getNodeTitle());
             return node.generateNonce(bd);
         } else if (filterRule != null && (filterRule.getFlagged())) {
-            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.FALSE, Boolean.TRUE, Reason.FILTER_RULE, filterRule.getDescription(), node.getName());
+            if (catStr == null) catStr = filterRule.getDescription();
+            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.FALSE, Boolean.TRUE, Reason.FILTER_RULE, catStr, node.getName());
             node.logEvent(hbe);
         }
 
@@ -460,19 +479,27 @@ public abstract class DecisionEngine
      * Checks the given URL against sites in the block list Returns the given
      * rule if a rule matches, otherwise null
      */
-    private GenericRule checkUrlList(String host, String uri, RequestLineToken requestLine)
+    private GenericRule checkUrlList(NodeTCPSession sess, String host, String uri, RequestLineToken requestLine)
     {
+        String catStr = null;
+
         logger.debug("checkUrlList( " + host + " , " + uri + " ...)");
         GenericRule rule = UrlMatchingUtil.checkSiteList(host, uri, node.getSettings().getBlockedUrls());
 
         if (rule == null) return null;
 
+        if (sess != null) {
+            catStr = (String) sess.globalAttachment(NodeSession.KEY_WEB_FILTER_BEST_CATEGORY_NAME);
+        }
+
+        if (catStr == null) catStr = rule.getDescription();
+
         if (rule.getBlocked()) {
-            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.TRUE, Boolean.TRUE, Reason.BLOCK_URL, rule.getDescription(), node.getName());
+            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.TRUE, Boolean.TRUE, Reason.BLOCK_URL, catStr, node.getName());
             node.logEvent(hbe);
             return rule;
         } else if (rule.getFlagged()) {
-            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.FALSE, Boolean.TRUE, Reason.PASS_URL, rule.getDescription(), node.getName());
+            WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), Boolean.FALSE, Boolean.TRUE, Reason.PASS_URL, catStr, node.getName());
             node.logEvent(hbe);
             return rule;
         }

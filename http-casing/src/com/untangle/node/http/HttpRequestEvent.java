@@ -97,7 +97,7 @@ public class HttpRequestEvent extends LogEvent
     @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
-        String sql = "INSERT INTO reports.http_events" + getPartitionTablePostfix() + " " +
+        String sql = "INSERT INTO " + schemaPrefix() + "http_events" + getPartitionTablePostfix() + " " +
             "(time_stamp, " +
             "session_id, client_intf, server_intf, " +
             "c_client_addr, c_client_port, c_server_addr, c_server_port, " + 

@@ -1561,13 +1561,13 @@ Ext.define('Ung.setupWizard.Wireless', {
                     var element = this.panel.down('textfield[name="wirelessSsid"]');
                     element.setValue( result );
                     this.initialSsid = result;
-                    
+
                     rpc.networkManager.getWirelessEncryption(Ext.bind(function (result, exception) {
                         if (Ung.Util.handleException(exception)) return;
                         var element = this.panel.down('combo[name="wirelessEncryption"]');
                         element.setValue( result );
                         this.initialEncryption = result;
-                        
+
                         rpc.networkManager.getWirelessPassword(Ext.bind(function (result, exception) {
                             if (Ung.Util.handleException(exception)) return;
                             var element = this.panel.down('textfield[name="wirelessPassword"]');
@@ -1609,7 +1609,7 @@ Ext.define('Ung.setupWizard.Wireless', {
             });
             return false;
         }
-        
+
         return Ung.Util.validate(this.panel);
     },
     saveWireless: function (handler) {
@@ -1863,6 +1863,7 @@ Ext.define('Ung.Setup', {
     authenticate: function (password, handler) {
         Ext.MessageBox.wait(i18n._('Authenticating'), i18n._('Please Wait'));
         Ext.Ajax.request({
+            url: '/auth/login?url=/webui&realm=Administrator',
             params: {
                 username: 'admin',
                 password: password
@@ -1872,38 +1873,42 @@ Ext.define('Ung.Setup', {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
-            url: '/auth/login?url=/webui&realm=Administrator',
-            callback: Ext.bind(function (options, success, response) {
-                if (success) {
-                    if (response.responseText && response.responseText.indexOf('loginPage') != -1) {
-                        Ext.MessageBox.alert(i18n._('Authentication failed'), i18n._('Invalid password.'));
-                        return;
-                    }
-                    // It is very wrong to do this all synchronously
-                    rpc.jsonrpc = new JSONRpcClient('/webui/JSON-RPC');
-                    rpc.jsonrpc.UvmContext.getSetupStartupInfo(Ext.bind(function (result, exception) {
-                        if (Ung.Util.handleException(exception)) { return; }
-                        Ext.applyIf(rpc, result);
-                        rpc.tolerateKeepAliveExceptions = false;
-                        rpc.keepAlive = function() {
-                            rpc.jsonrpc.UvmContext.getFullVersion(Ext.bind(function (result, exception) {
-                                if (!rpc.tolerateKeepAliveExceptions) {
-                                    if (Ung.Util.handleException(exception)) { return; }
-                                }
-                                Ext.defer(rpc.keepAlive, 300000);
-                            }, this));
-                        };
-                        rpc.keepAlive();
-
-                        if (Ext.MessageBox.rendered) {
-                            Ext.MessageBox.hide();
-                        }
-                        handler();
-                    }, this));
-                } else {
-                    Ext.MessageBox.alert(i18n._('Authenticatication failed'), i18n._('The authentication request has failed.'));
+            success: function (response) {
+                if (response.responseText && response.responseText.indexOf('loginPage') != -1) {
+                    Ext.MessageBox.alert(i18n._('Authentication failed'), i18n._('Invalid password.'));
+                    return;
                 }
-            }, this)
+
+                var setupInfo;
+                rpc.jsonrpc = new JSONRpcClient('/webui/JSON-RPC');
+
+                try {
+                    setupInfo = rpc.jsonrpc.UvmContext.getSetupStartupInfo();
+                } catch (e) {
+                    Ung.Util.handleException(e);
+                }
+
+                Ext.applyIf(rpc, setupInfo);
+                rpc.tolerateKeepAliveExceptions = false;
+
+                rpc.keepAlive = function() {
+                    rpc.jsonrpc.UvmContext.getFullVersion(Ext.bind(function (result, exception) {
+                        if (!rpc.tolerateKeepAliveExceptions) {
+                            if (Ung.Util.handleException(exception)) { return; }
+                        }
+                        Ext.defer(rpc.keepAlive, 300000);
+                    }, this));
+                };
+                rpc.keepAlive();
+
+                if (Ext.MessageBox.rendered) {
+                    Ext.MessageBox.hide();
+                }
+                handler();
+            },
+            failure: function (response) {
+                Ext.MessageBox.alert(i18n._('Authenticatication failed'), i18n._('The authentication request has failed.'));
+            }
         });
     },
     saveCurrentStep: function (stepName) {

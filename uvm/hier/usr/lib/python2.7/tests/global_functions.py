@@ -83,11 +83,31 @@ def verifyIperf(wanIP):
     return True
 
 def findSmtpServer(wan_IP):
+    smtp_IP = ""
+    smtp_domain = "";
+    match = False
     for smtpServerHostIP in listFakeSmtpServerHosts:
         interfaceNet = smtpServerHostIP[0] + "/" + str(smtpServerHostIP[1])
         if ipaddr.IPAddress(wan_IP) in ipaddr.IPv4Network(interfaceNet):
-            return smtpServerHostIP[0],smtpServerHostIP[2]
-        return None,None
+            match = True
+            break
+
+        # Verify that it will pass through our WAN network
+        result = subprocess.check_output("traceroute -n -w 1 -q 1 " + smtpServerHostIP[0], shell=True)
+        space_split = result.split("\n")[1].strip().split()
+        if len(space_split) > 1:
+            try:
+                if ipaddr.IPAddress(space_split[1]) in ipaddr.IPv4Network(wan_IP + "/24"):
+                    match = True
+                    break
+            except Exception,e:
+                continue
+
+    if match is True:
+        smtp_IP = smtpServerHostIP[0]
+        smtp_domain = smtpServerHostIP[2]
+
+    return smtp_IP,smtp_domain
 
 def getUDPSpeed( receiverIP, senderIP, targetIP=None, targetRate=None ):
     if targetIP == None:
@@ -179,7 +199,13 @@ def check_events( events, num_events, *args, **kwargs):
 
         # if event has a date and its too old - ignore the event
         if event.get('time_stamp') != None:
-            ts = datetime.datetime.fromtimestamp((event['time_stamp']['time'])/1000)
+            time_stamp = event.get('time_stamp')
+            if type(time_stamp) is int:
+                ts = datetime.datetime.fromtimestamp(time_stamp/1000)
+            elif type(time_stamp) is long:
+                ts = datetime.datetime.fromtimestamp(time_stamp/1000)
+            else:
+                ts = datetime.datetime.fromtimestamp(time_stamp['time']/1000)
             if ts < min_date:
                 print "ignoring old event: %s < %s " % (ts.isoformat(),min_date.isoformat())
                 continue
@@ -189,11 +215,18 @@ def check_events( events, num_events, *args, **kwargs):
         # if all match, return True
         allMatched = True
         for i in range(0, len(args)/2):
-            key=args[i*2]
-            expectedValue=args[i*2+1]
+            key = args[i*2]
+            expectedValue = args[i*2+1]
             actualValue = event.get(key)
+            alternateValue = expectedValue
+            # If the type is a boolean, accept 1/0 also
+            if type(expectedValue) is bool:
+                if expectedValue:
+                    alternateValue = 1
+                else:
+                    alternateValue = 0
             #print "key %s expectedValue %s actualValue %s " % ( key, str(expectedValue), str(actualValue) )
-            if str(expectedValue) != str(actualValue):
+            if str(expectedValue) != str(actualValue) and str(alternateValue) != str(actualValue):
                 print "mismatch event[%s] expectedValue %s != actualValue %s " % ( key, str(expectedValue), str(actualValue) )
                 allMatched = False
                 break

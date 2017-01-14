@@ -689,10 +689,9 @@ public class CertificateManagerImpl implements CertificateManager
         String smtpsInfo = null;
         String ipsecInfo = null;
         String certFile = null;
-        int problem = 0;
 
         String goodMessage = i18nUtil.tr("No problems detected");
-        String failMessage = i18nUtil.tr("Missing hostname and/or one or more IP addresses");
+        String failMessage = i18nUtil.tr("Missing");
 
         // grab the hostname and all IP addresses assigned to this server
         String hostName = UvmContextFactory.context().networkManager().getNetworkSettings().getHostName();
@@ -706,53 +705,55 @@ public class CertificateManagerImpl implements CertificateManager
         // check the WEB certificate
         certFile = CertificateManager.CERT_STORE_PATH + UvmContextFactory.context().systemManager().getSettings().getWebCertificate().replaceAll("\\.pem", "\\.crt");
         certInfo = getServerCertificateInformation(certFile);
-        problem = 0;
 
         for (String item : machineList) {
-            if (certInfo.getCertSubject().toLowerCase().contains(item.toLowerCase())) continue;
-            if (certInfo.getCertNames().toLowerCase().contains(item.toLowerCase())) continue;
-            problem++;
+            if ((certInfo.getCertSubject() != null) && (certInfo.getCertSubject().toLowerCase().contains(item.toLowerCase()))) continue;
+            if ((certInfo.getCertNames() != null) && (certInfo.getCertNames().toLowerCase().contains(item.toLowerCase()))) continue;
+            if (httpsInfo == null) httpsInfo = (new String(failMessage) + " ");
+            else httpsInfo += ", ";
+            httpsInfo += item;
         }
 
-        if (problem != 0) httpsInfo = failMessage;
-        else httpsInfo = goodMessage;
+        if (httpsInfo == null) httpsInfo = goodMessage;
 
         // check the MAIL certificate
         certFile = CertificateManager.CERT_STORE_PATH + UvmContextFactory.context().systemManager().getSettings().getMailCertificate().replaceAll("\\.pem", "\\.crt");
         certInfo = getServerCertificateInformation(certFile);
-        problem = 0;
 
         for (String item : machineList) {
-            if (certInfo.getCertSubject().toLowerCase().contains(item.toLowerCase())) continue;
-            if (certInfo.getCertNames().toLowerCase().contains(item.toLowerCase())) continue;
-            problem++;
+            if ((certInfo.getCertSubject() != null) && (certInfo.getCertSubject().toLowerCase().contains(item.toLowerCase()))) continue;
+            if ((certInfo.getCertNames() != null) && (certInfo.getCertNames().toLowerCase().contains(item.toLowerCase()))) continue;
+            if (smtpsInfo == null) smtpsInfo = (new String(failMessage) + " ");
+            else smtpsInfo += ", ";
+            smtpsInfo += item;
         }
 
-        if (problem != 0) smtpsInfo = failMessage;
-        else smtpsInfo = goodMessage;
+        if (smtpsInfo == null) smtpsInfo = goodMessage;
 
         // check the IPSEC certificate
         certFile = CertificateManager.CERT_STORE_PATH + UvmContextFactory.context().systemManager().getSettings().getIpsecCertificate().replaceAll("\\.pem", "\\.crt");
         certInfo = getServerCertificateInformation(certFile);
-        problem = 0;
 
         for (String item : machineList) {
-            if (certInfo.getCertSubject().toLowerCase().contains(item.toLowerCase())) continue;
-            if (certInfo.getCertNames().toLowerCase().contains(item.toLowerCase())) continue;
-            problem++;
+            if ((certInfo.getCertSubject() != null) && (certInfo.getCertSubject().toLowerCase().contains(item.toLowerCase()))) continue;
+            if ((certInfo.getCertNames() != null) && (certInfo.getCertNames().toLowerCase().contains(item.toLowerCase()))) continue;
+            if (ipsecInfo == null) ipsecInfo = (new String(failMessage) + " ");
+            else ipsecInfo += ", ";
+            ipsecInfo += item;
         }
 
-        if (problem != 0) ipsecInfo = failMessage;
-        else {
-            // IPsec IKEv2 will not work properly without this OID
-            if (certInfo.getCertUsage().contains("ikeIntermediate") == false) ipsecInfo = "Missing OID 1.3.6.1.5.5.8.2.2 (ikeIntermediate)";
-            else ipsecInfo = goodMessage;
-
+        // IPsec IKEv2 will not work properly without this OID
+        if ((certInfo.getCertUsage() == null) || (certInfo.getCertUsage().contains("ikeIntermediate") == false)) {
+            if (ipsecInfo == null) ipsecInfo = (new String(failMessage) + " ");
+            else ipsecInfo += ", ";
+            ipsecInfo += "OID 1.3.6.1.5.5.8.2.2 (ikeIntermediate)";
         }
+
+        if (ipsecInfo == null) ipsecInfo = goodMessage;
 
 // THIS IS FOR ECLIPSE - @formatter:off
 
-        String statusInfo = "<TABLE BORDER=1 CELLSPACING=0 CELLPADDING=5>"
+        String statusInfo = "<TABLE BORDER=1 CELLSPACING=0 CELLPADDING=5 STYLE=border-collapse:collapse;>"
                 + "<TR><TD COLSPAN=2><CENTER><STRONG>Server Certificate Verification</STRONG></CENTER></TD></TR>"
                 + "<TR><TD WIDTH=120>HTTPS Certificate</TD><TD>" + httpsInfo + "</TD></TR>"
                 + "<TR><TD WIDTH=120>SMTPS Certificate</TD><TD>" + smtpsInfo + "</TD></TR>"

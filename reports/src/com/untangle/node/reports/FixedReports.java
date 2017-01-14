@@ -31,10 +31,11 @@ import java.nio.file.Files;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -100,7 +101,9 @@ public class FixedReports
     public enum Filter{
         FIRST,
         DISTINCT,
-        FORMAT
+        FORMAT,
+        IN,
+        ORDER
     }
 
     public enum ConditionalE {
@@ -115,6 +118,7 @@ public class FixedReports
     private static final Map<ParsePass, String> ParsePassActiveVariables;
     private static final ArrayList<String> ConfigCategories;
     private static final Map<ConditionalE,Pattern> ConditionalPatterns;
+    public static final ArrayList<String> ReservedReports;
 
     static {
         TagPatterns = new HashMap<Tag, Pattern>();
@@ -139,6 +143,8 @@ public class FixedReports
         FilterPatterns.put(Filter.FIRST, Pattern.compile("first"));
         FilterPatterns.put(Filter.DISTINCT, Pattern.compile("distinct\\=([^,]+)"));
         FilterPatterns.put(Filter.FORMAT, Pattern.compile("format\\=([^,]+),(.+)"));
+        FilterPatterns.put(Filter.IN, Pattern.compile("in\\=([^,]+),(.+)"));
+        FilterPatterns.put(Filter.ORDER, Pattern.compile("order\\=([^,]+),(.+)"));
 
         NonGreedyVariablePattern = Pattern.compile("\\{\\{\\s*(.+?)\\s*\\}\\}");
 
@@ -155,10 +161,162 @@ public class FixedReports
         ConfigCategories.add("System");
         ConfigCategories.add("Shield");
 
+        // This would be better as an external file for easier modification and not
+        // hanging onto the memory.
+        ReservedReports = new ArrayList<String>();
+        // Ad Blocker Summary
+        ReservedReports.add("ad-blocker-WvH1wCQQ0D");
+        // Ads Blocked
+        ReservedReports.add("ad-blocker-nvhtmu6LXi");
+        // Admin Logins
+        //ReservedReports.add("Administration-tFb0iLvxHE");
+        // Application Control Summary
+        ReservedReports.add("application-control-upl31dqKb1");
+        // Top Applications Usage
+        ReservedReports.add("application-control-OAI5zmhxOM");
+        // Application Control Lite Summary
+        ReservedReports.add("application-control-lite-upl31dqKb1");
+        // Detection Statistics
+        ReservedReports.add("application-control-lite-9Yyq8iXZJ5");
+        // Bandwidth Control Summary
+        ReservedReports.add("bandwidth-control-upl31dqKb1");
+        // Bandwidth Usage
+        ReservedReports.add("bandwidth-control-StzlzfZAp8");
+        // Captive Portal Summary
+        ReservedReports.add("captive-portal-upl31dqKb1");
+        // Activity Summary
+        ReservedReports.add("captive-portal-psXTQbdE");
+        // Configuration Backup Summary
+        ReservedReports.add("configuration-backup-eN8Ot9wh");
+        // Backup Usage (all)
+        ReservedReports.add("configuration-backup-HF3qFZ9M");
+        // Devices Additions
+        //ReservedReports.add("device-table-UkYvElV11f");
+        // Devices Updates
+        //ReservedReports.add("device-table-WGQUSYhIck");
+        // Directory Connector Summary
+        ReservedReports.add("directory-connector-upl31dqKb1");
+        // User Notification API Events
+        ReservedReports.add("directory-connector-D6IabIxIrC");
+        // Firewall Summary
+        ReservedReports.add("firewall-upl31dqKb1");
+        // Scanned Sessions
+        ReservedReports.add("firewall-8bTqxKxxUK");
+        // Hosts Active
+        ReservedReports.add("host-viewer-pfRvYDKKQx");
+        // Hosts Additions
+        //ReservedReports.add("host-viewer-UkYvElV11f");
+        // Hosts Updates
+        //ReservedReports.add("host-viewer-WGQUSYhIck");
+        // IPsec VPN Summary
+        ReservedReports.add("ipsec-vpn-upl31dqKb1");
+        // Hourly Tunnel Traffic
+        ReservedReports.add("ipsec-7y1o6zC1Ez");
+        // Intrusion Prevention Summary
+        ReservedReports.add("intrusion-prevention-kt095LB6");
+        // Intrusion Detection (all)
+        ReservedReports.add("intrusion-prevention-pYviv7Cg");
+        // Network Summary
+        ReservedReports.add("network-tn9iaE74pK");
+        // Sessions
+        ReservedReports.add("network-8bTqxKxxUK");
+        // Bandwidth Usage
+        ReservedReports.add("network-StzlzfZAp8");
+        // OpenVPN Summary
+        ReservedReports.add("openvpn-upl31dqKb1");
+        // OpenVPN Bandwidth Usage
+        ReservedReports.add("openvpn-StzlzfZAp8");
+        // Phish Blocker Summary
+        ReservedReports.add("phish-blocker-DniRBEni");
+        // Email Usage (all)
+        ReservedReports.add("phish-blocker-iZV0Z13m");
+        // Policy Manager Summary
+        ReservedReports.add("policy-manager-upl31dqKb1");
+        // Top Policy Usage
+        ReservedReports.add("policy-manager-hWC6KjOc8Y");
+        // Alerts
+        ReservedReports.add("reporting-498VRSufOw");
+        // SSL Inspector Summary
+        ReservedReports.add("ssl-inspector-ggDy9pSApA");
+        // Scanned Sessions
+        ReservedReports.add("ssl-inspector-F10QTQJPXF");
+        // Scanned Sessions
+        //ReservedReports.add("shield-2ObNkapIEq");
+        // Spam Blocker Summary
+        ReservedReports.add("spam-blocker-gnmDTFRS");
+        // Email Usage (all)
+        ReservedReports.add("spam-blocker-exreIeeR");
+        // Spam Ratio
+        ReservedReports.add("spam-blocker-QuhTJ1ude8");
+        // Spam Blocker Lite Summary
+        ReservedReports.add("spam-blocker-lite-DniRBEni");
+        // Email Usage (all)
+        ReservedReports.add("spam-blocker-lite-iZV0Z13m");
+        // Spam Ratio
+        ReservedReports.add("spam-blocker-lite-QuhTJ1ude8");
+        // CPU Load
+        ReservedReports.add("system-LJnwhWuJiN");
+        // Memory Usage
+        ReservedReports.add("system-fgQnUn1Tle");
+        // Disk Usage
+        ReservedReports.add("system-6iYMGsnldQ");
+        // Swap Usage Ratio
+        ReservedReports.add("system-N63OfrLqbS");
+        // Highest Active Hosts
+        ReservedReports.add("system-lL959lz7qu");
+        // Virus Blocker FTP Summary
+        ReservedReports.add("virus-blocker-ugosjuGk");
+        // Virus Blocker Email Summary
+        ReservedReports.add("virus-blocker-dR0pxxoH");
+        // Virus Blocker Web Summary
+        ReservedReports.add("virus-blocker-bCgxepqj");
+        // Web Usage (all)
+        ReservedReports.add("virus-blocker-9gTFTMGF");
+        // FTP Usage (all)
+        ReservedReports.add("virus-blocker-JJ05hQYG");
+        // Email Usage (all)
+        ReservedReports.add("virus-blocker-R61SMfc9");
+        // Virus Blocker Lite FTP Summary
+        ReservedReports.add("virus-blocker-lite-pi3IfwzM");
+        // Virus Blocker Lite Email Summary
+        ReservedReports.add("virus-blocker-lite-CRxmUhVM");
+        // Virus Blocker Lite Web Summary
+        ReservedReports.add("virus-blocker-lite-omMJnSjI");
+        // Web Usage (all)
+        ReservedReports.add("virus-blocker-lite-Zj70iUtK");
+        // FTP Usage (all)
+        ReservedReports.add("virus-blocker-lite-4v7yTaQa");
+        // Email Usage (all)
+        ReservedReports.add("virus-blocker-lite-lBdJV59j");
+        // WAN Balancer Summary
+        ReservedReports.add("wan-balance-upl31dqKb1");
+        // WAN Failover Summary
+        ReservedReports.add("wan-failover-upl31dqKb1");
+        // Web Cache Summary
+        ReservedReports.add("web-cache-q97vptQHbv");
+        // Cache Hit/Miss Statistics
+        ReservedReports.add("webcache-sYa4T0zsOs");
+        // Web Filter Summary
+        ReservedReports.add("web-filter-q97vptQHbv");
+        // Web Usage
+        ReservedReports.add("web-filter-h0jelsttGp");
+        // Top Domains Usage
+        ReservedReports.add("web-filter-2nx8FA4VCB");
+        // Web Filter Lite Summary
+        ReservedReports.add("web-filter-lite-q97vptQHbv");
+        // Web Usage
+        ReservedReports.add("web-filter-lite-9dIdqhMNva");
+        // Web Monitor Summary
+        ReservedReports.add("web-monitor-q97vptQHbv");
+        // Web Usage
+        ReservedReports.add("web-monitor-h0jelsttGp");
+        // Top Domains Usage
+        ReservedReports.add("web-monitor-2nx8FA4VCB");
+
         // Order matters when processing
         ConditionalPatterns = new LinkedHashMap<ConditionalE,Pattern>();
         ConditionalPatterns.put(ConditionalE.LOGICAL, Pattern.compile("(.+?)\\s+(not\\s+|)(and|or)\\s+(.+)"));
-        ConditionalPatterns.put(ConditionalE.EQUALITY, Pattern.compile("(.+?)\\s+(not\\s+|\\!|)(in|\\=|\\=\\=)\\s+(.+)"));
+        ConditionalPatterns.put(ConditionalE.EQUALITY, Pattern.compile("(.+?)\\s+(not\\s+|\\!|)(in|\\=|\\=\\=|\\<|\\>)\\s+(.+)"));
     }
 
     private static final Pattern Conditional = Pattern.compile("(.+?)\\s+(not\\s+|\\!\\s+)(\\=\\=|in)\\s+(.+)");
@@ -229,6 +387,17 @@ public class FixedReports
         List<conditionalContext> conditionals = new ArrayList<conditionalContext>();
 
         public void addVariable(Tag tag, String name, Object object){
+
+            /* Replace if found */
+            variableContext vc = null;
+            for( int i = 0; i < variables.size(); i ++){
+                vc = variables.get(i);
+                if(vc.tag == tag && vc.name.equals(name)){
+                    variables.set(i, new variableContext(tag, name, object));
+                    return;
+                }
+            }
+            /* Otherwise, add*/
             variables.add(new variableContext(tag, name, object));
         }
 
@@ -380,11 +549,15 @@ public class FixedReports
         return FixedReports.ConfigCategories;
     }
 
+    private ReportsManager reportsManager;
+
     /*
      * Create and send fixed reports
      */
-    public void generate(EmailTemplate emailTemplate, List<ReportsUser> users, String reportsUrl)
+    public void generate(EmailTemplate emailTemplate, List<ReportsUser> users, String reportsUrl, ReportsManager reportsManager)
     {
+        this.reportsManager = reportsManager;
+
         Map<String, String> i18nMap = UvmContextFactory.context().languageManager().getTranslations("untangle");
         i18nUtil = new I18nUtil(i18nMap);
 
@@ -406,7 +579,7 @@ public class FixedReports
         }else if(emailTemplate.getInterval() == 604800){
             // Weekly, Sunday through Sunday
             interval = i18nUtil.tr("Weekly");
-            c.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+            c.set(Calendar.DAY_OF_WEEK, emailTemplate.getIntervalWeekStart());
             endDate = c.getTime();
             c.add(Calendar.DATE, -7);
             startDate = c.getTime();
@@ -427,6 +600,28 @@ public class FixedReports
             ": " + interval + " (" + dateFormatter.format(startDate) + ")" + 
             (emailTemplate.getMobile() == true ? " " + i18nUtil.tr("Mobile") : "");
 
+        // Determine users lists with/without online access for url inclusion
+        List<String> recipientsWithoutOnlineAccess = new ArrayList<String>();
+        List<String> recipientsWithOnlineAccess = new ArrayList<String>();
+        for(ReportsUser user: users){
+            List<String> emailAddresses = null;
+            if(user.getEmailAddress().equals("admin")){
+                emailAddresses = reportsManager.getAdminEmailAddresses();
+            }else{
+                emailAddresses = new ArrayList<String>();
+                emailAddresses.add(user.getEmailAddress());
+            }
+            if(user.getOnlineAccess() == true){
+                recipientsWithOnlineAccess.addAll(emailAddresses);
+            }else{
+                recipientsWithoutOnlineAccess.addAll(emailAddresses);
+            }
+        }
+        if( (recipientsWithOnlineAccess.size() == 0 ) && 
+            (recipientsWithoutOnlineAccess.size() == 0) ){
+            return;
+        }
+
         logger.warn("Generating report for \"" + title + "\"");
 
         Integer browserWidth = 800;
@@ -435,24 +630,29 @@ public class FixedReports
             browserWidth = 250;
             browserHeight = 250;
         }
-        webbrowser = new WebBrowser(1, 5, browserWidth, browserHeight, 8);
+
+        webbrowser = null;
+        try{
+            webbrowser = new WebBrowser(1, 5, browserWidth, browserHeight, 8);
+        }catch(Exception e){}
 
         File fixedReportTemplateFile = new File(REPORTS_FIXED_TEMPLATE_FILENAME);
+
+        List<String> allowedReportTypes = new ArrayList<String>();
+        for(ReportEntry.ReportEntryType r : ReportEntry.ReportEntryType.values()){
+            if(r.name().equals("EVENT_LIST")){
+                continue;
+            }
+            if(webbrowser == null &&
+                r.name().indexOf("_GRAPH") > -1 ){
+                continue;
+            }
+            allowedReportTypes.add(r.name());
+        }
 
         messageParts = new ArrayList<Map<MailSender.MessagePartsField,String>>();
         messageText = new StringBuilder();
         messageText.append(i18nUtil.tr("HTML Report enclosed.") + "\n\n");
-
-        // Determine users lists with/without online access for url inclusion
-        List<String> recipientsWithoutOnlineAccess = new ArrayList<String>();
-        List<String> recipientsWithOnlineAccess = new ArrayList<String>();
-        for(ReportsUser user: users){
-            if(user.getOnlineAccess() == true){
-                recipientsWithOnlineAccess.add(user.getEmailAddress());
-            }else{
-                recipientsWithoutOnlineAccess.add(user.getEmailAddress());
-            }
-        }
 
         List<StringBuilder> inputLines = new ArrayList<StringBuilder>();
         List<StringBuilder> outputLines = new ArrayList<StringBuilder>();
@@ -486,6 +686,21 @@ public class FixedReports
         variableKeyValues.put("title", title);
         variableKeyValues.put("emailTemplate", emailTemplate);
         variableKeyValues.put("FixedReports", this);
+        variableKeyValues.put("allowedReportTypes", allowedReportTypes);
+
+        // It would be "better" if the template language could process this directly from the objects...
+        List<String> enabledConfigIds = emailTemplate.getEnabledConfigIds();
+        if(enabledConfigIds != null && enabledConfigIds.size() > 0 && enabledConfigIds.get(0).equals("_recommended")){
+            variableKeyValues.put("enabledConfigIds", ReservedReports);
+        }else{
+            variableKeyValues.put("enabledConfigIds", enabledConfigIds);
+        }
+        List<String> enabledAppIds = emailTemplate.getEnabledAppIds();
+        if(enabledAppIds != null && enabledAppIds.size() > 0 && enabledAppIds.get(0).equals("_recommended")){
+            variableKeyValues.put("enabledAppIds", ReservedReports);
+        }else{
+            variableKeyValues.put("enabledAppIds", enabledAppIds);
+        }
 
         currentParsePass = ParsePass.PRE;
         parseBuffer(inputLines, outputLines, variableKeyValues);
@@ -506,7 +721,9 @@ public class FixedReports
             sendEmail(recipientsWithOnlineAccess, outputLines);
         }
 
-        webbrowser.close();
+        if(webbrowser != null){
+            webbrowser.close();
+        }
     }
 
     /*
@@ -781,6 +998,10 @@ public class FixedReports
         String operation;
         String right;
 
+        // if(condition.indexOf("uniqueId") > -1){
+        //     logger.warn("parseCondition, condition="+ condition);
+        // }
+
         Matcher tags = null;
         int startPosition = 0;
         Boolean tagFound = false;
@@ -803,7 +1024,9 @@ public class FixedReports
 
                         leftLogicalMatch = parseCondition(left);
                         rightLogicalMatch = parseCondition(right);
-                        // logger.warn("parseConditional, logical: leftConditionalMatch=" + leftLogicalMatch + ", rightConditionalMatch=" + rightLogicalMatch);
+                        // if(condition.indexOf("uniqueId") > -1){
+                        //     logger.warn("parseConditional, logical: leftConditionalMatch=" + leftLogicalMatch + ", rightConditionalMatch=" + rightLogicalMatch);
+                        // }
 
                         if(operation.equals("and")){
                             match = (leftLogicalMatch && rightLogicalMatch);
@@ -813,7 +1036,9 @@ public class FixedReports
                         break;
 
                     case EQUALITY:
-                        // logger.warn("parseCondition, conditional: left=[" + left + "], negation=["+negation+"], operation=[" + operation + "], right=[" + right + "]");
+                        // if(condition.indexOf("uniqueId") > -1){
+                        //     logger.warn("parseCondition, conditional: left=[" + left + "], negation=["+negation+"], operation=[" + operation + "], right=[" + right + "]");
+                        // }
 
                         if(right.equals("\"\"")){
                             /* Empty string */
@@ -834,8 +1059,13 @@ public class FixedReports
                         }
                         Object leftVariable = getVariable(new selector(left));
                         Object rightVariable = getVariable(new selector(right));
+                        // logger.warn("parseConditional: left=" + left + ", leftVariable=" + leftVariable);
 
                         if(leftVariable != null){
+                            if(leftVariable.getClass().isEnum()){
+                                // All enums will be string comparisions
+                                leftVariable = leftVariable.toString();
+                            }
                             if( operation.equals("==") || operation.equals("=") ){
                                 // !!! is this comparision hokey/bad form?
                                 if(leftVariable.getClass().getName().equals("java.lang.Boolean")){
@@ -848,11 +1078,24 @@ public class FixedReports
                                     }else if(leftVariable.toString().equals(right)){
                                         match = true;
                                     }
+                                    // logger.warn("parseConditional: leftVariable=" + leftVariable + ", right=" + right + ", match=" +match );
 
-                                // !!! Also numeric checks.
+                                // !!! Also non-equality numeric checks.
                                 }
                             }else if(operation.equals("in")){
                                 if(((List) rightVariable).indexOf((String) leftVariable) > -1){
+                                    match = true;
+                                }
+                            }else if(operation.equals("<")){
+                                if(rightVariable == null){
+                                    rightVariable = right;
+                                }
+                                if(Integer.parseInt((String)leftVariable) < Integer.parseInt((String)rightVariable)){
+                                    match = true;
+                                }
+                                // logger.warn("parseCondition: ["+condition+"] leftVariable=" + leftVariable + ", rightVariable=" + rightVariable + ", match=" + match);
+                            }else if(operation.equals(">")){
+                                if((Integer) rightVariable > (Integer) leftVariable){
                                     match = true;
                                 }
                             }
@@ -917,7 +1160,7 @@ public class FixedReports
         String filename = variableSelector.arguments.get(0);
 
         if(variableSelector.arguments.get(0).equals("chart")){
-            filename = getChart(getVariable(new selector(variableSelector.arguments.get(1))), getVariable(new selector(variableSelector.arguments.get(2))), id);
+            filename = getChart(getVariable(new selector(variableSelector.arguments.get(1))), id);
         }
 
         File f = new File(filename);
@@ -948,7 +1191,16 @@ public class FixedReports
      */
     private void insertVariableCycle(Matcher argumentValues)
     {
-        ArrayList<String> values = new ArrayList<String>(Arrays.asList(argumentValues.group(1).split("\\s")));
+        ArrayList<String> values = null;
+        if(argumentValues.group(1).indexOf("...") > -1){
+            ArrayList<String> startEnd = new ArrayList<String>(Arrays.asList(argumentValues.group(1).split("\\.\\.\\.")));
+            values = new ArrayList<String>(Integer.parseInt(startEnd.get(1)) - Integer.parseInt(startEnd.get(0)));
+            for(Integer i = Integer.parseInt(startEnd.get(0)); i < Integer.parseInt(startEnd.get(1)); i++){
+                values.add(Integer.toString(i));
+            }
+        }else{
+            values = new ArrayList<String>(Arrays.asList(argumentValues.group(1).split("\\s")));
+        }
         String variableName = argumentValues.group(2);
 
         int contextIndex = parseContextStack.size() - 1;
@@ -1252,6 +1504,12 @@ public class FixedReports
                             case FORMAT:
                                 object = filterProcessFormat(object, (JSONObject) getVariable(new selector(filterMatcher.group(1))), getVariable(new selector(filterMatcher.group(2))));
                                 break;
+                            case IN:
+                                object = filterProcessIn(object, new selector(filterMatcher.group(1)), getVariable(new selector(filterMatcher.group(2))));
+                                break;
+                            case ORDER:
+                                object = filterProcessOrder(object, new selector(filterMatcher.group(1)), new selector(filterMatcher.group(2)));
+                                break;
                         }
                     }
                 }catch(Exception e){
@@ -1373,13 +1631,115 @@ public class FixedReports
         return (Object) outgoings;
     }
 
-    String getChart(Object reportCategory, Object reportTitle, String id){
+    /*
+     * Process the list and include only those in the specified list.
+     *
+     * One use for this is to pull only reports within the allowed report type list.
+     */
+    Object filterProcessIn(Object incomings, selector filterSelector, Object checklist){
+        List<Object> outgoings = new ArrayList<Object>();
+
+        Method method = null;
+        Object object = null;
+
+        int fieldIndex;
+        for(int i = 0; i < ((List) incomings).size(); i++){
+            object = ((List) incomings).get(i);
+            for(fieldIndex = 0; fieldIndex < filterSelector.fields.size(); fieldIndex++){
+                try{
+                    /* No arguments allowed at this time. */
+                    method = object.getClass().getMethod(filterSelector.fields.get(fieldIndex));
+                    object = method.invoke(object);
+                }catch(Exception e){
+                    logger.warn("Unable to get variable: " + filterSelector );
+                    break;
+                }
+            }
+            if( ((List) checklist).indexOf(object.toString()) > -1 ){
+                outgoings.add(((List) incomings).get(i));
+            }
+        }
+
+        return (Object) outgoings;
+    }
+
+    /*
+     * Process the list to order by the specified field.
+     *
+     * One use is to sort all reports so that TEXT types are first.
+     * Another it to sort by category order
+     *
+     */
+    @SuppressWarnings("unchecked")
+    Object filterProcessOrder(Object incomings, selector filterSelector, selector orderSelector){
+        ArrayList<?> orderList = (ArrayList<?>) getVariable(orderSelector);
+        if(orderList == null){
+            orderList = new ArrayList<String>();
+            ((ArrayList<String>) orderList).add(orderSelector.fields.get(0));
+        }
+        Collections.sort((ArrayList<String>)orderList);
+
+        LinkedHashMap<String,ArrayList<Object>> sortedOutgoings = new LinkedHashMap<String,ArrayList<Object>>();
+        for(String orderString: (ArrayList<String>) orderList){
+            sortedOutgoings.put(orderString, new ArrayList<Object>());
+        }
+
+        List<Object> otherOutgoings = new ArrayList<Object>();
+
+        Method method = null;
+        Object object = null;
+
+        int fieldIndex;
+        Boolean sortedMatch = false;
+        String orderKey;
+        ArrayList<Object> orderedList;
+        for(int i = 0; i < ((List) incomings).size(); i++){
+            object = ((List) incomings).get(i);
+            for(fieldIndex = 0; fieldIndex < filterSelector.fields.size(); fieldIndex++){
+                try{
+                    /* No arguments allowed at this time. */
+                    method = object.getClass().getMethod(filterSelector.fields.get(fieldIndex));
+                    object = method.invoke(object);
+                }catch(Exception e){
+                    logger.warn("Unable to get variable: " + filterSelector );
+                    break;
+                }
+            }
+
+            sortedMatch = false;
+            for(Map.Entry<String,ArrayList<Object>> entry : sortedOutgoings.entrySet()){
+                orderKey = entry.getKey();
+                if(orderKey.equals(object.toString())){
+                    sortedMatch = true;
+                    orderedList = entry.getValue();
+                    orderedList.add(((List) incomings).get(i));
+                    break;
+                }
+            }
+            if(sortedMatch == false){
+                otherOutgoings.add(((List) incomings).get(i));
+            }
+        }
+
+        List<Object> outgoings = new ArrayList<Object>();
+        for(Map.Entry<String,ArrayList<Object>> entry : sortedOutgoings.entrySet()){
+            if(entry.getValue().size() > 0){
+                outgoings.addAll(entry.getValue());
+            }
+        }
+        if(otherOutgoings.size() > 0){
+            outgoings.addAll(otherOutgoings);
+        }
+        return (Object) outgoings;
+    }
+
+    String getChart(Object reportUniqueId, String id){
         String filename;
         if(id != null){
             filename = webbrowser.getTempDirectory() + "/" + id + ".png";
         }else{
             try{
-                filename = webbrowser.getTempDirectory() + "/" + URLEncoder.encode((String) reportCategory, "UTF-8") + "_" + URLEncoder.encode((String) reportTitle, "UTF-8") + ".png";
+                filename = webbrowser.getTempDirectory() + "/" + URLEncoder.encode((String) reportUniqueId, "UTF-8") + ".png";
             }catch(Exception e){
                 filename = webbrowser.getTempDirectory() + "/image.png";
             }
@@ -1387,14 +1747,15 @@ public class FixedReports
 
         try {
             String url = "http://127.0.0.1/reports/?reportChart=1" + 
-                "&reportCategory=" + URLEncoder.encode((String) reportCategory, "UTF-8") + 
-                "&reportTitle=" + URLEncoder.encode((String) reportTitle, "UTF-8") + 
-                "&startDate=" + URLEncoder.encode(startDate.toString(), "UTF-8") + 
-                "&endDate=" + URLEncoder.encode(endDate.toString(), "UTF-8");
+                "&reportUniqueId=" + URLEncoder.encode((String) reportUniqueId, "UTF-8") + 
+                "&startDate=" + URLEncoder.encode(Long.toString(startDate.getTime()), "UTF-8") + 
+                "&endDate=" + URLEncoder.encode(Long.toString(endDate.getTime()), "UTF-8");
             webbrowser.openUrl(url);
             webbrowser.waitForElement("highcharts-0");
             webbrowser.takeScreenshot(filename);
-
+        } catch (org.openqa.selenium.TimeoutException e) {
+            webbrowser.waitForElement("label-1016");
+            webbrowser.takeScreenshot(filename);
         } catch (Exception e) {
             logger.warn("Exception",e);
             return "";

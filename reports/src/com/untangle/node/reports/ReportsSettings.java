@@ -120,6 +120,12 @@ public class ReportsSettings implements Serializable, JSONString
     public String getGoogleDriveDirectory() { return googleDriveDirectory; }
     public void setGoogleDriveDirectory( String newValue ) { this.googleDriveDirectory = newValue; }
 
+    /**
+     * DEPRECATED
+     */
+    public String getDbDriver() { return null; }
+    public void setDbDriver( String dbDriver ) { return; }
+
     public String toJSONString()
     {
         JSONObject jO = new JSONObject(this);

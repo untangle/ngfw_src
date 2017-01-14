@@ -8,11 +8,11 @@ import org.json.JSONObject;
 import org.apache.log4j.Logger;
 
 import java.util.LinkedList;
+import java.util.List;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.AdminUserSettings;
 
 /**
  * This contains the logic for handling the alert rules.
@@ -32,29 +32,32 @@ public class AlertHandler
     
     public static void runAlertRules( LinkedList<AlertRule> alertRules, LogEvent event, ReportsApp reports )
     {
-            try {
-                JSONObject jsonObject = event.toJSONObject();
-                if ( ! ( event instanceof AlertEvent ) ) {
-                    for ( AlertRule rule : alertRules ) {
-                        if ( ! rule.getEnabled() )
-                            continue;
+        try {
+            JSONObject jsonObject = event.toJSONObject();
+            if ( event instanceof AlertEvent )
+                return;
                 
-                        if ( rule.isMatch( jsonObject ) ) {
-                            logger.info( "alert match: " + rule.getDescription() + " matches " + jsonObject.toString() );
+            for ( AlertRule rule : alertRules ) {
+                if ( ! rule.getEnabled() )
+                    continue;
 
-                            if ( rule.getLog() )
-                                UvmContextFactory.context().logEvent( new AlertEvent( rule.getDescription(), event.toSummaryString(), jsonObject, event ) );
-                            if ( rule.getAlert() ) 
-                                sendAlertForEvent( rule, event, reports );
-                        } 
-                    }
+                if ( rule.isMatch( jsonObject ) ) {
+                    logger.info( "alert match: " + rule.getDescription() + " matches " + jsonObject.toString() );
+
+                    boolean alertSent = false;
+                    AlertEvent alertEvent = new AlertEvent( rule.getDescription(), event.toSummaryString(), jsonObject, event, rule, false );
+                    if ( rule.getAlert() )
+                        alertSent = sendAlertForEvent( rule, event, reports );
+                    if ( rule.getLog() )
+                        UvmContextFactory.context().logEvent( alertEvent );
                 }
-            } catch ( Exception e ) {
-                logger.warn("Failed to evaluate alert rules.", e);
             }
+        } catch ( Exception e ) {
+            logger.warn("Failed to evaluate alert rules.", e);
+        }
     }
 
-    private static void sendAlertForEvent( AlertRule rule, LogEvent event, ReportsApp reports )
+    private static boolean sendAlertForEvent( AlertRule rule, LogEvent event, ReportsApp reports )
     {
         if ( rule.getAlertLimitFrequency() && rule.getAlertLimitFrequencyMinutes() > 0 ) {
             long currentTime = System.currentTimeMillis();
@@ -62,7 +65,7 @@ public class AlertHandler
             long secondsSinceLastAlert = ( currentTime - lastAlertTime ) / 1000;
             // if not enough time has elapsed, just return
             if ( secondsSinceLastAlert < ( rule.getAlertLimitFrequencyMinutes() * 60 ) )
-                return;
+                return false;
         }
 
         rule.updateAlertTime();
@@ -99,21 +102,6 @@ public class AlertHandler
             "\r\n\r\n" +
             I18nUtil.marktr("This is an automated message sent because the event matched the configured Alert Rules.");
                               
-        if ( UvmContextFactory.context().adminManager().getSettings().getUsers() != null ) {
-            for( AdminUserSettings admin : UvmContextFactory.context().adminManager().getSettings().getUsers() ) {
-                if ( admin.getEmailAddress() == null || "".equals( admin.getEmailAddress() ) )
-                    continue;
-                if ( ! admin.getEmailAlerts() )
-                    continue;
-                try {
-                    String[] recipients = new String[]{ admin.getEmailAddress() };
-                    logger.warn("Sending alert to " + admin.getEmailAddress());
-                    UvmContextFactory.context().mailSender().sendMessage( recipients, subject, messageBody);
-                } catch ( Exception e) {
-                    logger.warn("Failed to send mail.",e);
-                }
-            }
-        }
         if ( reports.getSettings().getReportsUsers() != null ) {
             for ( ReportsUser user : reports.getSettings().getReportsUsers() ) {
                 if ( user.getEmailAddress() == null || "".equals( user.getEmailAddress() ) )
@@ -121,7 +109,17 @@ public class AlertHandler
                 if ( ! user.getEmailAlerts() )
                     continue;
                 try {
-                    String[] recipients = new String[]{ user.getEmailAddress() };
+                    String[] recipients = null;
+                    if(user.getEmailAddress().equals("admin")){
+                        List<String> adminEmailAddresses = ReportsManagerImpl.getInstance().getAdminEmailAddresses();
+                        if(adminEmailAddresses.size() == 0){
+                            continue;
+                        }
+                        recipients = new String[adminEmailAddresses.size()];
+                        recipients = adminEmailAddresses.toArray(recipients);
+                    }else{
+                        recipients = new String[]{ user.getEmailAddress() };
+                    }
                     logger.warn("Sending alert to " + user.getEmailAddress());
                     UvmContextFactory.context().mailSender().sendMessage( recipients, subject, messageBody);
                 } catch ( Exception e) {
@@ -129,6 +127,8 @@ public class AlertHandler
                 }
             }
         }
+
+        return true;
     }
 
     @SuppressWarnings("unchecked")

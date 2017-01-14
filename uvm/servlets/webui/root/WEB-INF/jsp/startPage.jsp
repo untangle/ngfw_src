@@ -15,7 +15,7 @@
     <script type="text/javascript" src="/highcharts/highcharts-extra.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="/highcharts/map.js?s=${buildStamp}"></script>
 
-    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,400,600,700" rel="stylesheet">
+    <link href="/images/fonts/source-sans-pro/source-sans-pro.css" rel="stylesheet"/>
 
 <c:if test="${isDebug==false}">
     <script type="text/javascript" src="/ext6/ext-all.js?s=${buildStamp}"></script>
