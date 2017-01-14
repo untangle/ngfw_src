@@ -9,7 +9,8 @@ Ext.define('Ung.controller.Global', {
         'Ung.view.main.Main',
         'Ung.overrides.form.field.VTypes',
         'Ung.view.shd.Sessions',
-        'Ung.view.shd.Hosts'
+        'Ung.view.shd.Hosts',
+        'Ung.view.shd.Devices'
     ],
 
 
@@ -39,8 +40,9 @@ Ext.define('Ung.controller.Global', {
 
         refs: {
             mainView: '#main',
+            dashboardView: '#dashboard',
             appsView: '#apps',
-            dashboardView: '#dashboard'
+            reportsView: '#reports',
         },
 
         routes: {
@@ -51,6 +53,8 @@ Ext.define('Ung.controller.Global', {
             'config': 'onConfig',
             'config/:configName': 'onConfig',
             'reports': 'onReports',
+            'reports/:category': 'onReports',
+            'reports/:category/:entry': 'onReports',
             'sessions': 'onSessions',
             'hosts': 'onHosts',
             'devices': 'onDevices'
@@ -117,6 +121,17 @@ Ext.define('Ung.controller.Global', {
     //     });
     // },
 
+    onReports: function (category) {
+        if (category) {
+            this.getReportsView().getViewModel().set('category', category.replace(/-/g, ' '));
+        } else {
+            this.getReportsView().getViewModel().set('category', null);
+        }
+        this.getMainView().getViewModel().set('selectedNavItem', 'reports');
+        this.getMainView().setActiveItem('reports');
+        // console.log(this.getReportsView().getViewModel());
+    },
+
     onSessions: function () {
         var shd = this.getMainView().down('#shd');
         if (shd) {
@@ -143,7 +158,20 @@ Ext.define('Ung.controller.Global', {
         });
         this.getMainView().getViewModel().set('selectedNavItem', 'hosts');
         this.getMainView().setActiveItem('shd');
-    }
+    },
 
+    onDevices: function () {
+        var shd = this.getMainView().down('#shd');
+        if (shd) {
+            // this.getMainView().remove('#shd', true);
+            shd.destroy();
+        }
+        this.getMainView().add({
+            xtype: 'ung.devices',
+            itemId: 'shd'
+        });
+        this.getMainView().getViewModel().set('selectedNavItem', 'devices');
+        this.getMainView().setActiveItem('shd');
+    }
 
 });

@@ -126,7 +126,7 @@ cite { background: yellow; font-style: normal; }
     opacity: 1 !important;
 }
 */
-.apps-separator { font-family: 'Source Sans Pro', sans-serif; font-size: 14px; font-weight: 600; background-color: #CCCDCD; line-height: 40px; padding-left: 10px; }
+.apps-separator { font-family: "Source Sans Pro", sans-serif; font-size: 14px; font-weight: 600; background-color: #CCCDCD; line-height: 40px; padding-left: 10px; }
 
 @keyframes shakeremoval { 0% { -webkit-transform: translate(2px, 1px) rotate(0deg); }
   10% { -webkit-transform: translate(-1px, -2px) rotate(-1deg); }
@@ -169,7 +169,7 @@ cite { background: yellow; font-style: normal; }
 */
 .toast { background: #333; border-radius: 5px; box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5); max-width: 500px; height: auto !important; z-index: 9999; }
 
-.toast-body { font-family: 'Source Sans Pro', sans-serif; font-size: 12px; height: auto !important; color: #CCC; }
+.toast-body { font-family: "Source Sans Pro", sans-serif; font-size: 12px; height: auto !important; color: #CCC; }
 
 .toast i { color: #0F0; }
 
@@ -189,7 +189,7 @@ cite { background: yellow; font-style: normal; }
 
 i.draggable { cursor: move; }
 
-.grid-description { font-family: 'Source Sans Pro', sans-serif; background: #eaeaea; }
+.grid-description { font-family: "Source Sans Pro", sans-serif; background: #eaeaea; }
 
 .grid-description h3 { margin: 0; font-size: 16px; font-weight: 600; }
 
@@ -197,7 +197,7 @@ i.draggable { cursor: move; }
 
 .status-item { padding: 10px 5px 20px 5px; }
 
-.status-item-header-title { font-family: 'Source Sans Pro', sans-serif; font-size: 14px; font-weight: 600; }
+.status-item-header-title { font-family: "Source Sans Pro", sans-serif; font-size: 14px; font-weight: 600; }
 
 .status-item-body { margin-top: 10px; }
 
@@ -213,7 +213,7 @@ i.draggable { cursor: move; }
 
 .x-grid-item-focused .x-grid-cell-inner:before { display: none; }
 
-.report-header { font-family: 'Source Sans Pro', sans-serif; padding: 10px; }
+.report-header { font-family: "Source Sans Pro", sans-serif; padding: 10px; }
 
 .report-header h2 { margin: 0; font-weight: 400; }
 
@@ -223,9 +223,9 @@ i.draggable { cursor: move; }
 
 .entry-btn { width: 220px; display: inline-block; margin: 5px 5px 10px 5px; border-radius: 3px; cursor: pointer; transition: all 0.25s cubic-bezier(0.23, 1, 0.32, 1); }
 
-.entry-btn .x-btn-inner-default-small { font-family: 'Source Sans Pro', sans-serif; padding: 10px 5px 10px 35px; }
+.entry-btn .x-btn-inner-default-small { font-family: "Source Sans Pro", sans-serif; padding: 10px 5px 10px 35px; }
 
-.entry-btn i { font-size: 24px !important; position: absolute; left: 5px; top: 7px; color: #777; }
+.entry-btn i { position: absolute; left: 10px; top: 12px; color: #555; }
 
 .entry-btn .ttl { font-size: 16px; font-weight: 600; color: #000; }
 
@@ -235,7 +235,7 @@ i.draggable { cursor: move; }
 
 .category-btn { cursor: pointer; display: inline-block; border-radius: 3px; margin: 5px; width: 120px; padding: 5px 0 0 0; }
 
-.category-btn .x-btn-inner-default-small { font-family: 'Source Sans Pro', sans-serif; font-size: 12px; font-weight: 600; padding: 10px 5px; color: #777; transition: color 0.35s cubic-bezier(0.23, 1, 0.32, 1); }
+.category-btn .x-btn-inner-default-small { font-family: "Source Sans Pro", sans-serif; font-size: 12px; font-weight: 600; padding: 10px 5px; color: #777; transition: color 0.35s cubic-bezier(0.23, 1, 0.32, 1); }
 
 .category-btn img { width: 80px; height: 80px; margin-bottom: 5px; transition: transform 0.35s cubic-bezier(0.23, 1, 0.32, 1); }
 
@@ -245,7 +245,7 @@ i.draggable { cursor: move; }
 
 .category-btn:hover .x-btn-inner-default-small { color: #000; }
 
-.headline { font-family: 'Source Sans Pro', sans-serif; text-align: center; font-size: 32px; font-weight: 100; color: #777; }
+.headline { font-family: "Source Sans Pro", sans-serif; text-align: center; font-size: 32px; font-weight: 100; color: #777; }
 
 .x-action-col-icon { position: absolute; top: 0; left: 0; right: 0; bottom: 0; height: auto; width: auto; }
 
@@ -297,7 +297,7 @@ i.draggable { cursor: move; }
 
 .loader, .loader:after { border-radius: 50%; width: 40px; height: 40px; }
 
-.loader { margin: 20px auto; font-size: 10px; position: absolute; left: 30px; text-indent: -9999em; box-sizing: border-box; border-top: 3px solid rgba(0, 0, 0, 0.2); border-right: 3px solid rgba(0, 0, 0, 0.2); border-bottom: 3px solid rgba(0, 0, 0, 0.2); border-left: 3px solid green; -webkit-transform: translateZ(0); -ms-transform: translateZ(0); transform: translateZ(0); -webkit-animation: install 1.1s infinite linear; animation: install 1.1s infinite linear; }
+.loader { font-size: 10px; position: absolute; left: 50%; top: 50%; margin-left: -20px; margin-top: -20px; text-indent: -9999em; box-sizing: border-box; border-top: 3px solid rgba(0, 0, 0, 0.2); border-right: 3px solid rgba(0, 0, 0, 0.2); border-bottom: 3px solid rgba(0, 0, 0, 0.2); border-left: 3px solid green; -webkit-transform: translateZ(0); -ms-transform: translateZ(0); transform: translateZ(0); -webkit-animation: install 1.1s infinite linear; animation: install 1.1s infinite linear; }
 
 @-webkit-keyframes install { 0% { -webkit-transform: rotate(0deg);
     transform: rotate(0deg); }
@@ -401,7 +401,7 @@ i.draggable { cursor: move; }
 
 .net-layout .iface .name { font-weight: 600; margin: 5px 0; padding-left: 5px; }
 
-.net-layout .iface i { height: 10px; font-size: 20px; }
+.net-layout .iface i { height: 10px; font-size: 20px; vertical-align: middle; }
 
 .net-layout .iface span { font-size: 10px; vertical-align: middle; }
 

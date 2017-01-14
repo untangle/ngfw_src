@@ -7,7 +7,7 @@ Ext.define('Ung.view.reports.ReportsController', {
     },
 
     control: {
-        '#': { beforeactivate: 'onBeforeActivate', beforedeactivate: 'onBeforeDeactivate' },
+        '#': { activate: 'onBeforeActivate', beforedeactivate: 'onBeforeDeactivate' },
         '#categoriesGrid': { selectionchange: 'onCategorySelect' },
         '#reportsGrid': { selectionchange: 'onReportSelect' },
         '#chart': { afterrender: 'fetchReportData' },
@@ -31,6 +31,17 @@ Ext.define('Ung.view.reports.ReportsController', {
         '#dashboardBtn': { click: 'toggleDashboardWidget' }
     },
 
+    listen: {
+        global: {
+            init: 'getCurrentApplications',
+        },
+        store: {
+            '#categories': {
+                datachanged: 'onCategoriesLoad'
+            }
+        }
+    },
+
     /*
     listen: {
         store: {
@@ -40,6 +51,16 @@ Ext.define('Ung.view.reports.ReportsController', {
         }
     },
     */
+
+    onCategoriesLoad: function () {
+        // reports are already loaded
+        // console.log('cat load');
+        var vm = this.getViewModel();
+        if (vm.get('category')) {
+            var cat = Ext.getStore('categories').findRecord('categoryName', vm.get('category'));
+            this.getView().down('#categoriesGrid').getSelectionModel().select(cat);
+        }
+    },
 
     onBeforeActivate: function () {
         var vm = this.getViewModel();
@@ -72,31 +93,40 @@ Ext.define('Ung.view.reports.ReportsController', {
         vm.set({
             isNodeReporting: false,
             activeCard: 'allCategoriesCard',
-            category: null,
+            // category: null,
             report: null,
             categoriesData: null,
             startDateTime: null,
             endDateTime: null
         });
 
-        this.getCurrentApplications();
+        var me = this;
+        vm.bind('{category}', function (category) {
+            if (category) {
+                var cat = Ext.getStore('categories').findRecord('categoryName', category);
+                me.getView().down('#categoriesGrid').getSelectionModel().select(cat);
+            } else {
+                me.onBeforeDeactivate();
+            }
+        });
     },
 
     onBeforeDeactivate: function () {
         this.getView().down('#categoriesGrid').getSelectionModel().deselectAll();
         this.getView().down('#reportsGrid').getSelectionModel().deselectAll();
+        this.getViewModel().set('activeCard', 'allCategoriesCard');
         Ext.getStore('reports').clearFilter();
     },
 
     getCurrentApplications: function () {
         var app, i, vm = this.getViewModel(), me = this;
         var categories = [
-            { categoryName: 'Hosts', displayName: 'Hosts'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_hosts.png' },
-            { categoryName: 'Devices', displayName: 'Devices'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_devices.png' },
-            { categoryName: 'Network', displayName: 'Network'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_network.png' },
-            { categoryName: 'Administration', displayName: 'Administration'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_admin.png' },
-            { categoryName: 'System', displayName: 'System'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_system.png' },
-            { categoryName: 'Shield', displayName: 'Shield'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/apps/untangle-node-shield_17x17.png' }
+            { categoryName: 'Hosts', url: 'hosts', displayName: 'Hosts'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_hosts.png' },
+            { categoryName: 'Devices', url: 'devices', displayName: 'Devices'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_devices.png' },
+            { categoryName: 'Network', url: 'network', displayName: 'Network'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_network.png' },
+            { categoryName: 'Administration', url: 'administration', displayName: 'Administration'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_admin.png' },
+            { categoryName: 'System', url: 'system', displayName: 'System'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_system.png' },
+            { categoryName: 'Shield', url: 'shield', displayName: 'Shield'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/apps/untangle-node-shield_17x17.png' }
         ];
 
         rpc.reportsManager.getCurrentApplications(function (result, ex) {
@@ -107,35 +137,35 @@ Ext.define('Ung.view.reports.ReportsController', {
                 if (app.name !== 'untangle-node-branding-manager' && app.name !== 'untangle-node-live-support') {
                     categories.push({
                         categoryName: app.displayName,
-                        appName: app.name,
+                        url: app.name.replace('untangle-node-', ''),
                         displayName: app.displayName, // t()
                         icon: resourcesBaseHref + '/skins/modern-rack/images/admin/apps/' + app.name + '_80x80.png'
                     });
                 }
             }
             Ext.getStore('categories').loadData(categories);
-            vm.set('categoriesData', Ext.getStore('categories').getRange());
-            //me.getView().down('#categoriesGrid').getSelectionModel().select(0);
+            // vm.set('categoriesData', Ext.getStore('categories').getRange());
+            // //me.getView().down('#categoriesGrid').getSelectionModel().select(0);
 
-            var allCategItems = [];
-            categories.forEach(function (category, idx) {
-                allCategItems.push({
-                    xtype: 'button',
-                    baseCls: 'category-btn',
-                    html: '<img src="' + category.icon + '"/><br/><span>' + category.displayName + '</span>',
-                    index: idx,
-                    handler: function () {
-                        me.getView().down('#categoriesGrid').getSelectionModel().select(this.index);
-                    }
-                });
-            });
-            me.getView().down('#allCategoriesList').removeAll();
+            // var allCategItems = [];
+            // categories.forEach(function (category, idx) {
+            //     allCategItems.push({
+            //         xtype: 'button',
+            //         baseCls: 'category-btn',
+            //         html: '<img src="' + category.icon + '"/><br/><span>' + category.displayName + '</span>',
+            //         index: idx,
+            //         handler: function () {
+            //             me.getView().down('#categoriesGrid').getSelectionModel().select(this.index);
+            //         }
+            //     });
+            // });
+            // me.getView().down('#allCategoriesList').removeAll();
 
-            if (me.getView().down('#categoriesLoader')) {
-                me.getView().down('#categoriesLoader').destroy();
-            }
+            // if (me.getView().down('#categoriesLoader')) {
+            //     me.getView().down('#categoriesLoader').destroy();
+            // }
 
-            me.getView().down('#allCategoriesList').add(allCategItems);
+            // me.getView().down('#allCategoriesList').add(allCategItems);
         });
     },
 
@@ -150,6 +180,7 @@ Ext.define('Ung.view.reports.ReportsController', {
     },
 
     onCategorySelect: function (selModel, records) {
+        console.log('here');
         if (records.length === 0) {
             return false;
         }
@@ -161,7 +192,10 @@ Ext.define('Ung.view.reports.ReportsController', {
 
         this.getView().down('#reportsGrid').getSelectionModel().deselectAll();
 
+        Ung.app.redirectTo('#reports/' + records[0].get('url'));
+
         // filter reports based on selected category
+        console.log(records[0].get('categoryName'));
         Ext.getStore('reports').filter({
             property: 'category',
             value: records[0].get('categoryName'),
@@ -178,8 +212,8 @@ Ext.define('Ung.view.reports.ReportsController', {
         this.getView().down('#categoryReportsList').removeAll();
         Ext.getStore('reports').getRange().forEach(function (report) {
 
-            entryHtml = Ung.Util.iconReportTitle(report);
-            entryHtml += '<span class="ttl">' + (report.get('readOnly') ? report.get('title').t() : report.get('title')) + '</span><p>' +
+            // entryHtml = Ung.Util.iconReportTitle(report);
+            entryHtml = '<i class="fa ' + report.get('icon') + ' fa-lg"></i><span class="ttl">' + (report.get('readOnly') ? report.get('title').t() : report.get('title')) + '</span><p>' +
                           (report.get('readOnly') ? report.get('description').t() : report.get('description')) + '</p>';
             entries.push({
                 xtype: 'button',

@@ -77,6 +77,7 @@ Ext.define('Ung.view.apps.Apps', {
 
     items: [{
         xtype: 'dataview',
+        scrollable: true,
         itemId: 'installedApps',
         bind: '{apps}',
         tpl: '<p class="apps-title">' + 'Apps'.t() + '</p>' +
@@ -100,6 +101,7 @@ Ext.define('Ung.view.apps.Apps', {
         itemSelector: 'a'
     }, {
         xtype: 'dataview',
+        scrollable: true,
         itemId: 'installableApps',
         bind: {
             store: '{apps}'
