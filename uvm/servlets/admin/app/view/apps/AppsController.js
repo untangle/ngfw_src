@@ -71,8 +71,16 @@ Ext.define('Ung.view.apps.AppsController', {
                     displayName: node.displayName,
                     type: node.type,
                     viewPosition: node.viewPosition,
-                    status: null
+                    status: null,
+                    targetState: result[0].instances.list.filter(function (instance) {
+                        return node.name === instance.nodeName;
+                    })[0].targetState
                 });
+
+                // var tState = result[0].instances.list.filter(function (instance) {
+                //     return node.name === instance.nodeName;
+                // });
+                // console.log(tState[0]);
             });
 
             Ext.Array.each(result[0].installable.list, function (node) {

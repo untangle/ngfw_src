@@ -84,6 +84,7 @@ Ext.define('Ung.view.apps.Apps', {
             '<tpl for=".">' +
                 '<tpl if="type === \'FILTER\'">' +
                 '<a href="#config" class="app-item">' +
+                '<span class="state {targetState}"><i class="fa fa-power-off"></i></span>' +
                 '<img src="' + resourcesBaseHref + '/skins/modern-rack/images/admin/apps/{name}_80x80.png" width=80 height=80/>' +
                 '<span class="app-name">{displayName}</span>' +
                 '</a>' +
@@ -93,6 +94,7 @@ Ext.define('Ung.view.apps.Apps', {
             '<tpl for=".">' +
                 '<tpl if="type === \'SERVICE\'">' +
                 '<a href="#config" class="app-item">' +
+                '<span class="state {targetState}"><i class="fa fa-power-off"></i></span>' +
                 '<img src="' + resourcesBaseHref + '/skins/modern-rack/images/admin/apps/{name}_80x80.png" width=80 height=80/>' +
                 '<span class="app-name">{displayName}</span>' +
                 '</a>' +
