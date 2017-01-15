@@ -10,7 +10,8 @@ Ext.define('Ung.controller.Global', {
         'Ung.overrides.form.field.VTypes',
         'Ung.view.shd.Sessions',
         'Ung.view.shd.Hosts',
-        'Ung.view.shd.Devices'
+        'Ung.view.shd.Devices',
+        'Ung.view.config.network.Network'
     ],
 
 
@@ -100,9 +101,18 @@ Ext.define('Ung.controller.Global', {
         // console.log(this.getAppsView());
     },
 
-    onConfig: function () {
-        this.getMainView().getViewModel().set('selectedNavItem', 'config');
-        this.getMainView().setActiveItem('config');
+    onConfig: function (configName) {
+        if (!configName) {
+            this.getMainView().getViewModel().set('selectedNavItem', 'config');
+            this.getMainView().setActiveItem('config');
+        } else {
+            this.getMainView().add({
+                xtype: 'ung.config.network',
+                region: 'center',
+                itemId: 'configCard'
+            });
+            this.getMainView().setActiveItem('configCard');
+        }
         // this.getMainView().setActiveItem('#dashboard');
         // this.getViewModel().set('activeItem', 'dashboard');
     },

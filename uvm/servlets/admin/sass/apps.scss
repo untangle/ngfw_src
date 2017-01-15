@@ -43,17 +43,36 @@
     overflow: hidden;
     text-align: center;
     padding: 20px 10px 0;
-    transition: all .3s cubic-bezier(0.23, 1, 0.32, 1), transform .2s cubic-bezier(0.23, 1, 0.32, 1);
-    i {
-        // font-size: 70px;
+    transition: all .3s cubic-bezier(0.23, 1, 0.32, 1);
+    // i {
+    //     // font-size: 70px;
+    //     display: block;
+    //     position: relative;
+    //     margin: 20px auto 0 auto;
+    //     text-align: center;
+    //     z-index: 10;
+    //     color: #999;
+    //     -webkit-font-smoothing: antialiased;
+    //     -webkit-backface-visibility: hidden;
+    // }
+
+    .state {
+        position: absolute;
+        top: 15px;
+        right: 25px;
+        background: #FFF;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
         display: block;
-        position: relative;
-        margin: 20px auto 0 auto;
-        text-align: center;
-        z-index: 10;
-        color: #999;
-        -webkit-font-smoothing: antialiased;
-        -webkit-backface-visibility: hidden;
+        transition: all .3s cubic-bezier(0.23, 1, 0.32, 1);
+        &.RUNNING i {
+            color: green;
+        }
+        i {
+            color: red;
+            line-height: 20px;
+        }
     }
 
     &:hover {
@@ -62,11 +81,9 @@
         img {
             // transform: translate3d( 0, 0, 0) scale(1);
         }
-        i {
-            color: green;
-            // transform: translate3d( 0, 0, 0) scale(1.2);
+        .state {
+            background: #EEE;
         }
-        // background: #EEE;
         .app-install {
             opacity: 1;
             bottom: 3px;
@@ -275,6 +292,8 @@
 
     .loader {
         display: none;
+        left: 50px;
+        top: 50px;
     }
 
     &.installing {
@@ -298,6 +317,7 @@
         }
         i.fa-check {
             opacity: 1;
+            color: green;
         }
         &:hover i.fa-download {
             opacity: 0;
