@@ -11,7 +11,7 @@ Ext.define('Ung.controller.Global', {
         'Ung.view.shd.Sessions',
         'Ung.view.shd.Hosts',
         'Ung.view.shd.Devices',
-        'Ung.view.config.network.Network'
+        'Ung.config.network.Network'
     ],
 
 
@@ -102,17 +102,49 @@ Ext.define('Ung.controller.Global', {
     },
 
     onConfig: function (configName) {
+        var me = this;
         if (!configName) {
             this.getMainView().getViewModel().set('selectedNavItem', 'config');
             this.getMainView().setActiveItem('config');
         } else {
-            this.getMainView().add({
-                xtype: 'ung.config.network',
-                region: 'center',
-                itemId: 'configCard'
+            me.getMainView().setLoading(true);
+            Ext.Loader.loadScript({
+                url: 'root/script/config/' + configName + '.js',
+                onLoad: function () {
+                    me.getMainView().setLoading(false);
+                    me.getMainView().add({
+                        xtype: 'ung.config.' + configName,
+                        region: 'center',
+                        itemId: 'configCard'
+                    });
+                    me.getMainView().setActiveItem('configCard');
+                    // console.log('loaded');
+                    // Ext.require('Ung.config.network.Network', function () {
+                    //     console.log('require');
+                    // });
+                    // setTimeout(function() {
+                    //     me.getMainView().add({
+                    //         xtype: 'ung.config.network',
+                    //         region: 'center',
+                    //         itemId: 'configCard'
+                    //     });
+                    // }, 1000);
+                }
             });
-            this.getMainView().setActiveItem('configCard');
         }
+
+
+        // if (!configName) {
+        //     this.getMainView().getViewModel().set('selectedNavItem', 'config');
+        //     this.getMainView().setActiveItem('config');
+        // } else {
+        //     this.getMainView().add({
+        //         xtype: 'ung.config.network',
+        //         region: 'center',
+        //         itemId: 'configCard'
+        //     });
+        //     this.getMainView().setActiveItem('configCard');
+        // }
         // this.getMainView().setActiveItem('#dashboard');
         // this.getViewModel().set('activeItem', 'dashboard');
     },
@@ -129,45 +161,45 @@ Ext.define('Ung.controller.Global', {
     },
 
     onSessions: function () {
-        var shd = this.getMainView().down('#shd');
-        if (shd) {
-            // this.getMainView().remove('#shd', true);
-            shd.destroy();
-        }
+        // var shd = this.getMainView().down('#shd');
+        // if (shd) {
+        //     // this.getMainView().remove('#shd', true);
+        //     shd.destroy();
+        // }
         this.getMainView().add({
             xtype: 'ung.sessions',
-            itemId: 'shd'
+            itemId: 'sessions'
         });
         this.getMainView().getViewModel().set('selectedNavItem', 'sessions');
-        this.getMainView().setActiveItem('shd');
+        this.getMainView().setActiveItem('sessions');
     },
 
     onHosts: function () {
-        var shd = this.getMainView().down('#shd');
-        if (shd) {
-            // this.getMainView().remove('#shd', true);
-            shd.destroy();
-        }
+        // var shd = this.getMainView().down('#shd');
+        // if (shd) {
+        //     // this.getMainView().remove('#shd', true);
+        //     shd.destroy();
+        // }
         this.getMainView().add({
             xtype: 'ung.hosts',
-            itemId: 'shd'
+            itemId: 'hosts'
         });
         this.getMainView().getViewModel().set('selectedNavItem', 'hosts');
-        this.getMainView().setActiveItem('shd');
+        this.getMainView().setActiveItem('hosts');
     },
 
     onDevices: function () {
-        var shd = this.getMainView().down('#shd');
-        if (shd) {
-            // this.getMainView().remove('#shd', true);
-            shd.destroy();
-        }
+        // var shd = this.getMainView().down('#shd');
+        // if (shd) {
+        //     // this.getMainView().remove('#shd', true);
+        //     shd.destroy();
+        // }
         this.getMainView().add({
             xtype: 'ung.devices',
-            itemId: 'shd'
+            itemId: 'devices'
         });
         this.getMainView().getViewModel().set('selectedNavItem', 'devices');
-        this.getMainView().setActiveItem('shd');
+        this.getMainView().setActiveItem('devices');
     }
 
 });

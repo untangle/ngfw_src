@@ -93,7 +93,7 @@
 
   <div id="app-loader">
     <div style="position: absolute; left: 50%; top: 30%; margin-left: -75px; margin-top: -60px; width: 150px; height: 140px; font-size: 16px;">
-      <img src="http://localhost:8000/images/BrandingLogo.png"/>
+      <img src="http://localhost:8002/images/BrandingLogo.png"/>
       <div class="ung-loader">Loading ...</div>
     </div>
   </div>
@@ -129,10 +129,10 @@
       }
     });
 
-    var resourcesBaseHref = 'http://localhost:8000'; // this is used for development so images are loaded from :80 server default location
+    var resourcesBaseHref = 'http://localhost:8002'; // this is used for development so images are loaded from :80 server default location
 
     // connect to RPC using forwarded 8000 port to bypass authentication for it
-    var rpc = new JSONRpcClient('http://localhost:8000/webui/JSON-RPC');
+    var rpc = new JSONRpcClient('http://localhost:8002/webui/JSON-RPC');
 
     // Disable Ext Area to avoid unwanted debug messages
     Ext.supports.MouseWheel = false;

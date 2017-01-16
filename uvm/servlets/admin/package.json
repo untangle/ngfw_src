@@ -20,7 +20,9 @@
     "gulp-uglify": "^2.0.0",
     "gulp-util": "^3.0.7",
     "jshint": "^2.9.3",
+    "parse-filepath": "^1.0.1",
     "pump": "^1.0.1",
-    "run-sequence": "^1.2.2"
+    "run-sequence": "^1.2.2",
+    "slash": "^1.0.0"
   }
 }

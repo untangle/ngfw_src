@@ -113,6 +113,8 @@ cite { background: yellow; font-style: normal; }
 
 .nav-item.x-btn-pressed { background: #3c3c3c; }
 
+.dashboard { background: #EEE; }
+
 .dashboard.highlight .widget { opacity: 0.3; }
 
 .dashboard > div > div { display: -webkit-flex; display: flex; flex-wrap: wrap; align-content: flex-start; -webkit-align-content: flex-start; -webkit-flex-wrap: wrap; width: 100%; height: 100%; vertical-align: top; box-sizing: border-box; }
@@ -427,15 +429,7 @@ i.draggable { cursor: move; }
 
 .widget .exception h3 span { vertical-align: middle; }
 
-.widget-manager { box-shadow: 1px 0 5px rgba(0, 0, 0, 0.3); z-index: 10; }
-
-.widget-manager .x-grid-row.disabled { color: #555; }
-
-.widget-manager .x-grid-cell-inner { font-family: "Source Sans Pro", sans-serif; font-size: 13px; padding: 5px 6px 3px; }
-
-.widget-manager .x-grid-cell-inner i { font-size: 20px; cursor: pointer; padding-top: 3px; }
-
-.widget-manager .x-grid-cell-inner-action-col { padding-top: 5px; height: 35px; }
+.widget-manager .x-grid-cell-inner { font-family: "Source Sans Pro", sans-serif; font-size: 13px; }
 
 .widget-manager .x-grid-cell-last i { opacity: 0; transition: opacity 0.3s cubic-bezier(0.23, 1, 0.32, 1); }
 

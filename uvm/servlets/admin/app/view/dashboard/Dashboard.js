@@ -48,7 +48,7 @@ Ext.define('Ung.view.dashboard.Dashboard', {
         titleCollapse: true,
         floatable: false,
         cls: 'widget-manager',
-        split: false,
+        split: true,
         xtype: 'grid',
         reference: 'dashboardNav',
         // forceFit: true,

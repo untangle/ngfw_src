@@ -5,7 +5,8 @@ Ext.define('Ung.view.shd.SessionsController', {
 
     control: {
         '#': {
-            afterrender: 'getSessions'
+            afterrender: 'getSessions',
+            deactivate: 'onDeactivate'
         },
         '#list': {
             select: 'onSelect'
@@ -16,6 +17,10 @@ Ext.define('Ung.view.shd.SessionsController', {
     },
 
     refreshInterval: null,
+
+    onDeactivate: function (view) {
+        view.destroy();
+    },
 
     setAutoRefresh: function (btn) {
         var me = this,
