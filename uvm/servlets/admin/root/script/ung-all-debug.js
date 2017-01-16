@@ -1929,8 +1929,16 @@ Ext.define('Ung.view.apps.AppsController', {
                     displayName: node.displayName,
                     type: node.type,
                     viewPosition: node.viewPosition,
-                    status: null
+                    status: null,
+                    targetState: result[0].instances.list.filter(function (instance) {
+                        return node.name === instance.nodeName;
+                    })[0].targetState
                 });
+
+                // var tState = result[0].instances.list.filter(function (instance) {
+                //     return node.name === instance.nodeName;
+                // });
+                // console.log(tState[0]);
             });
 
             Ext.Array.each(result[0].installable.list, function (node) {
@@ -2136,6 +2144,7 @@ Ext.define('Ung.view.apps.Apps', {
             '<tpl for=".">' +
                 '<tpl if="type === \'FILTER\'">' +
                 '<a href="#config" class="app-item">' +
+                '<span class="state {targetState}"><i class="fa fa-power-off"></i></span>' +
                 '<img src="' + resourcesBaseHref + '/skins/modern-rack/images/admin/apps/{name}_80x80.png" width=80 height=80/>' +
                 '<span class="app-name">{displayName}</span>' +
                 '</a>' +
@@ -2145,6 +2154,7 @@ Ext.define('Ung.view.apps.Apps', {
             '<tpl for=".">' +
                 '<tpl if="type === \'SERVICE\'">' +
                 '<a href="#config" class="app-item">' +
+                '<span class="state {targetState}"><i class="fa fa-power-off"></i></span>' +
                 '<img src="' + resourcesBaseHref + '/skins/modern-rack/images/admin/apps/{name}_80x80.png" width=80 height=80/>' +
                 '<span class="app-name">{displayName}</span>' +
                 '</a>' +
@@ -2294,13 +2304,13 @@ Ext.define('Ung.view.config.Config', {
     }, {
         xtype: 'dataview',
         store: {data: [
-                { name: 'Sessions'.t(), url: 'network', icon: 'icon_config_sessions.png' },
-                { name: 'Hosts'.t(), url: 'administration', icon: 'icon_config_hosts.png' },
-                { name: 'Devices'.t(), url: 'email', icon: 'icon_config_devices.png' }
+                { name: 'Sessions'.t(), url: 'sessions', icon: 'icon_config_sessions.png' },
+                { name: 'Hosts'.t(), url: 'hosts', icon: 'icon_config_hosts.png' },
+                { name: 'Devices'.t(), url: 'devices', icon: 'icon_config_devices.png' }
         ]},
         tpl: '<p class="apps-title">' + 'Tools'.t() + '</p>' +
              '<tpl for=".">' +
-                '<a href="#config/{url}" class="app-item">' +
+                '<a href="#{url}" class="app-item">' +
                 '<img src="' + resourcesBaseHref + '/skins/modern-rack/images/admin/config/{icon}" width=80 height=80/>' +
                 '<span class="app-name">{name}</span>' +
                 '</a>' +
@@ -5155,7 +5165,8 @@ Ext.define('Ung.controller.Global', {
         'Ung.overrides.form.field.VTypes',
         'Ung.view.shd.Sessions',
         'Ung.view.shd.Hosts',
-        'Ung.view.shd.Devices'
+        'Ung.view.shd.Devices',
+        'Ung.config.network.Network'
     ],
 
 
@@ -5245,9 +5256,50 @@ Ext.define('Ung.controller.Global', {
         // console.log(this.getAppsView());
     },
 
-    onConfig: function () {
-        this.getMainView().getViewModel().set('selectedNavItem', 'config');
-        this.getMainView().setActiveItem('config');
+    onConfig: function (configName) {
+        var me = this;
+        if (!configName) {
+            this.getMainView().getViewModel().set('selectedNavItem', 'config');
+            this.getMainView().setActiveItem('config');
+        } else {
+            me.getMainView().setLoading(true);
+            Ext.Loader.loadScript({
+                url: 'root/script/config/' + configName + '.js',
+                onLoad: function () {
+                    me.getMainView().setLoading(false);
+                    me.getMainView().add({
+                        xtype: 'ung.config.' + configName,
+                        region: 'center',
+                        itemId: 'configCard'
+                    });
+                    me.getMainView().setActiveItem('configCard');
+                    // console.log('loaded');
+                    // Ext.require('Ung.config.network.Network', function () {
+                    //     console.log('require');
+                    // });
+                    // setTimeout(function() {
+                    //     me.getMainView().add({
+                    //         xtype: 'ung.config.network',
+                    //         region: 'center',
+                    //         itemId: 'configCard'
+                    //     });
+                    // }, 1000);
+                }
+            });
+        }
+
+
+        // if (!configName) {
+        //     this.getMainView().getViewModel().set('selectedNavItem', 'config');
+        //     this.getMainView().setActiveItem('config');
+        // } else {
+        //     this.getMainView().add({
+        //         xtype: 'ung.config.network',
+        //         region: 'center',
+        //         itemId: 'configCard'
+        //     });
+        //     this.getMainView().setActiveItem('configCard');
+        // }
         // this.getMainView().setActiveItem('#dashboard');
         // this.getViewModel().set('activeItem', 'dashboard');
     },
@@ -5264,45 +5316,45 @@ Ext.define('Ung.controller.Global', {
     },
 
     onSessions: function () {
-        var shd = this.getMainView().down('#shd');
-        if (shd) {
-            // this.getMainView().remove('#shd', true);
-            shd.destroy();
-        }
+        // var shd = this.getMainView().down('#shd');
+        // if (shd) {
+        //     // this.getMainView().remove('#shd', true);
+        //     shd.destroy();
+        // }
         this.getMainView().add({
             xtype: 'ung.sessions',
-            itemId: 'shd'
+            itemId: 'sessions'
         });
         this.getMainView().getViewModel().set('selectedNavItem', 'sessions');
-        this.getMainView().setActiveItem('shd');
+        this.getMainView().setActiveItem('sessions');
     },
 
     onHosts: function () {
-        var shd = this.getMainView().down('#shd');
-        if (shd) {
-            // this.getMainView().remove('#shd', true);
-            shd.destroy();
-        }
+        // var shd = this.getMainView().down('#shd');
+        // if (shd) {
+        //     // this.getMainView().remove('#shd', true);
+        //     shd.destroy();
+        // }
         this.getMainView().add({
             xtype: 'ung.hosts',
-            itemId: 'shd'
+            itemId: 'hosts'
         });
         this.getMainView().getViewModel().set('selectedNavItem', 'hosts');
-        this.getMainView().setActiveItem('shd');
+        this.getMainView().setActiveItem('hosts');
     },
 
     onDevices: function () {
-        var shd = this.getMainView().down('#shd');
-        if (shd) {
-            // this.getMainView().remove('#shd', true);
-            shd.destroy();
-        }
+        // var shd = this.getMainView().down('#shd');
+        // if (shd) {
+        //     // this.getMainView().remove('#shd', true);
+        //     shd.destroy();
+        // }
         this.getMainView().add({
             xtype: 'ung.devices',
-            itemId: 'shd'
+            itemId: 'devices'
         });
         this.getMainView().getViewModel().set('selectedNavItem', 'devices');
-        this.getMainView().setActiveItem('shd');
+        this.getMainView().setActiveItem('devices');
     }
 
 });

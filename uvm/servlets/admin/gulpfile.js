@@ -9,7 +9,14 @@ var gulp        = require('gulp'),
     fs          = require('fs'),
     gutil       = require('gulp-util'),
     runSequence = require('run-sequence'),
-    jshint      = require('gulp-jshint');
+    jshint      = require('gulp-jshint'),
+    parsePath = require('parse-filepath');
+    slash = require('slash');
+
+var configModules = ['about', 'administration', 'email', 'localdirectory', 'network', 'system', 'upgrade'];
+var moduleName;
+
+
 
 // method to traverse recursevly /app folder and returns the files list
 var walkSync = function(dir, filelist) {
@@ -116,12 +123,22 @@ gulp.task('lint', function () {
         .pipe(jshint.reporter('fail'));
 });
 
+gulp.task('config-modules', function () {
+    for (var i = 0; i < configModules.length; i++) {
+        gulp.src(['./app/config/' + configModules[i] + '/*.js'])
+        // .pipe(jshint())
+        .pipe(concat(configModules[i] + '.js'))
+        // .pipe(uglify())
+        .pipe(gulp.dest('./root/script/config/'));
+    }
+});
+
 gulp.task('build', function (cb) {
     runSequence(
         'lint',
         'checkfiles',
         'clean',
-        ['js-compress', 'js-compact', 'css-compact', 'copy-node-settings'],
+        ['js-compress', 'js-compact', 'css-compact', 'config-modules'],
         function (err) {
             if (err) {
                 return process.exit(2);
@@ -147,14 +164,35 @@ gulp.task('sass', function () {
         .pipe(browserSync.stream());
 });
 
+gulp.task('modules-build', function () {
+    return gulp.src(['./app/config/' + moduleName + '/*.js'])
+        .pipe(jshint())
+        .pipe(concat(moduleName + '.js'))
+        // .pipe(uglify())
+        .pipe(gulp.dest('./root/script/config/'));
+});
+
+
 // it starts a local server and watches for changes in JS and SCSS files
-gulp.task('watch', function() {
+gulp.task('watch', ['build'], function() {
     browserSync.init({
-        //proxy: 'http://localhost'
-        //localOnly: true,
         server: './'
-        //port: 3000
     });
     gulp.watch('./sass/*.scss', ['sass']);
-    gulp.watch('./app/**/*.js', ['js-sync']);
+    gulp.watch(['./app/!(config)/**/*.js'], ['js-sync']);
+
+    // gulp.watch(['./app/config/**/*.js'], function (file) {
+    //     console.log(file);
+    // });
+
+    gulp.watch(['./app/config/**/*.js'], function (file) {
+        var arr = slash(file.path).split('/');
+        arr.pop();
+        moduleName = arr.pop();
+        console.log(gutil.colors.yellow('Building config [' + moduleName + '] ...'));
+        gulp.start('modules-build', function () {
+            browserSync.reload();
+        });
+    });
+
 });

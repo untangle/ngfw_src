@@ -5,15 +5,15 @@ Ext.define('Ung.view.shd.HostsController', {
 
     control: {
         '#': {
-            beforeactivate: 'onBeforeActivate'
+            deactivate: 'onDeactivate'
         },
         '#hostsgrid': {
             beforerender: 'onBeforeRenderHostsGrid'
         }
     },
 
-    onBeforeActivate: function (view) {
-        view.setActiveItem(0);
+    onDeactivate: function (view) {
+        view.destroy();
     },
 
     onBeforeRenderHostsGrid: function (grid) {

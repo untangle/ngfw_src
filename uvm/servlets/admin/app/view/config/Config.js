@@ -32,13 +32,13 @@ Ext.define('Ung.view.config.Config', {
     }, {
         xtype: 'dataview',
         store: {data: [
-                { name: 'Sessions'.t(), url: 'network', icon: 'icon_config_sessions.png' },
-                { name: 'Hosts'.t(), url: 'administration', icon: 'icon_config_hosts.png' },
-                { name: 'Devices'.t(), url: 'email', icon: 'icon_config_devices.png' }
+                { name: 'Sessions'.t(), url: 'sessions', icon: 'icon_config_sessions.png' },
+                { name: 'Hosts'.t(), url: 'hosts', icon: 'icon_config_hosts.png' },
+                { name: 'Devices'.t(), url: 'devices', icon: 'icon_config_devices.png' }
         ]},
         tpl: '<p class="apps-title">' + 'Tools'.t() + '</p>' +
              '<tpl for=".">' +
-                '<a href="#config/{url}" class="app-item">' +
+                '<a href="#{url}" class="app-item">' +
                 '<img src="' + resourcesBaseHref + '/skins/modern-rack/images/admin/config/{icon}" width=80 height=80/>' +
                 '<span class="app-name">{name}</span>' +
                 '</a>' +
