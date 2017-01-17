@@ -3,10 +3,10 @@ Ext.define('Ung.config.network.Network', {
     xtype: 'ung.config.network',
 
     requires: [
-        'Ung.config.network.Interfaces',
-
         'Ung.config.network.NetworkController',
-        'Ung.config.network.NetworkModel'
+        'Ung.config.network.NetworkModel',
+
+        'Ung.view.grid.Grid'
     ],
 
     controller: 'config.network',
@@ -31,22 +31,26 @@ Ext.define('Ung.config.network.Network', {
         }, '-', {
             xtype: 'component',
             html: 'Network'
+        }],
+    }, {
+        xtype: 'toolbar',
+        dock: 'bottom',
+        border: false,
+        items: ['->', {
+            text: 'Apply Changes'.t(),
+            iconCls: 'fa fa-floppy-o fa-lg',
+            handler: 'saveSettings'
         }]
     }],
 
     items: [{
         xtype: 'ung.config.network.interfaces'
     }, {
-        title: 'Hostname'.t(),
-        itemId: 'hostname',
-        html: 'hostname'
+        xtype: 'ung.config.network.hostname'
     }, {
-        title: 'Services'.t(),
-        itemId: 'services',
-        html: 'services'
+        xtype: 'ung.config.network.services'
     }, {
-        title: 'Rules'.t(),
-        html: 'rules'
+        xtype: 'ung.config.network.portforwardrules'
     }, {
         title: 'Routes'.t(),
         html: 'routes'

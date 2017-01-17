@@ -20,23 +20,24 @@ Ext.define('Ung.config.network.NetworkController', {
         },
         '#interfaceArp': {
         },
-        '#apply': {
-            click: 'saveSettings'
-        }
+        // '#apply': {
+        //     click: 'saveSettings'
+        // }
     },
 
     saveSettings: function () {
         var view = this.getView();
         var vm = this.getViewModel();
         var me = this;
-        view.setLoading('Saving ...');
-        rpc.networkManager.setNetworkSettings(function (result, ex) {
-            console.log(ex);
-            console.log(result);
-            // vm.getStore('interfaces').reload();
-            view.setLoading(false);
-            me.loadInterfaceStatusAndDevices();
-        }, vm.get('settings'));
+        // view.setLoading('Saving ...');
+        console.log(vm.get('settings'));
+        // rpc.networkManager.setNetworkSettings(function (result, ex) {
+        //     console.log(ex);
+        //     console.log(result);
+        //     // vm.getStore('interfaces').reload();
+        //     view.setLoading(false);
+        //     me.loadInterfaceStatusAndDevices();
+        // }, vm.get('settings'));
     },
 
     loadSettings: function () {
@@ -44,6 +45,8 @@ Ext.define('Ung.config.network.NetworkController', {
         rpc.networkManager.getNetworkSettings(function (result, ex) {
             me.getViewModel().set('settings', result);
             me.loadInterfaceStatusAndDevices();
+
+            console.log(result);
             // interfaces = result.interfaces.list;
         });
     },

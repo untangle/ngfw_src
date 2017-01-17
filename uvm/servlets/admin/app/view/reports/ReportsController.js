@@ -121,15 +121,18 @@ Ext.define('Ung.view.reports.ReportsController', {
     getCurrentApplications: function () {
         var app, i, vm = this.getViewModel(), me = this;
         var categories = [
-            { categoryName: 'Hosts', url: 'hosts', displayName: 'Hosts'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_hosts.png' },
-            { categoryName: 'Devices', url: 'devices', displayName: 'Devices'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_devices.png' },
-            { categoryName: 'Network', url: 'network', displayName: 'Network'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_network.png' },
-            { categoryName: 'Administration', url: 'administration', displayName: 'Administration'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_admin.png' },
-            { categoryName: 'System', url: 'system', displayName: 'System'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_system.png' },
-            { categoryName: 'Shield', url: 'shield', displayName: 'Shield'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/apps/untangle-node-shield_17x17.png' }
+            { categoryName: 'Hosts', type: 'system', url: 'hosts', displayName: 'Hosts'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_hosts.png' },
+            { categoryName: 'Devices', type: 'system', url: 'devices', displayName: 'Devices'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_devices.png' },
+            { categoryName: 'Network', type: 'system', url: 'network', displayName: 'Network'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_network.png' },
+            { categoryName: 'Administration', type: 'system', url: 'administration', displayName: 'Administration'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_admin.png' },
+            { categoryName: 'System', type: 'system', url: 'system', displayName: 'System'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_system.png' },
+            { categoryName: 'Shield', type: 'system', url: 'shield', displayName: 'Shield'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/apps/untangle-node-shield_17x17.png' }
         ];
 
         rpc.reportsManager.getCurrentApplications(function (result, ex) {
+
+            console.log(result);
+
             if (ex) { Ung.Util.exceptionToast(ex); return false; }
 
             for (i = 0; i < result.list.length; i += 1) {
@@ -137,6 +140,7 @@ Ext.define('Ung.view.reports.ReportsController', {
                 if (app.name !== 'untangle-node-branding-manager' && app.name !== 'untangle-node-live-support') {
                     categories.push({
                         categoryName: app.displayName,
+                        type: 'app',
                         url: app.name.replace('untangle-node-', ''),
                         displayName: app.displayName, // t()
                         icon: resourcesBaseHref + '/skins/modern-rack/images/admin/apps/' + app.name + '_80x80.png'

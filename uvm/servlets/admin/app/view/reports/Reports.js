@@ -139,12 +139,23 @@ Ext.define('Ung.view.reports.Reports', {
                 xtype: 'dataview',
                 itemId: 'allCategoriesCard',
                 store: 'categories',
-                tpl: '<p class="apps-title">' + 'Select Category'.t() + '</p>' +
+                tpl: '<p class="apps-title">' + 'System'.t() + '</p>' +
                     '<tpl for=".">' +
+                        '<tpl if="type === \'system\'">' +
                         '<a href="#reports/{url}" class="app-item">' +
                         '<img src="{icon}" width=80 height=80/>' +
                         '<span class="app-name">{displayName}</span>' +
                         '</a>' +
+                        '</tpl>' +
+                    '</tpl>' +
+                    '<p class="apps-title">' + 'Apps'.t() + '</p>' +
+                    '<tpl for=".">' +
+                        '<tpl if="type === \'app\'">' +
+                        '<a href="#reports/{url}" class="app-item">' +
+                        '<img src="{icon}" width=80 height=80/>' +
+                        '<span class="app-name">{displayName}</span>' +
+                        '</a>' +
+                        '</tpl>' +
                     '</tpl>',
                 itemSelector: 'a'
             }, {

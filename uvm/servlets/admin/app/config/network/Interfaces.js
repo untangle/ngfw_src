@@ -82,7 +82,7 @@ Ext.define('Ung.config.network.Interfaces', {
             header: 'is WAN'.t(),
             dataIndex: 'isWan'
         }],
-        bbar: [{
+        tbar: [{
             xtype: 'button',
             iconCls: 'fa fa-refresh',
             text: 'Refresh'.t(),
@@ -161,12 +161,6 @@ Ext.define('Ung.config.network.Interfaces', {
                 labelWidth: 200,
                 labelAlign: 'right'
             },
-            bbar: [{
-                xtype: 'button',
-                itemId: 'apply',
-                text: 'Apply',
-                iconCls: 'fa fa-floppy-o'
-            }],
             items: [{
                 // interface name
                 xtype: 'textfield',

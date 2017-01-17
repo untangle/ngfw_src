@@ -17,7 +17,16 @@ Ext.define('Ung.config.network.NetworkModel', {
         showRouterWarning: function (get) { return get('si.v6StaticPrefixLength') !== 64; },
         showWireless: function (get) { return get('si.isWirelessInterface') && get('si.configType') !== 'DISABLED'; },
         showWirelessPassword: function (get) { return get('si.wirelessEncryption') !== 'NONE' && get('si.wirelessEncryption') !== null; },
-        activePropsItem: function (get) { return get('si.configType') !== 'DISABLED' ? 0 : 2; }
+        activePropsItem: function (get) { return get('si.configType') !== 'DISABLED' ? 0 : 2; },
+
+        fullHostName: function (get) {
+            var domain = get('settings.domainName'),
+                host = get('settings.hostName');
+            if (domain !== null && domain !== '') {
+                return host + "." + domain;
+            }
+            return host;
+        }
     },
     data: {
         // si = selected interface (from grid)
@@ -33,6 +42,10 @@ Ext.define('Ung.config.network.NetworkModel', {
         },
         interfaceArp: {
             data: '{siArp}'
+        },
+
+        portforwardrules: {
+            data: '{settings.portForwardRules.list}'
         }
     }
 });
