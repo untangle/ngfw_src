@@ -59,7 +59,7 @@ Ext.define('Ung.view.grid.Grid', {
         // Edit column
         if (Ext.Array.contains(columnFeatures, 'edit')) {
             actionColumns.push({
-                xtype: 'ung.actioncolumn',
+                xtype: 'actioncolumn',
                 text: 'Edit'.t(),
                 align: 'center',
                 width: 50,
@@ -67,10 +67,13 @@ Ext.define('Ung.view.grid.Grid', {
                 hideable: false,
                 resizable: false,
                 menuDisabled: true,
-                materialIcon: 'edit',
-                handler: 'editRecord',
-                editor: false,
-                type: 'edit'
+                // materialIcon: 'edit',
+                // handler: 'editRecord',
+                // editor: false,
+                // type: 'edit',
+                items: [{
+                    iconCls: 'fa fa-pencil-square'
+                }]
             });
         }
 

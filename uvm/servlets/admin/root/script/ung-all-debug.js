@@ -900,14 +900,14 @@ Ext.define('Ung.view.dashboard.DashboardController', {
     enableRenderer: function (value, meta, record) {
         var vm = this.getViewModel();
         if (record.get('type') !== 'ReportEntry') {
-            return '<i class="fa ' + (value ? 'fa-check-circle-o' : 'fa-circle-o') + '"></i>';
+            return '<i class="fa ' + (value ? 'fa-check-circle-o' : 'fa-circle-o') + ' fa-lg"></i>';
         }
         var entry = Ext.getStore('reports').findRecord('uniqueId', record.get('entryId'));
 
         if (!entry || Ext.getStore('unavailableApps').first().get(entry.get('category')) || !vm.get('reportsRunning')) {
-            return '<i class="fa fa-info-circle" style="color: #a91f1f;"></i>';
+            return '<i class="fa fa-info-circle fa-lg" style="color: #a91f1f;"></i>';
         }
-        return '<i class="fa ' + (value ? 'fa-check-circle-o' : 'fa-circle-o') + '"></i>';
+        return '<i class="fa ' + (value ? 'fa-check-circle-o' : 'fa-circle-o') + ' fa-lg"></i>';
     },
 
     settingsRenderer: function () {
@@ -922,7 +922,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         enabled = record.get('enabled');
 
         if (!value) {
-            return '<span style="font-weight: 700; ' + (!enabled ? 'color: #999;' : '') + '">' + record.get('type') + '</span><br/><span style="font-size: 10px; color: #777;">Common</span>';
+            return '<span style="font-weight: 700; ' + (!enabled ? 'color: #999;' : '') + '">' + record.get('type') + '</span>'; // <br/><span style="font-size: 10px; color: #777;">Common</span>';
         }
         if (vm.get('reportsInstalled')) {
             entry = Ext.getStore('reports').findRecord('uniqueId', value);
@@ -933,11 +933,11 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                 if (entry.get('timeDataInterval') && entry.get('timeDataInterval') !== 'AUTO') {
                     title += '<span style="text-transform: lowercase; color: #999; font-weight: 300;"> per ' + entry.get('timeDataInterval') + '</span>';
                 }
-                if (unavailApp) {
-                    title += '<br/><span style="font-size: 10px; color: #777;">' + entry.get('category') + '</span>';
-                } else {
-                    title += '<br/><span style="font-size: 10px; color: #777;">' + entry.get('category') + '</span>';
-                }
+                // if (unavailApp) {
+                //     title += '<br/><span style="font-size: 10px; color: #777;">' + entry.get('category') + '</span>';
+                // } else {
+                //     title += '<br/><span style="font-size: 10px; color: #777;">' + entry.get('category') + '</span>';
+                // }
                 /*
                 if (entry.get('readOnly')) {
                     title += ' <i class="material-icons" style="font-size: 14px; color: #999; vertical-align: top;">lock</i>';
@@ -4115,7 +4115,7 @@ Ext.define('Ung.view.dashboard.Dashboard', {
         titleCollapse: true,
         floatable: false,
         cls: 'widget-manager',
-        split: false,
+        split: true,
         xtype: 'grid',
         reference: 'dashboardNav',
         // forceFit: true,

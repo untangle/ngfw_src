@@ -253,7 +253,7 @@ i.draggable { cursor: move; }
 
 .headline { font-family: "Source Sans Pro", sans-serif; text-align: center; font-size: 32px; font-weight: 100; color: #777; }
 
-.x-action-col-icon { position: absolute; top: 0; left: 0; right: 0; bottom: 0; height: auto; width: auto; }
+.x-action-col-icon { font-size: 18px; color: #333; }
 
 .bar-text .x-form-display-field-default { font-size: 11px; min-height: auto; margin-top: 2px; }
 

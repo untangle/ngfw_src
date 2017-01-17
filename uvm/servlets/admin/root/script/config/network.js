@@ -1,3 +1,163 @@
+Ext.define('Ung.config.network.Hostname', {
+    extend: 'Ext.panel.Panel',
+    xtype: 'ung.config.network.hostname',
+
+    viewModel: true,
+
+    title: 'Hostname'.t(),
+    padding: 10,
+    // itemId: 'interfaces',
+
+    items: [{
+        xtype: 'fieldset',
+        title: 'Hostname'.t(),
+        items: [{
+            xtype: 'container',
+            layout: 'column',
+            margin: '0 0 5 0',
+            items: [{
+                xtype: 'textfield',
+                fieldLabel: 'Hostname'.t(),
+                labelAlign: 'right',
+                emptyText: 'untangle',
+                name: 'HostName',
+                bind: '{settings.hostName}',
+                maskRe: /[a-zA-Z0-9\-]/
+            }, {
+                xtype: 'label',
+                html: '(eg: gateway)'.t(),
+                cls: 'boxlabel'
+            }]
+        },{
+            xtype: 'container',
+            layout: 'column',
+            margin: '0 0 5 0',
+            items: [{
+                xtype: 'textfield',
+                fieldLabel: 'Domain Name'.t(),
+                labelAlign: 'right',
+                emptyText: 'example.com',
+                allowBlank: false,
+                name: 'DomainName',
+                bind: '{settings.domainName}'
+            }, {
+                xtype: 'label',
+                html: '(eg: example.com)',
+                cls: 'boxlabel'
+            }]
+        }]
+    }, {
+        xtype: 'fieldset',
+        title: 'Dynamic DNS Service Configuration'.t(),
+        defaults: {
+            labelAlign: 'right'
+        },
+        items: [{
+            xtype: 'checkbox',
+            fieldLabel: 'Enabled',
+            bind: '{settings.dynamicDnsServiceEnabled}',
+        }, {
+            xtype: 'combo',
+            fieldLabel: 'Service'.t(),
+            bind: '{settings.dynamicDnsServiceName}',
+            store: [['easydns','EasyDNS'],
+                    ['zoneedit','ZoneEdit'],
+                    ['dyndns','DynDNS'],
+                    ['namecheap','Namecheap'],
+                    ['dslreports','DSL-Reports'],
+                    ['dnspark','DNSPark'],
+                    ['no-ip','No-IP'],
+                    ['dnsomatic','DNS-O-Matic'],
+                    ['cloudflare','Cloudflare']]
+        }, {
+            xtype: 'textfield',
+            fieldLabel: 'Username'.t(),
+            bind: '{settings.dynamicDnsServiceUsername}'
+        }, {
+            xtype: 'textfield',
+            fieldLabel: 'Password'.t(),
+            bind: '{settings.dynamicDnsServicePassword}',
+            inputType: 'password'
+        }, {
+            xtype: 'textfield',
+            fieldLabel: 'Hostname(s)'.t(),
+            bind: '{settings.dynamicDnsServiceHostnames}',
+        }]
+    }, {
+        xtype: 'radiogroup',
+        title: 'Public Address Configuration'.t(),
+        columns: 1,
+        simpleValue: true,
+        bind: '{settings.publicUrlMethod}',
+        items: [{
+            xtype: 'component',
+            margin: '0 0 10 0',
+            html: Ext.String.format('The Public Address is the address/URL that provides a public location for the {0} Server. This address will be used in emails sent by the {0} Server to link back to services hosted on the {0} Server such as Quarantine Digests and OpenVPN Client emails.'.t(), rpc.companyName)
+        }, {
+            xtype: 'radio',
+            boxLabel: 'Use IP address from External interface (default)'.t(),
+            name: 'publicUrl',
+            inputValue: 'external'
+        }, {
+            xtype: 'component',
+            margin: '0 0 10 25',
+            html: Ext.String.format('This works if your {0} Server has a routable public static IP address.'.t(), rpc.companyName)
+        }, {
+            xtype: 'radio',
+            boxLabel: 'Use Hostname'.t(),
+            name: 'publicUrl',
+            inputValue: 'hostname'
+        }, {
+            xtype: 'component',
+            margin: '0 0 5 25',
+            html: Ext.String.format('This is recommended if the {0} Server\'s fully qualified domain name looks up to its IP address both internally and externally.'.t(), rpc.companyName)
+        }, {
+            xtype: 'component',
+            margin: '0 0 10 25',
+            bind: {
+                html: 'Current Hostname'.t() + ':<i> {fullHostName} </i>'
+            }
+        }, {
+            xtype: 'radio',
+            boxLabel: 'Use Manually Specified Address'.t(),
+            name: 'publicUrl',
+            inputValue: 'address_and_port'
+        }, {
+            xtype: 'component',
+            margin: '0 0 10 25',
+            html: Ext.String.format('This is recommended if the {0} Server is installed behind another firewall with a port forward from the specified hostname/IP that redirects traffic to the {0} Server.'.t(), rpc.companyName)
+        }, {
+            xtype: 'textfield',
+            margin: '0 0 5 25',
+            fieldLabel: 'IP/Hostname'.t(),
+            name: 'publicUrlAddress',
+            allowBlank: false,
+            width: 400,
+            blankText: 'You must provide a valid IP Address or hostname.'.t(),
+            disabled: true,
+            bind: {
+                value: '{settings.publicUrlAddress}',
+                disabled: '{settings.publicUrlMethod != "address_and_port"}',
+            }
+        }, {
+            xtype: 'numberfield',
+            margin: '0 0 5 25',
+            fieldLabel: 'Port'.t(),
+            name: 'publicUrlPort',
+            allowDecimals: false,
+            minValue: 0,
+            allowBlank: false,
+            width: 210,
+            blankText: 'You must provide a valid port.'.t(),
+            vtype: 'port',
+            disabled: true,
+            bind: {
+                value: '{settings.publicUrlPort}',
+                disabled: '{settings.publicUrlMethod != "address_and_port"}',
+            }
+        }]
+    }]
+});
 Ext.define('Ung.config.network.Interfaces', {
     extend: 'Ext.panel.Panel',
     xtype: 'ung.config.network.interfaces', //..
@@ -82,7 +242,7 @@ Ext.define('Ung.config.network.Interfaces', {
             header: 'is WAN'.t(),
             dataIndex: 'isWan'
         }],
-        bbar: [{
+        tbar: [{
             xtype: 'button',
             iconCls: 'fa fa-refresh',
             text: 'Refresh'.t(),
@@ -161,12 +321,6 @@ Ext.define('Ung.config.network.Interfaces', {
                 labelWidth: 200,
                 labelAlign: 'right'
             },
-            bbar: [{
-                xtype: 'button',
-                itemId: 'apply',
-                text: 'Apply',
-                iconCls: 'fa fa-floppy-o'
-            }],
             items: [{
                 // interface name
                 xtype: 'textfield',
@@ -778,10 +932,10 @@ Ext.define('Ung.config.network.Network', {
     xtype: 'ung.config.network',
 
     requires: [
-        'Ung.config.network.Interfaces',
-
         'Ung.config.network.NetworkController',
-        'Ung.config.network.NetworkModel'
+        'Ung.config.network.NetworkModel',
+
+        'Ung.view.grid.Grid'
     ],
 
     controller: 'config.network',
@@ -806,22 +960,26 @@ Ext.define('Ung.config.network.Network', {
         }, '-', {
             xtype: 'component',
             html: 'Network'
+        }],
+    }, {
+        xtype: 'toolbar',
+        dock: 'bottom',
+        border: false,
+        items: ['->', {
+            text: 'Apply Changes'.t(),
+            iconCls: 'fa fa-floppy-o fa-lg',
+            handler: 'saveSettings'
         }]
     }],
 
     items: [{
         xtype: 'ung.config.network.interfaces'
     }, {
-        title: 'Hostname'.t(),
-        itemId: 'hostname',
-        html: 'hostname'
+        xtype: 'ung.config.network.hostname'
     }, {
-        title: 'Services'.t(),
-        itemId: 'services',
-        html: 'services'
+        xtype: 'ung.config.network.services'
     }, {
-        title: 'Rules'.t(),
-        html: 'rules'
+        xtype: 'ung.config.network.portforwardrules'
     }, {
         title: 'Routes'.t(),
         html: 'routes'
@@ -864,23 +1022,24 @@ Ext.define('Ung.config.network.NetworkController', {
         },
         '#interfaceArp': {
         },
-        '#apply': {
-            click: 'saveSettings'
-        }
+        // '#apply': {
+        //     click: 'saveSettings'
+        // }
     },
 
     saveSettings: function () {
         var view = this.getView();
         var vm = this.getViewModel();
         var me = this;
-        view.setLoading('Saving ...');
-        rpc.networkManager.setNetworkSettings(function (result, ex) {
-            console.log(ex);
-            console.log(result);
-            // vm.getStore('interfaces').reload();
-            view.setLoading(false);
-            me.loadInterfaceStatusAndDevices();
-        }, vm.get('settings'));
+        // view.setLoading('Saving ...');
+        console.log(vm.get('settings'));
+        // rpc.networkManager.setNetworkSettings(function (result, ex) {
+        //     console.log(ex);
+        //     console.log(result);
+        //     // vm.getStore('interfaces').reload();
+        //     view.setLoading(false);
+        //     me.loadInterfaceStatusAndDevices();
+        // }, vm.get('settings'));
     },
 
     loadSettings: function () {
@@ -888,6 +1047,8 @@ Ext.define('Ung.config.network.NetworkController', {
         rpc.networkManager.getNetworkSettings(function (result, ex) {
             me.getViewModel().set('settings', result);
             me.loadInterfaceStatusAndDevices();
+
+            console.log(result);
             // interfaces = result.interfaces.list;
         });
     },
@@ -1126,7 +1287,16 @@ Ext.define('Ung.config.network.NetworkModel', {
         showRouterWarning: function (get) { return get('si.v6StaticPrefixLength') !== 64; },
         showWireless: function (get) { return get('si.isWirelessInterface') && get('si.configType') !== 'DISABLED'; },
         showWirelessPassword: function (get) { return get('si.wirelessEncryption') !== 'NONE' && get('si.wirelessEncryption') !== null; },
-        activePropsItem: function (get) { return get('si.configType') !== 'DISABLED' ? 0 : 2; }
+        activePropsItem: function (get) { return get('si.configType') !== 'DISABLED' ? 0 : 2; },
+
+        fullHostName: function (get) {
+            var domain = get('settings.domainName'),
+                host = get('settings.hostName');
+            if (domain !== null && domain !== '') {
+                return host + "." + domain;
+            }
+            return host;
+        }
     },
     data: {
         // si = selected interface (from grid)
@@ -1142,6 +1312,219 @@ Ext.define('Ung.config.network.NetworkModel', {
         },
         interfaceArp: {
             data: '{siArp}'
+        },
+
+        portforwardrules: {
+            data: '{settings.portForwardRules.list}'
         }
     }
+});
+Ext.define('Ung.config.network.PortForwardRules', {
+    extend: 'Ext.panel.Panel',
+    xtype: 'ung.config.network.portforwardrules',
+
+    viewModel: true,
+
+    title: 'Port Forward Rules'.t(),
+
+    layout: { type: 'vbox', align: 'stretch' },
+
+    tbar: [{
+        xtype: 'displayfield',
+        value: "Port Forward rules forward sessions matching the configured criteria from a public IP to an IP on an internal (NAT'd) network. The rules are evaluated in order.".t()
+    }],
+
+    portForwardConditions: [
+        {name:"DST_LOCAL",displayName: 'Destined Local'.t(), type: "boolean", visible: true},
+        {name:"DST_ADDR",displayName: 'Destination Address'.t(), type: "text", visible: true, vtype:"ipMatcher"},
+        {name:"DST_PORT",displayName: 'Destination Port'.t(), type: "text",vtype:"portMatcher", visible: true},
+        {name:"SRC_ADDR",displayName: 'Source Address'.t(), type: "text", visible: true, vtype:"ipMatcher"},
+        {name:"SRC_PORT",displayName: 'Source Port'.t(), type: "text",vtype:"portMatcher", visible: rpc.isExpertMode},
+        {name:"SRC_INTF",displayName: 'Source Interface'.t(), type: "checkgroup", values: ['a', 'b'], visible: true},
+        {name:"PROTOCOL",displayName: 'Protocol'.t(), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true}
+    ],
+
+    items: [{
+        xtype: 'grid',
+        // columnFeatures: ['edit'],
+        flex: 3,
+        tbar: [{
+            text: 'Add Rule'.t(),
+            iconCls: 'fa fa-plus'
+        }],
+        leadingBufferZone: 8,
+        trailingBufferZone: 8,
+        plugins: [{
+            ptype: 'rowwidget',
+            widget: {
+                xtype: 'grid',
+                hideHeaders: true,
+                bind: {
+                    store: {
+                        data: '{record.conditions.list}'
+                    },
+                    // title: 'Conditions'.t()
+                },
+                // columns: [{
+                //     text: 'Condition',
+                //     // dataIndex: 'conditionType',
+                //     renderer: function (val, record) {
+                //         console.log(record);
+                //         return record.conditionType + ' ' + (record.get('invert') ? 'is Not' : 'is') + ' ' + record.get('value');
+                //     }
+                // }]
+                fields: ['conditionType', 'invert', 'value'],
+                columns: [{
+                    xtype: 'widgetcolumn',
+                    text: 'Condition',
+                    width: 200,
+                    // dataIndex: 'conditionType',
+                    widget: {
+                        xtype: 'combo',
+                        editable: false,
+                        bind: '{record.conditionType}',
+                        store: [
+                            ['DST_LOCAL', 'Destined Local'.t()],
+                            ['DST_ADDR', 'Destinatoin Address'.t()],
+                        ]
+                    }
+                }, {
+                    xtype: 'widgetcolumn',
+                    widget: {
+                        xtype: 'combo',
+                        editable: false,
+                        bind: '{record.invert}',
+                        store: [[true, 'is not'], [false, 'is']]
+                    }
+                }, {
+                    xtype: 'widgetcolumn',
+                    widget: {
+                        xtype: 'container',
+                        items: [{
+                            xtype: 'textfield',
+                            hidden: true,
+                            bind: {
+                                value: '{record.value}',
+                                hidden: '{record.conditionType === "DST_LOCAL"}'
+                            }
+                        }, {
+                            html: 'b'
+                        }]
+                    }
+                }]
+            }
+        }],
+
+        bind: '{portforwardrules}',
+        fields: [{
+            name: 'ruleId'
+        }, {
+            name: 'enabled'
+        }, {
+            name: 'newDestination',
+            sortType: 'asIp'
+        }, {
+            name: 'newPort',
+            sortType: 'asInt'
+        }, {
+            name: 'conditions'
+        }, {
+            name: 'description'
+        }, {
+            name: 'simple'
+        }, {
+            name: 'javaClass'
+        }],
+        columns: [{
+            header: 'Rule Id'.t(),
+            width: 50,
+            dataIndex: 'ruleId',
+            renderer: function(value) {
+                if (value < 0) {
+                    return 'new'.t();
+                } else {
+                    return value;
+                }
+            }
+        }, {
+            xtype:'checkcolumn',
+            header: 'Enable',
+            dataIndex: 'enabled',
+            resizable: false,
+            width: 55
+        }, {
+            header: 'Description',
+            width: 200,
+            dataIndex: 'description',
+            flex: 1,
+            editor: {
+                xtype:'textfield',
+                emptyText: '[no description]'.t()
+            }
+        }, {
+            header: 'New Destination'.t(),
+            dataIndex: 'newDestination',
+            width: 150
+        }, {
+            header: 'New Port'.t(),
+            dataIndex: 'newPort',
+            width: 65
+        }],
+    }, {
+        xtype: 'fieldset',
+        flex: 2,
+        margin: 10,
+        // border: true,
+        collapsible: true,
+        collapsed: false,
+        autoScroll: true,
+        title: 'The following ports are currently reserved and can not be forwarded:'.t(),
+        items: [{
+            xtype: 'component',
+            name: 'portForwardWarnings',
+            html: ' '
+        }]
+    }]
+});
+Ext.define('Ung.config.network.Services', {
+    extend: 'Ext.panel.Panel',
+    xtype: 'ung.config.network.services',
+
+    viewModel: true,
+
+    title: 'Services'.t(),
+    padding: 10,
+
+    items: [{
+        xtype: 'fieldset',
+        title: 'Local Services'.t(),
+        defaults: {
+            allowDecimals: false,
+            minValue: 0,
+            allowBlank: false,
+            vtype: 'port'
+        },
+        items: [{
+            xtype: 'component',
+            html: '<br/>' + 'The specified HTTPS port will be forwarded from all interfaces to the local HTTPS server to provide administration and other services.'.t() + '<br/>',
+            margin: '0 0 10 0'
+        }, {
+            xtype: 'numberfield',
+            fieldLabel: 'HTTPS port'.t(),
+            name: 'httpsPort',
+            bind: '{settings.httpsPort}',
+            blankText: 'You must provide a valid port.'.t()
+        }, {
+            xtype: 'component',
+            html: '<br/>' + 'The specified HTTP port will be forwarded on non-WAN interfaces to the local HTTP server to provide administration, blockpages, and other services.'.t() + '<br/>',
+            margin: '0 0 10 0'
+        }, {
+            xtype: 'numberfield',
+            fieldLabel: 'HTTP port'.t(),
+            name: 'httpPort',
+            bind: '{settings.httpPort}',
+            blankText: 'You must provide a valid port.'.t(),
+        }]
+    }]
+
 });
