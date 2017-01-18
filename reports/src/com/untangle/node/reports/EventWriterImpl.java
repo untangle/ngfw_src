@@ -187,11 +187,6 @@ public class EventWriterImpl implements Runnable
                     }
 
                     /**
-                     * Run alert rules
-                     */
-                    AlertHandler.runAlertRules( app.getSettings().getAlertRules(), logQueue, app );
-                    
-                    /**
                      * If there is anything to log, log it to the database
                      */
                     if (logQueue.size() > 0)
