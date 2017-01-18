@@ -80,6 +80,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private CertificateManagerImpl certificateManager;
     private GeographyManagerImpl geographyManager;
     private NetcapManagerImpl netcapManager;
+    private AlertManagerImpl alertManager;
     private DaemonManagerImpl daemonManager;
     private BrandingManagerImpl brandingManager;
     private SkinManagerImpl skinManager;
@@ -217,6 +218,11 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     public NetcapManager netcapManager()
     {
         return this.netcapManager;
+    }
+
+    public AlertManager alertManager()
+    {
+        return this.alertManager;
     }
 
     public ServletFileManager servletFileManager()
@@ -648,6 +654,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             return;
 
         this.reportsNode.logEvent(evt);
+        this.alertManager.logEvent(evt);
     }
 
     public String getServerUID()
@@ -824,6 +831,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         this.netcapManager = NetcapManagerImpl.getInstance();
         
         createUID();
+
+        this.alertManager = new AlertManagerImpl();
 
         this.hookManager = HookManagerImpl.getInstance();
 

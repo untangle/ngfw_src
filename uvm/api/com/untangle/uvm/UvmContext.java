@@ -211,6 +211,13 @@ public interface UvmContext
     NetcapManager netcapManager();
 
     /**
+     * Get the AlertManager
+     *
+     * @return the AlertManager
+     */
+    AlertManager alertManager();
+
+    /**
      * Get the UploadManager
      *
      * @return the UploadManager
