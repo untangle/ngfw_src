@@ -409,19 +409,10 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         }
 
         /**
-         * Start the database
-         */
-        if ( "postgresql".equals( ReportsApp.dbDriver ) )
-            UvmContextFactory.context().daemonManager().incrementUsageCount( "postgresql" );
-        
-        /**
          * Report updates
          */
         ReportsManagerImpl.getInstance().updateSystemReportEntries( settings.getReportEntries(), true );
         
-        /* intialize tables (if necessary) */
-        this.initializeDB();
-
         /* sync settings to disk if necessary */
         File settingsFile = new File( settingsFileName );
         if (settingsFile.lastModified() > CRON_FILE.lastModified())
@@ -429,12 +420,6 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         if (settingsFile.lastModified() > SYSLOG_CONF_FILE.lastModified())
             SyslogManagerImpl.reconfigure(this.settings);
         SyslogManagerImpl.setEnabled(this.settings);
-        
-        /* Start the servlet */
-        UvmContextFactory.context().tomcatManager().loadServlet("/reports", "reports");
-
-        /* Enable to run event writing performance tests */
-        // new Thread(new PerformanceTest()).start();
     }
 
     @Override
@@ -444,13 +429,28 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
             postInit();
         }
 
+        /* Start the servlet */
+        UvmContextFactory.context().tomcatManager().loadServlet("/reports", "reports");
+
+        /* Start the database */
+        if ( "postgresql".equals( ReportsApp.dbDriver ) )
+            UvmContextFactory.context().daemonManager().incrementUsageCount( "postgresql" );
+
+        /* Intialize database tables (if necessary) */
+        this.initializeDB();
+
         ReportsApp.eventWriter.start( this );
+
+        /* Enable to run event writing performance tests */
+        // new Thread(new PerformanceTest()).start();
     }
 
     @Override
     protected void postStop( boolean isPermanentTransition )
     {
         ReportsApp.eventWriter.stop();
+
+        UvmContextFactory.context().tomcatManager().unloadServlet("/reports");
 
         if ( "postgresql".equals( ReportsApp.dbDriver ) )
             UvmContextFactory.context().daemonManager().decrementUsageCount( "postgresql" );
@@ -459,7 +459,6 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
     @Override
     protected void preDestroy() 
     {
-        UvmContextFactory.context().tomcatManager().unloadServlet("/reports");
     }
     
     private LinkedList<AlertRule> defaultAlertRules()
