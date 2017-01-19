@@ -6,6 +6,8 @@ Ext.define('Ung.config.network.Network', {
         'Ung.config.network.NetworkController',
         'Ung.config.network.NetworkModel',
 
+        'Ung.config.network.RuleEditor',
+
         'Ung.view.grid.Grid'
     ],
 

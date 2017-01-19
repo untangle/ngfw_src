@@ -188,5 +188,39 @@ Ext.define('Ung.util.Util', {
                 value: extClasses.join('\r\n')
             }]
         }).show();
-    }
+    },
+
+    getInterfaceListSystemDev: function(wanMatchers, anyMatcher, systemDev) {
+        var data = [];
+        // var networkSettings = Ung.Main.getNetworkSettings();
+        // for ( var c = 0 ; c < networkSettings.interfaces.list.length ; c++ ) {
+        //     var intf = networkSettings.interfaces.list[c];
+        //     var name = intf.name;
+        //     var key = systemDev?intf.systemDev:intf.interfaceId;
+        //     data.push( [ key, name ] );
+        // }
+
+
+        if (systemDev) {
+            data.push( [ 'tun0', 'OpenVPN' ] );
+        } else {
+            data.push( [ 250, 'OpenVPN' ] ); // 0xfa
+            data.push( [ 251, 'L2TP' ] ); // 0xfb
+            data.push( [ 252, 'Xauth' ] ); // 0xfc
+            data.push( [ 253, 'GRE' ] ); // 0xfd
+        }
+        if (wanMatchers) {
+            data.unshift( ['wan', 'Any WAN'.t()] );
+            data.unshift( ['non_wan', 'Any Non-WAN'.t()] );
+        }
+        if (anyMatcher) {
+            data.unshift( ['any', 'Any'.t()] );
+        }
+        return data;
+    },
+
+    getInterfaceList: function (wanMatchers, anyMatcher) {
+        return this.getInterfaceListSystemDev(wanMatchers, anyMatcher, false);
+    },
+
 });
