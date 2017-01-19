@@ -3,8 +3,24 @@ Ext.define ('Ung.model.Condition', {
     fields: [
         { name: 'conditionType', type: 'string', defaultValue: 'DST_ADDR' },
         { name: 'invert', type: 'boolean', defaultValue: false },
-        { name: 'javaClass', type: 'string', defaultValue: 'com.untangle.node.bandwidth_control.BandwidthControlRuleCondition' },
-        { name: 'value', type: 'auto', defaultValue: ''}
+        // { name: 'javaClass', type: 'string', defaultValue: 'com.untangle.node.bandwidth_control.BandwidthControlRuleCondition' },
+        { name: 'value', type: 'auto', defaultValue: '' },
+        { name: 'editor', type: 'string',
+            calculate: function (data) {
+                if (data.conditionType === 'PROTOCOL') {
+                    return 'checkboxgroup';
+                }
+                return 'textfield';
+            }
+        },
+        { name: 'groupValue', type: 'auto',
+            // calculate: function (data) {
+            //     return {
+            //         cb: data.value.split(',')
+            //     };
+            // }
+        }
+
     ],
     proxy: {
         autoLoad: true,

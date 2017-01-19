@@ -264,5 +264,10 @@ Ext.define('Ung.config.network.NetworkController', {
             vm.set('siArp', connections);
             // vm.getStore('interfaceArp').reload();
         }, arpCommand);
-    }
+    },
+
+
+    // editRule: function () {
+
+    // }
 });
