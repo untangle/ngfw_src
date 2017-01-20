@@ -4,6 +4,10 @@ Ext.define('Ung.config.network.PortForwardRules', {
 
     viewModel: true,
 
+    requires: [
+        'Ung.config.network.ConditionWidget'
+    ],
+
     title: 'Port Forward Rules'.t(),
 
     layout: { type: 'vbox', align: 'stretch' },
@@ -45,91 +49,34 @@ Ext.define('Ung.config.network.PortForwardRules', {
         //         itemSelector: 'span'
         //     }
         // }],
-        // plugins: [{
-        //     ptype: 'rowwidget',
-        //     widget: {
-        //         xtype: 'grid',
-        //         hideHeaders: true,
-        //         bind: {
-        //             store: {
-        //                 data: '{record.conditions.list}'
-        //             },
-        //             // title: 'Conditions'.t()
-        //         },
-        //         // columns: [{
-        //         //     text: 'Condition',
-        //         //     // dataIndex: 'conditionType',
-        //         //     renderer: function (val, record) {
-        //         //         console.log(record);
-        //         //         return record.conditionType + ' ' + (record.get('invert') ? 'is Not' : 'is') + ' ' + record.get('value');
-        //         //     }
-        //         // }]
-        //         fields: ['conditionType', 'invert', 'value'],
-        //         columns: [{
-        //             xtype: 'widgetcolumn',
-        //             text: 'Condition',
-        //             width: 200,
-        //             // dataIndex: 'conditionType',
-        //             widget: {
-        //                 xtype: 'combo',
-        //                 editable: false,
-        //                 bind: '{record.conditionType}',
-        //                 store: [
-        //                     ['DST_LOCAL', 'Destined Local'.t()],
-        //                     ['DST_ADDR', 'Destinatoin Address'.t()],
-        //                 ]
-        //             }
-        //         }, {
-        //             xtype: 'widgetcolumn',
-        //             widget: {
-        //                 xtype: 'combo',
-        //                 editable: false,
-        //                 bind: '{record.invert}',
-        //                 store: [[true, 'is not'], [false, 'is']]
-        //             }
-        //         }, {
-        //             xtype: 'widgetcolumn',
-        //             widget: {
-        //                 xtype: 'container',
-        //                 items: [{
-        //                     xtype: 'textfield',
-        //                     hidden: true,
-        //                     bind: {
-        //                         value: '{record.value}',
-        //                         hidden: '{record.conditionType === "DST_LOCAL"}'
-        //                     }
-        //                 }, {
-        //                     html: 'b'
-        //                 }]
-        //             }
-        //         }]
-        //     }
-        // }, {
+        plugins: [{
+            ptype: 'rowwidget',
+            widget: {
+                xtype: 'ung.condwidget',
+
+                bind: {
+                    // data: {
+                    //     rule: '{record}'
+                    // },
+                    store: {
+                        type: 'ruleconditions',
+                        data: '{record.conditions.list}'
+                    }
+                    // title: 'Conditions'.t()
+                },
+            },
+            // onWidgetAttach: function () {
+            //     console.log('widget attach');
+            // }
+        },
+        // {
         //     ptype: 'rowediting',
         //     clicksToMoveEditor: 1,
         //     autoCancel: false
-        // }],
+        // }
+        ],
 
         bind: '{portforwardrules}',
-        fields: [{
-            name: 'ruleId'
-        }, {
-            name: 'enabled'
-        }, {
-            name: 'newDestination',
-            sortType: 'asIp'
-        }, {
-            name: 'newPort',
-            sortType: 'asInt'
-        }, {
-            name: 'conditions'
-        }, {
-            name: 'description'
-        }, {
-            name: 'simple'
-        }, {
-            name: 'javaClass'
-        }],
         columns: [{
             header: 'Rule Id'.t(),
             width: 50,
@@ -152,91 +99,93 @@ Ext.define('Ung.config.network.PortForwardRules', {
             // }
         }, {
             header: 'Description',
+            flex: 1,
             width: 200,
             dataIndex: 'description',
             editor: {
                 xtype:'textfield',
                 emptyText: '[no description]'.t()
             }
-        }, {
-            xtype: 'actioncolumn',
-            iconCls: 'fa fa-edit',
-
-            handler: function (view, rowIndex, colIndex, item, e, record) {
-                console.log(record);
-                Ext.widget('ung.config.network.ruleeditorwin', {
-                    // config: {
-                        conditions: [
-                            {name:"DST_LOCAL",displayName: 'Destined Local'.t(), type: "boolean", visible: true},
-                            {name:"DST_ADDR",displayName: 'Destination Address'.t(), type: "text", visible: true, vtype:"ipMatcher"},
-                            {name:"DST_PORT",displayName: 'Destination Port'.t(), type: "text",vtype:"portMatcher", visible: true},
-                            {name:"SRC_ADDR",displayName: 'Source Address'.t(), type: "text", visible: true, vtype:"ipMatcher"},
-                            {name:"SRC_PORT",displayName: 'Source Port'.t(), type: "text",vtype:"portMatcher", visible: rpc.isExpertMode},
-                            {name:"SRC_INTF",displayName: 'Source Interface'.t(), type: "checkgroup", values: Ung.Util.getInterfaceList(true, true), visible: true},
-                            {name:"PROTOCOL",displayName: 'Protocol'.t(), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true}
-                        ],
-                        rule: record,
-                    // }
-                    // conditions: {
-                    //     DST_LOCAL: {displayName: 'Destined Local'.t(), type: "boolean", visible: true},
-                    //     DST_ADDR: {displayName: 'Destination Address'.t(), type: "text", visible: true, vtype:"ipMatcher"},
-                    //     DST_PORT: {displayName: 'Destination Port'.t(), type: "text", vtype:"portMatcher", visible: true},
-                    //     PROTOCOL: {displayName: 'Protocol'.t(), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true}
-                    // },
-                    viewModel: {
-                        data: {
-                            rule: record
-                        }
-                    },
-                });
-            }
         },
         // {
-        //     header: 'Conditions'.t(),
-        //     dataIndex: 'conditions',
-        //     renderer: function (conds) {
-        //         var resp = '', i, cond;
-        //         for (i = 0; i < conds.list.length; i += 1) {
-        //             cond = conds.list[i];
-        //             resp += cond.conditionType + (cond.invert ? ' &ne; ' : ' = ') + cond.value + ', ';
-        //         }
-        //         //console.log(val);
-        //         return resp;
-        //     }
-        //     // width: 150
-        // }
-        // {
-        //     xtype: 'widgetcolumn',
-        //     tdCls: 'no-padding',
-        //     flex: 1,
-        //     widget: {
-        //         xtype: 'ung.config.network.ruleeditor',
-        //         conditions: [
-        //             {name:"DST_LOCAL", text: 'Destined Local'.t(), type: "boolean", visible: true},
-        //             {name:"DST_ADDR", text: 'Destination Address'.t(), type: "text", visible: true, vtype:"ipMatcher"},
-        //             {name:"DST_PORT", text: 'Destination Port'.t(), type: "text",vtype:"portMatcher", visible: true},
-        //             {name:"SRC_ADDR", text: 'Source Address'.t(), type: "text", visible: true, vtype:"ipMatcher"},
-        //             {name:"SRC_PORT", text: 'Source Port'.t(), type: "text",vtype:"portMatcher", visible: rpc.isExpertMode},
-        //             {name:"SRC_INTF", text: 'Source Interface'.t(), type: "checkgroup", values: ['a', 'b'], visible: true},
-        //             {name:"PROTOCOL", text: 'Protocol'.t(), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true}
-        //         ],
-        //         // portForwardConditions: [
-        //         //     {name:"DST_LOCAL",displayName: 'Destined Local'.t(), type: "boolean", visible: true},
-        //         //     {name:"DST_ADDR",displayName: 'Destination Address'.t(), type: "text", visible: true, vtype:"ipMatcher"},
-        //         //     {name:"DST_PORT",displayName: 'Destination Port'.t(), type: "text",vtype:"portMatcher", visible: true},
-        //         //     {name:"SRC_ADDR",displayName: 'Source Address'.t(), type: "text", visible: true, vtype:"ipMatcher"},
-        //         //     {name:"SRC_PORT",displayName: 'Source Port'.t(), type: "text",vtype:"portMatcher", visible: rpc.isExpertMode},
-        //         //     {name:"SRC_INTF",displayName: 'Source Interface'.t(), type: "checkgroup", values: ['a', 'b'], visible: true},
-        //         //     {name:"PROTOCOL",displayName: 'Protocol'.t(), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true}
-        //         // ],
-        //         bind: {
-        //             store: {
-        //                 type: 'ruleconditions',
-        //                 data: '{record.conditions}'
-        //             }
-        //         }
+        //     xtype: 'actioncolumn',
+        //     iconCls: 'fa fa-edit',
+
+        //     handler: function (view, rowIndex, colIndex, item, e, record) {
+        //         console.log(record);
+        //         Ext.widget('ung.config.network.ruleeditorwin', {
+        //             // config: {
+        //                 conditions: [
+        //                     {name:"DST_LOCAL",displayName: 'Destined Local'.t(), type: "boolean", visible: true},
+        //                     {name:"DST_ADDR",displayName: 'Destination Address'.t(), type: "text", visible: true, vtype:"ipMatcher"},
+        //                     {name:"DST_PORT",displayName: 'Destination Port'.t(), type: "text",vtype:"portMatcher", visible: true},
+        //                     {name:"SRC_ADDR",displayName: 'Source Address'.t(), type: "text", visible: true, vtype:"ipMatcher"},
+        //                     {name:"SRC_PORT",displayName: 'Source Port'.t(), type: "text",vtype:"portMatcher", visible: rpc.isExpertMode},
+        //                     {name:"SRC_INTF",displayName: 'Source Interface'.t(), type: "checkgroup", values: Ung.Util.getInterfaceList(true, true), visible: true},
+        //                     {name:"PROTOCOL",displayName: 'Protocol'.t(), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true}
+        //                 ],
+        //                 rule: record,
+        //             // }
+        //             // conditions: {
+        //             //     DST_LOCAL: {displayName: 'Destined Local'.t(), type: "boolean", visible: true},
+        //             //     DST_ADDR: {displayName: 'Destination Address'.t(), type: "text", visible: true, vtype:"ipMatcher"},
+        //             //     DST_PORT: {displayName: 'Destination Port'.t(), type: "text", vtype:"portMatcher", visible: true},
+        //             //     PROTOCOL: {displayName: 'Protocol'.t(), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true}
+        //             // },
+        //             // viewModel: {
+        //             //     data: {
+        //             //         rule: record
+        //             //     }
+        //             // },
+        //         });
         //     }
         // },
+        {
+            header: 'Conditions'.t(),
+            dataIndex: 'conditions',
+            renderer: function (conds) {
+                var resp = '', i, cond;
+                for (i = 0; i < conds.list.length; i += 1) {
+                    cond = conds.list[i];
+                    resp += cond.conditionType + (cond.invert ? ' &ne; ' : ' = ') + cond.value + ', ';
+                }
+                //console.log(val);
+                return resp;
+            }
+            // width: 150
+        },
+        {
+            // xtype: 'widgetcolumn',
+            // tdCls: 'no-padding',
+            // flex: 1,
+            // widget: {
+            //     xtype: 'ung.config.network.ruleeditor',
+            //     conditions: [
+            //         {name:"DST_LOCAL", text: 'Destined Local'.t(), type: "boolean", visible: true},
+            //         {name:"DST_ADDR", text: 'Destination Address'.t(), type: "text", visible: true, vtype:"ipMatcher"},
+            //         {name:"DST_PORT", text: 'Destination Port'.t(), type: "text",vtype:"portMatcher", visible: true},
+            //         {name:"SRC_ADDR", text: 'Source Address'.t(), type: "text", visible: true, vtype:"ipMatcher"},
+            //         {name:"SRC_PORT", text: 'Source Port'.t(), type: "text",vtype:"portMatcher", visible: rpc.isExpertMode},
+            //         {name:"SRC_INTF", text: 'Source Interface'.t(), type: "checkgroup", values: ['a', 'b'], visible: true},
+            //         {name:"PROTOCOL", text: 'Protocol'.t(), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true}
+            //     ],
+            //     // portForwardConditions: [
+            //     //     {name:"DST_LOCAL",displayName: 'Destined Local'.t(), type: "boolean", visible: true},
+            //     //     {name:"DST_ADDR",displayName: 'Destination Address'.t(), type: "text", visible: true, vtype:"ipMatcher"},
+            //     //     {name:"DST_PORT",displayName: 'Destination Port'.t(), type: "text",vtype:"portMatcher", visible: true},
+            //     //     {name:"SRC_ADDR",displayName: 'Source Address'.t(), type: "text", visible: true, vtype:"ipMatcher"},
+            //     //     {name:"SRC_PORT",displayName: 'Source Port'.t(), type: "text",vtype:"portMatcher", visible: rpc.isExpertMode},
+            //     //     {name:"SRC_INTF",displayName: 'Source Interface'.t(), type: "checkgroup", values: ['a', 'b'], visible: true},
+            //     //     {name:"PROTOCOL",displayName: 'Protocol'.t(), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true}
+            //     // ],
+            //     bind: {
+            //         store: {
+            //             type: 'ruleconditions',
+            //             data: '{record.conditions.list}'
+            //         }
+            //     }
+            // }
+        },
         {
             header: 'New Destination'.t(),
             dataIndex: 'newDestination',

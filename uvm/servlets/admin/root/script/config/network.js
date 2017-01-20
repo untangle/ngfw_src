@@ -1,3 +1,378 @@
+Ext.define('Ung.config.network.ConditionWidget', {
+    extend: 'Ext.grid.Panel',
+
+    xtype: 'ung.condwidget',
+
+    requires: [
+        'Ung.config.network.ConditionWidgetController'
+    ],
+
+    controller: 'condwidget',
+
+    // bind: {
+    //     store: {
+    //         data: '{record.conditions.list}'
+    //     },
+    // },
+
+    // layout: 'fit',
+
+    trackMouseOver: false,
+    disableSelection: true,
+
+    conditions: [
+        {name:"DST_LOCAL",displayName: 'Destined Local'.t(), type: "boolean", visible: true},
+        {name:"DST_ADDR",displayName: 'Destination Address'.t(), type: "textfield", visible: true, vtype:"ipMatcher"},
+        {name:"DST_PORT",displayName: 'Destination Port'.t(), type: "textfield",vtype:"portMatcher", visible: true},
+        {name:"SRC_ADDR",displayName: 'Source Address'.t(), type: "textfield", visible: true, vtype:"ipMatcher"},
+        {name:"SRC_PORT",displayName: 'Source Port'.t(), type: "textfield",vtype:"portMatcher", visible: rpc.isExpertMode},
+        {name:"SRC_INTF",displayName: 'Source Interface'.t(), type: "checkboxgroup", values: [['a', 'a'], ['b', 'b']], visible: true},
+        {name:"PROTOCOL",displayName: 'Protocol'.t(), type: "checkboxgroup", values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true}
+    ],
+    // border: false,
+    hideHeaders: true,
+    // columns: [{
+    //     text: 'Condition',
+    //     // dataIndex: 'conditionType',
+    //     renderer: function (val, record) {
+    //         console.log(record);
+    //         return record.conditionType + ' ' + (record.get('invert') ? 'is Not' : 'is') + ' ' + record.get('value');
+    //     }
+    // }]
+    dockedItems: [{
+        xtype: 'toolbar',
+        dock: 'left',
+        items: [{
+            text: 'Add Condition',
+            itemId: 'conditionsBtn',
+            menuAlign: 'tl-br',
+            menu: Ext.create('Ext.menu.Menu', {
+                items: [{
+                    text: 'regular item 1'
+                },{
+                    text: 'regular item 2'
+                },{
+                    text: 'regular item 3'
+                }
+            ]}),
+            listeners: {
+                // click: 'addCondition'
+            }
+        }]
+    }],
+
+    // fields: ['conditionType', 'invert', 'value'],
+    columns: [{
+        text: 'Condition',
+        width: 200,
+        dataIndex: 'conditionType',
+        renderer: 'conditionRenderer'
+    },
+    {
+        xtype: 'widgetcolumn',
+        widget: {
+            xtype: 'combo',
+            editable: false,
+            bind: '{record.invert}',
+            store: [[true, 'is not'], [false, 'is']]
+        }
+    }, {
+        xtype: 'widgetcolumn',
+        flex: 1,
+        widget: {
+            xtype: 'container',
+            layout: {
+                type: 'hbox'
+            },
+            // items: [{
+            //     xtype: 'textfield',
+            //     // hidden: true,
+            //     bind: {
+            //         value: '{record.value}',
+            //         // hidden: '{record.conditionType === "DST_LOCAL"}'
+            //     }
+            // }, {
+            //     xtype: 'checkboxgroup',
+            //     bind: {
+            //         value: '{record.value}',
+            //         // disabled: '{record.editor !== "checkboxgroup"}',
+            //     },
+            //     items: [
+            //         { boxLabel: 'TCP', name: 'cb', inputValue: 'TCP' },
+            //         { boxLabel: 'UDP', name: 'cb', inputValue: 'UDP' },
+            //         { boxLabel: 'ICMP', name: 'cb', inputValue: 'ICMP' }
+            //     ],
+            //     listeners: {
+            //         change: 'groupCheckChange'
+            //     }
+            // }]
+        },
+        onWidgetAttach: 'onWidgetAttach'
+    }
+    ]
+});
+Ext.define('Ung.config.network.ConditionWidgetController', {
+    extend: 'Ext.app.ViewController',
+    alias: 'controller.condwidget',
+
+    control: {
+        '#': {
+            // afterrender: 'onAfterRender',
+            beforerender: 'onBeforeRender',
+            close: 'onClose',
+        },
+        '#conditionsBtn': {
+            // click: 'addCondition'
+        }
+    },
+
+    onClose: function (view) {
+        view.destroy();
+    },
+
+    onWidgetAttach: function (column, container, record) {
+        console.log(record);
+        var condition = this.getView().conditionsMap[record.get('conditionType')], i, ckItems = [];
+
+        switch (condition.type) {
+        case 'textfield':
+            container.add({
+                xtype: 'textfield',
+                bind: {
+                    value: '{record.value}'
+                }
+            });
+            break;
+        case 'checkboxgroup':
+            console.log(condition.values);
+            // var values_arr = (cond.value !== null && cond.value.length > 0) ? cond.value.split(',') : [], i, ckItems = [];
+            for (i = 0; i < condition.values.length; i += 1) {
+                ckItems.push({
+                    inputValue: condition.values[i][0],
+                    boxLabel: condition.values[i][1]
+                });
+            }
+            container.add({
+                xtype: 'checkboxgroup',
+                bind: {
+                    value: '{record.value}'
+                },
+                items: ckItems
+            });
+        }
+
+
+    },
+
+    // view.down('#conditionsBtn').setMenu({
+    //     showSeparator: false,
+    //     plain: true,
+    //     items: menuConditions,
+    //     mouseLeaveDelay: 0,
+    //     listeners: {
+    //         click: 'addRuleCondition'
+    //     }
+    // });
+
+    onBeforeRender: function (view) {
+        view.conditionsMap = Ext.Array.toValueMap(view.conditions, 'name');
+        // console.log(view.getViewModel().get('rule'));
+        console.log('here');
+        // view.ruleConditions = view.rule.get('conditions').list;
+        // view.ruleConditionsMap = Ext.Array.toValueMap(view.ruleConditions, 'conditionType');
+
+        // console.log(view.rule);
+    },
+
+    addCondition: function () {
+        // console.log(this.getViewModel().get('record.conditions.list'));
+        // var list = this.getViewModel().get('record.conditions.list');
+
+        // list.push({
+        //     conditionType: 'SRC_INTF',
+        //     invert: false,
+        //     javaClass: 'com.untangle.uvm.network.PortForwardRuleCondition',
+        //     value: 'a'
+        // });
+
+        // this.getViewModel().set('record.conditions.list', list);
+
+        // this.getViewModel().set('record.conditions.list', ['a']);
+
+        var rec = this.getView().getStore().insert(0, {
+            conditionType: 'SRC_INTF',
+            invert: false,
+            javaClass: 'com.untangle.uvm.network.PortForwardRuleCondition',
+            value: 'a'
+        })[0];
+        this.getView().getStore().commitChanges();
+        rec.commit();
+        this.getView().getStore().reload();
+
+
+
+        // var newCond = {
+        //     conditionType: item.condName,
+        //     invert: false,
+        //     // javaClass: 'com.untangle.uvm.network.PortForwardRuleCondition',
+        //     value: ''
+        // };
+    },
+
+
+    onAfterRender: function (view) {
+        // console.log(view.getViewModel().get('record.conditions'));
+        // conds = view.getViewModel().get('record.conditions.list');
+
+        // conds[0].value = 'aaaaaaa';
+
+        // var menuConditions = [], i;
+        // // for (i = 0; i < view.ruleConditions.length; i += 1) {
+        // //     this.addRowView(view.ruleConditions[i]);
+        // // };
+
+        // for (i = 0; i < view.conditions.length; i += 1) {
+        //     menuConditions.push({
+        //         text: view.conditions[i].displayName,
+        //         condName: view.conditions[i].name,
+        //         disabled: view.ruleConditionsMap[view.conditions[i].name]
+        //     });
+        // }
+
+        // view.down('#conditionsBtn').setMenu({
+        //     showSeparator: false,
+        //     plain: true,
+        //     items: menuConditions,
+        //     mouseLeaveDelay: 0,
+        //     listeners: {
+        //         click: 'addRuleCondition'
+        //     }
+        // });
+
+    },
+
+    // addRuleCondition: function (menu, item) {
+    //     item.setDisabled(true);
+    //     var newCond = {
+    //         conditionType: item.condName,
+    //         invert: false,
+    //         // javaClass: 'com.untangle.uvm.network.PortForwardRuleCondition',
+    //         value: ''
+    //     };
+    //     this.getView().ruleConditions.push(newCond);
+    //     this.addRowView(newCond);
+    // },
+
+
+    addRowView: function (cond) {
+        var a = this.getView().conditionsMap[cond.conditionType];
+        var row = {
+            xtype: 'container',
+            layout: {
+                type: 'hbox',
+                pack: 'justify'
+            },
+            padding: '3 3 0 3',
+            style: {
+                borderBottom: '1px #EEE solid'
+            },
+            defaults: {
+                // border: false
+            },
+            items: [{
+                xtype: 'displayfield',
+                value: a.displayName,
+                width: 150,
+            }, {
+                xtype: 'segmentedbutton',
+                margin: '0 3',
+                value: cond.invert,
+                width: 80,
+                items: [{
+                    text: '=',
+                    value: false
+                }, {
+                    text: '&ne;',
+                    value: true
+                }]
+            }]
+        };
+
+        if (a.type === 'text') {
+            row.items.push({
+                xtype: 'textfield',
+                value: cond.value
+            });
+        }
+
+        if (a.type === 'boolean') {
+            row.items.push({
+                xtype: 'displayfield',
+                value: 'True'.t()
+            });
+        }
+
+        if (a.type === 'checkgroup') {
+            var values_arr = (cond.value !== null && cond.value.length > 0) ? cond.value.split(',') : [], i, ckItems = [];
+            for (i = 0; i < a.values.length; i += 1) {
+                ckItems.push({inputValue: a.values[i][0], boxLabel: a.values[i][1], name: 'ck'});
+            }
+            row.items.push({
+                xtype: 'checkboxgroup',
+                flex: 1,
+                columns: 3,
+                vertical: true,
+                defaults: {
+                    padding: '0 15 0 0'
+                },
+                value: {
+                    ck: values_arr
+                },
+                items: ckItems,
+                listeners: {
+                    change: function (el, newValue) {
+                        console.log(cond);
+                        console.log(newValue);
+                    }
+                }
+            });
+        }
+
+
+        row.items.push({
+            xtype: 'component',
+            flex: 1
+        }, {
+            xtype: 'button',
+            text: 'Remove',
+            iconCls: 'fa fa-times fa-lg'
+        });
+
+        this.getView().add(row);
+
+
+        // if (a.type === 'textfield')  {
+        //     this.getView().add({
+        //         xtype: 'container',
+        //         items: [{
+        //             html: a.displayName
+        //         }]
+        //     });
+        // }
+    },
+
+
+    conditionRenderer: function (val) {
+        return this.getView().conditionsMap[val].displayName;
+        // return [val].displayName;
+    },
+
+    groupCheckChange: function (el, newVal) {
+        console.log(el);
+        console.log(this.getViewModel());
+    }
+});
+
 Ext.define('Ung.config.network.Hostname', {
     extend: 'Ext.panel.Panel',
     xtype: 'ung.config.network.hostname',
@@ -937,7 +1312,8 @@ Ext.define('Ung.config.network.Network', {
 
         'Ung.config.network.RuleEditor',
 
-        'Ung.view.grid.Grid'
+        'Ung.view.grid.Grid',
+        'Ung.store.RuleConditions'
     ],
 
     controller: 'config.network',
@@ -1332,6 +1708,10 @@ Ext.define('Ung.config.network.PortForwardRules', {
 
     viewModel: true,
 
+    requires: [
+        'Ung.config.network.ConditionWidget'
+    ],
+
     title: 'Port Forward Rules'.t(),
 
     layout: { type: 'vbox', align: 'stretch' },
@@ -1373,91 +1753,34 @@ Ext.define('Ung.config.network.PortForwardRules', {
         //         itemSelector: 'span'
         //     }
         // }],
-        // plugins: [{
-        //     ptype: 'rowwidget',
-        //     widget: {
-        //         xtype: 'grid',
-        //         hideHeaders: true,
-        //         bind: {
-        //             store: {
-        //                 data: '{record.conditions.list}'
-        //             },
-        //             // title: 'Conditions'.t()
-        //         },
-        //         // columns: [{
-        //         //     text: 'Condition',
-        //         //     // dataIndex: 'conditionType',
-        //         //     renderer: function (val, record) {
-        //         //         console.log(record);
-        //         //         return record.conditionType + ' ' + (record.get('invert') ? 'is Not' : 'is') + ' ' + record.get('value');
-        //         //     }
-        //         // }]
-        //         fields: ['conditionType', 'invert', 'value'],
-        //         columns: [{
-        //             xtype: 'widgetcolumn',
-        //             text: 'Condition',
-        //             width: 200,
-        //             // dataIndex: 'conditionType',
-        //             widget: {
-        //                 xtype: 'combo',
-        //                 editable: false,
-        //                 bind: '{record.conditionType}',
-        //                 store: [
-        //                     ['DST_LOCAL', 'Destined Local'.t()],
-        //                     ['DST_ADDR', 'Destinatoin Address'.t()],
-        //                 ]
-        //             }
-        //         }, {
-        //             xtype: 'widgetcolumn',
-        //             widget: {
-        //                 xtype: 'combo',
-        //                 editable: false,
-        //                 bind: '{record.invert}',
-        //                 store: [[true, 'is not'], [false, 'is']]
-        //             }
-        //         }, {
-        //             xtype: 'widgetcolumn',
-        //             widget: {
-        //                 xtype: 'container',
-        //                 items: [{
-        //                     xtype: 'textfield',
-        //                     hidden: true,
-        //                     bind: {
-        //                         value: '{record.value}',
-        //                         hidden: '{record.conditionType === "DST_LOCAL"}'
-        //                     }
-        //                 }, {
-        //                     html: 'b'
-        //                 }]
-        //             }
-        //         }]
-        //     }
-        // }, {
+        plugins: [{
+            ptype: 'rowwidget',
+            widget: {
+                xtype: 'ung.condwidget',
+
+                bind: {
+                    // data: {
+                    //     rule: '{record}'
+                    // },
+                    store: {
+                        type: 'ruleconditions',
+                        data: '{record.conditions.list}'
+                    }
+                    // title: 'Conditions'.t()
+                },
+            },
+            // onWidgetAttach: function () {
+            //     console.log('widget attach');
+            // }
+        },
+        // {
         //     ptype: 'rowediting',
         //     clicksToMoveEditor: 1,
         //     autoCancel: false
-        // }],
+        // }
+        ],
 
         bind: '{portforwardrules}',
-        fields: [{
-            name: 'ruleId'
-        }, {
-            name: 'enabled'
-        }, {
-            name: 'newDestination',
-            sortType: 'asIp'
-        }, {
-            name: 'newPort',
-            sortType: 'asInt'
-        }, {
-            name: 'conditions'
-        }, {
-            name: 'description'
-        }, {
-            name: 'simple'
-        }, {
-            name: 'javaClass'
-        }],
         columns: [{
             header: 'Rule Id'.t(),
             width: 50,
@@ -1480,91 +1803,93 @@ Ext.define('Ung.config.network.PortForwardRules', {
             // }
         }, {
             header: 'Description',
+            flex: 1,
             width: 200,
             dataIndex: 'description',
             editor: {
                 xtype:'textfield',
                 emptyText: '[no description]'.t()
             }
-        }, {
-            xtype: 'actioncolumn',
-            iconCls: 'fa fa-edit',
-
-            handler: function (view, rowIndex, colIndex, item, e, record) {
-                console.log(record);
-                Ext.widget('ung.config.network.ruleeditorwin', {
-                    // config: {
-                        conditions: [
-                            {name:"DST_LOCAL",displayName: 'Destined Local'.t(), type: "boolean", visible: true},
-                            {name:"DST_ADDR",displayName: 'Destination Address'.t(), type: "text", visible: true, vtype:"ipMatcher"},
-                            {name:"DST_PORT",displayName: 'Destination Port'.t(), type: "text",vtype:"portMatcher", visible: true},
-                            {name:"SRC_ADDR",displayName: 'Source Address'.t(), type: "text", visible: true, vtype:"ipMatcher"},
-                            {name:"SRC_PORT",displayName: 'Source Port'.t(), type: "text",vtype:"portMatcher", visible: rpc.isExpertMode},
-                            {name:"SRC_INTF",displayName: 'Source Interface'.t(), type: "checkgroup", values: Ung.Util.getInterfaceList(true, true), visible: true},
-                            {name:"PROTOCOL",displayName: 'Protocol'.t(), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true}
-                        ],
-                        rule: record,
-                    // }
-                    // conditions: {
-                    //     DST_LOCAL: {displayName: 'Destined Local'.t(), type: "boolean", visible: true},
-                    //     DST_ADDR: {displayName: 'Destination Address'.t(), type: "text", visible: true, vtype:"ipMatcher"},
-                    //     DST_PORT: {displayName: 'Destination Port'.t(), type: "text", vtype:"portMatcher", visible: true},
-                    //     PROTOCOL: {displayName: 'Protocol'.t(), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true}
-                    // },
-                    viewModel: {
-                        data: {
-                            rule: record
-                        }
-                    },
-                });
-            }
         },
         // {
-        //     header: 'Conditions'.t(),
-        //     dataIndex: 'conditions',
-        //     renderer: function (conds) {
-        //         var resp = '', i, cond;
-        //         for (i = 0; i < conds.list.length; i += 1) {
-        //             cond = conds.list[i];
-        //             resp += cond.conditionType + (cond.invert ? ' &ne; ' : ' = ') + cond.value + ', ';
-        //         }
-        //         //console.log(val);
-        //         return resp;
-        //     }
-        //     // width: 150
-        // }
-        // {
-        //     xtype: 'widgetcolumn',
-        //     tdCls: 'no-padding',
-        //     flex: 1,
-        //     widget: {
-        //         xtype: 'ung.config.network.ruleeditor',
-        //         conditions: [
-        //             {name:"DST_LOCAL", text: 'Destined Local'.t(), type: "boolean", visible: true},
-        //             {name:"DST_ADDR", text: 'Destination Address'.t(), type: "text", visible: true, vtype:"ipMatcher"},
-        //             {name:"DST_PORT", text: 'Destination Port'.t(), type: "text",vtype:"portMatcher", visible: true},
-        //             {name:"SRC_ADDR", text: 'Source Address'.t(), type: "text", visible: true, vtype:"ipMatcher"},
-        //             {name:"SRC_PORT", text: 'Source Port'.t(), type: "text",vtype:"portMatcher", visible: rpc.isExpertMode},
-        //             {name:"SRC_INTF", text: 'Source Interface'.t(), type: "checkgroup", values: ['a', 'b'], visible: true},
-        //             {name:"PROTOCOL", text: 'Protocol'.t(), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true}
-        //         ],
-        //         // portForwardConditions: [
-        //         //     {name:"DST_LOCAL",displayName: 'Destined Local'.t(), type: "boolean", visible: true},
-        //         //     {name:"DST_ADDR",displayName: 'Destination Address'.t(), type: "text", visible: true, vtype:"ipMatcher"},
-        //         //     {name:"DST_PORT",displayName: 'Destination Port'.t(), type: "text",vtype:"portMatcher", visible: true},
-        //         //     {name:"SRC_ADDR",displayName: 'Source Address'.t(), type: "text", visible: true, vtype:"ipMatcher"},
-        //         //     {name:"SRC_PORT",displayName: 'Source Port'.t(), type: "text",vtype:"portMatcher", visible: rpc.isExpertMode},
-        //         //     {name:"SRC_INTF",displayName: 'Source Interface'.t(), type: "checkgroup", values: ['a', 'b'], visible: true},
-        //         //     {name:"PROTOCOL",displayName: 'Protocol'.t(), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true}
-        //         // ],
-        //         bind: {
-        //             store: {
-        //                 type: 'ruleconditions',
-        //                 data: '{record.conditions}'
-        //             }
-        //         }
+        //     xtype: 'actioncolumn',
+        //     iconCls: 'fa fa-edit',
+
+        //     handler: function (view, rowIndex, colIndex, item, e, record) {
+        //         console.log(record);
+        //         Ext.widget('ung.config.network.ruleeditorwin', {
+        //             // config: {
+        //                 conditions: [
+        //                     {name:"DST_LOCAL",displayName: 'Destined Local'.t(), type: "boolean", visible: true},
+        //                     {name:"DST_ADDR",displayName: 'Destination Address'.t(), type: "text", visible: true, vtype:"ipMatcher"},
+        //                     {name:"DST_PORT",displayName: 'Destination Port'.t(), type: "text",vtype:"portMatcher", visible: true},
+        //                     {name:"SRC_ADDR",displayName: 'Source Address'.t(), type: "text", visible: true, vtype:"ipMatcher"},
+        //                     {name:"SRC_PORT",displayName: 'Source Port'.t(), type: "text",vtype:"portMatcher", visible: rpc.isExpertMode},
+        //                     {name:"SRC_INTF",displayName: 'Source Interface'.t(), type: "checkgroup", values: Ung.Util.getInterfaceList(true, true), visible: true},
+        //                     {name:"PROTOCOL",displayName: 'Protocol'.t(), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true}
+        //                 ],
+        //                 rule: record,
+        //             // }
+        //             // conditions: {
+        //             //     DST_LOCAL: {displayName: 'Destined Local'.t(), type: "boolean", visible: true},
+        //             //     DST_ADDR: {displayName: 'Destination Address'.t(), type: "text", visible: true, vtype:"ipMatcher"},
+        //             //     DST_PORT: {displayName: 'Destination Port'.t(), type: "text", vtype:"portMatcher", visible: true},
+        //             //     PROTOCOL: {displayName: 'Protocol'.t(), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true}
+        //             // },
+        //             // viewModel: {
+        //             //     data: {
+        //             //         rule: record
+        //             //     }
+        //             // },
+        //         });
         //     }
         // },
+        {
+            header: 'Conditions'.t(),
+            dataIndex: 'conditions',
+            renderer: function (conds) {
+                var resp = '', i, cond;
+                for (i = 0; i < conds.list.length; i += 1) {
+                    cond = conds.list[i];
+                    resp += cond.conditionType + (cond.invert ? ' &ne; ' : ' = ') + cond.value + ', ';
+                }
+                //console.log(val);
+                return resp;
+            }
+            // width: 150
+        },
+        {
+            // xtype: 'widgetcolumn',
+            // tdCls: 'no-padding',
+            // flex: 1,
+            // widget: {
+            //     xtype: 'ung.config.network.ruleeditor',
+            //     conditions: [
+            //         {name:"DST_LOCAL", text: 'Destined Local'.t(), type: "boolean", visible: true},
+            //         {name:"DST_ADDR", text: 'Destination Address'.t(), type: "text", visible: true, vtype:"ipMatcher"},
+            //         {name:"DST_PORT", text: 'Destination Port'.t(), type: "text",vtype:"portMatcher", visible: true},
+            //         {name:"SRC_ADDR", text: 'Source Address'.t(), type: "text", visible: true, vtype:"ipMatcher"},
+            //         {name:"SRC_PORT", text: 'Source Port'.t(), type: "text",vtype:"portMatcher", visible: rpc.isExpertMode},
+            //         {name:"SRC_INTF", text: 'Source Interface'.t(), type: "checkgroup", values: ['a', 'b'], visible: true},
+            //         {name:"PROTOCOL", text: 'Protocol'.t(), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true}
+            //     ],
+            //     // portForwardConditions: [
+            //     //     {name:"DST_LOCAL",displayName: 'Destined Local'.t(), type: "boolean", visible: true},
+            //     //     {name:"DST_ADDR",displayName: 'Destination Address'.t(), type: "text", visible: true, vtype:"ipMatcher"},
+            //     //     {name:"DST_PORT",displayName: 'Destination Port'.t(), type: "text",vtype:"portMatcher", visible: true},
+            //     //     {name:"SRC_ADDR",displayName: 'Source Address'.t(), type: "text", visible: true, vtype:"ipMatcher"},
+            //     //     {name:"SRC_PORT",displayName: 'Source Port'.t(), type: "text",vtype:"portMatcher", visible: rpc.isExpertMode},
+            //     //     {name:"SRC_INTF",displayName: 'Source Interface'.t(), type: "checkgroup", values: ['a', 'b'], visible: true},
+            //     //     {name:"PROTOCOL",displayName: 'Protocol'.t(), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true}
+            //     // ],
+            //     bind: {
+            //         store: {
+            //             type: 'ruleconditions',
+            //             data: '{record.conditions.list}'
+            //         }
+            //     }
+            // }
+        },
         {
             header: 'New Destination'.t(),
             dataIndex: 'newDestination',
@@ -1608,9 +1933,9 @@ Ext.define('Ung.config.network.RuleEditor', {
     xtype: 'ung.config.network.ruleeditor',
     requires: [
         'Ung.config.network.RuleEditorController',
-        'Ung.store.RuleConditions'
+        'Ung.overrides.form.CheckboxGroup'
     ],
-    controller: 'ruleeditor',
+    // controller: 'ruleeditor',
 
     collapsed: true,
     collapsible: true,
@@ -1691,16 +2016,13 @@ Ext.define('Ung.config.network.RuleEditor', {
                 xtype: 'textfield',
                 bind: {
                     value: '{record.value}',
-                    disabled: '{record.editor !== "textfield"}'
+                    // disabled: '{record.editor !== "textfield"}'
                 }
             }, {
                 xtype: 'checkboxgroup',
-                value: {
-                    cb: ['TCP', 'UDP']
-                },
                 bind: {
-                    // value: '{record.groupValue}',
-                    disabled: '{record.editor !== "checkboxgroup"}',
+                    value: '{record.value}',
+                    // disabled: '{record.editor !== "checkboxgroup"}',
                 },
                 items: [
                     { boxLabel: 'TCP', name: 'cb', inputValue: 'TCP' },
@@ -1720,6 +2042,9 @@ Ext.define('Ung.config.network.RuleEditorController', {
             afterrender: 'onAfterRender',
             beforerender: 'onBeforeRender',
             close: 'onClose'
+        },
+        '#applyBtn': {
+            click: 'setRuleConditions'
         }
     },
 
@@ -1731,15 +2056,15 @@ Ext.define('Ung.config.network.RuleEditorController', {
         view.conditionsMap = Ext.Array.toValueMap(view.conditions, 'name');
         view.ruleConditions = view.rule.get('conditions').list;
         view.ruleConditionsMap = Ext.Array.toValueMap(view.ruleConditions, 'conditionType');
-        // this.getViewModel()bind
-        console.log(view.rule);
+
+        // console.log(view.rule);
     },
 
     onAfterRender: function (view) {
         var menuConditions = [], i;
-        // for (i = 0; i < view.ruleConditions.length; i += 1) {
-        //     this.addRowView(view.ruleConditions[i]);
-        // };
+        for (i = 0; i < view.ruleConditions.length; i += 1) {
+            this.addRowView(view.ruleConditions[i]);
+        }
 
         for (i = 0; i < view.conditions.length; i += 1) {
             menuConditions.push({
@@ -1778,11 +2103,13 @@ Ext.define('Ung.config.network.RuleEditorController', {
         var a = this.getView().conditionsMap[cond.conditionType];
         var row = {
             xtype: 'container',
+            name: 'rule',
+            conditionType: a.name,
             layout: {
                 type: 'hbox',
-                // pack: 'justify'
+                pack: 'justify'
             },
-            padding: '1 3 1 3',
+            padding: '3 3 0 3',
             style: {
                 borderBottom: '1px #EEE solid'
             },
@@ -1795,6 +2122,7 @@ Ext.define('Ung.config.network.RuleEditorController', {
                 width: 150,
             }, {
                 xtype: 'segmentedbutton',
+                margin: '0 3',
                 value: cond.invert,
                 width: 80,
                 items: [{
@@ -1810,21 +2138,16 @@ Ext.define('Ung.config.network.RuleEditorController', {
         if (a.type === 'text') {
             row.items.push({
                 xtype: 'textfield',
+                name: 'conditionValue',
                 value: cond.value
             });
         }
 
         if (a.type === 'boolean') {
-            console.log(typeof cond.value);
             row.items.push({
-                xtype: 'radiogroup',
-                // value: {
-                //     rb: cond.value
-                // },
-                items: [
-                    { boxLabel: 'True', name: 'rb', inputValue: true },
-                    { boxLabel: 'False', name: 'rb', inputValue: false }
-                ]
+                xtype: 'displayfield',
+                name: 'conditionValue',
+                value: 'True'.t()
             });
         }
 
@@ -1835,6 +2158,7 @@ Ext.define('Ung.config.network.RuleEditorController', {
             }
             row.items.push({
                 xtype: 'checkboxgroup',
+                name: 'conditionValue',
                 flex: 1,
                 columns: 3,
                 vertical: true,
@@ -1856,9 +2180,16 @@ Ext.define('Ung.config.network.RuleEditorController', {
 
 
         row.items.push({
+            xtype: 'component',
+            flex: 1
+        }, {
+            xtype: 'component',
+            html: cond.value,
+            width: 100
+        }, {
             xtype: 'button',
             text: 'Remove',
-            iconCls: 'fa fa-trash-o'
+            iconCls: 'fa fa-times fa-lg'
         });
 
         this.getView().add(row);
@@ -1874,6 +2205,81 @@ Ext.define('Ung.config.network.RuleEditorController', {
         // }
     },
 
+    getConditionValue: function(item) {
+        var value = '', view = this.getView();
+        // var rule = view.conditionsMap[item.down("[ruleDataIndex=conditionType]").getValue()];
+        // if (!rule) {
+        //     return value;
+        // }
+        var valueContainer = item.down("[name=conditionValue]");
+
+        console.log(valueContainer.getXType());
+
+        switch (valueContainer.getXType()) {
+        case 'textfield':
+            value = valueContainer.getValue();
+            break;
+        case "boolean":
+            value = 'true';
+            break;
+        case "editor":
+            value = valueContainer.down("button").getValue();
+            break;
+        case 'checkboxgroup':
+            if (Ext.isArray(valueContainer.getValue().ck)) {
+                value = valueContainer.getValue().ck.join(',');
+            } else {
+                value = valueContainer.getValue().ck;
+            }
+            break;
+        }
+        return value;
+    },
+
+    setRuleConditions: function() {
+        var list = [], conditionType, view = this.getView(), me = this;
+        var ruleConditions = view.query('container[name=rule]');
+
+        Ext.Array.each(ruleConditions, function (item, index, len) {
+            // console.log(item.conditionType);
+            // console.log(me.getConditionValue(item));
+
+            list.push({
+                javaClass: 'aa',
+                conditionType: item.conditionType,
+                invert: false,
+                value: me.getConditionValue(item)
+            });
+
+        });
+        console.log(list);
+
+        view.rule.set('conditions.list', list);
+
+        console.log(view.rule);
+
+        // Ext.Array.each(this.query("container[name=rule]"), function(item, index, len) {
+        //     conditionType = item.down("[ruleDataIndex=conditionType]").getValue();
+        //     if(!Ext.isEmpty(conditionType)) {
+        //         list.push({
+        //             javaClass: me.javaClass,
+        //             conditionType: conditionType,
+        //             invert: item.down("[ruleDataIndex=invert]").getValue(),
+        //             value: me.getRuleValue(item)
+        //         });
+        //     }
+        // });
+
+        // return {
+        //     javaClass: "java.util.LinkedList",
+        //     list: list,
+        //     //must override toString in order for all objects not to appear the same
+        //     toString: function() {
+        //         return Ext.encode(this);
+        //     }
+        // };
+    },
+
 
     conditionRenderer: function (val) {
         return this.getView().conditionsMap[val].displayName;
@@ -1881,6 +2287,7 @@ Ext.define('Ung.config.network.RuleEditorController', {
     },
 
     groupCheckChange: function (el, newVal) {
+        console.log(el);
         console.log(this.getViewModel());
     }
 });
@@ -1892,6 +2299,7 @@ Ext.define('Ung.config.network.RuleEditorWin', {
     xtype: 'ung.config.network.ruleeditorwin',
     requires: [
         'Ung.config.network.RuleEditorController'
+        // 'Ung.overrides.form.CheckboxGroup'
     ],
     controller: 'ruleeditor',
 
@@ -1924,86 +2332,86 @@ Ext.define('Ung.config.network.RuleEditorWin', {
         // iconCls: 'fa fa-add'
     }, {
         text: 'Apply',
+        itemId: 'applyBtn',
         iconCls: 'fa fa-check'
     }],
-    items: [{
-        xtype: 'grid',
-        // collapsed: true,
-        // collapsible: true,
-        // animCollapse: false,
-        border: false,
-        trackMouseOver: false,
-        disableSelection: true,
+    // items: [{
+    //     xtype: 'grid',
+    //     // collapsed: true,
+    //     // collapsible: true,
+    //     // animCollapse: false,
+    //     border: false,
+    //     trackMouseOver: false,
+    //     disableSelection: true,
 
-        bind: {
-            store: {
-                type: 'ruleconditions',
-                data: '{rule.conditions.list}'
-            }
-        },
+    //     bind: {
+    //         store: {
+    //             type: 'ruleconditions',
+    //             data: '{rule.conditions.list}'
+    //         }
+    //     },
 
-        columns: [{
-            dataIndex: 'groupValue'
-        }, {
-            dataIndex: 'conditionType',
-            width: 200,
-            renderer: 'conditionRenderer'
-        }, {
-            xtype: 'widgetcolumn',
-            width: 50,
-            widget: {
-                xtype: 'combo',
-                editable: false,
-                bind: '{record.invert}',
-                store: [[true, 'is not'], [false, 'is']]
-            }
-            // widget: {
-            //     xtype: 'segmentedbutton',
-            //     bind: '{record.invert}',
-            //     // bind: {
-            //     //     value: '{record.invert}',
-            //     // },
-            //     items: [{
-            //         text: 'IS',
-            //         value: true
-            //     }, {
-            //         text: 'IS NOT',
-            //         value: false
-            //     }]
-            // }
-        }, {
-            xtype: 'widgetcolumn',
-            flex: 1,
-            widget: {
-                xtype: 'container',
-                items: [{
-                    xtype: 'displayfield',
-                    value: 'TRUE'
-                }, {
-                    xtype: 'textfield',
-                    bind: {
-                        value: '{record.value}',
-                        // disabled: '{record.editor !== "textfield"}'
-                    }
-                }, {
-                    xtype: 'checkboxgroup',
-                    bind: {
-                        value: '{record.value}',
-                        disabled: '{record.editor !== "checkboxgroup"}',
-                    },
-                    items: [
-                        { boxLabel: 'TCP', name: 'cb', inputValue: 'TCP' },
-                        { boxLabel: 'UDP', name: 'cb', inputValue: 'UDP' },
-                        { boxLabel: 'ICMP', name: 'cb', inputValue: 'ICMP' }
-                    ],
-                    listeners: {
-                        change: 'groupCheckChange'
-                    }
-                }]
-            }
-        }]
-
-    }]
+    //     columns: [{
+    //         dataIndex: 'groupValue'
+    //     }, {
+    //         dataIndex: 'conditionType',
+    //         width: 200,
+    //         renderer: 'conditionRenderer'
+    //     }, {
+    //         xtype: 'widgetcolumn',
+    //         width: 50,
+    //         widget: {
+    //             xtype: 'combo',
+    //             editable: false,
+    //             bind: '{record.invert}',
+    //             store: [[true, 'is not'], [false, 'is']]
+    //         }
+    //         // widget: {
+    //         //     xtype: 'segmentedbutton',
+    //         //     bind: '{record.invert}',
+    //         //     // bind: {
+    //         //     //     value: '{record.invert}',
+    //         //     // },
+    //         //     items: [{
+    //         //         text: 'IS',
+    //         //         value: true
+    //         //     }, {
+    //         //         text: 'IS NOT',
+    //         //         value: false
+    //         //     }]
+    //         // }
+    //     }, {
+    //         xtype: 'widgetcolumn',
+    //         flex: 1,
+    //         widget: {
+    //             xtype: 'container',
+    //             items: [{
+    //                 xtype: 'displayfield',
+    //                 value: 'TRUE'
+    //             }, {
+    //                 xtype: 'textfield',
+    //                 bind: {
+    //                     value: '{record.value}',
+    //                     // disabled: '{record.editor !== "textfield"}'
+    //                 }
+    //             }, {
+    //                 xtype: 'checkboxgroup',
+    //                 bind: {
+    //                     value: '{record.value}',
+    //                     disabled: '{record.editor !== "checkboxgroup"}',
+    //                 },
+    //                 items: [
+    //                     { boxLabel: 'TCP', name: 'cb', inputValue: 'TCP' },
+    //                     { boxLabel: 'UDP', name: 'cb', inputValue: 'UDP' },
+    //                     { boxLabel: 'ICMP', name: 'cb', inputValue: 'ICMP' }
+    //                 ],
+    //                 listeners: {
+    //                     change: 'groupCheckChange'
+    //                 }
+    //             }]
+    //         }
+    //     }]
+    // }]
 });
 Ext.define('Ung.config.network.Services', {
     extend: 'Ext.panel.Panel',

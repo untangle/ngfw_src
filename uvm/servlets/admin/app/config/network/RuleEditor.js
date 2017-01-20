@@ -5,9 +5,9 @@ Ext.define('Ung.config.network.RuleEditor', {
     xtype: 'ung.config.network.ruleeditor',
     requires: [
         'Ung.config.network.RuleEditorController',
-        'Ung.store.RuleConditions'
+        'Ung.overrides.form.CheckboxGroup'
     ],
-    controller: 'ruleeditor',
+    // controller: 'ruleeditor',
 
     collapsed: true,
     collapsible: true,
@@ -88,16 +88,13 @@ Ext.define('Ung.config.network.RuleEditor', {
                 xtype: 'textfield',
                 bind: {
                     value: '{record.value}',
-                    disabled: '{record.editor !== "textfield"}'
+                    // disabled: '{record.editor !== "textfield"}'
                 }
             }, {
                 xtype: 'checkboxgroup',
-                value: {
-                    cb: ['TCP', 'UDP']
-                },
                 bind: {
-                    // value: '{record.groupValue}',
-                    disabled: '{record.editor !== "checkboxgroup"}',
+                    value: '{record.value}',
+                    // disabled: '{record.editor !== "checkboxgroup"}',
                 },
                 items: [
                     { boxLabel: 'TCP', name: 'cb', inputValue: 'TCP' },
