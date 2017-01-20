@@ -12,15 +12,7 @@ Ext.define ('Ung.model.Condition', {
                 }
                 return 'textfield';
             }
-        },
-        { name: 'groupValue', type: 'auto',
-            // calculate: function (data) {
-            //     return {
-            //         cb: data.value.split(',')
-            //     };
-            // }
         }
-
     ],
     proxy: {
         autoLoad: true,

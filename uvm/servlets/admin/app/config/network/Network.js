@@ -8,7 +8,8 @@ Ext.define('Ung.config.network.Network', {
 
         'Ung.config.network.RuleEditor',
 
-        'Ung.view.grid.Grid'
+        'Ung.view.grid.Grid',
+        'Ung.store.RuleConditions'
     ],
 
     controller: 'config.network',
