@@ -1,7 +1,7 @@
 /**
  * $Id: AlertRuleCondition.java 37267 2014-02-26 23:42:19Z dmorris $
  */
-package com.untangle.node.reports;
+package com.untangle.uvm.alert;
 
 import org.json.JSONObject;
 
