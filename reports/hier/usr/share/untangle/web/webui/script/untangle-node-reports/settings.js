@@ -37,11 +37,11 @@ Ext.define('Webui.untangle-node-reports.settings', {
         this.buildSyslog();
         this.buildHostnameMap();
         this.buildReportEntries();
-        this.buildAlertRules();
+//        this.buildAlertRules();
         this.buildData();
         this.buildEmailTemplates();
 
-        var panels = [this.gridReportEntries, this.panelData, this.panelAlertRules, this.panelEmailTemplates, this.panelUsers, this.panelSyslog, this.gridHostnameMap ];
+        var panels = [this.gridReportEntries, this.panelData, this.panelEmailTemplates, this.panelUsers, this.panelSyslog, this.gridHostnameMap ];
 
         this.buildTabPanel(panels);
 
