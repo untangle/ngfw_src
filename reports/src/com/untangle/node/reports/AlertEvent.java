@@ -9,6 +9,9 @@ import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.util.I18nUtil;
 
+// Remove after conversion
+import com.untangle.uvm.alert.AlertRule;
+
 /**
  * Log event for an "alert" event
  */

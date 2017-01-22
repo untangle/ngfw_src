@@ -2,7 +2,7 @@
  * $Id: AlertRule.java,v 1.00 2014/11/05 15:17:53 dmorris Exp $
  */
 
-package com.untangle.node.reports;
+package com.untangle.uvm.alert;
 
 import java.util.List;
 import java.io.Serializable;

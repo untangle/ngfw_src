@@ -14,6 +14,9 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.util.I18nUtil;
 
+// Remove after conversion
+import com.untangle.uvm.alert.AlertRule;
+
 /**
  * This contains the logic for handling the alert rules.
  * This is called by the EventWriter

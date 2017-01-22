@@ -32,10 +32,13 @@ import org.apache.log4j.Logger;
 import org.apache.commons.fileupload.FileItem;
 
 import com.untangle.uvm.ExecManagerResult;
+import com.untangle.uvm.AlertManager;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.AdminUserSettings;
 import com.untangle.uvm.logging.LogEvent;
+import com.untangle.uvm.alert.AlertRule;
+import com.untangle.uvm.alert.AlertSettings;
 import com.untangle.uvm.network.FilterRule;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.NodeSettings;
@@ -97,18 +100,10 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         this.sanityCheck( newSettings );
 
         /**
-         * Set the Alert Rules IDs
-         */
-        int idx = 0;
-        for (AlertRule rule : newSettings.getAlertRules()) {
-            rule.setRuleId(++idx);
-        }
-
-        /**
          * Set the Email Template Ids
          */
         HashMap<Integer,Integer> mapOldNewEmailTemplateIds = new HashMap<Integer,Integer>();
-        idx = 0;
+        int idx = 0;
         for (EmailTemplate template : newSettings.getEmailTemplates()) {
             idx = ++idx;
             mapOldNewEmailTemplateIds.put(template.getTemplateId(), idx);
@@ -359,6 +354,8 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         ReportsSettings readSettings = null;
         String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-node-reports/" + "settings_" + nodeID + ".js";
 
+        conversion_paths_13_0_0();
+
         try {
             readSettings = settingsManager.load( ReportsSettings.class, settingsFileName );
         } catch (SettingsManager.SettingsException e) {
@@ -380,32 +377,26 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         }
 
         /**
-         * 12.0 conversion
-         */
-        if ( settings.getVersion() == null ) {
-            logger.warn("Running v12.0 conversion...");
-            conversion_12_0();
-        }
-        /**
          * 12.1 conversion
          */
         if ( settings.getVersion() == 1 ) {
             logger.warn("Running v12.1 conversion...");
             conversion_12_1();
         }
-        /**
-         * 12.1.1 conversion
-         */
-        if ( settings.getVersion() == 2 ) {
-            logger.warn("Running v12.1.1 conversion...");
-            conversion_12_1_1();
-        }
+
         /**
          * 12.2 conversion
          */
         if ( settings.getVersion() == 3 ) {
             logger.warn("Running v12.2 conversion...");
             conversion_12_2_0();
+        }
+        /*
+         * 13.3 conversion
+         */
+        if ( settings.getVersion() == 4 ) {
+            logger.warn("Running v13.0 conversion...");
+            conversion_13_0_0();
         }
 
         /**
@@ -435,6 +426,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
 
         /* Enable to run event writing performance tests */
         // new Thread(new PerformanceTest()).start();
+
     }
 
     @Override
@@ -462,203 +454,6 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         UvmContextFactory.context().tomcatManager().unloadServlet("/reports");
     }
     
-    private LinkedList<AlertRule> defaultAlertRules()
-    {
-        LinkedList<AlertRule> rules = new LinkedList<AlertRule>();
-        
-        LinkedList<AlertRuleCondition> matchers;
-        AlertRuleCondition matcher1;
-        AlertRuleCondition matcher2;
-        AlertRuleCondition matcher3;
-        AlertRule alertRule;
-        
-        matchers = new LinkedList<AlertRuleCondition>();
-        matcher1 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "class", "=", "*WanFailoverEvent*" ) );
-        matchers.add( matcher1 );
-        matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "action", "=", "DISCONNECTED" ) );
-        matchers.add( matcher2 );
-        alertRule = new AlertRule( true, matchers, true, true, "WAN is offline", false, 0 );
-        rules.add( alertRule );
-
-        matchers = new LinkedList<AlertRuleCondition>();
-        matcher1 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "class", "=", "*SystemStatEvent*" ) );
-        matchers.add( matcher1 );
-        matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "load1", ">", "20" ) );
-        matchers.add( matcher2 );
-        alertRule = new AlertRule( true, matchers, true, true, "Server load is high", true, 60 );
-        rules.add( alertRule );
-
-        matchers = new LinkedList<AlertRuleCondition>();
-        matcher1 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "class", "=", "*SystemStatEvent*" ) );
-        matchers.add( matcher1 );
-        matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "diskFreePercent", "<", ".2" ) );
-        matchers.add( matcher2 );
-        alertRule = new AlertRule( true, matchers, true, true, "Free disk space is low", true, 60 );
-        rules.add( alertRule );
-
-        matchers = new LinkedList<AlertRuleCondition>();
-        matcher1 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "class", "=", "*SystemStatEvent*" ) );
-        matchers.add( matcher1 );
-        matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "memFreePercent", "<", ".05" ) );
-        matchers.add( matcher2 );
-        alertRule = new AlertRule( false, matchers, true, true, "Free memory is low", true, 60 );
-        rules.add( alertRule );
-
-        matchers = new LinkedList<AlertRuleCondition>();
-        matcher1 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "class", "=", "*SystemStatEvent*" ) );
-        matchers.add( matcher1 );
-        matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "swapUsedPercent", ">", ".25" ) );
-        matchers.add( matcher2 );
-        alertRule = new AlertRule( true, matchers, true, true, "Swap usage is high", true, 60 );
-        rules.add( alertRule );
-        
-        matchers = new LinkedList<AlertRuleCondition>();
-        matcher1 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "class", "=", "*SessionEvent*" ) );
-        matchers.add( matcher1 );
-        matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "SServerPort", "=", "22" ) );
-        matchers.add( matcher2 );
-        alertRule = new AlertRule( true, matchers, true, true, "Suspicious Activity: Client created many SSH sessions", true, 60, Boolean.TRUE, 20.0D, 60, "CClientAddr");
-        rules.add( alertRule );
-
-        matchers = new LinkedList<AlertRuleCondition>();
-        matcher1 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "class", "=", "*SessionEvent*" ) );
-        matchers.add( matcher1 );
-        matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "SServerPort", "=", "3389" ) );
-        matchers.add( matcher2 );
-        alertRule = new AlertRule( true, matchers, true, true, "Suspicious Activity: Client created many RDP sessions", true, 60, Boolean.TRUE, 20.0D, 60, "CClientAddr");
-        rules.add( alertRule );
-
-        matchers = new LinkedList<AlertRuleCondition>();
-        matcher1 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "class", "=", "*SessionEvent*" ) );
-        matchers.add( matcher1 );
-        matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "entitled", "=", "false" ) );
-        matchers.add( matcher2 );
-        alertRule = new AlertRule( true, matchers, true, true, "License limit exceeded. Session not entitled", true, 60*24 );
-        rules.add( alertRule );
-
-        matchers = new LinkedList<AlertRuleCondition>();
-        matcher1 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "class", "=", "*WebFilterEvent*" ) );
-        matchers.add( matcher1 );
-        matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "blocked", "=", "False" ) );
-        matchers.add( matcher2 );
-        matcher3 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "category", "=", "Malware Distribution Point" ) );
-        matchers.add( matcher3 );
-        alertRule = new AlertRule( true, matchers, true, true, "Malware Distribution Point website visit detected", false, 10 );
-        rules.add( alertRule );
-
-        matchers = new LinkedList<AlertRuleCondition>();
-        matcher1 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "class", "=", "*WebFilterEvent*" ) );
-        matchers.add( matcher1 );
-        matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "blocked", "=", "True" ) );
-        matchers.add( matcher2 );
-        matcher3 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "category", "=", "Malware Distribution Point" ) );
-        matchers.add( matcher3 );
-        alertRule = new AlertRule( true, matchers, true, true, "Malware Distribution Point website visit blocked", false, 10 );
-        rules.add( alertRule );
-
-        matchers = new LinkedList<AlertRuleCondition>();
-        matcher1 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "class", "=", "*WebFilterEvent*" ) );
-        matchers.add( matcher1 );
-        matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "blocked", "=", "False" ) );
-        matchers.add( matcher2 );
-        matcher3 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "category", "=", "Botnet" ) );
-        matchers.add( matcher3 );
-        alertRule = new AlertRule( true, matchers, true, true, "Botnet website visit detected", false, 10 );
-        rules.add( alertRule );
-
-        matchers = new LinkedList<AlertRuleCondition>();
-        matcher1 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "class", "=", "*WebFilterEvent*" ) );
-        matchers.add( matcher1 );
-        matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "blocked", "=", "True" ) );
-        matchers.add( matcher2 );
-        matcher3 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "category", "=", "Botnet" ) );
-        matchers.add( matcher3 );
-        alertRule = new AlertRule( true, matchers, true, true, "Botnet website visit blocked", false, 10 );
-        rules.add( alertRule );
-
-        matchers = new LinkedList<AlertRuleCondition>();
-        matcher1 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "class", "=", "*WebFilterEvent*" ) );
-        matchers.add( matcher1 );
-        matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "blocked", "=", "False" ) );
-        matchers.add( matcher2 );
-        matcher3 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "category", "=", "Phishing/Fraud" ) );
-        matchers.add( matcher3 );
-        alertRule = new AlertRule( true, matchers, true, true, "Phishing/Fraud website visit detected", false, 10 );
-        rules.add( alertRule );
-
-        matchers = new LinkedList<AlertRuleCondition>();
-        matcher1 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "class", "=", "*WebFilterEvent*" ) );
-        matchers.add( matcher1 );
-        matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "blocked", "=", "True" ) );
-        matchers.add( matcher2 );
-        matcher3 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "category", "=", "Phishing/Fraud" ) );
-        matchers.add( matcher3 );
-        alertRule = new AlertRule( true, matchers, true, true, "Phishing/Fraud website visit blocked", false, 10 );
-        rules.add( alertRule );
-
-        matchers = new LinkedList<AlertRuleCondition>();
-        matcher1 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "class", "=", "*DeviceTableEvent*" ) );
-        matchers.add( matcher1 );
-        matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "key", "=", "add" ) );
-        matchers.add( matcher2 );
-        if ( "i386".equals(System.getProperty("os.arch", "unknown")) || "amd64".equals(System.getProperty("os.arch", "unknown"))) {
-            alertRule = new AlertRule( false, matchers, true, true, "New device discovered", false, 0 );
-        } else {
-            alertRule = new AlertRule( true, matchers, true, true, "New device discovered", false, 0 );
-        }
-        rules.add( alertRule );
-
-        matchers = new LinkedList<AlertRuleCondition>();
-        matcher1 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "class", "=", "*QuotaEvent*" ) );
-        matchers.add( matcher1 );
-        matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "action", "=", "2" ) );
-        matchers.add( matcher2 );
-        alertRule = new AlertRule( false, matchers, true, true, "Host exceeded quota.", false, 0 );
-        rules.add( alertRule );
-        
-        matchers = new LinkedList<AlertRuleCondition>();
-        matcher1 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "class", "=", "*PenaltyBoxEvent*" ) );
-        matchers.add( matcher1 );
-        matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "action", "=", "1" ) );
-        matchers.add( matcher2 );
-        alertRule = new AlertRule( false, matchers, true, true, "Host put in penalty box", false, 0 );
-        rules.add( alertRule );
-
-        matchers = new LinkedList<AlertRuleCondition>();
-        matcher1 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "class", "=", "*ApplicationControlLogEvent*" ) );
-        matchers.add( matcher1 );
-        matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "protochain", "=", "*BITTORRE*" ) );
-        matchers.add( matcher2 );
-        alertRule = new AlertRule( false, matchers, true, true, "Host is using Bittorrent", true, 60 );
-        rules.add( alertRule );
-
-        matchers = new LinkedList<AlertRuleCondition>();
-        matcher1 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "class", "=", "*HttpResponseEvent*" ) );
-        matchers.add( matcher1 );
-        matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "contentLength", ">", "1000000000" ) );
-        matchers.add( matcher2 );
-        alertRule = new AlertRule( false, matchers, true, true, "Host is doing large download", true, 60 );
-        rules.add( alertRule );
-        
-        matchers = new LinkedList<AlertRuleCondition>();
-        matcher1 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "class", "=", "*CaptureUserEvent*" ) );
-        matchers.add( matcher1 );
-        matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "event", "=", "FAILED" ) );
-        matchers.add( matcher2 );
-        alertRule = new AlertRule( false, matchers, true, true, "Failed Captive Portal login", false, 0 );
-        rules.add( alertRule );
-
-        matchers = new LinkedList<AlertRuleCondition>();
-        matcher1 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "class", "=", "*VirusHttpEvent*" ) );
-        matchers.add( matcher1 );
-        matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "clean", "=", "False" ) );
-        matchers.add( matcher2 );
-        alertRule = new AlertRule( false, matchers, true, true, "HTTP virus blocked", false, 0 );
-        rules.add( alertRule );
-
-        return rules;
-    }
-
     private LinkedList<EmailTemplate> defaultEmailTemplates()
     {
         LinkedList<EmailTemplate> templates = new LinkedList<EmailTemplate>();
@@ -716,8 +511,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
     private ReportsSettings defaultSettings()
     {
         ReportsSettings settings = new ReportsSettings();
-        settings.setVersion( 4 );
-        settings.setAlertRules( defaultAlertRules() );
+        settings.setVersion( 5 );
         settings.setEmailTemplates( defaultEmailTemplates() );
         settings.setReportsUsers( defaultReportsUsers( null ) );
 
@@ -842,36 +636,6 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         }
     }
 
-    private void conversion_12_0()
-    {
-        settings.setVersion( 1 );
-
-        LinkedList<AlertRuleCondition> matchers;
-        AlertRuleCondition matcher1;
-        AlertRuleCondition matcher2;
-        AlertRule alertRule;
-        
-        LinkedList<AlertRule> rules = settings.getAlertRules();
-
-        matchers = new LinkedList<AlertRuleCondition>();
-        matcher1 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "class", "=", "*SessionEvent*" ) );
-        matchers.add( matcher1 );
-        matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "entitled", "=", "false" ) );
-        matchers.add( matcher2 );
-        alertRule = new AlertRule( true, matchers, true, true, "License exceeded. Session not entitled", true, 60*24 );
-        rules.add( alertRule );
-
-        matchers = new LinkedList<AlertRuleCondition>();
-        matcher1 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "class", "=", "*DeviceTableEvent*" ) );
-        matchers.add( matcher1 );
-        matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "key", "=", "add" ) );
-        matchers.add( matcher2 );
-        alertRule = new AlertRule( false, matchers, true, true, "New device discovered", false, 0 );
-        rules.add( alertRule );
-        
-        setSettings( settings );
-    }
-
     private void conversion_12_1()
     {
         settings.setVersion( 2 );
@@ -882,46 +646,6 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
             }
         }
         
-        setSettings( settings );
-    }
-
-    private void conversion_12_1_1()
-    {
-        settings.setVersion( 3 );
-
-        try {
-            boolean found = false;
-            
-            for (Iterator<AlertRule> it = settings.getAlertRules().iterator(); it.hasNext() ;) {
-                AlertRule rule = it.next();
-                if ("Free Memory is low".equals( rule.getDescription() ) ) {
-                    logger.info("Replacing Free Memory alert rule...");
-                    it.remove();
-                    found = true;
-                    break;
-                }
-            }
-
-            if ( found ) {
-                LinkedList<AlertRuleCondition> matchers;
-                AlertRuleCondition matcher1;
-                AlertRuleCondition matcher2;
-                AlertRule alertRule;
-                
-                matchers = new LinkedList<AlertRuleCondition>();
-                matcher1 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "class", "=", "*SystemStatEvent*" ) );
-                matchers.add( matcher1 );
-                matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "memFreePercent", "<", ".05" ) );
-                matchers.add( matcher2 );
-                alertRule = new AlertRule( false, matchers, true, true, "Free memory is low", true, 60 );
-
-                LinkedList<AlertRule> rules = settings.getAlertRules();
-                rules.add( 3, alertRule );
-            }
-        } catch (Exception e) {
-            logger.warn("Conversion Exception",e);
-        }
-
         setSettings( settings );
     }
 
@@ -943,6 +667,49 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
 
         setSettings( settings );
     }
+
+    private void conversion_paths_13_0_0()
+    {
+        // Convert alert rule paths to new locations for 12.2 to 13.0
+        String[] oldNames = new String[] {"com.untangle.node.reports.AlertRule",
+                                 "com.untangle.node.reports.AlertRuleCondition",
+                                 "com.untangle.node.reports.AlertRuleConditionField"};
+        String[] newNames = new String[] {"com.untangle.uvm.alert.AlertRule",
+                                 "com.untangle.uvm.alert.AlertRuleCondition",
+                                 "com.untangle.uvm.alert.AlertRuleConditionField"};
+        for ( int i = 0 ; i < oldNames.length ; i++ ) {
+            String oldStr = oldNames[i];
+            String newStr = newNames[i];
+            UvmContextFactory.context().execManager().execResult("/bin/sed -e 's/" + oldStr + "/" + newStr + "/g' -i " + System.getProperty("uvm.settings.dir") + "/" + "/untangle-node-reports/" + "/*");
+        }
+    }
+
+    private void conversion_13_0_0()
+    {
+        settings.setVersion( 5 );
+
+        try {
+            if(settings.getAlertRules() != null){
+                logger.warn("conversion_13_0_0: move alert rules");
+                AlertManager alertManager = UvmContextFactory.context().alertManager();
+                if(alertManager != null){
+                    AlertSettings alertSettings = alertManager.getSettings();
+                    if(alertSettings != null){
+                        alertSettings.setAlertRules(settings.getAlertRules());
+                        alertSettings.setVersion(settings.getVersion());
+                        alertManager.setSettings(alertSettings);
+                        logger.warn("empty report alerts");
+                        settings.setAlertRules(null);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.warn("Conversion Exception",e);
+        }
+
+        setSettings( settings );
+    }
+
 
 
     private class PerformanceTest implements Runnable
