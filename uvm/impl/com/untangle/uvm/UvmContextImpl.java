@@ -832,8 +832,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         
         createUID();
 
-        this.alertManager = new AlertManagerImpl();
-
         this.hookManager = HookManagerImpl.getInstance();
 
         this.certCacheManager = new CertCacheManagerImpl();
@@ -900,6 +898,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         this.notificationManager = new NotificationManagerImpl();
 
         this.pluginManager = PluginManagerImpl.getInstance();
+
+        this.alertManager = new AlertManagerImpl();
 
         // start vectoring
         NetcapManagerImpl.getInstance().run();
