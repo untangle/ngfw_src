@@ -690,6 +690,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             json.put("nodeManager", this.nodeManager());
             json.put("notificationManager", this.notificationManager());
             json.put("adminManager", this.adminManager());
+            json.put("alertManager", this.alertManager());
             json.put("systemManager", this.systemManager());
             json.put("dashboardManager", this.dashboardManager());
             json.put("hostTable", this.hostTable());
