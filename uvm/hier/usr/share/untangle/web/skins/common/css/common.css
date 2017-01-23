@@ -251,6 +251,10 @@ img.icon-drag {
     background-image: url(../images/admin/config/icon_config_admin.png);
 }
 
+.icon-config-alert {
+    background-image: url(../images/admin/config/icon_config_alert.png);
+}
+
 .icon-config-email {
     background-image: url(../images/admin/config/icon_config_email.png);
 }
