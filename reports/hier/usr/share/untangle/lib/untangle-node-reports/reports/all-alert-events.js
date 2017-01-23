@@ -1,5 +1,5 @@
 {
-    "category": "Reports",
+    "category": "Alerts",
     "readOnly": true,
     "type": "EVENT_LIST",
     "conditions": [],
@@ -9,5 +9,5 @@
     "javaClass": "com.untangle.node.reports.ReportEntry",
     "table": "alerts",
     "title": "Alert Events",
-    "uniqueId": "reports-8XL9cbqQa9"
+    "uniqueId": "alerts-8XL9cbqQa9"
 }

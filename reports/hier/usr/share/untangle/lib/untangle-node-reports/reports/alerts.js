@@ -1,6 +1,6 @@
 {
-    "uniqueId": "reporting-498VRSufOw",
-    "category": "Reports",
+    "uniqueId": "alerts-498VRSufOw",
+    "category": "Alerts",
     "description": "Alerts over time.",
     "displayOrder": 100,
     "enabled": true,

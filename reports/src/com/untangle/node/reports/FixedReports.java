@@ -158,6 +158,7 @@ public class FixedReports
         ConfigCategories.add("Devices");
         ConfigCategories.add("Network");
         ConfigCategories.add("Administration");
+        ConfigCategories.add("Events");
         ConfigCategories.add("System");
         ConfigCategories.add("Shield");
 
