@@ -1,6 +1,7 @@
 
 Ext.define('Webui.untangle-node-reports.settings', {
     extend:'Ung.NodeWin',
+    hasReports: false,
     panelUsers: null,
     panelSyslog: null,
     panelData: null,
@@ -10,7 +11,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
     gridEmailTemplates: null,
 
     // pull from backend
-    configCategories: ['Hosts', 'Devices', 'Network', 'Administration', 'System', 'Shield'],
+    configCategories: ['Hosts', 'Devices', 'Network', 'Administration', 'Events', 'System', 'Shield'],
     appCategories: [],
     chartTypeMap: Ung.Util.createStoreMap([
             ["TEXT", i18n._("Text")],

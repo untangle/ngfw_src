@@ -1414,11 +1414,11 @@ Ext.define("Ung.Main", {
             helpSource: 'administration',
             className: 'Webui.config.administration'
         }, {
-            name: 'alert',
-            displayName: i18n._('Alerts'),
-            iconClass: 'icon-config-alert',
-            helpSource: 'alert',
-            className: 'Webui.config.alert'
+            name: 'event',
+            displayName: i18n._('Events'),
+            iconClass: 'icon-config-events',
+            helpSource: 'events',
+            className: 'Webui.config.events'
         }, {
             name: 'email',
             displayName: i18n._('Email'),
