@@ -402,7 +402,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         /**
          * Report updates
          */
-        ReportsManagerImpl.getInstance().updateSystemReportEntries( settings.getReportEntries(), true );
+        // ReportsManagerImpl.getInstance().updateSystemReportEntries( settings.getReportEntries(), true );
         
         /* sync settings to disk if necessary */
         File settingsFile = new File( settingsFileName );
@@ -688,7 +688,6 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
 
         try {
             if(settings.getAlertRules() != null){
-                logger.warn("conversion_13_0_0: move alert rules");
                 AlertManager alertManager = UvmContextFactory.context().alertManager();
                 if(alertManager != null){
                     AlertSettings alertSettings = alertManager.getSettings();
@@ -696,11 +695,20 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
                         alertSettings.setAlertRules(settings.getAlertRules());
                         alertSettings.setVersion(settings.getVersion());
                         alertManager.setSettings(alertSettings);
-                        logger.warn("empty report alerts");
                         settings.setAlertRules(null);
                     }
                 }
             }
+
+            if(settings.getReportEntries() != null){
+                for ( ReportEntry entry : settings.getReportEntries() ) {
+                    if ( entry.getTitle().contains("Alert") && entry.getCategory().equals("Reports") ){
+                        entry.setCategory( "Events" );
+                    }
+                }
+            }
+
+            // convert reportentries for alerts
         } catch (Exception e) {
             logger.warn("Conversion Exception",e);
         }

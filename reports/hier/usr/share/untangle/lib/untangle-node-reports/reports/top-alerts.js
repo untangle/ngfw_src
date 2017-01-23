@@ -1,6 +1,6 @@
 {
-    "uniqueId": "reports-3hFE6eMBRm",
-    "category": "Reports",
+    "uniqueId": "alerts-3hFE6eMBRm",
+    "category": "Alerts",
     "description": "The top alerts.",
     "displayOrder": 200,
     "enabled": true,
