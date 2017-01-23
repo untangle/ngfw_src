@@ -11,7 +11,7 @@ Ext.define('Webui.config.events', {
                 this.cancelAction();
             }, this)
         }, {
-            title: i18n._('Alert')
+            title: i18n._('Events')
         }];
         this.buildAlertRules();
 
