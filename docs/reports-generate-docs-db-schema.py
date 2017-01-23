@@ -210,7 +210,7 @@ generic = {
     'policy_id' : 'The policy',
     'username' : 'The username associated with this session',
     'hostname' : 'The hostname of the local address',
-    'filter_prefix' : 'The network filter that blocked the connection',
+    'filter_prefix' : 'The network filter that blocked the connection (filter,shield,invalid)',
     'c2s_content_length' : 'The client-to-server content length',
     's2c_content_length' : 'The server-to-client content length',
     's2c_content_type' : 'The server-to-client content type',
@@ -241,7 +241,7 @@ dict['openvpn_events'].update({
     'remote_address' : 'The remote IP address of the client',
     'pool_address'   : 'The pool IP address of the client',
     'client_name': 'The name of the client',
-    'type': 'The type of the event (CONNECT/DISCONNECT)',
+    'type': 'The type of the event (CONNECT,DISCONNECT)',
 })
 
 dict['ipsec_user_events'] = copy.deepcopy(generic)
@@ -408,7 +408,7 @@ dict['wan_failover_action_events'] = copy.deepcopy(generic)
 dict['wan_failover_action_events'].update({
     'table_description' : 'This table stores WAN Failover events. There is one row for each WAN status change.',
     'interface_id' : 'This interface ID',
-    'action' : 'This action (CONNECTED/DISCONNECTED)',
+    'action' : 'This action (CONNECTED,DISCONNECTED)',
     'os_name' : 'This O/S name of the interface',
     'name' : 'This name of the interface',
 })
@@ -523,7 +523,7 @@ dict['sessions'].update({
     'bandwidth_control_priority' : 'The priority given to this session',
     'bandwidth_control_rule' : 'The matching rule in Bandwidth Control rule (if any)',
     'ssl_inspector_ruleid' : 'The matching rule in SSL Inspector rule (if any)',
-    'ssl_inspector_status' : 'The status/action of the SSL session (INSPECTED/IGNORED/BLOCKED/UNTRUSTED/ABANDONED)',
+    'ssl_inspector_status' : 'The status/action of the SSL session (INSPECTED,IGNORED,BLOCKED,UNTRUSTED,ABANDONED)',
     'ssl_inspector_detail' : 'Additional text detail about the SSL connection (SNI, IP Address)',
 })
 

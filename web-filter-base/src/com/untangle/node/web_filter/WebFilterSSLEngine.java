@@ -86,7 +86,6 @@ public class WebFilterSSLEngine
 
         // null result means something went haywire
         if ( ! success ) {
-            logger.warn("Received null return from clientDataWorker");
             session.globalAttach(NodeSession.KEY_WEB_FILTER_SSL_ENGINE, null);
             session.resetClient();
             session.resetServer();
