@@ -65,6 +65,9 @@ Ext.define('Webui.config.events', {
                 title: i18n._("Alert Rules"),
                 dataExpression: "getAlertSettings().alertRules.list",
                 recordJavaClass: "com.untangle.uvm.alert.AlertRule",
+                hasCopy: true,
+                copyNameField: 'description',
+                copyIdField: 'ruleId',
                 emptyRow: {
                     "ruleId": null,
                     "enabled": true,
@@ -122,7 +125,13 @@ Ext.define('Webui.config.events', {
                     header: i18n._("Description"),
                     width: 200,
                     dataIndex: 'description',
-                    flex: 1
+                    flex: 1,
+                    editor: {
+                        xtype:'textfield',
+                        emptyText: i18n._("[no description]"),
+                        allowBlank: false,
+                        blankText: i18n._("The description cannot be blank.")
+                    },
                 }, {
                     xtype:'checkcolumn',
                     header: i18n._("Log Alert"),
