@@ -231,7 +231,7 @@ Ext.define('Webui.untangle-node-reports.settings', {
                     recordJavaClass: "com.untangle.node.reports.ReportsUser",
                     emptyRow: {
                         emailAddress: "",
-                        emailAlerts: true,
+                        // emailAlerts: true,
                         emailSummaries: true,
                         emailTemplateIds : {
                             javaClass: "java.util.LinkedList",
@@ -244,8 +244,8 @@ Ext.define('Webui.untangle-node-reports.settings', {
                     sortField: "emailAddress",
                     fields: [{
                         name: "emailAddress"
-                    },{
-                        name: "emailAlerts"
+                    // },{
+                    //     name: "emailAlerts"
                     },{
                         name: "emailSummaries"
                     },{
@@ -269,12 +269,12 @@ Ext.define('Webui.untangle-node-reports.settings', {
                             blankText: i18n._("The email address cannot be blank.")
                         },
                         flex:1
-                    }, {
-                        xtype:'checkcolumn',
-                        header: i18n._("Email Alerts"),
-                        dataIndex: "emailAlerts",
-                        width: 100,
-                        resizable: false
+                    // }, {
+                    //     xtype:'checkcolumn',
+                    //     header: i18n._("Email Alerts"),
+                    //     dataIndex: "emailAlerts",
+                    //     width: 100,
+                    //     resizable: false
                     }, {
                         xtype:'checkcolumn',
                         header: i18n._("Email Reports"),
@@ -354,11 +354,11 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 allowBlank: false,
                 blankText: i18n._("The email address name cannot be blank."),
                 width: 300
-            },{
-                xtype:'checkbox',
-                dataIndex: "emailAlerts",
-                fieldLabel: i18n._("Email Alerts"),
-                width: 300
+            // },{
+            //     xtype:'checkbox',
+            //     dataIndex: "emailAlerts",
+            //     fieldLabel: i18n._("Email Alerts"),
+            //     width: 300
             },{
                 xtype:'checkbox',
                 dataIndex: "emailSummaries",
