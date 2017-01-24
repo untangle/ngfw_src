@@ -4,6 +4,7 @@
 package com.untangle.uvm;
 
 import com.untangle.uvm.logging.LogEvent;
+import com.untangle.uvm.alert.AlertEvent;
 import com.untangle.uvm.alert.AlertSettings;
 import com.untangle.uvm.alert.AlertRule;
 import com.untangle.uvm.alert.AlertRuleCondition;
@@ -11,6 +12,13 @@ import com.untangle.uvm.alert.AlertRuleConditionField;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.util.I18nUtil;
+
+
+import com.untangle.uvm.AdminManager;
+import com.untangle.uvm.AdminSettings;
+import com.untangle.uvm.AdminUserSettings;
+
 
 import java.util.LinkedList;
 import java.util.Iterator;
@@ -19,6 +27,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.log4j.Logger;
+
+import org.json.JSONObject;
 
 public class AlertManagerImpl implements AlertManager
 {
@@ -413,6 +423,109 @@ public class AlertManagerImpl implements AlertManager
         eventWriter.inputQueue.offer(event);
     }
 
+    private static void runAlertEventQueue( LinkedList<LogEvent> events )
+    {
+        for ( LogEvent event : events ) {
+            runAlertEvent( event );
+        }
+    }
+
+    private static void runAlertEvent( LogEvent event )
+    {
+        try {
+            JSONObject jsonObject = event.toJSONObject();
+            for ( AlertRule rule : UvmContextFactory.context().alertManager().getSettings().getAlertRules() ) {
+                if ( ! rule.getEnabled() )
+                {
+                    continue;
+                }
+
+                if ( rule.isMatch( jsonObject ) ) {
+                    logger.info( "alert match: " + rule.getDescription() + " matches " + jsonObject.toString() );
+
+                    boolean alertSent = false;
+                    AlertEvent alertEvent = new AlertEvent( rule.getDescription(), event.toSummaryString(), jsonObject, event, rule, false );
+                    if ( rule.getAlert() ){
+                        alertSent = sendAlertForEvent( rule, event );
+                    }
+                    if ( rule.getLog() ){
+                        UvmContextFactory.context().logEvent( alertEvent );
+                    }
+                }
+            }
+        } catch ( Exception e ) {
+            logger.warn("Failed to evaluate alert rules.", e);
+        }
+    }
+
+    private static boolean sendAlertForEvent( AlertRule rule, LogEvent event )
+    {
+        if ( rule.getAlertLimitFrequency() && rule.getAlertLimitFrequencyMinutes() > 0 ) {
+            long currentTime = System.currentTimeMillis();
+            long lastAlertTime = rule.lastAlertTime();
+            long secondsSinceLastAlert = ( currentTime - lastAlertTime ) / 1000;
+            // if not enough time has elapsed, just return
+            if ( secondsSinceLastAlert < ( rule.getAlertLimitFrequencyMinutes() * 60 ) )
+                return false;
+        }
+
+        rule.updateAlertTime();
+
+        String companyName = UvmContextFactory.context().brandingManager().getCompanyName();
+        String hostName = UvmContextFactory.context().networkManager().getNetworkSettings().getHostName();
+        String domainName = UvmContextFactory.context().networkManager().getNetworkSettings().getDomainName();
+        String fullName = hostName + (  domainName == null ? "" : ("."+domainName));
+        String serverName = companyName + " " + I18nUtil.marktr("Server");
+        JSONObject jsonObject = event.toJSONObject();
+        String jsonEvent;
+
+        cleanupJsonObject( jsonObject );
+
+        try {
+            jsonEvent = jsonObject.toString(4);
+        } catch (org.json.JSONException e) {
+            logger.warn("Failed to pretty print.",e);
+            jsonEvent = jsonObject.toString();
+        }
+
+        LinkedList<AdminUserSettings> adminManagerUsers = UvmContextFactory.context().adminManager().getSettings().getUsers();
+
+        String subject = serverName + " " +
+            I18nUtil.marktr("Alert!") +
+            " [" + fullName + "] ";
+
+        String messageBody = I18nUtil.marktr("The following event occurred on the") + " " + serverName + " @ " + event.getTimeStamp() +
+            "\r\n\r\n" +
+            rule.getDescription() + ":" + "\r\n" +
+            event.toSummaryString() +
+            "\r\n\r\n" +
+            I18nUtil.marktr("Causal Event:") + " " + event.getClass().getSimpleName() + 
+            "\r\n" +
+            jsonEvent + 
+            "\r\n\r\n" +
+            I18nUtil.marktr("This is an automated message sent because the event matched the configured Alert Rules.");
+
+        if ( adminManagerUsers != null ) {
+            for ( AdminUserSettings user : adminManagerUsers ) {
+                if ( user.getEmailAddress() == null || "".equals( user.getEmailAddress() ) ){
+                    continue;
+                }
+                if ( ! user.getEmailAlerts() ){
+                    continue;
+                }
+                try {
+                    String[] recipients = null;
+                    recipients = new String[]{ user.getEmailAddress() };
+                    UvmContextFactory.context().mailSender().sendMessage( recipients, subject, messageBody);
+                } catch ( Exception e) {
+                    logger.warn("Failed to send mail.",e);
+                }
+            }
+        }
+
+        return true;
+    }
+
     /**
      * This thread periodically walks through the entries and removes expired entries
      * It also explicitly releases hosts from the penalty box and quotas after expiration
@@ -504,6 +617,11 @@ public class AlertManagerImpl implements AlertManager
                          * Copy all events out of the queue
                         */
                         while ((event = inputQueue.poll()) != null && logQueue.size() < maxEventsPerCycle) {
+                            if ( event instanceof AlertEvent )
+                            {
+                                /* Ignore our own events (they're destined for logging) */
+                                continue;
+                            }
                             logQueue.add(event);
                         }
 
@@ -522,9 +640,9 @@ public class AlertManagerImpl implements AlertManager
                         /**
                          * Run alert rules
                          */
-                        for ( LogEvent le : logQueue ) {
-                            // runAlertRules( alertRules, event, reports );
-                        }
+                        runAlertEventQueue( logQueue );
+
+                        logQueue.clear();
                     
                         try {Thread.sleep(1000);} catch (Exception e) {}
 
@@ -561,4 +679,57 @@ public class AlertManagerImpl implements AlertManager
         }
     }
 
+    @SuppressWarnings("unchecked")
+    private static void cleanupJsonObject( JSONObject jsonObject )
+    {
+        if ( jsonObject == null )
+            return;
+
+        java.util.Iterator<String> keys = (java.util.Iterator<String>)jsonObject.keys();
+        while ( keys.hasNext() ) {
+            String key = keys.next();
+
+            if ("class".equals(key)) {
+                keys.remove();
+                continue;
+            }
+            if ("tag".equals(key)) {
+                keys.remove();
+                continue;
+            }
+            if ("partitionTablePostfix".equals(key)) {
+                keys.remove();
+                continue;
+            }
+
+            /**
+             * Recursively clean json objects
+             */
+            try {
+                JSONObject subObject = jsonObject.getJSONObject(key);
+                if (subObject != null) {
+                    cleanupJsonObject( subObject );
+                }
+            } catch (Exception e) {
+                /* ignore */
+            }
+
+            /**
+             * If the object implements JSONString, then its probably a jsonObject
+             * Convert to JSON Object, recursively clean that, then replace it
+             */
+            try {
+                if ( jsonObject.get(key) != null ) {
+                    Object o = jsonObject.get(key);
+                    if ( o instanceof org.json.JSONString ) {
+                        JSONObject newObj = new JSONObject( o );
+                        cleanupJsonObject( newObj );
+                        jsonObject.put( key, newObj );
+                    }
+                }
+            } catch (Exception e) {
+                /* ignore */
+            }
+        }
+    }
 }

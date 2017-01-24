@@ -1,7 +1,7 @@
 /**
  * $Id: AlertEvent.java 34225 2013-03-10 20:38:45Z dmorris $
  */
-package com.untangle.node.reports;
+package com.untangle.uvm.alert;
 
 import org.json.JSONObject;
 
