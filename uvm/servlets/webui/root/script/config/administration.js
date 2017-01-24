@@ -232,7 +232,7 @@ Ext.define('Webui.config.administration', {
                 "username": "",
                 "description": "",
                 "emailAddress": "",
-                // "emailAlerts": true,
+                "emailAlerts": true,
                 // "emailSummaries": true,
                 "passwordHashBase64": null,
                 "passwordHashShadow": null,
@@ -246,8 +246,8 @@ Ext.define('Webui.config.administration', {
                 name: 'description'
             }, {
                 name: 'emailAddress'
-            // },{
-            //     name: 'emailAlerts'
+            },{
+                name: 'emailAlerts'
             // },{
             //     name: 'emailSummaries'
             }, {
@@ -285,12 +285,12 @@ Ext.define('Webui.config.administration', {
                     emptyText: i18n._("[no email]"),
                     vtype: 'email'
                 }
-            // }, {
-            //     xtype:'checkcolumn',
-            //     header: i18n._("Email Alerts"),
-            //     dataIndex: "emailAlerts",
-            //     width: 150,
-            //     resizable: false
+            }, {
+                xtype:'checkcolumn',
+                header: i18n._("Email Alerts"),
+                dataIndex: "emailAlerts",
+                width: 150,
+                resizable: false
             // }, {
             //     xtype:'checkcolumn',
             //     header: i18n._("Email Summaries"),
@@ -323,11 +323,11 @@ Ext.define('Webui.config.administration', {
                 emptyText: i18n._("[no email address]"),
                 vtype: 'email',
                 width: 400
-            // },{
-            //     xtype:'checkbox',
-            //     dataIndex: "emailAlerts",
-            //     fieldLabel: i18n._("Email Alerts"),
-            //     width: 300
+            },{
+                xtype:'checkbox',
+                dataIndex: "emailAlerts",
+                fieldLabel: i18n._("Email Alerts"),
+                width: 300
             // },{
             //     xtype:'checkbox',
             //     dataIndex: "emailSummaries",
