@@ -15,6 +15,9 @@ import time
 import os
 import uvm.i18n_helper
 
+## 
+import cProfile
+
 _ = uvm.i18n_helper.get_translation('untangle').lgettext
 
 ## PythonOption ApplicationPath /
@@ -81,36 +84,37 @@ def index(req):
     appid = args['APPID']
     captureSettings = load_capture_settings(req,appid)
 
-    if captureSettings.get("sessionCookiesEnabled") == True:
-        captureNode = load_rpc_manager(appid)
-        # Process cookie if exists.
-        address = req.get_remote_host(apache.REMOTE_NOLOOKUP,None)
+    if captureSettings.get("sessionCookiesEnabled") == True and 'Cookie' in req.headers_in:
         cookie = HandlerCookie(req)
+        if cookie.get_field("username") != None:
+            captureNode = load_rpc_manager(appid)
+            # Process cookie if exists.
+            address = req.get_remote_host(apache.REMOTE_NOLOOKUP,None)
 
-        if captureNode.isUserInCookieTable(address,cookie.get_field("username")):
-            # User was found in expired cookie table.
-            captureNode.removeUserFromCookieTable(address)
-            cookie.expire()
-        elif ((cookie != None) and
-            (cookie.is_valid() == True) and
-            (captureNode.userActivate(address,cookie.get_field("username"),"agree",False) == 0)):
-            # Cookie checks out.  Active them, let them through.
-            redirectUrl = captureSettings.get('redirectUrl')
-            if (redirectUrl != None and len(redirectUrl) != 0 and (not redirectUrl.isspace())):
-                target = str(redirectUrl)
-            else:
-                host = args['HOST']
-                uri = args['URI']
-                nonce = args['NONCE']
-                if ((host == 'Empty') or (uri == 'Empty')):
-                    page = "<HTML><HEAD><TITLE>Login Success</TITLE></HEAD><BODY><H1>Login Success</H1></BODY></HTML>"
-                    return(page)
-                if (nonce == 'a1b2c3d4e5f6'):
-                    target = str("https://" + host + uri)
+            if captureNode.isUserInCookieTable(address,cookie.get_field("username")):
+                # User was found in expired cookie table.
+                captureNode.removeUserFromCookieTable(address)
+                cookie.expire()
+            elif ((cookie != None) and
+                (cookie.is_valid() == True) and
+                (captureNode.userActivate(address,cookie.get_field("username"),"agree",False) == 0)):
+                # Cookie checks out.  Active them, let them through.
+                redirectUrl = captureSettings.get('redirectUrl')
+                if (redirectUrl != None and len(redirectUrl) != 0 and (not redirectUrl.isspace())):
+                    target = str(redirectUrl)
                 else:
-                    target = str("http://" + host + uri)
-            util.redirect(req, target)
-            return
+                    host = args['HOST']
+                    uri = args['URI']
+                    nonce = args['NONCE']
+                    if ((host == 'Empty') or (uri == 'Empty')):
+                        page = "<HTML><HEAD><TITLE>Login Success</TITLE></HEAD><BODY><H1>Login Success</H1></BODY></HTML>"
+                        return(page)
+                    if (nonce == 'a1b2c3d4e5f6'):
+                        target = str("https://" + host + uri)
+                    else:
+                        target = str("http://" + host + uri)
+                util.redirect(req, target)
+                return
 
     # if not using a custom capture page we generate and return a standard page
     if (captureSettings.get('pageType') != 'CUSTOM'):
