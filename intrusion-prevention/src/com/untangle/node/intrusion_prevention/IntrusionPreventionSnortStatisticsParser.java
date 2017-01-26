@@ -58,9 +58,6 @@ public class IntrusionPreventionSnortStatisticsParser
      */
     private final Logger logger = Logger.getLogger(getClass());
 
-    private final String SYSLOG_SIGNAL_COMMAND = "killall -SIGHUP rsyslogd";
-    private final String SNORT_SIGNAL_COMMAND = "killall -SIGUSR1 snort";
-
     private enum State {
         NONE ("===============$"),
         BREAKDOWN ("Breakdown by protocol \\(includes rebuilt packets\\):$"),
@@ -137,10 +134,6 @@ public class IntrusionPreventionSnortStatisticsParser
 
         RandomAccessFile raf = null;
         File file = new File(SNORT_LOG);
-        if(!file.exists()){
-            String cmd = SYSLOG_SIGNAL_COMMAND + "; " + SNORT_SIGNAL_COMMAND;
-            ExecManagerResult result = IntrusionPreventionSnortStatisticsParser.execManager.exec( cmd );
-        }
         try {
             raf = new RandomAccessFile( file, "r" );
         } catch( Exception e) {
@@ -163,7 +156,18 @@ public class IntrusionPreventionSnortStatisticsParser
         long sleepInterval = 10;
         long maxTime = 1000 / sleepInterval;
 
-        String cmd = SNORT_SIGNAL_COMMAND;
+        /**
+         * I changed this to killall because if snort crashes it leaves its PID file in place
+         * When that happens evenually something else takes the PID and we send it a signal
+         * If java takes that PID, then we actually kill java with a SIGUSR1
+         *
+         * Given that the we dont check that snort owns that PID, I just changed kill to killall which is a bit safer.
+         * I left the logic to check that the PID file still exists as that seems useful
+         *
+         * bug #12837 for more info
+         */
+        String cmd = "killall -SIGUSR1 snort";
+        // String cmd = "/bin/kill -SIGUSR1 " + pid;
         ExecManagerResult result = IntrusionPreventionSnortStatisticsParser.execManager.exec( cmd );
 
         do {
