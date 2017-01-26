@@ -91,8 +91,12 @@ public class IntrusionPreventionApp extends NodeBase
         this.addMetric(new NodeMetric(STAT_SCAN, I18nUtil.marktr("Sessions scanned")));
         this.addMetric(new NodeMetric(STAT_DETECT, I18nUtil.marktr("Sessions logged")));
         this.addMetric(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Sessions blocked")));
-        
-        this.ipsEventMonitor   = new IntrusionPreventionEventMonitor( this );
+
+        setScanCount(0);
+        setDetectCount(0);
+        setBlockCount(0);
+
+        this.ipsEventMonitor = new IntrusionPreventionEventMonitor( this );
 
         UvmContextFactory.context().servletFileManager().registerDownloadHandler( new IntrusionPreventionSettingsDownloadHandler() );
 
@@ -157,9 +161,6 @@ public class IntrusionPreventionApp extends NodeBase
     {
         iptablesRules();
 
-        setScanCount(0);
-        setDetectCount(0);
-        setBlockCount(0);
     }
 
     public void reconfigure()
