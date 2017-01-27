@@ -26,6 +26,20 @@ Ext.define('Ung.config.network.NetworkModel', {
                 return host + "." + domain;
             }
             return host;
+        },
+
+                                conditionsData: {
+                                    bind: '{rule.conditions.list}',
+                                    get: function (coll) {
+                                        return coll || [];
+                                    }
+                                },
+
+        portForwardRulesData: {
+            bind: '{settings.portForwardRules.list}',
+            get: function (rules) {
+                return rules || null;
+            }
         }
     },
     data: {
@@ -45,7 +59,8 @@ Ext.define('Ung.config.network.NetworkModel', {
         },
 
         portforwardrules: {
-            data: '{settings.portForwardRules.list}'
+            type: 'rule',
+            data: '{portForwardRulesData}'
         }
     }
 });

@@ -7,9 +7,9 @@ Ext.define ('Ung.model.Condition', {
         { name: 'value', type: 'auto', defaultValue: '' },
         { name: 'editor', type: 'string',
             calculate: function (data) {
-                if (data.conditionType === 'PROTOCOL') {
-                    return 'checkboxgroup';
-                }
+                // if (data.conditionType === 'PROTOCOL') {
+                //     return 'checkboxgroup';
+                // }
                 return 'textfield';
             }
         }

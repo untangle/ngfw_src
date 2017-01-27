@@ -267,7 +267,51 @@ Ext.define('Ung.config.network.NetworkController', {
     },
 
 
-    // editRule: function () {
+    editWin: function () {
+        // console.log(this.getViewModel());
+        // var pf = this.getViewModel().get('portforwardrules');
+        // // console.log(pf);
+        // pf.getAt(0).data.conditions.list[0].value = 'false';
+        // console.log(pf.getAt(0));
 
-    // }
+        // pf.getAt(0).set('description', 'aaa');
+        // pf.getAt(0).set('conditions', {
+        //     list: [{
+        //         conditionType: 'DST_LOCAL'
+        //     }]
+        // });
+
+        // Ext.widget('ung.config.network.editorwin', {
+        //     // config: {
+        //         conditions: [
+        //             {name:"DST_LOCAL",displayName: 'Destined Local'.t(), type: "boolean", visible: true},
+        //             {name:"DST_ADDR",displayName: 'Destination Address'.t(), type: "text", visible: true, vtype:"ipMatcher"},
+        //             {name:"DST_PORT",displayName: 'Destination Port'.t(), type: "text",vtype:"portMatcher", visible: true},
+        //             {name:"SRC_ADDR",displayName: 'Source Address'.t(), type: "text", visible: true, vtype:"ipMatcher"},
+        //             {name:"SRC_PORT",displayName: 'Source Port'.t(), type: "text",vtype:"portMatcher", visible: rpc.isExpertMode},
+        //             {name:"SRC_INTF",displayName: 'Source Interface'.t(), type: "checkgroup", values: Ung.Util.getInterfaceList(true, true), visible: true},
+        //             {name:"PROTOCOL",displayName: 'Protocol'.t(), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true}
+        //         ],
+        //         rule: record,
+        //         viewModel: {
+        //             data: {
+        //                 rule:
+        //             }
+        //         }
+            // }
+            // conditions: {
+            //     DST_LOCAL: {displayName: 'Destined Local'.t(), type: "boolean", visible: true},
+            //     DST_ADDR: {displayName: 'Destination Address'.t(), type: "text", visible: true, vtype:"ipMatcher"},
+            //     DST_PORT: {displayName: 'Destination Port'.t(), type: "text", vtype:"portMatcher", visible: true},
+            //     PROTOCOL: {displayName: 'Protocol'.t(), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true}
+            // },
+            // viewModel: {
+            //     data: {
+            //         rule: record
+            //     }
+            // },
+        // });
+
+
+    }
 });

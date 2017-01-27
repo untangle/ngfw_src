@@ -6,10 +6,10 @@ Ext.define('Ung.config.network.Network', {
         'Ung.config.network.NetworkController',
         'Ung.config.network.NetworkModel',
 
-        'Ung.config.network.RuleEditor',
-
         'Ung.view.grid.Grid',
-        'Ung.store.RuleConditions'
+        'Ung.store.RuleConditions',
+        'Ung.store.Rule',
+        'Ung.cmp.Rules'
     ],
 
     controller: 'config.network',
@@ -17,6 +17,16 @@ Ext.define('Ung.config.network.Network', {
     viewModel: {
         type: 'config.network'
     },
+
+    portForwardConditions: [
+        {name:"DST_LOCAL",displayName: 'Destined Local'.t(), type: "boolean", visible: true},
+        {name:"DST_ADDR",displayName: 'Destination Address'.t(), type: "textfield", visible: true, vtype:"ipMatcher"},
+        {name:"DST_PORT",displayName: 'Destination Port'.t(), type: "textfield",vtype:"portMatcher", visible: true},
+        {name:"SRC_ADDR",displayName: 'Source Address'.t(), type: "textfield", visible: true, vtype:"ipMatcher"},
+        {name:"SRC_PORT",displayName: 'Source Port'.t(), type: "textfield",vtype:"portMatcher", visible: rpc.isExpertMode},
+        {name:"SRC_INTF",displayName: 'Source Interface'.t(), type: "checkboxgroup", values: [['a', 'a'], ['b', 'b']], visible: true},
+        {name:"PROTOCOL",displayName: 'Protocol'.t(), type: "checkboxgroup", values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true}
+    ],
 
     // tabPosition: 'left',
     // tabRotation: 0,
