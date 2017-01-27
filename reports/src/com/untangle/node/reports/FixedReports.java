@@ -57,10 +57,10 @@ import org.json.JSONObject;
 
 public class FixedReports
 {
-    private static final Logger logger = Logger.getLogger( AlertHandler.class );
+    private static final Logger logger = Logger.getLogger( FixedReports.class );
 
     public static final String REPORTS_FIXED_TEMPLATE_FILENAME =  System.getProperty("uvm.lib.dir") + "/untangle-node-reports/templates/reports.html";
-        
+
     private StringBuilder messageText = null;
 
     private StringBuilder currentInputLine = null;
