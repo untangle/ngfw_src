@@ -324,3 +324,13 @@
         }
     }
 }
+
+
+.cond-val {
+    background: #98c3a9;
+    padding: 2px 3px;
+    border-radius: 3px;
+    &.invert {
+        background: #e4a4a4;
+    }
+}

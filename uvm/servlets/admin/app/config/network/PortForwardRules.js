@@ -21,7 +21,7 @@ Ext.define('Ung.config.network.PortForwardRules', {
     items: [{
         xtype: 'ung.cmp.rules',
         flex: 3,
-        // columnFeatures: ['edit'],
+        columnFeatures: ['reorder'],
 
         conditions: [
             { name: 'DST_LOCAL', displayName: 'Destined Local'.t(), type: 'boolean', visible: true},
@@ -100,7 +100,6 @@ Ext.define('Ung.config.network.PortForwardRules', {
             // }
         }, {
             header: 'Description',
-            flex: 1,
             width: 200,
             dataIndex: 'description',
             editor: {
@@ -109,28 +108,36 @@ Ext.define('Ung.config.network.PortForwardRules', {
             }
         }, {
             header: 'Conditions'.t(),
+            itemId: 'conditions',
             flex: 1,
-            dataIndex: 'ruleId',
+            dataIndex: 'conditions',
             renderer: 'conditionsRenderer'
         },
-        {
-            xtype: 'actioncolumn', //
-            iconCls: 'fa fa-edit',
-            handler: 'editRuleWin'
-        },
+        // {
+        //     xtype: 'actioncolumn', //
+        //     iconCls: 'fa fa-edit',
+        //     handler: 'editRuleWin'
+        // },
         {
             header: 'New Destination'.t(),
             dataIndex: 'newDestination',
             width: 150,
             editor: {
                 xtype: 'textfield',
+                allowBlank: false,
+                vtype: 'ipall'
             }
         }, {
             header: 'New Port'.t(),
             dataIndex: 'newPort',
+            align: 'right',
             width: 80,
             editor: {
-                xtype: 'textfield'
+                xtype: 'numberfield',
+                allowBlank: true,
+                minValue : 1,
+                maxValue : 0xFFFF,
+                vtype: 'port'
             }
         }],
     }, {
