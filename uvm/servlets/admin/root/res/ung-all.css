@@ -99,6 +99,10 @@
 
 .node-install-item.installed:hover i.fa-download { opacity: 0; }
 
+.cond-val { background: #98c3a9; padding: 2px 3px; border-radius: 3px; }
+
+.cond-val.invert { background: #e4a4a4; }
+
 cite { background: yellow; font-style: normal; }
 
 .x-panel-navigation { box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3); z-index: 999; }
