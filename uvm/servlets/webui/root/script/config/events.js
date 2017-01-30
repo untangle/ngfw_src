@@ -3,7 +3,7 @@ Ext.define('Webui.config.events', {
     displayName: 'Events',
     hasReports: true,
     reportCategory: 'Events',
-    panelAlert: null,
+    panelEvent: null,
     initComponent: function() {
         this.breadcrumbs = [{
             title: i18n._("Configuration"),
@@ -13,26 +13,26 @@ Ext.define('Webui.config.events', {
         }, {
             title: i18n._('Events')
         }];
-        this.buildAlertRules();
+        this.buildEventRules();
 
         // builds the tab panel with the tabs
-        var alertTabs = [this.panelAlertRules];
-        this.buildTabPanel(alertTabs);
-        this.tabs.setActiveTab(this.panelAlertRules);
+        var eventTabs = [this.panelEventRules];
+        this.buildTabPanel(eventTabs);
+        this.tabs.setActiveTab(this.panelEventRules);
         this.callParent(arguments);
     },
-    // get alert settings
-    getAlertSettings: function(forceReload) {
-        if (forceReload || this.rpc.alertSettings === undefined) {
+    // get event settings
+    getEventSettings: function(forceReload) {
+        if (forceReload || this.rpc.eventSettings === undefined) {
             try {
-                this.rpc.alertSettings = rpc.alertManager.getSettings();
+                this.rpc.eventSettings = rpc.eventManager.getSettings();
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
         }
-        return this.rpc.alertSettings;
+        return this.rpc.eventSettings;
     },
-    getAlertRuleConditions: function () {
+    getEventRuleConditions: function () {
         return [
             {name:"FIELD_CONDITION",displayName: i18n._("Field condition"), type: "editor", editor: Ext.create('Ung.FieldConditionWindow',{}), visible: true, disableInvert: true, allowMultiple: true, allowBlank: false, formatValue: function(value) {
                 var result= "";
@@ -43,28 +43,28 @@ Ext.define('Webui.config.events', {
             }}
         ];
     },
-    // AlertRules Panel
-    buildAlertRules: function() {
-        this.panelAlertRules = Ext.create('Ext.panel.Panel',{
-            name: 'alertRules',
-            helpSource: 'reports_alert_rules',
-            title: i18n._('Alert Rules'),
+    // EventRules Panel
+    buildEventRules: function() {
+        this.panelEventRules = Ext.create('Ext.panel.Panel',{
+            name: 'eventRules',
+            helpSource: 'reports_event_rules',
+            title: i18n._('Event Rules'),
             layout: { type: 'vbox', align: 'stretch' },
             cls: 'ung-panel',
             items: [{
                 xtype: 'fieldset',
                 title: i18n._('Note'),
                 flex: 0,
-                html: " " + i18n._("<b>Alert Rules</b> process all events to log and/or alert administrators when special or noteworthy events occur.")
-            },  this.gridAlertRules= Ext.create('Ung.grid.Panel',{
+                html: " " + i18n._("<b>Event Rules</b> process all events to log and/or event administrators when special or noteworthy events occur.")
+            },  this.gridEventRules= Ext.create('Ung.grid.Panel',{
                 flex: 1,
-                name: 'Alert Rules',
+                name: 'Event Rules',
                 settingsCmp: this,
                 hasReorder: true,
                 addAtTop: false,
-                title: i18n._("Alert Rules"),
-                dataExpression: "getAlertSettings().alertRules.list",
-                recordJavaClass: "com.untangle.uvm.alert.AlertRule",
+                title: i18n._("Event Rules"),
+                dataExpression: "getEventSettings().eventRules.list",
+                recordJavaClass: "com.untangle.uvm.event.EventRule",
                 hasCopy: true,
                 copyNameField: 'description',
                 copyIdField: 'ruleId',
@@ -72,9 +72,9 @@ Ext.define('Webui.config.events', {
                     "ruleId": null,
                     "enabled": true,
                     "log": false,
-                    "alert": false,
-                    "alertLimitFrequency": false,
-                    "alertLimitFrequencyMinutes": 0,
+                    "event": false,
+                    "eventLimitFrequency": false,
+                    "eventLimitFrequencyMinutes": 0,
                     "description": ""
                 },
                 fields: [{
@@ -84,11 +84,11 @@ Ext.define('Webui.config.events', {
                 }, {
                     name: 'log'
                 }, {
-                    name: 'alert'
+                    name: 'event'
                 }, {
-                    name: 'alertLimitFrequency'
+                    name: 'eventLimitFrequency'
                 }, {
-                    name: 'alertLimitFrequencyMinutes'
+                    name: 'eventLimitFrequencyMinutes'
                 }, {
                     name: 'thresholdEnabled'
                 }, {
@@ -134,18 +134,18 @@ Ext.define('Webui.config.events', {
                     },
                 }, {
                     xtype:'checkcolumn',
-                    header: i18n._("Log Alert"),
+                    header: i18n._("Log Event"),
                     dataIndex: 'log',
                     width:150
                 }, {
                     xtype:'checkcolumn',
-                    header: i18n._("Send Alert"),
-                    dataIndex: 'alert',
+                    header: i18n._("Send Event"),
+                    dataIndex: 'event',
                     width:150
                 }]
             })]
         });
-        this.gridAlertRules.setRowEditor( Ext.create('Ung.RowEditorWindow',{
+        this.gridEventRules.setRowEditor( Ext.create('Ung.RowEditorWindow',{
             inputLines: [{
                 xtype:'checkbox',
                 name: "Enable Rule",
@@ -164,9 +164,9 @@ Ext.define('Webui.config.events', {
                 items:[{
                     xtype:'rulebuilder',
                     settingsCmp: this,
-                    javaClass: "com.untangle.uvm.alert.AlertRuleCondition",
+                    javaClass: "com.untangle.uvm.event.EventRuleCondition",
                     dataIndex: "conditions",
-                    conditions: this.getAlertRuleConditions()
+                    conditions: this.getEventRuleConditions()
                 }]
             }, {
                 xtype: 'fieldset',
@@ -179,7 +179,7 @@ Ext.define('Webui.config.events', {
                     listeners: {
                         "change": {
                             fn: Ext.bind(function(elem, newValue) {
-                                this.gridAlertRules.rowEditor.syncComponents();
+                                this.gridEventRules.rowEditor.syncComponents();
                             }, this)
                         }
                     }
@@ -225,16 +225,16 @@ Ext.define('Webui.config.events', {
                     xtype:'checkbox',
                     labelWidth: 160,
                     dataIndex: "log",
-                    fieldLabel: i18n._("Log Alert")
+                    fieldLabel: i18n._("Log Event")
                 }, {
                     xtype:'checkbox',
                     labelWidth: 160,
-                    dataIndex: "alert",
-                    fieldLabel: i18n._("Send Alert"),
+                    dataIndex: "event",
+                    fieldLabel: i18n._("Send Event"),
                     listeners: {
                         "change": {
                             fn: Ext.bind(function(elem, newValue) {
-                                this.gridAlertRules.rowEditor.syncComponents();
+                                this.gridEventRules.rowEditor.syncComponents();
                             }, this)
                         }
                     }
@@ -244,7 +244,7 @@ Ext.define('Webui.config.events', {
                     items: [{
                         xtype:'checkbox',
                         labelWidth: 160,
-                        dataIndex: "alertLimitFrequency",
+                        dataIndex: "eventLimitFrequency",
                         fieldLabel: i18n._("Limit Send Frequency")
                     },{
                         xtype: 'container',
@@ -254,7 +254,7 @@ Ext.define('Webui.config.events', {
                             xtype: 'numberfield',
                             labelWidth: 160,
                             width: 230,
-                            dataIndex: "alertLimitFrequencyMinutes",
+                            dataIndex: "eventLimitFrequencyMinutes",
                             allowDecimals: false,
                             allowBlank: false,
                             minValue: 0,
@@ -269,9 +269,9 @@ Ext.define('Webui.config.events', {
                 }]
             }],
             syncComponents: function () {
-                var sendAlert=this.down('checkbox[dataIndex=alert]').getValue();
-                this.down('checkbox[dataIndex=alertLimitFrequency]').setDisabled(!sendAlert);
-                this.down('numberfield[dataIndex=alertLimitFrequencyMinutes]').setDisabled(!sendAlert);
+                var sendEvent=this.down('checkbox[dataIndex=event]').getValue();
+                this.down('checkbox[dataIndex=eventLimitFrequency]').setDisabled(!sendEvent);
+                this.down('numberfield[dataIndex=eventLimitFrequencyMinutes]').setDisabled(!sendEvent);
 
                 var thresholdEnabled=this.down('checkbox[dataIndex=thresholdEnabled]').getValue();
                 this.down('numberfield[dataIndex=thresholdLimit]').setDisabled(!thresholdEnabled);
@@ -287,18 +287,18 @@ Ext.define('Webui.config.events', {
         this.saveSemaphore = 1;
         Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
 
-        this.getAlertSettings().alertRules.list=this.gridAlertRules.getList();
+        this.getEventSettings().eventRules.list=this.gridEventRules.getList();
 
-        rpc.alertManager.setSettings(Ext.bind(function(result, exception) {
+        rpc.eventManager.setSettings(Ext.bind(function(result, exception) {
             this.afterSave(exception, isApply);
-        }, this), this.getAlertSettings());
+        }, this), this.getEventSettings());
     },
     afterSave: function(exception, isApply) {
         if(Ung.Util.handleException(exception)) return;
         this.saveSemaphore--;
         if (this.saveSemaphore == 0) {
             if(isApply) {
-                this.getAlertSettings(true);
+                this.getEventSettings(true);
                 this.clearDirty();
                 Ext.MessageBox.hide();
             } else {
@@ -308,4 +308,4 @@ Ext.define('Webui.config.events', {
         }
     }
 });
-//# sourceURL=alert.js
+//# sourceURL=event.js

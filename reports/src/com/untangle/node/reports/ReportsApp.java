@@ -32,13 +32,13 @@ import org.apache.log4j.Logger;
 import org.apache.commons.fileupload.FileItem;
 
 import com.untangle.uvm.ExecManagerResult;
-import com.untangle.uvm.AlertManager;
+import com.untangle.uvm.EventManager;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.AdminUserSettings;
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.alert.AlertRule;
-import com.untangle.uvm.alert.AlertSettings;
+import com.untangle.uvm.event.EventRule;
+import com.untangle.uvm.event.EventSettings;
 import com.untangle.uvm.network.FilterRule;
 import com.untangle.uvm.node.NodeProperties;
 import com.untangle.uvm.node.NodeSettings;
@@ -668,13 +668,14 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
 
     private void conversion_paths_13_0_0()
     {
-        // Convert alert rule paths to new locations for 12.2 to 13.0
+        // Convert event rule paths to new locations for 12.2 to 13.0
+        // !!! change other classes and these to Event
         String[] oldNames = new String[] {"com.untangle.node.reports.AlertRule",
                                  "com.untangle.node.reports.AlertRuleCondition",
                                  "com.untangle.node.reports.AlertRuleConditionField"};
-        String[] newNames = new String[] {"com.untangle.uvm.alert.AlertRule",
-                                 "com.untangle.uvm.alert.AlertRuleCondition",
-                                 "com.untangle.uvm.alert.AlertRuleConditionField"};
+        String[] newNames = new String[] {"com.untangle.uvm.event.AlertRule",
+                                 "com.untangle.uvm.event.AlertRuleCondition",
+                                 "com.untangle.uvm.event.AlertRuleConditionField"};
         for ( int i = 0 ; i < oldNames.length ; i++ ) {
             String oldStr = oldNames[i];
             String newStr = newNames[i];
@@ -687,28 +688,28 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         settings.setVersion( 5 );
 
         try {
-            if(settings.getAlertRules() != null){
-                AlertManager alertManager = UvmContextFactory.context().alertManager();
-                if(alertManager != null){
-                    AlertSettings alertSettings = alertManager.getSettings();
-                    if(alertSettings != null){
-                        alertSettings.setAlertRules(settings.getAlertRules());
-                        alertSettings.setVersion(settings.getVersion());
-                        alertManager.setSettings(alertSettings);
-                        settings.setAlertRules(null);
+            if(settings.getEventRules() != null){
+                EventManager eventManager = UvmContextFactory.context().eventManager();
+                if(eventManager != null){
+                    EventSettings eventSettings = eventManager.getSettings();
+                    if(eventSettings != null){
+                        eventSettings.setEventRules(settings.getEventRules());
+                        eventSettings.setVersion(settings.getVersion());
+                        eventManager.setSettings(eventSettings);
+                        settings.setEventRules(null);
                     }
                 }
             }
 
             if(settings.getReportEntries() != null){
                 for ( ReportEntry entry : settings.getReportEntries() ) {
-                    if ( entry.getTitle().contains("Alert") && entry.getCategory().equals("Reports") ){
+                    if ( entry.getTitle().contains("Event") && entry.getCategory().equals("Reports") ){
                         entry.setCategory( "Events" );
                     }
                 }
             }
 
-            // convert reportentries for alerts
+            // convert reportentries for events
         } catch (Exception e) {
             logger.warn("Conversion Exception",e);
         }
