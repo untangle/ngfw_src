@@ -211,11 +211,11 @@ public interface UvmContext
     NetcapManager netcapManager();
 
     /**
-     * Get the AlertManager
+     * Get the EventManager
      *
-     * @return the AlertManager
+     * @return the EventManager
      */
-    AlertManager alertManager();
+    EventManager eventManager();
 
     /**
      * Get the UploadManager

@@ -80,7 +80,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private CertificateManagerImpl certificateManager;
     private GeographyManagerImpl geographyManager;
     private NetcapManagerImpl netcapManager;
-    private AlertManagerImpl alertManager;
+    private EventManagerImpl eventManager;
     private DaemonManagerImpl daemonManager;
     private BrandingManagerImpl brandingManager;
     private SkinManagerImpl skinManager;
@@ -220,9 +220,9 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return this.netcapManager;
     }
 
-    public AlertManager alertManager()
+    public EventManager eventManager()
     {
-        return this.alertManager;
+        return this.eventManager;
     }
 
     public ServletFileManager servletFileManager()
@@ -654,7 +654,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             return;
 
         this.reportsNode.logEvent(evt);
-        this.alertManager.logEvent(evt);
+        this.eventManager.logEvent(evt);
     }
 
     public String getServerUID()
@@ -690,7 +690,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             json.put("nodeManager", this.nodeManager());
             json.put("notificationManager", this.notificationManager());
             json.put("adminManager", this.adminManager());
-            json.put("alertManager", this.alertManager());
+            json.put("eventManager", this.eventManager());
             json.put("systemManager", this.systemManager());
             json.put("dashboardManager", this.dashboardManager());
             json.put("hostTable", this.hostTable());
@@ -900,7 +900,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         this.pluginManager = PluginManagerImpl.getInstance();
 
-        this.alertManager = new AlertManagerImpl();
+        this.eventManager = new EventManagerImpl();
 
         // start vectoring
         NetcapManagerImpl.getInstance().run();

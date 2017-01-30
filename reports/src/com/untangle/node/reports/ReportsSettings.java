@@ -12,7 +12,7 @@ import org.json.JSONString;
 
 import com.untangle.uvm.node.IPMaskedAddress;
 import com.untangle.uvm.node.DayOfWeekMatcher;
-import com.untangle.uvm.alert.AlertRule;
+import com.untangle.uvm.event.EventRule;
 
 /**
  * Settings for the Reports Node.
@@ -27,7 +27,7 @@ public class ReportsSettings implements Serializable, JSONString
     private Integer generationMinute = 0;
     private LinkedList<ReportsHostnameMapEntry> hostnameMap = new LinkedList<ReportsHostnameMapEntry>();
     private LinkedList<ReportsUser> reportsUsers = new LinkedList<ReportsUser>();
-    private LinkedList<AlertRule> alertRules = null;
+    private LinkedList<EventRule> alertRules = null;
     private LinkedList<EmailTemplate> emailTemplates = new LinkedList<EmailTemplate>();
     
     private String dbHost = "localhost";
@@ -67,8 +67,8 @@ public class ReportsSettings implements Serializable, JSONString
     public LinkedList<ReportsUser> getReportsUsers() { return this.reportsUsers; }
     public void setReportsUsers( LinkedList<ReportsUser> reportsUsers ) { this.reportsUsers = reportsUsers; }
 
-    public LinkedList<AlertRule> getAlertRules() { return this.alertRules; }
-    public void setAlertRules( LinkedList<AlertRule> newValue ) { this.alertRules = newValue; }
+    public LinkedList<EventRule> getEventRules() { return this.alertRules; }
+    public void setEventRules( LinkedList<EventRule> newValue ) { this.alertRules = newValue; }
     
     public LinkedList<EmailTemplate> getEmailTemplates() { return this.emailTemplates; }
     public void setEmailTemplates( LinkedList<EmailTemplate> newValue ) { this.emailTemplates = newValue; }
