@@ -1008,19 +1008,9 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         logger.info("UvmContext destroyed");
     }
 
-    protected boolean refreshLibs()
-    {
-        return main.refreshLibs();
-    }
-
     protected void fatalError(String throwingLocation, Throwable x)
     {
         main.fatalError(throwingLocation, x);
-    }
-
-    protected boolean loadUvmResource(String name)
-    {
-        return main.loadUvmResource(name);
     }
 
     @SuppressWarnings({"rawtypes","unchecked"})
