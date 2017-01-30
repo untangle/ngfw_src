@@ -703,7 +703,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
 
             if(settings.getReportEntries() != null){
                 for ( ReportEntry entry : settings.getReportEntries() ) {
-                    if ( entry.getTitle().contains("Event") && entry.getCategory().equals("Reports") ){
+                    if ( entry.getTitle().contains("Alert") && entry.getCategory().equals("Reports") ){
                         entry.setCategory( "Events" );
                     }
                 }
