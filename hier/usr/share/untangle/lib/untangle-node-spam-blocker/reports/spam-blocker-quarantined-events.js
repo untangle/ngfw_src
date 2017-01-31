@@ -16,7 +16,7 @@
             "value": "Q"
         }
     ],
-    "defaultColumns": ["time_stamp","hostname","s_server_addr","addr","sender","subject","spam_blocker_is_spam","spam_blocker_action","spam_blocker_score","spam_blocker_tests_string"],
+    "defaultColumns": ["time_stamp","hostname","c_client_addr","s_server_addr","addr","sender","subject","spam_blocker_is_spam","spam_blocker_action","spam_blocker_score","spam_blocker_tests_string"],
     "description": "All emails marked as Spam and quarantined.",
     "displayOrder": 1030,
     "javaClass": "com.untangle.node.reports.ReportEntry",
