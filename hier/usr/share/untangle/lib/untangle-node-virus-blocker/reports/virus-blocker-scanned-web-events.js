@@ -10,7 +10,7 @@
             "value": "NOT NULL"
         }
     ],
-    "defaultColumns": ["time_stamp","hostname","username","host","uri","virus_blocker_clean","virus_blocker_name","s_server_addr","s_server_port"],
+    "defaultColumns": ["time_stamp","hostname","username","host","uri","virus_blocker_clean","virus_blocker_name","c_client_addr","s_server_addr","s_server_port"],
     "description": "All HTTP sessions scanned by Virus Blocker.",
     "displayOrder": 1010,
     "javaClass": "com.untangle.node.reports.ReportEntry",

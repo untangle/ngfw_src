@@ -16,7 +16,7 @@
             "value": "TRUE"
         }
     ],
-        "defaultColumns": ["time_stamp","hostname","username","addr","sender","virus_blocker_clean","virus_blocker_name","s_server_addr","s_server_port"],
+        "defaultColumns": ["time_stamp","hostname","username","addr","sender","virus_blocker_clean","virus_blocker_name","c_client_addr","s_server_addr","s_server_port"],
     "description": "Scanned email sessions marked clean.",
     "displayOrder": 1022,
     "javaClass": "com.untangle.node.reports.ReportEntry",

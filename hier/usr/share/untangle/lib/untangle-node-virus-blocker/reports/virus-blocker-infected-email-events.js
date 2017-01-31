@@ -16,7 +16,7 @@
             "value": "FALSE"
         }
     ],
-    "defaultColumns": ["time_stamp","hostname","username","addr","sender","virus_blocker_clean","virus_blocker_name","s_server_addr","s_server_port"],
+    "defaultColumns": ["time_stamp","hostname","username","addr","sender","virus_blocker_clean","virus_blocker_name","c_client_addr","s_server_addr","s_server_port"],
     "description": "Infected email sessions blocked by Virus Blocker.",
     "displayOrder": 1021,
     "javaClass": "com.untangle.node.reports.ReportEntry",
