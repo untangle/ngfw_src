@@ -10,7 +10,7 @@
             "value": "INSPECTED"
         }
     ],
-    "defaultColumns": ["time_stamp","hostname","username","s_server_addr","s_server_port","s_server_port","ssl_inspector_status","ssl_inspector_ruleid","ssl_inspector_detail"],
+    "defaultColumns": ["time_stamp","hostname","username","c_client_addr","s_server_addr","s_server_port","s_server_port","ssl_inspector_status","ssl_inspector_ruleid","ssl_inspector_detail"],
     "description": "Events where traffic was fully processed by the inspector, and all traffic was passed through all the other applications and services.",
     "displayOrder": 1020,
     "javaClass": "com.untangle.node.reports.ReportEntry",

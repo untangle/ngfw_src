@@ -10,7 +10,7 @@
             "value": "NOT NULL"
         }
     ],
-    "defaultColumns": ["time_stamp","hostname","username","s_server_addr","s_server_port","s_server_port","ssl_inspector_status","ssl_inspector_ruleid","ssl_inspector_detail"],
+    "defaultColumns": ["time_stamp","hostname","username","c_client_addr","s_server_addr","s_server_port","s_server_port","ssl_inspector_status","ssl_inspector_ruleid","ssl_inspector_detail"],
     "description": "All sessions detected by SSL Inspector.",
     "displayOrder": 1010,
     "javaClass": "com.untangle.node.reports.ReportEntry",
