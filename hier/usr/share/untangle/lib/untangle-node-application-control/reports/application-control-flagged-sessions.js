@@ -10,7 +10,7 @@
             "value": "TRUE"
         }
     ],
-    "defaultColumns": ["time_stamp","username","hostname","c_client_port","s_server_addr","s_server_port","application_control_application","application_control_protochain","application_control_blocked","application_control_flagged","application_control_confidence","application_control_detail"],
+    "defaultColumns": ["time_stamp","username","hostname","c_client_port","c_client_addr","s_server_addr","s_server_port","application_control_application","application_control_protochain","application_control_blocked","application_control_flagged","application_control_confidence","application_control_detail"],
     "description": "All sessions matching an application control signature and flagged.",
     "displayOrder": 1020,
     "javaClass": "com.untangle.node.reports.ReportEntry",
