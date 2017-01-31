@@ -3,6 +3,8 @@ Ext.define('Ung.cmp.RulesController', {
 
     alias: 'controller.rules',
 
+    addCount: 0,
+
     control: {
         '#': {
             beforerender: 'onBeforeRender',
@@ -13,8 +15,46 @@ Ext.define('Ung.cmp.RulesController', {
     onBeforeRender: function (view) {
         // create conditions map
         view.setConditionsMap(Ext.Array.toValueMap(view.getConditions(), 'name'));
-        console.log(view.getConditionsMap());
+        console.log(view.getViewModel());
     },
+
+
+    addRecord: function () {
+        var grid = this.getView();
+        var vm = this.getViewModel();
+        var r = Ext.create('Ung.model.Rule', Ext.clone(this.getView().emptyRow));
+        vm.get('portforwardrules').add(r);
+        r.dirty = true;
+        grid.view.refresh();
+        console.log(vm.get('portforwardrules').getRange());
+        // grid.getStore().insert(0, newRule);
+        // vm.get('portforwardrules').sync();
+        // grid.getStore().reload();
+    },
+
+    editRecord: function (view, rowIndex, colIndex, item, e, record, row) {
+        Ext.widget('ung.cmp.recordeditor', {
+            viewModel: {
+                data: {
+                    record: record
+                }
+            }
+        });
+    },
+
+
+    deleteRecord: function (view, rowIndex, colIndex, item, e, record, row) {
+        record.set('markedForDelete', true);
+        // console.log(record);
+        // record.drop();
+        // console.log(record);
+        // this.getView().getStore().remove(record);
+        //console.log(record);
+        //record.setConfig('markDelete', true);
+        //record.markDelete = true;
+        //console.log(record);
+    },
+
 
     onCellClick: function (table, td, cellIndex, record) {
         var me = this;

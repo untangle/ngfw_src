@@ -60,7 +60,7 @@ Ext.define('Ung.config.network.NetworkModel', {
 
         portforwardrules: {
             type: 'rule',
-            data: '{portForwardRulesData}'
+            data: '{settings.portForwardRules.list}'
         }
     }
 });

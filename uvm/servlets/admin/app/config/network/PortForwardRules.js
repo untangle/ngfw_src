@@ -21,7 +21,8 @@ Ext.define('Ung.config.network.PortForwardRules', {
     items: [{
         xtype: 'ung.cmp.rules',
         flex: 3,
-        columnFeatures: ['reorder'],
+        columnFeatures: ['reorder', 'delete', 'edit'], // which columns to add
+        recordActions: ['@edit', '@delete'],
 
         conditions: [
             { name: 'DST_LOCAL', displayName: 'Destined Local'.t(), type: 'boolean', visible: true},
@@ -33,48 +34,41 @@ Ext.define('Ung.config.network.PortForwardRules', {
             { name: 'PROTOCOL', displayName: 'Protocol'.t(), type: 'checkboxgroup', values: [['TCP','TCP'],['UDP','UDP'],['ICMP','ICMP'],['GRE','GRE'],['ESP','ESP'],['AH','AH'],['SCTP','SCTP']], visible: true}
         ],
 
-        // plugins: [{
-        //     ptype: 'rowwidget',
-        //     widget: {
-        //         xtype: 'dataview',
-        //         bind: '{record.conditions.list}',
-        //         tpl: '<tpl for=".">' +
-        //             '<span>{conditionType}</span>' +
-        //         '</tpl>',
-        //         itemSelector: 'span'
-        //     }
-        // }],
-        // plugins: [{
-        //     ptype: 'rowexpander',
-        //     widget: {
-        //         xtype: 'ung.condwidget2',
-        //         // bind: {
-        //         //     data: '{record.conditions}'
-        //         // }
-        //         // data: '{record.conditions}'
-        //         // bind: {
-        //         //     // data: {
-        //         //     //     rule: '{record}'
-        //         //     // },
-        //         //     store: {
-        //         //         type: 'ruleconditions',
-        //         //         data: '{record.conditions}'
-        //         //     }
-        //         //     // title: 'Conditions'.t()
-        //         // },
-        //     },
-        //     // onWidgetAttach: function () {
-        //     //     console.log('widget attach');
-        //     // }
-        // },
-        // // {
-        // //     ptype: 'rowediting',
-        // //     clicksToMoveEditor: 1,
-        // //     autoCancel: false
-        // // }
-        // ],
+        emptyRow: {
+            ruleId: -1,
+            simple: true,
+            enabled: true,
+            // description: '',
+            conditions: {
+                javaClass: 'java.util.LinkedList',
+                list: [{
+                    conditionType: 'DST_LOCAL',
+                    invert: false,
+                    value: 'true',
+                    javaClass: 'com.untangle.uvm.network.PortForwardRuleCondition'
+                }, {
+                    conditionType: 'PROTOCOL',
+                    invert: false,
+                    value: 'TCP',
+                    javaClass: 'com.untangle.uvm.network.PortForwardRuleCondition'
+                }, {
+                    conditionType:'DST_PORT',
+                    invert: false,
+                    value: '80',
+                    javaClass: 'com.untangle.uvm.network.PortForwardRuleCondition'
+                }]
+            },
+            newPort: 80
+        },
 
-        bind: '{portforwardrules}',
+        bind: {
+            store: '{portforwardrules}'
+        },
+
+        modelValidation: true,
+
+        sortableColumns: false,
+        enableColumnHide: false,
 
         columns: [{
             header: 'Rule Id'.t(),
@@ -94,7 +88,7 @@ Ext.define('Ung.config.network.PortForwardRules', {
             header: 'Enable'.t(),
             dataIndex: 'enabled',
             resizable: false,
-            width: 55,
+            width: 70,
             // renderer: function (val) {
             //     return '<i class="fa + ' + (val ? 'fa-check' : 'fa-check-o') + '"></i>';
             // }
@@ -104,7 +98,8 @@ Ext.define('Ung.config.network.PortForwardRules', {
             dataIndex: 'description',
             editor: {
                 xtype: 'textfield',
-                emptyText: '[no description]'.t()
+                emptyText: '[no description]'.t(),
+                allowBlank: false
             }
         }, {
             header: 'Conditions'.t(),
@@ -130,7 +125,7 @@ Ext.define('Ung.config.network.PortForwardRules', {
         }, {
             header: 'New Port'.t(),
             dataIndex: 'newPort',
-            align: 'right',
+            // align: 'right',
             width: 80,
             editor: {
                 xtype: 'numberfield',
@@ -140,6 +135,10 @@ Ext.define('Ung.config.network.PortForwardRules', {
                 vtype: 'port'
             }
         }],
+
+        editFields: [{
+
+        }]
     }, {
         xtype: 'fieldset',
         flex: 2,
