@@ -1,11 +1,11 @@
 Ext.define ('Ung.model.Rule', {
     extend: 'Ext.data.Model' ,
     fields: [
-        //{ name: 'conditions'},
-        { name: 'name', type: 'string', defaultValue: null },
+        { name: 'ruleId', type: 'auto', defaultValue: null },
+        { name: 'description', type: 'string', defaultValue: '' },
+        { name: 'enabled', type: 'boolean', defaultValue: true },
         { name: 'conditions', type: 'auto' },
         { name: 'conditionsMap', mapping: function (data) {
-            console.log(data);
             return data.conditions.list;
         }},
         { name: 'conditionsList', calculate: function(data) {
@@ -18,17 +18,16 @@ Ext.define ('Ung.model.Rule', {
             }
             //console.log(val);
             return resp;
-        } }
+        } },
+
+        { name: 'markedForDelete', defaultValue: false }
         // { name: 'string', type: 'string', defaultValue: '' },
         // { name: 'blocked', type: 'boolean', defaultValue: true },
         // { name: 'flagged', type: 'boolean', defaultValue: true },
         // { name: 'category', type: 'string', defaultValue: null },
-        // { name: 'description', type: 'string', defaultValue: '' },
-        // { name: 'enabled', type: 'boolean', defaultValue: true },
         // { name: 'id', defaultValue: null },
         // { name: 'readOnly', type: 'boolean', defaultValue: null },
         // { name: 'javaClass', type: 'string', defaultValue: 'com.untangle.node.bandwidth_control.BandwidthControlRule' },
-        // { name: 'ruleId', type: 'int', defaultValue: null },
 
         // { name: 'action', type: 'auto'},
         // { name: 'actionType', type: 'string', mapping: 'action.actionType', defaultValue: 'SET_PRIORITY' },
@@ -39,7 +38,7 @@ Ext.define ('Ung.model.Rule', {
     ],
     // hasMany: 'Ung.model.Condition',
     proxy: {
-        autoLoad: true,
+        // autoLoad: true,
         type: 'memory',
         reader: {
             type: 'json',
