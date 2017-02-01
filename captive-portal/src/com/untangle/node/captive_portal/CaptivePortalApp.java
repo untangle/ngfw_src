@@ -84,8 +84,8 @@ public class CaptivePortalApp extends NodeBase
     private final String settingsFile = (System.getProperty("uvm.settings.dir") + "/untangle-node-captive-portal/settings_" + getNodeSettings().getId().toString()) + ".js";
     private final String customPath = (System.getProperty("uvm.web.dir") + "/capture/custom_" + getNodeSettings().getId().toString());
 
-    protected CaptivePortalUserTable captureUserTable = new CaptivePortalUserTable();
     protected CaptivePortalUserCookieTable captureUserCookieTable = new CaptivePortalUserCookieTable();
+    protected CaptivePortalUserTable captureUserTable;
     private CaptivePortalSettings captureSettings;
     private CaptivePortalTimer captureTimer;
     private Timer timer;
@@ -97,6 +97,7 @@ public class CaptivePortalApp extends NodeBase
     {
         super( nodeSettings, nodeProperties );
 
+        captureUserTable = new CaptivePortalUserTable(this);
         replacementGenerator = new CaptivePortalReplacementGenerator(getNodeSettings(),this);
 
         UvmContextFactory.context().servletFileManager().registerUploadHandler(new CustomPageUploadHandler());
@@ -330,7 +331,7 @@ public class CaptivePortalApp extends NodeBase
     }
 
     @Override
-    protected void preStart( boolean isPermanentTransition )
+    protected void preStart(boolean isPermanentTransition)
     {
         // load user state from file (if exists)
         loadUserState();
@@ -343,26 +344,26 @@ public class CaptivePortalApp extends NodeBase
     }
 
     @Override
-    protected void postStart( boolean isPermanentTransition )
+    protected void postStart(boolean isPermanentTransition)
     {
         logger.debug("Creating session cleanup timer task");
         captureTimer = new CaptivePortalTimer(this);
         timer = new Timer();
         timer.schedule(captureTimer, CLEANUP_INTERVAL, CLEANUP_INTERVAL);
 
-        UvmContextFactory.context().hookManager().registerCallback( com.untangle.uvm.HookManager.HOST_TABLE_REMOVE, this.hostRemovedCallback );
+        UvmContextFactory.context().hookManager().registerCallback(com.untangle.uvm.HookManager.HOST_TABLE_REMOVE, this.hostRemovedCallback);
     }
 
     @Override
-    protected void preStop( boolean isPermanentTransition )
+    protected void preStop(boolean isPermanentTransition)
     {
         // stop the session cleanup timer thread
         logger.debug("Destroying session cleanup timer task");
         timer.cancel();
 
         // unregister hook
-        UvmContextFactory.context().hookManager().unregisterCallback( com.untangle.uvm.HookManager.HOST_TABLE_REMOVE, this.hostRemovedCallback );
-        
+        UvmContextFactory.context().hookManager().unregisterCallback(com.untangle.uvm.HookManager.HOST_TABLE_REMOVE, this.hostRemovedCallback);
+
         // shutdown any active sessions
         killAllSessions();
 
@@ -375,7 +376,7 @@ public class CaptivePortalApp extends NodeBase
     }
 
     @Override
-    protected void postStop( boolean isPermanentTransition )
+    protected void postStop(boolean isPermanentTransition)
     {
     }
 
@@ -440,11 +441,11 @@ public class CaptivePortalApp extends NodeBase
             // when concurrent logins are disabled and we have an active entry for the user
             // we check the address and ignore the match if they are the same since it's
             // not really a concurrent login but a duplicate login from the same client
-            if ((entry != null) && (address.equals(entry.getUserAddress()) == false)) {
-                CaptivePortalUserEvent event = new CaptivePortalUserEvent(policyId, address, username, captureSettings.getAuthenticationType(), CaptivePortalUserEvent.EventType.FAILED);
+            if ((entry != null) && (address.equals(entry.getUserNetAddress()) == false)) {
+                CaptivePortalUserEvent event = new CaptivePortalUserEvent(policyId, address.getHostAddress().toString(), username, captureSettings.getAuthenticationType(), CaptivePortalUserEvent.EventType.FAILED);
                 logEvent(event);
                 incrementBlinger(BlingerType.AUTHFAIL, 1);
-                logger.info("Authenticate duplicate " + username + " " + address);
+                logger.info("Authenticate duplicate " + username + " " + address.getHostAddress().toString());
                 return (2);
             }
         }
@@ -537,38 +538,38 @@ public class CaptivePortalApp extends NodeBase
         }
 
         if (!isAuthenticated) {
-            CaptivePortalUserEvent event = new CaptivePortalUserEvent(policyId, address, username, captureSettings.getAuthenticationType(), CaptivePortalUserEvent.EventType.FAILED);
+            CaptivePortalUserEvent event = new CaptivePortalUserEvent(policyId, address.getHostAddress().toString(), username, captureSettings.getAuthenticationType(), CaptivePortalUserEvent.EventType.FAILED);
             logEvent(event);
             incrementBlinger(BlingerType.AUTHFAIL, 1);
-            logger.info("Authenticate failure " + username + " " + address);
+            logger.info("Authenticate failure " + username + " " + address.getHostAddress().toString());
             return (1);
         }
 
         captureUserTable.insertActiveUser(address, username, false);
 
-        CaptivePortalUserEvent event = new CaptivePortalUserEvent(policyId, address, username, captureSettings.getAuthenticationType(), CaptivePortalUserEvent.EventType.LOGIN);
+        CaptivePortalUserEvent event = new CaptivePortalUserEvent(policyId, address.getHostAddress().toString(), username, captureSettings.getAuthenticationType(), CaptivePortalUserEvent.EventType.LOGIN);
         logEvent(event);
         incrementBlinger(BlingerType.AUTHGOOD, 1);
-        logger.info("Authenticate success " + username + " " + address);
+        logger.info("Authenticate success " + username + " " + address.getHostAddress().toString());
         return (0);
     }
 
     public int userActivate(InetAddress address, String username, String agree, boolean anonymous)
     {
         if (agree.equals("agree") == false) {
-            CaptivePortalUserEvent event = new CaptivePortalUserEvent(policyId, address, username, captureSettings.getAuthenticationType(), CaptivePortalUserEvent.EventType.FAILED);
+            CaptivePortalUserEvent event = new CaptivePortalUserEvent(policyId, address.getHostAddress().toString(), username, captureSettings.getAuthenticationType(), CaptivePortalUserEvent.EventType.FAILED);
             logEvent(event);
             incrementBlinger(BlingerType.AUTHFAIL, 1);
-            logger.info("Activate failure " + address);
+            logger.info("Activate failure " + address.getHostAddress().toString());
             return (1);
         }
 
         captureUserTable.insertActiveUser(address, username, anonymous);
 
-        CaptivePortalUserEvent event = new CaptivePortalUserEvent(policyId, address, username, captureSettings.getAuthenticationType(), CaptivePortalUserEvent.EventType.LOGIN);
+        CaptivePortalUserEvent event = new CaptivePortalUserEvent(policyId, address.getHostAddress().toString(), username, captureSettings.getAuthenticationType(), CaptivePortalUserEvent.EventType.LOGIN);
         logEvent(event);
         incrementBlinger(BlingerType.AUTHGOOD, 1);
-        logger.info("Activate success " + address);
+        logger.info("Activate success " + address.getHostAddress().toString());
 
         if (captureSettings.getSessionCookiesEnabled()) {
             captureUserCookieTable.removeActiveUser(address);
@@ -586,10 +587,10 @@ public class CaptivePortalApp extends NodeBase
     {
         captureUserTable.insertActiveUser(address, username, false);
 
-        CaptivePortalUserEvent event = new CaptivePortalUserEvent(policyId, address, username, CaptivePortalSettings.AuthenticationType.CUSTOM, CaptivePortalUserEvent.EventType.LOGIN);
+        CaptivePortalUserEvent event = new CaptivePortalUserEvent(policyId, address.getHostAddress().toString(), username, CaptivePortalSettings.AuthenticationType.CUSTOM, CaptivePortalUserEvent.EventType.LOGIN);
         logEvent(event);
         incrementBlinger(BlingerType.AUTHGOOD, 1);
-        logger.info("Login success " + address);
+        logger.info("Login success " + address.getHostAddress().toString());
         return (0);
     }
 
@@ -608,7 +609,7 @@ public class CaptivePortalApp extends NodeBase
         CaptivePortalUserEntry user = captureUserTable.searchByAddress(address);
 
         if (user == null) {
-            logger.info("Logout failure: " + address);
+            logger.info("Logout failure: " + address.getHostAddress().toString());
             return (1);
         }
 
@@ -619,9 +620,9 @@ public class CaptivePortalApp extends NodeBase
         // user we just logged out to clean up any outstanding sessions
         validateAllSessions(address);
 
-        CaptivePortalUserEvent event = new CaptivePortalUserEvent(policyId, user.getUserAddress(), user.getUserName(), captureSettings.getAuthenticationType(), reason);
+        CaptivePortalUserEvent event = new CaptivePortalUserEvent(policyId, user.getUserNetAddress().getHostAddress().toString(), user.getUserName(), captureSettings.getAuthenticationType(), reason);
         logEvent(event);
-        logger.info("Logout success: " + address);
+        logger.info("Logout success: " + address.getHostAddress().toString());
 
         if (captureSettings.getSessionCookiesEnabled() && ((reason == CaptivePortalUserEvent.EventType.USER_LOGOUT) || (reason == CaptivePortalUserEvent.EventType.ADMIN_LOGOUT))) {
             captureUserCookieTable.insertInactiveUser(user);
@@ -885,22 +886,21 @@ public class CaptivePortalApp extends NodeBase
         }
 
         /**
-         * This hook is called when a host is removed from the host table.
-         * If the user is logged into captive portal the host table entry should never be removed.
-         *
-         * However it is removed if the MAC address changes (a different host) or something drastic occurs.
-         * In this case we should log the host out.
+         * This hook is called when a host is removed from the host table. If
+         * the user is logged into captive portal the host table entry should
+         * never be removed.
+         * 
+         * However it is removed if the MAC address changes (a different host)
+         * or something drastic occurs. In this case we should log the host out.
          */
-        public void callback( Object o )
+        public void callback(Object o)
         {
-            if ( !(o instanceof InetAddress) ) {
-                logger.warn( "Invalid argument: " + o );
-                    return;
+            if (!(o instanceof InetAddress)) {
+                logger.warn("Invalid argument: " + o);
+                return;
             }
             InetAddress addr = (InetAddress) o;
-            if ( isClientAuthenticated( addr ) )
-                userLogout( addr, CaptivePortalUserEvent.EventType.HOST_CHANGE );
+            if (isClientAuthenticated(addr)) userLogout(addr, CaptivePortalUserEvent.EventType.HOST_CHANGE);
         }
     }
-
 }
