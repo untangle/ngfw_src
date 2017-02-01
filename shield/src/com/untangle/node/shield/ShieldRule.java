@@ -35,7 +35,7 @@ public class ShieldRule implements JSONString, Serializable
     private Integer ruleId;
     private Boolean enabled;
     private String description;
-    private ShieldRuleAction action;
+    private ShieldRuleAction action = ShieldRuleAction.SCAN;
     
     public ShieldRule()
     {
