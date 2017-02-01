@@ -10,7 +10,7 @@
             "value": "shield_blocked"
         }
     ],
-    "defaultColumns": ["time_stamp","username","hostname","c_client_port","s_server_addr","s_server_port","filter_prefix"],
+    "defaultColumns": ["time_stamp","username","hostname","c_client_port","c_client_addr","s_server_addr","s_server_port","filter_prefix"],
     "description": "All sessions blocked by Shield.",
     "displayOrder": 1011,
     "javaClass": "com.untangle.node.reports.ReportEntry",

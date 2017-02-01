@@ -10,7 +10,7 @@
             "value": "NOT NULL"
         }
     ],
-    "defaultColumns": ["time_stamp","username","hostname","host","uri","ad_blocker_cookie_ident","s_server_addr"],
+    "defaultColumns": ["time_stamp","username","hostname","host","uri","ad_blocker_cookie_ident","c_client_addr","s_server_addr"],
     "description": "Requests blocked by cookie filters.",
     "displayOrder": 1012,
     "javaClass": "com.untangle.node.reports.ReportEntry",
