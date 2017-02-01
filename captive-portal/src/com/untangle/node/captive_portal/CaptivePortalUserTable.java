@@ -17,7 +17,9 @@ import com.untangle.uvm.HostTableEntry;
 public class CaptivePortalUserTable
 {
     private final Logger logger = Logger.getLogger(getClass());
-    private Hashtable<InetAddress, CaptivePortalUserEntry> userTable;
+    private Hashtable<InetAddress, CaptivePortalUserEntry> netAddrTable = null;
+    private Hashtable<String, CaptivePortalUserEntry> macAddrTable = null;
+    private CaptivePortalApp ownerApp = null;
 
     public class StaleUser
     {
@@ -31,33 +33,57 @@ public class CaptivePortalUserTable
         }
     }
 
-    public CaptivePortalUserTable()
+    public CaptivePortalUserTable(CaptivePortalApp ownerApp)
     {
-        userTable = new Hashtable<InetAddress, CaptivePortalUserEntry>();
+        this.ownerApp = ownerApp;
+
+        macAddrTable = new Hashtable<String, CaptivePortalUserEntry>();
+        netAddrTable = new Hashtable<InetAddress, CaptivePortalUserEntry>();
     }
 
     public ArrayList<CaptivePortalUserEntry> buildUserList()
     {
-        ArrayList<CaptivePortalUserEntry> userList = new ArrayList<CaptivePortalUserEntry>(userTable.values());
+        ArrayList<CaptivePortalUserEntry> userList = new ArrayList<CaptivePortalUserEntry>();
+
+        // if the mac table is active add all those values first
+        if (ownerApp.getSettings().getUseMacAddress()) {
+            userList.addAll(macAddrTable.values());
+        }
+
+        // next we add all the values from the net table
+        userList.addAll(netAddrTable.values());
+
         return (userList);
     }
 
     public CaptivePortalUserEntry insertActiveUser(InetAddress address, String username, Boolean anonymous)
     {
-        CaptivePortalUserEntry local = new CaptivePortalUserEntry(address, username, anonymous);
-        return insertActiveUser( local );
+        String macaddr = null;
+
+        // do not pass the create flag here since it is passed in object insert call 
+        HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry(address);
+        if (entry != null) macaddr = entry.getMacAddress();
+
+        CaptivePortalUserEntry local = new CaptivePortalUserEntry(address, macaddr, username, anonymous);
+        return insertActiveUser(local);
     }
 
-    public CaptivePortalUserEntry insertActiveUser( CaptivePortalUserEntry local )
+    protected CaptivePortalUserEntry insertActiveUser(CaptivePortalUserEntry local)
     {
-        userTable.put(local.getUserAddress(), local);
+        if ((ownerApp.getSettings().getUseMacAddress()) && (local.getUserMacAddress() != null)) {
+            logger.debug("INSERT MAC TABLE: " + local.toString());
+            macAddrTable.put(local.getUserMacAddress(), local);
+        } else {
+            logger.debug("INSERT NET TABLE: " + local.toString());
+            netAddrTable.put(local.getUserNetAddress(), local);
+        }
 
         // For anonymous users clear the global capture username which
         // shouldn't be required but always better safe than sorry.  We
         // also set the captive portal flag to prevent the entry from being
         // timed-out while active in our table.
         if (local.getAnonymous() == true) {
-            HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry(local.getUserAddress(), true);
+            HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry(local.getUserNetAddress(), true);
             entry.setUsernameCapture(null);
             entry.setCaptivePortalAuthenticated(true);
         }
@@ -65,7 +91,7 @@ public class CaptivePortalUserTable
         // for all other users set the global capture username and also
         // the captive portal flag so we don't get timed-out of the table
         else {
-            HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry(local.getUserAddress(), true);
+            HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry(local.getUserNetAddress(), true);
             entry.setUsernameCapture(local.getUserName());
             entry.setCaptivePortalAuthenticated(true);
         }
@@ -75,13 +101,30 @@ public class CaptivePortalUserTable
 
     public boolean removeActiveUser(InetAddress address)
     {
-        CaptivePortalUserEntry user = userTable.get(address);
+        CaptivePortalUserEntry user = null;
+        String macaddr = null;
+
+        HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry(address);
+        if (entry != null) macaddr = entry.getMacAddress();
+
+        if ((ownerApp.getSettings().getUseMacAddress()) && (macaddr != null)) {
+            user = macAddrTable.get(macaddr);
+            if (user != null) {
+                logger.debug("REMOVE MAC TABLE: " + user.toString());
+                macAddrTable.remove(user.getUserMacAddress());
+            }
+        } else {
+            user = netAddrTable.get(address);
+            if (user != null) {
+                logger.debug("REMOVE NET TABLE: " + user.toString());
+                netAddrTable.remove(user.getUserNetAddress());
+            }
+        }
+
         if (user == null) return (false);
-        userTable.remove(address);
 
         // clear the capture username from the host table entry and turn
         // of the captive portal flag so it knows we are all done 
-        HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry(address, true);
         entry.setUsernameCapture(null);
         entry.setCaptivePortalAuthenticated(false);
         return (true);
@@ -89,12 +132,46 @@ public class CaptivePortalUserTable
 
     public CaptivePortalUserEntry searchByAddress(InetAddress address)
     {
-        return (userTable.get(address));
+        CaptivePortalUserEntry user = null;
+        String macaddr = null;
+
+        HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry(address);
+        if (entry != null) macaddr = entry.getMacAddress();
+
+        if ((ownerApp.getSettings().getUseMacAddress()) && (macaddr != null)) {
+            user = macAddrTable.get(entry.getMacAddress());
+        } else {
+            user = netAddrTable.get(address);
+        }
+
+        return (user);
     }
 
     public CaptivePortalUserEntry searchByUsername(String username, boolean ignoreCase)
     {
-        Enumeration<CaptivePortalUserEntry> ee = userTable.elements();
+        Enumeration<CaptivePortalUserEntry> ee;
+
+        // start with mac addr table if enabled in settings
+        if (ownerApp.getSettings().getUseMacAddress()) {
+            ee = macAddrTable.elements();
+
+            while (ee.hasMoreElements()) {
+                CaptivePortalUserEntry item = ee.nextElement();
+
+                // if the ignoreCase flag is set we compare both as lowercase
+                if (ignoreCase == true) {
+                    if (username.toLowerCase().equals(item.getUserName().toLowerCase()) == true) return (item);
+                }
+
+                // ignoreCase flag is not set so do a direct comparison
+                else {
+                    if (username.equals(item.getUserName()) == true) return (item);
+                }
+            }
+        }
+
+        // not found in mac addr table so check net addr table
+        ee = netAddrTable.elements();
 
         while (ee.hasMoreElements()) {
             CaptivePortalUserEntry item = ee.nextElement();
@@ -116,40 +193,75 @@ public class CaptivePortalUserTable
     public ArrayList<StaleUser> buildStaleList(long idleTimeout, long userTimeout)
     {
         ArrayList<StaleUser> wipelist = new ArrayList<StaleUser>();
+        Enumeration<CaptivePortalUserEntry> ee;
         long currentTime, idleTrigger, idleTrigger2, userTrigger;
+        int wipecount = 0;
         StaleUser stale;
-        int wipecount;
 
         currentTime = (System.currentTimeMillis() / 1000);
-        Enumeration<CaptivePortalUserEntry> ee = userTable.elements();
-        wipecount = 0;
+
+        // start with mac addr table if enabled in settings
+        if (ownerApp.getSettings().getUseMacAddress()) {
+
+            ee = macAddrTable.elements();
+
+            while (ee.hasMoreElements()) {
+                CaptivePortalUserEntry item = ee.nextElement();
+                userTrigger = ((item.getSessionCreation() / 1000) + userTimeout);
+
+                HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry(item.getUserNetAddress());
+                if (entry != null) {
+                    idleTrigger = (entry.getLastSessionTime() / 1000) + idleTimeout;
+                } else {
+                    logger.warn("HostTableEntry missing for logged in Captive Portal Entry: " + item.getUserNetAddress().getHostAddress().toString() + " : " + item.getUserName());
+                    idleTrigger = ((item.getSessionActivity() / 1000) + userTimeout);
+                }
+
+                // look for users with no traffic within the configured non-zero idle timeout
+                if ((idleTimeout > 0) && (currentTime > idleTrigger)) {
+                    logger.info("Idle timeout removing user " + item.getUserNetAddress() + " " + item.getUserName());
+                    stale = new StaleUser(item.getUserNetAddress(), CaptivePortalUserEvent.EventType.INACTIVE);
+                    wipelist.add(stale);
+                    wipecount++;
+                }
+
+                // look for users who have exceeded the configured maximum session time
+                if (currentTime > userTrigger) {
+                    logger.info("Session timeout removing user " + item.getUserNetAddress() + " " + item.getUserName());
+                    stale = new StaleUser(item.getUserNetAddress(), CaptivePortalUserEvent.EventType.TIMEOUT);
+                    wipelist.add(stale);
+                    wipecount++;
+                }
+            }
+        }
+
+        // now check all the entries in the net addr table
+        ee = netAddrTable.elements();
 
         while (ee.hasMoreElements()) {
             CaptivePortalUserEntry item = ee.nextElement();
             userTrigger = ((item.getSessionCreation() / 1000) + userTimeout);
 
-            HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry(item.getUserAddress());
+            HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry(item.getUserNetAddress());
             if (entry != null) {
                 idleTrigger = (entry.getLastSessionTime() / 1000) + idleTimeout;
             } else {
-                logger.warn("HostTableEntry missing for logged in Captive Portal Entry: " + item.getUserAddress().getHostAddress() + " : " + item.getUserName());
+                logger.warn("HostTableEntry missing for logged in Captive Portal Entry: " + item.getUserNetAddress().getHostAddress().toString() + " : " + item.getUserName());
                 idleTrigger = ((item.getSessionActivity() / 1000) + userTimeout);
             }
 
-            // look for users with no traffic within the configured non-zero
-            // idle timeout
+            // look for users with no traffic within the configured non-zero idle timeout
             if ((idleTimeout > 0) && (currentTime > idleTrigger)) {
-                logger.info("Idle timeout removing user " + item.getUserAddress() + " " + item.getUserName());
-                stale = new StaleUser(item.getUserAddress(), CaptivePortalUserEvent.EventType.INACTIVE);
+                logger.info("Idle timeout removing user " + item.getUserNetAddress() + " " + item.getUserName());
+                stale = new StaleUser(item.getUserNetAddress(), CaptivePortalUserEvent.EventType.INACTIVE);
                 wipelist.add(stale);
                 wipecount++;
             }
 
-            // look for users who have exceeded the configured maximum session
-            // time
+            // look for users who have exceeded the configured maximum session time
             if (currentTime > userTrigger) {
-                logger.info("Session timeout removing user " + item.getUserAddress() + " " + item.getUserName());
-                stale = new StaleUser(item.getUserAddress(), CaptivePortalUserEvent.EventType.TIMEOUT);
+                logger.info("Session timeout removing user " + item.getUserNetAddress() + " " + item.getUserName());
+                stale = new StaleUser(item.getUserNetAddress(), CaptivePortalUserEvent.EventType.TIMEOUT);
                 wipelist.add(stale);
                 wipecount++;
             }
@@ -160,6 +272,9 @@ public class CaptivePortalUserTable
 
     public void purgeAllUsers()
     {
-        userTable.clear();
+        if (ownerApp.getSettings().getUseMacAddress()) {
+            macAddrTable.clear();
+        }
+        netAddrTable.clear();
     }
 }

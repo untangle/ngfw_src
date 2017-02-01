@@ -83,8 +83,10 @@ Ext.define('Webui.untangle-node-captive-portal.settings', {
             dataFn: this.getRpcNode().getActiveUsers,
             recordJavaClass: "com.untangle.node.captive_portal.CaptureUserEntry",
             fields: [{
-                name: "userAddress",
+                name: "userNetAddress",
                 sortType: 'asIp'
+            },{
+                name: "userMacAddress"
             },{
                 name: "userName"
             },{
@@ -98,8 +100,12 @@ Ext.define('Webui.untangle-node-captive-portal.settings', {
             }],
             columns: [{
                 header: i18n._("IP Address"),
-                dataIndex:'userAddress',
+                dataIndex:'userNetAddress',
                 width: 150
+            },{
+                header: i18n._("MAC Address"),
+                dataIndex:'userMacAddress',
+                width: 200
             },{
                 header: i18n._("User Name"),
                 dataIndex:'userName',
@@ -131,7 +137,7 @@ Ext.define('Webui.untangle-node-captive-portal.settings', {
                     this.getRpcNode().userAdminLogout(Ext.bind(function(result, exception) {
                         if(Ung.Util.handleException(exception)) return;
                         this.gridCaptiveStatus.reload();
-                    },this), record.get("userAddress"));
+                    },this), record.get("userNetAddress"));
                 }, this)
             }]
         });
@@ -578,6 +584,17 @@ Ext.define('Webui.untangle-node-captive-portal.settings', {
                     listeners: {
                         "change": Ext.bind(function(elem, checked) {
                             this.settings.sessionCookiesEnabled = checked;
+                        }, this)
+                    }
+                },{
+                    xtype: "checkbox",
+                    boxLabel: i18n._("Track logins using MAC address"),
+                    tooltip: i18n._("This will allow client authentication to be tracked by MAC address instead of IP address."),
+                    hideLabel: true,
+                    checked: this.settings.useMacAddress,
+                    listeners: {
+                        "change": Ext.bind(function(elem, checked) {
+                            this.settings.useMacAddress = checked;
                         }, this)
                     }
                 },{

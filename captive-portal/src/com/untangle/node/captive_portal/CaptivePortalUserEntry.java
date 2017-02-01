@@ -10,7 +10,8 @@ import java.net.InetAddress;
 @SuppressWarnings("serial")
 public class CaptivePortalUserEntry implements Serializable
 {
-    private InetAddress userAddress;
+    private InetAddress userNetAddress;
+    private String userMacAddress;
     private String userName;
     private Boolean isAnonymous;
     private long sessionCreation;
@@ -19,18 +20,22 @@ public class CaptivePortalUserEntry implements Serializable
 
     public CaptivePortalUserEntry() {}
     
-    public CaptivePortalUserEntry(InetAddress userAddress, String userName, Boolean isAnonymous)
+    public CaptivePortalUserEntry(InetAddress userNetAddress, String userMacAddress, String userName, Boolean isAnonymous)
     {
-        this.userAddress = userAddress;
+        this.userNetAddress = userNetAddress;
+        this.userMacAddress = userMacAddress;
         this.userName = userName;
         this.isAnonymous = isAnonymous;
         sessionCreation = System.currentTimeMillis();
         sessionActivity = sessionCreation;
     }
 
-    public InetAddress getUserAddress() { return userAddress; }
-    public void setUserAddress( InetAddress newValue ) { this.userAddress = newValue; }
-    
+    public InetAddress getUserNetAddress() { return userNetAddress; }
+    public void setUserNetAddress( InetAddress newValue ) { this.userNetAddress = newValue; }
+
+    public String getUserMacAddress() { return userMacAddress; }
+    public void setUserMacAddress( String newValue ) { this.userMacAddress = newValue; }
+
     public String getUserName() { return userName; }
     public void setUserName( String newValue ) { this.userName = newValue; }
 
@@ -50,5 +55,11 @@ public class CaptivePortalUserEntry implements Serializable
     {
         sessionActivity = System.currentTimeMillis();
         sessionCounter++;
+    }
+    
+    public String toString()
+    {
+        String local = ("ADDR:" + userNetAddress.getHostAddress().toString() + " MAC:" + userMacAddress + " NAME:" + userName); 
+        return(local);
     }
 }
