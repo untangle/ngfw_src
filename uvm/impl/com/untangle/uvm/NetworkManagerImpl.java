@@ -813,6 +813,9 @@ public class NetworkManagerImpl implements NetworkManager
 
             String hostname = UvmContextFactory.context().oemManager().getOemName().toLowerCase();
             try {
+                /**
+                 * If the OEM name contains multiple words, use just the first word for the hostname
+                 */
                 hostname = hostname.split("[^a-z]",2)[0];
             } catch (Exception e) {}
 
