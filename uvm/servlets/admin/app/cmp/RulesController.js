@@ -8,14 +8,17 @@ Ext.define('Ung.cmp.RulesController', {
     control: {
         '#': {
             beforerender: 'onBeforeRender',
-            cellclick: 'onCellClick'
         },
+        'grid': {
+            cellclick: 'onCellClick'
+        }
     },
 
     onBeforeRender: function (view) {
+        view.down('grid').setBind('{portforwardrules}');
         // create conditions map
         view.setConditionsMap(Ext.Array.toValueMap(view.getConditions(), 'name'));
-        console.log(view.getViewModel());
+        // console.log(view.getViewModel());
     },
 
 
@@ -33,12 +36,35 @@ Ext.define('Ung.cmp.RulesController', {
     },
 
     editRecord: function (view, rowIndex, colIndex, item, e, record, row) {
+        // console.log(this.getView().down('grid').getColumns());
+
+        // open recordeditor window
         Ext.widget('ung.cmp.recordeditor', {
-            viewModel: {
-                data: {
-                    record: record
-                }
-            }
+            fields: this.getView().down('grid').getColumns(), // form fields needed to be displayed in the editor taken from grid columns
+            label: this.getView().label, // the label in the form
+            conditions: this.getView().getConditions(), // the available conditions which can be applied
+            conditionsMap: this.getView().getConditionsMap(), // a map with the above conditions as helper
+            // recordCopy: record.copy(null), // a clean copy of the record to be edited
+            record: record
+            // bind: {
+            //     data: {
+            //         record: '{record}'
+            //     }
+            // }
+            // conditionsMap: this.getView().getConditionsMap(),
+            // viewModel: {
+            //     data: {
+            //         originalRecord: record
+            //     },
+            //     // formulas: {
+            //     //     conditionsData: {
+            //     //         bind: '{record.conditions.list}',
+            //     //         get: function (coll) {
+            //     //             return coll || [];
+            //     //         }
+            //     //     },
+            //     // }
+            // }
         });
     },
 
@@ -53,6 +79,12 @@ Ext.define('Ung.cmp.RulesController', {
         //record.setConfig('markDelete', true);
         //record.markDelete = true;
         //console.log(record);
+    },
+
+    moveUp: function (view, rowIndex, colIndex, item, e, record, row) {
+        var store = this.getView().down('grid').getStore();
+        store.remove(record, true); // just moving
+        store.insert(rowIndex + item.direction, record);
     },
 
 
@@ -82,11 +114,11 @@ Ext.define('Ung.cmp.RulesController', {
     conditionsRenderer: function (value, metaData, record) {
         var view = this.getView(),
             conds = record.get('conditions').list,
-            resp = '', i, cond;
+            resp = [], i, cond;
         for (i = 0; i < conds.length; i += 1) {
-            resp += view.getConditionsMap()[conds[i].conditionType].displayName + '<strong>' + (conds[i].invert ? ' &ne; ' : ' = ') + '<span class="cond-val ' + (conds[i].invert ? 'invert' : '') + '">' + conds[i].value + '</span>' + '</strong> &nbsp;&bull;&nbsp; ';
+            resp.push(view.getConditionsMap()[conds[i].conditionType].displayName + '<strong>' + (conds[i].invert ? ' &nrArr; ' : ' &rArr; ') + '<span class="cond-val ' + (conds[i].invert ? 'invert' : '') + '">' + conds[i].value.split(',').join(', ') + '</span>' + '</strong>');
         }
-        return resp;
+        return resp.join(' &nbsp;&bull;&nbsp; ');
     },
 
     conditionRenderer: function (val) {

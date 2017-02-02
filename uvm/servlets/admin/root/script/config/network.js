@@ -1432,6 +1432,8 @@ Ext.define('Ung.config.network.PortForwardRules', {
             { name: 'PROTOCOL', displayName: 'Protocol'.t(), type: 'checkboxgroup', values: [['TCP','TCP'],['UDP','UDP'],['ICMP','ICMP'],['GRE','GRE'],['ESP','ESP'],['AH','AH'],['SCTP','SCTP']], visible: true}
         ],
 
+        label: 'Forward to the following location:'.t(),
+
         emptyRow: {
             ruleId: -1,
             simple: true,
@@ -1459,15 +1461,9 @@ Ext.define('Ung.config.network.PortForwardRules', {
             newPort: 80
         },
 
-        bind: {
-            store: '{portforwardrules}'
-        },
-
-        modelValidation: true,
-
-        sortableColumns: false,
-        enableColumnHide: false,
-
+        // bind: {
+        //     store: '{portforwardrules}'
+        // },
         columns: [{
             header: 'Rule Id'.t(),
             width: 70,
@@ -1482,11 +1478,16 @@ Ext.define('Ung.config.network.PortForwardRules', {
                 }
             }
         }, {
-            xtype:'checkcolumn',
+            xtype: 'checkcolumn',
             header: 'Enable'.t(),
             dataIndex: 'enabled',
             resizable: false,
             width: 70,
+            editor: {
+                xtype: 'checkbox',
+                fieldLabel: 'Enable Port Forward Rule'.t(),
+                bind: '{record.enabled}',
+            }
             // renderer: function (val) {
             //     return '<i class="fa + ' + (val ? 'fa-check' : 'fa-check-o') + '"></i>';
             // }
@@ -1494,8 +1495,16 @@ Ext.define('Ung.config.network.PortForwardRules', {
             header: 'Description',
             width: 200,
             dataIndex: 'description',
+            renderer: function (value) {
+                if (value) {
+                    return value;
+                }
+                return '<em>no description<em>';
+            },
             editor: {
                 xtype: 'textfield',
+                fieldLabel: 'Description'.t(),
+                bind: '{record.description}',
                 emptyText: '[no description]'.t(),
                 allowBlank: false
             }
@@ -1517,6 +1526,8 @@ Ext.define('Ung.config.network.PortForwardRules', {
             width: 150,
             editor: {
                 xtype: 'textfield',
+                fieldLabel: 'New Destination'.t(),
+                bind: '{record.newDestination}',
                 allowBlank: false,
                 vtype: 'ipall'
             }
@@ -1527,16 +1538,15 @@ Ext.define('Ung.config.network.PortForwardRules', {
             width: 80,
             editor: {
                 xtype: 'numberfield',
+                fieldLabel: 'New Port'.t(),
+                width: 100,
+                bind: '{record.newPort}',
                 allowBlank: true,
                 minValue : 1,
                 maxValue : 0xFFFF,
                 vtype: 'port'
             }
         }],
-
-        editFields: [{
-
-        }]
     }, {
         xtype: 'fieldset',
         flex: 2,
