@@ -1,24 +1,49 @@
 Ext.define('Ung.cmp.RecordEditor', {
     extend: 'Ext.window.Window',
-    width: 600,
-    height: 400,
+    width: 800,
+    height: 500,
+
     xtype: 'ung.cmp.recordeditor',
     requires: [
         'Ung.cmp.RecordEditorController',
-        // 'Ung.overrides.form.CheckboxGroup',
-        // 'Ung.overrides.form.field.VTypes'
+        'Ung.cmp.ConditionsGrid',
+        'Ung.overrides.form.CheckboxGroup',
+        'Ung.overrides.form.field.VTypes'
     ],
     controller: 'recordeditor',
 
+    // config: {
+    //     conditions: null
+    // },
+
+    viewModel: true,
+
+    actions: {
+        apply: {
+            text: 'Apply',
+            formBind: true,
+            iconCls: 'fa fa-check',
+            handler: 'onApply'
+        },
+        cancel: {
+            text: 'Cancel',
+            iconCls: 'fa fa-check',
+            // handler: 'onCancel'
+        }
+    },
+
+
     bodyStyle: {
-        background: '#FFF'
+        // background: '#FFF'
     },
 
     autoShow: true,
-    shadow: false,
+    // shadow: false,
+
+    // layout: 'border',
 
     bind: {
-        title: '{rule.description}',
+        title: '{record.description}',
     },
     modal: true,
     constrain: true,
@@ -32,17 +57,47 @@ Ext.define('Ung.cmp.RecordEditor', {
     //     iconCls: 'fa fa-plus',
     //     // handler: 'onAdd'
     // }],
-    // bbar: ['->', {
-    //     text: 'Cancel',
-    //     // iconCls: 'fa fa-add'
-    // }, {
-    //     text: 'Apply',
-    //     itemId: 'applyBtn',
-    //     iconCls: 'fa fa-check',
-    //     handler: 'onApply'
-    // }],
+
+
+    // scrollable: true,
+
+    layout: 'fit',
 
     items: [{
-        html: 'test'
-    }]
+        xtype: 'form',
+        // region: 'center',
+        scrollable: 'y',
+        bodyPadding: 10,
+        border: false,
+        layout: 'anchor',
+        defaults: {
+            anchor: '100%',
+            labelWidth: 180,
+            labelAlign : 'right',
+        },
+        bbar: ['->', '@cancel', '@apply'],
+        items: []
+    }],
+
+    // initComponent: function () {
+    //     var items = this.items;
+    //     var form = items[0];
+
+    //     for (var i = 0; i < this.fields.length; i++) {
+    //         console.log();
+    //         if (this.fields[i].editor) {
+    //             if (this.fields[i].getItemId() !== 'conditions') {
+    //                 form.items.push(this.fields[i].editor);
+    //             } else {
+    //                 this.items.push({
+    //                     xtype: 'component',
+    //                     html: 'some panel'
+    //                 });
+    //             }
+    //         }
+    //     }
+
+    //     this.callParent(arguments);
+
+    // }
 });

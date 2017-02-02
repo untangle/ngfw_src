@@ -1,6 +1,6 @@
-Ext.define('Ung.cmp.RuleEditorController', {
+Ext.define('Ung.cmp.ConditionsGridController', {
     extend: 'Ext.app.ViewController',
-    alias: 'controller.ruleeditor',
+    alias: 'controller.conditionsgrid',
 
     control: {
         '#': {
@@ -15,11 +15,9 @@ Ext.define('Ung.cmp.RuleEditorController', {
 
     onAfterRender: function (view) {
         var menuConditions = [], i;
-        console.log(view.getViewModel());
 
         view.getViewModel().bind({
-            bindTo: '{conditionsData}',
-            deep: true
+            bindTo: '{record}',
         }, this.setMenuConditions);
 
         for (i = 0; i < view.conditions.length; i += 1) {
@@ -49,27 +47,20 @@ Ext.define('Ung.cmp.RuleEditorController', {
         // });
     },
 
-    setMenuConditions: function () {
+    setMenuConditions: function (conds) {
         var menu = this.getView().down('#addConditionBtn').getMenu(),
-            store = this.getView().down('grid').getStore();
+            store = this.getView().getStore();
         menu.items.each(function (item) {
             item.setDisabled(store.findRecord('conditionType', item.conditionType) ? true : false);
         });
     },
 
-    onApply: function (btn) {
-        console.log(this.getViewModel());
-        this.getViewModel().get('rule').set('conditions', {
-            list: Ext.Array.pluck(this.getView().down('grid').getStore().getRange(), 'data')
-        });
-    },
-
     onWidgetAttach: function (column, container, record) {
         // if widget aklready attached do nothing
-        // if (container.items.length >= 1) {
-        //     return;
-        // }
-
+        if (container.items.length >= 1) {
+            return;
+        }
+        console.log('widget attach');
         container.removeAll(true);
 
         var condition = this.getView().conditionsMap[record.get('conditionType')], i, ckItems = [];
@@ -83,7 +74,6 @@ Ext.define('Ung.cmp.RuleEditorController', {
             });
             break;
         case 'textfield':
-            console.log(condition.vtype);
             container.add({
                 xtype: 'textfield',
                 bind: {
@@ -127,7 +117,7 @@ Ext.define('Ung.cmp.RuleEditorController', {
             // javaClass: 'com.untangle.uvm.network.PortForwardRuleCondition',
             value: ''
         };
-        this.getView().down('grid').getStore().add(newCond);
+        this.getView().getStore().add(newCond);
         // this.getView().ruleConditions.push(newCond);
         // this.addRowView(newCond);
     },
@@ -142,7 +132,7 @@ Ext.define('Ung.cmp.RuleEditorController', {
     },
 
     removeCondition: function (view, rowIndex, colIndex, item, e, record) {
-        this.getView().down('grid').getStore().remove(record);
+        this.getView().getStore().remove(record);
         this.setMenuConditions();
     }
 

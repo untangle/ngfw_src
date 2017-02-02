@@ -20,7 +20,9 @@ Ext.define ('Ung.model.Rule', {
             return resp;
         } },
 
-        { name: 'markedForDelete', defaultValue: false }
+        { name: 'markedForDelete', defaultValue: false },
+        { name: 'newDestination' },
+        { name: 'newPort' }
         // { name: 'string', type: 'string', defaultValue: '' },
         // { name: 'blocked', type: 'boolean', defaultValue: true },
         // { name: 'flagged', type: 'boolean', defaultValue: true },
