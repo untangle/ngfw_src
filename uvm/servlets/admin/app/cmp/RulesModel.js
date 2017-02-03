@@ -1,7 +1,7 @@
 Ext.define('Ung.cmp.RulesModel', {
     extend: 'Ext.app.ViewModel',
 
-    alias: 'viewmodel.rulesmodel',
+    alias: 'viewmodel.rules',
 
     formulas: {
         currentRecord: {

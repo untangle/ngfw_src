@@ -9,13 +9,14 @@ Ext.define('Ung.cmp.RulesController', {
         '#': {
             beforerender: 'onBeforeRender',
         },
-        'grid': {
-            cellclick: 'onCellClick'
-        }
+        // 'grid': {
+        //     cellclick: 'onCellClick'
+        // }
     },
 
     onBeforeRender: function (view) {
-        view.down('grid').setBind('{portforwardrules}');
+        // view.setStore()
+        // view.down('grid').setBind('{portforwardrules}');
         // create conditions map
         view.setConditionsMap(Ext.Array.toValueMap(view.getConditions(), 'name'));
         // console.log(view.getViewModel());
@@ -25,25 +26,36 @@ Ext.define('Ung.cmp.RulesController', {
     addRecord: function () {
         var grid = this.getView();
         var vm = this.getViewModel();
-        var r = Ext.create('Ung.model.Rule', Ext.clone(this.getView().emptyRow));
-        vm.get('portforwardrules').add(r);
-        r.dirty = true;
-        grid.view.refresh();
-        console.log(vm.get('portforwardrules').getRange());
+
+
+
+        var r = grid.emptyRow;
+        // grid.getStore().add({
+        //     description: 'aaaa'
+        // });
+        console.log(vm.get('portForwardRulesData'));
+        vm.get('portForwardRulesData').push(Ext.clone(grid.emptyRow));
+
+
+        // vm.get('portforwardrules').add(r);
+        // r.dirty = true;
+        // grid.view.refresh();
+        // console.log(vm.get('portforwardrules').getRange());
         // grid.getStore().insert(0, newRule);
-        // vm.get('portforwardrules').sync();
-        // grid.getStore().reload();
+        // vm.get('portforwardrules').commitChanges();
+        grid.getStore().reload();
     },
 
     editRecord: function (view, rowIndex, colIndex, item, e, record, row) {
+        var v = this.getView();
         // console.log(this.getView().down('grid').getColumns());
 
         // open recordeditor window
         Ext.widget('ung.cmp.recordeditor', {
-            fields: this.getView().down('grid').getColumns(), // form fields needed to be displayed in the editor taken from grid columns
-            label: this.getView().label, // the label in the form
-            conditions: this.getView().getConditions(), // the available conditions which can be applied
-            conditionsMap: this.getView().getConditionsMap(), // a map with the above conditions as helper
+            fields: v.getColumns(), // form fields needed to be displayed in the editor taken from grid columns
+            label: v.label, // the label in the form
+            conditions: v.getConditions(), // the available conditions which can be applied
+            conditionsMap: v.getConditionsMap(), // a map with the above conditions as helper
             // recordCopy: record.copy(null), // a clean copy of the record to be edited
             record: record
             // bind: {
@@ -67,6 +79,43 @@ Ext.define('Ung.cmp.RulesController', {
             // }
         });
     },
+
+    // addRecord: function (btn) {
+    //     var v = this.getView();
+    //     Ext.widget('ung.cmp.recordeditor', {
+    //         fields: v.getColumns(), // form fields needed to be displayed in the editor taken from grid columns
+    //         label: v.label, // the label in the form
+    //         conditions: v.getConditions(), // the available conditions which can be applied
+    //         conditionsMap: v.getConditionsMap(), // a map with the above conditions as helper
+    //         // recordCopy: record.copy(null), // a clean copy of the record to be edited
+    //         record: Ext.create('Ung.model.Rule', Ext.clone(v.emptyRow)),
+    //         store: v.getStore()
+    //         // bind: {
+    //         //     data: {
+    //         //         record: '{record}'
+    //         //     }
+    //         // }
+    //         // conditionsMap: this.getView().getConditionsMap(),
+    //         // viewModel: {
+    //         //     data: {
+    //         //         originalRecord: record
+    //         //     },
+    //         //     // formulas: {
+    //         //     //     conditionsData: {
+    //         //     //         bind: '{record.conditions.list}',
+    //         //     //         get: function (coll) {
+    //         //     //             return coll || [];
+    //         //     //         }
+    //         //     //     },
+    //         //     // }
+    //         // }
+    //         // listeners: {
+    //         //     close: function (a) {
+    //         //         console.log(a);
+    //         //     }
+    //         // }
+    //     });
+    // },
 
 
     deleteRecord: function (view, rowIndex, colIndex, item, e, record, row) {

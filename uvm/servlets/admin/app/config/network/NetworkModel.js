@@ -39,6 +39,9 @@ Ext.define('Ung.config.network.NetworkModel', {
             bind: '{settings.portForwardRules.list}',
             get: function (rules) {
                 return rules || null;
+            },
+            set: function (val) {
+                return val;
             }
         }
     },
@@ -60,7 +63,8 @@ Ext.define('Ung.config.network.NetworkModel', {
 
         portforwardrules: {
             type: 'rule',
-            data: '{settings.portForwardRules.list}'
+            // data: '{settings.portForwardRules}'
+            data: '{portForwardRulesData}'
         }
     }
 });
