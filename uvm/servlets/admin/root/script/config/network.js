@@ -1371,6 +1371,9 @@ Ext.define('Ung.config.network.NetworkModel', {
             bind: '{settings.portForwardRules.list}',
             get: function (rules) {
                 return rules || null;
+            },
+            set: function (val) {
+                return val;
             }
         }
     },
@@ -1392,7 +1395,8 @@ Ext.define('Ung.config.network.NetworkModel', {
 
         portforwardrules: {
             type: 'rule',
-            data: '{settings.portForwardRules.list}'
+            // data: '{settings.portForwardRules}'
+            data: '{portForwardRulesData}'
         }
     }
 });
@@ -1413,6 +1417,7 @@ Ext.define('Ung.config.network.PortForwardRules', {
 
     tbar: [{
         xtype: 'displayfield',
+        padding: '0 10',
         value: "Port Forward rules forward sessions matching the configured criteria from a public IP to an IP on an internal (NAT'd) network. The rules are evaluated in order.".t()
     }],
 
@@ -1421,6 +1426,9 @@ Ext.define('Ung.config.network.PortForwardRules', {
         flex: 3,
         columnFeatures: ['reorder', 'delete', 'edit'], // which columns to add
         recordActions: ['@edit', '@delete'],
+
+        // bind: '{portForwardRules}',
+        bind: '{portforwardrules}',
 
         conditions: [
             { name: 'DST_LOCAL', displayName: 'Destined Local'.t(), type: 'boolean', visible: true},
@@ -1433,6 +1441,7 @@ Ext.define('Ung.config.network.PortForwardRules', {
         ],
 
         label: 'Forward to the following location:'.t(),
+        description: "Port Forward rules forward sessions matching the configured criteria from a public IP to an IP on an internal (NAT'd) network. The rules are evaluated in order.".t(),
 
         emptyRow: {
             ruleId: -1,

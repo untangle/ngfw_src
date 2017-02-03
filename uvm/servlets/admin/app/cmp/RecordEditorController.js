@@ -18,7 +18,7 @@ Ext.define('Ung.cmp.RecordEditorController', {
         // }, function (rec) {
         //     console.log(rec);
         // });
-        view.getViewModel().set('record', view.record.copy(null));
+        view.getViewModel().set('record', view.record.copy());
 
 
         var fields = view.fields, form = view.down('form');
@@ -205,18 +205,44 @@ Ext.define('Ung.cmp.RecordEditorController', {
 
         // this.getView().record.set('description', 'aaa');
 
+
         vm.get('record').set('conditions', {
+            javaClass: 'java.util.LinkedList',
             list: Ext.Array.pluck(v.down('grid').getStore().getRange(), 'data')
         });
+
+        // console.log(vm.get('record'));
+
+        for (var field in vm.get('record').modified) {
+            console.log(field);
+            v.record.set(field, vm.get('record').get(field));
+        }
 
         // console.log(this.getView().down('grid'));
         // this.getViewModel().get('record').commit();
 
         // this.getView().record.beginEdit();
-        v.record.copyFrom(vm.get('record'));
+        // console.log(v.record.copyFrom(vm.get('record')));
         // this.getView().record.endEdit();
+        // console.log(vm.get('record'));
+        // v.record.modified = vm.get('record').modified;
 
-        v.record.save();
+        // console.log(vm.get('record'));
+
+        // v.record = vm.get('record');
+
+
+        if (v.store) {
+            v.store.add(v.record);
+            v.store.sync();
+        }
+
+
+        // Ext.apply(v.record, vm.get('record'));
+
+        // v.record.save();
+        // v.getStore().refresh();
+        // v.record.load();
 
         v.close();
 
