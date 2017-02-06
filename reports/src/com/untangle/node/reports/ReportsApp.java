@@ -70,7 +70,6 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
     private static final String REPORTS_DB_DRIVER_FILE = System.getProperty("uvm.conf.dir") + "/database-driver";
 
     private static final File CRON_FILE = new File("/etc/cron.daily/reports-cron");
-    private static final File SYSLOG_CONF_FILE = new File("/etc/rsyslog.d/untangle-remote.conf");
 
     protected static EventWriterImpl eventWriter = null;
     protected static EventReaderImpl eventReader = null;
@@ -161,8 +160,6 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
          * Sync settings to disk
          */
         writeCronFile();
-        SyslogManagerImpl.reconfigure(this.settings);
-        
     }
 
     public ReportsSettings getSettings()
@@ -406,11 +403,9 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         
         /* sync settings to disk if necessary */
         File settingsFile = new File( settingsFileName );
-        if (settingsFile.lastModified() > CRON_FILE.lastModified())
+        if (settingsFile.lastModified() > CRON_FILE.lastModified()){
             writeCronFile();
-        if (settingsFile.lastModified() > SYSLOG_CONF_FILE.lastModified())
-            SyslogManagerImpl.reconfigure(this.settings);
-        SyslogManagerImpl.setEnabled(this.settings);
+        }
     }
 
     @Override
@@ -673,9 +668,9 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         String[] oldNames = new String[] {"com.untangle.node.reports.AlertRule",
                                  "com.untangle.node.reports.AlertRuleCondition",
                                  "com.untangle.node.reports.AlertRuleConditionField"};
-        String[] newNames = new String[] {"com.untangle.uvm.event.AlertRule",
-                                 "com.untangle.uvm.event.AlertRuleCondition",
-                                 "com.untangle.uvm.event.AlertRuleConditionField"};
+        String[] newNames = new String[] {"com.untangle.uvm.event.EventRule",
+                                 "com.untangle.uvm.event.EventRuleCondition",
+                                 "com.untangle.uvm.event.EventRuleConditionField"};
         for ( int i = 0 ; i < oldNames.length ; i++ ) {
             String oldStr = oldNames[i];
             String newStr = newNames[i];
@@ -688,19 +683,32 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         settings.setVersion( 5 );
 
         try {
+            // Move Alerts and syslog
+            logger.warn("**try getEventRules()");
             if(settings.getEventRules() != null){
+                logger.warn("**got getEventRules()");
                 EventManager eventManager = UvmContextFactory.context().eventManager();
                 if(eventManager != null){
                     EventSettings eventSettings = eventManager.getSettings();
                     if(eventSettings != null){
                         eventSettings.setEventRules(settings.getEventRules());
+
+                        // Syslog
+                        eventSettings.setSyslogEnabled(settings.getSyslogEnabled());
+                        eventSettings.setSyslogHost(settings.getSyslogHost());
+                        eventSettings.setSyslogPort(settings.getSyslogPort());
+                        eventSettings.setSyslogProtocol(settings.getSyslogProtocol());
+
                         eventSettings.setVersion(settings.getVersion());
+
                         eventManager.setSettings(eventSettings);
+
                         settings.setEventRules(null);
                     }
                 }
             }
 
+            // Rename "Alert" report categories to "Event"
             if(settings.getReportEntries() != null){
                 for ( ReportEntry entry : settings.getReportEntries() ) {
                     if ( entry.getTitle().contains("Alert") && entry.getCategory().equals("Reports") ){
@@ -708,8 +716,6 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
                     }
                 }
             }
-
-            // convert reportentries for events
         } catch (Exception e) {
             logger.warn("Conversion Exception",e);
         }

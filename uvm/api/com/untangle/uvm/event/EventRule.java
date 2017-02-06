@@ -34,9 +34,11 @@ public class EventRule implements JSONString, Serializable
     private Integer ruleId;
     private Boolean enabled;
     private Boolean log;
-    private Boolean event;
-    private Boolean eventLimitFrequency = false;
-    private Integer eventLimitFrequencyMinutes = 0;
+    private Boolean remoteLog;
+    private Boolean email;
+
+    private Boolean limitFrequency = false;
+    private Integer limitFrequencyMinutes = 0;
     private Boolean thresholdEnabled;
     private Double  thresholdLimit;
     private Integer thresholdTimeframeSec;
@@ -53,16 +55,16 @@ public class EventRule implements JSONString, Serializable
     {
     }
 
-    public EventRule( boolean enabled, List<EventRuleCondition> conditions, boolean log, boolean event, String description, boolean frequencyLimit, int frequencyMinutes,
+    public EventRule( boolean enabled, List<EventRuleCondition> conditions, boolean log, boolean email, String description, boolean frequencyLimit, int frequencyMinutes,
                       Boolean thresholdEnabled, Double thresholdLimit, Integer thresholdTimeframeSec, String thresholdGroupingField )
     {
         this.setEnabled( enabled );
         this.setConditions( conditions );
         this.setLog( log );
-        this.setEvent( event );
+        this.setEmail( email );
         this.setDescription( description );
-        this.setEventLimitFrequency( frequencyLimit );
-        this.setEventLimitFrequencyMinutes( frequencyMinutes );
+        this.setLimitFrequency( frequencyLimit );
+        this.setLimitFrequencyMinutes( frequencyMinutes );
         this.thresholdEnabled = thresholdEnabled;
         this.thresholdLimit = thresholdLimit;
         this.thresholdTimeframeSec = thresholdTimeframeSec;
@@ -86,14 +88,17 @@ public class EventRule implements JSONString, Serializable
     public Boolean getLog() { return log; }
     public void setLog( Boolean newValue ) { this.log = newValue; }
 
-    public Boolean getEvent() { return event; }
-    public void setEvent( Boolean newValue ) { this.event = newValue; }
+    public Boolean getRemoteLog() { return remoteLog; }
+    public void setRemoteLog( Boolean newValue ) { this.remoteLog = newValue; }
 
-    public Boolean getEventLimitFrequency() { return eventLimitFrequency; }
-    public void setEventLimitFrequency( Boolean newValue ) { this.eventLimitFrequency = newValue; }
+    public Boolean getEmail() { return email; }
+    public void setEmail( Boolean newValue ) { this.email = newValue; }
 
-    public Integer getEventLimitFrequencyMinutes() { return eventLimitFrequencyMinutes; }
-    public void setEventLimitFrequencyMinutes( Integer newValue ) { this.eventLimitFrequencyMinutes = newValue; }
+    public Boolean getLimitFrequency() { return limitFrequency; }
+    public void setLimitFrequency( Boolean newValue ) { this.limitFrequency = newValue; }
+
+    public Integer getLimitFrequencyMinutes() { return limitFrequencyMinutes; }
+    public void setLimitFrequencyMinutes( Integer newValue ) { this.limitFrequencyMinutes = newValue; }
 
     public Boolean getThresholdEnabled() { return this.thresholdEnabled; }
     public void setThresholdEnabled( Boolean newValue ) { this.thresholdEnabled = newValue; }

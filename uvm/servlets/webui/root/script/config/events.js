@@ -4,6 +4,7 @@ Ext.define('Webui.config.events', {
     hasReports: true,
     reportCategory: 'Events',
     panelEvent: null,
+    panelSyslog: null,
     initComponent: function() {
         this.breadcrumbs = [{
             title: i18n._("Configuration"),
@@ -13,11 +14,12 @@ Ext.define('Webui.config.events', {
         }, {
             title: i18n._('Events')
         }];
-        this.buildEventRules();
 
-        // builds the tab panel with the tabs
-        var eventTabs = [this.panelEventRules];
-        this.buildTabPanel(eventTabs);
+        this.buildEventRules();
+        this.buildSyslog();
+
+        this.buildTabPanel([this.panelEventRules, this.panelSyslog]);
+
         this.tabs.setActiveTab(this.panelEventRules);
         this.callParent(arguments);
     },
@@ -72,9 +74,9 @@ Ext.define('Webui.config.events', {
                     "ruleId": null,
                     "enabled": true,
                     "log": false,
-                    "event": false,
-                    "eventLimitFrequency": false,
-                    "eventLimitFrequencyMinutes": 0,
+                    "email": false,
+                    "limitFrequency": false,
+                    "limitFrequencyMinutes": 0,
                     "description": ""
                 },
                 fields: [{
@@ -84,11 +86,11 @@ Ext.define('Webui.config.events', {
                 }, {
                     name: 'log'
                 }, {
-                    name: 'event'
+                    name: 'email'
                 }, {
-                    name: 'eventLimitFrequency'
+                    name: 'limitFrequency'
                 }, {
-                    name: 'eventLimitFrequencyMinutes'
+                    name: 'limitFrequencyMinutes'
                 }, {
                     name: 'thresholdEnabled'
                 }, {
@@ -134,13 +136,18 @@ Ext.define('Webui.config.events', {
                     },
                 }, {
                     xtype:'checkcolumn',
-                    header: i18n._("Log Event"),
+                    header: i18n._("Log Locally"),
                     dataIndex: 'log',
                     width:150
                 }, {
                     xtype:'checkcolumn',
-                    header: i18n._("Send Event"),
-                    dataIndex: 'event',
+                    header: i18n._("Log Remotely"),
+                    dataIndex: 'remoteLog',
+                    width:150
+                }, {
+                    xtype:'checkcolumn',
+                    header: i18n._("Send Email"),
+                    dataIndex: 'email',
                     width:150
                 }]
             })]
@@ -225,12 +232,17 @@ Ext.define('Webui.config.events', {
                     xtype:'checkbox',
                     labelWidth: 160,
                     dataIndex: "log",
-                    fieldLabel: i18n._("Log Event")
+                    fieldLabel: i18n._("Log Locally")
                 }, {
                     xtype:'checkbox',
                     labelWidth: 160,
-                    dataIndex: "event",
-                    fieldLabel: i18n._("Send Event"),
+                    dataIndex: "remoteLog",
+                    fieldLabel: i18n._("Log Remotely")
+                }, {
+                    xtype:'checkbox',
+                    labelWidth: 160,
+                    dataIndex: "email",
+                    fieldLabel: i18n._("Send Email"),
                     listeners: {
                         "change": {
                             fn: Ext.bind(function(elem, newValue) {
@@ -244,7 +256,7 @@ Ext.define('Webui.config.events', {
                     items: [{
                         xtype:'checkbox',
                         labelWidth: 160,
-                        dataIndex: "eventLimitFrequency",
+                        dataIndex: "limitFrequency",
                         fieldLabel: i18n._("Limit Send Frequency")
                     },{
                         xtype: 'container',
@@ -254,7 +266,7 @@ Ext.define('Webui.config.events', {
                             xtype: 'numberfield',
                             labelWidth: 160,
                             width: 230,
-                            dataIndex: "eventLimitFrequencyMinutes",
+                            dataIndex: "limitFrequencyMinutes",
                             allowDecimals: false,
                             allowBlank: false,
                             minValue: 0,
@@ -269,9 +281,9 @@ Ext.define('Webui.config.events', {
                 }]
             }],
             syncComponents: function () {
-                var sendEvent=this.down('checkbox[dataIndex=event]').getValue();
-                this.down('checkbox[dataIndex=eventLimitFrequency]').setDisabled(!sendEvent);
-                this.down('numberfield[dataIndex=eventLimitFrequencyMinutes]').setDisabled(!sendEvent);
+                var sendEmail=this.down('checkbox[dataIndex=email]').getValue();
+                this.down('checkbox[dataIndex=limitFrequency]').setDisabled(!sendEmail);
+                this.down('numberfield[dataIndex=limitFrequencyMinutes]').setDisabled(!sendEmail);
 
                 var thresholdEnabled=this.down('checkbox[dataIndex=thresholdEnabled]').getValue();
                 this.down('numberfield[dataIndex=thresholdLimit]').setDisabled(!thresholdEnabled);
@@ -279,6 +291,113 @@ Ext.define('Webui.config.events', {
                 this.down('textfield[dataIndex=thresholdGroupingField]').setDisabled(!thresholdEnabled);
             }
         }));
+    },
+    // syslog panel
+    buildSyslog: function() {
+        this.panelSyslog = Ext.create('Ext.panel.Panel',{
+            name: 'Syslog',
+            helpSource: 'reports_syslog',
+            title: i18n._('Syslog'),
+            cls: 'ung-panel',
+            autoScroll: true,
+            defaults: {
+                xtype: 'fieldset'
+            },
+            items: [{
+                title: i18n._('Syslog'),
+                height: 350,
+                items: [{
+                    xtype: 'component',
+                    margin: '0 0 10 0',
+                    html: i18n._('If enabled logged events will be sent in real-time to a remote syslog for custom processing.')
+                }, {
+                    xtype: 'component',
+                    html: i18n._('Warning: Syslog logging can be computationally expensive for servers processing millions of events. Caution is advised.'),
+                    cls: 'warning',
+                    margin: '0 0 10 10'
+                }, {
+                    xtype: 'radio',
+                    boxLabel: Ext.String.format(i18n._('{0}Disable{1} Syslog Events. (This is the default setting.)'), '<b>', '</b>'),
+                    hideLabel: true,
+                    name: 'syslogEnabled',
+                    checked: !this.getEventSettings().syslogEnabled,
+                    listeners: {
+                        "change": {
+                            fn: Ext.bind( function(elem, checked) {
+                                this.getEventSettings().syslogEnabled = !checked;
+                                if (checked) {
+                                    this.panelSyslog.down("textfield[name=syslogHost]").disable();
+                                    this.panelSyslog.down("numberfield[name=syslogPort]").disable();
+                                    this.panelSyslog.down("combo[name=syslogProtocol]").disable();
+                                }
+                            }, this)
+                        }
+                    }
+                },{
+                    xtype: 'radio',
+                    boxLabel: Ext.String.format(i18n._('{0}Enable{1} Syslog Events.'), '<b>', '</b>'),
+                    hideLabel: true,
+                    name: 'syslogEnabled',
+                    checked: this.getEventSettings().syslogEnabled,
+                    listeners: {
+                        "change": {
+                            fn: Ext.bind( function(elem, checked) {
+                                this.getEventSettings().syslogEnabled = checked;
+                                if (checked) {
+                                    this.panelSyslog.down("textfield[name=syslogHost]").enable();
+                                    this.panelSyslog.down("numberfield[name=syslogPort]").enable();
+                                    this.panelSyslog.down("combo[name=syslogProtocol]").enable();
+                                }
+                            }, this)
+                        }
+                    }
+                }, {
+                    xtype: 'container',
+                    margin: '0 0 0 40',
+                    items: [{
+                        xtype: 'textfield',
+                        fieldLabel: i18n._('Host'),
+                        name: 'syslogHost',
+                        width: 300,
+                        value: this.getEventSettings().syslogHost,
+                        toValidate: true,
+                        allowBlank: false,
+                        blankText: i18n._("A Host must be specified."),
+                        disabled: !this.getEventSettings().syslogEnabled,
+                        validator: Ext.bind( function( value ){
+                            if( value == '127.0.0.1' ||
+                                value == 'localhost' ){
+                                return i18n._("Host cannot be localhost address.");
+                            }
+                            return true;
+                        }, this)
+                    },{
+                        xtype: 'numberfield',
+                        fieldLabel: i18n._('Port'),
+                        name: 'syslogPort',
+                        width: 200,
+                        value: this.getEventSettings().syslogPort,
+                        toValidate: true,
+                        allowDecimals: false,
+                        minValue: 0,
+                        allowBlank: false,
+                        blankText: i18n._("You must provide a valid port."),
+                        vtype: 'port',
+                        disabled: !this.getEventSettings().syslogEnabled
+                    },{
+                        xtype: 'combo',
+                        name: 'syslogProtocol',
+                        editable: false,
+                        fieldLabel: i18n._('Protocol'),
+                        queryMode: 'local',
+                        store: [["UDP", i18n._("UDP")],
+                                ["TCP", i18n._("TCP")]],
+                        value: this.getEventSettings().syslogProtocol,
+                        disabled: !this.getEventSettings().syslogEnabled
+                    }]
+                }]
+            }]
+        });
     },
     beforeSave: function(isApply, handler) {
         handler.call(this, isApply);
@@ -288,6 +407,9 @@ Ext.define('Webui.config.events', {
         Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
 
         this.getEventSettings().eventRules.list=this.gridEventRules.getList();
+        this.getEventSettings().syslogHost = this.panelSyslog.down("textfield[name=syslogHost]").getValue();
+        this.getEventSettings().syslogPort = this.panelSyslog.down("numberfield[name=syslogPort]").getValue();
+        this.getEventSettings().syslogProtocol = this.panelSyslog.down("combo[name=syslogProtocol]").getValue();
 
         rpc.eventManager.setSettings(Ext.bind(function(result, exception) {
             this.afterSave(exception, isApply);

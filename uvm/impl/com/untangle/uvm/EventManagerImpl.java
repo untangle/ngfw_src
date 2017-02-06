@@ -13,12 +13,11 @@ import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.NodeSettings;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.util.I18nUtil;
-
+import com.untangle.uvm.SyslogManagerImpl;
 
 import com.untangle.uvm.AdminManager;
 import com.untangle.uvm.AdminSettings;
 import com.untangle.uvm.AdminUserSettings;
-
 
 import java.util.LinkedList;
 import java.util.Iterator;
@@ -73,6 +72,8 @@ public class EventManagerImpl implements EventManager
         }
 
         eventWriter.start();
+
+        SyslogManagerImpl.reconfigureCheck(settingsFilename, this.settings);
     }
 
     public void setSettings( final EventSettings newSettings )
@@ -87,7 +88,6 @@ public class EventManagerImpl implements EventManager
 
         EventSettings convertedSettings = null;
         if(newSettings.getVersion() < this.currentSettingsVersion){
-            logger.warn("EventManagerImpl: do conversion");
             convertedSettings = convertSettings(newSettings);
         }
 
@@ -112,6 +112,7 @@ public class EventManagerImpl implements EventManager
         this.settings = newSettings;
         try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
 
+        SyslogManagerImpl.reconfigure(this.settings);
     }
 
     private EventSettings convertSettings(EventSettings settings)
@@ -420,7 +421,17 @@ public class EventManagerImpl implements EventManager
 
     public void logEvent( LogEvent event )
     {
+        if ( eventWriter.overloadedFlag ) {
+            if ( System.currentTimeMillis() - eventWriter.lastLoggedWarningTime > 10000 ) {
+                logger.warn("Event Writer overloaded, discarding event");
+                eventWriter.lastLoggedWarningTime = System.currentTimeMillis();
+            }
+            return;
+        }
+
         eventWriter.inputQueue.offer(event);
+
+        UvmContextFactory.context().hookManager().callCallbacks( HookManager.REPORTS_EVENT_LOGGED, event );
     }
 
     private static void runEventQueue( LinkedList<LogEvent> events )
@@ -443,12 +454,20 @@ public class EventManagerImpl implements EventManager
                 if ( rule.isMatch( jsonObject ) ) {
                     logger.info( "event match: " + rule.getDescription() + " matches " + jsonObject.toString() );
 
-                    boolean eventSent = false;
-                    Event eventEvent = new Event( rule.getDescription(), event.toSummaryString(), jsonObject, event, rule, false );
-                    if ( rule.getEvent() ){
-                        eventSent = sendEventForEvent( rule, event );
+                    if ( rule.getEmail() ){
+                        sendEmailForEvent( rule, event );
+                    }
+
+                    event.setTag(SyslogManagerImpl.LOG_TAG_PREFIX);
+                    if ( rule.getRemoteLog() ){
+                        try {
+                            SyslogManagerImpl.sendSyslog( event );
+                        } catch (Exception exn) {
+                            logger.warn("failed to send syslog", exn);
+                        }
                     }
                     if ( rule.getLog() ){
+                        Event eventEvent = new Event( rule.getDescription(), event.toSummaryString(), jsonObject, event, rule, false );
                         UvmContextFactory.context().logEvent( eventEvent );
                     }
                 }
@@ -458,14 +477,14 @@ public class EventManagerImpl implements EventManager
         }
     }
 
-    private static boolean sendEventForEvent( EventRule rule, LogEvent event )
+    private static boolean sendEmailForEvent( EventRule rule, LogEvent event )
     {
-        if ( rule.getEventLimitFrequency() && rule.getEventLimitFrequencyMinutes() > 0 ) {
+        if ( rule.getLimitFrequency() && rule.getLimitFrequencyMinutes() > 0 ) {
             long currentTime = System.currentTimeMillis();
             long lastEventTime = rule.lastEventTime();
             long secondsSinceLastEvent = ( currentTime - lastEventTime ) / 1000;
             // if not enough time has elapsed, just return
-            if ( secondsSinceLastEvent < ( rule.getEventLimitFrequencyMinutes() * 60 ) )
+            if ( secondsSinceLastEvent < ( rule.getLimitFrequencyMinutes() * 60 ) )
                 return false;
         }
 
@@ -583,6 +602,8 @@ public class EventManagerImpl implements EventManager
          * This is a queue of incoming events
          */
         private final BlockingQueue<LogEvent> inputQueue = new LinkedBlockingQueue<LogEvent>();
+
+        private long lastLoggedWarningTime = System.currentTimeMillis();
 
         public void run()
         {
