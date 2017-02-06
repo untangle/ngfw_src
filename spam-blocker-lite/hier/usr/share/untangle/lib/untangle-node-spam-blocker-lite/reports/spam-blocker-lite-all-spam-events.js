@@ -16,7 +16,7 @@
             "value": "TRUE"
         }
     ],
-    "defaultColumns": ["time_stamp","hostname","s_server_addr","addr","sender","subject","spam_blocker_lite_is_spam","spam_blocker_lite_action","spam_blocker_lite_score","spam_blocker_lite_tests_string"],
+    "defaultColumns": ["time_stamp","hostname","c_client_addr","s_server_addr","addr","sender","subject","spam_blocker_lite_is_spam","spam_blocker_lite_action","spam_blocker_lite_score","spam_blocker_lite_tests_string"],
     "description": "All emails marked as Spam.",
     "displayOrder": 1020,
     "javaClass": "com.untangle.node.reports.ReportEntry",

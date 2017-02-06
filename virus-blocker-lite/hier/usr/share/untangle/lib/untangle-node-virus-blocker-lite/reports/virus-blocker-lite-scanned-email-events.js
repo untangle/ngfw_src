@@ -17,7 +17,7 @@
             "value": "NOT NULL"
         }
     ],
-    "defaultColumns": ["time_stamp","hostname","username","addr","sender","s_server_addr","s_server_port"],
+    "defaultColumns": ["time_stamp","hostname","username","addr","sender","c_client_addr","s_server_addr","s_server_port"],
     "description": "All email sessions scanned by Virus Blocker Lite.",
     "displayOrder": 1020,
     "javaClass": "com.untangle.node.reports.ReportEntry",

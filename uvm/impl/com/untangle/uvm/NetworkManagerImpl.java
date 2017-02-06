@@ -810,7 +810,16 @@ public class NetworkManagerImpl implements NetworkManager
         
         try {
             newSettings.setVersion( 5 ); // Currently on v5 (as of v12.2)
-            newSettings.setHostName( UvmContextFactory.context().oemManager().getOemName().toLowerCase() );
+
+            String hostname = UvmContextFactory.context().oemManager().getOemName().toLowerCase();
+            try {
+                /**
+                 * If the OEM name contains multiple words, use just the first word for the hostname
+                 */
+                hostname = hostname.split("[^a-z]",2)[0];
+            } catch (Exception e) {}
+
+            newSettings.setHostName( hostname );
             newSettings.setDomainName( "example.com" );
             newSettings.setHttpPort( 80 );
             newSettings.setHttpsPort( 443 );

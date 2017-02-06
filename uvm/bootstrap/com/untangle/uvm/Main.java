@@ -6,6 +6,7 @@ package com.untangle.uvm;
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +40,7 @@ public class Main
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    private UvmClassLoader uvmCl;
+    private URLClassLoader uvmClassLoader;
     private UvmContextBase uvmContext;
 
     // constructor -------------------------------------------------------------
@@ -76,14 +77,6 @@ public class Main
     // public methods ----------------------------------------------------------
 
     /**
-     * @see UvmClassLoader.refreshLibs()
-     */
-    public boolean refreshLibs()
-    {
-        return uvmCl.refreshLibs();
-    }
-
-    /**
      * <code>fatalError</code> can be called to indicate that a fatal
      * error has occured and that the UVM *must* restart (or
      * otherwise recover) itself.  One example is an OutOfMemory
@@ -112,16 +105,11 @@ public class Main
         }
     }
 
-    public boolean loadUvmResource(String name)
-    {
-        return uvmCl.loadUvmResource(name);
-    }
-
     @SuppressWarnings("rawtypes")
     public Class loadClass(String className)
     {
         try {
-            Class clazz = (Class)uvmCl.loadClass(className);
+            Class clazz = (Class)uvmClassLoader.loadClass(className);
             return clazz;
         } catch (java.lang.ClassNotFoundException e) {
             logger.warn("Class not found: " + className, e);
@@ -173,13 +161,17 @@ public class Main
         /* Add everything in lib */
         File uvmLibDir = new File(System.getProperty("uvm.lib.dir"));
         for (File f : uvmLibDir.listFiles()) {
+            // exclude plugins directory - the PluginManager only loads classes from there
+            if (f.toString().contains("/plugins/"))
+                continue;
             URL url = f.toURI().toURL();
             urls.add(url);
         }
 
         urls.add(new URL("file://" + System.getProperty("uvm.lang.dir") + "/"));
-        uvmCl = new UvmClassLoader(urls.toArray(new URL[urls.size()]), getClass().getClassLoader(), new File(System.getProperty("uvm.lib.dir")));
-        Thread.currentThread().setContextClassLoader(uvmCl);
+        uvmClassLoader = new URLClassLoader(urls.toArray(new URL[urls.size()]), getClass().getClassLoader());
+
+        Thread.currentThread().setContextClassLoader(uvmClassLoader);
     }
     
     private void destroy()
@@ -247,7 +239,7 @@ public class Main
 
     private void startUvm() throws Exception
     {
-        uvmContext = (UvmContextBase)uvmCl.loadClass(UVM_CONTEXT_CLASSNAME).getMethod("context").invoke(null);
+        uvmContext = (UvmContextBase)uvmClassLoader.loadClass(UVM_CONTEXT_CLASSNAME).getMethod("context").invoke(null);
         uvmContext.main = this;
         uvmContext.init();
     }
@@ -261,7 +253,7 @@ public class Main
     private void loadExtensions() throws Exception
     {
         try {
-            Runnable runnable = (Runnable)uvmCl.loadClass(UVM_EXTENSION_CLASSNAME).getMethod("instance").invoke(null);
+            Runnable runnable = (Runnable)uvmClassLoader.loadClass(UVM_EXTENSION_CLASSNAME).getMethod("instance").invoke(null);
             Thread thread = new Thread(runnable);
             thread.start();
         } catch (java.lang.ClassNotFoundException e) {
