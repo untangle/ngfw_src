@@ -34,13 +34,12 @@ Ext.define('Webui.untangle-node-reports.settings', {
     initComponent: function(container, position) {
         this.buildPasswordValidator();
         this.buildUsers();
-        this.buildSyslog();
         this.buildHostnameMap();
         this.buildReportEntries();
         this.buildData();
         this.buildEmailTemplates();
 
-        var panels = [this.gridReportEntries, this.panelData, this.panelEmailTemplates, this.panelUsers, this.panelSyslog, this.gridHostnameMap ];
+        var panels = [this.gridReportEntries, this.panelData, this.panelEmailTemplates, this.panelUsers, this.gridHostnameMap ];
 
         this.buildTabPanel(panels);
 
@@ -404,113 +403,6 @@ Ext.define('Webui.untangle-node-reports.settings', {
                 }
             },
         }));
-    },
-    // syslog panel
-    buildSyslog: function() {
-        this.panelSyslog = Ext.create('Ext.panel.Panel',{
-            name: 'Syslog',
-            helpSource: 'reports_syslog',
-            title: i18n._('Syslog'),
-            cls: 'ung-panel',
-            autoScroll: true,
-            defaults: {
-                xtype: 'fieldset'
-            },
-            items: [{
-                title: i18n._('Syslog'),
-                height: 350,
-                items: [{
-                    xtype: 'component',
-                    margin: '0 0 10 0',
-                    html: i18n._('If enabled logged events will be sent in real-time to a remote syslog for custom processing.')
-                }, {
-                    xtype: 'component',
-                    html: i18n._('Warning: Syslog logging can be computationally expensive for servers processing millions of events. Caution is advised.'),
-                    cls: 'warning',
-                    margin: '0 0 10 10'
-                }, {
-                    xtype: 'radio',
-                    boxLabel: Ext.String.format(i18n._('{0}Disable{1} Syslog Events. (This is the default setting.)'), '<b>', '</b>'),
-                    hideLabel: true,
-                    name: 'syslogEnabled',
-                    checked: !this.getSettings().syslogEnabled,
-                    listeners: {
-                        "change": {
-                            fn: Ext.bind( function(elem, checked) {
-                                this.getSettings().syslogEnabled = !checked;
-                                if (checked) {
-                                    this.panelSyslog.down("textfield[name=syslogHost]").disable();
-                                    this.panelSyslog.down("numberfield[name=syslogPort]").disable();
-                                    this.panelSyslog.down("combo[name=syslogProtocol]").disable();
-                                }
-                            }, this)
-                        }
-                    }
-                },{
-                    xtype: 'radio',
-                    boxLabel: Ext.String.format(i18n._('{0}Enable{1} Syslog Events.'), '<b>', '</b>'),
-                    hideLabel: true,
-                    name: 'syslogEnabled',
-                    checked: this.getSettings().syslogEnabled,
-                    listeners: {
-                        "change": {
-                            fn: Ext.bind( function(elem, checked) {
-                                this.getSettings().syslogEnabled = checked;
-                                if (checked) {
-                                    this.panelSyslog.down("textfield[name=syslogHost]").enable();
-                                    this.panelSyslog.down("numberfield[name=syslogPort]").enable();
-                                    this.panelSyslog.down("combo[name=syslogProtocol]").enable();
-                                }
-                            }, this)
-                        }
-                    }
-                }, {
-                    xtype: 'container',
-                    margin: '0 0 0 40',
-                    items: [{
-                        xtype: 'textfield',
-                        fieldLabel: i18n._('Host'),
-                        name: 'syslogHost',
-                        width: 300,
-                        value: this.getSettings().syslogHost,
-                        toValidate: true,
-                        allowBlank: false,
-                        blankText: i18n._("A Host must be specified."),
-                        disabled: !this.getSettings().syslogEnabled,
-                        validator: Ext.bind( function( value ){
-                            if( value == '127.0.0.1' ||
-                                value == 'localhost' ){
-                                return i18n._("Host cannot be localhost address.");
-                            }
-                            return true;
-                        }, this)
-                    },{
-                        xtype: 'numberfield',
-                        fieldLabel: i18n._('Port'),
-                        name: 'syslogPort',
-                        width: 200,
-                        value: this.getSettings().syslogPort,
-                        toValidate: true,
-                        allowDecimals: false,
-                        minValue: 0,
-                        allowBlank: false,
-                        blankText: i18n._("You must provide a valid port."),
-                        vtype: 'port',
-                        disabled: !this.getSettings().syslogEnabled
-                    },{
-                        xtype: 'combo',
-                        name: 'syslogProtocol',
-                        editable: false,
-                        fieldLabel: i18n._('Protocol'),
-                        queryMode: 'local',
-                        store: [["UDP", i18n._("UDP")],
-                                ["TCP", i18n._("TCP")]],
-                        value: this.getSettings().syslogProtocol,
-                        disabled: !this.getSettings().syslogEnabled
-                    }]
-                }]
-            }]
-        });
     },
     // database panel
     buildData: function() {
@@ -1271,10 +1163,6 @@ Ext.define('Webui.untangle-node-reports.settings', {
         this.getSettings().hostnameMap.list = this.gridHostnameMap.getList();
         this.getSettings().reportEntries.list = this.gridReportEntries.getList();
         this.getSettings().emailTemplates.list = this.gridEmailTemplates.getList();
-
-        this.getSettings().syslogHost = this.panelSyslog.down("textfield[name=syslogHost]").getValue();
-        this.getSettings().syslogPort = this.panelSyslog.down("numberfield[name=syslogPort]").getValue();
-        this.getSettings().syslogProtocol = this.panelSyslog.down("combo[name=syslogProtocol]").getValue();
 
         // when saving set the dashboard flag
         Ung.dashboard.reportEntriesModified = true;

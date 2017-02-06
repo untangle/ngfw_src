@@ -24,6 +24,11 @@ public class EventSettings implements Serializable, JSONString
 
     private LinkedList<EventRule> eventRules = null;
 
+    private boolean syslogEnabled = false;
+    private String syslogHost;
+    private int syslogPort = 514;
+    private String syslogProtocol = "UDP";
+
     public EventSettings() { }
 
     public Integer getVersion() { return version; }
@@ -31,6 +36,22 @@ public class EventSettings implements Serializable, JSONString
 
     public LinkedList<EventRule> getEventRules() { return this.eventRules; }
     public void setEventRules( LinkedList<EventRule> newValue ) { this.eventRules = newValue; }
+
+    /*
+     Remote syslog
+     */
+    public boolean getSyslogEnabled() { return syslogEnabled; }
+    public void setSyslogEnabled( boolean syslogEnabled ) { this.syslogEnabled = syslogEnabled; }
+
+    public String getSyslogHost() { return syslogHost; }
+    public void setSyslogHost( String syslogHost ) { this.syslogHost = syslogHost; }
+
+    public int getSyslogPort() { return syslogPort; }
+    public void setSyslogPort( int syslogPort ) { this.syslogPort = syslogPort; }
+
+    public String getSyslogProtocol() { return syslogProtocol; }
+    public void setSyslogProtocol( String syslogProtocol ) { this.syslogProtocol = syslogProtocol; }
+
 
     public String toJSONString()
     {

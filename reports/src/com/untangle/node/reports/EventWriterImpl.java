@@ -260,9 +260,6 @@ public class EventWriterImpl implements Runnable
             return;
         }
         
-        String tag = "uvm[0]: ";
-        event.setTag(tag);
-        
         /**
          * Send to queue for database logging
          */
@@ -270,19 +267,6 @@ public class EventWriterImpl implements Runnable
             logger.warn("dropping logevent: " + event);
         }
 
-        /**
-         * Call the event logged hook
-         */
-        UvmContextFactory.context().hookManager().callCallbacks( HookManager.REPORTS_EVENT_LOGGED, event );
-
-        /**
-         * Send it to syslog (make best attempt - ignore errors)
-         */
-        try {
-            SyslogManagerImpl.sendSyslog(event, event.getTag());
-        } catch (Exception exn) { 
-            logger.warn("failed to send syslog", exn);
-        }
     }
 
     public double getAvgWriteTimePerEvent()
