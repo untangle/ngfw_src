@@ -28,20 +28,23 @@ Ext.define('Ung.config.network.NetworkModel', {
             return host;
         },
 
-                                conditionsData: {
-                                    bind: '{rule.conditions.list}',
-                                    get: function (coll) {
-                                        return coll || [];
-                                    }
-                                },
-
+        // conditionsData: {
+        //     bind: '{rule.conditions.list}',
+        //     get: function (coll) {
+        //         return coll || [];
+        //     }
+        // },
         portForwardRulesData: {
             bind: '{settings.portForwardRules.list}',
             get: function (rules) {
                 return rules || null;
-            },
-            set: function (val) {
-                return val;
+            }
+        },
+
+        natRulesData: {
+            bind: '{settings.natRules.list}',
+            get: function (rules) {
+                return rules || null;
             }
         }
     },
@@ -62,9 +65,15 @@ Ext.define('Ung.config.network.NetworkModel', {
         },
 
         portforwardrules: {
-            type: 'rule',
+            // type: 'rule',
             // data: '{settings.portForwardRules}'
             data: '{portForwardRulesData}'
+        },
+
+        natrules: {
+            // type: 'rule',
+            // data: '{settings.portForwardRules}'
+            data: '{natRulesData}'
         }
     }
 });

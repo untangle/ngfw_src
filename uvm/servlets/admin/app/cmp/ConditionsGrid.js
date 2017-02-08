@@ -45,11 +45,11 @@ Ext.define('Ung.cmp.ConditionsGrid', {
 
     padding: '10 0',
 
-    bind: {
-        store: {
-            data: '{record.conditions.list}'
-        }
-    },
+    // bind: {
+    //     store: {
+    //         data: '{record.conditions.list}'
+    //     }
+    // },
 
     // bind: '{conds}',
 

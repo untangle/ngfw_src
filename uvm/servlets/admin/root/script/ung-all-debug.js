@@ -5215,7 +5215,8 @@ Ext.define('Ung.controller.Global', {
         'Conditions',
         'Countries',
         'Categories',
-        'UnavailableApps'
+        'UnavailableApps',
+        'Rule'
     ],
 
     config: {

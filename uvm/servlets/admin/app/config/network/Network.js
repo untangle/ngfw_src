@@ -65,6 +65,8 @@ Ext.define('Ung.config.network.Network', {
     }, {
         xtype: 'ung.config.network.portforwardrules'
     }, {
+        xtype: 'ung.config.network.natrules'
+    }, {
         title: 'Routes'.t(),
         html: 'routes'
     }, {

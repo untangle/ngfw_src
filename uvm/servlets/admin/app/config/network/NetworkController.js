@@ -29,15 +29,20 @@ Ext.define('Ung.config.network.NetworkController', {
         var view = this.getView();
         var vm = this.getViewModel();
         var me = this;
-        // view.setLoading('Saving ...');
+        view.setLoading('Saving ...');
         console.log(vm.get('settings'));
-        // rpc.networkManager.setNetworkSettings(function (result, ex) {
-        //     console.log(ex);
-        //     console.log(result);
-        //     // vm.getStore('interfaces').reload();
-        //     view.setLoading(false);
-        //     me.loadInterfaceStatusAndDevices();
-        // }, vm.get('settings'));
+
+        // used to update all tabs data
+        Ext.fireEvent('applysettings');
+        rpc.networkManager.setNetworkSettings(function (result, ex) {
+            if (ex) {
+                console.log(ex);
+            }
+            console.log(result);
+            // vm.getStore('interfaces').reload();
+            view.setLoading(false);
+            // me.loadInterfaceStatusAndDevices();
+        }, vm.get('settings'));
     },
 
     loadSettings: function () {

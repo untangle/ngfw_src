@@ -927,6 +927,166 @@ Ext.define('Ung.config.network.Interfaces', {
         }]
     }]
 });
+Ext.define('Ung.config.network.NatRules', {
+    extend: 'Ext.panel.Panel',
+    xtype: 'ung.config.network.natrules',
+
+    viewModel: true,
+
+    requires: [
+        // 'Ung.config.network.ConditionWidget',
+        // 'Ung.config.network.CondWidget'
+    ],
+
+    title: 'NAT Rules'.t(),
+
+    layout: 'fit',
+
+    tbar: [{
+        xtype: 'displayfield',
+        padding: '0 10',
+        value: 'NAT Rules control the rewriting of the IP source address of traffic (Network Address Translation). The rules are evaluated in order.'.t()
+    }],
+
+    items: [{
+        xtype: 'ung.cmp.rules',
+        flex: 3,
+        columnFeatures: ['reorder', 'delete', 'edit'], // which columns to add
+        recordActions: ['@edit', '@delete'],
+
+        dataProperty: 'natRules',
+        ruleJavaClass: 'com.untangle.uvm.network.NatRuleCondition',
+
+        conditions: [
+            { name: 'DST_LOCAL', displayName: 'Destined Local'.t(), type: 'boolean', visible: true},
+            { name: 'DST_ADDR', displayName: 'Destination Address'.t(), type: 'textfield', visible: true, vtype:'ipall'},
+            { name: 'DST_PORT', displayName: 'Destination Port'.t(), type: 'textfield', vtype:'port', visible: true},
+            { name: 'SRC_ADDR', displayName: 'Source Address'.t(), type: 'textfield', visible: true, vtype:'ipall'},
+            { name: 'SRC_PORT', displayName: 'Source Port'.t(), type: 'textfield', vtype:'port', visible: rpc.isExpertMode},
+            { name: 'SRC_INTF', displayName: 'Source Interface'.t(), type: 'checkboxgroup', values: [['a', 'a'], ['b', 'b']], visible: true},
+            { name: 'PROTOCOL', displayName: 'Protocol'.t(), type: 'checkboxgroup', values: [['TCP','TCP'],['UDP','UDP'],['ICMP','ICMP'],['GRE','GRE'],['ESP','ESP'],['AH','AH'],['SCTP','SCTP']], visible: true}
+        ],
+
+        label: 'Perform the following action(s):'.t(),
+        description: "Port Forward rules forward sessions matching the configured criteria from a public IP to an IP on an internal (NAT'd) network. The rules are evaluated in order.".t(),
+
+        emptyRow: {
+            ruleId: -1,
+            enabled: true,
+            auto: true,
+            javaClass: 'com.untangle.uvm.network.NatRule',
+            conditions: {
+                javaClass: 'java.util.LinkedList',
+                list: []
+            },
+            description: ''
+        },
+
+        bind: {
+            store: {
+                data: '{settings.natRules.list}'
+            }
+        },
+
+        columns: [{
+            header: 'Rule Id'.t(),
+            width: 70,
+            align: 'right',
+            resizable: false,
+            dataIndex: 'ruleId',
+            renderer: function(value) {
+                if (value < 0) {
+                    return 'new'.t();
+                } else {
+                    return value;
+                }
+            }
+        }, {
+            xtype: 'checkcolumn',
+            header: 'Enable'.t(),
+            dataIndex: 'enabled',
+            resizable: false,
+            width: 70,
+            editor: {
+                xtype: 'checkbox',
+                fieldLabel: 'Enable NAT Rule'.t(),
+                bind: '{record.enabled}',
+            }
+            // renderer: function (val) {
+            //     return '<i class="fa + ' + (val ? 'fa-check' : 'fa-check-o') + '"></i>';
+            // }
+        }, {
+            header: 'Description',
+            width: 200,
+            dataIndex: 'description',
+            renderer: function (value) {
+                if (value) {
+                    return value;
+                }
+                return '<em>no description<em>';
+            },
+            editor: {
+                xtype: 'textfield',
+                fieldLabel: 'Description'.t(),
+                bind: '{record.description}',
+                emptyText: '[no description]'.t(),
+                allowBlank: false
+            }
+        }, {
+            header: 'Conditions'.t(),
+            itemId: 'conditions',
+            flex: 1,
+            dataIndex: 'conditions',
+            renderer: 'conditionsRenderer'
+        },
+        // {
+        //     xtype: 'actioncolumn', //
+        //     iconCls: 'fa fa-edit',
+        //     handler: 'editRuleWin'
+        // },
+        {
+            header: 'NAT Type'.t(),
+            dataIndex: 'auto',
+            width: 100,
+            renderer: function (val) {
+                return val ? 'Auto'.t() : 'Custom'.t();
+            },
+            editor: {
+                xtype: 'combo',
+                fieldLabel: 'NAT Type'.t(),
+                bind: '{record.auto}',
+                allowBlank: false,
+                editable: false,
+                store: [[true, 'Auto'.t()], [false, 'Custom'.t()]],
+                queryMode: 'local'
+                // vtype: 'ipall'
+            }
+        }, {
+            header: 'New Source'.t(),
+            dataIndex: 'newSource',
+            // align: 'right',
+            width: 120,
+            renderer: function (value, metaData, record) {
+                return record.get('auto') ? '' : value;
+                // if (record.get('auto')) {
+                //     return '<span style="color: #999;">' + value + '</span>';
+                // }
+                // return value;
+            },
+            editor: {
+                xtype: 'textfield',
+                fieldLabel: 'New Source'.t(),
+                width: 100,
+                bind: {
+                    value: '{record.newSource}',
+                    disabled: '{record.auto}'
+                },
+                allowBlank: true,
+                vtype: 'ipall'
+            }
+        }],
+    }]
+});
 Ext.define('Ung.config.network.Network', {
     extend: 'Ext.tab.Panel',
     xtype: 'ung.config.network',
@@ -994,6 +1154,8 @@ Ext.define('Ung.config.network.Network', {
     }, {
         xtype: 'ung.config.network.portforwardrules'
     }, {
+        xtype: 'ung.config.network.natrules'
+    }, {
         title: 'Routes'.t(),
         html: 'routes'
     }, {
@@ -1044,15 +1206,20 @@ Ext.define('Ung.config.network.NetworkController', {
         var view = this.getView();
         var vm = this.getViewModel();
         var me = this;
-        // view.setLoading('Saving ...');
+        view.setLoading('Saving ...');
         console.log(vm.get('settings'));
-        // rpc.networkManager.setNetworkSettings(function (result, ex) {
-        //     console.log(ex);
-        //     console.log(result);
-        //     // vm.getStore('interfaces').reload();
-        //     view.setLoading(false);
-        //     me.loadInterfaceStatusAndDevices();
-        // }, vm.get('settings'));
+
+        // used to update all tabs data
+        Ext.fireEvent('applysettings');
+        rpc.networkManager.setNetworkSettings(function (result, ex) {
+            if (ex) {
+                console.log(ex);
+            }
+            console.log(result);
+            // vm.getStore('interfaces').reload();
+            view.setLoading(false);
+            // me.loadInterfaceStatusAndDevices();
+        }, vm.get('settings'));
     },
 
     loadSettings: function () {
@@ -1360,20 +1527,23 @@ Ext.define('Ung.config.network.NetworkModel', {
             return host;
         },
 
-                                conditionsData: {
-                                    bind: '{rule.conditions.list}',
-                                    get: function (coll) {
-                                        return coll || [];
-                                    }
-                                },
-
+        // conditionsData: {
+        //     bind: '{rule.conditions.list}',
+        //     get: function (coll) {
+        //         return coll || [];
+        //     }
+        // },
         portForwardRulesData: {
             bind: '{settings.portForwardRules.list}',
             get: function (rules) {
                 return rules || null;
-            },
-            set: function (val) {
-                return val;
+            }
+        },
+
+        natRulesData: {
+            bind: '{settings.natRules.list}',
+            get: function (rules) {
+                return rules || null;
             }
         }
     },
@@ -1394,9 +1564,15 @@ Ext.define('Ung.config.network.NetworkModel', {
         },
 
         portforwardrules: {
-            type: 'rule',
+            // type: 'rule',
             // data: '{settings.portForwardRules}'
             data: '{portForwardRulesData}'
+        },
+
+        natrules: {
+            // type: 'rule',
+            // data: '{settings.portForwardRules}'
+            data: '{natRulesData}'
         }
     }
 });
@@ -1424,55 +1600,63 @@ Ext.define('Ung.config.network.PortForwardRules', {
     items: [{
         xtype: 'ung.cmp.rules',
         flex: 3,
-        columnFeatures: ['reorder', 'delete', 'edit'], // which columns to add
-        recordActions: ['@edit', '@delete'],
 
-        // bind: '{portForwardRules}',
-        bind: '{portforwardrules}',
+        config: {
 
-        conditions: [
-            { name: 'DST_LOCAL', displayName: 'Destined Local'.t(), type: 'boolean', visible: true},
-            { name: 'DST_ADDR', displayName: 'Destination Address'.t(), type: 'textfield', visible: true, vtype:'ipall'},
-            { name: 'DST_PORT', displayName: 'Destination Port'.t(), type: 'textfield', vtype:'port', visible: true},
-            { name: 'SRC_ADDR', displayName: 'Source Address'.t(), type: 'textfield', visible: true, vtype:'ipall'},
-            { name: 'SRC_PORT', displayName: 'Source Port'.t(), type: 'textfield', vtype:'port', visible: rpc.isExpertMode},
-            { name: 'SRC_INTF', displayName: 'Source Interface'.t(), type: 'checkboxgroup', values: [['a', 'a'], ['b', 'b']], visible: true},
-            { name: 'PROTOCOL', displayName: 'Protocol'.t(), type: 'checkboxgroup', values: [['TCP','TCP'],['UDP','UDP'],['ICMP','ICMP'],['GRE','GRE'],['ESP','ESP'],['AH','AH'],['SCTP','SCTP']], visible: true}
-        ],
+            columnFeatures: ['reorder', 'delete', 'edit'], // which columns to add
+            recordActions: ['@edit', '@delete'],
 
-        label: 'Forward to the following location:'.t(),
-        description: "Port Forward rules forward sessions matching the configured criteria from a public IP to an IP on an internal (NAT'd) network. The rules are evaluated in order.".t(),
+            dataProperty: 'portForwardRules',
+            ruleJavaClass: 'com.untangle.uvm.network.PortForwardRuleCondition',
 
-        emptyRow: {
-            ruleId: -1,
-            simple: true,
-            enabled: true,
-            // description: '',
-            conditions: {
-                javaClass: 'java.util.LinkedList',
-                list: [{
-                    conditionType: 'DST_LOCAL',
-                    invert: false,
-                    value: 'true',
-                    javaClass: 'com.untangle.uvm.network.PortForwardRuleCondition'
-                }, {
-                    conditionType: 'PROTOCOL',
-                    invert: false,
-                    value: 'TCP',
-                    javaClass: 'com.untangle.uvm.network.PortForwardRuleCondition'
-                }, {
-                    conditionType:'DST_PORT',
-                    invert: false,
-                    value: '80',
-                    javaClass: 'com.untangle.uvm.network.PortForwardRuleCondition'
-                }]
+            conditions: [
+                { name: 'DST_LOCAL', displayName: 'Destined Local'.t(), type: 'boolean', visible: true},
+                { name: 'DST_ADDR', displayName: 'Destination Address'.t(), type: 'textfield', visible: true, vtype:'ipall'},
+                { name: 'DST_PORT', displayName: 'Destination Port'.t(), type: 'textfield', vtype:'port', visible: true},
+                { name: 'SRC_ADDR', displayName: 'Source Address'.t(), type: 'textfield', visible: true, vtype:'ipall'},
+                { name: 'SRC_PORT', displayName: 'Source Port'.t(), type: 'textfield', vtype:'port', visible: rpc.isExpertMode},
+                { name: 'SRC_INTF', displayName: 'Source Interface'.t(), type: 'checkboxgroup', values: [['a', 'a'], ['b', 'b']], visible: true},
+                { name: 'PROTOCOL', displayName: 'Protocol'.t(), type: 'checkboxgroup', values: [['TCP','TCP'],['UDP','UDP'],['ICMP','ICMP'],['GRE','GRE'],['ESP','ESP'],['AH','AH'],['SCTP','SCTP']], visible: true}
+            ],
+
+            label: 'Forward to the following location:'.t(),
+            description: "Port Forward rules forward sessions matching the configured criteria from a public IP to an IP on an internal (NAT'd) network. The rules are evaluated in order.".t(),
+
+            emptyRow: {
+                ruleId: -1,
+                simple: true,
+                enabled: true,
+                // description: '',
+                javaClass: 'com.untangle.uvm.network.PortForwardRule',
+                conditions: {
+                    javaClass: 'java.util.LinkedList',
+                    list: [{
+                        conditionType: 'DST_LOCAL',
+                        invert: false,
+                        value: 'true',
+                        javaClass: 'com.untangle.uvm.network.PortForwardRuleCondition'
+                    }, {
+                        conditionType: 'PROTOCOL',
+                        invert: false,
+                        value: 'TCP',
+                        javaClass: 'com.untangle.uvm.network.PortForwardRuleCondition'
+                    }, {
+                        conditionType:'DST_PORT',
+                        invert: false,
+                        value: '80',
+                        javaClass: 'com.untangle.uvm.network.PortForwardRuleCondition'
+                    }]
+                },
+                newPort: 80
             },
-            newPort: 80
         },
 
-        // bind: {
-        //     store: '{portforwardrules}'
-        // },
+        bind: {
+            store: {
+                data: '{settings.portForwardRules.list}'
+            }
+        },
+
         columns: [{
             header: 'Rule Id'.t(),
             width: 70,
