@@ -1,6 +1,6 @@
-Ext.define('Ung.config.network.NatRules', {
+Ext.define('Ung.config.network.BypassRules', {
     extend: 'Ext.panel.Panel',
-    xtype: 'ung.config.network.natrules',
+    xtype: 'ung.config.network.bypassrules',
 
     viewModel: true,
 
@@ -9,14 +9,14 @@ Ext.define('Ung.config.network.NatRules', {
         // 'Ung.config.network.CondWidget'
     ],
 
-    title: 'NAT Rules'.t(),
+    title: 'Bypass Rules'.t(),
 
     layout: 'fit',
 
     tbar: [{
         xtype: 'displayfield',
         padding: '0 10',
-        value: 'NAT Rules control the rewriting of the IP source address of traffic (Network Address Translation). The rules are evaluated in order.'.t()
+        value: 'Bypass Rules control what traffic is scanned by the applications. Bypassed traffic skips application processing. The rules are evaluated in order. Sessions that meet no rule are not bypassed.'.t()
     }],
 
     items: [{
@@ -25,8 +25,8 @@ Ext.define('Ung.config.network.NatRules', {
         columnFeatures: ['reorder', 'delete', 'edit'], // which columns to add
         recordActions: ['@edit', '@delete'],
 
-        dataProperty: 'natRules',
-        ruleJavaClass: 'com.untangle.uvm.network.NatRuleCondition',
+        dataProperty: 'bypassRules',
+        ruleJavaClass: 'com.untangle.uvm.network.BypassRuleCondition',
 
         conditions: [
             { name: 'DST_ADDR', displayName: 'Destination Address'.t(), type: 'textfield', visible: true, vtype:'ipall'},
@@ -44,8 +44,8 @@ Ext.define('Ung.config.network.NatRules', {
         emptyRow: {
             ruleId: -1,
             enabled: true,
-            auto: true,
-            javaClass: 'com.untangle.uvm.network.NatRule',
+            bypass: true,
+            javaClass: 'com.untangle.uvm.network.BypassRule',
             conditions: {
                 javaClass: 'java.util.LinkedList',
                 list: []
@@ -55,7 +55,7 @@ Ext.define('Ung.config.network.NatRules', {
 
         bind: {
             store: {
-                data: '{settings.natRules.list}'
+                data: '{settings.bypassRules.list}'
             }
         },
 
@@ -116,44 +116,18 @@ Ext.define('Ung.config.network.NatRules', {
         //     handler: 'editRuleWin'
         // },
         {
-            header: 'NAT Type'.t(),
-            dataIndex: 'auto',
+            header: 'Bypass'.t(),
+            xtype: 'checkcolumn',
+            dataIndex: 'bypass',
             width: 100,
-            renderer: function (val) {
-                return val ? 'Auto'.t() : 'Custom'.t();
-            },
             editor: {
                 xtype: 'combo',
-                fieldLabel: 'NAT Type'.t(),
-                bind: '{record.auto}',
-                allowBlank: false,
+                fieldLabel: 'Action'.t(),
+                bind: '{record.bypass}',
                 editable: false,
-                store: [[true, 'Auto'.t()], [false, 'Custom'.t()]],
+                store: [[true, 'Bypass'.t()], [false, 'Process'.t()]],
                 queryMode: 'local'
                 // vtype: 'ipall'
-            }
-        }, {
-            header: 'New Source'.t(),
-            dataIndex: 'newSource',
-            // align: 'right',
-            width: 120,
-            renderer: function (value, metaData, record) {
-                return record.get('auto') ? '' : value;
-                // if (record.get('auto')) {
-                //     return '<span style="color: #999;">' + value + '</span>';
-                // }
-                // return value;
-            },
-            editor: {
-                xtype: 'textfield',
-                fieldLabel: 'New Source'.t(),
-                width: 100,
-                bind: {
-                    value: '{record.newSource}',
-                    disabled: '{record.auto}'
-                },
-                allowBlank: true,
-                vtype: 'ipall'
             }
         }],
     }]

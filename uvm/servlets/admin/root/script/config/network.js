@@ -1,3 +1,558 @@
+Ext.define('Ung.config.network.Advanced', {
+    extend: 'Ext.panel.Panel',
+    xtype: 'ung.config.network.advanced',
+
+    viewModel: true,
+
+    title: 'Advanced'.t(),
+
+    layout: 'fit',
+
+    tbar: [{
+        xtype: 'displayfield',
+        padding: '0 10',
+        value: '<i class="fa fa-exclamation-triangle" style="color: red;"></i> '  + 'Advanced settings require careful configuration. Misconfiguration can compromise the proper operation and security of your server.'.t()
+    }],
+
+    items: [{
+        xtype: 'tabpanel',
+
+        // tabPosition: 'left',
+        // tabRotation: 0,
+        // tabStretchMax: true,
+
+        items: [{
+            title: 'Options'.t(),
+            padding: 10,
+            defaults: {
+                xtype: 'checkbox',
+                // labelWidth: 250,
+                // labelAlign: 'right'
+            },
+            items: [{
+                boxLabel: 'Enable SIP NAT Helper'.t(),
+                bind: '{settings.enableSipNatHelper}'
+            }, {
+                boxLabel: 'Send ICMP Redirects'.t(),
+                bind: '{settings.sendIcmpRedirects}'
+            }, {
+                boxLabel: 'Enable STP (Spanning Tree) on Bridges'.t(),
+                bind: '{settings.stpEnabled}'
+            }, {
+                boxLabel: 'Enable Strict ARP mode'.t(),
+                bind: '{settings.strictArpMode}'
+            }, {
+                boxLabel: 'DHCP Authoritative'.t(),
+                bind: '{settings.dhcpAuthoritative}'
+            }, {
+                boxLabel: 'Block new sessions during network configuration'.t(),
+                bind: '{settings.blockDuringRestarts}'
+            }, {
+                boxLabel: 'Block replay packets'.t(),
+                bind: '{settings.blockReplayPackets}'
+            }, {
+                boxLabel: 'Log bypassed sessions'.t(),
+                bind: '{settings.logBypassedSessions}'
+            }, {
+                boxLabel: 'Log local outbound sessions'.t(),
+                bind: '{settings.logLocalOutboundSessions}'
+            }, {
+                boxLabel: 'Log local inbound sessions'.t(),
+                bind: '{settings.logLocalInboundSessions}'
+            }, {
+                boxLabel: 'Log blocked sessions'.t(),
+                bind: '{settings.logBlockedSessions}'
+            }, {
+                boxLabel: 'Log intermediate session updates'.t(),
+                bind: '{settings.logSessionUpdates}'
+            }]
+        }, {
+            title: 'QoS'.t(),
+            layout: {
+                type: 'vbox',
+                align: 'stretch'
+            },
+            defaults: {
+                border: false
+            },
+            items: [{
+                xtype: 'panel',
+                title: 'QoS'.t(),
+                bodyPadding: 10,
+                defaults: {
+                    labelAlign: 'right',
+                    labelWidth: 120,
+                },
+                items: [{
+                    xtype: 'checkbox',
+                    fieldLabel: 'Enabled'.t(),
+                    bind: '{settings.qosSettings.qosEnabled}'
+                }, {
+                    xtype: 'combo',
+                    fieldLabel: 'Default Priority'.t(),
+                    bind: '{settings.qosSettings.defaultPriority}',
+                    queryMode: 'local',
+                    editable: false,
+                    store: [
+                        [1, 'Very High'.t()],
+                        [2, 'High'.t()],
+                        [3, 'Medium'.t()],
+                        [4, 'Low'.t()],
+                        [5, 'Limited'.t()],
+                        [6, 'Limited More'.t()],
+                        [7, 'Limited Severely'.t()]
+                    ]
+                }]
+            }, {
+                xtype: 'panel',
+                title: 'WAN Bandwidth'.t(),
+                // bodyPadding: 10,
+                tbar: [{
+                    xtype: 'component',
+                    padding: 5,
+                    html: Ext.String.format('{0}Note{1}: When enabling QoS valid Download Bandwidth and Upload Bandwidth limits must be set for all WAN interfaces.'.t(), '<font color="red">','</font>') + '<br/>'
+                          // Ext.String.format('Total: {0} kbps ({1} Mbit) download, {2} kbps ({3} Mbit) upload'.t(), d, d_Mbit, u, u_Mbit )
+                }],
+
+                items: [{
+                    xtype: 'grid',
+                    header: false,
+                    columns: [{
+                        header: 'Id'.t(),
+                        width: 70,
+                        align: 'right',
+                        dataIndex: 'interfaceId',
+                        renderer: function(value) {
+                            if (value < 0) {
+                                return i18n._("new");
+                            } else {
+                                return value;
+                            }
+                        }
+                    }, {
+                        header: 'WAN'.t(),
+                        flex: 1,
+                        dataIndex: 'name'
+                    }, {
+                        header: 'Config Type'.t(),
+                        dataIndex: 'configType',
+                        width: 150
+                    }, {
+                        header: 'Download Bandwidth'.t(),
+                        dataIndex: 'downloadBandwidthKbps',
+                        width: 180,
+                        editor: {
+                            xtype: 'numberfield',
+                            allowBlank : false,
+                            allowDecimals: false,
+                            minValue: 0
+                        },
+                        renderer: function( value, metadata, record ) {
+                            if (Ext.isEmpty(value)) {
+                                return 'Not set'.t();
+                            } else {
+                                return value;
+                                // var mbit_value = value/1000;
+                                // return value + " kbps" + " (" + mbit_value + " Mbit" + ")";
+                            }
+                        }
+                    }, {
+                        header: 'Upload Bandwidth'.t(),
+                        dataIndex: 'uploadBandwidthKbps',
+                        width: 180,
+                        editor: {
+                            xtype: 'numberfield',
+                            allowBlank : false,
+                            allowDecimals: false,
+                            minValue: 0
+                        },
+                        renderer: function( value, metadata, record ) {
+                            if (Ext.isEmpty(value)) {
+                                return 'Not set'.t();
+                            } else {
+                                return value;
+                                // var mbit_value = value/1000;
+                                // return value + " kbps" + " (" + mbit_value + " Mbit" + ")";
+                            }
+                        }
+                    }]
+                }]
+            }, {
+                xtype: 'panel',
+                title: 'QoS Rules'.t(),
+                bodyPadding: 10,
+                defaults: {
+                    xtype: 'combo',
+                    labelAlign: 'right',
+                    labelWidth: 120,
+                    editable: false,
+                    queryMode: 'local',
+                    store: [
+                        [0, 'Default'.t()],
+                        [1, 'Very High'.t()],
+                        [2, 'High'.t()],
+                        [3, 'Medium'.t()],
+                        [4, 'Low'.t()],
+                        [5, 'Limited'.t()],
+                        [6, 'Limited More'.t()],
+                        [7, 'Limited Severely'.t()]
+                    ]
+                },
+                items: [{
+                    fieldLabel: 'Ping Priority'.t(),
+                    bind: '{settings.qosSettings.pingPriority}'
+                }, {
+                    fieldLabel: 'DNS Priority'.t(),
+                    bind: '{settings.qosSettings.dnsPriority}'
+                }, {
+                    fieldLabel: 'SSH Priority'.t(),
+                    bind: '{settings.qosSettings.sshPriority}'
+                }, {
+                    fieldLabel: 'OpenVPN Priority'.t(),
+                    bind: '{settings.qosSettings.openvpnPriority}'
+                }]
+            }]
+        }, {
+            title: 'Filter Rules'.t(),
+        }, {
+            title: 'UPnP'.t(),
+        }, {
+            title: 'DNS & DHCP'.t(),
+        }, {
+            title: 'Network Cards'.t(),
+        }]
+    }]
+});
+Ext.define('Ung.config.network.BypassRules', {
+    extend: 'Ext.panel.Panel',
+    xtype: 'ung.config.network.bypassrules',
+
+    viewModel: true,
+
+    requires: [
+        // 'Ung.config.network.ConditionWidget',
+        // 'Ung.config.network.CondWidget'
+    ],
+
+    title: 'Bypass Rules'.t(),
+
+    layout: 'fit',
+
+    tbar: [{
+        xtype: 'displayfield',
+        padding: '0 10',
+        value: 'Bypass Rules control what traffic is scanned by the applications. Bypassed traffic skips application processing. The rules are evaluated in order. Sessions that meet no rule are not bypassed.'.t()
+    }],
+
+    items: [{
+        xtype: 'rules',
+        flex: 3,
+        columnFeatures: ['reorder', 'delete', 'edit'], // which columns to add
+        recordActions: ['@edit', '@delete'],
+
+        dataProperty: 'bypassRules',
+        ruleJavaClass: 'com.untangle.uvm.network.BypassRuleCondition',
+
+        conditions: [
+            { name: 'DST_ADDR', displayName: 'Destination Address'.t(), type: 'textfield', visible: true, vtype:'ipall'},
+            { name: 'DST_PORT', displayName: 'Destination Port'.t(), type: 'textfield', vtype:'port', visible: true},
+            { name: 'DST_INTF', displayName: 'Destination Interface'.t(), type: 'checkboxgroup', values: [['a', 'a'], ['b', 'b']], visible: true},
+            { name: 'SRC_ADDR', displayName: 'Source Address'.t(), type: 'textfield', visible: true, vtype:'ipall'},
+            { name: 'SRC_PORT', displayName: 'Source Port'.t(), type: 'numberfield', vtype:'port', visible: rpc.isExpertMode},
+            { name: 'SRC_INTF', displayName: 'Source Interface'.t(), type: 'checkboxgroup', values: [['a', 'a'], ['b', 'b']], visible: true},
+            { name: 'PROTOCOL', displayName: 'Protocol'.t(), type: 'checkboxgroup', values: [['TCP','TCP'],['UDP','UDP'],['ICMP','ICMP'],['GRE','GRE'],['ESP','ESP'],['AH','AH'],['SCTP','SCTP']], visible: true}
+        ],
+
+        label: 'Perform the following action(s):'.t(),
+        description: "NAT Rules control the rewriting of the IP source address of traffic (Network Address Translation). The rules are evaluated in order.".t(),
+
+        emptyRow: {
+            ruleId: -1,
+            enabled: true,
+            bypass: true,
+            javaClass: 'com.untangle.uvm.network.BypassRule',
+            conditions: {
+                javaClass: 'java.util.LinkedList',
+                list: []
+            },
+            description: ''
+        },
+
+        bind: {
+            store: {
+                data: '{settings.bypassRules.list}'
+            }
+        },
+
+        columns: [{
+            header: 'Rule Id'.t(),
+            width: 70,
+            align: 'right',
+            resizable: false,
+            dataIndex: 'ruleId',
+            renderer: function(value) {
+                if (value < 0) {
+                    return 'new'.t();
+                } else {
+                    return value;
+                }
+            }
+        }, {
+            xtype: 'checkcolumn',
+            header: 'Enable'.t(),
+            dataIndex: 'enabled',
+            resizable: false,
+            width: 70,
+            editor: {
+                xtype: 'checkbox',
+                fieldLabel: 'Enable NAT Rule'.t(),
+                bind: '{record.enabled}',
+            }
+            // renderer: function (val) {
+            //     return '<i class="fa + ' + (val ? 'fa-check' : 'fa-check-o') + '"></i>';
+            // }
+        }, {
+            header: 'Description',
+            width: 200,
+            dataIndex: 'description',
+            renderer: function (value) {
+                if (value) {
+                    return value;
+                }
+                return '<em>no description<em>';
+            },
+            editor: {
+                xtype: 'textfield',
+                fieldLabel: 'Description'.t(),
+                bind: '{record.description}',
+                emptyText: '[no description]'.t(),
+                allowBlank: false
+            }
+        }, {
+            header: 'Conditions'.t(),
+            itemId: 'conditions',
+            flex: 1,
+            dataIndex: 'conditions',
+            renderer: 'conditionsRenderer'
+        },
+        // {
+        //     xtype: 'actioncolumn', //
+        //     iconCls: 'fa fa-edit',
+        //     handler: 'editRuleWin'
+        // },
+        {
+            header: 'Bypass'.t(),
+            xtype: 'checkcolumn',
+            dataIndex: 'bypass',
+            width: 100,
+            editor: {
+                xtype: 'combo',
+                fieldLabel: 'Action'.t(),
+                bind: '{record.bypass}',
+                editable: false,
+                store: [[true, 'Bypass'.t()], [false, 'Process'.t()]],
+                queryMode: 'local'
+                // vtype: 'ipall'
+            }
+        }],
+    }]
+});
+Ext.define('Ung.config.network.DhcpServer', {
+    extend: 'Ext.panel.Panel',
+    xtype: 'ung.config.network.dhcpserver',
+
+    viewModel: true,
+
+    title: 'DHCP Server'.t(),
+
+    layout: 'border',
+
+    items: [{
+        xtype: 'rules',
+        region: 'center',
+
+        title: 'Static DHCP Entries'.t(),
+
+        columnFeatures: ['delete'], // which columns to add
+        recordActions: ['@delete'],
+
+        dataProperty: 'staticRoutes',
+
+        // },
+
+        bind: {
+            store: {
+                data: '{settings.staticDhcpEntries.list}'
+            }
+        },
+
+        columns: [{
+            header: 'MAC Address'.t(),
+            dataIndex: 'macAddress',
+            width: 200,
+            editor: {
+                xtype: 'textfield',
+                allowBlank: false,
+                emptyText: '[enter MAC name]'.t(),
+                maskRe: /[a-fA-F0-9:]/
+            }
+        }, {
+            header: 'Address'.t(),
+            flex: 1,
+            dataIndex: 'address',
+            editor: {
+                xtype: 'textfield',
+                emptyText: '[enter address]'.t(),
+                allowBlank: false,
+                vtype: 'ipall',
+            }
+        }, {
+            header: 'Description'.t(),
+            width: 200,
+            dataIndex: 'description',
+            editor: {
+                xtype: 'textfield',
+                emptyText: '[enter description]'.t(),
+                allowBlank: false,
+            }
+        }],
+    }, {
+        xtype: 'grid',
+        title: 'Current DHCP Leases'.t(),
+        region: 'south',
+
+        height: '50%',
+        split: true,
+
+        tbar: [{
+            text: 'Refresh'.t(),
+            iconCls: 'fa fa-refresh',
+            // handler: 'refreshDhcpLeases'
+        }],
+
+        columns: [{
+            header: 'MAC Address'.t(),
+            dataIndex:'macAddress',
+            width: 150
+        },{
+            header: 'Address'.t(),
+            dataIndex:'address',
+            width: 200
+        },{
+            header: 'Hostname'.t(),
+            dataIndex:'hostname',
+            width: 200
+        },{
+            header: 'Expiration Time'.t(),
+            dataIndex:'date',
+            width: 180,
+            // renderer: function(value) { return i18n.timestampFormat(value*1000); }
+        }, {
+            xtype: 'actioncolumn',
+            header: 'Add Static'.t(),
+            iconCls: 'fa fa-plus',
+            handler: function () {
+                alert('to add');
+            }
+        }]
+
+    }]
+});
+Ext.define('Ung.config.network.DnsServer', {
+    extend: 'Ext.panel.Panel',
+    xtype: 'ung.config.network.dnsserver',
+
+    viewModel: true,
+
+    title: 'DNS Server'.t(),
+
+    layout: 'border',
+
+    items: [{
+        xtype: 'rules',
+        region: 'center',
+
+        title: 'Static DNS Entries'.t(),
+
+        columnFeatures: ['delete'], // which columns to add
+        recordActions: ['@delete'],
+
+        dataProperty: 'staticRoutes',
+
+        // },
+
+        bind: {
+            store: {
+                data: '{settings.dnsSettings.staticEntries.list}'
+            }
+        },
+
+        columns: [{
+            header: 'Name'.t(),
+            dataIndex: 'name',
+            flex: 1,
+            editor: {
+                xtype: 'textfield',
+                allowBlank: false,
+                emptyText: '[enter name]'.t()
+            }
+        }, {
+            header: 'Address'.t(),
+            width: 200,
+            dataIndex: 'address',
+            editor: {
+                xtype: 'textfield',
+                emptyText: '[enter address]'.t(),
+                allowBlank: false,
+                vtype: 'ipall',
+            }
+        }],
+    }, {
+        xtype: 'rules',
+        region: 'south',
+
+        height: '50%',
+        split: true,
+
+
+
+        title: 'Domain DNS Servers'.t(),
+
+        columnFeatures: ['delete'], // which columns to add
+        recordActions: ['@delete'],
+
+        dataProperty: 'staticRoutes',
+
+        // },
+
+        bind: {
+            store: {
+                data: '{settings.dnsSettings.localServers.list}'
+            }
+        },
+
+        columns: [{
+            header: 'Domain'.t(),
+            dataIndex: 'domain',
+            flex: 1,
+            editor: {
+                xtype: 'textfield',
+                allowBlank: false,
+                emptyText: '[enter domain]'.t()
+            }
+        }, {
+            header: 'Server'.t(),
+            width: 200,
+            dataIndex: 'localServer',
+            editor: {
+                xtype: 'textfield',
+                emptyText: '[enter DNS server]'.t(),
+                allowBlank: false,
+                vtype: 'ipall',
+            }
+        }],
+    }]
+});
 Ext.define('Ung.config.network.Hostname', {
     extend: 'Ext.panel.Panel',
     xtype: 'ung.config.network.hostname',
@@ -949,7 +1504,7 @@ Ext.define('Ung.config.network.NatRules', {
     }],
 
     items: [{
-        xtype: 'ung.cmp.rules',
+        xtype: 'rules',
         flex: 3,
         columnFeatures: ['reorder', 'delete', 'edit'], // which columns to add
         recordActions: ['@edit', '@delete'],
@@ -958,17 +1513,17 @@ Ext.define('Ung.config.network.NatRules', {
         ruleJavaClass: 'com.untangle.uvm.network.NatRuleCondition',
 
         conditions: [
-            { name: 'DST_LOCAL', displayName: 'Destined Local'.t(), type: 'boolean', visible: true},
             { name: 'DST_ADDR', displayName: 'Destination Address'.t(), type: 'textfield', visible: true, vtype:'ipall'},
             { name: 'DST_PORT', displayName: 'Destination Port'.t(), type: 'textfield', vtype:'port', visible: true},
+            { name: 'DST_INTF', displayName: 'Destination Interface'.t(), type: 'checkboxgroup', values: [['a', 'a'], ['b', 'b']], visible: true},
             { name: 'SRC_ADDR', displayName: 'Source Address'.t(), type: 'textfield', visible: true, vtype:'ipall'},
-            { name: 'SRC_PORT', displayName: 'Source Port'.t(), type: 'textfield', vtype:'port', visible: rpc.isExpertMode},
+            { name: 'SRC_PORT', displayName: 'Source Port'.t(), type: 'numberfield', vtype:'port', visible: rpc.isExpertMode},
             { name: 'SRC_INTF', displayName: 'Source Interface'.t(), type: 'checkboxgroup', values: [['a', 'a'], ['b', 'b']], visible: true},
             { name: 'PROTOCOL', displayName: 'Protocol'.t(), type: 'checkboxgroup', values: [['TCP','TCP'],['UDP','UDP'],['ICMP','ICMP'],['GRE','GRE'],['ESP','ESP'],['AH','AH'],['SCTP','SCTP']], visible: true}
         ],
 
         label: 'Perform the following action(s):'.t(),
-        description: "Port Forward rules forward sessions matching the configured criteria from a public IP to an IP on an internal (NAT'd) network. The rules are evaluated in order.".t(),
+        description: "NAT Rules control the rewriting of the IP source address of traffic (Network Address Translation). The rules are evaluated in order.".t(),
 
         emptyRow: {
             ruleId: -1,
@@ -1107,16 +1662,6 @@ Ext.define('Ung.config.network.Network', {
         type: 'config.network'
     },
 
-    portForwardConditions: [
-        {name:"DST_LOCAL",displayName: 'Destined Local'.t(), type: "boolean", visible: true},
-        {name:"DST_ADDR",displayName: 'Destination Address'.t(), type: "textfield", visible: true, vtype:"ipMatcher"},
-        {name:"DST_PORT",displayName: 'Destination Port'.t(), type: "textfield",vtype:"portMatcher", visible: true},
-        {name:"SRC_ADDR",displayName: 'Source Address'.t(), type: "textfield", visible: true, vtype:"ipMatcher"},
-        {name:"SRC_PORT",displayName: 'Source Port'.t(), type: "textfield",vtype:"portMatcher", visible: rpc.isExpertMode},
-        {name:"SRC_INTF",displayName: 'Source Interface'.t(), type: "checkboxgroup", values: [['a', 'a'], ['b', 'b']], visible: true},
-        {name:"PROTOCOL",displayName: 'Protocol'.t(), type: "checkboxgroup", values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true}
-    ],
-
     // tabPosition: 'left',
     // tabRotation: 0,
     // tabStretchMax: false,
@@ -1151,29 +1696,36 @@ Ext.define('Ung.config.network.Network', {
         xtype: 'ung.config.network.hostname'
     }, {
         xtype: 'ung.config.network.services'
-    }, {
+    },
+    // {
+    //     xtype: 'panel',
+    //     layout: 'border',
+    //     title: 'Mix',
+    //     items: [{
+    //         xtype: 'ung.config.network.portforwardrules',
+    //         region: 'center'
+    //     }, {
+    //         xtype: 'ung.config.network.natrules',
+    //         region: 'south',
+    //         height: 300
+    //     }]
+    // }
+    {
         xtype: 'ung.config.network.portforwardrules'
     }, {
         xtype: 'ung.config.network.natrules'
     }, {
-        title: 'Routes'.t(),
-        html: 'routes'
+        xtype: 'ung.config.network.bypassrules'
     }, {
-        title: 'DNS Server'.t(),
-        html: 'dns'
+        xtype: 'ung.config.network.routes'
     }, {
-        title: 'DHCP Server'.t(),
-        html: 'dhcp'
+        xtype: 'ung.config.network.dnsserver'
     }, {
-        title: 'Advanced'.t(),
-        html: 'adv'
+        xtype: 'ung.config.network.dhcpserver'
     }, {
-        title: 'Troubleshooting'.t(),
-        html: 'trb'
-    }, {
-        title: 'Reports'.t(),
-        html: 'reports'
-    }]
+        xtype: 'ung.config.network.advanced'
+    }
+    ]
 });
 Ext.define('Ung.config.network.NetworkController', {
     extend: 'Ext.app.ViewController',
@@ -1207,10 +1759,21 @@ Ext.define('Ung.config.network.NetworkController', {
         var vm = this.getViewModel();
         var me = this;
         view.setLoading('Saving ...');
-        console.log(vm.get('settings'));
-
         // used to update all tabs data
-        Ext.fireEvent('applysettings');
+        Ext.ComponentQuery.query('rules').forEach(function (grid) {
+            var store = grid.getStore();
+
+            if (store.getModifiedRecords().length > 0) {
+                console.log(grid.dataProperty);
+                store.each(function (record, id) {
+                    if (record.get('markedForDelete')) {
+                        record.drop();
+                    }
+                });
+                vm.get('settings')[grid.dataProperty].list = Ext.Array.pluck(store.getRange(), 'data');
+                store.commitChanges();
+            }
+        });
         rpc.networkManager.setNetworkSettings(function (result, ex) {
             if (ex) {
                 console.log(ex);
@@ -1495,7 +2058,15 @@ Ext.define('Ung.config.network.NetworkController', {
         // });
 
 
+    },
+
+    refreshRoutes: function () {
+        var v = this.getView();
+        rpc.execManager.exec(function (result, ex) {
+            v.down('#currentRoutes').setValue(result.output);
+        }, '/usr/share/untangle/bin/ut-routedump.sh');
     }
+
 });
 Ext.define('Ung.config.network.NetworkModel', {
     extend: 'Ext.app.ViewModel',
@@ -1598,10 +2169,10 @@ Ext.define('Ung.config.network.PortForwardRules', {
     }],
 
     items: [{
-        xtype: 'ung.cmp.rules',
+        xtype: 'rules',
         flex: 3,
 
-        config: {
+        // cfg: {
 
             columnFeatures: ['reorder', 'delete', 'edit'], // which columns to add
             recordActions: ['@edit', '@delete'],
@@ -1614,7 +2185,7 @@ Ext.define('Ung.config.network.PortForwardRules', {
                 { name: 'DST_ADDR', displayName: 'Destination Address'.t(), type: 'textfield', visible: true, vtype:'ipall'},
                 { name: 'DST_PORT', displayName: 'Destination Port'.t(), type: 'textfield', vtype:'port', visible: true},
                 { name: 'SRC_ADDR', displayName: 'Source Address'.t(), type: 'textfield', visible: true, vtype:'ipall'},
-                { name: 'SRC_PORT', displayName: 'Source Port'.t(), type: 'textfield', vtype:'port', visible: rpc.isExpertMode},
+                { name: 'SRC_PORT', displayName: 'Source Port'.t(), type: 'numberfield', vtype:'port', visible: rpc.isExpertMode},
                 { name: 'SRC_INTF', displayName: 'Source Interface'.t(), type: 'checkboxgroup', values: [['a', 'a'], ['b', 'b']], visible: true},
                 { name: 'PROTOCOL', displayName: 'Protocol'.t(), type: 'checkboxgroup', values: [['TCP','TCP'],['UDP','UDP'],['ICMP','ICMP'],['GRE','GRE'],['ESP','ESP'],['AH','AH'],['SCTP','SCTP']], visible: true}
             ],
@@ -1649,7 +2220,7 @@ Ext.define('Ung.config.network.PortForwardRules', {
                 },
                 newPort: 80
             },
-        },
+        // },
 
         bind: {
             store: {
@@ -1753,6 +2324,160 @@ Ext.define('Ung.config.network.PortForwardRules', {
             xtype: 'component',
             name: 'portForwardWarnings',
             html: ' '
+        }]
+    }]
+});
+Ext.define('Ung.config.network.Routes', {
+    extend: 'Ext.panel.Panel',
+    xtype: 'ung.config.network.routes',
+
+    viewModel: true,
+
+    title: 'Routes'.t(),
+
+    layout: 'border',
+
+    tbar: [{
+        xtype: 'displayfield',
+        padding: '0 10',
+        value: "Static Routes are global routes that control how traffic is routed by destination address. The most specific Static Route is taken for a particular packet, order is not important.".t()
+    }],
+
+    items: [{
+        xtype: 'rules',
+        region: 'center',
+
+        // cfg: {
+
+            columnFeatures: ['reorder', 'delete', 'edit'], // which columns to add
+            recordActions: ['@edit', '@delete'],
+
+            dataProperty: 'staticRoutes',
+
+            conditions: [
+                { name: 'DST_LOCAL', displayName: 'Destined Local'.t(), type: 'boolean', visible: true},
+                { name: 'DST_ADDR', displayName: 'Destination Address'.t(), type: 'textfield', visible: true, vtype:'ipall'},
+                { name: 'DST_PORT', displayName: 'Destination Port'.t(), type: 'textfield', vtype:'port', visible: true},
+                { name: 'SRC_ADDR', displayName: 'Source Address'.t(), type: 'textfield', visible: true, vtype:'ipall'},
+                { name: 'SRC_PORT', displayName: 'Source Port'.t(), type: 'numberfield', vtype:'port', visible: rpc.isExpertMode},
+                { name: 'SRC_INTF', displayName: 'Source Interface'.t(), type: 'checkboxgroup', values: [['a', 'a'], ['b', 'b']], visible: true},
+                { name: 'PROTOCOL', displayName: 'Protocol'.t(), type: 'checkboxgroup', values: [['TCP','TCP'],['UDP','UDP'],['ICMP','ICMP'],['GRE','GRE'],['ESP','ESP'],['AH','AH'],['SCTP','SCTP']], visible: true}
+            ],
+
+            label: 'Forward to the following location:'.t(),
+            description: "Port Forward rules forward sessions matching the configured criteria from a public IP to an IP on an internal (NAT'd) network. The rules are evaluated in order.".t(),
+
+        emptyRow: {
+            ruleId: -1,
+            network: '',
+            prefix: 24,
+            nextHop: '4.3.2.1',
+            javaClass: 'com.untangle.uvm.network.StaticRoute',
+            description: ''
+        },
+        // },
+
+        bind: {
+            store: {
+                data: '{settings.staticRoutes.list}'
+            }
+        },
+
+        columns: [{
+            header: 'Description'.t(),
+            dataIndex: 'description',
+            flex: 1,
+            editor: {
+                xtype: 'textfield',
+                fieldLabel: 'Description'.t(),
+                bind: '{record.description}',
+                allowBlank: false,
+                emptyText: '[enter description]'.t()
+            }
+        }, {
+            header: 'Network'.t(),
+            width: 170,
+            dataIndex: 'network',
+            editor: {
+                xtype: 'textfield',
+                fieldLabel: 'Network'.t(),
+                emptyText: '1.2.3.0'.t(),
+                allowBlank: false,
+                vtype: 'ipall',
+                bind: '{record.network}',
+            }
+        }, {
+            header: 'Netmask/Prefix'.t(),
+            width: 170,
+            dataIndex: 'prefix',
+            editor: {
+                xtype: 'combo',
+                fieldLabel: 'Netmask/Prefix'.t(),
+                bind: '{record.prefix}',
+                store: Ung.Util.getV4NetmaskList(false),
+                queryMode: 'local',
+                editable: false
+            }
+        }, {
+            header: 'Next Hop'.t(),
+            width: 300,
+            dataIndex: 'nextHop',
+            // renderer: function (value) {
+            //     if (value) {
+            //         return value;
+            //     }
+            //     return '<em>no description<em>';
+            // },
+            editor: {
+                xtype: 'combo',
+                fieldLabel: 'Next Hop'.t(),
+                bind: '{record.nextHop}',
+                // store: Ung.Util.getV4NetmaskList(false),
+                queryMode: 'local',
+                allowBlank: false,
+                editable: true
+            }
+        }, {
+            hidden: true,
+            editor: {
+                xtype: 'component',
+                margin: '10 0 0 20',
+                html: 'If <b>Next Hop</b> is an IP address that network will be routed via the specified IP address.'.t() + '<br/>' +
+                    'If <b>Next Hop</b> is an interface that network will be routed <b>locally</b> on that interface.'.t()
+            }
+        }],
+    }, {
+        xtype: 'panel',
+        title: 'Current Routes'.t(),
+        region: 'south',
+        height: '50%',
+        split: true,
+        border: false,
+        tbar: [{
+            xtype: 'displayfield',
+            padding: '0 5',
+            value: "Current Routes shows the current routing system's configuration and how all traffic will be routed.".t()
+        }, '->', {
+            text: 'Refresh Routes'.t(),
+            iconCls: 'fa fa-refresh',
+            handler: 'refreshRoutes'
+        }],
+        layout: 'fit',
+        items: [{
+            xtype: 'textarea',
+            itemId: 'currentRoutes',
+            border: false,
+            fieldStyle: {
+                fontFamily: 'monospace'
+            },
+            // name: "state",
+            hideLabel: true,
+            labelSeperator: '',
+            readOnly: true,
+            // autoCreate: { tag: 'textarea', autocomplete: 'off', spellcheck: 'false' },
+            // height: 200,
+            // width: "100%",
+            // isDirty: function() { return false; }
         }]
     }]
 });

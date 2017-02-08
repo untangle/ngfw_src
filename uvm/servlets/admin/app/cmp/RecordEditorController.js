@@ -80,23 +80,25 @@ Ext.define('Ung.cmp.RecordEditorController', {
         var v = this.getView(),
             vm = this.getViewModel();
 
-        vm.get('record').set('conditions', {
-            javaClass: 'java.util.LinkedList',
-            list: Ext.Array.pluck(v.down('grid').getStore().getRange(), 'data')
-        });
 
-        console.log(vm.get('record'));
+        if (v.down('grid') && v.down('grid').getStore().getModifiedRecords().length > 0) {
+            v.record.set('conditions', {
+                javaClass: 'java.util.LinkedList',
+                list: Ext.Array.pluck(v.down('grid').getStore().getRange(), 'data')
+            });
+        }
+
 
         for (var field in vm.get('record').modified) {
-            console.log(field);
-            v.record.set(field, vm.get('record').get(field));
+            if (field !== 'conditions') {
+                v.record.set(field, vm.get('record').get(field));
+            }
         }
 
         if (v.action === 'add') {
             v.store.add(v.record);
-            // v.store.sync();
         }
         v.close();
-    },
+    }
 
 });
