@@ -1,6 +1,7 @@
 Ext.define('Ung.cmp.Rules', {
     extend: 'Ext.grid.Panel',
-    xtype: 'ung.cmp.rules',
+    // xtype: 'ung.cmp.rules',
+    alias: 'widget.rules',
 
     layout: 'fit',
 
@@ -16,15 +17,15 @@ Ext.define('Ung.cmp.Rules', {
     controller: 'rules',
 
     config: {
-        toolbarFeatures: null, // ['add', 'delete', 'revert', 'importexport'] add specific buttons to top toolbar
-        columnFeatures: null, // ['delete', 'edit', 'reorder', 'select'] add specific actioncolumns to grid
-        inlineEdit: null, // 'cell' or 'row',
-        dataProperty: null, // the settings data property, e.g. settings.dataProperty.list
+        // toolbarFeatures: null, // ['add', 'delete', 'revert', 'importexport'] add specific buttons to top toolbar
+        // columnFeatures: null, // ['delete', 'edit', 'reorder', 'select'] add specific actioncolumns to grid
+        // inlineEdit: null, // 'cell' or 'row',
+        // dataProperty: null, // the settings data property, e.g. settings.dataProperty.list
 
-        recordActions: null,
+        // recordActions: null,
 
-        conditions: null,
-        conditionsMap: null
+        // conditions: null,
+        // conditionsMap: null
     },
 
     tbar: [{
@@ -91,13 +92,16 @@ Ext.define('Ung.cmp.Rules', {
     // columnLines: true,
 
     initComponent: function () {
-        var columnFeatures = this.getColumnFeatures();
+
+        // Ext.apply(this.config, this.cfg);
+
+        // var columnFeatures = this.getColumnFeatures();
 
         this.columns.push({
             xtype: 'actioncolumn',
             header: 'Actions'.t(),
             align: 'center',
-            items: this.getRecordActions()
+            items: this.recordActions
         });
 
         // Ext.apply(this, Ext.apply(this.initialConfig, this.config));

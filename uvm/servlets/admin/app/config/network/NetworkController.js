@@ -30,10 +30,21 @@ Ext.define('Ung.config.network.NetworkController', {
         var vm = this.getViewModel();
         var me = this;
         view.setLoading('Saving ...');
-        console.log(vm.get('settings'));
-
         // used to update all tabs data
-        Ext.fireEvent('applysettings');
+        Ext.ComponentQuery.query('rules').forEach(function (grid) {
+            var store = grid.getStore();
+
+            if (store.getModifiedRecords().length > 0) {
+                console.log(grid.dataProperty);
+                store.each(function (record, id) {
+                    if (record.get('markedForDelete')) {
+                        record.drop();
+                    }
+                });
+                vm.get('settings')[grid.dataProperty].list = Ext.Array.pluck(store.getRange(), 'data');
+                store.commitChanges();
+            }
+        });
         rpc.networkManager.setNetworkSettings(function (result, ex) {
             if (ex) {
                 console.log(ex);
@@ -318,5 +329,13 @@ Ext.define('Ung.config.network.NetworkController', {
         // });
 
 
+    },
+
+    refreshRoutes: function () {
+        var v = this.getView();
+        rpc.execManager.exec(function (result, ex) {
+            v.down('#currentRoutes').setValue(result.output);
+        }, '/usr/share/untangle/bin/ut-routedump.sh');
     }
+
 });

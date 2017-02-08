@@ -85,6 +85,15 @@ Ext.define('Ung.cmp.ConditionsGridController', {
                 vtype: condition.vtype
             });
             break;
+        case 'numberfield':
+            container.add({
+                xtype: 'numberfield',
+                bind: {
+                    value: '{record.value}'
+                },
+                vtype: condition.vtype
+            });
+            break;
         case 'checkboxgroup':
             // console.log(condition.values);
             // var values_arr = (cond.value !== null && cond.value.length > 0) ? cond.value.split(',') : [], i, ckItems = [];

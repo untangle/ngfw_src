@@ -18,16 +18,6 @@ Ext.define('Ung.config.network.Network', {
         type: 'config.network'
     },
 
-    portForwardConditions: [
-        {name:"DST_LOCAL",displayName: 'Destined Local'.t(), type: "boolean", visible: true},
-        {name:"DST_ADDR",displayName: 'Destination Address'.t(), type: "textfield", visible: true, vtype:"ipMatcher"},
-        {name:"DST_PORT",displayName: 'Destination Port'.t(), type: "textfield",vtype:"portMatcher", visible: true},
-        {name:"SRC_ADDR",displayName: 'Source Address'.t(), type: "textfield", visible: true, vtype:"ipMatcher"},
-        {name:"SRC_PORT",displayName: 'Source Port'.t(), type: "textfield",vtype:"portMatcher", visible: rpc.isExpertMode},
-        {name:"SRC_INTF",displayName: 'Source Interface'.t(), type: "checkboxgroup", values: [['a', 'a'], ['b', 'b']], visible: true},
-        {name:"PROTOCOL",displayName: 'Protocol'.t(), type: "checkboxgroup", values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true}
-    ],
-
     // tabPosition: 'left',
     // tabRotation: 0,
     // tabStretchMax: false,
@@ -62,27 +52,34 @@ Ext.define('Ung.config.network.Network', {
         xtype: 'ung.config.network.hostname'
     }, {
         xtype: 'ung.config.network.services'
-    }, {
+    },
+    // {
+    //     xtype: 'panel',
+    //     layout: 'border',
+    //     title: 'Mix',
+    //     items: [{
+    //         xtype: 'ung.config.network.portforwardrules',
+    //         region: 'center'
+    //     }, {
+    //         xtype: 'ung.config.network.natrules',
+    //         region: 'south',
+    //         height: 300
+    //     }]
+    // }
+    {
         xtype: 'ung.config.network.portforwardrules'
     }, {
         xtype: 'ung.config.network.natrules'
     }, {
-        title: 'Routes'.t(),
-        html: 'routes'
+        xtype: 'ung.config.network.bypassrules'
     }, {
-        title: 'DNS Server'.t(),
-        html: 'dns'
+        xtype: 'ung.config.network.routes'
     }, {
-        title: 'DHCP Server'.t(),
-        html: 'dhcp'
+        xtype: 'ung.config.network.dnsserver'
     }, {
-        title: 'Advanced'.t(),
-        html: 'adv'
+        xtype: 'ung.config.network.dhcpserver'
     }, {
-        title: 'Troubleshooting'.t(),
-        html: 'trb'
-    }, {
-        title: 'Reports'.t(),
-        html: 'reports'
-    }]
+        xtype: 'ung.config.network.advanced'
+    }
+    ]
 });
