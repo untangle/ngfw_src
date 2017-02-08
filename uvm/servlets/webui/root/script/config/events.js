@@ -49,7 +49,7 @@ Ext.define('Webui.config.events', {
     buildEventRules: function() {
         this.panelEventRules = Ext.create('Ext.panel.Panel',{
             name: 'eventRules',
-            helpSource: 'reports_event_rules',
+            helpSource: 'events_rules',
             title: i18n._('Event Rules'),
             layout: { type: 'vbox', align: 'stretch' },
             cls: 'ung-panel',
@@ -296,7 +296,7 @@ Ext.define('Webui.config.events', {
     buildSyslog: function() {
         this.panelSyslog = Ext.create('Ext.panel.Panel',{
             name: 'Syslog',
-            helpSource: 'reports_syslog',
+            helpSource: 'events_syslog',
             title: i18n._('Syslog'),
             cls: 'ung-panel',
             autoScroll: true,
@@ -310,11 +310,6 @@ Ext.define('Webui.config.events', {
                     xtype: 'component',
                     margin: '0 0 10 0',
                     html: i18n._('If enabled logged events will be sent in real-time to a remote syslog for custom processing.')
-                }, {
-                    xtype: 'component',
-                    html: i18n._('Warning: Syslog logging can be computationally expensive for servers processing millions of events. Caution is advised.'),
-                    cls: 'warning',
-                    margin: '0 0 10 10'
                 }, {
                     xtype: 'radio',
                     boxLabel: Ext.String.format(i18n._('{0}Disable{1} Syslog Events. (This is the default setting.)'), '<b>', '</b>'),
@@ -394,9 +389,49 @@ Ext.define('Webui.config.events', {
                                 ["TCP", i18n._("TCP")]],
                         value: this.getEventSettings().syslogProtocol,
                         disabled: !this.getEventSettings().syslogEnabled
+                    },{
+                        name: 'syslogEventsSummary',
+                        xtype: 'component',
+                        html: ''
                     }]
                 }]
-            }]
+            }],
+            listeners: {
+                "activate": {
+                    fn: Ext.bind(function(elem, newValue) {
+                        var ruleNames = [];
+                        var rules = this.getEventSettings().eventRules;
+                        var rule;
+                        var allMatch = false;
+                        var i;
+                        for(i = 0; i < rules.list.length; i++){
+                            rule = rules.list[i];
+                            if(rule.remoteLog){
+                                if(rule.conditions.list.length == 0){
+                                    allMatch = true;
+                                    ruleNames.push(rule.description + ' (*)');
+                                }else{
+                                    ruleNames.push(rule.description);
+                                }
+                            }
+                        }
+                        var summary = [];
+                        if(ruleNames.length == 0){
+                            summary.push(i18n._("No events configured to log remotely"));
+                        }else{
+                            summary.push(i18n._("The following events will be logged:"));
+                            for(i = 0; i < ruleNames.length; i++){
+                                summary.push( "<i>" + ruleNames[i] + "</i>");
+                            }
+                        }
+                        if(allMatch == true){
+                            summary.push("");
+                            summary.push('<span class="warning">' + i18n._("(*) Logs all events.  This can be computationally expensive for servers processing millions of events.  Caution is advised.") + "</span>");
+                        }
+                        this.panelSyslog.down("[name=syslogEventsSummary]").setHtml(summary.join("<br>"));
+                    }, this)
+                }
+            }
         });
     },
     beforeSave: function(isApply, handler) {
