@@ -20,7 +20,10 @@ Ext.define('Ung.cmp.RecordEditor', {
 
     actions: {
         apply: {
-            text: 'Apply',
+            // text: 'Save'.t(),
+            bind: {
+                text: '{actionTitle}'
+            },
             formBind: true,
             iconCls: 'fa fa-check',
             handler: 'onApply'
@@ -43,7 +46,7 @@ Ext.define('Ung.cmp.RecordEditor', {
     // layout: 'border',
 
     bind: {
-        title: '{record.description}',
+        title: '{windowTitle} | {record.description}',
     },
     modal: true,
     constrain: true,

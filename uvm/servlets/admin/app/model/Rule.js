@@ -5,24 +5,27 @@ Ext.define ('Ung.model.Rule', {
         { name: 'description', type: 'string', defaultValue: '' },
         { name: 'enabled', type: 'boolean', defaultValue: true },
         { name: 'conditions', type: 'auto' },
-        { name: 'conditionsMap', mapping: function (data) {
-            return data.conditions.list;
-        }},
-        { name: 'conditionsList', calculate: function(data) {
-            //console.log(data);
-            var conds = data.conditions;
-            var resp = '', i, cond;
-            for (i = 0; i < conds.list.length; i += 1) {
-                cond = conds.list[i];
-                resp += cond.conditionType + (cond.invert ? ' &ne; ' : ' = ') + cond.value + '<br/>';
-            }
-            //console.log(val);
-            return resp;
-        } },
 
-        { name: 'markedForDelete', defaultValue: false },
-        { name: 'newDestination' },
-        { name: 'newPort' }
+        { name: 'markedForDelete', defaultValue: false }
+
+        // { name: 'conditionsMap', mapping: function (data) {
+        //     return data.conditions.list;
+        // }},
+        // { name: 'conditionsList', calculate: function(data) {
+        //     //console.log(data);
+        //     var conds = data.conditions;
+        //     var resp = '', i, cond;
+        //     for (i = 0; i < conds.list.length; i += 1) {
+        //         cond = conds.list[i];
+        //         resp += cond.conditionType + (cond.invert ? ' &ne; ' : ' = ') + cond.value + '<br/>';
+        //     }
+        //     //console.log(val);
+        //     return resp;
+        // } },
+
+        // { name: 'markedForDelete', defaultValue: false },
+        // { name: 'newDestination' },
+        // { name: 'newPort' }
         // { name: 'string', type: 'string', defaultValue: '' },
         // { name: 'blocked', type: 'boolean', defaultValue: true },
         // { name: 'flagged', type: 'boolean', defaultValue: true },

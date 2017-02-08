@@ -14,7 +14,10 @@ Ext.define('Ung.cmp.ConditionsGridController', {
     },
 
     onAfterRender: function (view) {
+
         var menuConditions = [], i;
+
+        console.log(view.getViewModel().get('ruleJavaClass'));
 
         view.getViewModel().bind({
             bindTo: '{record}',
@@ -60,8 +63,8 @@ Ext.define('Ung.cmp.ConditionsGridController', {
         if (container.items.length >= 1) {
             return;
         }
-        console.log('widget attach');
-        container.removeAll(true);
+        // console.log('widget attach');
+        // container.removeAll(true);
 
         var condition = this.getView().conditionsMap[record.get('conditionType')], i, ckItems = [];
 
@@ -104,8 +107,6 @@ Ext.define('Ung.cmp.ConditionsGridController', {
                 items: ckItems
             });
         }
-
-
     },
 
     addCondition: function (menu, item) {
@@ -114,7 +115,7 @@ Ext.define('Ung.cmp.ConditionsGridController', {
         var newCond = {
             conditionType: item.conditionType,
             invert: false,
-            // javaClass: 'com.untangle.uvm.network.PortForwardRuleCondition',
+            javaClass: this.getViewModel().get('ruleJavaClass'),
             value: ''
         };
         this.getView().getStore().add(newCond);

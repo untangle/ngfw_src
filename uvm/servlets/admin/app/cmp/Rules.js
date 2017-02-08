@@ -28,7 +28,7 @@ Ext.define('Ung.cmp.Rules', {
     },
 
     tbar: [{
-        text: 'Add Port Forward Rule'.t(),
+        text: 'Add'.t(),
         // iconCls: 'fa fa-plus',
         handler: 'addRecord'
     }],
@@ -99,6 +99,9 @@ Ext.define('Ung.cmp.Rules', {
             align: 'center',
             items: this.getRecordActions()
         });
+
+        // Ext.apply(this, Ext.apply(this.initialConfig, this.config));
+        // Ext.apply(this.initialConfig, config);
 
         // Edit column
         // if (Ext.Array.contains(columnFeatures, 'edit')) {
