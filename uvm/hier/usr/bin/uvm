@@ -106,6 +106,16 @@ def flushConntrack():
     os.system('conntrack -D --proto udp >/dev/null 2>&1');
 
 #
+# Cleanup tmp files
+# Currently this just deletes all zero-length tomcat files
+# Occasionally tomcat leaves a zero length file in place and it must be removed
+# before it will regenerate the proper class/java file
+#
+def cleanupTmpFiles():
+    # debug("flushConntrack()")
+    os.system('find @PREFIX@/var/lib/uvm/work -type f -size 0 -exec rm -f {} \; 2>&1');
+
+#
 # If the UVM is running this inserts the necessary iptables to capture traffic
 # If the UVM is not running this removes the iptables rules to capture traffic
 #
@@ -394,6 +404,7 @@ while True:
     with open('/var/run/uvm.status', 'w+') as status_file:
         status_file.write('launching\n')
 
+    cleanupTmpFiles();
     flushConntrack();
 
     if exit_flag == 1:

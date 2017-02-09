@@ -186,7 +186,7 @@ Ext.define('Webui.config.accountRegistration', {
                         items: [{
                             xtype: 'component',
                             flex: 1,
-                            html: i18n._("If you are a new Untangle Customer, simply click Continue With Checkout below. We'll create an account for you as you checkout.")
+                            html: i18n._("If you are a new Untangle Customer, please click Create New Account below.")
                         }, {
                             xtype: 'button',
                             baseCls: 'reg-btn',

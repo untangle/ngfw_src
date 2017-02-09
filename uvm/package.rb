@@ -37,7 +37,6 @@ jts << JarTarget.build_target(uvm_lib, Jars::Base, 'bootstrap', ["./uvm/bootstra
 # java source is in uvm/api/, and resources/ is in . (copied by
 # ngfw_pkgtools's Makefile at build time)
 jts << (jt = JarTarget.build_target(uvm_lib, Jars::Base, 'api', ["./uvm/api", '.']))
-BuildEnv::SRC.installTarget.install_jars(jt, uvm_lib.getWebappDir('webstart'), nil, true)
 
 ## Implementation
 deps  = Jars::Base + Jars::TomcatEmb + Jars::JavaMail +
