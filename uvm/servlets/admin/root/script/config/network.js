@@ -347,7 +347,7 @@ Ext.define('Ung.config.network.Advanced', {
                     align: 'right',
                     dataIndex: 'priorityName',
                     renderer: function (value) {
-                        return value.t()
+                        return value.t();
                     }
                 }, {
                     header: 'Upload Reservation'.t(),
@@ -666,10 +666,14 @@ Ext.define('Ung.config.network.Advanced', {
             }]
         }, {
             title: 'UPnP'.t(),
+            layout: 'border',
             items: [{
                 xtype: 'panel',
                 header: false,
                 bodyPadding: 10,
+                region: 'north',
+                height: 'auto',
+
                 defaults: {
                     labelAlign: 'right',
                     labelWidth: 120,
@@ -677,28 +681,236 @@ Ext.define('Ung.config.network.Advanced', {
                 items: [{
                     xtype: 'checkbox',
                     fieldLabel: 'Enabled'.t(),
-                    bind: '{settings.qosSettings.qosEnabled}'
+                    bind: '{settings.upnpSettings.upnpEnabled}'
                 }, {
-                    xtype: 'combo',
-                    fieldLabel: 'Default Priority'.t(),
-                    bind: '{settings.qosSettings.defaultPriority}',
-                    queryMode: 'local',
-                    editable: false,
-                    store: [
-                        [1, 'Very High'.t()],
-                        [2, 'High'.t()],
-                        [3, 'Medium'.t()],
-                        [4, 'Low'.t()],
-                        [5, 'Limited'.t()],
-                        [6, 'Limited More'.t()],
-                        [7, 'Limited Severely'.t()]
-                    ]
+                    xtype: 'checkbox',
+                    fieldLabel: 'Secure Mode'.t(),
+                    bind: '{settings.upnpSettings.secureMode}'
                 }]
+            }, {
+                xtype: 'grid',
+                region: 'center',
+
+                title: 'Status'.t(),
+                enableColumnHide: false,
+                enableSorting: false,
+
+                tbar: [{
+                    text: 'Refresh'.t(),
+                    iconCls: 'fa fa-refresh',
+                    // handler: 'refreshUpnpStatus'
+                }],
+
+                columns: [{
+                    header: 'Protocol'.t(),
+                    width: 100,
+                    dataIndex: 'upnp_protocol'
+                }, {
+                    header: 'Client IP Address'.t(),
+                    width: 150,
+                    dataIndex: 'upnp_client_ip_address'
+                }, {
+                    header: 'Client Port'.t(),
+                    width: 150,
+                    dataIndex: 'upnp_client_port'
+                }, {
+                    header: 'Destination Port'.t(),
+                    width: 150,
+                    dataIndex: 'upnp_destination_port'
+                }, {
+                    header: 'Bytes'.t(),
+                    width: 150,
+                    dataIndex: 'bytes'
+                    // renderer ????
+                }]
+            }, {
+                xtype: 'rules',
+                region: 'south',
+                height: '50%',
+                split: true,
+                title: 'Access Control Rules'.t(),
+
+                columnFeatures: ['reorder', 'delete', 'edit'], // which columns to add
+                recordActions: ['@edit', '@delete'],
+
+                dataProperty: 'settings.upnpSettings.upnpRules',
+
+                conditions: [
+                    { name: 'DST_PORT', displayName: 'Destination Port'.t(), type: "textfield", vtype: 'port', visible: true },
+                    { name: 'SRC_ADDR', displayName: 'Source Address'.t(), type: "textfield", visible: true, vtype: 'ipall' },
+                    { name: 'SRC_PORT', displayName: 'Source Port'.t(), type: "textfield", vtype: 'port', visible: true }
+                ],
+
+                label: 'Perform the following action(s):'.t(),
+
+                emptyRow: {
+                    ruleId: -1,
+                    enabled: true,
+                    // description: '',
+                    javaClass: 'com.untangle.uvm.network.UpnpRule',
+                    conditions: {
+                        javaClass: 'java.util.LinkedList',
+                        list: []
+                    },
+                    priority: 1
+                },
+
+                bind: {
+                    store: {
+                        data: '{settings.upnpSettings.upnpRules.list}'
+                    }
+                },
+
+                columns: [{
+                    header: 'Rule Id'.t(),
+                    width: 70,
+                    align: 'right',
+                    resizable: false,
+                    dataIndex: 'ruleId',
+                    renderer: function(value) {
+                        return value < 0 ? 'new'.t() : value;
+                    }
+                }, {
+                    xtype: 'checkcolumn',
+                    header: 'Enable'.t(),
+                    dataIndex: 'enabled',
+                    resizable: false,
+                    width: 70,
+                    editor: {
+                        xtype: 'checkbox',
+                        fieldLabel: 'Enable'.t(),
+                        bind: '{record.enabled}',
+                    }
+                    // renderer: function (val) {
+                    //     return '<i class="fa + ' + (val ? 'fa-check' : 'fa-check-o') + '"></i>';
+                    // }
+                }, {
+                    header: 'Description',
+                    width: 200,
+                    dataIndex: 'description',
+                    renderer: function (value) {
+                        return value || '<em>no description<em>';
+                    },
+                    editor: {
+                        xtype: 'textfield',
+                        fieldLabel: 'Description'.t(),
+                        bind: '{record.description}',
+                        emptyText: '[no description]'.t(),
+                        allowBlank: false
+                    }
+                }, {
+                    header: 'Conditions'.t(),
+                    itemId: 'conditions',
+                    flex: 1,
+                    dataIndex: 'conditions',
+                    renderer: 'conditionsRenderer'
+                }, {
+                    header: 'Action'.t(),
+                    width: 100,
+                    dataIndex: 'allow',
+                    renderer: function (value) {
+                        return value ? 'Allow'.t() : 'Deny'.t();
+                    },
+                    editor: {
+                        xtype: 'combo',
+                        bind: '{record.allow}',
+                        store: [
+                            [false, 'Deny'.t()],
+                            [true, 'Allow'.t()]
+                        ],
+                        queryMode: 'local',
+                        editable: false
+                    }
+                }]
+
             }]
         }, {
             title: 'DNS & DHCP'.t(),
+            xtype: 'panel',
+            tbar: [{
+                xtype: 'displayfield',
+                padding: '0 10',
+                value: '<strong>' + 'Custom dnsmasq options.'.t() + '</strong> ' +
+                      '<i class="fa fa-exclamation-triangle" style="color: red;"></i> ' + 'Warning: Invalid syntax will halt all DHCP & DNS services.'.t()
+            }],
+            layout: 'fit',
+            items: [{
+                xtype: 'textarea',
+                margin: 10,
+                fieldStyle: {
+                    fontFamily: 'monospace'
+                },
+                bind: '{settings.dnsmasqOptions}'
+            }]
         }, {
+            xtype: 'grid',
             title: 'Network Cards'.t(),
+
+            bind: {
+                store: {
+                    data: '{settings.devices.list}'
+                }
+            },
+
+            selModel: {
+                type: 'cellmodel'
+            },
+
+            plugins: {
+                ptype: 'cellediting',
+                clicksToEdit: 1
+            },
+
+            columns: [{
+                header: 'Device Name'.t(),
+                width: 250,
+                dataIndex: 'deviceName'
+            }, {
+                header: 'MTU'.t(),
+                width: 100,
+                dataIndex: 'mtu',
+                renderer: function (value) {
+                    return value || 'Auto'.t();
+                },
+                editor: {
+                    xtype: 'numberfield'
+                }
+            }, {
+                header: 'Ethernet Media'.t(),
+                dataIndex: 'duplex',
+                width: 250,
+                renderer: function (value) {
+                    switch (value) {
+                        case 'AUTO': return 'Auto'.t();
+                        case 'M10000_FULL_DUPLEX': return '10000 Mbps, Full Duplex'.t();
+                        case 'M10000_HALF_DUPLEX': return '10000 Mbps, Half Duplex'.t();
+                        case 'M1000_FULL_DUPLEX': return '1000 Mbps, Full Duplex'.t();
+                        case 'M1000_HALF_DUPLEX': return '1000 Mbps, Half Duplex'.t();
+                        case 'M100_FULL_DUPLEX': return '100 Mbps, Full Duplex'.t();
+                        case 'M100_HALF_DUPLEX': return '100 Mbps, Half Duplex'.t();
+                        case 'M10_FULL_DUPLEX': return '10 Mbps, Full Duplex'.t();
+                        case 'M10_HALF_DUPLEX': return '10 Mbps, Half Duplex'.t();
+                    }
+                },
+                editor: {
+                    xtype: 'combo',
+                    store: [
+                        ['AUTO', 'Auto'.t()],
+                        ['M10000_FULL_DUPLEX', '10000 Mbps, Full Duplex'.t()],
+                        ['M10000_HALF_DUPLEX', '10000 Mbps, Half Duplex'.t()],
+                        ['M1000_FULL_DUPLEX', '1000 Mbps, Full Duplex'.t()],
+                        ['M1000_HALF_DUPLEX', '1000 Mbps, Half Duplex'.t()],
+                        ['M100_FULL_DUPLEX', '100 Mbps, Full Duplex'.t()],
+                        ['M100_HALF_DUPLEX', '100 Mbps, Half Duplex'.t()],
+                        ['M10_FULL_DUPLEX', '10 Mbps, Full Duplex'.t()],
+                        ['M10_HALF_DUPLEX', '10 Mbps, Half Duplex'.t()]
+                    ],
+                    queryMode: 'local',
+                    editable: false
+                }
+            }, {
+                flex: 1
+            }]
         }]
     }]
 });
@@ -2203,6 +2415,8 @@ Ext.define('Ung.config.network.Network', {
         xtype: 'ung.config.network.dhcpserver'
     }, {
         xtype: 'ung.config.network.advanced'
+    }, {
+        xtype: 'ung.config.network.troubleshooting'
     }
     ]
 });
@@ -2559,8 +2773,57 @@ Ext.define('Ung.config.network.NetworkController', {
             }
             // handler ({list: list}, exception);
         }, '/usr/share/untangle-netd/bin/qos-service.py status');
-    }
+    },
 
+
+    runTest: function (btn) {
+        console.log(btn);
+        var v = btn.up('networktest'),
+            output = v.down('textarea'),
+            text = [],
+            me = this;
+
+            // text.push(output.getValue());
+            // text.push('' + 'Test Started'.t() + '\n');
+
+            // output.setValue(text.join(''));
+
+            // console.log(v.getCommand());
+
+            rpc.execManager.execEvil(function (result, ex1) {
+                me.readOutput(result, text, output);
+                // if (result) {
+                //     result.readFromOutput(function (res, ex2) {
+                //         console.log(res);
+                //         if (res) {
+                //             text.push(res);
+                //             Ext.Function.defer(me.runTest, 1000, me, [btn]);
+                //         } else {
+                //             text.push('Test Completed'.t());
+                //         }
+                //         output.setValue(text.join(''));
+                //     });
+                // }
+            }, v.getCommand());
+
+    },
+
+    readOutput: function (resultReader, text, output) {
+        var me = this;
+        // console.log(result);
+        if (!resultReader) {
+            return;
+        }
+        resultReader.readFromOutput(function (res, ex2) {
+            if (res) {
+                text.push(res);
+                Ext.Function.defer(me.readOutput, 1000, me, [resultReader, text, output]);
+            } else {
+                text.push('Test Completed'.t());
+            }
+            output.setValue(text.join(''));
+        });
+    }
 
 
 });
@@ -2642,6 +2905,55 @@ Ext.define('Ung.config.network.NetworkModel', {
             data: '{natRulesData}'
         }
     }
+});
+Ext.define('Ung.config.network.NetworkTest', {
+    extend: 'Ext.panel.Panel',
+    xtype: 'ung.config.networktest',
+    alias: 'widget.networktest',
+
+    tbar: [{
+        xtype: 'displayfield',
+        padding: '0 10',
+        bind: '{description}'
+    }],
+
+    layout: 'fit',
+
+    config: {
+        command: null
+    },
+
+    actions: {
+        runTest: {
+            text: 'Run Test'.t(),
+            handler: 'runTest'
+        }
+    },
+
+    items: [{
+        xtype: 'panel',
+        tbar: ['@runTest'],
+        layout: 'fit',
+        items: [{
+            xtype: 'textarea',
+            border: false,
+            bind: {
+                emptyText: '{emptyText}'
+            },
+            fieldStyle: {
+                fontFamily: 'Courier, monospace',
+                fontSize: '14px',
+                background: '#1b1e26',
+                color: 'lime'
+            },
+            // margin: 10,
+            readOnly: true
+        }]
+    }]
+
+    // initComponent: function () {
+    //     this.callParent(arguments);
+    // }
 });
 Ext.define('Ung.config.network.PortForwardRules', {
     extend: 'Ext.panel.Panel',
@@ -2731,11 +3043,7 @@ Ext.define('Ung.config.network.PortForwardRules', {
             resizable: false,
             dataIndex: 'ruleId',
             renderer: function(value) {
-                if (value < 0) {
-                    return 'new'.t();
-                } else {
-                    return value;
-                }
+                return value < 0 ? 'new'.t() : value;
             }
         }, {
             xtype: 'checkcolumn',
@@ -3015,4 +3323,60 @@ Ext.define('Ung.config.network.Services', {
         }]
     }]
 
+});
+Ext.define('Ung.config.network.Troubleshooting', {
+    extend: 'Ext.panel.Panel',
+    xtype: 'ung.config.network.troubleshooting',
+
+    title: 'Troubleshooting'.t(),
+
+    layout: 'fit',
+
+    tbar: [{
+        xtype: 'displayfield',
+        padding: '0 10',
+        value: '<strong>' + 'Network Tests'.t() + '</strong>'
+    }],
+
+
+    // tabPosition: 'left',
+    // tabRotation: 0,
+    // align: 'left',
+    // tabStretchMax: true,
+
+    items: [{
+        xtype: 'tabpanel',
+        items: [{
+            xtype: 'networktest',
+            title: 'Connectivity Test'.t(),
+
+            command: [
+                '/bin/bash',
+                '-c',
+                ['echo -n "Testing DNS ... " ; success="Successful";',
+                'dig updates.untangle.com > /dev/null 2>&1; if [ "$?" = "0" ]; then echo "OK"; else echo "FAILED"; success="Failure"; fi;',
+                'echo -n "Testing TCP Connectivity ... ";',
+                'echo "GET /" | netcat -q 0 -w 15 updates.untangle.com 80 > /dev/null 2>&1;',
+                'if [ "$?" = "0" ]; then echo "OK"; else echo "FAILED"; success="Failure"; fi;',
+                'echo "Test ${success}!"'].join('')
+            ],
+            viewModel: {
+                data: {
+                    description: 'The <b>Connectivity Test</b> verifies a working connection to the Internet.'.t(),
+                    emptyText: 'Connectivity Test Output'.t()
+                }
+            }
+        }, {
+            xtype: 'networktest',
+            title: 'Ping Test'.t(),
+
+            command: 'ping -c 5 evz.ro',
+            viewModel: {
+                data: {
+                    description: 'The <b>Ping Test</b> can be used to test that a particular host or client can be pinged'.t(),
+                    emptyText: 'Ping Test Output'.t()
+                }
+            }
+        }]
+    }],
 });

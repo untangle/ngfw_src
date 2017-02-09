@@ -86,11 +86,7 @@ Ext.define('Ung.config.network.PortForwardRules', {
             resizable: false,
             dataIndex: 'ruleId',
             renderer: function(value) {
-                if (value < 0) {
-                    return 'new'.t();
-                } else {
-                    return value;
-                }
+                return value < 0 ? 'new'.t() : value;
             }
         }, {
             xtype: 'checkcolumn',

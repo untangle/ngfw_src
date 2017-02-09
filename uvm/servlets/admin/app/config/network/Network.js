@@ -80,6 +80,8 @@ Ext.define('Ung.config.network.Network', {
         xtype: 'ung.config.network.dhcpserver'
     }, {
         xtype: 'ung.config.network.advanced'
+    }, {
+        xtype: 'ung.config.network.troubleshooting'
     }
     ]
 });
