@@ -351,8 +351,57 @@ Ext.define('Ung.config.network.NetworkController', {
             }
             // handler ({list: list}, exception);
         }, '/usr/share/untangle-netd/bin/qos-service.py status');
-    }
+    },
 
+
+    runTest: function (btn) {
+        console.log(btn);
+        var v = btn.up('networktest'),
+            output = v.down('textarea'),
+            text = [],
+            me = this;
+
+            // text.push(output.getValue());
+            // text.push('' + 'Test Started'.t() + '\n');
+
+            // output.setValue(text.join(''));
+
+            // console.log(v.getCommand());
+
+            rpc.execManager.execEvil(function (result, ex1) {
+                me.readOutput(result, text, output);
+                // if (result) {
+                //     result.readFromOutput(function (res, ex2) {
+                //         console.log(res);
+                //         if (res) {
+                //             text.push(res);
+                //             Ext.Function.defer(me.runTest, 1000, me, [btn]);
+                //         } else {
+                //             text.push('Test Completed'.t());
+                //         }
+                //         output.setValue(text.join(''));
+                //     });
+                // }
+            }, v.getCommand());
+
+    },
+
+    readOutput: function (resultReader, text, output) {
+        var me = this;
+        // console.log(result);
+        if (!resultReader) {
+            return;
+        }
+        resultReader.readFromOutput(function (res, ex2) {
+            if (res) {
+                text.push(res);
+                Ext.Function.defer(me.readOutput, 1000, me, [resultReader, text, output]);
+            } else {
+                text.push('Test Completed'.t());
+            }
+            output.setValue(text.join(''));
+        });
+    }
 
 
 });
