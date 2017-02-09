@@ -18,3 +18,4 @@ jabsorb: used by the UI/uvm
 gettext-commons: unsed by the untangle-vm for I18n/localization
 jakarta-taglibs-standard: jsp taglib library (for jsps)
 selenium: browser emulation in directory connector (includes phantomjsdriver, gson, guava, commons-exec, commons-logging)
+sqlite-jdbc: for connecting to sqlite (reports) NOTE: this has a custom compiled arm .so file - see NGFW-10211 for more details.

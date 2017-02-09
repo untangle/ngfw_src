@@ -414,6 +414,13 @@ public class SettingsManagerImpl implements SettingsManager
             UvmContextImpl.context().execManager().execResult(formatCmd);
             UvmContextImpl.context().execManager().setLevel(org.apache.log4j.Level.INFO);
         }
+
+        /**
+         * Call sync to force save to filesystem
+         */
+        UvmContextImpl.context().execManager().setLevel(org.apache.log4j.Level.DEBUG);
+        UvmContextImpl.context().execManager().execResult("sync");
+        UvmContextImpl.context().execManager().setLevel(org.apache.log4j.Level.INFO);
         
         if ( saveVersion ) {
             String[] chops = outputFileName.split(File.separator);

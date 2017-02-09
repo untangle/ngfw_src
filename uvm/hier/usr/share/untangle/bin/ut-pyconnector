@@ -182,7 +182,7 @@ def read_from_cmd():
      debug("Result: %s" % output.strip())
      try:
           output_len = len(output)
-          command_socket.send(str(output_len) + "\n" + str(output))
+          command_socket.sendall(str(output_len) + "\n" + str(output))
      except Exception,e:
           sys.stderr.write("Failed to write: (%s)\n" % e )
           reset_command_socket()
