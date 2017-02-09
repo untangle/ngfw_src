@@ -111,10 +111,7 @@ Ext.define('Ung.config.network.PortForwardRules', {
             width: 200,
             dataIndex: 'description',
             renderer: function (value) {
-                if (value) {
-                    return value;
-                }
-                return '<em>no description<em>';
+                return value || '<em>no description<em>';
             },
             editor: {
                 xtype: 'textfield',
