@@ -68,12 +68,18 @@ Ext.define('Ung.config.network.Advanced', {
             }]
         }, {
             title: 'QoS'.t(),
+            scrollable: 'y',
             layout: {
                 type: 'vbox',
                 align: 'stretch'
             },
             defaults: {
-                border: false
+                // border: false,
+                // margin: '0 0 10 0',
+                collapsible: true,
+                animCollapse: false,
+                titleCollapse: true,
+                minHeight: 100
             },
             items: [{
                 xtype: 'panel',
@@ -211,11 +217,484 @@ Ext.define('Ung.config.network.Advanced', {
                     fieldLabel: 'OpenVPN Priority'.t(),
                     bind: '{settings.qosSettings.openvpnPriority}'
                 }]
+            }, {
+                xtype: 'rules',
+                title: 'QoS Custom Rules'.t(),
+
+                columnFeatures: ['reorder', 'delete', 'edit'], // which columns to add
+                recordActions: ['@edit', '@delete'],
+
+                // dataProperty: 'portForwardRules',
+                // ruleJavaClass: 'com.untangle.uvm.network.PortForwardRuleCondition',
+
+                conditions: [
+                    { name: 'DST_LOCAL', displayName: 'Destined Local'.t(), type: 'boolean', visible: true},
+                    { name: 'DST_ADDR', displayName: 'Destination Address'.t(), type: 'textfield', visible: true, vtype:'ipall'},
+                    { name: 'DST_PORT', displayName: 'Destination Port'.t(), type: 'textfield', vtype:'port', visible: true},
+                    { name: 'SRC_ADDR', displayName: 'Source Address'.t(), type: 'textfield', visible: true, vtype:'ipall'},
+                    { name: 'SRC_PORT', displayName: 'Source Port'.t(), type: 'numberfield', vtype:'port', visible: rpc.isExpertMode},
+                    { name: 'SRC_INTF', displayName: 'Source Interface'.t(), type: 'checkboxgroup', values: [['a', 'a'], ['b', 'b']], visible: true},
+                    { name: 'PROTOCOL', displayName: 'Protocol'.t(), type: 'checkboxgroup', values: [['TCP','TCP'],['UDP','UDP'],['ICMP','ICMP'],['GRE','GRE'],['ESP','ESP'],['AH','AH'],['SCTP','SCTP']], visible: true}
+                ],
+
+                tbar: [{
+                    xtype: 'component',
+                    padding: 5,
+                    html: Ext.String.format('{0}Note{1}: Custom Rules only match <b>Bypassed</b> traffic.'.t(), '<font color="red">','</font>')
+                }],
+
+                bind: {
+                    store: {
+                        data: '{settings.qosSettings.qosRules.list}'
+                    }
+                },
+
+                columns: [{
+                    header: 'Rule Id'.t(),
+                    width: 70,
+                    align: 'right',
+                    resizable: false,
+                    dataIndex: 'ruleId',
+                    renderer: function(value) {
+                        if (value < 0) {
+                            return 'new'.t();
+                        } else {
+                            return value;
+                        }
+                    }
+                }, {
+                    xtype: 'checkcolumn',
+                    header: 'Enable'.t(),
+                    dataIndex: 'enabled',
+                    resizable: false,
+                    width: 70,
+                    editor: {
+                        xtype: 'checkbox',
+                        fieldLabel: 'Enable'.t(),
+                        bind: '{record.enabled}',
+                    }
+                    // renderer: function (val) {
+                    //     return '<i class="fa + ' + (val ? 'fa-check' : 'fa-check-o') + '"></i>';
+                    // }
+                }, {
+                    header: 'Description',
+                    width: 200,
+                    dataIndex: 'description',
+                    renderer: function (value) {
+                        if (value) {
+                            return value;
+                        }
+                        return '<em>no description<em>';
+                    },
+                    editor: {
+                        xtype: 'textfield',
+                        fieldLabel: 'Description'.t(),
+                        bind: '{record.description}',
+                        emptyText: '[no description]'.t(),
+                        allowBlank: false
+                    }
+                }, {
+                    header: 'Conditions'.t(),
+                    itemId: 'conditions',
+                    flex: 1,
+                    dataIndex: 'conditions',
+                    renderer: 'conditionsRenderer'
+                }, {
+                    header: 'Priority'.t(),
+                    width: 100,
+                    dataIndex: 'priority',
+                    editor: {
+                        xtype: 'combo',
+                        store: [
+                            [1, 'Very High'.t()],
+                            [2, 'High'.t()],
+                            [3, 'Medium'.t()],
+                            [4, 'Low'.t()],
+                            [5, 'Limited'.t()],
+                            [6, 'Limited More'.t()],
+                            [7, 'Limited Severely'.t()]
+                        ],
+                        queryMode: 'local',
+                        editable: false
+                    }
+                }]
+            }, {
+                xtype: 'grid',
+                title: 'QoS Priorities'.t(),
+
+                bind: {
+                    store: {
+                        data: '{settings.qosSettings.qosPriorities.list}'
+                    }
+                },
+
+                selModel: {
+                    type: 'cellmodel'
+                },
+
+                plugins: {
+                    ptype: 'cellediting',
+                    clicksToEdit: 1
+                },
+
+                columnLines: true,
+                sortableColumns: false,
+                enableColumnHide: false,
+
+                columns: [{
+                    header: 'Priority'.t(),
+                    width: 150,
+                    align: 'right',
+                    dataIndex: 'priorityName',
+                    renderer: function (value) {
+                        return value.t()
+                    }
+                }, {
+                    header: 'Upload Reservation'.t(),
+                    dataIndex: 'uploadReservation',
+                    width: 150,
+                    editor : {
+                        xtype: 'numberfield',
+                        allowBlank : false,
+                        minValue : 0.1,
+                        maxValue : 100
+                    },
+                    renderer: function (value, metadata, record) {
+                        return value === 0 ? 'No reservation' : value + '%';
+                    }
+                }, {
+                    header: 'Upload Limit'.t(),
+                    dataIndex: 'uploadLimit',
+                    width: 150,
+                    editor : {
+                        xtype: 'numberfield',
+                        allowBlank : false,
+                        minValue : 0.1,
+                        maxValue : 100
+                    },
+                    renderer: function (value, metadata, record) {
+                        return value === 0 ? 'No reservation' : value + '%';
+                    }
+                }, {
+                    header: 'Download Reservation'.t(),
+                    dataIndex: 'downloadReservation',
+                    width: 150,
+                    editor : {
+                        xtype: 'numberfield',
+                        allowBlank : false,
+                        minValue : 0.1,
+                        maxValue : 100
+                    },
+                    renderer: function (value, metadata, record) {
+                        return value === 0 ? 'No reservation' : value + '%';
+                    }
+                }, {
+                    header: 'Download Limit'.t(),
+                    dataIndex: 'downloadLimit',
+                    width: 150,
+                    editor : {
+                        xtype: 'numberfield',
+                        allowBlank : false,
+                        minValue : 0.1,
+                        maxValue : 100
+                    },
+                    renderer: function (value, metadata, record) {
+                        return value === 0 ? 'No limit' : value + '%';
+                    }
+                }, {
+                    flex: 1
+                }]
+            }, {
+                xtype: 'grid',
+                title: 'QoS Statistics'.t(),
+                groupField:'interface_name',
+
+                columnLines: true,
+                enableColumnHide: false,
+
+                tbar: [{
+                    text: 'Refresh'.t(),
+                    iconCls: 'fa fa-refresh',
+                    handler: 'refreshQosStatistics'
+                }],
+
+                columns: [{
+                    header: 'Interface'.t(),
+                    width: 150,
+                    dataIndex: 'interface_name',
+                    renderer: function (value) {
+                        return value.t();
+                    }
+                }, {
+                    header: 'Priority'.t(),
+                    dataIndex: 'priority',
+                    width: 150
+                }, {
+                    header: 'Data'.t(),
+                    dataIndex: 'sent',
+                    width: 150,
+                }, {
+                    flex: 1
+                }]
             }]
         }, {
             title: 'Filter Rules'.t(),
+            layout: 'border',
+
+            items: [{
+                xtype: 'rules',
+                region: 'center',
+                title: 'Forward Filter Rules'.t(),
+
+                columnFeatures: ['reorder', 'delete', 'edit'], // which columns to add
+                recordActions: ['@edit', '@delete'],
+
+                dataProperty: 'forwardFilterRules',
+
+                label: 'Perform the following action(s):'.t(),
+
+                conditions: [
+                    { name: 'DST_LOCAL', displayName: 'Destined Local'.t(), type: 'boolean', visible: true},
+                    { name: 'DST_ADDR', displayName: 'Destination Address'.t(), type: 'textfield', visible: true, vtype:'ipall'},
+                    { name: 'DST_PORT', displayName: 'Destination Port'.t(), type: 'textfield', vtype:'port', visible: true},
+                    // { name: 'DST_INTF',displayName: 'Destination Interface'.t(), type: 'checkgroup', values: Ung.Util.getInterfaceList(true, true), visible: true},
+                    { name: 'SRC_MAC' , displayName: 'Source MAC'.t(), type: 'textfield', visible: true},
+                    { name: 'SRC_ADDR', displayName: 'Source Address'.t(), type: 'textfield', visible: true, vtype: 'ipall'},
+                    { name: 'SRC_PORT', displayName: 'Source Port'.t(), type: 'textfield',vtype: 'port', visible: rpc.isExpertMode},
+                    // { name: 'SRC_INTF',displayName: 'Source Interface'.t(), type: 'checkgroup', values: Ung.Util.getInterfaceList(true, true), visible: true},
+                    { name: 'PROTOCOL', displayName: 'Protocol'.t(), type: 'checkboxgroup', values: [['TCP','TCP'],['UDP','UDP'],['ICMP','ICMP'],['GRE','GRE'],['ESP','ESP'],['AH','AH'],['SCTP','SCTP']], visible: true}
+                ],
+
+                emptyRow: {
+                    ruleId: -1,
+                    enabled: true,
+                    ipvsEnabled: false,
+                    description: '',
+                    javaClass: 'com.untangle.uvm.network.FilterRule',
+                    conditions: {
+                        javaClass: 'java.util.LinkedList',
+                        list: []
+                    },
+                    blocked: false
+                },
+
+                bind: {
+                    store: {
+                        data: '{settings.forwardFilterRules.list}'
+                    }
+                },
+
+                columns: [{
+                    header: 'Rule Id'.t(),
+                    width: 70,
+                    align: 'right',
+                    resizable: false,
+                    dataIndex: 'ruleId',
+                    renderer: function (value) {
+                        return value < 0 ? 'new'.t() : value;
+                    }
+                }, {
+                    xtype: 'checkcolumn',
+                    header: 'Enable'.t(),
+                    dataIndex: 'enabled',
+                    resizable: false,
+                    width: 70,
+                    editor: {
+                        xtype: 'checkbox',
+                        fieldLabel: 'Enable Forward Filter Rule'.t(),
+                        bind: '{record.enabled}',
+                    }
+                }, {
+                    xtype: 'checkcolumn',
+                    header: 'IPv6'.t(),
+                    dataIndex: 'ipv6Enabled',
+                    resizable: false,
+                    width: 70,
+                    editor: {
+                        xtype: 'checkbox',
+                        fieldLabel: 'Enable IPv6 Support'.t(),
+                        bind: '{record.ipv6Enabled}',
+                    }
+                }, {
+                    header: 'Description',
+                    width: 200,
+                    dataIndex: 'description',
+                    renderer: function (value) {
+                        return value || '<em>no description<em>';
+                    },
+                    editor: {
+                        xtype: 'textfield',
+                        fieldLabel: 'Description'.t(),
+                        bind: '{record.description}',
+                        emptyText: '[no description]'.t(),
+                        allowBlank: false
+                    }
+                }, {
+                    header: 'Conditions'.t(),
+                    itemId: 'conditions',
+                    flex: 1,
+                    dataIndex: 'conditions',
+                    renderer: 'conditionsRenderer'
+                }, {
+                    xtype: 'checkcolumn',
+                    header: 'Block'.t(),
+                    dataIndex: 'blocked',
+                    resizable: false,
+                    width: 70,
+                    editor: {
+                        xtype: 'combo',
+                        fieldLabel: 'Action'.t(),
+                        bind: '{record.blocked}',
+                        editable: false,
+                        store: [[true, 'Block'.t()], [false, 'Pass'.t()]],
+                        queryMode: 'local'
+                    }
+                }],
+            }, {
+                xtype: 'rules',
+                region: 'south',
+                height: '60%',
+                split: true,
+
+                title: 'Input Filter Rules'.t(),
+
+                columnFeatures: ['reorder', 'delete', 'edit'], // which columns to add
+                recordActions: ['@edit', '@delete'],
+
+                dataProperty: 'inputFilterRules',
+
+                label: 'Perform the following action(s):'.t(),
+
+                conditions: [
+                    { name: 'DST_LOCAL', displayName: 'Destined Local'.t(), type: 'boolean', visible: true},
+                    { name: 'DST_ADDR', displayName: 'Destination Address'.t(), type: 'textfield', visible: true, vtype:'ipall'},
+                    { name: 'DST_PORT', displayName: 'Destination Port'.t(), type: 'textfield', vtype:'port', visible: true},
+                    { name: 'DST_INTF',displayName: 'Destination Interface'.t(), type: 'checkgroup', values: [], visible: true},
+                    { name: 'SRC_MAC' , displayName: 'Source MAC'.t(), type: 'textfield', visible: true},
+                    { name: 'SRC_ADDR', displayName: 'Source Address'.t(), type: 'textfield', visible: true, vtype: 'ipall'},
+                    { name: 'SRC_PORT', displayName: 'Source Port'.t(), type: 'textfield',vtype: 'port', visible: rpc.isExpertMode},
+                    { name: 'SRC_INTF',displayName: 'Source Interface'.t(), type: 'checkgroup', values: [], visible: true},
+                    { name: 'PROTOCOL', displayName: 'Protocol'.t(), type: 'checkboxgroup', values: [['TCP','TCP'],['UDP','UDP'],['ICMP','ICMP'],['GRE','GRE'],['ESP','ESP'],['AH','AH'],['SCTP','SCTP']], visible: true}
+                ],
+
+                emptyRow: {
+                    ruleId: -1,
+                    enabled: true,
+                    ipvsEnabled: false,
+                    description: '',
+                    javaClass: 'com.untangle.uvm.network.FilterRule',
+                    conditions: {
+                        javaClass: 'java.util.LinkedList',
+                        list: []
+                    },
+                    blocked: false,
+                    readOnly: null
+                },
+
+                bind: {
+                    store: {
+                        data: '{settings.inputFilterRules.list}'
+                    }
+                },
+
+                columns: [{
+                    header: 'Rule Id'.t(),
+                    width: 70,
+                    align: 'right',
+                    resizable: false,
+                    dataIndex: 'ruleId',
+                    renderer: function (value) {
+                        return value < 0 ? 'new'.t() : value;
+                    }
+                }, {
+                    xtype: 'checkcolumn',
+                    header: 'Enable'.t(),
+                    dataIndex: 'enabled',
+                    resizable: false,
+                    width: 70,
+                    editor: {
+                        xtype: 'checkbox',
+                        fieldLabel: 'Enable Forward Filter Rule'.t(),
+                        bind: '{record.enabled}',
+                    }
+                }, {
+                    xtype: 'checkcolumn',
+                    header: 'IPv6'.t(),
+                    dataIndex: 'ipv6Enabled',
+                    resizable: false,
+                    width: 70,
+                    editor: {
+                        xtype: 'checkbox',
+                        fieldLabel: 'Enable IPv6 Support'.t(),
+                        bind: '{record.ipv6Enabled}',
+                    }
+                }, {
+                    header: 'Description',
+                    width: 200,
+                    dataIndex: 'description',
+                    renderer: function (value) {
+                        return value || '<em>no description<em>';
+                    },
+                    editor: {
+                        xtype: 'textfield',
+                        fieldLabel: 'Description'.t(),
+                        bind: '{record.description}',
+                        emptyText: '[no description]'.t(),
+                        allowBlank: false
+                    }
+                }, {
+                    header: 'Conditions'.t(),
+                    itemId: 'conditions',
+                    flex: 1,
+                    dataIndex: 'conditions',
+                    renderer: 'conditionsRenderer'
+                }, {
+                    xtype: 'checkcolumn',
+                    header: 'Block'.t(),
+                    dataIndex: 'blocked',
+                    resizable: false,
+                    width: 70,
+                    editor: {
+                        xtype: 'combo',
+                        fieldLabel: 'Action'.t(),
+                        bind: '{record.blocked}',
+                        editable: false,
+                        store: [[true, 'Block'.t()], [false, 'Pass'.t()]],
+                        queryMode: 'local'
+                    }
+                }],
+            }]
         }, {
             title: 'UPnP'.t(),
+            items: [{
+                xtype: 'panel',
+                header: false,
+                bodyPadding: 10,
+                defaults: {
+                    labelAlign: 'right',
+                    labelWidth: 120,
+                },
+                items: [{
+                    xtype: 'checkbox',
+                    fieldLabel: 'Enabled'.t(),
+                    bind: '{settings.qosSettings.qosEnabled}'
+                }, {
+                    xtype: 'combo',
+                    fieldLabel: 'Default Priority'.t(),
+                    bind: '{settings.qosSettings.defaultPriority}',
+                    queryMode: 'local',
+                    editable: false,
+                    store: [
+                        [1, 'Very High'.t()],
+                        [2, 'High'.t()],
+                        [3, 'Medium'.t()],
+                        [4, 'Low'.t()],
+                        [5, 'Limited'.t()],
+                        [6, 'Limited More'.t()],
+                        [7, 'Limited Severely'.t()]
+                    ]
+                }]
+            }]
         }, {
             title: 'DNS & DHCP'.t(),
         }, {
@@ -2065,7 +2544,24 @@ Ext.define('Ung.config.network.NetworkController', {
         rpc.execManager.exec(function (result, ex) {
             v.down('#currentRoutes').setValue(result.output);
         }, '/usr/share/untangle/bin/ut-routedump.sh');
+    },
+
+
+    refreshQosStatistics: function () {
+        rpc.execManager.execOutput(function (result, exception) {
+            // if(Ung.Util.handleException(exception)) return;
+            console.log(result);
+            var list = [];
+            try {
+                // list = eval(result);
+            } catch (e) {
+                // console.error("Could not execute /usr/share/untangle-netd/bin/qos-service.py output: ", result, e);
+            }
+            // handler ({list: list}, exception);
+        }, '/usr/share/untangle-netd/bin/qos-service.py status');
     }
+
+
 
 });
 Ext.define('Ung.config.network.NetworkModel', {
@@ -2260,10 +2756,7 @@ Ext.define('Ung.config.network.PortForwardRules', {
             width: 200,
             dataIndex: 'description',
             renderer: function (value) {
-                if (value) {
-                    return value;
-                }
-                return '<em>no description<em>';
+                return value || '<em>no description<em>';
             },
             editor: {
                 xtype: 'textfield',

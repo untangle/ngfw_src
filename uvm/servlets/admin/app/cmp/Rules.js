@@ -97,13 +97,14 @@ Ext.define('Ung.cmp.Rules', {
 
         // var columnFeatures = this.getColumnFeatures();
 
-        this.columns.push({
-            xtype: 'actioncolumn',
-            header: 'Actions'.t(),
-            align: 'center',
-            items: this.recordActions
-        });
-
+        if (this.columns) {
+            this.columns.push({
+                xtype: 'actioncolumn',
+                header: 'Actions'.t(),
+                align: 'center',
+                items: this.recordActions
+            });
+        }
         // Ext.apply(this, Ext.apply(this.initialConfig, this.config));
         // Ext.apply(this.initialConfig, config);
 

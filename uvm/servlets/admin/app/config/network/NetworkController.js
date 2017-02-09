@@ -336,6 +336,23 @@ Ext.define('Ung.config.network.NetworkController', {
         rpc.execManager.exec(function (result, ex) {
             v.down('#currentRoutes').setValue(result.output);
         }, '/usr/share/untangle/bin/ut-routedump.sh');
+    },
+
+
+    refreshQosStatistics: function () {
+        rpc.execManager.execOutput(function (result, exception) {
+            // if(Ung.Util.handleException(exception)) return;
+            console.log(result);
+            var list = [];
+            try {
+                // list = eval(result);
+            } catch (e) {
+                // console.error("Could not execute /usr/share/untangle-netd/bin/qos-service.py output: ", result, e);
+            }
+            // handler ({list: list}, exception);
+        }, '/usr/share/untangle-netd/bin/qos-service.py status');
     }
+
+
 
 });
