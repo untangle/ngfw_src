@@ -211,7 +211,6 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
             name: 'Categories',
             title: i18n._('Categories'),
             //helpSource: 'web_filter_block_categories',
-            //helpSource: 'web_filter_lite_block_categories',
             helpSource: this.helpSourceName + '_block_categories',
             cls: 'ung-panel',
             autoScroll: true,
@@ -317,7 +316,6 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
             name: 'BlockSites',
             title: i18n._('Block Sites'),
             //helpSource: 'web_filter_block_sites',
-            //helpSource: 'web_filter_lite_block_sites',
             helpSource: this.helpSourceName + '_block_sites',
             cls: 'ung-panel',
             autoScroll: true,
@@ -406,7 +404,6 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
         this.allowedSitesPanel = Ext.create('Ext.panel.Panel',{
             name: 'PassSites',
             //helpSource: 'web_filter_pass_sites',
-            //helpSource: 'web_filter_lite_pass_sites',
             helpSource: this.helpSourceName + '_pass_sites',
             title: i18n._('Pass Sites'),
             cls: 'ung-panel',
@@ -496,7 +493,6 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
         this.allowedClientsPanel = Ext.create('Ext.panel.Panel',{
             name: 'PassClients',
             //helpSource: 'web_filter_pass_clients',
-            //helpSource: 'web_filter_lite_pass_clients',
             helpSource: this.helpSourceName + '_pass_clients',
             title: i18n._('Pass Clients'),
             cls: 'ung-panel',
@@ -522,7 +518,6 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
         this.gridFilterRules = Ext.create('Ung.grid.Panel',{
             name: "gridFilterRules",
             //helpSource: 'web_filter_rules',
-            //helpSource: 'web_filter_lite_rules',
             helpSource: this.helpSourceName + '_rules',
             settingsCmp: this,
             height: 500,
@@ -636,7 +631,6 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
         this.panelAdvanced = Ext.create('Ext.panel.Panel',{
             name: 'Advanced',
             //helpSource: 'web_filter_advanced',
-            //helpSource: 'web_filter_lite_advanced',
             helpSource: this.helpSourceName + '_advanced',
             title: i18n._('Advanced'),
             cls: 'ung-panel',

@@ -114,9 +114,6 @@ for f in $(find $t -type f -name '*.po'); do
         untangle-node-application-control)
             d=$hades/src/application-control
             ;;
-        untangle-node-web-filter-lite)
-            d=$work/src/web-filter-lite
-            ;;
         untangle-system-stats*)
             d=$internal/isotools/installer-pkgs-additional/untangle-system-stats/debian
             ;;

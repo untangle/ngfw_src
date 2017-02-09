@@ -1218,23 +1218,12 @@ Ext.define('Ung.TableConfig', {
                 }, {
                     name: 's2c_content_type'
                 }, {
-                    name: 'web_filter_lite_blocked'
-                }, {
                     name: 'web_filter_blocked'
-                }, {
-                    name: 'web_filter_lite_flagged'
                 }, {
                     name: 'web_filter_flagged'
                 }, {
-                    name: 'web_filter_lite_category',
-                    type: 'string'
-                }, {
                     name: 'web_filter_category',
                     type: 'string'
-                }, {
-                    name: 'web_filter_lite_reason',
-                    type: 'string',
-                    convert: Ung.TableConfig.httpEventConvertReason
                 }, {
                     name: 'web_filter_reason',
                     type: 'string',
@@ -1411,35 +1400,6 @@ Ext.define('Ung.TableConfig', {
                     width: 150,
                     sortable: true,
                     dataIndex: 's2c_content_type'
-                }, {
-                    header: i18n._("Blocked") + " (Web Filter Lite)",
-                    width: Ung.TableConfig.booleanFieldWidth,
-                    sortable: true,
-                    dataIndex: 'web_filter_lite_blocked',
-                    filter: {
-                        type: 'boolean',
-                        yesText: i18n._('true'),
-                        noText: i18n._('false')
-                    }
-                }, {
-                    header: i18n._("Flagged") + " (Web Filter Lite)",
-                    width: Ung.TableConfig.booleanFieldWidth,
-                    dataIndex: 'web_filter_lite_flagged',
-                    filter: {
-                        type: 'boolean',
-                        yesText: i18n._('true'),
-                        noText: i18n._('false')
-                    }
-                }, {
-                    header: i18n._("Reason For Action") + " (Web Filter Lite)",
-                    width: 150,
-                    sortable: true,
-                    dataIndex: 'web_filter_lite_reason'
-                }, {
-                    header: i18n._("Category") + " (Web Filter Lite)",
-                    width: 120,
-                    sortable: true,
-                    dataIndex: 'web_filter_lite_category'
                 }, {
                     header: i18n._("Blocked") + " (Web Filter)",
                     width: Ung.TableConfig.booleanFieldWidth,
