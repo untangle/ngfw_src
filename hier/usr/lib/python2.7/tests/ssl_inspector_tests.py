@@ -17,6 +17,7 @@ import global_functions
 defaultRackId = 1
 node = None
 nodeWeb = None
+pornServerName="www.pornhub.com"
 testedServerName="news.ycombinator.com"
 testedServerURLParts = testedServerName.split(".")
 testedServerDomainWildcard = "*" + testedServerURLParts[-2] + "." + testedServerURLParts[-1]
@@ -111,7 +112,7 @@ class SslInspectorTests(unittest2.TestCase):
         nukeBlockedUrls()
         result = remote_control.runCommand('grep blockpage /tmp/ssl_test_015.trace')
         assert (result == 0)
-        result = remote_control.runCommand("wget -q -4 -t 2 --timeout=5 --no-check-certificate -q -O - https://penthouse.com/ 2>&1 | grep -q blockpage")
+        result = remote_control.runCommand("wget -q -4 -t 2 --timeout=5 --no-check-certificate -q -O - https://%s 2>&1 | grep -q blockpage" % (pornServerName))
         assert (result == 0)        
         
 
