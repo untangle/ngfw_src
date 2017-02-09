@@ -277,21 +277,10 @@ public class AlertManagerImpl implements AlertManager
         /**
          * Check for redundant apps
          */
-        List<Node> webFilterLiteList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-web-filter-lite");
-        List<Node> webFilterList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-web-filter");
         List<Node> spamBlockerLiteList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-spam-blocker-lite");
         List<Node> spamblockerList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-spamblocker");
         List<Node> webMonitorList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-web-monitor");
-
-        for (Node node1 : webFilterLiteList) {
-            for (Node node2 : webFilterList) {
-                if (node1.getNodeSettings().getId().equals(node2.getNodeSettings().getId()))
-                    continue;
-
-                if (node1.getNodeSettings().getPolicyId().equals(node2.getNodeSettings().getPolicyId()))
-                    alertList.add(i18nUtil.tr("One or more racks contain redundant apps") + ": " + " Web Filter " + i18nUtil.tr("and") + " Web Filter Lite" );
-            }
-        }
+        List<Node> webFilterList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-web-filter");
 
         for (Node node1 : webMonitorList) {
             for (Node node2 : webFilterList) {

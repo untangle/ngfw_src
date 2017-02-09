@@ -116,6 +116,10 @@ CREATE TABLE reports.sessions (
     sql_helper.add_column('sessions','local_addr','inet') # 12.2
     sql_helper.add_column('sessions','remote_addr','inet') # 12.2
     sql_helper.drop_column('sessions','shield_blocked') # 12.2
+    sql_helper.drop_column('sessions','web_filter_lite_blocked')  # 13.0
+    sql_helper.drop_column('sessions','web_filter_lite_flagged')  # 13.0
+    sql_helper.drop_column('sessions','web_filter_lite_category') # 13.0
+    sql_helper.drop_column('sessions','web_filter_lite_reason')   # 13.0
 
 @sql_helper.print_timing
 def __create_session_minutes_table(  ):

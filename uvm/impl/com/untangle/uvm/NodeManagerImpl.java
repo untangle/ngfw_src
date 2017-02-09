@@ -813,6 +813,20 @@ public class NodeManagerImpl implements NodeManager
 
             // UPDATE settings if necessary
 
+            // look for and remove old nodes that no longer exist
+            LinkedList<NodeSettings> cleanList = new LinkedList<NodeSettings>();
+            for (NodeSettings item : readSettings.getNodes()) {
+                if (item.getNodeName().equals("untangle-node-webfilter-lite")) continue;
+                if (item.getNodeName().equals("untangle-node-ips")) continue;
+                cleanList.add(item);
+            }
+
+            // if we removed anything update the node list and save
+            if (cleanList.size() != readSettings.getNodes().size()) {
+                readSettings.setNodes(cleanList);
+                this._setSettings(readSettings);
+            }
+
             this.settings = readSettings;
             logger.debug("Settings: " + this.settings.toJSONString());
         }

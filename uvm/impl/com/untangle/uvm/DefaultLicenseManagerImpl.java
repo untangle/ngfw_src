@@ -102,7 +102,6 @@ public class DefaultLicenseManagerImpl implements LicenseManager
         else if ("untangle-node-router".equals(identifier)) return true;
         else if ("untangle-node-shield".equals(identifier)) return true;
         else if ("untangle-node-spam-blocker-lite".equals(identifier)) return true;
-        else if ("untangle-node-web-filter-lite".equals(identifier)) return true;
         else if ("untangle-node-web-monitor".equals(identifier)) return true;
 
         if ("untangle-node-license".equals(identifier)) return true;

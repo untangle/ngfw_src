@@ -81,7 +81,6 @@ public class WebFilterEvent extends LogEvent
     {
         String appName;
         switch ( getNodeName().toLowerCase() ) {
-        case "web_filter_lite": appName = "Web Filter Lite"; break;
         case "web_filter": appName = "Web Filter"; break;
         case "web_monitor": appName = "Web Monitor"; break;
         default: appName = "Web Filter"; break;
@@ -103,8 +102,6 @@ public class WebFilterEvent extends LogEvent
     {
         String node = getNodeName().toLowerCase();
 
-        if ("web-filter-lite".equals(node))
-            return "web_filter_lite";
         if ("web-filter".equals(node))
             return "web_filter";
         if ("web-monitor".equals(node))
