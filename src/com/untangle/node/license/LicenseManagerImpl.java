@@ -928,7 +928,6 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
         case "untangle-node-reports": return true;
         case "untangle-node-shield": return true;
         case "untangle-node-spam-blocker-lite": return true;
-        case "untangle-node-web-filter-lite": return true;
         case "untangle-node-web-monitor": return true;
         case "untangle-node-license": return true;
         case "untangle-casing-http": return true;
