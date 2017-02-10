@@ -131,8 +131,6 @@ Ext.define('Ung.view.reports.ReportsController', {
 
         rpc.reportsManager.getCurrentApplications(function (result, ex) {
 
-            console.log(result);
-
             if (ex) { Ung.Util.exceptionToast(ex); return false; }
 
             for (i = 0; i < result.list.length; i += 1) {

@@ -1,5 +1,8 @@
 Ext.define ('Ung.model.Rule', {
     extend: 'Ext.data.Model' ,
+
+    alias: 'model.rule',
+
     fields: [
         { name: 'ruleId', type: 'auto', defaultValue: null },
         { name: 'description', type: 'string', defaultValue: '' },

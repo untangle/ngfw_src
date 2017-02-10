@@ -21,11 +21,7 @@ Ext.define('Ung.config.network.view.DhcpServer', {
 
         // },
 
-        bind: {
-            store: {
-                data: '{settings.staticDhcpEntries.list}'
-            }
-        },
+        bind: '{staticDhcpEntries}',
 
         columns: [{
             header: 'MAC Address'.t(),

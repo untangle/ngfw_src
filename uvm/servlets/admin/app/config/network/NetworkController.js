@@ -20,6 +20,9 @@ Ext.define('Ung.config.network.NetworkController', {
         },
         '#interfaceArp': {
         },
+        'networktest': {
+            afterrender: 'networkTestRender'
+        }
         // '#apply': {
         //     click: 'saveSettings'
         // }
@@ -29,43 +32,31 @@ Ext.define('Ung.config.network.NetworkController', {
         var view = this.getView();
         var vm = this.getViewModel();
         var me = this;
-        // view.setLoading('Saving ...');
+        view.setLoading('Saving ...');
         // used to update all tabs data
         Ext.ComponentQuery.query('rules').forEach(function (grid) {
             var store = grid.getStore();
-
-            // console.log(grid.dataProperty);
-
-            // if (grid.dataProperty) {
-            //     grid.dataProperty.split('.').reduce(function index(obj, i) { console.log(obj); return obj[i]; });
-            // }
-
-            // console.log(vm.get('settings.' + grid.dataProperty + '.list'));
-
             if (store.getModifiedRecords().length > 0) {
+                store.each(function (record, id) {
+                    if (record.get('markedForDelete')) {
+                        record.drop();
+                    }
+                });
                 vm.set(grid.listProperty, Ext.Array.pluck(store.getRange(), 'data'));
-                console.log(grid.dataProperty);
-                // store.each(function (record, id) {
-                //     if (record.get('markedForDelete')) {
-                //         record.drop();
-                //     }
-                // });
-
-
-                // vm.get('settings')[grid.dataProperty].list = Ext.Array.pluck(store.getRange(), 'data');
-                // store.commitChanges();
+                store.commitChanges();
             }
         });
-        console.log(vm.get('settings'));
-        // rpc.networkManager.setNetworkSettings(function (result, ex) {
-        //     if (ex) {
-        //         console.log(ex);
-        //     }
-        //     console.log(result);
-        //     // vm.getStore('interfaces').reload();
-        //     view.setLoading(false);
-        //     // me.loadInterfaceStatusAndDevices();
-        // }, vm.get('settings'));
+
+        rpc.networkManager.setNetworkSettings(function (result, ex) {
+            view.setLoading(false);
+            if (ex) {
+                console.log(ex);
+                return;
+            }
+            console.log(result);
+            // vm.getStore('interfaces').reload();
+            // me.loadInterfaceStatusAndDevices();
+        }, vm.get('settings'));
     },
 
     loadSettings: function () {
@@ -366,6 +357,13 @@ Ext.define('Ung.config.network.NetworkController', {
     },
 
 
+
+
+
+    // Network Tests
+    networkTestRender: function (view) {
+        view.down('form').insert(0, view.commandFields);
+    },
     runTest: function (btn) {
         console.log(btn);
         var v = btn.up('networktest'),
@@ -373,46 +371,40 @@ Ext.define('Ung.config.network.NetworkController', {
             text = [],
             me = this;
 
-            // text.push(output.getValue());
-            // text.push('' + 'Test Started'.t() + '\n');
+            btn.setDisabled(true);
 
-            // output.setValue(text.join(''));
-
-            // console.log(v.getCommand());
+            text.push(output.getValue());
+            text.push('' + (new Date()) + ' - ' + 'Test Started'.t() + '\n');
 
             rpc.execManager.execEvil(function (result, ex1) {
-                me.readOutput(result, text, output);
-                // if (result) {
-                //     result.readFromOutput(function (res, ex2) {
-                //         console.log(res);
-                //         if (res) {
-                //             text.push(res);
-                //             Ext.Function.defer(me.runTest, 1000, me, [btn]);
-                //         } else {
-                //             text.push('Test Completed'.t());
-                //         }
-                //         output.setValue(text.join(''));
-                //     });
-                // }
-            }, v.getCommand());
+                me.readOutput(result, text, output, btn);
+            }, v.getViewModel().get('command'));
 
     },
-
-    readOutput: function (resultReader, text, output) {
+    readOutput: function (resultReader, text, output, btn) {
         var me = this;
-        // console.log(result);
+
         if (!resultReader) {
             return;
         }
         resultReader.readFromOutput(function (res, ex2) {
-            if (res) {
+            // console.log(res);
+            if (res !== null) {
                 text.push(res);
-                Ext.Function.defer(me.readOutput, 1000, me, [resultReader, text, output]);
+                Ext.Function.defer(me.readOutput, 1000, me, [resultReader, text, output, btn]);
             } else {
-                text.push('Test Completed'.t());
+                btn.setDisabled(false);
+                text.push('' + (new Date()) + ' - ' + 'Test Completed'.t());
+                text.push('\n\n--------------------------------------------------------\n\n');
             }
             output.setValue(text.join(''));
+            output.getEl().down('textarea').dom.scrollTop = 99999;
         });
+    },
+
+    clearOutput: function (btn) {
+        var v = btn.up('networktest');
+        v.down('textarea').setValue('');
     }
 
 

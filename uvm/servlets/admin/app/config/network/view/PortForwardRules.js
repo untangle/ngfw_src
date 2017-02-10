@@ -73,11 +73,7 @@ Ext.define('Ung.config.network.view.PortForwardRules', {
             },
         // },
 
-        bind: {
-            store: {
-                data: '{settings.portForwardRules.list}'
-            }
-        },
+        bind: '{portForwardRules}',
 
         columns: [{
             header: 'Rule Id'.t(),
