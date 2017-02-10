@@ -1,6 +1,6 @@
-Ext.define('Ung.config.network.Hostname', {
+Ext.define('Ung.config.network.view.Hostname', {
     extend: 'Ext.panel.Panel',
-    xtype: 'ung.config.network.hostname',
+    alias: 'widget.config.network.hostname',
 
     viewModel: true,
 

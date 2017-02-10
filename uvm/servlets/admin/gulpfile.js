@@ -125,7 +125,7 @@ gulp.task('lint', function () {
 
 gulp.task('config-modules', function () {
     for (var i = 0; i < configModules.length; i++) {
-        gulp.src(['./app/config/' + configModules[i] + '/*.js'])
+        gulp.src(['./app/config/' + configModules[i] + '/**/*.js'])
         // .pipe(jshint())
         .pipe(concat(configModules[i] + '.js'))
         // .pipe(uglify())
@@ -165,7 +165,7 @@ gulp.task('sass', function () {
 });
 
 gulp.task('modules-build', function () {
-    return gulp.src(['./app/config/' + moduleName + '/*.js'])
+    return gulp.src(['./app/config/' + moduleName + '/**/*.js'])
         .pipe(jshint())
         .pipe(concat(moduleName + '.js'))
         // .pipe(uglify())
@@ -189,6 +189,9 @@ gulp.task('watch', ['build'], function() {
         var arr = slash(file.path).split('/');
         arr.pop();
         moduleName = arr.pop();
+        if (moduleName === 'view') {
+            moduleName = arr.pop();
+        }
         console.log(gutil.colors.yellow('Building config [' + moduleName + '] ...'));
         gulp.start('modules-build', function () {
             browserSync.reload();

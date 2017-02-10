@@ -1,6 +1,6 @@
-Ext.define('Ung.config.network.Troubleshooting', {
+Ext.define('Ung.config.network.view.Troubleshooting', {
     extend: 'Ext.panel.Panel',
-    xtype: 'ung.config.network.troubleshooting',
+    alias: 'widget.config.network.troubleshooting',
 
     title: 'Troubleshooting'.t(),
 

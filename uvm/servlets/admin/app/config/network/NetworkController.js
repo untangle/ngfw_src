@@ -29,31 +29,43 @@ Ext.define('Ung.config.network.NetworkController', {
         var view = this.getView();
         var vm = this.getViewModel();
         var me = this;
-        view.setLoading('Saving ...');
+        // view.setLoading('Saving ...');
         // used to update all tabs data
         Ext.ComponentQuery.query('rules').forEach(function (grid) {
             var store = grid.getStore();
 
+            // console.log(grid.dataProperty);
+
+            // if (grid.dataProperty) {
+            //     grid.dataProperty.split('.').reduce(function index(obj, i) { console.log(obj); return obj[i]; });
+            // }
+
+            // console.log(vm.get('settings.' + grid.dataProperty + '.list'));
+
             if (store.getModifiedRecords().length > 0) {
+                vm.set(grid.listProperty, Ext.Array.pluck(store.getRange(), 'data'));
                 console.log(grid.dataProperty);
-                store.each(function (record, id) {
-                    if (record.get('markedForDelete')) {
-                        record.drop();
-                    }
-                });
-                vm.get('settings')[grid.dataProperty].list = Ext.Array.pluck(store.getRange(), 'data');
-                store.commitChanges();
+                // store.each(function (record, id) {
+                //     if (record.get('markedForDelete')) {
+                //         record.drop();
+                //     }
+                // });
+
+
+                // vm.get('settings')[grid.dataProperty].list = Ext.Array.pluck(store.getRange(), 'data');
+                // store.commitChanges();
             }
         });
-        rpc.networkManager.setNetworkSettings(function (result, ex) {
-            if (ex) {
-                console.log(ex);
-            }
-            console.log(result);
-            // vm.getStore('interfaces').reload();
-            view.setLoading(false);
-            // me.loadInterfaceStatusAndDevices();
-        }, vm.get('settings'));
+        console.log(vm.get('settings'));
+        // rpc.networkManager.setNetworkSettings(function (result, ex) {
+        //     if (ex) {
+        //         console.log(ex);
+        //     }
+        //     console.log(result);
+        //     // vm.getStore('interfaces').reload();
+        //     view.setLoading(false);
+        //     // me.loadInterfaceStatusAndDevices();
+        // }, vm.get('settings'));
     },
 
     loadSettings: function () {

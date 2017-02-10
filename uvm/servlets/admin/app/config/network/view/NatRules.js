@@ -1,6 +1,6 @@
-Ext.define('Ung.config.network.BypassRules', {
+Ext.define('Ung.config.network.view.NatRules', {
     extend: 'Ext.panel.Panel',
-    xtype: 'ung.config.network.bypassrules',
+    alias: 'widget.config.network.natrules',
 
     viewModel: true,
 
@@ -9,14 +9,14 @@ Ext.define('Ung.config.network.BypassRules', {
         // 'Ung.config.network.CondWidget'
     ],
 
-    title: 'Bypass Rules'.t(),
+    title: 'NAT Rules'.t(),
 
     layout: 'fit',
 
     tbar: [{
         xtype: 'displayfield',
         padding: '0 10',
-        value: 'Bypass Rules control what traffic is scanned by the applications. Bypassed traffic skips application processing. The rules are evaluated in order. Sessions that meet no rule are not bypassed.'.t()
+        value: 'NAT Rules control the rewriting of the IP source address of traffic (Network Address Translation). The rules are evaluated in order.'.t()
     }],
 
     items: [{
@@ -25,8 +25,8 @@ Ext.define('Ung.config.network.BypassRules', {
         columnFeatures: ['reorder', 'delete', 'edit'], // which columns to add
         recordActions: ['@edit', '@delete'],
 
-        dataProperty: 'bypassRules',
-        ruleJavaClass: 'com.untangle.uvm.network.BypassRuleCondition',
+        listProperty: 'settings.natRules.list',
+        ruleJavaClass: 'com.untangle.uvm.network.NatRuleCondition',
 
         conditions: [
             { name: 'DST_ADDR', displayName: 'Destination Address'.t(), type: 'textfield', visible: true, vtype:'ipall'},
@@ -44,8 +44,8 @@ Ext.define('Ung.config.network.BypassRules', {
         emptyRow: {
             ruleId: -1,
             enabled: true,
-            bypass: true,
-            javaClass: 'com.untangle.uvm.network.BypassRule',
+            auto: true,
+            javaClass: 'com.untangle.uvm.network.NatRule',
             conditions: {
                 javaClass: 'java.util.LinkedList',
                 list: []
@@ -55,7 +55,7 @@ Ext.define('Ung.config.network.BypassRules', {
 
         bind: {
             store: {
-                data: '{settings.bypassRules.list}'
+                data: '{settings.natRules.list}'
             }
         },
 
@@ -66,11 +66,7 @@ Ext.define('Ung.config.network.BypassRules', {
             resizable: false,
             dataIndex: 'ruleId',
             renderer: function(value) {
-                if (value < 0) {
-                    return 'new'.t();
-                } else {
-                    return value;
-                }
+                return value < 0 ? 'new'.t() : value;
             }
         }, {
             xtype: 'checkcolumn',
@@ -116,18 +112,44 @@ Ext.define('Ung.config.network.BypassRules', {
         //     handler: 'editRuleWin'
         // },
         {
-            header: 'Bypass'.t(),
-            xtype: 'checkcolumn',
-            dataIndex: 'bypass',
+            header: 'NAT Type'.t(),
+            dataIndex: 'auto',
             width: 100,
+            renderer: function (val) {
+                return val ? 'Auto'.t() : 'Custom'.t();
+            },
             editor: {
                 xtype: 'combo',
-                fieldLabel: 'Action'.t(),
-                bind: '{record.bypass}',
+                fieldLabel: 'NAT Type'.t(),
+                bind: '{record.auto}',
+                allowBlank: false,
                 editable: false,
-                store: [[true, 'Bypass'.t()], [false, 'Process'.t()]],
+                store: [[true, 'Auto'.t()], [false, 'Custom'.t()]],
                 queryMode: 'local'
                 // vtype: 'ipall'
+            }
+        }, {
+            header: 'New Source'.t(),
+            dataIndex: 'newSource',
+            // align: 'right',
+            width: 120,
+            renderer: function (value, metaData, record) {
+                return record.get('auto') ? '' : value;
+                // if (record.get('auto')) {
+                //     return '<span style="color: #999;">' + value + '</span>';
+                // }
+                // return value;
+            },
+            editor: {
+                xtype: 'textfield',
+                fieldLabel: 'New Source'.t(),
+                width: 100,
+                bind: {
+                    value: '{record.newSource}',
+                    disabled: '{record.auto}'
+                },
+                allowBlank: true,
+                vtype: 'ipall'
             }
         }],
     }]

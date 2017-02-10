@@ -1,6 +1,658 @@
-Ext.define('Ung.config.network.Advanced', {
+Ext.define('Ung.config.network.Network', {
+    extend: 'Ext.tab.Panel',
+    xtype: 'ung.config.network',
+
+    requires: [
+        'Ung.config.network.NetworkController',
+        'Ung.config.network.NetworkModel',
+
+        'Ung.view.grid.Grid',
+        'Ung.store.RuleConditions',
+        'Ung.store.Rule',
+        'Ung.cmp.Rules'
+    ],
+
+    controller: 'config.network',
+
+    viewModel: {
+        type: 'config.network'
+    },
+
+    // tabPosition: 'left',
+    // tabRotation: 0,
+    // tabStretchMax: false,
+
+    dockedItems: [{
+        xtype: 'toolbar',
+        weight: -10,
+        border: false,
+        items: [{
+            text: 'Back',
+            iconCls: 'fa fa-arrow-circle-left fa-lg',
+            hrefTarget: '_self',
+            href: '#config'
+        }, '-', {
+            xtype: 'component',
+            html: 'Network'
+        }],
+    }, {
+        xtype: 'toolbar',
+        dock: 'bottom',
+        border: false,
+        items: ['->', {
+            text: 'Apply Changes'.t(),
+            iconCls: 'fa fa-floppy-o fa-lg',
+            handler: 'saveSettings'
+        }]
+    }],
+
+    items: [{
+        xtype: 'config.network.interfaces'
+    }, {
+        xtype: 'config.network.hostname'
+    }, {
+        xtype: 'config.network.services'
+    },
+    // {
+    //     xtype: 'panel',
+    //     layout: 'border',
+    //     title: 'Mix',
+    //     items: [{
+    //         xtype: 'ung.config.network.portforwardrules',
+    //         region: 'center'
+    //     }, {
+    //         xtype: 'ung.config.network.natrules',
+    //         region: 'south',
+    //         height: 300
+    //     }]
+    // }
+    {
+        xtype: 'config.network.portforwardrules'
+    }, {
+        xtype: 'config.network.natrules'
+    }, {
+        xtype: 'config.network.bypassrules'
+    }, {
+        xtype: 'config.network.routes'
+    }, {
+        xtype: 'config.network.dnsserver'
+    }, {
+        xtype: 'config.network.dhcpserver'
+    }, {
+        xtype: 'config.network.advanced'
+    }, {
+        xtype: 'config.network.troubleshooting'
+    }
+    ]
+});
+Ext.define('Ung.config.network.NetworkController', {
+    extend: 'Ext.app.ViewController',
+
+    alias: 'controller.config.network',
+
+    control: {
+        '#': {
+            beforerender: 'loadSettings'
+        },
+        '#interfaces': {
+            beforeactivate: 'onInterfaces',
+
+        },
+        '#interfacesGrid': {
+            // select: 'onInterfaceSelect'
+        },
+        '#interfaceStatus': {
+            // activate: 'getInterfaceStatus',
+            beforeedit: function () { return false; }
+        },
+        '#interfaceArp': {
+        },
+        // '#apply': {
+        //     click: 'saveSettings'
+        // }
+    },
+
+    saveSettings: function () {
+        var view = this.getView();
+        var vm = this.getViewModel();
+        var me = this;
+        // view.setLoading('Saving ...');
+        // used to update all tabs data
+        Ext.ComponentQuery.query('rules').forEach(function (grid) {
+            var store = grid.getStore();
+
+            // console.log(grid.dataProperty);
+
+            // if (grid.dataProperty) {
+            //     grid.dataProperty.split('.').reduce(function index(obj, i) { console.log(obj); return obj[i]; });
+            // }
+
+            // console.log(vm.get('settings.' + grid.dataProperty + '.list'));
+
+            if (store.getModifiedRecords().length > 0) {
+                vm.set(grid.listProperty, Ext.Array.pluck(store.getRange(), 'data'));
+                console.log(grid.dataProperty);
+                // store.each(function (record, id) {
+                //     if (record.get('markedForDelete')) {
+                //         record.drop();
+                //     }
+                // });
+
+
+                // vm.get('settings')[grid.dataProperty].list = Ext.Array.pluck(store.getRange(), 'data');
+                // store.commitChanges();
+            }
+        });
+        console.log(vm.get('settings'));
+        // rpc.networkManager.setNetworkSettings(function (result, ex) {
+        //     if (ex) {
+        //         console.log(ex);
+        //     }
+        //     console.log(result);
+        //     // vm.getStore('interfaces').reload();
+        //     view.setLoading(false);
+        //     // me.loadInterfaceStatusAndDevices();
+        // }, vm.get('settings'));
+    },
+
+    loadSettings: function () {
+        var me = this;
+        rpc.networkManager.getNetworkSettings(function (result, ex) {
+            me.getViewModel().set('settings', result);
+            me.loadInterfaceStatusAndDevices();
+
+            console.log(result);
+            // interfaces = result.interfaces.list;
+        });
+    },
+
+    loadInterfaceStatusAndDevices: function () {
+        var me = this;
+        var vm = this.getViewModel(),
+            interfaces = vm.get('settings.interfaces.list'),
+            i, j, intfStatus, devStatus;
+        // load status
+        // vm.set('settings.interfaces.list[0].mbit', 2000);
+        // vm.notify();
+        rpc.networkManager.getInterfaceStatus(function (result, ex) {
+            for (i = 0; i < interfaces.length; i += 1) {
+                Ext.apply(interfaces[i], {
+                    'v4Address': null,
+                    'v4Netmask': null,
+                    'v4Gateway': null,
+                    'v4Dns1': null,
+                    'v4Dns2': null,
+                    'v4PrefixLength': null,
+                    'v6Address': null,
+                    'v6Gateway': null,
+                    'v6PrefixLength': null
+                });
+
+                for (j = 0; j < result.list.length; j += 1) {
+                    intfStatus = result.list[j];
+                    if (intfStatus.interfaceId === vm.get('settings.interfaces.list')[i].interfaceId) {
+                        Ext.apply(interfaces[i], {
+                            'v4Address': intfStatus.v4Address,
+                            'v4Netmask': intfStatus.v4Netmask,
+                            'v4Gateway': intfStatus.v4Gateway,
+                            'v4Dns1': intfStatus.v4Dns1,
+                            'v4Dns2': intfStatus.v4Dns2,
+                            'v4PrefixLength': intfStatus.v4PrefixLength,
+                            'v6Address': intfStatus.v6Address,
+                            'v6Gateway': intfStatus.v6Gateway,
+                            'v6PrefixLength': intfStatus.v6PrefixLength
+                        });
+                    }
+                }
+            }
+            vm.getStore('interfaces').reload();
+        });
+
+        rpc.networkManager.getDeviceStatus(function (result, ex) {
+            for (i = 0; i < interfaces.length; i += 1) {
+                Ext.apply(interfaces[i], {
+                    'deviceName': null,
+                    'macAddress': null,
+                    'duplex': null,
+                    'vendor': null,
+                    'mbit': null,
+                    'connected': null
+                });
+
+                for (j = 0; j < result.list.length; j += 1) {
+                    devStatus = result.list[j];
+                    if (devStatus.deviceName === interfaces[i].physicalDev) {
+                        Ext.apply(interfaces[i], {
+                            'deviceName': devStatus.deviceName,
+                            'macAddress': devStatus.macAddress,
+                            'duplex': devStatus.duplex,
+                            'vendor': devStatus.vendor,
+                            'mbit': devStatus.mbit,
+                            'connected': devStatus.connected
+                        });
+                    }
+                }
+            }
+            vm.getStore('interfaces').reload();
+        });
+
+    },
+
+    onInterfaces: function (view) {
+        console.log('load interf');
+        var me = this;
+        var vm = this.getViewModel();
+
+        vm.setFormulas({
+            si: {
+                bind: {
+                    bindTo: '{interfacesGrid.selection}',
+                    deep: true
+                },
+                get: function (intf) {
+                    if (intf) {
+                        me.getInterfaceStatus(intf.get('symbolicDev'));
+                        me.getInterfaceArp(intf.get('symbolicDev'));
+                    }
+                    return intf;
+                }
+            }
+        });
+
+        // vm.bind({
+        //     bindTo: '{interfacesGrid.selection}',
+        //     deep: true
+        // }, function (v) {
+        //     vm.set('si', v);
+        //     // return v;
+        // }, this);
+
+        // vm.bind('{si}', function (val) {
+        //     if (val) {
+        //         me.getInterfaceStatus(val.symbolicDev);
+        //         me.getInterfaceArp(val.symbolicDev);
+        //     }
+        // });
+
+        // vm.bind('{settings.interfaces}', function (v) {
+        //     // console.log(v);
+        // });
+
+    },
+
+    getInterface: function (i) {
+        return i;
+    },
+
+    // onInterfaceSelect: function (grid, record) {
+    //     this.getViewModel().set('si', record.getData());
+    // },
+
+    getInterfaceStatus: function (symbolicDev) {
+        var vm = this.getViewModel(),
+            command1 = 'ifconfig ' + symbolicDev + ' | grep "Link\\|packets" | grep -v inet6 | tr "\\n" " " | tr -s " " ',
+            command2 = 'ifconfig ' + symbolicDev + ' | grep "inet addr" | tr -s " " | cut -c 7- ',
+            command3 = 'ifconfig ' + symbolicDev + ' | grep inet6 | grep Global | cut -d" " -f 13',
+            stat = {
+                device: symbolicDev,
+                macAddress: null,
+                address: null,
+                mask: null,
+                v6Addr: null,
+                rxpkts: null,
+                rxerr: null,
+                rxdrop: null,
+                txpkts: null,
+                txerr: null,
+                txdrop: null
+            };
+
+        // vm.set('siStatus', stat);
+
+        rpc.execManager.execOutput(function (result, ex) {
+            if(Ext.isEmpty(result)) {
+                return;
+            }
+            if (result.search('Device not found') >= 0) {
+                return;
+            }
+            var lineparts = result.split(' ');
+            if (result.search('Ethernet') >= 0) {
+                Ext.apply(stat, {
+                    macAddress: lineparts[4],
+                    rxpkts: lineparts[6].split(':')[1],
+                    rxerr: lineparts[7].split(':')[1],
+                    rxdrop: lineparts[8].split(':')[1],
+                    txpkts: lineparts[12].split(':')[1],
+                    txerr: lineparts[13].split(':')[1],
+                    txdrop: lineparts[14].split(':')[1]
+                });
+            }
+            if (result.search('Point-to-Point') >= 0) {
+                Ext.apply(stat, {
+                    macAddress: '',
+                    rxpkts: lineparts[5].split(':')[1],
+                    rxerr: lineparts[6].split(':')[1],
+                    rxdrop: lineparts[7].split(':')[1],
+                    txpkts: lineparts[11].split(':')[1],
+                    txerr: lineparts[12].split(':')[1],
+                    txdrop: lineparts[13].split(':')[1]
+                });
+            }
+
+            rpc.execManager.execOutput(function (result, ex) {
+                if(Ext.isEmpty(result)) {
+                    return;
+                }
+                var linep = result.split(' ');
+                Ext.apply(stat, {
+                    address: linep[0].split(':')[1],
+                    mask: linep[2].split(':')[1]
+                });
+
+                rpc.execManager.execOutput(function (result, ex) {
+                    Ext.apply(stat, {
+                        v6Addr: result
+                    });
+                    vm.set('siStatus', stat);
+                }, command3);
+            }, command2);
+        }, command1);
+    },
+
+    getInterfaceArp: function (symbolicDev) {
+        var vm = this.getViewModel();
+        var arpCommand = 'arp -n | grep ' + symbolicDev + ' | grep -v incomplete > /tmp/arp.txt ; cat /tmp/arp.txt';
+        rpc.execManager.execOutput(function (result, ex) {
+            var lines = Ext.isEmpty(result) ? []: result.split('\n');
+            var lparts, connections = [];
+            for (var i = 0 ; i < lines.length; i++ ) {
+                if (!Ext.isEmpty(lines[i])) {
+                    lparts = lines[i].split(/\s+/);
+                    connections.push({
+                        address: lparts[0],
+                        type: lparts[1],
+                        macAddress: lparts[2]
+                    });
+                }
+            }
+            vm.set('siArp', connections);
+            // vm.getStore('interfaceArp').reload();
+        }, arpCommand);
+    },
+
+
+    editWin: function () {
+        // console.log(this.getViewModel());
+        // var pf = this.getViewModel().get('portforwardrules');
+        // // console.log(pf);
+        // pf.getAt(0).data.conditions.list[0].value = 'false';
+        // console.log(pf.getAt(0));
+
+        // pf.getAt(0).set('description', 'aaa');
+        // pf.getAt(0).set('conditions', {
+        //     list: [{
+        //         conditionType: 'DST_LOCAL'
+        //     }]
+        // });
+
+        // Ext.widget('ung.config.network.editorwin', {
+        //     // config: {
+        //         conditions: [
+        //             {name:"DST_LOCAL",displayName: 'Destined Local'.t(), type: "boolean", visible: true},
+        //             {name:"DST_ADDR",displayName: 'Destination Address'.t(), type: "text", visible: true, vtype:"ipMatcher"},
+        //             {name:"DST_PORT",displayName: 'Destination Port'.t(), type: "text",vtype:"portMatcher", visible: true},
+        //             {name:"SRC_ADDR",displayName: 'Source Address'.t(), type: "text", visible: true, vtype:"ipMatcher"},
+        //             {name:"SRC_PORT",displayName: 'Source Port'.t(), type: "text",vtype:"portMatcher", visible: rpc.isExpertMode},
+        //             {name:"SRC_INTF",displayName: 'Source Interface'.t(), type: "checkgroup", values: Ung.Util.getInterfaceList(true, true), visible: true},
+        //             {name:"PROTOCOL",displayName: 'Protocol'.t(), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true}
+        //         ],
+        //         rule: record,
+        //         viewModel: {
+        //             data: {
+        //                 rule:
+        //             }
+        //         }
+            // }
+            // conditions: {
+            //     DST_LOCAL: {displayName: 'Destined Local'.t(), type: "boolean", visible: true},
+            //     DST_ADDR: {displayName: 'Destination Address'.t(), type: "text", visible: true, vtype:"ipMatcher"},
+            //     DST_PORT: {displayName: 'Destination Port'.t(), type: "text", vtype:"portMatcher", visible: true},
+            //     PROTOCOL: {displayName: 'Protocol'.t(), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true}
+            // },
+            // viewModel: {
+            //     data: {
+            //         rule: record
+            //     }
+            // },
+        // });
+
+
+    },
+
+    refreshRoutes: function () {
+        var v = this.getView();
+        rpc.execManager.exec(function (result, ex) {
+            v.down('#currentRoutes').setValue(result.output);
+        }, '/usr/share/untangle/bin/ut-routedump.sh');
+    },
+
+
+    refreshQosStatistics: function () {
+        rpc.execManager.execOutput(function (result, exception) {
+            // if(Ung.Util.handleException(exception)) return;
+            console.log(result);
+            var list = [];
+            try {
+                // list = eval(result);
+            } catch (e) {
+                // console.error("Could not execute /usr/share/untangle-netd/bin/qos-service.py output: ", result, e);
+            }
+            // handler ({list: list}, exception);
+        }, '/usr/share/untangle-netd/bin/qos-service.py status');
+    },
+
+
+    runTest: function (btn) {
+        console.log(btn);
+        var v = btn.up('networktest'),
+            output = v.down('textarea'),
+            text = [],
+            me = this;
+
+            // text.push(output.getValue());
+            // text.push('' + 'Test Started'.t() + '\n');
+
+            // output.setValue(text.join(''));
+
+            // console.log(v.getCommand());
+
+            rpc.execManager.execEvil(function (result, ex1) {
+                me.readOutput(result, text, output);
+                // if (result) {
+                //     result.readFromOutput(function (res, ex2) {
+                //         console.log(res);
+                //         if (res) {
+                //             text.push(res);
+                //             Ext.Function.defer(me.runTest, 1000, me, [btn]);
+                //         } else {
+                //             text.push('Test Completed'.t());
+                //         }
+                //         output.setValue(text.join(''));
+                //     });
+                // }
+            }, v.getCommand());
+
+    },
+
+    readOutput: function (resultReader, text, output) {
+        var me = this;
+        // console.log(result);
+        if (!resultReader) {
+            return;
+        }
+        resultReader.readFromOutput(function (res, ex2) {
+            if (res) {
+                text.push(res);
+                Ext.Function.defer(me.readOutput, 1000, me, [resultReader, text, output]);
+            } else {
+                text.push('Test Completed'.t());
+            }
+            output.setValue(text.join(''));
+        });
+    }
+
+
+});
+Ext.define('Ung.config.network.NetworkModel', {
+    extend: 'Ext.app.ViewModel',
+
+    alias: 'viewmodel.config.network',
+
+    formulas: {
+        // used in view when showing/hiding interface specific configurations
+        isAddressed: function (get) { return get('si.configType') === 'ADDRESSED'; },
+        isDisabled: function (get) { return get('si.configType') === 'DISABLED'; },
+        isBridged: function (get) { return get('si.configType') === 'BRIDGED'; },
+        isStaticv4: function (get) { return get('si.v4ConfigType') === 'STATIC'; },
+        isAutov4: function (get) { return get('si.v4ConfigType') === 'AUTO'; },
+        isPPPOEv4: function (get) { return get('si.v4ConfigType') === 'PPPOE'; },
+        isDisabledv6: function (get) { return get('si.v6ConfigType') === 'DISABLED'; },
+        isStaticv6: function (get) { return get('si.v6ConfigType') === 'STATIC'; },
+        isAutov6: function (get) { return get('si.v6ConfigType') === 'AUTO'; },
+        showRouterWarning: function (get) { return get('si.v6StaticPrefixLength') !== 64; },
+        showWireless: function (get) { return get('si.isWirelessInterface') && get('si.configType') !== 'DISABLED'; },
+        showWirelessPassword: function (get) { return get('si.wirelessEncryption') !== 'NONE' && get('si.wirelessEncryption') !== null; },
+        activePropsItem: function (get) { return get('si.configType') !== 'DISABLED' ? 0 : 2; },
+
+        fullHostName: function (get) {
+            var domain = get('settings.domainName'),
+                host = get('settings.hostName');
+            if (domain !== null && domain !== '') {
+                return host + "." + domain;
+            }
+            return host;
+        },
+
+        // conditionsData: {
+        //     bind: '{rule.conditions.list}',
+        //     get: function (coll) {
+        //         return coll || [];
+        //     }
+        // },
+        portForwardRulesData: {
+            bind: '{settings.portForwardRules.list}',
+            get: function (rules) {
+                return rules || null;
+            }
+        },
+
+        natRulesData: {
+            bind: '{settings.natRules.list}',
+            get: function (rules) {
+                return rules || null;
+            }
+        },
+
+        qosPriorityNoDefaultStore: function (get) {
+            return get('qosPriorityStore').slice(1);
+        }
+    },
+    data: {
+        // si = selected interface (from grid)
+        settings: null,
+        // si: null,
+        siStatus: null,
+        siArp: null,
+
+        qosPriorityStore: [
+            [0, 'Default'.t()],
+            [1, 'Very High'.t()],
+            [2, 'High'.t()],
+            [3, 'Medium'.t()],
+            [4, 'Low'.t()],
+            [5, 'Limited'.t()],
+            [6, 'Limited More'.t()],
+            [7, 'Limited Severely'.t()]
+        ],
+    },
+    stores: {
+        // store which holds interfaces settings
+        interfaces: {
+            data: '{settings.interfaces.list}'
+        },
+        interfaceArp: {
+            data: '{siArp}'
+        },
+
+        portforwardrules: {
+            // type: 'rule',
+            // data: '{settings.portForwardRules}'
+            data: '{portForwardRulesData}'
+        },
+
+        natrules: {
+            // type: 'rule',
+            // data: '{settings.portForwardRules}'
+            data: '{natRulesData}'
+        },
+
+
+    }
+});
+Ext.define('Ung.config.network.NetworkTest', {
     extend: 'Ext.panel.Panel',
-    xtype: 'ung.config.network.advanced',
+    xtype: 'ung.config.networktest',
+    alias: 'widget.networktest',
+
+    tbar: [{
+        xtype: 'displayfield',
+        padding: '0 10',
+        bind: '{description}'
+    }],
+
+    layout: 'fit',
+
+    config: {
+        command: null
+    },
+
+    actions: {
+        runTest: {
+            text: 'Run Test'.t(),
+            handler: 'runTest'
+        }
+    },
+
+    items: [{
+        xtype: 'panel',
+        tbar: ['@runTest'],
+        layout: 'fit',
+        items: [{
+            xtype: 'textarea',
+            border: false,
+            bind: {
+                emptyText: '{emptyText}'
+            },
+            fieldStyle: {
+                fontFamily: 'Courier, monospace',
+                fontSize: '14px',
+                background: '#1b1e26',
+                color: 'lime'
+            },
+            // margin: 10,
+            readOnly: true
+        }]
+    }]
+
+    // initComponent: function () {
+    //     this.callParent(arguments);
+    // }
+});
+Ext.define('Ung.config.network.view.Advanced', {
+    extend: 'Ext.panel.Panel',
+
+    alias: 'widget.config.network.advanced',
 
     viewModel: true,
 
@@ -79,12 +731,15 @@ Ext.define('Ung.config.network.Advanced', {
                 collapsible: true,
                 animCollapse: false,
                 titleCollapse: true,
-                minHeight: 100
+                minHeight: 150
             },
             items: [{
                 xtype: 'panel',
                 title: 'QoS'.t(),
                 bodyPadding: 10,
+                layout: {
+                    type: 'hbox'
+                },
                 defaults: {
                     labelAlign: 'right',
                     labelWidth: 120,
@@ -96,18 +751,12 @@ Ext.define('Ung.config.network.Advanced', {
                 }, {
                     xtype: 'combo',
                     fieldLabel: 'Default Priority'.t(),
-                    bind: '{settings.qosSettings.defaultPriority}',
+                    bind: {
+                        store: '{qosPriorityNoDefaultStore}',
+                        value: '{settings.qosSettings.defaultPriority}'
+                    },
                     queryMode: 'local',
-                    editable: false,
-                    store: [
-                        [1, 'Very High'.t()],
-                        [2, 'High'.t()],
-                        [3, 'Medium'.t()],
-                        [4, 'Low'.t()],
-                        [5, 'Limited'.t()],
-                        [6, 'Limited More'.t()],
-                        [7, 'Limited Severely'.t()]
-                    ]
+                    editable: false
                 }]
             }, {
                 xtype: 'panel',
@@ -121,20 +770,33 @@ Ext.define('Ung.config.network.Advanced', {
                 }],
 
                 items: [{
-                    xtype: 'grid',
+                    xtype: 'rules',
+
+                    listProperty: 'settings.interfaces.list',
+
+                    bind: {
+                        store: {
+                            data: '{settings.interfaces.list}',
+                            filters: [{ property: 'configType', value: 'ADDRESSED' }, { property: 'isWan', value: true }]
+                        }
+                    },
+
+                    selModel: {
+                        type: 'cellmodel'
+                    },
+
+                    plugins: {
+                        ptype: 'cellediting',
+                        clicksToEdit: 1
+                    },
+
+
                     header: false,
                     columns: [{
                         header: 'Id'.t(),
                         width: 70,
                         align: 'right',
-                        dataIndex: 'interfaceId',
-                        renderer: function(value) {
-                            if (value < 0) {
-                                return i18n._("new");
-                            } else {
-                                return value;
-                            }
-                        }
+                        dataIndex: 'interfaceId'
                     }, {
                         header: 'WAN'.t(),
                         flex: 1,
@@ -146,40 +808,28 @@ Ext.define('Ung.config.network.Advanced', {
                     }, {
                         header: 'Download Bandwidth'.t(),
                         dataIndex: 'downloadBandwidthKbps',
-                        width: 180,
+                        width: 200,
                         editor: {
                             xtype: 'numberfield',
                             allowBlank : false,
                             allowDecimals: false,
                             minValue: 0
                         },
-                        renderer: function( value, metadata, record ) {
-                            if (Ext.isEmpty(value)) {
-                                return 'Not set'.t();
-                            } else {
-                                return value;
-                                // var mbit_value = value/1000;
-                                // return value + " kbps" + " (" + mbit_value + " Mbit" + ")";
-                            }
+                        renderer: function (value) {
+                            return Ext.isEmpty(value) ? 'Not set'.t() : value + ' kbps' + ' (' + value/1000 + ' Mbit' + ')';
                         }
                     }, {
                         header: 'Upload Bandwidth'.t(),
                         dataIndex: 'uploadBandwidthKbps',
-                        width: 180,
+                        width: 200,
                         editor: {
                             xtype: 'numberfield',
                             allowBlank : false,
                             allowDecimals: false,
                             minValue: 0
                         },
-                        renderer: function( value, metadata, record ) {
-                            if (Ext.isEmpty(value)) {
-                                return 'Not set'.t();
-                            } else {
-                                return value;
-                                // var mbit_value = value/1000;
-                                // return value + " kbps" + " (" + mbit_value + " Mbit" + ")";
-                            }
+                        renderer: function (value) {
+                            return Ext.isEmpty(value) ? 'Not set'.t() : value + ' kbps' + ' (' + value/1000 + ' Mbit' + ')';
                         }
                     }]
                 }]
@@ -192,30 +842,32 @@ Ext.define('Ung.config.network.Advanced', {
                     labelAlign: 'right',
                     labelWidth: 120,
                     editable: false,
-                    queryMode: 'local',
-                    store: [
-                        [0, 'Default'.t()],
-                        [1, 'Very High'.t()],
-                        [2, 'High'.t()],
-                        [3, 'Medium'.t()],
-                        [4, 'Low'.t()],
-                        [5, 'Limited'.t()],
-                        [6, 'Limited More'.t()],
-                        [7, 'Limited Severely'.t()]
-                    ]
+                    queryMode: 'local'
                 },
                 items: [{
                     fieldLabel: 'Ping Priority'.t(),
-                    bind: '{settings.qosSettings.pingPriority}'
+                    bind: {
+                        store: '{qosPriorityStore}',
+                        value: '{settings.qosSettings.pingPriority}'
+                    }
                 }, {
                     fieldLabel: 'DNS Priority'.t(),
-                    bind: '{settings.qosSettings.dnsPriority}'
+                    bind: {
+                        store: '{qosPriorityStore}',
+                        value: '{settings.qosSettings.dnsPriority}'
+                    }
                 }, {
                     fieldLabel: 'SSH Priority'.t(),
-                    bind: '{settings.qosSettings.sshPriority}'
+                    bind: {
+                        store: '{qosPriorityStore}',
+                        value: '{settings.qosSettings.sshPriority}'
+                    }
                 }, {
                     fieldLabel: 'OpenVPN Priority'.t(),
-                    bind: '{settings.qosSettings.openvpnPriority}'
+                    bind: {
+                        store: '{qosPriorityStore}',
+                        value: '{settings.qosSettings.openvpnPriority}'
+                    }
                 }]
             }, {
                 xtype: 'rules',
@@ -224,7 +876,7 @@ Ext.define('Ung.config.network.Advanced', {
                 columnFeatures: ['reorder', 'delete', 'edit'], // which columns to add
                 recordActions: ['@edit', '@delete'],
 
-                // dataProperty: 'portForwardRules',
+                listProperty: 'settings.qosSettings.qosRules.list',
                 // ruleJavaClass: 'com.untangle.uvm.network.PortForwardRuleCondition',
 
                 conditions: [
@@ -236,6 +888,8 @@ Ext.define('Ung.config.network.Advanced', {
                     { name: 'SRC_INTF', displayName: 'Source Interface'.t(), type: 'checkboxgroup', values: [['a', 'a'], ['b', 'b']], visible: true},
                     { name: 'PROTOCOL', displayName: 'Protocol'.t(), type: 'checkboxgroup', values: [['TCP','TCP'],['UDP','UDP'],['ICMP','ICMP'],['GRE','GRE'],['ESP','ESP'],['AH','AH'],['SCTP','SCTP']], visible: true}
                 ],
+
+                label: 'Perform the following action(s):'.t(),
 
                 tbar: [{
                     xtype: 'component',
@@ -256,11 +910,7 @@ Ext.define('Ung.config.network.Advanced', {
                     resizable: false,
                     dataIndex: 'ruleId',
                     renderer: function(value) {
-                        if (value < 0) {
-                            return 'new'.t();
-                        } else {
-                            return value;
-                        }
+                        return value < 0 ? 'new'.t() : value;
                     }
                 }, {
                     xtype: 'checkcolumn',
@@ -303,8 +953,20 @@ Ext.define('Ung.config.network.Advanced', {
                     header: 'Priority'.t(),
                     width: 100,
                     dataIndex: 'priority',
+                    renderer: function (value) {
+                        switch (value) {
+                            case 1: return 'Very High'.t();
+                            case 2: return 'High'.t();
+                            case 3: return 'Medium'.t();
+                            case 4: return 'Low'.t();
+                            case 5: return 'Limited'.t();
+                            case 6: return 'Limited More'.t();
+                            case 7: return 'Limited Severely'.t();
+                        }
+                    },
                     editor: {
                         xtype: 'combo',
+                        fieldLabel: 'Priority'.t(),
                         store: [
                             [1, 'Very High'.t()],
                             [2, 'High'.t()],
@@ -314,6 +976,7 @@ Ext.define('Ung.config.network.Advanced', {
                             [6, 'Limited More'.t()],
                             [7, 'Limited Severely'.t()]
                         ],
+                        bind: '{record.priority}',
                         queryMode: 'local',
                         editable: false
                     }
@@ -449,7 +1112,7 @@ Ext.define('Ung.config.network.Advanced', {
                 columnFeatures: ['reorder', 'delete', 'edit'], // which columns to add
                 recordActions: ['@edit', '@delete'],
 
-                dataProperty: 'forwardFilterRules',
+                listProperty: 'settings.forwardFilterRules.list',
 
                 label: 'Perform the following action(s):'.t(),
 
@@ -561,7 +1224,7 @@ Ext.define('Ung.config.network.Advanced', {
                 columnFeatures: ['reorder', 'delete', 'edit'], // which columns to add
                 recordActions: ['@edit', '@delete'],
 
-                dataProperty: 'inputFilterRules',
+                listProperty: 'settings.inputFilterRules.list',
 
                 label: 'Perform the following action(s):'.t(),
 
@@ -733,7 +1396,7 @@ Ext.define('Ung.config.network.Advanced', {
                 columnFeatures: ['reorder', 'delete', 'edit'], // which columns to add
                 recordActions: ['@edit', '@delete'],
 
-                dataProperty: 'settings.upnpSettings.upnpRules',
+                listProperty: 'settings.upnpSettings.upnpRules.list',
 
                 conditions: [
                     { name: 'DST_PORT', displayName: 'Destination Port'.t(), type: "textfield", vtype: 'port', visible: true },
@@ -914,9 +1577,10 @@ Ext.define('Ung.config.network.Advanced', {
         }]
     }]
 });
-Ext.define('Ung.config.network.BypassRules', {
+Ext.define('Ung.config.network.view.BypassRules', {
     extend: 'Ext.panel.Panel',
-    xtype: 'ung.config.network.bypassrules',
+    // xtype: 'ung.config.network.bypassrules',
+    alias: 'widget.config.network.bypassrules',
 
     viewModel: true,
 
@@ -941,7 +1605,7 @@ Ext.define('Ung.config.network.BypassRules', {
         columnFeatures: ['reorder', 'delete', 'edit'], // which columns to add
         recordActions: ['@edit', '@delete'],
 
-        dataProperty: 'bypassRules',
+        listProperty: 'settings.bypassRules.list',
         ruleJavaClass: 'com.untangle.uvm.network.BypassRuleCondition',
 
         conditions: [
@@ -982,11 +1646,7 @@ Ext.define('Ung.config.network.BypassRules', {
             resizable: false,
             dataIndex: 'ruleId',
             renderer: function(value) {
-                if (value < 0) {
-                    return 'new'.t();
-                } else {
-                    return value;
-                }
+                return value < 0 ? 'new'.t() : value;
             }
         }, {
             xtype: 'checkcolumn',
@@ -1048,10 +1708,10 @@ Ext.define('Ung.config.network.BypassRules', {
         }],
     }]
 });
-Ext.define('Ung.config.network.DhcpServer', {
+Ext.define('Ung.config.network.view.DhcpServer', {
     extend: 'Ext.panel.Panel',
-    xtype: 'ung.config.network.dhcpserver',
 
+    alias: 'widget.config.network.dhcpserver',
     viewModel: true,
 
     title: 'DHCP Server'.t(),
@@ -1067,7 +1727,7 @@ Ext.define('Ung.config.network.DhcpServer', {
         columnFeatures: ['delete'], // which columns to add
         recordActions: ['@delete'],
 
-        dataProperty: 'staticRoutes',
+        listProperty: 'settings.staticRoutes.list',
 
         // },
 
@@ -1149,9 +1809,9 @@ Ext.define('Ung.config.network.DhcpServer', {
 
     }]
 });
-Ext.define('Ung.config.network.DnsServer', {
+Ext.define('Ung.config.network.view.DnsServer', {
     extend: 'Ext.panel.Panel',
-    xtype: 'ung.config.network.dnsserver',
+    alias: 'widget.config.network.dnsserver',
 
     viewModel: true,
 
@@ -1168,7 +1828,7 @@ Ext.define('Ung.config.network.DnsServer', {
         columnFeatures: ['delete'], // which columns to add
         recordActions: ['@delete'],
 
-        dataProperty: 'staticRoutes',
+        listProperty: 'settings.dnsSettings.staticEntries.list',
 
         // },
 
@@ -1212,7 +1872,7 @@ Ext.define('Ung.config.network.DnsServer', {
         columnFeatures: ['delete'], // which columns to add
         recordActions: ['@delete'],
 
-        dataProperty: 'staticRoutes',
+        listProperty: 'settings.dnsSettings.localServers.list',
 
         // },
 
@@ -1244,9 +1904,9 @@ Ext.define('Ung.config.network.DnsServer', {
         }],
     }]
 });
-Ext.define('Ung.config.network.Hostname', {
+Ext.define('Ung.config.network.view.Hostname', {
     extend: 'Ext.panel.Panel',
-    xtype: 'ung.config.network.hostname',
+    alias: 'widget.config.network.hostname',
 
     viewModel: true,
 
@@ -1404,9 +2064,9 @@ Ext.define('Ung.config.network.Hostname', {
         }]
     }]
 });
-Ext.define('Ung.config.network.Interfaces', {
+Ext.define('Ung.config.network.view.Interfaces', {
     extend: 'Ext.panel.Panel',
-    xtype: 'ung.config.network.interfaces', //..
+    alias: 'widget.config.network.interfaces', //..
 
     title: 'Interfaces'.t(),
     layout: 'border',
@@ -2173,9 +2833,9 @@ Ext.define('Ung.config.network.Interfaces', {
         }]
     }]
 });
-Ext.define('Ung.config.network.NatRules', {
+Ext.define('Ung.config.network.view.NatRules', {
     extend: 'Ext.panel.Panel',
-    xtype: 'ung.config.network.natrules',
+    alias: 'widget.config.network.natrules',
 
     viewModel: true,
 
@@ -2200,7 +2860,7 @@ Ext.define('Ung.config.network.NatRules', {
         columnFeatures: ['reorder', 'delete', 'edit'], // which columns to add
         recordActions: ['@edit', '@delete'],
 
-        dataProperty: 'natRules',
+        listProperty: 'settings.natRules.list',
         ruleJavaClass: 'com.untangle.uvm.network.NatRuleCondition',
 
         conditions: [
@@ -2241,11 +2901,7 @@ Ext.define('Ung.config.network.NatRules', {
             resizable: false,
             dataIndex: 'ruleId',
             renderer: function(value) {
-                if (value < 0) {
-                    return 'new'.t();
-                } else {
-                    return value;
-                }
+                return value < 0 ? 'new'.t() : value;
             }
         }, {
             xtype: 'checkcolumn',
@@ -2333,631 +2989,9 @@ Ext.define('Ung.config.network.NatRules', {
         }],
     }]
 });
-Ext.define('Ung.config.network.Network', {
-    extend: 'Ext.tab.Panel',
-    xtype: 'ung.config.network',
-
-    requires: [
-        'Ung.config.network.NetworkController',
-        'Ung.config.network.NetworkModel',
-
-        'Ung.view.grid.Grid',
-        'Ung.store.RuleConditions',
-        'Ung.store.Rule',
-        'Ung.cmp.Rules'
-    ],
-
-    controller: 'config.network',
-
-    viewModel: {
-        type: 'config.network'
-    },
-
-    // tabPosition: 'left',
-    // tabRotation: 0,
-    // tabStretchMax: false,
-
-    dockedItems: [{
-        xtype: 'toolbar',
-        weight: -10,
-        border: false,
-        items: [{
-            text: 'Back',
-            iconCls: 'fa fa-arrow-circle-left fa-lg',
-            hrefTarget: '_self',
-            href: '#config'
-        }, '-', {
-            xtype: 'component',
-            html: 'Network'
-        }],
-    }, {
-        xtype: 'toolbar',
-        dock: 'bottom',
-        border: false,
-        items: ['->', {
-            text: 'Apply Changes'.t(),
-            iconCls: 'fa fa-floppy-o fa-lg',
-            handler: 'saveSettings'
-        }]
-    }],
-
-    items: [{
-        xtype: 'ung.config.network.interfaces'
-    }, {
-        xtype: 'ung.config.network.hostname'
-    }, {
-        xtype: 'ung.config.network.services'
-    },
-    // {
-    //     xtype: 'panel',
-    //     layout: 'border',
-    //     title: 'Mix',
-    //     items: [{
-    //         xtype: 'ung.config.network.portforwardrules',
-    //         region: 'center'
-    //     }, {
-    //         xtype: 'ung.config.network.natrules',
-    //         region: 'south',
-    //         height: 300
-    //     }]
-    // }
-    {
-        xtype: 'ung.config.network.portforwardrules'
-    }, {
-        xtype: 'ung.config.network.natrules'
-    }, {
-        xtype: 'ung.config.network.bypassrules'
-    }, {
-        xtype: 'ung.config.network.routes'
-    }, {
-        xtype: 'ung.config.network.dnsserver'
-    }, {
-        xtype: 'ung.config.network.dhcpserver'
-    }, {
-        xtype: 'ung.config.network.advanced'
-    }, {
-        xtype: 'ung.config.network.troubleshooting'
-    }
-    ]
-});
-Ext.define('Ung.config.network.NetworkController', {
-    extend: 'Ext.app.ViewController',
-
-    alias: 'controller.config.network',
-
-    control: {
-        '#': {
-            beforerender: 'loadSettings'
-        },
-        '#interfaces': {
-            beforeactivate: 'onInterfaces',
-
-        },
-        '#interfacesGrid': {
-            // select: 'onInterfaceSelect'
-        },
-        '#interfaceStatus': {
-            // activate: 'getInterfaceStatus',
-            beforeedit: function () { return false; }
-        },
-        '#interfaceArp': {
-        },
-        // '#apply': {
-        //     click: 'saveSettings'
-        // }
-    },
-
-    saveSettings: function () {
-        var view = this.getView();
-        var vm = this.getViewModel();
-        var me = this;
-        view.setLoading('Saving ...');
-        // used to update all tabs data
-        Ext.ComponentQuery.query('rules').forEach(function (grid) {
-            var store = grid.getStore();
-
-            if (store.getModifiedRecords().length > 0) {
-                console.log(grid.dataProperty);
-                store.each(function (record, id) {
-                    if (record.get('markedForDelete')) {
-                        record.drop();
-                    }
-                });
-                vm.get('settings')[grid.dataProperty].list = Ext.Array.pluck(store.getRange(), 'data');
-                store.commitChanges();
-            }
-        });
-        rpc.networkManager.setNetworkSettings(function (result, ex) {
-            if (ex) {
-                console.log(ex);
-            }
-            console.log(result);
-            // vm.getStore('interfaces').reload();
-            view.setLoading(false);
-            // me.loadInterfaceStatusAndDevices();
-        }, vm.get('settings'));
-    },
-
-    loadSettings: function () {
-        var me = this;
-        rpc.networkManager.getNetworkSettings(function (result, ex) {
-            me.getViewModel().set('settings', result);
-            me.loadInterfaceStatusAndDevices();
-
-            console.log(result);
-            // interfaces = result.interfaces.list;
-        });
-    },
-
-    loadInterfaceStatusAndDevices: function () {
-        var me = this;
-        var vm = this.getViewModel(),
-            interfaces = vm.get('settings.interfaces.list'),
-            i, j, intfStatus, devStatus;
-        // load status
-        // vm.set('settings.interfaces.list[0].mbit', 2000);
-        // vm.notify();
-        rpc.networkManager.getInterfaceStatus(function (result, ex) {
-            for (i = 0; i < interfaces.length; i += 1) {
-                Ext.apply(interfaces[i], {
-                    'v4Address': null,
-                    'v4Netmask': null,
-                    'v4Gateway': null,
-                    'v4Dns1': null,
-                    'v4Dns2': null,
-                    'v4PrefixLength': null,
-                    'v6Address': null,
-                    'v6Gateway': null,
-                    'v6PrefixLength': null
-                });
-
-                for (j = 0; j < result.list.length; j += 1) {
-                    intfStatus = result.list[j];
-                    if (intfStatus.interfaceId === vm.get('settings.interfaces.list')[i].interfaceId) {
-                        Ext.apply(interfaces[i], {
-                            'v4Address': intfStatus.v4Address,
-                            'v4Netmask': intfStatus.v4Netmask,
-                            'v4Gateway': intfStatus.v4Gateway,
-                            'v4Dns1': intfStatus.v4Dns1,
-                            'v4Dns2': intfStatus.v4Dns2,
-                            'v4PrefixLength': intfStatus.v4PrefixLength,
-                            'v6Address': intfStatus.v6Address,
-                            'v6Gateway': intfStatus.v6Gateway,
-                            'v6PrefixLength': intfStatus.v6PrefixLength
-                        });
-                    }
-                }
-            }
-            vm.getStore('interfaces').reload();
-        });
-
-        rpc.networkManager.getDeviceStatus(function (result, ex) {
-            for (i = 0; i < interfaces.length; i += 1) {
-                Ext.apply(interfaces[i], {
-                    'deviceName': null,
-                    'macAddress': null,
-                    'duplex': null,
-                    'vendor': null,
-                    'mbit': null,
-                    'connected': null
-                });
-
-                for (j = 0; j < result.list.length; j += 1) {
-                    devStatus = result.list[j];
-                    if (devStatus.deviceName === interfaces[i].physicalDev) {
-                        Ext.apply(interfaces[i], {
-                            'deviceName': devStatus.deviceName,
-                            'macAddress': devStatus.macAddress,
-                            'duplex': devStatus.duplex,
-                            'vendor': devStatus.vendor,
-                            'mbit': devStatus.mbit,
-                            'connected': devStatus.connected
-                        });
-                    }
-                }
-            }
-            vm.getStore('interfaces').reload();
-        });
-
-    },
-
-    onInterfaces: function (view) {
-        console.log('load interf');
-        var me = this;
-        var vm = this.getViewModel();
-
-        vm.setFormulas({
-            si: {
-                bind: {
-                    bindTo: '{interfacesGrid.selection}',
-                    deep: true
-                },
-                get: function (intf) {
-                    if (intf) {
-                        me.getInterfaceStatus(intf.get('symbolicDev'));
-                        me.getInterfaceArp(intf.get('symbolicDev'));
-                    }
-                    return intf;
-                }
-            }
-        });
-
-        // vm.bind({
-        //     bindTo: '{interfacesGrid.selection}',
-        //     deep: true
-        // }, function (v) {
-        //     vm.set('si', v);
-        //     // return v;
-        // }, this);
-
-        // vm.bind('{si}', function (val) {
-        //     if (val) {
-        //         me.getInterfaceStatus(val.symbolicDev);
-        //         me.getInterfaceArp(val.symbolicDev);
-        //     }
-        // });
-
-        // vm.bind('{settings.interfaces}', function (v) {
-        //     // console.log(v);
-        // });
-
-    },
-
-    getInterface: function (i) {
-        return i;
-    },
-
-    // onInterfaceSelect: function (grid, record) {
-    //     this.getViewModel().set('si', record.getData());
-    // },
-
-    getInterfaceStatus: function (symbolicDev) {
-        var vm = this.getViewModel(),
-            command1 = 'ifconfig ' + symbolicDev + ' | grep "Link\\|packets" | grep -v inet6 | tr "\\n" " " | tr -s " " ',
-            command2 = 'ifconfig ' + symbolicDev + ' | grep "inet addr" | tr -s " " | cut -c 7- ',
-            command3 = 'ifconfig ' + symbolicDev + ' | grep inet6 | grep Global | cut -d" " -f 13',
-            stat = {
-                device: symbolicDev,
-                macAddress: null,
-                address: null,
-                mask: null,
-                v6Addr: null,
-                rxpkts: null,
-                rxerr: null,
-                rxdrop: null,
-                txpkts: null,
-                txerr: null,
-                txdrop: null
-            };
-
-        // vm.set('siStatus', stat);
-
-        rpc.execManager.execOutput(function (result, ex) {
-            if(Ext.isEmpty(result)) {
-                return;
-            }
-            if (result.search('Device not found') >= 0) {
-                return;
-            }
-            var lineparts = result.split(' ');
-            if (result.search('Ethernet') >= 0) {
-                Ext.apply(stat, {
-                    macAddress: lineparts[4],
-                    rxpkts: lineparts[6].split(':')[1],
-                    rxerr: lineparts[7].split(':')[1],
-                    rxdrop: lineparts[8].split(':')[1],
-                    txpkts: lineparts[12].split(':')[1],
-                    txerr: lineparts[13].split(':')[1],
-                    txdrop: lineparts[14].split(':')[1]
-                });
-            }
-            if (result.search('Point-to-Point') >= 0) {
-                Ext.apply(stat, {
-                    macAddress: '',
-                    rxpkts: lineparts[5].split(':')[1],
-                    rxerr: lineparts[6].split(':')[1],
-                    rxdrop: lineparts[7].split(':')[1],
-                    txpkts: lineparts[11].split(':')[1],
-                    txerr: lineparts[12].split(':')[1],
-                    txdrop: lineparts[13].split(':')[1]
-                });
-            }
-
-            rpc.execManager.execOutput(function (result, ex) {
-                if(Ext.isEmpty(result)) {
-                    return;
-                }
-                var linep = result.split(' ');
-                Ext.apply(stat, {
-                    address: linep[0].split(':')[1],
-                    mask: linep[2].split(':')[1]
-                });
-
-                rpc.execManager.execOutput(function (result, ex) {
-                    Ext.apply(stat, {
-                        v6Addr: result
-                    });
-                    vm.set('siStatus', stat);
-                }, command3);
-            }, command2);
-        }, command1);
-    },
-
-    getInterfaceArp: function (symbolicDev) {
-        var vm = this.getViewModel();
-        var arpCommand = 'arp -n | grep ' + symbolicDev + ' | grep -v incomplete > /tmp/arp.txt ; cat /tmp/arp.txt';
-        rpc.execManager.execOutput(function (result, ex) {
-            var lines = Ext.isEmpty(result) ? []: result.split('\n');
-            var lparts, connections = [];
-            for (var i = 0 ; i < lines.length; i++ ) {
-                if (!Ext.isEmpty(lines[i])) {
-                    lparts = lines[i].split(/\s+/);
-                    connections.push({
-                        address: lparts[0],
-                        type: lparts[1],
-                        macAddress: lparts[2]
-                    });
-                }
-            }
-            vm.set('siArp', connections);
-            // vm.getStore('interfaceArp').reload();
-        }, arpCommand);
-    },
-
-
-    editWin: function () {
-        // console.log(this.getViewModel());
-        // var pf = this.getViewModel().get('portforwardrules');
-        // // console.log(pf);
-        // pf.getAt(0).data.conditions.list[0].value = 'false';
-        // console.log(pf.getAt(0));
-
-        // pf.getAt(0).set('description', 'aaa');
-        // pf.getAt(0).set('conditions', {
-        //     list: [{
-        //         conditionType: 'DST_LOCAL'
-        //     }]
-        // });
-
-        // Ext.widget('ung.config.network.editorwin', {
-        //     // config: {
-        //         conditions: [
-        //             {name:"DST_LOCAL",displayName: 'Destined Local'.t(), type: "boolean", visible: true},
-        //             {name:"DST_ADDR",displayName: 'Destination Address'.t(), type: "text", visible: true, vtype:"ipMatcher"},
-        //             {name:"DST_PORT",displayName: 'Destination Port'.t(), type: "text",vtype:"portMatcher", visible: true},
-        //             {name:"SRC_ADDR",displayName: 'Source Address'.t(), type: "text", visible: true, vtype:"ipMatcher"},
-        //             {name:"SRC_PORT",displayName: 'Source Port'.t(), type: "text",vtype:"portMatcher", visible: rpc.isExpertMode},
-        //             {name:"SRC_INTF",displayName: 'Source Interface'.t(), type: "checkgroup", values: Ung.Util.getInterfaceList(true, true), visible: true},
-        //             {name:"PROTOCOL",displayName: 'Protocol'.t(), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true}
-        //         ],
-        //         rule: record,
-        //         viewModel: {
-        //             data: {
-        //                 rule:
-        //             }
-        //         }
-            // }
-            // conditions: {
-            //     DST_LOCAL: {displayName: 'Destined Local'.t(), type: "boolean", visible: true},
-            //     DST_ADDR: {displayName: 'Destination Address'.t(), type: "text", visible: true, vtype:"ipMatcher"},
-            //     DST_PORT: {displayName: 'Destination Port'.t(), type: "text", vtype:"portMatcher", visible: true},
-            //     PROTOCOL: {displayName: 'Protocol'.t(), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true}
-            // },
-            // viewModel: {
-            //     data: {
-            //         rule: record
-            //     }
-            // },
-        // });
-
-
-    },
-
-    refreshRoutes: function () {
-        var v = this.getView();
-        rpc.execManager.exec(function (result, ex) {
-            v.down('#currentRoutes').setValue(result.output);
-        }, '/usr/share/untangle/bin/ut-routedump.sh');
-    },
-
-
-    refreshQosStatistics: function () {
-        rpc.execManager.execOutput(function (result, exception) {
-            // if(Ung.Util.handleException(exception)) return;
-            console.log(result);
-            var list = [];
-            try {
-                // list = eval(result);
-            } catch (e) {
-                // console.error("Could not execute /usr/share/untangle-netd/bin/qos-service.py output: ", result, e);
-            }
-            // handler ({list: list}, exception);
-        }, '/usr/share/untangle-netd/bin/qos-service.py status');
-    },
-
-
-    runTest: function (btn) {
-        console.log(btn);
-        var v = btn.up('networktest'),
-            output = v.down('textarea'),
-            text = [],
-            me = this;
-
-            // text.push(output.getValue());
-            // text.push('' + 'Test Started'.t() + '\n');
-
-            // output.setValue(text.join(''));
-
-            // console.log(v.getCommand());
-
-            rpc.execManager.execEvil(function (result, ex1) {
-                me.readOutput(result, text, output);
-                // if (result) {
-                //     result.readFromOutput(function (res, ex2) {
-                //         console.log(res);
-                //         if (res) {
-                //             text.push(res);
-                //             Ext.Function.defer(me.runTest, 1000, me, [btn]);
-                //         } else {
-                //             text.push('Test Completed'.t());
-                //         }
-                //         output.setValue(text.join(''));
-                //     });
-                // }
-            }, v.getCommand());
-
-    },
-
-    readOutput: function (resultReader, text, output) {
-        var me = this;
-        // console.log(result);
-        if (!resultReader) {
-            return;
-        }
-        resultReader.readFromOutput(function (res, ex2) {
-            if (res) {
-                text.push(res);
-                Ext.Function.defer(me.readOutput, 1000, me, [resultReader, text, output]);
-            } else {
-                text.push('Test Completed'.t());
-            }
-            output.setValue(text.join(''));
-        });
-    }
-
-
-});
-Ext.define('Ung.config.network.NetworkModel', {
-    extend: 'Ext.app.ViewModel',
-
-    alias: 'viewmodel.config.network',
-
-    formulas: {
-        // used in view when showing/hiding interface specific configurations
-        isAddressed: function (get) { return get('si.configType') === 'ADDRESSED'; },
-        isDisabled: function (get) { return get('si.configType') === 'DISABLED'; },
-        isBridged: function (get) { return get('si.configType') === 'BRIDGED'; },
-        isStaticv4: function (get) { return get('si.v4ConfigType') === 'STATIC'; },
-        isAutov4: function (get) { return get('si.v4ConfigType') === 'AUTO'; },
-        isPPPOEv4: function (get) { return get('si.v4ConfigType') === 'PPPOE'; },
-        isDisabledv6: function (get) { return get('si.v6ConfigType') === 'DISABLED'; },
-        isStaticv6: function (get) { return get('si.v6ConfigType') === 'STATIC'; },
-        isAutov6: function (get) { return get('si.v6ConfigType') === 'AUTO'; },
-        showRouterWarning: function (get) { return get('si.v6StaticPrefixLength') !== 64; },
-        showWireless: function (get) { return get('si.isWirelessInterface') && get('si.configType') !== 'DISABLED'; },
-        showWirelessPassword: function (get) { return get('si.wirelessEncryption') !== 'NONE' && get('si.wirelessEncryption') !== null; },
-        activePropsItem: function (get) { return get('si.configType') !== 'DISABLED' ? 0 : 2; },
-
-        fullHostName: function (get) {
-            var domain = get('settings.domainName'),
-                host = get('settings.hostName');
-            if (domain !== null && domain !== '') {
-                return host + "." + domain;
-            }
-            return host;
-        },
-
-        // conditionsData: {
-        //     bind: '{rule.conditions.list}',
-        //     get: function (coll) {
-        //         return coll || [];
-        //     }
-        // },
-        portForwardRulesData: {
-            bind: '{settings.portForwardRules.list}',
-            get: function (rules) {
-                return rules || null;
-            }
-        },
-
-        natRulesData: {
-            bind: '{settings.natRules.list}',
-            get: function (rules) {
-                return rules || null;
-            }
-        }
-    },
-    data: {
-        // si = selected interface (from grid)
-        settings: null,
-        // si: null,
-        siStatus: null,
-        siArp: null
-    },
-    stores: {
-        // store which holds interfaces settings
-        interfaces: {
-            data: '{settings.interfaces.list}'
-        },
-        interfaceArp: {
-            data: '{siArp}'
-        },
-
-        portforwardrules: {
-            // type: 'rule',
-            // data: '{settings.portForwardRules}'
-            data: '{portForwardRulesData}'
-        },
-
-        natrules: {
-            // type: 'rule',
-            // data: '{settings.portForwardRules}'
-            data: '{natRulesData}'
-        }
-    }
-});
-Ext.define('Ung.config.network.NetworkTest', {
+Ext.define('Ung.config.network.view.PortForwardRules', {
     extend: 'Ext.panel.Panel',
-    xtype: 'ung.config.networktest',
-    alias: 'widget.networktest',
-
-    tbar: [{
-        xtype: 'displayfield',
-        padding: '0 10',
-        bind: '{description}'
-    }],
-
-    layout: 'fit',
-
-    config: {
-        command: null
-    },
-
-    actions: {
-        runTest: {
-            text: 'Run Test'.t(),
-            handler: 'runTest'
-        }
-    },
-
-    items: [{
-        xtype: 'panel',
-        tbar: ['@runTest'],
-        layout: 'fit',
-        items: [{
-            xtype: 'textarea',
-            border: false,
-            bind: {
-                emptyText: '{emptyText}'
-            },
-            fieldStyle: {
-                fontFamily: 'Courier, monospace',
-                fontSize: '14px',
-                background: '#1b1e26',
-                color: 'lime'
-            },
-            // margin: 10,
-            readOnly: true
-        }]
-    }]
-
-    // initComponent: function () {
-    //     this.callParent(arguments);
-    // }
-});
-Ext.define('Ung.config.network.PortForwardRules', {
-    extend: 'Ext.panel.Panel',
-    xtype: 'ung.config.network.portforwardrules',
+    alias: 'widget.config.network.portforwardrules',
 
     viewModel: true,
 
@@ -2985,7 +3019,7 @@ Ext.define('Ung.config.network.PortForwardRules', {
             columnFeatures: ['reorder', 'delete', 'edit'], // which columns to add
             recordActions: ['@edit', '@delete'],
 
-            dataProperty: 'portForwardRules',
+            listProperty: 'settings.portForwardRules.list',
             ruleJavaClass: 'com.untangle.uvm.network.PortForwardRuleCondition',
 
             conditions: [
@@ -3128,9 +3162,9 @@ Ext.define('Ung.config.network.PortForwardRules', {
         }]
     }]
 });
-Ext.define('Ung.config.network.Routes', {
+Ext.define('Ung.config.network.view.Routes', {
     extend: 'Ext.panel.Panel',
-    xtype: 'ung.config.network.routes',
+    alias: 'widget.config.network.routes',
 
     viewModel: true,
 
@@ -3153,7 +3187,7 @@ Ext.define('Ung.config.network.Routes', {
             columnFeatures: ['reorder', 'delete', 'edit'], // which columns to add
             recordActions: ['@edit', '@delete'],
 
-            dataProperty: 'staticRoutes',
+            dataProperty: 'settings.staticRoutes.list',
 
             conditions: [
                 { name: 'DST_LOCAL', displayName: 'Destined Local'.t(), type: 'boolean', visible: true},
@@ -3282,9 +3316,9 @@ Ext.define('Ung.config.network.Routes', {
         }]
     }]
 });
-Ext.define('Ung.config.network.Services', {
+Ext.define('Ung.config.network.view.Services', {
     extend: 'Ext.panel.Panel',
-    xtype: 'ung.config.network.services',
+    alias: 'widget.config.network.services',
 
     viewModel: true,
 
@@ -3324,9 +3358,9 @@ Ext.define('Ung.config.network.Services', {
     }]
 
 });
-Ext.define('Ung.config.network.Troubleshooting', {
+Ext.define('Ung.config.network.view.Troubleshooting', {
     extend: 'Ext.panel.Panel',
-    xtype: 'ung.config.network.troubleshooting',
+    alias: 'widget.config.network.troubleshooting',
 
     title: 'Troubleshooting'.t(),
 

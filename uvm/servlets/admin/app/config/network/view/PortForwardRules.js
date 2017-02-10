@@ -1,6 +1,6 @@
-Ext.define('Ung.config.network.PortForwardRules', {
+Ext.define('Ung.config.network.view.PortForwardRules', {
     extend: 'Ext.panel.Panel',
-    xtype: 'ung.config.network.portforwardrules',
+    alias: 'widget.config.network.portforwardrules',
 
     viewModel: true,
 
@@ -28,7 +28,7 @@ Ext.define('Ung.config.network.PortForwardRules', {
             columnFeatures: ['reorder', 'delete', 'edit'], // which columns to add
             recordActions: ['@edit', '@delete'],
 
-            dataProperty: 'portForwardRules',
+            listProperty: 'settings.portForwardRules.list',
             ruleJavaClass: 'com.untangle.uvm.network.PortForwardRuleCondition',
 
             conditions: [

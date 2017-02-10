@@ -1,6 +1,6 @@
-Ext.define('Ung.config.network.Services', {
+Ext.define('Ung.config.network.view.Services', {
     extend: 'Ext.panel.Panel',
-    xtype: 'ung.config.network.services',
+    alias: 'widget.config.network.services',
 
     viewModel: true,
 
