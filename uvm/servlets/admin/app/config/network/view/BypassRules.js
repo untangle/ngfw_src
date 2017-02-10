@@ -54,11 +54,7 @@ Ext.define('Ung.config.network.view.BypassRules', {
             description: ''
         },
 
-        bind: {
-            store: {
-                data: '{settings.bypassRules.list}'
-            }
-        },
+        bind: '{bypassRules}',
 
         columns: [{
             header: 'Rule Id'.t(),

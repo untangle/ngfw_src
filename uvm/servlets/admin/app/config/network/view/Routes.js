@@ -48,11 +48,7 @@ Ext.define('Ung.config.network.view.Routes', {
         },
         // },
 
-        bind: {
-            store: {
-                data: '{settings.staticRoutes.list}'
-            }
-        },
+        bind: '{staticRoutes}',
 
         columns: [{
             header: 'Description'.t(),

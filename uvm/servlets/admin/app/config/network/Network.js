@@ -9,6 +9,7 @@ Ext.define('Ung.config.network.Network', {
         'Ung.view.grid.Grid',
         'Ung.store.RuleConditions',
         'Ung.store.Rule',
+        'Ung.model.Rule',
         'Ung.cmp.Rules'
     ],
 

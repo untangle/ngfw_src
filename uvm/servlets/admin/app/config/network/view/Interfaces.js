@@ -35,7 +35,15 @@ Ext.define('Ung.config.network.view.Interfaces', {
         }, {
             header: 'Connected'.t(),
             dataIndex: 'connected',
-            width: 130
+            width: 130,
+            renderer: function (value) {
+                switch (value) {
+                    case 'CONNECTED': return 'connected'.t();
+                    case 'DISCONNECTED': return 'disconnected'.t();
+                    case 'MISSING': return 'missing'.t();
+                    default: 'unknown'.t();
+                }
+            }
         }, {
             header: 'Device'.t(),
             dataIndex: 'physicalDev',
@@ -68,19 +76,39 @@ Ext.define('Ung.config.network.view.Interfaces', {
             header: 'Duplex'.t(),
             dataIndex: 'duplex',
             hidden: true,
-            width: 100
-            // renderer: duplexRenderer
+            width: 100,
+            renderer: function (value) {
+                switch (value) {
+                    case 'FULL_DUPLEX': return 'full-duplex'.t();
+                    case 'HALF_DUPLEX': return 'half-duplex'.t();
+                    default: return 'unknown'.t();
+                }
+            }
         }, {
             header: 'Config'.t(),
             dataIndex: 'configType',
-            width: 100
+            width: 100,
+            renderer: function (value) {
+                switch (value) {
+                    case 'ADDRESSED': return 'Addressed'.t();
+                    case 'BRIDGED': return 'Bridged'.t();
+                    case 'DISABLED': return 'Disabled'.t();
+                    default: value.t();
+                }
+            }
         }, {
             header: 'Current Address'.t(),
             dataIndex: 'v4Address',
-            width: 150
+            width: 150,
+            renderer: function (value, metaData, record) {
+                return Ext.isEmpty(value) ? '' : value + ' / ' + record.get('v4PrefixLength');
+            }
         }, {
             header: 'is WAN'.t(),
-            dataIndex: 'isWan'
+            dataIndex: 'isWan',
+            renderer: function (value, metaData, record) {
+                return (record.get('configType') === 'ADDRESSED') ? (value ? 'true'.t() : 'false'.t()) : ''; // if its addressed return value
+            }
         }],
         tbar: [{
             xtype: 'button',

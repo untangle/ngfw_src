@@ -53,11 +53,7 @@ Ext.define('Ung.config.network.view.NatRules', {
             description: ''
         },
 
-        bind: {
-            store: {
-                data: '{settings.natRules.list}'
-            }
-        },
+        bind: '{natRules}',
 
         columns: [{
             header: 'Rule Id'.t(),

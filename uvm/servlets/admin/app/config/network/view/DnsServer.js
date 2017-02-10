@@ -21,11 +21,7 @@ Ext.define('Ung.config.network.view.DnsServer', {
 
         // },
 
-        bind: {
-            store: {
-                data: '{settings.dnsSettings.staticEntries.list}'
-            }
-        },
+        bind: '{staticDnsEntries}',
 
         columns: [{
             header: 'Name'.t(),
@@ -65,11 +61,7 @@ Ext.define('Ung.config.network.view.DnsServer', {
 
         // },
 
-        bind: {
-            store: {
-                data: '{settings.dnsSettings.localServers.list}'
-            }
-        },
+        bind: '{localServers}',
 
         columns: [{
             header: 'Domain'.t(),
