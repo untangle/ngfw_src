@@ -1,6 +1,7 @@
-Ext.define('Ung.config.network.Advanced', {
+Ext.define('Ung.config.network.view.Advanced', {
     extend: 'Ext.panel.Panel',
-    xtype: 'ung.config.network.advanced',
+
+    alias: 'widget.config.network.advanced',
 
     viewModel: true,
 
@@ -79,12 +80,15 @@ Ext.define('Ung.config.network.Advanced', {
                 collapsible: true,
                 animCollapse: false,
                 titleCollapse: true,
-                minHeight: 100
+                minHeight: 150
             },
             items: [{
                 xtype: 'panel',
                 title: 'QoS'.t(),
                 bodyPadding: 10,
+                layout: {
+                    type: 'hbox'
+                },
                 defaults: {
                     labelAlign: 'right',
                     labelWidth: 120,
@@ -96,18 +100,12 @@ Ext.define('Ung.config.network.Advanced', {
                 }, {
                     xtype: 'combo',
                     fieldLabel: 'Default Priority'.t(),
-                    bind: '{settings.qosSettings.defaultPriority}',
+                    bind: {
+                        store: '{qosPriorityNoDefaultStore}',
+                        value: '{settings.qosSettings.defaultPriority}'
+                    },
                     queryMode: 'local',
-                    editable: false,
-                    store: [
-                        [1, 'Very High'.t()],
-                        [2, 'High'.t()],
-                        [3, 'Medium'.t()],
-                        [4, 'Low'.t()],
-                        [5, 'Limited'.t()],
-                        [6, 'Limited More'.t()],
-                        [7, 'Limited Severely'.t()]
-                    ]
+                    editable: false
                 }]
             }, {
                 xtype: 'panel',
@@ -121,20 +119,33 @@ Ext.define('Ung.config.network.Advanced', {
                 }],
 
                 items: [{
-                    xtype: 'grid',
+                    xtype: 'rules',
+
+                    listProperty: 'settings.interfaces.list',
+
+                    bind: {
+                        store: {
+                            data: '{settings.interfaces.list}',
+                            filters: [{ property: 'configType', value: 'ADDRESSED' }, { property: 'isWan', value: true }]
+                        }
+                    },
+
+                    selModel: {
+                        type: 'cellmodel'
+                    },
+
+                    plugins: {
+                        ptype: 'cellediting',
+                        clicksToEdit: 1
+                    },
+
+
                     header: false,
                     columns: [{
                         header: 'Id'.t(),
                         width: 70,
                         align: 'right',
-                        dataIndex: 'interfaceId',
-                        renderer: function(value) {
-                            if (value < 0) {
-                                return i18n._("new");
-                            } else {
-                                return value;
-                            }
-                        }
+                        dataIndex: 'interfaceId'
                     }, {
                         header: 'WAN'.t(),
                         flex: 1,
@@ -146,40 +157,28 @@ Ext.define('Ung.config.network.Advanced', {
                     }, {
                         header: 'Download Bandwidth'.t(),
                         dataIndex: 'downloadBandwidthKbps',
-                        width: 180,
+                        width: 200,
                         editor: {
                             xtype: 'numberfield',
                             allowBlank : false,
                             allowDecimals: false,
                             minValue: 0
                         },
-                        renderer: function( value, metadata, record ) {
-                            if (Ext.isEmpty(value)) {
-                                return 'Not set'.t();
-                            } else {
-                                return value;
-                                // var mbit_value = value/1000;
-                                // return value + " kbps" + " (" + mbit_value + " Mbit" + ")";
-                            }
+                        renderer: function (value) {
+                            return Ext.isEmpty(value) ? 'Not set'.t() : value + ' kbps' + ' (' + value/1000 + ' Mbit' + ')';
                         }
                     }, {
                         header: 'Upload Bandwidth'.t(),
                         dataIndex: 'uploadBandwidthKbps',
-                        width: 180,
+                        width: 200,
                         editor: {
                             xtype: 'numberfield',
                             allowBlank : false,
                             allowDecimals: false,
                             minValue: 0
                         },
-                        renderer: function( value, metadata, record ) {
-                            if (Ext.isEmpty(value)) {
-                                return 'Not set'.t();
-                            } else {
-                                return value;
-                                // var mbit_value = value/1000;
-                                // return value + " kbps" + " (" + mbit_value + " Mbit" + ")";
-                            }
+                        renderer: function (value) {
+                            return Ext.isEmpty(value) ? 'Not set'.t() : value + ' kbps' + ' (' + value/1000 + ' Mbit' + ')';
                         }
                     }]
                 }]
@@ -192,30 +191,32 @@ Ext.define('Ung.config.network.Advanced', {
                     labelAlign: 'right',
                     labelWidth: 120,
                     editable: false,
-                    queryMode: 'local',
-                    store: [
-                        [0, 'Default'.t()],
-                        [1, 'Very High'.t()],
-                        [2, 'High'.t()],
-                        [3, 'Medium'.t()],
-                        [4, 'Low'.t()],
-                        [5, 'Limited'.t()],
-                        [6, 'Limited More'.t()],
-                        [7, 'Limited Severely'.t()]
-                    ]
+                    queryMode: 'local'
                 },
                 items: [{
                     fieldLabel: 'Ping Priority'.t(),
-                    bind: '{settings.qosSettings.pingPriority}'
+                    bind: {
+                        store: '{qosPriorityStore}',
+                        value: '{settings.qosSettings.pingPriority}'
+                    }
                 }, {
                     fieldLabel: 'DNS Priority'.t(),
-                    bind: '{settings.qosSettings.dnsPriority}'
+                    bind: {
+                        store: '{qosPriorityStore}',
+                        value: '{settings.qosSettings.dnsPriority}'
+                    }
                 }, {
                     fieldLabel: 'SSH Priority'.t(),
-                    bind: '{settings.qosSettings.sshPriority}'
+                    bind: {
+                        store: '{qosPriorityStore}',
+                        value: '{settings.qosSettings.sshPriority}'
+                    }
                 }, {
                     fieldLabel: 'OpenVPN Priority'.t(),
-                    bind: '{settings.qosSettings.openvpnPriority}'
+                    bind: {
+                        store: '{qosPriorityStore}',
+                        value: '{settings.qosSettings.openvpnPriority}'
+                    }
                 }]
             }, {
                 xtype: 'rules',
@@ -224,7 +225,7 @@ Ext.define('Ung.config.network.Advanced', {
                 columnFeatures: ['reorder', 'delete', 'edit'], // which columns to add
                 recordActions: ['@edit', '@delete'],
 
-                // dataProperty: 'portForwardRules',
+                listProperty: 'settings.qosSettings.qosRules.list',
                 // ruleJavaClass: 'com.untangle.uvm.network.PortForwardRuleCondition',
 
                 conditions: [
@@ -236,6 +237,8 @@ Ext.define('Ung.config.network.Advanced', {
                     { name: 'SRC_INTF', displayName: 'Source Interface'.t(), type: 'checkboxgroup', values: [['a', 'a'], ['b', 'b']], visible: true},
                     { name: 'PROTOCOL', displayName: 'Protocol'.t(), type: 'checkboxgroup', values: [['TCP','TCP'],['UDP','UDP'],['ICMP','ICMP'],['GRE','GRE'],['ESP','ESP'],['AH','AH'],['SCTP','SCTP']], visible: true}
                 ],
+
+                label: 'Perform the following action(s):'.t(),
 
                 tbar: [{
                     xtype: 'component',
@@ -256,11 +259,7 @@ Ext.define('Ung.config.network.Advanced', {
                     resizable: false,
                     dataIndex: 'ruleId',
                     renderer: function(value) {
-                        if (value < 0) {
-                            return 'new'.t();
-                        } else {
-                            return value;
-                        }
+                        return value < 0 ? 'new'.t() : value;
                     }
                 }, {
                     xtype: 'checkcolumn',
@@ -303,8 +302,20 @@ Ext.define('Ung.config.network.Advanced', {
                     header: 'Priority'.t(),
                     width: 100,
                     dataIndex: 'priority',
+                    renderer: function (value) {
+                        switch (value) {
+                            case 1: return 'Very High'.t();
+                            case 2: return 'High'.t();
+                            case 3: return 'Medium'.t();
+                            case 4: return 'Low'.t();
+                            case 5: return 'Limited'.t();
+                            case 6: return 'Limited More'.t();
+                            case 7: return 'Limited Severely'.t();
+                        }
+                    },
                     editor: {
                         xtype: 'combo',
+                        fieldLabel: 'Priority'.t(),
                         store: [
                             [1, 'Very High'.t()],
                             [2, 'High'.t()],
@@ -314,6 +325,7 @@ Ext.define('Ung.config.network.Advanced', {
                             [6, 'Limited More'.t()],
                             [7, 'Limited Severely'.t()]
                         ],
+                        bind: '{record.priority}',
                         queryMode: 'local',
                         editable: false
                     }
@@ -449,7 +461,7 @@ Ext.define('Ung.config.network.Advanced', {
                 columnFeatures: ['reorder', 'delete', 'edit'], // which columns to add
                 recordActions: ['@edit', '@delete'],
 
-                dataProperty: 'forwardFilterRules',
+                listProperty: 'settings.forwardFilterRules.list',
 
                 label: 'Perform the following action(s):'.t(),
 
@@ -561,7 +573,7 @@ Ext.define('Ung.config.network.Advanced', {
                 columnFeatures: ['reorder', 'delete', 'edit'], // which columns to add
                 recordActions: ['@edit', '@delete'],
 
-                dataProperty: 'inputFilterRules',
+                listProperty: 'settings.inputFilterRules.list',
 
                 label: 'Perform the following action(s):'.t(),
 
@@ -733,7 +745,7 @@ Ext.define('Ung.config.network.Advanced', {
                 columnFeatures: ['reorder', 'delete', 'edit'], // which columns to add
                 recordActions: ['@edit', '@delete'],
 
-                dataProperty: 'settings.upnpSettings.upnpRules',
+                listProperty: 'settings.upnpSettings.upnpRules.list',
 
                 conditions: [
                     { name: 'DST_PORT', displayName: 'Destination Port'.t(), type: "textfield", vtype: 'port', visible: true },

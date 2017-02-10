@@ -47,11 +47,11 @@ Ext.define('Ung.config.network.Network', {
     }],
 
     items: [{
-        xtype: 'ung.config.network.interfaces'
+        xtype: 'config.network.interfaces'
     }, {
-        xtype: 'ung.config.network.hostname'
+        xtype: 'config.network.hostname'
     }, {
-        xtype: 'ung.config.network.services'
+        xtype: 'config.network.services'
     },
     // {
     //     xtype: 'panel',
@@ -67,21 +67,21 @@ Ext.define('Ung.config.network.Network', {
     //     }]
     // }
     {
-        xtype: 'ung.config.network.portforwardrules'
+        xtype: 'config.network.portforwardrules'
     }, {
-        xtype: 'ung.config.network.natrules'
+        xtype: 'config.network.natrules'
     }, {
-        xtype: 'ung.config.network.bypassrules'
+        xtype: 'config.network.bypassrules'
     }, {
-        xtype: 'ung.config.network.routes'
+        xtype: 'config.network.routes'
     }, {
-        xtype: 'ung.config.network.dnsserver'
+        xtype: 'config.network.dnsserver'
     }, {
-        xtype: 'ung.config.network.dhcpserver'
+        xtype: 'config.network.dhcpserver'
     }, {
-        xtype: 'ung.config.network.advanced'
+        xtype: 'config.network.advanced'
     }, {
-        xtype: 'ung.config.network.troubleshooting'
+        xtype: 'config.network.troubleshooting'
     }
     ]
 });

@@ -46,6 +46,10 @@ Ext.define('Ung.config.network.NetworkModel', {
             get: function (rules) {
                 return rules || null;
             }
+        },
+
+        qosPriorityNoDefaultStore: function (get) {
+            return get('qosPriorityStore').slice(1);
         }
     },
     data: {
@@ -53,7 +57,18 @@ Ext.define('Ung.config.network.NetworkModel', {
         settings: null,
         // si: null,
         siStatus: null,
-        siArp: null
+        siArp: null,
+
+        qosPriorityStore: [
+            [0, 'Default'.t()],
+            [1, 'Very High'.t()],
+            [2, 'High'.t()],
+            [3, 'Medium'.t()],
+            [4, 'Low'.t()],
+            [5, 'Limited'.t()],
+            [6, 'Limited More'.t()],
+            [7, 'Limited Severely'.t()]
+        ],
     },
     stores: {
         // store which holds interfaces settings
@@ -74,6 +89,8 @@ Ext.define('Ung.config.network.NetworkModel', {
             // type: 'rule',
             // data: '{settings.portForwardRules}'
             data: '{natRulesData}'
-        }
+        },
+
+
     }
 });

@@ -1,7 +1,7 @@
-Ext.define('Ung.config.network.DhcpServer', {
+Ext.define('Ung.config.network.view.DhcpServer', {
     extend: 'Ext.panel.Panel',
-    xtype: 'ung.config.network.dhcpserver',
 
+    alias: 'widget.config.network.dhcpserver',
     viewModel: true,
 
     title: 'DHCP Server'.t(),
@@ -17,7 +17,7 @@ Ext.define('Ung.config.network.DhcpServer', {
         columnFeatures: ['delete'], // which columns to add
         recordActions: ['@delete'],
 
-        dataProperty: 'staticRoutes',
+        listProperty: 'settings.staticRoutes.list',
 
         // },
 

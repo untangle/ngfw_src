@@ -1,6 +1,6 @@
-Ext.define('Ung.config.network.Routes', {
+Ext.define('Ung.config.network.view.Routes', {
     extend: 'Ext.panel.Panel',
-    xtype: 'ung.config.network.routes',
+    alias: 'widget.config.network.routes',
 
     viewModel: true,
 
@@ -23,7 +23,7 @@ Ext.define('Ung.config.network.Routes', {
             columnFeatures: ['reorder', 'delete', 'edit'], // which columns to add
             recordActions: ['@edit', '@delete'],
 
-            dataProperty: 'staticRoutes',
+            dataProperty: 'settings.staticRoutes.list',
 
             conditions: [
                 { name: 'DST_LOCAL', displayName: 'Destined Local'.t(), type: 'boolean', visible: true},

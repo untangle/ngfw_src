@@ -1,6 +1,6 @@
-Ext.define('Ung.config.network.Interfaces', {
+Ext.define('Ung.config.network.view.Interfaces', {
     extend: 'Ext.panel.Panel',
-    xtype: 'ung.config.network.interfaces', //..
+    alias: 'widget.config.network.interfaces', //..
 
     title: 'Interfaces'.t(),
     layout: 'border',

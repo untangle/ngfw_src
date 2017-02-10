@@ -1,6 +1,6 @@
-Ext.define('Ung.config.network.DnsServer', {
+Ext.define('Ung.config.network.view.DnsServer', {
     extend: 'Ext.panel.Panel',
-    xtype: 'ung.config.network.dnsserver',
+    alias: 'widget.config.network.dnsserver',
 
     viewModel: true,
 
@@ -17,7 +17,7 @@ Ext.define('Ung.config.network.DnsServer', {
         columnFeatures: ['delete'], // which columns to add
         recordActions: ['@delete'],
 
-        dataProperty: 'staticRoutes',
+        listProperty: 'settings.dnsSettings.staticEntries.list',
 
         // },
 
@@ -61,7 +61,7 @@ Ext.define('Ung.config.network.DnsServer', {
         columnFeatures: ['delete'], // which columns to add
         recordActions: ['@delete'],
 
-        dataProperty: 'staticRoutes',
+        listProperty: 'settings.dnsSettings.localServers.list',
 
         // },
 
