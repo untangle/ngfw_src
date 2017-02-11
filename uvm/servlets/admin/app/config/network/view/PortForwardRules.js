@@ -25,8 +25,9 @@ Ext.define('Ung.config.network.view.PortForwardRules', {
 
         // cfg: {
 
-            columnFeatures: ['reorder', 'delete', 'edit'], // which columns to add
-            recordActions: ['@edit', '@delete'],
+            // columnFeatures: ['reorder', 'delete', 'edit'], // which columns to add
+            tbar: ['@add'],
+            recordActions: ['@edit', '@delete', '@reorder'],
 
             listProperty: 'settings.portForwardRules.list',
             ruleJavaClass: 'com.untangle.uvm.network.PortForwardRuleCondition',
@@ -41,7 +42,7 @@ Ext.define('Ung.config.network.view.PortForwardRules', {
                 { name: 'PROTOCOL', displayName: 'Protocol'.t(), type: 'checkboxgroup', values: [['TCP','TCP'],['UDP','UDP'],['ICMP','ICMP'],['GRE','GRE'],['ESP','ESP'],['AH','AH'],['SCTP','SCTP']], visible: true}
             ],
 
-            label: 'Forward to the following location:'.t(),
+            actionDescription: 'Forward to the following location:'.t(),
             description: "Port Forward rules forward sessions matching the configured criteria from a public IP to an IP on an internal (NAT'd) network. The rules are evaluated in order.".t(),
 
             emptyRow: {

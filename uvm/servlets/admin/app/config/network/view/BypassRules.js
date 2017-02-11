@@ -23,8 +23,9 @@ Ext.define('Ung.config.network.view.BypassRules', {
     items: [{
         xtype: 'rules',
         flex: 3,
-        columnFeatures: ['reorder', 'delete', 'edit'], // which columns to add
-        recordActions: ['@edit', '@delete'],
+
+        tbar: ['@add'],
+        recordActions: ['@edit', '@delete', '@reorder'],
 
         listProperty: 'settings.bypassRules.list',
         ruleJavaClass: 'com.untangle.uvm.network.BypassRuleCondition',

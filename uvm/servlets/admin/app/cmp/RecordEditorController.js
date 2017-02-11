@@ -5,15 +5,91 @@ Ext.define('Ung.cmp.RecordEditorController', {
     control: {
         '#': {
             afterrender: 'onBeforeRender',
+            // close: 'onDestroy'
             // beforerender: 'onBeforeRender',
             // close: 'onClose',
         },
+        'grid': {
+            afterrender: 'onConditionsRender'
+        }
     },
 
+    conditionsGrid: {
+        xtype: 'grid',
+        trackMouseOver: false,
+        disableSelection: true,
+        padding: '10 0',
+        tbar: ['@addCondition'],
+        bind: {
+            store: {
+                model: 'Ung.model.Condition',
+                data: '{record.conditions.list}'
+            }
+        },
+        // store: {
+        //     data: view.record.get('conditions').list
+        //     // data: '{record.conditions.list}'
+        // },
+
+        columns: [{
+            header: 'Type'.t(),
+            menuDisabled: true,
+            // sortable: false,
+            dataIndex: 'conditionType',
+            width: 200,
+            renderer: 'conditionRenderer'
+        }, {
+            xtype: 'widgetcolumn',
+            menuDisabled: true,
+            sortable: false,
+            width: 70,
+            widget: {
+                xtype: 'combo',
+                editable: false,
+                bind: '{record.invert}',
+                store: [[true, 'is NOT'.t()], [false, 'is'.t()]]
+            }
+            // widget: {
+            //     xtype: 'segmentedbutton',
+            //     bind: '{record.invert}',
+            //     // bind: {
+            //     //     value: '{record.invert}',
+            //     // },
+            //     items: [{
+            //         text: 'IS',
+            //         value: true
+            //     }, {
+            //         text: 'IS NOT',
+            //         value: false
+            //     }]
+            // }
+        }, {
+            header: 'Value'.t(),
+            xtype: 'widgetcolumn',
+            menuDisabled: true,
+            sortable: false,
+            flex: 1,
+            widget: {
+                xtype: 'container',
+                padding: '0 3'
+                // layout: {
+                //     type: 'hbox'
+                // }
+            },
+            onWidgetAttach: 'onWidgetAttach'
+        }, {
+            xtype: 'actioncolumn',
+            menuDisabled: true,
+            sortable: false,
+            width: 30,
+            align: 'center',
+            iconCls: 'fa fa-trash',
+            handler: 'removeCondition'
+        }]
+    },
+
+
     onBeforeRender: function (view) {
-        console.log(view.getViewModel());
-
-
         var fields = view.fields, form = view.down('form');
 
         // add editable column fields into the form
@@ -27,67 +103,34 @@ Ext.define('Ung.cmp.RecordEditorController', {
                     padding: '10 0 0 0',
                     html: '<strong>' + 'If all of the following conditions are met:'.t() + '</strong>'
                 });
-                form.add({
-                    xtype: 'ung.cmp.conditionsgrid',
-                    // split: true,
-                    collapsible: false,
-                    resizable: false,
-                    // title: 'If all of the following conditions are met:'.t(),
-                    region: 'south',
-                    // minHeight: 100,
-                    layout: 'fit',
-
-                    conditions: view.conditions,
-                    conditionsMap: view.conditionsMap,
-                    store: {
-                        data: view.record.get('conditions').list
-                        // data: '{record.conditions.list}'
-                    }
-                });
+                form.add(this.conditionsGrid);
                 form.add({
                     xtype: 'component',
                     padding: '0 0 10 0',
-                    html: '<strong>' + view.label + '</strong>'
+                    html: '<strong>' + view.actionDescription + '</strong>'
                 });
             }
         }
         form.isValid();
     },
 
-    setMenuConditions: function () {
-        var menu = this.getView().down('#addConditionBtn').getMenu(),
-            store = this.getView().down('grid').getStore();
-        menu.items.each(function (item) {
-            item.setDisabled(store.findRecord('conditionType', item.conditionType) ? true : false);
-        });
-    },
-
-    addCondition: function (menu, item) {
-        // console.log('add');
-        item.setDisabled(true);
-        var newCond = {
-            conditionType: item.conditionType,
-            invert: false,
-            // javaClass: 'com.untangle.uvm.network.PortForwardRuleCondition',
-            value: ''
-        };
-        this.getView().down('grid').getStore().add(newCond);
-        // this.getView().ruleConditions.push(newCond);
-        // this.addRowView(newCond);
-    },
-
     onApply: function (btn) {
         var v = this.getView(),
-            vm = this.getViewModel();
+            vm = this.getViewModel(),
+            conditionsGrid = v.down('grid'),
+            store;
 
+        if (!conditionsGrid) {
+            return;
+        }
+        store = conditionsGrid.getStore();
 
-        if (v.down('grid') && v.down('grid').getStore().getModifiedRecords().length > 0) {
+        if (store.getModifiedRecords().length > 0 || store.getRemovedRecords().length > 0 || store.getNewRecords().length > 0) {
             v.record.set('conditions', {
                 javaClass: 'java.util.LinkedList',
-                list: Ext.Array.pluck(v.down('grid').getStore().getRange(), 'data')
+                list: Ext.Array.pluck(store.getRange(), 'data')
             });
         }
-
 
         for (var field in vm.get('record').modified) {
             if (field !== 'conditions') {
@@ -98,7 +141,146 @@ Ext.define('Ung.cmp.RecordEditorController', {
         if (v.action === 'add') {
             v.store.add(v.record);
         }
+        console.log(v.record);
         v.close();
-    }
+    },
 
+
+    // conditions grid
+
+    onConditionsRender: function (conditionsGrid) {
+        var conds = this.getView().conditions, menuConditions = [];
+
+        // when record is modified update conditions menu
+        this.recordBind = this.getViewModel().bind({
+            bindTo: '{record}',
+        }, this.setMenuConditions);
+
+        // create and add conditions to the menu
+        for (i = 0; i < conds.length; i += 1) {
+            menuConditions.push({
+                text: conds[i].displayName,
+                conditionType: conds[i].name,
+                index: i
+            });
+        }
+
+        conditionsGrid.down('#addConditionBtn').setMenu({
+            showSeparator: false,
+            plain: true,
+            items: menuConditions,
+            mouseLeaveDelay: 0,
+            listeners: {
+                click: 'addCondition'
+            }
+        });
+    },
+
+    /**
+     * Updates the disabled/enabled status of the conditions in the menu
+     */
+    setMenuConditions: function () {
+        var conditionsGrid = this.getView().down('grid'),
+            menu = conditionsGrid.down('#addConditionBtn').getMenu(),
+            store = conditionsGrid.getStore();
+        menu.items.each(function (item) {
+            item.setDisabled(store.findRecord('conditionType', item.conditionType) ? true : false);
+        });
+    },
+
+    /**
+     * Adds a new condition for the edited rule
+     */
+    addCondition: function (menu, item) {
+        var newCond = {
+            conditionType: item.conditionType,
+            invert: false,
+            javaClass: this.getViewModel().get('ruleJavaClass'),
+            value: ''
+        };
+        this.getView().down('grid').getStore().add(newCond);
+    },
+
+    /**
+     * Removes a condition from the rule
+     */
+    removeCondition: function (view, rowIndex, colIndex, item, e, record) {
+        record.drop();
+        this.setMenuConditions();
+    },
+
+    /**
+     * Renders the condition name in the grid
+     */
+    conditionRenderer: function (val) {
+        return this.getView().conditionsMap[val].displayName;
+        // return [val].displayName;
+    },
+
+    /**
+     * Adds specific condition editor based on it's defined type
+     */
+    onWidgetAttach: function (column, container, record) {
+        // if widget aklready attached do nothing
+        if (container.items.length >= 1) {
+            return;
+        }
+
+        var condition = this.getView().conditionsMap[record.get('conditionType')], i, ckItems = [];
+
+        switch (condition.type) {
+        case 'boolean':
+            container.add({
+                xtype: 'component',
+                padding: 3,
+                html: 'True'.t()
+            });
+            break;
+        case 'textfield':
+            container.add({
+                xtype: 'textfield',
+                bind: {
+                    value: '{record.value}'
+                },
+                vtype: condition.vtype
+            });
+            break;
+        case 'numberfield':
+            container.add({
+                xtype: 'numberfield',
+                bind: {
+                    value: '{record.value}'
+                },
+                vtype: condition.vtype
+            });
+            break;
+        case 'checkboxgroup':
+            // console.log(condition.values);
+            // var values_arr = (cond.value !== null && cond.value.length > 0) ? cond.value.split(',') : [], i, ckItems = [];
+            for (i = 0; i < condition.values.length; i += 1) {
+                ckItems.push({
+                    inputValue: condition.values[i][0],
+                    boxLabel: condition.values[i][1]
+                });
+            }
+            container.add({
+                xtype: 'checkboxgroup',
+                bind: {
+                    value: '{record.value}'
+                },
+                columns: 3,
+                vertical: true,
+                defaults: {
+                    padding: '0 10 0 0'
+                },
+                items: ckItems
+            });
+        }
+    },
+
+    onDestroy: function () {
+        console.log('destroy');
+        this.recordBind.destroy();
+        this.recordBind = null;
+    }
 });

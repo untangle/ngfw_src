@@ -7,14 +7,30 @@ Ext.define('Ung.cmp.Rules', {
 
     requires: [
         'Ung.cmp.RulesController',
-        // 'Ung.cmp.RulesModel',
-        // 'Ung.cmp.RuleEditor',
-        'Ung.cmp.RecordEditor'
+        'Ung.cmp.RecordEditor',
+        'Ung.cmp.DataImporter'
     ],
 
     // viewModel: 'rules',
 
     controller: 'rules',
+
+    // bbar: [{
+    //     xtype: 'form',
+    //     itemId: 'exportForm',
+    //     url: 'http://localhost:8002/webui/gridSettings',
+    //     defaults: {
+    //         xtype: 'textfield'
+    //     },
+    //     items: [{
+    //         name: 'gridName',
+    //     }, {
+    //         name: 'gridData',
+    //     }, {
+    //         name: 'type',
+    //         value: 'export'
+    //     }]
+    // }],
 
     config: {
         // toolbarFeatures: null, // ['add', 'delete', 'revert', 'importexport'] add specific buttons to top toolbar
@@ -28,15 +44,11 @@ Ext.define('Ung.cmp.Rules', {
         // conditionsMap: null
     },
 
-    tbar: [{
-        text: 'Add'.t(),
-        // iconCls: 'fa fa-plus',
-        handler: 'addRecord'
-    }],
-
+    trackMouseOver: false,
+    // disableSelection: true,
 
     selModel: {
-        // type: 'rowmodel'
+        type: 'cellmodel'
     },
 
     sortableColumns: false,
@@ -48,6 +60,27 @@ Ext.define('Ung.cmp.Rules', {
     // }],
 
     actions: {
+        add: {
+            text: 'Add'.t(),
+            // iconCls: 'fa fa-plus',
+            handler: 'addRecord'
+        },
+        import: {
+            text: 'Import'.t(),
+            // iconCls: 'fa fa-plus',
+            handler: 'importData'
+        },
+        export: {
+            text: 'Export'.t(),
+            // iconCls: 'fa fa-plus',
+            handler: 'exportData'
+        },
+        undo: {
+            text: 'Undo'.t(),
+            // iconCls: 'fa fa-plus',
+            handler: 'undoChanges'
+        },
+
         edit: {
             iconCls: 'fa fa-pencil',
             tooltip: 'Edit record'.t(),
@@ -92,19 +125,58 @@ Ext.define('Ung.cmp.Rules', {
     // columnLines: true,
 
     initComponent: function () {
-
+        var i;
+        for (i = 0; i < this.recordActions.length; i += 1) {
+            var action = this.recordActions[i];
+            if (action === '@edit' || action === '@delete') {
+                this.columns.push({
+                    xtype: 'actioncolumn',
+                    width: 60,
+                    header: action === '@edit' ? 'Edit'.t() : 'Delete'.t(),
+                    align: 'center',
+                    tdCls: 'action-cell',
+                    items: [action]
+                });
+            }
+            if (action === '@reorder') {
+                Ext.apply(this.viewConfig, {
+                    plugins: {
+                        ptype: 'gridviewdragdrop',
+                        dragText: 'Drag and drop to reorganize'.t(),
+                        // allow drag only from drag column icons
+                        dragZone: {
+                            onBeforeDrag: function(data, e) {
+                                return Ext.get(e.target).hasCls('fa-arrows');
+                            }
+                        }
+                    }
+                });
+                this.columns.unshift({
+                    xtype: 'gridcolumn',
+                    header: '<i class="fa fa-sort"></i> ' + 'Reorder'.t(),
+                    align: 'center',
+                    width: 70,
+                    tdCls: 'action-cell',
+                    // iconCls: 'fa fa-arrows'
+                    renderer: function() {
+                        return '<i class="fa fa-arrows" style="cursor: move;"></i>';
+                    },
+                    // dragEnabled: true,
+                });
+            }
+        }
         // Ext.apply(this.config, this.cfg);
 
         // var columnFeatures = this.getColumnFeatures();
 
-        if (this.columns) {
-            this.columns.push({
-                xtype: 'actioncolumn',
-                header: 'Actions'.t(),
-                align: 'center',
-                items: this.recordActions
-            });
-        }
+        // if (this.columns) {
+        //     this.columns.push({
+        //         xtype: 'actioncolumn',
+        //         header: 'Actions'.t(),
+        //         align: 'center',
+        //         items: this.recordActions
+        //     });
+        // }
         // Ext.apply(this, Ext.apply(this.initialConfig, this.config));
         // Ext.apply(this.initialConfig, config);
 

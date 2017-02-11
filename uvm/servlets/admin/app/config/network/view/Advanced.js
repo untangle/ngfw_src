@@ -228,8 +228,13 @@ Ext.define('Ung.config.network.view.Advanced', {
 
                         border: false,
 
-                        columnFeatures: ['reorder', 'delete', 'edit'], // which columns to add
-                        recordActions: ['@edit', '@delete'],
+                        tbar: ['@add', '->', {
+                            xtype: 'component',
+                            padding: 5,
+                            html: Ext.String.format('{0}Note{1}: Custom Rules only match <b>Bypassed</b> traffic.'.t(), '<font color="red">','</font>')
+                        }],
+
+                        recordActions: ['@edit', '@delete', '@reorder'],
 
                         listProperty: 'settings.qosSettings.qosRules.list',
                         // ruleJavaClass: 'com.untangle.uvm.network.PortForwardRuleCondition',
@@ -245,12 +250,6 @@ Ext.define('Ung.config.network.view.Advanced', {
                         ],
 
                         label: 'Perform the following action(s):'.t(),
-
-                        tbar: [{
-                            xtype: 'component',
-                            padding: 5,
-                            html: Ext.String.format('{0}Note{1}: Custom Rules only match <b>Bypassed</b> traffic.'.t(), '<font color="red">','</font>')
-                        }],
 
                         bind: '{qosRules}',
 
@@ -458,8 +457,8 @@ Ext.define('Ung.config.network.view.Advanced', {
                 region: 'center',
                 title: 'Forward Filter Rules'.t(),
 
-                columnFeatures: ['reorder', 'delete', 'edit'], // which columns to add
-                recordActions: ['@edit', '@delete'],
+                tbar: ['@add'],
+                recordActions: ['@edit', '@delete', '@reorder'],
 
                 listProperty: 'settings.forwardFilterRules.list',
 
@@ -566,8 +565,8 @@ Ext.define('Ung.config.network.view.Advanced', {
 
                 title: 'Input Filter Rules'.t(),
 
-                columnFeatures: ['reorder', 'delete', 'edit'], // which columns to add
-                recordActions: ['@edit', '@delete'],
+                tbar: ['@add'],
+                recordActions: ['@edit', '@delete', '@reorder'],
 
                 listProperty: 'settings.inputFilterRules.list',
 
@@ -740,8 +739,8 @@ Ext.define('Ung.config.network.view.Advanced', {
                 split: true,
                 title: 'Access Control Rules'.t(),
 
-                columnFeatures: ['reorder', 'delete', 'edit'], // which columns to add
-                recordActions: ['@edit', '@delete'],
+                tbar: ['@add'],
+                recordActions: ['@edit', '@delete', '@reorder'],
 
                 listProperty: 'settings.upnpSettings.upnpRules.list',
 
