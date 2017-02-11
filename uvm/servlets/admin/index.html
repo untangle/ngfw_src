@@ -144,6 +144,7 @@
     // connect to RPC using forwarded 8000 port to bypass authentication for it
     var rpc = new JSONRpcClient('http://localhost:8002/webui/JSON-RPC');
 
+    Ext.QuickTips.init();
     // Disable Ext Area to avoid unwanted debug messages
     Ext.supports.MouseWheel = false;
     Ext.enableAria = false;

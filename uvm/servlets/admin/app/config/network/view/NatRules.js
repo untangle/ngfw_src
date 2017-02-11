@@ -22,8 +22,9 @@ Ext.define('Ung.config.network.view.NatRules', {
     items: [{
         xtype: 'rules',
         flex: 3,
-        columnFeatures: ['reorder', 'delete', 'edit'], // which columns to add
-        recordActions: ['@edit', '@delete'],
+
+        tbar: ['@add'],
+        recordActions: ['@edit', '@delete', '@reorder'],
 
         listProperty: 'settings.natRules.list',
         ruleJavaClass: 'com.untangle.uvm.network.NatRuleCondition',
@@ -38,7 +39,6 @@ Ext.define('Ung.config.network.view.NatRules', {
             { name: 'PROTOCOL', displayName: 'Protocol'.t(), type: 'checkboxgroup', values: [['TCP','TCP'],['UDP','UDP'],['ICMP','ICMP'],['GRE','GRE'],['ESP','ESP'],['AH','AH'],['SCTP','SCTP']], visible: true}
         ],
 
-        label: 'Perform the following action(s):'.t(),
         description: "NAT Rules control the rewriting of the IP source address of traffic (Network Address Translation). The rules are evaluated in order.".t(),
 
         emptyRow: {

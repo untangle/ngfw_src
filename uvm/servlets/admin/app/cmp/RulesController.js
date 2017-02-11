@@ -55,10 +55,10 @@ Ext.define('Ung.cmp.RulesController', {
         //     conditionsMap: v.getConditionsMap(), // a map with the above conditions as helper
         //     ruleJavaClass: v.ruleJavaClass,
         // });
+    },
 
-
-
-
+    undoChanges: function () {
+        this.getView().getStore().rejectChanges();
     },
 
     editRecord: function (view, rowIndex, colIndex, item, e, record, row) {
@@ -73,7 +73,7 @@ Ext.define('Ung.cmp.RulesController', {
         Ext.widget('ung.cmp.recordeditor', {
             action: record ? 'edit' : 'add',
             fields: v.getColumns(), // form fields needed to be displayed in the editor taken from grid columns
-            label: v.label, // the label in the form
+            actionDescription: v.actionDescription || 'Perform the following action(s):'.t(), // the label in the form
             conditions: v.conditions, // the available conditions which can be applied
             conditionsMap: v.conditionsMap, // a map with the above conditions as helper
             // ruleJavaClass: v.ruleJavaClass,
@@ -198,25 +198,34 @@ Ext.define('Ung.cmp.RulesController', {
         return this.getView().conditionsMap[val].displayName;
     },
 
-    editRuleWin: function (view, rowIndex, colIndex, item, e, record) {
-        var me = this;
-        Ext.widget('ung.cmp.ruleeditor', {
-            conditions: me.getView().conditions,
-            conditionsMap: me.getView().conditionsMap,
-            viewModel: {
-                data: {
-                    rule: record
-                },
-                formulas: {
-                    conditionsData: {
-                        bind: '{rule.conditions.list}',
-                        get: function (coll) {
-                            return coll || [];
-                        }
-                    },
-                },
-            }
+    // import/export features
+    importData: function () {
+        Ext.widget('dataimporter', {
+
         });
+    },
+
+    exportData: function () {
+        // to be implemented
+
+
+        // this.getView().down('#exportForm').submit();
+        // console.log('export');
+        // Ext.Ajax.request({
+        //     method: 'POST',
+        //     url: 'http://localhost:8002/webui/gridSettings', // test url
+        //     params: {
+        //         type: 'export',
+        //         gridName: 'a',
+        //         gridData: 'b'
+        //     },
+        //     success: function (resp) {
+        //         console.log('success');
+        //     },
+        //     failure: function (resp) {
+        //         console.log('fail');
+        //     }
+        // });
     }
 
 });

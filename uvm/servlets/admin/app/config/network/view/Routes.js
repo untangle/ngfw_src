@@ -17,26 +17,25 @@ Ext.define('Ung.config.network.view.Routes', {
     items: [{
         xtype: 'rules',
         region: 'center',
+        title: 'Static Routes'.t(),
 
-        // cfg: {
+        tbar: ['@add'],
+        recordActions: ['@edit', '@delete', '@reorder'],
 
-            columnFeatures: ['reorder', 'delete', 'edit'], // which columns to add
-            recordActions: ['@edit', '@delete'],
+        dataProperty: 'settings.staticRoutes.list',
 
-            dataProperty: 'settings.staticRoutes.list',
+        conditions: [
+            { name: 'DST_LOCAL', displayName: 'Destined Local'.t(), type: 'boolean', visible: true},
+            { name: 'DST_ADDR', displayName: 'Destination Address'.t(), type: 'textfield', visible: true, vtype:'ipall'},
+            { name: 'DST_PORT', displayName: 'Destination Port'.t(), type: 'textfield', vtype:'port', visible: true},
+            { name: 'SRC_ADDR', displayName: 'Source Address'.t(), type: 'textfield', visible: true, vtype:'ipall'},
+            { name: 'SRC_PORT', displayName: 'Source Port'.t(), type: 'numberfield', vtype:'port', visible: rpc.isExpertMode},
+            { name: 'SRC_INTF', displayName: 'Source Interface'.t(), type: 'checkboxgroup', values: [['a', 'a'], ['b', 'b']], visible: true},
+            { name: 'PROTOCOL', displayName: 'Protocol'.t(), type: 'checkboxgroup', values: [['TCP','TCP'],['UDP','UDP'],['ICMP','ICMP'],['GRE','GRE'],['ESP','ESP'],['AH','AH'],['SCTP','SCTP']], visible: true}
+        ],
 
-            conditions: [
-                { name: 'DST_LOCAL', displayName: 'Destined Local'.t(), type: 'boolean', visible: true},
-                { name: 'DST_ADDR', displayName: 'Destination Address'.t(), type: 'textfield', visible: true, vtype:'ipall'},
-                { name: 'DST_PORT', displayName: 'Destination Port'.t(), type: 'textfield', vtype:'port', visible: true},
-                { name: 'SRC_ADDR', displayName: 'Source Address'.t(), type: 'textfield', visible: true, vtype:'ipall'},
-                { name: 'SRC_PORT', displayName: 'Source Port'.t(), type: 'numberfield', vtype:'port', visible: rpc.isExpertMode},
-                { name: 'SRC_INTF', displayName: 'Source Interface'.t(), type: 'checkboxgroup', values: [['a', 'a'], ['b', 'b']], visible: true},
-                { name: 'PROTOCOL', displayName: 'Protocol'.t(), type: 'checkboxgroup', values: [['TCP','TCP'],['UDP','UDP'],['ICMP','ICMP'],['GRE','GRE'],['ESP','ESP'],['AH','AH'],['SCTP','SCTP']], visible: true}
-            ],
-
-            label: 'Forward to the following location:'.t(),
-            description: "Port Forward rules forward sessions matching the configured criteria from a public IP to an IP on an internal (NAT'd) network. The rules are evaluated in order.".t(),
+        label: 'Forward to the following location:'.t(),
+        description: "Port Forward rules forward sessions matching the configured criteria from a public IP to an IP on an internal (NAT'd) network. The rules are evaluated in order.".t(),
 
         emptyRow: {
             ruleId: -1,
@@ -46,7 +45,7 @@ Ext.define('Ung.config.network.view.Routes', {
             javaClass: 'com.untangle.uvm.network.StaticRoute',
             description: ''
         },
-        // },
+
 
         bind: '{staticRoutes}',
 

@@ -6,17 +6,22 @@ Ext.define('Ung.cmp.RecordEditor', {
     xtype: 'ung.cmp.recordeditor',
     requires: [
         'Ung.cmp.RecordEditorController',
-        'Ung.cmp.ConditionsGrid',
+        // 'Ung.cmp.ConditionsGrid',
         'Ung.overrides.form.CheckboxGroup',
         'Ung.overrides.form.field.VTypes'
     ],
     controller: 'recordeditor',
-
+    closeAction: 'destroy',
     // config: {
     //     conditions: null
     // },
 
     viewModel: true,
+    disabled: true,
+    bind: {
+        title: '{windowTitle} | {record.description}',
+        disabled: '{!record}'
+    },
 
     actions: {
         apply: {
@@ -32,6 +37,10 @@ Ext.define('Ung.cmp.RecordEditor', {
             text: 'Cancel',
             iconCls: 'fa fa-check',
             // handler: 'onCancel'
+        },
+        addCondition: {
+            itemId: 'addConditionBtn',
+            text: 'Add Condition'.t()
         }
     },
 
@@ -45,9 +54,6 @@ Ext.define('Ung.cmp.RecordEditor', {
 
     // layout: 'border',
 
-    bind: {
-        title: '{windowTitle} | {record.description}',
-    },
     modal: true,
     constrain: true,
     // layout: {

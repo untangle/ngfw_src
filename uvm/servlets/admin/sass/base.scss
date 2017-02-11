@@ -376,9 +376,6 @@ cite {
     background: rgba(0, 0, 0, 0.05);
 }
 
-i.draggable {
-    cursor: move;
-}
 
 .grid-description {
     font-family: $custom-font;
@@ -766,11 +763,14 @@ i.draggable {
 
 
 
-
+.action-cell {
+    cursor: move;
+    background: rgba(200, 200, 200, 0.5);
+}
 
 
 .mark-delete {
-    background: #e8c1c1;
+    // background: #e8c1c1;
     text-decoration: line-through;
-    // color: #999;
+    color: #CCC;
 }
