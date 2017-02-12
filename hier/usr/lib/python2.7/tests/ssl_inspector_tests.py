@@ -111,7 +111,7 @@ class SslInspectorTests(unittest2.TestCase):
         nukeBlockedUrls()
         result = remote_control.runCommand('grep blockpage /tmp/ssl_test_015.trace')
         assert (result == 0)
-        result = remote_control.runCommand("wget -q -4 -t 2 --timeout=5 --no-check-certificate -q -O - https://penthouse.com/ 2>&1 | grep -q blockpage")
+        result = remote_control.runCommand("wget -q -4 -t 2 --timeout=5 --no-check-certificate -q -O - https://www.playboy.com/ 2>&1 | grep -q blockpage")
         assert (result == 0)        
         
 
