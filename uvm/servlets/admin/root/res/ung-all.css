@@ -179,11 +179,11 @@ cite { background: yellow; font-style: normal; }
 */
 .toast { background: #333; border-radius: 5px; box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5); max-width: 500px; height: auto !important; z-index: 9999; }
 
-.toast-body { font-family: "Source Sans Pro", sans-serif; font-size: 12px; height: auto !important; color: #CCC; }
+.toast-body { font-family: "Source Sans Pro", sans-serif; font-size: 14px; height: auto !important; color: #FFF; }
 
-.toast i { color: #0F0; }
+.toast i { color: #0F0; margin-right: 10px; position: absolute; top: 15px; left: 15px; }
 
-.toast.exception i { color: red; }
+.toast.exception i { color: yellow; }
 
 .x-grid-row { color: #333; }
 

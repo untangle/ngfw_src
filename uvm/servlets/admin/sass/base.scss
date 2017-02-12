@@ -331,16 +331,20 @@ cite {
     z-index: 9999;
     &-body {
         font-family: $custom-font;
-        font-size: 12px;
+        font-size: 14px;
         height: auto !important;
-        color: #CCC;
+        color: #FFF;
     }
     i {
         color: #0F0;
+        margin-right: 10px;
+        position: absolute;
+        top: 15px;
+        left: 15px;
     }
     &.exception {
         i {
-            color: red;
+            color: yellow;
         }
         //background: red;
     }

@@ -137,7 +137,7 @@ Ext.define('Ung.view.grid.Grid', {
         }
 
         // set action columns
-        this.columns = this.columns.concat(actionColumns);
+        // this.columns = this.columns.concat(actionColumns);
 
         this.callParent(arguments);
     }

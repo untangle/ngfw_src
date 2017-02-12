@@ -154,9 +154,12 @@ Ext.define('Ung.config.network.view.PortForwardRules', {
         margin: 10,
         padding: 10,
         // border: true,
-        collapsible: true,
+        collapsible: false,
         collapsed: false,
         autoScroll: true,
+        style: {
+            lineHeight: 1.4
+        },
         title: 'The following ports are currently reserved and can not be forwarded:'.t(),
         items: [{
             xtype: 'component',
