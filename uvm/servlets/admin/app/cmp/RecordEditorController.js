@@ -18,6 +18,8 @@ Ext.define('Ung.cmp.RecordEditorController', {
         xtype: 'grid',
         trackMouseOver: false,
         disableSelection: true,
+        sortableColumns: false,
+        enableColumnHide: false,
         padding: '10 0',
         tbar: ['@addCondition'],
         bind: {
@@ -117,19 +119,18 @@ Ext.define('Ung.cmp.RecordEditorController', {
     onApply: function (btn) {
         var v = this.getView(),
             vm = this.getViewModel(),
-            conditionsGrid = v.down('grid'),
             store;
 
-        if (!conditionsGrid) {
-            return;
-        }
-        store = conditionsGrid.getStore();
+        // if conditions grid
+        if (v.down('grid')) {
+            store = v.down('grid').getStore();
 
-        if (store.getModifiedRecords().length > 0 || store.getRemovedRecords().length > 0 || store.getNewRecords().length > 0) {
-            v.record.set('conditions', {
-                javaClass: 'java.util.LinkedList',
-                list: Ext.Array.pluck(store.getRange(), 'data')
-            });
+            if (store.getModifiedRecords().length > 0 || store.getRemovedRecords().length > 0 || store.getNewRecords().length > 0) {
+                v.record.set('conditions', {
+                    javaClass: 'java.util.LinkedList',
+                    list: Ext.Array.pluck(store.getRange(), 'data')
+                });
+            }
         }
 
         for (var field in vm.get('record').modified) {
@@ -141,11 +142,12 @@ Ext.define('Ung.cmp.RecordEditorController', {
         if (v.action === 'add') {
             v.store.add(v.record);
         }
-        console.log(v.record);
         v.close();
     },
 
-
+    onCancel: function () {
+        this.getView().close();
+    },
     // conditions grid
 
     onConditionsRender: function (conditionsGrid) {
@@ -199,13 +201,15 @@ Ext.define('Ung.cmp.RecordEditorController', {
             value: ''
         };
         this.getView().down('grid').getStore().add(newCond);
+        this.setMenuConditions();
     },
 
     /**
      * Removes a condition from the rule
      */
     removeCondition: function (view, rowIndex, colIndex, item, e, record) {
-        record.drop();
+        // record.drop();
+        this.getView().down('grid').getStore().remove(record);
         this.setMenuConditions();
     },
 
@@ -221,12 +225,13 @@ Ext.define('Ung.cmp.RecordEditorController', {
      * Adds specific condition editor based on it's defined type
      */
     onWidgetAttach: function (column, container, record) {
-        // if widget aklready attached do nothing
-        if (container.items.length >= 1) {
-            return;
-        }
+        container.removeAll(true);
 
         var condition = this.getView().conditionsMap[record.get('conditionType')], i, ckItems = [];
+
+        // if (container.items.length >= 1) {
+        //     return;
+        // }
 
         switch (condition.type) {
         case 'boolean':
@@ -268,7 +273,7 @@ Ext.define('Ung.cmp.RecordEditorController', {
                 bind: {
                     value: '{record.value}'
                 },
-                columns: 3,
+                columns: 4,
                 vertical: true,
                 defaults: {
                     padding: '0 10 0 0'

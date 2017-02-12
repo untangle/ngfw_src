@@ -17,9 +17,14 @@ Ext.define('Ung.config.network.view.DhcpServer', {
         tbar: ['@add'],
         recordActions: ['@delete'],
 
-        listProperty: 'settings.staticRoutes.list',
+        listProperty: 'settings.staticDhcpEntries.list',
 
-        // },
+        emptyRow: {
+            macAddress: '11:22:33:44:55:66',
+            address: '1.2.3.4',
+            javaClass: 'com.untangle.uvm.network.DhcpStaticEntry',
+            description: '[no description]'.t()
+        },
 
         bind: '{staticDhcpEntries}',
 
@@ -29,26 +34,32 @@ Ext.define('Ung.config.network.view.DhcpServer', {
             width: 200,
             editor: {
                 xtype: 'textfield',
+                fieldLabel: 'MAC Address'.t(),
                 allowBlank: false,
+                bind: '{record.macAddress}',
                 emptyText: '[enter MAC name]'.t(),
                 maskRe: /[a-fA-F0-9:]/
             }
         }, {
             header: 'Address'.t(),
-            flex: 1,
+            width: 200,
             dataIndex: 'address',
             editor: {
                 xtype: 'textfield',
+                fieldLabel: 'Address'.t(),
                 emptyText: '[enter address]'.t(),
+                bind: '{record.address}',
                 allowBlank: false,
                 vtype: 'ipall',
             }
         }, {
             header: 'Description'.t(),
-            width: 200,
+            flex: 1,
             dataIndex: 'description',
             editor: {
                 xtype: 'textfield',
+                fieldLabel: 'Description'.t(),
+                bind: '{record.description}',
                 emptyText: '[enter description]'.t(),
                 allowBlank: false,
             }

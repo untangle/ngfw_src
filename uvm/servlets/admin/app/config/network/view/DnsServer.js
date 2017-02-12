@@ -19,7 +19,11 @@ Ext.define('Ung.config.network.view.DnsServer', {
 
         listProperty: 'settings.dnsSettings.staticEntries.list',
 
-        // },
+        emptyRow: {
+            name: '[no name]'.t(),
+            address: '1.2.3.4',
+            javaClass: 'com.untangle.uvm.network.DnsStaticEntry'
+        },
 
         bind: '{staticDnsEntries}',
 
@@ -29,7 +33,9 @@ Ext.define('Ung.config.network.view.DnsServer', {
             flex: 1,
             editor: {
                 xtype: 'textfield',
+                fieldLabel: 'Name'.t(),
                 allowBlank: false,
+                bind: '{record.name}',
                 emptyText: '[enter name]'.t()
             }
         }, {
@@ -38,7 +44,9 @@ Ext.define('Ung.config.network.view.DnsServer', {
             dataIndex: 'address',
             editor: {
                 xtype: 'textfield',
+                fieldLabel: 'Address'.t(),
                 emptyText: '[enter address]'.t(),
+                bind: '{record.address}',
                 allowBlank: false,
                 vtype: 'ipall',
             }
@@ -59,7 +67,11 @@ Ext.define('Ung.config.network.view.DnsServer', {
 
         listProperty: 'settings.dnsSettings.localServers.list',
 
-        // },
+        emptyRow: {
+            domain: '[no domain]'.t(),
+            localServer: '1.2.3.4',
+            javaClass: 'com.untangle.uvm.network.DnsLocalServer'
+        },
 
         bind: '{localServers}',
 
@@ -69,8 +81,10 @@ Ext.define('Ung.config.network.view.DnsServer', {
             flex: 1,
             editor: {
                 xtype: 'textfield',
+                fieldLabel: 'Domain'.t(),
                 allowBlank: false,
-                emptyText: '[enter domain]'.t()
+                emptyText: '[enter domain]'.t(),
+                bind: '{record.domain}',
             }
         }, {
             header: 'Server'.t(),
@@ -78,8 +92,10 @@ Ext.define('Ung.config.network.view.DnsServer', {
             dataIndex: 'localServer',
             editor: {
                 xtype: 'textfield',
+                fieldLabel: 'DNS Server'.t(),
                 emptyText: '[enter DNS server]'.t(),
                 allowBlank: false,
+                bind: '{record.localServer}',
                 vtype: 'ipall',
             }
         }],

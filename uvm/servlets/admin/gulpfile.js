@@ -168,7 +168,7 @@ gulp.task('modules-build', function () {
     return gulp.src(['./app/config/' + moduleName + '/**/*.js'])
         .pipe(jshint())
         .pipe(concat(moduleName + '.js'))
-        .pipe(uglify())
+        // .pipe(uglify())
         .pipe(gulp.dest('./root/script/config/'));
 });
 

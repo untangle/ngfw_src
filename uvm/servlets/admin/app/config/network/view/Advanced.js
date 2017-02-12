@@ -237,7 +237,19 @@ Ext.define('Ung.config.network.view.Advanced', {
                         recordActions: ['@edit', '@delete', '@reorder'],
 
                         listProperty: 'settings.qosSettings.qosRules.list',
-                        // ruleJavaClass: 'com.untangle.uvm.network.PortForwardRuleCondition',
+                        ruleJavaClass: 'com.untangle.uvm.network.QosRuleCondition',
+
+                        emptyRow: {
+                            ruleId: -1,
+                            enabled: true,
+                            description: '',
+                            priority: 1,
+                            javaClass: 'com.untangle.uvm.network.QosRule',
+                            conditions: {
+                                javaClass: 'java.util.LinkedList',
+                                list: []
+                            }
+                        },
 
                         conditions: [
                             { name: 'DST_LOCAL', displayName: 'Destined Local'.t(), type: 'boolean', visible: true},
@@ -461,8 +473,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                 recordActions: ['@edit', '@delete', '@reorder'],
 
                 listProperty: 'settings.forwardFilterRules.list',
-
-                label: 'Perform the following action(s):'.t(),
+                ruleJavaClass: 'com.untangle.uvm.network.FilterRuleCondition',
 
                 conditions: [
                     { name: 'DST_LOCAL', displayName: 'Destined Local'.t(), type: 'boolean', visible: true},
@@ -569,8 +580,8 @@ Ext.define('Ung.config.network.view.Advanced', {
                 recordActions: ['@edit', '@delete', '@reorder'],
 
                 listProperty: 'settings.inputFilterRules.list',
+                ruleJavaClass: 'com.untangle.uvm.network.FilterRuleCondition',
 
-                label: 'Perform the following action(s):'.t(),
 
                 conditions: [
                     { name: 'DST_LOCAL', displayName: 'Destined Local'.t(), type: 'boolean', visible: true},
@@ -743,6 +754,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                 recordActions: ['@edit', '@delete', '@reorder'],
 
                 listProperty: 'settings.upnpSettings.upnpRules.list',
+                ruleJavaClass: 'com.untangle.uvm.network.UpnpRuleCondition',
 
                 conditions: [
                     { name: 'DST_PORT', displayName: 'Destination Port'.t(), type: "textfield", vtype: 'port', visible: true },
@@ -755,13 +767,14 @@ Ext.define('Ung.config.network.view.Advanced', {
                 emptyRow: {
                     ruleId: -1,
                     enabled: true,
-                    // description: '',
+                    description: '',
                     javaClass: 'com.untangle.uvm.network.UpnpRule',
                     conditions: {
                         javaClass: 'java.util.LinkedList',
                         list: []
                     },
-                    priority: 1
+                    priority: 1,
+                    allow: true
                 },
 
                 disabled: true,
@@ -823,6 +836,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                     },
                     editor: {
                         xtype: 'combo',
+                        fieldLabel: 'Action'.t(),
                         bind: '{record.allow}',
                         store: [
                             [false, 'Deny'.t()],

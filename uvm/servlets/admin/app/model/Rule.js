@@ -9,7 +9,8 @@ Ext.define ('Ung.model.Rule', {
         { name: 'enabled', type: 'boolean', defaultValue: true },
         { name: 'conditions', type: 'auto' },
 
-        { name: 'markedForDelete', defaultValue: false }
+        { name: 'markedForDelete', defaultValue: false },
+        { name: 'markedForNew', defaultValue: false }
 
         // { name: 'conditionsMap', mapping: function (data) {
         //     return data.conditions.list;
