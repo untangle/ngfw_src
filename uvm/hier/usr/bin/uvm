@@ -197,10 +197,8 @@ def prepareSystem():
     # build classpath
     os.environ['CLASSPATH'] = ""
     os.environ['CLASSPATH'] += "@PREFIX@/usr/share/untangle/conf:@PREFIX@/usr/share/untangle/lib/untangle-libuvm-bootstrap/:"
-
-    # build the classpath
     for jarfile in glob.glob( os.path.join('@PREFIX@/usr/share/java/uvm', '*.jar') ):
-        #debug("Adding jarfile: %s"%jarfile)
+        # debug("Adding jarfile: %s"%jarfile)
         os.environ['CLASSPATH'] += jarfile + ":"
 
     os.unsetenv('DISPLAY');

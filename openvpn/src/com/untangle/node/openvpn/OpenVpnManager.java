@@ -106,7 +106,8 @@ public class OpenVpnManager
         /* Allow management from localhost */
         "management 127.0.0.1 " + MANAGEMENT_PORT,
         /* log to /var/log/openvpn.log */
-        "log-append /var/log/openvpn.log",
+        // let openvpn use syslog instead
+        //"log-append /var/log/openvpn.log",
         /* persist pool address assignments */
         "ifconfig-pool-persist /etc/openvpn/address-pool-assignments.txt",
         /* push register-dns to reset DNS on windows machines */
