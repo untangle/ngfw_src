@@ -36,14 +36,21 @@ Ext.define('Ung.config.network.NetworkController', {
         // used to update all tabs data
         Ext.ComponentQuery.query('rules').forEach(function (grid) {
             var store = grid.getStore();
-            if (store.getModifiedRecords().length > 0) {
+
+            /**
+             * Important!
+             * update custom grids only if are modified records or it was reordered via drag/drop
+             */
+            if (store.getModifiedRecords().length > 0 || store.isReordered) {
+                console.log(store.getModifiedRecords());
                 store.each(function (record, id) {
                     if (record.get('markedForDelete')) {
                         record.drop();
                     }
                 });
+                store.isReordered = undefined;
                 vm.set(grid.listProperty, Ext.Array.pluck(store.getRange(), 'data'));
-                store.commitChanges();
+                // store.commitChanges();
             }
         });
 
@@ -54,6 +61,7 @@ Ext.define('Ung.config.network.NetworkController', {
                 return;
             }
             console.log(result);
+            me.loadSettings();
             // vm.getStore('interfaces').reload();
             // me.loadInterfaceStatusAndDevices();
         }, vm.get('settings'));
@@ -110,6 +118,7 @@ Ext.define('Ung.config.network.NetworkController', {
                 }
             }
             vm.getStore('interfaces').reload();
+            me.setPortForwardWarnings();
         });
 
         rpc.networkManager.getDeviceStatus(function (result, ex) {
@@ -139,7 +148,6 @@ Ext.define('Ung.config.network.NetworkController', {
             }
             vm.getStore('interfaces').reload();
         });
-
     },
 
     onInterfaces: function (view) {
@@ -182,6 +190,40 @@ Ext.define('Ung.config.network.NetworkController', {
         //     // console.log(v);
         // });
 
+    },
+
+    setPortForwardWarnings: function () {
+        var vm = this.getViewModel(),
+            interfaces = vm.get('settings.interfaces.list'), intf, i,
+            portForwardWarningsHtml = [];
+
+        for (i = 0; i < interfaces.length; i += 1) {
+            intf = interfaces[i];
+            if (intf.v4Address) {
+                portForwardWarningsHtml.push(Ext.String.format('<b>{0}:{1}</b> ', intf.v4Address, vm.get('settings.httpsPort')) + 'for HTTPS services.'.t() + '<br/>');
+            }
+        }
+        for (i = 0; i < interfaces.length ; i += 1) {
+            intf = interfaces[i];
+            if (intf.v4Address && !intf.isWan) {
+                portForwardWarningsHtml.push(Ext.String.format('<b>{0}:{1}</b> ', intf.v4Address, vm.get('settings.httpPort')) + 'for HTTP services.'.t() + '<br/>');
+            }
+        }
+        for (i = 0; i < interfaces.length ; i += 1) {
+            intf = interfaces[i];
+            if (intf.v4Address && intf.isWan) {
+                for (var j = 0; j < interfaces.length; j++) {
+                    var sub_intf = interfaces[j];
+                    if (sub_intf.configType === 'BRIDGED' && sub_intf.bridgedTo === intf.interfaceId) {
+                        portForwardWarningsHtml.push(Ext.String.format('<b>{0}:{1}</b> ', intf.v4Address, vm.get('settings.httpPort')) +
+                                                        'on'.t() +
+                                                        Ext.String.format(' {2} ', sub_intf.name) +
+                                                        'for HTTP services.'.t() + '<br/>');
+                    }
+                }
+            }
+        }
+        vm.set('portForwardWarnings', portForwardWarningsHtml.join(''));
     },
 
     getInterface: function (i) {

@@ -29,8 +29,7 @@ Ext.define('Ung.config.network.NetworkModel', {
 
         qosPriorityNoDefaultStore: function (get) {
             return get('qosPriorityStore').slice(1);
-        }
-
+        },
     },
     data: {
         // si = selected interface (from grid)

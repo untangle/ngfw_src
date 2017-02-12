@@ -1,4 +1,4 @@
-Ext.define('Ung.cmp.RecordEditor', {
+                                                                                        Ext.define('Ung.cmp.RecordEditor', {
     extend: 'Ext.window.Window',
     width: 800,
     height: 500,
@@ -35,8 +35,8 @@ Ext.define('Ung.cmp.RecordEditor', {
         },
         cancel: {
             text: 'Cancel',
-            iconCls: 'fa fa-check',
-            // handler: 'onCancel'
+            iconCls: 'fa fa-ban',
+            handler: 'onCancel'
         },
         addCondition: {
             itemId: 'addConditionBtn',

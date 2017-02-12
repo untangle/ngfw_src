@@ -22,7 +22,7 @@ Ext.define('Ung.config.network.view.Routes', {
         tbar: ['@add'],
         recordActions: ['@edit', '@delete', '@reorder'],
 
-        dataProperty: 'settings.staticRoutes.list',
+        listProperty: 'settings.staticRoutes.list',
 
         conditions: [
             { name: 'DST_LOCAL', displayName: 'Destined Local'.t(), type: 'boolean', visible: true},

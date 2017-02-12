@@ -319,9 +319,11 @@ cite { background: yellow; font-style: normal; }
 
 .x-grid-widgetcolumn-cell-inner { padding: 0; margin: 0; }
 
-.action-cell { cursor: move; background: rgba(200, 200, 200, 0.5); }
+.action-cell { background: rgba(210, 210, 210, 0.15); }
 
-.mark-delete { text-decoration: line-through; color: #CCC; }
+.mark-delete { background: rgba(255, 170, 108, 0.18); }
+
+.mark-new { background: #dffddf; }
 
 .widget { font-family: "Source Sans Pro", sans-serif; margin: 10px; border: 3px transparent solid; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4); border-radius: 3px; box-sizing: border-box; /*background: rgb(249,249,249);*/ background: #FFF; /* background: rgb(249,249,249); background: -moz-linear-gradient(top,  rgba(249,249,249,1) 0%, rgba(255,255,255,1) 50%, rgba(249,249,249,1) 100%); background: -webkit-linear-gradient(top,  rgba(249,249,249,1) 0%,rgba(255,255,255,1) 50%,rgba(249,249,249,1) 100%); background: linear-gradient(to bottom,  rgba(249,249,249,1) 0%,rgba(255,255,255,1) 50%,rgba(249,249,249,1) 100%); filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f9f9f9', endColorstr='#f0f0f0',GradientType=0 ); */ width: 450px; height: 300px; flex-grow: 1; position: relative; transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1), opacity 1s cubic-bezier(0.23, 1, 0.32, 1); backface-visibility: hidden; -webkit-backface-visibility: hidden; }
 
