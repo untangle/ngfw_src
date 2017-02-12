@@ -58,9 +58,10 @@ Ext.define('Ung.config.network.NetworkController', {
             view.setLoading(false);
             if (ex) {
                 console.log(ex);
+                Ung.Util.exceptionToast(ex);
                 return;
             }
-            console.log(result);
+            Ung.Util.successToast('Network'.t() + ' settings saved!');
             me.loadSettings();
             // vm.getStore('interfaces').reload();
             // me.loadInterfaceStatusAndDevices();

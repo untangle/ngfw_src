@@ -42,7 +42,8 @@ Ext.define('Ung.config.network.Network', {
         border: false,
         items: ['->', {
             text: 'Apply Changes'.t(),
-            iconCls: 'fa fa-floppy-o fa-lg',
+            scale: 'large',
+            // iconCls: 'fa fa-floppy-o fa-lg',
             handler: 'saveSettings'
         }]
     }],

@@ -23,14 +23,6 @@ Ext.define('Ung.util.Util', {
         'untangle-node-reports': 'Ung.node.Reports'
     },
 
-    iconTitle: function (text, icon) {
-        var icn = icon.split('-') [0],
-            size = icon.split('-') [1] || 24;
-        return '<i class="material-icons" style="font-size: ' + size + 'px">' +
-                icn + '</i> <span style="vertical-align: middle;">' +
-                text + '</span>';
-    },
-
     iconReportTitle: function (report) {
         var icon;
         switch (report.get('type')) {
@@ -90,13 +82,23 @@ Ext.define('Ung.util.Util', {
         return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
     },
 
+    iconTitle: function (text, icon) {
+        var icn = icon.split('-') [0],
+            size = icon.split('-') [1] || 24;
+        return '<i class="material-icons" style="font-size: ' + size + 'px">' +
+                icn + '</i> <span style="vertical-align: middle;">' +
+                text + '</span>';
+    },
+
     successToast: function (message) {
         Ext.toast({
-            html: this.iconTitle(message, 'check-20'),
-            bodyPadding: '8 10',
+            html: '<i class="fa fa-check fa-lg"></i> ' + message,
+            // minWidth: 200,
+            bodyPadding: '12 12 12 40',
             baseCls: 'toast',
             border: false,
             bodyBorder: false,
+            // align: 'b',
             align: 'br',
             autoCloseDelay: 5000,
             slideInAnimation: 'easeOut',
@@ -108,9 +110,20 @@ Ext.define('Ung.util.Util', {
     },
 
     exceptionToast: function (message) {
+        var msg = [];
+        if (typeof message === 'object') {
+            if (message.name && message.code) {
+                msg.push('<strong>Name:</strong> ' + message.name + ' (' + message.code + ')');
+            }
+            if (message.message) {
+                msg.push('<strong>Error:</strong> ' + message.message);
+            }
+        } else {
+            msg = [message]
+        }
         Ext.toast({
-            html: this.iconTitle('<span style="color: #FFF; font-weight: bold;">Exception!</span> ' + message, 'error-20'),
-            bodyPadding: '10',
+            html: '<i class="fa fa-exclamation-triangle fa-lg"></i> <span style="font-weight: bold; color: yellow;">Exception!</span><br/>' + msg.join('<br/>'),
+            bodyPadding: '10 10 10 45',
             baseCls: 'toast',
             cls: 'exception',
             border: false,

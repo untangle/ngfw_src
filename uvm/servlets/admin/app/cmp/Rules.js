@@ -72,11 +72,12 @@ Ext.define('Ung.cmp.Rules', {
     },
 
     initComponent: function () {
-        var i;
+        // to revisit the way columns are attached
+        var columns = Ext.clone(this.columns), i;
         for (i = 0; i < this.recordActions.length; i += 1) {
             var action = this.recordActions[i];
             if (action === '@edit' || action === '@delete') {
-                this.columns.push({
+                columns.push({
                     xtype: 'actioncolumn',
                     width: 60,
                     header: action === '@edit' ? 'Edit'.t() : 'Delete'.t(),
@@ -98,7 +99,7 @@ Ext.define('Ung.cmp.Rules', {
                         }
                     }
                 });
-                this.columns.unshift({
+                columns.unshift({
                     xtype: 'gridcolumn',
                     header: '<i class="fa fa-sort"></i>',
                     align: 'center',
@@ -111,7 +112,9 @@ Ext.define('Ung.cmp.Rules', {
                 });
             }
         }
-        // Ext.apply(this.config, this.cfg);
+        Ext.apply(this, {
+            columns: columns
+        });
         this.callParent(arguments);
     }
 

@@ -65,11 +65,11 @@ Ext.define('Ung.view.node.Settings', {
         dock: 'bottom',
         items: [{
             xtype: 'button',
-            text: Ung.Util.iconTitle('Remove', 'remove_circle-16'),
+            text: 'Remove',
             handler: 'removeNode'
         }, {
             xtype: 'button',
-            text: Ung.Util.iconTitle('Save', 'save-16'),
+            text: 'Save',
             handler: 'saveSettings'
         }]
     }]

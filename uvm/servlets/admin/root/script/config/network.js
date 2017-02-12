@@ -42,7 +42,8 @@ Ext.define('Ung.config.network.Network', {
         border: false,
         items: ['->', {
             text: 'Apply Changes'.t(),
-            iconCls: 'fa fa-floppy-o fa-lg',
+            scale: 'large',
+            // iconCls: 'fa fa-floppy-o fa-lg',
             handler: 'saveSettings'
         }]
     }],
@@ -146,9 +147,10 @@ Ext.define('Ung.config.network.NetworkController', {
             view.setLoading(false);
             if (ex) {
                 console.log(ex);
+                Ung.Util.exceptionToast(ex);
                 return;
             }
-            console.log(result);
+            Ung.Util.successToast('Network'.t() + ' settings saved!');
             me.loadSettings();
             // vm.getStore('interfaces').reload();
             // me.loadInterfaceStatusAndDevices();
@@ -3228,9 +3230,12 @@ Ext.define('Ung.config.network.view.PortForwardRules', {
         margin: 10,
         padding: 10,
         // border: true,
-        collapsible: true,
+        collapsible: false,
         collapsed: false,
         autoScroll: true,
+        style: {
+            lineHeight: 1.4
+        },
         title: 'The following ports are currently reserved and can not be forwarded:'.t(),
         items: [{
             xtype: 'component',
