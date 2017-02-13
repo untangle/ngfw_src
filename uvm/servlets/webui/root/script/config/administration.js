@@ -287,7 +287,7 @@ Ext.define('Webui.config.administration', {
                 }
             }, {
                 xtype:'checkcolumn',
-                header: i18n._("Email Events"),
+                header: i18n._("Email Alerts"),
                 dataIndex: "emailAlerts",
                 width: 150,
                 resizable: false
@@ -326,7 +326,7 @@ Ext.define('Webui.config.administration', {
             },{
                 xtype:'checkbox',
                 dataIndex: "emailAlerts",
-                fieldLabel: i18n._("Email Events"),
+                fieldLabel: i18n._("Email Alerts"),
                 width: 300
             // },{
             //     xtype:'checkbox',
