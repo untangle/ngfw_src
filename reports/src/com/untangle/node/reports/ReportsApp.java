@@ -691,7 +691,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
                 if(eventManager != null){
                     EventSettings eventSettings = eventManager.getSettings();
                     if(eventSettings != null){
-                        eventSettings.setEventRules(settings.getEventRules());
+                        eventSettings.setAlertRules(settings.getEventRules());
 
                         // Syslog
                         eventSettings.setSyslogEnabled(settings.getSyslogEnabled());

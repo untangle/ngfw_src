@@ -22,7 +22,8 @@ public class EventSettings implements Serializable, JSONString
 {
     private Integer version = 1;
 
-    private LinkedList<EventRule> eventRules = null;
+    private LinkedList<EventRule> alertRules = null;
+    private LinkedList<EventRule> logRules = null;
 
     private boolean syslogEnabled = false;
     private String syslogHost;
@@ -34,8 +35,11 @@ public class EventSettings implements Serializable, JSONString
     public Integer getVersion() { return version; }
     public void setVersion( Integer newValue ) { this.version = newValue; }
 
-    public LinkedList<EventRule> getEventRules() { return this.eventRules; }
-    public void setEventRules( LinkedList<EventRule> newValue ) { this.eventRules = newValue; }
+    public LinkedList<EventRule> getAlertRules() { return this.alertRules; }
+    public void setAlertRules( LinkedList<EventRule> newValue ) { this.alertRules = newValue; }
+
+    public LinkedList<EventRule> getLogRules() { return this.logRules; }
+    public void setLogRules( LinkedList<EventRule> newValue ) { this.logRules = newValue; }
 
     /*
      Remote syslog
