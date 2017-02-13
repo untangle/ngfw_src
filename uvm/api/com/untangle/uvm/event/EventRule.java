@@ -33,6 +33,7 @@ public class EventRule implements JSONString, Serializable
     
     private Integer ruleId;
     private Boolean enabled;
+
     private Boolean log;
     private Boolean remoteLog;
     private Boolean email;
@@ -60,8 +61,10 @@ public class EventRule implements JSONString, Serializable
     {
         this.setEnabled( enabled );
         this.setConditions( conditions );
+
         this.setLog( log );
         this.setEmail( email );
+
         this.setDescription( description );
         this.setLimitFrequency( frequencyLimit );
         this.setLimitFrequencyMinutes( frequencyMinutes );

@@ -82,7 +82,7 @@ public class EventManagerImpl implements EventManager
          * Set the Event Rules IDs
          */
         int idx = 0;
-        for (EventRule rule : newSettings.getEventRules()) {
+        for (EventRule rule : newSettings.getAlertRules()) {
             rule.setRuleId(++idx);
         }
 
@@ -147,12 +147,13 @@ public class EventManagerImpl implements EventManager
     {
         EventSettings settings = new EventSettings();
         settings.setVersion( 1 );
-        settings.setEventRules( defaultEventRules() );
+        settings.setAlertRules( defaultAlertRules() );
+        settings.setLogRules( defaultLogRules() );
 
         return settings;
     }
 
-    private LinkedList<EventRule> defaultEventRules()
+    private LinkedList<EventRule> defaultAlertRules()
     {
         LinkedList<EventRule> rules = new LinkedList<EventRule>();
 
@@ -349,6 +350,19 @@ public class EventManagerImpl implements EventManager
         return rules;
     }
 
+    private LinkedList<EventRule> defaultLogRules()
+    {
+        LinkedList<EventRule> rules = new LinkedList<EventRule>();
+
+        LinkedList<EventRuleCondition> matchers;
+        EventRuleCondition matcher1;
+        EventRuleCondition matcher2;
+        EventRuleCondition matcher3;
+        EventRule eventRule;
+
+        return rules;
+    }
+
     private EventSettings conversion_12_0(EventSettings settings)
     {
         settings.setVersion( 1 );
@@ -358,7 +372,7 @@ public class EventManagerImpl implements EventManager
         EventRuleCondition matcher2;
         EventRule eventRule;
 
-        LinkedList<EventRule> rules = settings.getEventRules();
+        LinkedList<EventRule> rules = settings.getAlertRules();
 
         matchers = new LinkedList<EventRuleCondition>();
         matcher1 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "class", "=", "*SessionEvent*" ) );
@@ -386,7 +400,7 @@ public class EventManagerImpl implements EventManager
         try {
             boolean found = false;
 
-            for (Iterator<EventRule> it = settings.getEventRules().iterator(); it.hasNext() ;) {
+            for (Iterator<EventRule> it = settings.getAlertRules().iterator(); it.hasNext() ;) {
                 EventRule rule = it.next();
                 if ("Free Memory is low".equals( rule.getDescription() ) ) {
                     logger.info("Replacing Free Memory event rule...");
@@ -409,7 +423,7 @@ public class EventManagerImpl implements EventManager
                 matchers.add( matcher2 );
                 eventRule = new EventRule( false, matchers, true, true, "Free memory is low", true, 60 );
 
-                LinkedList<EventRule> rules = settings.getEventRules();
+                LinkedList<EventRule> rules = settings.getAlertRules();
                 rules.add( 3, eventRule );
             }
         } catch (Exception e) {
@@ -437,15 +451,16 @@ public class EventManagerImpl implements EventManager
     private static void runEventQueue( LinkedList<LogEvent> events )
     {
         for ( LogEvent event : events ) {
-            runEvent( event );
+            runAlertRules( event );
+            runLogRules( event );
         }
     }
 
-    private static void runEvent( LogEvent event )
+    private static void runAlertRules( LogEvent event )
     {
         try {
             JSONObject jsonObject = event.toJSONObject();
-            for ( EventRule rule : UvmContextFactory.context().eventManager().getSettings().getEventRules() ) {
+            for ( EventRule rule : UvmContextFactory.context().eventManager().getSettings().getAlertRules() ) {
                 if ( ! rule.getEnabled() )
                 {
                     continue;
@@ -454,26 +469,11 @@ public class EventManagerImpl implements EventManager
                 if ( rule.isMatch( jsonObject ) ) {
                     logger.info( "event match: " + rule.getDescription() + " matches " + jsonObject.toString() );
 
-                    if ( rule.getEmail() ){
-                        sendEmailForEvent( rule, event );
-                    }
-
-                    event.setTag(SyslogManagerImpl.LOG_TAG_PREFIX);
-                    if ( rule.getRemoteLog() ){
-                        try {
-                            SyslogManagerImpl.sendSyslog( event );
-                        } catch (Exception exn) {
-                            logger.warn("failed to send syslog", exn);
-                        }
-                    }
-                    if ( rule.getLog() ){
-                        Event eventEvent = new Event( rule.getDescription(), event.toSummaryString(), jsonObject, event, rule, false );
-                        UvmContextFactory.context().logEvent( eventEvent );
-                    }
+                    sendEmailForEvent( rule, event );
                 }
             }
         } catch ( Exception e ) {
-            logger.warn("Failed to evaluate event rules.", e);
+            logger.warn("Failed to evaluate alert rules.", e);
         }
     }
 
@@ -544,6 +544,39 @@ public class EventManagerImpl implements EventManager
 
         return true;
     }
+
+    private static void runLogRules( LogEvent event )
+    {
+        try {
+            JSONObject jsonObject = event.toJSONObject();
+            for ( EventRule rule : UvmContextFactory.context().eventManager().getSettings().getLogRules() ) {
+                if ( ! rule.getEnabled() )
+                {
+                    continue;
+                }
+
+                if ( rule.isMatch( jsonObject ) ) {
+                    logger.info( "event match: " + rule.getDescription() + " matches " + jsonObject.toString() );
+
+                    event.setTag(SyslogManagerImpl.LOG_TAG_PREFIX);
+                    if ( rule.getRemoteLog() ){
+                        try {
+                            SyslogManagerImpl.sendSyslog( event );
+                        } catch (Exception exn) {
+                            logger.warn("failed to send syslog", exn);
+                        }
+                    }
+                    if ( rule.getLog() ){
+                        Event eventEvent = new Event( rule.getDescription(), event.toSummaryString(), jsonObject, event, rule, false );
+                        UvmContextFactory.context().logEvent( eventEvent );
+                    }
+                }
+            }
+        } catch ( Exception e ) {
+            logger.warn("Failed to evaluate log rules.", e);
+        }
+    }
+
 
     /**
      * This thread periodically walks through the entries and removes expired entries
