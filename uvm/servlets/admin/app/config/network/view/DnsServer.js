@@ -48,7 +48,7 @@ Ext.define('Ung.config.network.view.DnsServer', {
                 emptyText: '[enter address]'.t(),
                 bind: '{record.address}',
                 allowBlank: false,
-                vtype: 'ipall',
+                vtype: 'ipAddress',
             }
         }],
     }, {
@@ -96,7 +96,7 @@ Ext.define('Ung.config.network.view.DnsServer', {
                 emptyText: '[enter DNS server]'.t(),
                 allowBlank: false,
                 bind: '{record.localServer}',
-                vtype: 'ipall',
+                vtype: 'ipAddress',
             }
         }],
     }]
