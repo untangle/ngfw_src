@@ -21,11 +21,6 @@ Ext.define('Ung.cmp.RulesController', {
 
 
     addRecord: function () {
-        var v = this.getView();
-        var vm = this.getViewModel();
-
-        console.log(v.getStore());
-
         // var r = grid.emptyRow;
         // r = v.getStore().add(Ext.clone(v.emptyRow));
         // console.log(r[0]);
@@ -50,9 +45,11 @@ Ext.define('Ung.cmp.RulesController', {
         // });
     },
 
-    editRecord: function (view, rowIndex, colIndex, item, e, record, row) {
-        // var v = this.getView();
-        // console.log(this.getView().down('grid').getColumns());
+    editRecord: function (view, rowIndex, colIndex, item, e, record) {
+        // if (record.get('readOnly')) {
+        //     Ext.MessageBox.alert('Info', '<strong>' + record.get('description') + '</strong> connot be edited!');
+        //     return;
+        // }
         this.editorWin(record);
     },
 
@@ -95,11 +92,15 @@ Ext.define('Ung.cmp.RulesController', {
         });
     },
 
-    deleteRecord: function (view, rowIndex, colIndex, item, e, record, row) {
+    deleteRecord: function (view, rowIndex, colIndex, item, e, record) {
+        // if (record.get('readOnly')) {
+        //     Ext.MessageBox.alert('Info', '<strong>' + record.get('description') + '</strong> connot be deleted!');
+        //     return;
+        // }
         record.set('markedForDelete', true);
     },
 
-    moveUp: function (view, rowIndex, colIndex, item, e, record, row) {
+    moveUp: function (view, rowIndex, colIndex, item, e, record) {
         var store = this.getView().down('grid').getStore();
         store.remove(record, true); // just moving
         store.insert(rowIndex + item.direction, record);
@@ -129,13 +130,21 @@ Ext.define('Ung.cmp.RulesController', {
     //     }
     // },
 
-    conditionsRenderer: function (value, metaData, record) {
+    conditionsRenderer: function (value) {
         var view = this.getView(),
             conds = value.list,
-            resp = [], i, cond;
+            resp = [], i, valueRenderer = [];
 
         for (i = 0; i < conds.length; i += 1) {
-            resp.push(view.conditionsMap[conds[i].conditionType].displayName + '<strong>' + (conds[i].invert ? ' &nrArr; ' : ' &rArr; ') + '<span class="cond-val ' + (conds[i].invert ? 'invert' : '') + '">' + conds[i].value.toString().split(',').join(', ') + '</span>' + '</strong>');
+            valueRenderer = [];
+            if (conds[i].conditionType === 'SRC_INTF' || conds[i].conditionType === 'DST_INTF') {
+                conds[i].value.toString().split(',').forEach(function (intfff) {
+                    valueRenderer.push(Ung.Util.interfacesListNamesMap()[intfff]);
+                });
+            } else {
+                valueRenderer = conds[i].value.toString().split(',');
+            }
+            resp.push(view.conditionsMap[conds[i].conditionType].displayName + '<strong>' + (conds[i].invert ? ' &nrArr; ' : ' &rArr; ') + '<span class="cond-val ' + (conds[i].invert ? 'invert' : '') + '">' + valueRenderer.join(', ') + '</span>' + '</strong>');
         }
         return resp.join(' &nbsp;&bull;&nbsp; ');
     },

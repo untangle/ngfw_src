@@ -131,8 +131,7 @@ Ext.define('Ung.config.network.NetworkController', {
              * update custom grids only if are modified records or it was reordered via drag/drop
              */
             if (store.getModifiedRecords().length > 0 || store.isReordered) {
-                console.log(store.getModifiedRecords());
-                store.each(function (record, id) {
+                store.each(function (record) {
                     if (record.get('markedForDelete')) {
                         record.drop();
                     }
@@ -144,27 +143,24 @@ Ext.define('Ung.config.network.NetworkController', {
         });
 
         rpc.networkManager.setNetworkSettings(function (result, ex) {
-            view.setLoading(false);
-            if (ex) {
-                console.log(ex);
-                Ung.Util.exceptionToast(ex);
-                return;
-            }
-            Ung.Util.successToast('Network'.t() + ' settings saved!');
+            view.setLoading (false);
             me.loadSettings();
-            // vm.getStore('interfaces').reload();
+            if (ex) { console.error(ex); Ung.Util.exceptionToast(ex); return; }
+            Ung.Util.successToast('Network'.t() + ' settings saved!');
             // me.loadInterfaceStatusAndDevices();
         }, vm.get('settings'));
     },
 
+    /**
+     * Loads netowrk settings
+     */
     loadSettings: function () {
         var me = this;
         rpc.networkManager.getNetworkSettings(function (result, ex) {
+            if (ex) { console.error(ex); Ung.Util.exceptionToast(ex); return; }
             me.getViewModel().set('settings', result);
             me.loadInterfaceStatusAndDevices();
-
             console.log(result);
-            // interfaces = result.interfaces.list;
         });
     },
 
@@ -177,6 +173,11 @@ Ext.define('Ung.config.network.NetworkController', {
         // vm.set('settings.interfaces.list[0].mbit', 2000);
         // vm.notify();
         rpc.networkManager.getInterfaceStatus(function (result, ex) {
+            if (ex) {
+                console.log(ex);
+                Ung.Util.exceptionToast(ex);
+                return;
+            }
             for (i = 0; i < interfaces.length; i += 1) {
                 Ext.apply(interfaces[i], {
                     'v4Address': null,
@@ -212,6 +213,7 @@ Ext.define('Ung.config.network.NetworkController', {
         });
 
         rpc.networkManager.getDeviceStatus(function (result, ex) {
+            if (ex) { console.error(ex); Ung.Util.exceptionToast(ex); return; }
             for (i = 0; i < interfaces.length; i += 1) {
                 Ext.apply(interfaces[i], {
                     'deviceName': null,
@@ -240,8 +242,7 @@ Ext.define('Ung.config.network.NetworkController', {
         });
     },
 
-    onInterfaces: function (view) {
-        console.log('load interf');
+    onInterfaces: function () {
         var me = this;
         var vm = this.getViewModel();
 
@@ -343,15 +344,11 @@ Ext.define('Ung.config.network.NetworkController', {
                 txdrop: null
             };
 
-        // vm.set('siStatus', stat);
-
         rpc.execManager.execOutput(function (result, ex) {
-            if(Ext.isEmpty(result)) {
-                return;
-            }
-            if (result.search('Device not found') >= 0) {
-                return;
-            }
+            if (ex) { console.error(ex); Ung.Util.exceptionToast(ex); return; }
+            if (Ext.isEmpty(result)) { return; }
+            if (result.search('Device not found') >= 0) { return; }
+
             var lineparts = result.split(' ');
             if (result.search('Ethernet') >= 0) {
                 Ext.apply(stat, {
@@ -377,9 +374,9 @@ Ext.define('Ung.config.network.NetworkController', {
             }
 
             rpc.execManager.execOutput(function (result, ex) {
-                if(Ext.isEmpty(result)) {
-                    return;
-                }
+                if (ex) { console.error(ex); Ung.Util.exceptionToast(ex); return; }
+                if (Ext.isEmpty(result)) { return; }
+
                 var linep = result.split(' ');
                 Ext.apply(stat, {
                     address: linep[0].split(':')[1],
@@ -387,6 +384,7 @@ Ext.define('Ung.config.network.NetworkController', {
                 });
 
                 rpc.execManager.execOutput(function (result, ex) {
+                    if (ex) { console.error(ex); Ung.Util.exceptionToast(ex); return; }
                     Ext.apply(stat, {
                         v6Addr: result
                     });
@@ -400,6 +398,8 @@ Ext.define('Ung.config.network.NetworkController', {
         var vm = this.getViewModel();
         var arpCommand = 'arp -n | grep ' + symbolicDev + ' | grep -v incomplete > /tmp/arp.txt ; cat /tmp/arp.txt';
         rpc.execManager.execOutput(function (result, ex) {
+            if (ex) { console.error(ex); Ung.Util.exceptionToast(ex); return; }
+
             var lines = Ext.isEmpty(result) ? []: result.split('\n');
             var lparts, connections = [];
             for (var i = 0 ; i < lines.length; i++ ) {
@@ -469,22 +469,15 @@ Ext.define('Ung.config.network.NetworkController', {
     refreshRoutes: function () {
         var v = this.getView();
         rpc.execManager.exec(function (result, ex) {
+            if (ex) { console.error(ex); Ung.Util.exceptionToast(ex); return; }
             v.down('#currentRoutes').setValue(result.output);
         }, '/usr/share/untangle/bin/ut-routedump.sh');
     },
 
 
     refreshQosStatistics: function () {
-        rpc.execManager.execOutput(function (result, exception) {
-            // if(Ung.Util.handleException(exception)) return;
-            console.log(result);
-            var list = [];
-            try {
-                // list = eval(result);
-            } catch (e) {
-                // console.error("Could not execute /usr/share/untangle-netd/bin/qos-service.py output: ", result, e);
-            }
-            // handler ({list: list}, exception);
+        rpc.execManager.execOutput(function (result, ex) {
+            if (ex) { console.error(ex); Ung.Util.exceptionToast(ex); return; }
         }, '/usr/share/untangle-netd/bin/qos-service.py status');
     },
 
@@ -508,7 +501,8 @@ Ext.define('Ung.config.network.NetworkController', {
             text.push(output.getValue());
             text.push('' + (new Date()) + ' - ' + 'Test Started'.t() + '\n');
 
-            rpc.execManager.execEvil(function (result, ex1) {
+            rpc.execManager.execEvil(function (result, ex) {
+                if (ex) { console.error(ex); Ung.Util.exceptionToast(ex); return; }
                 me.readOutput(result, text, output, btn);
             }, v.getViewModel().get('command'));
 
@@ -519,7 +513,8 @@ Ext.define('Ung.config.network.NetworkController', {
         if (!resultReader) {
             return;
         }
-        resultReader.readFromOutput(function (res, ex2) {
+        resultReader.readFromOutput(function (res, ex) {
+            if (ex) { console.error(ex); Ung.Util.exceptionToast(ex); return; }
             // console.log(res);
             if (res !== null) {
                 text.push(res);
@@ -944,13 +939,13 @@ Ext.define('Ung.config.network.view.Advanced', {
                         },
 
                         conditions: [
-                            { name: 'DST_LOCAL', displayName: 'Destined Local'.t(), type: 'boolean', visible: true},
-                            { name: 'DST_ADDR', displayName: 'Destination Address'.t(), type: 'textfield', visible: true, vtype:'ipall'},
-                            { name: 'DST_PORT', displayName: 'Destination Port'.t(), type: 'textfield', vtype:'port', visible: true},
-                            { name: 'SRC_ADDR', displayName: 'Source Address'.t(), type: 'textfield', visible: true, vtype:'ipall'},
-                            { name: 'SRC_PORT', displayName: 'Source Port'.t(), type: 'numberfield', vtype:'port', visible: rpc.isExpertMode},
-                            { name: 'SRC_INTF', displayName: 'Source Interface'.t(), type: 'checkboxgroup', values: [['a', 'a'], ['b', 'b']], visible: true},
-                            { name: 'PROTOCOL', displayName: 'Protocol'.t(), type: 'checkboxgroup', values: [['TCP','TCP'],['UDP','UDP'],['ICMP','ICMP'],['GRE','GRE'],['ESP','ESP'],['AH','AH'],['SCTP','SCTP']], visible: true}
+                            { name: 'DST_LOCAL', displayName: 'Destined Local'.t(), type: 'boolean' },
+                            { name: 'DST_ADDR', displayName: 'Destination Address'.t(), type: 'textfield', vtype:'ipMatcher' },
+                            { name: 'DST_PORT', displayName: 'Destination Port'.t(), type: 'textfield', vtype:'portMatcher' },
+                            { name: 'PROTOCOL', displayName: 'Protocol'.t(), type: 'checkboxgroup', values: [['TCP','TCP'], ['UDP','UDP']] },
+                            { name: 'SRC_INTF', displayName: 'Source Interface'.t(), type: 'checkboxgroup', values: Ung.Util.getInterfaceList(true, true) },
+                            { name: 'SRC_ADDR', displayName: 'Source Address'.t(), type: 'textfield', vtype:'ipMatcher' },
+                            { name: 'SRC_PORT', displayName: 'Source Port'.t(), type: 'numberfield', vtype:'portMatcher' }
                         ],
 
                         label: 'Perform the following action(s):'.t(),
@@ -985,10 +980,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                             width: 200,
                             dataIndex: 'description',
                             renderer: function (value) {
-                                if (value) {
-                                    return value;
-                                }
-                                return '<em>no description<em>';
+                                return value || '<em>no description<em>';
                             },
                             editor: {
                                 xtype: 'textfield',
@@ -1168,15 +1160,15 @@ Ext.define('Ung.config.network.view.Advanced', {
                 ruleJavaClass: 'com.untangle.uvm.network.FilterRuleCondition',
 
                 conditions: [
-                    { name: 'DST_LOCAL', displayName: 'Destined Local'.t(), type: 'boolean', visible: true},
-                    { name: 'DST_ADDR', displayName: 'Destination Address'.t(), type: 'textfield', visible: true, vtype:'ipall'},
-                    { name: 'DST_PORT', displayName: 'Destination Port'.t(), type: 'textfield', vtype:'port', visible: true},
-                    // { name: 'DST_INTF',displayName: 'Destination Interface'.t(), type: 'checkgroup', values: Ung.Util.getInterfaceList(true, true), visible: true},
-                    { name: 'SRC_MAC' , displayName: 'Source MAC'.t(), type: 'textfield', visible: true},
-                    { name: 'SRC_ADDR', displayName: 'Source Address'.t(), type: 'textfield', visible: true, vtype: 'ipall'},
-                    { name: 'SRC_PORT', displayName: 'Source Port'.t(), type: 'textfield',vtype: 'port', visible: rpc.isExpertMode},
-                    // { name: 'SRC_INTF',displayName: 'Source Interface'.t(), type: 'checkgroup', values: Ung.Util.getInterfaceList(true, true), visible: true},
-                    { name: 'PROTOCOL', displayName: 'Protocol'.t(), type: 'checkboxgroup', values: [['TCP','TCP'],['UDP','UDP'],['ICMP','ICMP'],['GRE','GRE'],['ESP','ESP'],['AH','AH'],['SCTP','SCTP']], visible: true}
+                    { name: 'DST_LOCAL', displayName: 'Destined Local'.t(), type: 'boolean' },
+                    { name: 'DST_ADDR', displayName: 'Destination Address'.t(), type: 'textfield', vtype:'ipMatcher' },
+                    { name: 'DST_PORT', displayName: 'Destination Port'.t(), type: 'textfield', vtype:'portMatcher' },
+                    { name: 'DST_INTF', displayName: 'Destination Interface'.t(), type: 'checkboxgroup', values: Ung.Util.getInterfaceList(true, true) },
+                    { name: 'SRC_MAC' , displayName: 'Source MAC'.t(), type: 'textfield' },
+                    { name: 'SRC_ADDR', displayName: 'Source Address'.t(), type: 'textfield', vtype: 'ipMatcher'},
+                    { name: 'SRC_PORT', displayName: 'Source Port'.t(), type: 'textfield', vtype: 'portMatcher' },
+                    { name: 'SRC_INTF', displayName: 'Source Interface'.t(), type: 'checkboxgroup', values: Ung.Util.getInterfaceList(true, true) },
+                    { name: 'PROTOCOL', displayName: 'Protocol'.t(), type: 'checkboxgroup', values: [['TCP','TCP'],['UDP','UDP'],['ICMP','ICMP'],['GRE','GRE'],['ESP','ESP'],['AH','AH'],['SCTP','SCTP']] }
                 ],
 
                 emptyRow: {
@@ -1263,7 +1255,7 @@ Ext.define('Ung.config.network.view.Advanced', {
             }, {
                 xtype: 'rules',
                 region: 'south',
-                height: '60%',
+                height: '70%',
                 split: true,
 
                 title: 'Input Filter Rules'.t(),
@@ -1276,15 +1268,15 @@ Ext.define('Ung.config.network.view.Advanced', {
 
 
                 conditions: [
-                    { name: 'DST_LOCAL', displayName: 'Destined Local'.t(), type: 'boolean', visible: true},
-                    { name: 'DST_ADDR', displayName: 'Destination Address'.t(), type: 'textfield', visible: true, vtype:'ipall'},
-                    { name: 'DST_PORT', displayName: 'Destination Port'.t(), type: 'textfield', vtype:'port', visible: true},
-                    { name: 'DST_INTF',displayName: 'Destination Interface'.t(), type: 'checkgroup', values: [], visible: true},
-                    { name: 'SRC_MAC' , displayName: 'Source MAC'.t(), type: 'textfield', visible: true},
-                    { name: 'SRC_ADDR', displayName: 'Source Address'.t(), type: 'textfield', visible: true, vtype: 'ipall'},
-                    { name: 'SRC_PORT', displayName: 'Source Port'.t(), type: 'textfield',vtype: 'port', visible: rpc.isExpertMode},
-                    { name: 'SRC_INTF',displayName: 'Source Interface'.t(), type: 'checkgroup', values: [], visible: true},
-                    { name: 'PROTOCOL', displayName: 'Protocol'.t(), type: 'checkboxgroup', values: [['TCP','TCP'],['UDP','UDP'],['ICMP','ICMP'],['GRE','GRE'],['ESP','ESP'],['AH','AH'],['SCTP','SCTP']], visible: true}
+                    { name: 'DST_LOCAL', displayName: 'Destined Local'.t(), type: 'boolean' },
+                    { name: 'DST_ADDR', displayName: 'Destination Address'.t(), type: 'textfield', vtype:'ipMatcher' },
+                    { name: 'DST_PORT', displayName: 'Destination Port'.t(), type: 'textfield', vtype:'portMatcher' },
+                    { name: 'DST_INTF', displayName: 'Destination Interface'.t(), type: 'checkboxgroup', values: Ung.Util.getInterfaceList(true, true) },
+                    { name: 'SRC_MAC' , displayName: 'Source MAC'.t(), type: 'textfield' },
+                    { name: 'SRC_ADDR', displayName: 'Source Address'.t(), type: 'textfield', vtype: 'ipMatcher'},
+                    { name: 'SRC_PORT', displayName: 'Source Port'.t(), type: 'textfield', vtype: 'portMatcher' },
+                    { name: 'SRC_INTF', displayName: 'Source Interface'.t(), type: 'checkboxgroup', values: Ung.Util.getInterfaceList(true, true) },
+                    { name: 'PROTOCOL', displayName: 'Protocol'.t(), type: 'checkboxgroup', values: [['TCP','TCP'],['UDP','UDP'],['ICMP','ICMP'],['GRE','GRE'],['ESP','ESP'],['AH','AH'],['SCTP','SCTP']] }
                 ],
 
                 emptyRow: {
@@ -1298,7 +1290,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                         list: []
                     },
                     blocked: false,
-                    readOnly: null
+                    readOnly: false
                 },
 
                 bind: '{inputFilterRules}',
@@ -1367,6 +1359,14 @@ Ext.define('Ung.config.network.view.Advanced', {
                         editable: false,
                         store: [[true, 'Block'.t()], [false, 'Pass'.t()]],
                         queryMode: 'local'
+                    },
+                    listeners: {
+                        beforecheckchange: function (col, rowIndex, checked, record) {
+                            if (record.get('readOnly')) {
+                                Ext.MessageBox.alert('Info', '<strong>' + record.get('description') + '</strong> connot be edited!');
+                                return false;
+                            }
+                        }
                     }
                 }],
             }]
@@ -1449,9 +1449,9 @@ Ext.define('Ung.config.network.view.Advanced', {
                 ruleJavaClass: 'com.untangle.uvm.network.UpnpRuleCondition',
 
                 conditions: [
-                    { name: 'DST_PORT', displayName: 'Destination Port'.t(), type: "textfield", vtype: 'port', visible: true },
-                    { name: 'SRC_ADDR', displayName: 'Source Address'.t(), type: "textfield", visible: true, vtype: 'ipall' },
-                    { name: 'SRC_PORT', displayName: 'Source Port'.t(), type: "textfield", vtype: 'port', visible: true }
+                    { name: 'DST_PORT', displayName: 'Destination Port'.t(), type: "textfield", vtype: 'portMatcher' },
+                    { name: 'SRC_ADDR', displayName: 'Source Address'.t(), type: "textfield", vtype: 'ipMatcher' },
+                    { name: 'SRC_PORT', displayName: 'Source Port'.t(), type: "textfield", vtype: 'portMatcher' }
                 ],
 
                 label: 'Perform the following action(s):'.t(),
@@ -1659,13 +1659,13 @@ Ext.define('Ung.config.network.view.BypassRules', {
         ruleJavaClass: 'com.untangle.uvm.network.BypassRuleCondition',
 
         conditions: [
-            { name: 'DST_ADDR', displayName: 'Destination Address'.t(), type: 'textfield', visible: true, vtype:'ipall'},
-            { name: 'DST_PORT', displayName: 'Destination Port'.t(), type: 'textfield', vtype:'port', visible: true},
-            { name: 'DST_INTF', displayName: 'Destination Interface'.t(), type: 'checkboxgroup', values: [['a', 'a'], ['b', 'b']], visible: true},
-            { name: 'SRC_ADDR', displayName: 'Source Address'.t(), type: 'textfield', visible: true, vtype:'ipall'},
-            { name: 'SRC_PORT', displayName: 'Source Port'.t(), type: 'numberfield', vtype:'port', visible: rpc.isExpertMode},
-            { name: 'SRC_INTF', displayName: 'Source Interface'.t(), type: 'checkboxgroup', values: [['a', 'a'], ['b', 'b']], visible: true},
-            { name: 'PROTOCOL', displayName: 'Protocol'.t(), type: 'checkboxgroup', values: [['TCP','TCP'],['UDP','UDP'],['ICMP','ICMP'],['GRE','GRE'],['ESP','ESP'],['AH','AH'],['SCTP','SCTP']], visible: true}
+            { name: 'DST_ADDR', displayName: 'Destination Address'.t(), type: 'textfield', vtype:'ipMatcher' },
+            { name: 'DST_PORT', displayName: 'Destination Port'.t(), type: 'textfield', vtype:'portMatcher' },
+            { name: 'DST_INTF', displayName: 'Destination Interface'.t(), type: 'checkboxgroup', values: Ung.Util.getInterfaceList(true, true) },
+            { name: 'SRC_ADDR', displayName: 'Source Address'.t(), type: 'textfield', vtype:'ipMatcher' },
+            { name: 'SRC_PORT', displayName: 'Source Port'.t(), type: 'numberfield', vtype:'portMatcher' },
+            { name: 'SRC_INTF', displayName: 'Source Interface'.t(), type: 'checkboxgroup', values: Ung.Util.getInterfaceList(true, true) },
+            { name: 'PROTOCOL', displayName: 'Protocol'.t(), type: 'checkboxgroup', values: [['TCP','TCP'],['UDP','UDP']] }
         ],
 
         label: 'Perform the following action(s):'.t(),
@@ -1713,10 +1713,7 @@ Ext.define('Ung.config.network.view.BypassRules', {
             width: 200,
             dataIndex: 'description',
             renderer: function (value) {
-                if (value) {
-                    return value;
-                }
-                return '<em>no description<em>';
+                return value || '<em>no description<em>';
             },
             editor: {
                 xtype: 'textfield',
@@ -1731,13 +1728,7 @@ Ext.define('Ung.config.network.view.BypassRules', {
             flex: 1,
             dataIndex: 'conditions',
             renderer: 'conditionsRenderer'
-        },
-        // {
-        //     xtype: 'actioncolumn', //
-        //     iconCls: 'fa fa-edit',
-        //     handler: 'editRuleWin'
-        // },
-        {
+        }, {
             header: 'Bypass'.t(),
             xtype: 'checkcolumn',
             dataIndex: 'bypass',
@@ -2132,24 +2123,64 @@ Ext.define('Ung.config.network.view.Interfaces', {
     title: 'Interfaces'.t(),
     layout: 'border',
     itemId: 'interfaces',
+
     tbar: [{
         xtype: 'displayfield',
-        value: "Use this page to configure each interface's configuration and its mapping to a physical network card.".t()
+        padding: '0 10',
+        value: '<strong>' + 'Interface configuration'.t() + '</strong> ' +  "Use this page to configure each interface's configuration and its mapping to a physical network card.".t()
     }],
+
+    actions: {
+        refresh: {
+            xtype: 'button',
+            iconCls: 'fa fa-refresh',
+            text: 'Refresh'.t(),
+            handler: 'loadSettings'
+        }
+    },
+
     items: [{
         xtype: 'grid',
         itemId: 'interfacesGrid',
         reference: 'interfacesGrid',
         region: 'center',
-        flex: 1,
+        // flex: 1,
         border: false,
-        forceFit: true,
+        // forceFit: true,
+
+        tbar: ['@refresh'],
+
+        // viewConfig: {
+        //     plugins: {
+        //         ptype: 'gridviewdragdrop',
+        //         dragText: 'Drag and drop to reorganize'.t(),
+        //         // allow drag only from drag column icons
+        //         dragZone: {
+        //             onBeforeDrag: function (data, e) {
+        //                 return Ext.get(e.target).hasCls('fa-arrows');
+        //             }
+        //         }
+        //     }
+        // },
         // title: 'Interfaces'.t(),
         bind: '{interfaces}',
-        fields: [{
-            name: 'v4Address'
-        }],
-        columns: [{
+
+        // fields: [{
+        //     name: 'v4Address'
+        // }],
+        columns: [
+        // {
+        //     xtype: 'gridcolumn',
+        //     header: '<i class="fa fa-sort"></i>',
+        //     align: 'center',
+        //     width: 30,
+        //     tdCls: 'action-cell',
+        //     // iconCls: 'fa fa-arrows'
+        //     renderer: function() {
+        //         return '<i class="fa fa-arrows" style="cursor: move;"></i>';
+        //     },
+        // },
+        {
             header: 'Id'.t(),
             dataIndex: 'interfaceId',
             width: 50,
@@ -2158,7 +2189,6 @@ Ext.define('Ung.config.network.view.Interfaces', {
             header: 'Name'.t(),
             dataIndex: 'name',
             minWidth: 200
-            // flex: 1
         }, {
             header: 'Connected'.t(),
             dataIndex: 'connected',
@@ -2236,21 +2266,29 @@ Ext.define('Ung.config.network.view.Interfaces', {
             renderer: function (value, metaData, record) {
                 return (record.get('configType') === 'ADDRESSED') ? (value ? 'true'.t() : 'false'.t()) : ''; // if its addressed return value
             }
-        }],
-        tbar: [{
-            xtype: 'button',
-            iconCls: 'fa fa-refresh',
-            text: 'Refresh'.t(),
-            handler: 'loadInterfaceStatusAndDevices'
+        }, {
+            header: 'MAC Address'.t(),
+            width: 160,
+            dataIndex: 'macAddress'
+        }, {
+            header: 'Vendor'.t(),
+            width: 160,
+            dataIndex: 'vendor'
+        }, {
+            flex: 1,
+            sortable: false,
+            hideable: false,
+            menuDisabled: true
         }]
     }, {
-        xtype: 'tabpanel',
-        region: 'east',
+        xtype: 'panel',
+        region: 'south',
         split: 'true',
         collapsible: false,
-        width: 450,
+        height: '80%',
         // maxWidth: 450,
         hidden: true,
+        layout: 'border',
         bind: {
             title: '{si.name} ({si.physicalDev})',
             hidden: '{!si}',
@@ -2258,6 +2296,10 @@ Ext.define('Ung.config.network.view.Interfaces', {
         },
         items: [{
             title: 'Status'.t(),
+            region: 'west',
+            split: true,
+            border: false,
+            width: 400,
             itemId: 'interfaceStatus',
             xtype: 'propertygrid',
             // header: false,
@@ -2290,6 +2332,7 @@ Ext.define('Ung.config.network.view.Interfaces', {
             }]
         }, {
             xtype: 'grid',
+            region: 'center',
             itemId: 'interfaceArp',
             title: 'ARP Entry List'.t(),
             forceFit: true,
@@ -2297,15 +2340,18 @@ Ext.define('Ung.config.network.view.Interfaces', {
             columns: [{
                 header: 'MAC Address'.t(),
                 dataIndex: 'macAddress'
-            },{
+            }, {
                 header: 'IP Address'.t(),
                 dataIndex: 'address'
-            },{
+            }, {
                 header: 'Type'.t(),
                 dataIndex: 'type'
             }]
         }, {
             title: 'Config'.t(),
+            region: 'east',
+            split: true,
+            width: 450,
             bodyPadding: 15,
             scrollable: 'vertical',
             layout: {
@@ -2954,13 +3000,13 @@ Ext.define('Ung.config.network.view.NatRules', {
         ruleJavaClass: 'com.untangle.uvm.network.NatRuleCondition',
 
         conditions: [
-            { name: 'DST_ADDR', displayName: 'Destination Address'.t(), type: 'textfield', visible: true, vtype:'ipall'},
-            { name: 'DST_PORT', displayName: 'Destination Port'.t(), type: 'textfield', vtype:'port', visible: true},
-            { name: 'DST_INTF', displayName: 'Destination Interface'.t(), type: 'checkboxgroup', values: [['a', 'a'], ['b', 'b']], visible: true},
-            { name: 'SRC_ADDR', displayName: 'Source Address'.t(), type: 'textfield', visible: true, vtype:'ipall'},
-            { name: 'SRC_PORT', displayName: 'Source Port'.t(), type: 'numberfield', vtype:'port', visible: rpc.isExpertMode},
-            { name: 'SRC_INTF', displayName: 'Source Interface'.t(), type: 'checkboxgroup', values: [['a', 'a'], ['b', 'b']], visible: true},
-            { name: 'PROTOCOL', displayName: 'Protocol'.t(), type: 'checkboxgroup', values: [['TCP','TCP'],['UDP','UDP'],['ICMP','ICMP'],['GRE','GRE'],['ESP','ESP'],['AH','AH'],['SCTP','SCTP']], visible: true}
+            { name: 'DST_ADDR', displayName: 'Destination Address'.t(), type: 'textfield', vtype: 'ipMatcher' },
+            { name: 'DST_PORT', displayName: 'Destination Port'.t(), type: 'textfield', vtype: 'portMatcher' },
+            { name: 'DST_INTF', displayName: 'Destination Interface'.t(), type: 'checkboxgroup', values: Ung.Util.getInterfaceList(true, true) },
+            { name: 'SRC_ADDR', displayName: 'Source Address'.t(), type: 'textfield', vtype:'ipMatcher'},
+            { name: 'SRC_PORT', displayName: 'Source Port'.t(), type: 'textfield', vtype:'portMatcher' },
+            { name: 'SRC_INTF', displayName: 'Source Interface'.t(), type: 'checkboxgroup', values: Ung.Util.getInterfaceList(true, true) },
+            { name: 'PROTOCOL', displayName: 'Protocol'.t(), type: 'checkboxgroup', values: [['TCP','TCP'],['UDP','UDP'],['ICMP','ICMP'],['GRE','GRE'],['ESP','ESP'],['AH','AH'],['SCTP','SCTP']]}
         ],
 
         description: "NAT Rules control the rewriting of the IP source address of traffic (Network Address Translation). The rules are evaluated in order.".t(),
@@ -3007,10 +3053,7 @@ Ext.define('Ung.config.network.view.NatRules', {
             width: 200,
             dataIndex: 'description',
             renderer: function (value) {
-                if (value) {
-                    return value;
-                }
-                return '<em>no description<em>';
+                return value || '<em>no description<em>';
             },
             editor: {
                 xtype: 'textfield',
@@ -3106,13 +3149,13 @@ Ext.define('Ung.config.network.view.PortForwardRules', {
         ruleJavaClass: 'com.untangle.uvm.network.PortForwardRuleCondition',
 
         conditions: [
-            { name: 'DST_LOCAL', displayName: 'Destined Local'.t(), type: 'boolean', visible: true},
-            { name: 'DST_ADDR', displayName: 'Destination Address'.t(), type: 'textfield', visible: true, vtype:'ipall'},
-            { name: 'DST_PORT', displayName: 'Destination Port'.t(), type: 'textfield', vtype:'port', visible: true},
-            { name: 'SRC_ADDR', displayName: 'Source Address'.t(), type: 'textfield', visible: true, vtype:'ipall'},
-            { name: 'SRC_PORT', displayName: 'Source Port'.t(), type: 'numberfield', vtype:'port', visible: rpc.isExpertMode},
-            { name: 'SRC_INTF', displayName: 'Source Interface'.t(), type: 'checkboxgroup', values: [['a', 'a'], ['b', 'b']], visible: true},
-            { name: 'PROTOCOL', displayName: 'Protocol'.t(), type: 'checkboxgroup', values: [['TCP','TCP'],['UDP','UDP'],['ICMP','ICMP'],['GRE','GRE'],['ESP','ESP'],['AH','AH'],['SCTP','SCTP']], visible: true}
+            { name: 'DST_LOCAL', displayName: 'Destined Local'.t(), type: 'boolean' },
+            { name: 'DST_ADDR', displayName: 'Destination Address'.t(), type: 'textfield', vtype:'ipMatcher' },
+            { name: 'DST_PORT', displayName: 'Destination Port'.t(), type: 'textfield', vtype:'portMatcher' },
+            { name: 'SRC_ADDR', displayName: 'Source Address'.t(), type: 'textfield', vtype:'ipMatcher' },
+            { name: 'SRC_PORT', displayName: 'Source Port'.t(), type: 'numberfield', vtype:'portMatcher' },
+            { name: 'SRC_INTF', displayName: 'Source Interface'.t(), type: 'checkboxgroup', values: Ung.Util.getInterfaceList(true, true) },
+            { name: 'PROTOCOL', displayName: 'Protocol'.t(), type: 'checkboxgroup', values: [['TCP','TCP'],['UDP','UDP'],['ICMP','ICMP'],['GRE','GRE'],['ESP','ESP'],['AH','AH'],['SCTP','SCTP']] }
         ],
 
         actionDescription: 'Forward to the following location:'.t(),
@@ -3272,19 +3315,6 @@ Ext.define('Ung.config.network.view.Routes', {
 
         listProperty: 'settings.staticRoutes.list',
 
-        conditions: [
-            { name: 'DST_LOCAL', displayName: 'Destined Local'.t(), type: 'boolean', visible: true},
-            { name: 'DST_ADDR', displayName: 'Destination Address'.t(), type: 'textfield', visible: true, vtype:'ipall'},
-            { name: 'DST_PORT', displayName: 'Destination Port'.t(), type: 'textfield', vtype:'port', visible: true},
-            { name: 'SRC_ADDR', displayName: 'Source Address'.t(), type: 'textfield', visible: true, vtype:'ipall'},
-            { name: 'SRC_PORT', displayName: 'Source Port'.t(), type: 'numberfield', vtype:'port', visible: rpc.isExpertMode},
-            { name: 'SRC_INTF', displayName: 'Source Interface'.t(), type: 'checkboxgroup', values: [['a', 'a'], ['b', 'b']], visible: true},
-            { name: 'PROTOCOL', displayName: 'Protocol'.t(), type: 'checkboxgroup', values: [['TCP','TCP'],['UDP','UDP'],['ICMP','ICMP'],['GRE','GRE'],['ESP','ESP'],['AH','AH'],['SCTP','SCTP']], visible: true}
-        ],
-
-        label: 'Forward to the following location:'.t(),
-        description: "Port Forward rules forward sessions matching the configured criteria from a public IP to an IP on an internal (NAT'd) network. The rules are evaluated in order.".t(),
-
         emptyRow: {
             ruleId: -1,
             network: '',
@@ -3336,12 +3366,9 @@ Ext.define('Ung.config.network.view.Routes', {
             header: 'Next Hop'.t(),
             width: 300,
             dataIndex: 'nextHop',
-            // renderer: function (value) {
-            //     if (value) {
-            //         return value;
-            //     }
-            //     return '<em>no description<em>';
-            // },
+            renderer: function (value) {
+                return value || '<em>no description<em>';
+            },
             editor: {
                 xtype: 'combo',
                 fieldLabel: 'Next Hop'.t(),

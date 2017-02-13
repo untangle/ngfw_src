@@ -104,7 +104,7 @@ Ext.define('Ung.util.Util', {
             slideInAnimation: 'easeOut',
             slideInDuration: 300,
             hideDuration: 0,
-            paddingX: 30,
+            paddingX: 10,
             paddingY: 50
         });
     },
@@ -119,7 +119,7 @@ Ext.define('Ung.util.Util', {
                 msg.push('<strong>Error:</strong> ' + message.message);
             }
         } else {
-            msg = [message]
+            msg = [message];
         }
         Ext.toast({
             html: '<i class="fa fa-exclamation-triangle fa-lg"></i> <span style="font-weight: bold; color: yellow;">Exception!</span><br/>' + msg.join('<br/>'),
@@ -133,10 +133,66 @@ Ext.define('Ung.util.Util', {
             slideInAnimation: 'easeOut',
             slideInDuration: 300,
             hideDuration: 0,
-            paddingX: 30,
+            paddingX: 10,
             paddingY: 50
         });
     },
+
+    getInterfaceListSystemDev: function (wanMatchers, anyMatcher, systemDev) {
+        var networkSettings = rpc.networkSettings,
+            data = [], intf, i;
+
+        // Note: using strings as keys instead of numbers, needed for the checkboxgroup column widget component to function
+
+        for (i = 0; i < networkSettings.interfaces.list.length; i += 1) {
+            intf = networkSettings.interfaces.list[i];
+            data.push([systemDev ? intf.systemDev.toString() : intf.interfaceId.toString(), intf.name]);
+        }
+
+        if (systemDev) {
+            data.push(['tun0', 'OpenVPN']);
+        } else {
+            data.push(['250', 'OpenVPN']); // 0xfa
+            data.push(['251', 'L2TP']); // 0xfb
+            data.push(['252', 'Xauth']); // 0xfc
+            data.push(['253', 'GRE']); // 0xfd
+        }
+        if (wanMatchers) {
+            data.unshift(['wan', 'Any WAN'.t()]);
+            data.unshift(['non_wan', 'Any Non-WAN'.t()]);
+        }
+        if (anyMatcher) {
+            data.unshift(['any', 'Any'.t()]);
+        }
+        return data;
+    },
+    getInterfaceList: function (wanMatchers, anyMatcher) {
+        return Ung.Util.getInterfaceListSystemDev(wanMatchers, anyMatcher, false);
+    },
+
+    // used for render purposes
+    interfacesListNamesMap: function () {
+        var map = {
+            'wan': 'Any WAN'.t(),
+            'non_wan': 'Any Non-WAN'.t(),
+            'any': 'Any'.t(),
+            '250': 'OpenVPN',
+            '251': 'L2TP',
+            '252': 'Xauth',
+            '253': 'GRE'
+        };
+        var i, intf;
+
+        for (i = 0; i < rpc.networkSettings.interfaces.list.length; i += 1) {
+            intf = rpc.networkSettings.interfaces.list[i];
+            map[intf.systemDev] = intf.name;
+            map[intf.interfaceId] = intf.name;
+        }
+        return map;
+    },
+
+
+
 
     urlValidator: function (val) {
         var res = val.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g);
@@ -203,42 +259,11 @@ Ext.define('Ung.util.Util', {
         }).show();
     },
 
-    getInterfaceListSystemDev: function(wanMatchers, anyMatcher, systemDev) {
-        var data = [];
-        // var networkSettings = Ung.Main.getNetworkSettings();
-        // for ( var c = 0 ; c < networkSettings.interfaces.list.length ; c++ ) {
-        //     var intf = networkSettings.interfaces.list[c];
-        //     var name = intf.name;
-        //     var key = systemDev?intf.systemDev:intf.interfaceId;
-        //     data.push( [ key, name ] );
-        // }
-
-
-        if (systemDev) {
-            data.push( [ 'tun0', 'OpenVPN' ] );
-        } else {
-            data.push( [ 250, 'OpenVPN' ] ); // 0xfa
-            data.push( [ 251, 'L2TP' ] ); // 0xfb
-            data.push( [ 252, 'Xauth' ] ); // 0xfc
-            data.push( [ 253, 'GRE' ] ); // 0xfd
-        }
-        if (wanMatchers) {
-            data.unshift( ['wan', 'Any WAN'.t()] );
-            data.unshift( ['non_wan', 'Any Non-WAN'.t()] );
-        }
-        if (anyMatcher) {
-            data.unshift( ['any', 'Any'.t()] );
-        }
-        return data;
-    },
-
-    getInterfaceList: function (wanMatchers, anyMatcher) {
-        return this.getInterfaceListSystemDev(wanMatchers, anyMatcher, false);
-    },
-
     getV4NetmaskList: function(includeNull) {
         var data = [];
-        if (includeNull) data.push( [null,"\u00a0"] );
+        if (includeNull) {
+            data.push( [null,"\u00a0"] );
+        }
         data.push( [32,"/32 - 255.255.255.255"] );
         data.push( [31,"/31 - 255.255.255.254"] );
         data.push( [30,"/30 - 255.255.255.252"] );

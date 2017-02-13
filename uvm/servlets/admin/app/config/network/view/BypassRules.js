@@ -31,13 +31,13 @@ Ext.define('Ung.config.network.view.BypassRules', {
         ruleJavaClass: 'com.untangle.uvm.network.BypassRuleCondition',
 
         conditions: [
-            { name: 'DST_ADDR', displayName: 'Destination Address'.t(), type: 'textfield', visible: true, vtype:'ipall'},
-            { name: 'DST_PORT', displayName: 'Destination Port'.t(), type: 'textfield', vtype:'port', visible: true},
-            { name: 'DST_INTF', displayName: 'Destination Interface'.t(), type: 'checkboxgroup', values: [['a', 'a'], ['b', 'b']], visible: true},
-            { name: 'SRC_ADDR', displayName: 'Source Address'.t(), type: 'textfield', visible: true, vtype:'ipall'},
-            { name: 'SRC_PORT', displayName: 'Source Port'.t(), type: 'numberfield', vtype:'port', visible: rpc.isExpertMode},
-            { name: 'SRC_INTF', displayName: 'Source Interface'.t(), type: 'checkboxgroup', values: [['a', 'a'], ['b', 'b']], visible: true},
-            { name: 'PROTOCOL', displayName: 'Protocol'.t(), type: 'checkboxgroup', values: [['TCP','TCP'],['UDP','UDP'],['ICMP','ICMP'],['GRE','GRE'],['ESP','ESP'],['AH','AH'],['SCTP','SCTP']], visible: true}
+            { name: 'DST_ADDR', displayName: 'Destination Address'.t(), type: 'textfield', vtype:'ipMatcher' },
+            { name: 'DST_PORT', displayName: 'Destination Port'.t(), type: 'textfield', vtype:'portMatcher' },
+            { name: 'DST_INTF', displayName: 'Destination Interface'.t(), type: 'checkboxgroup', values: Ung.Util.getInterfaceList(true, true) },
+            { name: 'SRC_ADDR', displayName: 'Source Address'.t(), type: 'textfield', vtype:'ipMatcher' },
+            { name: 'SRC_PORT', displayName: 'Source Port'.t(), type: 'numberfield', vtype:'portMatcher' },
+            { name: 'SRC_INTF', displayName: 'Source Interface'.t(), type: 'checkboxgroup', values: Ung.Util.getInterfaceList(true, true) },
+            { name: 'PROTOCOL', displayName: 'Protocol'.t(), type: 'checkboxgroup', values: [['TCP','TCP'],['UDP','UDP']] }
         ],
 
         label: 'Perform the following action(s):'.t(),
@@ -85,10 +85,7 @@ Ext.define('Ung.config.network.view.BypassRules', {
             width: 200,
             dataIndex: 'description',
             renderer: function (value) {
-                if (value) {
-                    return value;
-                }
-                return '<em>no description<em>';
+                return value || '<em>no description<em>';
             },
             editor: {
                 xtype: 'textfield',
@@ -103,13 +100,7 @@ Ext.define('Ung.config.network.view.BypassRules', {
             flex: 1,
             dataIndex: 'conditions',
             renderer: 'conditionsRenderer'
-        },
-        // {
-        //     xtype: 'actioncolumn', //
-        //     iconCls: 'fa fa-edit',
-        //     handler: 'editRuleWin'
-        // },
-        {
+        }, {
             header: 'Bypass'.t(),
             xtype: 'checkcolumn',
             dataIndex: 'bypass',

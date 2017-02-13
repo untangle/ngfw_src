@@ -135,7 +135,7 @@ gulp.task('config-modules', function () {
 
 gulp.task('build', function (cb) {
     runSequence(
-        'lint',
+        // 'lint',
         'checkfiles',
         'clean',
         ['js-compress', 'js-compact', 'css-compact', 'config-modules'],
@@ -166,7 +166,7 @@ gulp.task('sass', function () {
 
 gulp.task('modules-build', function () {
     return gulp.src(['./app/config/' + moduleName + '/**/*.js'])
-        .pipe(jshint())
+        // .pipe(jshint())
         .pipe(concat(moduleName + '.js'))
         // .pipe(uglify())
         .pipe(gulp.dest('./root/script/config/'));

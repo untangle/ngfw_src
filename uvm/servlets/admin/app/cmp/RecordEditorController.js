@@ -116,7 +116,7 @@ Ext.define('Ung.cmp.RecordEditorController', {
         form.isValid();
     },
 
-    onApply: function (btn) {
+    onApply: function () {
         var v = this.getView(),
             vm = this.getViewModel(),
             store;
@@ -151,7 +151,7 @@ Ext.define('Ung.cmp.RecordEditorController', {
     // conditions grid
 
     onConditionsRender: function (conditionsGrid) {
-        var conds = this.getView().conditions, menuConditions = [];
+        var conds = this.getView().conditions, menuConditions = [], i;
 
         // when record is modified update conditions menu
         this.recordBind = this.getViewModel().bind({

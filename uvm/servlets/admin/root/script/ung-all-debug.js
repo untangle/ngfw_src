@@ -160,14 +160,6 @@ Ext.define('Ung.util.Util', {
         'untangle-node-reports': 'Ung.node.Reports'
     },
 
-    iconTitle: function (text, icon) {
-        var icn = icon.split('-') [0],
-            size = icon.split('-') [1] || 24;
-        return '<i class="material-icons" style="font-size: ' + size + 'px">' +
-                icn + '</i> <span style="vertical-align: middle;">' +
-                text + '</span>';
-    },
-
     iconReportTitle: function (report) {
         var icon;
         switch (report.get('type')) {
@@ -227,27 +219,48 @@ Ext.define('Ung.util.Util', {
         return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
     },
 
+    iconTitle: function (text, icon) {
+        var icn = icon.split('-') [0],
+            size = icon.split('-') [1] || 24;
+        return '<i class="material-icons" style="font-size: ' + size + 'px">' +
+                icn + '</i> <span style="vertical-align: middle;">' +
+                text + '</span>';
+    },
+
     successToast: function (message) {
         Ext.toast({
-            html: this.iconTitle(message, 'check-20'),
-            bodyPadding: '8 10',
+            html: '<i class="fa fa-check fa-lg"></i> ' + message,
+            // minWidth: 200,
+            bodyPadding: '12 12 12 40',
             baseCls: 'toast',
             border: false,
             bodyBorder: false,
+            // align: 'b',
             align: 'br',
             autoCloseDelay: 5000,
             slideInAnimation: 'easeOut',
             slideInDuration: 300,
             hideDuration: 0,
-            paddingX: 30,
+            paddingX: 10,
             paddingY: 50
         });
     },
 
     exceptionToast: function (message) {
+        var msg = [];
+        if (typeof message === 'object') {
+            if (message.name && message.code) {
+                msg.push('<strong>Name:</strong> ' + message.name + ' (' + message.code + ')');
+            }
+            if (message.message) {
+                msg.push('<strong>Error:</strong> ' + message.message);
+            }
+        } else {
+            msg = [message];
+        }
         Ext.toast({
-            html: this.iconTitle('<span style="color: #FFF; font-weight: bold;">Exception!</span> ' + message, 'error-20'),
-            bodyPadding: '10',
+            html: '<i class="fa fa-exclamation-triangle fa-lg"></i> <span style="font-weight: bold; color: yellow;">Exception!</span><br/>' + msg.join('<br/>'),
+            bodyPadding: '10 10 10 45',
             baseCls: 'toast',
             cls: 'exception',
             border: false,
@@ -257,10 +270,66 @@ Ext.define('Ung.util.Util', {
             slideInAnimation: 'easeOut',
             slideInDuration: 300,
             hideDuration: 0,
-            paddingX: 30,
+            paddingX: 10,
             paddingY: 50
         });
     },
+
+    getInterfaceListSystemDev: function (wanMatchers, anyMatcher, systemDev) {
+        var networkSettings = rpc.networkSettings,
+            data = [], intf, i;
+
+        // Note: using strings as keys instead of numbers, needed for the checkboxgroup column widget component to function
+
+        for (i = 0; i < networkSettings.interfaces.list.length; i += 1) {
+            intf = networkSettings.interfaces.list[i];
+            data.push([systemDev ? intf.systemDev.toString() : intf.interfaceId.toString(), intf.name]);
+        }
+
+        if (systemDev) {
+            data.push(['tun0', 'OpenVPN']);
+        } else {
+            data.push(['250', 'OpenVPN']); // 0xfa
+            data.push(['251', 'L2TP']); // 0xfb
+            data.push(['252', 'Xauth']); // 0xfc
+            data.push(['253', 'GRE']); // 0xfd
+        }
+        if (wanMatchers) {
+            data.unshift(['wan', 'Any WAN'.t()]);
+            data.unshift(['non_wan', 'Any Non-WAN'.t()]);
+        }
+        if (anyMatcher) {
+            data.unshift(['any', 'Any'.t()]);
+        }
+        return data;
+    },
+    getInterfaceList: function (wanMatchers, anyMatcher) {
+        return Ung.Util.getInterfaceListSystemDev(wanMatchers, anyMatcher, false);
+    },
+
+    // used for render purposes
+    interfacesListNamesMap: function () {
+        var map = {
+            'wan': 'Any WAN'.t(),
+            'non_wan': 'Any Non-WAN'.t(),
+            'any': 'Any'.t(),
+            '250': 'OpenVPN',
+            '251': 'L2TP',
+            '252': 'Xauth',
+            '253': 'GRE'
+        };
+        var i, intf;
+
+        for (i = 0; i < rpc.networkSettings.interfaces.list.length; i += 1) {
+            intf = rpc.networkSettings.interfaces.list[i];
+            map[intf.systemDev] = intf.name;
+            map[intf.interfaceId] = intf.name;
+        }
+        return map;
+    },
+
+
+
 
     urlValidator: function (val) {
         var res = val.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g);
@@ -327,42 +396,11 @@ Ext.define('Ung.util.Util', {
         }).show();
     },
 
-    getInterfaceListSystemDev: function(wanMatchers, anyMatcher, systemDev) {
-        var data = [];
-        // var networkSettings = Ung.Main.getNetworkSettings();
-        // for ( var c = 0 ; c < networkSettings.interfaces.list.length ; c++ ) {
-        //     var intf = networkSettings.interfaces.list[c];
-        //     var name = intf.name;
-        //     var key = systemDev?intf.systemDev:intf.interfaceId;
-        //     data.push( [ key, name ] );
-        // }
-
-
-        if (systemDev) {
-            data.push( [ 'tun0', 'OpenVPN' ] );
-        } else {
-            data.push( [ 250, 'OpenVPN' ] ); // 0xfa
-            data.push( [ 251, 'L2TP' ] ); // 0xfb
-            data.push( [ 252, 'Xauth' ] ); // 0xfc
-            data.push( [ 253, 'GRE' ] ); // 0xfd
-        }
-        if (wanMatchers) {
-            data.unshift( ['wan', 'Any WAN'.t()] );
-            data.unshift( ['non_wan', 'Any Non-WAN'.t()] );
-        }
-        if (anyMatcher) {
-            data.unshift( ['any', 'Any'.t()] );
-        }
-        return data;
-    },
-
-    getInterfaceList: function (wanMatchers, anyMatcher) {
-        return this.getInterfaceListSystemDev(wanMatchers, anyMatcher, false);
-    },
-
     getV4NetmaskList: function(includeNull) {
         var data = [];
-        if (includeNull) data.push( [null,"\u00a0"] );
+        if (includeNull) {
+            data.push( [null,"\u00a0"] );
+        }
         data.push( [32,"/32 - 255.255.255.255"] );
         data.push( [31,"/31 - 255.255.255.254"] );
         data.push( [30,"/30 - 255.255.255.252"] );
@@ -451,134 +489,202 @@ Ext.define('Ung.util.Metrics', {
 Ext.define('Ung.overrides.form.field.VTypes', {
     override: 'Ext.form.field.VTypes',
 
-    validators: function () {
-
+    mask: {
+        macAddrMaskRe: /^[a-fA-F0-9]{2}:[a-fA-F0-9]{2}:[a-fA-F0-9]{2}:[a-fA-F0-9]{2}:[a-fA-F0-9]{2}:[a-fA-F0-9]{2}$/,
+        ip4AddrMaskRe: /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/,
+        ip6AddrMaskRe: /^\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?\s*$/,
+        email: /^(")?(?:[^\."])(?:(?:[\.])?(?:[\w\-!#$%&'*+/=?^_`{|}~]))*\1@(\w[\-\w]*\.){1,5}([A-Za-z]){2,63}$/,
+        ipAddrRange: /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)-(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/,
+        cidrRange: /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\/[0-3]?[0-9]$/,
+        ipNetmask: /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\/(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/
     },
 
-    // ip all
-    ipall: function (val) {
-        if ( val.indexOf('/') === -1 && val.indexOf(',') === -1 && val.indexOf('-') === -1) {
-            switch (val) {
-            case 'any':
-                return true;
-            default:
-                return this.ip4(val);
-            }
-        }
-        if (val.indexOf(',') !== -1) {
-            return this.ipList(val);
-        } else {
-            if ( val.indexOf('-') !== -1) {
-                return this.ipRange(val);
-            }
-            if ( val.indexOf('/') !== -1) {
-                return this.cidrRange(val) || this.ipNetmask(val);
-            }
-            console.log('Unhandled case while handling vtype for ipAddr:', val, ' returning true!');
+    validators: {
+        isSinglePortValid: function(val) {
+            /* check for values between 0 and 65536 */
+            if (val < 0 || val > 65536) { return false; }
+            /* verify its an integer (not a float) */
+            if (!/^\d{1,5}$/.test(val)) { return false; }
             return true;
-        }
-    },
-    ipallText: 'Invalid IP Address.'.t(),
-
-    // ip any
-    ip: function (value) { return this.ip4Re.test(value) || this.ip6Re.test(value); },
-    ipText: 'Invalid IP Address.'.t(),
-
-    // ip4 address
-    ip4: function (value) { return this.ip4Re.test(value); },
-    ip4Re: /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/,
-    ip4Text: 'Invalid IPv4 Address.'.t(),
-
-    // ip6 address
-    ip6: function (value) { return this.ip6Re.test(value); },
-    ip6Re: '/^\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?\s*$/',
-    ip6Text: 'Invalid IPv6 Address.'.t(),
-
-    // ip4 list
-    ip4List: function (value) {
-        var addr = value.split(','), i;
-        for (i = 0 ; i < addr.length ; i++) {
-            if (!this.ip4Re.test(addr[i])) {
-                return false;
-            }
-        }
-        return true;
-    },
-    ip4ListText: 'Invalid IPv4 Address(es).'.t(),
-
-    // mac address
-    mac: function (value) { return this.macRe.test(value); },
-    macRe: /^[a-fA-F0-9]{2}:[a-fA-F0-9]{2}:[a-fA-F0-9]{2}:[a-fA-F0-9]{2}:[a-fA-F0-9]{2}:[a-fA-F0-9]{2}$/,
-    macText: 'Invalid Mac Address.'.t(),
-
-    // cidr block
-    cidr: function (value) { return this.cidrRe.test(value); },
-    cidrRe: /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2}$/,
-    cidrText: 'Must be a network in CIDR format.'.t() + ' (192.168.123.0/24)',
-
-    // cidr list
-    cidrList: function (value) {
-        var blocks = value.split(','), i;
-        for (i = 0 ; i < blocks.length ; i++) {
-            if (!this.cidrRe.test(blocks[i])) {
-                return false;
-            }
-        }
-        return true;
-    },
-    cidrListText: 'Must be a comma seperated list of networks in CIDR format.'.t() + ' (192.168.123.0/24,1.2.3.4/24)',
-
-    // cidr block
-    cidrBlock: function (value) {
-        var blocks = value.split('\n'), i;
-        for (i = 0 ; i < blocks.length ; i++) {
-            if (!this.cidrRe.test(blocks[i])) {
-                return false;
-            }
-        }
-        return true;
-    },
-    cidrBlockText: 'Must be a one-per-line list of networks in CIDR format.'.t() + ' (192.168.123.0/24)',
-
-    // port
-    port: function(value) {
-        var minValue = 1;
-        var maxValue = 65535;
-        return (value >= minValue && value <= maxValue);
-    },
-    portText: Ext.String.format('The port must be an integer number between {0} and {1} or one of the following values: any, all, n/a, none.'.t(), 1, 65535),
-
-
-    ipRange: function (value) { return this.ipRangeRe.test(value); },
-    ipRangeRe: /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)-(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/,
-    ipRangeText: 'Invalid IP range'.t(),
-
-    cidrRange: function (value)  { return this.cidrRangeRe.test(value); },
-    cidrRangeRe: /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\/[0-3]?[0-9]$/,
-
-    ipNetmask: function (value) { return this.cidrRangeRe.test(value); },
-    ipNetmaskRe: /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\/(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/,
-
-
-    ipList: function (val) {
-        var ipList = val.split(',');
-        var retVal = true;
-        for ( var i = 0; i < ipList.length;i++) {
-            if ( ipList[i].indexOf('-') !== -1) {
-                retVal = retVal && this.ipRange(ipList[i]);
-            } else {
-                if ( ipList[i].indexOf('/') !== -1) {
-                    retVal = retVal && ( this.cidRange(ipList[i]) || this.ipNetmask(ipList[i]));
+        },
+        isPortRangeValid: function(val) {
+            var portRange = val.split('-');
+            if (portRange.length !== 2) { return false; }
+            return this.isSinglePortValid(portRange[0]) && this.isSinglePortValid(portRange[1]);
+        },
+        isPortListValid: function(val) {
+            var portList = val.split(','),
+                retVal = true, i;
+            for (i = 0; i < portList.length; i++) {
+                if (portList[i].indexOf('-') !== -1) {
+                    retVal = retVal && this.isPortRangeValid(portList[i]);
                 } else {
-                    retVal = retVal && this.ip4(ipList[i]);
+                    retVal = retVal && this.isSinglePortValid(portList[i]);
+                }
+                if (!retVal) {
+                    return false;
                 }
             }
-            if (!retVal) {
-                return false;
-            }
-        }
-        return true;
-    }
+            return true;
+        },
+        isSingleIpValid: function(val) {
+            return this.mask.ip4AddrMaskRe.test(val);
+        },
+        // isIpRangeValid: function(val) {
+        //     return ipAddrRange.test(val);
+        // },
+        // isCIDRValid: function(val) {
+        //     return cidrRange.test(val);
+        // },
+        // isIpNetmaskValid:function(val) {
+        //     return ipNetmask.test(val);
+        // },
+        // isIpListValid: function(val) {
+        //     var ipList = val.split(',');
+        //     var retVal = true;
+        //     for ( var i = 0; i < ipList.length;i++) {
+        //         if ( ipList[i].indexOf("-") != -1) {
+        //             retVal = retVal && this.isIpRangeValid(ipList[i]);
+        //         } else {
+        //             if ( ipList[i].indexOf("/") != -1) {
+        //                 retVal = retVal && ( this.isCIDRValid(ipList[i]) || this.isIpNetmaskValid(ipList[i]));
+        //                 } else {
+        //                     retVal = retVal && this.isSingleIpValid(ipList[i]);
+        //                 }
+        //         }
+        //         if (!retVal) {
+        //             return false;
+        //         }
+        //     }
+        //     return true;
+        // }
+    },
+
+    // // ip all
+    // ipall: function (val) {
+    //     console.log(this.validators.isSinglePortValid(150000000));
+    //     if ( val.indexOf('/') === -1 && val.indexOf(',') === -1 && val.indexOf('-') === -1) {
+    //         switch (val) {
+    //         case 'any':
+    //             return true;
+    //         default:
+    //             return this.ip4(val);
+    //         }
+    //     }
+    //     if (val.indexOf(',') !== -1) {
+    //         return this.ipList(val);
+    //     } else {
+    //         if ( val.indexOf('-') !== -1) {
+    //             return this.ipRange(val);
+    //         }
+    //         if ( val.indexOf('/') !== -1) {
+    //             return this.cidrRange(val) || this.ipNetmask(val);
+    //         }
+    //         console.log('Unhandled case while handling vtype for ipAddr:', val, ' returning true!');
+    //         return true;
+    //     }
+    // },
+    // ipallText: 'Invalid IP Address.'.t(),
+
+    // // ip any
+    // ip: function (value) { return this.ip4Re.test(value) || this.ip6Re.test(value); },
+    // ipText: 'Invalid IP Address.'.t(),
+
+    // // ip4 address
+    // ip4: function (value) { return this.ip4Re.test(value); },
+    // ip4Re: /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/,
+    // ip4Text: 'Invalid IPv4 Address.'.t(),
+
+    // // ip6 address
+    // ip6: function (value) { return this.ip6Re.test(value); },
+    // ip6Re: '/^\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?\s*$/',
+    // ip6Text: 'Invalid IPv6 Address.'.t(),
+
+    // // ip4 list
+    // ip4List: function (value) {
+    //     var addr = value.split(','), i;
+    //     for (i = 0 ; i < addr.length ; i++) {
+    //         if (!this.ip4Re.test(addr[i])) {
+    //             return false;
+    //         }
+    //     }
+    //     return true;
+    // },
+    // ip4ListText: 'Invalid IPv4 Address(es).'.t(),
+
+    // // mac address
+    // mac: function (value) { return this.macRe.test(value); },
+    // macRe: /^[a-fA-F0-9]{2}:[a-fA-F0-9]{2}:[a-fA-F0-9]{2}:[a-fA-F0-9]{2}:[a-fA-F0-9]{2}:[a-fA-F0-9]{2}$/,
+    // macText: 'Invalid Mac Address.'.t(),
+
+    // // cidr block
+    // cidr: function (value) { return this.cidrRe.test(value); },
+    // cidrRe: /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2}$/,
+    // cidrText: 'Must be a network in CIDR format.'.t() + ' (192.168.123.0/24)',
+
+    // // cidr list
+    // cidrList: function (value) {
+    //     var blocks = value.split(','), i;
+    //     for (i = 0 ; i < blocks.length ; i++) {
+    //         if (!this.cidrRe.test(blocks[i])) {
+    //             return false;
+    //         }
+    //     }
+    //     return true;
+    // },
+    // cidrListText: 'Must be a comma seperated list of networks in CIDR format.'.t() + ' (192.168.123.0/24,1.2.3.4/24)',
+
+    // // cidr block
+    // cidrBlock: function (value) {
+    //     var blocks = value.split('\n'), i;
+    //     for (i = 0 ; i < blocks.length ; i++) {
+    //         if (!this.cidrRe.test(blocks[i])) {
+    //             return false;
+    //         }
+    //     }
+    //     return true;
+    // },
+    // cidrBlockText: 'Must be a one-per-line list of networks in CIDR format.'.t() + ' (192.168.123.0/24)',
+
+    // // port
+    // port: function(value) {
+    //     var minValue = 1;
+    //     var maxValue = 65535;
+    //     return (value >= minValue && value <= maxValue);
+    // },
+    // portText: Ext.String.format('The port must be an integer number between {0} and {1} or one of the following values: any, all, n/a, none.'.t(), 1, 65535),
+
+
+    // ipRange: function (value) { return this.ipRangeRe.test(value); },
+    // ipRangeRe: /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)-(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/,
+    // ipRangeText: 'Invalid IP range'.t(),
+
+    // cidrRange: function (value)  { return this.cidrRangeRe.test(value); },
+    // cidrRangeRe: /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\/[0-3]?[0-9]$/,
+
+    // ipNetmask: function (value) { return this.cidrRangeRe.test(value); },
+    // ipNetmaskRe: /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\/(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/,
+
+
+    // ipList: function (val) {
+    //     var ipList = val.split(',');
+    //     var retVal = true;
+    //     for ( var i = 0; i < ipList.length;i++) {
+    //         if ( ipList[i].indexOf('-') !== -1) {
+    //             retVal = retVal && this.ipRange(ipList[i]);
+    //         } else {
+    //             if ( ipList[i].indexOf('/') !== -1) {
+    //                 retVal = retVal && ( this.cidRange(ipList[i]) || this.ipNetmask(ipList[i]));
+    //             } else {
+    //                 retVal = retVal && this.ip4(ipList[i]);
+    //             }
+    //         }
+    //         if (!retVal) {
+    //             return false;
+    //         }
+    //     }
+    //     return true;
+    // }
 });
 Ext.define('Ung.view.main.MainController', {
     extend: 'Ext.app.ViewController',
