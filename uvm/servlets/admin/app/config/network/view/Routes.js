@@ -24,19 +24,6 @@ Ext.define('Ung.config.network.view.Routes', {
 
         listProperty: 'settings.staticRoutes.list',
 
-        conditions: [
-            { name: 'DST_LOCAL', displayName: 'Destined Local'.t(), type: 'boolean', visible: true},
-            { name: 'DST_ADDR', displayName: 'Destination Address'.t(), type: 'textfield', visible: true, vtype:'ipall'},
-            { name: 'DST_PORT', displayName: 'Destination Port'.t(), type: 'textfield', vtype:'port', visible: true},
-            { name: 'SRC_ADDR', displayName: 'Source Address'.t(), type: 'textfield', visible: true, vtype:'ipall'},
-            { name: 'SRC_PORT', displayName: 'Source Port'.t(), type: 'numberfield', vtype:'port', visible: rpc.isExpertMode},
-            { name: 'SRC_INTF', displayName: 'Source Interface'.t(), type: 'checkboxgroup', values: [['a', 'a'], ['b', 'b']], visible: true},
-            { name: 'PROTOCOL', displayName: 'Protocol'.t(), type: 'checkboxgroup', values: [['TCP','TCP'],['UDP','UDP'],['ICMP','ICMP'],['GRE','GRE'],['ESP','ESP'],['AH','AH'],['SCTP','SCTP']], visible: true}
-        ],
-
-        label: 'Forward to the following location:'.t(),
-        description: "Port Forward rules forward sessions matching the configured criteria from a public IP to an IP on an internal (NAT'd) network. The rules are evaluated in order.".t(),
-
         emptyRow: {
             ruleId: -1,
             network: '',
@@ -88,12 +75,9 @@ Ext.define('Ung.config.network.view.Routes', {
             header: 'Next Hop'.t(),
             width: 300,
             dataIndex: 'nextHop',
-            // renderer: function (value) {
-            //     if (value) {
-            //         return value;
-            //     }
-            //     return '<em>no description<em>';
-            // },
+            renderer: function (value) {
+                return value || '<em>no description<em>';
+            },
             editor: {
                 xtype: 'combo',
                 fieldLabel: 'Next Hop'.t(),

@@ -327,14 +327,13 @@
 
 
 .cond-val {
-    // background: #98c3a9;
-    // padding: 2px 3px;
+    background: beige;
     border-radius: 2px;
     padding: 1px 3px 2px 3px;
     border-radius: 3px;
-    border: 1px #999 solid;
-    &.invert {
-        // background: #e4a4a4;
-        border: 1px red solid;
-    }
+    border: 1px #DDD solid;
+    // &.invert {
+    //     // background: #e4a4a4;
+    //     // border: 1px red solid;
+    // }
 }

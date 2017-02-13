@@ -42,8 +42,7 @@ Ext.define('Ung.config.network.NetworkController', {
              * update custom grids only if are modified records or it was reordered via drag/drop
              */
             if (store.getModifiedRecords().length > 0 || store.isReordered) {
-                console.log(store.getModifiedRecords());
-                store.each(function (record, id) {
+                store.each(function (record) {
                     if (record.get('markedForDelete')) {
                         record.drop();
                     }
@@ -55,27 +54,24 @@ Ext.define('Ung.config.network.NetworkController', {
         });
 
         rpc.networkManager.setNetworkSettings(function (result, ex) {
-            view.setLoading(false);
-            if (ex) {
-                console.log(ex);
-                Ung.Util.exceptionToast(ex);
-                return;
-            }
-            Ung.Util.successToast('Network'.t() + ' settings saved!');
+            view.setLoading (false);
             me.loadSettings();
-            // vm.getStore('interfaces').reload();
+            if (ex) { console.error(ex); Ung.Util.exceptionToast(ex); return; }
+            Ung.Util.successToast('Network'.t() + ' settings saved!');
             // me.loadInterfaceStatusAndDevices();
         }, vm.get('settings'));
     },
 
+    /**
+     * Loads netowrk settings
+     */
     loadSettings: function () {
         var me = this;
         rpc.networkManager.getNetworkSettings(function (result, ex) {
+            if (ex) { console.error(ex); Ung.Util.exceptionToast(ex); return; }
             me.getViewModel().set('settings', result);
             me.loadInterfaceStatusAndDevices();
-
             console.log(result);
-            // interfaces = result.interfaces.list;
         });
     },
 
@@ -88,6 +84,11 @@ Ext.define('Ung.config.network.NetworkController', {
         // vm.set('settings.interfaces.list[0].mbit', 2000);
         // vm.notify();
         rpc.networkManager.getInterfaceStatus(function (result, ex) {
+            if (ex) {
+                console.log(ex);
+                Ung.Util.exceptionToast(ex);
+                return;
+            }
             for (i = 0; i < interfaces.length; i += 1) {
                 Ext.apply(interfaces[i], {
                     'v4Address': null,
@@ -123,6 +124,7 @@ Ext.define('Ung.config.network.NetworkController', {
         });
 
         rpc.networkManager.getDeviceStatus(function (result, ex) {
+            if (ex) { console.error(ex); Ung.Util.exceptionToast(ex); return; }
             for (i = 0; i < interfaces.length; i += 1) {
                 Ext.apply(interfaces[i], {
                     'deviceName': null,
@@ -151,8 +153,7 @@ Ext.define('Ung.config.network.NetworkController', {
         });
     },
 
-    onInterfaces: function (view) {
-        console.log('load interf');
+    onInterfaces: function () {
         var me = this;
         var vm = this.getViewModel();
 
@@ -254,15 +255,11 @@ Ext.define('Ung.config.network.NetworkController', {
                 txdrop: null
             };
 
-        // vm.set('siStatus', stat);
-
         rpc.execManager.execOutput(function (result, ex) {
-            if(Ext.isEmpty(result)) {
-                return;
-            }
-            if (result.search('Device not found') >= 0) {
-                return;
-            }
+            if (ex) { console.error(ex); Ung.Util.exceptionToast(ex); return; }
+            if (Ext.isEmpty(result)) { return; }
+            if (result.search('Device not found') >= 0) { return; }
+
             var lineparts = result.split(' ');
             if (result.search('Ethernet') >= 0) {
                 Ext.apply(stat, {
@@ -288,9 +285,9 @@ Ext.define('Ung.config.network.NetworkController', {
             }
 
             rpc.execManager.execOutput(function (result, ex) {
-                if(Ext.isEmpty(result)) {
-                    return;
-                }
+                if (ex) { console.error(ex); Ung.Util.exceptionToast(ex); return; }
+                if (Ext.isEmpty(result)) { return; }
+
                 var linep = result.split(' ');
                 Ext.apply(stat, {
                     address: linep[0].split(':')[1],
@@ -298,6 +295,7 @@ Ext.define('Ung.config.network.NetworkController', {
                 });
 
                 rpc.execManager.execOutput(function (result, ex) {
+                    if (ex) { console.error(ex); Ung.Util.exceptionToast(ex); return; }
                     Ext.apply(stat, {
                         v6Addr: result
                     });
@@ -311,6 +309,8 @@ Ext.define('Ung.config.network.NetworkController', {
         var vm = this.getViewModel();
         var arpCommand = 'arp -n | grep ' + symbolicDev + ' | grep -v incomplete > /tmp/arp.txt ; cat /tmp/arp.txt';
         rpc.execManager.execOutput(function (result, ex) {
+            if (ex) { console.error(ex); Ung.Util.exceptionToast(ex); return; }
+
             var lines = Ext.isEmpty(result) ? []: result.split('\n');
             var lparts, connections = [];
             for (var i = 0 ; i < lines.length; i++ ) {
@@ -380,22 +380,15 @@ Ext.define('Ung.config.network.NetworkController', {
     refreshRoutes: function () {
         var v = this.getView();
         rpc.execManager.exec(function (result, ex) {
+            if (ex) { console.error(ex); Ung.Util.exceptionToast(ex); return; }
             v.down('#currentRoutes').setValue(result.output);
         }, '/usr/share/untangle/bin/ut-routedump.sh');
     },
 
 
     refreshQosStatistics: function () {
-        rpc.execManager.execOutput(function (result, exception) {
-            // if(Ung.Util.handleException(exception)) return;
-            console.log(result);
-            var list = [];
-            try {
-                // list = eval(result);
-            } catch (e) {
-                // console.error("Could not execute /usr/share/untangle-netd/bin/qos-service.py output: ", result, e);
-            }
-            // handler ({list: list}, exception);
+        rpc.execManager.execOutput(function (result, ex) {
+            if (ex) { console.error(ex); Ung.Util.exceptionToast(ex); return; }
         }, '/usr/share/untangle-netd/bin/qos-service.py status');
     },
 
@@ -419,7 +412,8 @@ Ext.define('Ung.config.network.NetworkController', {
             text.push(output.getValue());
             text.push('' + (new Date()) + ' - ' + 'Test Started'.t() + '\n');
 
-            rpc.execManager.execEvil(function (result, ex1) {
+            rpc.execManager.execEvil(function (result, ex) {
+                if (ex) { console.error(ex); Ung.Util.exceptionToast(ex); return; }
                 me.readOutput(result, text, output, btn);
             }, v.getViewModel().get('command'));
 
@@ -430,7 +424,8 @@ Ext.define('Ung.config.network.NetworkController', {
         if (!resultReader) {
             return;
         }
-        resultReader.readFromOutput(function (res, ex2) {
+        resultReader.readFromOutput(function (res, ex) {
+            if (ex) { console.error(ex); Ung.Util.exceptionToast(ex); return; }
             // console.log(res);
             if (res !== null) {
                 text.push(res);

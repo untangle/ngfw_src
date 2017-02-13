@@ -14,8 +14,22 @@ Ext.define('Ung.cmp.Rules', {
         add: { text: 'Add'.t(), handler: 'addRecord' },
         import: { text: 'Import'.t(), handler: 'importData' },
         export: { text: 'Export'.t(), handler: 'exportData' },
-        edit: { iconCls: 'fa fa-pencil', tooltip: 'Edit record'.t(), handler: 'editRecord' },
-        delete: { iconCls: 'fa fa-trash-o', tooltip: 'Delete record'.t(), handler: 'deleteRecord' },
+        edit: {
+            iconCls: 'fa fa-pencil',
+            tooltip: 'Edit record'.t(),
+            handler: 'editRecord',
+            isDisabled: function (table, rowIndex, colIndex, item, record) {
+                return record.get('readOnly') || false;
+            }
+        },
+        delete: {
+            iconCls: 'fa fa-trash-o',
+            tooltip: 'Delete record'.t(),
+            handler: 'deleteRecord',
+            isDisabled: function (table, rowIndex, colIndex, item, record) {
+                return record.get('readOnly') || false;
+            }
+        },
         moveUp: { iconCls: 'fa fa-chevron-up', tooltip: 'Move Up'.t(), direction: -1, handler: 'moveUp' },
         moveDown: { iconCls: 'fa fa-chevron-down', tooltip: 'Move Down'.t(), direction: 1, handler: 'moveUp' }
     },
@@ -38,6 +52,9 @@ Ext.define('Ung.cmp.Rules', {
             }
             if (record.get('markedForNew')) {
                 return 'mark-new';
+            }
+            if (record.get('readOnly')) {
+                return 'mark-readonly';
             }
         }
     },
@@ -93,7 +110,7 @@ Ext.define('Ung.cmp.Rules', {
                         dragText: 'Drag and drop to reorganize'.t(),
                         // allow drag only from drag column icons
                         dragZone: {
-                            onBeforeDrag: function(data, e) {
+                            onBeforeDrag: function (data, e) {
                                 return Ext.get(e.target).hasCls('fa-arrows');
                             }
                         }

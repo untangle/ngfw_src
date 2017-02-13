@@ -5,24 +5,64 @@ Ext.define('Ung.config.network.view.Interfaces', {
     title: 'Interfaces'.t(),
     layout: 'border',
     itemId: 'interfaces',
+
     tbar: [{
         xtype: 'displayfield',
-        value: "Use this page to configure each interface's configuration and its mapping to a physical network card.".t()
+        padding: '0 10',
+        value: '<strong>' + 'Interface configuration'.t() + '</strong> ' +  "Use this page to configure each interface's configuration and its mapping to a physical network card.".t()
     }],
+
+    actions: {
+        refresh: {
+            xtype: 'button',
+            iconCls: 'fa fa-refresh',
+            text: 'Refresh'.t(),
+            handler: 'loadSettings'
+        }
+    },
+
     items: [{
         xtype: 'grid',
         itemId: 'interfacesGrid',
         reference: 'interfacesGrid',
         region: 'center',
-        flex: 1,
+        // flex: 1,
         border: false,
-        forceFit: true,
+        // forceFit: true,
+
+        tbar: ['@refresh'],
+
+        // viewConfig: {
+        //     plugins: {
+        //         ptype: 'gridviewdragdrop',
+        //         dragText: 'Drag and drop to reorganize'.t(),
+        //         // allow drag only from drag column icons
+        //         dragZone: {
+        //             onBeforeDrag: function (data, e) {
+        //                 return Ext.get(e.target).hasCls('fa-arrows');
+        //             }
+        //         }
+        //     }
+        // },
         // title: 'Interfaces'.t(),
         bind: '{interfaces}',
-        fields: [{
-            name: 'v4Address'
-        }],
-        columns: [{
+
+        // fields: [{
+        //     name: 'v4Address'
+        // }],
+        columns: [
+        // {
+        //     xtype: 'gridcolumn',
+        //     header: '<i class="fa fa-sort"></i>',
+        //     align: 'center',
+        //     width: 30,
+        //     tdCls: 'action-cell',
+        //     // iconCls: 'fa fa-arrows'
+        //     renderer: function() {
+        //         return '<i class="fa fa-arrows" style="cursor: move;"></i>';
+        //     },
+        // },
+        {
             header: 'Id'.t(),
             dataIndex: 'interfaceId',
             width: 50,
@@ -31,7 +71,6 @@ Ext.define('Ung.config.network.view.Interfaces', {
             header: 'Name'.t(),
             dataIndex: 'name',
             minWidth: 200
-            // flex: 1
         }, {
             header: 'Connected'.t(),
             dataIndex: 'connected',
@@ -109,21 +148,29 @@ Ext.define('Ung.config.network.view.Interfaces', {
             renderer: function (value, metaData, record) {
                 return (record.get('configType') === 'ADDRESSED') ? (value ? 'true'.t() : 'false'.t()) : ''; // if its addressed return value
             }
-        }],
-        tbar: [{
-            xtype: 'button',
-            iconCls: 'fa fa-refresh',
-            text: 'Refresh'.t(),
-            handler: 'loadInterfaceStatusAndDevices'
+        }, {
+            header: 'MAC Address'.t(),
+            width: 160,
+            dataIndex: 'macAddress'
+        }, {
+            header: 'Vendor'.t(),
+            width: 160,
+            dataIndex: 'vendor'
+        }, {
+            flex: 1,
+            sortable: false,
+            hideable: false,
+            menuDisabled: true
         }]
     }, {
-        xtype: 'tabpanel',
-        region: 'east',
+        xtype: 'panel',
+        region: 'south',
         split: 'true',
         collapsible: false,
-        width: 450,
+        height: '80%',
         // maxWidth: 450,
         hidden: true,
+        layout: 'border',
         bind: {
             title: '{si.name} ({si.physicalDev})',
             hidden: '{!si}',
@@ -131,6 +178,10 @@ Ext.define('Ung.config.network.view.Interfaces', {
         },
         items: [{
             title: 'Status'.t(),
+            region: 'west',
+            split: true,
+            border: false,
+            width: 400,
             itemId: 'interfaceStatus',
             xtype: 'propertygrid',
             // header: false,
@@ -163,6 +214,7 @@ Ext.define('Ung.config.network.view.Interfaces', {
             }]
         }, {
             xtype: 'grid',
+            region: 'center',
             itemId: 'interfaceArp',
             title: 'ARP Entry List'.t(),
             forceFit: true,
@@ -170,15 +222,18 @@ Ext.define('Ung.config.network.view.Interfaces', {
             columns: [{
                 header: 'MAC Address'.t(),
                 dataIndex: 'macAddress'
-            },{
+            }, {
                 header: 'IP Address'.t(),
                 dataIndex: 'address'
-            },{
+            }, {
                 header: 'Type'.t(),
                 dataIndex: 'type'
             }]
         }, {
             title: 'Config'.t(),
+            region: 'east',
+            split: true,
+            width: 450,
             bodyPadding: 15,
             scrollable: 'vertical',
             layout: {
