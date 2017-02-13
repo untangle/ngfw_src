@@ -112,7 +112,6 @@ Ext.define('Ung.config.network.view.BypassRules', {
                 editable: false,
                 store: [[true, 'Bypass'.t()], [false, 'Process'.t()]],
                 queryMode: 'local'
-                // vtype: 'ipall'
             }
         }],
     }]

@@ -118,8 +118,8 @@ Ext.define('Ung.config.network.view.NatRules', {
                 allowBlank: false,
                 editable: false,
                 store: [[true, 'Auto'.t()], [false, 'Custom'.t()]],
-                queryMode: 'local'
-                // vtype: 'ipall'
+                queryMode: 'local',
+                vtype: 'ipAddress'
             }
         }, {
             header: 'New Source'.t(),
@@ -142,7 +142,7 @@ Ext.define('Ung.config.network.view.NatRules', {
                     disabled: '{record.auto}'
                 },
                 allowBlank: true,
-                vtype: 'ipall'
+                vtype: 'ipAddress'
             }
         }],
     }]

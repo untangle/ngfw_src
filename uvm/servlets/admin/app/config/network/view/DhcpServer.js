@@ -38,6 +38,7 @@ Ext.define('Ung.config.network.view.DhcpServer', {
                 allowBlank: false,
                 bind: '{record.macAddress}',
                 emptyText: '[enter MAC name]'.t(),
+                vtype: 'macAddress',
                 maskRe: /[a-fA-F0-9:]/
             }
         }, {
@@ -50,7 +51,7 @@ Ext.define('Ung.config.network.view.DhcpServer', {
                 emptyText: '[enter address]'.t(),
                 bind: '{record.address}',
                 allowBlank: false,
-                vtype: 'ipall',
+                vtype: 'ipAddress',
             }
         }, {
             header: 'Description'.t(),

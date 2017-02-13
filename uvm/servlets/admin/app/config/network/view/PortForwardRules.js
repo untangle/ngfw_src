@@ -130,7 +130,7 @@ Ext.define('Ung.config.network.view.PortForwardRules', {
                 fieldLabel: 'New Destination'.t(),
                 bind: '{record.newDestination}',
                 allowBlank: false,
-                vtype: 'ipall'
+                vtype: 'ipAddress'
             }
         }, {
             header: 'New Port'.t(),

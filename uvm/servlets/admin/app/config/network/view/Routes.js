@@ -56,7 +56,7 @@ Ext.define('Ung.config.network.view.Routes', {
                 fieldLabel: 'Network'.t(),
                 emptyText: '1.2.3.0'.t(),
                 allowBlank: false,
-                vtype: 'ipall',
+                vtype: 'ipAddress',
                 bind: '{record.network}',
             }
         }, {

@@ -1740,7 +1740,6 @@ Ext.define('Ung.config.network.view.BypassRules', {
                 editable: false,
                 store: [[true, 'Bypass'.t()], [false, 'Process'.t()]],
                 queryMode: 'local'
-                // vtype: 'ipall'
             }
         }],
     }]
@@ -1785,6 +1784,7 @@ Ext.define('Ung.config.network.view.DhcpServer', {
                 allowBlank: false,
                 bind: '{record.macAddress}',
                 emptyText: '[enter MAC name]'.t(),
+                vtype: 'macAddress',
                 maskRe: /[a-fA-F0-9:]/
             }
         }, {
@@ -1797,7 +1797,7 @@ Ext.define('Ung.config.network.view.DhcpServer', {
                 emptyText: '[enter address]'.t(),
                 bind: '{record.address}',
                 allowBlank: false,
-                vtype: 'ipall',
+                vtype: 'ipAddress',
             }
         }, {
             header: 'Description'.t(),
@@ -1903,7 +1903,7 @@ Ext.define('Ung.config.network.view.DnsServer', {
                 emptyText: '[enter address]'.t(),
                 bind: '{record.address}',
                 allowBlank: false,
-                vtype: 'ipall',
+                vtype: 'ipAddress',
             }
         }],
     }, {
@@ -1951,7 +1951,7 @@ Ext.define('Ung.config.network.view.DnsServer', {
                 emptyText: '[enter DNS server]'.t(),
                 allowBlank: false,
                 bind: '{record.localServer}',
-                vtype: 'ipall',
+                vtype: 'ipAddress',
             }
         }],
     }]
@@ -3088,8 +3088,8 @@ Ext.define('Ung.config.network.view.NatRules', {
                 allowBlank: false,
                 editable: false,
                 store: [[true, 'Auto'.t()], [false, 'Custom'.t()]],
-                queryMode: 'local'
-                // vtype: 'ipall'
+                queryMode: 'local',
+                vtype: 'ipAddress'
             }
         }, {
             header: 'New Source'.t(),
@@ -3112,7 +3112,7 @@ Ext.define('Ung.config.network.view.NatRules', {
                     disabled: '{record.auto}'
                 },
                 allowBlank: true,
-                vtype: 'ipall'
+                vtype: 'ipAddress'
             }
         }],
     }]
@@ -3249,7 +3249,7 @@ Ext.define('Ung.config.network.view.PortForwardRules', {
                 fieldLabel: 'New Destination'.t(),
                 bind: '{record.newDestination}',
                 allowBlank: false,
-                vtype: 'ipall'
+                vtype: 'ipAddress'
             }
         }, {
             header: 'New Port'.t(),
@@ -3347,7 +3347,7 @@ Ext.define('Ung.config.network.view.Routes', {
                 fieldLabel: 'Network'.t(),
                 emptyText: '1.2.3.0'.t(),
                 allowBlank: false,
-                vtype: 'ipall',
+                vtype: 'ipAddress',
                 bind: '{record.network}',
             }
         }, {
