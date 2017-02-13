@@ -545,12 +545,15 @@ Ext.define('Webui.config.events', {
                 "activate": {
                     fn: Ext.bind(function(elem, newValue) {
                         var ruleNames = [];
-                        var rules = this.getEventSettings().alertRules;
+                        var rules = this.getEventSettings().logRules;
                         var rule;
                         var allMatch = false;
                         var i;
                         for(i = 0; i < rules.list.length; i++){
                             rule = rules.list[i];
+                            if(rule.enabled == false){
+                                continue;
+                            }
                             if(rule.remoteLog){
                                 if(rule.conditions.list.length == 0){
                                     allMatch = true;
