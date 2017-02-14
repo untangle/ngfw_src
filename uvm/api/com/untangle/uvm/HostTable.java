@@ -30,6 +30,11 @@ public interface HostTable
     HostTableEntry getHostTableEntry( InetAddress addr, boolean create );
 
     /**
+     * Search for a HostTableEntry with specified MAC address 
+     */
+    HostTableEntry findHostTableEntry( String macaddr );
+
+    /**
      * return the "license size" (the number of hosts applicable to licensing)
      */
     int getCurrentActiveSize();
@@ -140,4 +145,3 @@ public interface HostTable
      */
     HostTableEntry removeHostTableEntry( InetAddress addr );
 }
-

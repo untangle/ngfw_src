@@ -24,11 +24,11 @@ public class CaptivePortalUserTable
     public class StaleUser
     {
         CaptivePortalUserEvent.EventType reason;
-        InetAddress address;
+        InetAddress netaddr;
 
-        StaleUser(InetAddress address, CaptivePortalUserEvent.EventType reason)
+        StaleUser(InetAddress netaddr, CaptivePortalUserEvent.EventType reason)
         {
-            this.address = address;
+            this.netaddr = netaddr;
             this.reason = reason;
         }
     }
@@ -56,15 +56,15 @@ public class CaptivePortalUserTable
         return (userList);
     }
 
-    public CaptivePortalUserEntry insertActiveUser(InetAddress address, String username, Boolean anonymous)
+    public CaptivePortalUserEntry insertActiveUser(InetAddress netaddr, String username, Boolean anonymous)
     {
         String macaddr = null;
 
         // do not pass the create flag here since it is passed in object insert call 
-        HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry(address);
+        HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry(netaddr);
         if (entry != null) macaddr = entry.getMacAddress();
 
-        CaptivePortalUserEntry local = new CaptivePortalUserEntry(address, macaddr, username, anonymous);
+        CaptivePortalUserEntry local = new CaptivePortalUserEntry(netaddr, macaddr, username, anonymous);
         return insertActiveUser(local);
     }
 
@@ -99,12 +99,12 @@ public class CaptivePortalUserTable
         return (local);
     }
 
-    public boolean removeActiveUser(InetAddress address)
+    public boolean removeActiveNetUser(InetAddress netaddr)
     {
         CaptivePortalUserEntry user = null;
         String macaddr = null;
 
-        HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry(address);
+        HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry(netaddr);
         if (entry != null) macaddr = entry.getMacAddress();
 
         if ((ownerApp.getSettings().getUseMacAddress()) && (macaddr != null)) {
@@ -114,7 +114,7 @@ public class CaptivePortalUserTable
                 macAddrTable.remove(user.getUserMacAddress());
             }
         } else {
-            user = netAddrTable.get(address);
+            user = netAddrTable.get(netaddr);
             if (user != null) {
                 logger.debug("REMOVE NET TABLE: " + user.toString());
                 netAddrTable.remove(user.getUserNetAddress());
@@ -130,18 +130,55 @@ public class CaptivePortalUserTable
         return (true);
     }
 
-    public CaptivePortalUserEntry searchByAddress(InetAddress address)
+    public boolean removeActiveMacUser(String macaddr)
+    {
+
+        CaptivePortalUserEntry user = null;
+
+        if ((ownerApp.getSettings().getUseMacAddress()) && (macaddr != null)) {
+            user = macAddrTable.get(macaddr);
+            if (user != null) {
+                logger.debug("REMOVE MAC TABLE: " + user.toString());
+                macAddrTable.remove(user.getUserMacAddress());
+            }
+        }
+
+        if (user == null) return (false);
+
+        // clear the capture username from the host table entry and turn
+        // of the captive portal flag so it knows we are all done
+        HostTableEntry entry = UvmContextFactory.context().hostTable().findHostTableEntry(macaddr);
+        if (entry != null) {
+            entry.setUsernameCapture(null);
+            entry.setCaptivePortalAuthenticated(false);
+        }
+
+        return (true);
+    }
+
+    public CaptivePortalUserEntry searchByNetAddress(InetAddress netaddr)
     {
         CaptivePortalUserEntry user = null;
         String macaddr = null;
 
-        HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry(address);
+        HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry(netaddr);
         if (entry != null) macaddr = entry.getMacAddress();
 
         if ((ownerApp.getSettings().getUseMacAddress()) && (macaddr != null)) {
             user = macAddrTable.get(entry.getMacAddress());
         } else {
-            user = netAddrTable.get(address);
+            user = netAddrTable.get(netaddr);
+        }
+
+        return (user);
+    }
+
+    public CaptivePortalUserEntry searchByMacAddress(String macaddr)
+    {
+        CaptivePortalUserEntry user = null;
+
+        if (ownerApp.getSettings().getUseMacAddress()) {
+            user = macAddrTable.get(macaddr);
         }
 
         return (user);
