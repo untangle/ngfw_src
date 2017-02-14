@@ -5,13 +5,14 @@ Ext.define('Ung.cmp.Rules', {
     requires: [
         'Ung.cmp.RulesController',
         'Ung.cmp.RecordEditor',
-        'Ung.cmp.DataImporter'
+        'Ung.cmp.DataImporter',
+        'Ung.model.Condition'
     ],
 
     controller: 'rules',
 
     actions: {
-        add: { text: 'Add'.t(), handler: 'addRecord' },
+        add: { text: 'Add'.t(), iconCls: 'fa fa-plus', handler: 'addRecord' },
         import: { text: 'Import'.t(), handler: 'importData' },
         export: { text: 'Export'.t(), handler: 'exportData' },
         edit: {
@@ -91,47 +92,50 @@ Ext.define('Ung.cmp.Rules', {
     initComponent: function () {
         // to revisit the way columns are attached
         var columns = Ext.clone(this.columns), i;
-        for (i = 0; i < this.recordActions.length; i += 1) {
-            var action = this.recordActions[i];
-            if (action === '@edit' || action === '@delete') {
-                columns.push({
-                    xtype: 'actioncolumn',
-                    width: 60,
-                    header: action === '@edit' ? 'Edit'.t() : 'Delete'.t(),
-                    align: 'center',
-                    tdCls: 'action-cell',
-                    items: [action]
-                });
-            }
-            if (action === '@reorder') {
-                Ext.apply(this.viewConfig, {
-                    plugins: {
-                        ptype: 'gridviewdragdrop',
-                        dragText: 'Drag and drop to reorganize'.t(),
-                        // allow drag only from drag column icons
-                        dragZone: {
-                            onBeforeDrag: function (data, e) {
-                                return Ext.get(e.target).hasCls('fa-arrows');
+
+        if (this.recordActions) {
+            for (i = 0; i < this.recordActions.length; i += 1) {
+                var action = this.recordActions[i];
+                if (action === '@edit' || action === '@delete') {
+                    columns.push({
+                        xtype: 'actioncolumn',
+                        width: 60,
+                        header: action === '@edit' ? 'Edit'.t() : 'Delete'.t(),
+                        align: 'center',
+                        tdCls: 'action-cell',
+                        items: [action]
+                    });
+                }
+                if (action === '@reorder') {
+                    Ext.apply(this.viewConfig, {
+                        plugins: {
+                            ptype: 'gridviewdragdrop',
+                            dragText: 'Drag and drop to reorganize'.t(),
+                            // allow drag only from drag column icons
+                            dragZone: {
+                                onBeforeDrag: function (data, e) {
+                                    return Ext.get(e.target).hasCls('fa-arrows');
+                                }
                             }
                         }
-                    }
-                });
-                columns.unshift({
-                    xtype: 'gridcolumn',
-                    header: '<i class="fa fa-sort"></i>',
-                    align: 'center',
-                    width: 30,
-                    tdCls: 'action-cell',
-                    // iconCls: 'fa fa-arrows'
-                    renderer: function() {
-                        return '<i class="fa fa-arrows" style="cursor: move;"></i>';
-                    },
-                });
+                    });
+                    columns.unshift({
+                        xtype: 'gridcolumn',
+                        header: '<i class="fa fa-sort"></i>',
+                        align: 'center',
+                        width: 30,
+                        tdCls: 'action-cell',
+                        // iconCls: 'fa fa-arrows'
+                        renderer: function() {
+                            return '<i class="fa fa-arrows" style="cursor: move;"></i>';
+                        },
+                    });
+                }
             }
+            Ext.apply(this, {
+                columns: columns
+            });
         }
-        Ext.apply(this, {
-            columns: columns
-        });
         this.callParent(arguments);
     }
 

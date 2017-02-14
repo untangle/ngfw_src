@@ -15,9 +15,10 @@ Ext.define('Ung.config.network.view.BypassRules', {
     layout: 'fit',
 
     tbar: [{
-        xtype: 'displayfield',
-        padding: '0 10',
-        value: 'Bypass Rules control what traffic is scanned by the applications. Bypassed traffic skips application processing. The rules are evaluated in order. Sessions that meet no rule are not bypassed.'.t()
+        xtype: 'tbtext',
+        padding: '8 5',
+        style: { fontSize: '12px' },
+        html: 'Bypass Rules control what traffic is scanned by the applications. Bypassed traffic skips application processing. The rules are evaluated in order. Sessions that meet no rule are not bypassed.'.t()
     }],
 
     items: [{

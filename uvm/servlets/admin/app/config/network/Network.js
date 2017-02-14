@@ -1,13 +1,13 @@
 Ext.define('Ung.config.network.Network', {
     extend: 'Ext.tab.Panel',
-    xtype: 'ung.config.network',
+    alias: 'widget.config.network',
 
     requires: [
         'Ung.config.network.NetworkController',
         'Ung.config.network.NetworkModel',
 
-        'Ung.view.grid.Grid',
-        'Ung.store.RuleConditions',
+        // 'Ung.view.grid.Grid',
+        // 'Ung.store.RuleConditions',
         'Ung.store.Rule',
         'Ung.model.Rule',
         'Ung.cmp.Rules'
@@ -33,8 +33,8 @@ Ext.define('Ung.config.network.Network', {
             hrefTarget: '_self',
             href: '#config'
         }, '-', {
-            xtype: 'component',
-            html: 'Network'
+            xtype: 'tbtext',
+            html: '<strong>' + 'Network'.t() + '</strong>'
         }],
     }, {
         xtype: 'toolbar',
@@ -43,7 +43,7 @@ Ext.define('Ung.config.network.Network', {
         items: ['->', {
             text: 'Apply Changes'.t(),
             scale: 'large',
-            // iconCls: 'fa fa-floppy-o fa-lg',
+            iconCls: 'fa fa-floppy-o fa-lg',
             handler: 'saveSettings'
         }]
     }],
@@ -54,21 +54,7 @@ Ext.define('Ung.config.network.Network', {
         xtype: 'config.network.hostname'
     }, {
         xtype: 'config.network.services'
-    },
-    // {
-    //     xtype: 'panel',
-    //     layout: 'border',
-    //     title: 'Mix',
-    //     items: [{
-    //         xtype: 'ung.config.network.portforwardrules',
-    //         region: 'center'
-    //     }, {
-    //         xtype: 'ung.config.network.natrules',
-    //         region: 'south',
-    //         height: 300
-    //     }]
-    // }
-    {
+    }, {
         xtype: 'config.network.portforwardrules'
     }, {
         xtype: 'config.network.natrules'
@@ -84,6 +70,5 @@ Ext.define('Ung.config.network.Network', {
         xtype: 'config.network.advanced'
     }, {
         xtype: 'config.network.troubleshooting'
-    }
-    ]
+    }]
 });

@@ -40,7 +40,8 @@
         },
         addCondition: {
             itemId: 'addConditionBtn',
-            text: 'Add Condition'.t()
+            text: 'Add Condition'.t(),
+            iconCls: 'fa fa-plus'
         }
     },
 
