@@ -134,10 +134,21 @@ Ext.define('Webui.untangle-node-captive-portal.settings', {
                 iconCls: 'icon-delete-row',
                 tooltip: i18n._("Click to logout"),
                 handler: Ext.bind(function(view, rowIndex, colIndex, item, e, record) {
-                    this.getRpcNode().userAdminLogout(Ext.bind(function(result, exception) {
-                        if(Ung.Util.handleException(exception)) return;
-                        this.gridCaptiveStatus.reload();
-                    },this), record.get("userNetAddress"));
+
+                    var netaddr = record.get("userNetAddress");
+                    var macaddr = record.get("userMacAddress");
+
+                    if ( (this.settings.useMacAddress == true) && (macaddr != null) && (macaddr.length > 12) ) {
+                        this.getRpcNode().userAdminMacLogout(Ext.bind(function(result, exception) {
+                            if(Ung.Util.handleException(exception)) return;
+                            this.gridCaptiveStatus.reload();
+                        },this), macaddr);
+                    } else {
+                        this.getRpcNode().userAdminNetLogout(Ext.bind(function(result, exception) {
+                            if(Ung.Util.handleException(exception)) return;
+                            this.gridCaptiveStatus.reload();
+                        },this), netaddr);
+                    }
                 }, this)
             }]
         });
