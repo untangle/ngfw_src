@@ -9,9 +9,10 @@ Ext.define('Ung.config.network.view.Routes', {
     layout: 'border',
 
     tbar: [{
-        xtype: 'displayfield',
-        padding: '0 10',
-        value: "Static Routes are global routes that control how traffic is routed by destination address. The most specific Static Route is taken for a particular packet, order is not important.".t()
+        xtype: 'tbtext',
+        padding: '8 5',
+        style: { fontSize: '12px' },
+        html: 'Static Routes are global routes that control how traffic is routed by destination address. The most specific Static Route is taken for a particular packet, order is not important.'.t()
     }],
 
     items: [{
@@ -104,8 +105,9 @@ Ext.define('Ung.config.network.view.Routes', {
         split: true,
         border: false,
         tbar: [{
-            xtype: 'displayfield',
-            padding: '0 5',
+            xtype: 'tbtext',
+            padding: '8 5',
+            style: { fontSize: '12px' },
             value: "Current Routes shows the current routing system's configuration and how all traffic will be routed.".t()
         }, '->', {
             text: 'Refresh Routes'.t(),

@@ -14,9 +14,10 @@ Ext.define('Ung.config.network.view.PortForwardRules', {
     layout: { type: 'vbox', align: 'stretch' },
 
     tbar: [{
-        xtype: 'displayfield',
-        padding: '0 10',
-        value: "Port Forward rules forward sessions matching the configured criteria from a public IP to an IP on an internal (NAT'd) network. The rules are evaluated in order.".t()
+        xtype: 'tbtext',
+        padding: '8 5',
+        style: { fontSize: '12px' },
+        html: "Port Forward rules forward sessions matching the configured criteria from a public IP to an IP on an internal (NAT'd) network. The rules are evaluated in order.".t()
     }],
 
     items: [{

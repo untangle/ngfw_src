@@ -784,3 +784,15 @@ cite {
 .mark-readonly {
     background: #f3f3f3;
 }
+
+// especially for gray theme
+span.fa:before {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+    display: block;
+}
+
+.cert-verification table {
+    width: 100%;
+}

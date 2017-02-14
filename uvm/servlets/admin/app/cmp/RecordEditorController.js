@@ -93,7 +93,7 @@ Ext.define('Ung.cmp.RecordEditorController', {
 
     onBeforeRender: function (view) {
         var fields = view.fields, form = view.down('form');
-
+        console.log(fields);
         // add editable column fields into the form
         for (var i = 0; i < fields.length; i++) {
             if (fields[i].editor) {
@@ -140,6 +140,7 @@ Ext.define('Ung.cmp.RecordEditorController', {
         }
 
         if (v.action === 'add') {
+            console.log(v.record);
             v.store.add(v.record);
         }
         v.close();

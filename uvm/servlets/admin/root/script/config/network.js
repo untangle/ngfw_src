@@ -1,13 +1,13 @@
 Ext.define('Ung.config.network.Network', {
     extend: 'Ext.tab.Panel',
-    xtype: 'ung.config.network',
+    alias: 'widget.config.network',
 
     requires: [
         'Ung.config.network.NetworkController',
         'Ung.config.network.NetworkModel',
 
-        'Ung.view.grid.Grid',
-        'Ung.store.RuleConditions',
+        // 'Ung.view.grid.Grid',
+        // 'Ung.store.RuleConditions',
         'Ung.store.Rule',
         'Ung.model.Rule',
         'Ung.cmp.Rules'
@@ -33,8 +33,8 @@ Ext.define('Ung.config.network.Network', {
             hrefTarget: '_self',
             href: '#config'
         }, '-', {
-            xtype: 'component',
-            html: 'Network'
+            xtype: 'tbtext',
+            html: '<strong>' + 'Network'.t() + '</strong>'
         }],
     }, {
         xtype: 'toolbar',
@@ -43,7 +43,7 @@ Ext.define('Ung.config.network.Network', {
         items: ['->', {
             text: 'Apply Changes'.t(),
             scale: 'large',
-            // iconCls: 'fa fa-floppy-o fa-lg',
+            iconCls: 'fa fa-floppy-o fa-lg',
             handler: 'saveSettings'
         }]
     }],
@@ -54,21 +54,7 @@ Ext.define('Ung.config.network.Network', {
         xtype: 'config.network.hostname'
     }, {
         xtype: 'config.network.services'
-    },
-    // {
-    //     xtype: 'panel',
-    //     layout: 'border',
-    //     title: 'Mix',
-    //     items: [{
-    //         xtype: 'ung.config.network.portforwardrules',
-    //         region: 'center'
-    //     }, {
-    //         xtype: 'ung.config.network.natrules',
-    //         region: 'south',
-    //         height: 300
-    //     }]
-    // }
-    {
+    }, {
         xtype: 'config.network.portforwardrules'
     }, {
         xtype: 'config.network.natrules'
@@ -84,8 +70,7 @@ Ext.define('Ung.config.network.Network', {
         xtype: 'config.network.advanced'
     }, {
         xtype: 'config.network.troubleshooting'
-    }
-    ]
+    }]
 });
 Ext.define('Ung.config.network.NetworkController', {
     extend: 'Ext.app.ViewController',
@@ -697,9 +682,10 @@ Ext.define('Ung.config.network.view.Advanced', {
     layout: 'fit',
 
     tbar: [{
-        xtype: 'displayfield',
-        padding: '0 10',
-        value: '<i class="fa fa-exclamation-triangle" style="color: red;"></i> '  + 'Advanced settings require careful configuration. Misconfiguration can compromise the proper operation and security of your server.'.t()
+        xtype: 'tbtext',
+        padding: '8 5',
+        style: { fontSize: '12px' },
+        html: '<i class="fa fa-exclamation-triangle" style="color: red;"></i> '  + 'Advanced settings require careful configuration. Misconfiguration can compromise the proper operation and security of your server.'.t()
     }],
 
     items: [{
@@ -762,6 +748,8 @@ Ext.define('Ung.config.network.view.Advanced', {
             dockedItems: [{
                 xtype: 'toolbar',
                 dock: 'top',
+                padding: '8 5',
+                style: { fontSize: '12px' },
                 items: [{
                     xtype: 'checkbox',
                     fieldLabel: 'Enabled'.t(),
@@ -796,8 +784,9 @@ Ext.define('Ung.config.network.view.Advanced', {
                     title: 'WAN Bandwidth'.t(),
                     // bodyPadding: 10,
                     tbar: [{
-                        xtype: 'component',
-                        padding: 5,
+                        xtype: 'tbtext',
+                        padding: '8 5',
+                        style: { fontSize: '12px' },
                         html: Ext.String.format('{0}Note{1}: When enabling QoS valid Download Bandwidth and Upload Bandwidth limits must be set for all WAN interfaces.'.t(), '<font color="red">','</font>') + '<br/>'
                             // Ext.String.format('Total: {0} kbps ({1} Mbit) download, {2} kbps ({3} Mbit) upload'.t(), d, d_Mbit, u, u_Mbit )
                     }],
@@ -916,8 +905,9 @@ Ext.define('Ung.config.network.view.Advanced', {
                         border: false,
 
                         tbar: ['@add', '->', {
-                            xtype: 'component',
-                            padding: 5,
+                            xtype: 'tbtext',
+                            padding: '8 5',
+                            style: { fontSize: '12px' },
                             html: Ext.String.format('{0}Note{1}: Custom Rules only match <b>Bypassed</b> traffic.'.t(), '<font color="red">','</font>')
                         }],
 
@@ -1544,9 +1534,10 @@ Ext.define('Ung.config.network.view.Advanced', {
             title: 'DNS & DHCP'.t(),
             xtype: 'panel',
             tbar: [{
-                xtype: 'displayfield',
-                padding: '0 10',
-                value: '<strong>' + 'Custom dnsmasq options.'.t() + '</strong> ' +
+                xtype: 'tbtext',
+                padding: '8 5',
+                style: { fontSize: '12px' },
+                html: '<strong>' + 'Custom dnsmasq options.'.t() + '</strong> <br/>' +
                       '<i class="fa fa-exclamation-triangle" style="color: red;"></i> ' + 'Warning: Invalid syntax will halt all DHCP & DNS services.'.t()
             }],
             layout: 'fit',
@@ -1643,9 +1634,10 @@ Ext.define('Ung.config.network.view.BypassRules', {
     layout: 'fit',
 
     tbar: [{
-        xtype: 'displayfield',
-        padding: '0 10',
-        value: 'Bypass Rules control what traffic is scanned by the applications. Bypassed traffic skips application processing. The rules are evaluated in order. Sessions that meet no rule are not bypassed.'.t()
+        xtype: 'tbtext',
+        padding: '8 5',
+        style: { fontSize: '12px' },
+        html: 'Bypass Rules control what traffic is scanned by the applications. Bypassed traffic skips application processing. The rules are evaluated in order. Sessions that meet no rule are not bypassed.'.t()
     }],
 
     items: [{
@@ -2125,9 +2117,10 @@ Ext.define('Ung.config.network.view.Interfaces', {
     itemId: 'interfaces',
 
     tbar: [{
-        xtype: 'displayfield',
-        padding: '0 10',
-        value: '<strong>' + 'Interface configuration'.t() + '</strong> ' +  "Use this page to configure each interface's configuration and its mapping to a physical network card.".t()
+        xtype: 'tbtext',
+        padding: '8 5',
+        style: { fontSize: '12px' },
+        html: '<strong>' + 'Interface configuration'.t() + '</strong> <br/>' +  "Use this page to configure each interface's configuration and its mapping to a physical network card.".t()
     }],
 
     actions: {
@@ -2144,12 +2137,12 @@ Ext.define('Ung.config.network.view.Interfaces', {
         itemId: 'interfacesGrid',
         reference: 'interfacesGrid',
         region: 'center',
-        // flex: 1,
         border: false,
-        // forceFit: true,
 
         tbar: ['@refresh'],
 
+        layout: 'fit',
+        forceFit: true,
         // viewConfig: {
         //     plugins: {
         //         ptype: 'gridviewdragdrop',
@@ -2263,8 +2256,16 @@ Ext.define('Ung.config.network.view.Interfaces', {
         }, {
             header: 'is WAN'.t(),
             dataIndex: 'isWan',
+            align: 'center',
             renderer: function (value, metaData, record) {
-                return (record.get('configType') === 'ADDRESSED') ? (value ? 'true'.t() : 'false'.t()) : ''; // if its addressed return value
+                return (record.get('configType') === 'ADDRESSED') ? (value ? '<i class="fa fa-check fa-lg"></i>' : '<i class="fa fa-minus fa-lg"></i>') : '<i class="fa fa-minus fa-lg"></i>'; // if its addressed return value
+            }
+        }, {
+            header: 'is Vlan'.t(),
+            dataIndex: 'isVlanInterface',
+            align: 'center',
+            renderer: function (value) {
+                return value ? '<i class="fa fa-check fa-lg"></i>' : '<i class="fa fa-minus fa-lg"></i>';
             }
         }, {
             header: 'MAC Address'.t(),
@@ -2274,11 +2275,6 @@ Ext.define('Ung.config.network.view.Interfaces', {
             header: 'Vendor'.t(),
             width: 160,
             dataIndex: 'vendor'
-        }, {
-            flex: 1,
-            sortable: false,
-            hideable: false,
-            menuDisabled: true
         }]
     }, {
         xtype: 'panel',
@@ -2984,9 +2980,10 @@ Ext.define('Ung.config.network.view.NatRules', {
     layout: 'fit',
 
     tbar: [{
-        xtype: 'displayfield',
-        padding: '0 10',
-        value: 'NAT Rules control the rewriting of the IP source address of traffic (Network Address Translation). The rules are evaluated in order.'.t()
+        xtype: 'tbtext',
+        padding: '8 5',
+        style: { fontSize: '12px' },
+        html: 'NAT Rules control the rewriting of the IP source address of traffic (Network Address Translation). The rules are evaluated in order.'.t()
     }],
 
     items: [{
@@ -3133,9 +3130,10 @@ Ext.define('Ung.config.network.view.PortForwardRules', {
     layout: { type: 'vbox', align: 'stretch' },
 
     tbar: [{
-        xtype: 'displayfield',
-        padding: '0 10',
-        value: "Port Forward rules forward sessions matching the configured criteria from a public IP to an IP on an internal (NAT'd) network. The rules are evaluated in order.".t()
+        xtype: 'tbtext',
+        padding: '8 5',
+        style: { fontSize: '12px' },
+        html: "Port Forward rules forward sessions matching the configured criteria from a public IP to an IP on an internal (NAT'd) network. The rules are evaluated in order.".t()
     }],
 
     items: [{
@@ -3300,9 +3298,10 @@ Ext.define('Ung.config.network.view.Routes', {
     layout: 'border',
 
     tbar: [{
-        xtype: 'displayfield',
-        padding: '0 10',
-        value: "Static Routes are global routes that control how traffic is routed by destination address. The most specific Static Route is taken for a particular packet, order is not important.".t()
+        xtype: 'tbtext',
+        padding: '8 5',
+        style: { fontSize: '12px' },
+        html: 'Static Routes are global routes that control how traffic is routed by destination address. The most specific Static Route is taken for a particular packet, order is not important.'.t()
     }],
 
     items: [{
@@ -3395,8 +3394,9 @@ Ext.define('Ung.config.network.view.Routes', {
         split: true,
         border: false,
         tbar: [{
-            xtype: 'displayfield',
-            padding: '0 5',
+            xtype: 'tbtext',
+            padding: '8 5',
+            style: { fontSize: '12px' },
             value: "Current Routes shows the current routing system's configuration and how all traffic will be routed.".t()
         }, '->', {
             text: 'Refresh Routes'.t(),
@@ -3432,9 +3432,10 @@ Ext.define('Ung.config.network.view.Services', {
     bodyPadding: 10,
 
     tbar: [{
-        xtype: 'displayfield',
-        padding: '0 10',
-        value: '<strong>' + 'Local Services'.t() + '</strong>'
+        xtype: 'tbtext',
+        padding: '8 5',
+        style: { fontSize: '12px' },
+        html: '<strong>' + 'Local Services'.t() + '</strong>'
     }],
 
     defaults: {
@@ -3476,9 +3477,10 @@ Ext.define('Ung.config.network.view.Troubleshooting', {
     layout: 'fit',
 
     tbar: [{
-        xtype: 'displayfield',
-        padding: '0 10',
-        value: '<strong>' + 'Network Tests'.t() + '</strong>'
+        xtype: 'tbtext',
+        padding: '8 5',
+        style: { fontSize: '12px' },
+        html: '<strong>' + 'Network Tests'.t() + '</strong>'
     }],
 
     items: [{

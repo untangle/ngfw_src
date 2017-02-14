@@ -7,9 +7,10 @@ Ext.define('Ung.config.network.view.Troubleshooting', {
     layout: 'fit',
 
     tbar: [{
-        xtype: 'displayfield',
-        padding: '0 10',
-        value: '<strong>' + 'Network Tests'.t() + '</strong>'
+        xtype: 'tbtext',
+        padding: '8 5',
+        style: { fontSize: '12px' },
+        html: '<strong>' + 'Network Tests'.t() + '</strong>'
     }],
 
     items: [{

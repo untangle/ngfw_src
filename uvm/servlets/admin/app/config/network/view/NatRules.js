@@ -14,9 +14,10 @@ Ext.define('Ung.config.network.view.NatRules', {
     layout: 'fit',
 
     tbar: [{
-        xtype: 'displayfield',
-        padding: '0 10',
-        value: 'NAT Rules control the rewriting of the IP source address of traffic (Network Address Translation). The rules are evaluated in order.'.t()
+        xtype: 'tbtext',
+        padding: '8 5',
+        style: { fontSize: '12px' },
+        html: 'NAT Rules control the rewriting of the IP source address of traffic (Network Address Translation). The rules are evaluated in order.'.t()
     }],
 
     items: [{

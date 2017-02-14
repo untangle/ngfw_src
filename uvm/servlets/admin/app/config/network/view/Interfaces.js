@@ -7,9 +7,10 @@ Ext.define('Ung.config.network.view.Interfaces', {
     itemId: 'interfaces',
 
     tbar: [{
-        xtype: 'displayfield',
-        padding: '0 10',
-        value: '<strong>' + 'Interface configuration'.t() + '</strong> ' +  "Use this page to configure each interface's configuration and its mapping to a physical network card.".t()
+        xtype: 'tbtext',
+        padding: '8 5',
+        style: { fontSize: '12px' },
+        html: '<strong>' + 'Interface configuration'.t() + '</strong> <br/>' +  "Use this page to configure each interface's configuration and its mapping to a physical network card.".t()
     }],
 
     actions: {
@@ -26,12 +27,12 @@ Ext.define('Ung.config.network.view.Interfaces', {
         itemId: 'interfacesGrid',
         reference: 'interfacesGrid',
         region: 'center',
-        // flex: 1,
         border: false,
-        // forceFit: true,
 
         tbar: ['@refresh'],
 
+        layout: 'fit',
+        forceFit: true,
         // viewConfig: {
         //     plugins: {
         //         ptype: 'gridviewdragdrop',
@@ -145,8 +146,16 @@ Ext.define('Ung.config.network.view.Interfaces', {
         }, {
             header: 'is WAN'.t(),
             dataIndex: 'isWan',
+            align: 'center',
             renderer: function (value, metaData, record) {
-                return (record.get('configType') === 'ADDRESSED') ? (value ? 'true'.t() : 'false'.t()) : ''; // if its addressed return value
+                return (record.get('configType') === 'ADDRESSED') ? (value ? '<i class="fa fa-check fa-lg"></i>' : '<i class="fa fa-minus fa-lg"></i>') : '<i class="fa fa-minus fa-lg"></i>'; // if its addressed return value
+            }
+        }, {
+            header: 'is Vlan'.t(),
+            dataIndex: 'isVlanInterface',
+            align: 'center',
+            renderer: function (value) {
+                return value ? '<i class="fa fa-check fa-lg"></i>' : '<i class="fa fa-minus fa-lg"></i>';
             }
         }, {
             header: 'MAC Address'.t(),
@@ -156,11 +165,6 @@ Ext.define('Ung.config.network.view.Interfaces', {
             header: 'Vendor'.t(),
             width: 160,
             dataIndex: 'vendor'
-        }, {
-            flex: 1,
-            sortable: false,
-            hideable: false,
-            menuDisabled: true
         }]
     }, {
         xtype: 'panel',

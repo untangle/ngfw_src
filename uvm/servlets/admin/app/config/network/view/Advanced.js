@@ -10,9 +10,10 @@ Ext.define('Ung.config.network.view.Advanced', {
     layout: 'fit',
 
     tbar: [{
-        xtype: 'displayfield',
-        padding: '0 10',
-        value: '<i class="fa fa-exclamation-triangle" style="color: red;"></i> '  + 'Advanced settings require careful configuration. Misconfiguration can compromise the proper operation and security of your server.'.t()
+        xtype: 'tbtext',
+        padding: '8 5',
+        style: { fontSize: '12px' },
+        html: '<i class="fa fa-exclamation-triangle" style="color: red;"></i> '  + 'Advanced settings require careful configuration. Misconfiguration can compromise the proper operation and security of your server.'.t()
     }],
 
     items: [{
@@ -75,6 +76,8 @@ Ext.define('Ung.config.network.view.Advanced', {
             dockedItems: [{
                 xtype: 'toolbar',
                 dock: 'top',
+                padding: '8 5',
+                style: { fontSize: '12px' },
                 items: [{
                     xtype: 'checkbox',
                     fieldLabel: 'Enabled'.t(),
@@ -109,8 +112,9 @@ Ext.define('Ung.config.network.view.Advanced', {
                     title: 'WAN Bandwidth'.t(),
                     // bodyPadding: 10,
                     tbar: [{
-                        xtype: 'component',
-                        padding: 5,
+                        xtype: 'tbtext',
+                        padding: '8 5',
+                        style: { fontSize: '12px' },
                         html: Ext.String.format('{0}Note{1}: When enabling QoS valid Download Bandwidth and Upload Bandwidth limits must be set for all WAN interfaces.'.t(), '<font color="red">','</font>') + '<br/>'
                             // Ext.String.format('Total: {0} kbps ({1} Mbit) download, {2} kbps ({3} Mbit) upload'.t(), d, d_Mbit, u, u_Mbit )
                     }],
@@ -229,8 +233,9 @@ Ext.define('Ung.config.network.view.Advanced', {
                         border: false,
 
                         tbar: ['@add', '->', {
-                            xtype: 'component',
-                            padding: 5,
+                            xtype: 'tbtext',
+                            padding: '8 5',
+                            style: { fontSize: '12px' },
                             html: Ext.String.format('{0}Note{1}: Custom Rules only match <b>Bypassed</b> traffic.'.t(), '<font color="red">','</font>')
                         }],
 
@@ -857,9 +862,10 @@ Ext.define('Ung.config.network.view.Advanced', {
             title: 'DNS & DHCP'.t(),
             xtype: 'panel',
             tbar: [{
-                xtype: 'displayfield',
-                padding: '0 10',
-                value: '<strong>' + 'Custom dnsmasq options.'.t() + '</strong> ' +
+                xtype: 'tbtext',
+                padding: '8 5',
+                style: { fontSize: '12px' },
+                html: '<strong>' + 'Custom dnsmasq options.'.t() + '</strong> <br/>' +
                       '<i class="fa fa-exclamation-triangle" style="color: red;"></i> ' + 'Warning: Invalid syntax will halt all DHCP & DNS services.'.t()
             }],
             layout: 'fit',
