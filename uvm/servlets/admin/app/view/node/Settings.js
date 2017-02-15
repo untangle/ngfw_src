@@ -14,7 +14,6 @@ Ext.define('Ung.view.node.Settings', {
         'Ung.model.NodeMetric',
         'Ung.view.grid.Grid',
         'Ung.view.grid.Conditions',
-        'Ung.view.grid.ActionColumn',
         'Ung.model.GenericRule'
     ],
 

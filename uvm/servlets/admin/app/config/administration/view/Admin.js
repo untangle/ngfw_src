@@ -8,19 +8,13 @@ Ext.define('Ung.config.administration.view.Admin', {
     title: 'Admin'.t(),
     layout: 'border',
 
-    actions: {
-        addAccount: { text: 'Add Account'.t(), iconCls: 'fa fa-plus', handler: 'addAccount' },
-    },
-
     items: [{
         xtype: 'ungrid',
-        border: false,
+        // border: false,
         title: 'Admin Accounts'.t(),
         region: 'center',
 
-        // tbar: ['@addAccount'],
         bind: '{accounts}',
-
 
         listProperty: 'adminSettings.users.list',
         tbar: ['@add'],

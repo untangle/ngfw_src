@@ -138,6 +138,31 @@ Ext.define('Ung.util.Util', {
         });
     },
 
+    invalidFormToast: function (fields) {
+        if (!fields || fields.length === 0) {
+            return;
+        }
+
+        var str = [];
+        fields.forEach(function (field) {
+            str.push('<span class="field-name">' + field.label + '</span>: <br/> <span class="field-error">' + field.error.replace(/<\/?[^>]+(>|$)/g, '') + '</span>');
+        });
+        Ext.toast({
+            html: '<i class="fa fa-exclamation-triangle fa-lg"></i> <span style="font-weight: bold; font-size: 14px; color: yellow;">Check invalid fields!</span><br/><br/>' + str.join('<br/>'),
+            bodyPadding: '10 10 10 45',
+            baseCls: 'toast-invalid-frm',
+            border: false,
+            bodyBorder: false,
+            align: 'br',
+            autoCloseDelay: 5000,
+            slideInAnimation: 'easeOut',
+            slideInDuration: 300,
+            hideDuration: 0,
+            paddingX: 10,
+            paddingY: 50
+        });
+    },
+
     getInterfaceListSystemDev: function (wanMatchers, anyMatcher, systemDev) {
         var networkSettings = rpc.networkSettings,
             data = [], intf, i;

@@ -1,4 +1,4 @@
-                                                                                        Ext.define('Ung.cmp.RecordEditor', {
+Ext.define('Ung.cmp.RecordEditor', {
     extend: 'Ext.window.Window',
     width: 800,
     height: 500,

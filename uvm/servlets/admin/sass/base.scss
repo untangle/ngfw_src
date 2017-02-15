@@ -350,6 +350,39 @@ cite {
     }
 }
 
+.toast-invalid-frm {
+    background: #333;
+    border-radius: 5px;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+    max-width: 300px;
+    height: auto !important;
+    z-index: 9999;
+    &-body {
+        font-family: $custom-font;
+        font-size: 12px;
+        height: auto !important;
+        color: #FFF;
+    }
+    i {
+        color: yellow;
+        margin-right: 10px;
+        position: absolute;
+        top: 15px;
+        left: 15px;
+    }
+    .field-name {
+        font-size: 14px;
+        line-height: 1;
+        color: orange;
+    }
+    .field-error {
+        color: #CCC;
+        line-height: 1;
+        margin-bottom: 10px;
+        display: inline-block;
+    }
+}
+
 
 .x-grid-row {
     color: #333;

@@ -6,7 +6,6 @@ app/view/main/MainController.js
 app/view/main/MainModel.js
 app/view/dashboard/DashboardController.js
 app/view/dashboard/Queue.js
-app/view/grid/ActionColumn.js
 app/widget/WidgetController.js
 app/widget/Information.js
 app/widget/Resources.js

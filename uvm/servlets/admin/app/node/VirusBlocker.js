@@ -4,7 +4,6 @@ Ext.define('Ung.node.VirusBlocker', {
     layout: 'fit',
     requires: [
         'Ung.view.grid.Grid',
-        'Ung.view.grid.ActionColumn',
         'Ung.model.GenericRule'
     ],
 
