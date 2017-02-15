@@ -1,15 +1,15 @@
-Ext.define('Ung.cmp.Rules', {
+Ext.define('Ung.cmp.Grid', {
     extend: 'Ext.grid.Panel',
-    alias: 'widget.rules',
+    alias: 'widget.ungrid',
 
     requires: [
-        'Ung.cmp.RulesController',
+        'Ung.cmp.GridController',
         'Ung.cmp.RecordEditor',
         'Ung.cmp.DataImporter',
         'Ung.model.Condition'
     ],
 
-    controller: 'rules',
+    controller: 'ungrid',
 
     actions: {
         add: { text: 'Add'.t(), iconCls: 'fa fa-plus', handler: 'addRecord' },
@@ -87,6 +87,11 @@ Ext.define('Ung.cmp.Rules', {
 
         // conditions: null,
         // conditionsMap: null
+    },
+
+    plugins: {
+        ptype: 'cellediting',
+        clicksToEdit: 1
     },
 
     initComponent: function () {

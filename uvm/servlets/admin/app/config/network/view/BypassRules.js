@@ -22,7 +22,7 @@ Ext.define('Ung.config.network.view.BypassRules', {
     }],
 
     items: [{
-        xtype: 'rules',
+        xtype: 'ungrid',
         flex: 3,
 
         tbar: ['@add'],
@@ -72,32 +72,16 @@ Ext.define('Ung.config.network.view.BypassRules', {
             header: 'Enable'.t(),
             dataIndex: 'enabled',
             resizable: false,
-            width: 70,
-            editor: {
-                xtype: 'checkbox',
-                fieldLabel: 'Enable NAT Rule'.t(),
-                bind: '{record.enabled}',
-            }
-            // renderer: function (val) {
-            //     return '<i class="fa + ' + (val ? 'fa-check' : 'fa-check-o') + '"></i>';
-            // }
+            width: 70
         }, {
             header: 'Description',
             width: 200,
             dataIndex: 'description',
             renderer: function (value) {
                 return value || '<em>no description<em>';
-            },
-            editor: {
-                xtype: 'textfield',
-                fieldLabel: 'Description'.t(),
-                bind: '{record.description}',
-                emptyText: '[no description]'.t(),
-                allowBlank: false
             }
         }, {
             header: 'Conditions'.t(),
-            itemId: 'conditions',
             flex: 1,
             dataIndex: 'conditions',
             renderer: 'conditionsRenderer'
@@ -105,15 +89,13 @@ Ext.define('Ung.config.network.view.BypassRules', {
             header: 'Bypass'.t(),
             xtype: 'checkcolumn',
             dataIndex: 'bypass',
-            width: 100,
-            editor: {
-                xtype: 'combo',
-                fieldLabel: 'Action'.t(),
-                bind: '{record.bypass}',
-                editable: false,
-                store: [[true, 'Bypass'.t()], [false, 'Process'.t()]],
-                queryMode: 'local'
-            }
+            width: 100
         }],
+        editorFields: [
+            Fields.enableRule(),
+            Fields.description,
+            Fields.conditions,
+            Fields.bypass
+        ]
     }]
 });

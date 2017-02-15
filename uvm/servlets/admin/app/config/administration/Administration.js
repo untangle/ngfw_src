@@ -8,7 +8,7 @@ Ext.define('Ung.config.administration.Administration', {
 
         'Ung.store.Rule',
         'Ung.model.Rule',
-        'Ung.cmp.Rules'
+        'Ung.cmp.Grid'
     ],
 
     controller: 'config.administration',

@@ -21,7 +21,7 @@ Ext.define('Ung.config.network.view.NatRules', {
     }],
 
     items: [{
-        xtype: 'rules',
+        xtype: 'ungrid',
         flex: 3,
 
         tbar: ['@add'],
@@ -70,81 +70,40 @@ Ext.define('Ung.config.network.view.NatRules', {
             header: 'Enable'.t(),
             dataIndex: 'enabled',
             resizable: false,
-            width: 70,
-            editor: {
-                xtype: 'checkbox',
-                fieldLabel: 'Enable NAT Rule'.t(),
-                bind: '{record.enabled}',
-            }
-            // renderer: function (val) {
-            //     return '<i class="fa + ' + (val ? 'fa-check' : 'fa-check-o') + '"></i>';
-            // }
+            width: 70
         }, {
             header: 'Description',
             width: 200,
             dataIndex: 'description',
             renderer: function (value) {
                 return value || '<em>no description<em>';
-            },
-            editor: {
-                xtype: 'textfield',
-                fieldLabel: 'Description'.t(),
-                bind: '{record.description}',
-                emptyText: '[no description]'.t(),
-                allowBlank: false
             }
         }, {
             header: 'Conditions'.t(),
-            itemId: 'conditions',
             flex: 1,
             dataIndex: 'conditions',
             renderer: 'conditionsRenderer'
-        },
-        // {
-        //     xtype: 'actioncolumn', //
-        //     iconCls: 'fa fa-edit',
-        //     handler: 'editRuleWin'
-        // },
-        {
+        }, {
             header: 'NAT Type'.t(),
             dataIndex: 'auto',
             width: 100,
             renderer: function (val) {
                 return val ? 'Auto'.t() : 'Custom'.t();
-            },
-            editor: {
-                xtype: 'combo',
-                fieldLabel: 'NAT Type'.t(),
-                bind: '{record.auto}',
-                allowBlank: false,
-                editable: false,
-                store: [[true, 'Auto'.t()], [false, 'Custom'.t()]],
-                queryMode: 'local',
-                vtype: 'ipAddress'
             }
         }, {
             header: 'New Source'.t(),
             dataIndex: 'newSource',
-            // align: 'right',
             width: 120,
             renderer: function (value, metaData, record) {
                 return record.get('auto') ? '' : value;
-                // if (record.get('auto')) {
-                //     return '<span style="color: #999;">' + value + '</span>';
-                // }
-                // return value;
-            },
-            editor: {
-                xtype: 'textfield',
-                fieldLabel: 'New Source'.t(),
-                width: 100,
-                bind: {
-                    value: '{record.newSource}',
-                    disabled: '{record.auto}'
-                },
-                allowBlank: true,
-                vtype: 'ipAddress'
             }
         }],
+        editorFields: [
+            Fields.enableRule('Enable NAT Rule'.t()),
+            Fields.description,
+            Fields.conditions,
+            Fields.natType,
+            Fields.natSource
+        ]
     }]
 });

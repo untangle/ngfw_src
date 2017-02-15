@@ -9,7 +9,7 @@ Ext.define('Ung.config.network.view.DnsServer', {
     layout: 'border',
 
     items: [{
-        xtype: 'rules',
+        xtype: 'ungrid',
         region: 'center',
 
         title: 'Static DNS Entries'.t(),
@@ -33,7 +33,6 @@ Ext.define('Ung.config.network.view.DnsServer', {
             flex: 1,
             editor: {
                 xtype: 'textfield',
-                fieldLabel: 'Name'.t(),
                 allowBlank: false,
                 bind: '{record.name}',
                 emptyText: '[enter name]'.t()
@@ -44,21 +43,18 @@ Ext.define('Ung.config.network.view.DnsServer', {
             dataIndex: 'address',
             editor: {
                 xtype: 'textfield',
-                fieldLabel: 'Address'.t(),
                 emptyText: '[enter address]'.t(),
                 bind: '{record.address}',
                 allowBlank: false,
                 vtype: 'ipAddress',
             }
-        }],
+        }]
     }, {
-        xtype: 'rules',
+        xtype: 'ungrid',
         region: 'south',
 
         height: '50%',
         split: true,
-
-
 
         title: 'Domain DNS Servers'.t(),
 
@@ -81,7 +77,6 @@ Ext.define('Ung.config.network.view.DnsServer', {
             flex: 1,
             editor: {
                 xtype: 'textfield',
-                fieldLabel: 'Domain'.t(),
                 allowBlank: false,
                 emptyText: '[enter domain]'.t(),
                 bind: '{record.domain}',
@@ -92,7 +87,6 @@ Ext.define('Ung.config.network.view.DnsServer', {
             dataIndex: 'localServer',
             editor: {
                 xtype: 'textfield',
-                fieldLabel: 'DNS Server'.t(),
                 emptyText: '[enter DNS server]'.t(),
                 allowBlank: false,
                 bind: '{record.localServer}',

@@ -96,28 +96,28 @@ Ext.define('Ung.config.administration.AdministrationController', {
     },
 
     saveSettings: function () {
-        var view = this.getView(),
+        var me = this,
+            view = this.getView(),
             vm = this.getViewModel();
 
         view.setLoading('Saving ...');
 
-        Ext.ComponentQuery.query('rules').forEach(function (grid) {
+        view.query('ungrid').forEach(function (grid) {
             var store = grid.getStore();
-            console.log(store.getModifiedRecords());
             /**
              * Important!
              * update custom grids only if are modified records or it was reordered via drag/drop
              */
-            // if (store.getModifiedRecords().length > 0 || store.isReordered) {
-            //     store.each(function (record) {
-            //         if (record.get('markedForDelete')) {
-            //             record.drop();
-            //         }
-            //     });
-            //     store.isReordered = undefined;
-            //     vm.set(grid.listProperty, Ext.Array.pluck(store.getRange(), 'data'));
-            //     // store.commitChanges();
-            // }
+            if (store.getModifiedRecords().length > 0 || store.isReordered) {
+                store.each(function (record) {
+                    if (record.get('markedForDelete')) {
+                        record.drop();
+                    }
+                });
+                store.isReordered = undefined;
+                vm.set(grid.listProperty, Ext.Array.pluck(store.getRange(), 'data'));
+                // store.commitChanges();
+            }
         });
 
         Ext.Deferred.sequence([
@@ -126,6 +126,9 @@ Ext.define('Ung.config.administration.AdministrationController', {
             this.setSystemSettings
         ], this).then(function () {
             view.setLoading(false);
+
+            me.loadAdmin(); me.loadCertificates(); me.loadSkins();
+
             Ung.Util.successToast('Administration'.t() + ' settings saved!');
         }, function (ex) {
             view.setLoading(false);

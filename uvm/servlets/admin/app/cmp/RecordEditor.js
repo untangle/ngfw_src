@@ -6,7 +6,6 @@
     xtype: 'ung.cmp.recordeditor',
     requires: [
         'Ung.cmp.RecordEditorController',
-        // 'Ung.cmp.ConditionsGrid',
         'Ung.overrides.form.CheckboxGroup',
         'Ung.overrides.form.field.VTypes'
     ],

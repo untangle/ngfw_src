@@ -9,7 +9,7 @@ Ext.define('Ung.config.network.view.DhcpServer', {
     layout: 'border',
 
     items: [{
-        xtype: 'rules',
+        xtype: 'ungrid',
         region: 'center',
 
         title: 'Static DHCP Entries'.t(),
@@ -31,40 +31,21 @@ Ext.define('Ung.config.network.view.DhcpServer', {
         columns: [{
             header: 'MAC Address'.t(),
             dataIndex: 'macAddress',
-            width: 200,
-            editor: {
-                xtype: 'textfield',
-                fieldLabel: 'MAC Address'.t(),
-                allowBlank: false,
-                bind: '{record.macAddress}',
-                emptyText: '[enter MAC name]'.t(),
-                vtype: 'macAddress',
-                maskRe: /[a-fA-F0-9:]/
-            }
+            width: 200
         }, {
             header: 'Address'.t(),
             width: 200,
-            dataIndex: 'address',
-            editor: {
-                xtype: 'textfield',
-                fieldLabel: 'Address'.t(),
-                emptyText: '[enter address]'.t(),
-                bind: '{record.address}',
-                allowBlank: false,
-                vtype: 'ipAddress',
-            }
+            dataIndex: 'address'
         }, {
             header: 'Description'.t(),
             flex: 1,
-            dataIndex: 'description',
-            editor: {
-                xtype: 'textfield',
-                fieldLabel: 'Description'.t(),
-                bind: '{record.description}',
-                emptyText: '[enter description]'.t(),
-                allowBlank: false,
-            }
+            dataIndex: 'description'
         }],
+        editorFields: [
+            Fields.macAddress,
+            Fields.ipAddress,
+            Fields.description
+        ]
     }, {
         xtype: 'grid',
         title: 'Current DHCP Leases'.t(),

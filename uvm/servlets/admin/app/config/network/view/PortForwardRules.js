@@ -21,7 +21,7 @@ Ext.define('Ung.config.network.view.PortForwardRules', {
     }],
 
     items: [{
-        xtype: 'rules',
+        xtype: 'ungrid',
         flex: 3,
 
         tbar: ['@add'],
@@ -87,68 +87,35 @@ Ext.define('Ung.config.network.view.PortForwardRules', {
             header: 'Enable'.t(),
             dataIndex: 'enabled',
             resizable: false,
-            width: 70,
-            editor: {
-                xtype: 'checkbox',
-                fieldLabel: 'Enable Port Forward Rule'.t(),
-                bind: '{record.enabled}',
-            }
-            // renderer: function (val) {
-            //     return '<i class="fa + ' + (val ? 'fa-check' : 'fa-check-o') + '"></i>';
-            // }
+            width: 70
         }, {
             header: 'Description',
             width: 200,
             dataIndex: 'description',
             renderer: function (value) {
                 return value || '<em>no description<em>';
-            },
-            editor: {
-                xtype: 'textfield',
-                fieldLabel: 'Description'.t(),
-                bind: '{record.description}',
-                emptyText: '[no description]'.t(),
-                allowBlank: false
             }
         }, {
             header: 'Conditions'.t(),
-            itemId: 'conditions',
             flex: 1,
             dataIndex: 'conditions',
             renderer: 'conditionsRenderer'
-        },
-        // {
-        //     xtype: 'actioncolumn', //
-        //     iconCls: 'fa fa-edit',
-        //     handler: 'editRuleWin'
-        // },
-        {
+        }, {
             header: 'New Destination'.t(),
             dataIndex: 'newDestination',
-            width: 150,
-            editor: {
-                xtype: 'textfield',
-                fieldLabel: 'New Destination'.t(),
-                bind: '{record.newDestination}',
-                allowBlank: false,
-                vtype: 'ipAddress'
-            }
+            width: 150
         }, {
             header: 'New Port'.t(),
             dataIndex: 'newPort',
-            // align: 'right',
-            width: 80,
-            editor: {
-                xtype: 'numberfield',
-                fieldLabel: 'New Port'.t(),
-                width: 100,
-                bind: '{record.newPort}',
-                allowBlank: true,
-                minValue : 1,
-                maxValue : 0xFFFF,
-                vtype: 'port'
-            }
+            width: 80
         }],
+        editorFields: [
+            Fields.enableRule('Enable Port Forward Rule'.t()),
+            Fields.description,
+            Fields.conditions,
+            Fields.newDestination,
+            Fields.newPort
+        ]
     }, {
         xtype: 'fieldset',
         flex: 2,

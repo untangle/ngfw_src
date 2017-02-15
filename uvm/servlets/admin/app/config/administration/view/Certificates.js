@@ -73,7 +73,7 @@ Ext.define('Ung.config.administration.view.Certificates', {
         }]
     }, {
         title: 'Server Certificates'.t(),
-        xtype: 'rules',
+        xtype: 'ungrid',
         region: 'south',
         height: '40%',
         split: true,

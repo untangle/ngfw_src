@@ -2438,10 +2438,11 @@ Ext.define('Ung.view.config.ConfigController', {
     },
 
     onDeactivate: function (view) {
-        if (view.down('#configCard')) {
-            view.setActiveItem(0);
-            view.down('#configCard').destroy();
-        }
+        console.log('here');
+        // if (view.down('#configCard')) {
+        //     view.setActiveItem(0);
+        //     view.down('#configCard').destroy();
+        // }
         // view.remove('configCard');
     }
 
@@ -2454,6 +2455,7 @@ Ext.define('Ung.view.config.Config', {
 
     requires: [
         'Ung.view.config.ConfigController',
+        'Ung.cmp.EditorFields'
         // 'Ung.view.config.ConfigModel'
     ],
 
@@ -5386,6 +5388,7 @@ Ext.define('Ung.controller.Global', {
             'apps/:policyId/:node': 'onApps',
             'config': 'onConfig',
             'config/:configName': 'onConfig',
+            'config/:configName/:configView': 'onConfig',
             'reports': 'onReports',
             'reports/:category': 'onReports',
             'reports/:category/:entry': 'onReports',
@@ -5434,7 +5437,7 @@ Ext.define('Ung.controller.Global', {
         // console.log(this.getAppsView());
     },
 
-    onConfig: function (configName) {
+    onConfig: function (configName, configView) {
         var me = this;
         if (!configName) {
             this.getMainView().getViewModel().set('selectedNavItem', 'config');
@@ -5451,6 +5454,12 @@ Ext.define('Ung.controller.Global', {
                         itemId: 'configCard'
                     });
                     me.getMainView().setActiveItem('configCard');
+
+                    // if (configView) {
+                    //     console.log('here');
+                    //     me.getMainView().down('#configCard').setActiveItem(configView);
+                    // }
+
                     // console.log('loaded');
                     // Ext.require('Ung.config.network.Network', function () {
                     //     console.log('require');
