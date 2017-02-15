@@ -119,8 +119,9 @@ public class CaptivePortalApp extends NodeBase
 // THIS IS FOR ECLIPSE - @formatter:on
 
     /**
-     * The UI components seem to automagically call getSettings and setSettings to handle the load and save stuff, so
-     * these functions just call our getCaptivePortalSettings and setCaptivePortalSettings functions.
+     * The UI components seem to automagically call getSettings and setSettings
+     * to handle the load and save stuff, so these functions just call our
+     * getCaptivePortalSettings and setCaptivePortalSettings functions.
      */
 
     public CaptivePortalSettings getSettings()
@@ -607,7 +608,6 @@ public class CaptivePortalApp extends NodeBase
 
     public int userAdminMacLogout(String macaddr)
     {
-
         CaptivePortalUserEntry user = captureUserTable.searchByMacAddress(macaddr);
 
         if (user == null) {
@@ -618,8 +618,8 @@ public class CaptivePortalApp extends NodeBase
         // remove from the user table
         captureUserTable.removeActiveMacUser(macaddr);
 
-        // call the session cleanup function passing the address of the
-        // user we just logged out to clean up any outstanding sessions
+        // call the session cleanup function passing the address from the MAC
+        // entry of the user we just logged out to clean up any outstanding sessions
         HostTableEntry entry = UvmContextFactory.context().hostTable().findHostTableEntry(macaddr);
         validateAllSessions(entry.getAddress());
 
@@ -772,12 +772,31 @@ public class CaptivePortalApp extends NodeBase
             long currentTime = System.currentTimeMillis();
 
             /**
-             * Insert all the non-expired users into the table. Since the untangle-vm has likely been down, don't check
-             * idle timeout
+             * Insert all the non-expired users into the table. Since the
+             * untangle-vm has likely been down, don't check idle timeout
              */
             for (CaptivePortalUserEntry user : users) {
                 long userTrigger = (user.getSessionCreation() + (userTimeout * 1000));
-                if (currentTime > userTrigger) continue;
+
+                /**
+                 * If we aren't loading this expired user we need to clear our
+                 * username and authenticated fields in the HostTable
+                 */
+                if (currentTime > userTrigger) {
+                    HostTableEntry entry;
+
+                    if (user.getMacLogin()) {
+                        entry = UvmContextFactory.context().hostTable().findHostTableEntry(user.getUserMacAddress());
+                    } else {
+                        entry = UvmContextFactory.context().hostTable().getHostTableEntry(user.getUserNetAddress());
+                    }
+
+                    if (entry != null) {
+                        entry.setUsernameCapture(null);
+                        entry.setCaptivePortalAuthenticated(false);
+                    }
+                    continue;
+                }
 
                 captureUserTable.insertActiveUser(user);
                 usersLoaded++;
@@ -796,8 +815,8 @@ public class CaptivePortalApp extends NodeBase
     }
 
     /**
-     * This method saves the current user state in a file in conf/ This is so we preserve user login state on
-     * untangle-vm or server reboots
+     * This method saves the current user state in a file in conf/ This is so we
+     * preserve user login state on untangle-vm or server reboots
      */
     private void saveUserState()
     {
@@ -853,8 +872,8 @@ public class CaptivePortalApp extends NodeBase
             tempStream.close();
 
             /*
-             * make sure we have a valid zip file and check the contents to see if there is either a custom.html or
-             * custom.py script
+             * make sure we have a valid zip file and check the contents to see
+             * if there is either a custom.html or custom.py script
              */
             try {
                 int checker = 0;
@@ -887,8 +906,9 @@ public class CaptivePortalApp extends NodeBase
             }
 
             /*
-             * We seem to have a good ZIP archive and it contains the files we expect so clean up any existing custom
-             * page that may already exist and extract the file into our custom directory
+             * We seem to have a good ZIP archive and it contains the files we
+             * expect so clean up any existing custom page that may already
+             * exist and extract the file into our custom directory
              */
             UvmContextFactory.context().execManager().exec(CAPTURE_CUSTOM_REMOVE_SCRIPT + " " + customPath);
             UvmContextFactory.context().execManager().exec(CAPTURE_CUSTOM_CREATE_SCRIPT + " " + customPath);
@@ -900,7 +920,7 @@ public class CaptivePortalApp extends NodeBase
 
         private ExecManagerResult handleFileRemove() throws Exception
         {
-            // use our existing remove and create scripts to wipe any existing custom page 
+            // use our existing remove and create scripts to wipe any existing custom page
             UvmContextFactory.context().execManager().exec(CAPTURE_CUSTOM_REMOVE_SCRIPT + " " + customPath);
             UvmContextFactory.context().execManager().exec(CAPTURE_CUSTOM_CREATE_SCRIPT + " " + customPath);
             return new ExecManagerResult(0, "The custom captive portal page has been removed");
@@ -915,11 +935,12 @@ public class CaptivePortalApp extends NodeBase
         }
 
         /**
-         * This hook is called when a host is removed from the host table. If the user is logged into captive portal the
-         * host table entry should never be removed.
+         * This hook is called when a host is removed from the host table. If
+         * the user is logged into captive portal the host table entry should
+         * never be removed.
          * 
-         * However it is removed if the MAC address changes (a different host) or something drastic occurs. In this case
-         * we should log the host out.
+         * However it is removed if the MAC address changes (a different host)
+         * or something drastic occurs. In this case we should log the host out.
          */
         public void callback(Object o)
         {

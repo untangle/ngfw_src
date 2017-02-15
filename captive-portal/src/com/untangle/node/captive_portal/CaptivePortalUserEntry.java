@@ -14,18 +14,20 @@ public class CaptivePortalUserEntry implements Serializable
     private String userMacAddress;
     private String userName;
     private Boolean isAnonymous;
+    private Boolean isMacLogin;
     private long sessionCreation;
     private long sessionActivity;
     private long sessionCounter;
 
     public CaptivePortalUserEntry() {}
-    
+
     public CaptivePortalUserEntry(InetAddress userNetAddress, String userMacAddress, String userName, Boolean isAnonymous)
     {
         this.userNetAddress = userNetAddress;
         this.userMacAddress = userMacAddress;
         this.userName = userName;
         this.isAnonymous = isAnonymous;
+        this.isMacLogin = false;
         sessionCreation = System.currentTimeMillis();
         sessionActivity = sessionCreation;
     }
@@ -38,6 +40,9 @@ public class CaptivePortalUserEntry implements Serializable
 
     public String getUserName() { return userName; }
     public void setUserName( String newValue ) { this.userName = newValue; }
+
+    public Boolean getMacLogin() { return isMacLogin; }
+    public void setMacLogin( Boolean newValue ) { this.isMacLogin = newValue; }
 
     public Boolean getAnonymous() { return isAnonymous; }
     public void setAnonymous( Boolean newValue ) { this.isAnonymous = newValue; }
@@ -56,10 +61,10 @@ public class CaptivePortalUserEntry implements Serializable
         sessionActivity = System.currentTimeMillis();
         sessionCounter++;
     }
-    
+
     public String toString()
     {
-        String local = ("ADDR:" + userNetAddress.getHostAddress().toString() + " MAC:" + userMacAddress + " NAME:" + userName); 
+        String local = ("ADDR:" + userNetAddress.getHostAddress().toString() + " MAC:" + userMacAddress + " NAME:" + userName);
         return(local);
     }
 }

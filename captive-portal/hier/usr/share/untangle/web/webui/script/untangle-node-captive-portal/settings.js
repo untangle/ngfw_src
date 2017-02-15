@@ -88,6 +88,8 @@ Ext.define('Webui.untangle-node-captive-portal.settings', {
             },{
                 name: "userMacAddress"
             },{
+                name: "macLogin",
+            },{
                 name: "userName"
             },{
                 name: "sessionCreation"
@@ -106,6 +108,11 @@ Ext.define('Webui.untangle-node-captive-portal.settings', {
                 header: i18n._("MAC Address"),
                 dataIndex:'userMacAddress',
                 width: 200
+            },{
+                header: i18n._("Login Key"),
+                dataIndex: 'macLogin',
+                width: 120,
+                renderer: function(value) { return (value ? "MAC Address" : "IP Address"); }
             },{
                 header: i18n._("User Name"),
                 dataIndex:'userName',

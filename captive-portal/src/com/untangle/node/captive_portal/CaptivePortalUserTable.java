@@ -60,7 +60,7 @@ public class CaptivePortalUserTable
     {
         String macaddr = null;
 
-        // do not pass the create flag here since it is passed in object insert call 
+        // do not pass the create flag here since it is passed in object insert call
         HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry(netaddr);
         if (entry != null) macaddr = entry.getMacAddress();
 
@@ -72,9 +72,11 @@ public class CaptivePortalUserTable
     {
         if ((ownerApp.getSettings().getUseMacAddress()) && (local.getUserMacAddress() != null)) {
             logger.debug("INSERT MAC TABLE: " + local.toString());
+            local.setMacLogin(Boolean.TRUE);
             macAddrTable.put(local.getUserMacAddress(), local);
         } else {
             logger.debug("INSERT NET TABLE: " + local.toString());
+            local.setMacLogin(Boolean.FALSE);
             netAddrTable.put(local.getUserNetAddress(), local);
         }
 
@@ -124,7 +126,7 @@ public class CaptivePortalUserTable
         if (user == null) return (false);
 
         // clear the capture username from the host table entry and turn
-        // of the captive portal flag so it knows we are all done 
+        // of the captive portal flag so it knows we are all done
         entry.setUsernameCapture(null);
         entry.setCaptivePortalAuthenticated(false);
         return (true);
