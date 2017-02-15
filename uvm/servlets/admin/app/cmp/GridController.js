@@ -1,7 +1,7 @@
-Ext.define('Ung.cmp.RulesController', {
+Ext.define('Ung.cmp.GridController', {
     extend: 'Ext.app.ViewController',
 
-    alias: 'controller.rules',
+    alias: 'controller.ungrid',
 
     addCount: 0,
 
@@ -21,28 +21,14 @@ Ext.define('Ung.cmp.RulesController', {
 
 
     addRecord: function () {
-        // var r = grid.emptyRow;
-        // r = v.getStore().add(Ext.clone(v.emptyRow));
-        // console.log(r[0]);
-        this.editorWin(null);
-        // vm.get('portforwardrules').add(r);
-        // r.dirty = true;
-        // grid.view.refresh();
-        // console.log(vm.get('portforwardrules').getRange());
-        // grid.getStore().insert(0, Ext.create('Ung.model.Rule'));
-        // vm.get('portforwardrules').commitChanges();
-        // grid.getStore().reload();
-
-
-        // console.log(v.getStore().getModel());
-
-        // Ext.widget('ung.cmp.recordeditor', {
-        //     fields: v.getColumns(), // form fields needed to be displayed in the editor taken from grid columns
-        //     label: v.label, // the label in the form
-        //     conditions: v.getConditions(), // the available conditions which can be applied
-        //     conditionsMap: v.getConditionsMap(), // a map with the above conditions as helper
-        //     ruleJavaClass: v.ruleJavaClass,
-        // });
+        var v = this.getView(), newRecord;
+        // if there are no editor fields defined, the record is added inline and has inline editing capability
+        if (!v.editorFields) {
+            newRecord = Ext.create('Ung.model.Rule', Ext.clone(v.emptyRow));
+            v.getStore().add(newRecord);
+        } else {
+            this.editorWin(null);
+        }
     },
 
     editRecord: function (view, rowIndex, colIndex, item, e, record) {
@@ -64,7 +50,7 @@ Ext.define('Ung.cmp.RulesController', {
 
         Ext.widget('ung.cmp.recordeditor', {
             action: record ? 'edit' : 'add',
-            fields: v.getColumns(), // form fields needed to be displayed in the editor taken from grid columns
+            editorFields: v.editorFields, // form fields needed to be displayed in the editor taken from grid columns
             actionDescription: v.actionDescription || 'Perform the following action(s):'.t(), // the label in the form
             conditions: v.conditions, // the available conditions which can be applied
             conditionsMap: v.conditionsMap, // a map with the above conditions as helper

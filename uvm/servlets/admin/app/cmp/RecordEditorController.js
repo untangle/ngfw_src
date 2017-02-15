@@ -92,14 +92,12 @@ Ext.define('Ung.cmp.RecordEditorController', {
 
 
     onBeforeRender: function (view) {
-        var fields = view.fields, form = view.down('form');
-        console.log(fields);
+        var fields = view.editorFields, form = view.down('form');
         // add editable column fields into the form
         for (var i = 0; i < fields.length; i++) {
-            if (fields[i].editor) {
-                form.add(fields[i].editor);
-            }
-            if (fields[i].getItemId() === 'conditions') {
+            if (fields[i].dataIndex !== 'conditions') {
+                form.add(fields[i]);
+            } else {
                 form.add({
                     xtype: 'component',
                     padding: '10 0 0 0',
@@ -140,7 +138,6 @@ Ext.define('Ung.cmp.RecordEditorController', {
         }
 
         if (v.action === 'add') {
-            console.log(v.record);
             v.store.add(v.record);
         }
         v.close();

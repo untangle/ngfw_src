@@ -16,7 +16,7 @@ Ext.define('Ung.config.network.view.Routes', {
     }],
 
     items: [{
-        xtype: 'rules',
+        xtype: 'ungrid',
         region: 'center',
         title: 'Static Routes'.t(),
 
@@ -40,46 +40,27 @@ Ext.define('Ung.config.network.view.Routes', {
         columns: [{
             header: 'Description'.t(),
             dataIndex: 'description',
-            flex: 1,
-            editor: {
-                xtype: 'textfield',
-                fieldLabel: 'Description'.t(),
-                bind: '{record.description}',
-                allowBlank: false,
-                emptyText: '[enter description]'.t()
-            }
+            flex: 1
         }, {
             header: 'Network'.t(),
             width: 170,
-            dataIndex: 'network',
-            editor: {
-                xtype: 'textfield',
-                fieldLabel: 'Network'.t(),
-                emptyText: '1.2.3.0'.t(),
-                allowBlank: false,
-                vtype: 'ipAddress',
-                bind: '{record.network}',
-            }
+            dataIndex: 'network'
         }, {
             header: 'Netmask/Prefix'.t(),
             width: 170,
-            dataIndex: 'prefix',
-            editor: {
-                xtype: 'combo',
-                fieldLabel: 'Netmask/Prefix'.t(),
-                bind: '{record.prefix}',
-                store: Ung.Util.getV4NetmaskList(false),
-                queryMode: 'local',
-                editable: false
-            }
+            dataIndex: 'prefix'
         }, {
             header: 'Next Hop'.t(),
             width: 300,
             dataIndex: 'nextHop',
             renderer: function (value) {
                 return value || '<em>no description<em>';
-            },
-            editor: {
+            }
+        }],
+        editorFields: [
+            Fields.description,
+            Fields.network,
+            Fields.netMask, {
                 xtype: 'combo',
                 fieldLabel: 'Next Hop'.t(),
                 bind: '{record.nextHop}',
@@ -87,16 +68,13 @@ Ext.define('Ung.config.network.view.Routes', {
                 queryMode: 'local',
                 allowBlank: false,
                 editable: true
-            }
-        }, {
-            hidden: true,
-            editor: {
+            }, {
                 xtype: 'component',
                 margin: '10 0 0 20',
                 html: 'If <b>Next Hop</b> is an IP address that network will be routed via the specified IP address.'.t() + '<br/>' +
                     'If <b>Next Hop</b> is an interface that network will be routed <b>locally</b> on that interface.'.t()
             }
-        }],
+        ]
     }, {
         xtype: 'panel',
         title: 'Current Routes'.t(),

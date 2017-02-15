@@ -5,6 +5,7 @@ Ext.define('Ung.view.config.Config', {
 
     requires: [
         'Ung.view.config.ConfigController',
+        'Ung.cmp.EditorFields'
         // 'Ung.view.config.ConfigModel'
     ],
 

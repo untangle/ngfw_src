@@ -227,7 +227,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                             }
                         }]
                     }, {
-                        xtype: 'rules',
+                        xtype: 'ungrid',
                         title: 'QoS Custom Rules'.t(),
 
                         border: false,
@@ -284,32 +284,16 @@ Ext.define('Ung.config.network.view.Advanced', {
                             header: 'Enable'.t(),
                             dataIndex: 'enabled',
                             resizable: false,
-                            width: 70,
-                            editor: {
-                                xtype: 'checkbox',
-                                fieldLabel: 'Enable'.t(),
-                                bind: '{record.enabled}',
-                            }
-                            // renderer: function (val) {
-                            //     return '<i class="fa + ' + (val ? 'fa-check' : 'fa-check-o') + '"></i>';
-                            // }
+                            width: 70
                         }, {
                             header: 'Description',
                             width: 200,
                             dataIndex: 'description',
                             renderer: function (value) {
                                 return value || '<em>no description<em>';
-                            },
-                            editor: {
-                                xtype: 'textfield',
-                                fieldLabel: 'Description'.t(),
-                                bind: '{record.description}',
-                                emptyText: '[no description]'.t(),
-                                allowBlank: false
                             }
                         }, {
                             header: 'Conditions'.t(),
-                            itemId: 'conditions',
                             flex: 1,
                             dataIndex: 'conditions',
                             renderer: 'conditionsRenderer'
@@ -327,24 +311,14 @@ Ext.define('Ung.config.network.view.Advanced', {
                                     case 6: return 'Limited More'.t();
                                     case 7: return 'Limited Severely'.t();
                                 }
-                            },
-                            editor: {
-                                xtype: 'combo',
-                                fieldLabel: 'Priority'.t(),
-                                store: [
-                                    [1, 'Very High'.t()],
-                                    [2, 'High'.t()],
-                                    [3, 'Medium'.t()],
-                                    [4, 'Low'.t()],
-                                    [5, 'Limited'.t()],
-                                    [6, 'Limited More'.t()],
-                                    [7, 'Limited Severely'.t()]
-                                ],
-                                bind: '{record.priority}',
-                                queryMode: 'local',
-                                editable: false
                             }
-                        }]
+                        }],
+                        editorFields: [
+                            Fields.enableRule(),
+                            Fields.description,
+                            Fields.conditions,
+                            Fields.priority
+                        ]
                     }]
                 }, {
                     xtype: 'grid',
@@ -467,7 +441,7 @@ Ext.define('Ung.config.network.view.Advanced', {
             layout: 'border',
 
             items: [{
-                xtype: 'rules',
+                xtype: 'ungrid',
                 region: 'center',
                 title: 'Forward Filter Rules'.t(),
 
@@ -518,40 +492,22 @@ Ext.define('Ung.config.network.view.Advanced', {
                     header: 'Enable'.t(),
                     dataIndex: 'enabled',
                     resizable: false,
-                    width: 70,
-                    editor: {
-                        xtype: 'checkbox',
-                        fieldLabel: 'Enable Forward Filter Rule'.t(),
-                        bind: '{record.enabled}',
-                    }
+                    width: 70
                 }, {
                     xtype: 'checkcolumn',
                     header: 'IPv6'.t(),
                     dataIndex: 'ipv6Enabled',
                     resizable: false,
-                    width: 70,
-                    editor: {
-                        xtype: 'checkbox',
-                        fieldLabel: 'Enable IPv6 Support'.t(),
-                        bind: '{record.ipv6Enabled}',
-                    }
+                    width: 70
                 }, {
                     header: 'Description',
                     width: 200,
                     dataIndex: 'description',
                     renderer: function (value) {
                         return value || '<em>no description<em>';
-                    },
-                    editor: {
-                        xtype: 'textfield',
-                        fieldLabel: 'Description'.t(),
-                        bind: '{record.description}',
-                        emptyText: '[no description]'.t(),
-                        allowBlank: false
                     }
                 }, {
                     header: 'Conditions'.t(),
-                    itemId: 'conditions',
                     flex: 1,
                     dataIndex: 'conditions',
                     renderer: 'conditionsRenderer'
@@ -560,18 +516,17 @@ Ext.define('Ung.config.network.view.Advanced', {
                     header: 'Block'.t(),
                     dataIndex: 'blocked',
                     resizable: false,
-                    width: 70,
-                    editor: {
-                        xtype: 'combo',
-                        fieldLabel: 'Action'.t(),
-                        bind: '{record.blocked}',
-                        editable: false,
-                        store: [[true, 'Block'.t()], [false, 'Pass'.t()]],
-                        queryMode: 'local'
-                    }
+                    width: 70
                 }],
+                editorFields: [
+                    Fields.enableRule('Enable Forward Filter Rule'.t()),
+                    Fields.enableIpv6,
+                    Fields.description,
+                    Fields.conditions,
+                    Fields.blocked
+                ]
             }, {
-                xtype: 'rules',
+                xtype: 'ungrid',
                 region: 'south',
                 height: '70%',
                 split: true,
@@ -627,40 +582,22 @@ Ext.define('Ung.config.network.view.Advanced', {
                     header: 'Enable'.t(),
                     dataIndex: 'enabled',
                     resizable: false,
-                    width: 70,
-                    editor: {
-                        xtype: 'checkbox',
-                        fieldLabel: 'Enable Forward Filter Rule'.t(),
-                        bind: '{record.enabled}',
-                    }
+                    width: 70
                 }, {
                     xtype: 'checkcolumn',
                     header: 'IPv6'.t(),
                     dataIndex: 'ipv6Enabled',
                     resizable: false,
-                    width: 70,
-                    editor: {
-                        xtype: 'checkbox',
-                        fieldLabel: 'Enable IPv6 Support'.t(),
-                        bind: '{record.ipv6Enabled}',
-                    }
+                    width: 70
                 }, {
                     header: 'Description',
                     width: 200,
                     dataIndex: 'description',
                     renderer: function (value) {
                         return value || '<em>no description<em>';
-                    },
-                    editor: {
-                        xtype: 'textfield',
-                        fieldLabel: 'Description'.t(),
-                        bind: '{record.description}',
-                        emptyText: '[no description]'.t(),
-                        allowBlank: false
                     }
                 }, {
                     header: 'Conditions'.t(),
-                    itemId: 'conditions',
                     flex: 1,
                     dataIndex: 'conditions',
                     renderer: 'conditionsRenderer'
@@ -670,14 +607,6 @@ Ext.define('Ung.config.network.view.Advanced', {
                     dataIndex: 'blocked',
                     resizable: false,
                     width: 70,
-                    editor: {
-                        xtype: 'combo',
-                        fieldLabel: 'Action'.t(),
-                        bind: '{record.blocked}',
-                        editable: false,
-                        store: [[true, 'Block'.t()], [false, 'Pass'.t()]],
-                        queryMode: 'local'
-                    },
                     listeners: {
                         beforecheckchange: function (col, rowIndex, checked, record) {
                             if (record.get('readOnly')) {
@@ -687,6 +616,13 @@ Ext.define('Ung.config.network.view.Advanced', {
                         }
                     }
                 }],
+                editorFields: [
+                    Fields.enableRule('Enable Input Filter Rule'.t()),
+                    Fields.enableIpv6,
+                    Fields.description,
+                    Fields.conditions,
+                    Fields.blocked
+                ]
             }]
         }, {
             title: 'UPnP'.t(),
@@ -754,7 +690,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                     // renderer ????
                 }]
             }, {
-                xtype: 'rules',
+                xtype: 'ungrid',
                 region: 'south',
                 height: '50%',
                 split: true,
@@ -808,32 +744,16 @@ Ext.define('Ung.config.network.view.Advanced', {
                     header: 'Enable'.t(),
                     dataIndex: 'enabled',
                     resizable: false,
-                    width: 70,
-                    editor: {
-                        xtype: 'checkbox',
-                        fieldLabel: 'Enable'.t(),
-                        bind: '{record.enabled}',
-                    }
-                    // renderer: function (val) {
-                    //     return '<i class="fa + ' + (val ? 'fa-check' : 'fa-check-o') + '"></i>';
-                    // }
+                    width: 70
                 }, {
                     header: 'Description',
                     width: 200,
                     dataIndex: 'description',
                     renderer: function (value) {
                         return value || '<em>no description<em>';
-                    },
-                    editor: {
-                        xtype: 'textfield',
-                        fieldLabel: 'Description'.t(),
-                        bind: '{record.description}',
-                        emptyText: '[no description]'.t(),
-                        allowBlank: false
                     }
                 }, {
                     header: 'Conditions'.t(),
-                    itemId: 'conditions',
                     flex: 1,
                     dataIndex: 'conditions',
                     renderer: 'conditionsRenderer'
@@ -843,20 +763,14 @@ Ext.define('Ung.config.network.view.Advanced', {
                     dataIndex: 'allow',
                     renderer: function (value) {
                         return value ? 'Allow'.t() : 'Deny'.t();
-                    },
-                    editor: {
-                        xtype: 'combo',
-                        fieldLabel: 'Action'.t(),
-                        bind: '{record.allow}',
-                        store: [
-                            [false, 'Deny'.t()],
-                            [true, 'Allow'.t()]
-                        ],
-                        queryMode: 'local',
-                        editable: false
                     }
-                }]
-
+                }],
+                editorFields: [
+                    Fields.enableRule(),
+                    Fields.description,
+                    Fields.conditions,
+                    Fields.allow
+                ]
             }]
         }, {
             title: 'DNS & DHCP'.t(),

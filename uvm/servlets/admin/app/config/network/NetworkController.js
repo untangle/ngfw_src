@@ -34,7 +34,7 @@ Ext.define('Ung.config.network.NetworkController', {
         var me = this;
         view.setLoading('Saving ...');
         // used to update all tabs data
-        Ext.ComponentQuery.query('rules').forEach(function (grid) {
+        view.query('ungrid').forEach(function (grid) {
             var store = grid.getStore();
 
             /**

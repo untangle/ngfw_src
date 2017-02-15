@@ -8,7 +8,7 @@ Ext.define('Ung.config.administration.Administration', {
 
         'Ung.store.Rule',
         'Ung.model.Rule',
-        'Ung.cmp.Rules'
+        'Ung.cmp.Grid'
     ],
 
     controller: 'config.administration',
@@ -146,28 +146,28 @@ Ext.define('Ung.config.administration.AdministrationController', {
     },
 
     saveSettings: function () {
-        var view = this.getView(),
+        var me = this,
+            view = this.getView(),
             vm = this.getViewModel();
 
         view.setLoading('Saving ...');
 
-        Ext.ComponentQuery.query('rules').forEach(function (grid) {
+        view.query('ungrid').forEach(function (grid) {
             var store = grid.getStore();
-            console.log(store.getModifiedRecords());
             /**
              * Important!
              * update custom grids only if are modified records or it was reordered via drag/drop
              */
-            // if (store.getModifiedRecords().length > 0 || store.isReordered) {
-            //     store.each(function (record) {
-            //         if (record.get('markedForDelete')) {
-            //             record.drop();
-            //         }
-            //     });
-            //     store.isReordered = undefined;
-            //     vm.set(grid.listProperty, Ext.Array.pluck(store.getRange(), 'data'));
-            //     // store.commitChanges();
-            // }
+            if (store.getModifiedRecords().length > 0 || store.isReordered) {
+                store.each(function (record) {
+                    if (record.get('markedForDelete')) {
+                        record.drop();
+                    }
+                });
+                store.isReordered = undefined;
+                vm.set(grid.listProperty, Ext.Array.pluck(store.getRange(), 'data'));
+                // store.commitChanges();
+            }
         });
 
         Ext.Deferred.sequence([
@@ -176,6 +176,9 @@ Ext.define('Ung.config.administration.AdministrationController', {
             this.setSystemSettings
         ], this).then(function () {
             view.setLoading(false);
+
+            me.loadAdmin(); me.loadCertificates(); me.loadSkins();
+
             Ung.Util.successToast('Administration'.t() + ' settings saved!');
         }, function (ex) {
             view.setLoading(false);
@@ -288,7 +291,7 @@ Ext.define('Ung.config.administration.view.Admin', {
     },
 
     items: [{
-        xtype: 'rules',
+        xtype: 'ungrid',
         border: false,
         title: 'Admin Accounts'.t(),
         region: 'center',
@@ -296,7 +299,9 @@ Ext.define('Ung.config.administration.view.Admin', {
         // tbar: ['@addAccount'],
         bind: '{accounts}',
 
-        // tbar: ['@add'],
+
+        listProperty: 'adminSettings.users.list',
+        tbar: ['@add'],
         recordActions: ['@delete'],
 
         emptyRow: {
@@ -314,36 +319,15 @@ Ext.define('Ung.config.administration.view.Admin', {
         columns: [{
             header: 'Username'.t(),
             width: 150,
-            dataIndex: 'username',
-            editor: {
-                xtype: 'textfield',
-                bind: '{record.username}',
-                fieldLabel: 'Username'.t(),
-                allowBlank: false,
-                emptyText: '[enter username]'.t(),
-                blankText: 'The username cannot be blank.'.t()
-            }
+            dataIndex: 'username'
         }, {
             header: 'Description'.t(),
             flex: 1,
-            dataIndex: 'description',
-            editor: {
-                xtype: 'textfield',
-                bind: '{record.description}',
-                fieldLabel: 'Description'.t(),
-                emptyText: '[enter description]'.t()
-            }
+            dataIndex: 'description'
         }, {
             header: 'Email Address'.t(),
             width: 150,
-            dataIndex: 'emailAddress',
-            editor: {
-                xtype: 'textfield',
-                bind: '{record.emailAddress}',
-                fieldLabel: 'Email Address'.t(),
-                emptyText: '[no email]'.t(),
-                vtype: 'email'
-            }
+            dataIndex: 'emailAddress'
         }, {
             header: 'Email Alerts'.t(),
             dataIndex: 'emailAlerts',
@@ -365,25 +349,34 @@ Ext.define('Ung.config.administration.view.Admin', {
             width: 130,
             iconCls: 'fa fa-lock',
             handler: 'changePassword'
+        }],
+        editorFields: [{
+            xtype: 'textfield',
+            bind: '{record.username}',
+            fieldLabel: 'Username'.t(),
+            allowBlank: false,
+            emptyText: '[enter username]'.t(),
+            blankText: 'The username cannot be blank.'.t()
+        },
+        Fields.description, {
+            xtype: 'textfield',
+            bind: '{record.emailAddress}',
+            fieldLabel: 'Email Address'.t(),
+            emptyText: '[no email]'.t(),
+            vtype: 'email'
         }, {
-            hidden: true,
-            editor: {
-                xtype: 'textfield',
-                inputType: 'password',
-                bind: '{record.password}',
-                fieldLabel: 'Password'.t(),
-                allowBlank: false,
-                minLength: 3,
-                minLengthText: Ext.String.format('The password is shorter than the minimum {0} characters.'.t(), 3)
-            }
+            xtype: 'textfield',
+            inputType: 'password',
+            bind: '{record.password}',
+            fieldLabel: 'Password'.t(),
+            allowBlank: false,
+            minLength: 3,
+            minLengthText: Ext.String.format('The password is shorter than the minimum {0} characters.'.t(), 3)
         }, {
-            hidden: true,
-            editor: {
-                xtype: 'textfield',
-                inputType: 'password',
-                fieldLabel: 'Confirm Password'.t(),
-                allowBlank: false
-            }
+            xtype: 'textfield',
+            inputType: 'password',
+            fieldLabel: 'Confirm Password'.t(),
+            allowBlank: false
         }]
     }, {
         xtype: 'panel',
@@ -492,7 +485,7 @@ Ext.define('Ung.config.administration.view.Certificates', {
         }]
     }, {
         title: 'Server Certificates'.t(),
-        xtype: 'rules',
+        xtype: 'ungrid',
         region: 'south',
         height: '40%',
         split: true,

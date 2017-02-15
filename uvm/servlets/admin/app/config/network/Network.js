@@ -10,7 +10,7 @@ Ext.define('Ung.config.network.Network', {
         // 'Ung.store.RuleConditions',
         'Ung.store.Rule',
         'Ung.model.Rule',
-        'Ung.cmp.Rules'
+        'Ung.cmp.Grid'
     ],
 
     controller: 'config.network',

@@ -4,10 +4,10 @@ Ext.define ('Ung.model.Rule', {
     alias: 'model.rule',
 
     fields: [
-        { name: 'ruleId', type: 'auto', defaultValue: null },
-        { name: 'description', type: 'string', defaultValue: '' },
-        { name: 'enabled', type: 'boolean', defaultValue: true },
-        { name: 'conditions', type: 'auto' },
+        // { name: 'ruleId', type: 'auto', defaultValue: null },
+        // { name: 'description', type: 'string', defaultValue: '' },
+        // { name: 'enabled', type: 'boolean', defaultValue: true },
+        // { name: 'conditions', type: 'auto' },
 
         { name: 'markedForDelete', defaultValue: false },
         { name: 'markedForNew', defaultValue: false }
