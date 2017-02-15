@@ -45,7 +45,10 @@ Ext.define('Ung.config.administration.view.Certificates', {
             items: [{
                 xtype: 'button',
                 iconCls: 'fa fa-certificate',
-                text: 'Generate Certificate Authority'
+                text: 'Generate Certificate Authority',
+                certMode: 'ROOT',
+                hostName: null,
+                handler: 'generateCertificate'
             }, {
                 xtype: 'component',
                 style: { fontSize: '11px', color: '#999' },
@@ -73,58 +76,74 @@ Ext.define('Ung.config.administration.view.Certificates', {
         }]
     }, {
         title: 'Server Certificates'.t(),
-        xtype: 'ungrid',
         region: 'south',
         height: '40%',
         split: true,
-        tbar: [{
-            xtype: 'tbtext',
-            html: '<p>The Server Certificates list is used to select the SSL certificate to be used for each service provided by this server.The <B>HTTPS</B> column selects the certificate used by the internal web server.  The <B>SMTPS</B> column selects the certificate to use for SMTP+STARTTLS when using SSL Inspector to scan inbound email.  The <B>IPSEC</B> column selects the certificate to use for the IPsec IKEv2 VPN server.'.t()
-        }],
 
-        bind: '{certificates}',
+        layout: {
+            type: 'vbox',
+            align: 'stretch'
+        },
 
-        bbar: [{
-            text: 'Generate Server Certificate'.t(),
-            handler: 'generateServerCert',
-            iconCls: 'fa fa-certificate'
+        items: [{
+            xtype: 'component',
+            padding: 10,
+            html: 'The Server Certificates list is used to select the SSL certificate to be used for each service provided by this server.  The <B>HTTPS</B> column selects the certificate used by the internal web server.  The <B>SMTPS</B> column selects the certificate to use for SMTP+STARTTLS when using SSL Inspector to scan inbound email.  The <B>IPSEC</B> column selects the certificate to use for the IPsec IKEv2 VPN server.'.t()
         }, {
-            text: 'Upload Server Certificate'.t(),
-            handler: 'generateServerCert',
-            iconCls: 'fa fa-upload'
-        }, {
-            text: 'Create Certificate Signing Request'.t(),
-            handler: 'generateServerCert',
-            iconCls: 'fa fa-certificate'
-        }],
+            xtype: 'ungrid',
+            flex: 1,
+            bind: '{certificates}',
 
-        columns: [{
-            header: 'Subject'.t(),
-            dataIndex: 'certSubject'
-        }, {
-            header: 'Issued By'.t(),
-            dataIndex: 'certIssuer'
-        }, {
-            header: 'Date Valid'.t(),
-            dataIndex: 'dateValid'
-        }, {
-            header: 'Date Expires'.t(),
-            dataIndex: 'dateExpires'
-        }, {
-            header: 'HTTPS'.t(),
-            xtype: 'checkcolumn',
-            width: 80,
-            dataIndex: 'httpsServer'
-        }, {
-            header: 'SMTPS'.t(),
-            xtype: 'checkcolumn',
-            width: 80,
-            dataIndex: 'smtpsServer'
-        }, {
-            header: 'IPSEC'.t(),
-            xtype: 'checkcolumn',
-            width: 80,
-            dataIndex: 'ipsecServer'
+            listProperty: 'serverCertificates.list',
+
+            recordActions: ['@delete'],
+
+            bbar: [{
+                text: 'Generate Server Certificate'.t(),
+                handler: 'generateServerCert',
+                iconCls: 'fa fa-certificate'
+            }, {
+                text: 'Upload Server Certificate'.t(),
+                handler: 'generateServerCert',
+                iconCls: 'fa fa-upload'
+            }, {
+                text: 'Create Certificate Signing Request'.t(),
+                handler: 'generateServerCert',
+                iconCls: 'fa fa-certificate'
+            }],
+
+            columns: [{
+                header: 'Subject'.t(),
+                dataIndex: 'certSubject',
+                width: 220
+            }, {
+                header: 'Issued By'.t(),
+                flex: 1,
+                dataIndex: 'certIssuer'
+            }, {
+                header: 'Date Valid'.t(),
+                width: 140,
+                dataIndex: 'dateValid'
+            }, {
+                header: 'Date Expires'.t(),
+                width: 140,
+                dataIndex: 'dateExpires'
+            }, {
+                header: 'HTTPS'.t(),
+                xtype: 'checkcolumn',
+                width: 80,
+                dataIndex: 'httpsServer'
+            }, {
+                header: 'SMTPS'.t(),
+                xtype: 'checkcolumn',
+                width: 80,
+                dataIndex: 'smtpsServer'
+            }, {
+                header: 'IPSEC'.t(),
+                xtype: 'checkcolumn',
+                width: 80,
+                dataIndex: 'ipsecServer'
+            }]
         }]
     }, {
         region: 'east',

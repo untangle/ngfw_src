@@ -9,7 +9,6 @@ Ext.define('Ung.view.dashboard.Dashboard', {
         'Ung.view.dashboard.DashboardController',
         'Ung.view.dashboard.Queue',
         'Ung.widget.Report',
-        'Ung.view.grid.ActionColumn',
 
         'Ung.widget.WidgetController',
         'Ung.widget.Information',

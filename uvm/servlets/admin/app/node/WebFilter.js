@@ -4,7 +4,6 @@ Ext.define('Ung.node.WebFilter', {
     layout: 'fit',
     requires: [
         'Ung.view.grid.Grid',
-        'Ung.view.grid.ActionColumn',
         'Ung.model.GenericRule'
     ],
 

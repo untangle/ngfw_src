@@ -66,6 +66,70 @@ Ext.define('Ung.config.administration.AdministrationController', {
         }
     },
 
+    countries: [
+        [ 'US', 'United States'.t() ], [ 'AF', 'Afghanistan'.t() ], [ 'AL', 'Albania'.t() ], [ 'DZ', 'Algeria'.t() ],
+        [ 'AS', 'American Samoa'.t() ], [ 'AD', 'Andorra'.t() ], [ 'AO', 'Angola'.t() ], [ 'AI', 'Anguilla'.t() ],
+        [ 'AQ', 'Antarctica'.t() ], [ 'AG', 'Antigua and Barbuda'.t() ], [ 'AR', 'Argentina'.t() ], [ 'AM', 'Armenia'.t() ],
+        [ 'AW', 'Aruba'.t() ], [ 'AU', 'Australia'.t() ], [ 'AT', 'Austria'.t() ], [ 'AZ', 'Azerbaijan'.t() ],
+        [ 'BS', 'Bahamas'.t() ], [ 'BH', 'Bahrain'.t() ], [ 'BD', 'Bangladesh'.t() ], [ 'BB', 'Barbados'.t() ],
+        [ 'BY', 'Belarus'.t() ], [ 'BE', 'Belgium'.t() ], [ 'BZ', 'Belize'.t() ], [ 'BJ', 'Benin'.t() ], [ 'BM', 'Bermuda'.t() ],
+        [ 'BT', 'Bhutan'.t() ], [ 'BO', 'Bolivia'.t() ], [ 'BA', 'Bosnia and Herzegovina'.t() ], [ 'BW', 'Botswana'.t() ],
+        [ 'BV', 'Bouvet Island'.t() ], [ 'BR', 'Brazil'.t() ], [ 'IO', 'British Indian Ocean Territory'.t() ],
+        [ 'VG', 'British Virgin Islands'.t() ], [ 'BN', 'Brunei'.t() ], [ 'BG', 'Bulgaria'.t() ], [ 'BF', 'Burkina Faso'.t() ],
+        [ 'BI', 'Burundi'.t() ], [ 'KH', 'Cambodia'.t() ], [ 'CM', 'Cameroon'.t() ], [ 'CA', 'Canada'.t() ],
+        [ 'CV', 'Cape Verde'.t() ], [ 'KY', 'Cayman Islands'.t() ], [ 'CF', 'Central African Republic'.t() ],
+        [ 'TD', 'Chad'.t() ], [ 'CL', 'Chile'.t() ], [ 'CN', 'China'.t() ], [ 'CX', 'Christmas Island'.t() ],
+        [ 'CC', 'Cocos Islands'.t() ], [ 'CO', 'Colombia'.t() ], [ 'KM', 'Comoros'.t() ], [ 'CG', 'Congo - Brazzaville'.t() ],
+        [ 'CK', 'Cook Islands'.t() ], [ 'CR', 'Costa Rica'.t() ], [ 'HR', 'Croatia'.t() ], [ 'CU', 'Cuba'.t() ],
+        [ 'CY', 'Cyprus'.t() ], [ 'CZ', 'Czech Republic'.t() ], [ 'DK', 'Denmark'.t() ], [ 'DJ', 'Djibouti'.t() ],
+        [ 'DM', 'Dominica'.t() ], [ 'DO', 'Dominican Republic'.t() ], [ 'EC', 'Ecuador'.t() ], [ 'EG', 'Egypt'.t() ],
+        [ 'SV', 'El Salvador'.t() ], [ 'GQ', 'Equatorial Guinea'.t() ], [ 'ER', 'Eritrea'.t() ], [ 'EE', 'Estonia'.t() ],
+        [ 'ET', 'Ethiopia'.t() ], [ 'FK', 'Falkland Islands'.t() ], [ 'FO', 'Faroe Islands'.t() ], [ 'FJ', 'Fiji'.t() ],
+        [ 'FI', 'Finland'.t() ], [ 'FR', 'France'.t() ], [ 'GF', 'French Guiana'.t() ], [ 'PF', 'French Polynesia'.t() ],
+        [ 'TF', 'French Southern Territories'.t() ], [ 'GA', 'Gabon'.t() ], [ 'GM', 'Gambia'.t() ], [ 'GE', 'Georgia'.t() ],
+        [ 'DE', 'Germany'.t() ], [ 'GH', 'Ghana'.t() ], [ 'GI', 'Gibraltar'.t() ], [ 'GR', 'Greece'.t() ],
+        [ 'GL', 'Greenland'.t() ], [ 'GD', 'Grenada'.t() ], [ 'GP', 'Guadeloupe'.t() ], [ 'GU', 'Guam'.t() ],
+        [ 'GT', 'Guatemala'.t() ], [ 'GN', 'Guinea'.t() ], [ 'GW', 'Guinea-Bissau'.t() ], [ 'GY', 'Guyana'.t() ],
+        [ 'HT', 'Haiti'.t() ], [ 'HM', 'Heard Island and McDonald Islands'.t() ], [ 'HN', 'Honduras'.t() ],
+        [ 'HK', 'Hong Kong SAR China'.t() ], [ 'HU', 'Hungary'.t() ], [ 'IS', 'Iceland'.t() ], [ 'IN', 'India'.t() ],
+        [ 'ID', 'Indonesia'.t() ], [ 'IR', 'Iran'.t() ], [ 'IQ', 'Iraq'.t() ], [ 'IE', 'Ireland'.t() ],
+        [ 'IL', 'Israel'.t() ], [ 'IT', 'Italy'.t() ], [ 'CI', 'Ivory Coast'.t() ], [ 'JM', 'Jamaica'.t() ],
+        [ 'JP', 'Japan'.t() ], [ 'JO', 'Jordan'.t() ], [ 'KZ', 'Kazakhstan'.t() ], [ 'KE', 'Kenya'.t() ],
+        [ 'KI', 'Kiribati'.t() ], [ 'KW', 'Kuwait'.t() ], [ 'KG', 'Kyrgyzstan'.t() ], [ 'LA', 'Laos'.t() ],
+        [ 'LV', 'Latvia'.t() ], [ 'LB', 'Lebanon'.t() ], [ 'LS', 'Lesotho'.t() ], [ 'LR', 'Liberia'.t() ],
+        [ 'LY', 'Libya'.t() ], [ 'LI', 'Liechtenstein'.t() ], [ 'LT', 'Lithuania'.t() ], [ 'LU', 'Luxembourg'.t() ],
+        [ 'MO', 'Macao SAR China'.t() ], [ 'MK', 'Macedonia'.t() ], [ 'MG', 'Madagascar'.t() ], [ 'MW', 'Malawi'.t() ],
+        [ 'MY', 'Malaysia'.t() ], [ 'MV', 'Maldives'.t() ], [ 'ML', 'Mali'.t() ], [ 'MT', 'Malta'.t() ],
+        [ 'MH', 'Marshall Islands'.t() ], [ 'MQ', 'Martinique'.t() ], [ 'MR', 'Mauritania'.t() ], [ 'MU', 'Mauritius'.t() ],
+        [ 'YT', 'Mayotte'.t() ], [ 'FX', 'Metropolitan France'.t() ], [ 'MX', 'Mexico'.t() ], [ 'FM', 'Micronesia'.t() ],
+        [ 'MD', 'Moldova'.t() ], [ 'MC', 'Monaco'.t() ], [ 'MN', 'Mongolia'.t() ], [ 'MS', 'Montserrat'.t() ],
+        [ 'MA', 'Morocco'.t() ], [ 'MZ', 'Mozambique'.t() ], [ 'MM', 'Myanmar'.t() ], [ 'NA', 'Namibia'.t() ],
+        [ 'NR', 'Nauru'.t() ], [ 'NP', 'Nepal'.t() ], [ 'NL', 'Netherlands'.t() ], [ 'AN', 'Netherlands Antilles'.t() ],
+        [ 'NC', 'New Caledonia'.t() ], [ 'NZ', 'New Zealand'.t() ], [ 'NI', 'Nicaragua'.t() ], [ 'NE', 'Niger'.t() ],
+        [ 'NG', 'Nigeria'.t() ], [ 'NU', 'Niue'.t() ], [ 'NF', 'Norfolk Island'.t() ], [ 'KP', 'North Korea'.t() ],
+        [ 'MP', 'Northern Mariana Islands'.t() ], [ 'NO', 'Norway'.t() ], [ 'OM', 'Oman'.t() ], [ 'PK', 'Pakistan'.t() ],
+        [ 'PW', 'Palau'.t() ], [ 'PA', 'Panama'.t() ], [ 'PG', 'Papua New Guinea'.t() ], [ 'PY', 'Paraguay'.t() ],
+        [ 'PE', 'Peru'.t() ], [ 'PH', 'Philippines'.t() ], [ 'PN', 'Pitcairn'.t() ], [ 'PL', 'Poland'.t() ],
+        [ 'PT', 'Portugal'.t() ], [ 'PR', 'Puerto Rico'.t() ], [ 'QA', 'Qatar'.t() ], [ 'RE', 'Reunion'.t() ],
+        [ 'RO', 'Romania'.t() ], [ 'RU', 'Russia'.t() ], [ 'RW', 'Rwanda'.t() ], [ 'SH', 'Saint Helena'.t() ],
+        [ 'KN', 'Saint Kitts and Nevis'.t() ], [ 'LC', 'Saint Lucia'.t() ], [ 'PM', 'Saint Pierre and Miquelon'.t() ],
+        [ 'VC', 'Saint Vincent and the Grenadines'.t() ], [ 'WS', 'Samoa'.t() ], [ 'SM', 'San Marino'.t() ],
+        [ 'ST', 'Sao Tome and Principe'.t() ], [ 'SA', 'Saudi Arabia'.t() ], [ 'SN', 'Senegal'.t() ], [ 'SC', 'Seychelles'.t() ],
+        [ 'SL', 'Sierra Leone'.t() ], [ 'SG', 'Singapore'.t() ], [ 'SK', 'Slovakia'.t() ], [ 'SI', 'Slovenia'.t() ],
+        [ 'SB', 'Solomon Islands'.t() ], [ 'SO', 'Somalia'.t() ], [ 'ZA', 'South Africa'.t() ],
+        [ 'GS', 'South Georgia and the South Sandwich Islands'.t() ], [ 'KR', 'South Korea'.t() ], [ 'ES', 'Spain'.t() ],
+        [ 'LK', 'Sri Lanka'.t() ], [ 'SD', 'Sudan'.t() ], [ 'SR', 'Suriname'.t() ], [ 'SJ', 'Svalbard and Jan Mayen'.t() ],
+        [ 'SZ', 'Swaziland'.t() ], [ 'SE', 'Sweden'.t() ], [ 'CH', 'Switzerland'.t() ], [ 'SY', 'Syria'.t() ],
+        [ 'TW', 'Taiwan'.t() ], [ 'TJ', 'Tajikistan'.t() ], [ 'TZ', 'Tanzania'.t() ], [ 'TH', 'Thailand'.t() ],
+        [ 'TG', 'Togo'.t() ], [ 'TK', 'Tokelau'.t() ], [ 'TO', 'Tonga'.t() ], [ 'TT', 'Trinidad and Tobago'.t() ],
+        [ 'TN', 'Tunisia'.t() ], [ 'TR', 'Turkey'.t() ], [ 'TM', 'Turkmenistan'.t() ], [ 'TC', 'Turks and Caicos Islands'.t() ],
+        [ 'TV', 'Tuvalu'.t() ], [ 'VI', 'U.S. Virgin Islands'.t() ], [ 'UG', 'Uganda'.t() ], [ 'UA', 'Ukraine'.t() ],
+        [ 'AE', 'United Arab Emirates'.t() ], [ 'GB', 'United Kingdom'.t() ], [ 'UM', 'United States Minor Outlying Islands'.t() ],
+        [ 'UY', 'Uruguay'.t() ], [ 'UZ', 'Uzbekistan'.t() ], [ 'VU', 'Vanuatu'.t() ], [ 'VA', 'Vatican'.t() ],
+        [ 'VE', 'Venezuela'.t() ], [ 'VN', 'Vietnam'.t() ], [ 'WF', 'Wallis and Futuna'.t() ], [ 'EH', 'Western Sahara'.t() ],
+        [ 'YE', 'Yemen'.t() ], [ 'ZM', 'Zambia'.t() ], [ 'ZW', 'Zimbabwe'.t() ]
+    ],
+
     onTabChange: function (tabPanel, newCard) {
         // window.location.hash = '#config/administration/' + newCard.getItemId();
         // Ung.app.redirectTo('#config/administration/' + newCard.getItemId(), false);
@@ -218,7 +282,124 @@ Ext.define('Ung.config.administration.AdministrationController', {
     },
 
 
+    generateCertificate: function (btn) {
+        var me = this,
+            certMode = btn.certMode,
+            hostName = btn.hostName,
+            netStatus, addressList, i;
 
+        try {
+            netStatus = rpc.networkManager.getInterfaceStatus();
+        } catch (e) {
+            Ung.Util.exceptionToast(e);
+        }
+
+        addressList = "";
+        addressList += hostName;
+
+        for (i = 0; i < netStatus.list.length; i++) {
+            var netItem = netStatus.list[i];
+            if (netItem.v4Address === null) { continue; }
+            addressList += ',';
+            addressList += netItem.v4Address;
+        }
+
+        Ext.create('Ext.Window', {
+            title: btn.getText(),
+            layout: 'fit',
+            width: 600,
+            autoShow: true,
+            // height: (certMode === "ROOT" ? 320 : 360),
+            height: 320,
+            border: true,
+            modal: true,
+            items: [{
+                xtype: 'form',
+                layout: 'anchor',
+                border: false,
+                bodyPadding: 10,
+                defaults: {
+                    anchor: '100%',
+                    labelWidth: 150,
+                    labelAlign: 'right'
+                    // listeners: {
+                    //     render: helptipRenderer
+                    // }
+                },
+                items: [{
+                    xtype: 'combo',
+                    fieldLabel: 'Country'.t() + ' (C)',
+                    // helptip: 'Select the country in which your organization is legally registered."),
+                    allowBlank: true,
+                    store: me.countries,
+                    queryMode: 'local',
+                    editable: false
+                }, {
+                    xtype: 'textfield',
+                    fieldLabel: 'State/Province'.t() + ' (ST)',
+                    // name: "State',
+                    // helptip: i18n._('Name of state, province, region, territory where your organization is located. Please enter the full name. Do not abbreviate.'),
+                    allowBlank: false
+                }, {
+                    xtype: 'textfield',
+                    fieldLabel: 'City/Locality'.t() + ' (L)',
+                    // name: "Locality',
+                    // helptip: i18n._('Name of the city/locality in which your organization is registered/located. Please spell out the name of the city/locality. Do not abbreviate.'),
+                    allowBlank: false
+                }, {
+                    xtype: 'textfield',
+                    fieldLabel: 'Organization'.t() + ' (O)',
+                    // name: "Organization',
+                    // helptip: 'The name under which your business is legally registered. The listed organization must be the legal registrant of the domain name in the certificate request. If you are enrolling as a small business/sole proprietor, please enter the certificate requester's name in the Organization field, and the DBA (doing business as) name in the Organizational Unit field."),
+                    allowBlank: false
+                }, {
+                    xtype: 'textfield',
+                    fieldLabel: 'Organizational Unit'.t() + ' (OU)',
+                    // name: "OrganizationalUnit',
+                    // helptip: 'Optional. Use this field to differentiate between divisions within an organization. If applicable, you may enter the DBA (doing business as) name in this field."),
+                    allowBlank: true
+                }, {
+                    xtype: 'textfield',
+                    fieldLabel: 'Common Name'.t() + ' (CN)',
+                    // name: "CommonName',
+                    // helptip: 'The name entered in the CN (common name) field MUST be the fully-qualified domain name of the website for which you will be using the certificate (example.com). Do not include the http:// or https:// prefixes in your common name. Do NOT enter your personal name in this field."),
+                    allowBlank: false,
+                    // value: hostName
+                }, {
+                    xtype: 'textfield',
+                    fieldLabel: 'Subject Alternative Names'.t(),
+                    // name: "AltNames',
+                    // helptip: 'Optional. Use this field to enter a comma seperated list of one or more alternative host names or IP addresses that may be used to access the website for which you will be using the certificate."),
+                    allowBlank: true,
+                    value: (certMode === 'ROOT' ? '' : addressList),
+                    hidden: certMode === 'ROOT'
+                }],
+                buttons: [{
+                    xtype: 'button',
+                    text: 'Generate'.t(),
+                    name: 'Accept',
+                    width: 120,
+                    formBind: true,
+                    handler: Ext.bind(function() {
+                        // this.certGeneratorWorker(certMode);
+                    }, this)
+                },{
+                    xtype: 'button',
+                    text: 'Cancel'.t(),
+                    name: 'Cancel',
+                    width: 120,
+                    handler: Ext.bind(function() {
+                        // this.certGeneratorWindow.close();
+                    }, this)
+                }]
+            }]
+        });
+
+    },
+
+    // generateCertificate: function () {
+
+    // },
 
 
 
@@ -286,19 +467,13 @@ Ext.define('Ung.config.administration.view.Admin', {
     title: 'Admin'.t(),
     layout: 'border',
 
-    actions: {
-        addAccount: { text: 'Add Account'.t(), iconCls: 'fa fa-plus', handler: 'addAccount' },
-    },
-
     items: [{
         xtype: 'ungrid',
-        border: false,
+        // border: false,
         title: 'Admin Accounts'.t(),
         region: 'center',
 
-        // tbar: ['@addAccount'],
         bind: '{accounts}',
-
 
         listProperty: 'adminSettings.users.list',
         tbar: ['@add'],
@@ -457,7 +632,10 @@ Ext.define('Ung.config.administration.view.Certificates', {
             items: [{
                 xtype: 'button',
                 iconCls: 'fa fa-certificate',
-                text: 'Generate Certificate Authority'
+                text: 'Generate Certificate Authority',
+                certMode: 'ROOT',
+                hostName: null,
+                handler: 'generateCertificate'
             }, {
                 xtype: 'component',
                 style: { fontSize: '11px', color: '#999' },
@@ -485,58 +663,74 @@ Ext.define('Ung.config.administration.view.Certificates', {
         }]
     }, {
         title: 'Server Certificates'.t(),
-        xtype: 'ungrid',
         region: 'south',
         height: '40%',
         split: true,
-        tbar: [{
-            xtype: 'tbtext',
-            html: '<p>The Server Certificates list is used to select the SSL certificate to be used for each service provided by this server.The <B>HTTPS</B> column selects the certificate used by the internal web server.  The <B>SMTPS</B> column selects the certificate to use for SMTP+STARTTLS when using SSL Inspector to scan inbound email.  The <B>IPSEC</B> column selects the certificate to use for the IPsec IKEv2 VPN server.'.t()
-        }],
 
-        bind: '{certificates}',
+        layout: {
+            type: 'vbox',
+            align: 'stretch'
+        },
 
-        bbar: [{
-            text: 'Generate Server Certificate'.t(),
-            handler: 'generateServerCert',
-            iconCls: 'fa fa-certificate'
+        items: [{
+            xtype: 'component',
+            padding: 10,
+            html: 'The Server Certificates list is used to select the SSL certificate to be used for each service provided by this server.  The <B>HTTPS</B> column selects the certificate used by the internal web server.  The <B>SMTPS</B> column selects the certificate to use for SMTP+STARTTLS when using SSL Inspector to scan inbound email.  The <B>IPSEC</B> column selects the certificate to use for the IPsec IKEv2 VPN server.'.t()
         }, {
-            text: 'Upload Server Certificate'.t(),
-            handler: 'generateServerCert',
-            iconCls: 'fa fa-upload'
-        }, {
-            text: 'Create Certificate Signing Request'.t(),
-            handler: 'generateServerCert',
-            iconCls: 'fa fa-certificate'
-        }],
+            xtype: 'ungrid',
+            flex: 1,
+            bind: '{certificates}',
 
-        columns: [{
-            header: 'Subject'.t(),
-            dataIndex: 'certSubject'
-        }, {
-            header: 'Issued By'.t(),
-            dataIndex: 'certIssuer'
-        }, {
-            header: 'Date Valid'.t(),
-            dataIndex: 'dateValid'
-        }, {
-            header: 'Date Expires'.t(),
-            dataIndex: 'dateExpires'
-        }, {
-            header: 'HTTPS'.t(),
-            xtype: 'checkcolumn',
-            width: 80,
-            dataIndex: 'httpsServer'
-        }, {
-            header: 'SMTPS'.t(),
-            xtype: 'checkcolumn',
-            width: 80,
-            dataIndex: 'smtpsServer'
-        }, {
-            header: 'IPSEC'.t(),
-            xtype: 'checkcolumn',
-            width: 80,
-            dataIndex: 'ipsecServer'
+            listProperty: 'serverCertificates.list',
+
+            recordActions: ['@delete'],
+
+            bbar: [{
+                text: 'Generate Server Certificate'.t(),
+                handler: 'generateServerCert',
+                iconCls: 'fa fa-certificate'
+            }, {
+                text: 'Upload Server Certificate'.t(),
+                handler: 'generateServerCert',
+                iconCls: 'fa fa-upload'
+            }, {
+                text: 'Create Certificate Signing Request'.t(),
+                handler: 'generateServerCert',
+                iconCls: 'fa fa-certificate'
+            }],
+
+            columns: [{
+                header: 'Subject'.t(),
+                dataIndex: 'certSubject',
+                width: 220
+            }, {
+                header: 'Issued By'.t(),
+                flex: 1,
+                dataIndex: 'certIssuer'
+            }, {
+                header: 'Date Valid'.t(),
+                width: 140,
+                dataIndex: 'dateValid'
+            }, {
+                header: 'Date Expires'.t(),
+                width: 140,
+                dataIndex: 'dateExpires'
+            }, {
+                header: 'HTTPS'.t(),
+                xtype: 'checkcolumn',
+                width: 80,
+                dataIndex: 'httpsServer'
+            }, {
+                header: 'SMTPS'.t(),
+                xtype: 'checkcolumn',
+                width: 80,
+                dataIndex: 'smtpsServer'
+            }, {
+                header: 'IPSEC'.t(),
+                xtype: 'checkcolumn',
+                width: 80,
+                dataIndex: 'ipsecServer'
+            }]
         }]
     }, {
         region: 'east',
