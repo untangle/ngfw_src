@@ -399,7 +399,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         /**
          * Report updates
          */
-        // ReportsManagerImpl.getInstance().updateSystemReportEntries( settings.getReportEntries(), true );
+        ReportsManagerImpl.getInstance().updateSystemReportEntries( settings.getReportEntries(), true );
         
         /* sync settings to disk if necessary */
         File settingsFile = new File( settingsFileName );

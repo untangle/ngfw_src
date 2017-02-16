@@ -3354,6 +3354,44 @@ Ext.define('Ung.TableConfig', {
                     dataIndex: "json"
                 }]
             },
+            syslog: {
+                fields: [{
+                    name: "time_stamp",
+                    sortType: 'asTimestamp'
+                },{
+                    name: "description"
+                },{
+                    name: "summary_text"
+                },{
+                    name: "json"
+                }],
+                // the list of columns
+                columns: [{
+                    header: i18n._("Timestamp"),
+                    width: Ung.TableConfig.timestampFieldWidth,
+                    sortable: true,
+                    dataIndex: 'time_stamp',
+                    renderer: function(value) {
+                        return i18n.timestampFormat(value);
+                    }
+                },{
+                    header: i18n._("Description"),
+                    width: 200,
+                    sortable: true,
+                    dataIndex: "description"
+                },{
+                    header: i18n._("Summary Text"),
+                    flex: 1,
+                    width: 500,
+                    sortable: true,
+                    dataIndex: "summary_text"
+                },{
+                    header: i18n._("JSON"),
+                    width: 500,
+                    sortable: true,
+                    dataIndex: "json"
+                }]
+            },
             ftp_events: {
                 fields: [{
                     name: 'event_id'
