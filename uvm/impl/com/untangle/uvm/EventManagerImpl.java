@@ -499,16 +499,9 @@ public class EventManagerImpl implements EventManager
 
     private static boolean sendEmailForEvent( AlertRule rule, LogEvent event )
     {
-        if ( rule.getLimitFrequency() && rule.getLimitFrequencyMinutes() > 0 ) {
-            long currentTime = System.currentTimeMillis();
-            long lastEventTime = rule.lastEventTime();
-            long secondsSinceLastEvent = ( currentTime - lastEventTime ) / 1000;
-            // if not enough time has elapsed, just return
-            if ( secondsSinceLastEvent < ( rule.getLimitFrequencyMinutes() * 60 ) )
-                return false;
+        if(rule.frequencyCheck() == false){
+            return false;
         }
-
-        rule.updateEventTime();
 
         String companyName = UvmContextFactory.context().brandingManager().getCompanyName();
         String hostName = UvmContextFactory.context().networkManager().getNetworkSettings().getHostName();

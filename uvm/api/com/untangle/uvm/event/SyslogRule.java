@@ -32,13 +32,12 @@ public class SyslogRule extends EventRule
     public SyslogRule( boolean enabled, List<EventRuleCondition> conditions, boolean log, boolean syslog, String description, boolean frequencyLimit, int frequencyMinutes,
                       Boolean thresholdEnabled, Double thresholdLimit, Integer thresholdTimeframeSec, String thresholdGroupingField )
     {
-        super(enabled, conditions, log, false, description, frequencyLimit, frequencyMinutes,
-                    thresholdEnabled,  thresholdLimit, thresholdTimeframeSec, thresholdGroupingField);
+        super(enabled, conditions, log, description, thresholdEnabled,  thresholdLimit, thresholdTimeframeSec, thresholdGroupingField);
         this.setSyslog( syslog );
     }
-    public SyslogRule( boolean enabled, List<EventRuleCondition> conditions, boolean log, boolean event, String description, boolean frequencyLimit, int frequencyMinutes )
+    public SyslogRule( boolean enabled, List<EventRuleCondition> conditions, boolean log, boolean syslog, String description, boolean frequencyLimit, int frequencyMinutes )
     {
-        this(enabled, conditions, log, event, description, frequencyLimit, frequencyMinutes, null, null, null, null);
+        this(enabled, conditions, log, syslog, description, frequencyLimit, frequencyMinutes, null, null, null, null);
     }
 
     public Boolean getSyslog() { return syslog; }
