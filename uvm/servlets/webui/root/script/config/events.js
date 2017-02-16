@@ -4,7 +4,6 @@ Ext.define('Webui.config.events', {
     hasReports: true,
     reportCategory: 'Events',
     panelAlertRules: null,
-    panelLogRules: null,
     panelSyslog: null,
     initComponent: function() {
         this.breadcrumbs = [{
@@ -17,10 +16,9 @@ Ext.define('Webui.config.events', {
         }];
 
         this.buildAlertRules();
-        this.buildLogRules();
         this.buildSyslog();
 
-        this.buildTabPanel([this.panelAlertRules, this.panelLogRules, this.panelSyslog]);
+        this.buildTabPanel([this.panelAlertRules, this.panelSyslog]);
 
         this.tabs.setActiveTab(this.panelAlertRules);
         this.callParent(arguments);
@@ -59,16 +57,16 @@ Ext.define('Webui.config.events', {
                 xtype: 'fieldset',
                 title: i18n._('Note'),
                 flex: 0,
-                html: " " + i18n._("<b>Event Rules</b> process all events to log and/or event administrators when special or noteworthy events occur.")
+                html: " " + i18n._("<b>Alert Rules</b> process all events to log and/or administrators when special or noteworthy events occur.")
             },  this.gridAlertRules= Ext.create('Ung.grid.Panel',{
                 flex: 1,
-                name: 'Event Rules',
+                name: 'Alert Rules',
                 settingsCmp: this,
                 hasReorder: true,
                 addAtTop: false,
                 title: i18n._("Event Rules"),
                 dataExpression: "getEventSettings().alertRules.list",
-                recordJavaClass: "com.untangle.uvm.event.EventRule",
+                recordJavaClass: "com.untangle.uvm.event.AlertRule",
                 hasCopy: true,
                 copyNameField: 'description',
                 copyIdField: 'ruleId',
@@ -83,6 +81,10 @@ Ext.define('Webui.config.events', {
                     name: 'ruleId'
                 }, {
                     name: 'enabled'
+                }, {
+                    name: 'log'
+                }, {
+                    name: 'email'
                 }, {
                     name: 'limitFrequency'
                 }, {
@@ -130,6 +132,16 @@ Ext.define('Webui.config.events', {
                         allowBlank: false,
                         blankText: i18n._("The description cannot be blank.")
                     }
+                }, {
+                     xtype:'checkcolumn',
+                     header: i18n._("Log"),
+                     dataIndex: 'log',
+                     width:150
+                 }, {
+                     xtype:'checkcolumn',
+                     header: i18n._("Send Email"),
+                     dataIndex: 'email',
+                     width:150
                 }]
             })]
         });
@@ -208,34 +220,59 @@ Ext.define('Webui.config.events', {
                 }]
             }, {
                 xtype: 'fieldset',
-                title: i18n._('Send with the following options:'),
-                items: [{
+                title: i18n._('Perform the following action(s):'),
+                items:[{
                     xtype:'checkbox',
                     labelWidth: 160,
-                    dataIndex: "limitFrequency",
-                    fieldLabel: i18n._("Limit Send Frequency")
+                    dataIndex: "log",
+                    fieldLabel: i18n._("Log")
+                }, {
+                    xtype:'checkbox',
+                    labelWidth: 160,
+                    dataIndex: "email",
+                    fieldLabel: i18n._("Send Email"),
+                    listeners: {
+                        "change": {
+                            fn: Ext.bind(function(elem, newValue) {
+                                this.gridAlertRules.rowEditor.syncComponents();
+                            }, this)
+                        }
+                    }
                 },{
-                    xtype: 'container',
-                    layout: 'column',
-                    margin: '0 0 5 0',
+                    xtype:'fieldset',
+                    collapsible: false,
                     items: [{
-                        xtype: 'numberfield',
+                        xtype:'checkbox',
                         labelWidth: 160,
-                        width: 230,
-                        dataIndex: "limitFrequencyMinutes",
-                        allowDecimals: false,
-                        allowBlank: false,
-                        minValue: 0,
-                        maxValue: 24*60*7, // 1 weeks
-                        fieldLabel: i18n._('To once per')
-                    }, {
-                        xtype: 'label',
-                        html: i18n._("(minutes)"),
-                        cls: 'boxlabel'
+                        dataIndex: "limitFrequency",
+                        fieldLabel: i18n._("Limit Send Frequency")
+                    },{
+                        xtype: 'container',
+                        layout: 'column',
+                        margin: '0 0 5 0',
+                        items: [{
+                            xtype: 'numberfield',
+                            labelWidth: 160,
+                            width: 230,
+                            dataIndex: "limitFrequencyMinutes",
+                            allowDecimals: false,
+                            allowBlank: false,
+                            minValue: 0,
+                            maxValue: 24*60*7, // 1 weeks
+                            fieldLabel: i18n._('To once per')
+                        }, {
+                            xtype: 'label',
+                            html: i18n._("(minutes)"),
+                            cls: 'boxlabel'
+                        }]
                     }]
                 }]
             }],
             syncComponents: function () {
+                var sendEmail=this.down('checkbox[dataIndex=email]').getValue();
+                this.down('checkbox[dataIndex=limitFrequency]').setDisabled(!sendEmail);
+                this.down('numberfield[dataIndex=limitFrequencyMinutes]').setDisabled(!sendEmail);
+
                 var thresholdEnabled=this.down('checkbox[dataIndex=thresholdEnabled]').getValue();
                 this.down('numberfield[dataIndex=thresholdLimit]').setDisabled(!thresholdEnabled);
                 this.down('numberfield[dataIndex=thresholdTimeframeSec]').setDisabled(!thresholdEnabled);
@@ -243,105 +280,95 @@ Ext.define('Webui.config.events', {
             }
         }));
     },
-    // Log Rules Panel
-    buildLogRules: function() {
-        this.panelLogRules = Ext.create('Ext.panel.Panel',{
-            name: 'logRules',
-            helpSource: 'log_rules',
-            title: i18n._('Log Rules'),
-            layout: { type: 'vbox', align: 'stretch' },
-            cls: 'ung-panel',
-            items: [{
-                xtype: 'fieldset',
-                title: i18n._('Note'),
-                flex: 0,
-                html: " " + i18n._("<b>Event Rules</b> process all events to log and/or event administrators when special or noteworthy events occur.")
-            },  this.gridLogRules= Ext.create('Ung.grid.Panel',{
-                flex: 1,
-                name: 'Log Rules',
-                settingsCmp: this,
-                hasReorder: true,
-                addAtTop: false,
-                title: i18n._("Event Rules"),
-                dataExpression: "getEventSettings().logRules.list",
-                recordJavaClass: "com.untangle.uvm.event.EventRule",
-                hasCopy: true,
-                copyNameField: 'description',
-                copyIdField: 'ruleId',
-                emptyRow: {
-                    "ruleId": null,
-                    "enabled": true,
-                    "log": false,
-                    "remoteLog": false,
-                    "limitFrequency": false,
-                    "limitFrequencyMinutes": 0,
-                    "description": ""
-                },
-                fields: [{
-                    name: 'ruleId'
-                }, {
-                    name: 'enabled'
-                }, {
-                    name: 'log'
-                }, {
-                    name: 'remoteLog'
-                }, {
-                    name: 'thresholdEnabled'
-                }, {
-                    name: 'thresholdLimit'
-                }, {
-                    name: 'thresholdTimeframeSec'
-                }, {
-                    name: 'thresholdGroupingField'
-                }, {
-                    name: 'conditions'
-                },{
-                    name: 'description'
-                }, {
-                    name: 'javaClass'
-                }],
-                columns: [{
-                    header: i18n._("Rule Id"),
-                    width: 50,
-                    dataIndex: 'ruleId',
-                    renderer: function(value) {
-                        if (value < 0) {
-                            return i18n._("new");
-                        } else {
-                            return value;
-                        }
+    // syslog panel
+    buildSyslog: function() {
+        this.gridSyslogRules= Ext.create('Ung.grid.Panel',{
+            flex: 1,
+            name: 'syslogRules',
+            settingsCmp: this,
+            hasReorder: true,
+            addAtTop: false,
+            title: i18n._("Syslog Rules"),
+            dataExpression: "getEventSettings().syslogRules.list",
+            recordJavaClass: "com.untangle.uvm.event.SyslogRule",
+            hasCopy: true,
+            copyNameField: 'description',
+            copyIdField: 'ruleId',
+            disabled: !this.getEventSettings().syslogEnabled,
+            emptyRow: {
+                "ruleId": null,
+                "enabled": true,
+                "log": false,
+                "syslog": false,
+                "limitFrequency": false,
+                "limitFrequencyMinutes": 0,
+                "description": ""
+            },
+            fields: [{
+                name: 'ruleId'
+            }, {
+                name: 'enabled'
+            }, {
+                name: 'log'
+            }, {
+                name: 'syslog'
+            }, {
+                name: 'thresholdEnabled'
+            }, {
+                name: 'thresholdLimit'
+            }, {
+                name: 'thresholdTimeframeSec'
+            }, {
+                name: 'thresholdGroupingField'
+            }, {
+                name: 'conditions'
+            },{
+                name: 'description'
+            }, {
+                name: 'javaClass'
+            }],
+            columns: [{
+                header: i18n._("Rule Id"),
+                width: 50,
+                dataIndex: 'ruleId',
+                renderer: function(value) {
+                    if (value < 0) {
+                        return i18n._("new");
+                    } else {
+                        return value;
                     }
-                }, {
-                    xtype:'checkcolumn',
-                    header: i18n._("Enable"),
-                    dataIndex: 'enabled',
-                    resizable: false,
-                    width:55
-                }, {
-                    header: i18n._("Description"),
-                    width: 200,
-                    dataIndex: 'description',
-                    flex: 1,
-                    editor: {
-                        xtype:'textfield',
-                        emptyText: i18n._("[no description]"),
-                        allowBlank: false,
-                        blankText: i18n._("The description cannot be blank.")
-                    },
-                }, {
-                    xtype:'checkcolumn',
-                    header: i18n._("Log Locally"),
-                    dataIndex: 'log',
-                    width:150
-                }, {
-                    xtype:'checkcolumn',
-                    header: i18n._("Log Remotely"),
-                    dataIndex: 'remoteLog',
-                    width:150
-                }]
-            })]
+                }
+            }, {
+                xtype:'checkcolumn',
+                header: i18n._("Enable"),
+                dataIndex: 'enabled',
+                resizable: false,
+                width:55
+            }, {
+                header: i18n._("Description"),
+                width: 200,
+                dataIndex: 'description',
+                flex: 1,
+                editor: {
+                    xtype:'textfield',
+                    emptyText: i18n._("[no description]"),
+                    allowBlank: false,
+                    blankText: i18n._("The description cannot be blank.")
+                },
+            }, {
+                xtype:'checkcolumn',
+                header: i18n._("Log"),
+                dataIndex: 'log',
+                width:150
+            }, {
+                xtype:'checkcolumn',
+                header: i18n._("Syslog"),
+                dataIndex: 'syslog',
+                width:150
+            }]
         });
-        this.gridLogRules.setRowEditor( Ext.create('Ung.RowEditorWindow',{
+
+        this.gridSyslogRules.setRowEditor( Ext.create('Ung.RowEditorWindow',{
             inputLines: [{
                 xtype:'checkbox',
                 name: "Enable Rule",
@@ -375,7 +402,7 @@ Ext.define('Webui.config.events', {
                     listeners: {
                         "change": {
                             fn: Ext.bind(function(elem, newValue) {
-                                this.gridLogRules.rowEditor.syncComponents();
+                                this.gridSyslogRules.rowEditor.syncComponents();
                             }, this)
                         }
                     }
@@ -421,12 +448,12 @@ Ext.define('Webui.config.events', {
                     xtype:'checkbox',
                     labelWidth: 160,
                     dataIndex: "log",
-                    fieldLabel: i18n._("Log Locally")
-                }, {
+                    fieldLabel: i18n._("Log")
+                },{
                     xtype:'checkbox',
                     labelWidth: 160,
-                    dataIndex: "remoteLog",
-                    fieldLabel: i18n._("Log Remotely")
+                    dataIndex: "syslog",
+                    fieldLabel: i18n._("Syslog")
                 }]
             }],
             syncComponents: function () {
@@ -436,21 +463,19 @@ Ext.define('Webui.config.events', {
                 this.down('textfield[dataIndex=thresholdGroupingField]').setDisabled(!thresholdEnabled);
             }
         }));
-    },
-    // syslog panel
-    buildSyslog: function() {
+ 
         this.panelSyslog = Ext.create('Ext.panel.Panel',{
             name: 'Syslog',
             helpSource: 'events_syslog',
             title: i18n._('Syslog'),
             cls: 'ung-panel',
             autoScroll: true,
+            layout: { type: 'vbox', align: 'stretch' },
             defaults: {
                 xtype: 'fieldset'
             },
             items: [{
                 title: i18n._('Syslog'),
-                height: 350,
                 items: [{
                     xtype: 'component',
                     margin: '0 0 10 0',
@@ -469,6 +494,8 @@ Ext.define('Webui.config.events', {
                                     this.panelSyslog.down("textfield[name=syslogHost]").disable();
                                     this.panelSyslog.down("numberfield[name=syslogPort]").disable();
                                     this.panelSyslog.down("combo[name=syslogProtocol]").disable();
+                                    this.panelSyslog.down("component[name=syslogEventsSummary]").setVisible(false);
+                                    this.panelSyslog.down("[name=syslogRules]").disable();
                                 }
                             }, this)
                         }
@@ -487,6 +514,8 @@ Ext.define('Webui.config.events', {
                                     this.panelSyslog.down("textfield[name=syslogHost]").enable();
                                     this.panelSyslog.down("numberfield[name=syslogPort]").enable();
                                     this.panelSyslog.down("combo[name=syslogProtocol]").enable();
+                                    this.panelSyslog.down("component[name=syslogEventsSummary]").setVisible(true);
+                                    this.panelSyslog.down("component[name=syslogRules]").enable();
                                 }
                             }, this)
                         }
@@ -537,15 +566,19 @@ Ext.define('Webui.config.events', {
                     },{
                         name: 'syslogEventsSummary',
                         xtype: 'component',
-                        html: ''
+                        html: '',
+                        hidden: !this.getEventSettings().syslogEnabled
                     }]
-                }]
-            }],
+                },
+                ],
+            },
+                this.gridSyslogRules
+            ],
             listeners: {
                 "activate": {
                     fn: Ext.bind(function(elem, newValue) {
                         var ruleNames = [];
-                        var rules = this.getEventSettings().logRules;
+                        var rules = this.getEventSettings().syslogRules;
                         var rule;
                         var allMatch = false;
                         var i;
@@ -554,7 +587,7 @@ Ext.define('Webui.config.events', {
                             if(rule.enabled == false){
                                 continue;
                             }
-                            if(rule.remoteLog){
+                            if(rule.log){
                                 if(rule.conditions.list.length == 0){
                                     allMatch = true;
                                     ruleNames.push(rule.description + ' (*)');
@@ -565,16 +598,10 @@ Ext.define('Webui.config.events', {
                         }
                         var summary = [];
                         if(ruleNames.length == 0){
-                            summary.push(i18n._("No events configured to log remotely"));
-                        }else{
-                            summary.push(i18n._("The following events will be logged:"));
-                            for(i = 0; i < ruleNames.length; i++){
-                                summary.push( "<i>" + ruleNames[i] + "</i>");
-                            }
+                            summary.push(i18n._("No Syslog Rules configured to log remotely"));
                         }
                         if(allMatch == true){
-                            summary.push("");
-                            summary.push('<span class="warning">' + i18n._("(*) Logs all events.  This can be computationally expensive for servers processing millions of events.  Caution is advised.") + "</span>");
+                            summary.push('<span class="warning">' + i18n._("One or more rules log all events.  This can be computationally expensive for servers processing millions of events.  Caution is advised.") + "</span>");
                         }
                         this.panelSyslog.down("[name=syslogEventsSummary]").setHtml(summary.join("<br>"));
                     }, this)
@@ -590,7 +617,7 @@ Ext.define('Webui.config.events', {
         Ext.MessageBox.wait(i18n._("Saving..."), i18n._("Please wait"));
 
         this.getEventSettings().alertRules.list=this.gridAlertRules.getList();
-        this.getEventSettings().logRules.list=this.gridLogRules.getList();
+        this.getEventSettings().syslogRules.list=this.gridSyslogRules.getList();
         this.getEventSettings().syslogHost = this.panelSyslog.down("textfield[name=syslogHost]").getValue();
         this.getEventSettings().syslogPort = this.panelSyslog.down("numberfield[name=syslogPort]").getValue();
         this.getEventSettings().syslogProtocol = this.panelSyslog.down("combo[name=syslogProtocol]").getValue();

@@ -32,15 +32,14 @@ public class EventRule implements JSONString, Serializable
     private static final int LOAD_STATE_CACHE_MAX_SIZE = 100;
     
     private Integer ruleId;
-    private Boolean enabled;
+    private Boolean enabled = false;
 
-    private Boolean log;
-    private Boolean remoteLog;
-    private Boolean email;
+    private Boolean log = false;
+    private Boolean email = false;
 
     private Boolean limitFrequency = false;
     private Integer limitFrequencyMinutes = 0;
-    private Boolean thresholdEnabled;
+    private Boolean thresholdEnabled = false;
     private Double  thresholdLimit;
     private Integer thresholdTimeframeSec;
     private String  thresholdGroupingField;
@@ -68,10 +67,10 @@ public class EventRule implements JSONString, Serializable
         this.setDescription( description );
         this.setLimitFrequency( frequencyLimit );
         this.setLimitFrequencyMinutes( frequencyMinutes );
-        this.thresholdEnabled = thresholdEnabled;
-        this.thresholdLimit = thresholdLimit;
-        this.thresholdTimeframeSec = thresholdTimeframeSec;
-        this.thresholdGroupingField = thresholdGroupingField;
+        this.setThresholdEnabled( thresholdEnabled );
+        this.setThresholdLimit( thresholdLimit );
+        this.setThresholdTimeframeSec( thresholdTimeframeSec );
+        this.setThresholdGroupingField( thresholdGroupingField );
     }
     
     public EventRule( boolean enabled, List<EventRuleCondition> conditions, boolean log, boolean event, String description, boolean frequencyLimit, int frequencyMinutes )
@@ -90,9 +89,6 @@ public class EventRule implements JSONString, Serializable
 
     public Boolean getLog() { return log; }
     public void setLog( Boolean newValue ) { this.log = newValue; }
-
-    public Boolean getRemoteLog() { return remoteLog; }
-    public void setRemoteLog( Boolean newValue ) { this.remoteLog = newValue; }
 
     public Boolean getEmail() { return email; }
     public void setEmail( Boolean newValue ) { this.email = newValue; }
