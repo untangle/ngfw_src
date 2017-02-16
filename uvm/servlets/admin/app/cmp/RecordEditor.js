@@ -7,7 +7,8 @@ Ext.define('Ung.cmp.RecordEditor', {
     requires: [
         'Ung.cmp.RecordEditorController',
         'Ung.overrides.form.CheckboxGroup',
-        'Ung.overrides.form.field.VTypes'
+        'Ung.overrides.form.field.VTypes',
+        'Ung.cmp.DateTime'
     ],
     controller: 'recordeditor',
     closeAction: 'destroy',

@@ -2350,6 +2350,8 @@ Ext.define('Ung.view.config.ConfigController', {
 
         var cfgName = configName.charAt(0).toUpperCase() + configName.slice(1).toLowerCase();
 
+        console.log(cfgName);
+
         view.down('#subNav').getStore().each(function (item) {
             if (item.get('url') === configName) {
                 item.set('selected', 'x-item-selected');
@@ -2360,6 +2362,7 @@ Ext.define('Ung.view.config.ConfigController', {
 
 
         view.setLoading('Loading ' + cfgName.t() + '...');
+        console.log(cfgName);
         Ext.require('Ung.view.config.' + cfgName.toLowerCase() + '.' + cfgName, function () {
             view.down('#configWrapper').add({
                 xtype: 'ung.config.' + cfgName.toLowerCase(),
@@ -2395,7 +2398,8 @@ Ext.define('Ung.view.config.Config', {
 
     requires: [
         'Ung.view.config.ConfigController',
-        'Ung.cmp.EditorFields'
+        'Ung.cmp.EditorFields',
+
         // 'Ung.view.config.ConfigModel'
     ],
 

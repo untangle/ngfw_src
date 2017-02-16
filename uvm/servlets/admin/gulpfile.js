@@ -166,7 +166,7 @@ gulp.task('sass', function () {
 
 gulp.task('modules-build', function () {
     return gulp.src(['./app/config/' + moduleName + '/**/*.js'])
-        // .pipe(jshint())
+        .pipe(jshint())
         .pipe(concat(moduleName + '.js'))
         // .pipe(uglify())
         .pipe(gulp.dest('./root/script/config/'));
