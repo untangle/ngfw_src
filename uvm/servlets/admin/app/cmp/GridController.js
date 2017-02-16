@@ -73,6 +73,16 @@ Ext.define('Ung.cmp.GridController', {
                     windowTitle: function (get) {
                         return get('addAction') ? 'Add'.t() : 'Edit'.t();
                     }
+
+
+                    // datetime: function (get) {
+                    //     return new Date(get('record.expirationTime'));
+                    // },
+                    // checked: {
+                    //     get: function (get) {
+                    //         return get('record.expirationTime') === 0;
+                    //     }
+                    // }
                 }
             }
         });
