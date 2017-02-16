@@ -4,7 +4,8 @@
 package com.untangle.uvm;
 
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.event.Event;
+import com.untangle.uvm.event.AlertEvent;
+import com.untangle.uvm.event.SyslogEvent;
 import com.untangle.uvm.event.EventSettings;
 import com.untangle.uvm.event.AlertRule;
 import com.untangle.uvm.event.SyslogRule;
@@ -487,7 +488,7 @@ public class EventManagerImpl implements EventManager
                         sendEmailForEvent( rule, event );
                     }
                     if(rule.getLog()){
-                        Event eventEvent = new Event( rule.getDescription(), event.toSummaryString(), jsonObject, event, rule, false );
+                        AlertEvent eventEvent = new AlertEvent( rule.getDescription(), event.toSummaryString(), jsonObject, event, rule, false );
                         UvmContextFactory.context().logEvent( eventEvent );
                     }
                 }
@@ -572,7 +573,11 @@ public class EventManagerImpl implements EventManager
                     logger.debug( "syslog match: " + rule.getDescription() + " matches " + jsonObject.toString() );
 
                     event.setTag(SyslogManagerImpl.LOG_TAG_PREFIX);
-                    if ( rule.getLog() ){
+                    if(rule.getLog()){
+                        SyslogEvent eventEvent = new SyslogEvent( rule.getDescription(), event.toSummaryString(), jsonObject, event, rule, false );
+                        UvmContextFactory.context().logEvent( eventEvent );
+                    }
+                    if ( rule.getSyslog() ){
                         try {
                             SyslogManagerImpl.sendSyslog( event );
                         } catch (Exception exn) {
@@ -680,7 +685,7 @@ public class EventManagerImpl implements EventManager
                          * Copy all events out of the queue
                         */
                         while ((event = inputQueue.poll()) != null && logQueue.size() < maxEventsPerCycle) {
-                            if ( event instanceof Event )
+                            if ( ( event instanceof AlertEvent ) || ( event instanceof SyslogEvent) )
                             {
                                 /* Ignore our own events (they're destined for logging) */
                                 continue;

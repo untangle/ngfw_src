@@ -15,7 +15,7 @@ import com.untangle.uvm.event.EventRule;
  * Log event for an event
  */
 @SuppressWarnings("serial")
-public class Event extends LogEvent
+public class AlertEvent extends LogEvent
 {
     private String description;
     private String summaryText;
@@ -24,9 +24,9 @@ public class Event extends LogEvent
     private Boolean eventSent;
     private EventRule causalRule;
     
-    public Event() { }
+    public AlertEvent() { }
 
-    public Event( String description, String summaryText, JSONObject json, LogEvent cause, EventRule causalRule, Boolean eventSent )
+    public AlertEvent( String description, String summaryText, JSONObject json, LogEvent cause, EventRule causalRule, Boolean eventSent )
     {
         this.description = description;
         this.summaryText = summaryText;
