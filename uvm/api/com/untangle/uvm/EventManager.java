@@ -17,4 +17,6 @@ public interface EventManager
 
     public void logEvent( LogEvent evt );
 
+    public void flushEvents();
+
 }
