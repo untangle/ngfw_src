@@ -35,10 +35,7 @@ public class EventRule implements JSONString, Serializable
     private Boolean enabled = false;
 
     private Boolean log = false;
-    private Boolean email = false;
 
-    private Boolean limitFrequency = false;
-    private Integer limitFrequencyMinutes = 0;
     private Boolean thresholdEnabled = false;
     private Double  thresholdLimit;
     private Integer thresholdTimeframeSec;
@@ -55,27 +52,24 @@ public class EventRule implements JSONString, Serializable
     {
     }
 
-    public EventRule( boolean enabled, List<EventRuleCondition> conditions, boolean log, boolean email, String description, boolean frequencyLimit, int frequencyMinutes,
+    public EventRule( boolean enabled, List<EventRuleCondition> conditions, boolean log, String description,
                       Boolean thresholdEnabled, Double thresholdLimit, Integer thresholdTimeframeSec, String thresholdGroupingField )
     {
         this.setEnabled( enabled );
         this.setConditions( conditions );
 
         this.setLog( log );
-        this.setEmail( email );
 
         this.setDescription( description );
-        this.setLimitFrequency( frequencyLimit );
-        this.setLimitFrequencyMinutes( frequencyMinutes );
         this.setThresholdEnabled( thresholdEnabled );
         this.setThresholdLimit( thresholdLimit );
         this.setThresholdTimeframeSec( thresholdTimeframeSec );
         this.setThresholdGroupingField( thresholdGroupingField );
     }
     
-    public EventRule( boolean enabled, List<EventRuleCondition> conditions, boolean log, boolean event, String description, boolean frequencyLimit, int frequencyMinutes )
+    public EventRule( boolean enabled, List<EventRuleCondition> conditions, boolean log, String description )
     {
-        this( enabled, conditions, log, event, description, frequencyLimit, frequencyMinutes, null, null, null, null );
+        this( enabled, conditions, log, description, null, null, null, null );
     }
 
     public List<EventRuleCondition> getConditions() { return this.conditions; }
@@ -89,15 +83,6 @@ public class EventRule implements JSONString, Serializable
 
     public Boolean getLog() { return log; }
     public void setLog( Boolean newValue ) { this.log = newValue; }
-
-    public Boolean getEmail() { return email; }
-    public void setEmail( Boolean newValue ) { this.email = newValue; }
-
-    public Boolean getLimitFrequency() { return limitFrequency; }
-    public void setLimitFrequency( Boolean newValue ) { this.limitFrequency = newValue; }
-
-    public Integer getLimitFrequencyMinutes() { return limitFrequencyMinutes; }
-    public void setLimitFrequencyMinutes( Integer newValue ) { this.limitFrequencyMinutes = newValue; }
 
     public Boolean getThresholdEnabled() { return this.thresholdEnabled; }
     public void setThresholdEnabled( Boolean newValue ) { this.thresholdEnabled = newValue; }
@@ -114,16 +99,6 @@ public class EventRule implements JSONString, Serializable
     public String getDescription() { return description; }
     public void setDescription( String newValue ) { this.description = newValue; }
 
-    public long lastEventTime()
-    {
-        return this.lastEventTime;
-    }
-
-    public void updateEventTime()
-    {
-        this.lastEventTime = System.currentTimeMillis();
-    }
-    
     public String toJSONString()
     {
         JSONObject jO = new JSONObject(this);

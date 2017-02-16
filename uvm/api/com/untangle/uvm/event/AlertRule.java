@@ -28,6 +28,8 @@ public class AlertRule extends EventRule
     private Boolean limitFrequency = false;
     private Integer limitFrequencyMinutes = 0;
 
+    private long lastEventTime = 0; /* stores the last time this rule sent an event */
+
     public AlertRule()
     {
     }
@@ -35,16 +37,15 @@ public class AlertRule extends EventRule
     public AlertRule( boolean enabled, List<EventRuleCondition> conditions, boolean log, boolean email, String description, boolean frequencyLimit, int frequencyMinutes,
                       Boolean thresholdEnabled, Double thresholdLimit, Integer thresholdTimeframeSec, String thresholdGroupingField )
     {
-        super(enabled, conditions, log, email, description, frequencyLimit, frequencyMinutes,
-                 	thresholdEnabled,  thresholdLimit, thresholdTimeframeSec, thresholdGroupingField);
+        super(enabled, conditions, log, description, thresholdEnabled,  thresholdLimit, thresholdTimeframeSec, thresholdGroupingField);
         this.setEmail( email );
         this.setLimitFrequency( frequencyLimit );
         this.setLimitFrequencyMinutes( frequencyMinutes );
     }
 
-    public AlertRule( boolean enabled, List<EventRuleCondition> conditions, boolean log, boolean event, String description, boolean frequencyLimit, int frequencyMinutes )
+    public AlertRule( boolean enabled, List<EventRuleCondition> conditions, boolean log, boolean email, String description, boolean frequencyLimit, int frequencyMinutes )
     {
-		this(enabled, conditions, log, event, description, frequencyLimit, frequencyMinutes, null, null, null, null);
+		this(enabled, conditions, log, email, description, frequencyLimit, frequencyMinutes, null, null, null, null);
     }
 
 
@@ -57,5 +58,30 @@ public class AlertRule extends EventRule
     public Integer getLimitFrequencyMinutes() { return limitFrequencyMinutes; }
     public void setLimitFrequencyMinutes( Integer newValue ) { this.limitFrequencyMinutes = newValue; }
 
+    public long lastEventTime()
+    {
+        return this.lastEventTime;
+    }
+
+    public void updateEventTime()
+    {
+        this.lastEventTime = System.currentTimeMillis();
+    }
+    
+    public Boolean frequencyCheck()
+    {
+        if ( this.getLimitFrequency() && this.getLimitFrequencyMinutes() > 0 ) {
+            long currentTime = System.currentTimeMillis();
+            long lastEventTime = this.lastEventTime();
+            long secondsSinceLastEvent = ( currentTime - lastEventTime ) / 1000;
+            // if not enough time has elapsed, just return
+            if ( secondsSinceLastEvent < ( this.getLimitFrequencyMinutes() * 60 ) )
+            {
+                return false;
+            }
+        }    	
+        this.updateEventTime();
+        return true;
+    }
 
 }
