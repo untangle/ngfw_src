@@ -122,11 +122,13 @@ Ext.define('Ung.config.system.Regional', {
                 margin: '5 25',
                 border: false,
                 disabled: true,
+                hidden: true,
                 layout: {
                     type: 'hbox'
                 },
                 bind: {
-                    disabled: '{systemSettings.timeSource !== "ntp"}'
+                    disabled: '{systemSettings.timeSource !== "ntp"}',
+                    hidden: '{systemSettings.timeSource !== "ntp"}'
                 },
                 items: [{
                     xtype: 'displayfield',
@@ -143,14 +145,16 @@ Ext.define('Ung.config.system.Regional', {
                 inputValue: 'manual'
             }, {
                 xtype: 'datefield',
-                width: 200,
+                width: 180,
                 margin: '5 25',
                 disabled: true,
+                hidden: true,
                 value: new Date(),
                 bind: {
                     value: '{manualDate}',
                     format: '{manualDateFormat}',
-                    disabled: '{systemSettings.timeSource !== "manual"}'
+                    disabled: '{systemSettings.timeSource !== "manual"}',
+                    hidden: '{systemSettings.timeSource !== "manual"}'
                 }
             }]
         }]
@@ -207,9 +211,11 @@ Ext.define('Ung.config.system.Regional', {
             }, {
                 xtype: 'fieldset',
                 disabled: true,
+                hidden: true,
                 border: false,
                 bind: {
-                    disabled: '{languageSettings.regionalFormats === "default"}'
+                    disabled: '{languageSettings.regionalFormats === "default"}',
+                    hidden: '{languageSettings.regionalFormats === "default"}'
                 },
                 defaults: {
                     xtype: 'combo',
@@ -268,16 +274,18 @@ Ext.define('Ung.config.system.Regional', {
                     ],
                     queryMode: 'local',
                     editable: false
-                }, {
-                    xtype: 'textfield',
-                    fieldLabel: 'date',
-                    bind: '{languageSettings.overrideDateFmt}'
-                }, {
-                    xtype: 'textfield',
-                    fieldLabel: 'tstp',
-                    bind: '{languageSettings.overrideTimestampFmt}'
                 }]
             }]
+        }, {
+            xtype: 'button',
+            text: 'Synchronize Language'.t(),
+            iconCls: 'fa fa-refresh'
+        }, {
+            xtype: 'component',
+            padding: 5,
+            bind: 'Last synchronized'.t() + ': {languageSettings.lastSynchronized}'
+            // fieldLabel: ,
+            // bind: '{languageSettings.lastSynchronized}'
         }]
     }]
 
