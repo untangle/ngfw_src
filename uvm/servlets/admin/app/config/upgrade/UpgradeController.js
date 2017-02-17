@@ -15,7 +15,7 @@ Ext.define('Ung.config.upgrade.UpgradeController', {
         // });
 
         view.down('progressbar').wait({
-            interval: 500, //bar will move fast!
+            interval: 500,
             text: 'Checking for upgrades...'.t()
         });
         // this.checkUpgrades();

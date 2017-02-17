@@ -10,8 +10,9 @@ var gulp        = require('gulp'),
     gutil       = require('gulp-util'),
     runSequence = require('run-sequence'),
     jshint      = require('gulp-jshint'),
-    parsePath = require('parse-filepath');
-    slash = require('slash');
+    parsePath = require('parse-filepath'),
+    slash = require('slash'),
+    removeEmptyLines = require('gulp-remove-empty-lines');
 
 var configModules = ['about', 'administration', 'email', 'localdirectory', 'network', 'system', 'upgrade'];
 var moduleName;
@@ -168,6 +169,7 @@ gulp.task('modules-build', function () {
     return gulp.src(['./app/config/' + moduleName + '/**/*.js'])
         .pipe(jshint())
         .pipe(concat(moduleName + '.js'))
+        .pipe(removeEmptyLines({removeComments: true}))
         // .pipe(uglify())
         .pipe(gulp.dest('./root/script/config/'));
 });
