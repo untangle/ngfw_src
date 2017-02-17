@@ -37,7 +37,7 @@ Ext.define('Ung.config.email.EmailController', {
 
         if (invalidFields.length > 0) {
             Ung.Util.invalidFormToast(invalidFields);
-            return deferred.reject('invalid fields');
+            deferred.reject('invalid fields');
         }
 
         var me = this, view = this.getView();
@@ -47,11 +47,11 @@ Ext.define('Ung.config.email.EmailController', {
             if (ex) {
                 console.error(ex);
                 Ung.Util.exceptionToast(ex);
-                return deferred.reject(ex);
+                deferred.reject(ex);
             }
             me.mailSettings();
             Ung.Util.successToast('Email'.t() + ' settings saved!');
-            return deferred.resolve();
+            deferred.resolve();
         }, me.getViewModel().get('mailSender'));
         return deferred.promise;
     },

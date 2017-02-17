@@ -426,7 +426,7 @@ Ext.define('Ung.config.administration.AdministrationController', {
                 'Do you wish to continue?'.t() + '<br/>',
             buttons: Ext.MessageBox.YESNO,
             fn: Ext.bind(function(btn) {
-                if (btn == "yes") {
+                if (btn === 'yes') {
                     // if (Ext.get('admin_understand').dom.checked) {
                     //     Ung.grid.Panel.prototype.addHandler.call(this, button, e, rowData);
                     // }

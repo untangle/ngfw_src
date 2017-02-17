@@ -16,7 +16,9 @@ Ext.define('Ung.config.upgrade.Upgrade', {
         formulas: {
             upgradeTime: {
                 get: function (get) {
-                    return get('settings.autoUpgradeHour') + ':' + (get('settings.autoUpgradeMinute') ? get('settings.autoUpgradeMinute') : '00');
+                    var hour = get('settings.autoUpgradeHour'),
+                        minute = get('settings.autoUpgradeMinute') ? get('settings.autoUpgradeMinute') : '00';
+                    return hour + ':' + minute;
                 }
             }
         }
@@ -144,7 +146,7 @@ Ext.define('Ung.config.upgrade.UpgradeController', {
         // });
 
         view.down('progressbar').wait({
-            interval: 500, //bar will move fast!
+            interval: 500,
             text: 'Checking for upgrades...'.t()
         });
         // this.checkUpgrades();
