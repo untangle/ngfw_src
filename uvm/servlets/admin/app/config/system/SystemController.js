@@ -52,7 +52,7 @@ Ext.define('Ung.config.system.SystemController', {
                         if (result !== 0) {
                             Ung.Util.exceptionToast('Time synchronization failed. Return code:'.t() + ' ' + result);
                         } else {
-                            me.timeUpdate();
+                            me.getTime();
                             Ung.Util.successToast('Time was synchronized!');
                         }
                     });
@@ -65,7 +65,7 @@ Ext.define('Ung.config.system.SystemController', {
         var v = this.getView();
         v.setLoading('Saving...');
         Ext.Deferred.sequence([
-            // this.setLanguage,
+            this.setLanguage,
             this.setSystem,
             this.setTimezone,
             this.setDate
