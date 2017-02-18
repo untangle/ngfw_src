@@ -2399,7 +2399,7 @@ Ext.define('Ung.view.config.Config', {
     requires: [
         'Ung.view.config.ConfigController',
         'Ung.cmp.EditorFields',
-
+        'Ung.overrides.form.field.Date'
         // 'Ung.view.config.ConfigModel'
     ],
 
@@ -5326,7 +5326,8 @@ Ext.define('Ung.controller.Global', {
 
         routes: {
             '': 'onDashboard',
-            // 'apps': 'onApps',
+            'expert': 'setExpertMode',
+            'noexpert': 'setNoExpertMode',
             'apps/:policyId': 'onApps',
             'apps/:policyId/:node': 'onApps',
             'config': 'onConfig',
@@ -5350,6 +5351,17 @@ Ext.define('Ung.controller.Global', {
     onActivate: function () {
         console.log('activate');
     },
+
+    setExpertMode: function () {
+        rpc.isExpertMode = true;
+        this.redirectTo(window.location.hash.replace('|expert', ''));
+    },
+
+    setNoExpertMode: function () {
+        rpc.isExpertMode = false;
+        this.redirectTo(window.location.hash.replace('|noexpert', ''));
+    },
+
 
     onDashboard: function () {
         this.getMainView().setActiveItem('dashboard');
@@ -5507,12 +5519,18 @@ Ext.define('Ung.Application', {
     init: function () {
         console.timeEnd('resources');
         // Ext.get('app-loader').destroy();
+
+        if (!rpc.translations.decimal_sep) { rpc.translations.decimal_sep = '.'; }
+        if (!rpc.translations.thousand_sep) { rpc.translations.thousand_sep = ','; }
+        if (!rpc.translations.date_fmt) { rpc.translations.date_fmt = 'Y-m-d'; }
+        if (!rpc.translations.timestamp_fmt) { rpc.translations.timestamp_fmt = 'Y-m-d h:i:s a'; }
     },
 
     launch: function () {
         var me = this;
         Rpc.rpc = me.rpc;
-        rpc.isExpertMode = true;
+        // rpc.isExpertMode = true;
+
         Ext.getStore('policies').loadData(me.rpc.appsViews);
 
         Ung.util.Metrics.start();

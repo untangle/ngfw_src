@@ -1,75 +1,11 @@
-Ext.define('Ung.config.system.Regional', {
+Ext.define('Ung.config.system.view.Regional', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.config.system.regional',
     itemId: 'regional',
 
+    viewModel: true,
 
-    viewModel: {
-        data: {
-            isExpertMode: rpc.isExpertMode,
-            time: null,
-            languageSettings: rpc.languageManager.getLanguageSettings(),
-            languagesList: rpc.languageManager.getLanguagesList(),
-            systemSettings: rpc.systemManager.getSettings(),
-            tz: rpc.systemManager.getTimeZone(),
-            timeZones: null
-        },
-        formulas: {
-            timeSource: function (get) {
-                return get('systemSettings.timeSource') === 'manual' ? 'Time was set manually'.t() : 'Time is automatically synchronized via NTP'.t();
-            },
-            manualDate: function (get) {
-                // to fix because rpc.systemManager.getDate() returns an invalid date string
-                return get('time') ? new Date(get('time').replace('EET', '(EET)')) : new Date();
-            },
-            // used for setting the date/time
-            manualDateFormat: function (get) { return get('languageSettings.overrideTimestampFmt') || 'timestamp_fmt'.t(); },
-
-            dateFormat: {
-                get: function (get) {
-                    var fmt = get('languageSettings.overrideDateFmt');
-                    return fmt.length === 0 ? 'Y-m-d' : fmt;
-                },
-                set: function (value) {
-                    var fmt = value + ' ' + this.get('timeFormat');
-                    this.set('languageSettings.overrideDateFmt', value === 'Y-m-d' ? '' : value);
-                    this.set('languageSettings.overrideTimestampFmt', fmt === 'Y-m-d h:i:s a' ? '' : fmt);
-                }
-            },
-
-            timeFormat: {
-                get: function (get) {
-                    var tsFmt = get('languageSettings.overrideTimestampFmt');
-                    return tsFmt.length > 0 ? tsFmt.substring(6) : 'h:i:s a';
-                },
-                set: function (value) {
-                    var dateFmt = this.get('languageSettings.overrideDateFmt'),
-                        fmt = (dateFmt.length === 0 ? 'Y-m-d' : dateFmt) + ' ' + value;
-                    this.set('languageSettings.overrideTimestampFmt', fmt === 'Y-m-d h:i:s a' ? '' : fmt);
-                }
-            }
-
-            // decimalSep: function (get) { return get('languageSettings.overrideDecimalSep') || 'decimal_sep'.t(); },
-            // thousandSep: function (get) { return get('languageSettings.overrideThousandSep') || 'thousand_sep'.t(); },
-            // dateFmt: function (get) { return get('languageSettings.overrideDateFmt') || 'date_fmt'.t(); },
-            // timestampFmt: function (get) { return get('languageSettings.overrideTimestampFmt') || 'timestamp_fmt'.t(); }
-        },
-        stores: {
-            timeZone: {
-                fields: ['name', 'value'],
-                data: '{timeZones}'
-            },
-            languages: {
-                fields: ['code', 'name', 'statistics', {
-                    name: 'cc',
-                    calculate: function (r) {
-                        return r.code ? r.code.split('-')[1] : r.code;
-                    }
-                }],
-                data: '{languagesList.list}'
-            }
-        }
-    },
+    scrollable: true,
 
     title: 'Regional'.t(),
 
@@ -82,6 +18,10 @@ Ext.define('Ung.config.system.Regional', {
 
     items: [{
         title: 'Current Time'.t(),
+        hidden: true,
+        bind: {
+            hidden: '{!time}'
+        },
         items: [{
             xtype: 'component',
             bind: '{timeSource}'
@@ -94,20 +34,28 @@ Ext.define('Ung.config.system.Regional', {
         title: 'Force Sync Time'.t(),
         hidden: true,
         bind: {
-            hidden: '{isExpertMode || systemSettings.timeSource === "manual"}'
+            hidden: '{isExpertMode || systemSettings.timeSource === "manual" || !time}'
         },
+        layout: {
+            type: 'hbox'
+        },
+        magin: 5,
         items: [{
-            xtype: 'component',
-            bind: 'Click to force instant time synchronization.'.t()
-        }, {
             xtype: 'button',
-            margin: '10 0 0 0',
+            margin: '0 10 0 0',
             text: 'Synchronize Time'.t(),
             iconCls: 'fa fa-refresh',
             handler: 'syncTime'
+        }, {
+            xtype: 'displayfield',
+            value: 'Click to force instant time synchronization.'.t()
         }]
     }, {
         title: 'Time Settings'.t(),
+        hidden: true,
+        bind: {
+            hidden: '{!(isExpertMode || systemSettings.timeSource === "manual" || !time)}'
+        },
         items: [{
             xtype: 'radiogroup',
             columns: 1,
@@ -119,7 +67,7 @@ Ext.define('Ung.config.system.Regional', {
                 inputValue: 'ntp'
             }, {
                 xtype: 'fieldset',
-                margin: '5 25',
+                margin: 5,
                 border: false,
                 disabled: true,
                 hidden: true,
@@ -131,14 +79,14 @@ Ext.define('Ung.config.system.Regional', {
                     hidden: '{systemSettings.timeSource !== "ntp"}'
                 },
                 items: [{
-                    xtype: 'displayfield',
-                    value: 'Click to force instant time synchronization.'.t()
-                }, {
                     xtype: 'button',
-                    margin: '0 0 0 10',
+                    margin: '0 10 0 0',
                     text: 'Synchronize Time'.t(),
                     iconCls: 'fa fa-refresh',
                     handler: 'syncTime'
+                }, {
+                    xtype: 'displayfield',
+                    value: 'Click to force instant time synchronization.'.t()
                 }]
             }, {
                 boxLabel: '<strong>' + 'Set system clock manually'.t() + '</strong>',
@@ -160,12 +108,16 @@ Ext.define('Ung.config.system.Regional', {
         }]
     }, {
         title: 'Timezone'.t(),
+        hidden: true,
+        bind: {
+            hidden: '{!timeZonesList || !timeZone}'
+        },
         items: [{
             xtype: 'combo',
             width: 350,
             bind: {
-                store: '{timeZone}',
-                value: '{tz.ID}'
+                store: '{timeZones}',
+                value: '{timeZone.ID}'
             },
             displayField: 'name',
             valueField: 'value',
@@ -174,6 +126,10 @@ Ext.define('Ung.config.system.Regional', {
         }]
     }, {
         title: 'Language'.t(),
+        hidden: true,
+        bind: {
+            hidden: '{!languagesList || !languageSettings}'
+        },
         items: [{
             xtype: 'combo',
             width: 350,
@@ -277,15 +233,22 @@ Ext.define('Ung.config.system.Regional', {
                 }]
             }]
         }, {
-            xtype: 'button',
-            text: 'Synchronize Language'.t(),
-            iconCls: 'fa fa-refresh'
-        }, {
-            xtype: 'component',
-            padding: 5,
-            bind: 'Last synchronized'.t() + ': {languageSettings.lastSynchronized}'
-            // fieldLabel: ,
-            // bind: '{languageSettings.lastSynchronized}'
+            xtype: 'container',
+            layout: {
+                type: 'hbox'
+            },
+            items: [{
+                xtype: 'button',
+                margin: '0 10 0 0',
+                text: 'Synchronize Language'.t(),
+                iconCls: 'fa fa-refresh',
+                handler: 'syncLanguage'
+            }, {
+                xtype: 'displayfield',
+                bind: '<strong>' + 'Last synchronized'.t() + '</strong>: {lastLanguageSync}'
+                // fieldLabel: ,
+                // bind: '{languageSettings.lastSynchronized}'
+            }]
         }]
     }]
 
