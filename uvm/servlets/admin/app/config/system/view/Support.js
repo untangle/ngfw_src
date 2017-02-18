@@ -1,9 +1,110 @@
-Ext.define('Ung.config.system.Support', {
+Ext.define('Ung.config.system.view.Support', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.config.system.support',
 
     viewModel: true,
 
-    title: 'Support'.t()
+    title: 'Support'.t(),
+
+    bodyPadding: 10,
+    scrollable: true,
+
+    defaults: {
+        xtype: 'fieldset',
+        padding: 10
+    },
+
+    items: [{
+        title: 'Support'.t(),
+        items: [{
+            xtype: 'checkbox',
+            boxLabel: Ext.String.format('Connect to {0} cloud'.t(), this.oemName),
+            bind: '{systemSettings.cloudEnabled}'
+        }, {
+            xtype: 'checkbox',
+            boxLabel: Ext.String.format('Allow secure remote access to {0} support team'.t(), this.oemName),
+            bind: '{systemSettings.supportEnabled}'
+        }]
+    }, {
+        title: 'Logs'.t(),
+        items: [{
+            xtype: 'button',
+            text: 'Download System Logs'.t(),
+            handler: 'downloadSystemLogs',
+            iconCls: 'fa fa-download'
+        }]
+    }, {
+        title: 'Manual Reboot'.t(),
+        items: [{
+            xtype: 'container',
+            layout: {
+                type: 'hbox'
+            },
+            items: [{
+                xtype: 'displayfield',
+                value: 'Reboot the server.'.t()
+            }, {
+                xtype: 'button',
+                margin: '0 0 0 10',
+                text: 'Reboot'.t(),
+                iconCls: 'fa fa-refresh',
+                handler: 'manualReboot'
+            }]
+        }]
+    }, {
+        title: 'Manual Shutdown'.t(),
+        items: [{
+            xtype: 'container',
+            layout: {
+                type: 'hbox'
+            },
+            items: [{
+                xtype: 'displayfield',
+                value: 'Power off the server.'.t(),
+            }, {
+                xtype: 'button',
+                margin: '0 0 0 10',
+                text: 'Shutdown'.t(),
+                iconCls: 'fa fa-power-off',
+                handler: 'manualShutdown'
+            }]
+        }]
+    }, {
+        title: 'Setup Wizard'.t(),
+        items: [{
+            xtype: 'container',
+            layout: {
+                type: 'hbox'
+            },
+            items: [{
+                xtype: 'displayfield',
+                value: 'Launch the Setup Wizard.'.t()
+            }, {
+                xtype: 'button',
+                margin: '0 0 0 10',
+                text: 'Setup Wizard'.t(),
+                iconCls: 'fa fa-magic',
+                handler: 'setupWizard'
+            }]
+        }]
+    }, {
+        title: 'Factory Defaults'.t(),
+        items: [{
+            xtype: 'container',
+            layout: {
+                type: 'hbox'
+            },
+            items: [{
+                xtype: 'displayfield',
+                value: 'Reset all settings to factory defaults.'.t()
+            }, {
+                xtype: 'button',
+                margin: '0 0 0 10',
+                text: 'Reset to Factory Defaults'.t(),
+                iconCls: 'fa fa-industry',
+                handler: 'factoryDefaults'
+            }]
+        }]
+    }]
 
 });

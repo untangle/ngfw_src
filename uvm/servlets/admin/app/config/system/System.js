@@ -4,16 +4,14 @@ Ext.define('Ung.config.system.System', {
 
     requires: [
         'Ung.config.system.SystemController',
-        // 'Ung.overrides.form.CheckboxGroup'
+        'Ung.config.system.SystemModel',
     ],
 
-    viewModel: {
-        data: {
-            time: null
-        }
-    },
-
     controller: 'config.system',
+
+    viewModel: {
+        type: 'config.system'
+    },
 
     dockedItems: [{
         xtype: 'toolbar',

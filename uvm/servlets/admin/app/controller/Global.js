@@ -49,7 +49,8 @@ Ext.define('Ung.controller.Global', {
 
         routes: {
             '': 'onDashboard',
-            // 'apps': 'onApps',
+            'expert': 'setExpertMode',
+            'noexpert': 'setNoExpertMode',
             'apps/:policyId': 'onApps',
             'apps/:policyId/:node': 'onApps',
             'config': 'onConfig',
@@ -73,6 +74,17 @@ Ext.define('Ung.controller.Global', {
     onActivate: function () {
         console.log('activate');
     },
+
+    setExpertMode: function () {
+        rpc.isExpertMode = true;
+        this.redirectTo(window.location.hash.replace('|expert', ''));
+    },
+
+    setNoExpertMode: function () {
+        rpc.isExpertMode = false;
+        this.redirectTo(window.location.hash.replace('|noexpert', ''));
+    },
+
 
     onDashboard: function () {
         this.getMainView().setActiveItem('dashboard');
