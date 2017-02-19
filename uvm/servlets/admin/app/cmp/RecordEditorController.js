@@ -32,7 +32,9 @@ Ext.define('Ung.cmp.RecordEditorController', {
         //     data: view.record.get('conditions').list
         //     // data: '{record.conditions.list}'
         // },
-
+        viewConfig: {
+            emptyText: '<p style="text-align: center; margin: 0; line-height: 2"><i class="fa fa-exclamation-triangle fa-2x"></i> <br/>No Conditions! Add from the menu...</p>'
+        },
         columns: [{
             header: 'Type'.t(),
             menuDisabled: true,
@@ -111,7 +113,7 @@ Ext.define('Ung.cmp.RecordEditorController', {
                 });
             }
         }
-        form.isValid();
+        // form.isValid();
     },
 
     onApply: function () {

@@ -85,8 +85,8 @@ Ext.define('Ung.cmp.RecordEditor', {
             labelWidth: 180,
             labelAlign : 'right',
         },
-        bbar: ['->', '@cancel', '@apply'],
-        items: []
+        items: [],
+        buttons: ['@cancel', '@apply']
     }],
 
     // initComponent: function () {

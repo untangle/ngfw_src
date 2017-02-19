@@ -836,3 +836,10 @@ span.fa:before {
     // font-family: $custom-font;
     font-size: 12px;
 }
+
+
+.fa {
+    &-red {
+        color: red;
+    }
+}
