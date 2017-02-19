@@ -5,6 +5,7 @@ Ext.define('Ung.config.network.Network', {
     requires: [
         'Ung.config.network.NetworkController',
         'Ung.config.network.NetworkModel',
+        'Ung.config.network.Interface',
 
         // 'Ung.view.grid.Grid',
         // 'Ung.store.RuleConditions',

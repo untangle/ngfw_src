@@ -46,6 +46,7 @@ Ext.define('Ung.cmp.Grid', {
         type: 'cellmodel'
     },
     viewConfig: {
+        emptyText: '<p style="text-align: center; margin: 0; line-height: 2"><i class="fa fa-exclamation-triangle fa-2x"></i> <br/>No Rules! Add from the menu...</p>',
         stripeRows: false,
         getRowClass: function(record) {
             if (record.get('markedForDelete')) {

@@ -1,14 +1,18 @@
 Ext.define('Ung.config.email.Email', {
     extend: 'Ext.tab.Panel',
     alias: 'widget.config.email',
+
     requires: [
         'Ung.config.email.EmailController',
         'Ung.config.email.EmailTest',
+
         'Ung.store.Rule',
         'Ung.model.Rule',
         'Ung.cmp.Grid'
     ],
+
     controller: 'config.email',
+
     viewModel: {
         data: {
             globalSafeList: null,
@@ -29,6 +33,7 @@ Ext.define('Ung.config.email.Email', {
             }
         }
     },
+
     dockedItems: [{
         xtype: 'toolbar',
         weight: -10,
@@ -53,6 +58,7 @@ Ext.define('Ung.config.email.Email', {
             handler: 'saveSettings'
         }]
     }],
+
     items: [
         { xtype: 'config.email.outgoingserver' },
         { xtype: 'config.email.safelist' },
@@ -61,7 +67,9 @@ Ext.define('Ung.config.email.Email', {
 });
 Ext.define('Ung.config.email.EmailController', {
     extend: 'Ext.app.ViewController',
+
     alias: 'controller.config.email',
+
     control: {
         '#': {
             beforerender: 'loadSettings'
@@ -70,16 +78,21 @@ Ext.define('Ung.config.email.EmailController', {
             beforerender: 'loadQuarantine'
         }
     },
+
     mailSender: rpc.UvmContext.mailSender(),
     originalMailSender: null,
+
     smtpNode: rpc.nodeManager.node('untangle-casing-smtp'),
     safelistAdminView: null,
+
     loadSettings: function (view) {
         this.safelistAdminView =  this.smtpNode.getSafelistAdminView();
+
         // load mail settings
         this.mailSettings();
         this.getSafeList();
     },
+
     saveSettings: function () {
         var deferred = new Ext.Deferred(),
             invalidFields = [];
@@ -88,10 +101,12 @@ Ext.define('Ung.config.email.EmailController', {
                 invalidFields.push({ label: field.getFieldLabel(), error: field.getActiveError() });
             });
         });
+
         if (invalidFields.length > 0) {
             Ung.Util.invalidFormToast(invalidFields);
             deferred.reject('invalid fields');
         }
+
         var me = this, view = this.getView();
         view.setLoading('Saving ...');
         this.mailSender.setSettings(function(result, ex) {
@@ -107,6 +122,7 @@ Ext.define('Ung.config.email.EmailController', {
         }, me.getViewModel().get('mailSender'));
         return deferred.promise;
     },
+
     mailSettings: function () {
         var me = this;
         this.mailSender.getSettings(function (result, ex) {
@@ -116,10 +132,12 @@ Ext.define('Ung.config.email.EmailController', {
             console.log(me.getViewModel());
         });
     },
+
     testEmail: function () {
         var me = this, vm = this.getViewModel(),
             modifiedVal = Ext.encode(vm.get('mailSender')),
             originalVal = Ext.encode(me.originalMailSender);
+
         if (originalVal !== modifiedVal) {
             Ext.Msg.show({
                 title: 'Save Changes?'.t(),
@@ -142,6 +160,8 @@ Ext.define('Ung.config.email.EmailController', {
             Ext.create('Ung.config.email.EmailTest');
         }
     },
+
+
     // Safe List
     getSafeList: function () {
         var me = this;
@@ -151,6 +171,7 @@ Ext.define('Ung.config.email.EmailController', {
             me.getViewModel().set('globalSafeList', result);
         }, 'GLOBAL');
     },
+
     // Quarantine
     loadQuarantine: function () {
         var me = this;
@@ -159,23 +180,31 @@ Ext.define('Ung.config.email.EmailController', {
              me.getViewModel().set('smtpNodeSettings', result);
         });
     }
+
+
 });
 Ext.define('Ung.config.email.EmailTest', {
     extend: 'Ext.window.Window',
     width: 500,
     height: 300,
     modal: true,
+
     alias: 'widget.config.email.test',
+
     requires: [
         'Ung.config.email.EmailTestController'
     ],
+
     controller: 'config.email.test',
+
     title: 'Email Test'.t(),
     autoShow: true,
+
     layout: 'fit',
     plain: false,
     bodyBorder: false,
     border: false,
+
     items: [{
         xtype: 'form',
         // border: false,
@@ -212,6 +241,7 @@ Ext.define('Ung.config.email.EmailTest', {
                 hidden: '{processing === false}'
             }
         }],
+
         buttons: [{
             text: 'Cancel'.t(),
             handler: 'cancel'
@@ -221,16 +251,19 @@ Ext.define('Ung.config.email.EmailTest', {
             handler: 'sendMail'
         }]
     }],
+
     viewModel: {
         data: {
             processingIcon: null,
             processing: false
         },
     }
+
 });
 Ext.define('Ung.config.email.EmailTestController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.config.email.test',
+
     sendMail: function (btn) {
         var v = this.getView(), vm = this.getViewModel();
         btn.setDisabled(true);
@@ -250,14 +283,18 @@ Ext.define('Ung.config.email.EmailTestController', {
     cancel: function () {
         this.getView().close();
     }
+
 });
 Ext.define('Ung.config.email.view.OutgoingServer', {
     extend: 'Ext.form.Panel',
     alias: 'widget.config.email.outgoingserver',
     itemId: 'outgoingserver',
+
     viewModel: true,
     title: 'Outgoing Server'.t(),
+
     bodyPadding: 10,
+
     items: [{
         xtype: 'fieldset',
         title: 'Outgoing Email Server'.t(),
@@ -357,12 +394,15 @@ Ext.define('Ung.config.email.view.OutgoingServer', {
             handler: 'testEmail'
         }]
     }]
+
 });
 Ext.define('Ung.config.email.view.Quarantine', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.config.email.quarantine',
     itemId: 'quarantine',
+
     title: 'Quarantine'.t(),
+
     viewModel: {
         formulas: {
             maxHoldTime: function (get) {
@@ -378,7 +418,10 @@ Ext.define('Ung.config.email.view.Quarantine', {
             }
         }
     },
+
+
     layout: 'border',
+
     actions: {
         purge: {
             text: 'Purge Selected'.t()
@@ -387,6 +430,7 @@ Ext.define('Ung.config.email.view.Quarantine', {
             text: 'Release Selected'.t()
         }
     },
+
     items: [{
         region: 'center',
         border: false,
@@ -459,16 +503,21 @@ Ext.define('Ung.config.email.view.Quarantine', {
         split: true,
         border: false,
         layout: 'border',
+
         items: [{
             xtype: 'ungrid',
             region: 'center',
             title: 'Quarantinable Addresses'.t(),
+
             tbar: ['@add'],
             recordActions: ['@delete'],
+
             emptyRow: {
                 address: ''
             },
+
             bind: '{qAddresses}',
+
             columns: [{
                 header: 'Quarantinable Address'.t(),
                 flex: 1,
@@ -483,20 +532,26 @@ Ext.define('Ung.config.email.view.Quarantine', {
                     vtype: 'email'
                 }
             }]
+
         }, {
             xtype: 'ungrid',
             region: 'south',
             height: '50%',
             split: true,
             forceFit: true,
+
             title: 'Quarantine Forwards'.t(),
+
             tbar: ['@add'],
             recordActions: ['@delete'],
+
             emptyRow: {
                 address1: '',
                 address2: ''
             },
+
             bind: '{qForwards}',
+
             columns: [{
                 header: 'Distribution List Address'.t(),
                 dataIndex: 'address1',
@@ -524,28 +579,39 @@ Ext.define('Ung.config.email.view.Quarantine', {
                     allowBlank: false
                 }
             }]
+
         }]
     }]
+
 });
 Ext.define('Ung.config.email.view.SafeList', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.config.email.safelist',
     itemId: 'safelist',
+
     viewModel: true,
     title: 'Safe List'.t(),
+
     layout: 'border',
+
     items: [{
         xtype: 'ungrid',
         region: 'center',
+
         title: 'Global Safe List'.t(),
+
         tbar: ['@add'],
         recordActions: ['@delete'],
+
         // listProperty: 'settings.dnsSettings.staticEntries.list',
+
         emptyRow: {
             emailAddress: 'email@' + rpc.hostname + '.com',
             // javaClass: 'com.untangle.uvm.network.DnsStaticEntry'
         },
+
         bind: '{globalSL}',
+
         columns: [{
             header: 'Email Address'.t(),
             dataIndex: 'emailAddress',
@@ -561,11 +627,16 @@ Ext.define('Ung.config.email.view.SafeList', {
     }, {
         xtype: 'grid',
         region: 'south',
+
         height: '50%',
         split: true,
+
         title: 'Per User Safe Lists'.t(),
+
         // tbar: ['@add'],
+
         // bind: '{localServers}',
+
         columns: [{
             header: 'Account Address'.t(),
             dataIndex: 'emailAddress',
@@ -577,4 +648,5 @@ Ext.define('Ung.config.email.view.SafeList', {
             align: 'right'
         }],
     }]
+
 });

@@ -284,6 +284,13 @@ Ext.define('Ung.util.Util', {
         fields.forEach(function (field) {
             str.push('<span class="field-name">' + field.label + '</span>: <br/> <span class="field-error">' + field.error.replace(/<\/?[^>]+(>|$)/g, '') + '</span>');
         });
+
+        // var store = [];
+        // fields.forEach(function (field) {
+        //     console.log(field);
+        //     store.push({ label: field.getFieldLabel(), error: field.getActiveError().replace(/<\/?[^>]+(>|$)/g, ''), field: field });
+        // });
+
         Ext.toast({
             html: '<i class="fa fa-exclamation-triangle fa-lg"></i> <span style="font-weight: bold; font-size: 14px; color: yellow;">Check invalid fields!</span><br/><br/>' + str.join('<br/>'),
             bodyPadding: '10 10 10 45',
@@ -297,6 +304,24 @@ Ext.define('Ung.util.Util', {
             hideDuration: 0,
             paddingX: 10,
             paddingY: 50
+            // items: [{
+            //     xtype: 'dataview',
+            //     store: {
+            //         data: store
+            //     },
+            //     tpl:     '<tpl for=".">' +
+            //         '<div style="margin-bottom: 10px;">' +
+            //         '<span class="field-name">{label}</span>:' +
+            //         '<br/><span>{error}</span>' +
+            //         '</div>' +
+            //     '</tpl>',
+            //     itemSelector: 'div',
+            //     listeners: {
+            //         select: function (el, field) {
+            //             field.get('field').focus();
+            //         }
+            //     }
+            // }]
         });
     },
 
@@ -462,6 +487,26 @@ Ext.define('Ung.util.Util', {
 
         return data;
     },
+
+    validateForms: function (view) {
+        var invalidFields = [];
+
+        view.query('form[withValidation]').forEach(function (form) {
+            if (form.isDirty()) {
+                form.query('field{isValid()==false}').forEach(function (field) {
+                    invalidFields.push({ label: field.getFieldLabel(), error: field.getActiveError() });
+                    // invalidFields.push(field);
+                });
+            }
+        });
+
+        if (invalidFields.length > 0) {
+            Ung.Util.invalidFormToast(invalidFields);
+            return false;
+        }
+        return true;
+    }
+
 
 });
 Ext.define('Ung.util.Metrics', {
