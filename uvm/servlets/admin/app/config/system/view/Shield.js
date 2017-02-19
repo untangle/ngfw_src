@@ -17,7 +17,7 @@ Ext.define('Ung.config.system.view.Shield', {
         style: { fontSize: '12px' },
         items: [{
             xtype: 'checkbox',
-            boxLabel: 'Enable Shield'.t(),
+            boxLabel: '<strong>' + 'Enable Shield'.t() + '</strong>',
             bind: '{shieldSettings.shieldEnabled}'
         }]
     }],

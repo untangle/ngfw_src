@@ -354,7 +354,7 @@ cite {
     background: #333;
     border-radius: 5px;
     box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
-    max-width: 300px;
+    min-width: 400px;
     height: auto !important;
     z-index: 9999;
     &-body {
@@ -373,7 +373,7 @@ cite {
     .field-name {
         font-size: 14px;
         line-height: 1;
-        color: orange;
+        color: #FFF;
     }
     .field-error {
         color: #CCC;
@@ -828,4 +828,11 @@ span.fa:before {
 
 .cert-verification table {
     width: 100%;
+}
+
+
+.x-fieldset-header-default > .x-fieldset-header-text {
+    font-weight: bold;
+    // font-family: $custom-font;
+    font-size: 12px;
 }

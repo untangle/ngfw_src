@@ -156,11 +156,13 @@ Ext.define('Ung.config.system.SystemController', {
     saveSettings: function () {
         var v = this.getView();
         v.setLoading('Saving...');
+
         Ext.Deferred.sequence([
             this.setLanguage,
             this.setSystem,
             this.setTimezone,
-            this.setDate
+            this.setDate,
+            this.setShield
         ], this).then(function () {
             v.setLoading(false);
             Ung.Util.successToast('System settings saved!');
@@ -190,7 +192,7 @@ Ext.define('Ung.config.system.SystemController', {
     setSystem: function () {
         console.log('Saving System...');
         var deferred = new Ext.Deferred(),
-            vm = this.getView().down('#regional').getViewModel();
+            vm = this.getView().getViewModel();
         rpc.systemManager.setSettings(function (result, ex) { if (ex) { deferred.reject(ex); } deferred.resolve(); }, vm.get('systemSettings'));
         return deferred.promise;
     },
@@ -198,8 +200,8 @@ Ext.define('Ung.config.system.SystemController', {
     setTimezone: function () {
         console.log('Saving Timezone...');
         var deferred = new Ext.Deferred(),
-            vm = this.getView().down('#regional').getViewModel();
-        rpc.systemManager.setTimeZone(function (result, ex) { if (ex) { deferred.reject(ex); } deferred.resolve(); }, vm.get('tz'));
+            vm = this.getView().getViewModel();
+        rpc.systemManager.setTimeZone(function (result, ex) { if (ex) { deferred.reject(ex); } deferred.resolve(); }, vm.get('timeZone'));
         return deferred.promise;
     },
 
@@ -211,13 +213,32 @@ Ext.define('Ung.config.system.SystemController', {
         return deferred.promise;
     },
 
-    // setTimezone: function () {
-    //     console.log('Saving Timezone...');
-    //     var deferred = new Ext.Deferred(),
-    //         vm = this.getView().down('#regional').getViewModel();
-    //     rpc.systemManager.setTimeZone(function (result, ex) { if (ex) { deferred.reject(ex); } deferred.resolve(); }, vm.get('tz'));
-    //     return deferred.promise;
-    // }
+    setShield: function () {
+        var deferred = new Ext.Deferred(),
+            v = this.getView(), vm = this.getViewModel();
+        v.query('ungrid').forEach(function (grid) {
+            var store = grid.getStore();
+
+            /**
+             * Important!
+             * update custom grids only if are modified records or it was reordered via drag/drop
+             */
+            if (store.getModifiedRecords().length > 0 || store.isReordered) {
+                store.each(function (record) {
+                    if (record.get('markedForDelete')) {
+                        record.drop();
+                    }
+                });
+                store.isReordered = undefined;
+                vm.set(grid.listProperty, Ext.Array.pluck(store.getRange(), 'data'));
+                // store.commitChanges();
+            }
+        });
+        console.log('Saving Shield...');
+
+        rpc.nodeManager.node('untangle-node-shield').setSettings(function (result, ex) { if (ex) { deferred.reject(ex); } deferred.resolve(); }, vm.get('shieldSettings'));
+        return deferred.promise;
+    },
 
 
     // Support methods

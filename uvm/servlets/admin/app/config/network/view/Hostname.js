@@ -1,16 +1,17 @@
 Ext.define('Ung.config.network.view.Hostname', {
-    extend: 'Ext.panel.Panel',
+    extend: 'Ext.form.Panel',
     alias: 'widget.config.network.hostname',
-
+    withValidation: true, // requires validation on save
     viewModel: true,
 
     title: 'Hostname'.t(),
-    padding: 10,
-    // itemId: 'interfaces',
+    bodyPadding: 10,
+    scrollable: true,
 
     items: [{
         xtype: 'fieldset',
         title: 'Hostname'.t(),
+        padding: 10,
         items: [{
             xtype: 'container',
             layout: 'column',
@@ -24,9 +25,10 @@ Ext.define('Ung.config.network.view.Hostname', {
                 bind: '{settings.hostName}',
                 maskRe: /[a-zA-Z0-9\-]/
             }, {
-                xtype: 'label',
-                html: '(eg: gateway)'.t(),
-                cls: 'boxlabel'
+                xtype: 'displayfield',
+                value: '(eg: gateway)'.t(),
+                margin: '0 0 0 5'
+                // cls: 'boxlabel'
             }]
         },{
             xtype: 'container',
@@ -41,22 +43,28 @@ Ext.define('Ung.config.network.view.Hostname', {
                 name: 'DomainName',
                 bind: '{settings.domainName}'
             }, {
-                xtype: 'label',
-                html: '(eg: example.com)',
-                cls: 'boxlabel'
+                xtype: 'displayfield',
+                value: '(eg: example.com)'.t(),
+                margin: '0 0 0 5'
+                // cls: 'boxlabel'
             }]
         }]
     }, {
         xtype: 'fieldset',
         title: 'Dynamic DNS Service Configuration'.t(),
+        checkboxToggle: true,
+        collapsible: true,
+        collapsed: true,
+        padding: 10,
+        checkbox: {
+            bind: {
+                value: '{settings.dynamicDnsServiceEnabled}'
+            }
+        },
         defaults: {
             labelAlign: 'right'
         },
         items: [{
-            xtype: 'checkbox',
-            fieldLabel: 'Enabled',
-            bind: '{settings.dynamicDnsServiceEnabled}',
-        }, {
             xtype: 'combo',
             fieldLabel: 'Service'.t(),
             bind: '{settings.dynamicDnsServiceName}',
@@ -95,7 +103,7 @@ Ext.define('Ung.config.network.view.Hostname', {
             html: Ext.String.format('The Public Address is the address/URL that provides a public location for the {0} Server. This address will be used in emails sent by the {0} Server to link back to services hosted on the {0} Server such as Quarantine Digests and OpenVPN Client emails.'.t(), rpc.companyName)
         }, {
             xtype: 'radio',
-            boxLabel: 'Use IP address from External interface (default)'.t(),
+            boxLabel: '<strong>' + 'Use IP address from External interface (default)'.t() + '</strong>',
             name: 'publicUrl',
             inputValue: 'external'
         }, {
@@ -104,7 +112,7 @@ Ext.define('Ung.config.network.view.Hostname', {
             html: Ext.String.format('This works if your {0} Server has a routable public static IP address.'.t(), rpc.companyName)
         }, {
             xtype: 'radio',
-            boxLabel: 'Use Hostname'.t(),
+            boxLabel: '<strong>' + 'Use Hostname'.t() + '</strong>',
             name: 'publicUrl',
             inputValue: 'hostname'
         }, {
@@ -119,7 +127,7 @@ Ext.define('Ung.config.network.view.Hostname', {
             }
         }, {
             xtype: 'radio',
-            boxLabel: 'Use Manually Specified Address'.t(),
+            boxLabel: '<strong>' + 'Use Manually Specified Address'.t() + '</strong>',
             name: 'publicUrl',
             inputValue: 'address_and_port'
         }, {
