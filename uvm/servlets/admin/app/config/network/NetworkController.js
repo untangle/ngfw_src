@@ -4,34 +4,80 @@ Ext.define('Ung.config.network.NetworkController', {
     alias: 'controller.config.network',
 
     control: {
-        '#': {
-            beforerender: 'loadSettings'
-        },
-        '#interfaces': {
-            beforeactivate: 'onInterfaces',
+        '#': { afterrender: 'loadSettings' },
+        '#interfaces': { beforeactivate: 'onInterfaces' },
+        '#interfaceStatus': { beforeedit: function () { return false; } },
+        'networktest': { afterrender: 'networkTestRender' }
+    },
 
-        },
-        '#interfacesGrid': {
-            // select: 'onInterfaceSelect'
-        },
-        '#interfaceStatus': {
-            // activate: 'getInterfaceStatus',
-            beforeedit: function () { return false; }
-        },
-        '#interfaceArp': {
-        },
-        'networktest': {
-            afterrender: 'networkTestRender'
-        }
-        // '#apply': {
-        //     click: 'saveSettings'
-        // }
+    getNetworkSettings: function () {
+        var deferred = new Ext.Deferred();
+        rpc.networkManager.getNetworkSettings(function (result, ex) {
+            if (ex) { deferred.reject(ex); }
+            deferred.resolve(result);
+        });
+        return deferred.promise;
+    },
+
+    getInterfaceStatus: function () {
+        var deferred = new Ext.Deferred();
+        rpc.networkManager.getInterfaceStatus(function (result, ex) {
+            if (ex) { deferred.reject(ex); }
+            deferred.resolve(result);
+        });
+        return deferred.promise;
+    },
+
+    getDeviceStatus: function () {
+        var deferred = new Ext.Deferred();
+        rpc.networkManager.getDeviceStatus(function (result, ex) {
+            if (ex) { deferred.reject(ex); }
+            deferred.resolve(result);
+        });
+        return deferred.promise;
+    },
+
+    loadSettings: function () {
+        var v = this.getView(), vm = this.getViewModel();
+        v.setLoading(true);
+        Ext.Deferred.sequence([
+            this.getNetworkSettings,
+            this.getInterfaceStatus,
+            this.getDeviceStatus
+        ], this).then(function (result) {
+            v.setLoading(false);
+            var intf, intfStatus, devStatus;
+            result[0].interfaces.list.forEach(function (intf) {
+                intfStatus = Ext.Array.findBy(result[1].list, function (intfSt) {
+                    return intfSt.interfaceId === intf.interfaceId;
+                });
+                delete intfStatus.javaClass;
+                Ext.apply(intf, intfStatus);
+
+                devStatus = Ext.Array.findBy(result[2].list, function (devSt) {
+                    return devSt.deviceName === intf.physicalDev;
+                });
+                delete devStatus.javaClass;
+                Ext.apply(intf, devStatus);
+            });
+            vm.set('settings', result[0]);
+        }, function (ex) {
+            v.setLoading(false);
+            console.error(ex);
+            Ung.Util.exceptionToast(ex);
+        });
     },
 
     saveSettings: function () {
         var view = this.getView();
         var vm = this.getViewModel();
         var me = this;
+
+        if (!Ung.Util.validateForms(view)) {
+            return;
+        }
+
+
         view.setLoading('Saving ...');
         // used to update all tabs data
         view.query('ungrid').forEach(function (grid) {
@@ -62,96 +108,18 @@ Ext.define('Ung.config.network.NetworkController', {
         }, vm.get('settings'));
     },
 
-    /**
-     * Loads netowrk settings
-     */
-    loadSettings: function () {
-        var me = this;
-        rpc.networkManager.getNetworkSettings(function (result, ex) {
-            if (ex) { console.error(ex); Ung.Util.exceptionToast(ex); return; }
-            me.getViewModel().set('settings', result);
-            me.loadInterfaceStatusAndDevices();
-            console.log(result);
-        });
-    },
-
-    loadInterfaceStatusAndDevices: function () {
-        var me = this;
-        var vm = this.getViewModel(),
-            interfaces = vm.get('settings.interfaces.list'),
-            i, j, intfStatus, devStatus;
-        // load status
-        // vm.set('settings.interfaces.list[0].mbit', 2000);
-        // vm.notify();
-        rpc.networkManager.getInterfaceStatus(function (result, ex) {
-            if (ex) {
-                console.log(ex);
-                Ung.Util.exceptionToast(ex);
-                return;
-            }
-            for (i = 0; i < interfaces.length; i += 1) {
-                Ext.apply(interfaces[i], {
-                    'v4Address': null,
-                    'v4Netmask': null,
-                    'v4Gateway': null,
-                    'v4Dns1': null,
-                    'v4Dns2': null,
-                    'v4PrefixLength': null,
-                    'v6Address': null,
-                    'v6Gateway': null,
-                    'v6PrefixLength': null
-                });
-
-                for (j = 0; j < result.list.length; j += 1) {
-                    intfStatus = result.list[j];
-                    if (intfStatus.interfaceId === vm.get('settings.interfaces.list')[i].interfaceId) {
-                        Ext.apply(interfaces[i], {
-                            'v4Address': intfStatus.v4Address,
-                            'v4Netmask': intfStatus.v4Netmask,
-                            'v4Gateway': intfStatus.v4Gateway,
-                            'v4Dns1': intfStatus.v4Dns1,
-                            'v4Dns2': intfStatus.v4Dns2,
-                            'v4PrefixLength': intfStatus.v4PrefixLength,
-                            'v6Address': intfStatus.v6Address,
-                            'v6Gateway': intfStatus.v6Gateway,
-                            'v6PrefixLength': intfStatus.v6PrefixLength
-                        });
-                    }
-                }
-            }
-            vm.getStore('interfaces').reload();
-            me.setPortForwardWarnings();
-        });
-
-        rpc.networkManager.getDeviceStatus(function (result, ex) {
-            if (ex) { console.error(ex); Ung.Util.exceptionToast(ex); return; }
-            for (i = 0; i < interfaces.length; i += 1) {
-                Ext.apply(interfaces[i], {
-                    'deviceName': null,
-                    'macAddress': null,
-                    'duplex': null,
-                    'vendor': null,
-                    'mbit': null,
-                    'connected': null
-                });
-
-                for (j = 0; j < result.list.length; j += 1) {
-                    devStatus = result.list[j];
-                    if (devStatus.deviceName === interfaces[i].physicalDev) {
-                        Ext.apply(interfaces[i], {
-                            'deviceName': devStatus.deviceName,
-                            'macAddress': devStatus.macAddress,
-                            'duplex': devStatus.duplex,
-                            'vendor': devStatus.vendor,
-                            'mbit': devStatus.mbit,
-                            'connected': devStatus.connected
-                        });
-                    }
-                }
-            }
-            vm.getStore('interfaces').reload();
-        });
-    },
+    // /**
+    //  * Loads netowrk settings
+    //  */
+    // loadSettings: function () {
+    //     var me = this;
+    //     rpc.networkManager.getNetworkSettings(function (result, ex) {
+    //         if (ex) { console.error(ex); Ung.Util.exceptionToast(ex); return; }
+    //         me.getViewModel().set('settings', result);
+    //         me.loadInterfaceStatusAndDevices();
+    //         console.log(result);
+    //     });
+    // },
 
     onInterfaces: function () {
         var me = this;
@@ -165,7 +133,7 @@ Ext.define('Ung.config.network.NetworkController', {
                 },
                 get: function (intf) {
                     if (intf) {
-                        me.getInterfaceStatus(intf.get('symbolicDev'));
+                        me.getSelectedInterfaceStatus(intf.get('symbolicDev'));
                         me.getInterfaceArp(intf.get('symbolicDev'));
                     }
                     return intf;
@@ -236,7 +204,7 @@ Ext.define('Ung.config.network.NetworkController', {
     //     this.getViewModel().set('si', record.getData());
     // },
 
-    getInterfaceStatus: function (symbolicDev) {
+    getSelectedInterfaceStatus: function (symbolicDev) {
         var vm = this.getViewModel(),
             command1 = 'ifconfig ' + symbolicDev + ' | grep "Link\\|packets" | grep -v inet6 | tr "\\n" " " | tr -s " " ',
             command2 = 'ifconfig ' + symbolicDev + ' | grep "inet addr" | tr -s " " | cut -c 7- ',

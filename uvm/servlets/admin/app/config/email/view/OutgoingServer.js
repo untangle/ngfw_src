@@ -23,9 +23,9 @@ Ext.define('Ung.config.email.view.OutgoingServer', {
             columns: 1,
             vertical: true,
             items: [
-                { boxLabel: 'Send email using the cloud hosted mail relay server'.t(), inputValue: 'RELAY' },
-                { boxLabel: 'Send email directly'.t(), inputValue: 'DIRECT' },
-                { boxLabel: 'Send email using the specified SMTP Server'.t(), inputValue: 'CUSTOM' }
+                { boxLabel: '<strong>' + 'Send email using the cloud hosted mail relay server'.t() + '</strong>', inputValue: 'RELAY' },
+                { boxLabel: '<strong>' + 'Send email directly'.t() + '</strong>', inputValue: 'DIRECT' },
+                { boxLabel: '<strong>' + 'Send email using the specified SMTP Server'.t() + '</strong>', inputValue: 'CUSTOM' }
             ]
         }, {
             xtype: 'fieldset',

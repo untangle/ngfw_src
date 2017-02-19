@@ -164,6 +164,10 @@ Ext.define('Ung.config.administration.AdministrationController', {
             view = this.getView(),
             vm = this.getViewModel();
 
+        if (!Ung.Util.validateForms(view)) {
+            return;
+        }
+
         view.setLoading('Saving ...');
 
         view.query('ungrid').forEach(function (grid) {
@@ -224,6 +228,7 @@ Ext.define('Ung.config.administration.AdministrationController', {
     setSystemSettings: function () {
         var me = this,
             deferred = new Ext.Deferred();
+        console.log(me.getViewModel().get('systemSettings'));
         rpc.systemManager.setSettings(function(result, ex) {
             if (ex) { deferred.reject(ex); }
             deferred.resolve(result);

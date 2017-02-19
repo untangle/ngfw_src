@@ -1,7 +1,7 @@
 Ext.define('Ung.config.network.view.Services', {
-    extend: 'Ext.panel.Panel',
+    extend: 'Ext.form.Panel',
     alias: 'widget.config.network.services',
-
+    withValidation: true, // requires validation on save
     viewModel: true,
 
     title: 'Services'.t(),
@@ -18,7 +18,8 @@ Ext.define('Ung.config.network.view.Services', {
         allowDecimals: false,
         minValue: 0,
         allowBlank: false,
-        vtype: 'port'
+        vtype: 'port',
+        labelAlign: 'right'
     },
 
     items: [{
@@ -28,6 +29,7 @@ Ext.define('Ung.config.network.view.Services', {
     }, {
         xtype: 'numberfield',
         fieldLabel: 'HTTPS port'.t(),
+        width: 200,
         name: 'httpsPort',
         bind: '{settings.httpsPort}',
         blankText: 'You must provide a valid port.'.t()
@@ -38,6 +40,7 @@ Ext.define('Ung.config.network.view.Services', {
     }, {
         xtype: 'numberfield',
         fieldLabel: 'HTTP port'.t(),
+        width: 200,
         name: 'httpPort',
         bind: '{settings.httpPort}',
         blankText: 'You must provide a valid port.'.t(),

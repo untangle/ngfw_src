@@ -1,171 +1,192 @@
 Ext.define('Ung.config.administration.view.Snmp', {
-    extend: 'Ext.panel.Panel',
+    extend: 'Ext.form.Panel',
     alias: 'widget.config.administration.snmp',
+    withValidation: true, // requires validation on save
     itemId: 'snmp',
 
     viewModel: {
         formulas: {
-            snmpEnabled: function (get) {
-                return get('systemSettings.snmpSettings.enabled');
+            snmpEnabled: {
+                get: function (get) {
+                    return get('systemSettings.snmpSettings.enabled');
+                },
+                set: function (value) {
+                    this.set('systemSettings.snmpSettings.enabled', value);
+                    if (!value) {
+                        this.set('systemSettings.snmpSettings.sendTraps', value);
+                        this.set('systemSettings.snmpSettings.v3Enabled', value);
+                    }
+                }
             },
-            trapsEnabled: function (get) {
-                return get('systemSettings.snmpSettings.sendTraps');
+            communityString: {
+                get: function (get) {
+                    var val = get('systemSettings.snmpSettings.communityString');
+                    return  val === 'CHANGE_ME' ? 'CHANGE_ME'.t() : val;
+                },
+                set: function (value) {
+                    this.set('systemSettings.snmpSettings.communityString', value);
+                }
             },
-            v3Enabled: function (get) {
-                return get('systemSettings.snmpSettings.v3Enabled');
+            sysContact: {
+                get: function (get) {
+                    var val = get('systemSettings.snmpSettings.sysContact');
+                    return  val === 'MY_CONTACT_INFO' ? 'MY_CONTACT_INFO'.t() : val;
+                },
+                set: function (value) {
+                    this.set('systemSettings.snmpSettings.sysContact', value);
+                }
             },
-            communityString: function (get) {
-                var val = get('systemSettings.snmpSettings.communityString');
-                return  val === 'CHANGE_ME' ? 'CHANGE_ME'.t() : val;
+            sysLocation: {
+                get: function (get) {
+                    var val = get('systemSettings.snmpSettings.sysLocation');
+                    return  val === 'MY_LOCATION' ? 'MY_LOCATION'.t() : val;
+                },
+                set: function (value) {
+                    this.set('systemSettings.snmpSettings.sysLocation', value);
+                }
             },
-            sysContact: function (get) {
-                var val = get('systemSettings.snmpSettings.sysContact');
-                return  val === 'MY_CONTACT_INFO' ? 'MY_CONTACT_INFO'.t() : val;
-            },
-            sysLocation: function (get) {
-                var val = get('systemSettings.snmpSettings.sysLocation');
-                return  val === 'MY_LOCATION' ? 'MY_LOCATION'.t() : val;
-            },
-            trapCommunity: function (get) {
-                var val = get('systemSettings.snmpSettings.trapCommunity');
-                return  val === 'MY_TRAP_COMMUNITY' ? 'MY_TRAP_COMMUNITY'.t() : val;
+            trapCommunity: {
+                get: function (get) {
+                    var val = get('systemSettings.snmpSettings.trapCommunity');
+                    return  val === 'MY_TRAP_COMMUNITY' ? 'MY_TRAP_COMMUNITY'.t() : val;
+                },
+                set: function (value) {
+                    this.set('systemSettings.snmpSettings.trapCommunity', value);
+                }
             }
         }
     },
 
     title: 'SNMP'.t(),
-
-    tbar: [{
-        xtype: 'checkbox',
-        padding: '8 5',
-        boxLabel: 'Enable SNMP Monitoring'.t(),
-        bind: '{systemSettings.snmpSettings.enabled}'
-    }],
-
-    defaults: {
-        xtype: 'textfield',
-        // width: 600,
-        labelWidth: 300,
-        labelAlign: 'right',
-        disabled: true,
-        msgTarget: 'side'
-    },
-
+    scrollable: 'y',
     bodyPadding: 10,
 
-    items: [{
-        fieldLabel: 'Community'.t(),
-        allowBlank: false,
-        blankText: 'An SNMP Community must be specified.'.t(),
-        bind: {
-            value: '{communityString}',
-            disabled: '{!snmpEnabled}'
-        }
-    }, {
-        fieldLabel: 'System Contact'.t(),
-        bind: {
-            value: '{sysContact}',
-            disabled: '{!snmpEnabled}'
-        }
-    }, {
-        fieldLabel: 'System Location'.t(),
-        bind: {
-            value: '{sysLocation}',
-            disabled: '{!snmpEnabled}'
-        }
-    }, {
-        xtype: 'checkbox',
-        fieldLabel: 'Enable Traps'.t(),
-        bind: {
-            value: '{systemSettings.snmpSettings.sendTraps}',
-            disabled: '{!snmpEnabled}'
-        }
-    }, {
+    defaults: {
         xtype: 'fieldset',
-        border: false,
-        // layout: 'anchor',
-        padding: 0,
+        width: 500,
+        layout: 'anchor',
+        padding: 10,
+        checkboxToggle: true,
+        collapsible: true,
+        collapsed: true,
         defaults: {
             xtype: 'textfield',
-            // width: 500,
-            labelWidth: 300,
-            labelAlign: 'right',
+            anchor: '100%',
+            labelWidth: 250,
             msgTarget: 'side'
+        }
+    },
+
+    items: [{
+        title: 'Enable SNMP Monitoring'.t(),
+        checkbox: {
+            bind: '{snmpEnabled}'
         },
+
+        items: [{
+            fieldLabel: 'Community'.t(),
+            allowBlank: false,
+            blankText: 'An SNMP Community must be specified.'.t(),
+            bind: {
+                value: '{communityString}',
+                disabled: '{!snmpEnabled}'
+            }
+        }, {
+            fieldLabel: 'System Contact'.t(),
+            bind: {
+                value: '{sysContact}',
+                disabled: '{!snmpEnabled}'
+            }
+        }, {
+            fieldLabel: 'System Location'.t(),
+            bind: {
+                value: '{sysLocation}',
+                disabled: '{!snmpEnabled}'
+            }
+        }]
+    }, {
+        title: 'Enable Traps'.t(),
+        checkbox: {
+            bind: '{systemSettings.snmpSettings.sendTraps}'
+        },
+        disabled: true,
         bind: {
-            disabled: '{!snmpEnabled || !trapsEnabled}'
+            disabled: '{!snmpEnabled}'
         },
         items: [{
             fieldLabel: 'Community'.t(),
             allowBlank: false,
             blankText: 'An Trap Community must be specified.'.t(),
-            bind: '{systemSettings.snmpSettings.trapCommunity}'
+            bind: {
+                value: '{systemSettings.snmpSettings.trapCommunity}',
+                disabled: '{!systemSettings.snmpSettings.sendTraps}'
+            }
         }, {
             fieldLabel: 'Host'.t(),
             allowBlank: false,
             blankText: 'An Trap Host must be specified.'.t(),
-            bind: '{systemSettings.snmpSettings.trapHost}'
+            bind: {
+                value: '{systemSettings.snmpSettings.trapHost}',
+                disabled: '{!systemSettings.snmpSettings.sendTraps}'
+            }
         }, {
             xtype: 'numberfield',
             fieldLabel: 'Port'.t(),
-            bind: '{systemSettings.snmpSettings.trapPort}',
             allowDecimals: false,
             minValue: 0,
             allowBlank: false,
             blankText: 'You must provide a valid port.'.t(),
-            vtype: 'port'
+            vtype: 'port',
+            bind: {
+                value: '{systemSettings.snmpSettings.trapPort}',
+                disabled: '{!systemSettings.snmpSettings.sendTraps}'
+            }
         }]
     }, {
-        xtype: 'checkbox',
-        fieldLabel: 'Enable SNMP v3'.t(),
-        bind: {
-            value: '{systemSettings.snmpSettings.v3Enabled}',
-            disabled: '{!snmpEnabled}'
-        }
-    }, {
-        xtype: 'fieldset',
-        border: false,
-        // layout: 'anchor',
-        padding: 0,
-        defaults: {
-            xtype: 'textfield',
-            // width: 500,
-            labelWidth: 300,
-            labelAlign: 'right',
-            msgTarget: 'side'
+        title: 'Enable SNMP v3'.t(),
+        checkbox: {
+            bind: '{systemSettings.snmpSettings.v3Enabled}'
         },
+        disabled: true,
         bind: {
-            disabled: '{!snmpEnabled || !v3Enabled}'
+            disabled: '{!snmpEnabled}'
         },
         items: [{
             fieldLabel: 'Username'.t(),
             allowBlank: false,
             blankText: 'Username must be specified.'.t(),
-            bind: '{systemSettings.snmpSettings.v3Username}'
+            bind: {
+                value: '{systemSettings.snmpSettings.v3Username}',
+                disabled: '{!systemSettings.snmpSettings.v3Enabled}'
+            }
         }, {
             xtype: 'combo',
-            // width: 300,
             fieldLabel: 'Authentication Protocol'.t(),
             store: [['sha', 'SHA'.t()], ['md5', 'MD5'.t()]],
             editable: false,
             queryMode: 'local',
-            // items: [
-            //     { boxLabel: 'SHA', name: 'rb', inputValue: 'sha' },
-            //     { boxLabel: 'MD5', name: 'rb', inputValue: 'md5' }
-            // ],
-            bind: '{systemSettings.snmpSettings.v3AuthenticationProtocol}'
+            bind: {
+                value: '{systemSettings.snmpSettings.v3AuthenticationProtocol}',
+                disabled: '{!systemSettings.snmpSettings.v3Enabled}'
+            }
         }, {
             fieldLabel: 'Authentication Passphrase'.t(),
             inputType: 'password',
-            bind: '{systemSettings.snmpSettings.v3AuthenticationPassphrase}',
             allowBlank: false,
             blankText: 'Authentication Passphrase must be specified.'.t(),
+            bind: {
+                value: '{systemSettings.snmpSettings.v3AuthenticationPassphrase}',
+                disabled: '{!systemSettings.snmpSettings.v3Enabled}'
+            }
             // validator: passwordValidator,
         }, {
             fieldLabel: 'Confirm Authentication Passphrase'.t(),
             inputType: 'password',
             allowBlank: false,
-            blankText: 'Confirm Authentication Passphrase must be specified.'.t()
+            blankText: 'Confirm Authentication Passphrase must be specified.'.t(),
+            bind: {
+                disabled: '{!systemSettings.snmpSettings.v3Enabled}'
+            }
             // validator: passwordValidator,
         }, {
             xtype: 'combo',
@@ -173,24 +194,36 @@ Ext.define('Ung.config.administration.view.Snmp', {
             store: [['des', 'DES'.t()], ['aes', 'AES'.t()]],
             editable: false,
             queryMode: 'local',
-            bind: '{systemSettings.snmpSettings.v3PrivacyProtocol}'
+            bind: {
+                value: '{systemSettings.snmpSettings.v3PrivacyProtocol}',
+                disabled: '{!systemSettings.snmpSettings.v3Enabled}'
+            }
         }, {
             fieldLabel: 'Privacy Passphrase'.t(),
             inputType: 'password',
-            bind: '{systemSettings.snmpSettings.v3PrivacyPassphrase}',
             allowBlank: false,
             blankText: 'Privacy Passphrase must be specified.'.t(),
+            bind: {
+                value: '{systemSettings.snmpSettings.v3PrivacyPassphrase}',
+                disabled: '{!systemSettings.snmpSettings.v3Enabled}'
+            }
             // validator: passwordValidator,
         }, {
             fieldLabel: 'Confirm Privacy Passphrase'.t(),
             inputType: 'password',
             allowBlank: false,
             blankText: 'Confirm Privacy Passphrase must be specified.'.t(),
+            bind: {
+                disabled: '{!systemSettings.snmpSettings.v3Enabled}'
+            }
             // validator: passwordValidator,
         }, {
             xtype: 'checkbox',
             fieldLabel: 'Require only SNMP v3'.t(),
-            bind: '{systemSettings.snmpSettings.v3Required}'
+            bind: {
+                value: '{systemSettings.snmpSettings.v3Required}',
+                disabled: '{!systemSettings.snmpSettings.v3Enabled}'
+            }
         }]
     }]
 
