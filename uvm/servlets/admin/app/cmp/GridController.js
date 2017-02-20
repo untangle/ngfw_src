@@ -135,7 +135,7 @@ Ext.define('Ung.cmp.GridController', {
             valueRenderer = [];
             if (conds[i].conditionType === 'SRC_INTF' || conds[i].conditionType === 'DST_INTF') {
                 conds[i].value.toString().split(',').forEach(function (intfff) {
-                    valueRenderer.push(Ung.Util.interfacesListNamesMap()[intfff]);
+                    valueRenderer.push(Util.interfacesListNamesMap()[intfff]);
                 });
             } else {
                 valueRenderer = conds[i].value.toString().split(',');

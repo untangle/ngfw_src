@@ -15,7 +15,7 @@ Ext.define('Ung.widget.ReportModel', {
         timeframe: {
             get: function(get) {
                 return get('widget.timeframe');
-                //return Ung.util.Services.secondsToString(get('widget.timeframe'));
+                //return Util.Services.secondsToString(get('widget.timeframe'));
             }
         }
     }

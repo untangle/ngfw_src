@@ -3,7 +3,7 @@ Ext.define('Ung.controller.Global', {
     namespace: 'Ung',
 
     requires: [
-        'Ung.rpc.Rpc',
+        'Ung.util.Rpc',
         'Ung.util.Util',
         'Ung.util.Metrics',
         'Ung.view.main.Main',

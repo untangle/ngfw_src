@@ -81,7 +81,7 @@ Ext.define('Ung.cmp.EditorFields', {
         xtype: 'combo',
         fieldLabel: 'Netmask/Prefix'.t(),
         bind: '{record.prefix}',
-        store: Ung.Util.getV4NetmaskList(false),
+        store: Util.getV4NetmaskList(false),
         queryMode: 'local',
         editable: false
     },

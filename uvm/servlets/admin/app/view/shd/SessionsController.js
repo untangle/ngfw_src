@@ -45,16 +45,13 @@ Ext.define('Ung.view.shd.SessionsController', {
         var me = this,
             grid = me.getView().down('#list');
         grid.getView().setLoading(true);
-        rpc.sessionMonitor.getMergedSessions(function (result, exception) {
-            grid.getView().setLoading(false);
-            if (exception) {
-                Ung.Util.exceptionToast(exception);
-                return;
-            }
-            Ext.getStore('sessions').loadData(result.list);
-            grid.getSelectionModel().select(0);
-            // grid.getStore().setData(result.list);
-        });
+        Rpc.asyncData('rpc.sessionMonitor.getMergedSessions')
+            .then(function(result) {
+                grid.getView().setLoading(false);
+                Ext.getStore('sessions').loadData(result.list);
+                grid.getSelectionModel().select(0);
+                // grid.getStore().setData(result.list);
+            });
     },
 
     onSelect: function (grid, record) {

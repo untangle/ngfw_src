@@ -60,7 +60,8 @@ Ext.define('Ung.view.apps.AppsController', {
         console.log('on activate');
         var me = this;
         var vm = this.getViewModel();
-        rpc.nodeManager.getAppsViews(function(result, ex) {
+
+        Rpc.asyncData('rpc.nodeManager.getAppsViews').then(function(result) {
             console.log(result);
             var nodes = [];
             vm.getStore('apps').removeAll();
@@ -188,14 +189,10 @@ Ext.define('Ung.view.apps.AppsController', {
      */
     onInstallNode: function (view, record) {
         record.set('status', 'installing');
-        rpc.nodeManager.instantiate(function (result, ex) {
-            if (ex) {
-                record.set('status', 'available');
-                console.log(ex);
-                return;
-            }
+        Rpc.asyncData('rpc.nodeManager.instantiate', record.get('name'), 1)
+        .then(function (result) {
             record.set('status', 'installed');
-        }, record.get('name'), 1);
+        });
     }
 
 });

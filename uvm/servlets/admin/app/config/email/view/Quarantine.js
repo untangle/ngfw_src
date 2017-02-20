@@ -7,31 +7,34 @@ Ext.define('Ung.config.email.view.Quarantine', {
 
     viewModel: {
         formulas: {
-            maxHoldTime: function (get) {
-                return get('smtpNodeSettings.quarantineSettings.maxMailIntern') / (1440*60*1000);
+            maxHoldTime: {
+                get: function (get) { return get('smtpSettings.quarantineSettings.maxMailIntern') / (1440*60*1000); },
+                set: function (value) { this.set('smtpSettings.quarantineSettings.maxMailIntern', value * (1440*60*1000)); }
+            },
+            digestHour: {
+                get: function (get) {
+                    var date = new Date();
+                    date.setHours(get('smtpSettings.quarantineSettings.digestHourOfDay'));
+                    date.setMinutes(get('smtpSettings.quarantineSettings.digestMinuteOfDay'));
+                    return date;
+                },
+                set: function (value) {
+                    this.set('smtpSettings.quarantineSettings.digestHourOfDay', value.getHours());
+                    this.set('smtpSettings.quarantineSettings.digestMinuteOfDay', value.getMinutes());
+                }
+            },
+            quarantineTotalDisk: function (get) {
+                return Ext.String.format('Total Disk Space Used: {0} MB'.t(), get('inboxesTotalSize')/(1024 * 1024));
             }
         },
         stores: {
-            qAddresses: {
-                data: '{smtpNodeSettings.quarantineSettings.allowedAddressPatterns.list}'
-            },
-            qForwards: {
-                data: '{smtpNodeSettings.quarantineSettings.addressRemaps.list}'
-            }
+            qInboxes: { data: '{inboxesList.list}' },
+            qAddresses: { data: '{smtpSettings.quarantineSettings.allowedAddressPatterns.list}' },
+            qForwards: { data: '{smtpSettings.quarantineSettings.addressRemaps.list}' }
         }
     },
-
 
     layout: 'border',
-
-    actions: {
-        purge: {
-            text: 'Purge Selected'.t()
-        },
-        release: {
-            text: 'Release Selected'.t()
-        }
-    },
 
     items: [{
         region: 'center',
@@ -44,8 +47,7 @@ Ext.define('Ung.config.email.view.Quarantine', {
             xtype: 'form',
             bodyPadding: 20,
             defaults: {
-                labelWidth: 250,
-                labelAlign: 'right'
+                labelWidth: 250
             },
             items: [{
                 xtype: 'numberfield',
@@ -53,35 +55,61 @@ Ext.define('Ung.config.email.view.Quarantine', {
                 allowBlank: false,
                 minValue: 0,
                 maxValue: 99,
-                // regex: /^([0-9]|[0-9][0-9])$/,
-                // regexText: 'Maximum Holding Time must be a number in range 0-99'.t(),
+                regex: /^([0-9]|[0-9][0-9])$/,
+                regexText: 'Maximum Holding Time must be a number in range 0-99'.t(),
                 bind: '{maxHoldTime}'
             }, {
                 xtype: 'checkbox',
                 fieldLabel: 'Send Daily Quarantine Digest Emails'.t(),
-                bind: '{smtpNodeSettings.quarantineSettings.sendDailyDigests}'
+                bind: '{smtpSettings.quarantineSettings.sendDailyDigests}'
             }, {
                 xtype: 'timefield',
                 fieldLabel: 'Quarantine Digest Sending Time'.t(),
                 allowBlank: false,
-                increment: 1,
-                bind: '{smtpNodeSettings.quarantineSettings.digestHourOfDay}'
+                editable: false,
+                increment: 30,
+                bind: '{digestHour}'
             }, {
                 xtype: 'component',
                 margin: '10 0 0 0',
-                bind: {
-                    html: '{smtpNodeSettings.quarantineSettings.maxMailIntern}'
-                }
-                //html: Ext.String.format('Users can also request Quarantine Digest Emails manually at this link: <b>https://{0}/quarantine/</b>'.t(), rpc.networkManager.getPublicUrl())
+                html: Ext.String.format('Users can also request Quarantine Digest Emails manually at this link: <b>https://{0}/quarantine/</b>'.t(), rpc.networkManager.getPublicUrl())
             }]
         }, {
             xtype: 'grid',
+            reference: 'inboxesGrid',
             title: 'User Quarantines'.t(),
             flex: 1,
-            tbar: ['@purge', '@release', '->', {
+
+            viewConfig: {
+                emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-exclamation-triangle fa-2x"></i> <br/>No Data!</p>',
+            },
+            selModel: {
+                selType: 'checkboxmodel'
+            },
+
+            bind: '{qInboxes}',
+
+            tbar: [{
+                text: 'Purge Selected'.t(),
+                iconCls: 'fa fa-circle fa-red',
+                handler: 'purgeInboxes',
+                disabled: true,
+                bind: {
+                    disabled: '{!inboxesGrid.selection}'
+                }
+            }, {
+                text: 'Release Selected'.t(),
+                iconCls: 'fa fa-circle fa-green',
+                handler: 'releaseInboxes',
+                disabled: true,
+                bind: {
+                    disabled: '{!inboxesGrid.selection}'
+                }
+            }, '->', {
                 xtype: 'tbtext',
-                html: 'to see'
-                // html: Ext.String.format('Total Disk Space Used: {0} MB'.t(), i18n.numberFormat((this.getQuarantineMaintenenceView().getInboxesTotalSize()/(1024 * 1024)).toFixed(3)))
+                bind: {
+                    text: '{quarantineTotalDisk}'
+                }
             }],
             columns: [{
                 header: 'Account Address'.t(),
@@ -107,81 +135,113 @@ Ext.define('Ung.config.email.view.Quarantine', {
         layout: 'border',
 
         items: [{
-            xtype: 'ungrid',
             region: 'center',
             title: 'Quarantinable Addresses'.t(),
 
-            tbar: ['@add'],
-            recordActions: ['@delete'],
-
-            emptyRow: {
-                address: ''
-            },
-
-            bind: '{qAddresses}',
-
-            columns: [{
-                header: 'Quarantinable Address'.t(),
-                flex: 1,
-                dataIndex: 'address',
-                renderer: function (value) {
-                    return value || '<em>click to edit</em>';
+            dockedItems: [{
+                xtype: 'component',
+                padding: 10,
+                style: {
+                    fontSize: '11px'
                 },
-                editor: {
-                    xtype: 'textfield',
-                    emptyText: "[enter email address rule]".t(),
-                    allowBlank: false,
-                    vtype: 'email'
-                }
-            }]
+                html: 'Email addresses on this list will have quarantines automatically created. All other emails will be marked and not quarantined.'.t(),
+                dock: 'top'
+            }],
 
+            layout: 'fit',
+
+            items: [{
+                xtype: 'ungrid',
+                border: false,
+                tbar: ['@add'],
+                recordActions: ['@delete'],
+
+                emptyRow: {
+                    address: '',
+                    javaClass: 'com.untangle.node.smtp.EmailAddressRule'
+                },
+
+                listProperty: 'smtpSettings.quarantineSettings.allowedAddressPatterns.list',
+
+                bind: '{qAddresses}',
+
+                columns: [{
+                    header: 'Quarantinable Address'.t(),
+                    flex: 1,
+                    dataIndex: 'address',
+                    renderer: function (value) {
+                        return value || '<em>click to edit</em>';
+                    },
+                    editor: {
+                        xtype: 'textfield',
+                        emptyText: '[enter email address rule]'.t(),
+                        allowBlank: false,
+                        vtype: 'email'
+                    }
+                }],
+            }]
         }, {
-            xtype: 'ungrid',
             region: 'south',
             height: '50%',
             split: true,
-            forceFit: true,
-
             title: 'Quarantine Forwards'.t(),
 
-            tbar: ['@add'],
-            recordActions: ['@delete'],
-
-            emptyRow: {
-                address1: '',
-                address2: ''
-            },
-
-            bind: '{qForwards}',
-
-            columns: [{
-                header: 'Distribution List Address'.t(),
-                dataIndex: 'address1',
-                width: 200,
-                renderer: function (value) {
-                    return value || '<em>click to edit</em>';
+            dockedItems: [{
+                xtype: 'component',
+                padding: 10,
+                style: {
+                    fontSize: '11px'
                 },
-                editor: {
-                    xtype: 'textfield',
-                    emptyText: 'distributionlistrecipient@example.com'.t(),
-                    vtype: 'email',
-                    allowBlank: false
-                }
-            }, {
-                header: 'Send to Address'.t(),
-                dataIndex: 'address2',
-                flex: 1,
-                renderer: function (value) {
-                    return value || '<em>click to edit</em>';
+                html: 'This is a list of email addresses whose quarantine digest gets forwarded to another account. This is common for distribution lists where the whole list should not receive the digest.'.t(),
+                dock: 'top'
+            }],
+
+            layout: 'fit',
+
+            items: [{
+                xtype: 'ungrid',
+                border: false,
+                forceFit: true,
+                tbar: ['@add'],
+                recordActions: ['@delete'],
+
+                emptyRow: {
+                    address1: '',
+                    address2: '',
+                    javaClass: 'com.untangle.node.smtp.EmailAddressPairRule'
                 },
-                editor: {
-                    xtype: 'textfield',
-                    emptyText: 'quarantinelistowner@example.com'.t(),
-                    vtype: 'email',
-                    allowBlank: false
-                }
+
+                listProperty: 'smtpSettings.quarantineSettings.addressRemaps.list',
+                bind: '{qForwards}',
+
+                columns: [{
+                    header: 'Distribution List Address'.t(),
+                    dataIndex: 'address1',
+                    width: 200,
+                    renderer: function (value) {
+                        return value || '<em>click to edit</em>';
+                    },
+                    editor: {
+                        xtype: 'textfield',
+                        emptyText: 'distributionlistrecipient@example.com'.t(),
+                        vtype: 'email',
+                        allowBlank: false
+                    }
+                }, {
+                    header: 'Send to Address'.t(),
+                    dataIndex: 'address2',
+                    flex: 1,
+                    renderer: function (value) {
+                        return value || '<em>click to edit</em>';
+                    },
+                    editor: {
+                        xtype: 'textfield',
+                        emptyText: 'quarantinelistowner@example.com'.t(),
+                        vtype: 'email',
+                        allowBlank: false
+                    }
+                }]
             }]
-
         }]
     }]
 

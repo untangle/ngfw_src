@@ -1,5 +1,5 @@
 Ext.define('Ung.util.Util', {
-    alternateClassName: 'Ung.Util',
+    alternateClassName: 'Util',
     singleton: true,
 
     // node name to class mapping
@@ -217,7 +217,7 @@ Ext.define('Ung.util.Util', {
         return data;
     },
     getInterfaceList: function (wanMatchers, anyMatcher) {
-        return Ung.Util.getInterfaceListSystemDev(wanMatchers, anyMatcher, false);
+        return Util.getInterfaceListSystemDev(wanMatchers, anyMatcher, false);
     },
 
     // used for render purposes
@@ -312,41 +312,41 @@ Ext.define('Ung.util.Util', {
     getV4NetmaskList: function(includeNull) {
         var data = [];
         if (includeNull) {
-            data.push( [null,"\u00a0"] );
+            data.push( [null,'\u00a0'] );
         }
-        data.push( [32,"/32 - 255.255.255.255"] );
-        data.push( [31,"/31 - 255.255.255.254"] );
-        data.push( [30,"/30 - 255.255.255.252"] );
-        data.push( [29,"/29 - 255.255.255.248"] );
-        data.push( [28,"/28 - 255.255.255.240"] );
-        data.push( [27,"/27 - 255.255.255.224"] );
-        data.push( [26,"/26 - 255.255.255.192"] );
-        data.push( [25,"/25 - 255.255.255.128"] );
-        data.push( [24,"/24 - 255.255.255.0"] );
-        data.push( [23,"/23 - 255.255.254.0"] );
-        data.push( [22,"/22 - 255.255.252.0"] );
-        data.push( [21,"/21 - 255.255.248.0"] );
-        data.push( [20,"/20 - 255.255.240.0"] );
-        data.push( [19,"/19 - 255.255.224.0"] );
-        data.push( [18,"/18 - 255.255.192.0"] );
-        data.push( [17,"/17 - 255.255.128.0"] );
-        data.push( [16,"/16 - 255.255.0.0"] );
-        data.push( [15,"/15 - 255.254.0.0"] );
-        data.push( [14,"/14 - 255.252.0.0"] );
-        data.push( [13,"/13 - 255.248.0.0"] );
-        data.push( [12,"/12 - 255.240.0.0"] );
-        data.push( [11,"/11 - 255.224.0.0"] );
-        data.push( [10,"/10 - 255.192.0.0"] );
-        data.push( [9,"/9 - 255.128.0.0"] );
-        data.push( [8,"/8 - 255.0.0.0"] );
-        data.push( [7,"/7 - 254.0.0.0"] );
-        data.push( [6,"/6 - 252.0.0.0"] );
-        data.push( [5,"/5 - 248.0.0.0"] );
-        data.push( [4,"/4 - 240.0.0.0"] );
-        data.push( [3,"/3 - 224.0.0.0"] );
-        data.push( [2,"/2 - 192.0.0.0"] );
-        data.push( [1,"/1 - 128.0.0.0"] );
-        data.push( [0,"/0 - 0.0.0.0"] );
+        data.push( [32,'/32 - 255.255.255.255'] );
+        data.push( [31,'/31 - 255.255.255.254'] );
+        data.push( [30,'/30 - 255.255.255.252'] );
+        data.push( [29,'/29 - 255.255.255.248'] );
+        data.push( [28,'/28 - 255.255.255.240'] );
+        data.push( [27,'/27 - 255.255.255.224'] );
+        data.push( [26,'/26 - 255.255.255.192'] );
+        data.push( [25,'/25 - 255.255.255.128'] );
+        data.push( [24,'/24 - 255.255.255.0'] );
+        data.push( [23,'/23 - 255.255.254.0'] );
+        data.push( [22,'/22 - 255.255.252.0'] );
+        data.push( [21,'/21 - 255.255.248.0'] );
+        data.push( [20,'/20 - 255.255.240.0'] );
+        data.push( [19,'/19 - 255.255.224.0'] );
+        data.push( [18,'/18 - 255.255.192.0'] );
+        data.push( [17,'/17 - 255.255.128.0'] );
+        data.push( [16,'/16 - 255.255.0.0'] );
+        data.push( [15,'/15 - 255.254.0.0'] );
+        data.push( [14,'/14 - 255.252.0.0'] );
+        data.push( [13,'/13 - 255.248.0.0'] );
+        data.push( [12,'/12 - 255.240.0.0'] );
+        data.push( [11,'/11 - 255.224.0.0'] );
+        data.push( [10,'/10 - 255.192.0.0'] );
+        data.push( [9,'/9 - 255.128.0.0'] );
+        data.push( [8,'/8 - 255.0.0.0'] );
+        data.push( [7,'/7 - 254.0.0.0'] );
+        data.push( [6,'/6 - 252.0.0.0'] );
+        data.push( [5,'/5 - 248.0.0.0'] );
+        data.push( [4,'/4 - 240.0.0.0'] );
+        data.push( [3,'/3 - 224.0.0.0'] );
+        data.push( [2,'/2 - 192.0.0.0'] );
+        data.push( [1,'/1 - 128.0.0.0'] );
+        data.push( [0,'/0 - 0.0.0.0'] );
 
         return data;
     },
@@ -364,7 +364,7 @@ Ext.define('Ung.util.Util', {
         });
 
         if (invalidFields.length > 0) {
-            Ung.Util.invalidFormToast(invalidFields);
+            Util.invalidFormToast(invalidFields);
             return false;
         }
         return true;

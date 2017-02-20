@@ -16,21 +16,6 @@ Ext.define('Ung.config.email.Email', {
     viewModel: {
         data: {
             globalSafeList: null,
-        },
-        formulas: {
-            globalSafeListMap: function (get) {
-                if (get('globalSafeList')) {
-                    return Ext.Array.map(get('globalSafeList'), function (email) {
-                        return { emailAddress: email };
-                    });
-                }
-                return {};
-            }
-        },
-        stores: {
-            globalSL: {
-                data: '{globalSafeListMap}'
-            }
         }
     },
 

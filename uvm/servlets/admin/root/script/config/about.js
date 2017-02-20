@@ -67,12 +67,15 @@ Ext.define('Ung.config.about.AboutController', {
     },
 
     reloadLicenses: function () {
-        rpc.UvmContext.licenseManager().reloadLicenses(function (result, ex) {
-            // todo
-        });
+        rpc.licenseManager = rpc.UvmContext.licenseManager();
+        Rpc.asyncData('rpc.licenseManager.reloadLicenses')
+            .then(function(result) {
+                // todo
+            });
     }
 
 });
+
 Ext.define('Ung.config.about.view.LicenseAgreement', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.config.about.licenseagreement',
@@ -87,6 +90,7 @@ Ext.define('Ung.config.about.view.LicenseAgreement', {
     }]
 
 });
+
 Ext.define('Ung.config.about.view.Licenses', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.config.about.licenses',
@@ -147,6 +151,7 @@ Ext.define('Ung.config.about.view.Licenses', {
     }]
 
 });
+
 Ext.define('Ung.config.about.view.Server', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.config.about.server',

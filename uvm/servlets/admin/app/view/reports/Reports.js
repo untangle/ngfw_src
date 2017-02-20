@@ -96,7 +96,7 @@ Ext.define('Ung.view.reports.Reports', {
                 width: 25,
                 renderer: function (value, meta, record) {
                     // meta.tdCls = 'app-icon';
-                    // return Ung.Util.iconReportTitle(record);
+                    // return Util.iconReportTitle(record);
                     return '<i class="fa ' + record.get('icon') + ' fa-lg"></i>';
                 }
             }, {
@@ -614,7 +614,7 @@ Ext.define('Ung.view.reports.Reports', {
                         }]
                     }],
                     fbar: [/*{
-                        text: Ung.Util.iconTitle('Preview'.t(), 'rotate_left-16'),
+                        text: Util.iconTitle('Preview'.t(), 'rotate_left-16'),
                         itemId: 'applyBtn',
                         formBind: true
                     },*/ {

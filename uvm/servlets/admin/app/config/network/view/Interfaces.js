@@ -32,7 +32,7 @@ Ext.define('Ung.config.network.view.Interfaces', {
         tbar: ['@refresh'],
 
         layout: 'fit',
-        // forceFit: true,
+        forceFit: true,
         // viewConfig: {
         //     plugins: {
         //         ptype: 'gridviewdragdrop',
@@ -48,9 +48,6 @@ Ext.define('Ung.config.network.view.Interfaces', {
         // title: 'Interfaces'.t(),
         bind: '{interfaces}',
 
-        // fields: [{
-        //     name: 'v4Address'
-        // }],
         columns: [
         // {
         //     xtype: 'gridcolumn',
@@ -72,16 +69,17 @@ Ext.define('Ung.config.network.view.Interfaces', {
             header: 'Name'.t(),
             dataIndex: 'name',
             minWidth: 200
+            // flex: 1
         }, {
             header: 'Connected'.t(),
             dataIndex: 'connected',
             width: 130,
             renderer: function (value) {
                 switch (value) {
-                    case 'CONNECTED': return 'connected'.t();
-                    case 'DISCONNECTED': return 'disconnected'.t();
-                    case 'MISSING': return 'missing'.t();
-                    default: 'unknown'.t();
+                case 'CONNECTED': return 'connected'.t();
+                case 'DISCONNECTED': return 'disconnected'.t();
+                case 'MISSING': return 'missing'.t();
+                default: 'unknown'.t();
                 }
             }
         }, {
@@ -119,9 +117,9 @@ Ext.define('Ung.config.network.view.Interfaces', {
             width: 100,
             renderer: function (value) {
                 switch (value) {
-                    case 'FULL_DUPLEX': return 'full-duplex'.t();
-                    case 'HALF_DUPLEX': return 'half-duplex'.t();
-                    default: return 'unknown'.t();
+                case 'FULL_DUPLEX': return 'full-duplex'.t();
+                case 'HALF_DUPLEX': return 'half-duplex'.t();
+                default: return 'unknown'.t();
                 }
             }
         }, {
@@ -130,10 +128,10 @@ Ext.define('Ung.config.network.view.Interfaces', {
             width: 100,
             renderer: function (value) {
                 switch (value) {
-                    case 'ADDRESSED': return 'Addressed'.t();
-                    case 'BRIDGED': return 'Bridged'.t();
-                    case 'DISABLED': return 'Disabled'.t();
-                    default: value.t();
+                case 'ADDRESSED': return 'Addressed'.t();
+                case 'BRIDGED': return 'Bridged'.t();
+                case 'DISABLED': return 'Disabled'.t();
+                default: value.t();
                 }
             }
         }, {
@@ -159,10 +157,12 @@ Ext.define('Ung.config.network.view.Interfaces', {
             }
         }, {
             header: 'MAC Address'.t(),
+            hidden: true,
             width: 160,
             dataIndex: 'macAddress'
         }, {
             header: 'Vendor'.t(),
+            hidden: true,
             width: 160,
             dataIndex: 'vendor'
         }]

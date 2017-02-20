@@ -3,13 +3,30 @@ Ext.define('Ung.config.email.view.SafeList', {
     alias: 'widget.config.email.safelist',
     itemId: 'safelist',
 
-    viewModel: true,
     title: 'Safe List'.t(),
+
+    viewModel: {
+        formulas: {
+            globalSafeListMap: function (get) {
+                if (get('globalSafeList')) {
+                    return Ext.Array.map(get('globalSafeList'), function (email) {
+                        return { emailAddress: email };
+                    });
+                }
+                return {};
+            }
+        },
+        stores: {
+            globalSL: { data: '{globalSafeListMap}' },
+            userSL: { data: '{userSafeList.list}' }
+        }
+    },
 
     layout: 'border',
 
     items: [{
         xtype: 'ungrid',
+        itemId: 'safeListStore',
         region: 'center',
 
         title: 'Global Safe List'.t(),
@@ -17,11 +34,8 @@ Ext.define('Ung.config.email.view.SafeList', {
         tbar: ['@add'],
         recordActions: ['@delete'],
 
-        // listProperty: 'settings.dnsSettings.staticEntries.list',
-
         emptyRow: {
-            emailAddress: 'email@' + rpc.hostname + '.com',
-            // javaClass: 'com.untangle.uvm.network.DnsStaticEntry'
+            emailAddress: 'email@' + rpc.hostname + '.com'
         },
 
         bind: '{globalSL}',
@@ -40,16 +54,32 @@ Ext.define('Ung.config.email.view.SafeList', {
         }]
     }, {
         xtype: 'grid',
-        region: 'south',
+        reference: 'userSafeList',
+        region: 'east',
 
-        height: '50%',
+        width: '50%',
         split: true,
 
         title: 'Per User Safe Lists'.t(),
 
-        // tbar: ['@add'],
+        viewConfig: {
+            emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-exclamation-triangle fa-2x"></i> <br/>No Data!</p>',
+        },
+        selModel: {
+            selType: 'checkboxmodel'
+        },
 
-        // bind: '{localServers}',
+        bind: '{userSL}',
+
+        tbar: [{
+            text: 'Purge Selected'.t(),
+            iconCls: 'fa fa-circle fa-red',
+            handler: 'purgeUserSafeList',
+            disabled: true,
+            bind: {
+                disabled: '{!userSafeList.selection}'
+            }
+        }],
 
         columns: [{
             header: 'Account Address'.t(),
@@ -60,6 +90,9 @@ Ext.define('Ung.config.email.view.SafeList', {
             width: 150,
             dataIndex: 'count',
             align: 'right'
+        }, {
+            // todo: the show detail when available data
+            header: 'Show Detail'.t()
         }],
     }]
 

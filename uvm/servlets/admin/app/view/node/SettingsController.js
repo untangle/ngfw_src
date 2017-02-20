@@ -46,10 +46,11 @@ Ext.define('Ung.view.node.SettingsController', {
         }).show();
 
         // dynamic require node class
-        Ext.require(Ung.Util.nodeClassMapping[nodeInstance.nodeName], function () {
+        Ext.require(Util.nodeClassMapping[nodeInstance.nodeName], function () {
             // get node manager
+            console.log('hererere');
             rpc.nodeManager.node(function (nodeManager, ex) {
-                if (ex) { Ung.Util.exceptionToast(ex); return false; }
+                if (ex) { Util.exceptionToast(ex); return false; }
                 me.setNodeManager(nodeManager);
                 // get node settings
                 nodeManager.getSettings(function (settings) {
@@ -96,9 +97,9 @@ Ext.define('Ung.view.node.SettingsController', {
         if (vm.get('nodeInstance.targetState') === 'RUNNING') {
             // stop node
             nodeManager.stop(function (result, ex) {
-                if (ex) { Ung.Util.exceptionToast(ex); return false; }
+                if (ex) { Util.exceptionToast(ex); return false; }
                 nodeManager.getRunState(function (result2, ex2) {
-                    if (ex2) { Ung.Util.exceptionToast(ex2); return false; }
+                    if (ex2) { Util.exceptionToast(ex2); return false; }
                     vm.set('nodeInstance.targetState', result2);
                     vm.notify();
                     btn.setDisabled(false);
@@ -107,7 +108,7 @@ Ext.define('Ung.view.node.SettingsController', {
                         vm.getParent().set('reportsRunning', false);
                     }
 
-                    Ung.Util.successToast(vm.get('powerMessage'));
+                    Util.successToast(vm.get('powerMessage'));
 
                     Ext.GlobalEvents.fireEvent('nodestatechange', result2, vm.get('nodeInstance'));
                 });
@@ -121,7 +122,7 @@ Ext.define('Ung.view.node.SettingsController', {
                     return false;
                 }
                 nodeManager.getRunState(function (result2, ex2) {
-                    if (ex2) { Ung.Util.exceptionToast(ex2); return false; }
+                    if (ex2) { Util.exceptionToast(ex2); return false; }
                     vm.set('nodeInstance.targetState', result2);
                     vm.notify();
                     btn.setDisabled(false);
@@ -130,7 +131,7 @@ Ext.define('Ung.view.node.SettingsController', {
                         vm.getParent().set('reportsRunning', true);
                     }
 
-                    Ung.Util.successToast(vm.get('powerMessage'));
+                    Util.successToast(vm.get('powerMessage'));
                     Ext.GlobalEvents.fireEvent('nodestatechange', result2, vm.get('nodeInstance'));
                 });
             });
@@ -164,13 +165,13 @@ Ext.define('Ung.view.node.SettingsController', {
         // send settings to backend
         nodeManager.setSettings(function (result, ex) {
             myMask.hide();
-            if (ex) { Ung.Util.exceptionToast(ex); return false; }
+            if (ex) { Util.exceptionToast(ex); return false; }
 
-            Ung.util.Util.successToast('Settings saved!');
+            Util.Util.successToast('Settings saved!');
 
             // retreive again settings from backend as pushed changes might have extra effects on the data
             nodeManager.getSettings(function (settings, ex) {
-                if (ex) { Ung.Util.exceptionToast(ex); return false; }
+                if (ex) { Util.exceptionToast(ex); return false; }
                 vm.set('settings', settings); // apply fresh settings on the viewmodel
                 me.getView().query('grid').forEach(function(grid) {
                     grid.fireEvent('reloaded');
@@ -193,10 +194,10 @@ Ext.define('Ung.view.node.SettingsController', {
                 Ung.app.redirectTo('#apps/' + vm.get('policyId'));
 
                 rpc.nodeManager.destroy(function (result, ex) {
-                    if (ex) { Ung.Util.exceptionToast(ex); return false; }
+                    if (ex) { Util.exceptionToast(ex); return false; }
 
                     rpc.nodeManager.getAppsViews(function (result2, ex2) {
-                        if (ex2) { Ung.Util.exceptionToast(ex2); return; }
+                        if (ex2) { Util.exceptionToast(ex2); return; }
                         Ext.getStore('policies').loadData(result2);
                     });
 
@@ -210,7 +211,7 @@ Ext.define('Ung.view.node.SettingsController', {
 
                     if (rpc.reportsManager) {
                         rpc.reportsManager.getUnavailableApplicationsMap(function (result3, ex3) {
-                            if (ex3) { Ung.Util.exceptionToast(ex3); return; }
+                            if (ex3) { Util.exceptionToast(ex3); return; }
                             Ext.getStore('unavailableApps').loadRawData(result3.map);
 
                             // fire nodeinstall event to update widgets on dashboard

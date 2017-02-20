@@ -25,16 +25,13 @@ Ext.define('Ung.view.shd.HostsController', {
         var me = this,
             grid = me.getView().down('#hostsgrid');
         grid.getView().setLoading(true);
-        rpc.hostTable.getHosts(function (result, exception) {
-            grid.getView().setLoading(false);
-            if (exception) {
-                Ung.Util.exceptionToast(exception);
-                return;
-            }
-            Ext.getStore('hosts').loadData(result.list);
-            // grid.getSelectionModel().select(0);
-            // grid.getStore().setData(result.list);
-        });
+        Rpc.asyncData('rpc.hostTable.getHosts')
+            .then(function(result) {
+                grid.getView().setLoading(false);
+                Ext.getStore('hosts').loadData(result.list);
+                // grid.getSelectionModel().select(0);
+                // grid.getStore().setData(result.list);
+            });
     }
 
 });

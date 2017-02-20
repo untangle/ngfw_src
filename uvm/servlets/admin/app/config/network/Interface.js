@@ -64,7 +64,7 @@ Ext.define('Ung.config.network.Interface', {
             },
             hidden: true,
             fieldLabel: 'Parent Interface'.t(),
-            // store: Ung.Util.getInterfaceList(false, false),
+            // store: Util.getInterfaceList(false, false),
             queryMode: 'local'
         }, {
             // VLAN Tag
@@ -105,7 +105,7 @@ Ext.define('Ung.config.network.Interface', {
                 hidden: '{!isBridged}'
             },
             fieldLabel: 'Bridged To'.t(),
-            // store: Ung.Util.getInterfaceAddressedList(),
+            // store: Util.getInterfaceAddressedList(),
             queryMode: 'local'
         }, {
             // is WAN
@@ -246,7 +246,7 @@ Ext.define('Ung.config.network.Interface', {
                 fieldLabel: 'Netmask'.t(),
                 allowBlank: false,
                 editable: false,
-                store: Ung.Util.v4NetmaskList,
+                store: Util.v4NetmaskList,
                 queryMode: 'local'
             }, {
                 // gateway
@@ -292,7 +292,7 @@ Ext.define('Ung.config.network.Interface', {
                 },
                 editable: false,
                 fieldLabel: 'Netmask Override'.t(),
-                store: Ung.Util.v4NetmaskList,
+                store: Util.v4NetmaskList,
                 queryMode: 'local'
             }, {
                 // override gateway
@@ -572,7 +572,7 @@ Ext.define('Ung.config.network.Interface', {
                     bind: '{si.dhcpPrefixOverride}',
                     fieldLabel: 'Netmask Override'.t(),
                     editable: false,
-                    store: Ung.Util.v4NetmaskList,
+                    store: Util.v4NetmaskList,
                     queryMode: 'local'
                 }, {
                     // dns override
