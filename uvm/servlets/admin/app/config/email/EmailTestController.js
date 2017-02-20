@@ -11,7 +11,7 @@ Ext.define('Ung.config.email.EmailTestController', {
         });
         rpc.UvmContext.mailSender().sendTestMessage(function (result, ex) {
             btn.setDisabled(false);
-            if (ex) { console.error(ex); Ung.Util.exceptionToast(ex); return; }
+            if (ex) { console.error(ex); Util.exceptionToast(ex); return; }
             vm.set({
                 processing: null,
                 processingIcon: '<i class="fa fa-check fa-3x fa-fw" style="color: green;"></i> <br/>' + 'Success'.t()

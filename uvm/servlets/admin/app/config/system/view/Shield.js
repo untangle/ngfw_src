@@ -37,7 +37,7 @@ Ext.define('Ung.config.system.view.Shield', {
         tbar: ['@add'],
         recordActions: ['@edit', '@delete', '@reorder'],
 
-        listProperty: 'settings.qosSettings.qosRules.list',
+        listProperty: 'shieldSettings.rules.list',
         ruleJavaClass: 'com.untangle.node.shield.ShieldRuleCondition',
 
         emptyRow: {
@@ -55,10 +55,10 @@ Ext.define('Ung.config.system.view.Shield', {
         conditions: [
             { name: 'DST_ADDR', displayName: 'Destination Address'.t(), type: 'textfield', vtype:'ipMatcher' },
             { name: 'DST_PORT', displayName: 'Destination Port'.t(), type: 'textfield', vtype:'portMatcher' },
-            { name: 'DST_INTF', displayName: 'Destination Interface'.t(), type: 'checkboxgroup', values: Ung.Util.getInterfaceList(true, true) },
+            { name: 'DST_INTF', displayName: 'Destination Interface'.t(), type: 'checkboxgroup', values: Util.getInterfaceList(true, true) },
             { name: 'SRC_ADDR', displayName: 'Source Address'.t(), type: 'textfield', vtype:'ipMatcher' },
             { name: 'SRC_PORT', displayName: 'Source Port'.t(), type: 'numberfield', vtype:'portMatcher' },
-            { name: 'SRC_INTF', displayName: 'Source Interface'.t(), type: 'checkboxgroup', values: Ung.Util.getInterfaceList(true, true) },
+            { name: 'SRC_INTF', displayName: 'Source Interface'.t(), type: 'checkboxgroup', values: Util.getInterfaceList(true, true) },
             { name: 'PROTOCOL', displayName: 'Protocol'.t(), type: 'checkboxgroup', values: [['TCP','TCP'], ['UDP','UDP']] }
         ],
 

@@ -138,11 +138,11 @@ Ext.define('Ung.node.WebFilter', {
                 width: 200,
                 hideable: false,
                 editorField: 'textfield',
-                editorValidator: Ung.Util.urlValidator,
+                editorValidator: Util.urlValidator,
                 editor: {
                     allowBlank: false,
                     emptyText: 'Site URL'.t(),
-                    validator: Ung.Util.urlValidator
+                    validator: Util.urlValidator
                 }
             }, {
                 xtype: 'checkcolumn',
@@ -219,11 +219,11 @@ Ext.define('Ung.node.WebFilter', {
                 hideable: false,
                 menuDisabled: true,
                 editorField: 'textfield',
-                editorValidator: Ung.Util.urlValidator,
+                editorValidator: Util.urlValidator,
                 editor: {
                     allowBlank: false,
                     emptyText: 'Site URL'.t(),
-                    validator: Ung.Util.urlValidator
+                    validator: Util.urlValidator
                 }
             }, {
                 xtype: 'checkcolumn',

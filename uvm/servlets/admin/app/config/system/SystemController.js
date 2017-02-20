@@ -3,18 +3,10 @@ Ext.define('Ung.config.system.SystemController', {
     alias: 'controller.config.system',
 
     control: {
-        '#': {
-            beforerender: 'loadSystem'
-        },
-        '#regional': {
-            afterrender: 'loadRegional'
-        },
-        '#protocols': {
-            beforerender: 'initProtocols'
-        },
-        '#shield': {
-            afterrender: 'loadShieldSettings'
-        }
+        '#': { afterrender: 'loadSystem' },
+        '#regional': { afterrender: 'loadRegional' },
+        '#protocols': { beforerender: 'initProtocols' },
+        '#shield': { afterrender: 'loadShieldSettings' }
     },
 
     loadSystem: function (view) {
@@ -22,82 +14,35 @@ Ext.define('Ung.config.system.SystemController', {
     },
 
     // Regional
-    getLanguageSettings: function () {
-        var vm = this.getViewModel(), deferred = new Ext.Deferred();
-        try { vm.set('languageSettings', rpc.languageManager.getLanguageSettings()); deferred.resolve(); }
-        catch (ex) { deferred.reject(ex); }
-        return deferred.promise;
-    },
-
-    getLanguagesList: function () {
-        var vm = this.getViewModel(), deferred = new Ext.Deferred();
-        try { vm.set('languagesList', rpc.languageManager.getLanguagesList()); deferred.resolve(); }
-        catch (ex) { deferred.reject(ex); }
-        return deferred.promise;
-    },
-
-    getSystemSettings: function () {
-        var vm = this.getViewModel(), deferred = new Ext.Deferred();
-        try { vm.set('systemSettings', rpc.systemManager.getSettings()); deferred.resolve(); }
-        catch (ex) { deferred.reject(ex); }
-        return deferred.promise;
-    },
-
-    getTime: function () {
-        var vm = this.getViewModel(), deferred = new Ext.Deferred();
-        rpc.systemManager.getDate(function (result, ex) {
-            if (ex) { deferred.reject(ex); }
-            vm.set('time', result);
-            deferred.resolve();
-        });
-        return deferred.promise;
-    },
-
-    getTimeZone: function () {
-        var vm = this.getViewModel(), deferred = new Ext.Deferred();
-        try { vm.set('timeZone', rpc.systemManager.getTimeZone()); deferred.resolve(); }
-        catch (ex) { deferred.reject(ex); }
-        return deferred.promise;
-    },
-
-    getTimeZonesList: function () {
-        var vm = this.getViewModel(), deferred = new Ext.Deferred(), timeZones = [];
-        try {
-            eval(rpc.systemManager.getTimeZones()).forEach(function (tz) {
-                timeZones.push({name: '(' + tz[1] + ') ' + tz[0], value: tz[0]})
-            });
-            vm.set('timeZonesList', timeZones);
-            deferred.resolve();
-        }
-        catch (ex) { deferred.reject(ex); }
-        return deferred.promise;
-    },
-
     loadRegional: function (v) {
+        var vm = this.getViewModel(),
+            timeZones = [];
         v.setLoading(true);
         Ext.Deferred.sequence([
-            this.getLanguageSettings,
-            this.getLanguagesList,
-            this.getSystemSettings,
-            this.getTime,
-            this.getTimeZone,
-            this.getTimeZonesList
-        ], this).then(function () {
+            Rpc.directPromise('rpc.languageManager.getLanguageSettings'),
+            Rpc.directPromise('rpc.languageManager.getLanguagesList'),
+            Rpc.directPromise('rpc.systemManager.getSettings'),
+            Rpc.asyncPromise('rpc.systemManager.getDate'),
+            Rpc.directPromise('rpc.systemManager.getTimeZone'),
+            Rpc.directPromise('rpc.systemManager.getTimeZones'),
+        ], this).then(function (result) {
             v.setLoading(false);
-        }, function (ex) {
-            v.setLoading(false);
-            console.error(ex);
-            Ung.Util.exceptionToast(ex);
+            vm.set({
+                languageSettings: result[0],
+                languagesList: result[1],
+                systemSettings: result[2],
+                time: result[3],
+                timeZone: result[4],
+            });
+
+            if (result[5]) {
+                eval(result[5]).forEach(function (tz) {
+                    timeZones.push({name: '(' + tz[1] + ') ' + tz[0], value: tz[0]});
+                });
+                vm.set('timeZonesList', timeZones);
+            }
         });
     },
-
-    // getTimeZone: function () {
-    //     var tz = rpc.systemManager.getTimeZone();
-    //     if (tz && typeof tz !== 'string' ) {
-    //         tz = tz.ID;
-    //     }
-    //     // this.rpc.timeZone = tz;
-    // },
 
     syncTime: function () {
         var me = this;
@@ -111,12 +56,12 @@ Ext.define('Ung.config.system.SystemController', {
                     Ext.MessageBox.wait('Syncing time with the internet...'.t(), 'Please wait'.t());
                     rpc.UvmContext.forceTimeSync(function (result, ex) {
                         Ext.MessageBox.hide();
-                        if (ex) { console.error(ex); Ung.Util.exceptionToast(ex); return; }
+                        if (ex) { console.error(ex); Util.exceptionToast(ex); return; }
                         if (result !== 0) {
-                            Ung.Util.exceptionToast('Time synchronization failed. Return code:'.t() + ' ' + result);
+                            Util.exceptionToast('Time synchronization failed. Return code:'.t() + ' ' + result);
                         } else {
                             me.getTime();
-                            Ung.Util.successToast('Time was synchronized!');
+                            Util.successToast('Time was synchronized!');
                         }
                     });
                 }
@@ -136,13 +81,13 @@ Ext.define('Ung.config.system.SystemController', {
         var vm = this.getViewModel();
         v.setLoading(true);
         try {
-            vm.set('shieldSettings', rpc.nodeManager.node("untangle-node-shield").getSettings());
+            vm.set('shieldSettings', rpc.nodeManager.node('untangle-node-shield').getSettings());
             v.setLoading(false);
         }
         catch (ex) {
             v.setLoading(false);
             console.error(ex);
-            Ung.Util.exceptionToast(ex);
+            Util.exceptionToast(ex);
         }
     },
 
@@ -154,30 +99,10 @@ Ext.define('Ung.config.system.SystemController', {
 
 
     saveSettings: function () {
-        var v = this.getView();
+        var v = this.getView(),
+            vm = this.getViewModel();
+
         v.setLoading('Saving...');
-
-        Ext.Deferred.sequence([
-            this.setLanguage,
-            this.setSystem,
-            this.setTimezone,
-            this.setDate,
-            this.setShield
-        ], this).then(function () {
-            v.setLoading(false);
-            Ung.Util.successToast('System settings saved!');
-        }, function (ex) {
-            v.setLoading(false);
-            console.error(ex);
-            Ung.Util.exceptionToast(ex);
-        });
-    },
-
-    setLanguage: function () {
-        console.log('Saving Language...');
-        var deferred = new Ext.Deferred(),
-            vm = this.getView().down('#regional').getViewModel();
-
         if (vm.get('languageSettings.regionalFormats') === 'default') {
             // reset overrides
             vm.set('languageSettings.overrideDateFmt', '');
@@ -185,32 +110,23 @@ Ext.define('Ung.config.system.SystemController', {
             vm.set('languageSettings.overrideThousandSep', '');
             vm.set('languageSettings.overrideTimestampFmt', '');
         }
-        rpc.languageManager.setLanguageSettings(function (result, ex) { if (ex) { deferred.reject(ex); } deferred.resolve(); }, vm.get('languageSettings'));
-        return deferred.promise;
-    },
 
-    setSystem: function () {
-        console.log('Saving System...');
-        var deferred = new Ext.Deferred(),
-            vm = this.getView().getViewModel();
-        rpc.systemManager.setSettings(function (result, ex) { if (ex) { deferred.reject(ex); } deferred.resolve(); }, vm.get('systemSettings'));
-        return deferred.promise;
-    },
+        var newDate = new Date(v.down('#regional').down('datefield').getValue()).getTime();
 
-    setTimezone: function () {
-        console.log('Saving Timezone...');
-        var deferred = new Ext.Deferred(),
-            vm = this.getView().getViewModel();
-        rpc.systemManager.setTimeZone(function (result, ex) { if (ex) { deferred.reject(ex); } deferred.resolve(); }, vm.get('timeZone'));
-        return deferred.promise;
-    },
-
-    setDate: function () {
-        console.log('Saving Date...');
-        var deferred = new Ext.Deferred(),
-            v = this.getView().down('#regional');
-        rpc.systemManager.setDate(function (result, ex) { if (ex) { deferred.reject(ex); } deferred.resolve(); }, new Date(v.down('datefield').getValue()).getTime());
-        return deferred.promise;
+        Ext.Deferred.sequence([
+            Rpc.asyncPromise('rpc.languageManager.setLanguageSettings', vm.get('languageSettings')),
+            Rpc.asyncPromise('rpc.systemManager.setSettings', vm.get('systemSettings')),
+            Rpc.asyncPromise('rpc.systemManager.setTimeZone', vm.get('timeZone')),
+            // Rpc.asyncPromise('rpc.systemManager.setDate', newDate),
+            // this.setShield
+        ], this).then(function () {
+            v.setLoading(false);
+            Util.successToast('System settings saved!');
+        }, function (ex) {
+            v.setLoading(false);
+            console.error(ex);
+            Util.exceptionToast(ex);
+        });
     },
 
     setShield: function () {
@@ -218,7 +134,7 @@ Ext.define('Ung.config.system.SystemController', {
             v = this.getView(), vm = this.getViewModel();
         v.query('ungrid').forEach(function (grid) {
             var store = grid.getStore();
-
+            console.log(store);
             /**
              * Important!
              * update custom grids only if are modified records or it was reordered via drag/drop
@@ -234,9 +150,7 @@ Ext.define('Ung.config.system.SystemController', {
                 // store.commitChanges();
             }
         });
-        console.log('Saving Shield...');
-
-        rpc.nodeManager.node('untangle-node-shield').setSettings(function (result, ex) { if (ex) { deferred.reject(ex); } deferred.resolve(); }, vm.get('shieldSettings'));
+        rpc.nodeManager.node('untangle-node-shield').setSettings(function (result, ex) { if (ex) { console.log('exception'); deferred.reject(ex); } deferred.resolve(); }, vm.get('shieldSettings'));
         return deferred.promise;
     },
 
@@ -252,7 +166,7 @@ Ext.define('Ung.config.system.SystemController', {
             function (btn) {
                 if (btn === 'yes') {
                     rpc.UvmContext.rebootBox(function (result, ex) {
-                        if (ex) { console.error(ex); Ung.Util.exceptionToast(Ext.String.format('Error: Unable to reboot {0} Server', rpc.companyName)); return; }
+                        if (ex) { console.error(ex); Util.exceptionToast(Ext.String.format('Error: Unable to reboot {0} Server', rpc.companyName)); return; }
                         Ext.MessageBox.wait(
                             Ext.String.format('The {0} Server is rebooting.'.t(), rpc.companyName),
                             'Please wait'.t(), {
@@ -272,7 +186,7 @@ Ext.define('Ung.config.system.SystemController', {
             function (btn) {
                 if (btn === 'yes') {
                     rpc.UvmContext.shutdownBox(function (result, ex) {
-                        if (ex) { console.error(ex); Ung.Util.exceptionToast(Ext.String.format('Error: Unable to shutdown {0} Server', rpc.companyName)); return; }
+                        if (ex) { console.error(ex); Util.exceptionToast(Ext.String.format('Error: Unable to shutdown {0} Server', rpc.companyName)); return; }
                         Ext.MessageBox.wait(
                             Ext.String.format('The {0} Server is shutting down.'.t(), rpc.companyName),
                             'Please wait'.t(), {
@@ -304,7 +218,7 @@ Ext.define('Ung.config.system.SystemController', {
                     });
                     rpc.execManager.exec(function (result, ex) {
                         Ext.MessageBox.hide();
-                        if (ex) { console.error(ex); Ung.Util.exceptionToast(ex); return; }
+                        if (ex) { console.error(ex); Util.exceptionToast(ex); return; }
                         Ext.MessageBox.alert(
                             'Factory Defaults'.t(),
                             'All settings have been reset to factory defaults.', console.log('reload homepage'));
@@ -328,7 +242,7 @@ Ext.define('Ung.config.system.SystemController', {
         try {
             vm.set('httpSettings', rpc.nodeManager.node('untangle-casing-http').getHttpSettings());
         } catch (ex) {
-            if (ex) { console.error(ex); Ung.Util.exceptionToast(ex); return; }
+            if (ex) { console.error(ex); Util.exceptionToast(ex); return; }
         }
     },
     getFtpSettings: function () {
@@ -336,7 +250,7 @@ Ext.define('Ung.config.system.SystemController', {
         try {
             vm.set('ftpSettings', rpc.nodeManager.node('untangle-casing-ftp').getFtpSettings());
         } catch (ex) {
-            if (ex) { console.error(ex); Ung.Util.exceptionToast(ex); return; }
+            if (ex) { console.error(ex); Util.exceptionToast(ex); return; }
         }
     },
 
@@ -345,7 +259,7 @@ Ext.define('Ung.config.system.SystemController', {
         try {
             vm.set('smtpSettings', rpc.nodeManager.node('untangle-casing-smtp').getSmtpNodeSettings());
         } catch (ex) {
-            if (ex) { console.error(ex); Ung.Util.exceptionToast(ex); return; }
+            if (ex) { console.error(ex); Util.exceptionToast(ex); return; }
         }
     },
 

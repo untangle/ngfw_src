@@ -5,14 +5,11 @@ Ext.define('Ung.config.administration.AdministrationController', {
 
     control: {
         '#': {
-            beforerender: 'loadAdmin',
+            afterrender: 'loadAdmin',
             tabchange: 'onTabChange'
         },
         '#certificates': {
             beforerender: 'loadCertificates'
-        },
-        '#skins': {
-            beforerender: 'loadSkins'
         }
     },
 
@@ -85,77 +82,51 @@ Ext.define('Ung.config.administration.AdministrationController', {
         // Ung.app.redirectTo('#config/administration/' + newCard.getItemId(), false);
     },
 
-    certificateManager: rpc.UvmContext.certificateManager(),
-
-    loadAdmin: function (view) {
-        this.adminSettings();
-        this.systemSettings();
-        this.skinSettings();
-    },
-
-    loadCertificates: function (view) {
-        this.serverCertificates();
-        this.rootCertificateInformation();
-        this.serverCertificateVerification();
-    },
-
-    loadSkins: function () {
-        this.skinsList();
-    },
-
-    adminSettings: function () {
-        var me = this;
-        rpc.adminManager.getSettings(function (result, ex) {
-            if (ex) { console.error(ex); Ung.Util.exceptionToast(ex); return; }
-            me.getViewModel().set('adminSettings', result);
+    loadAdmin: function () {
+        var v = this.getView(),
+            vm = this.getViewModel();
+        v.setLoading(true);
+        Ext.Deferred.sequence([
+            Rpc.asyncPromise('rpc.adminManager.getSettings'),
+            Rpc.asyncPromise('rpc.systemManager.getSettings'),
+            Rpc.asyncPromise('rpc.skinManager.getSettings'),
+            Rpc.asyncPromise('rpc.skinManager.getSkinsList')
+        ], this).then(function(result) {
+            vm.set({
+                adminSettings: result[0],
+                systemSettings: result[1],
+                skinSettings: result[2],
+                skinsList: result[4]
+            });
+        }, function(ex) {
+            console.error(ex);
+            Util.exceptionToast(ex);
+        }).always(function() {
+            v.setLoading(false);
         });
     },
 
-    systemSettings: function () {
-        var me = this;
-        rpc.systemManager.getSettings(function (result, ex) {
-            if (ex) { console.error(ex); Ung.Util.exceptionToast(ex); return; }
-            me.getViewModel().set('systemSettings', result);
-        });
-    },
+    loadCertificates: function () {
+        var v = this.getView(),
+            vm = this.getViewModel();
 
-    serverCertificates: function () {
-        var me = this;
-        this.certificateManager.getServerCertificateList(function (result, ex) {
-            if (ex) { console.error(ex); Ung.Util.exceptionToast(ex); return; }
-            me.getViewModel().set('serverCertificates', result);
-        });
-    },
-
-    rootCertificateInformation: function () {
-        var me = this;
-        this.certificateManager.getRootCertificateInformation(function (result, ex) {
-            if (ex) { console.error(ex); Ung.Util.exceptionToast(ex); return; }
-            me.getViewModel().set('rootCertificateInformation', result);
-        });
-    },
-
-    serverCertificateVerification: function () {
-        var me = this;
-        this.certificateManager.validateActiveInspectorCertificates(function (result, ex) {
-            if (ex) { console.error(ex); Ung.Util.exceptionToast(ex); return; }
-            me.getViewModel().set('serverCertificateVerification', result);
-        });
-    },
-
-    skinSettings: function () {
-        var me = this;
-        rpc.skinManager.getSettings(function (result, ex) {
-            if (ex) { console.error(ex); Ung.Util.exceptionToast(ex); return; }
-            me.getViewModel().set('skinSettings', result);
-        });
-    },
-
-    skinsList: function () {
-        var me = this;
-        rpc.skinManager.getSkinsList(function (result, ex) {
-            if (ex) { console.error(ex); Ung.Util.exceptionToast(ex); return; }
-            me.getViewModel().set('skinsList', result);
+        v.setLoading(true);
+        rpc.certificateManager = rpc.UvmContext.certificateManager();
+        Ext.Deferred.sequence([
+            Rpc.asyncPromise('rpc.certificateManager.getServerCertificateList'),
+            Rpc.asyncPromise('rpc.certificateManager.getRootCertificateInformation'),
+            Rpc.asyncPromise('rpc.certificateManager.validateActiveInspectorCertificates'),
+        ], this).then(function(result) {
+            vm.set({
+                serverCertificates: result[0],
+                rootCertificateInformation: result[1],
+                serverCertificateVerification: result[2],
+            });
+        }, function(ex) {
+            console.error(ex);
+            Util.exceptionToast(ex);
+        }).always(function() {
+            v.setLoading(false);
         });
     },
 
@@ -164,7 +135,7 @@ Ext.define('Ung.config.administration.AdministrationController', {
             view = this.getView(),
             vm = this.getViewModel();
 
-        if (!Ung.Util.validateForms(view)) {
+        if (!Util.validateForms(view)) {
             return;
         }
 
@@ -189,53 +160,20 @@ Ext.define('Ung.config.administration.AdministrationController', {
         });
 
         Ext.Deferred.sequence([
-            this.setAdminSettings,
-            this.setSkinSettings,
-            this.setSystemSettings
-        ], this).then(function () {
-            view.setLoading(false);
-
-            me.loadAdmin(); me.loadCertificates(); me.loadSkins();
-
-            Ung.Util.successToast('Administration'.t() + ' settings saved!');
-        }, function (ex) {
-            view.setLoading(false);
+            Rpc.asyncPromise('rpc.adminManager.setSettings', vm.get('adminSettings')),
+            Rpc.asyncPromise('rpc.systemManager.setSettings', vm.get('systemSettings')),
+            Rpc.asyncPromise('rpc.skinManager.setSettings', vm.get('skinSettings')),
+        ], this).then(function() {
+            me.loadAdmin();
+            me.loadCertificates();
+            Util.successToast('Administration'.t() + ' settings saved!');
+        }, function(ex) {
             console.error(ex);
-            Ung.Util.exceptionToast(ex);
+            Util.exceptionToast(ex);
+        }).always(function() {
+            view.setLoading(false);
         });
     },
-
-    setAdminSettings: function () {
-        var me = this,
-            deferred = new Ext.Deferred();
-        rpc.adminManager.setSettings(function(result, ex) {
-            if (ex) { deferred.reject(ex); }
-            deferred.resolve(result);
-        }, me.getViewModel().get('adminSettings'));
-         return deferred.promise;
-    },
-
-    setSkinSettings: function () {
-        var me = this,
-            deferred = new Ext.Deferred();
-        rpc.skinManager.setSettings(function(result, ex) {
-            if (ex) { deferred.reject(ex); }
-            deferred.resolve(result);
-        }, me.getViewModel().get('skinSettings'));
-        return deferred.promise;
-    },
-
-    setSystemSettings: function () {
-        var me = this,
-            deferred = new Ext.Deferred();
-        console.log(me.getViewModel().get('systemSettings'));
-        rpc.systemManager.setSettings(function(result, ex) {
-            if (ex) { deferred.reject(ex); }
-            deferred.resolve(result);
-        }, me.getViewModel().get('systemSettings'));
-        return deferred.promise;
-    },
-
 
     generateCertificate: function (btn) {
         var me = this,
@@ -246,10 +184,10 @@ Ext.define('Ung.config.administration.AdministrationController', {
         try {
             netStatus = rpc.networkManager.getInterfaceStatus();
         } catch (e) {
-            Ung.Util.exceptionToast(e);
+            Util.exceptionToast(e);
         }
 
-        addressList = "";
+        addressList = '';
         addressList += hostName;
 
         for (i = 0; i < netStatus.list.length; i++) {

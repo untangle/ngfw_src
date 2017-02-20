@@ -64,7 +64,7 @@ Ext.define('Ung.config.network.view.Routes', {
                 xtype: 'combo',
                 fieldLabel: 'Next Hop'.t(),
                 bind: '{record.nextHop}',
-                // store: Ung.Util.getV4NetmaskList(false),
+                // store: Util.getV4NetmaskList(false),
                 queryMode: 'local',
                 allowBlank: false,
                 editable: true

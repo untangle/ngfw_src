@@ -61,11 +61,11 @@ Ext.define('Ung.node.VirusBlocker', {
                 hideable: false,
                 menuDisabled: true,
                 editorField: 'textfield',
-                editorValidator: Ung.Util.urlValidator,
+                editorValidator: Util.urlValidator,
                 editor: {
                     allowBlank: false,
                     emptyText: 'Site URL'.t(),
-                    validator: Ung.Util.urlValidator
+                    validator: Util.urlValidator
                 }
             }, {
                 xtype: 'checkcolumn',

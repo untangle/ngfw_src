@@ -10,44 +10,40 @@ Ext.define('Ung.config.network.NetworkController', {
         'networktest': { afterrender: 'networkTestRender' }
     },
 
-    getNetworkSettings: function () {
-        var deferred = new Ext.Deferred();
-        rpc.networkManager.getNetworkSettings(function (result, ex) {
-            if (ex) { deferred.reject(ex); }
-            deferred.resolve(result);
-        });
-        return deferred.promise;
-    },
-
-    getInterfaceStatus: function () {
-        var deferred = new Ext.Deferred();
-        rpc.networkManager.getInterfaceStatus(function (result, ex) {
-            if (ex) { deferred.reject(ex); }
-            deferred.resolve(result);
-        });
-        return deferred.promise;
-    },
-
-    getDeviceStatus: function () {
-        var deferred = new Ext.Deferred();
-        rpc.networkManager.getDeviceStatus(function (result, ex) {
-            if (ex) { deferred.reject(ex); }
-            deferred.resolve(result);
-        });
-        return deferred.promise;
-    },
+    additionalInterfaceProps: [{
+        // interface status
+        v4Address: null,
+        v4Netmask: null,
+        v4Gateway: null,
+        v4Dns1: null,
+        v4Dns2: null,
+        v4PrefixLength: null,
+        v6Address: null,
+        v6Gateway: null,
+        v6PrefixLength: null,
+        // device status
+        deviceName: null,
+        macAddress: null,
+        duplex: null,
+        vendor: null,
+        mbit: null,
+        connected: null
+    }],
 
     loadSettings: function () {
-        var v = this.getView(), vm = this.getViewModel();
+        var me = this,
+            v = this.getView(),
+            vm = this.getViewModel();
         v.setLoading(true);
         Ext.Deferred.sequence([
-            this.getNetworkSettings,
-            this.getInterfaceStatus,
-            this.getDeviceStatus
+            Rpc.asyncPromise('rpc.networkManager.getNetworkSettings'),
+            Rpc.asyncPromise('rpc.networkManager.getInterfaceStatus'),
+            Rpc.asyncPromise('rpc.networkManager.getDeviceStatus'),
         ], this).then(function (result) {
             v.setLoading(false);
-            var intf, intfStatus, devStatus;
+            var intfStatus, devStatus;
             result[0].interfaces.list.forEach(function (intf) {
+                Ext.apply(intf, me.additionalInterfaceProps);
                 intfStatus = Ext.Array.findBy(result[1].list, function (intfSt) {
                     return intfSt.interfaceId === intf.interfaceId;
                 });
@@ -64,7 +60,7 @@ Ext.define('Ung.config.network.NetworkController', {
         }, function (ex) {
             v.setLoading(false);
             console.error(ex);
-            Ung.Util.exceptionToast(ex);
+            Util.exceptionToast(ex);
         });
     },
 
@@ -73,7 +69,7 @@ Ext.define('Ung.config.network.NetworkController', {
         var vm = this.getViewModel();
         var me = this;
 
-        if (!Ung.Util.validateForms(view)) {
+        if (!Util.validateForms(view)) {
             return;
         }
 
@@ -99,27 +95,13 @@ Ext.define('Ung.config.network.NetworkController', {
             }
         });
 
-        rpc.networkManager.setNetworkSettings(function (result, ex) {
+        Rpc.asyncData('rpc.networkManager.setNetworkSettings', vm.get('settings'))
+        .then(function(result) {
             view.setLoading (false);
             me.loadSettings();
-            if (ex) { console.error(ex); Ung.Util.exceptionToast(ex); return; }
-            Ung.Util.successToast('Network'.t() + ' settings saved!');
-            // me.loadInterfaceStatusAndDevices();
-        }, vm.get('settings'));
+            Util.successToast('Network'.t() + ' settings saved!');
+        });
     },
-
-    // /**
-    //  * Loads netowrk settings
-    //  */
-    // loadSettings: function () {
-    //     var me = this;
-    //     rpc.networkManager.getNetworkSettings(function (result, ex) {
-    //         if (ex) { console.error(ex); Ung.Util.exceptionToast(ex); return; }
-    //         me.getViewModel().set('settings', result);
-    //         me.loadInterfaceStatusAndDevices();
-    //         console.log(result);
-    //     });
-    // },
 
     onInterfaces: function () {
         var me = this;
@@ -224,7 +206,7 @@ Ext.define('Ung.config.network.NetworkController', {
             };
 
         rpc.execManager.execOutput(function (result, ex) {
-            if (ex) { console.error(ex); Ung.Util.exceptionToast(ex); return; }
+            if (ex) { console.error(ex); Util.exceptionToast(ex); return; }
             if (Ext.isEmpty(result)) { return; }
             if (result.search('Device not found') >= 0) { return; }
 
@@ -253,7 +235,7 @@ Ext.define('Ung.config.network.NetworkController', {
             }
 
             rpc.execManager.execOutput(function (result, ex) {
-                if (ex) { console.error(ex); Ung.Util.exceptionToast(ex); return; }
+                if (ex) { console.error(ex); Util.exceptionToast(ex); return; }
                 if (Ext.isEmpty(result)) { return; }
 
                 var linep = result.split(' ');
@@ -263,7 +245,7 @@ Ext.define('Ung.config.network.NetworkController', {
                 });
 
                 rpc.execManager.execOutput(function (result, ex) {
-                    if (ex) { console.error(ex); Ung.Util.exceptionToast(ex); return; }
+                    if (ex) { console.error(ex); Util.exceptionToast(ex); return; }
                     Ext.apply(stat, {
                         v6Addr: result
                     });
@@ -277,7 +259,7 @@ Ext.define('Ung.config.network.NetworkController', {
         var vm = this.getViewModel();
         var arpCommand = 'arp -n | grep ' + symbolicDev + ' | grep -v incomplete > /tmp/arp.txt ; cat /tmp/arp.txt';
         rpc.execManager.execOutput(function (result, ex) {
-            if (ex) { console.error(ex); Ung.Util.exceptionToast(ex); return; }
+            if (ex) { console.error(ex); Util.exceptionToast(ex); return; }
 
             var lines = Ext.isEmpty(result) ? []: result.split('\n');
             var lparts, connections = [];
@@ -300,7 +282,7 @@ Ext.define('Ung.config.network.NetworkController', {
     refreshRoutes: function () {
         var v = this.getView();
         rpc.execManager.exec(function (result, ex) {
-            if (ex) { console.error(ex); Ung.Util.exceptionToast(ex); return; }
+            if (ex) { console.error(ex); Util.exceptionToast(ex); return; }
             v.down('#currentRoutes').setValue(result.output);
         }, '/usr/share/untangle/bin/ut-routedump.sh');
     },
@@ -308,12 +290,9 @@ Ext.define('Ung.config.network.NetworkController', {
 
     refreshQosStatistics: function () {
         rpc.execManager.execOutput(function (result, ex) {
-            if (ex) { console.error(ex); Ung.Util.exceptionToast(ex); return; }
+            if (ex) { console.error(ex); Util.exceptionToast(ex); return; }
         }, '/usr/share/untangle-netd/bin/qos-service.py status');
     },
-
-
-
 
 
     // Network Tests
@@ -327,15 +306,15 @@ Ext.define('Ung.config.network.NetworkController', {
             text = [],
             me = this;
 
-            btn.setDisabled(true);
+        btn.setDisabled(true);
 
-            text.push(output.getValue());
-            text.push('' + (new Date()) + ' - ' + 'Test Started'.t() + '\n');
+        text.push(output.getValue());
+        text.push('' + (new Date()) + ' - ' + 'Test Started'.t() + '\n');
 
-            rpc.execManager.execEvil(function (result, ex) {
-                if (ex) { console.error(ex); Ung.Util.exceptionToast(ex); return; }
-                me.readOutput(result, text, output, btn);
-            }, v.getViewModel().get('command'));
+        rpc.execManager.execEvil(function (result, ex) {
+            if (ex) { console.error(ex); Util.exceptionToast(ex); return; }
+            me.readOutput(result, text, output, btn);
+        }, v.getViewModel().get('command'));
 
     },
     readOutput: function (resultReader, text, output, btn) {
@@ -345,7 +324,7 @@ Ext.define('Ung.config.network.NetworkController', {
             return;
         }
         resultReader.readFromOutput(function (res, ex) {
-            if (ex) { console.error(ex); Ung.Util.exceptionToast(ex); return; }
+            if (ex) { console.error(ex); Util.exceptionToast(ex); return; }
             // console.log(res);
             if (res !== null) {
                 text.push(res);

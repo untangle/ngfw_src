@@ -112,15 +112,16 @@ Ext.define('Ung.widget.Report', {
             } else {
                 // fetch chart data
                 this.lookupReference('chart').fireEvent('beginfetchdata');
-                Rpc.getReportData(entry.getData(), timeframe)
+                Rpc.asyncData('rpc.reportsManager.getDataForReportEntry', entry.getData(), timeframe, -1)
                     .then(function (response) {
                         me.fireEvent('afterdata');
                         me.lookupReference('chart').fireEvent('setseries', response.list);
                     }, function (exception) {
+                        console.log(exception);
                         me.fireEvent('afterdata');
                         me.lookupReference('chart').lookupReference('loader').hide();
-                        console.log(exception);
-                        // Ung.Util.exceptionToast(exception);
+
+                        // Util.exceptionToast(exception);
 
                         if (me.down('#exception')) {
                             me.remove('exception');

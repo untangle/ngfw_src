@@ -26,19 +26,21 @@ Ext.define('Ung.Application', {
 
     launch: function () {
         var me = this;
-        Rpc.rpc = me.rpc;
+        // Rpc.rpc = me.rpc;
         // rpc.isExpertMode = true;
 
         Ext.getStore('policies').loadData(me.rpc.appsViews);
 
-        Ung.util.Metrics.start();
+        Metrics.start();
 
         Ext.get('app-loader').destroy();
 
+        rpc.reportsManager = rpc.nodeManager.node('untangle-node-reports').getReportsManager();
+
         Ext.Deferred.parallel([
-            Rpc.getDashboardSettings,
-            Rpc.getReports,
-            Rpc.getUnavailableApps
+            Rpc.asyncPromise('rpc.dashboardManager.getSettings'),
+            Rpc.asyncPromise('rpc.reportsManager.getReportEntries'),
+            Rpc.asyncPromise('rpc.reportsManager.getUnavailableApplicationsMap')
         ]).then(function (result) {
             // Ext.get('app-loader').destroy();
             Ung.dashboardSettings = result[0];
@@ -82,7 +84,7 @@ Ext.define('Ung.Application', {
         //     //     // load unavailable apps needed for showing the widgets
         //     //     console.time('unavailApps');
         //     //     rpc.reportsManager.getUnavailableApplicationsMap(function (result, ex) {
-        //     //         if (ex) { Ung.Util.exceptionToast(ex); return false; }
+        //     //         if (ex) { Util.exceptionToast(ex); return false; }
 
         //     //         Ext.getStore('unavailableApps').loadRawData(result.map);
         //     //         Ext.getStore('widgets').loadData(settings.widgets.list);
@@ -97,16 +99,16 @@ Ext.define('Ung.Application', {
         // });
 
         // uncomment this to retreive the class load order inside browser
-        // Ung.Util.getClassOrder();
+        // Util.getClassOrder();
     },
 
     loadMainView: function () {
-        Ung.util.Metrics.start();
+        Util.Metrics.start();
         try {
             Ung.app.setMainView('Ung.view.main.Main');
         } catch (ex) {
             console.error(ex);
-            Ung.Util.exceptionToast(ex);
+            Util.exceptionToast(ex);
             return;
         }
 

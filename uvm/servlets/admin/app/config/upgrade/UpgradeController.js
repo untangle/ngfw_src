@@ -28,8 +28,8 @@ Ext.define('Ung.config.upgrade.UpgradeController', {
         me.getView().setLoading('Saving ...');
         rpc.systemManager.setSettings(function (result, ex) {
             me.getView().setLoading(false);
-            if (ex) { console.error(ex); Ung.Util.exceptionToast(ex); return; }
-            Ung.Util.successToast('Upgrade Settings'.t() + ' saved!');
+            if (ex) { console.error(ex); Util.exceptionToast(ex); return; }
+            Util.successToast('Upgrade Settings'.t() + ' saved!');
         }, me.getViewModel().get('settings'));
 
     },
@@ -37,7 +37,7 @@ Ext.define('Ung.config.upgrade.UpgradeController', {
     checkUpgrades: function () {
         var v = this.getView();
         rpc.systemManager.upgradesAvailable(function (result, ex) {
-            if (ex) { console.error(ex); Ung.Util.exceptionToast(ex); return; }
+            if (ex) { console.error(ex); Util.exceptionToast(ex); return; }
             console.log(result);
             v.down('progressbar').reset();
             v.down('progressbar').hide();

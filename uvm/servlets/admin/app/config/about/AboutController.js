@@ -25,9 +25,11 @@ Ext.define('Ung.config.about.AboutController', {
     },
 
     reloadLicenses: function () {
-        rpc.UvmContext.licenseManager().reloadLicenses(function (result, ex) {
-            // todo
-        });
+        rpc.licenseManager = rpc.UvmContext.licenseManager();
+        Rpc.asyncData('rpc.licenseManager.reloadLicenses')
+            .then(function(result) {
+                // todo
+            });
     }
 
 });

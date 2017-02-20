@@ -112,19 +112,19 @@ Ext.define('Ung.view.main.Main', {
     //                 pressed: '{isDashboard}'
     //             }
     //         }, {
-    //             html: Ung.Util.iconTitle('Apps'.t(), 'apps-16'),
+    //             html: Util.iconTitle('Apps'.t(), 'apps-16'),
     //             bind: {
     //                 href: '#apps/{policyId}',
     //                 pressed: '{isApps}'
     //             }
     //         }, {
-    //             html: Ung.Util.iconTitle('Config'.t(), 'tune-16'),
+    //             html: Util.iconTitle('Config'.t(), 'tune-16'),
     //             href: '#config',
     //             bind: {
     //                 pressed: '{isConfig}'
     //             }
     //         }, {
-    //             html: Ung.Util.iconTitle('Reports'.t(), 'show_chart-16'),
+    //             html: Util.iconTitle('Reports'.t(), 'show_chart-16'),
     //             href: '#reports',
     //             bind: {
     //                 //html: '{reportsEnabled}',
@@ -186,7 +186,7 @@ Ext.define('Ung.view.main.Main', {
     //                 hrefTarget: '_self'
     //             },
     //             items: [{
-    //                 html: Ung.Util.iconTitle('Back to Dashboard', 'keyboard_arrow_left-16'),
+    //                 html: Util.iconTitle('Back to Dashboard', 'keyboard_arrow_left-16'),
     //                 enableToggle: false,
     //                 href: '#',
     //                 hrefTarget: '_self'

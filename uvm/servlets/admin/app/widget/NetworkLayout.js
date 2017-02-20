@@ -70,37 +70,37 @@ Ext.define('Ung.widget.NetworkLayout', {
 
     fetchData: function () {
         var me = this;
-        rpc.networkManager.getNetworkSettings(function (result, ex) {
-            me.fireEvent('afterdata');
-            if (ex) { Ung.Util.exceptionToast(ex); return false; }
-            me.down('#externalInterface').removeAll();
-            me.down('#internalInterface').removeAll();
-            Ext.each(result.interfaces.list, function (iface) {
-                if (!iface.disabled) {
-                    if (iface.isWan) {
-                        me.down('#externalInterface').add({
-                            xtype: 'interfaceitem',
-                            cls: 'iface wan',
-                            viewModel: {
-                                data: {
-                                    iface: iface
+        Rpc.asyncData('rpc.networkManager.getNetworkSettings')
+            .then(function(result) {
+                me.fireEvent('afterdata');
+                me.down('#externalInterface').removeAll();
+                me.down('#internalInterface').removeAll();
+                Ext.each(result.interfaces.list, function (iface) {
+                    if (!iface.disabled) {
+                        if (iface.isWan) {
+                            me.down('#externalInterface').add({
+                                xtype: 'interfaceitem',
+                                cls: 'iface wan',
+                                viewModel: {
+                                    data: {
+                                        iface: iface
+                                    }
                                 }
-                            }
-                        });
-                    } else {
-                        me.down('#internalInterface').add({
-                            xtype: 'interfaceitem',
-                            cls: 'iface',
-                            viewModel: {
-                                data: {
-                                    iface: iface
+                            });
+                        } else {
+                            me.down('#internalInterface').add({
+                                xtype: 'interfaceitem',
+                                cls: 'iface',
+                                viewModel: {
+                                    data: {
+                                        iface: iface
+                                    }
                                 }
-                            }
-                        });
+                            });
+                        }
                     }
-                }
+                });
             });
-        });
     }
 
     // fetchData: function () {

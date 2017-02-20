@@ -19,9 +19,9 @@ Ext.define('Ung.view.node.SettingsModel', {
         },
         powerButton: function (get) {
             if (get('nodeInstance.targetState') === 'RUNNING') {
-                return Ung.Util.iconTitle('Disable', 'power_settings_new-16');
+                return Util.iconTitle('Disable', 'power_settings_new-16');
             }
-            return Ung.Util.iconTitle('Enable', 'power_settings_new-16');
+            return Util.iconTitle('Enable', 'power_settings_new-16');
         }
     },
 

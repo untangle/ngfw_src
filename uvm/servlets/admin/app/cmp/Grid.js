@@ -12,7 +12,7 @@ Ext.define('Ung.cmp.Grid', {
     controller: 'ungrid',
 
     actions: {
-        add: { text: 'Add'.t(), iconCls: 'fa fa-plus', handler: 'addRecord' },
+        add: { text: 'Add'.t(), iconCls: 'fa fa-plus-circle fa-lg', handler: 'addRecord' },
         import: { text: 'Import'.t(), handler: 'importData' },
         export: { text: 'Export'.t(), handler: 'exportData' },
         edit: {
@@ -24,7 +24,7 @@ Ext.define('Ung.cmp.Grid', {
             }
         },
         delete: {
-            iconCls: 'fa fa-trash-o',
+            iconCls: 'fa fa-trash-o fa-red',
             tooltip: 'Delete record'.t(),
             handler: 'deleteRecord',
             isDisabled: function (table, rowIndex, colIndex, item, record) {
@@ -46,7 +46,7 @@ Ext.define('Ung.cmp.Grid', {
         type: 'cellmodel'
     },
     viewConfig: {
-        emptyText: '<p style="text-align: center; margin: 0; line-height: 2"><i class="fa fa-exclamation-triangle fa-2x"></i> <br/>No Rules! Add from the menu...</p>',
+        emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-exclamation-triangle fa-2x"></i> <br/>No Data! Add from the menu...</p>',
         stripeRows: false,
         getRowClass: function(record) {
             if (record.get('markedForDelete')) {

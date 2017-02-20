@@ -160,7 +160,7 @@ Ext.define('Ung.chart.TimeChartController', {
                         var finalVal = this.value;
 
                         if (me.entry.get('units') === 'bytes/s') {
-                            finalVal = Ung.Util.bytesToHumanReadable(this.value, true);
+                            finalVal = Util.bytesToHumanReadable(this.value, true);
                             /*
                             if (this.isLast) {
                                 return '<span style="color: #555; font-size: 12px;"><strong>' + finalVal + '</strong> (per second)</span>';

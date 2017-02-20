@@ -205,13 +205,14 @@ Ext.define('Ung.config.localdirectory.LocalDirectoryController', {
     loadSettings: function () {
         var me = this;
         this.localDirectory.getUsers(function (result, ex) {
-            if (ex) { console.error(ex); Ung.Util.exceptionToast(ex); return; }
+            if (ex) { console.error(ex); Util.exceptionToast(ex); return; }
             console.log(result);
             me.getViewModel().set('usersData', result);
         });
     }
 
 });
+
 Ext.define('Ung.config.localdirectory.LocalDirectoryModel', {
     extend: 'Ext.app.ViewModel',
 

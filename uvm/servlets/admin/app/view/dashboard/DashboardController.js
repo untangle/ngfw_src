@@ -66,7 +66,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         //         // load unavailable apps needed for showing the widgets
         //         console.time('unavailApps');
         //         rpc.reportsManager.getUnavailableApplicationsMap(function (result, ex) {
-        //             if (ex) { Ung.Util.exceptionToast(ex); return false; }
+        //             if (ex) { Util.exceptionToast(ex); return false; }
 
         //             Ext.getStore('unavailableApps').loadRawData(result.map);
         //             Ext.getStore('widgets').loadData(settings.widgets.list);
@@ -84,7 +84,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
             // load unavailable apps needed for showing the widgets
             console.time('unavailApps');
             rpc.reportsManager.getUnavailableApplicationsMap(function (result, ex) {
-                if (ex) { Ung.Util.exceptionToast(ex); return false; }
+                if (ex) { Util.exceptionToast(ex); return false; }
 
                 Ext.getStore('unavailableApps').loadRawData(result.map);
                 //Ext.getStore('widgets').loadData(settings.widgets.list);
@@ -270,11 +270,12 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         console.log('apply');
         // because of the drag/drop reorder the settins widgets are updated to respect new ordering
         Ung.dashboardSettings.widgets.list = Ext.Array.pluck(Ext.getStore('widgets').getRange(), 'data');
-        rpc.dashboardManager.setSettings(function (result, ex) {
-            if (ex) { Ung.Util.exceptionToast(ex); return; }
-            Ung.Util.successToast('<span style="color: yellow; font-weight: 600;">Dashboard Saved!</span>');
+
+        Rpc.asyncData('rpc.dashboardManager.setSettings', Ung.dashboardSettings)
+        .then(function(result) {
+            Util.successToast('<span style="color: yellow; font-weight: 600;">Dashboard Saved!</span>');
             Ext.getStore('widgets').sync();
-        }, Ung.dashboardSettings);
+        });
 
     },
 
@@ -337,7 +338,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                         Ext.Msg.alert('Install required'.t(), Ext.String.format('To enable this Widget please install <strong>{0}</strong> app first!'.t(), entry.get('category')));
                     }
                 } else {
-                    Ung.Util.exceptionToast('This entry is not available and it should be removed!');
+                    Util.exceptionToast('This entry is not available and it should be removed!');
                 }
 
             }
@@ -420,27 +421,26 @@ Ext.define('Ung.view.dashboard.DashboardController', {
             'Do you want to continue?'.t(),
             function (btn) {
                 if (btn === 'yes') {
-                    rpc.dashboardManager.resetSettingsToDefault(function (result, ex) {
-                        if (ex) { Ung.Util.exceptionToast(ex); return; }
-                        Ung.Util.successToast('Dashboard reset done!');
-                        Rpc.getDashboardSettings().then(function(settings) {
-                            Ung.dashboardSettings = settings;
-                            if (vm.get('reportsInstalled')) {
-                                // load unavailable apps needed for showing the widgets
-                                rpc.reportsManager.getUnavailableApplicationsMap(function (result, ex) {
-                                    if (ex) { Ung.Util.exceptionToast(ex); return false; }
-
-                                    Ext.getStore('unavailableApps').loadRawData(result.map);
-                                    Ext.getStore('widgets').loadData(settings.widgets.list);
-                                    me.loadWidgets();
-                                });
-                            } else {
-                                Ext.getStore('widgets').loadData(settings.widgets.list);
-                                me.loadWidgets();
-                            }
-                            me.populateMenus();
-                        });
+                    Rpc.asyncData('rpc.dashboardManager.resetSettingsToDefault').then(function (result) {
+                        Util.successToast('Dashboard reset done!');
                     });
+                        // Rpc.getDashboardSettings().then(function(settings) {
+                        //     Ung.dashboardSettings = settings;
+                        //     if (vm.get('reportsInstalled')) {
+                        //         // load unavailable apps needed for showing the widgets
+                        //         rpc.reportsManager.getUnavailableApplicationsMap(function (result, ex) {
+                        //             if (ex) { Util.exceptionToast(ex); return false; }
+
+                        //             Ext.getStore('unavailableApps').loadRawData(result.map);
+                        //             Ext.getStore('widgets').loadData(settings.widgets.list);
+                        //             me.loadWidgets();
+                        //         });
+                        //     } else {
+                        //         Ext.getStore('widgets').loadData(settings.widgets.list);
+                        //         me.loadWidgets();
+                        //     }
+                        //     me.populateMenus();
+                        // });
                 }
             });
     },
@@ -488,7 +488,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         // get devices
         // @todo: review this based on oler implementation
         rpc.deviceTable.getDevices(function (result, ex) {
-            if (ex) { Ung.Util.exceptionToast(ex); return false; }
+            if (ex) { Util.exceptionToast(ex); return false; }
             vm.set('deviceCount', result.list.length);
         });
     },
@@ -528,7 +528,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                 listeners: {
                     click: function (menu, item) {
                         if (Ext.getStore('widgets').findRecord('type', item.type)) {
-                            Ung.Util.successToast('<span style="color: yellow; font-weight: 600;">' + item.text + '</span>' + ' is already in Dashboard!');
+                            Util.successToast('<span style="color: yellow; font-weight: 600;">' + item.text + '</span>' + ' is already in Dashboard!');
                             return;
                         }
                         var newWidget = Ext.create('Ung.model.Widget', {
@@ -548,7 +548,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         });
 
         if (rpc.reportsManager) {
-            rpc.reportsManager.getCurrentApplications(function (result, ex) {
+            Rpc.asyncData('rpc.reportsManager.getCurrentApplications').then(function(result, ex) {
                 categories = [
                     { displayName: 'Hosts', icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_hosts.png' },
                     { displayName: 'Devices', icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_devices.png' },
@@ -573,7 +573,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                     });
                     Ext.getStore('reports').getRange().forEach(function(report) {
                         reportsMenu.push({
-                            text: Ung.Util.iconReportTitle(report) + ' ' + report.get('title'),
+                            text: Util.iconReportTitle(report) + ' ' + report.get('title'),
                             report: report
                         });
                     });
@@ -589,7 +589,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                             listeners: {
                                 click: function (menu, item) {
                                     if (Ext.getStore('widgets').findRecord('entryId', item.report.get('uniqueId'))) {
-                                        Ung.Util.successToast('<span style="color: yellow; font-weight: 600;">' + item.report.get('title') + '</span>' + ' is already in Dashboard!');
+                                        Util.successToast('<span style="color: yellow; font-weight: 600;">' + item.report.get('title') + '</span>' + ' is already in Dashboard!');
                                         return;
                                     }
                                     var newWidget = Ext.create('Ung.model.Widget', {
