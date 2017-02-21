@@ -1,16 +1,13 @@
 Ext.define('Ung.config.network.Interface', {
     extend: 'Ext.window.Window',
     alias: 'widget.config.interface',
-    width: 420,
+    width: 500,
     height: 550,
-    constrainTo: 'body',
+    // constrainTo: 'body',
     layout: 'fit',
-
     modal: true,
 //    viewModel: true,
-
     title: 'Config'.t(),
-
     items: [{
         xtype: 'form',
         border: false,
@@ -24,7 +21,6 @@ Ext.define('Ung.config.network.Interface', {
             labelWidth: 200,
             labelAlign: 'right'
         },
-
         items: [{
             // interface name
             xtype: 'textfield',
@@ -32,7 +28,7 @@ Ext.define('Ung.config.network.Interface', {
             labelAlign: 'top',
             name: 'interfaceName',
             allowBlank: false,
-            bind: '{si2.name}'
+            bind: '{si.name}'
         },
         // {
         //     // is VLAN
@@ -495,7 +491,6 @@ Ext.define('Ung.config.network.Interface', {
                     bind: {
                         hidden: '{!showRouterWarning}'
                     }
-
                 }]
             }]
             // @todo: add aliases grid
@@ -630,43 +625,35 @@ Ext.define('Ung.config.network.Interface', {
         }],
         buttons: [{
             text: 'Cancel',
-            iconCls: 'fa fa-ban fa-red'
+            iconCls: 'fa fa-ban fa-red',
+            handler: 'cancelEdit'
         }, {
             text: 'Done',
-            iconCls: 'fa fa-check'
+            iconCls: 'fa fa-check',
+            handler: 'doneEdit'
         }]
-
     }]
-
 });
-
-
 Ext.define('Ung.config.network.Network', {
     extend: 'Ext.tab.Panel',
     alias: 'widget.config.network',
-
     requires: [
         'Ung.config.network.NetworkController',
         'Ung.config.network.NetworkModel',
         'Ung.config.network.Interface',
-
         // 'Ung.view.grid.Grid',
         // 'Ung.store.RuleConditions',
         'Ung.store.Rule',
         'Ung.model.Rule',
         'Ung.cmp.Grid'
     ],
-
     controller: 'config.network',
-
     viewModel: {
         type: 'config.network'
     },
-
     // tabPosition: 'left',
     // tabRotation: 0,
     // tabStretchMax: false,
-
     dockedItems: [{
         xtype: 'toolbar',
         weight: -10,
@@ -691,7 +678,6 @@ Ext.define('Ung.config.network.Network', {
             handler: 'saveSettings'
         }]
     }],
-
     items: [{
         xtype: 'config.network.interfaces'
     }, {
@@ -718,16 +704,17 @@ Ext.define('Ung.config.network.Network', {
 });
 Ext.define('Ung.config.network.NetworkController', {
     extend: 'Ext.app.ViewController',
-
     alias: 'controller.config.network',
-
     control: {
         '#': { afterrender: 'loadSettings' },
-        '#interfaces': { beforeactivate: 'onInterfaces' },
-        '#interfaceStatus': { beforeedit: function () { return false; } },
+        '#interfaces': { beforerender: 'onInterfaces' },
+        '#portForwardRules': { beforerender: 'setPortForwardWarnings' },
+        '#currentRoutes': { afterrender: 'refreshRoutes' },
+        '#qosStatistics': { afterrender: 'refreshQosStatistics' },
+        '#upnpStatus': { afterrender: 'refreshUpnpStatus' },
+        '#dhcpLeases': { afterrender: 'refreshDhcpLeases' },
         'networktest': { afterrender: 'networkTestRender' }
     },
-
     additionalInterfaceProps: [{
         // interface status
         v4Address: null,
@@ -747,7 +734,6 @@ Ext.define('Ung.config.network.NetworkController', {
         mbit: null,
         connected: null
     }],
-
     loadSettings: function () {
         var me = this,
             v = this.getView(),
@@ -767,7 +753,6 @@ Ext.define('Ung.config.network.NetworkController', {
                 });
                 delete intfStatus.javaClass;
                 Ext.apply(intf, intfStatus);
-
                 devStatus = Ext.Array.findBy(result[2].list, function (devSt) {
                     return devSt.deviceName === intf.physicalDev;
                 });
@@ -781,22 +766,17 @@ Ext.define('Ung.config.network.NetworkController', {
             Util.exceptionToast(ex);
         });
     },
-
     saveSettings: function () {
         var view = this.getView();
         var vm = this.getViewModel();
         var me = this;
-
         if (!Util.validateForms(view)) {
             return;
         }
-
-
         view.setLoading('Saving ...');
         // used to update all tabs data
         view.query('ungrid').forEach(function (grid) {
             var store = grid.getStore();
-
             /**
              * Important!
              * update custom grids only if are modified records or it was reordered via drag/drop
@@ -812,7 +792,6 @@ Ext.define('Ung.config.network.NetworkController', {
                 // store.commitChanges();
             }
         });
-
         Rpc.asyncData('rpc.networkManager.setNetworkSettings', vm.get('settings'))
         .then(function(result) {
             view.setLoading (false);
@@ -820,53 +799,112 @@ Ext.define('Ung.config.network.NetworkController', {
             Util.successToast('Network'.t() + ' settings saved!');
         });
     },
-
     onInterfaces: function () {
-        var me = this;
-        var vm = this.getViewModel();
-
-        vm.setFormulas({
-            si: {
-                bind: {
-                    bindTo: '{interfacesGrid.selection}',
-                    deep: true
-                },
-                get: function (intf) {
-                    if (intf) {
-                        me.getSelectedInterfaceStatus(intf.get('symbolicDev'));
-                        me.getInterfaceArp(intf.get('symbolicDev'));
-                    }
-                    return intf;
-                }
+        var me = this,
+            vm = this.getViewModel();
+        vm.bind('{interfacesGrid.selection}', function(interface) {
+            if (interface) {
+                me.getInterfaceStatus();
+                me.getInterfaceArp();
             }
         });
-
-        // vm.bind({
-        //     bindTo: '{interfacesGrid.selection}',
-        //     deep: true
-        // }, function (v) {
-        //     vm.set('si', v);
-        //     // return v;
-        // }, this);
-
-        // vm.bind('{si}', function (val) {
-        //     if (val) {
-        //         me.getInterfaceStatus(val.symbolicDev);
-        //         me.getInterfaceArp(val.symbolicDev);
-        //     }
-        // });
-
-        // vm.bind('{settings.interfaces}', function (v) {
-        //     // console.log(v);
-        // });
-
     },
-
+    getInterfaceStatus: function () {
+        var statusView = this.getView().down('#interfaceStatus'),
+            vm = this.getViewModel(),
+            symbolicDev = vm.get('interfacesGrid.selection').get('symbolicDev'),
+            command1 = 'ifconfig ' + symbolicDev + ' | grep "Link\\|packets" | grep -v inet6 | tr "\\n" " " | tr -s " " ',
+            command2 = 'ifconfig ' + symbolicDev + ' | grep "inet addr" | tr -s " " | cut -c 7- ',
+            command3 = 'ifconfig ' + symbolicDev + ' | grep inet6 | grep Global | cut -d" " -f 13',
+            stat = {
+                device: symbolicDev,
+                macAddress: null,
+                address: null,
+                mask: null,
+                v6Addr: null,
+                rxpkts: null,
+                rxerr: null,
+                rxdrop: null,
+                txpkts: null,
+                txerr: null,
+                txdrop: null
+            };
+        statusView.setLoading(true);
+        Rpc.asyncData('rpc.execManager.execOutput', command1).then(function (result) {
+            if (Ext.isEmpty(result) || result.search('Device not found') >= 0) {
+                statusView.setLoading(false);
+                return;
+            }
+            var lineparts = result.split(' ');
+            if (result.search('Ethernet') >= 0) {
+                Ext.apply(stat, {
+                    macAddress: lineparts[4],
+                    rxpkts: lineparts[6].split(':')[1],
+                    rxerr: lineparts[7].split(':')[1],
+                    rxdrop: lineparts[8].split(':')[1],
+                    txpkts: lineparts[12].split(':')[1],
+                    txerr: lineparts[13].split(':')[1],
+                    txdrop: lineparts[14].split(':')[1]
+                });
+            }
+            if (result.search('Point-to-Point') >= 0) {
+                Ext.apply(stat, {
+                    macAddress: '',
+                    rxpkts: lineparts[5].split(':')[1],
+                    rxerr: lineparts[6].split(':')[1],
+                    rxdrop: lineparts[7].split(':')[1],
+                    txpkts: lineparts[11].split(':')[1],
+                    txerr: lineparts[12].split(':')[1],
+                    txdrop: lineparts[13].split(':')[1]
+                });
+            }
+            Rpc.asyncData('rpc.execManager.execOutput', command2).then(function (result) {
+                if (Ext.isEmpty(result)) {
+                    statusView.setLoading(false);
+                    return;
+                }
+                var linep = result.split(' ');
+                Ext.apply(stat, {
+                    address: linep[0].split(':')[1],
+                    mask: linep[2].split(':')[1]
+                });
+                Rpc.asyncData('rpc.execManager.execOutput', command3).then(function (result) {
+                    statusView.setLoading(false);
+                    Ext.apply(stat, {
+                        v6Addr: result
+                    });
+                    vm.set('siStatus', stat);
+                });
+            });
+        });
+    },
+    getInterfaceArp: function () {
+        var vm = this.getViewModel(),
+            arpView = this.getView().down('#interfaceArp'),
+            symbolicDev = vm.get('interfacesGrid.selection').get('symbolicDev'),
+            arpCommand = 'arp -n | grep ' + symbolicDev + ' | grep -v incomplete > /tmp/arp.txt ; cat /tmp/arp.txt';
+        arpView.setLoading(true);
+        Rpc.asyncData('rpc.execManager.execOutput', arpCommand).then(function (result) {
+            var lines = Ext.isEmpty(result) ? []: result.split('\n');
+            var lparts, connections = [];
+            for (var i = 0 ; i < lines.length; i++ ) {
+                if (!Ext.isEmpty(lines[i])) {
+                    lparts = lines[i].split(/\s+/);
+                    connections.push({
+                        address: lparts[0],
+                        type: lparts[1],
+                        macAddress: lparts[2]
+                    });
+                }
+            }
+            vm.set('siArp', connections);
+            arpView.setLoading(false);
+        });
+    },
     setPortForwardWarnings: function () {
         var vm = this.getViewModel(),
             interfaces = vm.get('settings.interfaces.list'), intf, i,
             portForwardWarningsHtml = [];
-
         for (i = 0; i < interfaces.length; i += 1) {
             intf = interfaces[i];
             if (intf.v4Address) {
@@ -895,124 +933,73 @@ Ext.define('Ung.config.network.NetworkController', {
         }
         vm.set('portForwardWarnings', portForwardWarningsHtml.join(''));
     },
-
-    getInterface: function (i) {
-        return i;
+    refreshRoutes: function (cmp) {
+        var view = cmp.isXType('button') ? cmp.up('panel') : cmp;
+        view.down('textarea').setValue('');
+        view.setLoading(true);
+        Rpc.asyncData('rpc.execManager.exec', '/usr/share/untangle/bin/ut-routedump.sh')
+            .then(function (result) {
+                view.down('textarea').setValue(result.output);
+            }).always(function () {
+                view.setLoading(false);
+            });
     },
-
-    // onInterfaceSelect: function (grid, record) {
-    //     this.getViewModel().set('si', record.getData());
-    // },
-
-    getSelectedInterfaceStatus: function (symbolicDev) {
-        var vm = this.getViewModel(),
-            command1 = 'ifconfig ' + symbolicDev + ' | grep "Link\\|packets" | grep -v inet6 | tr "\\n" " " | tr -s " " ',
-            command2 = 'ifconfig ' + symbolicDev + ' | grep "inet addr" | tr -s " " | cut -c 7- ',
-            command3 = 'ifconfig ' + symbolicDev + ' | grep inet6 | grep Global | cut -d" " -f 13',
-            stat = {
-                device: symbolicDev,
-                macAddress: null,
-                address: null,
-                mask: null,
-                v6Addr: null,
-                rxpkts: null,
-                rxerr: null,
-                rxdrop: null,
-                txpkts: null,
-                txerr: null,
-                txdrop: null
-            };
-
-        rpc.execManager.execOutput(function (result, ex) {
-            if (ex) { console.error(ex); Util.exceptionToast(ex); return; }
-            if (Ext.isEmpty(result)) { return; }
-            if (result.search('Device not found') >= 0) { return; }
-
-            var lineparts = result.split(' ');
-            if (result.search('Ethernet') >= 0) {
-                Ext.apply(stat, {
-                    macAddress: lineparts[4],
-                    rxpkts: lineparts[6].split(':')[1],
-                    rxerr: lineparts[7].split(':')[1],
-                    rxdrop: lineparts[8].split(':')[1],
-                    txpkts: lineparts[12].split(':')[1],
-                    txerr: lineparts[13].split(':')[1],
-                    txdrop: lineparts[14].split(':')[1]
-                });
-            }
-            if (result.search('Point-to-Point') >= 0) {
-                Ext.apply(stat, {
-                    macAddress: '',
-                    rxpkts: lineparts[5].split(':')[1],
-                    rxerr: lineparts[6].split(':')[1],
-                    rxdrop: lineparts[7].split(':')[1],
-                    txpkts: lineparts[11].split(':')[1],
-                    txerr: lineparts[12].split(':')[1],
-                    txdrop: lineparts[13].split(':')[1]
-                });
-            }
-
-            rpc.execManager.execOutput(function (result, ex) {
-                if (ex) { console.error(ex); Util.exceptionToast(ex); return; }
-                if (Ext.isEmpty(result)) { return; }
-
-                var linep = result.split(' ');
-                Ext.apply(stat, {
-                    address: linep[0].split(':')[1],
-                    mask: linep[2].split(':')[1]
-                });
-
-                rpc.execManager.execOutput(function (result, ex) {
-                    if (ex) { console.error(ex); Util.exceptionToast(ex); return; }
-                    Ext.apply(stat, {
-                        v6Addr: result
-                    });
-                    vm.set('siStatus', stat);
-                }, command3);
-            }, command2);
-        }, command1);
+    refreshQosStatistics: function (cmp) {
+        var view = cmp.isXType('button') ? cmp.up('grid') : cmp;
+        view.setLoading(true);
+        Rpc.asyncData('rpc.execManager.execOutput', '/usr/share/untangle-netd/bin/qos-service.py status')
+            .then(function (result) {
+                var list = [];
+                try {
+                    list = eval(result);
+                } catch (e) {
+                    Util.exceptionToast('Unable to get QoS statistics');
+                    console.error('Could not execute /usr/share/untangle-netd/bin/qos-service.py output: ', result, e);
+                }
+            }).always(function () {
+                view.setLoading(false);
+            });
     },
-
-    getInterfaceArp: function (symbolicDev) {
+    refreshUpnpStatus: function (cmp) {
+        var view = cmp.isXType('button') ? cmp.up('grid') : cmp;
+        if (view.isDisabled()) {
+            return;
+        }
+        view.setLoading(true);
         var vm = this.getViewModel();
-        var arpCommand = 'arp -n | grep ' + symbolicDev + ' | grep -v incomplete > /tmp/arp.txt ; cat /tmp/arp.txt';
-        rpc.execManager.execOutput(function (result, ex) {
-            if (ex) { console.error(ex); Util.exceptionToast(ex); return; }
-
-            var lines = Ext.isEmpty(result) ? []: result.split('\n');
-            var lparts, connections = [];
-            for (var i = 0 ; i < lines.length; i++ ) {
-                if (!Ext.isEmpty(lines[i])) {
-                    lparts = lines[i].split(/\s+/);
-                    connections.push({
-                        address: lparts[0],
-                        type: lparts[1],
-                        macAddress: lparts[2]
+        Rpc.asyncData('rpc.networkManager.getUpnpManager', '--status', '')
+            .then(function(result) {
+                console.log(result);
+                vm.set('upnpStatus', Ext.decode(result)['active']);
+            }).always(function () {
+                view.setLoading(false);
+            });
+    },
+    refreshDhcpLeases: function (cmp) {
+        var view = cmp.isXType('button') ? cmp.up('grid') : cmp;
+        view.setLoading(true);
+        Rpc.asyncData('rpc.execManager.execOutput', 'cat /var/lib/misc/dnsmasq.leases')
+            .then(function (result) {
+                var lines = result.split('\n'),
+                    leases = [], lineparts, i;
+                for (i = 0 ; i < lines.length ; i++) {
+                    if (lines[i] === null || lines[i] === '' ) {
+                        continue;
+                    }
+                    lineparts = lines[i].split(/\s+/);
+                    leases.push({
+                        date: lineparts[0],
+                        macAddress: lineparts[1],
+                        address: lineparts[2],
+                        hostname: lineparts[3],
+                        clientId: lineparts[4]
                     });
                 }
-            }
-            vm.set('siArp', connections);
-            // vm.getStore('interfaceArp').reload();
-        }, arpCommand);
+                //todo: handle leases data / store
+            }).always(function () {
+                view.setLoading(false);
+            });
     },
-
-
-    refreshRoutes: function () {
-        var v = this.getView();
-        rpc.execManager.exec(function (result, ex) {
-            if (ex) { console.error(ex); Util.exceptionToast(ex); return; }
-            v.down('#currentRoutes').setValue(result.output);
-        }, '/usr/share/untangle/bin/ut-routedump.sh');
-    },
-
-
-    refreshQosStatistics: function () {
-        rpc.execManager.execOutput(function (result, ex) {
-            if (ex) { console.error(ex); Util.exceptionToast(ex); return; }
-        }, '/usr/share/untangle-netd/bin/qos-service.py status');
-    },
-
-
     // Network Tests
     networkTestRender: function (view) {
         view.down('form').insert(0, view.commandFields);
@@ -1023,21 +1010,16 @@ Ext.define('Ung.config.network.NetworkController', {
             output = v.down('textarea'),
             text = [],
             me = this;
-
         btn.setDisabled(true);
-
         text.push(output.getValue());
         text.push('' + (new Date()) + ' - ' + 'Test Started'.t() + '\n');
-
         rpc.execManager.execEvil(function (result, ex) {
             if (ex) { console.error(ex); Util.exceptionToast(ex); return; }
             me.readOutput(result, text, output, btn);
         }, v.getViewModel().get('command'));
-
     },
     readOutput: function (resultReader, text, output, btn) {
         var me = this;
-
         if (!resultReader) {
             return;
         }
@@ -1056,61 +1038,70 @@ Ext.define('Ung.config.network.NetworkController', {
             output.getEl().down('textarea').dom.scrollTop = 99999;
         });
     },
-
     clearOutput: function (btn) {
         var v = btn.up('networktest');
         v.down('textarea').setValue('');
     },
-
-
-    editInterface: function () {
+    editInterface: function (btn) {
         var v = this.getView(),
             vm = this.getViewModel();
         // var win = Ext.create('config.interface');
+        // this.editingRecord = btn.getWidgetRecord();
         this.dialog = v.add({
             xtype: 'config.interface',
             viewModel: {
                 data: {
-                    si2: vm.get('si').copy(null)
+                    // si: btn.getWidgetRecord().copy(null)
+                    si: btn.getWidgetRecord()
+                },
+                formulas: {
+                    isAddressed: function (get) { return get('si.configType') === 'ADDRESSED'; },
+                    isDisabled: function (get) { return get('si.configType') === 'DISABLED'; },
+                    isBridged: function (get) { return get('si.configType') === 'BRIDGED'; },
+                    isStaticv4: function (get) { return get('si.v4ConfigType') === 'STATIC'; },
+                    isAutov4: function (get) { return get('si.v4ConfigType') === 'AUTO'; },
+                    isPPPOEv4: function (get) { return get('si.v4ConfigType') === 'PPPOE'; },
+                    isDisabledv6: function (get) { return get('si.v6ConfigType') === 'DISABLED'; },
+                    isStaticv6: function (get) { return get('si.v6ConfigType') === 'STATIC'; },
+                    isAutov6: function (get) { return get('si.v6ConfigType') === 'AUTO'; },
+                    showRouterWarning: function (get) { return get('si.v6StaticPrefixLength') !== 64; },
+                    showWireless: function (get) { return get('si.isWirelessInterface') && get('si.configType') !== 'DISABLED'; },
+                    showWirelessPassword: function (get) { return get('si.wirelessEncryption') !== 'NONE' && get('si.wirelessEncryption') !== null; }
                 }
             }
         });
         this.dialog.show();
+    },
+    cancelEdit: function () {
+        this.dialog.close();
+    },
+    doneEdit: function () {
+        this.dialog.close();
+        // console.log(this.dialog.getViewModel());
+        // // Ext.apply(this.editingRecord, this.dialog.getViewModel().get('si'));
+        // var edited = this.dialog.getViewModel().get('si');
+        // console.log(edited);
+        // var store = this.getView().down('#interfacesGrid').getStore();
+        // console.log(store);
+        // var t = store.findRecord('interfaceId', edited.get('interfaceId'));
+        // t = edited.copy();
+        // console.log(t);
     }
-
-
-
 });
-
 Ext.define('Ung.config.network.NetworkModel', {
     extend: 'Ext.app.ViewModel',
-
     alias: 'viewmodel.config.network',
-
     formulas: {
         // used in Interfaces view when showing/hiding interface specific configurations
-        isAddressed: function (get) { return get('si.configType') === 'ADDRESSED'; },
-        isDisabled: function (get) { return get('si.configType') === 'DISABLED'; },
-        isBridged: function (get) { return get('si.configType') === 'BRIDGED'; },
-        isStaticv4: function (get) { return get('si.v4ConfigType') === 'STATIC'; },
-        isAutov4: function (get) { return get('si.v4ConfigType') === 'AUTO'; },
-        isPPPOEv4: function (get) { return get('si.v4ConfigType') === 'PPPOE'; },
-        isDisabledv6: function (get) { return get('si.v6ConfigType') === 'DISABLED'; },
-        isStaticv6: function (get) { return get('si.v6ConfigType') === 'STATIC'; },
-        isAutov6: function (get) { return get('si.v6ConfigType') === 'AUTO'; },
-        showRouterWarning: function (get) { return get('si.v6StaticPrefixLength') !== 64; },
-        showWireless: function (get) { return get('si.isWirelessInterface') && get('si.configType') !== 'DISABLED'; },
-        showWirelessPassword: function (get) { return get('si.wirelessEncryption') !== 'NONE' && get('si.wirelessEncryption') !== null; },
-        activePropsItem: function (get) { return get('si.configType') !== 'DISABLED' ? 0 : 2; },
+        si: function (get) { return get('interfacesGrid.selection'); },
         fullHostName: function (get) {
             var domain = get('settings.domainName'),
                 host = get('settings.hostName');
             if (domain !== null && domain !== '') {
-                return host + "." + domain;
+                return host + '.' + domain;
             }
             return host;
         },
-
         qosPriorityNoDefaultStore: function (get) {
             return get('qosPriorityStore').slice(1);
         },
@@ -1121,7 +1112,6 @@ Ext.define('Ung.config.network.NetworkModel', {
         // si: null,
         siStatus: null,
         siArp: null,
-
         qosPriorityStore: [
             [0, 'Default'.t()],
             [1, 'Very High'.t()],
@@ -1132,6 +1122,7 @@ Ext.define('Ung.config.network.NetworkModel', {
             [6, 'Limited More'.t()],
             [7, 'Limited Severely'.t()]
         ],
+        upnpStatus: null
     },
     stores: {
         interfaces:         { data: '{settings.interfaces.list}' },
@@ -1162,100 +1153,24 @@ Ext.define('Ung.config.network.NetworkModel', {
         },
     }
 });
-Ext.define('Ung.config.network.NetworkTest', {
-    extend: 'Ext.panel.Panel',
-    xtype: 'ung.config.networktest',
-    alias: 'widget.networktest',
-
-    layout: 'fit',
-
-    dockedItems: [{
-        xtype: 'toolbar',
-        layout: 'fit',
-        items: [{
-            xtype: 'container',
-            layout: {
-                type: 'vbox',
-                align: 'stretch'
-            },
-            items: [{
-                xtype: 'component',
-                padding: '10 10 0 10',
-                bind: {
-                    html: '{description}'
-                }
-            }, {
-                xtype: 'form',
-                border: false,
-                layout: {
-                    type: 'hbox'
-                },
-                padding: 10,
-                bodyStyle: {
-                    background: 'transparent'
-                },
-                items: [{
-                    xtype: 'button',
-                    text: 'Run Test'.t(),
-                    iconCls: 'fa fa-play',
-                    margin: '0 0 0 10',
-                    handler: 'runTest',
-                    formBind: true
-                }, {
-                    xtype: 'component',
-                    flex: 1
-                }, {
-                    xtype: 'button',
-                    text: 'Clear Output'.t(),
-                    iconCls: 'fa fa-eraser',
-                    margin: '0 0 0 10',
-                    handler: 'clearOutput'
-                }]
-            }]
-        }]
-    }],
-
-    items: [{
-        xtype: 'textarea',
-        border: false,
-        bind: {
-            emptyText: '{emptyText}'
-        },
-        fieldStyle: {
-            fontFamily: 'Courier, monospace',
-            fontSize: '14px',
-            background: '#1b1e26',
-            color: 'lime'
-        },
-        // margin: 10,
-        readOnly: true
-    }]
-});
+Ext.define('Ung.config.network.NetworkTest', {    extend: 'Ext.panel.Panel',    xtype: 'ung.config.networktest',    alias: 'widget.networktest',    layout: 'fit',    dockedItems: [{        xtype: 'toolbar',        layout: 'fit',        items: [{            xtype: 'container',            layout: {                type: 'vbox',                align: 'stretch'            },            items: [{                xtype: 'component',                padding: '10 10 0 10',                bind: {                    html: '{description}'                }            }, {                xtype: 'form',                border: false,                layout: {                    type: 'hbox'                },                padding: 10,                bodyStyle: {                    background: 'transparent'                },                items: [{                    xtype: 'button',                    text: 'Run Test'.t(),                    iconCls: 'fa fa-play',                    margin: '0 0 0 10',                    handler: 'runTest',                    formBind: true                }, {                    xtype: 'component',                    flex: 1                }, {                    xtype: 'button',                    text: 'Clear Output'.t(),                    iconCls: 'fa fa-eraser',                    margin: '0 0 0 10',                    handler: 'clearOutput'                }]            }]        }]    }],    items: [{        xtype: 'textarea',        border: false,        bind: {            emptyText: '{emptyText}'        },        fieldStyle: {            fontFamily: 'Courier, monospace',            fontSize: '14px',            background: '#1b1e26',            color: 'lime'        },        // margin: 10,        readOnly: true    }]});
 Ext.define('Ung.config.network.view.Advanced', {
     extend: 'Ext.panel.Panel',
-
     alias: 'widget.config.network.advanced',
-
     viewModel: true,
-
     title: 'Advanced'.t(),
-
     layout: 'fit',
-
     tbar: [{
         xtype: 'tbtext',
         padding: '8 5',
         style: { fontSize: '12px' },
         html: '<i class="fa fa-exclamation-triangle" style="color: red;"></i> '  + 'Advanced settings require careful configuration. Misconfiguration can compromise the proper operation and security of your server.'.t()
     }],
-
     items: [{
         xtype: 'tabpanel',
-
         // tabPosition: 'left',
         // tabRotation: 0,
         // tabStretchMax: true,
-
         items: [{
             title: 'Options'.t(),
             padding: 10,
@@ -1303,9 +1218,7 @@ Ext.define('Ung.config.network.view.Advanced', {
             }]
         }, {
             title: 'QoS'.t(),
-
             layout: 'fit',
-
             dockedItems: [{
                 xtype: 'toolbar',
                 dock: 'top',
@@ -1329,7 +1242,6 @@ Ext.define('Ung.config.network.view.Advanced', {
                     editable: false
                 }]
             }],
-
             items: [{
                 xtype: 'tabpanel',
                 // tabPosition: 'left',
@@ -1351,25 +1263,18 @@ Ext.define('Ung.config.network.view.Advanced', {
                         html: Ext.String.format('{0}Note{1}: When enabling QoS valid Download Bandwidth and Upload Bandwidth limits must be set for all WAN interfaces.'.t(), '<font color="red">','</font>') + '<br/>'
                             // Ext.String.format('Total: {0} kbps ({1} Mbit) download, {2} kbps ({3} Mbit) upload'.t(), d, d_Mbit, u, u_Mbit )
                     }],
-
                     listProperty: 'settings.interfaces.list',
-
                     bind: '{wanInterfaces}',
-
                     selModel: {
                         type: 'cellmodel'
                     },
-
                     plugins: {
                         ptype: 'cellediting',
                         clicksToEdit: 1
                     },
-
                     header: false,
-
                     sortableColumns: false,
                     enableColumnHide: false,
-
                     columns: [{
                         header: 'Id'.t(),
                         width: 70,
@@ -1414,12 +1319,10 @@ Ext.define('Ung.config.network.view.Advanced', {
                     xtype: 'panel',
                     title: 'QoS Rules'.t(),
                     // bodyPadding: 10,
-
                     layout: {
                         type: 'vbox',
                         align: 'stretch'
                     },
-
                     items: [{
                         border: false,
                         defaults: {
@@ -1462,21 +1365,16 @@ Ext.define('Ung.config.network.view.Advanced', {
                     }, {
                         xtype: 'ungrid',
                         title: 'QoS Custom Rules'.t(),
-
                         border: false,
-
                         tbar: ['@add', '->', {
                             xtype: 'tbtext',
                             padding: '8 5',
                             style: { fontSize: '12px' },
                             html: Ext.String.format('{0}Note{1}: Custom Rules only match <b>Bypassed</b> traffic.'.t(), '<font color="red">','</font>')
                         }],
-
                         recordActions: ['@edit', '@delete', '@reorder'],
-
                         listProperty: 'settings.qosSettings.qosRules.list',
                         ruleJavaClass: 'com.untangle.uvm.network.QosRuleCondition',
-
                         emptyRow: {
                             ruleId: -1,
                             enabled: true,
@@ -1488,7 +1386,6 @@ Ext.define('Ung.config.network.view.Advanced', {
                                 list: []
                             }
                         },
-
                         conditions: [
                             { name: 'DST_LOCAL', displayName: 'Destined Local'.t(), type: 'boolean' },
                             { name: 'DST_ADDR', displayName: 'Destination Address'.t(), type: 'textfield', vtype:'ipMatcher' },
@@ -1498,11 +1395,8 @@ Ext.define('Ung.config.network.view.Advanced', {
                             { name: 'SRC_ADDR', displayName: 'Source Address'.t(), type: 'textfield', vtype:'ipMatcher' },
                             { name: 'SRC_PORT', displayName: 'Source Port'.t(), type: 'numberfield', vtype:'portMatcher' }
                         ],
-
                         label: 'Perform the following action(s):'.t(),
-
                         bind: '{qosRules}',
-
                         columns: [{
                             header: 'Rule Id'.t(),
                             width: 70,
@@ -1536,13 +1430,13 @@ Ext.define('Ung.config.network.view.Advanced', {
                             dataIndex: 'priority',
                             renderer: function (value) {
                                 switch (value) {
-                                    case 1: return 'Very High'.t();
-                                    case 2: return 'High'.t();
-                                    case 3: return 'Medium'.t();
-                                    case 4: return 'Low'.t();
-                                    case 5: return 'Limited'.t();
-                                    case 6: return 'Limited More'.t();
-                                    case 7: return 'Limited Severely'.t();
+                                case 1: return 'Very High'.t();
+                                case 2: return 'High'.t();
+                                case 3: return 'Medium'.t();
+                                case 4: return 'Low'.t();
+                                case 5: return 'Limited'.t();
+                                case 6: return 'Limited More'.t();
+                                case 7: return 'Limited Severely'.t();
                                 }
                             }
                         }],
@@ -1556,22 +1450,17 @@ Ext.define('Ung.config.network.view.Advanced', {
                 }, {
                     xtype: 'grid',
                     title: 'QoS Priorities'.t(),
-
                     bind: '{qosPriorities}',
-
                     selModel: {
                         type: 'cellmodel'
                     },
-
                     plugins: {
                         ptype: 'cellediting',
                         clicksToEdit: 1
                     },
-
                     columnLines: true,
                     sortableColumns: false,
                     enableColumnHide: false,
-
                     columns: [{
                         header: 'Priority'.t(),
                         width: 150,
@@ -1637,18 +1526,22 @@ Ext.define('Ung.config.network.view.Advanced', {
                     }]
                 }, {
                     xtype: 'grid',
+                    itemId: 'qosStatistics',
                     title: 'QoS Statistics'.t(),
                     groupField:'interface_name',
-
                     columnLines: true,
                     enableColumnHide: false,
-
+                    store: {
+                        data: [] // todo: to set data
+                    },
+                    viewConfig: {
+                        emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-exclamation-triangle fa-2x"></i> <br/>No Data!</p>',
+                    },
                     tbar: [{
                         text: 'Refresh'.t(),
                         iconCls: 'fa fa-refresh',
                         handler: 'refreshQosStatistics'
                     }],
-
                     columns: [{
                         header: 'Interface'.t(),
                         width: 150,
@@ -1672,18 +1565,14 @@ Ext.define('Ung.config.network.view.Advanced', {
         }, {
             title: 'Filter Rules'.t(),
             layout: 'border',
-
             items: [{
                 xtype: 'ungrid',
                 region: 'center',
                 title: 'Forward Filter Rules'.t(),
-
                 tbar: ['@add'],
                 recordActions: ['@edit', '@delete', '@reorder'],
-
                 listProperty: 'settings.forwardFilterRules.list',
                 ruleJavaClass: 'com.untangle.uvm.network.FilterRuleCondition',
-
                 conditions: [
                     { name: 'DST_LOCAL', displayName: 'Destined Local'.t(), type: 'boolean' },
                     { name: 'DST_ADDR', displayName: 'Destination Address'.t(), type: 'textfield', vtype:'ipMatcher' },
@@ -1695,7 +1584,6 @@ Ext.define('Ung.config.network.view.Advanced', {
                     { name: 'SRC_INTF', displayName: 'Source Interface'.t(), type: 'checkboxgroup', values: Util.getInterfaceList(true, true) },
                     { name: 'PROTOCOL', displayName: 'Protocol'.t(), type: 'checkboxgroup', values: [['TCP','TCP'],['UDP','UDP'],['ICMP','ICMP'],['GRE','GRE'],['ESP','ESP'],['AH','AH'],['SCTP','SCTP']] }
                 ],
-
                 emptyRow: {
                     ruleId: -1,
                     enabled: true,
@@ -1708,9 +1596,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                     },
                     blocked: false
                 },
-
                 bind: '{forwardFilterRules}',
-
                 columns: [{
                     header: 'Rule Id'.t(),
                     width: 70,
@@ -1763,16 +1649,11 @@ Ext.define('Ung.config.network.view.Advanced', {
                 region: 'south',
                 height: '70%',
                 split: true,
-
                 title: 'Input Filter Rules'.t(),
-
                 tbar: ['@add'],
                 recordActions: ['@edit', '@delete', '@reorder'],
-
                 listProperty: 'settings.inputFilterRules.list',
                 ruleJavaClass: 'com.untangle.uvm.network.FilterRuleCondition',
-
-
                 conditions: [
                     { name: 'DST_LOCAL', displayName: 'Destined Local'.t(), type: 'boolean' },
                     { name: 'DST_ADDR', displayName: 'Destination Address'.t(), type: 'textfield', vtype:'ipMatcher' },
@@ -1784,7 +1665,6 @@ Ext.define('Ung.config.network.view.Advanced', {
                     { name: 'SRC_INTF', displayName: 'Source Interface'.t(), type: 'checkboxgroup', values: Util.getInterfaceList(true, true) },
                     { name: 'PROTOCOL', displayName: 'Protocol'.t(), type: 'checkboxgroup', values: [['TCP','TCP'],['UDP','UDP'],['ICMP','ICMP'],['GRE','GRE'],['ESP','ESP'],['AH','AH'],['SCTP','SCTP']] }
                 ],
-
                 emptyRow: {
                     ruleId: -1,
                     enabled: true,
@@ -1798,9 +1678,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                     blocked: false,
                     readOnly: false
                 },
-
                 bind: '{inputFilterRules}',
-
                 columns: [{
                     header: 'Rule Id'.t(),
                     width: 70,
@@ -1860,7 +1738,6 @@ Ext.define('Ung.config.network.view.Advanced', {
         }, {
             title: 'UPnP'.t(),
             layout: 'border',
-
             dockedItems: [{
                 xtype: 'toolbar',
                 dock: 'top',
@@ -1873,33 +1750,36 @@ Ext.define('Ung.config.network.view.Advanced', {
                     xtype: 'checkbox',
                     fieldLabel: 'Secure Mode'.t(),
                     labelAlign: 'right',
+                    disabled: true,
                     bind: {
                         value: '{settings.upnpSettings.secureMode}',
                         disabled: '{!settings.upnpSettings.upnpEnabled}'
                     }
                 }]
             }],
-
             items: [{
                 xtype: 'grid',
+                itemId: 'upnpStatus',
                 region: 'center',
-
                 title: 'Status'.t(),
                 enableColumnHide: false,
                 enableSorting: false,
-
+                forceFit: true,
+                viewConfig: {
+                    emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-exclamation-triangle fa-2x"></i> <br/>No Data!</p>',
+                },
                 tbar: [{
                     text: 'Refresh'.t(),
                     iconCls: 'fa fa-refresh',
-                    // handler: 'refreshUpnpStatus'
+                    handler: 'refreshUpnpStatus'
                 }],
-
                 disabled: true,
-
                 bind: {
                     disabled: '{!settings.upnpSettings.upnpEnabled}'
                 },
-
+                store: {
+                    data: [] // todo: to set data
+                },
                 columns: [{
                     header: 'Protocol'.t(),
                     width: 100,
@@ -1918,9 +1798,36 @@ Ext.define('Ung.config.network.view.Advanced', {
                     dataIndex: 'upnp_destination_port'
                 }, {
                     header: 'Bytes'.t(),
-                    width: 150,
-                    dataIndex: 'bytes'
-                    // renderer ????
+                    flex: 1,
+                    dataIndex: 'bytes',
+                    renderer: function (value, metadata, record) {
+                        if (Ext.isEmpty(value)) {
+                            return 'Not set'.t();
+                        } else {
+                            var v = value;
+                            switch (value[value.length-1]) {
+                            case 'K':
+                                v = parseInt(value.substr(0,value.length - 1), 10);
+                                value = v * 1024;
+                                break;
+                            case 'M':
+                                v = parseInt(value.substr(0,value.length - 1), 10);
+                                value = v * 1024 * 1024;
+                                break;
+                            }
+                            value = value / 1000;
+                            var mbit_value = value/1000;
+                            return Number(value).toFixed(2) + ' kbps' + ' (' + Number(mbit_value).toFixed(2) + ' Mbit' + ')';
+                        }
+                    }
+                }, {
+                    xtype: 'actioncolumn',
+                    width: 60,
+                    header: 'Delete'.t(),
+                    align: 'center',
+                    resizable: false,
+                    tdCls: 'action-cell',
+                    iconCls: 'fa fa-trash-o fa-red'
                 }]
             }, {
                 xtype: 'ungrid',
@@ -1928,21 +1835,16 @@ Ext.define('Ung.config.network.view.Advanced', {
                 height: '50%',
                 split: true,
                 title: 'Access Control Rules'.t(),
-
                 tbar: ['@add'],
                 recordActions: ['@edit', '@delete', '@reorder'],
-
                 listProperty: 'settings.upnpSettings.upnpRules.list',
                 ruleJavaClass: 'com.untangle.uvm.network.UpnpRuleCondition',
-
                 conditions: [
-                    { name: 'DST_PORT', displayName: 'Destination Port'.t(), type: "textfield", vtype: 'portMatcher' },
-                    { name: 'SRC_ADDR', displayName: 'Source Address'.t(), type: "textfield", vtype: 'ipMatcher' },
-                    { name: 'SRC_PORT', displayName: 'Source Port'.t(), type: "textfield", vtype: 'portMatcher' }
+                    { name: 'DST_PORT', displayName: 'Destination Port'.t(), type: 'textfield', vtype: 'portMatcher' },
+                    { name: 'SRC_ADDR', displayName: 'Source Address'.t(), type: 'textfield', vtype: 'ipMatcher' },
+                    { name: 'SRC_PORT', displayName: 'Source Port'.t(), type: 'textfield', vtype: 'portMatcher' }
                 ],
-
                 label: 'Perform the following action(s):'.t(),
-
                 emptyRow: {
                     ruleId: -1,
                     enabled: true,
@@ -1955,14 +1857,11 @@ Ext.define('Ung.config.network.view.Advanced', {
                     priority: 1,
                     allow: true
                 },
-
                 disabled: true,
-
                 bind: {
                     store: '{upnpRules}',
                     disabled: '{!settings.upnpSettings.upnpEnabled}'
                 },
-
                 columns: [{
                     header: 'Rule Id'.t(),
                     width: 70,
@@ -2027,18 +1926,14 @@ Ext.define('Ung.config.network.view.Advanced', {
         }, {
             xtype: 'grid',
             title: 'Network Cards'.t(),
-
             bind: '{devices}',
-
             selModel: {
                 type: 'cellmodel'
             },
-
             plugins: {
                 ptype: 'cellediting',
                 clicksToEdit: 1
             },
-
             columns: [{
                 header: 'Device Name'.t(),
                 width: 250,
@@ -2059,15 +1954,15 @@ Ext.define('Ung.config.network.view.Advanced', {
                 width: 250,
                 renderer: function (value) {
                     switch (value) {
-                        case 'AUTO': return 'Auto'.t();
-                        case 'M10000_FULL_DUPLEX': return '10000 Mbps, Full Duplex'.t();
-                        case 'M10000_HALF_DUPLEX': return '10000 Mbps, Half Duplex'.t();
-                        case 'M1000_FULL_DUPLEX': return '1000 Mbps, Full Duplex'.t();
-                        case 'M1000_HALF_DUPLEX': return '1000 Mbps, Half Duplex'.t();
-                        case 'M100_FULL_DUPLEX': return '100 Mbps, Full Duplex'.t();
-                        case 'M100_HALF_DUPLEX': return '100 Mbps, Half Duplex'.t();
-                        case 'M10_FULL_DUPLEX': return '10 Mbps, Full Duplex'.t();
-                        case 'M10_HALF_DUPLEX': return '10 Mbps, Half Duplex'.t();
+                    case 'AUTO': return 'Auto'.t();
+                    case 'M10000_FULL_DUPLEX': return '10000 Mbps, Full Duplex'.t();
+                    case 'M10000_HALF_DUPLEX': return '10000 Mbps, Half Duplex'.t();
+                    case 'M1000_FULL_DUPLEX': return '1000 Mbps, Full Duplex'.t();
+                    case 'M1000_HALF_DUPLEX': return '1000 Mbps, Half Duplex'.t();
+                    case 'M100_FULL_DUPLEX': return '100 Mbps, Full Duplex'.t();
+                    case 'M100_HALF_DUPLEX': return '100 Mbps, Half Duplex'.t();
+                    case 'M10_FULL_DUPLEX': return '10 Mbps, Full Duplex'.t();
+                    case 'M10_HALF_DUPLEX': return '10 Mbps, Half Duplex'.t();
                     }
                 },
                 editor: {
@@ -2092,40 +1987,30 @@ Ext.define('Ung.config.network.view.Advanced', {
         }]
     }]
 });
-
 Ext.define('Ung.config.network.view.BypassRules', {
     extend: 'Ext.panel.Panel',
     // xtype: 'ung.config.network.bypassrules',
     alias: 'widget.config.network.bypassrules',
-
     viewModel: true,
-
     requires: [
         // 'Ung.config.network.ConditionWidget',
         // 'Ung.config.network.CondWidget'
     ],
-
     title: 'Bypass Rules'.t(),
-
     layout: 'fit',
-
     tbar: [{
         xtype: 'tbtext',
         padding: '8 5',
         style: { fontSize: '12px' },
         html: 'Bypass Rules control what traffic is scanned by the applications. Bypassed traffic skips application processing. The rules are evaluated in order. Sessions that meet no rule are not bypassed.'.t()
     }],
-
     items: [{
         xtype: 'ungrid',
         flex: 3,
-
         tbar: ['@add'],
         recordActions: ['@edit', '@delete', '@reorder'],
-
         listProperty: 'settings.bypassRules.list',
         ruleJavaClass: 'com.untangle.uvm.network.BypassRuleCondition',
-
         conditions: [
             { name: 'DST_ADDR', displayName: 'Destination Address'.t(), type: 'textfield', vtype:'ipMatcher' },
             { name: 'DST_PORT', displayName: 'Destination Port'.t(), type: 'textfield', vtype:'portMatcher' },
@@ -2135,10 +2020,8 @@ Ext.define('Ung.config.network.view.BypassRules', {
             { name: 'SRC_INTF', displayName: 'Source Interface'.t(), type: 'checkboxgroup', values: Util.getInterfaceList(true, true) },
             { name: 'PROTOCOL', displayName: 'Protocol'.t(), type: 'checkboxgroup', values: [['TCP','TCP'],['UDP','UDP']] }
         ],
-
         label: 'Perform the following action(s):'.t(),
         description: "NAT Rules control the rewriting of the IP source address of traffic (Network Address Translation). The rules are evaluated in order.".t(),
-
         emptyRow: {
             ruleId: -1,
             enabled: true,
@@ -2150,9 +2033,7 @@ Ext.define('Ung.config.network.view.BypassRules', {
             },
             description: ''
         },
-
         bind: '{bypassRules}',
-
         columns: [{
             header: 'Rule Id'.t(),
             width: 70,
@@ -2194,49 +2075,56 @@ Ext.define('Ung.config.network.view.BypassRules', {
         ]
     }]
 });
-
 Ext.define('Ung.config.network.view.DhcpServer', {
     extend: 'Ext.panel.Panel',
-
     alias: 'widget.config.network.dhcpserver',
     viewModel: true,
-
     title: 'DHCP Server'.t(),
-
     layout: 'border',
-
     items: [{
         xtype: 'ungrid',
         region: 'center',
-
         title: 'Static DHCP Entries'.t(),
-
         tbar: ['@add'],
         recordActions: ['@delete'],
-
         listProperty: 'settings.staticDhcpEntries.list',
-
         emptyRow: {
             macAddress: '11:22:33:44:55:66',
             address: '1.2.3.4',
             javaClass: 'com.untangle.uvm.network.DhcpStaticEntry',
             description: '[no description]'.t()
         },
-
         bind: '{staticDhcpEntries}',
-
         columns: [{
             header: 'MAC Address'.t(),
             dataIndex: 'macAddress',
-            width: 200
+            width: 200,
+            editor: {
+                xtype:'textfield',
+                emptyText: '[enter MAC address]'.t(),
+                allowBlank: false,
+                vtype: 'macAddress',
+                maskRe: /[a-fA-F0-9:]/
+            }
         }, {
             header: 'Address'.t(),
             width: 200,
-            dataIndex: 'address'
+            dataIndex: 'address',
+            editor: {
+                xtype: 'textfield',
+                emptyText: '[enter address]'.t(),
+                allowBlank: false,
+                vtype: 'ipAddress'
+            }
         }, {
             header: 'Description'.t(),
             flex: 1,
-            dataIndex: 'description'
+            dataIndex: 'description',
+            editor: {
+                xtype: 'textfield',
+                emptyText: '[enter description]'.t(),
+                allowBlank: false
+            }
         }],
         editorFields: [
             Fields.macAddress,
@@ -2245,18 +2133,22 @@ Ext.define('Ung.config.network.view.DhcpServer', {
         ]
     }, {
         xtype: 'grid',
+        itemId: 'dhcpLeases',
         title: 'Current DHCP Leases'.t(),
         region: 'south',
-
         height: '50%',
         split: true,
-
+        viewConfig: {
+            emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-exclamation-triangle fa-2x"></i> <br/>No Data!</p>',
+        },
         tbar: [{
             text: 'Refresh'.t(),
             iconCls: 'fa fa-refresh',
-            // handler: 'refreshDhcpLeases'
+            handler: 'refreshDhcpLeases'
         }],
-
+        store: {
+            data: [] // todo: handle this store when available data
+        },
         columns: [{
             header: 'MAC Address'.t(),
             dataIndex:'macAddress',
@@ -2281,39 +2173,39 @@ Ext.define('Ung.config.network.view.DhcpServer', {
             handler: function () {
                 alert('to add');
             }
-        }]
-
+        }],
+        plugins: 'responsive',
+        responsiveConfig: {
+            wide: {
+                region: 'east',
+                width: '50%'
+            },
+            tall: {
+                region: 'south',
+                height: '50%',
+            }
+        }
     }]
 });
 Ext.define('Ung.config.network.view.DnsServer', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.config.network.dnsserver',
-
     viewModel: true,
-
     title: 'DNS Server'.t(),
-
     layout: 'border',
-
     items: [{
         xtype: 'ungrid',
         region: 'center',
-
         title: 'Static DNS Entries'.t(),
-
         tbar: ['@add'],
         recordActions: ['@delete'],
-
         listProperty: 'settings.dnsSettings.staticEntries.list',
-
         emptyRow: {
             name: '[no name]'.t(),
             address: '1.2.3.4',
             javaClass: 'com.untangle.uvm.network.DnsStaticEntry'
         },
-
         bind: '{staticDnsEntries}',
-
         columns: [{
             header: 'Name'.t(),
             dataIndex: 'name',
@@ -2339,25 +2231,18 @@ Ext.define('Ung.config.network.view.DnsServer', {
     }, {
         xtype: 'ungrid',
         region: 'south',
-
         height: '50%',
         split: true,
-
         title: 'Domain DNS Servers'.t(),
-
         tbar: ['@add'],
         recordActions: ['@delete'],
-
         listProperty: 'settings.dnsSettings.localServers.list',
-
         emptyRow: {
             domain: '[no domain]'.t(),
             localServer: '1.2.3.4',
             javaClass: 'com.untangle.uvm.network.DnsLocalServer'
         },
-
         bind: '{localServers}',
-
         columns: [{
             header: 'Domain'.t(),
             dataIndex: 'domain',
@@ -2380,6 +2265,17 @@ Ext.define('Ung.config.network.view.DnsServer', {
                 vtype: 'ipAddress',
             }
         }],
+        plugins: 'responsive',
+        responsiveConfig: {
+            wide: {
+                region: 'east',
+                width: '50%'
+            },
+            tall: {
+                region: 'south',
+                height: '50%',
+            }
+        }
     }]
 });
 Ext.define('Ung.config.network.view.Hostname', {
@@ -2387,11 +2283,9 @@ Ext.define('Ung.config.network.view.Hostname', {
     alias: 'widget.config.network.hostname',
     withValidation: true, // requires validation on save
     viewModel: true,
-
     title: 'Hostname'.t(),
     bodyPadding: 10,
     scrollable: true,
-
     items: [{
         xtype: 'fieldset',
         title: 'Hostname'.t(),
@@ -2553,18 +2447,15 @@ Ext.define('Ung.config.network.view.Hostname', {
 Ext.define('Ung.config.network.view.Interfaces', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.config.network.interfaces', //..
-
     title: 'Interfaces'.t(),
     layout: 'border',
     itemId: 'interfaces',
-
     tbar: [{
         xtype: 'tbtext',
         padding: '8 5',
         style: { fontSize: '12px' },
         html: '<strong>' + 'Interface configuration'.t() + '</strong> <br/>' +  "Use this page to configure each interface's configuration and its mapping to a physical network card.".t()
     }],
-
     actions: {
         refresh: {
             xtype: 'button',
@@ -2573,16 +2464,14 @@ Ext.define('Ung.config.network.view.Interfaces', {
             handler: 'loadSettings'
         }
     },
-
     items: [{
         xtype: 'grid',
         itemId: 'interfacesGrid',
         reference: 'interfacesGrid',
         region: 'center',
         border: false,
-
+        split: true,
         tbar: ['@refresh'],
-
         layout: 'fit',
         forceFit: true,
         // viewConfig: {
@@ -2599,7 +2488,9 @@ Ext.define('Ung.config.network.view.Interfaces', {
         // },
         // title: 'Interfaces'.t(),
         bind: '{interfaces}',
-
+        fields: [
+            'interfaceId'
+        ],
         columns: [
         // {
         //     xtype: 'gridcolumn',
@@ -2613,9 +2504,25 @@ Ext.define('Ung.config.network.view.Interfaces', {
         //     },
         // },
         {
+            dataIndex: 'connected',
+            width: 40,
+            align: 'center',
+            resizable: false,
+            sortable: false,
+            menuEnabled: false,
+            renderer: function (value) {
+                switch (value) {
+                case 'CONNECTED': return '<i class="fa fa-circle fa-green"></i>';
+                case 'DISCONNECTED': return '<i class="fa fa-circle fa-red"></i>';
+                case 'MISSING': return '<i class="fa fa-exclamation-triangle fa-orange"></i>';
+                default: return '<i class="fa fa-question-circle fa-red"></i>';
+                }
+            }
+        }, {
             header: 'Id'.t(),
             dataIndex: 'interfaceId',
-            width: 50,
+            width: 70,
+            resizable: false,
             align: 'right'
         }, {
             header: 'Name'.t(),
@@ -2631,7 +2538,7 @@ Ext.define('Ung.config.network.view.Interfaces', {
                 case 'CONNECTED': return 'connected'.t();
                 case 'DISCONNECTED': return 'disconnected'.t();
                 case 'MISSING': return 'missing'.t();
-                default: 'unknown'.t();
+                default: return 'unknown'.t();
                 }
             }
         }, {
@@ -2695,6 +2602,8 @@ Ext.define('Ung.config.network.view.Interfaces', {
             }
         }, {
             header: 'is WAN'.t(),
+            width: 80,
+            resizable: false,
             dataIndex: 'isWan',
             align: 'center',
             renderer: function (value, metaData, record) {
@@ -2702,6 +2611,7 @@ Ext.define('Ung.config.network.view.Interfaces', {
             }
         }, {
             header: 'is Vlan'.t(),
+            hidden: true,
             dataIndex: 'isVlanInterface',
             align: 'center',
             renderer: function (value) {
@@ -2717,34 +2627,45 @@ Ext.define('Ung.config.network.view.Interfaces', {
             hidden: true,
             width: 160,
             dataIndex: 'vendor'
+        }, {
+            xtype: 'widgetcolumn',
+            width: 90,
+            resizable: false,
+            sortable: false,
+            menuEnabled: false,
+            widget: {
+                xtype: 'button',
+                text: 'Edit'.t(),
+                iconCls: 'fa fa-pencil',
+                handler: 'editInterface'
+            }
         }]
     }, {
         xtype: 'panel',
-        region: 'east',
-        split: 'true',
+        region: 'south',
+        split: true,
         collapsible: false,
-        width: 350,
-        maxWidth: 450,
+        height: '50%',
+        // maxHeight: '50%',
         hidden: true,
         layout: 'border',
         bind: {
-            title: '{si.name} ({si.physicalDev})',
-            hidden: '{!si}',
-            // activeItem: '{activePropsItem}'
+            // title: '{si.name} ({si.physicalDev})',
+            hidden: '{!interfacesGrid.selection}',
         },
-        tbar: [{
-            bind: {
-                text: '<strong>' + 'Edit'.t() + ' {si.name} ({si.physicalDev})' + '</strong>',
-                iconCls: 'fa fa-pencil',
-                scale: 'large',
-                width: '100%',
-                handler: 'editInterface'
-            }
-        }],
+        // tbar: [{
+        //     bind: {
+        //         text: '<strong>' + 'Edit'.t() + ' {si.name} ({si.physicalDev})' + '</strong>',
+        //         iconCls: 'fa fa-pencil',
+        //         scale: 'large',
+        //         width: '100%',
+        //         handler: 'editInterface'
+        //     }
+        // }],
         items: [{
             title: 'Status'.t(),
             region: 'center',
-            border: false,
+            // border: false,
             itemId: 'interfaceStatus',
             xtype: 'propertygrid',
             // header: false,
@@ -2773,16 +2694,25 @@ Ext.define('Ung.config.network.view.Interfaces', {
             tbar: [{
                 xtype: 'button',
                 iconCls: 'fa fa-refresh',
-                text: 'Refresh'
-            }]
+                text: 'Refresh',
+                handler: 'getInterfaceStatus'
+            }],
+            listeners: {
+                beforeedit: function () { return false; }
+            }
         }, {
             xtype: 'grid',
-            region: 'south',
-            height: '30%',
+            region: 'east',
+            width: '60%',
             split: true,
+            // border: false,
             itemId: 'interfaceArp',
             title: 'ARP Entry List'.t(),
             forceFit: true,
+            viewConfig: {
+                emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-exclamation-triangle fa-2x"></i> <br/>No Data!</p>',
+            },
+            // forceFit: true,
             bind: '{interfaceArp}',
             columns: [{
                 header: 'MAC Address'.t(),
@@ -2793,43 +2723,39 @@ Ext.define('Ung.config.network.view.Interfaces', {
             }, {
                 header: 'Type'.t(),
                 dataIndex: 'type'
+            }],
+            tbar: [{
+                xtype: 'button',
+                iconCls: 'fa fa-refresh',
+                text: 'Refresh',
+                handler: 'getInterfaceArp'
             }]
         }]
     }]
 });
-
 Ext.define('Ung.config.network.view.NatRules', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.config.network.natrules',
-
     viewModel: true,
-
     requires: [
         // 'Ung.config.network.ConditionWidget',
         // 'Ung.config.network.CondWidget'
     ],
-
     title: 'NAT Rules'.t(),
-
     layout: 'fit',
-
     tbar: [{
         xtype: 'tbtext',
         padding: '8 5',
         style: { fontSize: '12px' },
         html: 'NAT Rules control the rewriting of the IP source address of traffic (Network Address Translation). The rules are evaluated in order.'.t()
     }],
-
     items: [{
         xtype: 'ungrid',
         flex: 3,
-
         tbar: ['@add'],
         recordActions: ['@edit', '@delete', '@reorder'],
-
         listProperty: 'settings.natRules.list',
         ruleJavaClass: 'com.untangle.uvm.network.NatRuleCondition',
-
         conditions: [
             { name: 'DST_ADDR', displayName: 'Destination Address'.t(), type: 'textfield', vtype: 'ipMatcher' },
             { name: 'DST_PORT', displayName: 'Destination Port'.t(), type: 'textfield', vtype: 'portMatcher' },
@@ -2839,9 +2765,7 @@ Ext.define('Ung.config.network.view.NatRules', {
             { name: 'SRC_INTF', displayName: 'Source Interface'.t(), type: 'checkboxgroup', values: Util.getInterfaceList(true, true) },
             { name: 'PROTOCOL', displayName: 'Protocol'.t(), type: 'checkboxgroup', values: [['TCP','TCP'],['UDP','UDP'],['ICMP','ICMP'],['GRE','GRE'],['ESP','ESP'],['AH','AH'],['SCTP','SCTP']]}
         ],
-
         description: "NAT Rules control the rewriting of the IP source address of traffic (Network Address Translation). The rules are evaluated in order.".t(),
-
         emptyRow: {
             ruleId: -1,
             enabled: true,
@@ -2853,9 +2777,7 @@ Ext.define('Ung.config.network.view.NatRules', {
             },
             description: ''
         },
-
         bind: '{natRules}',
-
         columns: [{
             header: 'Rule Id'.t(),
             width: 70,
@@ -2907,39 +2829,26 @@ Ext.define('Ung.config.network.view.NatRules', {
         ]
     }]
 });
-
 Ext.define('Ung.config.network.view.PortForwardRules', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.config.network.portforwardrules',
-
+    itemId: 'portForwardRules',
     viewModel: true,
-
-    requires: [
-        // 'Ung.config.network.ConditionWidget',
-        // 'Ung.config.network.CondWidget'
-    ],
-
     title: 'Port Forward Rules'.t(),
-
     layout: { type: 'vbox', align: 'stretch' },
-
     tbar: [{
         xtype: 'tbtext',
         padding: '8 5',
         style: { fontSize: '12px' },
         html: "Port Forward rules forward sessions matching the configured criteria from a public IP to an IP on an internal (NAT'd) network. The rules are evaluated in order.".t()
     }],
-
     items: [{
         xtype: 'ungrid',
         flex: 3,
-
         tbar: ['@add'],
         recordActions: ['@edit', '@delete', '@reorder'],
-
         listProperty: 'settings.portForwardRules.list',
         ruleJavaClass: 'com.untangle.uvm.network.PortForwardRuleCondition',
-
         conditions: [
             { name: 'DST_LOCAL', displayName: 'Destined Local'.t(), type: 'boolean' },
             { name: 'DST_ADDR', displayName: 'Destination Address'.t(), type: 'textfield', vtype:'ipMatcher' },
@@ -2949,10 +2858,8 @@ Ext.define('Ung.config.network.view.PortForwardRules', {
             { name: 'SRC_INTF', displayName: 'Source Interface'.t(), type: 'checkboxgroup', values: Util.getInterfaceList(true, true) },
             { name: 'PROTOCOL', displayName: 'Protocol'.t(), type: 'checkboxgroup', values: [['TCP','TCP'],['UDP','UDP'],['ICMP','ICMP'],['GRE','GRE'],['ESP','ESP'],['AH','AH'],['SCTP','SCTP']] }
         ],
-
         actionDescription: 'Forward to the following location:'.t(),
         description: "Port Forward rules forward sessions matching the configured criteria from a public IP to an IP on an internal (NAT'd) network. The rules are evaluated in order.".t(),
-
         emptyRow: {
             ruleId: -1,
             simple: true,
@@ -2980,9 +2887,7 @@ Ext.define('Ung.config.network.view.PortForwardRules', {
             },
             newPort: 80
         },
-
         bind: '{portForwardRules}',
-
         columns: [{
             header: 'Rule Id'.t(),
             width: 70,
@@ -3048,34 +2953,25 @@ Ext.define('Ung.config.network.view.PortForwardRules', {
         }]
     }]
 });
-
 Ext.define('Ung.config.network.view.Routes', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.config.network.routes',
-
     viewModel: true,
-
     title: 'Routes'.t(),
-
     layout: 'border',
-
     tbar: [{
         xtype: 'tbtext',
         padding: '8 5',
         style: { fontSize: '12px' },
         html: 'Static Routes are global routes that control how traffic is routed by destination address. The most specific Static Route is taken for a particular packet, order is not important.'.t()
     }],
-
     items: [{
         xtype: 'ungrid',
         region: 'center',
         title: 'Static Routes'.t(),
-
         tbar: ['@add'],
         recordActions: ['@edit', '@delete', '@reorder'],
-
         listProperty: 'settings.staticRoutes.list',
-
         emptyRow: {
             ruleId: -1,
             network: '',
@@ -3084,10 +2980,7 @@ Ext.define('Ung.config.network.view.Routes', {
             javaClass: 'com.untangle.uvm.network.StaticRoute',
             description: ''
         },
-
-
         bind: '{staticRoutes}',
-
         columns: [{
             header: 'Description'.t(),
             dataIndex: 'description',
@@ -3102,7 +2995,7 @@ Ext.define('Ung.config.network.view.Routes', {
             dataIndex: 'prefix'
         }, {
             header: 'Next Hop'.t(),
-            width: 300,
+            width: 170,
             dataIndex: 'nextHop',
             renderer: function (value) {
                 return value || '<em>no description<em>';
@@ -3128,16 +3021,16 @@ Ext.define('Ung.config.network.view.Routes', {
         ]
     }, {
         xtype: 'panel',
+        itemId: 'currentRoutes',
         title: 'Current Routes'.t(),
         region: 'south',
         height: '50%',
         split: true,
-        border: false,
         tbar: [{
             xtype: 'tbtext',
             padding: '8 5',
-            style: { fontSize: '12px' },
-            value: "Current Routes shows the current routing system's configuration and how all traffic will be routed.".t()
+            // style: { fontSize: '12px' },
+            text: "Current Routes shows the current routing system's configuration and how all traffic will be routed.".t()
         }, '->', {
             text: 'Refresh Routes'.t(),
             iconCls: 'fa fa-refresh',
@@ -3146,7 +3039,6 @@ Ext.define('Ung.config.network.view.Routes', {
         layout: 'fit',
         items: [{
             xtype: 'textarea',
-            itemId: 'currentRoutes',
             border: false,
             fieldStyle: {
                 fontFamily: 'monospace'
@@ -3159,26 +3051,33 @@ Ext.define('Ung.config.network.view.Routes', {
             // height: 200,
             // width: "100%",
             // isDirty: function() { return false; }
-        }]
+        }],
+        plugins: 'responsive',
+        responsiveConfig: {
+            wide: {
+                region: 'east',
+                width: '50%'
+            },
+            tall: {
+                region: 'south',
+                height: '50%',
+            }
+        }
     }]
 });
-
 Ext.define('Ung.config.network.view.Services', {
     extend: 'Ext.form.Panel',
     alias: 'widget.config.network.services',
     withValidation: true, // requires validation on save
     viewModel: true,
-
     title: 'Services'.t(),
     bodyPadding: 10,
-
     tbar: [{
         xtype: 'tbtext',
         padding: '8 5',
         style: { fontSize: '12px' },
         html: '<strong>' + 'Local Services'.t() + '</strong>'
     }],
-
     defaults: {
         allowDecimals: false,
         minValue: 0,
@@ -3186,7 +3085,6 @@ Ext.define('Ung.config.network.view.Services', {
         vtype: 'port',
         labelAlign: 'right'
     },
-
     items: [{
         xtype: 'component',
         html: '<br/>' + 'The specified HTTPS port will be forwarded from all interfaces to the local HTTPS server to provide administration and other services.'.t() + '<br/>',
@@ -3210,297 +3108,5 @@ Ext.define('Ung.config.network.view.Services', {
         bind: '{settings.httpPort}',
         blankText: 'You must provide a valid port.'.t(),
     }]
-
 });
-Ext.define('Ung.config.network.view.Troubleshooting', {
-    extend: 'Ext.panel.Panel',
-    alias: 'widget.config.network.troubleshooting',
-
-    title: 'Troubleshooting'.t(),
-
-    layout: 'fit',
-
-    tbar: [{
-        xtype: 'tbtext',
-        padding: '8 5',
-        style: { fontSize: '12px' },
-        html: '<strong>' + 'Network Tests'.t() + '</strong>'
-    }],
-
-    items: [{
-        xtype: 'tabpanel',
-        items: [{
-            xtype: 'networktest',
-            title: 'Connectivity Test'.t(),
-            viewModel: {
-                data: {
-                    description: 'The <b>Connectivity Test</b> verifies a working connection to the Internet.'.t(),
-                    emptyText: 'Connectivity Test Output'.t(),
-                    command: [
-                        '/bin/bash',
-                        '-c',
-                        ['echo -n "Testing DNS ... " ; success="Successful";',
-                        'dig updates.untangle.com > /dev/null 2>&1; if [ "$?" = "0" ]; then echo "OK"; else echo "FAILED"; success="Failure"; fi;',
-                        'echo -n "Testing TCP Connectivity ... ";',
-                        'echo "GET /" | netcat -q 0 -w 15 updates.untangle.com 80 > /dev/null 2>&1;',
-                        'if [ "$?" = "0" ]; then echo "OK"; else echo "FAILED"; success="Failure"; fi;',
-                        'echo "Test ${success}!"'].join('')
-                    ]
-                }
-            }
-        }, {
-            xtype: 'networktest',
-            title: 'Ping Test'.t(),
-
-            commandFields: [{
-                xtype: 'textfield',
-                width: 200,
-                emptyText : 'IP Address or Hostname'.t(),
-                allowBlank: false,
-                bind: '{destination}'
-            }],
-
-            viewModel: {
-                data: {
-                    description: 'The <b>Ping Test</b> can be used to test that a particular host or client can be pinged'.t(),
-                    emptyText: 'Ping Test Output'.t(),
-                    destination: null
-                },
-                formulas: {
-                    command: function (get) {
-                        return 'ping -c 5 ' + get('destination');
-                    }
-                }
-            }
-        }, {
-            xtype: 'networktest',
-            title: 'DNS Test'.t(),
-
-            commandFields: [{
-                xtype: 'textfield',
-                width: 200,
-                emptyText : 'Hostname'.t(),
-                allowBlank: false,
-                bind: '{destination}'
-            }],
-
-            viewModel: {
-                data: {
-                    description: 'The <b>DNS Test</b> can be used to test DNS lookups'.t(),
-                    emptyText: 'DNS Test Output'.t(),
-                    destination: null
-                },
-                formulas: {
-                    command: function (get) {
-                        return [
-                            '/bin/bash',
-                            '-c',
-                            ['host \'' + get('destination') +'\';',
-                            'if [ "$?" = "0" ]; then echo "Test Successful"; else echo "Test Failure"; fi;'].join('')
-                        ];
-                    }
-                }
-            }
-        }, {
-            xtype: 'networktest',
-            title: 'Connection Test'.t(),
-
-            commandFields: [{
-                xtype: 'textfield',
-                width: 200,
-                emptyText : 'IP Address or Hostname'.t(),
-                allowBlank: false,
-                bind: '{destination}'
-            }, {
-                xtype: 'numberfield',
-                minValue : 1,
-                maxValue : 65536,
-                width: 80,
-                emptyText: 'Port'.t(),
-                allowBlank: false,
-                bind: '{port}'
-            }],
-
-            viewModel: {
-                data: {
-                    description: 'The <b>Connection Test</b> verifies that Untangle can open a TCP connection to a port on the given host or client.'.t(),
-                    emptyText: 'Connection Test Output'.t(),
-                    destination: null,
-                    port: null
-                },
-                formulas: {
-                    command: function (get) {
-                        return [
-                            '/bin/bash',
-                            '-c',
-                            ['echo 1 | netcat -q 0 -v -w 15 \'' + get('destination') + '\' \'' + get('port') +'\';',
-                            'if [ "$?" = "0" ]; then echo "Test Successful"; else echo "Test Failure"; fi;'].join('')
-                        ];
-                    }
-                }
-            }
-        }, {
-            xtype: 'networktest',
-            title: 'Traceroute Test'.t(),
-
-            commandFields: [{
-                xtype: 'textfield',
-                width: 200,
-                emptyText : 'IP Address or Hostname'.t(),
-                allowBlank: false,
-                bind: '{destination}'
-            }, {
-                xtype: 'combo',
-                editable: false,
-                width: 100,
-                store: [['U','UDP'], ['T','TCP'], ['I','ICMP']],
-                bind: '{protocol}'
-            }],
-
-            viewModel: {
-                data: {
-                    description: 'The <b>Traceroute Test</b> traces the route to a given host or client.'.t(),
-                    emptyText: 'Traceroute Test Output'.t(),
-                    destination: '',
-                    protocol: 'U'
-                },
-                formulas: {
-                    command: function (get) {
-                        return [
-                            '/bin/bash',
-                            '-c',
-                            ['traceroute' + ' -' + get('protocol') + ' ' + get('destination') + ';',
-                            'if [ "$?" = "0" ]; then echo "Test Successful"; else echo "Test Failure"; fi;'].join('')
-                        ];
-                    }
-                }
-            }
-        }, {
-            xtype: 'networktest',
-            title: 'Download Test'.t(),
-
-            commandFields: [{
-                xtype: 'combo',
-                width: 500,
-                store : [
-                    ['http://cachefly.cachefly.net/50mb.test','http://cachefly.cachefly.net/50mb.test'],
-                    ['http://cachefly.cachefly.net/5mb.test','http://cachefly.cachefly.net/5mb.test'],
-                    ['http://download.thinkbroadband.com/50MB.zip','http://download.thinkbroadband.com/50MB.zip'],
-                    ['http://download.thinkbroadband.com/5MB.zip','http://download.thinkbroadband.com/5MB.zip'],
-                    ['http://download.untangle.com/data.php','http://download.untangle.com/data.php']
-                ],
-                bind: '{url}'
-            }],
-
-            viewModel: {
-                data: {
-                    description: 'The <b>Download Test</b> downloads a file.'.t(),
-                    emptyText: 'Download Test Output'.t(),
-                    url: 'http://cachefly.cachefly.net/5mb.test'
-                },
-                formulas: {
-                    command: function (get) {
-                        return [
-                            '/bin/bash',
-                            '-c',
-                            ['wget --output-document=/dev/null ' + ' \'' + get('url') + '\' ;'].join('')
-                        ];
-                    }
-                }
-            }
-        }, {
-            xtype: 'networktest',
-            title: 'Packet Test'.t(),
-
-            commandFields: [{
-                xtype: 'checkbox',
-                boxLabel: 'Advanced'.t(),
-                margin: '0 10 0 0',
-                bind: '{advanced}'
-            }, {
-                xtype: 'textfield',
-                width: 200,
-                emptyText : 'IP Address or Hostname'.t(),
-                disabled: true,
-                bind: {
-                    value: '{destination}',
-                    disabled: '{!advanced}'
-                }
-            }, {
-                xtype: 'numberfield',
-                minValue : 1,
-                maxValue : 65536,
-                width: 80,
-                emptyText: 'Port'.t(),
-                disabled: true,
-                bind: {
-                    value: '{port}',
-                    disabled: '{!advanced}'
-                }
-            }, {
-                xtype: 'combo',
-                fieldLabel: 'Interface'.t(),
-                labelAlign: 'right',
-                editable: false,
-                // width: 100,
-                forceSelection: true,
-                bind: {
-                    store: '{interfacesListSystemDev}',
-                    value: '{interface}'
-                }
-            }, {
-                xtype: 'combo',
-                fieldLabel: 'Timeout'.t(),
-                labelAlign: 'right',
-                editable: false,
-                store: [[ 5, '5 seconds'.t()],
-                        [ 30, '30 seconds'.t()],
-                        [ 120, '120 seconds'.t()]],
-                bind: '{timeout}'
-            }],
-
-            viewModel: {
-                data: {
-                    description: 'The <b>Packet Test</b> can be used to view packets on the network wire for troubleshooting.'.t(),
-                    emptyText: 'Packet Test Output'.t(),
-                    advanced: true,
-                    destination: 'any',
-                    port: '',
-                    timeout: 5
-                },
-                formulas: {
-                    command: function (get) {
-                        var traceFixedOptionsTemplate = ["-U", "-l", "-v"];
-                        var traceOverrideOptionsTemplate = ["-n", "-s 65535", "-i " + get('interface')];
-                        var traceOptions = traceFixedOptionsTemplate.concat(traceOverrideOptionsTemplate);
-                        var traceExpression = [];
-                        if (get('advanced')) {
-                            // traceExpression = [this.advancedInput.getValue()];
-                        } else {
-                            if (get('destination') !== null & get('destination').toLowerCase() !== "any") {
-                                traceExpression.push('host ' + get('destination'));
-                            }
-                            if (get('port') !== null) {
-                                traceExpression.push('port ' + get('port'));
-                            }
-                        }
-                        var traceArguments = traceOptions.join(' ') + ' ' + traceExpression.join( ' and ');
-                        return traceArguments;
-                    },
-                    interfacesListSystemDev: function (get) {
-                        var data = [], i,
-                            interfaces = get('settings.interfaces.list');
-                        for (i = 0 ; i < interfaces.length; i += 1) {
-                            data.push([interfaces[i].systemDev, interfaces[i].name]);
-                        }
-                        data.push(['tun0', 'OpenVPN']);
-                        return data;
-                    },
-                    interface: function (get) {
-                        return get('interfacesListSystemDev')[0][0];
-                    }
-                }
-            }
-        }]
-    }],
-});
+Ext.define('Ung.config.network.view.Troubleshooting', {    extend: 'Ext.panel.Panel',    alias: 'widget.config.network.troubleshooting',    title: 'Troubleshooting'.t(),    layout: 'fit',    tbar: [{        xtype: 'tbtext',        padding: '8 5',        style: { fontSize: '12px' },        html: '<strong>' + 'Network Tests'.t() + '</strong>'    }],    items: [{        xtype: 'tabpanel',        items: [{            xtype: 'networktest',            title: 'Connectivity Test'.t(),            viewModel: {                data: {                    description: 'The <b>Connectivity Test</b> verifies a working connection to the Internet.'.t(),                    emptyText: 'Connectivity Test Output'.t(),                    command: [                        '/bin/bash',                        '-c',                        ['echo -n "Testing DNS ... " ; success="Successful";',                        'dig updates.untangle.com > /dev/null 2>&1; if [ "$?" = "0" ]; then echo "OK"; else echo "FAILED"; success="Failure"; fi;',                        'echo -n "Testing TCP Connectivity ... ";',                        'echo "GET /" | netcat -q 0 -w 15 updates.untangle.com 80 > /dev/null 2>&1;',                        'if [ "$?" = "0" ]; then echo "OK"; else echo "FAILED"; success="Failure"; fi;',                        'echo "Test ${success}!"'].join('')                    ]                }            }        }, {            xtype: 'networktest',            title: 'Ping Test'.t(),            commandFields: [{                xtype: 'textfield',                width: 200,                emptyText : 'IP Address or Hostname'.t(),                allowBlank: false,                bind: '{destination}'            }],            viewModel: {                data: {                    description: 'The <b>Ping Test</b> can be used to test that a particular host or client can be pinged'.t(),                    emptyText: 'Ping Test Output'.t(),                    destination: null                },                formulas: {                    command: function (get) {                        return 'ping -c 5 ' + get('destination');                    }                }            }        }, {            xtype: 'networktest',            title: 'DNS Test'.t(),            commandFields: [{                xtype: 'textfield',                width: 200,                emptyText : 'Hostname'.t(),                allowBlank: false,                bind: '{destination}'            }],            viewModel: {                data: {                    description: 'The <b>DNS Test</b> can be used to test DNS lookups'.t(),                    emptyText: 'DNS Test Output'.t(),                    destination: null                },                formulas: {                    command: function (get) {                        return [                            '/bin/bash',                            '-c',                            ['host \'' + get('destination') +'\';',                            'if [ "$?" = "0" ]; then echo "Test Successful"; else echo "Test Failure"; fi;'].join('')                        ];                    }                }            }        }, {            xtype: 'networktest',            title: 'Connection Test'.t(),            commandFields: [{                xtype: 'textfield',                width: 200,                emptyText : 'IP Address or Hostname'.t(),                allowBlank: false,                bind: '{destination}'            }, {                xtype: 'numberfield',                minValue : 1,                maxValue : 65536,                width: 80,                emptyText: 'Port'.t(),                allowBlank: false,                bind: '{port}'            }],            viewModel: {                data: {                    description: 'The <b>Connection Test</b> verifies that Untangle can open a TCP connection to a port on the given host or client.'.t(),                    emptyText: 'Connection Test Output'.t(),                    destination: null,                    port: null                },                formulas: {                    command: function (get) {                        return [                            '/bin/bash',                            '-c',                            ['echo 1 | netcat -q 0 -v -w 15 \'' + get('destination') + '\' \'' + get('port') +'\';',                            'if [ "$?" = "0" ]; then echo "Test Successful"; else echo "Test Failure"; fi;'].join('')                        ];                    }                }            }        }, {            xtype: 'networktest',            title: 'Traceroute Test'.t(),            commandFields: [{                xtype: 'textfield',                width: 200,                emptyText : 'IP Address or Hostname'.t(),                allowBlank: false,                bind: '{destination}'            }, {                xtype: 'combo',                editable: false,                width: 100,                store: [['U','UDP'], ['T','TCP'], ['I','ICMP']],                bind: '{protocol}'            }],            viewModel: {                data: {                    description: 'The <b>Traceroute Test</b> traces the route to a given host or client.'.t(),                    emptyText: 'Traceroute Test Output'.t(),                    destination: '',                    protocol: 'U'                },                formulas: {                    command: function (get) {                        return [                            '/bin/bash',                            '-c',                            ['traceroute' + ' -' + get('protocol') + ' ' + get('destination') + ';',                            'if [ "$?" = "0" ]; then echo "Test Successful"; else echo "Test Failure"; fi;'].join('')                        ];                    }                }            }        }, {            xtype: 'networktest',            title: 'Download Test'.t(),            commandFields: [{                xtype: 'combo',                width: 500,                store : [                    ['http://cachefly.cachefly.net/50mb.test','http://cachefly.cachefly.net/50mb.test'],                    ['http://cachefly.cachefly.net/5mb.test','http://cachefly.cachefly.net/5mb.test'],                    ['http://download.thinkbroadband.com/50MB.zip','http://download.thinkbroadband.com/50MB.zip'],                    ['http://download.thinkbroadband.com/5MB.zip','http://download.thinkbroadband.com/5MB.zip'],                    ['http://download.untangle.com/data.php','http://download.untangle.com/data.php']                ],                bind: '{url}'            }],            viewModel: {                data: {                    description: 'The <b>Download Test</b> downloads a file.'.t(),                    emptyText: 'Download Test Output'.t(),                    url: 'http://cachefly.cachefly.net/5mb.test'                },                formulas: {                    command: function (get) {                        return [                            '/bin/bash',                            '-c',                            ['wget --output-document=/dev/null ' + ' \'' + get('url') + '\' ;'].join('')                        ];                    }                }            }        }, {            xtype: 'networktest',            title: 'Packet Test'.t(),            commandFields: [{                xtype: 'checkbox',                boxLabel: 'Advanced'.t(),                margin: '0 10 0 0',                bind: '{advanced}'            }, {                xtype: 'textfield',                width: 200,                emptyText : 'IP Address or Hostname'.t(),                disabled: true,                bind: {                    value: '{destination}',                    disabled: '{!advanced}'                }            }, {                xtype: 'numberfield',                minValue : 1,                maxValue : 65536,                width: 80,                emptyText: 'Port'.t(),                disabled: true,                bind: {                    value: '{port}',                    disabled: '{!advanced}'                }            }, {                xtype: 'combo',                fieldLabel: 'Interface'.t(),                labelAlign: 'right',                editable: false,                // width: 100,                forceSelection: true,                bind: {                    store: '{interfacesListSystemDev}',                    value: '{interface}'                }            }, {                xtype: 'combo',                fieldLabel: 'Timeout'.t(),                labelAlign: 'right',                editable: false,                store: [[ 5, '5 seconds'.t()],                        [ 30, '30 seconds'.t()],                        [ 120, '120 seconds'.t()]],                bind: '{timeout}'            }],            viewModel: {                data: {                    description: 'The <b>Packet Test</b> can be used to view packets on the network wire for troubleshooting.'.t(),                    emptyText: 'Packet Test Output'.t(),                    advanced: true,                    destination: 'any',                    port: '',                    timeout: 5                },                formulas: {                    command: function (get) {                        var traceFixedOptionsTemplate = ["-U", "-l", "-v"];                        var traceOverrideOptionsTemplate = ["-n", "-s 65535", "-i " + get('interface')];                        var traceOptions = traceFixedOptionsTemplate.concat(traceOverrideOptionsTemplate);                        var traceExpression = [];                        if (get('advanced')) {                            // traceExpression = [this.advancedInput.getValue()];                        } else {                            if (get('destination') !== null & get('destination').toLowerCase() !== "any") {                                traceExpression.push('host ' + get('destination'));                            }                            if (get('port') !== null) {                                traceExpression.push('port ' + get('port'));                            }                        }                        var traceArguments = traceOptions.join(' ') + ' ' + traceExpression.join( ' and ');                        return traceArguments;                    },                    interfacesListSystemDev: function (get) {                        var data = [], i,                            interfaces = get('settings.interfaces.list');                        for (i = 0 ; i < interfaces.length; i += 1) {                            data.push([interfaces[i].systemDev, interfaces[i].name]);                        }                        data.push(['tun0', 'OpenVPN']);                        return data;                    },                    interface: function (get) {                        return get('interfacesListSystemDev')[0][0];                    }                }            }        }]    }],});

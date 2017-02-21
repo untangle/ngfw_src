@@ -39,7 +39,7 @@ Ext.define('Ung.cmp.Grid', {
     trackMouseOver: false,
     sortableColumns: false,
     enableColumnHide: false,
-    // forceFit: true,
+    forceFit: true,
     // columnLines: true,
 
     selModel: {
@@ -108,6 +108,7 @@ Ext.define('Ung.cmp.Grid', {
                         width: 60,
                         header: action === '@edit' ? 'Edit'.t() : 'Delete'.t(),
                         align: 'center',
+                        resizable: false,
                         tdCls: 'action-cell',
                         items: [action]
                     });
@@ -130,6 +131,7 @@ Ext.define('Ung.cmp.Grid', {
                         header: '<i class="fa fa-sort"></i>',
                         align: 'center',
                         width: 30,
+                        resizable: false,
                         tdCls: 'action-cell',
                         // iconCls: 'fa fa-arrows'
                         renderer: function() {

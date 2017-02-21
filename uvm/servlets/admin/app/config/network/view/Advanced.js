@@ -303,13 +303,13 @@ Ext.define('Ung.config.network.view.Advanced', {
                             dataIndex: 'priority',
                             renderer: function (value) {
                                 switch (value) {
-                                    case 1: return 'Very High'.t();
-                                    case 2: return 'High'.t();
-                                    case 3: return 'Medium'.t();
-                                    case 4: return 'Low'.t();
-                                    case 5: return 'Limited'.t();
-                                    case 6: return 'Limited More'.t();
-                                    case 7: return 'Limited Severely'.t();
+                                case 1: return 'Very High'.t();
+                                case 2: return 'High'.t();
+                                case 3: return 'Medium'.t();
+                                case 4: return 'Low'.t();
+                                case 5: return 'Limited'.t();
+                                case 6: return 'Limited More'.t();
+                                case 7: return 'Limited Severely'.t();
                                 }
                             }
                         }],
@@ -404,11 +404,21 @@ Ext.define('Ung.config.network.view.Advanced', {
                     }]
                 }, {
                     xtype: 'grid',
+                    itemId: 'qosStatistics',
                     title: 'QoS Statistics'.t(),
                     groupField:'interface_name',
 
                     columnLines: true,
                     enableColumnHide: false,
+
+                    store: {
+                        data: [] // todo: to set data
+                    },
+
+
+                    viewConfig: {
+                        emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-exclamation-triangle fa-2x"></i> <br/>No Data!</p>',
+                    },
 
                     tbar: [{
                         text: 'Refresh'.t(),
@@ -640,6 +650,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                     xtype: 'checkbox',
                     fieldLabel: 'Secure Mode'.t(),
                     labelAlign: 'right',
+                    disabled: true,
                     bind: {
                         value: '{settings.upnpSettings.secureMode}',
                         disabled: '{!settings.upnpSettings.upnpEnabled}'
@@ -649,22 +660,31 @@ Ext.define('Ung.config.network.view.Advanced', {
 
             items: [{
                 xtype: 'grid',
+                itemId: 'upnpStatus',
                 region: 'center',
 
                 title: 'Status'.t(),
                 enableColumnHide: false,
                 enableSorting: false,
+                forceFit: true,
+
+                viewConfig: {
+                    emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-exclamation-triangle fa-2x"></i> <br/>No Data!</p>',
+                },
 
                 tbar: [{
                     text: 'Refresh'.t(),
                     iconCls: 'fa fa-refresh',
-                    // handler: 'refreshUpnpStatus'
+                    handler: 'refreshUpnpStatus'
                 }],
 
                 disabled: true,
-
                 bind: {
                     disabled: '{!settings.upnpSettings.upnpEnabled}'
+                },
+
+                store: {
+                    data: [] // todo: to set data
                 },
 
                 columns: [{
@@ -685,9 +705,36 @@ Ext.define('Ung.config.network.view.Advanced', {
                     dataIndex: 'upnp_destination_port'
                 }, {
                     header: 'Bytes'.t(),
-                    width: 150,
-                    dataIndex: 'bytes'
-                    // renderer ????
+                    flex: 1,
+                    dataIndex: 'bytes',
+                    renderer: function (value, metadata, record) {
+                        if (Ext.isEmpty(value)) {
+                            return 'Not set'.t();
+                        } else {
+                            var v = value;
+                            switch (value[value.length-1]) {
+                            case 'K':
+                                v = parseInt(value.substr(0,value.length - 1), 10);
+                                value = v * 1024;
+                                break;
+                            case 'M':
+                                v = parseInt(value.substr(0,value.length - 1), 10);
+                                value = v * 1024 * 1024;
+                                break;
+                            }
+                            value = value / 1000;
+                            var mbit_value = value/1000;
+                            return Number(value).toFixed(2) + ' kbps' + ' (' + Number(mbit_value).toFixed(2) + ' Mbit' + ')';
+                        }
+                    }
+                }, {
+                    xtype: 'actioncolumn',
+                    width: 60,
+                    header: 'Delete'.t(),
+                    align: 'center',
+                    resizable: false,
+                    tdCls: 'action-cell',
+                    iconCls: 'fa fa-trash-o fa-red'
                 }]
             }, {
                 xtype: 'ungrid',
@@ -703,9 +750,9 @@ Ext.define('Ung.config.network.view.Advanced', {
                 ruleJavaClass: 'com.untangle.uvm.network.UpnpRuleCondition',
 
                 conditions: [
-                    { name: 'DST_PORT', displayName: 'Destination Port'.t(), type: "textfield", vtype: 'portMatcher' },
-                    { name: 'SRC_ADDR', displayName: 'Source Address'.t(), type: "textfield", vtype: 'ipMatcher' },
-                    { name: 'SRC_PORT', displayName: 'Source Port'.t(), type: "textfield", vtype: 'portMatcher' }
+                    { name: 'DST_PORT', displayName: 'Destination Port'.t(), type: 'textfield', vtype: 'portMatcher' },
+                    { name: 'SRC_ADDR', displayName: 'Source Address'.t(), type: 'textfield', vtype: 'ipMatcher' },
+                    { name: 'SRC_PORT', displayName: 'Source Port'.t(), type: 'textfield', vtype: 'portMatcher' }
                 ],
 
                 label: 'Perform the following action(s):'.t(),
@@ -826,15 +873,15 @@ Ext.define('Ung.config.network.view.Advanced', {
                 width: 250,
                 renderer: function (value) {
                     switch (value) {
-                        case 'AUTO': return 'Auto'.t();
-                        case 'M10000_FULL_DUPLEX': return '10000 Mbps, Full Duplex'.t();
-                        case 'M10000_HALF_DUPLEX': return '10000 Mbps, Half Duplex'.t();
-                        case 'M1000_FULL_DUPLEX': return '1000 Mbps, Full Duplex'.t();
-                        case 'M1000_HALF_DUPLEX': return '1000 Mbps, Half Duplex'.t();
-                        case 'M100_FULL_DUPLEX': return '100 Mbps, Full Duplex'.t();
-                        case 'M100_HALF_DUPLEX': return '100 Mbps, Half Duplex'.t();
-                        case 'M10_FULL_DUPLEX': return '10 Mbps, Full Duplex'.t();
-                        case 'M10_HALF_DUPLEX': return '10 Mbps, Half Duplex'.t();
+                    case 'AUTO': return 'Auto'.t();
+                    case 'M10000_FULL_DUPLEX': return '10000 Mbps, Full Duplex'.t();
+                    case 'M10000_HALF_DUPLEX': return '10000 Mbps, Half Duplex'.t();
+                    case 'M1000_FULL_DUPLEX': return '1000 Mbps, Full Duplex'.t();
+                    case 'M1000_HALF_DUPLEX': return '1000 Mbps, Half Duplex'.t();
+                    case 'M100_FULL_DUPLEX': return '100 Mbps, Full Duplex'.t();
+                    case 'M100_HALF_DUPLEX': return '100 Mbps, Half Duplex'.t();
+                    case 'M10_FULL_DUPLEX': return '10 Mbps, Full Duplex'.t();
+                    case 'M10_HALF_DUPLEX': return '10 Mbps, Half Duplex'.t();
                     }
                 },
                 editor: {

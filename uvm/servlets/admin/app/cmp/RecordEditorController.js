@@ -28,45 +28,44 @@ Ext.define('Ung.cmp.RecordEditorController', {
                 data: '{record.conditions.list}'
             }
         },
-        // store: {
-        //     data: view.record.get('conditions').list
-        //     // data: '{record.conditions.list}'
-        // },
         viewConfig: {
-            emptyText: '<p style="text-align: center; margin: 0; line-height: 2"><i class="fa fa-exclamation-triangle fa-2x"></i> <br/>No Conditions! Add from the menu...</p>'
+            emptyText: '<p style="text-align: center; margin: 0; line-height: 2"><i class="fa fa-exclamation-triangle fa-2x"></i> <br/>No Conditions! Add from the menu...</p>',
+            stripeRows: false,
         },
         columns: [{
             header: 'Type'.t(),
             menuDisabled: true,
-            // sortable: false,
             dataIndex: 'conditionType',
+            align: 'right',
             width: 200,
             renderer: 'conditionRenderer'
         }, {
             xtype: 'widgetcolumn',
             menuDisabled: true,
-            sortable: false,
-            width: 70,
-            widget: {
-                xtype: 'combo',
-                editable: false,
-                bind: '{record.invert}',
-                store: [[true, 'is NOT'.t()], [false, 'is'.t()]]
-            }
+            width: 80,
+            resizable: false,
             // widget: {
-            //     xtype: 'segmentedbutton',
+            //     xtype: 'combo',
+            //     editable: false,
             //     bind: '{record.invert}',
-            //     // bind: {
-            //     //     value: '{record.invert}',
-            //     // },
-            //     items: [{
-            //         text: 'IS',
-            //         value: true
-            //     }, {
-            //         text: 'IS NOT',
-            //         value: false
-            //     }]
+            //     store: [[true, 'is NOT'.t()], [false, 'is'.t()]]
             // }
+            widget: {
+                xtype: 'segmentedbutton',
+                bind: '{record.invert}',
+                // bind: {
+                //     value: '{record.invert}',
+                // },
+                items: [{
+                    // text: '&rArr;',
+                    iconCls: 'fa fa-check fa-green',
+                    value: false
+                }, {
+                    // text: '&nrArr;',
+                    iconCls: 'fa fa-ban fa-red',
+                    value: true
+                }]
+            }
         }, {
             header: 'Value'.t(),
             xtype: 'widgetcolumn',
@@ -87,7 +86,8 @@ Ext.define('Ung.cmp.RecordEditorController', {
             sortable: false,
             width: 30,
             align: 'center',
-            iconCls: 'fa fa-trash',
+            iconCls: 'fa fa-minus-circle fa-red',
+            tdCls: 'action-cell-cond',
             handler: 'removeCondition'
         }]
     },
@@ -217,8 +217,7 @@ Ext.define('Ung.cmp.RecordEditorController', {
      * Renders the condition name in the grid
      */
     conditionRenderer: function (val) {
-        return this.getView().conditionsMap[val].displayName;
-        // return [val].displayName;
+        return '<strong>' + this.getView().conditionsMap[val].displayName + ':</strong>';
     },
 
     /**
@@ -244,6 +243,7 @@ Ext.define('Ung.cmp.RecordEditorController', {
         case 'textfield':
             container.add({
                 xtype: 'textfield',
+                style: { margin: 0 },
                 bind: {
                     value: '{record.value}'
                 },
@@ -253,6 +253,7 @@ Ext.define('Ung.cmp.RecordEditorController', {
         case 'numberfield':
             container.add({
                 xtype: 'numberfield',
+                style: { margin: 0 },
                 bind: {
                     value: '{record.value}'
                 },

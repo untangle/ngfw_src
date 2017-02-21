@@ -93,5 +93,17 @@ Ext.define('Ung.config.network.view.DnsServer', {
                 vtype: 'ipAddress',
             }
         }],
+
+        plugins: 'responsive',
+        responsiveConfig: {
+            wide: {
+                region: 'east',
+                width: '50%'
+            },
+            tall: {
+                region: 'south',
+                height: '50%',
+            }
+        }
     }]
 });

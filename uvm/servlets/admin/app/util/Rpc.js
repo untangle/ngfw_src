@@ -34,6 +34,26 @@ Ext.define('Ung.util.Rpc', {
         return dfrd.promise;
     },
 
+    directData: function(expression /*, args */) {
+        var ns = expression.split('.'),
+            method = ns.pop(),
+            context = window;
+
+        ns.forEach(function(part) { context = context[part]; });
+
+        if (!context.hasOwnProperty(method) || !Ext.isFunction(context[method])) {
+            console.error('Error: No such RPC method: \'' + expression + '\'');
+            Util.exceptionToast('No such RPC method: \'' + expression + '\'');
+            return;
+        }
+
+        try {
+            return context[method].call();
+        } catch (ex) {
+            Util.exceptionToast(ex);
+        }
+    },
+
     asyncPromise: function(expression /*, args */) {
         var args = [].slice.call(arguments).splice(1),
             ns = expression.split('.'),

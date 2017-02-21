@@ -31,15 +31,33 @@ Ext.define('Ung.config.network.view.DhcpServer', {
         columns: [{
             header: 'MAC Address'.t(),
             dataIndex: 'macAddress',
-            width: 200
+            width: 200,
+            editor: {
+                xtype:'textfield',
+                emptyText: '[enter MAC address]'.t(),
+                allowBlank: false,
+                vtype: 'macAddress',
+                maskRe: /[a-fA-F0-9:]/
+            }
         }, {
             header: 'Address'.t(),
             width: 200,
-            dataIndex: 'address'
+            dataIndex: 'address',
+            editor: {
+                xtype: 'textfield',
+                emptyText: '[enter address]'.t(),
+                allowBlank: false,
+                vtype: 'ipAddress'
+            }
         }, {
             header: 'Description'.t(),
             flex: 1,
-            dataIndex: 'description'
+            dataIndex: 'description',
+            editor: {
+                xtype: 'textfield',
+                emptyText: '[enter description]'.t(),
+                allowBlank: false
+            }
         }],
         editorFields: [
             Fields.macAddress,
@@ -48,17 +66,25 @@ Ext.define('Ung.config.network.view.DhcpServer', {
         ]
     }, {
         xtype: 'grid',
+        itemId: 'dhcpLeases',
         title: 'Current DHCP Leases'.t(),
         region: 'south',
-
         height: '50%',
         split: true,
+
+        viewConfig: {
+            emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-exclamation-triangle fa-2x"></i> <br/>No Data!</p>',
+        },
 
         tbar: [{
             text: 'Refresh'.t(),
             iconCls: 'fa fa-refresh',
-            // handler: 'refreshDhcpLeases'
+            handler: 'refreshDhcpLeases'
         }],
+
+        store: {
+            data: [] // todo: handle this store when available data
+        },
 
         columns: [{
             header: 'MAC Address'.t(),
@@ -84,7 +110,17 @@ Ext.define('Ung.config.network.view.DhcpServer', {
             handler: function () {
                 alert('to add');
             }
-        }]
-
+        }],
+        plugins: 'responsive',
+        responsiveConfig: {
+            wide: {
+                region: 'east',
+                width: '50%'
+            },
+            tall: {
+                region: 'south',
+                height: '50%',
+            }
+        }
     }]
 });

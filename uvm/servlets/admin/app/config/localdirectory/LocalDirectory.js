@@ -41,12 +41,14 @@ Ext.define('Ung.config.localdirectory.LocalDirectory', {
     layout: 'fit',
 
     items: [{
-        xtype: 'grid',
+        xtype: 'ungrid',
         border: false,
         title: 'Local Users'.t(),
 
-        // tbar: ['@add'],
-        // recordActions: ['@edit', '@delete'],
+        tbar: ['@add'],
+        recordActions: ['@edit', '@delete'],
+
+        listProperty: 'usersData.list',
 
         emptyRow: {
             username: '',
@@ -55,7 +57,8 @@ Ext.define('Ung.config.localdirectory.LocalDirectory', {
             email: '',
             password: '',
             passwordBase64Hash: '',
-            expirationTime: 0
+            expirationTime: 0,
+            javaClass: 'com.untangle.uvm.LocalDirectoryUser'
         },
 
         bind: '{users}',
@@ -101,9 +104,11 @@ Ext.define('Ung.config.localdirectory.LocalDirectory', {
         }, {
             header: 'datetime',
             dataIndex: 'expirationTime',
-        }, {
-            header: 'datetime',
-            dataIndex: 'datetime',
+            width: 150,
+            resizable: false,
+            renderer: function (time) {
+                return time > 0 ? new Date(time) : 'Never'.t();
+            }
         }],
         editorFields: [{
             xtype: 'textfield',
@@ -134,10 +139,6 @@ Ext.define('Ung.config.localdirectory.LocalDirectory', {
             vtype: 'email',
             width: 300
         }, {
-            xtype: 'textfield',
-            fieldLabel: 'Date Time',
-            bind: '{record.datetime}'
-        }, {
             xtype: 'container',
             layout: {
                 type: 'hbox'
@@ -152,32 +153,14 @@ Ext.define('Ung.config.localdirectory.LocalDirectory', {
                 xtype: 'checkbox',
                 boxLabel: 'Never'.t(),
                 bind: '{checked}'
-            },
-            // {
-            //     xtype: 'xdatetime',
-            //     bind: '{record.expirationTime}'
-            // }, {
-            //     xtype: 'textfield',
-            //     bind: '{record.expirationTime}'
-            // }, {
-            //     xtype: 'textfield',
-            //     bind: '{record.expirationTime}'
-            // }
-            {
+            }, {
                 xtype: 'datefield',
-                // format: 'timestamp',
-                // altFormats: 'm/d/Y',
+                format: 'time',
                 minValue: '',
                 margin: '0 10',
                 editable: false,
-                bind: {
-                    value: '{datetime}'
-                }
-            }, {
-                xtype: 'numberfield',
                 bind: '{record.expirationTime}'
-            }
-            ]
+            }]
         }]
         // extraVM: {
         //     formulas: {
