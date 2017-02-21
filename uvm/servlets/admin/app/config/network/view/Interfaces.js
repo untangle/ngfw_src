@@ -28,7 +28,7 @@ Ext.define('Ung.config.network.view.Interfaces', {
         reference: 'interfacesGrid',
         region: 'center',
         border: false,
-
+        split: true,
         tbar: ['@refresh'],
 
         layout: 'fit',
@@ -47,7 +47,9 @@ Ext.define('Ung.config.network.view.Interfaces', {
         // },
         // title: 'Interfaces'.t(),
         bind: '{interfaces}',
-
+        fields: [
+            'interfaceId'
+        ],
         columns: [
         // {
         //     xtype: 'gridcolumn',
@@ -61,9 +63,25 @@ Ext.define('Ung.config.network.view.Interfaces', {
         //     },
         // },
         {
+            dataIndex: 'connected',
+            width: 40,
+            align: 'center',
+            resizable: false,
+            sortable: false,
+            menuEnabled: false,
+            renderer: function (value) {
+                switch (value) {
+                case 'CONNECTED': return '<i class="fa fa-circle fa-green"></i>';
+                case 'DISCONNECTED': return '<i class="fa fa-circle fa-red"></i>';
+                case 'MISSING': return '<i class="fa fa-exclamation-triangle fa-orange"></i>';
+                default: return '<i class="fa fa-question-circle fa-red"></i>';
+                }
+            }
+        }, {
             header: 'Id'.t(),
             dataIndex: 'interfaceId',
-            width: 50,
+            width: 70,
+            resizable: false,
             align: 'right'
         }, {
             header: 'Name'.t(),
@@ -79,7 +97,7 @@ Ext.define('Ung.config.network.view.Interfaces', {
                 case 'CONNECTED': return 'connected'.t();
                 case 'DISCONNECTED': return 'disconnected'.t();
                 case 'MISSING': return 'missing'.t();
-                default: 'unknown'.t();
+                default: return 'unknown'.t();
                 }
             }
         }, {
@@ -143,6 +161,8 @@ Ext.define('Ung.config.network.view.Interfaces', {
             }
         }, {
             header: 'is WAN'.t(),
+            width: 80,
+            resizable: false,
             dataIndex: 'isWan',
             align: 'center',
             renderer: function (value, metaData, record) {
@@ -150,6 +170,7 @@ Ext.define('Ung.config.network.view.Interfaces', {
             }
         }, {
             header: 'is Vlan'.t(),
+            hidden: true,
             dataIndex: 'isVlanInterface',
             align: 'center',
             renderer: function (value) {
@@ -165,34 +186,45 @@ Ext.define('Ung.config.network.view.Interfaces', {
             hidden: true,
             width: 160,
             dataIndex: 'vendor'
+        }, {
+            xtype: 'widgetcolumn',
+            width: 90,
+            resizable: false,
+            sortable: false,
+            menuEnabled: false,
+            widget: {
+                xtype: 'button',
+                text: 'Edit'.t(),
+                iconCls: 'fa fa-pencil',
+                handler: 'editInterface'
+            }
         }]
     }, {
         xtype: 'panel',
-        region: 'east',
-        split: 'true',
+        region: 'south',
+        split: true,
         collapsible: false,
-        width: 350,
-        maxWidth: 450,
+        height: '50%',
+        // maxHeight: '50%',
         hidden: true,
         layout: 'border',
         bind: {
-            title: '{si.name} ({si.physicalDev})',
-            hidden: '{!si}',
-            // activeItem: '{activePropsItem}'
+            // title: '{si.name} ({si.physicalDev})',
+            hidden: '{!interfacesGrid.selection}',
         },
-        tbar: [{
-            bind: {
-                text: '<strong>' + 'Edit'.t() + ' {si.name} ({si.physicalDev})' + '</strong>',
-                iconCls: 'fa fa-pencil',
-                scale: 'large',
-                width: '100%',
-                handler: 'editInterface'
-            }
-        }],
+        // tbar: [{
+        //     bind: {
+        //         text: '<strong>' + 'Edit'.t() + ' {si.name} ({si.physicalDev})' + '</strong>',
+        //         iconCls: 'fa fa-pencil',
+        //         scale: 'large',
+        //         width: '100%',
+        //         handler: 'editInterface'
+        //     }
+        // }],
         items: [{
             title: 'Status'.t(),
             region: 'center',
-            border: false,
+            // border: false,
             itemId: 'interfaceStatus',
             xtype: 'propertygrid',
             // header: false,
@@ -221,16 +253,25 @@ Ext.define('Ung.config.network.view.Interfaces', {
             tbar: [{
                 xtype: 'button',
                 iconCls: 'fa fa-refresh',
-                text: 'Refresh'
-            }]
+                text: 'Refresh',
+                handler: 'getInterfaceStatus'
+            }],
+            listeners: {
+                beforeedit: function () { return false; }
+            }
         }, {
             xtype: 'grid',
-            region: 'south',
-            height: '30%',
+            region: 'east',
+            width: '60%',
             split: true,
+            // border: false,
             itemId: 'interfaceArp',
             title: 'ARP Entry List'.t(),
             forceFit: true,
+            viewConfig: {
+                emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-exclamation-triangle fa-2x"></i> <br/>No Data!</p>',
+            },
+            // forceFit: true,
             bind: '{interfaceArp}',
             columns: [{
                 header: 'MAC Address'.t(),
@@ -241,6 +282,12 @@ Ext.define('Ung.config.network.view.Interfaces', {
             }, {
                 header: 'Type'.t(),
                 dataIndex: 'type'
+            }],
+            tbar: [{
+                xtype: 'button',
+                iconCls: 'fa fa-refresh',
+                text: 'Refresh',
+                handler: 'getInterfaceArp'
             }]
         }]
     }]

@@ -1,18 +1,14 @@
 Ext.define('Ung.config.localdirectory.LocalDirectory', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.config.localdirectory',
-
     requires: [
         'Ung.config.localdirectory.LocalDirectoryController',
         'Ung.config.localdirectory.LocalDirectoryModel'
     ],
-
     controller: 'config.localdirectory',
-
     viewModel: {
         type: 'config.localdirectory'
     },
-
     dockedItems: [{
         xtype: 'toolbar',
         weight: -10,
@@ -37,17 +33,14 @@ Ext.define('Ung.config.localdirectory.LocalDirectory', {
             handler: 'saveSettings'
         }]
     }],
-
     layout: 'fit',
-
     items: [{
-        xtype: 'grid',
+        xtype: 'ungrid',
         border: false,
         title: 'Local Users'.t(),
-
-        // tbar: ['@add'],
-        // recordActions: ['@edit', '@delete'],
-
+        tbar: ['@add'],
+        recordActions: ['@edit', '@delete'],
+        listProperty: 'usersData.list',
         emptyRow: {
             username: '',
             firstName: '',
@@ -55,11 +48,10 @@ Ext.define('Ung.config.localdirectory.LocalDirectory', {
             email: '',
             password: '',
             passwordBase64Hash: '',
-            expirationTime: 0
+            expirationTime: 0,
+            javaClass: 'com.untangle.uvm.LocalDirectoryUser'
         },
-
         bind: '{users}',
-
         columns: [{
             header: 'user/login ID'.t(),
             width: 140,
@@ -101,9 +93,11 @@ Ext.define('Ung.config.localdirectory.LocalDirectory', {
         }, {
             header: 'datetime',
             dataIndex: 'expirationTime',
-        }, {
-            header: 'datetime',
-            dataIndex: 'datetime',
+            width: 150,
+            resizable: false,
+            renderer: function (time) {
+                return time > 0 ? new Date(time) : 'Never'.t();
+            }
         }],
         editorFields: [{
             xtype: 'textfield',
@@ -134,10 +128,6 @@ Ext.define('Ung.config.localdirectory.LocalDirectory', {
             vtype: 'email',
             width: 300
         }, {
-            xtype: 'textfield',
-            fieldLabel: 'Date Time',
-            bind: '{record.datetime}'
-        }, {
             xtype: 'container',
             layout: {
                 type: 'hbox'
@@ -152,32 +142,14 @@ Ext.define('Ung.config.localdirectory.LocalDirectory', {
                 xtype: 'checkbox',
                 boxLabel: 'Never'.t(),
                 bind: '{checked}'
-            },
-            // {
-            //     xtype: 'xdatetime',
-            //     bind: '{record.expirationTime}'
-            // }, {
-            //     xtype: 'textfield',
-            //     bind: '{record.expirationTime}'
-            // }, {
-            //     xtype: 'textfield',
-            //     bind: '{record.expirationTime}'
-            // }
-            {
+            }, {
                 xtype: 'datefield',
-                // format: 'timestamp',
-                // altFormats: 'm/d/Y',
+                format: 'time',
                 minValue: '',
                 margin: '0 10',
                 editable: false,
-                bind: {
-                    value: '{datetime}'
-                }
-            }, {
-                xtype: 'numberfield',
                 bind: '{record.expirationTime}'
-            }
-            ]
+            }]
         }]
         // extraVM: {
         //     formulas: {
@@ -186,44 +158,67 @@ Ext.define('Ung.config.localdirectory.LocalDirectory', {
         //         }
         //     }
         // }
-
     }]
-
 });
 Ext.define('Ung.config.localdirectory.LocalDirectoryController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.config.localdirectory',
-
     control: {
         '#': {
             beforerender: 'loadSettings'
         }
     },
-
     localDirectory: rpc.UvmContext.localDirectory(),
-
     loadSettings: function () {
         var me = this;
-        this.localDirectory.getUsers(function (result, ex) {
-            if (ex) { console.error(ex); Util.exceptionToast(ex); return; }
-            console.log(result);
-            me.getViewModel().set('usersData', result);
+        rpc.localDirectory = rpc.UvmContext.localDirectory();
+        Rpc.asyncData('rpc.localDirectory.getUsers')
+            .then(function (result) {
+                me.getViewModel().set('usersData', result);
+            });
+    },
+    saveSettings: function () {
+        var view = this.getView();
+        var vm = this.getViewModel();
+        var me = this;
+        if (!Util.validateForms(view)) {
+            return;
+        }
+        view.setLoading('Saving ...');
+        // used to update all tabs data
+        view.query('ungrid').forEach(function (grid) {
+            var store = grid.getStore();
+            /**
+             * Important!
+             * update custom grids only if are modified records or it was reordered via drag/drop
+             */
+            if (store.getModifiedRecords().length > 0 || store.isReordered) {
+                store.each(function (record) {
+                    if (record.get('markedForDelete')) {
+                        record.drop();
+                    }
+                });
+                store.isReordered = undefined;
+                vm.set(grid.listProperty, Ext.Array.pluck(store.getRange(), 'data'));
+                // store.commitChanges();
+            }
         });
+        Rpc.asyncData('rpc.localDirectory.setUsers', me.getViewModel().get('usersData'))
+            .then(function (result) {
+                me.getViewModel().set('usersData', result);
+                Util.successToast('Local Directory'.t() + ' settings saved!');
+            }).always(function () {
+                view.setLoading(false);
+            });
     }
-
 });
-
 Ext.define('Ung.config.localdirectory.LocalDirectoryModel', {
     extend: 'Ext.app.ViewModel',
-
     alias: 'viewmodel.config.localdirectory',
     // requires: ['Ung.model.LocalDirectoryUser'],
-
-
     data: {
         usersData: null
     },
-
     stores: {
         users: {
             // model: 'Ung.model.LocalDirectoryUser',

@@ -33,7 +33,7 @@ Ext.define('Ung.Application', {
 
         Metrics.start();
 
-        Ext.get('app-loader').destroy();
+        // Ext.get('app-loader').destroy();
 
         rpc.reportsManager = rpc.nodeManager.node('untangle-node-reports').getReportsManager();
 
@@ -42,7 +42,7 @@ Ext.define('Ung.Application', {
             Rpc.asyncPromise('rpc.reportsManager.getReportEntries'),
             Rpc.asyncPromise('rpc.reportsManager.getUnavailableApplicationsMap')
         ]).then(function (result) {
-            // Ext.get('app-loader').destroy();
+            Ext.get('app-loader').destroy();
             Ung.dashboardSettings = result[0];
             Ext.getStore('widgets').loadData(result[0].widgets.list);
             if (result[1]) {

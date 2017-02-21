@@ -12,14 +12,11 @@ Ext.define('Ung.cmp.RecordEditor', {
     ],
     controller: 'recordeditor',
     closeAction: 'destroy',
-    // config: {
-    //     conditions: null
-    // },
 
     viewModel: true,
     disabled: true,
     bind: {
-        title: '{windowTitle} | {record.description}',
+        title: '{windowTitle}',
         disabled: '{!record}'
     },
 

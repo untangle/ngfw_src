@@ -89,14 +89,15 @@ Ext.define('Ung.config.administration.AdministrationController', {
         Ext.Deferred.sequence([
             Rpc.asyncPromise('rpc.adminManager.getSettings'),
             Rpc.asyncPromise('rpc.systemManager.getSettings'),
-            Rpc.asyncPromise('rpc.skinManager.getSettings'),
-            Rpc.asyncPromise('rpc.skinManager.getSkinsList')
+            Rpc.asyncPromise('rpc.skinManager.getSkinsList'),
+            Rpc.asyncPromise('rpc.skinManager.getSettings')
         ], this).then(function(result) {
+            console.log(result);
             vm.set({
                 adminSettings: result[0],
                 systemSettings: result[1],
-                skinSettings: result[2],
-                skinsList: result[4]
+                skinsList: result[2],
+                skinSettings: result[3]
             });
         }, function(ex) {
             console.error(ex);
@@ -166,6 +167,7 @@ Ext.define('Ung.config.administration.AdministrationController', {
         ], this).then(function() {
             me.loadAdmin();
             me.loadCertificates();
+            window.location.reload();
             Util.successToast('Administration'.t() + ' settings saved!');
         }, function(ex) {
             console.error(ex);

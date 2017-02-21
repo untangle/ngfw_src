@@ -35,56 +35,56 @@
         bottom: 0;
         background: #282828;
         opacity: 1;
-        z-index: 9998;
+        z-index: 9999;
         transition: opacity 1s ease-out;
     }
     #app-loader.removing {
         opacity: 0;
     }
 
-  .ung-loader,
-  .ung-loader:after {
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-  }
-  .ung-loader {
-    margin: 20px auto;
-    font-size: 10px;
-    font-family: 'tahoma';
-    position: relative;
-    text-indent: -9999em;
-    box-sizing: border-box;
-    border-top: 3px solid rgba(255, 255, 255, 0.2);
-    border-right: 3px solid rgba(255, 255, 255, 0.2);
-    border-bottom: 3px solid rgba(255, 255, 255, 0.2);
-    border-left: 3px solid #ffffff;
-    -webkit-transform: translateZ(0);
-    -ms-transform: translateZ(0);
-    transform: translateZ(0);
-    -webkit-animation: load8 1.1s infinite linear;
-    animation: load8 1.1s infinite linear;
-  }
-  @-webkit-keyframes load8 {
-    0% {
-      -webkit-transform: rotate(0deg);
-      transform: rotate(0deg);
+    .ung-loader,
+    .ung-loader:after {
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
     }
-    100% {
-      -webkit-transform: rotate(360deg);
-      transform: rotate(360deg);
+    .ung-loader {
+      margin: 20px auto;
+      font-size: 10px;
+      font-family: 'tahoma';
+      position: relative;
+      text-indent: -9999em;
+      box-sizing: border-box;
+      border-top: 3px solid rgba(255, 255, 255, 0.2);
+      border-right: 3px solid rgba(255, 255, 255, 0.2);
+      border-bottom: 3px solid rgba(255, 255, 255, 0.2);
+      border-left: 3px solid #ffffff;
+      -webkit-transform: translateZ(0);
+      -ms-transform: translateZ(0);
+      transform: translateZ(0);
+      -webkit-animation: load8 1.1s infinite linear;
+      animation: load8 1.1s infinite linear;
     }
-  }
-  @keyframes load8 {
-    0% {
-      -webkit-transform: rotate(0deg);
-      transform: rotate(0deg);
+    @-webkit-keyframes load8 {
+      0% {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+      }
+      100% {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+      }
     }
-    100% {
-      -webkit-transform: rotate(360deg);
-      transform: rotate(360deg);
+    @keyframes load8 {
+      0% {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+      }
+      100% {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+      }
     }
-  }
   </style>
 
 </head>
@@ -120,10 +120,10 @@
   <link rel="stylesheet" href="root/res/themes/theme-neptune/resources/theme-neptune-all.css" />
   -->
 
-
+  <!--
   <script src="root/res/themes/theme-gray/theme-gray.js"></script>
   <link rel="stylesheet" href="root/res/themes/theme-gray/resources/theme-gray-all.css" />
-
+  -->
 
   <!-- font awesome -->
   <link rel="stylesheet" href="root/res/font-awesome/css/font-awesome.min.css" />
@@ -133,6 +133,20 @@
 
 
   <script>
+    var loadTheme = function(themeName) {
+      var script = document.createElement('script');
+      script.src = 'root/res/themes/theme-' + themeName + '/theme-' + themeName + '.js';
+      script.type = "text/javascript";
+      script.async = false;
+      document.getElementsByTagName('head')[0].appendChild(script);
+
+      var style = document.createElement('link');
+      style.href = 'root/res/themes/theme-' + themeName + '/resources/theme-' + themeName + '-all.css';
+      style.rel = "stylesheet";
+      style.type = "text/css";
+      document.getElementsByTagName('head')[0].appendChild(style);
+    }
+
     console.time('resources');
     Highcharts.setOptions({
       global: {
@@ -144,6 +158,7 @@
 
     // connect to RPC using forwarded 8000 port to bypass authentication for it
     var rpc = new JSONRpcClient('http://localhost:8002/webui/JSON-RPC');
+
 
     Ext.QuickTips.init();
     // Disable Ext Area to avoid unwanted debug messages
@@ -163,20 +178,19 @@
     // });
 
     Ext.onReady(function () {
-      // // Ext.get('app-message').setHtml('Fetching data ...');
       try {
           var startUpInfo = rpc.UvmContext.getWebuiStartupInfo();
       } catch (ex) {
-          Ext.get('app-spinner').destroy();
-          Ext.get('app-message').setHtml('<span>Fatal error!</span> <br/><br/>' + ex);
+          alert(ex);
+          // Ext.get('app-loader').destroy();
+          // Ext.get('app-message').setHtml('<span>Fatal error!</span> <br/><br/>' + ex);
       }
-
       Ext.apply(rpc, startUpInfo);
+      loadTheme(rpc.skinInfo.extjsTheme);
 
       String.prototype.t = function() {
           return rpc.translations[this.valueOf()] || '<cite>' + this.valueOf() + '</cite>';
       };
-
 
       Ext.application({
           name: 'Ung',
@@ -199,8 +213,6 @@
       */
 
     });
-
-
   </script>
 </body>
 </html>

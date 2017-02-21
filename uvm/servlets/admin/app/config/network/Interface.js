@@ -1,14 +1,13 @@
 Ext.define('Ung.config.network.Interface', {
     extend: 'Ext.window.Window',
     alias: 'widget.config.interface',
-    width: 420,
+    width: 500,
     height: 550,
-    constrainTo: 'body',
+    // constrainTo: 'body',
     layout: 'fit',
 
     modal: true,
 //    viewModel: true,
-
     title: 'Config'.t(),
 
     items: [{
@@ -32,7 +31,7 @@ Ext.define('Ung.config.network.Interface', {
             labelAlign: 'top',
             name: 'interfaceName',
             allowBlank: false,
-            bind: '{si2.name}'
+            bind: '{si.name}'
         },
         // {
         //     // is VLAN
@@ -630,10 +629,12 @@ Ext.define('Ung.config.network.Interface', {
         }],
         buttons: [{
             text: 'Cancel',
-            iconCls: 'fa fa-ban fa-red'
+            iconCls: 'fa fa-ban fa-red',
+            handler: 'cancelEdit'
         }, {
             text: 'Done',
-            iconCls: 'fa fa-check'
+            iconCls: 'fa fa-check',
+            handler: 'doneEdit'
         }]
 
     }]

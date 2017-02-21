@@ -51,7 +51,7 @@ Ext.define('Ung.config.network.view.Routes', {
             dataIndex: 'prefix'
         }, {
             header: 'Next Hop'.t(),
-            width: 300,
+            width: 170,
             dataIndex: 'nextHop',
             renderer: function (value) {
                 return value || '<em>no description<em>';
@@ -77,16 +77,16 @@ Ext.define('Ung.config.network.view.Routes', {
         ]
     }, {
         xtype: 'panel',
+        itemId: 'currentRoutes',
         title: 'Current Routes'.t(),
         region: 'south',
         height: '50%',
         split: true,
-        border: false,
         tbar: [{
             xtype: 'tbtext',
             padding: '8 5',
-            style: { fontSize: '12px' },
-            value: "Current Routes shows the current routing system's configuration and how all traffic will be routed.".t()
+            // style: { fontSize: '12px' },
+            text: "Current Routes shows the current routing system's configuration and how all traffic will be routed.".t()
         }, '->', {
             text: 'Refresh Routes'.t(),
             iconCls: 'fa fa-refresh',
@@ -95,7 +95,6 @@ Ext.define('Ung.config.network.view.Routes', {
         layout: 'fit',
         items: [{
             xtype: 'textarea',
-            itemId: 'currentRoutes',
             border: false,
             fieldStyle: {
                 fontFamily: 'monospace'
@@ -108,6 +107,17 @@ Ext.define('Ung.config.network.view.Routes', {
             // height: 200,
             // width: "100%",
             // isDirty: function() { return false; }
-        }]
+        }],
+        plugins: 'responsive',
+        responsiveConfig: {
+            wide: {
+                region: 'east',
+                width: '50%'
+            },
+            tall: {
+                region: 'south',
+                height: '50%',
+            }
+        }
     }]
 });
