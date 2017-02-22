@@ -23,6 +23,8 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOf;
+
 import com.untangle.uvm.util.IOUtil;
 
 /*
@@ -162,7 +164,11 @@ public class WebBrowser
 		Boolean found = false;
         found = wait.until(new ExpectedCondition<Boolean>() {
         	public Boolean apply(WebDriver driver) {
-            	return driver.findElement(By.id(elementId)) != null;
+                if(driver.findElement(By.id(elementId)) != null &&
+                    visibilityOf(driver.findElement(By.id(elementId))) != null){
+                    return true;
+                }
+                return false;
             }
         });
 		return found;
