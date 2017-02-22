@@ -63,5 +63,7 @@ CREATE TABLE reports.http_events (
                                  "virus_blocker_clean",
                                  "virus_blocker_lite_clean",
                                  "ad_blocker_action"])
-
-
+    sql_helper.drop_column('http_events','web_filter_lite_blocked')  # 13.0
+    sql_helper.drop_column('http_events','web_filter_lite_flagged')  # 13.0
+    sql_helper.drop_column('http_events','web_filter_lite_category') # 13.0
+    sql_helper.drop_column('http_events','web_filter_lite_reason')   # 13.0
