@@ -124,6 +124,20 @@ public class HostTableImpl implements HostTable
 
         return entry;
     }
+
+    public HostTableEntry findHostTableEntry( String macaddr )
+    {
+        LinkedList<HostTableEntry> list = new LinkedList<HostTableEntry>(UvmContextFactory.context().hostTable().getHosts());
+
+        //  look for an entry with matching MAC address
+        for (Iterator<HostTableEntry> i = list.iterator(); i.hasNext(); ) {
+            HostTableEntry entry = i.next();
+            if (entry.getMacAddress() == null) continue;
+            if (entry.getMacAddress().equals(macaddr)) return(entry);
+        }
+
+        return(null);
+    }
     
     public void setHostTableEntry( InetAddress addr, HostTableEntry entry )
     {
@@ -865,5 +879,4 @@ public class HostTableImpl implements HostTable
             saveHosts();
         }
     }
-    
 }

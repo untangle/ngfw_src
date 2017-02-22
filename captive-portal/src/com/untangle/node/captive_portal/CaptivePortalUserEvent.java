@@ -3,8 +3,6 @@
  */
 package com.untangle.node.captive_portal;
 
-import java.net.InetAddress;
-
 import com.untangle.node.captive_portal.CaptivePortalSettings.AuthenticationType;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.util.I18nUtil;
@@ -17,7 +15,7 @@ public class CaptivePortalUserEvent extends LogEvent
         LOGIN, FAILED, TIMEOUT, INACTIVE, USER_LOGOUT, ADMIN_LOGOUT, HOST_CHANGE
     };
 
-    private InetAddress clientAddr;
+    private String clientAddr;
     private String loginName;
     private String authenticationTypeValue;
     private String eventValue;
@@ -27,7 +25,7 @@ public class CaptivePortalUserEvent extends LogEvent
     {
     }
 
-    public CaptivePortalUserEvent(Integer policyId, InetAddress clientAddr, String loginName, AuthenticationType type, EventType event)
+    public CaptivePortalUserEvent(Integer policyId, String clientAddr, String loginName, AuthenticationType type, EventType event)
     {
         setPolicyId(policyId);
         setClientAddr(clientAddr);
@@ -36,8 +34,8 @@ public class CaptivePortalUserEvent extends LogEvent
         setEvent(event);
     }
 
-    public InetAddress getClientAddr() { return clientAddr; }
-    public void setClientAddr(InetAddress clientAddr) { this.clientAddr = clientAddr; }
+    public String getClientAddr() { return clientAddr; }
+    public void setClientAddr(String clientAddr) { this.clientAddr = clientAddr; }
 
     public String getLoginName() { return loginName; }
     public void setLoginName(String loginName) { this.loginName = loginName; }
@@ -72,7 +70,7 @@ public class CaptivePortalUserEvent extends LogEvent
         pstmt.setString(++i, getLoginName());
         pstmt.setString(++i, getEvent().toString());
         pstmt.setString(++i, getAuthenticationTypeValue());
-        pstmt.setString(++i, getClientAddr().getHostAddress().toString());
+        pstmt.setString(++i, getClientAddr());
 
         pstmt.addBatch();
         return;
@@ -95,5 +93,4 @@ public class CaptivePortalUserEvent extends LogEvent
         String summary = "Captive Portal: " + I18nUtil.marktr("User") + " " + getLoginName() + " " + action;
         return summary;
     }
-
 }
