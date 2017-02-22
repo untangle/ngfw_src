@@ -178,10 +178,6 @@ human_names = {
 'web_filter_blocked': 'Web Filter ' + 'Blocked',
 'web_filter_category': 'Web Filter ' + 'Category',
 'web_filter_flagged': 'Web Filter ' + 'Flagged',
-'web_filter_lite_blocked': 'Web Filter Lite ' + 'Blocked',
-'web_filter_lite_category': 'Web Filter Lite ' + 'Category',
-'web_filter_lite_flagged': 'Web Filter Lite ' + 'Flagged',
-'web_filter_lite_reason': 'Web Filter Lite ' + 'Reason',
 'web_filter_reason': 'Web Filter ' + 'Reason',
 }
 
@@ -384,10 +380,6 @@ dict['http_events'].update({
     'referer' : 'The Referer URL',
     'ad_blocker_cookie_ident' : 'This name of cookie blocked by Ad Blocker',
     'ad_blocker_action' : 'This action of Ad Blocker on this request',
-    'web_filter_lite_reason' : 'This reason Web Filter Lite blocked/flagged this request',
-    'web_filter_lite_category' : 'This category according to Web Filter Lite',
-    'web_filter_lite_blocked' : 'If Web Filter Lite blocked this request',
-    'web_filter_lite_flagged' : 'If Web Filter Lite flagged this request',
     'web_filter_reason' : 'This reason Web Filter blocked/flagged this request',
     'web_filter_category' : 'This category according to Web Filter',
     'web_filter_blocked' : 'If Web Filter blocked this request',
