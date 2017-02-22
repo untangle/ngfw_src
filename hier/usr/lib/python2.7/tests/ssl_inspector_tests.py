@@ -114,7 +114,6 @@ class SslInspectorTests(unittest2.TestCase):
         assert (result == 0)
         result = remote_control.runCommand("wget -q -4 -t 2 --timeout=5 --no-check-certificate -q -O - https://%s 2>&1 | grep -q blockpage" % (pornServerName))
         assert (result == 0)        
-        
 
     def test_020_checkIgnoreCertificate(self):
         if findRule('Ignore Dropbox'):
