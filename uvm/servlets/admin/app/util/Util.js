@@ -5,7 +5,6 @@ Ext.define('Ung.util.Util', {
     // node name to class mapping
     nodeClassMapping: {
         'untangle-node-web-filter': 'Ung.node.WebFilter',
-        'untangle-node-web-filter-lite': 'Ung.node.WebFilterLite',
         'untangle-node-virus-blocker': 'Ung.node.VirusBlocker',
         'untangle-node-virus-blocker-lite': 'Ung.node.VirusBlockerLite',
         'untangle-node-spam-blocker': 'Ung.node.SpamBlocker',

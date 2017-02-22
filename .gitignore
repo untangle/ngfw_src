@@ -73,9 +73,6 @@ debian/untangle-node-spam-blocker-lite/
 debian/untangle-node-virus-blocker-lite.debhelper.log
 debian/untangle-node-virus-blocker-lite.substvars
 debian/untangle-node-virus-blocker-lite/
-debian/untangle-node-web-filter-lite.debhelper.log
-debian/untangle-node-web-filter-lite.substvars
-debian/untangle-node-web-filter-lite/
 debian/untangle-node-web-monitor.debhelper.log
 debian/untangle-node-web-monitor.substvars
 debian/untangle-node-web-monitor/
