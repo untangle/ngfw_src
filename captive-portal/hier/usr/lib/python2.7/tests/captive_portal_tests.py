@@ -56,20 +56,20 @@ def createCaptureNonWanNicRule():
     };
 
 def createLocalDirectoryUser():
-    return {'javaClass': 'java.util.LinkedList', 
+    return {'javaClass': 'java.util.LinkedList',
         'list': [{
-            'username': localUserName, 
-            'firstName': '[firstName]', 
-            'lastName': '[lastName]', 
-            'javaClass': 'com.untangle.uvm.LocalDirectoryUser', 
-            'expirationTime': 0, 
-            'passwordBase64Hash': base64.b64encode('passwd'), 
+            'username': localUserName,
+            'firstName': '[firstName]',
+            'lastName': '[lastName]',
+            'javaClass': 'com.untangle.uvm.LocalDirectoryUser',
+            'expirationTime': 0,
+            'passwordBase64Hash': base64.b64encode('passwd'),
             'email': 'test20@example.com'
             },]
     }
 
 def removeLocalDirectoryUser():
-    return {'javaClass': 'java.util.LinkedList', 
+    return {'javaClass': 'java.util.LinkedList',
         'list': []
     }
 
@@ -87,11 +87,11 @@ def createDirectoryConnectorSettings():
             "superuserPass": AD_PASSWORD
        },
         "radiusSettings": {
-            "port": 1812, 
-            "enabled": False, 
-            "authenticationMethod": "PAP", 
-            "javaClass": "com.untangle.node.directory_connector.RadiusSettings", 
-            "server": radiusHost, 
+            "port": 1812,
+            "enabled": False,
+            "authenticationMethod": "PAP",
+            "javaClass": "com.untangle.node.directory_connector.RadiusSettings",
+            "server": radiusHost,
             "sharedSecret": "mysharedsecret"
         },
         "googleSettings": {
@@ -107,21 +107,21 @@ def createDirectoryConnectorSettings():
 def createRadiusSettings():
     return {
         "activeDirectorySettings": {
-            "enabled": False, 
-            "superuserPass": "passwd", 
-            "LDAPPort": "389", 
-            "OUFilter": "", 
-            "domain": "adtest.metaloft.com", 
-            "javaClass": "com.untangle.node.directory_connector.ActiveDirectorySettings", 
-            "LDAPHost": AD_HOST, 
+            "enabled": False,
+            "superuserPass": "passwd",
+            "LDAPPort": "389",
+            "OUFilter": "",
+            "domain": "adtest.metaloft.com",
+            "javaClass": "com.untangle.node.directory_connector.ActiveDirectorySettings",
+            "LDAPHost": AD_HOST,
             "superuser": AD_ADMIN
-        }, 
+        },
         "radiusSettings": {
-            "port": 1812, 
-            "enabled": True, 
-            "authenticationMethod": "PAP", 
-            "javaClass": "com.untangle.node.directory_connector.RadiusSettings", 
-            "server": radiusHost, 
+            "port": 1812,
+            "enabled": True,
+            "authenticationMethod": "PAP",
+            "javaClass": "com.untangle.node.directory_connector.RadiusSettings",
+            "server": radiusHost,
             "sharedSecret": "chakas"
         },
         "googleSettings": {
@@ -144,7 +144,7 @@ def findNameInHostTable (hostname='test'):
             break
     remote_control.runCommand("pkill netcat")
     return foundTestSession
-    
+
 def timeOfClientOff (timediff=60):
     # Check the time differential betwen the Untangle and client is less than 1 min.
     client_time = int(remote_control.runCommand("date +%s",stdout=True))
@@ -196,9 +196,9 @@ class CaptivePortalTests(unittest2.TestCase):
         # Create local directory user 'test20'
         uvmContext.localDirectory().setUsers(createLocalDirectoryUser())
         # Get the IP address of test.untangle.com
-        test_untangle_com_ip = socket.gethostbyname("test.untangle.com")   
+        test_untangle_com_ip = socket.gethostbyname("test.untangle.com")
         captureIP = system_properties.findInterfaceIPbyIP(remote_control.clientIP)
-        
+
         # remove previous temp files
         remote_control.runCommand("rm -f /tmp/capture_test_*")
 
@@ -229,18 +229,18 @@ class CaptivePortalTests(unittest2.TestCase):
                                             'captive_portal_blocked', True )
         assert( found )
         # logout user to clean up test.
-        # wget http://<internal IP>/capture/logout  
+        # wget http://<internal IP>/capture/logout
         result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_021b.out http://" + captureIP + "/capture/logout")
         assert (result == 0)
         search = remote_control.runCommand("grep -q 'logged out' /tmp/capture_test_021b.out")
         assert (search == 0)
-        
+
     def test_022_webFilterAffinityCheck(self):
         global node, nodeData, nodeWeb
         nodeData['captureRules']['list'] = []
         nodeData['captureRules']['list'].append(createCaptureNonWanNicRule())
         node.setSettings(nodeData)
- 
+
         newRule = { "blocked": True, "description": "test.untangle.com", "flagged": True, "javaClass": "com.untangle.uvm.node.GenericRule", "string": "test.untangle.com" }
         rules_orig = nodeWeb.getBlockedUrls()
         rules = copy.deepcopy(rules_orig)
@@ -254,7 +254,7 @@ class CaptivePortalTests(unittest2.TestCase):
         assert (search == 0)
 
         # logout user to clean up test.
-        # wget http://<internal IP>/capture/logout  
+        # wget http://<internal IP>/capture/logout
         nodeWeb.setBlockedUrls(rules_orig)
         result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_022b.out http://" + captureIP + "/capture/logout")
         assert (result == 0)
@@ -285,9 +285,9 @@ class CaptivePortalTests(unittest2.TestCase):
         assert (result == 0)
         search = remote_control.runCommand("grep -q 'Hi!' /tmp/capture_test_023a.out")
         assert (search == 0)
-        
+
         # logout user to clean up test.
-        # wget http://<internal IP>/capture/logout  
+        # wget http://<internal IP>/capture/logout
         result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_023b.out http://" + captureIP + "/capture/logout")
         assert (result == 0)
         search = remote_control.runCommand("grep -q 'logged out' /tmp/capture_test_023b.out")
@@ -317,7 +317,7 @@ class CaptivePortalTests(unittest2.TestCase):
         assert (result == 0)
         search = remote_control.runCommand("grep -q 'Hi!' /tmp/capture_test_024a.out")
         assert (search == 0)
-        
+
         # Wait for captive timeout
         time.sleep(20)
         node.runCleanup() # run the periodic cleanup task to remove expired users
@@ -351,9 +351,9 @@ class CaptivePortalTests(unittest2.TestCase):
         assert (result == 0)
         search = remote_control.runCommand("grep -q 'Hi!' /tmp/capture_test_025a.out")
         assert (search == 0)
-        
+
         # logout user to clean up test.
-        # wget http://<internal IP>/capture/logout  
+        # wget http://<internal IP>/capture/logout
         result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_025b.out http://" + captureIP + "/capture/logout")
         assert (result == 0)
         search = remote_control.runCommand("grep -q 'logged out' /tmp/capture_test_025b.out")
@@ -376,7 +376,7 @@ class CaptivePortalTests(unittest2.TestCase):
         search = remote_control.runCommand("grep -q 'username and password' /tmp/capture_test_030.out")
         assert (search == 0)
 
-        # check if local directory login and password 
+        # check if local directory login and password
         appid = str(node.getNodeSettings()["id"])
         # print 'appid is %s' % appid  # debug line
         result = remote_control.runCommand("wget -O /tmp/capture_test_030a.out  \'http://" + captureIP + "/capture/handler.py/authpost?username=" + localUserName + "&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
@@ -384,16 +384,16 @@ class CaptivePortalTests(unittest2.TestCase):
         search = remote_control.runCommand("grep -q 'Hi!' /tmp/capture_test_030a.out")
         assert (search == 0)
         foundUsername = findNameInHostTable(localUserName)
-        assert(foundUsername)        
+        assert(foundUsername)
 
         # logout user to clean up test.
-        # wget http://<internal IP>/capture/logout  
+        # wget http://<internal IP>/capture/logout
         result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_030b.out http://" + captureIP + "/capture/logout")
         assert (result == 0)
         search = remote_control.runCommand("grep -q 'logged out' /tmp/capture_test_030b.out")
         assert (search == 0)
         foundUsername = findNameInHostTable(localUserName)
-        assert(not foundUsername)        
+        assert(not foundUsername)
 
     def test_031_loginAny(self):
         global node, nodeData
@@ -412,7 +412,7 @@ class CaptivePortalTests(unittest2.TestCase):
         search = remote_control.runCommand("grep -q 'username and password' /tmp/capture_test_030.out")
         assert (search == 0)
 
-        # check if local directory login and password 
+        # check if local directory login and password
         appid = str(node.getNodeSettings()["id"])
         # print 'appid is %s' % appid  # debug line
         result = remote_control.runCommand("wget -O /tmp/capture_test_030a.out  \'http://" + captureIP + "/capture/handler.py/authpost?username=" + localUserName + "&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
@@ -420,16 +420,16 @@ class CaptivePortalTests(unittest2.TestCase):
         search = remote_control.runCommand("grep -q 'Hi!' /tmp/capture_test_030a.out")
         assert (search == 0)
         foundUsername = findNameInHostTable(localUserName)
-        assert(foundUsername)        
+        assert(foundUsername)
 
         # logout user to clean up test.
-        # wget http://<internal IP>/capture/logout  
+        # wget http://<internal IP>/capture/logout
         result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_030b.out http://" + captureIP + "/capture/logout")
         assert (result == 0)
         search = remote_control.runCommand("grep -q 'logged out' /tmp/capture_test_030b.out")
         assert (search == 0)
         foundUsername = findNameInHostTable(localUserName)
-        assert(not foundUsername)        
+        assert(not foundUsername)
 
     def test_032_loginGoogle(self):
         if platform.machine().startswith('arm'):
@@ -443,7 +443,7 @@ class CaptivePortalTests(unittest2.TestCase):
         print "username: %s\n " % str(googleUserName)
         if googlePassword != None:
             print "password: %s\n" % (len(googlePassword)*"*")
-        
+
         # account not found if message returned
         if googleUserName == "message":
             raise unittest2.SkipTest(googlePassword)
@@ -457,14 +457,14 @@ class CaptivePortalTests(unittest2.TestCase):
 
         # Configure Directory Connector
         nodeAD.setSettings(createDirectoryConnectorSettings())
-        
+
         # check that basic captive page is shown
         result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_032.out http://test.untangle.com/")
         assert (result == 0)
         search = remote_control.runCommand("grep -q 'username and password' /tmp/capture_test_032.out")
         assert (search == 0)
 
-        # check if local directory login and password 
+        # check if local directory login and password
         appid = str(node.getNodeSettings()["id"])
         # print 'appid is %s' % appid  # debug line
         result = remote_control.runCommand("wget -O /tmp/capture_test_032a.out  \'http://" + captureIP + "/capture/handler.py/authpost?username=" + googleUserName + "&password=" + googlePassword + "&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
@@ -472,16 +472,16 @@ class CaptivePortalTests(unittest2.TestCase):
         search = remote_control.runCommand("grep -q 'Hi!' /tmp/capture_test_032a.out")
         assert (search == 0)
         foundUsername = findNameInHostTable(googleUserName)
-        assert(foundUsername)        
+        assert(foundUsername)
 
         # logout user to clean up test.
-        # wget http://<internal IP>/capture/logout  
+        # wget http://<internal IP>/capture/logout
         result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_030b.out http://" + captureIP + "/capture/logout")
         assert (result == 0)
         search = remote_control.runCommand("grep -q 'logged out' /tmp/capture_test_030b.out")
         assert (search == 0)
         foundUsername = findNameInHostTable(googleUserName)
-        assert(not foundUsername)        
+        assert(not foundUsername)
 
     def test_033_loginFacebook(self):
         if platform.machine().startswith('arm'):
@@ -491,7 +491,7 @@ class CaptivePortalTests(unittest2.TestCase):
         print "username: %s\n " % str(facebookUserName)
         if facebookPassword != None:
             print "password: %s\n" % (len(facebookPassword)*"*")
-        
+
         # account not found if message returned
         if facebookUserName == "message":
             raise unittest2.SkipTest(facebookPassword)
@@ -505,14 +505,14 @@ class CaptivePortalTests(unittest2.TestCase):
 
         # Configure Directory Connector
         nodeAD.setSettings(createDirectoryConnectorSettings())
-        
+
         # check that basic captive page is shown
         result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_032.out http://test.untangle.com/")
         assert (result == 0)
         search = remote_control.runCommand("grep -q 'username and password' /tmp/capture_test_032.out")
         assert (search == 0)
 
-        # check if local directory login and password 
+        # check if local directory login and password
         appid = str(node.getNodeSettings()["id"])
         # print 'appid is %s' % appid  # debug line
         result = remote_control.runCommand("wget -O /tmp/capture_test_032a.out  \'http://" + captureIP + "/capture/handler.py/authpost?username=" + facebookUserName + "&password=" + facebookPassword + "&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
@@ -520,17 +520,17 @@ class CaptivePortalTests(unittest2.TestCase):
         search = remote_control.runCommand("grep -q 'Hi!' /tmp/capture_test_032a.out")
         assert (search == 0)
         foundUsername = findNameInHostTable(facebookUserName)
-        assert(foundUsername)        
+        assert(foundUsername)
 
         # logout user to clean up test.
-        # wget http://<internal IP>/capture/logout  
+        # wget http://<internal IP>/capture/logout
         result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_030b.out http://" + captureIP + "/capture/logout")
         assert (result == 0)
         search = remote_control.runCommand("grep -q 'logged out' /tmp/capture_test_030b.out")
         assert (search == 0)
         foundUsername = findNameInHostTable(facebookUserName)
-        assert(not foundUsername)        
-        
+        assert(not foundUsername)
+
     def test_035_loginActiveDirectory(self):
         global nodeData, node, nodeDataAD, nodeAD, captureIP
         if (adResult != 0):
@@ -554,7 +554,7 @@ class CaptivePortalTests(unittest2.TestCase):
         search = remote_control.runCommand("grep -q 'username and password' /tmp/capture_test_035.out")
         assert (search == 0)
 
-        # check if AD login and password 
+        # check if AD login and password
         appid = str(node.getNodeSettings()["id"])
         # print 'appid is %s' % appid  # debug line
         result = remote_control.runCommand("wget -O /tmp/capture_test_035a.out  \'http://" + captureIP + "/capture/handler.py/authpost?username=" + adUserName + "&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
@@ -562,27 +562,27 @@ class CaptivePortalTests(unittest2.TestCase):
         search = remote_control.runCommand("grep -q 'Hi!' /tmp/capture_test_035a.out")
         assert (search == 0)
         foundUsername = findNameInHostTable(adUserName)
-        assert(foundUsername)        
+        assert(foundUsername)
 
-        # logout 
+        # logout
         result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_035b.out http://" + captureIP + "/capture/logout")
         assert (result == 0)
         search = remote_control.runCommand("grep -q 'logged out' /tmp/capture_test_035b.out")
         assert (search == 0)
-        # try second time to login, 
+        # try second time to login,
         result = remote_control.runCommand("wget -O /tmp/capture_test_035c.out  \'http://" + captureIP + "/capture/handler.py/authpost?username=" + adUserName + "&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
         assert (result == 0)
         search = remote_control.runCommand("grep -q 'Hi!' /tmp/capture_test_035c.out")
         assert (search == 0)
 
         # logout user to clean up test.
-        # wget http://<internal IP>/capture/logout  
+        # wget http://<internal IP>/capture/logout
         result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_035d.out http://" + captureIP + "/capture/logout")
         assert (result == 0)
         search = remote_control.runCommand("grep -q 'logged out' /tmp/capture_test_035d.out")
         assert (search == 0)
         foundUsername = findNameInHostTable(adUserName)
-        assert(not foundUsername)        
+        assert(not foundUsername)
 
         # check extend ascii in login and password bug 10860
         result = remote_control.runCommand("wget -O /tmp/capture_test_035e.out  \'http://" + captureIP + "/capture/handler.py/authpost?username=britishguy&password=passwd%C2%A3&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
@@ -596,7 +596,7 @@ class CaptivePortalTests(unittest2.TestCase):
         search = remote_control.runCommand("grep -q 'logged out' /tmp/capture_test_035f.out")
         assert (search == 0)
 
-        
+
     def test_040_loginRadius(self):
         global nodeData, node, nodeDataRD, nodeDataAD, nodeAD, captureIP
         if (radiusResult != 0):
@@ -627,7 +627,7 @@ class CaptivePortalTests(unittest2.TestCase):
         search = remote_control.runCommand("grep -q 'username' /tmp/capture_test_040.out")
         assert (search == 0)
 
-        # check if RADIUS login and password 
+        # check if RADIUS login and password
         appid = str(node.getNodeSettings()["id"])
         # print 'appid is %s' % appid  # debug line
         result = remote_control.runCommand("wget -O /tmp/capture_test_040a.out  \'http://" + captureIP + "/capture/handler.py/authpost?username=normal&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'",stdout=True)
@@ -635,7 +635,7 @@ class CaptivePortalTests(unittest2.TestCase):
         assert (search == 0)
 
         # logout user to clean up test.
-        # wget http://<internal IP>/capture/logout  
+        # wget http://<internal IP>/capture/logout
         result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_040b.out http://" + captureIP + "/capture/logout")
         assert (result == 0)
         search = remote_control.runCommand("grep -q 'logged out' /tmp/capture_test_040b.out")
@@ -649,7 +649,7 @@ class CaptivePortalTests(unittest2.TestCase):
         assert (search == 0)
 
         # logout user to clean up test a second time.
-        # wget http://<internal IP>/capture/logout  
+        # wget http://<internal IP>/capture/logout
         result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_040d.out http://" + captureIP + "/capture/logout")
         assert (result == 0)
         search = remote_control.runCommand("grep -q 'logged out' /tmp/capture_test_040d.out")
@@ -684,7 +684,7 @@ class CaptivePortalTests(unittest2.TestCase):
         search = remote_control.runCommand("grep -q 'username and password' " + capture_file_name)
         assert (search == 0)
 
-        # check if local directory login and password 
+        # check if local directory login and password
         appid = str(node.getNodeSettings()["id"])
 
         # connect and auth to get cookie
@@ -710,7 +710,7 @@ class CaptivePortalTests(unittest2.TestCase):
         assert (search == 0)
 
         foundUsername = findNameInHostTable(localUserName)
-        assert(foundUsername)        
+        assert(foundUsername)
 
         # Wait for captive timeout
         time.sleep(20)
@@ -725,7 +725,7 @@ class CaptivePortalTests(unittest2.TestCase):
             raise unittest2.SkipTest('Skipping a time consuming test')
         if timeOfClientOff():
             raise unittest2.SkipTest('Client time different than Untangle server')
-            
+
         # variable for local test
         capture_file_name = "/tmp/capture_test_051.out"
         cookie_file_name = "/tmp/capture_test_051_cookie.txt"
@@ -748,7 +748,7 @@ class CaptivePortalTests(unittest2.TestCase):
         search = remote_control.runCommand("grep -q 'username and password' " + capture_file_name)
         assert (search == 0)
 
-        # check if local directory login and password 
+        # check if local directory login and password
         appid = str(node.getNodeSettings()["id"])
 
         # connect and auth to get cookie
@@ -794,7 +794,7 @@ class CaptivePortalTests(unittest2.TestCase):
         nodeData['userTimeout'] = 3600
         node.setSettings(nodeData)
 
-        # # check if local directory login and password 
+        # # check if local directory login and password
         appid = str(node.getNodeSettings()["id"])
 
         result = remote_control.runCommand("wget -O " + capture_file_name + "  \'http://" + captureIP + "/capture/handler.py/index?nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\' --load-cookies " + savedCookieFileName)
@@ -804,7 +804,44 @@ class CaptivePortalTests(unittest2.TestCase):
         assert (search == 1)
 
         foundUsername = findNameInHostTable(localUserName)
-        assert(foundUsername == False)        
+        assert(foundUsername == False)
+
+    def test_060_loginLocalDirectoryMacMode(self):
+        global node, nodeData
+
+        # Create Internal NIC capture rule with basic login page
+        nodeData['captureRules']['list'] = []
+        nodeData['captureRules']['list'].append(createCaptureNonWanNicRule())
+        nodeData['authenticationType']="LOCAL_DIRECTORY"
+        nodeData['pageType'] = "BASIC_LOGIN"
+        nodeData['userTimeout'] = 3600  # default
+        nodeData['useMacAddress'] = True
+        node.setSettings(nodeData)
+
+        # check that basic captive page is shown
+        result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_060.out http://test.untangle.com/")
+        assert (result == 0)
+        search = remote_control.runCommand("grep -q 'username and password' /tmp/capture_test_060.out")
+        assert (search == 0)
+
+        # check if local directory login and password
+        appid = str(node.getNodeSettings()["id"])
+        # print 'appid is %s' % appid  # debug line
+        result = remote_control.runCommand("wget -O /tmp/capture_test_060a.out  \'http://" + captureIP + "/capture/handler.py/authpost?username=" + localUserName + "&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
+        assert (result == 0)
+        search = remote_control.runCommand("grep -q 'Hi!' /tmp/capture_test_060a.out")
+        assert (search == 0)
+        foundUsername = findNameInHostTable(localUserName)
+        assert(foundUsername)
+
+        # logout user to clean up test.
+        # wget http://<internal IP>/capture/logout
+        result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_060b.out http://" + captureIP + "/capture/logout")
+        assert (result == 0)
+        search = remote_control.runCommand("grep -q 'logged out' /tmp/capture_test_060b.out")
+        assert (search == 0)
+        foundUsername = findNameInHostTable(localUserName)
+        assert(not foundUsername)
 
     @staticmethod
     def finalTearDown(self):
