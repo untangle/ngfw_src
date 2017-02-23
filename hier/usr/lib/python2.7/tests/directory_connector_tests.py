@@ -426,6 +426,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
         """
         Test google authentication
         """
+        raise unittest2.SkipTest('Broken test - google keeps banning account')
         if platform.machine().startswith('arm'):
             raise unittest2.SkipTest('Not supported on ARM')
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
