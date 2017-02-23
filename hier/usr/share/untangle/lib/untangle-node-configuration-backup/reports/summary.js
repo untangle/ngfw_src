@@ -7,8 +7,8 @@
     "javaClass": "com.untangle.node.reports.ReportEntry",
     "textColumns": [
         "count(*) as total",
-        "sum(case when success is true then 1 else null end::int) as passed",
-        "sum(case when success is false then 1 else null end::int) as failed"
+        "sum(case when success is true then 1 else 0 end) as passed",
+        "sum(case when success is false then 1 else 0 end) as failed"
     ],
     "textString": "Configuration backup attempted {0} backups where {1} succeeded and {2} failed.", 
     "readOnly": true,
