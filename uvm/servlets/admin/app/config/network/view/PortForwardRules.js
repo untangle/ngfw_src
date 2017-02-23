@@ -13,7 +13,7 @@ Ext.define('Ung.config.network.view.PortForwardRules', {
         xtype: 'tbtext',
         padding: '8 5',
         style: { fontSize: '12px' },
-        html: "Port Forward rules forward sessions matching the configured criteria from a public IP to an IP on an internal (NAT'd) network. The rules are evaluated in order.".t()
+        html: 'Port Forward rules forward sessions matching the configured criteria from a public IP to an IP on an internal (NAT\'d) network. The rules are evaluated in order.'.t()
     }],
 
     items: [{
@@ -35,10 +35,7 @@ Ext.define('Ung.config.network.view.PortForwardRules', {
             { name: 'SRC_INTF', displayName: 'Source Interface'.t(), type: 'checkboxgroup', values: Util.getInterfaceList(true, true) },
             { name: 'PROTOCOL', displayName: 'Protocol'.t(), type: 'checkboxgroup', values: [['TCP','TCP'],['UDP','UDP'],['ICMP','ICMP'],['GRE','GRE'],['ESP','ESP'],['AH','AH'],['SCTP','SCTP']] }
         ],
-
-        actionDescription: 'Forward to the following location:'.t(),
-        description: "Port Forward rules forward sessions matching the configured criteria from a public IP to an IP on an internal (NAT'd) network. The rules are evaluated in order.".t(),
-
+        actionText: 'Forward to the following location:'.t(),
         emptyRow: {
             ruleId: -1,
             simple: true,

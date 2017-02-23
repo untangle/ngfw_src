@@ -1,3 +1,112 @@
+/**
+ * rpc connectivity brain
+ */
+Ext.define('Ung.util.Rpc', {
+    alternateClassName: 'Rpc',
+    singleton: true,
+
+    asyncData: function(expression /*, args */) {
+        var args = [].slice.call(arguments).splice(1),
+            ns = expression.split('.'),
+            method = ns.pop(),
+            context = window,
+            dfrd = new Ext.Deferred();
+
+        ns.forEach(function(part) { context = context[part]; });
+
+        if (!context.hasOwnProperty(method) || !Ext.isFunction(context[method])) {
+            console.error('Error: No such RPC method: \'' + expression + '\'');
+            Util.exceptionToast('No such RPC method: \'' + expression + '\'');
+            return;
+        }
+
+        args.unshift(function (result, ex) {
+            if (ex) {
+                console.error('Error: ' + ex);
+                Util.exceptionToast(ex);
+                dfrd.reject(ex);
+            }
+            console.info(expression + ' (async data) ... OK');
+            dfrd.resolve(result);
+        });
+
+        context[method].apply(null, args);
+        return dfrd.promise;
+    },
+
+    directData: function(expression /*, args */) {
+        var ns = expression.split('.'),
+            method = ns.pop(),
+            context = window;
+
+        ns.forEach(function(part) { context = context[part]; });
+
+        if (!context.hasOwnProperty(method) || !Ext.isFunction(context[method])) {
+            console.error('Error: No such RPC method: \'' + expression + '\'');
+            Util.exceptionToast('No such RPC method: \'' + expression + '\'');
+            return;
+        }
+
+        try {
+            return context[method].call();
+        } catch (ex) {
+            Util.exceptionToast(ex);
+        }
+    },
+
+    asyncPromise: function(expression /*, args */) {
+        var args = [].slice.call(arguments).splice(1),
+            ns = expression.split('.'),
+            method = ns.pop(),
+            context = window;
+
+        ns.forEach(function(part) { context = context[part]; });
+
+        if (!context.hasOwnProperty(method) || !Ext.isFunction(context[method])) {
+            console.error('Error: No such RPC method: \'' + expression + '\'');
+            Util.exceptionToast('No such RPC method: \'' + expression + '\'');
+            return;
+        }
+
+        return function() {
+            var dfrd = new Ext.Deferred();
+            args.unshift(function (result, ex) {
+                if (ex) { dfrd.reject(ex); }
+                console.info(expression + ' (async promise) ... OK');
+                dfrd.resolve(result);
+            });
+            context[method].apply(null, args);
+            return dfrd.promise;
+        };
+    },
+
+    directPromise: function(expression /*, args */) {
+        var ns = expression.split('.'),
+            method = ns.pop(),
+            context = window;
+
+        ns.forEach(function(part) { context = context[part]; });
+
+        if (!context.hasOwnProperty(method) || !Ext.isFunction(context[method])) {
+            console.error('Error: No such RPC method: \'' + expression + '\'');
+            Util.exceptionToast('No such RPC method: \'' + expression + '\'');
+            return;
+        }
+
+        return function() {
+            var dfrd = new Ext.Deferred();
+            try {
+                console.info(expression + ' (direct promise) ... OK');
+                dfrd.resolve(context[method].call());
+            } catch (ex) {
+                dfrd.reject(ex);
+            }
+            return dfrd.promise;
+        };
+    },
+
+});
+
 Ext.define('Ung.util.Util', {
     alternateClassName: 'Util',
     singleton: true,
@@ -620,6 +729,37 @@ Ext.define('Ung.overrides.form.field.VTypes', {
     portText: Ext.String.format('The port must be an integer number between {0} and {1} or one of the following values: any, all, n/a, none.'.t(), 1, 65535)
 });
 
+Ext.define('Ung.view.shd.Devices', {
+    extend: 'Ext.panel.Panel',
+    // extend: 'Ext.grid.Panel',
+    xtype: 'ung.devices',
+    // layout: 'border',
+    requires: [
+        // 'Ung.view.sessions.SessionsController'
+    ],
+
+    // controller: 'sessions',
+
+    viewModel: {
+        data: {
+            autoRefresh: false
+        }
+    },
+
+    layout: 'border',
+
+    defaults: {
+        border: false
+    },
+
+    title: 'Devices'.t(),
+
+    items: [{
+        region: 'center',
+        html: 'devices'
+    }]
+});
+
 Ext.define('Ung.view.main.MainController', {
     extend: 'Ext.app.ViewController',
 
@@ -802,6 +942,1648 @@ Ext.define('Ung.view.main.MainModel', {
     }
 });
 
+Ext.define('Ung.view.shd.SessionsController', {
+    extend: 'Ext.app.ViewController',
+
+    alias: 'controller.sessions',
+
+    control: {
+        '#': {
+            afterrender: 'getSessions',
+            deactivate: 'onDeactivate'
+        },
+        '#list': {
+            select: 'onSelect'
+        },
+        'toolbar textfield': {
+            change: 'globalFilter'
+        }
+    },
+
+    refreshInterval: null,
+
+    onDeactivate: function (view) {
+        view.destroy();
+    },
+
+    setAutoRefresh: function (btn) {
+        var me = this,
+            vm = this.getViewModel();
+        vm.set('autoRefresh', btn.pressed);
+
+        console.log(btn.pressed);
+
+        if (btn.pressed) {
+            me.getSessions();
+            this.refreshInterval = setInterval(function () {
+                me.getSessions();
+            }, 5000);
+        } else {
+            clearInterval(this.refreshInterval);
+        }
+
+    },
+
+    getSessions: function () {
+        console.log('get sessions');
+        var me = this,
+            grid = me.getView().down('#list');
+        grid.getView().setLoading(true);
+        Rpc.asyncData('rpc.sessionMonitor.getMergedSessions')
+            .then(function(result) {
+                grid.getView().setLoading(false);
+                Ext.getStore('sessions').loadData(result.list);
+                grid.getSelectionModel().select(0);
+                // grid.getStore().setData(result.list);
+            });
+    },
+
+    onSelect: function (grid, record) {
+        var vm = this.getViewModel(),
+            props = record.getData();
+
+        delete props._id;
+        delete props.javaClass;
+        delete props.mark;
+        delete props.localAddr;
+        delete props.remoteAddr;
+        vm.set('selectedSession', props);
+    },
+
+    globalFilter: function (field, value) {
+        var list = this.getView().down('#list'),
+            re = new RegExp(value, 'gi');
+        if (value.length > 0) {
+            list.getStore().clearFilter();
+            list.getStore().filterBy(function (record) {
+                return re.test(record.get('protocol')) ||
+                       re.test(record.get('preNatClient')) ||
+                       re.test(record.get('postNatServer')) ||
+                       re.test(record.get('preNatClientPort')) ||
+                       re.test(record.get('postNatServerPort'));
+            });
+
+            // list.getStore().filter([
+            //     { property: 'protocol', value: value }
+            // ]);
+        } else {
+            list.getStore().clearFilter();
+        }
+        list.getSelectionModel().select(0);
+    }
+
+});
+
+Ext.define('Ung.view.shd.Sessions', {
+    extend: 'Ext.panel.Panel',
+    // extend: 'Ext.grid.Panel',
+    xtype: 'ung.sessions',
+    // layout: 'border',
+    requires: [
+        'Ung.view.shd.SessionsController'
+    ],
+
+    controller: 'sessions',
+
+    viewModel: {
+        data: {
+            autoRefresh: false
+        }
+    },
+
+    layout: 'border',
+
+    defaults: {
+        border: false
+    },
+
+    title: 'Current Sessions'.t(),
+
+    items: [{
+        region: 'center',
+        xtype: 'grid',
+        itemId: 'list',
+        store: 'sessions',
+        // forceFit: true,
+
+        plugins: 'gridfilters',
+        columnLines: true,
+        columns: [{
+            header: 'Creation Time'.t(),
+            dataIndex: 'creationTime',
+            hidden: true
+        }, {
+            header: 'Protocol'.t(),
+            dataIndex: 'protocol',
+            width: 70,
+            filter: {
+                type: 'list',
+                options: ['TCP', 'UDP']
+            }
+        }, {
+            header: 'Bypassed'.t(),
+            dataIndex: 'bypassed',
+            width: 70
+        }, {
+            header: 'Policy'.t(),
+            dataIndex: 'policy',
+            hidden: true
+        }, {
+            header: 'Hostname'.t(),
+            dataIndex: 'platform-hostname',
+            flex: 1
+        }, {
+            header: 'NATd'.t(),
+            dataIndex: 'natted',
+            hidden: true
+        }, {
+            header: 'Port Forwarded'.t(),
+            dataIndex: 'portForwarded',
+            hidden: true
+        }, {
+            header: 'Username'.t(),
+            dataIndex: 'platform-username',
+            hidden: true
+        }, {
+            header: 'Client'.t(),
+            columns: [{
+                header: 'Interface'.t(),
+                dataIndex: 'clientIntf'
+            }, {
+                header: 'Pre-NAT'.t(),
+                dataIndex: 'preNatClient'
+            }, {
+                header: 'Port (Pre-NAT)'.t(),
+                dataIndex: 'preNatClientPort'
+            }, {
+                header: 'Post-NAT'.t(),
+                dataIndex: 'postNatClient',
+                hidden: true
+            }, {
+                header: 'Port (Post-NAT)'.t(),
+                dataIndex: 'postNatClientPort',
+                hidden: true
+            }, {
+                header: 'Country'.t(),
+                dataIndex: 'clientCountry',
+                hidden: true
+            }, {
+                header: 'Latitude'.t(),
+                dataIndex: 'clientLatitude',
+                hidden: true
+            }, {
+                header: 'Longitude'.t(),
+                dataIndex: 'clientLlongitude',
+                hidden: true
+            }]
+        }, {
+            header: 'Server'.t(),
+            columns: [{
+                header: 'Interface'.t(),
+                dataIndex: 'serverIntf'
+            }, {
+                header: 'Pre-NAT'.t(),
+                dataIndex: 'preNatServer',
+                hidden: true
+            }, {
+                header: 'Port (Pre-NAT)'.t(),
+                dataIndex: 'preNatServerPort',
+                hidden: true
+            }, {
+                header: 'Post-NAT'.t(),
+                dataIndex: 'postNatServer'
+            }, {
+                header: 'Port (Post-NAT)'.t(),
+                dataIndex: 'postNatServerPort'
+            }, {
+                header: 'Country'.t(),
+                dataIndex: 'serverCountry',
+                hidden: true
+            }, {
+                header: 'Latitude'.t(),
+                dataIndex: 'serverLatitude',
+                hidden: true
+            }, {
+                header: 'Longitude'.t(),
+                dataIndex: 'serverLlongitude',
+                hidden: true
+            }]
+        }, {
+            header: 'Speed (KB/s)'.t(),
+            columns: [{
+                header: 'Client'.t(),
+                dataIndex: 'clientKBps',
+                filter: 'number',
+                align: 'right'
+            }, {
+                header: 'Server'.t(),
+                dataIndex: 'serverKBps',
+                filter: 'number',
+                align: 'right'
+            }, {
+                header: 'Total'.t(),
+                dataIndex: 'totalKBps',
+                filter: 'number',
+                align: 'right'
+            }]
+        }]
+    }, {
+        region: 'east',
+        xtype: 'propertygrid',
+        itemId: 'details',
+        editable: false,
+        width: 400,
+        title: 'Session Details'.t(),
+        split: true,
+        collapsible: true,
+        resizable: true,
+        shadow: false,
+        animCollapse: false,
+        titleCollapse: true,
+
+        // columnLines: false,
+
+        cls: 'prop-grid',
+
+        viewConfig: {
+            stripeRows: false,
+            getRowClass: function(record) {
+                if (record.get('value') === null || record.get('value') === '') {
+                    return 'empty';
+                }
+                return;
+            }
+        },
+
+        nameColumnWidth: 150,
+        bind: {
+            source: '{selectedSession}'
+        },
+        sourceConfig: {
+            attachments:       { displayName: 'Attachments'.t() },
+            bypassed:          { displayName: 'Bypassed'.t() },
+            clientCountry:     { displayName: 'Client Country'.t() },
+            clientIntf:        { displayName: 'Client Interface'.t() },
+            clientKBps:        { displayName: 'Client KB/s'.t() },
+            clientLatitude:    { displayName: 'Client Latitude'.t() },
+            clientLongitude:   { displayName: 'Client Longitude'.t() },
+            creationTime:      { displayName: 'Creation Time'.t() },
+            hostname:          { displayName: 'Hostname'.t() },
+            natted:            { displayName: 'NATd'.t() },
+            pipeline:          { displayName: 'Pipeline'.t() },
+            policy:            { displayName: 'Policy'.t() },
+            portForwarded:     { displayName: 'Port Forwarded'.t() },
+            postNatClient:     { displayName: 'Client (Post-NAT)'.t() },
+            postNatClientPort: { displayName: 'Client Port (Post-NAT)'.t() },
+            postNatServer:     { displayName: 'Server (Post-NAT)'.t() },
+            postNatServerPort: { displayName: 'Server Port (Post-NAT)'.t() },
+            preNatClient:      { displayName: 'Client (Pre-NAT)'.t() },
+            preNatClientPort:  { displayName: 'Client Port (Pre-NAT)'.t() },
+            preNatServer:      { displayName: 'Server (Pre-NAT)'.t() },
+            preNatServerPort:  { displayName: 'Server Port (Pre-NAT)'.t() },
+            priority:          { displayName: 'Priority'.t() },
+            protocol:          { displayName: 'Protocol'.t() },
+            qosPriority:       { displayName: 'Priority'.t() + '(QoS)' },
+            serverCountry:     { displayName: 'Server Country'.t() },
+            serverIntf:        { displayName: 'Server Interface'.t() },
+            serverKBps:        { displayName: 'Server KB/s'.t() },
+            serverLatitude:    { displayName: 'Server Latitude'.t() },
+            serverLongitude:   { displayName: 'Server Longitude'.t() },
+            sessionId:         { displayName: 'Session ID'.t() },
+            state:             { displayName: 'State'.t() },
+            totalKBps:         { displayName: 'Total KB/s'.t() }
+        },
+        listeners: {
+            beforeedit: function () {
+                return false;
+            }
+        }
+    }],
+    tbar: [{
+        xtype: 'button',
+        text: 'Refresh'.t(),
+        iconCls: 'fa fa-repeat',
+        handler: 'getSessions',
+        bind: {
+            disabled: '{autoRefresh}'
+        }
+    }, {
+        xtype: 'button',
+        text: 'Auto Refresh'.t(),
+        iconCls: 'fa fa-refresh',
+        enableToggle: true,
+        toggleHandler: 'setAutoRefresh'
+    }, '-', 'Filter:'.t(), {
+        xtype: 'textfield',
+        checkChangeBuffer: 200
+    }]
+});
+
+Ext.define('Ung.view.shd.HostsController', {
+    extend: 'Ext.app.ViewController',
+
+    alias: 'controller.hosts',
+
+    control: {
+        '#': {
+            deactivate: 'onDeactivate'
+        },
+        '#hostsgrid': {
+            beforerender: 'onBeforeRenderHostsGrid'
+        }
+    },
+
+    onDeactivate: function (view) {
+        view.destroy();
+    },
+
+    onBeforeRenderHostsGrid: function (grid) {
+        // this.getHosts();
+    },
+
+    getHosts: function () {
+        console.log('get hosts');
+        var me = this,
+            grid = me.getView().down('#hostsgrid');
+        grid.getView().setLoading(true);
+        Rpc.asyncData('rpc.hostTable.getHosts')
+            .then(function(result) {
+                grid.getView().setLoading(false);
+                Ext.getStore('hosts').loadData(result.list);
+                // grid.getSelectionModel().select(0);
+                // grid.getStore().setData(result.list);
+            });
+    }
+
+});
+
+Ext.define('Ung.view.shd.Hosts', {
+    extend: 'Ext.tab.Panel',
+    xtype: 'ung.hosts',
+    // layout: 'border',
+    requires: [
+        'Ung.view.shd.HostsController'
+    ],
+
+    controller: 'hosts',
+
+    layout: 'border',
+
+    defaults: {
+        border: false
+    },
+
+    items: [{
+        xtype: 'grid',
+        itemId: 'hostsgrid',
+        title: 'Current Hosts'.t(),
+        store: 'hosts',
+        columns: [
+            { header: 'IP'.t(), dataIndex: 'address' },
+            { header: 'MAC Address'.t(), dataIndex: 'macAddress' },
+            { header: 'MAC Vendor'.t(), dataIndex: 'macVendor' },
+            { header: 'Interface'.t(), dataIndex: 'interfaceId' },
+            { header: 'Last Access Time'.t(), dataIndex: 'lastAccessTimeDate', hidden: true },
+            { header: 'Last Session Time'.t(), dataIndex: 'lastSessionTimeDate', hidden: true },
+            { header: 'Last Completed TCP Session Time'.t(), dataIndex: 'lastCompletedTcpSessionTime', hidden: true },
+            { header: 'Entitled Status'.t(), dataIndex: 'entitledStatus', hidden: true },
+            { header: 'Active'.t(), dataIndex: 'active' },
+            { header: 'Hostname'.t(), dataIndex: 'hostname' },
+            { header: 'User Name'.t(), dataIndex: 'username' },
+            {
+                header: 'Penalty'.t(),
+                columns: [
+                    { header: 'Boxed'.t(), dataIndex: 'penaltyBoxed' },
+                    { header: 'Entry Time'.t(), dataIndex: 'penaltyBoxEntryTime', hidden: true },
+                    { header: 'Exit Time'.t(), dataIndex: 'penaltyBoxExitTime', hidden: true }
+                ]
+            }, {
+                header: 'Quota'.t(),
+                columns: [
+                    { header: 'Size'.t(), dataIndex: 'quotaSize' },
+                    { header: 'Remaining'.t(), dataIndex: 'quotaRemaining' },
+                    { header: 'Issue Time'.t(), dataIndex: 'quotaIssueTime', hidden: true },
+                    { header: 'Expiration Time'.t(), dataIndex: 'quotaExpirationTime', hidden: true }
+                ]
+            }
+        ]
+    }, {
+        title: 'Penalty Box Hosts'.t(),
+        html: 'penalty hosts'
+    }, {
+        title: 'Current Quotas'.t(),
+        html: 'quotas'
+    }, {
+        title: 'Reports'.t(),
+        html: 'reports'
+    }]
+});
+
+Ext.define('Ung.config.network.NetworkController', {
+    extend: 'Ext.app.ViewController',
+
+    alias: 'controller.config.network',
+
+    control: {
+        '#': { afterrender: 'loadSettings' },
+        '#interfaces': { beforerender: 'onInterfaces' },
+        '#portForwardRules': { beforerender: 'setPortForwardWarnings' },
+        '#currentRoutes': { afterrender: 'refreshRoutes' },
+        '#qosStatistics': { afterrender: 'refreshQosStatistics' },
+        '#upnpStatus': { afterrender: 'refreshUpnpStatus' },
+        '#dhcpLeases': { afterrender: 'refreshDhcpLeases' },
+        'networktest': { afterrender: 'networkTestRender' }
+    },
+
+    additionalInterfaceProps: [{
+        // interface status
+        v4Address: null,
+        v4Netmask: null,
+        v4Gateway: null,
+        v4Dns1: null,
+        v4Dns2: null,
+        v4PrefixLength: null,
+        v6Address: null,
+        v6Gateway: null,
+        v6PrefixLength: null,
+        // device status
+        deviceName: null,
+        macAddress: null,
+        duplex: null,
+        vendor: null,
+        mbit: null,
+        connected: null
+    }],
+
+    loadSettings: function () {
+        var me = this,
+            v = this.getView(),
+            vm = this.getViewModel();
+        v.setLoading(true);
+        Ext.Deferred.sequence([
+            Rpc.asyncPromise('rpc.networkManager.getNetworkSettings'),
+            Rpc.asyncPromise('rpc.networkManager.getInterfaceStatus'),
+            Rpc.asyncPromise('rpc.networkManager.getDeviceStatus'),
+        ], this).then(function (result) {
+            v.setLoading(false);
+            var intfStatus, devStatus;
+            result[0].interfaces.list.forEach(function (intf) {
+                Ext.apply(intf, me.additionalInterfaceProps);
+                intfStatus = Ext.Array.findBy(result[1].list, function (intfSt) {
+                    return intfSt.interfaceId === intf.interfaceId;
+                });
+                delete intfStatus.javaClass;
+                Ext.apply(intf, intfStatus);
+
+                devStatus = Ext.Array.findBy(result[2].list, function (devSt) {
+                    return devSt.deviceName === intf.physicalDev;
+                });
+                delete devStatus.javaClass;
+                Ext.apply(intf, devStatus);
+            });
+            vm.set('settings', result[0]);
+        }, function (ex) {
+            v.setLoading(false);
+            console.error(ex);
+            Util.exceptionToast(ex);
+        });
+    },
+
+    saveSettings: function () {
+        var view = this.getView();
+        var vm = this.getViewModel();
+        var me = this;
+
+        if (!Util.validateForms(view)) {
+            return;
+        }
+
+
+        view.setLoading('Saving ...');
+        // used to update all tabs data
+        view.query('ungrid').forEach(function (grid) {
+            var store = grid.getStore();
+
+            /**
+             * Important!
+             * update custom grids only if are modified records or it was reordered via drag/drop
+             */
+            if (store.getModifiedRecords().length > 0 || store.isReordered) {
+                store.each(function (record) {
+                    if (record.get('markedForDelete')) {
+                        record.drop();
+                    }
+                });
+                store.isReordered = undefined;
+                vm.set(grid.listProperty, Ext.Array.pluck(store.getRange(), 'data'));
+                // store.commitChanges();
+            }
+        });
+
+        Rpc.asyncData('rpc.networkManager.setNetworkSettings', vm.get('settings'))
+        .then(function(result) {
+            view.setLoading (false);
+            me.loadSettings();
+            Util.successToast('Network'.t() + ' settings saved!');
+        });
+    },
+
+    onInterfaces: function () {
+        var me = this,
+            vm = this.getViewModel();
+
+        vm.bind('{interfacesGrid.selection}', function(interface) {
+            if (interface) {
+                me.getInterfaceStatus();
+                me.getInterfaceArp();
+            }
+        });
+    },
+
+    getInterfaceStatus: function () {
+        var statusView = this.getView().down('#interfaceStatus'),
+            vm = this.getViewModel(),
+            symbolicDev = vm.get('interfacesGrid.selection').get('symbolicDev'),
+            command1 = 'ifconfig ' + symbolicDev + ' | grep "Link\\|packets" | grep -v inet6 | tr "\\n" " " | tr -s " " ',
+            command2 = 'ifconfig ' + symbolicDev + ' | grep "inet addr" | tr -s " " | cut -c 7- ',
+            command3 = 'ifconfig ' + symbolicDev + ' | grep inet6 | grep Global | cut -d" " -f 13',
+            stat = {
+                device: symbolicDev,
+                macAddress: null,
+                address: null,
+                mask: null,
+                v6Addr: null,
+                rxpkts: null,
+                rxerr: null,
+                rxdrop: null,
+                txpkts: null,
+                txerr: null,
+                txdrop: null
+            };
+        statusView.setLoading(true);
+        Rpc.asyncData('rpc.execManager.execOutput', command1).then(function (result) {
+            if (Ext.isEmpty(result) || result.search('Device not found') >= 0) {
+                statusView.setLoading(false);
+                return;
+            }
+            var lineparts = result.split(' ');
+            if (result.search('Ethernet') >= 0) {
+                Ext.apply(stat, {
+                    macAddress: lineparts[4],
+                    rxpkts: lineparts[6].split(':')[1],
+                    rxerr: lineparts[7].split(':')[1],
+                    rxdrop: lineparts[8].split(':')[1],
+                    txpkts: lineparts[12].split(':')[1],
+                    txerr: lineparts[13].split(':')[1],
+                    txdrop: lineparts[14].split(':')[1]
+                });
+            }
+            if (result.search('Point-to-Point') >= 0) {
+                Ext.apply(stat, {
+                    macAddress: '',
+                    rxpkts: lineparts[5].split(':')[1],
+                    rxerr: lineparts[6].split(':')[1],
+                    rxdrop: lineparts[7].split(':')[1],
+                    txpkts: lineparts[11].split(':')[1],
+                    txerr: lineparts[12].split(':')[1],
+                    txdrop: lineparts[13].split(':')[1]
+                });
+            }
+
+            Rpc.asyncData('rpc.execManager.execOutput', command2).then(function (result) {
+                if (Ext.isEmpty(result)) {
+                    statusView.setLoading(false);
+                    return;
+                }
+
+                var linep = result.split(' ');
+                Ext.apply(stat, {
+                    address: linep[0].split(':')[1],
+                    mask: linep[2].split(':')[1]
+                });
+
+                Rpc.asyncData('rpc.execManager.execOutput', command3).then(function (result) {
+                    statusView.setLoading(false);
+                    Ext.apply(stat, {
+                        v6Addr: result
+                    });
+                    vm.set('siStatus', stat);
+                });
+            });
+        });
+    },
+
+    getInterfaceArp: function () {
+        var vm = this.getViewModel(),
+            arpView = this.getView().down('#interfaceArp'),
+            symbolicDev = vm.get('interfacesGrid.selection').get('symbolicDev'),
+            arpCommand = 'arp -n | grep ' + symbolicDev + ' | grep -v incomplete > /tmp/arp.txt ; cat /tmp/arp.txt';
+
+        arpView.setLoading(true);
+        Rpc.asyncData('rpc.execManager.execOutput', arpCommand).then(function (result) {
+            var lines = Ext.isEmpty(result) ? []: result.split('\n');
+            var lparts, connections = [];
+            for (var i = 0 ; i < lines.length; i++ ) {
+                if (!Ext.isEmpty(lines[i])) {
+                    lparts = lines[i].split(/\s+/);
+                    connections.push({
+                        address: lparts[0],
+                        type: lparts[1],
+                        macAddress: lparts[2]
+                    });
+                }
+            }
+            vm.set('siArp', connections);
+            arpView.setLoading(false);
+        });
+    },
+
+    setPortForwardWarnings: function () {
+        var vm = this.getViewModel(),
+            interfaces = vm.get('settings.interfaces.list'), intf, i,
+            portForwardWarningsHtml = [];
+
+        for (i = 0; i < interfaces.length; i += 1) {
+            intf = interfaces[i];
+            if (intf.v4Address) {
+                portForwardWarningsHtml.push(Ext.String.format('<b>{0}:{1}</b> ', intf.v4Address, vm.get('settings.httpsPort')) + 'for HTTPS services.'.t() + '<br/>');
+            }
+        }
+        for (i = 0; i < interfaces.length ; i += 1) {
+            intf = interfaces[i];
+            if (intf.v4Address && !intf.isWan) {
+                portForwardWarningsHtml.push(Ext.String.format('<b>{0}:{1}</b> ', intf.v4Address, vm.get('settings.httpPort')) + 'for HTTP services.'.t() + '<br/>');
+            }
+        }
+        for (i = 0; i < interfaces.length ; i += 1) {
+            intf = interfaces[i];
+            if (intf.v4Address && intf.isWan) {
+                for (var j = 0; j < interfaces.length; j++) {
+                    var sub_intf = interfaces[j];
+                    if (sub_intf.configType === 'BRIDGED' && sub_intf.bridgedTo === intf.interfaceId) {
+                        portForwardWarningsHtml.push(Ext.String.format('<b>{0}:{1}</b> ', intf.v4Address, vm.get('settings.httpPort')) +
+                                                        'on'.t() +
+                                                        Ext.String.format(' {2} ', sub_intf.name) +
+                                                        'for HTTP services.'.t() + '<br/>');
+                    }
+                }
+            }
+        }
+        vm.set('portForwardWarnings', portForwardWarningsHtml.join(''));
+    },
+
+    refreshRoutes: function (cmp) {
+        var view = cmp.isXType('button') ? cmp.up('panel') : cmp;
+        view.down('textarea').setValue('');
+        view.setLoading(true);
+        Rpc.asyncData('rpc.execManager.exec', '/usr/share/untangle/bin/ut-routedump.sh')
+            .then(function (result) {
+                view.down('textarea').setValue(result.output);
+            }).always(function () {
+                view.setLoading(false);
+            });
+    },
+
+    refreshQosStatistics: function (cmp) {
+        var view = cmp.isXType('button') ? cmp.up('grid') : cmp;
+        view.setLoading(true);
+        Rpc.asyncData('rpc.execManager.execOutput', '/usr/share/untangle-netd/bin/qos-service.py status')
+            .then(function (result) {
+                var list = [];
+                try {
+                    list = eval(result);
+                } catch (e) {
+                    Util.exceptionToast('Unable to get QoS statistics');
+                    console.error('Could not execute /usr/share/untangle-netd/bin/qos-service.py output: ', result, e);
+                }
+            }).always(function () {
+                view.setLoading(false);
+            });
+    },
+
+    refreshUpnpStatus: function (cmp) {
+        var view = cmp.isXType('button') ? cmp.up('grid') : cmp;
+        if (view.isDisabled()) {
+            return;
+        }
+        view.setLoading(true);
+        var vm = this.getViewModel();
+        Rpc.asyncData('rpc.networkManager.getUpnpManager', '--status', '')
+            .then(function(result) {
+                console.log(result);
+                vm.set('upnpStatus', Ext.decode(result)['active']);
+            }).always(function () {
+                view.setLoading(false);
+            });
+    },
+
+    refreshDhcpLeases: function (cmp) {
+        var view = cmp.isXType('button') ? cmp.up('grid') : cmp;
+        view.setLoading(true);
+        Rpc.asyncData('rpc.execManager.execOutput', 'cat /var/lib/misc/dnsmasq.leases')
+            .then(function (result) {
+                var lines = result.split('\n'),
+                    leases = [], lineparts, i;
+                for (i = 0 ; i < lines.length ; i++) {
+                    if (lines[i] === null || lines[i] === '' ) {
+                        continue;
+                    }
+                    lineparts = lines[i].split(/\s+/);
+                    leases.push({
+                        date: lineparts[0],
+                        macAddress: lineparts[1],
+                        address: lineparts[2],
+                        hostname: lineparts[3],
+                        clientId: lineparts[4]
+                    });
+                }
+                //todo: handle leases data / store
+            }).always(function () {
+                view.setLoading(false);
+            });
+    },
+
+
+    // Network Tests
+    networkTestRender: function (view) {
+        view.down('form').insert(0, view.commandFields);
+    },
+    runTest: function (btn) {
+        console.log(btn);
+        var v = btn.up('networktest'),
+            output = v.down('textarea'),
+            text = [],
+            me = this;
+
+        btn.setDisabled(true);
+
+        text.push(output.getValue());
+        text.push('' + (new Date()) + ' - ' + 'Test Started'.t() + '\n');
+
+        rpc.execManager.execEvil(function (result, ex) {
+            if (ex) { console.error(ex); Util.exceptionToast(ex); return; }
+            me.readOutput(result, text, output, btn);
+        }, v.getViewModel().get('command'));
+
+    },
+    readOutput: function (resultReader, text, output, btn) {
+        var me = this;
+
+        if (!resultReader) {
+            return;
+        }
+        resultReader.readFromOutput(function (res, ex) {
+            if (ex) { console.error(ex); Util.exceptionToast(ex); return; }
+            // console.log(res);
+            if (res !== null) {
+                text.push(res);
+                Ext.Function.defer(me.readOutput, 1000, me, [resultReader, text, output, btn]);
+            } else {
+                btn.setDisabled(false);
+                text.push('' + (new Date()) + ' - ' + 'Test Completed'.t());
+                text.push('\n\n--------------------------------------------------------\n\n');
+            }
+            output.setValue(text.join(''));
+            output.getEl().down('textarea').dom.scrollTop = 99999;
+        });
+    },
+
+    clearOutput: function (btn) {
+        var v = btn.up('networktest');
+        v.down('textarea').setValue('');
+    },
+
+
+    editInterface: function (btn) {
+        var v = this.getView(),
+            vm = this.getViewModel();
+        // var win = Ext.create('config.interface');
+        // this.editingRecord = btn.getWidgetRecord();
+        this.dialog = v.add({
+            xtype: 'config.interface',
+            viewModel: {
+                data: {
+                    // si: btn.getWidgetRecord().copy(null)
+                    si: btn.getWidgetRecord()
+                },
+                formulas: {
+                    isAddressed: function (get) { return get('si.configType') === 'ADDRESSED'; },
+                    isDisabled: function (get) { return get('si.configType') === 'DISABLED'; },
+                    isBridged: function (get) { return get('si.configType') === 'BRIDGED'; },
+                    isStaticv4: function (get) { return get('si.v4ConfigType') === 'STATIC'; },
+                    isAutov4: function (get) { return get('si.v4ConfigType') === 'AUTO'; },
+                    isPPPOEv4: function (get) { return get('si.v4ConfigType') === 'PPPOE'; },
+                    isDisabledv6: function (get) { return get('si.v6ConfigType') === 'DISABLED'; },
+                    isStaticv6: function (get) { return get('si.v6ConfigType') === 'STATIC'; },
+                    isAutov6: function (get) { return get('si.v6ConfigType') === 'AUTO'; },
+                    showRouterWarning: function (get) { return get('si.v6StaticPrefixLength') !== 64; },
+                    showWireless: function (get) { return get('si.isWirelessInterface') && get('si.configType') !== 'DISABLED'; },
+                    showWirelessPassword: function (get) { return get('si.wirelessEncryption') !== 'NONE' && get('si.wirelessEncryption') !== null; }
+                }
+            }
+        });
+        this.dialog.show();
+    },
+    cancelEdit: function () {
+        this.dialog.close();
+    },
+
+    doneEdit: function () {
+        this.dialog.close();
+        // console.log(this.dialog.getViewModel());
+        // // Ext.apply(this.editingRecord, this.dialog.getViewModel().get('si'));
+        // var edited = this.dialog.getViewModel().get('si');
+        // console.log(edited);
+        // var store = this.getView().down('#interfacesGrid').getStore();
+        // console.log(store);
+        // var t = store.findRecord('interfaceId', edited.get('interfaceId'));
+        // t = edited.copy();
+        // console.log(t);
+    }
+
+
+
+});
+
+Ext.define('Ung.config.network.NetworkModel', {
+    extend: 'Ext.app.ViewModel',
+
+    alias: 'viewmodel.config.network',
+
+    formulas: {
+        // used in Interfaces view when showing/hiding interface specific configurations
+        si: function (get) { return get('interfacesGrid.selection'); },
+        fullHostName: function (get) {
+            var domain = get('settings.domainName'),
+                host = get('settings.hostName');
+            if (domain !== null && domain !== '') {
+                return host + '.' + domain;
+            }
+            return host;
+        },
+
+        qosPriorityNoDefaultStore: function (get) {
+            return get('qosPriorityStore').slice(1);
+        },
+    },
+    data: {
+        // si = selected interface (from grid)
+        settings: null,
+        // si: null,
+        siStatus: null,
+        siArp: null,
+
+        qosPriorityStore: [
+            [0, 'Default'.t()],
+            [1, 'Very High'.t()],
+            [2, 'High'.t()],
+            [3, 'Medium'.t()],
+            [4, 'Low'.t()],
+            [5, 'Limited'.t()],
+            [6, 'Limited More'.t()],
+            [7, 'Limited Severely'.t()]
+        ],
+
+        upnpStatus: null
+    },
+    stores: {
+        interfaces:         { data: '{settings.interfaces.list}' },
+        interfaceArp:       { data: '{siArp}' },
+        // Port Forward
+        portForwardRules:   { data: '{settings.portForwardRules.list}' },
+        // NAT
+        natRules:           { data: '{settings.natRules.list}' },
+        // Bypass
+        bypassRules:        { data: '{settings.bypassRules.list}' },
+        // Routes
+        staticRoutes:       { data: '{settings.staticRoutes.list}' },
+        // DNS
+        staticDnsEntries:   { data: '{settings.dnsSettings.staticEntries.list}' },
+        localServers:       { data: '{settings.dnsSettings.localServers.list}' },
+        // DHCP
+        staticDhcpEntries:  { data: '{settings.staticDhcpEntries.list}' },
+        // Advanced
+        devices:            { data: '{settings.devices.list}' },
+        qosPriorities:      { data: '{settings.qosSettings.qosPriorities.list}' },
+        qosRules:           { data: '{settings.qosSettings.qosRules.list}' },
+        forwardFilterRules: { data: '{settings.forwardFilterRules.list}' },
+        inputFilterRules:   { data: '{settings.inputFilterRules.list}' },
+        upnpRules:          { data: '{settings.upnpSettings.upnpRules.list}' },
+        wanInterfaces: {
+            source: '{interfaces}',
+            filters: [{ property: 'configType', value: 'ADDRESSED' }, { property: 'isWan', value: true }]
+        },
+    }
+});
+
+Ext.define('Ung.config.network.Interface', {
+    extend: 'Ext.window.Window',
+    alias: 'widget.config.interface',
+    width: 500,
+    height: 550,
+    // constrainTo: 'body',
+    layout: 'fit',
+
+    modal: true,
+//    viewModel: true,
+    title: 'Config'.t(),
+
+    items: [{
+        xtype: 'form',
+        border: false,
+        scrollable: 'vertical',
+        bodyPadding: 10,
+        layout: {
+            type: 'vbox',
+            align: 'stretch'
+        },
+        defaults: {
+            labelWidth: 200,
+            labelAlign: 'right'
+        },
+
+        items: [{
+            // interface name
+            xtype: 'textfield',
+            fieldLabel: 'Interface Name'.t(),
+            labelAlign: 'top',
+            name: 'interfaceName',
+            allowBlank: false,
+            bind: '{si.name}'
+        },
+        // {
+        //     // is VLAN
+        //     xtype: 'checkbox',
+        //     fieldLabel: 'Is VLAN (802.1q) Interface'.t(),
+        //     // readOnly: true,
+        //     bind: {
+        //         value: '{si.isVlanInterface}',
+        //         hidden: '{isDisabled}'
+        //     }
+        // }, {
+        //     // is Wireless
+        //     xtype: 'checkbox',
+        //     fieldLabel: 'Is Wireless Interface'.t(),
+        //     // readOnly: true,
+        //     bind: {
+        //         value: '{si.isWirelessInterface}',
+        //         hidden: '{isDisabled}'
+        //     }
+        // },
+        {
+            // parent VLAN
+            xtype: 'combo',
+            allowBlank: false,
+            editable: false,
+            bind: {
+                value: '{si.vlanParent}',
+                hidden: '{!si.isVlanInterface || isDisabled}' // visible only if isVlanInterface
+            },
+            hidden: true,
+            fieldLabel: 'Parent Interface'.t(),
+            // store: Util.getInterfaceList(false, false),
+            queryMode: 'local'
+        }, {
+            // VLAN Tag
+            xtype: 'numberfield',
+            bind: {
+                value: '{si.vlanTag}',
+                hidden: '{!si.isVlanInterface || isDisabled}' // visible only if isVlanInterface
+            },
+            hidden: true,
+            fieldLabel: '802.1q Tag'.t(),
+            minValue: 1,
+            maxValue: 4096,
+            allowBlank: false
+        }, {
+            // config type
+            xtype: 'segmentedbutton',
+            allowMultiple: false,
+            bind: '{si.configType}',
+            margin: '10 12',
+            items: [{
+                text: 'Addressed'.t(),
+                value: 'ADDRESSED'
+            }, {
+                text: 'Bridged'.t(),
+                value: 'BRIDGED'
+            }, {
+                text: 'Disabled'.t(),
+                value: 'DISABLED'
+            }]
+        }, {
+            // bridged to
+            xtype: 'combo',
+            allowBlank: false,
+            editable: false,
+            hidden: true,
+            bind: {
+                value: '{si.bridgedTo}',
+                hidden: '{!isBridged}'
+            },
+            fieldLabel: 'Bridged To'.t(),
+            // store: Util.getInterfaceAddressedList(),
+            queryMode: 'local'
+        }, {
+            // is WAN
+            xtype: 'checkbox',
+            fieldLabel: 'Is WAN Interface'.t(),
+            hidden: true,
+            bind: {
+                value: '{si.isWan}',
+                hidden: '{!isAddressed}'
+            }
+        }, {
+            // wireless conf
+            xtype: 'fieldset',
+            width: '100%',
+            title: 'Wireless Configuration'.t(),
+            collapsible: true,
+            // hidden: true,
+            defaults: {
+                labelWidth: 190,
+                labelAlign: 'right',
+                anchor: '100%'
+            },
+            hidden: true,
+            bind: {
+                hidden: '{!showWireless || !isAddressed}'
+            },
+            items: [{
+                // SSID
+                xtype: 'textfield',
+                fieldLabel: 'SSID'.t(),
+                bind: '{si.wirelessSsid}',
+                allowBlank: false,
+                disableOnly: true,
+                maxLength: 30,
+                maskRe: /[a-zA-Z0-9\-_=]/
+            }, {
+                // encryption
+                xtype: 'combo',
+                fieldLabel: 'Encryption'.t(),
+                bind: '{si.wirelessEncryption}',
+                editable: false,
+                store: [
+                    ['NONE', 'None'.t()],
+                    ['WPA1', 'WPA'.t()],
+                    ['WPA12', 'WPA / WPA2'.t()],
+                    ['WPA2', 'WPA2'.t()]
+                ],
+                queryMode: 'local'
+            }, {
+                // password
+                xtype: 'textfield',
+                bind: {
+                    value: '{si.wirelessPassword}',
+                    hidden: '{!showWirelessPassword}'
+                },
+                fieldLabel: 'Password'.t(),
+                allowBlank: false,
+                disableOnly: true,
+                maxLength: 63,
+                minLength: 8,
+                maskRe: /[a-zA-Z0-9~@#%_=,\!\-\/\?\(\)\[\]\\\^\$\+\*\.\|]/
+            }, {
+                // channel
+                xtype: 'combo',
+                bind: '{si.wirelessChannel}',
+                fieldLabel: 'Channel'.t(),
+                editable: false,
+                valueField: 'channel',
+                displayField: 'channelDescription',
+                queryMode: 'local'
+            }]
+        }, {
+            // IPv4 conf
+            xtype: 'fieldset',
+            title: 'IPv4 Configuration'.t(),
+            collapsible: true,
+            defaults: {
+                labelWidth: 190,
+                labelAlign: 'right',
+                anchor: '100%'
+            },
+            hidden: true,
+            bind: {
+                hidden: '{!isAddressed}'
+            },
+            items: [{
+                xtype: 'segmentedbutton',
+                allowMultiple: false,
+                bind: {
+                    value: '{si.v4ConfigType}',
+                    hidden: '{!si.isWan}'
+                },
+                margin: '10 0',
+                items: [{
+                    text: 'Auto (DHCP)'.t(),
+                    value: 'AUTO'
+                }, {
+                    text: 'Static'.t(),
+                    value: 'STATIC'
+                }, {
+                    text: 'PPPoE'.t(),
+                    value: 'PPPOE'
+                }]
+            },
+            // {
+            //     // config type
+            //     xtype: 'combo',
+            //     bind: {
+            //         value: '{si.v4ConfigType}',
+            //         hidden: '{!si.isWan}'
+            //     },
+            //     fieldLabel: 'Config Type'.t(),
+            //     allowBlank: false,
+            //     editable: false,
+            //     store: [
+            //         ['AUTO', 'Auto (DHCP)'.t()],
+            //         ['STATIC', 'Static'.t()],
+            //         ['PPPOE', 'PPPoE'.t()]
+            //     ],
+            //     queryMode: 'local'
+            // },
+            {
+                // address
+                xtype: 'textfield',
+                bind: {
+                    value: '{si.v4StaticAddress}',
+                    hidden: '{!isStaticv4}'
+                },
+                fieldLabel: 'Address'.t(),
+                allowBlank: false
+            }, {
+                // netmask
+                xtype: 'combo',
+                bind: {
+                    value: '{si.v4StaticPrefix}',
+                    hidden: '{!isStaticv4}'
+                },
+                fieldLabel: 'Netmask'.t(),
+                allowBlank: false,
+                editable: false,
+                store: Util.v4NetmaskList,
+                queryMode: 'local'
+            }, {
+                // gateway
+                xtype: 'textfield',
+                bind: {
+                    value: '{si.v4StaticGateway}',
+                    hidden: '{!si.isWan || !isStaticv4}'
+                },
+                fieldLabel: 'Gateway'.t(),
+                allowBlank: false
+            }, {
+                // primary DNS
+                xtype: 'textfield',
+                bind: {
+                    value: '{si.v4StaticDns1}',
+                    hidden: '{!si.isWan || !isStaticv4}'
+                },
+                fieldLabel: 'Primary DNS'.t(),
+                allowBlank: false
+            }, {
+                // secondary DNS
+                xtype: 'textfield',
+                bind: {
+                    value: '{si.v4StaticDns2}',
+                    hidden: '{!si.isWan || !isStaticv4}'
+                },
+                fieldLabel: 'Secondary DNS'.t()
+            }, {
+                // override address
+                xtype: 'textfield',
+                bind: {
+                    value: '{si.v4AutoAddressOverride}',
+                    emptyText: '{si.v4Address}',
+                    hidden: '{!isAutov4}'
+                },
+                fieldLabel: 'Address Override'.t()
+            }, {
+                // override netmask
+                xtype: 'combo',
+                bind: {
+                    value: '{si.v4AutoPrefixOverride}',
+                    hidden: '{!isAutov4}'
+                },
+                editable: false,
+                fieldLabel: 'Netmask Override'.t(),
+                store: Util.v4NetmaskList,
+                queryMode: 'local'
+            }, {
+                // override gateway
+                xtype: 'textfield',
+                bind: {
+                    value: '{si.v4AutoGatewayOverride}',
+                    emptyText: '{si.v4Gateway}',
+                    hidden: '{!isAutov4}'
+                },
+                fieldLabel: 'Gateway Override'.t()
+            }, {
+                // override primary DNS
+                xtype: 'textfield',
+                bind: {
+                    value: '{si.v4AutoDns1Override}',
+                    emptyText: '{si.v4Dns1}',
+                    hidden: '{!isAutov4}'
+                },
+                fieldLabel: 'Primary DNS Override'.t()
+            }, {
+                // override secondary DNS
+                xtype: 'textfield',
+                bind: {
+                    value: '{si.v4AutoDns2Override}',
+                    emptyText: '{si.v4Dns2}',
+                    hidden: '{!isAutov4}'
+                },
+                fieldLabel: 'Secondary DNS Override'.t()
+            }, {
+                // renew DHCP lease,
+                xtype: 'button',
+                text: 'Renew DHCP Lease'.t(),
+                margin: '0 0 15 200',
+                bind: {
+                    hidden: '{!isAutov4}'
+                }
+            }, {
+                // PPPoE username
+                xtype: 'textfield',
+                bind: {
+                    value: '{si.v4PPPoEUsername}',
+                    hidden: '{!isPPPOEv4}'
+                },
+                fieldLabel: 'Username'.t()
+            }, {
+                // PPPoE password
+                xtype: 'textfield',
+                inputType: 'password',
+                bind: {
+                    value: '{si.v4PPPoEPassword}',
+                    hidden: '{!isPPPOEv4}'
+                },
+                fieldLabel: 'Password'.t()
+            }, {
+                // PPPoE peer DNS
+                xtype: 'checkbox',
+                bind: {
+                    value: '{si.v4PPPoEUsePeerDns}',
+                    hidden: '{!isPPPOEv4}'
+                },
+                fieldLabel: 'Use Peer DNS'.t()
+            }, {
+                // PPPoE primary DNS
+                xtype: 'textfield',
+                bind: {
+                    value: '{si.v4PPPoEDns1}',
+                    hidden: '{!isPPPOEv4 || si.v4PPPoEUsePeerDns}'
+                },
+                fieldLabel: 'Primary DNS'.t()
+            }, {
+                // PPPoE secondary DNS
+                xtype: 'textfield',
+                bind: {
+                    value: '{si.v4PPPoEDns2}',
+                    hidden: '{!isPPPOEv4 || si.v4PPPoEUsePeerDns}'
+                },
+                fieldLabel: 'Secondary DNS'.t()
+            }, {
+                xtype: 'fieldset',
+                title: 'IPv4 Options'.t(),
+                items: [{
+                    xtype:'checkbox',
+                    bind: {
+                        value: '{si.v4NatEgressTraffic}',
+                        hidden: '{!si.isWan}'
+                    },
+                    boxLabel: 'NAT traffic exiting this interface (and bridged peers)'.t()
+                }, {
+                    xtype:'checkbox',
+                    bind: {
+                        value: '{si.v4NatIngressTraffic}',
+                        hidden: '{si.isWan}'
+                    },
+                    boxLabel: 'NAT traffic coming from this interface (and bridged peers)'.t()
+                }]
+            }]
+            // @todo: add aliases grid
+        }, {
+            // IPv6
+            xtype: 'fieldset',
+            title: 'IPv6 Configuration'.t(),
+            collapsible: true,
+            defaults: {
+                xtype: 'textfield',
+                labelWidth: 190,
+                labelAlign: 'right',
+                anchor: '100%'
+            },
+            hidden: true,
+            bind: {
+                hidden: '{!isAddressed}',
+                collapsed: '{isDisabledv6}'
+            },
+            items: [{
+                // config type
+                xtype: 'segmentedbutton',
+                allowMultiple: false,
+                bind: {
+                    value: '{si.v6ConfigType}',
+                    hidden: '{!si.isWan}'
+                },
+                margin: '10 0',
+                items: [{
+                    text: 'Disabled'.t(),
+                    value: 'DISABLED'
+                }, {
+                    text: 'Auto (SLAAC/RA)'.t(),
+                    value: 'AUTO'
+                }, {
+                    text: 'Static'.t(),
+                    value: 'STATIC'
+                }]
+                // xtype: 'combo',
+                // bind: {
+                //     value: '{si.v6ConfigType}',
+                //     hidden: '{!si.isWan}'
+                // },
+                // fieldLabel: 'Config Type'.t(),
+                // editable: false,
+                // store: [
+                //     ['DISABLED', 'Disabled'.t()],
+                //     ['AUTO', 'Auto (SLAAC/RA)'.t()],
+                //     ['STATIC', 'Static'.t()]
+                // ],
+                // queryMode: 'local'
+            }, {
+                // address
+                bind: {
+                    value: '{si.v6StaticAddress}',
+                    hidden: '{isDisabledv6 || isAutov6}'
+                },
+                fieldLabel: 'Address'.t()
+            }, {
+                // prefix length
+                bind: {
+                    value: '{si.v6StaticPrefixLength}',
+                    hidden: '{isDisabledv6 || isAutov6}'
+                },
+                fieldLabel: 'Prefix Length'.t()
+            }, {
+                // gateway
+                bind: {
+                    value: '{si.v6StaticGateway}',
+                    hidden: '{isDisabledv6 || isAutov6 || !si.isWan}'
+                },
+                fieldLabel: 'Gateway'.t()
+            }, {
+                // primary DNS
+                bind: {
+                    value: '{si.v6StaticDns1}',
+                    hidden: '{isDisabledv6 || isAutov6 || !si.isWan}'
+                },
+                fieldLabel: 'Primary DNS'.t()
+            }, {
+                // secondary DNS
+                bind: {
+                    value: '{si.v6StaticDns2}',
+                    hidden: '{isDisabledv6 || isAutov6 || !si.isWan}'
+                },
+                fieldLabel: 'Secondary DNS'.t()
+            }, {
+                xtype: 'fieldset',
+                title: 'IPv6 Options'.t(),
+                bind: {
+                    hidden: '{isDisabledv6 || isAutov6 || si.isWan}'
+                },
+                items: [{
+                    xtype:'checkbox',
+                    bind: {
+                        value: '{si.raEnabled}'
+                        // hidden: '{si.isWan}'
+                    },
+                    boxLabel: 'Send Router Advertisements'.t()
+                }, {
+                    xtype: 'label',
+                    style: {
+                        fontSize: '10px'
+                    },
+                    html: '<span style="color: red">' + 'Warning:'.t() + '</span> ' + 'SLAAC only works with /64 subnets.'.t(),
+                    bind: {
+                        hidden: '{!showRouterWarning}'
+                    }
+
+                }]
+            }]
+            // @todo: add aliases grid
+        }, {
+            xtype: 'fieldset',
+            title: 'DHCP Configuration',
+            collapsible: true,
+            defaults: {
+                labelWidth: 190,
+                labelAlign: 'right',
+                anchor: '100%'
+            },
+            hidden: true,
+            bind: {
+                hidden: '{!isAddressed || si.isWan}'
+            },
+            items: [{
+                // dhcp enabled
+                xtype: 'checkbox',
+                bind: '{si.dhcpEnabled}',
+                boxLabel: 'Enable DHCP Serving'.t()
+            }, {
+                // dhcp range start
+                xtype: 'textfield',
+                bind: {
+                    value: '{si.dhcpRangeStart}',
+                    hidden: '{!si.dhcpEnabled}'
+                },
+                fieldLabel: 'Range Start'.t(),
+                allowBlank: false,
+                disableOnly: true
+            }, {
+                // dhcp range end
+                xtype: 'textfield',
+                bind: {
+                    value: '{si.dhcpRangeEnd}',
+                    hidden: '{!si.dhcpEnabled}'
+                },
+                fieldLabel: 'Range End'.t(),
+                allowBlank: false,
+                disableOnly: true
+            }, {
+                // lease duration
+                xtype: 'numberfield',
+                bind: {
+                    value: '{si.dhcpLeaseDuration}',
+                    hidden: '{!si.dhcpEnabled}'
+                },
+                fieldLabel: 'Lease Duration'.t() + ' ' + '(seconds)'.t(),
+                allowDecimals: false,
+                allowBlank: false,
+                disableOnly: true
+            }, {
+                xtype: 'fieldset',
+                title: 'DHCP Advanced'.t(),
+                collapsible: true,
+                collapsed: true,
+                defaults: {
+                    labelWidth: 180,
+                    labelAlign: 'right',
+                    anchor: '100%'
+                },
+                bind: {
+                    hidden: '{!si.dhcpEnabled}'
+                },
+                items: [{
+                    // gateway override
+                    xtype: 'textfield',
+                    bind: '{si.dhcpGatewayOverride}',
+                    fieldLabel: 'Gateway Override'.t()
+                }, {
+                    // netmask override
+                    xtype: 'combo',
+                    bind: '{si.dhcpPrefixOverride}',
+                    fieldLabel: 'Netmask Override'.t(),
+                    editable: false,
+                    store: Util.v4NetmaskList,
+                    queryMode: 'local'
+                }, {
+                    // dns override
+                    xtype: 'textfield',
+                    bind: '{si.dhcpDnsOverride}',
+                    fieldLabel: 'DNS Override'.t()
+                }]
+                // @todo: dhcp options editor
+            }]
+        }, {
+            // VRRP
+            xtype: 'fieldset',
+            title: 'Redundancy (VRRP) Configuration'.t(),
+            collapsible: true,
+            defaults: {
+                labelWidth: 190,
+                labelAlign: 'right',
+                anchor: '100%'
+            },
+            hidden: true,
+            bind: {
+                hidden: '{!isAddressed || !isStaticv4}'
+            },
+            items: [{
+                // VRRP enabled
+                xtype: 'checkbox',
+                bind: '{si.vrrpEnabled}',
+                boxLabel: 'Enable VRRP'.t()
+            }, {
+                // VRRP ID
+                xtype: 'numberfield',
+                bind: {
+                    value: '{si.vrrpId}',
+                    hidden: '{!si.vrrpEnabled}'
+                },
+                fieldLabel: 'VRRP ID'.t(),
+                minValue: 1,
+                maxValue: 255,
+                allowBlank: false,
+                blankText: 'VRRP ID must be a valid integer between 1 and 255.'.t()
+            }, {
+                // VRRP priority
+                xtype: 'numberfield',
+                bind: {
+                    value: '{si.vrrpPriority}',
+                    hidden: '{!si.vrrpEnabled}'
+                },
+                fieldLabel: 'VRRP Priority'.t(),
+                minValue: 1,
+                maxValue: 255,
+                allowBlank: false,
+                blankText: 'VRRP Priority must be a valid integer between 1 and 255.'.t()
+            }]
+            // @todo: vrrp aliases
+        }],
+        buttons: [{
+            text: 'Cancel',
+            iconCls: 'fa fa-ban fa-red',
+            handler: 'cancelEdit'
+        }, {
+            text: 'Done',
+            iconCls: 'fa fa-check',
+            handler: 'doneEdit'
+        }]
+
+    }]
+
+});
+
+
+Ext.define ('Ung.model.Rule', {
+    extend: 'Ext.data.Model' ,
+
+    alias: 'model.rule',
+
+    fields: [
+        // { name: 'ruleId', type: 'auto', defaultValue: null },
+        // { name: 'description', type: 'string', defaultValue: '' },
+        // { name: 'enabled', type: 'boolean', defaultValue: true },
+        // { name: 'conditions', type: 'auto' },
+
+        { name: 'markedForDelete', defaultValue: false },
+        { name: 'markedForNew', defaultValue: false }
+
+        // { name: 'conditionsMap', mapping: function (data) {
+        //     return data.conditions.list;
+        // }},
+        // { name: 'conditionsList', calculate: function(data) {
+        //     //console.log(data);
+        //     var conds = data.conditions;
+        //     var resp = '', i, cond;
+        //     for (i = 0; i < conds.list.length; i += 1) {
+        //         cond = conds.list[i];
+        //         resp += cond.conditionType + (cond.invert ? ' &ne; ' : ' = ') + cond.value + '<br/>';
+        //     }
+        //     //console.log(val);
+        //     return resp;
+        // } },
+
+        // { name: 'markedForDelete', defaultValue: false },
+        // { name: 'newDestination' },
+        // { name: 'newPort' }
+        // { name: 'string', type: 'string', defaultValue: '' },
+        // { name: 'blocked', type: 'boolean', defaultValue: true },
+        // { name: 'flagged', type: 'boolean', defaultValue: true },
+        // { name: 'category', type: 'string', defaultValue: null },
+        // { name: 'id', defaultValue: null },
+        // { name: 'readOnly', type: 'boolean', defaultValue: null },
+        // { name: 'javaClass', type: 'string', defaultValue: 'com.untangle.node.bandwidth_control.BandwidthControlRule' },
+
+        // { name: 'action', type: 'auto'},
+        // { name: 'actionType', type: 'string', mapping: 'action.actionType', defaultValue: 'SET_PRIORITY' },
+        // { name: 'actionPriority', type: 'int', mapping: 'action.priority', defaultValue: 1 },
+        // { name: 'actionPenaltyTime', type: 'int', mapping: 'action.penaltyTime', defaultValue: 0 },
+        // { name: 'actionQuotaBytes', type: 'int', mapping: 'action.quotaBytes', defaultValue: 1 },
+        // { name: 'actionQuotaTime', type: 'int', mapping: 'action.quotaTime', defaultValue: -1 }
+    ],
+    // hasMany: 'Ung.model.Condition',
+    proxy: {
+        // autoLoad: true,
+        type: 'memory',
+        reader: {
+            type: 'json',
+            // rootProperty: 'list'
+        }
+    }
+});
+
+Ext.define('Ung.store.Rule', {
+    extend: 'Ext.data.Store',
+    storeId: 'rule',
+    alias: 'store.rule',
+    model: 'Ung.model.Rule'
+});
 /**
  * Dashboard Controller which displays and manages the Dashboard Widgets
  * Widgets can be affected by following actions:
@@ -2308,6 +4090,170 @@ Ext.define('Ung.view.config.ConfigController', {
 
 });
 
+Ext.define('Ung.cmp.EditorFields', {
+    singleton: true,
+    alternateClassName: 'Fields',
+
+    conditions: {
+        flex: 1,
+        dataIndex: 'conditions',
+        renderer: 'conditionsRenderer'
+    },
+
+    enableRule: function (label) {
+        return {
+            xtype: 'checkbox',
+            fieldLabel: label || 'Enable'.t(),
+            bind: '{record.enabled}',
+        };
+    },
+
+    enableIpv6: {
+        xtype: 'checkbox',
+        fieldLabel: 'Enable IPv6 Support'.t(),
+        bind: '{record.ipv6Enabled}',
+    },
+
+    blocked: {
+        xtype: 'combo',
+        fieldLabel: 'Action'.t(),
+        bind: '{record.blocked}',
+        store: [[true, 'Block'.t()], [false, 'Pass'.t()]],
+        queryMode: 'local',
+        editable: false,
+    },
+
+    allow: {
+        xtype: 'combo',
+        fieldLabel: 'Action'.t(),
+        bind: '{record.allow}',
+        store: [[false, 'Deny'.t()], [true, 'Allow'.t()]],
+        queryMode: 'local',
+        editable: false
+    },
+
+    bypass: {
+        xtype: 'combo',
+        fieldLabel: 'Action'.t(),
+        bind: '{record.bypass}',
+        store: [[true, 'Bypass'.t()], [false, 'Process'.t()]],
+        queryMode: 'local',
+        editable: false
+    },
+
+    macAddress: {
+        xtype: 'textfield',
+        fieldLabel: 'MAC Address'.t(),
+        allowBlank: false,
+        bind: '{record.macAddress}',
+        emptyText: '[enter MAC name]'.t(),
+        vtype: 'macAddress',
+        maskRe: /[a-fA-F0-9:]/
+    },
+
+    ipAddress: {
+        xtype: 'textfield',
+        fieldLabel: 'Address'.t(),
+        emptyText: '[enter address]'.t(),
+        bind: '{record.address}',
+        allowBlank: false,
+        vtype: 'ipAddress',
+    },
+
+    network: {
+        xtype: 'textfield',
+        fieldLabel: 'Network'.t(),
+        emptyText: '1.2.3.0'.t(),
+        allowBlank: false,
+        vtype: 'ipAddress',
+        bind: '{record.network}',
+    },
+
+    netMask: {
+        xtype: 'combo',
+        fieldLabel: 'Netmask/Prefix'.t(),
+        bind: '{record.prefix}',
+        store: Util.getV4NetmaskList(false),
+        queryMode: 'local',
+        editable: false
+    },
+
+    natType: {
+        xtype: 'combo',
+        fieldLabel: 'NAT Type'.t(),
+        bind: '{record.auto}',
+        allowBlank: false,
+        editable: false,
+        store: [[true, 'Auto'.t()], [false, 'Custom'.t()]],
+        queryMode: 'local',
+    },
+    natSource: {
+        xtype: 'textfield',
+        fieldLabel: 'New Source'.t(),
+        width: 100,
+        bind: {
+            value: '{record.newSource}',
+            disabled: '{record.auto}'
+        },
+        allowBlank: true,
+        vtype: 'ipAddress'
+    },
+    description: {
+        xtype: 'textfield',
+        fieldLabel: 'Description'.t(),
+        bind: '{record.description}',
+        emptyText: '[no description]'.t(),
+        allowBlank: false
+    },
+
+    newDestination: {
+        xtype: 'textfield',
+        fieldLabel: 'New Destination'.t(),
+        bind: '{record.newDestination}',
+        allowBlank: false,
+        vtype: 'ipAddress'
+    },
+
+    newPort: {
+        xtype: 'numberfield',
+        fieldLabel: 'New Port'.t(),
+        width: 100,
+        bind: '{record.newPort}',
+        allowBlank: true,
+        minValue : 1,
+        maxValue : 0xFFFF,
+        vtype: 'port'
+    },
+
+    priority: {
+        xtype: 'combo',
+        fieldLabel: 'Priority'.t(),
+        store: [
+            [1, 'Very High'.t()],
+            [2, 'High'.t()],
+            [3, 'Medium'.t()],
+            [4, 'Low'.t()],
+            [5, 'Limited'.t()],
+            [6, 'Limited More'.t()],
+            [7, 'Limited Severely'.t()]
+        ],
+        bind: '{record.priority}',
+        queryMode: 'local',
+        editable: false
+    }
+
+});
+
+
+Ext.define('Ung.overrides.form.field.Date', {
+    override: 'Ext.form.field.Date',
+
+    config: {
+        format: ''
+    }
+
+});
+
 Ext.define('Ung.view.config.Config', {
     extend: 'Ext.container.Container',
     xtype: 'ung.config',
@@ -2357,6 +4303,1550 @@ Ext.define('Ung.view.config.Config', {
             '</tpl>',
         itemSelector: 'a'
     }]
+});
+
+Ext.define('Ung.view.reports.ReportsController', {
+    extend: 'Ext.app.ViewController',
+    alias: 'controller.reports',
+
+    init: function () {
+        this.getAvailableTables();
+    },
+
+    control: {
+        '#': { activate: 'onBeforeActivate', beforedeactivate: 'onBeforeDeactivate' },
+        '#categoriesGrid': { selectionchange: 'onCategorySelect' },
+        '#reportsGrid': { selectionchange: 'onReportSelect' },
+        '#chart': { afterrender: 'fetchReportData' },
+
+        '#startDate': { select: 'onSelectStartDate' },
+        '#startTime': { select: 'onSelectStartTime' },
+        '#startDateTimeBtn': { click: 'setStartDateTime' },
+        '#endDate': { select: 'onSelectEndDate' },
+        '#endTime': { select: 'onSelectEndTime' },
+        '#endtDateTimeBtn': { click: 'setEndDateTime' },
+
+        '#refreshBtn': { click: 'fetchReportData' },
+        '#applyBtn': { click: 'fetchReportData' },
+        '#chartStyleBtn': { toggle: 'fetchReportData' },
+        '#timeIntervalBtn': { toggle: 'fetchReportData' },
+
+        '#saveNewBtn': { click: 'saveReport' },
+        '#updateBtn': { click: 'updateReport' },
+        '#removeBtn': { click: 'removeReport' },
+
+        '#dashboardBtn': { click: 'toggleDashboardWidget' }
+    },
+
+    listen: {
+        global: {
+            init: 'getCurrentApplications',
+        },
+        store: {
+            '#categories': {
+                datachanged: 'onCategoriesLoad'
+            }
+        }
+    },
+
+    /*
+    listen: {
+        store: {
+            '#reports': {
+                remove: 'onRemoveReport'
+            }
+        }
+    },
+    */
+
+    onCategoriesLoad: function () {
+        // reports are already loaded
+        // console.log('cat load');
+        var vm = this.getViewModel();
+        if (vm.get('category')) {
+            var cat = Ext.getStore('categories').findRecord('categoryName', vm.get('category'));
+            this.getView().down('#categoriesGrid').getSelectionModel().select(cat);
+        }
+    },
+
+    onBeforeActivate: function () {
+        var vm = this.getViewModel();
+
+        // if Reports inside Node settings
+        if (this.getView().getInitCategory()) {
+            vm.set({
+                isNodeReporting: true,
+                activeCard: 'categoryCard',
+                category: null,
+                report: null,
+                categoriesData: null,
+                startDateTime: null,
+                endDateTime: null
+            });
+
+            this.getView().down('#categoriesGrid').setCollapsed(false); // expand categories panel if collapsed
+
+            // filter reports based on selected category
+            Ext.getStore('reports').filter({
+                property: 'category',
+                value: this.getView().getInitCategory().categoryName,
+                exactMatch: true
+            });
+            this.buildReportsList();
+            return;
+        }
+
+        // if main Reports view
+        vm.set({
+            isNodeReporting: false,
+            activeCard: 'allCategoriesCard',
+            // category: null,
+            report: null,
+            categoriesData: null,
+            startDateTime: null,
+            endDateTime: null
+        });
+
+        var me = this;
+        vm.bind('{category}', function (category) {
+            if (category) {
+                var cat = Ext.getStore('categories').findRecord('categoryName', category);
+                me.getView().down('#categoriesGrid').getSelectionModel().select(cat);
+            } else {
+                me.onBeforeDeactivate();
+            }
+        });
+    },
+
+    onBeforeDeactivate: function () {
+        this.getView().down('#categoriesGrid').getSelectionModel().deselectAll();
+        this.getView().down('#reportsGrid').getSelectionModel().deselectAll();
+        this.getViewModel().set('activeCard', 'allCategoriesCard');
+        Ext.getStore('reports').clearFilter();
+    },
+
+    getCurrentApplications: function () {
+        var app, i, vm = this.getViewModel(), me = this;
+        var categories = [
+            { categoryName: 'Hosts', type: 'system', url: 'hosts', displayName: 'Hosts'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_hosts.png' },
+            { categoryName: 'Devices', type: 'system', url: 'devices', displayName: 'Devices'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_devices.png' },
+            { categoryName: 'Network', type: 'system', url: 'network', displayName: 'Network'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_network.png' },
+            { categoryName: 'Administration', type: 'system', url: 'administration', displayName: 'Administration'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_admin.png' },
+            { categoryName: 'System', type: 'system', url: 'system', displayName: 'System'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_system.png' },
+            { categoryName: 'Shield', type: 'system', url: 'shield', displayName: 'Shield'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/apps/untangle-node-shield_17x17.png' }
+        ];
+
+
+        Rpc.asyncData('rpc.reportsManager.getCurrentApplications').then(function (result) {
+            for (i = 0; i < result.list.length; i += 1) {
+                app = result.list[i];
+                if (app.name !== 'untangle-node-branding-manager' && app.name !== 'untangle-node-live-support') {
+                    categories.push({
+                        categoryName: app.displayName,
+                        type: 'app',
+                        url: app.name.replace('untangle-node-', ''),
+                        displayName: app.displayName, // t()
+                        icon: resourcesBaseHref + '/skins/modern-rack/images/admin/apps/' + app.name + '_80x80.png'
+                    });
+                }
+            }
+            Ext.getStore('categories').loadData(categories);
+            // vm.set('categoriesData', Ext.getStore('categories').getRange());
+            // //me.getView().down('#categoriesGrid').getSelectionModel().select(0);
+
+            // var allCategItems = [];
+            // categories.forEach(function (category, idx) {
+            //     allCategItems.push({
+            //         xtype: 'button',
+            //         baseCls: 'category-btn',
+            //         html: '<img src="' + category.icon + '"/><br/><span>' + category.displayName + '</span>',
+            //         index: idx,
+            //         handler: function () {
+            //             me.getView().down('#categoriesGrid').getSelectionModel().select(this.index);
+            //         }
+            //     });
+            // });
+            // me.getView().down('#allCategoriesList').removeAll();
+
+            // if (me.getView().down('#categoriesLoader')) {
+            //     me.getView().down('#categoriesLoader').destroy();
+            // }
+
+            // me.getView().down('#allCategoriesList').add(allCategItems);
+        });
+    },
+
+    getAvailableTables: function() {
+        var me = this;
+        if (rpc.reportsManager) {
+            Rpc.asyncData('rpc.reportsManager.getTables').then(function (result) {
+                me.getViewModel().set('tableNames', result);
+            });
+        }
+    },
+
+    onCategorySelect: function (selModel, records) {
+        console.log('here');
+        if (records.length === 0) {
+            return false;
+        }
+
+        this.getViewModel().set('activeCard', 'categoryCard'); // set category view card as active
+        this.getViewModel().set('category', records[0]);
+        this.getViewModel().set('report', null);
+        this.getView().down('#categoriesGrid').setCollapsed(false); // expand categories panel if collapsed
+
+        this.getView().down('#reportsGrid').getSelectionModel().deselectAll();
+
+        Ung.app.redirectTo('#reports/' + records[0].get('url'));
+
+        // filter reports based on selected category
+        console.log(records[0].get('categoryName'));
+        Ext.getStore('reports').filter({
+            property: 'category',
+            value: records[0].get('categoryName'),
+            exactMatch: true
+        });
+        this.buildReportsList();
+    },
+
+    buildReportsList: function () {
+        var me = this;
+        var entries = [], entryHtml = '';
+
+        // add reports list in category view card
+        this.getView().down('#categoryReportsList').removeAll();
+        Ext.getStore('reports').getRange().forEach(function (report) {
+
+            // entryHtml = Util.iconReportTitle(report);
+            entryHtml = '<i class="fa ' + report.get('icon') + ' fa-lg"></i><span class="ttl">' + (report.get('readOnly') ? report.get('title').t() : report.get('title')) + '</span><p>' +
+                          (report.get('readOnly') ? report.get('description').t() : report.get('description')) + '</p>';
+            entries.push({
+                xtype: 'button',
+                html: entryHtml,
+                baseCls: 'entry-btn',
+                //cls: (!entries[i].readOnly && entries[i].type !== 'EVENT_LIST') ? 'entry-btn custom' : 'entry-btn',
+                border: false,
+                textAlign: 'left',
+                item: report,
+                handler: function () {
+                    //console.log('handler');
+                    me.getView().down('#reportsGrid').getSelectionModel().select(this.item);
+                    //_that.entryList.getSelectionModel().select(this.item);
+                }
+            });
+        });
+        this.getView().down('#categoryReportsList').add(entries);
+    },
+
+    onReportSelect: function (selModel, records) {
+        if (records.length === 0) {
+            this.getViewModel().set({
+                activeCard: 'categoryCard'
+            });
+            return;
+        }
+        var report = records[0],
+            chartContainer = this.getView().down('#report');
+
+        this.getViewModel().set({
+            activeCard: 'reportCard',
+            report: report
+        });
+
+        this.getView().down('#customization').setActiveItem(0);
+        chartContainer.remove('chart');
+
+        if (report.get('type') === 'TIME_GRAPH' || report.get('type') === 'TIME_GRAPH_DYNAMIC') {
+            chartContainer.add({
+                xtype: 'timechart',
+                itemId: 'chart',
+                entry: report
+            });
+        }
+
+        if (report.get('type') === 'PIE_GRAPH') {
+            chartContainer.add({
+                xtype: 'piechart',
+                itemId: 'chart',
+                entry: report
+            });
+        }
+
+        if (report.get('type') === 'EVENT_LIST') {
+            chartContainer.add({
+                xtype: 'eventchart',
+                itemId: 'chart',
+                entry: report
+            });
+        }
+
+        if (report.get('type') === 'TEXT') {
+            chartContainer.add({
+                xtype: 'component',
+                itemId: 'chart',
+                html: 'Not Implemented'
+            });
+        }
+
+
+    },
+
+    fetchReportData: function () {
+        var me = this,
+            vm = me.getViewModel(),
+            chart = me.getView().down('#chart');
+
+        chart.fireEvent('beginfetchdata');
+
+        if (vm.get('report.type') !== 'EVENT_LIST') {
+
+            Rpc.asyncData('rpc.reportsManager.getDataForReportEntry',
+                           chart.getEntry().getData(),
+                           vm.get('startDateTime'),
+                           vm.get('endDateTime'), -1)
+                .then(function(result) {
+                    chart.fireEvent('setseries', result.list);
+                });
+        } else {
+            var extraCond = null, limit = 100;
+            Rpc.asyncData('rpc.reportsManager.getEventsForDateRangeResultSet',
+                           chart.getEntry().getData(),
+                           extraCond,
+                           limit,
+                           vm.get('startDateTime'),
+                           vm.get('endDateTime'))
+                .then(function(result) {
+                result.getNextChunk(function (result2, ex2) {
+                    if (ex2) { Util.exceptionToast(ex2); return false; }
+                    // console.log(result2);
+                    chart.fireEvent('setdata', result2.list);
+                }, 100);
+
+            });
+        }
+    },
+
+    onSelectStartDate: function (picker, date) {
+        var vm = this.getViewModel(), _date;
+        if (!vm.get('startDateTime')) {
+            this.getViewModel().set('startDateTime', date);
+        } else {
+            _date = new Date(vm.get('startDateTime'));
+            _date.setDate(date.getDate());
+            _date.setMonth(date.getMonth());
+            vm.set('startDateTime', _date);
+        }
+    },
+
+    onSelectStartTime: function (combo, record) {
+        var vm = this.getViewModel(), _date;
+        if (!vm.get('startDateTime')) {
+            _date = new Date();
+            //_date = _date.setDate(_date.getDate() - 1);
+        } else {
+            _date = new Date(vm.get('startDateTime'));
+        }
+        _date.setHours(record.get('date').getHours());
+        _date.setMinutes(record.get('date').getMinutes());
+        vm.set('startDateTime', _date);
+    },
+
+    setStartDateTime: function () {
+        var view = this.getView();
+        console.log(this.getViewModel().get('startDateTime'));
+        view.down('#startDateTimeMenu').hide();
+    },
+
+    onSelectEndDate: function (picker, date) {
+        var vm = this.getViewModel(), _date;
+        if (!vm.get('endDateTime')) {
+            this.getViewModel().set('endDateTime', date);
+        } else {
+            _date = new Date(vm.get('endDateTime'));
+            _date.setDate(date.getDate());
+            _date.setMonth(date.getMonth());
+            vm.set('endDateTime', _date);
+        }
+    },
+
+    onSelectEndTime: function (combo, record) {
+        var vm = this.getViewModel(), _date;
+        if (!vm.get('endDateTime')) {
+            _date = new Date();
+            //_date = _date.setDate(_date.getDate() - 1);
+        } else {
+            _date = new Date(vm.get('endDateTime'));
+        }
+        _date.setHours(record.get('date').getHours());
+        _date.setMinutes(record.get('date').getMinutes());
+        vm.set('endDateTime', _date);
+    },
+
+    setEndDateTime: function () {
+        var view = this.getView();
+        view.down('#endDateTimeMenu').hide();
+    },
+
+    saveReport: function () {
+        var me = this, report,
+            vm = this.getViewModel();
+
+        report = vm.get('report').copy(null);
+        report.set('uniqueId', 'report-' + Math.random().toString(36).substr(2));
+        report.set('readOnly', false);
+
+        Rpc.asyncData('rpc.reportsManager.saveReportEntry', report.getData())
+            .then(function(result) {
+                vm.get('report').reject();
+                Ext.getStore('reports').add(report);
+                report.commit();
+                me.getView().down('#reportsGrid').getSelectionModel().select(report);
+                Util.successToast('<span style="color: yellow; font-weight: 600;">' + report.get('title') + ' report added!');
+            });
+    },
+
+    updateReport: function () {
+        var vm = this.getViewModel();
+
+        Rpc.asyncData('rpc.reportsManager.saveReportEntry', vm.get('report').getData())
+            .then(function(result) {
+            vm.get('report').commit();
+            Util.successToast('<span style="color: yellow; font-weight: 600;">' + vm.get('report.title') + '</span> report updated!');
+        });
+    },
+
+    removeReport: function () {
+        var me = this,
+            vm = this.getViewModel();
+
+        Ext.MessageBox.confirm('Warning'.t(),
+            'This will remove also the Widget from Dashboard'.t() + '<br/><br/>' +
+            'Do you want to continue?'.t(),
+            function (btn) {
+                if (btn === 'yes') {
+                    Rpc.asyncData('rpc.reportsManager.removeReportEntry', vm.get('report').getData())
+                        .then(function(result) {
+                            Ext.getStore('reports').remove(vm.get('report'));
+                            me.buildReportsList();
+                            me.getView().down('#reportsGrid').getSelectionModel().deselectAll();
+
+                            Util.successToast('Report removed!');
+
+                            me.toggleDashboardWidget();
+                        });
+                }
+            });
+    },
+
+    toggleDashboardWidget: function () {
+        var vm = this.getViewModel(), record, me = this;
+        if (vm.get('isWidget')) {
+            // remove from dashboard
+            record = Ext.getStore('widgets').findRecord('entryId', vm.get('report.uniqueId'));
+            if (record) {
+                Ext.getStore('widgets').remove(record);
+                Ung.dashboardSettings.widgets.list = Ext.Array.pluck(Ext.getStore('widgets').getRange(), 'data');
+
+                Rpc.asyncData('rpc.dashboardManager.setSettings', Ung.dashboardSettings)
+                    .then(function(result) {
+                        Util.successToast('<span style="color: yellow; font-weight: 600;">' + vm.get('report.title') + '</span> was removed from dashboard!');
+                        Ext.GlobalEvents.fireEvent('removewidget', vm.get('report.uniqueId'));
+                        vm.set('isWidget', !vm.get('isWidget'));
+                        me.getView().down('#reportsGrid').getView().refresh();
+                    });
+            } else {
+                Util.exceptionToast('<span style="color: yellow; font-weight: 600;">' + vm.get('report.title') + '</span> was not found on Dashboard!');
+            }
+        } else {
+            // add to dashboard
+            record = Ext.create('Ung.model.Widget', {
+                displayColumns: vm.get('report.displayColumns'),
+                enabled: true,
+                entryId: vm.get('report.uniqueId'),
+                javaClass: 'com.untangle.uvm.DashboardWidgetSettings',
+                refreshIntervalSec: 60,
+                timeframe: 3600,
+                type: 'ReportEntry'
+            });
+            Ext.getStore('widgets').add(record);
+
+            Ung.dashboardSettings.widgets.list = Ext.Array.pluck(Ext.getStore('widgets').getRange(), 'data');
+
+            Rpc.asyncData('rpc.dashboardManager.setSettings', Ung.dashboardSettings)
+                .then(function (result, ex) {
+                    if (ex) { Util.exceptionToast(ex); return; }
+                    Util.successToast('<span style="color: yellow; font-weight: 600;">' + vm.get('report.title') + '</span> was added to dashboard!');
+                    Ext.GlobalEvents.fireEvent('addwidget', record, vm.get('report'));
+                    vm.set('isWidget', !vm.get('isWidget'));
+                    me.getView().down('#reportsGrid').getView().refresh();
+                });
+        }
+    }
+
+});
+
+Ext.define('Ung.view.reports.ReportsModel', {
+    extend: 'Ext.app.ViewModel',
+
+    alias: 'viewmodel.reports',
+
+    data: {
+        isNodeReporting: false,
+        activeCard: 'allCategoriesCard', // allCategoriesCard, categoryCard, reportCard
+        category: null,
+        report: null,
+        categoriesData: null,
+        startDateTime: null,
+        endDateTime: null
+    },
+
+    formulas: {
+        isCategorySelected: function (get) {
+            return get('activeCard') !== 'allCategoriesCard';
+        },
+
+        areCategoriesHidden: function (get) {
+            return !get('isCategorySelected') || get('isNodeReporting');
+        },
+
+        reportHeading: function (get) {
+            if (get('report.readOnly')) {
+                return '<h2>' + get('report.title').t() + '</h2><p>' + get('report.description').t() + '</p>';
+            }
+            return '<h2>' + get('report.title') + '</h2><p>' + get('report.description') + '</p>';
+        },
+
+        isTimeGraph: function (get) {
+            if (!get('report.type')) {
+                return false;
+            }
+            return get('report.type').indexOf('TIME_GRAPH') >= 0;
+        },
+        isPieGraph: function (get) {
+            if (!get('report.type')) {
+                return false;
+            }
+            return get('report.type').indexOf('PIE_GRAPH') >= 0;
+        },
+
+        startDate: function (get) {
+            if (!get('startDateTime')) {
+                return 'One day ago'.t();
+            }
+            return Ext.Date.format(get('startDateTime'), 'M j, h:i a');
+        },
+        endDate: function (get) {
+            if (!get('endDateTime')) {
+                return 'Present'.t();
+            }
+            return Ext.Date.format(get('endDateTime'), 'M j, h:i a');
+        },
+        startTimeMax: function (get) {
+            var now = new Date(),
+                ref = new Date(get('startDateTime'));
+            if (now.getYear() === ref.getYear() && now.getMonth() === ref.getMonth() && now.getDate() === ref.getDate()) {
+                return now;
+            }
+        },
+
+        customizeTitle: function (get) {
+            if (get('report.readOnly')) {
+                return 'Customize'.t() + ' <span style="font-weight: 300; color: #777;">(' + 'Readonly report! Changes can be saved as a new custom report!' + ')</span>';
+            }
+            return 'Customize'.t();
+        },
+
+        isWidget: function (get) {
+            return Ext.getStore('widgets').findRecord('entryId', get('report.uniqueId')) ? true : false;
+        }
+    },
+
+    stores: {
+        categories: {
+            model: 'Ung.model.Category',
+            data: '{categoriesData}'
+        }
+        /*
+        tables: {
+            data: '{tablesData}'
+        }
+        */
+    }
+});
+
+Ext.define ('Ung.model.Category', {
+    extend: 'Ext.data.Model' ,
+    fields: [
+        { name: 'name', type: 'string' },
+        { name: 'displayName', type: 'string' },
+        { name: 'icon', type: 'string' }
+    ],
+    proxy: {
+        type: 'memory',
+        reader: {
+            type: 'json'
+        }
+    }
+});
+
+Ext.define('Ung.view.reports.Reports', {
+    extend: 'Ext.container.Container',
+    xtype: 'ung.reports',
+    itemId: 'reports',
+
+    layout: 'border',
+
+    requires: [
+        'Ung.view.reports.ReportsController',
+        'Ung.view.reports.ReportsModel',
+        'Ung.model.Category'
+    ],
+
+    controller: 'reports',
+    viewModel: {
+        type: 'reports'
+    },
+
+    config: {
+        // initial category used for reports inside nodes
+        initCategory: null
+    },
+
+    items: [{
+        region: 'west',
+        xtype: 'grid',
+        itemId: 'categoriesGrid',
+        title: 'Select Category'.t(),
+        width: 200,
+        hideHeaders: true,
+        shadow: false,
+        collapsible: true,
+        floatable: false,
+        titleCollapse: true,
+        animCollapse: false,
+        //allowDeselect: true,
+        viewConfig: {
+            stripeRows: false
+            /*
+            getRowClass: function(record) {
+                if (record.dirty) {
+                    return 'dirty';
+                }
+            }
+            */
+        },
+        hidden: true,
+        store: 'categories',
+        bind: {
+            hidden: '{areCategoriesHidden}',
+        },
+        columns: [{
+            dataIndex: 'icon',
+            width: 20,
+            renderer: function (value, meta) {
+                meta.tdCls = 'app-icon';
+                return '<img src="' + value + '"/>';
+            }
+        }, {
+            dataIndex: 'displayName',
+            flex: 1
+            /*
+            renderer: function (value, meta) {
+                //meta.tdCls = 'app-icon';
+                return '<span style="font-weight: 600;">' + value + '</span>';
+            }
+            */
+        }]
+    }, {
+        region: 'center',
+        layout: 'border',
+        border: false,
+        items: [{
+            region: 'west',
+            xtype: 'grid',
+            itemId: 'reportsGrid',
+            title: 'Select Report'.t(),
+            width: 250,
+            hideHeaders: true,
+            shadow: false,
+            collapsible: true,
+            layout: 'fit',
+            animCollapse: false,
+            floatable: false,
+            titleCollapse: true,
+            viewConfig: {
+                stripeRows: false
+            },
+            bind: {
+                //hidden: '{!report}',
+                hidden: '{!isCategorySelected}',
+                store: '{reports}'
+            },
+            columns: [{
+                dataIndex: 'title',
+                width: 25,
+                renderer: function (value, meta, record) {
+                    // meta.tdCls = 'app-icon';
+                    // return Util.iconReportTitle(record);
+                    return '<i class="fa ' + record.get('icon') + ' fa-lg"></i>';
+                }
+            }, {
+                dataIndex: 'title',
+                flex: 1,
+                renderer: function (value, meta, record) {
+                    return record.get('readOnly') ? value.t() : value;
+                }
+            }, {
+                dataIndex: 'readOnly',
+                width: 20,
+                align: 'center',
+                renderer: function (value, meta) {
+                    meta.tdCls = 'app-icon';
+                    return !value ? '<i class="material-icons" style="font-size: 14px; color: #999;">brush</i>' : '';
+                }
+            }, {
+                dataIndex: 'uniqueId',
+                width: 20,
+                align: 'center',
+                renderer: function (value, meta) {
+                    meta.tdCls = 'app-icon';
+                    if (Ext.getStore('widgets').findRecord('entryId', value)) {
+                        return '<i class="fa fa-home fa-lg" style="font-size: 14px; color: #999;"></i>';
+                    }
+                    return '';
+                }
+            }]
+        }, {
+            region: 'center',
+            border: false,
+            layout: 'card',
+            bind: {
+                activeItem: '{activeCard}'
+            },
+            defaults: {
+                border: false
+            },
+            items: [{
+                xtype: 'dataview',
+                itemId: 'allCategoriesCard',
+                store: 'categories',
+                tpl: '<p class="apps-title">' + 'System'.t() + '</p>' +
+                    '<tpl for=".">' +
+                        '<tpl if="type === \'system\'">' +
+                        '<a href="#reports/{url}" class="app-item">' +
+                        '<img src="{icon}" width=80 height=80/>' +
+                        '<span class="app-name">{displayName}</span>' +
+                        '</a>' +
+                        '</tpl>' +
+                    '</tpl>' +
+                    '<p class="apps-title">' + 'Apps'.t() + '</p>' +
+                    '<tpl for=".">' +
+                        '<tpl if="type === \'app\'">' +
+                        '<a href="#reports/{url}" class="app-item">' +
+                        '<img src="{icon}" width=80 height=80/>' +
+                        '<span class="app-name">{displayName}</span>' +
+                        '</a>' +
+                        '</tpl>' +
+                    '</tpl>',
+                itemSelector: 'a'
+            }, {
+                // view which displays all reports from a specific category
+                itemId: 'categoryCard',
+                scrollable: true,
+                items: [{
+                    xtype: 'component',
+                    cls: 'headline',
+                    margin: '50 0',
+                    bind: {
+                        html: '<img src="{category.icon}" style="width: 80px; height: 80px;"/><br/>{category.displayName}'
+                    }
+                }, {
+                    xtype: 'container',
+                    style: {
+                        textAlign: 'center'
+                    },
+                    itemId: 'categoryReportsList'
+                }]
+            }, {
+                // report display
+                layout: 'border',
+                itemId: 'reportCard',
+                defaults: {
+                    border: false,
+                    bodyBorder: false
+                },
+                items: [{
+                    // report heading
+                    region: 'north',
+                    height: 60,
+                    items: [{
+                        xtype: 'component',
+                        cls: 'report-header',
+                        bind: {
+                            html: '{reportHeading}'
+                        }
+                    }]
+                }, {
+                    // report chart/event grid
+                    region: 'center',
+                    itemId: 'report',
+                    //height: 40,
+                    layout: 'fit',
+                    items: [],
+                    bbar: [{
+                        xtype: 'component',
+                        margin: '0 5 0 5',
+                        html: '<i class="fa fa-calendar fa-lg"></i>'
+                    }, {
+                        xtype: 'button',
+                        bind: {
+                            text: '{startDate}'
+                        },
+                        menu: {
+                            itemId: 'startDateTimeMenu',
+                            plain: true,
+                            showSeparator: false,
+                            shadow: false,
+                            //xtype: 'form',
+                            layout: {
+                                type: 'vbox',
+                                align: 'stretch'
+                            },
+                            items: [{
+                                xtype: 'datepicker',
+                                maxDate: new Date(),
+                                itemId: 'startDate'
+                            }, {
+                                xtype: 'timefield',
+                                itemId: 'startTime',
+                                format: 'h:i a',
+                                increment: 30,
+                                margin: '5',
+                                fieldLabel: 'Time'.t(),
+                                labelAlign: 'right',
+                                labelWidth: 60,
+                                width: 160,
+                                plain: true,
+                                editable: false,
+                                value: '12:00 am',
+                                bind: {
+                                    maxValue: '{startTimeMax}'
+                                }
+                            }, {
+                                xtype: 'button',
+                                itemId: 'startDateTimeBtn',
+                                text: 'OK'.t(),
+                                iconCls: 'fa fa-check fa-lg'
+                            }]
+                        }
+                    }, {
+                        xtype: 'button',
+                        bind: {
+                            text: '{endDate}'
+                        },
+                        menu: {
+                            itemId: 'endDateTimeMenu',
+                            plain: true,
+                            showSeparator: false,
+                            shadow: false,
+                            //xtype: 'form',
+                            layout: {
+                                type: 'vbox',
+                                align: 'stretch'
+                            },
+                            items: [{
+                                xtype: 'datepicker',
+                                maxDate: new Date(),
+                                itemId: 'endDate',
+                                bind: {
+                                    minDate: '{startDateTime}'
+                                }
+                            }, {
+                                xtype: 'timefield',
+                                itemId: 'endTime',
+                                format: 'h:i a',
+                                increment: 30,
+                                margin: '5',
+                                fieldLabel: 'Time'.t(),
+                                labelAlign: 'right',
+                                labelWidth: 60,
+                                width: 160,
+                                plain: true,
+                                editable: false,
+                                value: '12:00 am',
+                                bind: {
+                                    maxValue: '{endTimeMax}'
+                                }
+                            }, {
+                                xtype: 'button',
+                                itemId: 'endDateTimeBtn',
+                                text: 'OK'.t(),
+                                iconCls: 'fa fa-check fa-lg'
+                            }]
+                        }
+                    }, '-' , {
+                        text: 'Refresh'.t(),
+                        iconCls: 'fa fa-refresh fa-lg',
+                        itemId: 'refreshBtn'
+                    }, '->', {
+                        itemId: 'downloadBtn',
+                        text: 'Download'.t(),
+                        iconCls: 'fa fa-download fa-lg',
+                    }, '-', {
+                        itemId: 'dashboardBtn',
+                        iconCls: 'fa fa-home fa-lg',
+                        bind: {
+                            text: '{isWidget ? "Remove from Dashboard" : "Add to Dashboard"}'
+                        }
+
+                    }]
+                }, {
+                    // report customization
+                    region: 'south',
+                    xtype: 'form',
+                    layout: 'fit',
+                    minHeight: 300,
+                    shadow: false,
+                    split: true,
+                    collapsible: true,
+                    collapsed: false,
+                    floatable: false,
+                    titleCollapse: true,
+                    animCollapse: false,
+                    border: false,
+                    bodyBorder: false,
+
+                    bind: {
+                        title: '{customizeTitle}'
+                    },
+
+                    items: [{
+                        xtype: 'tabpanel',
+                        itemId: 'customization',
+                        border: false,
+                        defaults: {
+                            border: false,
+                            bodyBorder: false,
+                            bodyPadding: 5
+                        },
+                        items: [{
+                            title: 'Style'.t(),
+                            iconCls: 'fa fa-eyedropper fa-lg',
+                            layout: {
+                                type: 'vbox',
+                                align: 'stretch'
+                            },
+                            items: [{
+                                // ALL - report title
+                                xtype: 'textfield',
+                                fieldLabel: 'Title'.t(),
+                                maxWidth: 400,
+                                labelWidth: 150,
+                                labelAlign: 'right',
+                                allowBlank: false,
+                                bind: {
+                                    value: '{report.title}'
+                                }
+                            }, {
+                                // ALL - report description
+                                xtype: 'textfield',
+                                fieldLabel: 'Description'.t(),
+                                labelWidth: 150,
+                                labelAlign: 'right',
+                                bind: {
+                                    value: '{report.description}'
+                                }
+                            }, {
+                                // ALL - report enabled
+                                xtype: 'container',
+                                layout: 'hbox',
+                                margin: '0 0 5 0',
+                                items: [{
+                                    xtype: 'label',
+                                    cls: 'x-form-item-label-default',
+                                    width: 155,
+                                    style: {
+                                        textAlign: 'right'
+                                    },
+                                    text: 'Enabled'.t() + ':'
+                                }, {
+                                    xtype: 'segmentedbutton',
+                                    bind: {
+                                        value: '{report.enabled}'
+                                    },
+                                    items: [
+                                        { text: 'YES'.t(), iconCls: 'fa fa-check fa-lg', value: true },
+                                        { text: 'NO'.t(), iconCls: 'fa fa-times fa-lg', value: false }
+                                    ]
+                                }]
+                            }, {
+                                // TIME_GRAPH - chart style
+                                xtype: 'container',
+                                layout: 'hbox',
+                                margin: '0 0 5 0',
+                                hidden: true,
+                                bind: {
+                                    disabled: '{!isTimeGraph}',
+                                    hidden: '{!isTimeGraph}'
+                                },
+                                items: [{
+                                    xtype: 'label',
+                                    cls: 'x-form-item-label-default',
+                                    width: 155,
+                                    style: {
+                                        textAlign: 'right'
+                                    },
+                                    text: 'Time Chart Style'.t() + ':'
+                                }, {
+                                    xtype: 'segmentedbutton',
+                                    itemId: 'chartStyleBtn',
+                                    bind: {
+                                        value: '{report.timeStyle}'
+                                    },
+                                    items: [
+                                        {text: 'Line'.t(), value: 'LINE', styleType: 'spline'},
+                                        {text: 'Area'.t(), value: 'AREA', styleType: 'areaspline'},
+                                        {text: 'Stacked Area'.t(), value: 'AREA_STACKED', styleType: 'areaspline', stacked: true},
+                                        {text: 'Column'.t(), value: 'BAR', styleType: 'column', grouped: true},
+                                        {text: 'Overlapped Columns'.t(), value: 'BAR_OVERLAPPED', styleType: 'column', overlapped: true},
+                                        {text: 'Stacked Columns'.t(), value: 'BAR_STACKED', styleType: 'column', stacked : true}
+                                    ]
+                                }]
+                            }, {
+                                // PIE_GRAPH - chart style
+                                xtype: 'container',
+                                layout: 'hbox',
+                                margin: '0 0 5 0',
+                                hidden: true,
+                                bind: {
+                                    disabled: '{!isPieGraph}',
+                                    hidden: '{!isPieGraph}'
+                                },
+                                items: [{
+                                    xtype: 'label',
+                                    cls: 'x-form-item-label-default',
+                                    width: 155,
+                                    style: {
+                                        textAlign: 'right'
+                                    },
+                                    text: 'Style'.t() + ':'
+                                }, {
+                                    xtype: 'segmentedbutton',
+                                    itemId: 'chartStyleBtn',
+                                    bind: {
+                                        value: '{report.pieStyle}'
+                                    },
+                                    items: [
+                                        {text: 'Pie', value: 'PIE', styleType: 'pie'},
+                                        //{text: 'Pie 3D', value: 'PIE_3D', styleType: 'pie'},
+                                        {text: 'Donut', value: 'DONUT', styleType: 'pie'},
+                                        //{text: 'Donut 3D', value: 'DONUT_3D', styleType: 'pie'},
+                                        {text: 'Column', value: 'COLUMN', styleType: 'column'}
+                                        //{text: 'Column 3D', value: 'COLUMN_3D', styleType: 'column'}
+                                    ]
+                                }]
+                            }, {
+                                // TIME_GRAPH - data interval
+                                xtype: 'container',
+                                layout: 'hbox',
+                                margin: '0 0 5 0',
+                                hidden: true,
+                                bind: {
+                                    disabled: '{!isTimeGraph}',
+                                    hidden: '{!isTimeGraph}'
+                                },
+                                items: [{
+                                    xtype: 'label',
+                                    cls: 'x-form-item-label-default',
+                                    width: 155,
+                                    style: {
+                                        textAlign: 'right'
+                                    },
+                                    text: 'Time Data Interval'.t() + ':'
+                                }, {
+                                    xtype: 'segmentedbutton',
+                                    itemId: 'timeIntervalBtn',
+                                    bind: {
+                                        value: '{report.timeDataInterval}'
+                                    },
+                                    items: [
+                                        {text: 'Auto'.t(), value: 'AUTO'},
+                                        {text: 'Second'.t(), value: 'SECOND', defaultTimeFrame: 60 },
+                                        {text: 'Minute'.t(), value: 'MINUTE', defaultTimeFrame: 60 },
+                                        {text: 'Hour'.t(), value: 'HOUR', defaultTimeFrame: 24 },
+                                        {text: 'Day'.t(), value: 'DAY', defaultTimeFrame: 7 },
+                                        {text: 'Week'.t(), value: 'WEEK', defaultTimeFrame: 12 },
+                                        {text: 'Month'.t(), value: 'MONTH', defaultTimeFrame: 6 }
+                                    ]
+                                }]
+                            }, {
+                                // PIE_GRAPH - number of pie slices
+                                xtype: 'numberfield',
+                                fieldLabel: 'Pie Slices Number'.t(),
+                                labelWidth: 150,
+                                maxWidth: 200,
+                                labelAlign: 'right',
+                                minValue: 1,
+                                maxValue: 25,
+                                allowBlank: false,
+                                hidden: true,
+                                bind: {
+                                    disabled: '{!isPieGraph}',
+                                    hidden: '{!isPieGraph}',
+                                    value: '{report.pieNumSlices}'
+                                }
+                            }]
+                        }, {
+                            title: 'Conditions'.t(),
+                            iconCls: 'fa fa-filter fa-lg'
+                        }, {
+                            title: 'Advanced'.t(),
+                            iconCls: 'fa fa-cog fa-lg',
+                            scrollable: true,
+                            layout: {
+                                type: 'vbox',
+                                align: 'stretch'
+                            },
+                            items: [{
+                                // TIME_GRAPH - table
+                                xtype: 'combobox',
+                                fieldLabel: 'Table'.t(),
+                                maxWidth: 400,
+                                labelWidth: 150,
+                                labelAlign: 'right',
+                                editable: false,
+                                hidden: true,
+                                bind: {
+                                    store: '{tableNames}',
+                                    disabled: '{!isTimeGraph}',
+                                    hidden: '{!isTimeGraph}',
+                                    value: '{report.table}'
+                                }
+                            }, {
+                                // TIME_GRAPH - units
+                                xtype: 'textfield',
+                                fieldLabel: 'Units'.t(),
+                                maxWidth: 305,
+                                labelWidth: 150,
+                                labelAlign: 'right',
+                                hidden: true,
+                                bind: {
+                                    disabled: '{!isTimeGraph}',
+                                    hidden: '{!isTimeGraph}',
+                                    value: '{report.units}'
+                                }
+                            }, {
+                                // TIME_GRAPH - time data columns
+                                xtype: 'textarea',
+                                fieldLabel: 'Time Data Columns'.t(),
+                                grow: true,
+                                maxWidth: 500,
+                                labelWidth: 150,
+                                labelAlign: 'right',
+                                hidden: true,
+                                bind: {
+                                    disabled: '{!isTimeGraph}',
+                                    hidden: '{!isTimeGraph}',
+                                    value: '{report.timeDataColumns}'
+                                }
+                            }, {
+                                // TIME_GRAPH - series renderer
+                                xtype: 'textfield',
+                                fieldLabel: 'Series Renderer'.t(),
+                                maxWidth: 305,
+                                labelWidth: 150,
+                                labelAlign: 'right',
+                                hidden: true,
+                                bind: {
+                                    disabled: '{!isTimeGraph}',
+                                    hidden: '{!isTimeGraph}',
+                                    value: '{report.seriesRenderer}'
+                                }
+                            }, {
+                                // ALL - column ordering
+                                xtype: 'container',
+                                layout: 'hbox',
+                                margin: '0 0 5 0',
+                                items: [{
+                                    xtype: 'label',
+                                    cls: 'x-form-item-label-default',
+                                    width: 155,
+                                    style: {
+                                        textAlign: 'right'
+                                    },
+                                    text: 'Order By Column'.t() + ':'
+                                }, {
+                                    xtype: 'textfield',
+                                    bind: {
+                                        value: '{report.orderByColumn}'
+                                    }
+                                }, {
+                                    xtype: 'segmentedbutton',
+                                    margin: '0 0 0 5',
+                                    bind: {
+                                        value: '{report.orderDesc}'
+                                    },
+                                    items: [
+                                        {text: 'Ascending'.t(), iconCls: 'fa fa-sort-amount-asc', value: true },
+                                        {text: 'Descending'.t(), iconCls: 'fa fa-sort-amount-desc' , value: false }
+                                    ]
+                                }]
+                            }, {
+                                // ALL - display order
+                                xtype: 'numberfield',
+                                fieldLabel: 'Display Order'.t(),
+                                maxWidth: 220,
+                                labelWidth: 150,
+                                labelAlign: 'right',
+                                bind: {
+                                    value: '{report.displayOrder}'
+                                }
+                            }]
+                        }]
+                    }],
+                    fbar: [/*{
+                        text: Util.iconTitle('Preview'.t(), 'rotate_left-16'),
+                        itemId: 'applyBtn',
+                        formBind: true
+                    },*/ {
+                        text: 'Remove'.t(),
+                        iconCls: 'fa fa-trash fa-lg',
+                        itemId: 'removeBtn',
+                        bind: {
+                            hidden: '{report.readOnly}'
+                        }
+                    }, {
+                        text: 'Update'.t(),
+                        iconCls: 'fa fa-save fa-lg',
+                        itemId: 'updateBtn',
+                        formBind: true,
+                        bind: {
+                            hidden: '{report.readOnly}'
+                        }
+                    }, {
+                        text: 'Save as New Report'.t(),
+                        iconCls: 'fa fa-plus-circle fa-lg',
+                        itemId: 'saveNewBtn',
+                        formBind: true
+                    }]
+                }]
+            }]
+
+        }]
+    }]
+});
+
+Ext.define('Ung.cmp.GridController', {
+    extend: 'Ext.app.ViewController',
+
+    alias: 'controller.ungrid',
+
+    addCount: 0,
+
+    control: {
+        '#': {
+            afterrender: 'onBeforeRender',
+            drop: 'onDropRecord'
+        }
+    },
+
+    onBeforeRender: function (view) {
+        // create conditionsMap for later use
+        if (view.conditions) {
+            view.conditionsMap = Ext.Array.toValueMap(view.conditions, 'name');
+        }
+    },
+
+
+    addRecord: function () {
+        var v = this.getView(), newRecord;
+        // if there are no editor fields defined, the record is added inline and has inline editing capability
+        if (!v.editorFields) {
+            newRecord = Ext.create('Ung.model.Rule', Ext.clone(v.emptyRow));
+            v.getStore().add(newRecord);
+        } else {
+            this.editorWin(null);
+        }
+    },
+
+    editRecord: function (view, rowIndex, colIndex, item, e, record) {
+        // if (record.get('readOnly')) {
+        //     Ext.MessageBox.alert('Info', '<strong>' + record.get('description') + '</strong> connot be edited!');
+        //     return;
+        // }
+        this.editorWin(record);
+    },
+
+    editorWin: function (record) {
+        var v = this.getView(), newRecord;
+        // open recordeditor window
+
+        if (!record) {
+            newRecord = Ext.create('Ung.model.Rule', Ext.clone(v.emptyRow));
+            newRecord.set('markedForNew', true);
+        }
+        console.log(record);
+
+        this.dialog = v.add({
+            xtype: 'ung.cmp.recordeditor',
+            action: record ? 'edit' : 'add',
+            record: record || newRecord
+        });
+        this.dialog.show();
+
+
+        // Ext.widget('ung.cmp.recordeditor', {
+        //     action: record ? 'edit' : 'add',
+        //     editorFields: v.editorFields, // form fields needed to be displayed in the editor taken from grid columns
+        //     actionDescription: v.actionDescription || 'Perform the following action(s):'.t(), // the label in the form
+        //     conditions: v.conditions, // the available conditions which can be applied
+        //     conditionsMap: v.conditionsMap, // a map with the above conditions as helper
+        //     // ruleJavaClass: v.ruleJavaClass,
+        //     // recordCopy: record.copy(null), // a clean copy of the record to be edited
+        //     record: record || newRecord,
+
+        //     store: v.getStore(),
+
+        //     viewModel: {
+        //         data: {
+        //             record: record ? record.copy(null) : newRecord,
+        //             ruleJavaClass: v.ruleJavaClass,
+        //             addAction: record ? false : true
+        //         },
+        //         formulas: {
+        //             actionTitle: function (get) {
+        //                 return get('addAction') ? 'Add'.t() : 'Update'.t();
+        //             },
+        //             windowTitle: function (get) {
+        //                 return get('addAction') ? 'Add'.t() : 'Edit'.t();
+        //             }
+
+
+        //             // datetime: function (get) {
+        //             //     return new Date(get('record.expirationTime'));
+        //             // },
+        //             // checked: {
+        //             //     get: function (get) {
+        //             //         return get('record.expirationTime') === 0;
+        //             //     }
+        //             // }
+        //         }
+        //     }
+        // });
+    },
+
+    deleteRecord: function (view, rowIndex, colIndex, item, e, record) {
+        // if (record.get('readOnly')) {
+        //     Ext.MessageBox.alert('Info', '<strong>' + record.get('description') + '</strong> connot be deleted!');
+        //     return;
+        // }
+        record.set('markedForDelete', true);
+    },
+
+    moveUp: function (view, rowIndex, colIndex, item, e, record) {
+        var store = this.getView().down('grid').getStore();
+        store.remove(record, true); // just moving
+        store.insert(rowIndex + item.direction, record);
+    },
+
+
+    // onCellClick: function (table, td, cellIndex, record) {
+    //     var me = this;
+    //     if (td.dataset.columnid === 'conditions') {
+    //         Ext.widget('ung.cmp.ruleeditor', {
+    //             conditions: me.getView().conditions,
+    //             conditionsMap: me.getView().conditionsMap,
+    //             viewModel: {
+    //                 data: {
+    //                     rule: record
+    //                 },
+    //                 formulas: {
+    //                     conditionsData: {
+    //                         bind: '{rule.conditions.list}',
+    //                         get: function (coll) {
+    //                             return coll || [];
+    //                         }
+    //                     },
+    //                 },
+    //             }
+    //         });
+    //     }
+    // },
+
+    conditionsRenderer: function (value) {
+        var view = this.getView(),
+            conds = value.list,
+            resp = [], i, valueRenderer = [];
+
+        for (i = 0; i < conds.length; i += 1) {
+            valueRenderer = [];
+            if (conds[i].conditionType === 'SRC_INTF' || conds[i].conditionType === 'DST_INTF') {
+                conds[i].value.toString().split(',').forEach(function (intfff) {
+                    valueRenderer.push(Util.interfacesListNamesMap()[intfff]);
+                });
+            } else {
+                valueRenderer = conds[i].value.toString().split(',');
+            }
+            resp.push(view.conditionsMap[conds[i].conditionType].displayName + '<strong>' + (conds[i].invert ? ' &nrArr; ' : ' &rArr; ') + '<span class="cond-val ' + (conds[i].invert ? 'invert' : '') + '">' + valueRenderer.join(', ') + '</span>' + '</strong>');
+        }
+        return resp.join(' &nbsp;&bull;&nbsp; ');
+    },
+
+    conditionRenderer: function (val) {
+        return this.getView().conditionsMap[val].displayName;
+    },
+
+    onDropRecord: function () {
+        this.getView().getStore().isReordered = true;
+    },
+
+    // import/export features
+    importData: function () {
+        Ext.widget('dataimporter', {
+
+        });
+    },
+
+    exportData: function () {
+        // to be implemented
+
+
+        // this.getView().down('#exportForm').submit();
+        // console.log('export');
+        // Ext.Ajax.request({
+        //     method: 'POST',
+        //     url: 'http://localhost:8002/webui/gridSettings', // test url
+        //     params: {
+        //         type: 'export',
+        //         gridName: 'a',
+        //         gridData: 'b'
+        //     },
+        //     success: function (resp) {
+        //         console.log('success');
+        //     },
+        //     failure: function (resp) {
+        //         console.log('fail');
+        //     }
+        // });
+    }
+
+});
+
+Ext.define('Ung.cmp.DataImporter', {
+    extend: 'Ext.window.Window',
+    width: 500,
+    height: 200,
+
+    alias: 'widget.dataimporter',
+
+    title: 'Import Settings'.t(),
+    // controller: 'recordeditor',
+
+    viewModel: {
+        data: {
+            importMode: 'replace'
+        }
+    },
+    actions: {
+        import: {
+            text: 'Import'.t(),
+            formBind: true,
+            iconCls: 'fa fa-check',
+            handler: function (btn) {
+                console.log(btn.up('form'));
+                btn.up('form').submit({
+                    waitMsg: 'Please wait while the settings are uploaded...'.t(),
+                    success: function () {
+                        console.log('success');
+                    },
+                    failure: function () {
+                        console.log('failure');
+                    }
+                });
+            }
+            // handler: 'onApply'
+        },
+        cancel: {
+            text: 'Cancel',
+            iconCls: 'fa fa-check',
+            // handler: 'onCancel'
+        }
+    },
+
+    autoShow: true,
+    modal: true,
+    constrain: true,
+    layout: 'fit',
+    bodyStyle: {
+        background: '#FFF'
+    },
+
+    items: [{
+        xtype: 'form',
+        bodyPadding: 10,
+        bbar: ['->', '@cancel', '@import'],
+        name: 'importSettingsForm',
+        // url: 'gridSettings',
+        url: 'http://localhost:8002/webui/gridSettings',
+        border: false,
+        items: [{
+            xtype: 'radiogroup',
+            // fieldLabel: 'Two Columns',
+            // Arrange radio buttons into two columns, distributed vertically
+            columns: 1,
+            vertical: true,
+            simpleValue: true,
+            bind: '{importMode}',
+            items: [
+                { boxLabel: 'Replace current settings'.t(), name: 'importMode', inputValue: 'replace' },
+                { boxLabel: 'Prepend to current settings'.t(), name: 'importMode', inputValue: 'prepend'},
+                { boxLabel: 'Append to current settings'.t(), name: 'importMode', inputValue: 'append' }
+            ]
+        }, {
+            xtype: 'filefield',
+            width: '100%',
+            fieldLabel: 'with settings from'.t(),
+            labelAlign: 'top',
+            // name: 'import_settings_textfield',
+            // width: 450,
+            // labelWidth: 50,
+            allowBlank: false,
+            validateOnBlur: false,
+            // listeners: {
+            //     afterrender: function(field){
+            //         document.getElementById(field.getId()).addEventListener(
+            //             'change',
+            //             function(event){
+            //                 Ext.getCmp(this.id).eventFiles = event.target.files;
+            //             },
+            //             false
+            //         );
+            //     }
+            // }
+        }, {
+            xtype: 'hidden',
+            name: 'type',
+            value: 'import'
+        }]
+    }],
+});
+
+Ext.define ('Ung.model.Condition', {
+    extend: 'Ext.data.Model' ,
+    fields: [
+        { name: 'conditionType', type: 'string' },
+        { name: 'invert', type: 'boolean', defaultValue: false },
+        { name: 'javaClass', type: 'string' },
+        { name: 'value', type: 'auto', defaultValue: '' }
+    ],
+    proxy: {
+        autoLoad: true,
+        type: 'memory',
+        reader: {
+            type: 'json'
+        }
+    }
 });
 
 Ext.define('Ung.widget.ReportModel', {
@@ -2942,6 +6432,748 @@ Ext.define('Ung.widget.NetworkLayout', {
     // }
 });
 
+Ext.define('Ung.cmp.RecordEditorController', {
+    extend: 'Ext.app.ViewController',
+    alias: 'controller.recordeditor',
+
+    control: {
+        '#': {
+            beforerender: 'onBeforeRender',
+            afterrender: 'onAfterRender',
+            // close: 'onDestroy'
+            // beforerender: 'onBeforeRender',
+            // close: 'onClose',
+        },
+        'grid': {
+            afterrender: 'onConditionsRender'
+        }
+    },
+
+    conditionsGrid: {
+        xtype: 'grid',
+        trackMouseOver: false,
+        disableSelection: true,
+        sortableColumns: false,
+        enableColumnHide: false,
+        padding: '10 0',
+        tbar: ['@addCondition'],
+        bind: {
+            store: {
+                model: 'Ung.model.Condition',
+                data: '{record.conditions.list}'
+            }
+        },
+        viewConfig: {
+            emptyText: '<p style="text-align: center; margin: 0; line-height: 2"><i class="fa fa-exclamation-triangle fa-2x"></i> <br/>No Conditions! Add from the menu...</p>',
+            stripeRows: false,
+        },
+        columns: [{
+            header: 'Type'.t(),
+            menuDisabled: true,
+            dataIndex: 'conditionType',
+            align: 'right',
+            width: 200,
+            renderer: 'conditionRenderer'
+        }, {
+            xtype: 'widgetcolumn',
+            menuDisabled: true,
+            width: 80,
+            resizable: false,
+            // widget: {
+            //     xtype: 'combo',
+            //     editable: false,
+            //     bind: '{record.invert}',
+            //     store: [[true, 'is NOT'.t()], [false, 'is'.t()]]
+            // }
+            widget: {
+                xtype: 'segmentedbutton',
+                bind: '{record.invert}',
+                // bind: {
+                //     value: '{record.invert}',
+                // },
+                items: [{
+                    // text: '&rArr;',
+                    iconCls: 'fa fa-check fa-green',
+                    value: false
+                }, {
+                    // text: '&nrArr;',
+                    iconCls: 'fa fa-ban fa-red',
+                    value: true
+                }]
+            }
+        }, {
+            header: 'Value'.t(),
+            xtype: 'widgetcolumn',
+            menuDisabled: true,
+            sortable: false,
+            flex: 1,
+            widget: {
+                xtype: 'container',
+                padding: '0 3'
+                // layout: {
+                //     type: 'hbox'
+                // }
+            },
+            onWidgetAttach: 'onWidgetAttach'
+        }, {
+            xtype: 'actioncolumn',
+            menuDisabled: true,
+            sortable: false,
+            width: 30,
+            align: 'center',
+            iconCls: 'fa fa-minus-circle fa-red',
+            tdCls: 'action-cell-cond',
+            handler: 'removeCondition'
+        }]
+    },
+
+
+    onBeforeRender: function (v) {
+        this.mainGrid = v.up('grid');
+        this.getViewModel().set('record', v.record);
+    },
+
+    onAfterRender: function (view) {
+        var fields = this.mainGrid.editorFields, form = view.down('form');
+        // add editable column fields into the form
+        for (var i = 0; i < fields.length; i++) {
+            if (fields[i].dataIndex !== 'conditions') {
+                form.add(fields[i]);
+            } else {
+                form.add({
+                    xtype: 'component',
+                    padding: '10 0 0 0',
+                    html: '<strong>' + 'If all of the following conditions are met:'.t() + '</strong>'
+                });
+                form.add(this.conditionsGrid);
+                form.add({
+                    xtype: 'component',
+                    padding: '0 0 10 0',
+                    html: '<strong>' + view.actionDescription + '</strong>'
+                });
+            }
+        }
+        // form.isValid();
+    },
+
+    onApply: function () {
+        var v = this.getView(),
+            vm = this.getViewModel(),
+            store;
+
+        // if conditions grid
+        if (v.down('grid')) {
+            store = v.down('grid').getStore();
+
+            if (store.getModifiedRecords().length > 0 || store.getRemovedRecords().length > 0 || store.getNewRecords().length > 0) {
+                v.record.set('conditions', {
+                    javaClass: 'java.util.LinkedList',
+                    list: Ext.Array.pluck(store.getRange(), 'data')
+                });
+            }
+        }
+
+        for (var field in vm.get('record').modified) {
+            if (field !== 'conditions') {
+                v.record.set(field, vm.get('record').get(field));
+            }
+        }
+
+        if (v.action === 'add') {
+            this.mainGrid.getStore().add(v.record);
+        }
+        v.close();
+    },
+
+    onCancel: function () {
+        this.getView().close();
+    },
+    // conditions grid
+
+    onConditionsRender: function (conditionsGrid) {
+        var conds = this.mainGrid.conditions, menuConditions = [], i;
+
+        // when record is modified update conditions menu
+        this.recordBind = this.getViewModel().bind({
+            bindTo: '{record}',
+        }, this.setMenuConditions);
+
+        // create and add conditions to the menu
+        for (i = 0; i < conds.length; i += 1) {
+            menuConditions.push({
+                text: conds[i].displayName,
+                conditionType: conds[i].name,
+                index: i
+            });
+        }
+
+        conditionsGrid.down('#addConditionBtn').setMenu({
+            showSeparator: false,
+            plain: true,
+            items: menuConditions,
+            mouseLeaveDelay: 0,
+            listeners: {
+                click: 'addCondition'
+            }
+        });
+    },
+
+    /**
+     * Updates the disabled/enabled status of the conditions in the menu
+     */
+    setMenuConditions: function () {
+        var conditionsGrid = this.getView().down('grid'),
+            menu = conditionsGrid.down('#addConditionBtn').getMenu(),
+            store = conditionsGrid.getStore();
+        menu.items.each(function (item) {
+            item.setDisabled(store.findRecord('conditionType', item.conditionType) ? true : false);
+        });
+    },
+
+    /**
+     * Adds a new condition for the edited rule
+     */
+    addCondition: function (menu, item) {
+        var newCond = {
+            conditionType: item.conditionType,
+            invert: false,
+            javaClass: this.getViewModel().get('ruleJavaClass'),
+            value: ''
+        };
+        this.getView().down('grid').getStore().add(newCond);
+        this.setMenuConditions();
+    },
+
+    /**
+     * Removes a condition from the rule
+     */
+    removeCondition: function (view, rowIndex, colIndex, item, e, record) {
+        // record.drop();
+        this.getView().down('grid').getStore().remove(record);
+        this.setMenuConditions();
+    },
+
+    /**
+     * Renders the condition name in the grid
+     */
+    conditionRenderer: function (val) {
+        return '<strong>' + this.mainGrid.conditionsMap[val].displayName + ':</strong>';
+    },
+
+    /**
+     * Adds specific condition editor based on it's defined type
+     */
+    onWidgetAttach: function (column, container, record) {
+        container.removeAll(true);
+
+        var condition = this.mainGrid.conditionsMap[record.get('conditionType')], i, ckItems = [];
+
+        // if (container.items.length >= 1) {
+        //     return;
+        // }
+
+        switch (condition.type) {
+        case 'boolean':
+            container.add({
+                xtype: 'component',
+                padding: 3,
+                html: 'True'.t()
+            });
+            break;
+        case 'textfield':
+            container.add({
+                xtype: 'textfield',
+                style: { margin: 0 },
+                bind: {
+                    value: '{record.value}'
+                },
+                vtype: condition.vtype
+            });
+            break;
+        case 'numberfield':
+            container.add({
+                xtype: 'numberfield',
+                style: { margin: 0 },
+                bind: {
+                    value: '{record.value}'
+                },
+                vtype: condition.vtype
+            });
+            break;
+        case 'checkboxgroup':
+            // console.log(condition.values);
+            // var values_arr = (cond.value !== null && cond.value.length > 0) ? cond.value.split(',') : [], i, ckItems = [];
+            for (i = 0; i < condition.values.length; i += 1) {
+                ckItems.push({
+                    inputValue: condition.values[i][0],
+                    boxLabel: condition.values[i][1]
+                });
+            }
+            container.add({
+                xtype: 'checkboxgroup',
+                bind: {
+                    value: '{record.value}'
+                },
+                columns: 4,
+                vertical: true,
+                defaults: {
+                    padding: '0 10 0 0'
+                },
+                items: ckItems
+            });
+        }
+    },
+
+    onDestroy: function () {
+        console.log('destroy');
+        this.recordBind.destroy();
+        this.recordBind = null;
+    }
+});
+
+Ext.define('Ung.overrides.form.CheckboxGroup', {
+    override: 'Ext.form.CheckboxGroup',
+
+    setValue: function(value) {
+        var me    = this,
+            boxes = me.getBoxes(),
+            b,
+            bLen  = boxes.length,
+            box, name,
+            cbValue;
+
+        me.batchChanges(function() {
+            Ext.suspendLayouts();
+            for (b = 0; b < bLen; b++) {
+                box = boxes[b];
+                name = box.getName();
+                cbValue = false;
+
+                if (value) {
+                    var arr_val = value.split(',');
+                    if (Ext.isArray(arr_val)) {
+                        cbValue = Ext.Array.contains(arr_val, box.inputValue);
+                    } else {
+                        // single value, let the checkbox's own setValue handle conversion
+                        cbValue = arr_val;
+                    }
+                }
+                box.setValue(cbValue);
+            }
+            Ext.resumeLayouts(true);
+        });
+        return me;
+    },
+
+    getValue: function() {
+        var values = [],
+            boxes  = this.getBoxes(),
+            b,
+            bLen   = boxes.length,
+            box, name, inputValue, bucket;
+
+        for (b = 0; b < bLen; b++) {
+            box        = boxes[b];
+            name       = box.getName();
+            inputValue = box.inputValue;
+
+            if (box.getValue()) {
+                if (values.hasOwnProperty(name)) {
+                    bucket = values[name];
+                    if (!Ext.isArray(bucket)) {
+                        bucket = values[name] = [bucket];
+                    }
+                    bucket.push(inputValue);
+                } else {
+                    values.push(inputValue);
+                }
+            }
+        }
+
+        return values.join(',');
+    },
+
+});
+Ext.define('Ung.cmp.DateTime', {
+    extend: 'Ext.panel.Panel',
+    alias: 'widget.xdatetime',
+
+    viewModel: {
+        data: {
+            value: ''
+        },
+        formulas: {
+
+            test: {
+                get: function (get) {
+                    console.log('get');
+                    return get('value');
+                },
+                set: function (value) {
+                    console.log('set');
+                    this.set('value', value);
+                }
+            }
+        }
+    },
+
+    items: [{
+        xtype: 'textfield',
+        bind: '{test}'
+        // value: this.date,
+    }]
+
+    // reference: 'field',
+
+    // publishes: ['value'],
+    // twoWayBindable: ['value'],
+
+    // twoWayBindable: ['date'],
+
+    // items: [{
+    //     xtype: 'textfield'
+    // }],
+    // defaultBindProperty: 'value',
+
+});
+
+Ext.define('Ung.cmp.RecordEditor', {
+    extend: 'Ext.window.Window',
+    width: 800,
+    height: 500,
+
+    xtype: 'ung.cmp.recordeditor',
+    requires: [
+        'Ung.cmp.RecordEditorController',
+        'Ung.overrides.form.CheckboxGroup',
+        'Ung.overrides.form.field.VTypes',
+        'Ung.cmp.DateTime'
+    ],
+    controller: 'recordeditor',
+    closeAction: 'destroy',
+
+    viewModel: true,
+    disabled: true,
+    bind: {
+        title: '{windowTitle}',
+        disabled: '{!record}'
+    },
+
+    actions: {
+        apply: {
+            // text: 'Save'.t(),
+            bind: {
+                text: '{actionTitle}'
+            },
+            formBind: true,
+            iconCls: 'fa fa-check',
+            handler: 'onApply'
+        },
+        cancel: {
+            text: 'Cancel',
+            iconCls: 'fa fa-ban',
+            handler: 'onCancel'
+        },
+        addCondition: {
+            itemId: 'addConditionBtn',
+            text: 'Add Condition'.t(),
+            iconCls: 'fa fa-plus'
+        }
+    },
+
+
+    bodyStyle: {
+        // background: '#FFF'
+    },
+
+    autoShow: true,
+    // shadow: false,
+
+    // layout: 'border',
+
+    modal: true,
+    constrain: true,
+    // layout: {
+    //     type: 'vbox',
+    //     align: 'stretch'
+    // },
+    // tbar: [{
+    //     itemId: 'addConditionBtn',
+    //     text: 'Add Condition'.t(),
+    //     iconCls: 'fa fa-plus',
+    //     // handler: 'onAdd'
+    // }],
+
+
+    // scrollable: true,
+
+    layout: 'fit',
+
+    items: [{
+        xtype: 'form',
+        // region: 'center',
+        scrollable: 'y',
+        bodyPadding: 10,
+        border: false,
+        layout: 'anchor',
+        defaults: {
+            anchor: '100%',
+            labelWidth: 180,
+            labelAlign : 'right',
+        },
+        items: [],
+        buttons: ['@cancel', '@apply']
+    }],
+
+    // initComponent: function () {
+    //     var items = this.items;
+    //     var form = items[0];
+
+    //     for (var i = 0; i < this.fields.length; i++) {
+    //         console.log();
+    //         if (this.fields[i].editor) {
+    //             if (this.fields[i].getItemId() !== 'conditions') {
+    //                 form.items.push(this.fields[i].editor);
+    //             } else {
+    //                 this.items.push({
+    //                     xtype: 'component',
+    //                     html: 'some panel'
+    //                 });
+    //             }
+    //         }
+    //     }
+
+    //     this.callParent(arguments);
+
+    // }
+});
+
+Ext.define('Ung.cmp.Grid', {
+    extend: 'Ext.grid.Panel',
+    alias: 'widget.ungrid',
+
+    requires: [
+        'Ung.cmp.GridController',
+        'Ung.cmp.RecordEditor',
+        'Ung.cmp.DataImporter',
+        'Ung.model.Condition'
+    ],
+
+    controller: 'ungrid',
+
+    actions: {
+        add: { text: 'Add'.t(), iconCls: 'fa fa-plus-circle fa-lg', handler: 'addRecord' },
+        import: { text: 'Import'.t(), handler: 'importData' },
+        export: { text: 'Export'.t(), handler: 'exportData' },
+        edit: {
+            iconCls: 'fa fa-pencil',
+            tooltip: 'Edit record'.t(),
+            handler: 'editRecord',
+            isDisabled: function (table, rowIndex, colIndex, item, record) {
+                return record.get('readOnly') || false;
+            }
+        },
+        delete: {
+            iconCls: 'fa fa-trash-o fa-red',
+            tooltip: 'Delete record'.t(),
+            handler: 'deleteRecord',
+            isDisabled: function (table, rowIndex, colIndex, item, record) {
+                return record.get('readOnly') || false;
+            }
+        },
+        moveUp: { iconCls: 'fa fa-chevron-up', tooltip: 'Move Up'.t(), direction: -1, handler: 'moveUp' },
+        moveDown: { iconCls: 'fa fa-chevron-down', tooltip: 'Move Down'.t(), direction: 1, handler: 'moveUp' }
+    },
+
+    layout: 'fit',
+    trackMouseOver: false,
+    sortableColumns: false,
+    enableColumnHide: false,
+    forceFit: true,
+    // columnLines: true,
+
+    selModel: {
+        type: 'cellmodel'
+    },
+    viewConfig: {
+        emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-exclamation-triangle fa-2x"></i> <br/>No Data! Add from the menu...</p>',
+        stripeRows: false,
+        getRowClass: function(record) {
+            if (record.get('markedForDelete')) {
+                return 'mark-delete';
+            }
+            if (record.get('markedForNew')) {
+                return 'mark-new';
+            }
+            if (record.get('readOnly')) {
+                return 'mark-readonly';
+            }
+        }
+    },
+
+    // bbar: [{
+    //     xtype: 'form',
+    //     itemId: 'exportForm',
+    //     url: 'http://localhost:8002/webui/gridSettings',
+    //     defaults: {
+    //         xtype: 'textfield'
+    //     },
+    //     items: [{
+    //         name: 'gridName',
+    //     }, {
+    //         name: 'gridData',
+    //     }, {
+    //         name: 'type',
+    //         value: 'export'
+    //     }]
+    // }],
+
+    config: {
+        // toolbarFeatures: null, // ['add', 'delete', 'revert', 'importexport'] add specific buttons to top toolbar
+        // columnFeatures: null, // ['delete', 'edit', 'reorder', 'select'] add specific actioncolumns to grid
+        // inlineEdit: null, // 'cell' or 'row',
+        // dataProperty: null, // the settings data property, e.g. settings.dataProperty.list
+
+        // recordActions: null,
+
+        // conditions: null,
+        // conditionsMap: null
+    },
+
+    plugins: {
+        ptype: 'cellediting',
+        clicksToEdit: 1
+    },
+
+    initComponent: function () {
+        // to revisit the way columns are attached
+        var columns = Ext.clone(this.columns), i;
+
+        if (this.recordActions) {
+            for (i = 0; i < this.recordActions.length; i += 1) {
+                var action = this.recordActions[i];
+                if (action === '@edit' || action === '@delete') {
+                    columns.push({
+                        xtype: 'actioncolumn',
+                        width: 60,
+                        header: action === '@edit' ? 'Edit'.t() : 'Delete'.t(),
+                        align: 'center',
+                        resizable: false,
+                        tdCls: 'action-cell',
+                        items: [action]
+                    });
+                }
+                if (action === '@reorder') {
+                    Ext.apply(this.viewConfig, {
+                        plugins: {
+                            ptype: 'gridviewdragdrop',
+                            dragText: 'Drag and drop to reorganize'.t(),
+                            // allow drag only from drag column icons
+                            dragZone: {
+                                onBeforeDrag: function (data, e) {
+                                    return Ext.get(e.target).hasCls('fa-arrows');
+                                }
+                            }
+                        }
+                    });
+                    columns.unshift({
+                        xtype: 'gridcolumn',
+                        header: '<i class="fa fa-sort"></i>',
+                        align: 'center',
+                        width: 30,
+                        resizable: false,
+                        tdCls: 'action-cell',
+                        // iconCls: 'fa fa-arrows'
+                        renderer: function() {
+                            return '<i class="fa fa-arrows" style="cursor: move;"></i>';
+                        },
+                    });
+                }
+            }
+            Ext.apply(this, {
+                columns: columns
+            });
+        }
+        this.callParent(arguments);
+    }
+
+});
+
+Ext.define('Ung.config.network.Network', {
+    extend: 'Ext.tab.Panel',
+    alias: 'widget.config.network',
+
+    requires: [
+        'Ung.config.network.NetworkController',
+        'Ung.config.network.NetworkModel',
+        'Ung.config.network.Interface',
+
+        // 'Ung.view.grid.Grid',
+        // 'Ung.store.RuleConditions',
+        'Ung.store.Rule',
+        'Ung.model.Rule',
+        'Ung.cmp.Grid'
+    ],
+
+    controller: 'config.network',
+
+    viewModel: {
+        type: 'config.network'
+    },
+
+    // tabPosition: 'left',
+    // tabRotation: 0,
+    // tabStretchMax: false,
+
+    dockedItems: [{
+        xtype: 'toolbar',
+        weight: -10,
+        border: false,
+        items: [{
+            text: 'Back',
+            iconCls: 'fa fa-arrow-circle-left fa-lg',
+            hrefTarget: '_self',
+            href: '#config'
+        }, '-', {
+            xtype: 'tbtext',
+            html: '<strong>' + 'Network'.t() + '</strong>'
+        }],
+    }, {
+        xtype: 'toolbar',
+        dock: 'bottom',
+        border: false,
+        items: ['->', {
+            text: 'Apply Changes'.t(),
+            scale: 'large',
+            iconCls: 'fa fa-floppy-o fa-lg',
+            handler: 'saveSettings'
+        }]
+    }],
+
+    items: [{
+        xtype: 'config.network.interfaces'
+    }, {
+        xtype: 'config.network.hostname'
+    }, {
+        xtype: 'config.network.services'
+    }, {
+        xtype: 'config.network.portforwardrules'
+    }, {
+        xtype: 'config.network.natrules'
+    }, {
+        xtype: 'config.network.bypassrules'
+    }, {
+        xtype: 'config.network.routes'
+    }, {
+        xtype: 'config.network.dnsserver'
+    }, {
+        xtype: 'config.network.dhcpserver'
+    }, {
+        xtype: 'config.network.advanced'
+    }, {
+        xtype: 'config.network.troubleshooting'
+    }]
+});
 Ext.define('Ung.chart.TimeChartController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.timechart',
@@ -4877,6 +9109,12 @@ Ext.define('Ung.store.Countries', {
     ]
 });
 
+Ext.define('Ung.store.Categories', {
+    extend: 'Ext.data.Store',
+    storeId: 'categories',
+    model: 'Ung.model.Category'
+});
+
 Ext.define('Ung.store.UnavailableApps', {
     extend: 'Ext.data.Store',
     storeId: 'unavailableApps',
@@ -5200,27 +9438,6 @@ Ext.define('Ung.store.Sessions', {
     extend: 'Ext.data.Store',
     storeId: 'sessions',
     model: 'Ung.model.Session'
-});
-
-Ext.define ('Ung.model.Category', {
-    extend: 'Ext.data.Model' ,
-    fields: [
-        { name: 'name', type: 'string' },
-        { name: 'displayName', type: 'string' },
-        { name: 'icon', type: 'string' }
-    ],
-    proxy: {
-        type: 'memory',
-        reader: {
-            type: 'json'
-        }
-    }
-});
-
-Ext.define('Ung.store.Categories', {
-    extend: 'Ext.data.Store',
-    storeId: 'categories',
-    model: 'Ung.model.Category'
 });
 
 Ext.define('Ung.controller.Global', {
@@ -5550,7 +9767,7 @@ Ext.define('Ung.Application', {
         // });
 
         // uncomment this to retreive the class load order inside browser
-        // Util.getClassOrder();
+        Util.getClassOrder();
     },
 
     loadMainView: function () {

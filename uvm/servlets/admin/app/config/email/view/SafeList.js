@@ -28,17 +28,16 @@ Ext.define('Ung.config.email.view.SafeList', {
         xtype: 'ungrid',
         itemId: 'safeListStore',
         region: 'center',
-
         title: 'Global Safe List'.t(),
 
-        tbar: ['@add'],
-        recordActions: ['@delete'],
+        bind: '{globalSL}',
 
+        tbar: ['@addInline'],
+        recordActions: ['@delete'],
+        // listProperty: '',
         emptyRow: {
             emailAddress: 'email@' + rpc.hostname + '.com'
         },
-
-        bind: '{globalSL}',
 
         columns: [{
             header: 'Email Address'.t(),
