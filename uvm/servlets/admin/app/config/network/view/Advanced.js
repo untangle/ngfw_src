@@ -257,13 +257,13 @@ Ext.define('Ung.config.network.view.Advanced', {
                         },
 
                         conditions: [
-                            { name: 'DST_LOCAL', displayName: 'Destined Local'.t(), type: 'boolean' },
-                            { name: 'DST_ADDR', displayName: 'Destination Address'.t(), type: 'textfield', vtype:'ipMatcher' },
-                            { name: 'DST_PORT', displayName: 'Destination Port'.t(), type: 'textfield', vtype:'portMatcher' },
-                            { name: 'PROTOCOL', displayName: 'Protocol'.t(), type: 'checkboxgroup', values: [['TCP','TCP'], ['UDP','UDP']] },
-                            { name: 'SRC_INTF', displayName: 'Source Interface'.t(), type: 'checkboxgroup', values: Util.getInterfaceList(true, true) },
-                            { name: 'SRC_ADDR', displayName: 'Source Address'.t(), type: 'textfield', vtype:'ipMatcher' },
-                            { name: 'SRC_PORT', displayName: 'Source Port'.t(), type: 'numberfield', vtype:'portMatcher' }
+                            Cond.dstLocal,
+                            Cond.dstAddr,
+                            Cond.dstPort,
+                            Cond.protocol([['TCP','TCP'], ['UDP','UDP']]),
+                            Cond.srcIntf,
+                            Cond.srcAddr,
+                            Cond.srcPort
                         ],
 
                         label: 'Perform the following action(s):'.t(),
@@ -462,15 +462,15 @@ Ext.define('Ung.config.network.view.Advanced', {
                 ruleJavaClass: 'com.untangle.uvm.network.FilterRuleCondition',
 
                 conditions: [
-                    { name: 'DST_LOCAL', displayName: 'Destined Local'.t(), type: 'boolean' },
-                    { name: 'DST_ADDR', displayName: 'Destination Address'.t(), type: 'textfield', vtype:'ipMatcher' },
-                    { name: 'DST_PORT', displayName: 'Destination Port'.t(), type: 'textfield', vtype:'portMatcher' },
-                    { name: 'DST_INTF', displayName: 'Destination Interface'.t(), type: 'checkboxgroup', values: Util.getInterfaceList(true, true) },
-                    { name: 'SRC_MAC' , displayName: 'Source MAC'.t(), type: 'textfield' },
-                    { name: 'SRC_ADDR', displayName: 'Source Address'.t(), type: 'textfield', vtype: 'ipMatcher'},
-                    { name: 'SRC_PORT', displayName: 'Source Port'.t(), type: 'textfield', vtype: 'portMatcher' },
-                    { name: 'SRC_INTF', displayName: 'Source Interface'.t(), type: 'checkboxgroup', values: Util.getInterfaceList(true, true) },
-                    { name: 'PROTOCOL', displayName: 'Protocol'.t(), type: 'checkboxgroup', values: [['TCP','TCP'],['UDP','UDP'],['ICMP','ICMP'],['GRE','GRE'],['ESP','ESP'],['AH','AH'],['SCTP','SCTP']] }
+                    Cond.dstLocal,
+                    Cond.dstAddr,
+                    Cond.dstPort,
+                    Cond.dstIntf,
+                    Cond.srcMac,
+                    Cond.srcAddr,
+                    Cond.srcPort,
+                    Cond.srcIntf,
+                    Cond.protocol([['TCP','TCP'],['UDP','UDP'],['ICMP','ICMP'],['GRE','GRE'],['ESP','ESP'],['AH','AH'],['SCTP','SCTP']])
                 ],
 
                 emptyRow: {
@@ -549,17 +549,16 @@ Ext.define('Ung.config.network.view.Advanced', {
                 listProperty: 'settings.inputFilterRules.list',
                 ruleJavaClass: 'com.untangle.uvm.network.FilterRuleCondition',
 
-
                 conditions: [
-                    { name: 'DST_LOCAL', displayName: 'Destined Local'.t(), type: 'boolean' },
-                    { name: 'DST_ADDR', displayName: 'Destination Address'.t(), type: 'textfield', vtype:'ipMatcher' },
-                    { name: 'DST_PORT', displayName: 'Destination Port'.t(), type: 'textfield', vtype:'portMatcher' },
-                    { name: 'DST_INTF', displayName: 'Destination Interface'.t(), type: 'checkboxgroup', values: Util.getInterfaceList(true, true) },
-                    { name: 'SRC_MAC' , displayName: 'Source MAC'.t(), type: 'textfield' },
-                    { name: 'SRC_ADDR', displayName: 'Source Address'.t(), type: 'textfield', vtype: 'ipMatcher'},
-                    { name: 'SRC_PORT', displayName: 'Source Port'.t(), type: 'textfield', vtype: 'portMatcher' },
-                    { name: 'SRC_INTF', displayName: 'Source Interface'.t(), type: 'checkboxgroup', values: Util.getInterfaceList(true, true) },
-                    { name: 'PROTOCOL', displayName: 'Protocol'.t(), type: 'checkboxgroup', values: [['TCP','TCP'],['UDP','UDP'],['ICMP','ICMP'],['GRE','GRE'],['ESP','ESP'],['AH','AH'],['SCTP','SCTP']] }
+                    Cond.dstLocal,
+                    Cond.dstAddr,
+                    Cond.dstPort,
+                    Cond.dstIntf,
+                    Cond.srcMac,
+                    Cond.srcAddr,
+                    Cond.srcPort,
+                    Cond.srcIntf,
+                    Cond.protocol([['TCP','TCP'],['UDP','UDP'],['ICMP','ICMP'],['GRE','GRE'],['ESP','ESP'],['AH','AH'],['SCTP','SCTP']])
                 ],
 
                 emptyRow: {
@@ -750,9 +749,9 @@ Ext.define('Ung.config.network.view.Advanced', {
                 ruleJavaClass: 'com.untangle.uvm.network.UpnpRuleCondition',
 
                 conditions: [
-                    { name: 'DST_PORT', displayName: 'Destination Port'.t(), type: 'textfield', vtype: 'portMatcher' },
-                    { name: 'SRC_ADDR', displayName: 'Source Address'.t(), type: 'textfield', vtype: 'ipMatcher' },
-                    { name: 'SRC_PORT', displayName: 'Source Port'.t(), type: 'textfield', vtype: 'portMatcher' }
+                    Cond.dstPort,
+                    Cond.srcAddr,
+                    Cond.srcPort
                 ],
 
                 label: 'Perform the following action(s):'.t(),

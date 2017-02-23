@@ -95,6 +95,8 @@
         "Util": true,
         "Metrics": true,
         "rpc": true,
-        "Fields": true
+        "Fields": true,
+        "Cond": true,
+        "resourcesBaseHref": true
     }
 }

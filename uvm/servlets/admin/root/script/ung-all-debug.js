@@ -388,13 +388,7 @@ Ext.define('Ung.util.Util', {
                 align: 'stretch',
                 pack: 'end'
             },
-            items: [
-            // {
-            //     xtype: 'component',
-            //     padding: 10,
-            //     html: 'Copy this list into <strong>.buildorder</strong> file!'
-            // }, {
-                {
+            items: [{
                 xtype: 'textarea',
                 border: false,
                 flex: 1,
@@ -4262,6 +4256,7 @@ Ext.define('Ung.view.config.Config', {
     requires: [
         'Ung.view.config.ConfigController',
         'Ung.cmp.EditorFields',
+        'Ung.cmp.Conditions',
         'Ung.overrides.form.field.Date'
         // 'Ung.view.config.ConfigModel'
     ],
@@ -5505,11 +5500,7 @@ Ext.define('Ung.view.reports.Reports', {
                             }]
                         }]
                     }],
-                    fbar: [/*{
-                        text: Util.iconTitle('Preview'.t(), 'rotate_left-16'),
-                        itemId: 'applyBtn',
-                        formBind: true
-                    },*/ {
+                    fbar: [{
                         text: 'Remove'.t(),
                         iconCls: 'fa fa-trash fa-lg',
                         itemId: 'removeBtn',
@@ -5560,88 +5551,34 @@ Ext.define('Ung.cmp.GridController', {
 
 
     addRecord: function () {
-        var v = this.getView(), newRecord;
-        // if there are no editor fields defined, the record is added inline and has inline editing capability
-        if (!v.editorFields) {
+        this.editorWin(null);
+    },
+
+    addRecordInline: function () {
+        var v = this.getView(),
             newRecord = Ext.create('Ung.model.Rule', Ext.clone(v.emptyRow));
-            v.getStore().add(newRecord);
-        } else {
-            this.editorWin(null);
-        }
+        newRecord.set('markedForNew', true);
+        v.getStore().add(newRecord);
     },
 
     editRecord: function (view, rowIndex, colIndex, item, e, record) {
-        // if (record.get('readOnly')) {
-        //     Ext.MessageBox.alert('Info', '<strong>' + record.get('description') + '</strong> connot be edited!');
-        //     return;
-        // }
         this.editorWin(record);
     },
 
     editorWin: function (record) {
-        var v = this.getView(), newRecord;
-        // open recordeditor window
-
-        if (!record) {
-            newRecord = Ext.create('Ung.model.Rule', Ext.clone(v.emptyRow));
-            newRecord.set('markedForNew', true);
-        }
-        console.log(record);
-
-        this.dialog = v.add({
+        this.dialog = this.getView().add({
             xtype: 'ung.cmp.recordeditor',
-            action: record ? 'edit' : 'add',
-            record: record || newRecord
+            record: record
         });
         this.dialog.show();
-
-
-        // Ext.widget('ung.cmp.recordeditor', {
-        //     action: record ? 'edit' : 'add',
-        //     editorFields: v.editorFields, // form fields needed to be displayed in the editor taken from grid columns
-        //     actionDescription: v.actionDescription || 'Perform the following action(s):'.t(), // the label in the form
-        //     conditions: v.conditions, // the available conditions which can be applied
-        //     conditionsMap: v.conditionsMap, // a map with the above conditions as helper
-        //     // ruleJavaClass: v.ruleJavaClass,
-        //     // recordCopy: record.copy(null), // a clean copy of the record to be edited
-        //     record: record || newRecord,
-
-        //     store: v.getStore(),
-
-        //     viewModel: {
-        //         data: {
-        //             record: record ? record.copy(null) : newRecord,
-        //             ruleJavaClass: v.ruleJavaClass,
-        //             addAction: record ? false : true
-        //         },
-        //         formulas: {
-        //             actionTitle: function (get) {
-        //                 return get('addAction') ? 'Add'.t() : 'Update'.t();
-        //             },
-        //             windowTitle: function (get) {
-        //                 return get('addAction') ? 'Add'.t() : 'Edit'.t();
-        //             }
-
-
-        //             // datetime: function (get) {
-        //             //     return new Date(get('record.expirationTime'));
-        //             // },
-        //             // checked: {
-        //             //     get: function (get) {
-        //             //         return get('record.expirationTime') === 0;
-        //             //     }
-        //             // }
-        //         }
-        //     }
-        // });
     },
 
     deleteRecord: function (view, rowIndex, colIndex, item, e, record) {
-        // if (record.get('readOnly')) {
-        //     Ext.MessageBox.alert('Info', '<strong>' + record.get('description') + '</strong> connot be deleted!');
-        //     return;
-        // }
-        record.set('markedForDelete', true);
+        if (record.get('markedForNew')) {
+            record.drop();
+        } else {
+            record.set('markedForDelete', true);
+        }
     },
 
     moveUp: function (view, rowIndex, colIndex, item, e, record) {
@@ -6477,7 +6414,7 @@ Ext.define('Ung.cmp.RecordEditorController', {
         }, {
             xtype: 'widgetcolumn',
             menuDisabled: true,
-            width: 80,
+            width: 120,
             resizable: false,
             // widget: {
             //     xtype: 'combo',
@@ -6492,12 +6429,12 @@ Ext.define('Ung.cmp.RecordEditorController', {
                 //     value: '{record.invert}',
                 // },
                 items: [{
-                    // text: '&rArr;',
-                    iconCls: 'fa fa-check fa-green',
+                    text: 'is'.t(),
+                    // iconCls: 'fa fa-check fa-green',
                     value: false
                 }, {
-                    // text: '&nrArr;',
-                    iconCls: 'fa fa-ban fa-red',
+                    text: 'is NOT'.t(),
+                    // iconCls: 'fa fa-ban fa-red',
                     value: true
                 }]
             }
@@ -6530,7 +6467,23 @@ Ext.define('Ung.cmp.RecordEditorController', {
 
     onBeforeRender: function (v) {
         this.mainGrid = v.up('grid');
-        this.getViewModel().set('record', v.record);
+
+        if (!v.record) {
+            v.record = Ext.create('Ung.model.Rule', Ext.clone(this.mainGrid.emptyRow));
+            v.record.set('markedForNew', true);
+            this.action = 'add';
+            this.getViewModel().set({
+                record: v.record,
+                windowTitle: 'Add'.t()
+            });
+        } else {
+            this.getViewModel().set({
+                record: v.record.copy(null),
+                windowTitle: 'Edit'.t()
+            });
+        }
+
+
     },
 
     onAfterRender: function (view) {
@@ -6549,7 +6502,7 @@ Ext.define('Ung.cmp.RecordEditorController', {
                 form.add({
                     xtype: 'component',
                     padding: '0 0 10 0',
-                    html: '<strong>' + view.actionDescription + '</strong>'
+                    html: '<strong>' + (this.mainGrid.actionText || 'Perform the following action(s):'.t()) + '</strong>'
                 });
             }
         }
@@ -6562,24 +6515,25 @@ Ext.define('Ung.cmp.RecordEditorController', {
             store;
 
         // if conditions grid
-        if (v.down('grid')) {
-            store = v.down('grid').getStore();
+        if (!this.action) {
+            if (v.down('grid')) {
+                store = v.down('grid').getStore();
 
-            if (store.getModifiedRecords().length > 0 || store.getRemovedRecords().length > 0 || store.getNewRecords().length > 0) {
-                v.record.set('conditions', {
-                    javaClass: 'java.util.LinkedList',
-                    list: Ext.Array.pluck(store.getRange(), 'data')
-                });
+                if (store.getModifiedRecords().length > 0 || store.getRemovedRecords().length > 0 || store.getNewRecords().length > 0) {
+                    v.record.set('conditions', {
+                        javaClass: 'java.util.LinkedList',
+                        list: Ext.Array.pluck(store.getRange(), 'data')
+                    });
+                }
+            }
+
+            for (var field in vm.get('record').modified) {
+                if (field !== 'conditions') {
+                    v.record.set(field, vm.get('record').get(field));
+                }
             }
         }
-
-        for (var field in vm.get('record').modified) {
-            if (field !== 'conditions') {
-                v.record.set(field, vm.get('record').get(field));
-            }
-        }
-
-        if (v.action === 'add') {
+        if (this.action === 'add') {
             this.mainGrid.getStore().add(v.record);
         }
         v.close();
@@ -6861,10 +6815,10 @@ Ext.define('Ung.cmp.RecordEditor', {
 
     actions: {
         apply: {
-            // text: 'Save'.t(),
-            bind: {
-                text: '{actionTitle}'
-            },
+            // bind: {
+            //     text: '{actionTitle}'
+            // },
+            text: 'Done'.t(),
             formBind: true,
             iconCls: 'fa fa-check',
             handler: 'onApply'
@@ -6963,6 +6917,7 @@ Ext.define('Ung.cmp.Grid', {
 
     actions: {
         add: { text: 'Add'.t(), iconCls: 'fa fa-plus-circle fa-lg', handler: 'addRecord' },
+        addInline: { text: 'Add'.t(), iconCls: 'fa fa-plus-circle fa-lg', handler: 'addRecordInline' },
         import: { text: 'Import'.t(), handler: 'importData' },
         export: { text: 'Export'.t(), handler: 'exportData' },
         edit: {
@@ -9767,7 +9722,7 @@ Ext.define('Ung.Application', {
         // });
 
         // uncomment this to retreive the class load order inside browser
-        Util.getClassOrder();
+        // Util.getClassOrder();
     },
 
     loadMainView: function () {

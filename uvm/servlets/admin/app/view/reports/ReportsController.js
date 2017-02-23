@@ -310,13 +310,13 @@ Ext.define('Ung.view.reports.ReportsController', {
                            vm.get('startDateTime'),
                            vm.get('endDateTime'))
                 .then(function(result) {
-                result.getNextChunk(function (result2, ex2) {
-                    if (ex2) { Util.exceptionToast(ex2); return false; }
-                    // console.log(result2);
-                    chart.fireEvent('setdata', result2.list);
-                }, 100);
+                    result.getNextChunk(function (result2, ex2) {
+                        if (ex2) { Util.exceptionToast(ex2); return false; }
+                        // console.log(result2);
+                        chart.fireEvent('setdata', result2.list);
+                    }, 100);
 
-            });
+                });
         }
     },
 
@@ -404,9 +404,9 @@ Ext.define('Ung.view.reports.ReportsController', {
 
         Rpc.asyncData('rpc.reportsManager.saveReportEntry', vm.get('report').getData())
             .then(function(result) {
-            vm.get('report').commit();
-            Util.successToast('<span style="color: yellow; font-weight: 600;">' + vm.get('report.title') + '</span> report updated!');
-        });
+                vm.get('report').commit();
+                Util.successToast('<span style="color: yellow; font-weight: 600;">' + vm.get('report.title') + '</span> report updated!');
+            });
     },
 
     removeReport: function () {

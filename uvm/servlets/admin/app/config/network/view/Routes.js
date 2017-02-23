@@ -86,7 +86,7 @@ Ext.define('Ung.config.network.view.Routes', {
             xtype: 'tbtext',
             padding: '8 5',
             // style: { fontSize: '12px' },
-            text: "Current Routes shows the current routing system's configuration and how all traffic will be routed.".t()
+            text: 'Current Routes shows the current routing system\'s configuration and how all traffic will be routed.'.t()
         }, '->', {
             text: 'Refresh Routes'.t(),
             iconCls: 'fa fa-refresh',

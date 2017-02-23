@@ -26,11 +26,11 @@ Ext.define('Ung.config.network.view.Troubleshooting', {
                         '/bin/bash',
                         '-c',
                         ['echo -n "Testing DNS ... " ; success="Successful";',
-                        'dig updates.untangle.com > /dev/null 2>&1; if [ "$?" = "0" ]; then echo "OK"; else echo "FAILED"; success="Failure"; fi;',
-                        'echo -n "Testing TCP Connectivity ... ";',
-                        'echo "GET /" | netcat -q 0 -w 15 updates.untangle.com 80 > /dev/null 2>&1;',
-                        'if [ "$?" = "0" ]; then echo "OK"; else echo "FAILED"; success="Failure"; fi;',
-                        'echo "Test ${success}!"'].join('')
+                            'dig updates.untangle.com > /dev/null 2>&1; if [ "$?" = "0" ]; then echo "OK"; else echo "FAILED"; success="Failure"; fi;',
+                            'echo -n "Testing TCP Connectivity ... ";',
+                            'echo "GET /" | netcat -q 0 -w 15 updates.untangle.com 80 > /dev/null 2>&1;',
+                            'if [ "$?" = "0" ]; then echo "OK"; else echo "FAILED"; success="Failure"; fi;',
+                            'echo "Test ${success}!"'].join('')
                     ]
                 }
             }
@@ -82,7 +82,7 @@ Ext.define('Ung.config.network.view.Troubleshooting', {
                             '/bin/bash',
                             '-c',
                             ['host \'' + get('destination') +'\';',
-                            'if [ "$?" = "0" ]; then echo "Test Successful"; else echo "Test Failure"; fi;'].join('')
+                                'if [ "$?" = "0" ]; then echo "Test Successful"; else echo "Test Failure"; fi;'].join('')
                         ];
                     }
                 }
@@ -120,7 +120,7 @@ Ext.define('Ung.config.network.view.Troubleshooting', {
                             '/bin/bash',
                             '-c',
                             ['echo 1 | netcat -q 0 -v -w 15 \'' + get('destination') + '\' \'' + get('port') +'\';',
-                            'if [ "$?" = "0" ]; then echo "Test Successful"; else echo "Test Failure"; fi;'].join('')
+                                'if [ "$?" = "0" ]; then echo "Test Successful"; else echo "Test Failure"; fi;'].join('')
                         ];
                     }
                 }
@@ -156,7 +156,7 @@ Ext.define('Ung.config.network.view.Troubleshooting', {
                             '/bin/bash',
                             '-c',
                             ['traceroute' + ' -' + get('protocol') + ' ' + get('destination') + ';',
-                            'if [ "$?" = "0" ]; then echo "Test Successful"; else echo "Test Failure"; fi;'].join('')
+                                'if [ "$?" = "0" ]; then echo "Test Successful"; else echo "Test Failure"; fi;'].join('')
                         ];
                     }
                 }
@@ -256,14 +256,14 @@ Ext.define('Ung.config.network.view.Troubleshooting', {
                 },
                 formulas: {
                     command: function (get) {
-                        var traceFixedOptionsTemplate = ["-U", "-l", "-v"];
-                        var traceOverrideOptionsTemplate = ["-n", "-s 65535", "-i " + get('interface')];
+                        var traceFixedOptionsTemplate = ['-U', '-l', '-v'];
+                        var traceOverrideOptionsTemplate = ['-n', '-s 65535', '-i ' + get('interface')];
                         var traceOptions = traceFixedOptionsTemplate.concat(traceOverrideOptionsTemplate);
                         var traceExpression = [];
                         if (get('advanced')) {
                             // traceExpression = [this.advancedInput.getValue()];
                         } else {
-                            if (get('destination') !== null & get('destination').toLowerCase() !== "any") {
+                            if (get('destination') !== null & get('destination').toLowerCase() !== 'any') {
                                 traceExpression.push('host ' + get('destination'));
                             }
                             if (get('port') !== null) {

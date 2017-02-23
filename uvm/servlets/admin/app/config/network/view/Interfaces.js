@@ -10,7 +10,7 @@ Ext.define('Ung.config.network.view.Interfaces', {
         xtype: 'tbtext',
         padding: '8 5',
         style: { fontSize: '12px' },
-        html: '<strong>' + 'Interface configuration'.t() + '</strong> <br/>' +  "Use this page to configure each interface's configuration and its mapping to a physical network card.".t()
+        html: '<strong>' + 'Interface configuration'.t() + '</strong> <br/>' +  'Use this page to configure each interface\'s configuration and its mapping to a physical network card.'.t()
     }],
 
     actions: {
@@ -50,19 +50,7 @@ Ext.define('Ung.config.network.view.Interfaces', {
         fields: [
             'interfaceId'
         ],
-        columns: [
-        // {
-        //     xtype: 'gridcolumn',
-        //     header: '<i class="fa fa-sort"></i>',
-        //     align: 'center',
-        //     width: 30,
-        //     tdCls: 'action-cell',
-        //     // iconCls: 'fa fa-arrows'
-        //     renderer: function() {
-        //         return '<i class="fa fa-arrows" style="cursor: move;"></i>';
-        //     },
-        // },
-        {
+        columns: [{
             dataIndex: 'connected',
             width: 40,
             align: 'center',
