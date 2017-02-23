@@ -283,8 +283,16 @@ class IntrusionPreventionTests(unittest2.TestCase):
         self.intrusion_prevention_interface = IntrusionPreventionInterface(node.getNodeSettings()["id"])
         self.intrusion_prevention_interface.setup()
 
+        # create blank ruleset to start
         patch = IntrusionPreventionInterface.config_request_patch_template
+        patch["activeGroups"] = {
+            "classtypes": "custom",
+            "classtypesSelected": [],
+            "categories": "custom",
+            "categoriesSelected": []
+        }
         self.intrusion_prevention_interface.config_request( "save", patch )
+        node.reconfigure()
 
         node.start() # must be called since intrusion-prevention doesn't auto-start
 
@@ -590,26 +598,11 @@ class IntrusionPreventionTests(unittest2.TestCase):
 
         self.intrusion_prevention_interface.config_request( "save", self.intrusion_prevention_interface.create_patch( "rule", "add", rule ) )
         node.reconfigure()
-
-        pre_events_scan = global_functions.getStatusValue(node,"scan")
-        pre_events_detect = global_functions.getStatusValue(node,"detect")
-        pre_events_block = global_functions.getStatusValue(node,"block")
         
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/CompanySecret")
 
         event = self.intrusion_prevention_interface.get_log_event(rule)
         assert( event != None and event["blocked"] == True )
-
-        post_events_scan = global_functions.getStatusValue(node,"scan")
-        post_events_detect = global_functions.getStatusValue(node,"detect")
-        post_events_block = global_functions.getStatusValue(node,"block")
-
-        print "pre_events_scan: %s post_events_scan: %s"%(str(pre_events_scan),str(post_events_scan))
-        assert(pre_events_scan < post_events_scan)
-        print "pre_events_detect: %s post_events_detect: %s"%(str(pre_events_detect),str(post_events_detect))
-        assert(pre_events_detect < post_events_detect)
-        print "pre_events_block: %s post_events_block: %s"%(str(pre_events_block),str(post_events_block))
-        assert(pre_events_block < post_events_block)
         
     def test_052_functional_udp_log(self):
         """
@@ -680,12 +673,30 @@ class IntrusionPreventionTests(unittest2.TestCase):
         self.intrusion_prevention_interface.config_request( "save", self.intrusion_prevention_interface.create_patch( "rule", "add", rule ) )
         node.reconfigure()
 
+        result = remote_control.runCommand("ping -c 5 " + dest_ip_address + " > /dev/null")
+
+        event = self.intrusion_prevention_interface.get_log_event(rule)
+        assert( event != None and event["blocked"] == True )
+
+    def test_060_app_stats(self):
+        """
+        Checks that the scan, detect, and block stats are properly incremented
+        """
+        global node
+        if remote_control.quickTestsOnly:
+            raise unittest2.SkipTest('Skipping a time consuming test')
+
+        rule = self.intrusion_prevention_interface.create_rule(msg="TCP Block", type="tcp", block=True, directive="content:\"CompanySecret\"; nocase;")
+
+        self.intrusion_prevention_interface.config_request( "save", self.intrusion_prevention_interface.create_patch( "rule", "add", rule ) )
+        node.reconfigure()
+
         pre_events_scan = global_functions.getStatusValue(node,"scan")
         pre_events_detect = global_functions.getStatusValue(node,"detect")
         pre_events_block = global_functions.getStatusValue(node,"block")
         
-        result = remote_control.runCommand("ping -c 5 " + dest_ip_address + " > /dev/null")
-        
+        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/CompanySecret")
+
         event = self.intrusion_prevention_interface.get_log_event(rule)
         assert( event != None and event["blocked"] == True )
 
@@ -700,7 +711,10 @@ class IntrusionPreventionTests(unittest2.TestCase):
         print "pre_events_block: %s post_events_block: %s"%(str(pre_events_block),str(post_events_block))
         assert(pre_events_block < post_events_block)
 
-    def test_060_bypass_udp_block(self):
+    def test_070_bypass_udp_block(self):
+        """
+        UDP blocked but bypassed so UDP should work
+        """
         global node
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
@@ -739,9 +753,9 @@ class IntrusionPreventionTests(unittest2.TestCase):
         print "found: %s"%str(found)
         assert(not found)
 
-    def test_065_bypass_tcp_block(self):
+    def test_071_bypass_tcp_block(self):
         """
-        Functional, UDP block
+        TCP blocked but bypassed so TCP should work
         """
         global node
         if remote_control.quickTestsOnly:
