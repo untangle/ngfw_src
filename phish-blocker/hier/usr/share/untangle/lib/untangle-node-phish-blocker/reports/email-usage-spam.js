@@ -10,7 +10,7 @@
     "readOnly": true,
     "table": "mail_addrs",
     "timeDataColumns": [
-        "sum(case when phish_blocker_is_spam is true then 1 else null end::int) as phish"
+        "sum(case when phish_blocker_is_spam is true then 1 else 0 end) as phish"
     ],
     "conditions": [
         {
