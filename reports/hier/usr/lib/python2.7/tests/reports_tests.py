@@ -81,8 +81,8 @@ def createFakeEmailEnvironment(emailLogFile="report_test.log"):
     uvmContext.networkManager().setNetworkSettings(netsettings)
 
     # Remove old email and log files.
-    remote_control.runCommand("sudo rm /tmp/" + emailLogFile, host=fakeSmtpServerHost)
-    remote_control.runCommand("sudo rm /tmp/" + testEmailAddress + "*", host=fakeSmtpServerHost)
+    remote_control.runCommand("sudo rm -f /tmp/" + emailLogFile, host=fakeSmtpServerHost)
+    remote_control.runCommand("sudo rm -f /tmp/" + testEmailAddress + "*", host=fakeSmtpServerHost)
     remote_control.runCommand("sudo python fakemail.py --host=" + fakeSmtpServerHost +" --log=/tmp/" + emailLogFile + " --port 25 --background --path=/tmp/", host=fakeSmtpServerHost, stdout=False, nowait=True)
 
 def findEmailContent(searchTerm1,searchTerm2,measureBegin=False,measureEnd=False):
@@ -562,7 +562,7 @@ class ReportsTests(unittest2.TestCase):
         """
         1. Use reportuser
         2. Reportuser overrides admin user address.
-        3. Custom repor with test not in default.
+        3. Custom report with test not in default.
         """
         if (not canRelay):
             raise unittest2.SkipTest('Unable to relay through ' + fakeSmtpServerHost)
@@ -605,12 +605,11 @@ class ReportsTests(unittest2.TestCase):
         assert(emailFound)
         assert(('Custom Report' in emailContext) and ('Content-Type: image/png; name=' in emailContext2))
 
-    def test_101_mobile(self):
+    def test_102_email_admin_override_custom_report_mobile(self):
         """
         1. Use reportuser
         2. Reportuser overrides admin user address.
-        3. Custom repor with test not in default.
-        4
+        3. Custom report with test not in default.
         """
         if (not canRelay):
             raise unittest2.SkipTest('Unable to relay through ' + fakeSmtpServerHost)
