@@ -10,7 +10,7 @@
     "readOnly": true,
     "table": "configuration_backup_events",
     "timeDataColumns": [
-        "sum(case when success is false then 1 else null end::int) as failed"
+        "sum(case when success is false then 1 else 0 end) as failed"
     ],
     "colors": [
         "#8c0000"
