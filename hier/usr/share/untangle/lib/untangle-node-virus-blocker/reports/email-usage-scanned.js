@@ -10,7 +10,7 @@
     "readOnly": true,
     "table": "mail_addrs",
     "timeDataColumns": [
-        "sum(case when virus_blocker_clean is not null then 1 else null end::int) as scanned"
+        "sum(case when virus_blocker_clean is not null then 1 else 0 end) as scanned"
     ],
     "conditions": [
         {

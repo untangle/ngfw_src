@@ -10,7 +10,7 @@
     "readOnly": true,
     "table": "ftp_events",
     "timeDataColumns": [
-        "sum(case when virus_blocker_clean is false then 1 else null end::int) as blocked"
+        "sum(case when virus_blocker_clean is false then 1 else 0 end) as blocked"
     ],
     "colors": [
         "#8c0000"
