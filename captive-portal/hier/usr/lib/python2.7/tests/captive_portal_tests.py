@@ -432,6 +432,7 @@ class CaptivePortalTests(unittest2.TestCase):
         assert(not foundUsername)
 
     def test_032_loginGoogle(self):
+        raise unittest2.SkipTest('Broken test - google keeps banning account')
         if platform.machine().startswith('arm'):
             raise unittest2.SkipTest('Not supported on ARM')
         global node, nodeData
