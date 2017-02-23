@@ -1,17 +1,21 @@
 Ext.define('Ung.config.administration.Administration', {
     extend: 'Ext.tab.Panel',
     alias: 'widget.config.administration',
+
     requires: [
         'Ung.config.administration.AdministrationController',
         'Ung.config.administration.AdministrationModel',
+
         'Ung.store.Rule',
         'Ung.model.Rule',
         'Ung.cmp.Grid'
     ],
+
     controller: 'config.administration',
     viewModel: {
         type: 'config.administration'
     },
+
     dockedItems: [{
         xtype: 'toolbar',
         weight: -10,
@@ -36,6 +40,7 @@ Ext.define('Ung.config.administration.Administration', {
             handler: 'saveSettings'
         }]
     }],
+
     items: [
         { xtype: 'config.administration.admin' },
         { xtype: 'config.administration.certificates' },
@@ -45,7 +50,9 @@ Ext.define('Ung.config.administration.Administration', {
 });
 Ext.define('Ung.config.administration.AdministrationController', {
     extend: 'Ext.app.ViewController',
+
     alias: 'controller.config.administration',
+
     control: {
         '#': {
             afterrender: 'loadAdmin',
@@ -55,6 +62,7 @@ Ext.define('Ung.config.administration.AdministrationController', {
             beforerender: 'loadCertificates'
         }
     },
+
     countries: [
         [ 'US', 'United States'.t() ], [ 'AF', 'Afghanistan'.t() ], [ 'AL', 'Albania'.t() ], [ 'DZ', 'Algeria'.t() ],
         [ 'AS', 'American Samoa'.t() ], [ 'AD', 'Andorra'.t() ], [ 'AO', 'Angola'.t() ], [ 'AI', 'Anguilla'.t() ],
@@ -118,10 +126,12 @@ Ext.define('Ung.config.administration.AdministrationController', {
         [ 'VE', 'Venezuela'.t() ], [ 'VN', 'Vietnam'.t() ], [ 'WF', 'Wallis and Futuna'.t() ], [ 'EH', 'Western Sahara'.t() ],
         [ 'YE', 'Yemen'.t() ], [ 'ZM', 'Zambia'.t() ], [ 'ZW', 'Zimbabwe'.t() ]
     ],
+
     onTabChange: function (tabPanel, newCard) {
         // window.location.hash = '#config/administration/' + newCard.getItemId();
         // Ung.app.redirectTo('#config/administration/' + newCard.getItemId(), false);
     },
+
     loadAdmin: function () {
         var v = this.getView(),
             vm = this.getViewModel();
@@ -146,9 +156,11 @@ Ext.define('Ung.config.administration.AdministrationController', {
             v.setLoading(false);
         });
     },
+
     loadCertificates: function () {
         var v = this.getView(),
             vm = this.getViewModel();
+
         v.setLoading(true);
         rpc.certificateManager = rpc.UvmContext.certificateManager();
         Ext.Deferred.sequence([
@@ -168,14 +180,18 @@ Ext.define('Ung.config.administration.AdministrationController', {
             v.setLoading(false);
         });
     },
+
     saveSettings: function () {
         var me = this,
             view = this.getView(),
             vm = this.getViewModel();
+
         if (!Util.validateForms(view)) {
             return;
         }
+
         view.setLoading('Saving ...');
+
         view.query('ungrid').forEach(function (grid) {
             var store = grid.getStore();
             /**
@@ -193,6 +209,7 @@ Ext.define('Ung.config.administration.AdministrationController', {
                 // store.commitChanges();
             }
         });
+
         Ext.Deferred.sequence([
             Rpc.asyncPromise('rpc.adminManager.setSettings', vm.get('adminSettings')),
             Rpc.asyncPromise('rpc.systemManager.setSettings', vm.get('systemSettings')),
@@ -209,24 +226,29 @@ Ext.define('Ung.config.administration.AdministrationController', {
             view.setLoading(false);
         });
     },
+
     generateCertificate: function (btn) {
         var me = this,
             certMode = btn.certMode,
             hostName = btn.hostName,
             netStatus, addressList, i;
+
         try {
             netStatus = rpc.networkManager.getInterfaceStatus();
         } catch (e) {
             Util.exceptionToast(e);
         }
+
         addressList = '';
         addressList += hostName;
+
         for (i = 0; i < netStatus.list.length; i++) {
             var netItem = netStatus.list[i];
             if (netItem.v4Address === null) { continue; }
             addressList += ',';
             addressList += netItem.v4Address;
         }
+
         Ext.create('Ext.Window', {
             title: btn.getText(),
             layout: 'fit',
@@ -317,9 +339,17 @@ Ext.define('Ung.config.administration.AdministrationController', {
                 }]
             }]
         });
+
     },
+
     // generateCertificate: function () {
+
     // },
+
+
+
+
+
     addAccount: function () {
         Ext.MessageBox.show({
             title: 'Administrator Warning'.t(),
@@ -348,14 +378,20 @@ Ext.define('Ung.config.administration.AdministrationController', {
                 }
             }, this)});
     }
+
+
 });
+
 Ext.define('Ung.config.administration.AdministrationModel', {
     extend: 'Ext.app.ViewModel',
+
     alias: 'viewmodel.config.administration',
+
     data: {
         adminSettings: null,
         systemSettings: null,
         skinSettings: null,
+
         serverCertificates: null,
         rootCertificateInformation: null,
         serverCertificateVerification: null,
@@ -367,22 +403,29 @@ Ext.define('Ung.config.administration.AdministrationModel', {
         skins: { data: '{skinsList.list}' }
     }
 });
+
 Ext.define('Ung.config.administration.view.Admin', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.config.administration.admin',
     itemId: 'admin',
+
     viewModel: true,
+
     title: 'Admin'.t(),
     layout: 'border',
+
     items: [{
         xtype: 'ungrid',
         // border: false,
         title: 'Admin Accounts'.t(),
         region: 'center',
+
         bind: '{accounts}',
+
         listProperty: 'adminSettings.users.list',
         tbar: ['@add'],
         recordActions: ['@delete'],
+
         emptyRow: {
             javaClass: 'com.untangle.uvm.AdminUserSettings',
             username: '',
@@ -394,6 +437,7 @@ Ext.define('Ung.config.administration.view.Admin', {
             passwordHashShadow: null,
             password: null
         },
+
         columns: [{
             header: 'Username'.t(),
             width: 150,
@@ -486,14 +530,20 @@ Ext.define('Ung.config.administration.view.Admin', {
             }]
         }]
     }]
+
 });
+
 Ext.define('Ung.config.administration.view.Certificates', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.config.administration.certificates',
     itemId: 'certificates',
+
     viewModel: true,
+
     title: 'Certificates'.t(),
+
     layout: 'border',
+
     items: [{
         title: 'Certificate Authority'.t(),
         region: 'center',
@@ -564,10 +614,12 @@ Ext.define('Ung.config.administration.view.Certificates', {
         region: 'south',
         height: '40%',
         split: true,
+
         layout: {
             type: 'vbox',
             align: 'stretch'
         },
+
         items: [{
             xtype: 'component',
             padding: 10,
@@ -576,8 +628,11 @@ Ext.define('Ung.config.administration.view.Certificates', {
             xtype: 'ungrid',
             flex: 1,
             bind: '{certificates}',
+
             listProperty: 'serverCertificates.list',
+
             recordActions: ['@delete'],
+
             bbar: [{
                 text: 'Generate Server Certificate'.t(),
                 handler: 'generateServerCert',
@@ -591,6 +646,7 @@ Ext.define('Ung.config.administration.view.Certificates', {
                 handler: 'generateServerCert',
                 iconCls: 'fa fa-certificate'
             }],
+
             columns: [{
                 header: 'Subject'.t(),
                 dataIndex: 'certSubject',
@@ -638,14 +694,19 @@ Ext.define('Ung.config.administration.view.Certificates', {
             bind: '{serverCertificateVerification}'
         }]
     }]
+
 });
+
 Ext.define('Ung.config.administration.view.Skins', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.config.administration.skins',
     itemId: 'skins',
+
     viewModel: true,
     title: 'Skins'.t(),
+
     bodyPadding: 10,
+
     items: [{
         xtype: 'combo',
         width: 300,
@@ -679,11 +740,13 @@ Ext.define('Ung.config.administration.view.Skins', {
         }, this)
     }]
 });
+
 Ext.define('Ung.config.administration.view.Snmp', {
     extend: 'Ext.form.Panel',
     alias: 'widget.config.administration.snmp',
     withValidation: true, // requires validation on save
     itemId: 'snmp',
+
     viewModel: {
         formulas: {
             snmpEnabled: {
@@ -736,9 +799,11 @@ Ext.define('Ung.config.administration.view.Snmp', {
             }
         }
     },
+
     title: 'SNMP'.t(),
     scrollable: 'y',
     bodyPadding: 10,
+
     defaults: {
         xtype: 'fieldset',
         width: 500,
@@ -754,11 +819,13 @@ Ext.define('Ung.config.administration.view.Snmp', {
             msgTarget: 'side'
         }
     },
+
     items: [{
         title: 'Enable SNMP Monitoring'.t(),
         checkbox: {
             bind: '{snmpEnabled}'
         },
+
         items: [{
             fieldLabel: 'Community'.t(),
             allowBlank: false,
@@ -902,4 +969,5 @@ Ext.define('Ung.config.administration.view.Snmp', {
             }
         }]
     }]
+
 });

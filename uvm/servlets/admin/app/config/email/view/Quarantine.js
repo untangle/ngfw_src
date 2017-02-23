@@ -153,17 +153,16 @@ Ext.define('Ung.config.email.view.Quarantine', {
             items: [{
                 xtype: 'ungrid',
                 border: false,
-                tbar: ['@add'],
-                recordActions: ['@delete'],
-
-                emptyRow: {
-                    address: '',
-                    javaClass: 'com.untangle.node.smtp.EmailAddressRule'
-                },
-
-                listProperty: 'smtpSettings.quarantineSettings.allowedAddressPatterns.list',
 
                 bind: '{qAddresses}',
+
+                tbar: ['@addInline'],
+                recordActions: ['@delete'],
+                listProperty: 'smtpSettings.quarantineSettings.allowedAddressPatterns.list',
+                emptyRow: {
+                    javaClass: 'com.untangle.node.smtp.EmailAddressRule',
+                    address: ''
+                },
 
                 columns: [{
                     header: 'Quarantinable Address'.t(),
@@ -202,17 +201,18 @@ Ext.define('Ung.config.email.view.Quarantine', {
                 xtype: 'ungrid',
                 border: false,
                 forceFit: true,
-                tbar: ['@add'],
+
+                bind: '{qForwards}',
+
+                tbar: ['@addInline'],
                 recordActions: ['@delete'],
 
+                listProperty: 'smtpSettings.quarantineSettings.addressRemaps.list',
                 emptyRow: {
+                    javaClass: 'com.untangle.node.smtp.EmailAddressPairRule',
                     address1: '',
                     address2: '',
-                    javaClass: 'com.untangle.node.smtp.EmailAddressPairRule'
                 },
-
-                listProperty: 'smtpSettings.quarantineSettings.addressRemaps.list',
-                bind: '{qForwards}',
 
                 columns: [{
                     header: 'Distribution List Address'.t(),

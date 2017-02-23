@@ -21,79 +21,34 @@ Ext.define('Ung.cmp.GridController', {
 
 
     addRecord: function () {
-        var v = this.getView(), newRecord;
-        // if there are no editor fields defined, the record is added inline and has inline editing capability
-        if (!v.editorFields) {
+        this.editorWin(null);
+    },
+
+    addRecordInline: function () {
+        var v = this.getView(),
             newRecord = Ext.create('Ung.model.Rule', Ext.clone(v.emptyRow));
-            v.getStore().add(newRecord);
-        } else {
-            this.editorWin(null);
-        }
+        newRecord.set('markedForNew', true);
+        v.getStore().add(newRecord);
     },
 
     editRecord: function (view, rowIndex, colIndex, item, e, record) {
-        // if (record.get('readOnly')) {
-        //     Ext.MessageBox.alert('Info', '<strong>' + record.get('description') + '</strong> connot be edited!');
-        //     return;
-        // }
         this.editorWin(record);
     },
 
     editorWin: function (record) {
-        var v = this.getView(), newRecord;
-        // open recordeditor window
-
-        if (!record) {
-            newRecord = Ext.create('Ung.model.Rule', Ext.clone(v.emptyRow));
-            newRecord.set('markedForNew', true);
-        }
-
-        Ext.widget('ung.cmp.recordeditor', {
-            action: record ? 'edit' : 'add',
-            editorFields: v.editorFields, // form fields needed to be displayed in the editor taken from grid columns
-            actionDescription: v.actionDescription || 'Perform the following action(s):'.t(), // the label in the form
-            conditions: v.conditions, // the available conditions which can be applied
-            conditionsMap: v.conditionsMap, // a map with the above conditions as helper
-            // ruleJavaClass: v.ruleJavaClass,
-            // recordCopy: record.copy(null), // a clean copy of the record to be edited
-            record: record || newRecord,
-
-            store: v.getStore(),
-
-            viewModel: {
-                data: {
-                    record: record ? record.copy(null) : newRecord,
-                    ruleJavaClass: v.ruleJavaClass,
-                    addAction: record ? false : true
-                },
-                formulas: {
-                    actionTitle: function (get) {
-                        return get('addAction') ? 'Add'.t() : 'Update'.t();
-                    },
-                    windowTitle: function (get) {
-                        return get('addAction') ? 'Add'.t() : 'Edit'.t();
-                    }
-
-
-                    // datetime: function (get) {
-                    //     return new Date(get('record.expirationTime'));
-                    // },
-                    // checked: {
-                    //     get: function (get) {
-                    //         return get('record.expirationTime') === 0;
-                    //     }
-                    // }
-                }
-            }
+        this.dialog = this.getView().add({
+            xtype: 'ung.cmp.recordeditor',
+            record: record
         });
+        this.dialog.show();
     },
 
     deleteRecord: function (view, rowIndex, colIndex, item, e, record) {
-        // if (record.get('readOnly')) {
-        //     Ext.MessageBox.alert('Info', '<strong>' + record.get('description') + '</strong> connot be deleted!');
-        //     return;
-        // }
-        record.set('markedForDelete', true);
+        if (record.get('markedForNew')) {
+            record.drop();
+        } else {
+            record.set('markedForDelete', true);
+        }
     },
 
     moveUp: function (view, rowIndex, colIndex, item, e, record) {

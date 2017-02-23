@@ -23,14 +23,11 @@ Ext.define('Ung.config.network.view.BypassRules', {
 
     items: [{
         xtype: 'ungrid',
-        flex: 3,
 
         tbar: ['@add'],
         recordActions: ['@edit', '@delete', '@reorder'],
-
         listProperty: 'settings.bypassRules.list',
         ruleJavaClass: 'com.untangle.uvm.network.BypassRuleCondition',
-
         conditions: [
             { name: 'DST_ADDR', displayName: 'Destination Address'.t(), type: 'textfield', vtype:'ipMatcher' },
             { name: 'DST_PORT', displayName: 'Destination Port'.t(), type: 'textfield', vtype:'portMatcher' },
@@ -40,10 +37,6 @@ Ext.define('Ung.config.network.view.BypassRules', {
             { name: 'SRC_INTF', displayName: 'Source Interface'.t(), type: 'checkboxgroup', values: Util.getInterfaceList(true, true) },
             { name: 'PROTOCOL', displayName: 'Protocol'.t(), type: 'checkboxgroup', values: [['TCP','TCP'],['UDP','UDP']] }
         ],
-
-        label: 'Perform the following action(s):'.t(),
-        description: "NAT Rules control the rewriting of the IP source address of traffic (Network Address Translation). The rules are evaluated in order.".t(),
-
         emptyRow: {
             ruleId: -1,
             enabled: true,

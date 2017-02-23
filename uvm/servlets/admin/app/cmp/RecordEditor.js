@@ -22,10 +22,10 @@ Ext.define('Ung.cmp.RecordEditor', {
 
     actions: {
         apply: {
-            // text: 'Save'.t(),
-            bind: {
-                text: '{actionTitle}'
-            },
+            // bind: {
+            //     text: '{actionTitle}'
+            // },
+            text: 'Done'.t(),
             formBind: true,
             iconCls: 'fa fa-check',
             handler: 'onApply'

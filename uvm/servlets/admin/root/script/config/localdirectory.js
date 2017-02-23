@@ -1,14 +1,18 @@
 Ext.define('Ung.config.localdirectory.LocalDirectory', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.config.localdirectory',
+
     requires: [
         'Ung.config.localdirectory.LocalDirectoryController',
         'Ung.config.localdirectory.LocalDirectoryModel'
     ],
+
     controller: 'config.localdirectory',
+
     viewModel: {
         type: 'config.localdirectory'
     },
+
     dockedItems: [{
         xtype: 'toolbar',
         weight: -10,
@@ -33,14 +37,19 @@ Ext.define('Ung.config.localdirectory.LocalDirectory', {
             handler: 'saveSettings'
         }]
     }],
+
     layout: 'fit',
+
     items: [{
         xtype: 'ungrid',
         border: false,
         title: 'Local Users'.t(),
+
         tbar: ['@add'],
         recordActions: ['@edit', '@delete'],
+
         listProperty: 'usersData.list',
+
         emptyRow: {
             username: '',
             firstName: '',
@@ -51,7 +60,9 @@ Ext.define('Ung.config.localdirectory.LocalDirectory', {
             expirationTime: 0,
             javaClass: 'com.untangle.uvm.LocalDirectoryUser'
         },
+
         bind: '{users}',
+
         columns: [{
             header: 'user/login ID'.t(),
             width: 140,
@@ -158,17 +169,23 @@ Ext.define('Ung.config.localdirectory.LocalDirectory', {
         //         }
         //     }
         // }
+
     }]
+
 });
+
 Ext.define('Ung.config.localdirectory.LocalDirectoryController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.config.localdirectory',
+
     control: {
         '#': {
             beforerender: 'loadSettings'
         }
     },
+
     localDirectory: rpc.UvmContext.localDirectory(),
+
     loadSettings: function () {
         var me = this;
         rpc.localDirectory = rpc.UvmContext.localDirectory();
@@ -177,17 +194,22 @@ Ext.define('Ung.config.localdirectory.LocalDirectoryController', {
                 me.getViewModel().set('usersData', result);
             });
     },
+
     saveSettings: function () {
         var view = this.getView();
         var vm = this.getViewModel();
         var me = this;
+
         if (!Util.validateForms(view)) {
             return;
         }
+
+
         view.setLoading('Saving ...');
         // used to update all tabs data
         view.query('ungrid').forEach(function (grid) {
             var store = grid.getStore();
+
             /**
              * Important!
              * update custom grids only if are modified records or it was reordered via drag/drop
@@ -203,6 +225,7 @@ Ext.define('Ung.config.localdirectory.LocalDirectoryController', {
                 // store.commitChanges();
             }
         });
+
         Rpc.asyncData('rpc.localDirectory.setUsers', me.getViewModel().get('usersData'))
             .then(function (result) {
                 me.getViewModel().set('usersData', result);
@@ -211,14 +234,20 @@ Ext.define('Ung.config.localdirectory.LocalDirectoryController', {
                 view.setLoading(false);
             });
     }
+
 });
+
 Ext.define('Ung.config.localdirectory.LocalDirectoryModel', {
     extend: 'Ext.app.ViewModel',
+
     alias: 'viewmodel.config.localdirectory',
     // requires: ['Ung.model.LocalDirectoryUser'],
+
+
     data: {
         usersData: null
     },
+
     stores: {
         users: {
             // model: 'Ung.model.LocalDirectoryUser',

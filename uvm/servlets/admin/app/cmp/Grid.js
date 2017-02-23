@@ -13,6 +13,7 @@ Ext.define('Ung.cmp.Grid', {
 
     actions: {
         add: { text: 'Add'.t(), iconCls: 'fa fa-plus-circle fa-lg', handler: 'addRecord' },
+        addInline: { text: 'Add'.t(), iconCls: 'fa fa-plus-circle fa-lg', handler: 'addRecordInline' },
         import: { text: 'Import'.t(), handler: 'importData' },
         export: { text: 'Export'.t(), handler: 'exportData' },
         edit: {
