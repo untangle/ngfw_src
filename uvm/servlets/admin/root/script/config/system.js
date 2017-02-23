@@ -1,18 +1,14 @@
 Ext.define('Ung.config.system.System', {
     extend: 'Ext.tab.Panel',
     alias: 'widget.config.system',
-
     requires: [
         'Ung.config.system.SystemController',
         'Ung.config.system.SystemModel',
     ],
-
     controller: 'config.system',
-
     viewModel: {
         type: 'config.system'
     },
-
     dockedItems: [{
         xtype: 'toolbar',
         weight: -10,
@@ -37,7 +33,6 @@ Ext.define('Ung.config.system.System', {
             handler: 'saveSettings'
         }]
     }],
-
     items: [{
         xtype: 'config.system.regional'
     }, {
@@ -51,23 +46,19 @@ Ext.define('Ung.config.system.System', {
     }, {
         xtype: 'config.system.shield'
     }]
-
 });
 Ext.define('Ung.config.system.SystemController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.config.system',
-
     control: {
         '#': { afterrender: 'loadSystem' },
         '#regional': { afterrender: 'loadRegional' },
         '#protocols': { beforerender: 'initProtocols' },
         '#shield': { afterrender: 'loadShieldSettings' }
     },
-
     loadSystem: function (view) {
         view.getViewModel().set('isExpertMode', rpc.isExpertMode);
     },
-
     // Regional
     loadRegional: function (v) {
         var vm = this.getViewModel(),
@@ -89,7 +80,6 @@ Ext.define('Ung.config.system.SystemController', {
                 time: result[3],
                 timeZone: result[4],
             });
-
             if (result[5]) {
                 eval(result[5]).forEach(function (tz) {
                     timeZones.push({name: '(' + tz[1] + ') ' + tz[0], value: tz[0]});
@@ -98,7 +88,6 @@ Ext.define('Ung.config.system.SystemController', {
             }
         });
     },
-
     syncTime: function () {
         var me = this;
         Ext.MessageBox.confirm(
@@ -122,15 +111,12 @@ Ext.define('Ung.config.system.SystemController', {
                 }
             });
     },
-
     syncLanguage: function () {
         Ext.MessageBox.wait('Syncing time with the internet...'.t(), 'Please wait'.t());
         rpc.languageManager.synchronizeLanguage(function (result, ex) {
             document.location.reload();
         });
     },
-
-
     // Shield
     loadShieldSettings: function (v) {
         var vm = this.getViewModel();
@@ -145,18 +131,9 @@ Ext.define('Ung.config.system.SystemController', {
             Util.exceptionToast(ex);
         }
     },
-
-
-
-
-
-
-
-
     saveSettings: function () {
         var v = this.getView(),
             vm = this.getViewModel();
-
         v.setLoading('Saving...');
         if (vm.get('languageSettings.regionalFormats') === 'default') {
             // reset overrides
@@ -165,9 +142,7 @@ Ext.define('Ung.config.system.SystemController', {
             vm.set('languageSettings.overrideThousandSep', '');
             vm.set('languageSettings.overrideTimestampFmt', '');
         }
-
         var newDate = new Date(v.down('#regional').down('datefield').getValue()).getTime();
-
         Ext.Deferred.sequence([
             Rpc.asyncPromise('rpc.languageManager.setLanguageSettings', vm.get('languageSettings')),
             Rpc.asyncPromise('rpc.systemManager.setSettings', vm.get('systemSettings')),
@@ -183,7 +158,6 @@ Ext.define('Ung.config.system.SystemController', {
             Util.exceptionToast(ex);
         });
     },
-
     setShield: function () {
         var deferred = new Ext.Deferred(),
             v = this.getView(), vm = this.getViewModel();
@@ -208,13 +182,10 @@ Ext.define('Ung.config.system.SystemController', {
         rpc.nodeManager.node('untangle-node-shield').setSettings(function (result, ex) { if (ex) { console.log('exception'); deferred.reject(ex); } deferred.resolve(); }, vm.get('shieldSettings'));
         return deferred.promise;
     },
-
-
     // Support methods
     downloadSystemLogs: function () {
         Ext.Msg.alert('Status', 'Not yet implemented!');
     },
-
     manualReboot: function () {
         Ext.MessageBox.confirm('Manual Reboot Warning'.t(),
             Ext.String.format('The server is about to manually reboot.  This will interrupt normal network operations until the {0} Server is finished automatically restarting. This may take up to several minutes to complete.'.t(), rpc.companyName),
@@ -234,7 +205,6 @@ Ext.define('Ung.config.system.SystemController', {
                 }
             });
     },
-
     manualShutdown: function () {
         Ext.MessageBox.confirm('Manual Shutdown Warning'.t(),
             Ext.String.format('The {0} Server is about to shutdown.  This will stop all network operations.'.t(), rpc.companyName),
@@ -254,11 +224,9 @@ Ext.define('Ung.config.system.SystemController', {
                 }
             });
     },
-
     setupWizard: function () {
         Ext.Msg.alert('Status', 'Not yet implemented!');
     },
-
     factoryDefaults: function () {
         Ext.MessageBox.confirm('Reset to Factory Defaults Warning'.t(),
             'This will RESET ALL SETTINGS to factory defaults. ALL current settings WILL BE LOST.'.t(),
@@ -281,17 +249,14 @@ Ext.define('Ung.config.system.SystemController', {
                 }
             });
     },
-
     // Backup method(s)
     backupToFile: function () {
         Ext.Msg.alert('Status', 'Not yet implemented!');
     },
-
     // Restore method(s)
     restoreFromFile: function () {
         Ext.Msg.alert('Status', 'Not yet implemented!');
     },
-
     getHttpSettings: function () {
         var vm = this.getViewModel();
         try {
@@ -308,7 +273,6 @@ Ext.define('Ung.config.system.SystemController', {
             if (ex) { console.error(ex); Util.exceptionToast(ex); return; }
         }
     },
-
     getSmtpSettings: function () {
         var vm = this.getViewModel();
         try {
@@ -317,21 +281,16 @@ Ext.define('Ung.config.system.SystemController', {
             if (ex) { console.error(ex); Util.exceptionToast(ex); return; }
         }
     },
-
     // Protocols methods
     initProtocols: function () {
         this.getHttpSettings();
         this.getFtpSettings();
         this.getSmtpSettings();
     }
-
 });
-
 Ext.define('Ung.config.system.SystemModel', {
     extend: 'Ext.app.ViewModel',
-
     alias: 'viewmodel.config.system',
-
     data: {
         time: null,
         languageSettings: null,
@@ -339,7 +298,6 @@ Ext.define('Ung.config.system.SystemModel', {
         systemSettings: null,
         timeZone: null,
         timeZonesList: null,
-
         shieldSettings: null
     },
     formulas: {
@@ -357,7 +315,6 @@ Ext.define('Ung.config.system.SystemModel', {
         },
         // used for setting the date/time
         manualDateFormat: function (get) { return get('languageSettings.overrideTimestampFmt') || 'timestamp_fmt'.t(); },
-
         dateFormat: {
             get: function (get) {
                 var fmt = get('languageSettings.overrideDateFmt');
@@ -369,7 +326,6 @@ Ext.define('Ung.config.system.SystemModel', {
                 this.set('languageSettings.overrideTimestampFmt', fmt === 'Y-m-d h:i:s a' ? '' : fmt);
             }
         },
-
         timeFormat: {
             get: function (get) {
                 var tsFmt = get('languageSettings.overrideTimestampFmt');
@@ -381,13 +337,11 @@ Ext.define('Ung.config.system.SystemModel', {
                 this.set('languageSettings.overrideTimestampFmt', fmt === 'Y-m-d h:i:s a' ? '' : fmt);
             }
         },
-
         lastLanguageSync: function (get) {
             // todo: to update setting new date based on timeoffsets
             var ts = get('languageSettings.lastSynchronized');
             return ts ? new Date(ts) : 'Never'.t();
         }
-
     },
     stores: {
         timeZones: {
@@ -407,25 +361,18 @@ Ext.define('Ung.config.system.SystemModel', {
             data: '{shieldSettings.rules.list}'
         }
     }
-
 });
-
 Ext.define('Ung.config.system.view.Backup', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.config.system.backup',
-
     viewModel: true,
-
     title: 'Backup'.t(),
-
     bodyPadding: 10,
     scrollable: true,
-
     defaults: {
         xtype: 'fieldset',
         padding: 10
     },
-
     items: [{
         title: 'Backup to File'.t(),
         items: [{
@@ -440,13 +387,11 @@ Ext.define('Ung.config.system.view.Backup', {
             handler: 'backupToFile'
         }]
     }]
-
 });
 Ext.define('Ung.config.system.view.Protocols', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.config.system.protocols',
     itemId: 'protocols',
-
     viewModel: {
         formulas: {
             smtpTimeout: {
@@ -459,25 +404,19 @@ Ext.define('Ung.config.system.view.Protocols', {
             }
         }
     },
-
     title: 'Protocols'.t(),
-
     bodyPadding: 10,
     scrollable: true,
-
     defaults: {
         xtype: 'fieldset',
         padding: 10
     },
-
     tbar: [{
         xtype: 'tbtext',
         padding: '8 5',
         style: { fontSize: '12px' },
         html: '<i class="fa fa-exclamation-triangle" style="color: red;"></i> '  + 'These settings should not be changed unless instructed to do so by support.'.t()
     }],
-
-
     items: [{
         title: 'HTTP'.t(),
         disabled: true,
@@ -563,26 +502,19 @@ Ext.define('Ung.config.system.view.Protocols', {
             }]
         }]
     }]
-
 });
 Ext.define('Ung.config.system.view.Regional', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.config.system.regional',
     itemId: 'regional',
-
     viewModel: true,
-
     scrollable: true,
-
     title: 'Regional'.t(),
-
     bodyPadding: 10,
-
     defaults: {
         xtype: 'fieldset',
         padding: 10
     },
-
     items: [{
         title: 'Current Time'.t(),
         hidden: true,
@@ -754,9 +686,9 @@ Ext.define('Ung.config.system.view.Regional', {
                         ['', '. (DOT)'], // DOT is by default so value is set as ''
                         [',', ', (COMMA)'],
                         [' ', '&nbsp; (SPACE)'],
-                        ["'", "' (APOSTROPHE)"],
-                        ['&middot;', "&middot; (MIDDLE DOT)"],
-                        ['&#729;', "&#729; (DOT ABOVE)"]
+                        ['\'', '\' (APOSTROPHE)'],
+                        ['&middot;', '&middot; (MIDDLE DOT)'],
+                        ['&#729;', '&#729; (DOT ABOVE)']
                     ]
                 }, {
                     fieldLabel: 'Thousand Separator'.t(),
@@ -767,9 +699,9 @@ Ext.define('Ung.config.system.view.Regional', {
                         ['.', '. (DOT)'],
                         ['', ', (COMMA)'], // COMMA is by default so value is set as ''
                         [' ', '&nbsp; (SPACE)'],
-                        ["'", "' (APOSTROPHE)"],
-                        ['&middot;', "&middot; (MIDDLE DOT)"],
-                        ['&#729;', "&#729; (DOT ABOVE)"]
+                        ['\'', '\' (APOSTROPHE)'],
+                        ['&middot;', '&middot; (MIDDLE DOT)'],
+                        ['&#729;', '&#729; (DOT ABOVE)']
                     ],
                 }, {
                     fieldLabel: 'Date Format'.t(),
@@ -818,25 +750,18 @@ Ext.define('Ung.config.system.view.Regional', {
             }]
         }]
     }]
-
 });
-
 Ext.define('Ung.config.system.view.Restore', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.config.system.restore',
-
     viewModel: true,
-
     title: 'Restore'.t(),
-
     bodyPadding: 10,
     scrollable: true,
-
     defaults: {
         xtype: 'fieldset',
         padding: 10
     },
-
     items: [{
         title: 'Restore from File'.t(),
         items: [{
@@ -881,20 +806,14 @@ Ext.define('Ung.config.system.view.Restore', {
             }]
         }]
     }]
-
 });
 Ext.define('Ung.config.system.view.Shield', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.config.system.shield',
     itemId: 'shield',
-
-
     viewModel: true,
-
     title: 'Shield'.t(),
-
     layout: 'fit',
-
     dockedItems: [{
         xtype: 'toolbar',
         dock: 'top',
@@ -906,25 +825,19 @@ Ext.define('Ung.config.system.view.Shield', {
             bind: '{shieldSettings.shieldEnabled}'
         }]
     }],
-
-
     items: [{
         xtype: 'ungrid',
         border: false,
         title: 'Shield Rules'.t(),
-
         disabled: true,
         bind: {
             disabled: '{!shieldSettings.shieldEnabled}',
             store: '{shieldRules}'
         },
-
         tbar: ['@add'],
         recordActions: ['@edit', '@delete', '@reorder'],
-
         listProperty: 'shieldSettings.rules.list',
         ruleJavaClass: 'com.untangle.node.shield.ShieldRuleCondition',
-
         emptyRow: {
             ruleId: -1,
             enabled: true,
@@ -936,17 +849,9 @@ Ext.define('Ung.config.system.view.Shield', {
                 list: []
             }
         },
-
-        conditions: [
-            { name: 'DST_ADDR', displayName: 'Destination Address'.t(), type: 'textfield', vtype:'ipMatcher' },
-            { name: 'DST_PORT', displayName: 'Destination Port'.t(), type: 'textfield', vtype:'portMatcher' },
-            { name: 'DST_INTF', displayName: 'Destination Interface'.t(), type: 'checkboxgroup', values: Util.getInterfaceList(true, true) },
-            { name: 'SRC_ADDR', displayName: 'Source Address'.t(), type: 'textfield', vtype:'ipMatcher' },
-            { name: 'SRC_PORT', displayName: 'Source Port'.t(), type: 'numberfield', vtype:'portMatcher' },
-            { name: 'SRC_INTF', displayName: 'Source Interface'.t(), type: 'checkboxgroup', values: Util.getInterfaceList(true, true) },
-            { name: 'PROTOCOL', displayName: 'Protocol'.t(), type: 'checkboxgroup', values: [['TCP','TCP'], ['UDP','UDP']] }
+        conditions: [Cond.dstAddr, Cond.dstPort, Cond.dstIntf, Cond.srcAddr, Cond.srcPort, Cond.srcIntf,
+            Cond.protocol([['TCP','TCP'],['UDP','UDP']])
         ],
-
         columns: [{
             header: 'Rule Id'.t(),
             width: 70,
@@ -981,9 +886,9 @@ Ext.define('Ung.config.system.view.Shield', {
             renderer: function (value) {
                 var action;
                 switch (value) {
-                    case 'SCAN': action = 'Scan'.t(); break;
-                    case 'PASS': action = 'Pass'.t(); break;
-                    default: action = 'Unknown Action: ' + value;
+                case 'SCAN': action = 'Scan'.t(); break;
+                case 'PASS': action = 'Pass'.t(); break;
+                default: action = 'Unknown Action: ' + value;
                 }
                 return action;
             }
@@ -1004,28 +909,19 @@ Ext.define('Ung.config.system.view.Shield', {
                 queryMode: 'local'
             }
         ]
-
-
     }]
-
 });
-
 Ext.define('Ung.config.system.view.Support', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.config.system.support',
-
     viewModel: true,
-
     title: 'Support'.t(),
-
     bodyPadding: 10,
     scrollable: true,
-
     defaults: {
         xtype: 'fieldset',
         padding: 10
     },
-
     items: [{
         title: 'Support'.t(),
         items: [{
@@ -1118,5 +1014,4 @@ Ext.define('Ung.config.system.view.Support', {
             }]
         }]
     }]
-
 });

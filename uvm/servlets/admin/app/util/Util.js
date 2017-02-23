@@ -279,13 +279,7 @@ Ext.define('Ung.util.Util', {
                 align: 'stretch',
                 pack: 'end'
             },
-            items: [
-            // {
-            //     xtype: 'component',
-            //     padding: 10,
-            //     html: 'Copy this list into <strong>.buildorder</strong> file!'
-            // }, {
-                {
+            items: [{
                 xtype: 'textarea',
                 border: false,
                 flex: 1,

@@ -187,9 +187,9 @@ Ext.define('Ung.config.system.view.Regional', {
                         ['', '. (DOT)'], // DOT is by default so value is set as ''
                         [',', ', (COMMA)'],
                         [' ', '&nbsp; (SPACE)'],
-                        ["'", "' (APOSTROPHE)"],
-                        ['&middot;', "&middot; (MIDDLE DOT)"],
-                        ['&#729;', "&#729; (DOT ABOVE)"]
+                        ['\'', '\' (APOSTROPHE)'],
+                        ['&middot;', '&middot; (MIDDLE DOT)'],
+                        ['&#729;', '&#729; (DOT ABOVE)']
                     ]
                 }, {
                     fieldLabel: 'Thousand Separator'.t(),
@@ -200,9 +200,9 @@ Ext.define('Ung.config.system.view.Regional', {
                         ['.', '. (DOT)'],
                         ['', ', (COMMA)'], // COMMA is by default so value is set as ''
                         [' ', '&nbsp; (SPACE)'],
-                        ["'", "' (APOSTROPHE)"],
-                        ['&middot;', "&middot; (MIDDLE DOT)"],
-                        ['&#729;', "&#729; (DOT ABOVE)"]
+                        ['\'', '\' (APOSTROPHE)'],
+                        ['&middot;', '&middot; (MIDDLE DOT)'],
+                        ['&#729;', '&#729; (DOT ABOVE)']
                     ],
                 }, {
                     fieldLabel: 'Date Format'.t(),

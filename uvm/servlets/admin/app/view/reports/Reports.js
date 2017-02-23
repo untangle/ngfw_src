@@ -613,11 +613,7 @@ Ext.define('Ung.view.reports.Reports', {
                             }]
                         }]
                     }],
-                    fbar: [/*{
-                        text: Util.iconTitle('Preview'.t(), 'rotate_left-16'),
-                        itemId: 'applyBtn',
-                        formBind: true
-                    },*/ {
+                    fbar: [{
                         text: 'Remove'.t(),
                         iconCls: 'fa fa-trash fa-lg',
                         itemId: 'removeBtn',

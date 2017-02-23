@@ -82,7 +82,7 @@ Ext.define('Ung.overrides.form.field.VTypes', {
     ipMatcher: function(val) {
         if (val.indexOf('/') === -1 && val.indexOf(',') === -1 && val.indexOf('-') === -1) {
             switch (val) {
-                case 'any':
+            case 'any':
                 return true;
             default:
                 return this.isSingleIpValid(val);
@@ -168,7 +168,7 @@ Ext.define('Ung.overrides.form.field.VTypes', {
 
     portMatcher: function (val) {
         switch (val) {
-            case 'any':
+        case 'any':
             return true;
         default:
             if (val.indexOf('>') !== -1 && val.indexOf(',') === -1) {

@@ -12,8 +12,8 @@ Ext.define('Ung.model.LocalDirectoryUser', {
         { name: 'test', defaultValue: 'sometest' },
         { name: 'dt', type: 'string', claculate: function (data) {
             return data.lastName + ' ';
-            },
-        depends : ['lastName']
+        },
+            depends : ['lastName']
         },
     ],
     proxy: {
