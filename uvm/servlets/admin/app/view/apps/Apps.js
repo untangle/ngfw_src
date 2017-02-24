@@ -85,7 +85,7 @@ Ext.define('Ung.view.apps.Apps', {
                 '<tpl if="type === \'FILTER\'">' +
                 '<a href="#config" class="app-item">' +
                 '<span class="state {targetState}"><i class="fa fa-power-off"></i></span>' +
-                '<img src="' + resourcesBaseHref + '/skins/modern-rack/images/admin/apps/{name}_80x80.png" width=80 height=80/>' +
+                '<img src="' + '/skins/modern-rack/images/admin/apps/{name}_80x80.png" width=80 height=80/>' +
                 '<span class="app-name">{displayName}</span>' +
                 '</a>' +
                 '</tpl>' +
@@ -95,7 +95,7 @@ Ext.define('Ung.view.apps.Apps', {
                 '<tpl if="type === \'SERVICE\'">' +
                 '<a href="#config" class="app-item">' +
                 '<span class="state {targetState}"><i class="fa fa-power-off"></i></span>' +
-                '<img src="' + resourcesBaseHref + '/skins/modern-rack/images/admin/apps/{name}_80x80.png" width=80 height=80/>' +
+                '<img src="' + '/skins/modern-rack/images/admin/apps/{name}_80x80.png" width=80 height=80/>' +
                 '<span class="app-name">{displayName}</span>' +
                 '</a>' +
                 '</tpl>' +
@@ -111,7 +111,7 @@ Ext.define('Ung.view.apps.Apps', {
         tpl: '<p class="apps-title">' + 'Apps'.t() + '</p>' +'<tpl for=".">' +
             '<tpl if="type === \'FILTER\'">' +
                 '<div class="node-install-item {status}">' +
-                '<img src="' + resourcesBaseHref + '/skins/modern-rack/images/admin/apps/{name}_80x80.png" width=80 height=80/>' +
+                '<img src="' + '/skins/modern-rack/images/admin/apps/{name}_80x80.png" width=80 height=80/>' +
                 '<i class="fa fa-download fa-3x"></i>' +
                 '<i class="fa fa-check fa-3x"></i>' +
                 '<span class="loader">Loading...</span>' +
@@ -123,7 +123,7 @@ Ext.define('Ung.view.apps.Apps', {
             '<tpl for=".">' +
                 '<tpl if="type === \'SERVICE\'">' +
                 '<div class="node-install-item {status}">' +
-                '<img src="' + resourcesBaseHref + '/skins/modern-rack/images/admin/apps/{name}_80x80.png" width=80 height=80/>' +
+                '<img src="' + '/skins/modern-rack/images/admin/apps/{name}_80x80.png" width=80 height=80/>' +
                 '<i class="fa fa-download fa-3x"></i>' +
                 '<i class="fa fa-check fa-3x"></i>' +
                 '<span class="loader">Loading...</span>' +
