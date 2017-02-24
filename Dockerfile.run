@@ -1,0 +1,11 @@
+FROM untangle/ngfw/build
+MAINTAINER Sebastien Delafond <sdelafond@gmail.com>
+
+WORKDIR ${SRC}
+
+RUN DEBIAN_FRONTEND=noninteractive apt-get install --yes untangle-development-runtime
+RUN /etc/init.d/postgresql start
+
+EXPOSE 80
+
+ENTRYPOINT ./dist/etc/init.d/untangle-vm start
