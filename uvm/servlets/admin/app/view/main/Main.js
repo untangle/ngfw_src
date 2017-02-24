@@ -66,7 +66,7 @@ Ext.define('Ung.view.main.Main', {
             hrefTarget: '_self'
         },
         items: [
-            { html: '<img src="' + resourcesBaseHref + '/images/BrandingLogo.png" style="height: 40px;"/>', cls: 'logo' },
+            { html: '<img src="' + '/images/BrandingLogo.png" style="height: 40px;"/>', cls: 'logo' },
             { text: 'Dashboard'.t(), iconCls: 'fa fa-home', cls: 'upper', href: '#', bind: { pressed: '{selectedNavItem === "dashboard"}' } },
             { text: 'Apps'.t(), iconCls: 'fa fa-th', cls: 'upper', bind: { href: '#apps/{policyId}', pressed: '{selectedNavItem === "apps"}' } },
             { text: 'Config'.t(), iconCls: 'fa fa-sliders', cls: 'upper', href: '#config', bind: { pressed: '{selectedNavItem === "config"}' } },
@@ -100,7 +100,7 @@ Ext.define('Ung.view.main.Main', {
     //         },
     //         items: [{
     //             enableToggle: false,
-    //             html: '<img src="' + resourcesBaseHref + '/images/BrandingLogo.png" style="height: 40px;"/>',
+    //             html: '<img src="' + '/images/BrandingLogo.png" style="height: 40px;"/>',
     //             width: 100,
     //             height: 40,
     //             href: '#'

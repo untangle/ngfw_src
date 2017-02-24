@@ -28,7 +28,7 @@ Ext.define('Ung.view.config.Config', {
         tpl: '<p class="apps-title">' + 'Configuration'.t() + '</p>' +
              '<tpl for=".">' +
                 '<a href="#config/{url}" class="app-item">' +
-                '<img src="' + resourcesBaseHref + '/skins/modern-rack/images/admin/config/{icon}" width=80 height=80/>' +
+                '<img src="' + '/skins/modern-rack/images/admin/config/{icon}" width=80 height=80/>' +
                 '<span class="app-name">{name}</span>' +
                 '</a>' +
             '</tpl>',
@@ -43,7 +43,7 @@ Ext.define('Ung.view.config.Config', {
         tpl: '<p class="apps-title">' + 'Tools'.t() + '</p>' +
              '<tpl for=".">' +
                 '<a href="#{url}" class="app-item">' +
-                '<img src="' + resourcesBaseHref + '/skins/modern-rack/images/admin/config/{icon}" width=80 height=80/>' +
+                '<img src="' + '/skins/modern-rack/images/admin/config/{icon}" width=80 height=80/>' +
                 '<span class="app-name">{name}</span>' +
                 '</a>' +
             '</tpl>',

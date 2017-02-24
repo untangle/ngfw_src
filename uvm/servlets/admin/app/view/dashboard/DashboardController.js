@@ -502,7 +502,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
 
         categoriesMenu.push({
             text: 'Common',
-            icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_hosts.png',
+            icon: '/skins/modern-rack/images/admin/config/icon_config_hosts.png',
             iconCls: 'menu-icon',
             menu: {
                 plain: true,
@@ -550,17 +550,17 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         if (rpc.reportsManager) {
             Rpc.asyncData('rpc.reportsManager.getCurrentApplications').then(function(result, ex) {
                 categories = [
-                    { displayName: 'Hosts', icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_hosts.png' },
-                    { displayName: 'Devices', icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_devices.png' },
-                    { displayName: 'Network', icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_network.png' },
-                    { displayName: 'Administration', icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_admin.png' },
-                    { displayName: 'System', icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_system.png' },
-                    { displayName: 'Shield', icon: resourcesBaseHref + '/skins/modern-rack/images/admin/apps/untangle-node-shield_17x17.png' }
+                    { displayName: 'Hosts', icon: '/skins/modern-rack/images/admin/config/icon_config_hosts.png' },
+                    { displayName: 'Devices', icon: '/skins/modern-rack/images/admin/config/icon_config_devices.png' },
+                    { displayName: 'Network', icon: '/skins/modern-rack/images/admin/config/icon_config_network.png' },
+                    { displayName: 'Administration', icon: '/skins/modern-rack/images/admin/config/icon_config_admin.png' },
+                    { displayName: 'System', icon: '/skins/modern-rack/images/admin/config/icon_config_system.png' },
+                    { displayName: 'Shield', icon: '/skins/modern-rack/images/admin/apps/untangle-node-shield_17x17.png' }
                 ];
                 result.list.forEach(function (app) {
                     categories.push({
                         displayName: app.displayName,
-                        icon: resourcesBaseHref + '/skins/modern-rack/images/admin/apps/' + app.name + '_17x17.png'
+                        icon: '/skins/modern-rack/images/admin/apps/' + app.name + '_17x17.png'
                     });
                 });
 

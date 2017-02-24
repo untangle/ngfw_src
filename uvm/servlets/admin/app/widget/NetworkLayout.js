@@ -43,7 +43,7 @@ Ext.define('Ung.widget.NetworkLayout', {
             xtype: 'component'
         },
         items: [{
-            html: '<img src="' + resourcesBaseHref + '/skins/default/images/admin/icons/interface-cloud.png" style="margin: 0 auto; display: block; height: 30px;"/>'
+            html: '<img src="' + '/skins/default/images/admin/icons/interface-cloud.png" style="margin: 0 auto; display: block; height: 30px;"/>'
         }, {
             xtype: 'container',
             cls: 'ifaces',
@@ -63,7 +63,7 @@ Ext.define('Ung.widget.NetworkLayout', {
             margin: '5 0 0 0',
             height: 40,
             bind: {
-                html: '<img src="' + resourcesBaseHref + '/skins/default/images/admin/icons/interface-devices.png"><br/>{deviceCount}'
+                html: '<img src="' + '/skins/default/images/admin/icons/interface-devices.png"><br/>{deviceCount}'
             }
         }]
     }],

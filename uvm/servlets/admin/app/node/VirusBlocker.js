@@ -98,7 +98,7 @@ Ext.define('Ung.node.VirusBlocker', {
             categoryName: 'Virus Blocker',
             appName: 'untangle-node-virus-blocker',
             displayName: 'Virus Blocker'.t(),
-            icon: resourcesBaseHref + '/skins/modern-rack/images/admin/apps/untangle-node-virus-blocker_80x80.png'
+            icon: '/skins/modern-rack/images/admin/apps/untangle-node-virus-blocker_80x80.png'
         }
     }]
 });
