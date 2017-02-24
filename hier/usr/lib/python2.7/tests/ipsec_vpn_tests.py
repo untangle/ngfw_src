@@ -30,6 +30,7 @@ l2tpRadiusUser = "normal"
 l2tpRadiusPassword = "passwd"
 ipsecHost = "10.111.56.96"
 ipsecHostLANIP = "192.168.235.96"
+ipsecPcLANIP = "192.168.235.83"
 ipsecHostLAN = "192.168.235.0/24"
 configuredHostIPs = [('10.112.11.55','192.168.2.1','192.168.2.0/24'), # ATS
                      ('10.111.56.49','192.168.10.49','192.168.10.0/24'), # QA 1
@@ -185,6 +186,8 @@ class IPsecTests(unittest2.TestCase):
             # ping the remote LAN to see if the IPsec tunnel is connected.
             ipsecHostLANResult = remote_control.runCommand(("curl -s -4 --insecure -o /dev/null 'https://%s/'" % ipsecHostLANIP))
         assert (ipsecHostLANResult == 0)
+        ipsecPcLanResult = remote_control.runCommand("ping -c 1 %s" % ipsecPcLANIP)
+        assert (ipsecPcLanResult == 0)
         tunnelUp = True
 
         # Check to see if the faceplate counters have incremented. 
@@ -200,6 +203,8 @@ class IPsecTests(unittest2.TestCase):
         time.sleep(10) # wait for networking to restart
         ipsecHostLANResult = remote_control.runCommand(("curl -s -4 --insecure -o /dev/null 'https://%s/'" % ipsecHostLANIP))
         assert (ipsecHostLANResult == 0)
+        ipsecPcLanResult = remote_control.runCommand("ping -c 1 %s" % ipsecPcLANIP)
+        assert (ipsecPcLanResult == 0)
         
     def test_040_windowsL2TPlocalDirectory(self):
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
