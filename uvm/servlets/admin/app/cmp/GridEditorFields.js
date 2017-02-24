@@ -1,6 +1,6 @@
-Ext.define('Ung.cmp.EditorFields', {
+Ext.define('Ung.cmp.GridEditorFields', {
     singleton: true,
-    alternateClassName: 'Fields',
+    alternateClassName: 'Field',
 
     conditions: {
         flex: 1,

@@ -58,9 +58,9 @@ Ext.define('Ung.config.network.view.Routes', {
             }
         }],
         editorFields: [
-            Fields.description,
-            Fields.network,
-            Fields.netMask, {
+            Field.description,
+            Field.network,
+            Field.netMask, {
                 xtype: 'combo',
                 fieldLabel: 'Next Hop'.t(),
                 bind: '{record.nextHop}',

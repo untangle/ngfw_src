@@ -5,8 +5,9 @@ Ext.define('Ung.view.config.Config', {
 
     requires: [
         'Ung.view.config.ConfigController',
-        'Ung.cmp.EditorFields',
-        'Ung.cmp.Conditions',
+        'Ung.cmp.GridEditorFields',
+        'Ung.cmp.GridConditions',
+        'Ung.cmp.GridColumns',
         'Ung.overrides.form.field.Date'
         // 'Ung.view.config.ConfigModel'
     ],

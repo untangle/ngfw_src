@@ -257,13 +257,13 @@ Ext.define('Ung.config.network.view.Advanced', {
                         },
 
                         conditions: [
-                            Cond.dstLocal,
-                            Cond.dstAddr,
-                            Cond.dstPort,
-                            Cond.protocol([['TCP','TCP'], ['UDP','UDP']]),
-                            Cond.srcIntf,
-                            Cond.srcAddr,
-                            Cond.srcPort
+                            Condition.dstLocal,
+                            Condition.dstAddr,
+                            Condition.dstPort,
+                            Condition.protocol([['TCP','TCP'], ['UDP','UDP']]),
+                            Condition.srcIntf,
+                            Condition.srcAddr,
+                            Condition.srcPort
                         ],
 
                         label: 'Perform the following action(s):'.t(),
@@ -314,10 +314,10 @@ Ext.define('Ung.config.network.view.Advanced', {
                             }
                         }],
                         editorFields: [
-                            Fields.enableRule(),
-                            Fields.description,
-                            Fields.conditions,
-                            Fields.priority
+                            Field.enableRule(),
+                            Field.description,
+                            Field.conditions,
+                            Field.priority
                         ]
                     }]
                 }, {
@@ -462,15 +462,15 @@ Ext.define('Ung.config.network.view.Advanced', {
                 ruleJavaClass: 'com.untangle.uvm.network.FilterRuleCondition',
 
                 conditions: [
-                    Cond.dstLocal,
-                    Cond.dstAddr,
-                    Cond.dstPort,
-                    Cond.dstIntf,
-                    Cond.srcMac,
-                    Cond.srcAddr,
-                    Cond.srcPort,
-                    Cond.srcIntf,
-                    Cond.protocol([['TCP','TCP'],['UDP','UDP'],['ICMP','ICMP'],['GRE','GRE'],['ESP','ESP'],['AH','AH'],['SCTP','SCTP']])
+                    Condition.dstLocal,
+                    Condition.dstAddr,
+                    Condition.dstPort,
+                    Condition.dstIntf,
+                    Condition.srcMac,
+                    Condition.srcAddr,
+                    Condition.srcPort,
+                    Condition.srcIntf,
+                    Condition.protocol([['TCP','TCP'],['UDP','UDP'],['ICMP','ICMP'],['GRE','GRE'],['ESP','ESP'],['AH','AH'],['SCTP','SCTP']])
                 ],
 
                 emptyRow: {
@@ -529,11 +529,11 @@ Ext.define('Ung.config.network.view.Advanced', {
                     width: 70
                 }],
                 editorFields: [
-                    Fields.enableRule('Enable Forward Filter Rule'.t()),
-                    Fields.enableIpv6,
-                    Fields.description,
-                    Fields.conditions,
-                    Fields.blocked
+                    Field.enableRule('Enable Forward Filter Rule'.t()),
+                    Field.enableIpv6,
+                    Field.description,
+                    Field.conditions,
+                    Field.blocked
                 ]
             }, {
                 xtype: 'ungrid',
@@ -550,15 +550,15 @@ Ext.define('Ung.config.network.view.Advanced', {
                 ruleJavaClass: 'com.untangle.uvm.network.FilterRuleCondition',
 
                 conditions: [
-                    Cond.dstLocal,
-                    Cond.dstAddr,
-                    Cond.dstPort,
-                    Cond.dstIntf,
-                    Cond.srcMac,
-                    Cond.srcAddr,
-                    Cond.srcPort,
-                    Cond.srcIntf,
-                    Cond.protocol([['TCP','TCP'],['UDP','UDP'],['ICMP','ICMP'],['GRE','GRE'],['ESP','ESP'],['AH','AH'],['SCTP','SCTP']])
+                    Condition.dstLocal,
+                    Condition.dstAddr,
+                    Condition.dstPort,
+                    Condition.dstIntf,
+                    Condition.srcMac,
+                    Condition.srcAddr,
+                    Condition.srcPort,
+                    Condition.srcIntf,
+                    Condition.protocol([['TCP','TCP'],['UDP','UDP'],['ICMP','ICMP'],['GRE','GRE'],['ESP','ESP'],['AH','AH'],['SCTP','SCTP']])
                 ],
 
                 emptyRow: {
@@ -626,11 +626,11 @@ Ext.define('Ung.config.network.view.Advanced', {
                     }
                 }],
                 editorFields: [
-                    Fields.enableRule('Enable Input Filter Rule'.t()),
-                    Fields.enableIpv6,
-                    Fields.description,
-                    Fields.conditions,
-                    Fields.blocked
+                    Field.enableRule('Enable Input Filter Rule'.t()),
+                    Field.enableIpv6,
+                    Field.description,
+                    Field.conditions,
+                    Field.blocked
                 ]
             }]
         }, {
@@ -749,9 +749,9 @@ Ext.define('Ung.config.network.view.Advanced', {
                 ruleJavaClass: 'com.untangle.uvm.network.UpnpRuleCondition',
 
                 conditions: [
-                    Cond.dstPort,
-                    Cond.srcAddr,
-                    Cond.srcPort
+                    Condition.dstPort,
+                    Condition.srcAddr,
+                    Condition.srcPort
                 ],
 
                 label: 'Perform the following action(s):'.t(),
@@ -812,10 +812,10 @@ Ext.define('Ung.config.network.view.Advanced', {
                     }
                 }],
                 editorFields: [
-                    Fields.enableRule(),
-                    Fields.description,
-                    Fields.conditions,
-                    Fields.allow
+                    Field.enableRule(),
+                    Field.description,
+                    Field.conditions,
+                    Field.allow
                 ]
             }]
         }, {

@@ -11,6 +11,91 @@ Ext.define('Ung.cmp.Grid', {
 
     controller: 'ungrid',
 
+    /**
+     * @cfg {Array} tbar
+     * Contains the grid action buttons placed in the top toolbar
+     * Possible values:
+     * '@add' - opens up a popup form with an emptyRecord
+     * '@addInline' - add a new emptyRecord directly to the grid (meaning that grid columns have an editor defined for inline cell editing)
+     * '@import' - imports data from file (not implemented)
+     * '@export' - exports data to file (not implemented)
+     */
+    tbar: null,
+
+    /**
+     * @cfg {Array} recordActions
+     * The action columns for the grid.
+     * Possible values:
+     * '@edit' - opens a popup form for editing record
+     * '@delete' - marks record for deletions (is removed from grid upon save)
+     * '@reorder' - enables records reordering by drag and drop
+     */
+    recordActions: null,
+
+    /**
+     * @cfg {String} listProperty
+     * the string wich represents the object expression for the list
+     * e.g. 'settings.portForwardRules.list'
+     */
+    listProperty: null,
+
+    /**
+     * @cfg {Array} conditions
+     * Required for data containing conditions
+     * Represents a list of conditions as defined in Ung.cmp.GridConditions, or custom conditions defined inline
+     * e.g. [Condition.dstAddr, Condition.dstPort, Condition.protocol([['TCP','TCP'],['UDP','UDP']])]
+     */
+    conditions: null,
+
+    /**
+     * @cfg {Array} columns
+     * The default columns configuration
+     * Represents a list of columns as defined in Ung.cmp.GridColumns, or custom columns defined inline
+     * e.g. [Column.ruleId, Column.enabled, Column.description, Column.conditions]
+     */
+    columns: null,
+
+    /**
+     * @cfg {Array} editorFields
+     * The definition of fields which are used in the Popup record editor form
+     * Represents a list of fields as defined in Ung.cmp.GridEditorFields, or custom field defined inline
+     * e.g. [Field.description, Fields.conditions, Field.newDestination, Field.newPort]
+     */
+    editorFields: null,
+
+
+    /**
+     * @cfg {Object} emptyRow
+     * Required for adding new records
+     * Represents an object used to create a new record for a specific grid
+     * example:
+     * {
+     *     ruleId: -1,
+     *     enabled: true,
+     *     javaClass: 'com.untangle.uvm.network.PortForwardRule',
+     *     conditions: {
+     *         javaClass: 'java.util.LinkedList',
+     *         list: []
+     *     }
+     * }
+     */
+    emptyRow: null,
+
+    /**
+     * @cfg {String} actionText
+     * Used in grids with conditions.
+     * Tells the actions which are taken if condition are met
+     * e.g. 'Forward to the following location:'.t()
+     */
+    actionText: 'Perform the following action(s):'.t(),
+
+
+
+
+
+
+
+
     actions: {
         add: { text: 'Add'.t(), iconCls: 'fa fa-plus-circle fa-lg', handler: 'addRecord' },
         addInline: { text: 'Add'.t(), iconCls: 'fa fa-plus-circle fa-lg', handler: 'addRecordInline' },
@@ -60,35 +145,6 @@ Ext.define('Ung.cmp.Grid', {
                 return 'mark-readonly';
             }
         }
-    },
-
-    // bbar: [{
-    //     xtype: 'form',
-    //     itemId: 'exportForm',
-    //     url: 'http://localhost:8002/webui/gridSettings',
-    //     defaults: {
-    //         xtype: 'textfield'
-    //     },
-    //     items: [{
-    //         name: 'gridName',
-    //     }, {
-    //         name: 'gridData',
-    //     }, {
-    //         name: 'type',
-    //         value: 'export'
-    //     }]
-    // }],
-
-    config: {
-        // toolbarFeatures: null, // ['add', 'delete', 'revert', 'importexport'] add specific buttons to top toolbar
-        // columnFeatures: null, // ['delete', 'edit', 'reorder', 'select'] add specific actioncolumns to grid
-        // inlineEdit: null, // 'cell' or 'row',
-        // dataProperty: null, // the settings data property, e.g. settings.dataProperty.list
-
-        // recordActions: null,
-
-        // conditions: null,
-        // conditionsMap: null
     },
 
     plugins: {

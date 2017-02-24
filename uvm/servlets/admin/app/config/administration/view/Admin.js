@@ -73,7 +73,7 @@ Ext.define('Ung.config.administration.view.Admin', {
             allowBlank: false,
             emptyText: '[enter username]'.t(),
             blankText: 'The username cannot be blank.'.t()
-        }, Fields.description, {
+        }, Field.description, {
             xtype: 'textfield',
             bind: '{record.emailAddress}',
             fieldLabel: 'Email Address'.t(),
