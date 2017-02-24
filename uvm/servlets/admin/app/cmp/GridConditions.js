@@ -1,6 +1,6 @@
-Ext.define('Ung.cmp.Conditions', {
+Ext.define('Ung.cmp.GridConditions', {
     singleton: true,
-    alternateClassName: 'Cond',
+    alternateClassName: 'Condition',
 
     dstLocal: { name: 'DST_LOCAL', displayName: 'Destined Local'.t(), type: 'boolean' },
     dstIntf: { name: 'DST_INTF', displayName: 'Destination Interface'.t(), type: 'checkboxgroup', values: Util.getInterfaceList(true, true) },

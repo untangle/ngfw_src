@@ -31,13 +31,13 @@ Ext.define('Ung.config.network.view.NatRules', {
         ruleJavaClass: 'com.untangle.uvm.network.NatRuleCondition',
 
         conditions: [
-            Cond.dstAddr,
-            Cond.dstPort,
-            Cond.dstIntf,
-            Cond.srcAddr,
-            Cond.srcPort,
-            Cond.srcIntf,
-            Cond.protocol([['TCP','TCP'],['UDP','UDP'],['ICMP','ICMP'],['GRE','GRE'],['ESP','ESP'],['AH','AH'],['SCTP','SCTP']])
+            Condition.dstAddr,
+            Condition.dstPort,
+            Condition.dstIntf,
+            Condition.srcAddr,
+            Condition.srcPort,
+            Condition.srcIntf,
+            Condition.protocol([['TCP','TCP'],['UDP','UDP'],['ICMP','ICMP'],['GRE','GRE'],['ESP','ESP'],['AH','AH'],['SCTP','SCTP']])
         ],
 
         emptyRow: {
@@ -97,11 +97,11 @@ Ext.define('Ung.config.network.view.NatRules', {
             }
         }],
         editorFields: [
-            Fields.enableRule('Enable NAT Rule'.t()),
-            Fields.description,
-            Fields.conditions,
-            Fields.natType,
-            Fields.natSource
+            Field.enableRule('Enable NAT Rule'.t()),
+            Field.description,
+            Field.conditions,
+            Field.natType,
+            Field.natSource
         ]
     }]
 });

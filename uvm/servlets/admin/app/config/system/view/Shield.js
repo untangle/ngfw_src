@@ -52,8 +52,8 @@ Ext.define('Ung.config.system.view.Shield', {
             }
         },
 
-        conditions: [Cond.dstAddr, Cond.dstPort, Cond.dstIntf, Cond.srcAddr, Cond.srcPort, Cond.srcIntf,
-            Cond.protocol([['TCP','TCP'],['UDP','UDP']])
+        conditions: [Condition.dstAddr, Condition.dstPort, Condition.dstIntf, Condition.srcAddr, Condition.srcPort, Condition.srcIntf,
+            Condition.protocol([['TCP','TCP'],['UDP','UDP']])
         ],
 
         columns: [{
@@ -98,9 +98,9 @@ Ext.define('Ung.config.system.view.Shield', {
             }
         }],
         editorFields: [
-            Fields.enableRule(),
-            Fields.description,
-            Fields.conditions, {
+            Field.enableRule(),
+            Field.description,
+            Field.conditions, {
                 xtype: 'combo',
                 fieldLabel: 'Action',
                 allowBlank: false,

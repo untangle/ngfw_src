@@ -27,13 +27,13 @@ Ext.define('Ung.config.network.view.PortForwardRules', {
         ruleJavaClass: 'com.untangle.uvm.network.PortForwardRuleCondition',
 
         conditions: [
-            Cond.dstLocal,
-            Cond.dstAddr,
-            Cond.dstPort,
-            Cond.srcAddr,
-            Cond.srcPort,
-            Cond.srcIntf,
-            Cond.protocol([['TCP','TCP'],['UDP','UDP'],['ICMP','ICMP'],['GRE','GRE'],['ESP','ESP'],['AH','AH'],['SCTP','SCTP']])
+            Condition.dstLocal,
+            Condition.dstAddr,
+            Condition.dstPort,
+            Condition.srcAddr,
+            Condition.srcPort,
+            Condition.srcIntf,
+            Condition.protocol([['TCP','TCP'],['UDP','UDP'],['ICMP','ICMP'],['GRE','GRE'],['ESP','ESP'],['AH','AH'],['SCTP','SCTP']])
         ],
 
         actionText: 'Forward to the following location:'.t(),
@@ -67,48 +67,25 @@ Ext.define('Ung.config.network.view.PortForwardRules', {
 
         bind: '{portForwardRules}',
 
-        columns: [{
-            header: 'Rule Id'.t(),
-            width: 70,
-            align: 'right',
-            resizable: false,
-            dataIndex: 'ruleId',
-            renderer: function(value) {
-                return value < 0 ? 'new'.t() : value;
-            }
-        }, {
-            xtype: 'checkcolumn',
-            header: 'Enable'.t(),
-            dataIndex: 'enabled',
-            resizable: false,
-            width: 70
-        }, {
-            header: 'Description',
-            width: 200,
-            dataIndex: 'description',
-            renderer: function (value) {
-                return value || '<em>no description<em>';
-            }
-        }, {
-            header: 'Conditions'.t(),
-            flex: 1,
-            dataIndex: 'conditions',
-            renderer: 'conditionsRenderer'
-        }, {
-            header: 'New Destination'.t(),
-            dataIndex: 'newDestination',
-            width: 150
-        }, {
-            header: 'New Port'.t(),
-            dataIndex: 'newPort',
-            width: 80
-        }],
+        columns: [
+            Column.ruleId,
+            Column.enabled,
+            Column.description,
+            Column.conditions, {
+                header: 'New Destination'.t(),
+                dataIndex: 'newDestination',
+                width: 150
+            }, {
+                header: 'New Port'.t(),
+                dataIndex: 'newPort',
+                width: 80
+            }],
         editorFields: [
-            Fields.enableRule('Enable Port Forward Rule'.t()),
-            Fields.description,
-            Fields.conditions,
-            Fields.newDestination,
-            Fields.newPort
+            Field.enableRule('Enable Port Forward Rule'.t()),
+            Field.description,
+            Field.conditions,
+            Field.newDestination,
+            Field.newPort
         ]
     }, {
         xtype: 'fieldset',

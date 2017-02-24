@@ -60,9 +60,9 @@ Ext.define('Ung.config.network.view.DhcpServer', {
             }
         }],
         editorFields: [
-            Fields.macAddress,
-            Fields.ipAddress,
-            Fields.description
+            Field.macAddress,
+            Field.ipAddress,
+            Field.description
         ]
     }, {
         xtype: 'grid',

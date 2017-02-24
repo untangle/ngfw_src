@@ -31,8 +31,9 @@
         "Util": true,
         "Metrics": true,
         "rpc": true,
-        "Fields": true,
-        "Cond": true,
+        "Field": true,
+        "Condition": true,
+        "Column": true,
         "resourcesBaseHref": true
     }
 }

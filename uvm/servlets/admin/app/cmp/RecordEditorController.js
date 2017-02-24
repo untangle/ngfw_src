@@ -131,7 +131,7 @@ Ext.define('Ung.cmp.RecordEditorController', {
                 form.add({
                     xtype: 'component',
                     padding: '0 0 10 0',
-                    html: '<strong>' + (this.mainGrid.actionText || 'Perform the following action(s):'.t()) + '</strong>'
+                    html: '<strong>' + this.mainGrid.actionText + '</strong>'
                 });
             }
         }

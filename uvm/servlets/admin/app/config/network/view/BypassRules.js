@@ -29,13 +29,13 @@ Ext.define('Ung.config.network.view.BypassRules', {
         listProperty: 'settings.bypassRules.list',
         ruleJavaClass: 'com.untangle.uvm.network.BypassRuleCondition',
         conditions: [
-            Cond.dstAddr,
-            Cond.dstPort,
-            Cond.dstIntf,
-            Cond.srcAddr,
-            Cond.srcPort,
-            Cond.srcIntf,
-            Cond.protocol([['TCP','TCP'],['UDP','UDP']])
+            Condition.dstAddr,
+            Condition.dstPort,
+            Condition.dstIntf,
+            Condition.srcAddr,
+            Condition.srcPort,
+            Condition.srcIntf,
+            Condition.protocol([['TCP','TCP'],['UDP','UDP']])
         ],
         emptyRow: {
             ruleId: -1,
@@ -51,44 +51,18 @@ Ext.define('Ung.config.network.view.BypassRules', {
 
         bind: '{bypassRules}',
 
-        columns: [{
-            header: 'Rule Id'.t(),
-            width: 70,
-            align: 'right',
-            resizable: false,
-            dataIndex: 'ruleId',
-            renderer: function(value) {
-                return value < 0 ? 'new'.t() : value;
-            }
-        }, {
-            xtype: 'checkcolumn',
-            header: 'Enable'.t(),
-            dataIndex: 'enabled',
-            resizable: false,
-            width: 70
-        }, {
-            header: 'Description',
-            width: 200,
-            dataIndex: 'description',
-            renderer: function (value) {
-                return value || '<em>no description<em>';
-            }
-        }, {
-            header: 'Conditions'.t(),
-            flex: 1,
-            dataIndex: 'conditions',
-            renderer: 'conditionsRenderer'
-        }, {
-            header: 'Bypass'.t(),
-            xtype: 'checkcolumn',
-            dataIndex: 'bypass',
-            width: 100
-        }],
+        columns: [
+            Column.ruleId,
+            Column.enabled,
+            Column.description,
+            Column.conditions,
+            Column.bypass
+        ],
         editorFields: [
-            Fields.enableRule(),
-            Fields.description,
-            Fields.conditions,
-            Fields.bypass
+            Field.enableRule(),
+            Field.description,
+            Field.conditions,
+            Field.bypass
         ]
     }]
 });
