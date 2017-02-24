@@ -56,9 +56,6 @@ class IntrusionPreventionEventMonitor implements Runnable
     /* Status of the monitor */
     private volatile boolean isAlive = true;
 
-    /* Whether or not openvpn is started */
-    private volatile boolean isEnabled = false;
-
     protected IntrusionPreventionEventMonitor( IntrusionPreventionApp node )
     {
         this.node = node;
@@ -76,26 +73,22 @@ class IntrusionPreventionEventMonitor implements Runnable
         Date now = new Date();
 
         while ( true ) {
+            /* Check if the node is still running */
+            if ( !isAlive )
+                break;
+
+            /* Update the current time */
+            now.setTime( System.currentTimeMillis() );
+
+            processSnortLogFiles();
+
+            /* sleep */
             try {
                 Thread.sleep( SLEEP_TIME_MSEC );
             } catch ( InterruptedException e ) {
                 logger.info( "ips event monitor was interrupted" );
             }
 
-            /* Check if the node is still running */
-            if ( !isAlive )
-                break;
-
-            /* Only log when enabled */
-            if ( !isEnabled ) {
-                continue;
-            }
-
-            /* Update the current time */
-            now.setTime( System.currentTimeMillis() );
-
-            processSnortLogFiles();
-                
             /* Check if the node is still running */
             if ( !isAlive )
                 break;
@@ -107,7 +100,6 @@ class IntrusionPreventionEventMonitor implements Runnable
     public synchronized void start()
     {
         isAlive = true;
-        isEnabled = false;
 
         logger.debug( "Starting Intrusion Prevention Event monitor" );
 
@@ -119,16 +111,6 @@ class IntrusionPreventionEventMonitor implements Runnable
 
         thread = UvmContextFactory.context().newThread( this );
         thread.start();
-    }
-
-    public synchronized void enable()
-    {
-        isEnabled = true;
-    }
-
-    public synchronized void disable()
-    {
-        isEnabled = false;
     }
 
     public synchronized void stop()
