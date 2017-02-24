@@ -2,10 +2,11 @@ Ext.define('Ung.view.shd.Hosts', {
     extend: 'Ext.tab.Panel',
     xtype: 'ung.hosts',
     // layout: 'border',
+    /* requires-start */
     requires: [
         'Ung.view.shd.HostsController'
     ],
-
+    /* requires-end */
     controller: 'hosts',
 
     layout: 'border',

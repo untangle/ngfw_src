@@ -3,10 +3,11 @@ Ext.define('Ung.view.apps.Apps', {
     xtype: 'ung.apps',
     itemId: 'apps',
     layout: 'card',
+    /* requires-start */
     requires: [
         'Ung.view.apps.AppsController'
     ],
-
+    /* requires-end */
     controller: 'apps',
     viewModel: {
         data: {

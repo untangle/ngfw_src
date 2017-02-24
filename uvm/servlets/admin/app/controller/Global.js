@@ -2,6 +2,7 @@ Ext.define('Ung.controller.Global', {
     extend: 'Ext.app.Controller',
     namespace: 'Ung',
 
+    /* requires-start */
     requires: [
         'Ung.util.Rpc',
         'Ung.util.Util',
@@ -13,7 +14,7 @@ Ext.define('Ung.controller.Global', {
         'Ung.view.shd.Devices',
         'Ung.config.network.Network'
     ],
-
+    /* requires-end */
 
     stores: [
         'Policies',
@@ -123,7 +124,7 @@ Ext.define('Ung.controller.Global', {
         } else {
             me.getMainView().setLoading(true);
             Ext.Loader.loadScript({
-                url: 'root/script/config/' + configName + '.js',
+                url: 'script/config/' + configName + '.js',
                 onLoad: function () {
                     me.getMainView().setLoading(false);
                     me.getMainView().add({

@@ -2,6 +2,7 @@ Ext.define('Ung.config.network.Network', {
     extend: 'Ext.tab.Panel',
     alias: 'widget.config.network',
 
+    /* requires-start */
     requires: [
         'Ung.config.network.NetworkController',
         'Ung.config.network.NetworkModel',
@@ -13,7 +14,7 @@ Ext.define('Ung.config.network.Network', {
         'Ung.model.Rule',
         'Ung.cmp.Grid'
     ],
-
+    /* requires-end */
     controller: 'config.network',
 
     viewModel: {

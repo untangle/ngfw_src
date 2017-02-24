@@ -2,11 +2,12 @@ Ext.define('Ung.config.localdirectory.LocalDirectory', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.config.localdirectory',
 
+    /* requires-start */
     requires: [
         'Ung.config.localdirectory.LocalDirectoryController',
         'Ung.config.localdirectory.LocalDirectoryModel'
     ],
-
+    /* requires-end */
     controller: 'config.localdirectory',
 
     viewModel: {

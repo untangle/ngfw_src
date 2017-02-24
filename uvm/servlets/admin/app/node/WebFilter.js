@@ -2,10 +2,12 @@ Ext.define('Ung.node.WebFilter', {
     extend: 'Ext.tab.Panel',
     xtype: 'ung.untangle-node-web-filter',
     layout: 'fit',
+    /* requires-start */
     requires: [
         'Ung.view.grid.Grid',
         'Ung.model.GenericRule'
     ],
+    /* requires-end */
 
     defaults: {
         border: false

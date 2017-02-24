@@ -2,10 +2,6 @@ Ext.define('Ung.view.node.Reports', {
     extend: 'Ext.panel.Panel',
     xtype: 'nodereports',
 
-    requires: [
-        //'Ung.chart.NodeChart'
-    ],
-
     layout: 'border',
 
     border: false,

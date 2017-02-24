@@ -1,11 +1,13 @@
 Ext.define('Ung.chart.EventChart', {
     extend: 'Ext.grid.Panel',
     alias: 'widget.eventchart',
+
+    /* requires-start */
     requires: [
         'Ung.chart.EventChartController',
         'Ung.util.TableConfig'
     ],
-
+    /* requires-end */
     controller: 'eventchart',
     viewModel: {
         stores: {

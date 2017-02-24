@@ -1,6 +1,7 @@
 Ext.define('Ung.widget.Report', {
     extend: 'Ext.container.Container',
     alias: 'widget.reportwidget',
+    /* requires-start */
     requires: [
         //'Ung.widget.report.ReportController',
         'Ung.widget.ReportModel',
@@ -8,7 +9,7 @@ Ext.define('Ung.widget.Report', {
         'Ung.chart.PieChart',
         'Ung.chart.EventChart'
     ],
-
+    /* requires-end */
     controller: 'widget',
     viewModel: {
         type: 'reportwidget'

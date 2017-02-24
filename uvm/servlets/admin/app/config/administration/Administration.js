@@ -2,6 +2,7 @@ Ext.define('Ung.config.administration.Administration', {
     extend: 'Ext.tab.Panel',
     alias: 'widget.config.administration',
 
+    /* requires-start */
     requires: [
         'Ung.config.administration.AdministrationController',
         'Ung.config.administration.AdministrationModel',
@@ -10,6 +11,7 @@ Ext.define('Ung.config.administration.Administration', {
         'Ung.model.Rule',
         'Ung.cmp.Grid'
     ],
+    /* requires-end */
 
     controller: 'config.administration',
     viewModel: {

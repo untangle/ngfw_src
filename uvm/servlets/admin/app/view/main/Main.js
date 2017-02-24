@@ -6,7 +6,7 @@ Ext.define('Ung.view.main.Main', {
     // plugins: [
     //     'viewport'
     // ],
-
+    /* requires-start */
     requires: [
         // 'Ext.plugin.Viewport',
         'Ung.view.main.MainController',
@@ -21,7 +21,7 @@ Ext.define('Ung.view.main.Main', {
         // 'Ung.view.shd.Hosts',
         // 'Ung.view.shd.Devices'
     ],
-
+    /* requires-end */
 
     controller: 'main',
     // viewModel: true,

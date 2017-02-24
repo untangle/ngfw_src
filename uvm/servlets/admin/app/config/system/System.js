@@ -2,11 +2,12 @@ Ext.define('Ung.config.system.System', {
     extend: 'Ext.tab.Panel',
     alias: 'widget.config.system',
 
+    /* requires-start */
     requires: [
         'Ung.config.system.SystemController',
         'Ung.config.system.SystemModel',
     ],
-
+    /* requires-end */
     controller: 'config.system',
 
     viewModel: {

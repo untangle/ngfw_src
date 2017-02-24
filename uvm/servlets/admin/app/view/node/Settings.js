@@ -5,6 +5,8 @@ Ext.define('Ung.view.node.Settings', {
     extend: 'Ext.panel.Panel',
     xtype: 'ung.nodesettings',
     layout: 'border',
+
+    /* requires-start */
     requires: [
         'Ung.view.node.SettingsController',
         'Ung.view.node.SettingsModel',
@@ -16,7 +18,7 @@ Ext.define('Ung.view.node.Settings', {
         'Ung.view.grid.Conditions',
         'Ung.model.GenericRule'
     ],
-
+    /* requires-end */
     controller: 'nodesettings',
     viewModel: {
         type: 'nodesettings'

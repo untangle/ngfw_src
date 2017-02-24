@@ -2,9 +2,11 @@ Ext.define('Ung.widget.NetworkLayout', {
     extend: 'Ext.container.Container',
     alias: 'widget.networklayoutwidget',
 
+    /* requires-start */
     requires: [
         'Ung.widget.InterfaceItem'
     ],
+    /* requires-end */
 
     controller: 'widget',
 
