@@ -152,23 +152,6 @@ class IntrusionPreventionInterface:
         }
         return rule
 
-    def get_log_event(self, rule):
-        """
-        Get log event
-        """
-        global node
-
-        time.sleep(35)
-        events = global_functions.get_events('Intrusion Prevention','All Events',None,1)
-
-        logged = False
-        blocked = False
-        for event in events["list"]:
-            if event["msg"] == rule["msg"] and str(event["sig_id"]) == rule["sid"]:
-                return event
-
-        return None
-
     ## Change the timeout for receiving a response
     def set_timeout( self, timeout ):
         """
@@ -181,8 +164,6 @@ class IntrusionPreventionInterface:
         Perform initialization
         """
         settings = json.loads( self.config_request( "load" ) )
-        self.set_last_enabled_rules_count(self.count_enabled_rules(settings))
-        self.set_last_variables_count(self.count_variables(settings))
         del(settings)
 
     def count_enabled_rules(self, settings):
@@ -195,18 +176,6 @@ class IntrusionPreventionInterface:
                 enabled_count = enabled_count + 1
         return enabled_count
 
-    def set_last_enabled_rules_count(self, enabled_count):
-        """
-        Set enabled rules
-        """
-        self.last_enabled_rules_count = enabled_count
-
-    def get_last_enabled_rules_count(self):
-        """
-        Get enabled rules
-        """
-        return self.last_enabled_rules_count
-
     def count_variables(self, settings):
         """
         Count variables
@@ -215,18 +184,6 @@ class IntrusionPreventionInterface:
         for rule in settings["variables"]["list"]:
             count = count + 1
         return count
-
-    def set_last_variables_count(self, count):
-        """
-        Set variable count
-        """
-        self.last_variables_count = count
-
-    def get_last_variables_count(self):
-        """
-        Get variable count
-        """
-        return self.last_variables_count
 
 def flush_events():
     """
@@ -296,6 +253,10 @@ class IntrusionPreventionTests(unittest2.TestCase):
 
         node.start() # must be called since intrusion-prevention doesn't auto-start
 
+        # FIXME - if I remove this sleep, many tests fail - why?!?!
+        # start() is a blocking call
+        time.sleep(10)
+
     def setUp(self):
         self.intrusion_prevention_interface = IntrusionPreventionInterface(node.getNodeSettings()["id"])
         self.intrusion_prevention_interface.setup()
@@ -316,6 +277,9 @@ class IntrusionPreventionTests(unittest2.TestCase):
         """
         Setup Wizard, custom classtypes, recommended categories
         """
+        settings = json.loads( self.intrusion_prevention_interface.config_request( "load" ) )
+        pre_count = self.intrusion_prevention_interface.count_enabled_rules(settings)
+
         patch = IntrusionPreventionInterface.config_request_patch_template
         patch["activeGroups"] = {
             "classtypes": "custom",
@@ -326,15 +290,18 @@ class IntrusionPreventionTests(unittest2.TestCase):
         }
 
         self.intrusion_prevention_interface.config_request( "save", patch )
+
         settings = json.loads( self.intrusion_prevention_interface.config_request( "load" ) )
-        enabled_count = self.intrusion_prevention_interface.count_enabled_rules(settings)
-        assert(enabled_count != self.intrusion_prevention_interface.get_last_enabled_rules_count() )
-        self.intrusion_prevention_interface.set_last_enabled_rules_count(enabled_count)
+        post_count = self.intrusion_prevention_interface.count_enabled_rules(settings)
+        assert(pre_count != post_count)
 
     def test_022_wizard_classtypes_recommended_categories_custom(self):
         """
         Setup Wizard, recommended classtypes, custom categories
         """
+        settings = json.loads( self.intrusion_prevention_interface.config_request( "load" ) )
+        pre_count = self.intrusion_prevention_interface.count_enabled_rules(settings)
+
         patch = IntrusionPreventionInterface.config_request_patch_template
         patch["activeGroups"] = {
             "classtypes": "recommended",
@@ -345,15 +312,18 @@ class IntrusionPreventionTests(unittest2.TestCase):
         }
 
         self.intrusion_prevention_interface.config_request( "save", patch )
+
         settings = json.loads( self.intrusion_prevention_interface.config_request( "load" ) )
-        enabled_count = self.intrusion_prevention_interface.count_enabled_rules(settings)
-        assert(enabled_count != self.intrusion_prevention_interface.get_last_enabled_rules_count() )
-        self.intrusion_prevention_interface.set_last_enabled_rules_count(enabled_count)
+        post_count = self.intrusion_prevention_interface.count_enabled_rules(settings)
+        assert(pre_count != post_count)
 
     def test_023_wizard_classtypes_custom_categories_custom(self):
         """
         Setup Wiard, custom classtypes, custom categories
         """
+        settings = json.loads( self.intrusion_prevention_interface.config_request( "load" ) )
+        pre_count = self.intrusion_prevention_interface.count_enabled_rules(settings)
+
         patch = IntrusionPreventionInterface.config_request_patch_template
         patch["activeGroups"] = {
             "classtypes": "custom",
@@ -367,15 +337,18 @@ class IntrusionPreventionTests(unittest2.TestCase):
         }
 
         self.intrusion_prevention_interface.config_request( "save", patch )
+
         settings = json.loads( self.intrusion_prevention_interface.config_request( "load" ) )
-        enabled_count = self.intrusion_prevention_interface.count_enabled_rules(settings)
-        assert(enabled_count != self.intrusion_prevention_interface.get_last_enabled_rules_count() )
-        self.intrusion_prevention_interface.set_last_enabled_rules_count(enabled_count)
+        post_count = self.intrusion_prevention_interface.count_enabled_rules(settings)
+        assert(pre_count != post_count)
 
     def test_024_wizard_classtypes_recommended_categories_recommended(self):
         """
         Setup Wizard, recommended classtypes, recommended categories
         """
+        settings = json.loads( self.intrusion_prevention_interface.config_request( "load" ) )
+        pre_count = self.intrusion_prevention_interface.count_enabled_rules(settings)
+
         patch = IntrusionPreventionInterface.config_request_patch_template
         patch["activeGroups"] = {
             "classtypes": "recommended",
@@ -383,10 +356,10 @@ class IntrusionPreventionTests(unittest2.TestCase):
         }
 
         self.intrusion_prevention_interface.config_request( "save", patch )
+
         settings = json.loads( self.intrusion_prevention_interface.config_request( "load" ) )
-        enabled_count = self.intrusion_prevention_interface.count_enabled_rules(settings)
-        assert(enabled_count != self.intrusion_prevention_interface.get_last_enabled_rules_count() )
-        self.intrusion_prevention_interface.set_last_enabled_rules_count(enabled_count)
+        post_count = self.intrusion_prevention_interface.count_enabled_rules(settings)
+        assert(pre_count != post_count)
 
     #
     # Add/modify/delete rules
@@ -395,6 +368,9 @@ class IntrusionPreventionTests(unittest2.TestCase):
         """
         UI, Add rule
         """
+        settings = json.loads( self.intrusion_prevention_interface.config_request( "load" ) )
+        pre_count = self.intrusion_prevention_interface.count_enabled_rules(settings)
+
         patch = IntrusionPreventionInterface.config_request_patch_template
         patch["rules"] = {
             "-1": {
@@ -418,14 +394,16 @@ class IntrusionPreventionTests(unittest2.TestCase):
         self.intrusion_prevention_interface.config_request( "save", patch )
 
         settings = json.loads( self.intrusion_prevention_interface.config_request( "load" ) )
-        enabled_count = self.intrusion_prevention_interface.count_enabled_rules(settings)
-        assert(enabled_count != self.intrusion_prevention_interface.get_last_enabled_rules_count() )
-        self.intrusion_prevention_interface.set_last_enabled_rules_count(enabled_count)
+        post_count = self.intrusion_prevention_interface.count_enabled_rules(settings)
+        assert(pre_count < post_count)
 
     def test_031_rule_modify(self):
         """
         UI, Modify rule
         """
+        settings = json.loads( self.intrusion_prevention_interface.config_request( "load" ) )
+        pre_count = self.intrusion_prevention_interface.count_enabled_rules(settings)
+
         patch = IntrusionPreventionInterface.config_request_patch_template
         patch["rules"] = {
             "1":{
@@ -447,15 +425,18 @@ class IntrusionPreventionTests(unittest2.TestCase):
         }
         patch["variables"] = {}
         self.intrusion_prevention_interface.config_request( "save", patch )
+
         settings = json.loads( self.intrusion_prevention_interface.config_request( "load" ) )
-        enabled_count = self.intrusion_prevention_interface.count_enabled_rules(settings)
-        assert(enabled_count == self.intrusion_prevention_interface.get_last_enabled_rules_count() )
-        self.intrusion_prevention_interface.set_last_enabled_rules_count(enabled_count)
+        post_count = self.intrusion_prevention_interface.count_enabled_rules(settings)
+        assert(pre_count == post_count)
 
     def test_032_rule_delete(self):
         """
         UI, delete rule
         """
+        settings = json.loads( self.intrusion_prevention_interface.config_request( "load" ) )
+        pre_count = self.intrusion_prevention_interface.count_enabled_rules(settings)
+
         patch = IntrusionPreventionInterface.config_request_patch_template
         patch["rules"] = {
             "4194":{
@@ -477,10 +458,10 @@ class IntrusionPreventionTests(unittest2.TestCase):
         }
         patch["variables"] = {}
         self.intrusion_prevention_interface.config_request( "save", patch )
+
         settings = json.loads( self.intrusion_prevention_interface.config_request( "load" ) )
-        enabled_count = self.intrusion_prevention_interface.count_enabled_rules(settings)
-        assert(enabled_count != self.intrusion_prevention_interface.get_last_enabled_rules_count() )
-        self.intrusion_prevention_interface.set_last_enabled_rules_count(enabled_count)
+        post_count = self.intrusion_prevention_interface.count_enabled_rules(settings)
+        assert(pre_count != post_count)
 
     #
     # Add/modify/delete variables
@@ -489,6 +470,9 @@ class IntrusionPreventionTests(unittest2.TestCase):
         """
         UI, add variable
         """
+        settings = json.loads( self.intrusion_prevention_interface.config_request( "load" ) )
+        pre_count = self.intrusion_prevention_interface.count_variables(settings)
+
         patch = IntrusionPreventionInterface.config_request_patch_template
         patch["variables"] = {
             "-1":{
@@ -505,15 +489,20 @@ class IntrusionPreventionTests(unittest2.TestCase):
         }
         patch["rules"] = {}
         self.intrusion_prevention_interface.config_request( "save", patch )
+
         settings = json.loads( self.intrusion_prevention_interface.config_request( "load" ) )
-        count = self.intrusion_prevention_interface.count_variables(settings)
-        assert(count != self.intrusion_prevention_interface.get_last_variables_count() )
-        self.intrusion_prevention_interface.set_last_variables_count(count)
+        post_count = self.intrusion_prevention_interface.count_variables(settings)
+        print "pre_count: %i"%pre_count
+        print "post_count: %i"%post_count
+        assert(pre_count < post_count)
 
     def test_041_variable_modify(self):
         """
         UI, modify variable
         """
+        settings = json.loads( self.intrusion_prevention_interface.config_request( "load" ) )
+        pre_count = self.intrusion_prevention_interface.count_variables(settings)
+
         patch = IntrusionPreventionInterface.config_request_patch_template
         patch["variables"] = {
             "1":{
@@ -530,15 +519,20 @@ class IntrusionPreventionTests(unittest2.TestCase):
         }
         patch["rules"] = {}
         self.intrusion_prevention_interface.config_request( "save", patch )
+
         settings = json.loads( self.intrusion_prevention_interface.config_request( "load" ) )
-        count = self.intrusion_prevention_interface.count_variables(settings)
-        assert(count == self.intrusion_prevention_interface.get_last_variables_count() )
-        self.intrusion_prevention_interface.set_last_variables_count(count)
+        post_count = self.intrusion_prevention_interface.count_variables(settings)
+        print "pre_count: %i"%pre_count
+        print "post_count: %i"%post_count
+        assert(pre_count == post_count)
 
     def test_042_variable_delete(self):
         """
         UI, delete variable
         """
+        settings = json.loads( self.intrusion_prevention_interface.config_request( "load" ) )
+        pre_count = self.intrusion_prevention_interface.count_variables(settings)
+
         patch = IntrusionPreventionInterface.config_request_patch_template
         patch["variables"] = {
             "8":{
@@ -555,10 +549,12 @@ class IntrusionPreventionTests(unittest2.TestCase):
         }
         patch["rules"] = {}
         self.intrusion_prevention_interface.config_request( "save", patch )
+
         settings = json.loads( self.intrusion_prevention_interface.config_request( "load" ) )
-        count = self.intrusion_prevention_interface.count_variables(settings)
-        assert(count != self.intrusion_prevention_interface.get_last_variables_count() )
-        self.intrusion_prevention_interface.set_last_variables_count(count)
+        post_count = self.intrusion_prevention_interface.count_variables(settings)
+        print "pre_count: %i"%pre_count
+        print "post_count: %i"%post_count
+        assert(pre_count > post_count)
 
     #
     # Functional
@@ -571,8 +567,8 @@ class IntrusionPreventionTests(unittest2.TestCase):
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
 
+        startTime = datetime.now()
         rule = self.intrusion_prevention_interface.create_rule(msg="TCP Log", type="tcp", block=False, directive="content:\"CompanySecret\"; nocase;")
-
         self.intrusion_prevention_interface.config_request( "save", self.intrusion_prevention_interface.create_patch( "rule", "add", rule ) )
         node.reconfigure()
 
@@ -583,28 +579,15 @@ class IntrusionPreventionTests(unittest2.TestCase):
             time.sleep(1)
             result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/CompanySecret")
 
-        event = self.intrusion_prevention_interface.get_log_event(rule)
-        assert( event != None and event["blocked"] == False )
+        node.forceUpdateStats()
+        events = global_functions.get_events('Intrusion Prevention','All Events',None,1)
+        found = global_functions.check_events( events.get('list'), 5,
+                                               'msg', rule['msg'],
+                                               'blocked', False,
+                                               min_date=startTime)
+        assert( found )
         
-    def test_051_functional_tcp_block(self):
-        """
-        Functional, TCP block
-        """
-        global node
-        if remote_control.quickTestsOnly:
-            raise unittest2.SkipTest('Skipping a time consuming test')
-
-        rule = self.intrusion_prevention_interface.create_rule(msg="TCP Block", type="tcp", block=True, directive="content:\"CompanySecret\"; nocase;")
-
-        self.intrusion_prevention_interface.config_request( "save", self.intrusion_prevention_interface.create_patch( "rule", "add", rule ) )
-        node.reconfigure()
-        
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/CompanySecret")
-
-        event = self.intrusion_prevention_interface.get_log_event(rule)
-        assert( event != None and event["blocked"] == True )
-        
-    def test_052_functional_udp_log(self):
+    def test_051_functional_udp_log(self):
         """
         Functional, UDP log
         """
@@ -612,35 +595,22 @@ class IntrusionPreventionTests(unittest2.TestCase):
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
 
+        startTime = datetime.now()
         rule = self.intrusion_prevention_interface.create_rule(msg="UDP Log", type="udp", block=False, directive="content:\"CompanySecret\"; nocase;")
-
         self.intrusion_prevention_interface.config_request( "save", self.intrusion_prevention_interface.create_patch( "rule", "add", rule ) )
         node.reconfigure()
 
         result = remote_control.runCommand("host www.companysecret.com 4.2.2.1 > /dev/null")
 
-        event = self.intrusion_prevention_interface.get_log_event(rule)
-        assert( event != None and event["blocked"] == False )
+        node.forceUpdateStats()
+        events = global_functions.get_events('Intrusion Prevention','All Events',None,1)
+        found = global_functions.check_events( events.get('list'), 5,
+                                               'msg', rule['msg'],
+                                               'blocked', False,
+                                               min_date=startTime)
+        assert( found )
 
-    def test_053_functional_udp_block(self):
-        """
-        Functional, UDP block
-        """
-        global node
-        if remote_control.quickTestsOnly:
-            raise unittest2.SkipTest('Skipping a time consuming test')
-
-        rule = self.intrusion_prevention_interface.create_rule(msg="UDP Block", type="udp", block=True, directive="content:\"CompanySecret\"; nocase;")
-
-        self.intrusion_prevention_interface.config_request( "save", self.intrusion_prevention_interface.create_patch( "rule", "add", rule ) )
-        node.reconfigure()
-
-        result = remote_control.runCommand("host www.companysecret.com 4.2.2.1 > /dev/null")
-
-        event = self.intrusion_prevention_interface.get_log_event(rule)
-        assert( event != None and event["blocked"] == True )
-
-    def test_054_functional_icmp_log(self):
+    def test_052_functional_icmp_log(self):
         """
         Functional, ICMP log
         """
@@ -651,13 +621,66 @@ class IntrusionPreventionTests(unittest2.TestCase):
         dest_ip_address = remote_control.runCommand("host test.untangle.com | grep 'has address' | cut -d' ' -f4", None, True )
         rule = self.intrusion_prevention_interface.create_rule(msg="ICMP Log", type="icmp", dest_ip=dest_ip_address, block=False)
 
+        startTime = datetime.now()
         self.intrusion_prevention_interface.config_request( "save", self.intrusion_prevention_interface.create_patch( "rule", "add", rule ) )
         node.reconfigure()
 
         result = remote_control.runCommand("ping -c 5 " + dest_ip_address + " > /dev/null")
 
-        event = self.intrusion_prevention_interface.get_log_event(rule)
-        assert( event != None and event["blocked"] == False )
+        node.forceUpdateStats()
+        events = global_functions.get_events('Intrusion Prevention','All Events',None,1)
+        found = global_functions.check_events( events.get('list'), 5,
+                                               'msg', rule['msg'],
+                                               'blocked', False,
+                                               min_date=startTime)
+        assert( found )
+
+    def test_053_functional_tcp_block(self):
+        """
+        Functional, TCP block
+        """
+        global node
+        if remote_control.quickTestsOnly:
+            raise unittest2.SkipTest('Skipping a time consuming test')
+
+        rule = self.intrusion_prevention_interface.create_rule(msg="TCP Block", type="tcp", block=True, directive="content:\"CompanySecret\"; nocase;")
+
+        startTime = datetime.now()
+        self.intrusion_prevention_interface.config_request( "save", self.intrusion_prevention_interface.create_patch( "rule", "add", rule ) )
+        node.reconfigure()
+
+        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/CompanySecret")
+
+        node.forceUpdateStats()
+        events = global_functions.get_events('Intrusion Prevention','All Events',None,1)
+        found = global_functions.check_events( events.get('list'), 5,
+                                               'msg', rule['msg'],
+                                               'blocked', True,
+                                               min_date=startTime)
+        assert( found )
+
+    def test_054_functional_udp_block(self):
+        """
+        Functional, UDP block
+        """
+        global node
+        if remote_control.quickTestsOnly:
+            raise unittest2.SkipTest('Skipping a time consuming test')
+
+        startTime = datetime.now()
+        rule = self.intrusion_prevention_interface.create_rule(msg="UDP Block", type="udp", block=True, directive="content:\"CompanySecret\"; nocase;")
+        self.intrusion_prevention_interface.config_request( "save", self.intrusion_prevention_interface.create_patch( "rule", "add", rule ) )
+        node.reconfigure()
+
+        result = remote_control.runCommand("host www.companysecret.com 4.2.2.1 > /dev/null")
+
+        node.forceUpdateStats()
+        events = global_functions.get_events('Intrusion Prevention','All Events',None,1)
+        found = global_functions.check_events( events.get('list'), 5,
+                                               'msg', rule['msg'],
+                                               'blocked', True,
+                                               min_date=startTime)
+        assert( found )
 
     def test_055_functional_icmp_block(self):
         """
@@ -667,16 +690,21 @@ class IntrusionPreventionTests(unittest2.TestCase):
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
 
+        startTime = datetime.now()
         dest_ip_address = remote_control.runCommand("host test.untangle.com | grep 'has address' | cut -d' ' -f4", None, True )
         rule = self.intrusion_prevention_interface.create_rule(msg="ICMP Block", type="icmp", dest_ip=dest_ip_address, block=True)
-
         self.intrusion_prevention_interface.config_request( "save", self.intrusion_prevention_interface.create_patch( "rule", "add", rule ) )
         node.reconfigure()
 
         result = remote_control.runCommand("ping -c 5 " + dest_ip_address + " > /dev/null")
 
-        event = self.intrusion_prevention_interface.get_log_event(rule)
-        assert( event != None and event["blocked"] == True )
+        node.forceUpdateStats()
+        events = global_functions.get_events('Intrusion Prevention','All Events',None,1)
+        found = global_functions.check_events( events.get('list'), 5,
+                                               'msg', rule['msg'],
+                                               'blocked', True,
+                                               min_date=startTime)
+        assert( found )
 
     def test_060_app_stats(self):
         """
@@ -690,6 +718,7 @@ class IntrusionPreventionTests(unittest2.TestCase):
 
         self.intrusion_prevention_interface.config_request( "save", self.intrusion_prevention_interface.create_patch( "rule", "add", rule ) )
         node.reconfigure()
+        node.forceUpdateStats()
 
         pre_events_scan = global_functions.getStatusValue(node,"scan")
         pre_events_detect = global_functions.getStatusValue(node,"detect")
@@ -697,18 +726,20 @@ class IntrusionPreventionTests(unittest2.TestCase):
         
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/CompanySecret")
 
-        event = self.intrusion_prevention_interface.get_log_event(rule)
-        assert( event != None and event["blocked"] == True )
+        node.forceUpdateStats()
+        events = global_functions.get_events('Intrusion Prevention','All Events',None,1)
+        found = global_functions.check_events( events.get('list'), 5, 'msg', rule['msg'], 'blocked', True)
+        assert( found )
 
         post_events_scan = global_functions.getStatusValue(node,"scan")
         post_events_detect = global_functions.getStatusValue(node,"detect")
         post_events_block = global_functions.getStatusValue(node,"block")
 
         print "pre_events_scan: %s post_events_scan: %s"%(str(pre_events_scan),str(post_events_scan))
-        assert(pre_events_scan < post_events_scan)
         print "pre_events_detect: %s post_events_detect: %s"%(str(pre_events_detect),str(post_events_detect))
-        assert(pre_events_detect < post_events_detect)
         print "pre_events_block: %s post_events_block: %s"%(str(pre_events_block),str(post_events_block))
+        assert(pre_events_scan < post_events_scan)
+        assert(pre_events_detect < post_events_detect)
         assert(pre_events_block < post_events_block)
 
     def test_070_bypass_udp_block(self):
@@ -731,7 +762,6 @@ class IntrusionPreventionTests(unittest2.TestCase):
         test_untangle_com_ip = socket.gethostbyname("test.untangle.com")
 
         startTime = datetime.now()
-
         rule = self.intrusion_prevention_interface.create_rule(msg="UDP Block", type="udp", block=True, directive="")
         self.intrusion_prevention_interface.config_request( "save", self.intrusion_prevention_interface.create_patch( "rule", "add", rule ) )
         node.reconfigure()
@@ -739,7 +769,7 @@ class IntrusionPreventionTests(unittest2.TestCase):
         result = remote_control.runCommand("/usr/sbin/traceroute -U -m 3 -p 1234 " + test_untangle_com_ip)
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
-        time.sleep(35)
+        node.forceUpdateStats()
         events = global_functions.get_events('Intrusion Prevention','All Events',None,500)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 500,
@@ -769,16 +799,14 @@ class IntrusionPreventionTests(unittest2.TestCase):
         test_untangle_com_ip = socket.gethostbyname("test.untangle.com")
 
         startTime = datetime.now()
-
         rule = self.intrusion_prevention_interface.create_rule(msg="TCP Block", type="tcp", block=True, directive="")
-
         self.intrusion_prevention_interface.config_request( "save", self.intrusion_prevention_interface.create_patch( "rule", "add", rule ) )
         node.reconfigure()
 
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
-        time.sleep(35)
+        node.forceUpdateStats()
         events = global_functions.get_events('Intrusion Prevention','All Events',None,500)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 500,

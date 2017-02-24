@@ -129,7 +129,7 @@ public class IntrusionPreventionApp extends NodeBase
     {
         UvmContextFactory.context().hookManager().registerCallback( com.untangle.uvm.HookManager.NETWORK_SETTINGS_CHANGE, this.networkSettingsChangeHook );
         try{
-            this.ipsEventMonitor.disable();
+            this.ipsEventMonitor.stop();
         }catch( Exception e ){
             logger.warn( "Error disabling Intrusion Prevention Event Monitor", e );
         }
@@ -153,7 +153,6 @@ public class IntrusionPreventionApp extends NodeBase
         UvmContextFactory.context().daemonManager().incrementUsageCount( "snort" );
         UvmContextFactory.context().hookManager().unregisterCallback( com.untangle.uvm.HookManager.NETWORK_SETTINGS_CHANGE, this.networkSettingsChangeHook );
         this.ipsEventMonitor.start();
-        this.ipsEventMonitor.enable();
     }
 
     @Override
@@ -360,6 +359,13 @@ public class IntrusionPreventionApp extends NodeBase
     public void reloadEventMonitorMap()
     {
         this.ipsEventMonitor.unified2Parser.reloadEventMap();
+    }
+
+    public void forceUpdateStats()
+    {
+        this.ipsEventMonitor.stop();
+        this.ipsEventMonitor.start();
+        try { Thread.sleep( 2000 ); } catch ( InterruptedException e ) {}
     }
 
     /*
