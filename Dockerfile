@@ -10,3 +10,5 @@ RUN apt-get install --yes untangle-development-build
 ENV SRC=/opt/untangle/ngfw_src
 RUN mkdir -p ${SRC}
 VOLUME ${SRC}
+
+WORKDIR ${SRC}
