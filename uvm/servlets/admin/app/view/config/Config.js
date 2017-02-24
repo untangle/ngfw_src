@@ -3,6 +3,7 @@ Ext.define('Ung.view.config.Config', {
     xtype: 'ung.config',
     itemId: 'config',
 
+    /* requires-start */
     requires: [
         'Ung.view.config.ConfigController',
         'Ung.cmp.GridEditorFields',
@@ -11,7 +12,7 @@ Ext.define('Ung.view.config.Config', {
         'Ung.overrides.form.field.Date'
         // 'Ung.view.config.ConfigModel'
     ],
-
+    /* requires-end */
     controller: 'config',
 
     items: [{

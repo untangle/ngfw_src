@@ -2,11 +2,12 @@ Ext.define('Ung.config.upgrade.Upgrade', {
     extend: 'Ext.tab.Panel',
     alias: 'widget.config.upgrade',
 
+    /* requires-start */
     requires: [
         'Ung.config.upgrade.UpgradeController',
         'Ung.overrides.form.CheckboxGroup'
     ],
-
+    /* requires-end */
     controller: 'config.upgrade',
 
     viewModel: {

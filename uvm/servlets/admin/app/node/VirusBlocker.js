@@ -2,11 +2,12 @@ Ext.define('Ung.node.VirusBlocker', {
     extend: 'Ext.tab.Panel',
     xtype: 'ung.untangle-node-virus-blocker',
     layout: 'fit',
+    /* requires-start */
     requires: [
         'Ung.view.grid.Grid',
         'Ung.model.GenericRule'
     ],
-
+    /* requires-end */
     defaults: {
         border: false
     },

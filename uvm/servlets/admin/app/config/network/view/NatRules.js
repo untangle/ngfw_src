@@ -4,11 +4,6 @@ Ext.define('Ung.config.network.view.NatRules', {
 
     viewModel: true,
 
-    requires: [
-        // 'Ung.config.network.ConditionWidget',
-        // 'Ung.config.network.CondWidget'
-    ],
-
     title: 'NAT Rules'.t(),
 
     layout: 'fit',

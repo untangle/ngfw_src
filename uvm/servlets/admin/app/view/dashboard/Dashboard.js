@@ -5,6 +5,8 @@ Ext.define('Ung.view.dashboard.Dashboard', {
     extend: 'Ext.container.Container',
     xtype: 'ung.dashboard',
     itemId: 'dashboard',
+
+    /* requires-start */
     requires: [
         'Ung.view.dashboard.DashboardController',
         'Ung.view.dashboard.Queue',
@@ -18,7 +20,7 @@ Ext.define('Ung.view.dashboard.Dashboard', {
         'Ung.widget.NetworkLayout',
         'Ung.widget.MapDistribution'
     ],
-
+    /* requires-end */
     controller: 'dashboard',
     viewModel: true,
     //viewModel: 'dashboard',

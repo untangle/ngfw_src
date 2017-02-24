@@ -24,7 +24,9 @@ app/widget/MapDistribution.js
 app/view/apps/AppsController.js
 app/view/apps/Apps.js
 app/view/config/ConfigController.js
-app/cmp/EditorFields.js
+app/cmp/GridEditorFields.js
+app/cmp/GridConditions.js
+app/cmp/GridColumns.js
 app/overrides/form/field/Date.js
 app/view/config/Config.js
 app/view/reports/ReportsController.js

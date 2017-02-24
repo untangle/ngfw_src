@@ -18,6 +18,7 @@
     "gulp-remove-empty-lines": "0.0.8",
     "gulp-replace": "^0.5.4",
     "gulp-sass": "^2.3.2",
+    "gulp-strip-code": "^0.1.4",
     "gulp-uglify": "^2.0.0",
     "gulp-util": "^3.0.7",
     "jshint": "^2.9.3",

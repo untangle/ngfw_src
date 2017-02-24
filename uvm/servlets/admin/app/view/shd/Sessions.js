@@ -3,10 +3,11 @@ Ext.define('Ung.view.shd.Sessions', {
     // extend: 'Ext.grid.Panel',
     xtype: 'ung.sessions',
     // layout: 'border',
+    /* requires-start */
     requires: [
         'Ung.view.shd.SessionsController'
     ],
-
+    /* requires-end */
     controller: 'sessions',
 
     viewModel: {

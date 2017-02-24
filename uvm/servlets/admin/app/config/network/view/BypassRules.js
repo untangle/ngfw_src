@@ -5,11 +5,6 @@ Ext.define('Ung.config.network.view.BypassRules', {
 
     viewModel: true,
 
-    requires: [
-        // 'Ung.config.network.ConditionWidget',
-        // 'Ung.config.network.CondWidget'
-    ],
-
     title: 'Bypass Rules'.t(),
 
     layout: 'fit',

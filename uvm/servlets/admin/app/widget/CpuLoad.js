@@ -2,10 +2,11 @@ Ext.define('Ung.widget.CpuLoad', {
     extend: 'Ext.container.Container',
     alias: 'widget.cpuloadwidget',
 
+    /* requires-start */
     requires: [
         'Ung.widget.CpuLoadController'
     ],
-
+    /* requires-end */
     controller: 'cpuload',
     viewModel: true,
 

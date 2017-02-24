@@ -2,9 +2,11 @@ Ext.define('Ung.config.about.About', {
     extend: 'Ext.tab.Panel',
     alias: 'widget.config.about',
 
+    /* requires-start */
     requires: [
         'Ung.config.about.AboutController'
     ],
+    /* requires-end */
 
     controller: 'config.about',
 

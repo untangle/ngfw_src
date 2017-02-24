@@ -6,10 +6,11 @@ Ext.define('Ung.config.email.EmailTest', {
 
     alias: 'widget.config.email.test',
 
+    /* requires-start */
     requires: [
         'Ung.config.email.EmailTestController'
     ],
-
+    /* requires-end */
     controller: 'config.email.test',
 
     title: 'Email Test'.t(),

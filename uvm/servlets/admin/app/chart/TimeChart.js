@@ -1,10 +1,11 @@
 Ext.define('Ung.chart.TimeChart', {
     extend: 'Ext.container.Container',
     alias: 'widget.timechart',
+    /* requires-start */
     requires: [
         'Ung.chart.TimeChartController'
     ],
-
+    /* requires-end */
     controller: 'timechart',
     viewModel: true,
 

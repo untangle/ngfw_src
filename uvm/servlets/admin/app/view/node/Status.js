@@ -2,10 +2,11 @@ Ext.define('Ung.view.node.Status', {
     extend: 'Ext.panel.Panel',
     xtype: 'nodestatus',
 
+    /* requires-start */
     requires: [
         'Ung.chart.NodeChart'
     ],
-
+    /* requires-end */
     layout: {
         type: 'vbox'
     },

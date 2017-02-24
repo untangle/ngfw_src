@@ -3,10 +3,6 @@ Ext.define('Ung.view.shd.Devices', {
     // extend: 'Ext.grid.Panel',
     xtype: 'ung.devices',
     // layout: 'border',
-    requires: [
-        // 'Ung.view.sessions.SessionsController'
-    ],
-
     // controller: 'sessions',
 
     viewModel: {

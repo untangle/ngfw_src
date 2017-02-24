@@ -2,6 +2,7 @@ Ext.define('Ung.config.email.Email', {
     extend: 'Ext.tab.Panel',
     alias: 'widget.config.email',
 
+    /* requires-start */
     requires: [
         'Ung.config.email.EmailController',
         'Ung.config.email.EmailTest',
@@ -10,6 +11,7 @@ Ext.define('Ung.config.email.Email', {
         'Ung.model.Rule',
         'Ung.cmp.Grid'
     ],
+    /* requires-end */
 
     controller: 'config.email',
 
