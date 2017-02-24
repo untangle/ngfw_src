@@ -250,12 +250,7 @@ class IntrusionPreventionTests(unittest2.TestCase):
         }
         self.intrusion_prevention_interface.config_request( "save", patch )
         node.reconfigure()
-
         node.start() # must be called since intrusion-prevention doesn't auto-start
-
-        # FIXME - if I remove this sleep, many tests fail - why?!?!
-        # start() is a blocking call
-        time.sleep(10)
 
     def setUp(self):
         self.intrusion_prevention_interface = IntrusionPreventionInterface(node.getNodeSettings()["id"])
