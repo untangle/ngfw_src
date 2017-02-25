@@ -50,7 +50,7 @@ Ext.define('Webui.config.hostMonitor', {
                         "lastSessionTime": 0,//d.getTime()+(i*86400000),
                         "lastCompletedTcpSessionTime": 0,//d.getTime()+(i*86400000),
                         "username": "testuser"+i,
-                        "usernameAdConnector": "uad"+ii,
+                        "usernameDirectoryConnector": "uad"+ii,
                         "captivePortalAuthenticated":(ii%2)==1,
                         "usernameCapture": "ucap"+(ii%50),
                         "usernameDevice": "udev"+(ii%50),
@@ -140,6 +140,27 @@ Ext.define('Webui.config.hostMonitor', {
                 name: "hostname",
                 type: 'string',
                 convert: Ung.Util.preventEmptyValueConverter
+            },{
+                name: "hostnameDns",
+                type: 'string'
+            },{
+                name: "hostnameDhcp",
+                type: 'string'
+            },{
+                name: "hostnameDirectoryConnector",
+                type: 'string'
+            },{
+                name: "hostnameOpenvpn",
+                type: 'string'
+            },{
+                name: "hostnameReports",
+                type: 'string'
+            },{
+                name: "hostnameDevice",
+                type: 'string'
+            },{
+                name: "hostnameSource",
+                type: 'string'
             }, {
                 name: "lastAccessTime"
             }, {
@@ -173,7 +194,7 @@ Ext.define('Webui.config.hostMonitor', {
                 type: 'string',
                 convert: Ung.Util.preventEmptyValueConverter
             },{
-                name: "usernameAdConnector",
+                name: "usernameDirectoryConnector",
                 type: 'string'
             },{
                 name: "captivePortalAuthenticated",
@@ -318,6 +339,55 @@ Ext.define('Webui.config.hostMonitor', {
                 filter: {
                     type: 'string'
                 }
+            }, {
+                header: i18n._("Hostname (DHCP)"),
+                dataIndex: "hostnameDhcp",
+                width: 100,
+                filter: {
+                    type: 'string'
+                }
+            }, {
+                header: i18n._("Hostname (DNS)"),
+                dataIndex: "hostnameDns",
+                width: 100,
+                filter: {
+                    type: 'string'
+                }
+            }, {
+                header: i18n._("Hostname (Directory Connector)"),
+                dataIndex: "hostnameDirectoryConnector",
+                width: 100,
+                filter: {
+                    type: 'string'
+                }
+            }, {
+                header: i18n._("Hostname (OpenVpn)"),
+                dataIndex: "hostnameOpenvpn",
+                width: 100,
+                filter: {
+                    type: 'string'
+                }
+            }, {
+                header: i18n._("Hostname (Reports)"),
+                dataIndex: "hostnameReports",
+                width: 100,
+                filter: {
+                    type: 'string'
+                }
+            }, {
+                header: i18n._("Hostname (Device)"),
+                dataIndex: "hostnameDevice",
+                width: 100,
+                filter: {
+                    type: 'string'
+                }
+            }, {
+                header: i18n._("Hostname (Source)"),
+                dataIndex: "hostnameSource",
+                width: 100,
+                filter: {
+                    type: 'string'
+                }
             },{
                 header: i18n._("Username"),
                 dataIndex: "username",
@@ -424,7 +494,7 @@ Ext.define('Webui.config.hostMonitor', {
             },{
                 hidden: true,
                 header: "Directory Connector" + " - " + i18n._("Username"),
-                dataIndex: "usernameAdConnector",
+                dataIndex: "usernameDirectoryConnector",
                 width: 100,
                 filter: {
                     type: 'string'
@@ -449,6 +519,14 @@ Ext.define('Webui.config.hostMonitor', {
                 hidden: true,
                 header: i18n._("Device Username"),
                 dataIndex: "usernameDevice",
+                width: 100,
+                filter: {
+                    type: 'string'
+                }
+            },{
+                hidden: true,
+                header: i18n._("Username Source"),
+                dataIndex: "usernameSource",
                 width: 100,
                 filter: {
                     type: 'string'

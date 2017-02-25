@@ -547,7 +547,7 @@ public class HostTableImpl implements HostTable
          * Restore known information from the device entry where able
          */
         if ( deviceEntry.getHostname() != null )
-            entry.setHostname( deviceEntry.getHostname() );
+            entry.setHostnameDevice( deviceEntry.getHostname() );
         if ( deviceEntry.getDeviceUsername() != null )
             entry.setUsernameDevice( deviceEntry.getDeviceUsername() );
         if ( deviceEntry.getHttpUserAgent() != null )
@@ -858,7 +858,7 @@ public class HostTableImpl implements HostTable
                                 hostname = hostname.substring(0,firstdot);
                             
                             logger.debug("HostTable Reverse lookup hostname = " + hostname);
-                            entry.setHostname( hostname );
+                            entry.setHostnameDns( hostname );
                         } catch (java.net.UnknownHostException e ) {
                             //do nothing
                         } catch (Exception e) {
