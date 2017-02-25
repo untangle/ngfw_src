@@ -861,8 +861,8 @@ public abstract class NetcapHook implements Runnable
             hostname = reports.lookupHostname( clientAddr );
         }
         if ( hostname != null && hostname.length() > 0 ) {
-            if ( hostEntry != null && !hostEntry.isHostnameKnown() ) hostEntry.setHostname( hostname );
-            if ( deviceEntry != null && !deviceEntry.isHostnameKnown() ) deviceEntry.setHostname( hostname );
+            if ( hostEntry != null && !hostEntry.isHostnameKnown() ) hostEntry.setHostnameReports( hostname );
+            //if ( deviceEntry != null && !deviceEntry.isHostnameKnown() ) deviceEntry.setHostname( hostname ); //FIXME
             return hostname;
         }
 
@@ -871,8 +871,11 @@ public abstract class NetcapHook implements Runnable
             hostname = router.lookupHostname( clientAddr );
         }
         if ( hostname != null && hostname.length() > 0 ) {
-            if ( hostEntry != null && !hostEntry.isHostnameKnown() ) hostEntry.setHostname( hostname );
-            if ( deviceEntry != null && !deviceEntry.isHostnameKnown() ) deviceEntry.setHostname( hostname );
+            /**
+             * Router gets the hostname from DHCP
+             */
+            if ( hostEntry != null && !hostEntry.isHostnameKnown() ) hostEntry.setHostnameDhcp( hostname );
+            //if ( deviceEntry != null && !deviceEntry.isHostnameKnown() ) deviceEntry.setHostname( hostname ); //FIXME
             return hostname;
         }
 

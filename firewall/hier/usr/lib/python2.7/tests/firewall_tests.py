@@ -514,7 +514,7 @@ class FirewallTests(unittest2.TestCase):
         # make sure no username is known for this IP
         username = remote_control.runCommand("hostname -s", stdout=True)
         entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
-        entry['usernameAdConnector'] = None
+        entry['usernameDirectoryConnector'] = None
         entry['usernameCaptive'] = None
         uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
 
@@ -527,14 +527,14 @@ class FirewallTests(unittest2.TestCase):
     def test_142_clientUsernameManual(self):
         username = remote_control.runCommand("hostname -s", stdout=True)
         entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
-        entry['usernameAdConnector'] = username
+        entry['usernameDirectoryConnector'] = username
         uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
 
         nukeRules()
         appendRule( createSingleConditionRule( "USERNAME", username ) )
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
 
-        entry['usernameAdConnector'] = None
+        entry['usernameDirectoryConnector'] = None
         uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
         assert (result != 0)
 
@@ -542,7 +542,7 @@ class FirewallTests(unittest2.TestCase):
     def test_143_clientUsernameMultiple(self):
         username = remote_control.runCommand("hostname -s", stdout=True)
         entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
-        entry['usernameAdConnector'] = username
+        entry['usernameDirectoryConnector'] = username
         uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
 
         nukeRules()
@@ -552,7 +552,7 @@ class FirewallTests(unittest2.TestCase):
         appendRule( createSingleConditionRule( "USERNAME", "foobar," + username ) )
         result2 = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
 
-        entry['usernameAdConnector'] = None
+        entry['usernameDirectoryConnector'] = None
         uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
         assert (result1 != 0)
         assert (result2 != 0)
@@ -561,7 +561,7 @@ class FirewallTests(unittest2.TestCase):
     def test_144_clientUsernameWrongCase1(self):
         username = remote_control.runCommand("hostname -s", stdout=True)
         entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
-        entry['usernameAdConnector'] = username.upper()
+        entry['usernameDirectoryConnector'] = username.upper()
         uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
 
         nukeRules()
@@ -569,14 +569,14 @@ class FirewallTests(unittest2.TestCase):
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
-        entry['usernameAdConnector'] = None
+        entry['usernameDirectoryConnector'] = None
         uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
 
     # verify username matcher works despite rule & username being different case
     def test_145_clientUsernameWrongCase1(self):
         username = remote_control.runCommand("hostname -s", stdout=True)
         entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
-        entry['usernameAdConnector'] = username.lower()
+        entry['usernameDirectoryConnector'] = username.lower()
         uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
 
         nukeRules()
@@ -584,14 +584,14 @@ class FirewallTests(unittest2.TestCase):
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
-        entry['usernameAdConnector'] = None
+        entry['usernameDirectoryConnector'] = None
         uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
 
     # verify "[authenticated]" matches any username
     def test_146_clientUsernameAuthenticated(self):
         username = remote_control.runCommand("hostname -s", stdout=True)
         entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
-        entry['usernameAdConnector'] = username
+        entry['usernameDirectoryConnector'] = username
         uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
 
         nukeRules()
@@ -599,14 +599,14 @@ class FirewallTests(unittest2.TestCase):
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
-        entry['usernameAdConnector'] = None
+        entry['usernameDirectoryConnector'] = None
         uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
 
     # verify "A*" matches "abc"
     def test_147_clientUsernameLetterStar(self):
         username = remote_control.runCommand("hostname -s", stdout=True)
         entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
-        entry['usernameAdConnector'] = username.lower()
+        entry['usernameDirectoryConnector'] = username.lower()
         uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
 
         nukeRules()
@@ -615,19 +615,19 @@ class FirewallTests(unittest2.TestCase):
         assert (result != 0)
 
         entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
-        entry['usernameAdConnector'] = None
+        entry['usernameDirectoryConnector'] = None
         uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
-        entry['usernameAdConnector'] = None
+        entry['usernameDirectoryConnector'] = None
         uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
 
     # verify "*" matches any username but not null
     def test_148_clientUsernameStarOnly(self):
         username = remote_control.runCommand("hostname -s", stdout=True)
         entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
-        entry['usernameAdConnector'] = username
+        entry['usernameDirectoryConnector'] = username
         uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
 
         nukeRules()
@@ -636,19 +636,19 @@ class FirewallTests(unittest2.TestCase):
         assert (result != 0)
 
         entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
-        entry['usernameAdConnector'] = None
+        entry['usernameDirectoryConnector'] = None
         uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
-        entry['usernameAdConnector'] = None
+        entry['usernameDirectoryConnector'] = None
         uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
 
     # verify '' username matches null username (but not all usernames)
     def test_149_clientUsernameBlank(self):
         username = remote_control.runCommand("hostname -s", stdout=True)
         entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
-        entry['usernameAdConnector'] = username
+        entry['usernameDirectoryConnector'] = username
         uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
 
         nukeRules()
@@ -657,7 +657,7 @@ class FirewallTests(unittest2.TestCase):
         assert (result == 0)
 
         entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
-        entry['usernameAdConnector'] = None
+        entry['usernameDirectoryConnector'] = None
         uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)

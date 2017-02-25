@@ -31,14 +31,19 @@ public class HostTableEntry implements Serializable, JSONString
     private long        lastCompletedTcpSessionTime = 0; /* time of the last completed TCP session */
     private boolean     entitled = true;
 
-    private String hostname = null;
+    private String hostnameDhcp = null;
+    private String hostnameDns = null;
+    private String hostnameDevice = null;
+    private String hostnameOpenvpn = null;
+    private String hostnameReports = null;
+    private String hostnameDirectoryConnector = null;
 
     private boolean captivePortalAuthenticated = false; /* marks if this user is authenticated with captive portal */
 
     private String usernameCapture = null;
     private String usernameTunnel = null;
     private String usernameOpenvpn = null;
-    private String usernameAdConnector = null;
+    private String usernameDirectoryConnector = null;
     private String usernameDevice = null;
     
     private boolean penaltyBoxed = false;
@@ -68,8 +73,13 @@ public class HostTableEntry implements Serializable, JSONString
         this.setLastSessionTime( other.getLastSessionTime() );
         this.setLastCompletedTcpSessionTime( other.getLastCompletedTcpSessionTime() );
         this.setEntitled( other.getEntitled() );
-        this.setHostname( other.getHostname() );
-        this.setUsernameAdConnector( other.getUsernameAdConnector() );
+        this.setHostnameDhcp( other.getHostnameDhcp() );
+        this.setHostnameDns( other.getHostnameDns() );
+        this.setHostnameDevice( other.getHostnameDevice() );
+        this.setHostnameOpenvpn( other.getHostnameOpenvpn() );
+        this.setHostnameReports( other.getHostnameReports() );
+        this.setHostnameDirectoryConnector( other.getHostnameDirectoryConnector() );
+        this.setUsernameDirectoryConnector( other.getUsernameDirectoryConnector() );
         this.setUsernameCapture( other.getUsernameCapture() );
         this.setCaptivePortalAuthenticated( other.getCaptivePortalAuthenticated() );
         this.setUsernameTunnel( other.getUsernameTunnel() );
@@ -169,30 +179,80 @@ public class HostTableEntry implements Serializable, JSONString
     {
         if ( newValue == this.entitled )
             return;
-        updateEvent( "entitled", this.hostname, (newValue ? "true" : "false") );
+        updateEvent( "entitled", (this.entitled ? "true" : "false"), (newValue ? "true" : "false") );
         this.entitled = newValue;
         updateAccessTime();
     }
     
-    public String getHostname() { return this.hostname; }
-    public void setHostname( String newValue )
+    public String getHostnameDhcp() { return this.hostnameDhcp; }
+    public void setHostnameDhcp( String newValue )
     {
-        if ( Objects.equals( newValue, this.hostname ) )
+        if ( Objects.equals( newValue, this.hostnameDhcp ) )
             return;
-        updateEvent( "hostname", this.hostname, newValue );
-        this.hostname = newValue;
+        updateEvent( "hostnameDhcp", this.hostnameDhcp, newValue );
+        this.hostnameDhcp = newValue;
         updateAccessTime();
     }
 
-    public String getUsernameAdConnector() { return this.usernameAdConnector; }
-    public void setUsernameAdConnector( String newValue )
+    public String getHostnameDns() { return this.hostnameDns; }
+    public void setHostnameDns( String newValue )
+    {
+        if ( Objects.equals( newValue, this.hostnameDns ) )
+            return;
+        updateEvent( "hostnameDns", this.hostnameDns, newValue );
+        this.hostnameDns = newValue;
+        updateAccessTime();
+    }
+
+    public String getHostnameDevice() { return this.hostnameDevice; }
+    public void setHostnameDevice( String newValue )
+    {
+        if ( Objects.equals( newValue, this.hostnameDevice ) )
+            return;
+        updateEvent( "hostnameDevice", this.hostnameDevice, newValue );
+        this.hostnameDevice = newValue;
+        updateAccessTime();
+    }
+
+    public String getHostnameOpenvpn() { return this.hostnameOpenvpn; }
+    public void setHostnameOpenvpn( String newValue )
+    {
+        if ( Objects.equals( newValue, this.hostnameOpenvpn ) )
+            return;
+        updateEvent( "hostnameOpenvpn", this.hostnameOpenvpn, newValue );
+        this.hostnameOpenvpn = newValue;
+        updateAccessTime();
+    }
+
+    public String getHostnameReports() { return this.hostnameReports; }
+    public void setHostnameReports( String newValue )
+    {
+        if ( Objects.equals( newValue, this.hostnameReports ) )
+            return;
+        updateEvent( "hostnameReports", this.hostnameReports, newValue );
+        this.hostnameReports = newValue;
+        updateAccessTime();
+    }
+
+    public String getHostnameDirectoryConnector() { return this.hostnameDirectoryConnector; }
+    public void setHostnameDirectoryConnector( String newValue )
+    {
+        if ( Objects.equals( newValue, this.hostnameDirectoryConnector ) )
+            return;
+        updateEvent( "hostnameDirectoryConnector", this.hostnameDirectoryConnector, newValue );
+        this.hostnameDirectoryConnector = newValue;
+        updateAccessTime();
+    }
+
+    public String getUsernameDirectoryConnector() { return this.usernameDirectoryConnector; }
+    public void setUsernameDirectoryConnector( String newValue )
     {
         newValue = (newValue == null ? null : newValue.toLowerCase());
 
-        if ( Objects.equals( newValue, this.usernameAdConnector ) )
+        if ( Objects.equals( newValue, this.usernameDirectoryConnector ) )
             return;
-        updateEvent( "usernameAdConnector", this.usernameAdConnector, newValue );
-        this.usernameAdConnector = newValue;
+        updateEvent( "usernameDirectoryConnector", this.usernameDirectoryConnector, newValue );
+        this.usernameDirectoryConnector = newValue;
         updateAccessTime();
     }
     
@@ -335,6 +395,47 @@ public class HostTableEntry implements Serializable, JSONString
     }
 
     /**
+     * Get the "best" hostname of all known sources
+     * Precedence defined below
+     */
+    public String getHostname()
+    {
+        if (getHostnameDhcp() != null)
+            return getHostnameDhcp();
+        if (getHostnameDirectoryConnector() != null)
+            return getHostnameDirectoryConnector();
+        if (getHostnameDns() != null)
+            return getHostnameDns();
+        if (getHostnameOpenvpn() != null)
+            return getHostnameOpenvpn();
+        if (getHostnameReports() != null)
+            return getHostnameReports();
+        if (getHostnameDevice() != null)
+            return getHostnameDevice();
+        return null;
+    }
+
+    /**
+     * Get the source of the "best" hostname
+     */
+    public String getHostnameSource()
+    {
+        if (getHostnameDhcp() != null)
+            return "DHCP";
+        if (getHostnameDirectoryConnector() != null)
+            return "Directory Connector";
+        if (getHostnameDns() != null)
+            return "DHCP";
+        if (getHostnameOpenvpn() != null)
+            return "OpenVPN";
+        if (getHostnameReports() != null)
+            return "Reports";
+        if (getHostnameDevice() != null)
+            return "Device";
+        return null;
+    }
+
+    /**
      * Get the "best" username of all known sources
      * Precedence defined below
      */
@@ -346,8 +447,8 @@ public class HostTableEntry implements Serializable, JSONString
             return getUsernameTunnel();
         if (getUsernameOpenvpn() != null)
             return getUsernameOpenvpn();
-        if (getUsernameAdConnector() != null)
-            return getUsernameAdConnector();
+        if (getUsernameDirectoryConnector() != null)
+            return getUsernameDirectoryConnector();
         if (getUsernameDevice() != null)
             return getUsernameDevice();
         return null;
@@ -364,7 +465,7 @@ public class HostTableEntry implements Serializable, JSONString
             return "L2TP/IPsec";
         if (getUsernameOpenvpn() != null)
             return "OpenVPN";
-        if (getUsernameAdConnector() != null)
+        if (getUsernameDirectoryConnector() != null)
             return "Directory Connector";
         if (getUsernameDevice() != null)
             return "Device";
@@ -387,8 +488,6 @@ public class HostTableEntry implements Serializable, JSONString
     
     /**
      * Utility method to check that hostname is known
-     * Its not enough to just check that its null or ""
-     * because it will be set to the IP address string repr by default
      */
     public boolean isHostnameKnown()
     {
@@ -397,11 +496,11 @@ public class HostTableEntry implements Serializable, JSONString
             return false;
         if (hostname.equals(""))
             return false;
-        if (getAddress() == null) {
-            logger.warn("null address");
-            return true;
-        }
-        if (hostname.equals(getAddress().getHostAddress()))
+        /**
+         * Check that the hostname isn't just teh IP address.
+         * Does this happen anymore? XXX
+         */
+        if (getAddress() != null && hostname.equals(getAddress().getHostAddress()))
             return false;
         return true;
     }

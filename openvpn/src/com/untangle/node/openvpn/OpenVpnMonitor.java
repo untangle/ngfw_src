@@ -382,7 +382,7 @@ class OpenVpnMonitor implements Runnable
         // set the global openvpn username in the host table
         if ( poolAddress != null ) {
             HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry( poolAddress, true );
-            entry.setHostname( name );
+            entry.setHostnameOpenvpn( name );
             entry.setUsernameOpenvpn( name );
         }
         
