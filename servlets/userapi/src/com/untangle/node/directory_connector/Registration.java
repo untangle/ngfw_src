@@ -104,7 +104,7 @@ public class Registration extends HttpServlet
         if (action.equals("logout")) {
             logger.debug( "logout   user: " + username + " hostname: " + hostname + " clientIp: " + clientIp );
 
-            UvmContextFactory.context().hostTable().getHostTableEntry( inetAddress, true ).setUsernameAdConnector( null );
+            UvmContextFactory.context().hostTable().getHostTableEntry( inetAddress, true ).setUsernameDirectoryConnector( null );
 
             LoginEvent evt = new LoginEvent( inetAddress, username, null, LoginEvent.EVENT_LOGOUT );
             UvmContextFactory.context().logEvent( evt );
@@ -115,19 +115,19 @@ public class Registration extends HttpServlet
             logger.debug( "register user: " + username + " hostname: " + hostname + " clientIp: " + clientIp );
             HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry( inetAddress, true );
 
-            if (entry.getUsernameAdConnector() != null && entry.getUsernameAdConnector().equals(username))
+            if (entry.getUsernameDirectoryConnector() != null && entry.getUsernameDirectoryConnector().equals(username))
                 eventAction = LoginEvent.EVENT_UPDATE;
             else
                 eventAction = LoginEvent.EVENT_LOGIN;
             
-            entry.setUsernameAdConnector( username );
+            entry.setUsernameDirectoryConnector( username );
 
             LoginEvent evt = new LoginEvent( inetAddress, username, null, eventAction );
             UvmContextFactory.context().logEvent( evt );
 
             /* If the hostname was specified and is not already known - set it */
             if ( hostname != null && !entry.isHostnameKnown() )
-                entry.setHostname( hostname );
+                entry.setHostnameDirectoryConnector( hostname );
         }
         
     }
