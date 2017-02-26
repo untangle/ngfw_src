@@ -1752,6 +1752,7 @@ public class FixedReports
                 "&endDate=" + URLEncoder.encode(Long.toString(endDate.getTime()), "UTF-8");
             webbrowser.openUrl(url);
             webbrowser.waitForElement("highcharts-0");
+            Thread.sleep(1000);
             webbrowser.takeScreenshot(filename);
         } catch (org.openqa.selenium.TimeoutException e) {
             webbrowser.waitForElement("label-1016");
