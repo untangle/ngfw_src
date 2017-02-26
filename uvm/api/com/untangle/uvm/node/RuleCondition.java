@@ -137,7 +137,7 @@ public class RuleCondition implements JSONString, Serializable
     /**
      * These internal are used in various matchers
      * They are stored here so that repatitive evaluation is quicker
-     * They are prepared by calling _computerMatchers()
+     * They are prepared by calling _computeMatchers()
      */
     private IPMatcher        ipMatcher        = null;
     private IntMatcher       intMatcher       = null;
@@ -262,7 +262,24 @@ public class RuleCondition implements JSONString, Serializable
      */
     protected void computeMatchers()
     {
-
+        /**
+         * Convert old style conditions
+         */
+        switch (this.matcherType) {
+        case HOST_IN_PENALTY_BOX:
+        case CLIENT_IN_PENALTY_BOX:
+        case SERVER_IN_PENALTY_BOX:
+            /**
+             * These explicit conditions have been replaced by a condition
+             * to just check if the host is tagged with "penalty box"
+             */
+            this.matcherType = ConditionType.TAGGED;
+            this.value = "penalty-box";
+            break;
+        default:
+            break;
+        }
+        
         /**
          * Update cache for quick computation
          */
@@ -335,9 +352,6 @@ public class RuleCondition implements JSONString, Serializable
             break;
 
         case WEB_FILTER_FLAGGED:
-        case HOST_IN_PENALTY_BOX:
-        case CLIENT_IN_PENALTY_BOX:
-        case SERVER_IN_PENALTY_BOX:
         case HOST_HAS_NO_QUOTA:
         case CLIENT_HAS_NO_QUOTA:
         case SERVER_HAS_NO_QUOTA:
@@ -850,15 +864,6 @@ public class RuleCondition implements JSONString, Serializable
             tmpStr = hostEntry.getHostname();
             return globMatcher.isMatch( tmpStr );
 
-        case HOST_IN_PENALTY_BOX:
-            return UvmContextFactory.context().hostTable().hostInPenaltyBox( sess.sessionEvent().getLocalAddr() );
-
-        case CLIENT_IN_PENALTY_BOX:
-            return UvmContextFactory.context().hostTable().hostInPenaltyBox( sess.getClientAddr() );
-            
-        case SERVER_IN_PENALTY_BOX:
-            return UvmContextFactory.context().hostTable().hostInPenaltyBox( sess.getServerAddr() );
-
         case SSL_INSPECTOR_SNI_HOSTNAME:
             tmpStr = (String) sess.globalAttachment(NodeSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME);
             return globMatcher.isMatch( tmpStr );
@@ -871,6 +876,12 @@ public class RuleCondition implements JSONString, Serializable
             tmpStr = (String) sess.globalAttachment(NodeSession.KEY_SSL_INSPECTOR_ISSUER_DN);
             return globMatcher.isMatch( tmpStr );
 
+        case HOST_IN_PENALTY_BOX:
+            //return UvmContextFactory.context().hostTable().hostInPenaltyBox( sess.sessionEvent().getLocalAddr() );
+        case CLIENT_IN_PENALTY_BOX:
+            //return UvmContextFactory.context().hostTable().hostInPenaltyBox( sess.getClientAddr() );
+        case SERVER_IN_PENALTY_BOX:
+            //return UvmContextFactory.context().hostTable().hostInPenaltyBox( sess.getServerAddr() );
         default:
             logger.warn("Unsupported Matcher Type: \"" + this.matcherType + "\""); 
             break;
@@ -1052,19 +1063,6 @@ public class RuleCondition implements JSONString, Serializable
             tmpStr = hostEntry.getHostname();
             return globMatcher.isMatch( tmpStr );
             
-        case HOST_IN_PENALTY_BOX:
-            tmpAddress = getLocalAddress( srcAddress, srcIntf, dstAddress, dstIntf );
-            if ( tmpAddress == null )
-                return false;
-            else
-                return UvmContextFactory.context().hostTable().hostInPenaltyBox( tmpAddress );
-
-        case CLIENT_IN_PENALTY_BOX:
-            return UvmContextFactory.context().hostTable().hostInPenaltyBox( srcAddress );
-            
-        case SERVER_IN_PENALTY_BOX:
-            return UvmContextFactory.context().hostTable().hostInPenaltyBox( dstAddress );
-
         case HOST_HAS_NO_QUOTA:
             tmpAddress = getLocalAddress( srcAddress, srcIntf, dstAddress, dstIntf );
             if ( tmpAddress == null )
@@ -1241,6 +1239,25 @@ public class RuleCondition implements JSONString, Serializable
         case SERVER_COUNTRY:
             tmpStr = getCountry( dstAddress, dstIntf );
             return globMatcher.isMatch( tmpStr );
+
+        case HOST_IN_PENALTY_BOX:
+            // tmpAddress = getLocalAddress( srcAddress, srcIntf, dstAddress, dstIntf );
+            // if ( tmpAddress == null )
+            //     return false;
+            // else
+            //     return UvmContextFactory.context().hostTable().hostInPenaltyBox( tmpAddress );
+            logger.warn("Unsupported Matcher Type: \"" + this.matcherType + "\""); 
+            break;
+
+        case CLIENT_IN_PENALTY_BOX:
+            // return UvmContextFactory.context().hostTable().hostInPenaltyBox( srcAddress );
+            logger.warn("Unsupported Matcher Type: \"" + this.matcherType + "\""); 
+            break;
+            
+        case SERVER_IN_PENALTY_BOX:
+            // return UvmContextFactory.context().hostTable().hostInPenaltyBox( dstAddress );
+            logger.warn("Unsupported Matcher Type: \"" + this.matcherType + "\""); 
+            break;
 
         default:
             // this is commented out because some rules are run against sessions and attributes

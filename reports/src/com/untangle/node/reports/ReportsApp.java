@@ -446,6 +446,9 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
     {
     }
     
+
+
+    
     private LinkedList<EmailTemplate> defaultEmailTemplates()
     {
         LinkedList<EmailTemplate> templates = new LinkedList<EmailTemplate>();

@@ -482,8 +482,8 @@ class FirewallTests(unittest2.TestCase):
         addHostTag("testtag")
         appendRule( createSingleConditionRule( "TAGGED", "testtag" ) )
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
-        nukeHostTags()
         assert (result != 0)
+        nukeHostTags()
 
     def test_082_tagHostBlockGlob(self):
         nukeRules()
@@ -534,11 +534,11 @@ class FirewallTests(unittest2.TestCase):
     def test_102_clientPenaltyBox2(self):
         fname = sys._getframe().f_code.co_name
         nukeRules()
-        uvmContext.hostTable().addHostToPenaltyBox( remote_control.clientIP, 60, fname )
+        addHostTag("penalty-box")
         appendRule( createSingleConditionRule( "CLIENT_IN_PENALTY_BOX", None ) )
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
-        uvmContext.hostTable().releaseHostFromPenaltyBox( remote_control.clientIP )
+        nukeHostTags()
 
     # verify client penalty box not blocked
     def test_103_hostPenaltyBox(self):
@@ -551,11 +551,11 @@ class FirewallTests(unittest2.TestCase):
     def test_104_hostPenaltyBox2(self):
         fname = sys._getframe().f_code.co_name
         nukeRules()
-        uvmContext.hostTable().addHostToPenaltyBox( remote_control.clientIP, 60, fname )
+        addHostTag("penalty-box")
         appendRule( createSingleConditionRule( "HOST_IN_PENALTY_BOX", None ) )
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
-        uvmContext.hostTable().releaseHostFromPenaltyBox( remote_control.clientIP )
+        nukeHostTags()
         
     # verify client quota attainment condition
     def test_110_clientQuotaAttainment(self):

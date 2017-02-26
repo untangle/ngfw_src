@@ -9,7 +9,7 @@
     "units": "updates",
     "readOnly": true,
     "table": "host_table_updates",
-     "timeDataColumns": [
+    "timeDataColumns": [
         "count(*) as updates"
     ],
     "colors": [

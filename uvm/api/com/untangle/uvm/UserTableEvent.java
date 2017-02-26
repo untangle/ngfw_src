@@ -15,14 +15,16 @@ public class UserTableEvent extends LogEvent
     private String username;
     private String key;
     private String value;
+    private String oldValue;
     
     public UserTableEvent() { }
 
-    public UserTableEvent( String username, String key, String value )
+    public UserTableEvent( String username, String key, String value, String oldValue )
     {
         this.username = username;
         this.key = key;
         this.value = value;
+        this.oldValue = oldValue;
     }
 
     public String getUsername() { return username; }
@@ -34,13 +36,16 @@ public class UserTableEvent extends LogEvent
     public String getValue() { return value; }
     public void setValue( String newValue ) { this.value = newValue; }
     
+    public String getOldValue() { return oldValue; }
+    public void setOldValue( String newValue ) { this.oldValue = newValue; }
+
     @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
         String sql = "INSERT INTO " + schemaPrefix() + "user_table_updates" + getPartitionTablePostfix() + " " +
-            "(time_stamp, username, key, value) " +
+            "(time_stamp, username, key, value, old_value) " +
             "values " +
-            "(?, ?, ?, ?); ";
+            "(?, ?, ?, ?, ?); ";
 
         java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
 
@@ -49,6 +54,7 @@ public class UserTableEvent extends LogEvent
         pstmt.setString(++i, getUsername());
         pstmt.setString(++i, getKey());
         pstmt.setString(++i, getValue());
+        pstmt.setString(++i, getOldValue());
 
         pstmt.addBatch();
         return;

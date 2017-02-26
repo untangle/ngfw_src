@@ -174,21 +174,21 @@ def get_events( eventEntryCategory, eventEntryTitle, conditions, limit ):
 
     return reportsManager.getEvents( reportEntry, conditions, limit )
 
-def check_events( events, num_events, *args, **kwargs):
+def find_event( events, num_events, *args, **kwargs):
     if events == None:
-        return False
+        return None
     if num_events == 0:
-        return False
+        return None
     if len(events) == 0:
         print "No events in list"
-        return False
+        return None
     if kwargs.get('min_date') == None:
         min_date = datetime.datetime.now()-datetime.timedelta(minutes=12)
     else:
         min_date = kwargs.get('min_date')
     if (len(args) % 2) != 0:
         print "Invalid argument length"
-        return False
+        return None
     num_checked = 0
     while num_checked < num_events:
         if len(events) <= num_checked:
@@ -232,8 +232,11 @@ def check_events( events, num_events, *args, **kwargs):
                 break
 
         if allMatched:
-            return True
-    return False
+            return event
+    return None
+
+def check_events( events, num_events, *args, **kwargs):
+    return (find_event( events, num_events, *args, **kwargs) != None)
 
 def isInOfficeNetwork(wanIP):
     for officeNetworkTest in officeNetworks:
