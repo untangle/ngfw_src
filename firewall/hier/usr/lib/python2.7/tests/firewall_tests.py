@@ -395,19 +395,33 @@ class FirewallTests(unittest2.TestCase):
         assert (result == 0)
 
     # verify GeoiP blocking does block stuff that is blocked
-    def test_070_geoipTrumpCountry(self):
+    def test_070_geoipClientCountryBlock(self):
         nukeRules()
         appendRule( createSingleConditionRule( "SERVER_COUNTRY", "CN,US,AU" ) )
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify GeoIP blocking doesn't block stuff that isn't blocked
-    def test_071_geoipOtherCountry(self):
+    def test_071_geoipClientCountryMiss(self):
         nukeRules()
         appendRule( createSingleConditionRule( "SERVER_COUNTRY", "CN,GB,AU" ) )
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
+    # verify GeoiP blocking does block stuff that is blocked
+    def test_070_geoipHostCountryBlock(self):
+        nukeRules()
+        appendRule( createSingleConditionRule( "REMOTE_HOST_COUNTRY", "CN,US,AU" ) )
+        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        assert (result != 0)
+
+    # verify GeoIP blocking doesn't block stuff that isn't blocked
+    def test_071_geoipHostCountryMiss(self):
+        nukeRules()
+        appendRule( createSingleConditionRule( "REMOTE_HOST_COUNTRY", "CN,GB,AU" ) )
+        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        assert (result == 0)
+        
     # verify server penalty box wan not blocked
     def test_100_serverPenaltyBox(self):
         nukeRules()
@@ -432,6 +446,23 @@ class FirewallTests(unittest2.TestCase):
         assert (result != 0)
         uvmContext.hostTable().releaseHostFromPenaltyBox( remote_control.clientIP )
 
+    # verify client penalty box not blocked
+    def test_103_hostPenaltyBox(self):
+        nukeRules()
+        appendRule( createSingleConditionRule( "HOST_IN_PENALTY_BOX", None ) )
+        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        assert (result == 0)
+
+    # verify client penalty box is blocked when client in penalty box
+    def test_104_hostPenaltyBox2(self):
+        fname = sys._getframe().f_code.co_name
+        nukeRules()
+        uvmContext.hostTable().addHostToPenaltyBox( remote_control.clientIP, 60, fname )
+        appendRule( createSingleConditionRule( "HOST_IN_PENALTY_BOX", None ) )
+        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        assert (result != 0)
+        uvmContext.hostTable().releaseHostFromPenaltyBox( remote_control.clientIP )
+        
     # verify client quota attainment condition
     def test_110_clientQuotaAttainment(self):
         nukeRules()
@@ -439,6 +470,13 @@ class FirewallTests(unittest2.TestCase):
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
+    # verify client quota attainment condition
+    def test_111_hostQuotaAttainment(self):
+        nukeRules()
+        appendRule( createSingleConditionRule("HOST_QUOTA_ATTAINMENT", "<1.3", blocked=True) )
+        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        assert (result != 0)
+        
     # verify bogus user agent match not blocked
     def test_120_clientUserAgent(self):
         nukeRules()
@@ -483,25 +521,40 @@ class FirewallTests(unittest2.TestCase):
         assert (result != 0)
 
     # verify hostname match blocked after setting hostname
-    def test_132_clientHostnameMultiple(self):
+    def test_132_hostHostname(self):
         hostname = remote_control.runCommand("hostname -s", stdout=True)
         entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
         entry['hostname'] = hostname
         uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
 
         nukeRules()
-        appendRule( createSingleConditionRule( "CLIENT_HOSTNAME", hostname + ",foobar") )
+        appendRule( createSingleConditionRule( "HOST_HOSTNAME", hostname ) )
+        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+
+        entry['hostname'] = None
+        uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
+        assert (result != 0)
+
+    # verify hostname match blocked after setting hostname
+    def test_133_hostHostnameMultiple(self):
+        hostname = remote_control.runCommand("hostname -s", stdout=True)
+        entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
+        entry['hostname'] = hostname
+        uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
+
+        nukeRules()
+        appendRule( createSingleConditionRule( "HOST_HOSTNAME", hostname + ",foobar") )
         result1 = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
 
         nukeRules()
-        appendRule( createSingleConditionRule( "CLIENT_HOSTNAME", "foobar," + hostname ) )
+        appendRule( createSingleConditionRule( "HOST_HOSTNAME", "foobar," + hostname ) )
         result2 = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
 
         entry['hostname'] = None
         uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
         assert (result1 != 0)
         assert (result2 != 0)
-
+        
     # verify bogus username match not blocked
     def test_140_clientUsername(self):
         nukeRules()
