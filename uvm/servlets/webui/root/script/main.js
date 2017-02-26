@@ -637,6 +637,22 @@ Ext.define("Ung.Main", {
                                     hidden: false
                                 }
                             }
+                        }, {
+                            xtype: 'button',
+                            cls: 'action-button material-button',
+                            text: '<span>' + i18n._("Users") + '</span>',
+                            height: 30,
+                            margin: '0 10 0 0',
+                            handler: Ung.Main.showUsers,
+                            plugins: 'responsive',
+                            responsiveConfig: {
+                                'width <= 550': {
+                                    hidden: true
+                                },
+                                'width > 550': {
+                                    hidden: false
+                                }
+                            }
                         }]
                     }, {
                         xtype: 'container',
