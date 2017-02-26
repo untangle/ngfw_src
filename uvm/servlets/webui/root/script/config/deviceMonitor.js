@@ -68,6 +68,9 @@ Ext.define('Webui.config.deviceMonitor', {
                 name: "hostname",
                 type: 'string'
             },{
+                name: "tagsString",
+                type: 'string'
+            },{
                 name: "lastSeenInterfaceId",
                 convert: this.fieldConvertInterface
             },{
@@ -143,6 +146,13 @@ Ext.define('Webui.config.deviceMonitor', {
                 },
                 filter: {
                     type: 'date'
+                }
+            },{
+                header: i18n._("Tags"),
+                dataIndex: "tagsString",
+                width: 100,
+                filter: {
+                    type: 'string'
                 }
             }],
             reload: function() {

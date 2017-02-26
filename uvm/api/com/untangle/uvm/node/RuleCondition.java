@@ -18,7 +18,10 @@ import com.untangle.uvm.HostTable;
 import com.untangle.uvm.HostTableEntry;
 import com.untangle.uvm.UserTable;
 import com.untangle.uvm.UserTableEntry;
+import com.untangle.uvm.DeviceTable;
+import com.untangle.uvm.DeviceTableEntry;
 import com.untangle.uvm.GeographyManager;
+import com.untangle.uvm.Tag;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.node.IPMatcher;
@@ -56,6 +59,7 @@ public class RuleCondition implements JSONString, Serializable
         DST_INTF, /* "External" "any" */
         PROTOCOL, /* "TCP" "UDP" "TCP,UDP" "any" */
         USERNAME, /* "dmorris" or "none" or "*" */
+        TAGGED, /* glob */
         HOST_HOSTNAME, /* glob */
         CLIENT_HOSTNAME, /* glob */
         SERVER_HOSTNAME, /* glob */
@@ -353,6 +357,7 @@ public class RuleCondition implements JSONString, Serializable
             }
             break;
             
+        case TAGGED:
         case HOST_MAC:
         case SRC_MAC:
         case DST_MAC:
@@ -737,6 +742,13 @@ public class RuleCondition implements JSONString, Serializable
             tmpStr = (String) sess.globalAttachment(NodeSession.KEY_WEB_FILTER_RESPONSE_FILE_EXTENSION);
             return globMatcher.isMatch( tmpStr );
 
+        case TAGGED:
+            for( Tag t : sess.getTags() ) {
+                if( globMatcher.isMatch( t.getName() ) )
+                    return true;
+            }
+            return false;
+
         case USERNAME:
             tmpStr = (String) sess.globalAttachment(NodeSession.KEY_PLATFORM_USERNAME);
             if (this.userMatcher.isMatch(tmpStr))
@@ -877,6 +889,7 @@ public class RuleCondition implements JSONString, Serializable
         InetAddress tmpAddress = null;
         HostTableEntry hostEntry;
         UserTableEntry userEntry;
+        DeviceTableEntry deviceEntry;
         
         switch (this.matcherType) {
         case SRC_ADDR:
@@ -934,6 +947,30 @@ public class RuleCondition implements JSONString, Serializable
             }
 
             return protocolMatcher.isMatch(protocol);
+
+        case TAGGED:
+            hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( srcAddress );
+            if (hostEntry != null) {
+                for( Tag t : hostEntry.getTags() ) {
+                    if( globMatcher.isMatch( t.getName() ) )
+                        return true;
+                }
+                userEntry = UvmContextFactory.context().userTable().getUserTableEntry( hostEntry.getUsername() );
+                if ( userEntry != null ) {
+                    for( Tag t : userEntry.getTags() ) {
+                        if( globMatcher.isMatch( t.getName() ) )
+                            return true;
+                    }
+                }
+                deviceEntry = UvmContextFactory.context().deviceTable().getDevice( hostEntry.getMacVendor() );
+                if ( deviceEntry != null ) {
+                    for( Tag t : deviceEntry.getTags() ) {
+                        if( globMatcher.isMatch( t.getName() ) )
+                            return true;
+                    }
+                }
+            }
+            return false;
 
         case USERNAME:
             hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( srcAddress );

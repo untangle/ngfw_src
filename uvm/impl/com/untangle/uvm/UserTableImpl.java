@@ -94,6 +94,9 @@ public class UserTableImpl implements UserTable
 
     public UserTableEntry getUserTableEntry( String username, boolean createIfNecessary )
     {
+        if ( username == null )
+            return null;
+        
         UserTableEntry entry = userTable.get( username );
 
         if ( entry == null && createIfNecessary ) {

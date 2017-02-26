@@ -27,6 +27,7 @@ import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.node.Node;
 import com.untangle.uvm.node.PenaltyBoxEvent;
 import com.untangle.uvm.node.QuotaEvent;
+import com.untangle.uvm.node.HostnameLookup;
 
 /**
  * HostTable stores a global table of all "local" IPs that have recently been seen.
@@ -110,6 +111,9 @@ public class HostTableImpl implements HostTable
 
     public HostTableEntry getHostTableEntry( InetAddress addr, boolean createIfNecessary )
     {
+        if ( addr == null )
+            return null;
+
         HostTableEntry entry = hostTable.get( addr );
 
         if ( entry == null && createIfNecessary ) {
@@ -507,6 +511,9 @@ public class HostTableImpl implements HostTable
 
         checkForDevice( entry, address );
         
+        updateHostnameDhcp( entry );
+        updateHostnameReports( entry );
+        
         int seatLimit = UvmContextFactory.context().licenseManager().getSeatLimit();
         int currentSize = getCurrentActiveSize();
         
@@ -551,8 +558,9 @@ public class HostTableImpl implements HostTable
             entry.setHttpUserAgent( deviceEntry.getHttpUserAgent() );
         if ( deviceEntry.getMacVendor() != null )
             entry.setMacVendor( deviceEntry.getMacVendor() );
+        entry.addTags( deviceEntry.getTags() );
     }
-    
+
     @SuppressWarnings("unchecked")
     public void saveHosts()
     {
@@ -598,6 +606,30 @@ public class HostTableImpl implements HostTable
         
         if (realSize > this.maxActiveSize)
             this.maxActiveSize = realSize;
+    }
+
+    private static void updateHostnameDhcp( HostTableEntry entry )
+    {
+        HostnameLookup router = (HostnameLookup) UvmContextFactory.context().nodeManager().node("untangle-node-router");
+        String hostname = null;
+        if ( router != null ) {
+            hostname = router.lookupHostname( entry.getAddress() );
+        }
+        if ( hostname != null && hostname.length() > 0 ) {
+            entry.setHostnameDhcp( hostname );
+        }
+    }
+
+    private static void updateHostnameReports( HostTableEntry entry )
+    {
+        HostnameLookup reports = (HostnameLookup) UvmContextFactory.context().nodeManager().node("untangle-node-reports");
+        String hostname = null;
+        if ( reports != null ) {
+            hostname = reports.lookupHostname( entry.getAddress() );
+        }
+        if ( hostname != null && hostname.length() > 0 ) {
+            entry.setHostnameReports( hostname );
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -679,6 +711,12 @@ public class HostTableImpl implements HostTable
                         } catch (Exception e) {
                             logger.warn("Exception",e);
                         }
+                        
+                        /**
+                         * Update some metadata
+                         */
+                        updateHostnameDhcp( entry );
+                        updateHostnameReports( entry );
                         
                         /**
                          * Check penalty box expiration
