@@ -286,7 +286,7 @@ public class UserTableImpl implements UserTable
         }
         logger.info("Removing user table entry: " + username);
 
-        UserTableEvent event = new UserTableEvent( username, "remove", null );
+        UserTableEvent event = new UserTableEvent( username, "remove", null, null );
         UvmContextFactory.context().logEvent(event);
 
         UserTableEntry removed =  userTable.remove( username );
@@ -298,7 +298,7 @@ public class UserTableImpl implements UserTable
     {
         UserTableEntry entry = new UserTableEntry();
 
-        UserTableEvent event = new UserTableEvent( username, "add", null );
+        UserTableEvent event = new UserTableEvent( username, "add", null, null );
         UvmContextFactory.context().logEvent(event);
         
         entry.setUsername( username );

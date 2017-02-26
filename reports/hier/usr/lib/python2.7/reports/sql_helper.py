@@ -371,7 +371,7 @@ def drop_table( table ):
     conn = get_connection()
     try:
         curs = conn.cursor()
-        curs.execute('DROP TABLE %s' % fullname(table))
+        curs.execute('DROP TABLE %s CASCADE' % fullname(table))
         print("dropped table '%s'" % (table))
     except psycopg2.ProgrammingError:
         print('cannot drop table: %s' % (table))

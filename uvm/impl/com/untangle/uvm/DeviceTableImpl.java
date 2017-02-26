@@ -126,7 +126,7 @@ public class DeviceTableImpl implements DeviceTable
 
             addDevice( newEntry );
 
-            DeviceTableEvent event = new DeviceTableEvent( newEntry, macAddress, "add", null );
+            DeviceTableEvent event = new DeviceTableEvent( newEntry, macAddress, "add", null, null );
             UvmContextFactory.context().logEvent(event);
 
             saveDevices();
