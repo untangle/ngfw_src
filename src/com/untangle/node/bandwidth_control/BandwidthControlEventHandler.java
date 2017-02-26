@@ -125,6 +125,35 @@ public class BandwidthControlEventHandler extends AbstractEventHandler
         }
     }
 
+    protected void reprioritizeUserSessions(String username, String reason)
+    {
+        if ( username == null )
+            return;
+        
+        logger.info("Reprioritizing Sessions for " + username + " because \"" + reason + "\"");
+
+        for (NodeSession sess : this.node.liveNodeSessions()) {
+            if ( username.equals(sess.user())) {
+                logger.debug( "Reevaluating NodeSession : " + sess.getProtocol() + " " +
+                              sess.getClientAddr().getHostAddress() + ":" + sess.getClientPort() + " -> " +
+                              sess.getServerAddr().getHostAddress() + ":" + sess.getServerPort());
+
+
+                BandwidthControlRule rule = _findFirstMatch(sess, true);
+        
+                if (rule != null) {
+                    try {
+                        rule.getAction().apply( sess );
+                    } catch (Exception e) {
+                        logger.warn("Failed to reprioritize session: " + sess.getProtocol() + " " +
+                                    sess.getClientAddr().getHostAddress() + ":" + sess.getClientPort() + " -> " +
+                                    sess.getServerAddr().getHostAddress() + ":" + sess.getServerPort(), e);
+                    }
+                }
+            }
+        }
+    }
+    
     private void _handleNewSessionRequest( IPNewSessionRequest request, Protocol protocol )
     {
         if ( logger.isDebugEnabled() ) {

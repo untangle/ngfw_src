@@ -81,12 +81,12 @@ def createBandwidthPenaltyRule( conditionType, value, actionType="PENALTY_BOX_CL
         }
     }
             
-def createBandwidthQuotaRule( conditionType, value, actionType="GIVE_CLIENT_HOST_QUOTA", quotaValue=100 ):
+def createBandwidthQuotaRule( conditionType, value, actionType, quotaValue=100 ):
     conditionTypeStr = str(conditionType)
     valueStr = str(value)
     return {
         "action": {
-            "actionType": "GIVE_CLIENT_HOST_QUOTA",
+            "actionType": actionType,
             "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleAction",
             "quotaBytes": quotaValue,
             "quotaTime": -3
@@ -549,7 +549,7 @@ class BandwidthControlTests(unittest2.TestCase):
         post_count = global_functions.getStatusValue(node,"prioritize")
         assert(pre_count < post_count)
  
-    def test_060_quota(self):
+    def test_060_hostquota(self):
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
         global node
@@ -564,9 +564,9 @@ class BandwidthControlTests(unittest2.TestCase):
         wget_speed_pre = global_functions.getDownloadSpeed()
         
         # Create rule to give quota
-        appendRule(createBandwidthQuotaRule("CLIENT_HAS_NO_QUOTA","true","GIVE_CLIENT_HOST_QUOTA",given_quota))
+        appendRule(createBandwidthQuotaRule("HOST_HAS_NO_QUOTA","true","GIVE_HOST_QUOTA",given_quota))
         # Create penalty for exceeding quota
-        appendRule(createBandwidthSingleConditionRule("CLIENT_QUOTA_EXCEEDED","true","SET_PRIORITY",priority_level))
+        appendRule(createBandwidthSingleConditionRule("HOST_QUOTA_EXCEEDED","true","SET_PRIORITY",priority_level))
 
         # Download the file so quota is exceeded
         global_functions.getDownloadSpeed()
@@ -590,11 +590,11 @@ class BandwidthControlTests(unittest2.TestCase):
         found = global_functions.check_events( events.get('list'), 5, 
                                                "action", 1, #quota given
                                                "size", given_quota,
-                                               "address", remote_control.clientIP)
+                                               "entity", remote_control.clientIP)
         assert(found)
         found = global_functions.check_events( events.get('list'), 5, 
                                                "action", 2, #quota exceeded
-                                               "address", remote_control.clientIP)
+                                               "entity", remote_control.clientIP)
         assert(found)
 
         events = global_functions.get_events('Bandwidth Control','Prioritized Sessions',None,5)
@@ -604,6 +604,72 @@ class BandwidthControlTests(unittest2.TestCase):
                                                "c_client_addr", remote_control.clientIP)
         assert( found )
 
+    def test_061_userquota(self):
+        if remote_control.quickTestsOnly:
+            raise unittest2.SkipTest('Skipping a time consuming test')
+        global node
+        nukeRules()
+        priority_level = 7 # Severely Limited 
+        given_quota = 10000 # 10k 
+
+        # Set this host's username
+        username = remote_control.runCommand("hostname -s", stdout=True)
+        entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
+        entry['usernameDirectoryConnector'] = username
+        uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
+        
+        # Remove any existing quota
+        uvmContext.userTable().removeQuota(username)
+        
+        # Record average speed without bandwidth control configured
+        wget_speed_pre = global_functions.getDownloadSpeed()
+        
+        # Create rule to give quota
+        appendRule(createBandwidthQuotaRule("USER_HAS_NO_QUOTA","true","GIVE_USER_QUOTA",given_quota))
+
+        # Create penalty for exceeding quota
+        appendRule(createBandwidthSingleConditionRule("USER_QUOTA_EXCEEDED","true","SET_PRIORITY",priority_level))
+
+        # Download the file so quota is exceeded
+        global_functions.getDownloadSpeed()
+
+        # quota accounting occurs every 60 seconds, so we must wait at least 60 seconds
+        time.sleep(60)
+
+        # Download file and record the average speed in which the file was download
+        wget_speed_post = global_functions.getDownloadSpeed()
+        
+        printResults( wget_speed_pre, wget_speed_post, wget_speed_pre*0.1, wget_speed_pre*limitedAcceptanceRatio )
+
+        # Remove quota
+        uvmContext.userTable().removeQuota(username)
+
+        # Blank username
+        entry['usernameDirectoryConnector'] = None
+        uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
+        
+        assert ((wget_speed_post) and (wget_speed_post))
+        assert (wget_speed_pre * limitedAcceptanceRatio >  wget_speed_post)
+
+        events = global_functions.get_events('Hosts','Quota Events',None,5)
+        assert(events != None)
+        found = global_functions.check_events( events.get('list'), 5, 
+                                               "action", 1, #quota given
+                                               "size", given_quota,
+                                               "entity", username)
+        assert(found)
+        found = global_functions.check_events( events.get('list'), 5, 
+                                               "action", 2, #quota exceeded
+                                               "entity", username)
+        assert(found)
+
+        events = global_functions.get_events('Bandwidth Control','Prioritized Sessions',None,5)
+        assert(events != None)
+        found = global_functions.check_events( events.get('list'), 5, 
+                                               "bandwidth_control_priority", priority_level,
+                                               "c_client_addr", remote_control.clientIP)
+        assert( found )
+        
     def test_070_penaltyRule(self):
         global node
         nukeRules()

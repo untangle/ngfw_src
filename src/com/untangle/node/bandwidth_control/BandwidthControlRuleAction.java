@@ -31,8 +31,11 @@ public class BandwidthControlRuleAction implements JSONString, Serializable
     public enum ActionType {
         SET_PRIORITY, /* priority 1-7 */
         PENALTY_BOX_CLIENT_HOST, /* priority 1-7, time_sec */
+        GIVE_HOST_QUOTA, /* bytes #, time_sec */
+        GIVE_USER_QUOTA, /* bytes #, time_sec */
+
         APPLY_PENALTY_PRIORITY, /* DEPRECATED */
-        GIVE_CLIENT_HOST_QUOTA, /* bytes #, time_sec */
+        GIVE_CLIENT_HOST_QUOTA, /* DEPRECATED - 13.0 */
     }
 
     private ActionType action = null;
@@ -86,6 +89,11 @@ public class BandwidthControlRuleAction implements JSONString, Serializable
      */
     public void setActionType(ActionType action)
     {
+        // change deprecated values
+        switch (action) {
+        case GIVE_CLIENT_HOST_QUOTA: action = ActionType.GIVE_HOST_QUOTA; break;
+        default: break;
+        }
         this.action = action;
     }
 
@@ -128,7 +136,7 @@ public class BandwidthControlRuleAction implements JSONString, Serializable
 
     /**
      * Get the quota time for this action
-     * This only applies for the GIVE_HOST_QUOTA action
+     * This only applies for the GIVE_HOST_QUOTA, GIVE_USER_QUOTA action
      */
     public Integer getQuotaTime()
     {
@@ -137,7 +145,7 @@ public class BandwidthControlRuleAction implements JSONString, Serializable
 
     /**
      * Set the quota time for this action
-     * This only applies for the GIVE_HOST_QUOTA action
+     * This only applies for the GIVE_HOST_QUOTA, GIVE_USER_QUOTA action
      */
     public void setQuotaTime(Integer seconds)
     {
@@ -146,7 +154,7 @@ public class BandwidthControlRuleAction implements JSONString, Serializable
 
     /**
      * Get the quota bytes for this action
-     * This only applies for the GIVE_HOST_QUOTA action
+     * This only applies for the GIVE_HOST_QUOTA, GIVE_USER_QUOTA action
      */
     public Long getQuotaBytes()
     {
@@ -155,7 +163,7 @@ public class BandwidthControlRuleAction implements JSONString, Serializable
 
     /**
      * Set the quota bytes for this action
-     * This only applies for the GIVE_HOST_QUOTA action
+     * This only applies for the GIVE_HOST_QUOTA, GIVE_USER_QUOTA action
      */
     public void setQuotaBytes(Long bytes)
     {
@@ -198,6 +206,7 @@ public class BandwidthControlRuleAction implements JSONString, Serializable
 
         int pri;
         String reason;
+        long expireTime;
         
         switch (this.action) {
 
@@ -234,62 +243,35 @@ public class BandwidthControlRuleAction implements JSONString, Serializable
             break;
 
         case GIVE_CLIENT_HOST_QUOTA:
-
-            long expireTime = this.quotaTimeSec;
-
-            GregorianCalendar calendar = new GregorianCalendar();
-            Date now = calendar.getTime();
-            Date expireDate = null;
-
-            logger.debug( "Applying Action    : " + "Give Host Quota: " + sess.getClientAddr().getHostAddress());
-            
-            switch(this.quotaTimeSec) {
-
-            case END_OF_HOUR:
-                calendar.add(Calendar.HOUR, 1);
-                calendar.set(Calendar.MINUTE, 0);
-                calendar.set(Calendar.SECOND, 0);
-
-                expireDate = calendar.getTime();
-                expireTime = (expireDate.getTime() - now.getTime()) / 1000;
-                logger.debug("New Quota expires on : " + expireDate + " in " + expireTime + " seconds ");
-                break;
-                
-            case END_OF_DAY:
-                calendar.add(Calendar.DAY_OF_WEEK, 1);
-                calendar.set(Calendar.HOUR_OF_DAY, 0);
-                calendar.set(Calendar.MINUTE, 0);
-                calendar.set(Calendar.SECOND, 0);
-                calendar.add(Calendar.SECOND, -1);
-                /* subtract one second so as to avoid the whole AM/PM midnight confusion*/
-
-                expireDate = calendar.getTime();
-                expireTime = (expireDate.getTime() - now.getTime()) / 1000;
-                logger.debug("New Quota expires on : " + expireDate + " in " + expireTime + " seconds ");
-                break;
-
-            case END_OF_WEEK:
-                calendar.add(Calendar.WEEK_OF_YEAR, 1);
-                calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
-                calendar.set(Calendar.HOUR_OF_DAY, 0);
-                calendar.set(Calendar.MINUTE, 0);
-                calendar.set(Calendar.SECOND, 0);
-                calendar.add(Calendar.SECOND, -1);
-                /* subtract one second so as to avoid the whole AM/PM midnight confusion*/
-
-                expireDate = calendar.getTime();
-                expireTime = (expireDate.getTime() - now.getTime()) / 1000;
-                logger.info("New Quota expires on : " + expireDate + " in " + expireTime + " seconds ");
-                break;
-
-            default:
-                /* do nothing */
+        case GIVE_HOST_QUOTA: 
+            if ( sess == null || sess.sessionEvent() == null ) {
+                logger.warn("Missing session info: " + sess);
                 break;
             }
-                
+            InetAddress address = sess.sessionEvent().getLocalAddr();
+            if ( address == null ) {
+                logger.warn("Unknown local address for session: " + sess);
+                break;
+            }
+            logger.debug( "Applying Action    : " + "Give Host Quota: " + address);
+
+            expireTime = calculateQuotaExpireTime( this.quotaTimeSec );
             reason = "Bandwidth Control" + " ( " + I18nUtil.marktr("policy") + ": " + this.node.getNodeSettings().getPolicyId() + " " + I18nUtil.marktr("rule") + ": " + this.rule.getRuleId() + ")";
-            logger.debug("Giving " + sess.getClientAddr() + " a Quota of " + this.quotaBytes + " bytes (expires in " + expireTime + " seconds)");
-            UvmContextFactory.context().hostTable().giveHostQuota( sess.getClientAddr(), this.quotaBytes, (int)expireTime, reason);
+            logger.debug("Giving " + address.getHostAddress() + " a Quota of " + this.quotaBytes + " bytes (expires in " + expireTime + " seconds)");
+            UvmContextFactory.context().hostTable().giveHostQuota( address, this.quotaBytes, (int)expireTime, reason );
+
+            break;
+
+        case GIVE_USER_QUOTA:
+            logger.debug( "Applying Action    : " + "Give User Quota: " + sess.user());
+            if ( sess.user() == null ) {
+                break;
+            }
+
+            expireTime = calculateQuotaExpireTime( this.quotaTimeSec );
+            reason = "Bandwidth Control" + " ( " + I18nUtil.marktr("policy") + ": " + this.node.getNodeSettings().getPolicyId() + " " + I18nUtil.marktr("rule") + ": " + this.rule.getRuleId() + ")";
+            logger.debug("Giving " + sess.user() + " a Quota of " + this.quotaBytes + " bytes (expires in " + expireTime + " seconds)");
+            UvmContextFactory.context().userTable().giveUserQuota( sess.user(), this.quotaBytes, (int)expireTime, reason );
 
             break;
             
@@ -297,6 +279,62 @@ public class BandwidthControlRuleAction implements JSONString, Serializable
             logger.error("Unknown action: " + this.action);
 
             break;
+        }
+    }
+
+    private long calculateQuotaExpireTime( Integer quotaTimeSec )
+    {
+        switch(this.quotaTimeSec) {
+
+        case END_OF_HOUR: {
+            GregorianCalendar calendar = new GregorianCalendar();
+            Date now = calendar.getTime();
+            Date expireDate = null;
+            calendar.add(Calendar.HOUR, 1);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
+
+            expireDate = calendar.getTime();
+            long expireTime = (expireDate.getTime() - now.getTime()) / 1000;
+            logger.debug("New Quota expires on : " + expireDate + " in " + expireTime + " seconds ");
+            return expireTime;
+        }
+                
+        case END_OF_DAY: {
+            GregorianCalendar calendar = new GregorianCalendar();
+            Date now = calendar.getTime();
+            Date expireDate = null;
+            calendar.add(Calendar.DAY_OF_WEEK, 1);
+            calendar.set(Calendar.HOUR_OF_DAY, 0);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
+            calendar.add(Calendar.SECOND, -1);
+            /* subtract one second so as to avoid the whole AM/PM midnight confusion*/
+
+            expireDate = calendar.getTime();
+            long expireTime = (expireDate.getTime() - now.getTime()) / 1000;
+            logger.debug("New Quota expires on : " + expireDate + " in " + expireTime + " seconds ");
+            return expireTime;
+        }
+        case END_OF_WEEK: {
+            GregorianCalendar calendar = new GregorianCalendar();
+            Date now = calendar.getTime();
+            Date expireDate = null;
+            calendar.add(Calendar.WEEK_OF_YEAR, 1);
+            calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
+            calendar.set(Calendar.HOUR_OF_DAY, 0);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
+            calendar.add(Calendar.SECOND, -1);
+            /* subtract one second so as to avoid the whole AM/PM midnight confusion*/
+
+            expireDate = calendar.getTime();
+            long expireTime = (expireDate.getTime() - now.getTime()) / 1000;
+            logger.info("New Quota expires on : " + expireDate + " in " + expireTime + " seconds ");
+            return expireTime;
+        }
+        default:
+            return quotaTimeSec;
         }
     }
     

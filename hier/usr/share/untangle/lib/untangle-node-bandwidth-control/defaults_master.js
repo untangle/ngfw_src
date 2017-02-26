@@ -7,32 +7,13 @@
         "list":[{
             "set" : "standard",
             "ruleId":12345,
-            "description":"Apply Penalty Box Penalties (Server)",
+            "description":"Apply Penalty Box Penalties",
             "conditions":{
                 "javaClass":"java.util.LinkedList",
                 "list":[{
                     "value":"true",
                     "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
-                    "conditionType":"SERVER_IN_PENALTY_BOX"
-                }]
-            },
-            "action": {
-                "actionType": "SET_PRIORITY", 
-                "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleAction", 
-                "priority": 7
-            }, 
-            "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRule",
-            "enabled":true
-        }, {
-            "set" : "standard",
-            "ruleId":12345,
-            "description":"Apply Penalty Box Penalties (Client)",
-            "conditions":{
-                "javaClass":"java.util.LinkedList",
-                "list":[{
-                    "value":"true",
-                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
-                    "conditionType":"CLIENT_IN_PENALTY_BOX"
+                    "conditionType":"HOST_IN_PENALTY_BOX"
                 }]
             },
             "action": {

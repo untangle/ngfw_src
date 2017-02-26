@@ -40,12 +40,15 @@ public class BandwidthControlApp extends NodeBase
     private final PipelineConnector connector;
     private final PipelineConnector[] connectors;
 
-    private final PenaltyBoxEnterHook penaltyBoxEnterHook = new PenaltyBoxEnterHook();
-    private final PenaltyBoxExitHook penaltyBoxExitHook = new PenaltyBoxExitHook();
-    private final QuotaGivenHook quotaGivenHook = new QuotaGivenHook();
-    private final QuotaExceededHook quotaExceededHook = new QuotaExceededHook();
-    private final QuotaRemovedHook quotaRemovedHook = new QuotaRemovedHook();
-    
+    private final HostPenaltyBoxEnterHook hostPenaltyBoxEnterHook = new HostPenaltyBoxEnterHook();
+    private final HostPenaltyBoxExitHook hostPenaltyBoxExitHook = new HostPenaltyBoxExitHook();
+    private final HostQuotaGivenHook hostQuotaGivenHook = new HostQuotaGivenHook();
+    private final HostQuotaExceededHook hostQuotaExceededHook = new HostQuotaExceededHook();
+    private final HostQuotaRemovedHook hostQuotaRemovedHook = new HostQuotaRemovedHook();
+    private final UserQuotaGivenHook userQuotaGivenHook = new UserQuotaGivenHook();
+    private final UserQuotaExceededHook userQuotaExceededHook = new UserQuotaExceededHook();
+    private final UserQuotaRemovedHook userQuotaRemovedHook = new UserQuotaRemovedHook();
+   
     public BandwidthControlApp( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
     {
         super( nodeSettings, nodeProperties );
@@ -99,21 +102,27 @@ public class BandwidthControlApp extends NodeBase
                                         i18nUtil.tr( "This can be done using the Setup Wizard (in the settings)." ));
         }
 
-        UvmContextFactory.context().hookManager().registerCallback( com.untangle.uvm.HookManager.HOST_TABLE_PENALTY_BOX_ENTER, this.penaltyBoxEnterHook );
-        UvmContextFactory.context().hookManager().registerCallback( com.untangle.uvm.HookManager.HOST_TABLE_PENALTY_BOX_EXIT, this.penaltyBoxExitHook );
-        UvmContextFactory.context().hookManager().registerCallback( com.untangle.uvm.HookManager.HOST_TABLE_QUOTA_GIVEN, this.quotaGivenHook );
-        UvmContextFactory.context().hookManager().registerCallback( com.untangle.uvm.HookManager.HOST_TABLE_QUOTA_EXCEEDED, this.quotaExceededHook );
-        UvmContextFactory.context().hookManager().registerCallback( com.untangle.uvm.HookManager.HOST_TABLE_QUOTA_REMOVED, this.quotaRemovedHook );
+        UvmContextFactory.context().hookManager().registerCallback( com.untangle.uvm.HookManager.HOST_TABLE_PENALTY_BOX_ENTER, this.hostPenaltyBoxEnterHook );
+        UvmContextFactory.context().hookManager().registerCallback( com.untangle.uvm.HookManager.HOST_TABLE_PENALTY_BOX_EXIT, this.hostPenaltyBoxExitHook );
+        UvmContextFactory.context().hookManager().registerCallback( com.untangle.uvm.HookManager.HOST_TABLE_QUOTA_GIVEN, this.hostQuotaGivenHook );
+        UvmContextFactory.context().hookManager().registerCallback( com.untangle.uvm.HookManager.HOST_TABLE_QUOTA_EXCEEDED, this.hostQuotaExceededHook );
+        UvmContextFactory.context().hookManager().registerCallback( com.untangle.uvm.HookManager.HOST_TABLE_QUOTA_REMOVED, this.hostQuotaRemovedHook );
+        UvmContextFactory.context().hookManager().registerCallback( com.untangle.uvm.HookManager.USER_TABLE_QUOTA_GIVEN, this.userQuotaGivenHook );
+        UvmContextFactory.context().hookManager().registerCallback( com.untangle.uvm.HookManager.USER_TABLE_QUOTA_EXCEEDED, this.userQuotaExceededHook );
+        UvmContextFactory.context().hookManager().registerCallback( com.untangle.uvm.HookManager.USER_TABLE_QUOTA_REMOVED, this.userQuotaRemovedHook );
     }
 
     @Override
     protected void preStop( boolean isPermanentTransition ) 
     {
-        UvmContextFactory.context().hookManager().unregisterCallback( com.untangle.uvm.HookManager.HOST_TABLE_PENALTY_BOX_ENTER, this.penaltyBoxEnterHook );
-        UvmContextFactory.context().hookManager().unregisterCallback( com.untangle.uvm.HookManager.HOST_TABLE_PENALTY_BOX_EXIT, this.penaltyBoxExitHook );
-        UvmContextFactory.context().hookManager().unregisterCallback( com.untangle.uvm.HookManager.HOST_TABLE_QUOTA_GIVEN, this.quotaGivenHook );
-        UvmContextFactory.context().hookManager().unregisterCallback( com.untangle.uvm.HookManager.HOST_TABLE_QUOTA_EXCEEDED, this.quotaExceededHook );
-        UvmContextFactory.context().hookManager().unregisterCallback( com.untangle.uvm.HookManager.HOST_TABLE_QUOTA_REMOVED, this.quotaRemovedHook );
+        UvmContextFactory.context().hookManager().unregisterCallback( com.untangle.uvm.HookManager.HOST_TABLE_PENALTY_BOX_ENTER, this.hostPenaltyBoxEnterHook );
+        UvmContextFactory.context().hookManager().unregisterCallback( com.untangle.uvm.HookManager.HOST_TABLE_PENALTY_BOX_EXIT, this.hostPenaltyBoxExitHook );
+        UvmContextFactory.context().hookManager().unregisterCallback( com.untangle.uvm.HookManager.HOST_TABLE_QUOTA_GIVEN, this.hostQuotaGivenHook );
+        UvmContextFactory.context().hookManager().unregisterCallback( com.untangle.uvm.HookManager.HOST_TABLE_QUOTA_EXCEEDED, this.hostQuotaExceededHook );
+        UvmContextFactory.context().hookManager().unregisterCallback( com.untangle.uvm.HookManager.HOST_TABLE_QUOTA_REMOVED, this.hostQuotaRemovedHook );
+        UvmContextFactory.context().hookManager().unregisterCallback( com.untangle.uvm.HookManager.USER_TABLE_QUOTA_GIVEN, this.userQuotaGivenHook );
+        UvmContextFactory.context().hookManager().unregisterCallback( com.untangle.uvm.HookManager.USER_TABLE_QUOTA_EXCEEDED, this.userQuotaExceededHook );
+        UvmContextFactory.context().hookManager().unregisterCallback( com.untangle.uvm.HookManager.USER_TABLE_QUOTA_REMOVED, this.userQuotaRemovedHook );
     }
 
     @Override
@@ -185,26 +194,24 @@ public class BandwidthControlApp extends NodeBase
         }
     }
 
-    public void wizardAddQuotaRules(String network, int quotaTimeSec, long quotaBytes, int overQuotaPriority)
+    public void wizardAddHostQuotaRules(int quotaTimeSec, long quotaBytes, int overQuotaPriority)
     {
         /**
          * Create the quota-assigning rule
          */
         BandwidthControlRule newRule0 = new BandwidthControlRule();
         BandwidthControlRuleAction newRule0Action = new BandwidthControlRuleAction();
-        newRule0Action.setActionType(BandwidthControlRuleAction.ActionType.GIVE_CLIENT_HOST_QUOTA);
+        newRule0Action.setActionType(BandwidthControlRuleAction.ActionType.GIVE_HOST_QUOTA);
         newRule0Action.setQuotaTime(quotaTimeSec);
         newRule0Action.setQuotaBytes(quotaBytes);
-        BandwidthControlRuleCondition newRule0Matcher = new BandwidthControlRuleCondition(BandwidthControlRuleCondition.ConditionType.CLIENT_HAS_NO_QUOTA, null);
+        BandwidthControlRuleCondition newRule0Matcher = new BandwidthControlRuleCondition(BandwidthControlRuleCondition.ConditionType.HOST_HAS_NO_QUOTA, null);
         BandwidthControlRuleCondition newRule0Matcher2 = new BandwidthControlRuleCondition(BandwidthControlRuleCondition.ConditionType.SRC_INTF, "non_wan");
-        BandwidthControlRuleCondition newRule0Matcher3 = new BandwidthControlRuleCondition(BandwidthControlRuleCondition.ConditionType.SRC_ADDR, network);
         List<BandwidthControlRuleCondition> newRule0matchers = new LinkedList<BandwidthControlRuleCondition>();
         newRule0matchers.add(newRule0Matcher);
         newRule0matchers.add(newRule0Matcher2);
-        newRule0matchers.add(newRule0Matcher3);
         newRule0.setAction(newRule0Action);
         newRule0.setConditions(newRule0matchers);
-        newRule0.setDescription("Give Client a Quota if no Quota");
+        newRule0.setDescription("Give Host a Quota if no Quota");
         newRule0.setEnabled(true);
 
         /**
@@ -214,12 +221,55 @@ public class BandwidthControlApp extends NodeBase
         BandwidthControlRuleAction newRule1Action = new BandwidthControlRuleAction();
         newRule1Action.setActionType(BandwidthControlRuleAction.ActionType.SET_PRIORITY);
         newRule1Action.setPriority(new Integer(overQuotaPriority));
-        BandwidthControlRuleCondition newRule1Matcher = new BandwidthControlRuleCondition(BandwidthControlRuleCondition.ConditionType.CLIENT_QUOTA_EXCEEDED, null);
+        BandwidthControlRuleCondition newRule1Matcher = new BandwidthControlRuleCondition(BandwidthControlRuleCondition.ConditionType.HOST_QUOTA_EXCEEDED, null);
         List<BandwidthControlRuleCondition> newRule1matchers = new LinkedList<BandwidthControlRuleCondition>();
         newRule1matchers.add(newRule1Matcher);
         newRule1.setAction(newRule1Action);
         newRule1.setConditions(newRule1matchers);
-        newRule1.setDescription("Penalize Clients over Quota");
+        newRule1.setDescription("Penalize Hosts over Quota");
+        newRule1.setEnabled(true);
+
+        List<BandwidthControlRule> currentRules = this.getRules();
+        currentRules.add(0,newRule1);
+        currentRules.add(0,newRule0);
+        this.setRules(currentRules);
+
+        return;
+    }
+
+    public void wizardAddUserQuotaRules(int quotaTimeSec, long quotaBytes, int overQuotaPriority)
+    {
+        /**
+         * Create the quota-assigning rule
+         */
+        BandwidthControlRule newRule0 = new BandwidthControlRule();
+        BandwidthControlRuleAction newRule0Action = new BandwidthControlRuleAction();
+        newRule0Action.setActionType(BandwidthControlRuleAction.ActionType.GIVE_USER_QUOTA);
+        newRule0Action.setQuotaTime(quotaTimeSec);
+        newRule0Action.setQuotaBytes(quotaBytes);
+        BandwidthControlRuleCondition newRule0Matcher = new BandwidthControlRuleCondition(BandwidthControlRuleCondition.ConditionType.USER_HAS_NO_QUOTA, null);
+        BandwidthControlRuleCondition newRule0Matcher2 = new BandwidthControlRuleCondition(BandwidthControlRuleCondition.ConditionType.SRC_INTF, "non_wan");
+        List<BandwidthControlRuleCondition> newRule0matchers = new LinkedList<BandwidthControlRuleCondition>();
+        newRule0matchers.add(newRule0Matcher);
+        newRule0matchers.add(newRule0Matcher2);
+        newRule0.setAction(newRule0Action);
+        newRule0.setConditions(newRule0matchers);
+        newRule0.setDescription("Give User a Quota if no Quota");
+        newRule0.setEnabled(true);
+
+        /**
+         * Create the quota-enforcement rule
+         */
+        BandwidthControlRule newRule1 = new BandwidthControlRule();
+        BandwidthControlRuleAction newRule1Action = new BandwidthControlRuleAction();
+        newRule1Action.setActionType(BandwidthControlRuleAction.ActionType.SET_PRIORITY);
+        newRule1Action.setPriority(new Integer(overQuotaPriority));
+        BandwidthControlRuleCondition newRule1Matcher = new BandwidthControlRuleCondition(BandwidthControlRuleCondition.ConditionType.USER_QUOTA_EXCEEDED, null);
+        List<BandwidthControlRuleCondition> newRule1matchers = new LinkedList<BandwidthControlRuleCondition>();
+        newRule1matchers.add(newRule1Matcher);
+        newRule1.setAction(newRule1Action);
+        newRule1.setConditions(newRule1matchers);
+        newRule1.setDescription("Penalize Users over Quota");
         newRule1.setEnabled(true);
 
         List<BandwidthControlRule> currentRules = this.getRules();
@@ -258,6 +308,20 @@ public class BandwidthControlApp extends NodeBase
         this.handler.reprioritizeHostSessions(addr, reason);
     }
 
+    /**
+     * This forces the app to reevaluate all sessions
+     * of the specified addr.
+     * This is useful when hosts have been added to the penalty box
+     * or when quotas have expired
+     */
+    public void reprioritizeUserSessions(String username, String reason)
+    {
+        if ( username == null )
+            return;
+        logger.info("Reproritizing sessions for user " + username + " because \"" + reason + "\"");
+        this.handler.reprioritizeUserSessions(username, reason);
+    }
+    
     @Override
     protected PipelineConnector[] getConnectors()
     {
@@ -319,35 +383,54 @@ public class BandwidthControlApp extends NodeBase
         }
     }
 
-    private class PenaltyBoxEnterHook implements HookCallback
+    private class HostPenaltyBoxEnterHook implements HookCallback
     {
         public String getName() { return "bandwidth-control-penalty-box--hook"; }
         public void callback( Object o ) { reprioritizeHostSessions((InetAddress)o, "enter penalty box"); }
     }
 
-    private class PenaltyBoxExitHook implements HookCallback
+    private class HostPenaltyBoxExitHook implements HookCallback
     {
         public String getName() { return "bandwidth-control-penalty-box-exit-hook"; }
         public void callback( Object o ) { reprioritizeHostSessions((InetAddress)o, "exit penalty box"); }
     }
 
-    private class QuotaGivenHook implements HookCallback
+    private class HostQuotaGivenHook implements HookCallback
     {
         public String getName() { return "bandwidth-control-quota-given-hook"; }
         public void callback( Object o ) { reprioritizeHostSessions((InetAddress)o, "quota given"); }
     }
 
-    private class QuotaExceededHook implements HookCallback
+    private class HostQuotaExceededHook implements HookCallback
     {
         public String getName() { return "bandwidth-control-quota-exceeded-hook"; }
         public void callback( Object o ) { reprioritizeHostSessions((InetAddress)o, "quota exceeded"); }
     }
 
-    private class QuotaRemovedHook implements HookCallback
+    private class HostQuotaRemovedHook implements HookCallback
     {
         public String getName() { return "bandwidth-control-quota-removed-hook"; }
         public void callback( Object o ) { reprioritizeHostSessions((InetAddress)o, "quota removed"); }
     }
+
+    private class UserQuotaGivenHook implements HookCallback
+    {
+        public String getName() { return "bandwidth-control-quota-given-hook"; }
+        public void callback( Object o ) { reprioritizeUserSessions((String)o, "quota given"); }
+    }
+
+    private class UserQuotaExceededHook implements HookCallback
+    {
+        public String getName() { return "bandwidth-control-quota-exceeded-hook"; }
+        public void callback( Object o ) { reprioritizeUserSessions((String)o, "quota exceeded"); }
+    }
+
+    private class UserQuotaRemovedHook implements HookCallback
+    {
+        public String getName() { return "bandwidth-control-quota-removed-hook"; }
+        public void callback( Object o ) { reprioritizeUserSessions((String)o, "quota removed"); }
+    }
+    
 }
 
     

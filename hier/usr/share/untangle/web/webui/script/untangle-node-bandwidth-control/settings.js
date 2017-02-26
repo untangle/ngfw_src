@@ -42,20 +42,30 @@ Ext.define('Webui.untangle-node-bandwidth-control.settings', {
             {name:"SRC_INTF",displayName: i18n._("Source Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, false), visible: true},
             {name:"PROTOCOL",displayName: i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["any",i18n._("any")]], visible: true},
             {name:"USERNAME",displayName: i18n._("Username"), type: "editor", editor: Ext.create('Ung.UserEditorWindow',{}), visible: true},
-            {name:"CLIENT_HOSTNAME",displayName: i18n._("Client Hostname"), type: "text", visible: true},
+            {name:"HOST_HOSTNAME",displayName: i18n._("Host Hostname"), type: "text", visible: true},
+            {name:"CLIENT_HOSTNAME",displayName: i18n._("Client Hostname"), type: "text", visible: rpc.isExpertMode},
             {name:"SERVER_HOSTNAME",displayName: i18n._("Server Hostname"), type: "text", visible: rpc.isExpertMode},
+            {name:"HOST_MAC", displayName: i18n._("Host MAC Address"), type: "text", visible: true },
             {name:"SRC_MAC", displayName: i18n._("Client MAC Address"), type: "text", visible: true },
             {name:"DST_MAC", displayName: i18n._("Server MAC Address"), type: "text", visible: true },
+            {name:"HOST_MAC_VENDOR",displayName: i18n._("Host MAC Vendor"), type: "text", visible: true},
             {name:"CLIENT_MAC_VENDOR",displayName: i18n._("Client MAC Vendor"), type: "text", visible: true},
             {name:"SERVER_MAC_VENDOR",displayName: i18n._("Server MAC Vendor"), type: "text", visible: true},
-            {name:"CLIENT_IN_PENALTY_BOX",displayName: i18n._("Client in Penalty Box"), type: "boolean", visible: true},
-            {name:"SERVER_IN_PENALTY_BOX",displayName: i18n._("Server in Penalty Box"), type: "boolean", visible: true},
-            {name:"CLIENT_HAS_NO_QUOTA",displayName: i18n._("Client has no Quota"), type: "boolean", visible: true},
-            {name:"SERVER_HAS_NO_QUOTA",displayName: i18n._("Server has no Quota"), type: "boolean", visible: true},
-            {name:"CLIENT_QUOTA_EXCEEDED",displayName: i18n._("Client has exceeded Quota"), type: "boolean", visible: true},
-            {name:"SERVER_QUOTA_EXCEEDED",displayName: i18n._("Server has exceeded Quota"), type: "boolean", visible: true},
-            {name:"CLIENT_QUOTA_ATTAINMENT",displayName: i18n._("Client Quota Attainment"), type: "text", visible: true},
-            {name:"SERVER_QUOTA_ATTAINMENT",displayName: i18n._("Server Quota Attainment"), type: "text", visible: true},
+            {name:"HOST_IN_PENALTY_BOX",displayName: i18n._("Host in Penalty Box"), type: "boolean", visible: true},
+            {name:"CLIENT_IN_PENALTY_BOX",displayName: i18n._("Client in Penalty Box"), type: "boolean", visible: rpc.isExpertMode},
+            {name:"SERVER_IN_PENALTY_BOX",displayName: i18n._("Server in Penalty Box"), type: "boolean", visible: rpc.isExpertMode},
+            {name:"HOST_HAS_NO_QUOTA",displayName: i18n._("Host has no Quota"), type: "boolean", visible: true},
+            {name:"CLIENT_HAS_NO_QUOTA",displayName: i18n._("Client has no Quota"), type: "boolean", visible: rpc.isExpertMode},
+            {name:"SERVER_HAS_NO_QUOTA",displayName: i18n._("Server has no Quota"), type: "boolean", visible: rpc.isExpertMode},
+            {name:"USER_HAS_NO_QUOTA",displayName: i18n._("User has no Quota"), type: "boolean", visible: true},
+            {name:"HOST_QUOTA_EXCEEDED",displayName: i18n._("Host has exceeded Quota"), type: "boolean", visible: true},
+            {name:"CLIENT_QUOTA_EXCEEDED",displayName: i18n._("Client has exceeded Quota"), type: "boolean", visible: rpc.isExpertMode},
+            {name:"SERVER_QUOTA_EXCEEDED",displayName: i18n._("Server has exceeded Quota"), type: "boolean", visible: rpc.isExpertMode},
+            {name:"USER_QUOTA_EXCEEDED",displayName: i18n._("User has exceeded Quota"), type: "boolean", visible: true},
+            {name:"HOST_QUOTA_ATTAINMENT",displayName: i18n._("Host Quota Attainment"), type: "text", visible: true},
+            {name:"CLIENT_QUOTA_ATTAINMENT",displayName: i18n._("Client Quota Attainment"), type: "text", visible: rpc.isExpertMode},
+            {name:"SERVER_QUOTA_ATTAINMENT",displayName: i18n._("Server Quota Attainment"), type: "text", visible: rpc.isExpertMode},
+            {name:"USER_QUOTA_ATTAINMENT",displayName: i18n._("User Quota Attainment"), type: "text", visible: true},
             {name:"HTTP_HOST",displayName: i18n._("HTTP: Hostname"), type: "text", visible: true},
             {name:"HTTP_REFERER",displayName: i18n._("HTTP: Referer"), type: "text", visible: true},
             {name:"HTTP_URI",displayName: i18n._("HTTP: URI"), type: "text", visible: true},
@@ -78,8 +88,9 @@ Ext.define('Webui.untangle-node-bandwidth-control.settings', {
             {name:"WEB_FILTER_CATEGORY_DESCRIPTION",displayName: i18n._("Web Filter: Category Description"), type: "text", visible: true},
             {name:"WEB_FILTER_FLAGGED",displayName: i18n._("Web Filter: Website is Flagged"), type: "boolean", visible: true},
             {name:"DIRECTORY_CONNECTOR_GROUP",displayName: i18n._("Directory Connector: User in Group"), type: "editor", editor: Ext.create('Ung.GroupEditorWindow',{}), visible: true},
-            {name:"CLIENT_COUNTRY",displayName: i18n._("Client Country"), type: "editor", editor: Ext.create('Ung.CountryEditorWindow',{}), visible: true},
-            {name:"SERVER_COUNTRY",displayName: i18n._("Server Country"), type: "editor", editor: Ext.create('Ung.CountryEditorWindow',{}), visible: true}
+            {name:"REMOTE_HOST_COUNTRY",displayName: i18n._("Client Country"), type: "editor", editor: Ext.create('Ung.CountryEditorWindow',{}), visible: true},
+            {name:"CLIENT_COUNTRY",displayName: i18n._("Client Country"), type: "editor", editor: Ext.create('Ung.CountryEditorWindow',{}), visible: rpc.isExpertMode},
+            {name:"SERVER_COUNTRY",displayName: i18n._("Server Country"), type: "editor", editor: Ext.create('Ung.CountryEditorWindow',{}), visible: rpc.isExpertMode}
         ];
     },
     priorityRenderer: function(value) {
@@ -417,6 +428,8 @@ Ext.define('Webui.untangle-node-bandwidth-control.settings', {
                         case 'PENALTY_BOX_CLIENT_HOST': return i18n._("Send Client to Penalty Box");
                         case 'APPLY_PENALTY_PRIORITY': return i18n._("Apply Penalty Priority"); // DEPRECATED
                         case 'GIVE_CLIENT_HOST_QUOTA': return i18n._("Give Client a Quota");
+                        case 'GIVE_HOST_QUOTA': return i18n._("Give Host a Quota");
+                        case 'GIVE_USER_QUOTA': return i18n._("Give User a Quota");
                         default: return "Unknown Action: " + value;
                     }
                 }, this)
@@ -438,6 +451,8 @@ Ext.define('Webui.untangle-node-bandwidth-control.settings', {
                       var penaltyTime = this.down('numberfield[name="penaltyTime"]');
                       components.push(penaltyTime);
                       break;
+                  case "GIVE_USER_QUOTA":
+                  case "GIVE_HOST_QUOTA":
                   case "GIVE_CLIENT_HOST_QUOTA":
                       var quotaTime   = this.down('combo[name="quotaTime"]');
                       var quotaSize  = this.down('numberfield[name="quotaSize"]');
@@ -489,7 +504,8 @@ Ext.define('Webui.untangle-node-bandwidth-control.settings', {
                     editable: false,
                     store: [['SET_PRIORITY', i18n._('Set Priority')],
                             ['PENALTY_BOX_CLIENT_HOST', i18n._('Send Client to Penalty Box')],
-                            ['GIVE_CLIENT_HOST_QUOTA', i18n._('Give Client a Quota')]],
+                            ['GIVE_HOST_QUOTA', i18n._('Give Host a Quota')],
+                            ['GIVE_USER_QUOTA', i18n._('Give User a Quota')]],
                     queryMode: 'local',
                     listeners: {
                         'select': { 
@@ -860,7 +876,7 @@ Ext.define('Webui.untangle-node-bandwidth-control.Wizard.WAN',{
             items: [{
                 xtype: 'component',
                 html: '<h2 class="wizard-title">'+i18n._("Configure WANs download and upload bandwidths")+'</h2>',
-                margin: '10',
+                margin: '10'
             },{
                 xtype: 'component',
                 name: 'bandwidthLabel',
@@ -1271,17 +1287,17 @@ Ext.define('Webui.untangle-node-bandwidth-control.Wizard.Quotas', {
                 xtype:'fieldset',
                 hidden: true,
                 items: [{
-                    xtype: 'component',
-                    html: "<i>" + i18n._("Quota Clients") + "</i> " + i18n._('controls which hosts will be given quotas.') + " " + i18n._("(Example: 192.168.1.1/24 or 192.168.1.100-192.168.1.200)"),
-                    margin: '15 0 5 0'
+                    xtype: "checkbox",
+                    name: "quotaHostEnabled",
+                    fieldLabel: i18n._( "Enable Quotas for Hosts (IP addresses)" ),
+                    width: 500,
+                    checked: true
                 }, {
-                    xtype: "textfield",
-                    name: "quotaNetwork",
-                    fieldLabel: i18n._("Quota Clients"),
-                    width: 300,
-                    labelWidth: 150,
-                    allowBlank: false,
-                    value: ""
+                    xtype: "checkbox",
+                    name: "quotaUserEnabled",
+                    fieldLabel: i18n._( "Enable Quotas for Users (usernames)" ),
+                    width: 500,
+                    checked: true
                 }, {
                     xtype: 'component',
                     html: "<i>" + i18n._("Quota Expiration") + "</i> " + i18n._('controls how long a quota lasts (hourly, daily, weekly). The default is Daily.'),
@@ -1349,11 +1365,7 @@ Ext.define('Webui.untangle-node-bandwidth-control.Wizard.Quotas', {
         this.onValidate = function() {
             var enabled = Ext.getCmp("enableQuotas").getValue();
             if (enabled) {
-                var quotaNet = this.panel.down('textfield[name="quotaNetwork"]').getValue();
-                if (Ext.isEmpty(quotaNet)) {
-                    Ext.MessageBox.alert(i18n._("Error"), i18n._("You must provide an IP/netmask or range."));
-                    return false;
-                }
+                // nothing
             }
             return true;
         };
@@ -1365,9 +1377,15 @@ Ext.define('Webui.untangle-node-bandwidth-control.Wizard.Quotas', {
                 var quotaUnit  = this.panel.down('combo[name="quotaUnit"]').getValue();
                 var quotaBytes = Math.round(quotaSize * quotaUnit);
                 var quotaPrio   = this.panel.down('combo[name="quotaExceededPriority"]').getValue();
-                var quotaNet    = this.panel.down('textfield[name="quotaNetwork"]').getValue();
 
-                this.gui.getRpcNode().wizardAddQuotaRules(quotaNet, quotaTime, quotaBytes, quotaPrio);
+                var quotaHosts   = this.panel.down('checkbox[name="quotaHostEnabled"]').getValue();
+                var quotaUsers   = this.panel.down('checkbox[name="quotaUserEnabled"]').getValue();
+                
+                if (quotaHosts)
+                    this.gui.getRpcNode().wizardAddHostQuotaRules(quotaTime, quotaBytes, quotaPrio);
+                if (quotaUsers)
+                    this.gui.getRpcNode().wizardAddUserQuotaRules(quotaTime, quotaBytes, quotaPrio);
+                
                 this.gui.refreshSettings();
             }
             Ext.MessageBox.hide();
