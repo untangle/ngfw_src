@@ -113,7 +113,7 @@ Summary
 {% if interface.getIsWan == true %}
 {% with interfaceId=interface.getInterfaceId %}
 {% with status=networkManager.getInterfaceStatus,interface.getInterfaceId %}
-{{ status.getV4Address.getHostAddress }}
+{{ status.getV4Address.getHostAddress }}&nbsp;
 {% endwith %}
 {% endwith %}
 {% endif %}

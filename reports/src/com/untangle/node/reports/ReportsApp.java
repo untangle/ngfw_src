@@ -63,7 +63,6 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
     private static final String REPORTS_GENERATE_REPORTS_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-generate-reports.py";
     private static final String REPORTS_GENERATE_FIXED_REPORTS_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-generate-fixed-reports.py";
     private static final String REPORTS_RESTORE_DATA_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-restore-backup.sh";
-    private static final String REPORTS_LOG = System.getProperty("uvm.log.dir") + "/reports.log";
     private static final String REPORTS_DB_DRIVER_FILE = System.getProperty("uvm.conf.dir") + "/database-driver";
 
     private static final File CRON_FILE = new File("/etc/cron.daily/reports-cron");
@@ -409,19 +408,10 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         }
 
         /**
-         * Start the database
-         */
-        if ( "postgresql".equals( ReportsApp.dbDriver ) )
-            UvmContextFactory.context().daemonManager().incrementUsageCount( "postgresql" );
-        
-        /**
          * Report updates
          */
         ReportsManagerImpl.getInstance().updateSystemReportEntries( settings.getReportEntries(), true );
         
-        /* intialize tables (if necessary) */
-        this.initializeDB();
-
         /* sync settings to disk if necessary */
         File settingsFile = new File( settingsFileName );
         if (settingsFile.lastModified() > CRON_FILE.lastModified())
@@ -429,12 +419,6 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         if (settingsFile.lastModified() > SYSLOG_CONF_FILE.lastModified())
             SyslogManagerImpl.reconfigure(this.settings);
         SyslogManagerImpl.setEnabled(this.settings);
-        
-        /* Start the servlet */
-        UvmContextFactory.context().tomcatManager().loadServlet("/reports", "reports");
-
-        /* Enable to run event writing performance tests */
-        // new Thread(new PerformanceTest()).start();
     }
 
     @Override
@@ -444,13 +428,28 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
             postInit();
         }
 
+        /* Start the servlet */
+        UvmContextFactory.context().tomcatManager().loadServlet("/reports", "reports");
+
+        /* Start the database */
+        if ( "postgresql".equals( ReportsApp.dbDriver ) )
+            UvmContextFactory.context().daemonManager().incrementUsageCount( "postgresql" );
+
+        /* Intialize database tables (if necessary) */
+        this.initializeDB();
+
         ReportsApp.eventWriter.start( this );
+
+        /* Enable to run event writing performance tests */
+        // new Thread(new PerformanceTest()).start();
     }
 
     @Override
     protected void postStop( boolean isPermanentTransition )
     {
         ReportsApp.eventWriter.stop();
+
+        UvmContextFactory.context().tomcatManager().unloadServlet("/reports");
 
         if ( "postgresql".equals( ReportsApp.dbDriver ) )
             UvmContextFactory.context().daemonManager().decrementUsageCount( "postgresql" );
@@ -459,7 +458,6 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
     @Override
     protected void preDestroy() 
     {
-        UvmContextFactory.context().tomcatManager().unloadServlet("/reports");
     }
     
     private LinkedList<AlertRule> defaultAlertRules()
@@ -761,12 +759,11 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
     private void writeCronFile()
     {
         // write the cron file for nightly runs
-        // FIXME we should not write to log file directly - we should use logger/syslog
         String cronStr = "#!/bin/sh" + "\n" +
-            REPORTS_GENERATE_TABLES_SCRIPT + " >> /var/log/uvm/reports.log 2>&1" + "\n" +
-            REPORTS_CLEAN_TABLES_SCRIPT + " -d " + ReportsApp.dbDriver + " " + settings.getDbRetention() + " >> /var/log/uvm/reports.log 2>&1" + "\n" +
-            REPORTS_VACUUM_TABLES_SCRIPT + " >> /var/log/uvm/reports.log 2>&1" + "\n" + 
-            REPORTS_GENERATE_FIXED_REPORTS_SCRIPT + " >> /var/log/uvm/reports.log 2>&1" + "\n";
+            REPORTS_GENERATE_TABLES_SCRIPT + " | logger -t uvmreports" + "\n" +
+            REPORTS_CLEAN_TABLES_SCRIPT + " -d " + ReportsApp.dbDriver + " " + settings.getDbRetention() + " | logger -t uvmreports" + "\n" +
+            REPORTS_VACUUM_TABLES_SCRIPT + " | logger -t uvmreports" + "\n" +
+            REPORTS_GENERATE_FIXED_REPORTS_SCRIPT + " | logger -t uvmreports" + "\n";
 
         if ( settings.getGoogleDriveUploadData() ) {
             String dir = settings.getGoogleDriveDirectory();
@@ -775,7 +772,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
             else
                 dir = "";
             
-            cronStr += REPORTS_GOOGLE_DATA_BACKUP_SCRIPT + " " + dir + " >> /var/log/uvm/reports.log 2>&1" + "\n";
+            cronStr += REPORTS_GOOGLE_DATA_BACKUP_SCRIPT + " " + dir + " | logger -t uvmreports" + "\n";
         }
         if ( settings.getGoogleDriveUploadCsv() ) {
             String dir = settings.getGoogleDriveDirectory();
@@ -784,7 +781,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
             else
                 dir = "";
             
-            cronStr += REPORTS_GOOGLE_CSV_BACKUP_SCRIPT + " " + dir + " >> /var/log/uvm/reports.log 2>&1" + "\n";
+            cronStr += REPORTS_GOOGLE_CSV_BACKUP_SCRIPT + " " + dir + " | logger -t uvmreports" + "\n";
         }
 
         

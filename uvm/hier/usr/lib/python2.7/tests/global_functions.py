@@ -201,11 +201,11 @@ def check_events( events, num_events, *args, **kwargs):
         if event.get('time_stamp') != None:
             time_stamp = event.get('time_stamp')
             if type(time_stamp) is int:
-                ts = datetime.datetime.fromtimestamp(time_stamp/1000)
+                ts = datetime.datetime.fromtimestamp((time_stamp/1000)+1)#round up
             elif type(time_stamp) is long:
-                ts = datetime.datetime.fromtimestamp(time_stamp/1000)
+                ts = datetime.datetime.fromtimestamp((time_stamp/1000)+1)#round up
             else:
-                ts = datetime.datetime.fromtimestamp(time_stamp['time']/1000)
+                ts = datetime.datetime.fromtimestamp((time_stamp['time']/1000)+1)#round up
             if ts < min_date:
                 print "ignoring old event: %s < %s " % (ts.isoformat(),min_date.isoformat())
                 continue

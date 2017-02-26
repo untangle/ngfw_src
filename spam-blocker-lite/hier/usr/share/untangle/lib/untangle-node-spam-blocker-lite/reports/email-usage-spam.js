@@ -10,7 +10,7 @@
     "readOnly": true,
     "table": "mail_addrs",
     "timeDataColumns": [
-        "sum(case when spam_blocker_lite_is_spam is true then 1 else null end::int) as spam"
+        "sum(case when spam_blocker_lite_is_spam is true then 1 else 0 end) as spam"
     ],
     "conditions": [
         {

@@ -91,8 +91,12 @@ public class IntrusionPreventionApp extends NodeBase
         this.addMetric(new NodeMetric(STAT_SCAN, I18nUtil.marktr("Sessions scanned")));
         this.addMetric(new NodeMetric(STAT_DETECT, I18nUtil.marktr("Sessions logged")));
         this.addMetric(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Sessions blocked")));
-        
-        this.ipsEventMonitor   = new IntrusionPreventionEventMonitor( this );
+
+        setScanCount(0);
+        setDetectCount(0);
+        setBlockCount(0);
+
+        this.ipsEventMonitor = new IntrusionPreventionEventMonitor( this );
 
         UvmContextFactory.context().servletFileManager().registerDownloadHandler( new IntrusionPreventionSettingsDownloadHandler() );
 
@@ -125,7 +129,7 @@ public class IntrusionPreventionApp extends NodeBase
     {
         UvmContextFactory.context().hookManager().registerCallback( com.untangle.uvm.HookManager.NETWORK_SETTINGS_CHANGE, this.networkSettingsChangeHook );
         try{
-            this.ipsEventMonitor.disable();
+            this.ipsEventMonitor.stop();
         }catch( Exception e ){
             logger.warn( "Error disabling Intrusion Prevention Event Monitor", e );
         }
@@ -149,7 +153,6 @@ public class IntrusionPreventionApp extends NodeBase
         UvmContextFactory.context().daemonManager().incrementUsageCount( "snort" );
         UvmContextFactory.context().hookManager().unregisterCallback( com.untangle.uvm.HookManager.NETWORK_SETTINGS_CHANGE, this.networkSettingsChangeHook );
         this.ipsEventMonitor.start();
-        this.ipsEventMonitor.enable();
     }
 
     @Override
@@ -157,9 +160,6 @@ public class IntrusionPreventionApp extends NodeBase
     {
         iptablesRules();
 
-        setScanCount(0);
-        setDetectCount(0);
-        setBlockCount(0);
     }
 
     public void reconfigure()
@@ -359,6 +359,13 @@ public class IntrusionPreventionApp extends NodeBase
     public void reloadEventMonitorMap()
     {
         this.ipsEventMonitor.unified2Parser.reloadEventMap();
+    }
+
+    public void forceUpdateStats()
+    {
+        this.ipsEventMonitor.stop();
+        this.ipsEventMonitor.start();
+        try { Thread.sleep( 2000 ); } catch ( InterruptedException e ) {}
     }
 
     /*

@@ -3,9 +3,14 @@
  */
 package com.untangle.uvm;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Iterator;
+import java.util.List;
+import java.util.ArrayList;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.Files;
@@ -28,6 +33,26 @@ public class PluginManagerImpl implements PluginManager
     private HashMap<String,Plugin> loadedPlugins = new HashMap<String,Plugin>();
     
     private PluginManagerImpl() {}
+
+    private URLClassLoader createClassLoader()
+    {
+        try {
+            List<URL> urls = new ArrayList<URL>();
+
+            /* Add everything in lib */
+            File uvmLibDir = new File(System.getProperty("uvm.lib.dir"));
+            for (File f : uvmLibDir.listFiles()) {
+                URL url = f.toURI().toURL();
+                urls.add(url);
+            }
+
+            urls.add(new URL("file://" + System.getProperty("uvm.lang.dir") + "/"));
+            return new URLClassLoader(urls.toArray(new URL[urls.size()]), getClass().getClassLoader());
+        } catch ( Throwable exn ) {
+            logger.warn( "Failed to create pluginClassLoader", exn );
+            return null;
+        }
+    }
 
     public synchronized static PluginManagerImpl getInstance()
     {
@@ -88,16 +113,16 @@ public class PluginManagerImpl implements PluginManager
 
         try {
             logger.info("Loading   plugin: " + className);
-            Class clazz = UvmContextImpl.getInstance().loadClass( className );
+            Class clazz = createClassLoader().loadClass( className );
             if ( clazz == null ) {
                 logger.warn("Failed to find ExamplePluginImpl");
             } else {
                 Plugin plugin = (Plugin)clazz.getMethod("instance").invoke(null);
-                logger.info("Loaded    plugin: " + className + "@" + plugin.hashCode());
-                logger.info("Starting  plugin: " + className + "@" + plugin.hashCode());
+                logger.info("Loaded    plugin: " + className );
+                logger.info("Starting  plugin: " + className );
                 Thread thread = new Thread(plugin);
                 thread.start();
-                logger.info("Started   plugin: " + className + "@" + plugin.hashCode() + " " + thread);
+                logger.info("Started   plugin: " + className + " " + thread);
 
                 loadedPlugins.put( className, plugin );
             }
