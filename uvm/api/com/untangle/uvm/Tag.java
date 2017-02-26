@@ -29,15 +29,15 @@ public class Tag implements Serializable, JSONString
     public static final int EXPIRE_END_OF_MONTH = -4;
 
     private String name;
-    private long expirationTime;
+    private long expirationTime = 1;
 
     public Tag()
     {}
 
-    public Tag( String name, long expirationTime )
+    public Tag( String name, long lifetimeMillis )
     {
         this.name = name;
-        this.expirationTime = calculateExpirationTime( expirationTime );
+        this.expirationTime = calculateExpirationTime( lifetimeMillis );
     }
 
     public String getName()
@@ -93,9 +93,9 @@ public class Tag implements Serializable, JSONString
         return getName();
     }
     
-    public static long calculateExpirationTime( long expirationTime )
+    public static long calculateExpirationTime( long lifetimeMillis )
     {
-        switch (((int)expirationTime)) {
+        switch (((int)lifetimeMillis)) {
         case EXPIRE_END_OF_HOUR: {
             GregorianCalendar calendar = new GregorianCalendar();
             Date now = calendar.getTime();
@@ -157,9 +157,12 @@ public class Tag implements Serializable, JSONString
             long expireTime = (expireDate.getTime() - now.getTime()) / 1000;
             return expireTime;
         }
+
+        case EXPIRE_NEVER:
+            return 0;
             
         default:
-            return expirationTime;
+            return System.currentTimeMillis() + lifetimeMillis;
         }
     }
 

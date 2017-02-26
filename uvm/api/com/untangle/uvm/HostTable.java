@@ -9,9 +9,6 @@ import java.net.InetAddress;
 /**
  * The Host Table is responsible for storing known information about hosts.
  * Many different components use the host table to share known information about a given host (for example, its hostname).
- *
- * The host table also contains penalty box methods which maintain all the host table attachments related to penalty box logic
- * and other utility methods
  */
 public interface HostTable
 {
@@ -53,29 +50,6 @@ public interface HostTable
      * Returns a duplicated list of all current hosts
      */
     LinkedList<HostTableEntry> getHosts();
-
-    /**
-     * Add a host to the penalty box for the specified amount of time at the specified priority
-     * This sets all the appropriate attachments and calls the listeners
-     */
-    void addHostToPenaltyBox( InetAddress address, int time_sec, String reason );
-
-    /**
-     * Release a host from the penalty box
-     * This sets all the appropriate attachments and calls the listeners
-     */
-    void releaseHostFromPenaltyBox( InetAddress address );
-    
-    /**
-     * Checks if a host is in the penalty box
-     */
-    boolean hostInPenaltyBox( InetAddress address );
-
-    /**
-     * Returns a current list of all hosts in the penalty box
-     * This is used by the UI to display the list
-     */
-    LinkedList<HostTableEntry> getPenaltyBoxedHosts();
 
     /**
      * Give an address a quota

@@ -5,7 +5,6 @@ def generate_tables():
     __create_admin_logins_table()
     __create_sessions_table()
     __create_session_minutes_table()
-    __create_penaltybox_table()
     __create_quotas_table()
     __create_host_table_updates_table()
     __create_device_table_updates_table()
@@ -13,13 +12,15 @@ def generate_tables():
     __create_alerts_events_table()
     __create_syslog_events_table()
     __create_settings_changes_table()
+    # 13.0 conversion
+    if table_exists( "penaltybox" ):
+        sql_helper.drop_table("penaltybox") 
 
 @sql_helper.print_timing
 def cleanup_tables(cutoff):
     sql_helper.clean_table("admin_logins", cutoff)
     sql_helper.clean_table("sessions", cutoff)
     sql_helper.clean_table("session_minutes", cutoff)
-    sql_helper.clean_table("penaltybox", cutoff)
     sql_helper.clean_table("quotas", cutoff)
     sql_helper.clean_table("host_table_updates", cutoff)
     sql_helper.clean_table("device_table_updates", cutoff)
@@ -223,16 +224,6 @@ CREATE TABLE reports.settings_changes (
         hostname text NOT NULL)""")
 
 @sql_helper.print_timing
-def __create_penaltybox_table(  ):
-    sql_helper.create_table("""
-CREATE TABLE reports.penaltybox (
-        address inet,
-        reason text,
-        start_time timestamp,
-        end_time timestamp,
-        time_stamp timestamp)""", [], ["time_stamp","start_time"])
-
-@sql_helper.print_timing
 def __create_quotas_table(  ):
     sql_helper.create_table("""
 CREATE TABLE reports.quotas (
@@ -251,7 +242,9 @@ CREATE TABLE reports.host_table_updates (
         address inet,
         key text,
         value text,
+        old_value text,
         time_stamp timestamp)""",[],["time_stamp"])
+    sql_helper.add_column('host_table_updates','old_value','text') # 13.0
 
 @sql_helper.print_timing
 def __create_device_table_updates_table(  ):
@@ -260,7 +253,9 @@ CREATE TABLE reports.device_table_updates (
         mac_address text,
         key text,
         value text,
+        old_value text,
         time_stamp timestamp)""",[],["time_stamp"])
+    sql_helper.add_column('device_table_updates','old_value','text') # 13.0
         
 @sql_helper.print_timing
 def __create_user_table_updates_table(  ):
@@ -269,4 +264,5 @@ CREATE TABLE reports.user_table_updates (
         username text,
         key text,
         value text,
+        old_value text,
         time_stamp timestamp)""",[],["time_stamp"])

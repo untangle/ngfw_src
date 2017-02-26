@@ -130,13 +130,13 @@ public class DeviceTableEntry implements Serializable, JSONString
         this.httpUserAgent = newValue;
     }
 
-    public List<Tag> getTags()
+    public synchronized List<Tag> getTags()
     {
         removeExpiredTags();
         return new LinkedList<Tag>(this.tags.values());
     }
 
-    public void setTags( List<Tag> newValue )
+    public synchronized void setTags( List<Tag> newValue )
     {
         HashMap<String,Tag> newSet = new HashMap<String,Tag>();
         if ( newValue != null ) {
@@ -150,19 +150,19 @@ public class DeviceTableEntry implements Serializable, JSONString
         this.tags = newSet;
     }
 
-    public String getTagsString()
+    public synchronized String getTagsString()
     {
         return Tag.tagsToString( getTags() );
     }
 
-    public void addTag( Tag tag )
+    public synchronized void addTag( Tag tag )
     {
         if ( tag == null || tag.getName() == null )
             return;
         this.tags.put( tag.getName(), tag );
     }
 
-    public void addTags( List<Tag> tags )
+    public synchronized void addTags( List<Tag> tags )
     {
         if ( tags == null )
             return;
@@ -171,7 +171,7 @@ public class DeviceTableEntry implements Serializable, JSONString
         }
     }
 
-    public boolean hasTag( String name )
+    public synchronized boolean hasTag( String name )
     {
         Tag t = this.tags.get( name );
         if ( t == null )
@@ -259,7 +259,7 @@ public class DeviceTableEntry implements Serializable, JSONString
         if ( newValue == null ) 
             newValue = "null";
 
-        DeviceTableEvent event = new DeviceTableEvent( this, this.macAddress, key, newValue );
+        DeviceTableEvent event = new DeviceTableEvent( this, this.macAddress, key, newValue, oldValue );
         UvmContextFactory.context().logEvent(event);
     }
 }
