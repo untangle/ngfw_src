@@ -110,8 +110,8 @@ def get_list_of_username_mapped():
     usernames = []
     for entry in entries:
         print entry
-        if entry['usernameAdConnector'] != None and entry['usernameAdConnector'] != "":
-            usernames.append(entry['usernameAdConnector'])
+        if entry['usernameDirectoryConnector'] != None and entry['usernameDirectoryConnector'] != "":
+            usernames.append(entry['usernameDirectoryConnector'])
     return usernames
 
 def add_ad_settings(ldap_secure=False):
