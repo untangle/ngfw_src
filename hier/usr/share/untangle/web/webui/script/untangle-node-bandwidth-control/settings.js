@@ -41,6 +41,7 @@ Ext.define('Webui.untangle-node-bandwidth-control.settings', {
             {name:"SRC_PORT",displayName: i18n._("Source Port"), type: "text", vtype:"portMatcher", visible: rpc.isExpertMode},
             {name:"SRC_INTF",displayName: i18n._("Source Interface"), type: "checkgroup", values: Ung.Util.getInterfaceList(true, false), visible: true},
             {name:"PROTOCOL",displayName: i18n._("Protocol"), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["any",i18n._("any")]], visible: true},
+            {name:"TAGGED",displayName: i18n._("Tagged"), type: "text", visible: true},
             {name:"USERNAME",displayName: i18n._("Username"), type: "editor", editor: Ext.create('Ung.UserEditorWindow',{}), visible: true},
             {name:"HOST_HOSTNAME",displayName: i18n._("Host Hostname"), type: "text", visible: true},
             {name:"CLIENT_HOSTNAME",displayName: i18n._("Client Hostname"), type: "text", visible: rpc.isExpertMode},

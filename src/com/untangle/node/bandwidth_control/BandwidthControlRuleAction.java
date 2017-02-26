@@ -25,7 +25,7 @@ public class BandwidthControlRuleAction implements JSONString, Serializable
     public static final int END_OF_HOUR = -1;
     public static final int END_OF_DAY  = -2; 
     public static final int END_OF_WEEK = -3;
-
+    
     private final Logger logger = Logger.getLogger(getClass());
 
     public enum ActionType {
