@@ -17,6 +17,7 @@ import org.apache.log4j.MDC;
 import org.apache.log4j.helpers.AbsoluteTimeDateFormat;
 import static com.untangle.uvm.Dispatcher.SESSION_ID_MDC_KEY;
 
+import com.untangle.uvm.Tag;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.node.SessionEvent;
@@ -984,6 +985,10 @@ public abstract class NodeSessionImpl implements NodeSession
     public InetAddress getServerAddr() { return newServerAddr; }
     public int getServerPort() { return newServerPort; }
 
+    public boolean hasTag( String name ) { return sessionGlobalState.hasTag( name ); }
+    public void addTag( Tag tag ) { sessionGlobalState.addTag( tag ); }
+    public List<Tag> getTags() { return sessionGlobalState.getTags(); }
+    
     public String toString()
     {
         String origClientAddr = ( getOrigClientAddr() != null ? getOrigClientAddr().getHostAddress() : "null" );

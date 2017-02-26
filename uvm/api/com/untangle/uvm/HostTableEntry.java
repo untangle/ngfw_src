@@ -6,6 +6,10 @@ package com.untangle.uvm;
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.Objects;
+import java.util.List;
+import java.util.LinkedList;
+import java.util.HashMap;
+import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
@@ -57,6 +61,8 @@ public class HostTableEntry implements Serializable, JSONString
 
     private String httpUserAgent = null; /* the user-agent header from HTTP */
 
+    private HashMap<String,Tag> tags = new HashMap<String,Tag>();
+    
     public HostTableEntry()
     {
         creationTime = System.currentTimeMillis();
@@ -394,6 +400,69 @@ public class HostTableEntry implements Serializable, JSONString
         updateAccessTime();
     }
 
+    public List<Tag> getTags()
+    {
+        removeExpiredTags();
+        return new LinkedList<Tag>(this.tags.values());
+    }
+    
+    public void setTags( List<Tag> newValue )
+    {
+        HashMap<String,Tag> newSet = new HashMap<String,Tag>();
+        if ( newValue != null ) {
+            for ( Tag t : newValue ) {
+                if ( t == null || t.getName() == null )
+                    continue;
+                newSet.put(t.getName(),t);
+            }
+        }
+        updateEvent( "tags", Tag.tagsToString(this.tags.values()), Tag.tagsToString(newSet.values()) );
+        this.tags = newSet;
+        updateAccessTime();
+    }
+
+    public String getTagsString()
+    {
+        return Tag.tagsToString( getTags() );
+    }
+
+    public void addTag( Tag tag )
+    {
+        if ( tag == null || tag.getName() == null )
+            return;
+        this.tags.put( tag.getName(), tag );
+    }
+
+    public void addTags( List<Tag> tags )
+    {
+        if ( tags == null )
+            return;
+        for ( Tag tag : tags ) {
+            addTag( tag );
+        }
+    }
+
+    public boolean hasTag( String name )
+    {
+        Tag t = this.tags.get( name );
+        if ( t == null )
+            return false;
+        if ( t.isExpired() ) {
+            this.tags.remove( t.getName() );
+            return false;
+        }
+        return true;
+    }
+
+    public void removeExpiredTags()
+    {
+        for ( Iterator<Tag> i = this.tags.values().iterator() ; i.hasNext() ; ) {
+            Tag t = i.next();
+            if ( t.isExpired() )
+                i.remove();
+        }
+    }
+    
     /**
      * Get the "best" hostname of all known sources
      * Precedence defined below
