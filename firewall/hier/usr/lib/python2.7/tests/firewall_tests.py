@@ -85,6 +85,55 @@ def appendRule(newRule):
     rules["list"].append(newRule)
     node.setRules(rules)
 
+def addHostTag(str):
+    entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
+    entry['tags']['list'].append( {
+        "javaClass": "com.untangle.uvm.Tag",
+        "name": str,
+        "expirationTime": 0
+    } )
+    uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
+
+
+def addUserTag(username, str):
+    entry = uvmContext.userTable().getUserTableEntry( username, True )
+    entry['tags']['list'].append( {
+        "javaClass": "com.untangle.uvm.Tag",
+        "name": str,
+        "expirationTime": 0
+    } )
+    uvmContext.userTable().setUserTableEntry( username, entry )
+
+def nukeUserTags(username):
+    entry = uvmContext.userTable().getUserTableEntry( username, True )
+    entry['tags']['list'] = []
+    uvmContext.userTable().setUserTableEntry( username, entry )
+    
+def nukeHostTags():
+    entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
+    entry['tags']['list'] = []
+    uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
+
+def setHostUsername(str):
+    entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
+    entry['usernameDirectoryConnector'] = str
+    uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
+
+def nukeHostUsername():
+    entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
+    entry['usernameDirectoryConnector'] = None
+    uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
+
+def setHostHostname(str):
+    entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
+    entry['usernameDirectoryConnector'] = str
+    uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
+
+def nukeHostHostname():
+    entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
+    entry['usernameDirectoryConnector'] = None
+    uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
+    
 class FirewallTests(unittest2.TestCase):
 
     @staticmethod
@@ -409,18 +458,63 @@ class FirewallTests(unittest2.TestCase):
         assert (result == 0)
 
     # verify GeoiP blocking does block stuff that is blocked
-    def test_070_geoipHostCountryBlock(self):
+    def test_072_geoipHostCountryBlock(self):
         nukeRules()
         appendRule( createSingleConditionRule( "REMOTE_HOST_COUNTRY", "CN,US,AU" ) )
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify GeoIP blocking doesn't block stuff that isn't blocked
-    def test_071_geoipHostCountryMiss(self):
+    def test_073_geoipHostCountryMiss(self):
         nukeRules()
         appendRule( createSingleConditionRule( "REMOTE_HOST_COUNTRY", "CN,GB,AU" ) )
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
+
+    def test_080_tagHostCheckMissing(self):
+        nukeRules()
+        appendRule( createSingleConditionRule( "TAGGED", "NONEXISTANT-TAG" ) )
+        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        assert (result == 0)
+
+    def test_081_tagHostBlock(self):
+        nukeRules()
+        addHostTag("testtag")
+        appendRule( createSingleConditionRule( "TAGGED", "testtag" ) )
+        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        nukeHostTags()
+        assert (result != 0)
+
+    def test_082_tagHostBlockGlob(self):
+        nukeRules()
+        addHostTag("testtag")
+        appendRule( createSingleConditionRule( "TAGGED", "*test*" ) )
+        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        nukeHostTags()
+        assert (result != 0)
+
+    def test_082_tagHostBlockMultiple(self):
+        nukeRules()
+        addHostTag("foobar1")
+        addHostTag("foobar2")
+        addHostTag("testtag")
+        addHostTag("foobar3")
+        addHostTag("foobar4")
+        appendRule( createSingleConditionRule( "TAGGED", "*test*" ) )
+        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        nukeHostTags()
+        assert (result != 0)
+        
+    def test_083_tagUserBlock(self):
+        nukeRules()
+        username = remote_control.runCommand("hostname -s", stdout=True)
+        setHostUsername( username )
+        addUserTag(username,"testtag")
+        appendRule( createSingleConditionRule( "TAGGED", "testtag" ) )
+        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        nukeUserTags(username)
+        nukeHostUsername()
+        assert (result != 0)
         
     # verify server penalty box wan not blocked
     def test_100_serverPenaltyBox(self):
@@ -508,39 +602,31 @@ class FirewallTests(unittest2.TestCase):
     # verify hostname match blocked after setting hostname
     def test_131_clientHostname(self):
         hostname = remote_control.runCommand("hostname -s", stdout=True)
-        entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
-        entry['hostname'] = hostname
-        uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
+        setHostHostname( hostname )
 
         nukeRules()
         appendRule( createSingleConditionRule( "CLIENT_HOSTNAME", hostname ) )
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
 
-        entry['hostname'] = None
-        uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
+        nukeHostHostname()
         assert (result != 0)
 
     # verify hostname match blocked after setting hostname
     def test_132_hostHostname(self):
         hostname = remote_control.runCommand("hostname -s", stdout=True)
-        entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
-        entry['hostname'] = hostname
-        uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
+        setHostHostname( hostname )
 
         nukeRules()
         appendRule( createSingleConditionRule( "HOST_HOSTNAME", hostname ) )
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
 
-        entry['hostname'] = None
-        uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
+        nukeHostHostname()
         assert (result != 0)
 
     # verify hostname match blocked after setting hostname
     def test_133_hostHostnameMultiple(self):
         hostname = remote_control.runCommand("hostname -s", stdout=True)
-        entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
-        entry['hostname'] = hostname
-        uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
+        setHostHostname( hostname )
 
         nukeRules()
         appendRule( createSingleConditionRule( "HOST_HOSTNAME", hostname + ",foobar") )
@@ -550,8 +636,7 @@ class FirewallTests(unittest2.TestCase):
         appendRule( createSingleConditionRule( "HOST_HOSTNAME", "foobar," + hostname ) )
         result2 = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
 
-        entry['hostname'] = None
-        uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
+        nukeHostHostname()
         assert (result1 != 0)
         assert (result2 != 0)
         
@@ -566,11 +651,7 @@ class FirewallTests(unittest2.TestCase):
     def test_141_clientUsernameUnauthenticated(self):
         # make sure no username is known for this IP
         username = remote_control.runCommand("hostname -s", stdout=True)
-        entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
-        entry['usernameDirectoryConnector'] = None
-        entry['usernameCaptive'] = None
-        uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
-
+        nukeHostUsername()
         nukeRules()
         appendRule( createSingleConditionRule( "USERNAME", "[unauthenticated]" ) )
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
@@ -579,24 +660,19 @@ class FirewallTests(unittest2.TestCase):
     # verify username matcher works
     def test_142_clientUsernameManual(self):
         username = remote_control.runCommand("hostname -s", stdout=True)
-        entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
-        entry['usernameDirectoryConnector'] = username
-        uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
+        setHostUsername( username )
 
         nukeRules()
         appendRule( createSingleConditionRule( "USERNAME", username ) )
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
 
-        entry['usernameDirectoryConnector'] = None
-        uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
+        nukeHostUsername()
         assert (result != 0)
 
     # verify username matcher works with comma
     def test_143_clientUsernameMultiple(self):
         username = remote_control.runCommand("hostname -s", stdout=True)
-        entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
-        entry['usernameDirectoryConnector'] = username
-        uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
+        setHostUsername( username )
 
         nukeRules()
         appendRule( createSingleConditionRule( "USERNAME", username + ",foobar" ) )
@@ -605,115 +681,89 @@ class FirewallTests(unittest2.TestCase):
         appendRule( createSingleConditionRule( "USERNAME", "foobar," + username ) )
         result2 = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
 
-        entry['usernameDirectoryConnector'] = None
-        uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
+        nukeHostUsername()
         assert (result1 != 0)
         assert (result2 != 0)
 
     # verify username matcher works despite rule & username being different case
     def test_144_clientUsernameWrongCase1(self):
         username = remote_control.runCommand("hostname -s", stdout=True)
-        entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
-        entry['usernameDirectoryConnector'] = username.upper()
-        uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
+        setHostUsername( username )
 
         nukeRules()
         appendRule( createSingleConditionRule( "USERNAME", username.lower() ) )
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
-        entry['usernameDirectoryConnector'] = None
-        uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
+        nukeHostUsername()
 
     # verify username matcher works despite rule & username being different case
     def test_145_clientUsernameWrongCase1(self):
         username = remote_control.runCommand("hostname -s", stdout=True)
-        entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
-        entry['usernameDirectoryConnector'] = username.lower()
-        uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
+        setHostUsername( username )
 
         nukeRules()
         appendRule( createSingleConditionRule( "USERNAME", username.upper() ) )
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
-        entry['usernameDirectoryConnector'] = None
-        uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
+        nukeHostUsername()
+        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        assert (result == 0)
 
     # verify "[authenticated]" matches any username
     def test_146_clientUsernameAuthenticated(self):
         username = remote_control.runCommand("hostname -s", stdout=True)
-        entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
-        entry['usernameDirectoryConnector'] = username
-        uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
+        setHostUsername( username )
 
         nukeRules()
         appendRule( createSingleConditionRule( "USERNAME", '[authenticated]' ) )
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
-        entry['usernameDirectoryConnector'] = None
-        uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
-
+        nukeHostUsername()
+        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        assert (result == 0)
+        
     # verify "A*" matches "abc"
     def test_147_clientUsernameLetterStar(self):
         username = remote_control.runCommand("hostname -s", stdout=True)
-        entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
-        entry['usernameDirectoryConnector'] = username.lower()
-        uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
+        setHostUsername( username )
 
         nukeRules()
         appendRule( createSingleConditionRule( "USERNAME", username[:1].upper()+'*' ) )
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
-        entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
-        entry['usernameDirectoryConnector'] = None
-        uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
+        nukeHostUsername()
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
-
-        entry['usernameDirectoryConnector'] = None
-        uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
 
     # verify "*" matches any username but not null
     def test_148_clientUsernameStarOnly(self):
         username = remote_control.runCommand("hostname -s", stdout=True)
-        entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
-        entry['usernameDirectoryConnector'] = username
-        uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
+        setHostUsername( username )
 
         nukeRules()
         appendRule( createSingleConditionRule( "USERNAME", '*' ) )
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
-        entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
-        entry['usernameDirectoryConnector'] = None
-        uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
+        nukeHostUsername()
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
-
-        entry['usernameDirectoryConnector'] = None
-        uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
 
     # verify '' username matches null username (but not all usernames)
     def test_149_clientUsernameBlank(self):
         username = remote_control.runCommand("hostname -s", stdout=True)
-        entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
-        entry['usernameDirectoryConnector'] = username
-        uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
+        setHostUsername( username )
 
         nukeRules()
         appendRule( createSingleConditionRule( "USERNAME", '' ) )
         result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
-        entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
-        entry['usernameDirectoryConnector'] = None
-        uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
-        assert (result != 0)
+        nukeHostUsername()
 
     # verify username is NOT '*' matches null username
     def test_150_clientUsernameBlank2(self):

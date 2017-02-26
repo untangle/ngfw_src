@@ -1,7 +1,7 @@
 Ext.define('Webui.config.userMonitor', {
     extend: 'Ung.StatusWin',
     name: 'users',
-    helpSource: 'users',
+    helpSource: 'hosts',
     sortField:'bypassed',
     sortOrder: 'ASC',
     displayName: 'Users',
@@ -105,6 +105,10 @@ Ext.define('Webui.config.userMonitor', {
                 name: "username",
                 type: 'string',
                 convert: Ung.Util.preventEmptyValueConverter
+            },{
+                name: "tagsString",
+                type: 'string',
+                convert: Ung.Util.preventEmptyValueConverter
             }, {
                 name: "lastAccessTime"
             }, {
@@ -138,7 +142,6 @@ Ext.define('Webui.config.userMonitor', {
                     type: 'string'
                 }
             }, {
-                hidden: true,
                 header: i18n._("Last Access Time"),
                 dataIndex: "lastAccessTimeDate",
                 width: 150,
@@ -160,7 +163,6 @@ Ext.define('Webui.config.userMonitor', {
                     type: 'numeric'
                 }
             },{
-                hidden: true,
                 header: i18n._("Quota Remaining"),
                 dataIndex: "quotaRemaining",
                 width: 100,
@@ -168,7 +170,6 @@ Ext.define('Webui.config.userMonitor', {
                     type: 'numeric'
                 }
             },{
-                hidden: true,
                 header: i18n._("Quota Issue Time"),
                 dataIndex: "quotaIssueTimeDate",
                 width: 100,
@@ -180,7 +181,6 @@ Ext.define('Webui.config.userMonitor', {
                     type: 'date'
                 }
             },{
-                hidden: true,
                 header: i18n._("Quota Expiration Time"),
                 dataIndex: "quotaExpirationTimeDate",
                 width: 100,
@@ -190,6 +190,13 @@ Ext.define('Webui.config.userMonitor', {
                 },
                 filter: {
                     type: 'date'
+                }
+            },{
+                header: i18n._("Tags"),
+                dataIndex: "tagsString",
+                width: 100,
+                filter: {
+                    type: 'string'
                 }
             }]
         });

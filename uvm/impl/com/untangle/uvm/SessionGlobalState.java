@@ -4,8 +4,12 @@
 package com.untangle.uvm;
 
 import java.util.List;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 
@@ -41,6 +45,12 @@ public class SessionGlobalState
     protected int serverIntf = 0;
     protected long endTime = 0;
     protected long lastUpdateBytes = 0;
+
+    protected HostTableEntry hostEntry = null;
+    protected DeviceTableEntry deviceEntry = null;
+    protected UserTableEntry userEntry = null;
+    
+    private HashMap<String,Tag> tags = new HashMap<String,Tag>();
     
     /**
      * This is the global list of attachments for this session
@@ -110,6 +120,63 @@ public class SessionGlobalState
 
     public int getServerIntf() { return this.serverIntf; }
     public void setServerIntf( int newValue ) { this.serverIntf = newValue; }
+
+    public HostTableEntry getHostEntry() { return this.hostEntry; }
+    public void setHostEntry( HostTableEntry newValue ) { this.hostEntry = newValue; }
+
+    public DeviceTableEntry getDeviceEntry() { return this.deviceEntry; }
+    public void setDeviceEntry( DeviceTableEntry newValue ) { this.deviceEntry = newValue; }
+
+    public UserTableEntry getUserEntry() { return this.userEntry; }
+    public void setUserEntry( UserTableEntry newValue ) { this.userEntry = newValue; }
+    
+    public List<Tag> getTags()
+    {
+        removeExpiredTags();
+        return new LinkedList<Tag>(this.tags.values());
+    }
+
+    public String getTagsString()
+    {
+        return Tag.tagsToString( getTags() );
+    }
+
+    public void addTag( Tag tag )
+    {
+        if ( tag == null || tag.getName() == null )
+            return;
+        this.tags.put( tag.getName(), tag );
+    }
+
+    public void addTags( Collection<Tag> tags )
+    {
+        if ( tags == null )
+            return;
+        for ( Tag tag : tags ) {
+            addTag( tag );
+        }
+    }
+
+    public boolean hasTag( String name )
+    {
+        Tag t = this.tags.get( name );
+        if ( t == null )
+            return false;
+        if ( t.isExpired() ) {
+            this.tags.remove( t.getName() );
+            return false;
+        }
+        return true;
+    }
+
+    public void removeExpiredTags()
+    {
+        for ( Iterator<Tag> i = this.tags.values().iterator() ; i.hasNext() ; ) {
+            Tag t = i.next();
+            if ( t.isExpired() )
+                i.remove();
+        }
+    }
     
     public NetcapSession netcapSession()
     {

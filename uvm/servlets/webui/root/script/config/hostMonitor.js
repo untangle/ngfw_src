@@ -190,6 +190,10 @@ Ext.define('Webui.config.hostMonitor', {
                 type: 'boolean',
                 convert: Ung.Util.preventEmptyValueConverter
             },{
+                name: "tagsString",
+                type: 'string',
+                convert: Ung.Util.preventEmptyValueConverter
+            },{
                 name: "username",
                 type: 'string',
                 convert: Ung.Util.preventEmptyValueConverter
@@ -280,6 +284,13 @@ Ext.define('Webui.config.hostMonitor', {
                 width: 100,
                 filter: {
                     type: 'number'
+                }
+            },{
+                header: i18n._("Tags"),
+                dataIndex: "tagsString",
+                width: 100,
+                filter: {
+                    type: 'string'
                 }
             }, {
                 hidden: true,

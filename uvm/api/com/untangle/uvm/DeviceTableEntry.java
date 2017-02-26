@@ -6,6 +6,10 @@ package com.untangle.uvm;
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.Objects;
+import java.util.List;
+import java.util.LinkedList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
@@ -35,6 +39,8 @@ public class DeviceTableEntry implements Serializable, JSONString
     private long        lastSeenTime = 0;
     private int         lastSeenInterfaceId = 0;
 
+    private HashMap<String,Tag> tags = new HashMap<String,Tag>();
+    
     private static final String IPV4_PATTERN = "^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])$";
     private static Pattern ipv4Pattern = Pattern.compile( IPV4_PATTERN );
 
@@ -122,6 +128,68 @@ public class DeviceTableEntry implements Serializable, JSONString
             return;
         updateEvent( "httpUserAgent", String.valueOf(this.httpUserAgent), String.valueOf(newValue) );
         this.httpUserAgent = newValue;
+    }
+
+    public List<Tag> getTags()
+    {
+        removeExpiredTags();
+        return new LinkedList<Tag>(this.tags.values());
+    }
+
+    public void setTags( List<Tag> newValue )
+    {
+        HashMap<String,Tag> newSet = new HashMap<String,Tag>();
+        if ( newValue != null ) {
+            for ( Tag t : newValue ) {
+                if ( t == null || t.getName() == null )
+                    continue;
+                newSet.put(t.getName(),t);
+            }
+        }
+        updateEvent( "tags", Tag.tagsToString(this.tags.values()), Tag.tagsToString(newSet.values()) );
+        this.tags = newSet;
+    }
+
+    public String getTagsString()
+    {
+        return Tag.tagsToString( getTags() );
+    }
+
+    public void addTag( Tag tag )
+    {
+        if ( tag == null || tag.getName() == null )
+            return;
+        this.tags.put( tag.getName(), tag );
+    }
+
+    public void addTags( List<Tag> tags )
+    {
+        if ( tags == null )
+            return;
+        for ( Tag tag : tags ) {
+            addTag( tag );
+        }
+    }
+
+    public boolean hasTag( String name )
+    {
+        Tag t = this.tags.get( name );
+        if ( t == null )
+            return false;
+        if ( t.isExpired() ) {
+            this.tags.remove( t.getName() );
+            return false;
+        }
+        return true;
+    }
+
+    public void removeExpiredTags()
+    {
+        for ( Iterator<Tag> i = this.tags.values().iterator() ; i.hasNext() ; ) {
+            Tag t = i.next();
+            if ( t.isExpired() )
+                i.remove();
+        }
     }
     
     public String getDeviceUsername()
