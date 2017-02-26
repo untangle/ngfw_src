@@ -426,7 +426,7 @@ Ext.define('Webui.untangle-node-bandwidth-control.settings', {
                     }
                     switch(value.actionType) {
                         case 'SET_PRIORITY': return i18n._("Set Priority") + " [" + this.priorityRenderer(value.priority) + "]";
-                        case 'PENALTY_BOX_CLIENT_HOST': return i18n._("Send Client to Penalty Box");
+                        case 'TAG_HOST': return i18n._("Tag Host");
                         case 'APPLY_PENALTY_PRIORITY': return i18n._("Apply Penalty Priority"); // DEPRECATED
                         case 'GIVE_CLIENT_HOST_QUOTA': return i18n._("Give Client a Quota");
                         case 'GIVE_HOST_QUOTA': return i18n._("Give Host a Quota");

@@ -55,14 +55,15 @@ def createBandwidthSingleConditionRule( conditionType, value, actionType="SET_PR
         }
     }
 
-def createBandwidthPenaltyRule( conditionType, value, actionType="PENALTY_BOX_CLIENT_HOST", penaltyValue=1000 ):
+def createBandwidthPenaltyRule( conditionType, value, actionType="PENALTY_BOX_CLIENT_HOST", tagName="", tagTime=1000 ):
     conditionTypeStr = str(conditionType)
     valueStr = str(value)
     return {
         "action": {
             "actionType": actionType,
             "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleAction",
-            "penaltyTime": penaltyValue
+            "tagName" : tagName,
+            "tagTime": tagTime
         },
         "description": "penalty",
         "ruleId": 1,
@@ -673,33 +674,42 @@ class BandwidthControlTests(unittest2.TestCase):
     def test_070_penaltyRule(self):
         global node
         nukeRules()
-        penalty_time = 2000000
-        penalty_time_margin_error = penalty_time * 1.05  # we seem to add a few milliseconds in the code
+        tag_time = 2000000
 
-        # Create penalty rule
-        appendRule(createBandwidthPenaltyRule("SRC_ADDR",remote_control.clientIP,"PENALTY_BOX_CLIENT_HOST",penalty_time))
+        # remove tags
+        entry = uvmContext.hostTable().getHostTableEntry(remote_control.clientIP)
+        entry['tags']['list'] = []
+        entry = uvmContext.hostTable().setHostTableEntry(remote_control.clientIP, entry)
         
-        #  in case the client is already in the penalty box
-        uvmContext.hostTable().releaseHostFromPenaltyBox(remote_control.clientIP)
-
+        # Create penalty rule
+        appendRule(createBandwidthPenaltyRule("SRC_ADDR",remote_control.clientIP,"TAG_HOST","penalty-box",tag_time))
+        
         # go to test.untangle.com 
         result = remote_control.isOnline()
 
-        status_of_host = uvmContext.hostTable().getHostTableEntry(remote_control.clientIP)
-        # remove from penalty box before testing status
-        uvmContext.hostTable().releaseHostFromPenaltyBox(remote_control.clientIP)
-        # print "status_of_host : %s" % str(status_of_host)
-        penalty_assigned_time = (status_of_host['penaltyBoxExitTime'] - status_of_host['penaltyBoxEntryTime']) / 1000
-        # print " : %s" % exit_time_string
-        # print "penalty_assigned_time : %s" % penalty_assigned_time
-        assert(status_of_host['penaltyBoxed'])       
-        assert(penalty_assigned_time < penalty_time_margin_error)
+        # Look for tag
+        entry = uvmContext.hostTable().getHostTableEntry(remote_control.clientIP)
+        print entry['tags']['list']
+        found = False
+        for tag in entry['tags']['list']:
+            if tag['name'] == 'penalty-box':
+                found = True
+
+        assert(found)
+                
+        # remove tags
+        entry['tags']['list'] = []
+        entry = uvmContext.hostTable().setHostTableEntry(remote_control.clientIP, entry)
         
         # check penalty box
-        events = global_functions.get_events('Hosts','Penalty Box Events',None,5)
+        events = global_functions.get_events('Hosts','Hosts Events', None, 50)
         assert(events != None)
-        found = global_functions.check_events( events.get('list'), 5, "address", remote_control.clientIP)
-        assert(found)
+        event = global_functions.find_event( events.get('list'), 50,
+                                             "address", remote_control.clientIP,
+                                             "key", "tags" )
+        print(event) 
+        
+        assert((event != None))
 
     @staticmethod
     def finalTearDown(self):

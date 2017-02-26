@@ -146,7 +146,7 @@
                 "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleAction",
                 "quotaTime":null,
                 "actionType":"SET_PRIORITY",
-                "penaltyTime":null
+                "tagTime":null
             },
             "enabled":true
         }, {
@@ -266,26 +266,7 @@
         }, {
             "set" : "business,school,metered",
             "ruleId":12345,
-            "description":"Penalty Box Bittorrent users for 30 minutes (requires Application Control Lite)",
-            "conditions":{
-                "javaClass":"java.util.LinkedList",
-                "list":[{
-                    "value":"Bittorrent",
-                    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
-                    "conditionType":"PROTOCOL_CONTROL_SIGNATURE"
-                }]
-            },
-            "action":{
-                "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleAction",
-                "actionType":"PENALTY_BOX_CLIENT_HOST",
-                "penaltyTime":1800
-            },
-            "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRule",
-            "enabled":true
-        }, {
-            "set" : "business,school,metered",
-            "ruleId":12345,
-            "description":"Penalty Box Bittorrent users for 30 minutes (requires Application Control)",
+            "description":"Tag Bittorrent users for 30 minutes (requires Application Control)",
             "conditions":{
                 "javaClass":"java.util.LinkedList",
                 "list":[{
@@ -296,8 +277,9 @@
             },
             "action":{
                 "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRuleAction",
-                "actionType":"PENALTY_BOX_CLIENT_HOST",
-                "penaltyTime":1800
+                "actionType":"TAG_HOST",
+                "tagName":"penalty-box",
+                "tagTime":1800
             },
             "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlRule",
             "enabled":true

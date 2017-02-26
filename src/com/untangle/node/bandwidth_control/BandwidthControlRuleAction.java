@@ -15,9 +15,11 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.HostTable;
 import com.untangle.uvm.HostTableEntry;
+import com.untangle.uvm.HookManager;
+import com.untangle.uvm.Tag;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.vnet.NodeSession;
-import com.untangle.uvm.vnet.NodeSession;
+
 
 @SuppressWarnings("serial")
 public class BandwidthControlRuleAction implements JSONString, Serializable
@@ -30,20 +32,22 @@ public class BandwidthControlRuleAction implements JSONString, Serializable
 
     public enum ActionType {
         SET_PRIORITY, /* priority 1-7 */
-        PENALTY_BOX_CLIENT_HOST, /* priority 1-7, time_sec */
+        TAG_HOST, /* tagName tagTimeSec */
         GIVE_HOST_QUOTA, /* bytes #, time_sec */
         GIVE_USER_QUOTA, /* bytes #, time_sec */
 
         APPLY_PENALTY_PRIORITY, /* DEPRECATED */
         GIVE_CLIENT_HOST_QUOTA, /* DEPRECATED - 13.0 */
+        PENALTY_BOX_CLIENT_HOST, /* DEPRECATED - 13.0 priority 1-7, time_sec */
     }
 
     private ActionType action = null;
     private Integer priority = null;
-    private Integer penaltyTimeSec = null;
     private Integer quotaTimeSec = null;
     private Long quotaBytes = null;
-
+    private String tagName = null;
+    private Integer tagTimeSec = null;
+        
     private BandwidthControlRule rule = null; /* the rule that owns this action */
     
     /**
@@ -91,7 +95,13 @@ public class BandwidthControlRuleAction implements JSONString, Serializable
     {
         // change deprecated values
         switch (action) {
-        case GIVE_CLIENT_HOST_QUOTA: action = ActionType.GIVE_HOST_QUOTA; break;
+        case GIVE_CLIENT_HOST_QUOTA:
+            action = ActionType.GIVE_HOST_QUOTA;
+            break;
+        case PENALTY_BOX_CLIENT_HOST:
+            action = ActionType.TAG_HOST;
+            setTagName("penalty-box");
+            break;
         default: break;
         }
         this.action = action;
@@ -117,23 +127,49 @@ public class BandwidthControlRuleAction implements JSONString, Serializable
     }
 
     /**
-     * Get the penalty box time for this action
-     * This only applies for the PENALTY_BOX_USER action
+     * Get the tag time for this action
+     * This only applies for the TAG_HOST action
      */
-    public Integer getPenaltyTime()
+    public Integer getTagTime()
     {
-        return this.penaltyTimeSec;
+        return this.tagTimeSec;
     }
 
     /**
-     * Set the penalty box time for this action
-     * This only applies for the PENALTY_BOX_USER action
+     * Set the tag time for this action
+     * This only applies for the TAG_HOST action
+     */
+    public void setTagTime(Integer seconds)
+    {
+        this.tagTimeSec = seconds;
+    }
+
+    /**
+     * Keep the old deprecated name so JSON serialization works
      */
     public void setPenaltyTime(Integer seconds)
     {
-        this.penaltyTimeSec = seconds;
+        this.tagTimeSec = seconds;
+    }
+    
+    /**
+     * Get the tag name for this action
+     * This only applies for the TAG_HOST action
+     */
+    public String getTagName()
+    {
+        return this.tagName;
     }
 
+    /**
+     * Set the tag name for this action
+     * This only applies for the TAG_HOST action
+     */
+    public void setTagName(String newValue)
+    {
+        this.tagName = newValue;
+    }
+    
     /**
      * Get the quota time for this action
      * This only applies for the GIVE_HOST_QUOTA, GIVE_USER_QUOTA action
@@ -207,6 +243,7 @@ public class BandwidthControlRuleAction implements JSONString, Serializable
         int pri;
         String reason;
         long expireTime;
+        InetAddress address;
         
         switch (this.action) {
 
@@ -229,15 +266,28 @@ public class BandwidthControlRuleAction implements JSONString, Serializable
             
             break;
 
-        case PENALTY_BOX_CLIENT_HOST:
-
+        case TAG_HOST:
+            address = sess.sessionEvent().getLocalAddr();
             reason = "Bandwidth Control" + " ( " + I18nUtil.marktr("policy") + ": " + this.node.getNodeSettings().getPolicyId() + " " + I18nUtil.marktr("rule") + ": " + this.rule.getRuleId() + ")";
-            logger.debug( "Applying Action    : " + "Adding " + sess.getClientAddr() + " to Penalty box for " + this.penaltyTimeSec + " seconds");
-            UvmContextFactory.context().hostTable().addHostToPenaltyBox( sess.getClientAddr(), this.penaltyTimeSec, reason );
-            this.node.incrementCount( BandwidthControlApp.STAT_PENALTY_BOXED, 1 );
+            logger.debug( "Applying Action    : " + "Tagging " + address + " with " + this.tagName + " for " + this.tagTimeSec + " seconds");
+            HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry( address, true );
+
+            if ( entry == null ) {
+                logger.warn( "No HostTableEntry. Failed to tag host: " + address.getHostAddress());
+            } else {
+                boolean wasAlreadyTagged = entry.hasTag( this.tagName );
+                entry.addTag(new Tag(this.tagName,this.tagTimeSec*1000L));
+
+                this.node.incrementCount( BandwidthControlApp.STAT_TAGGED, 1 );
+                if (!wasAlreadyTagged)
+                    UvmContextFactory.context().hookManager().callCallbacks( HookManager.HOST_TABLE_TAGGED, address );
+            }
 
             break;
 
+        case PENALTY_BOX_CLIENT_HOST:
+            logger.warn("PENALTY_BOX_CLIENT_HOST used but is now DEPRECATED");
+            break;
         case APPLY_PENALTY_PRIORITY: 
             logger.warn("APPLY_PENALTY_PRIORITY used but is now DEPRECATED");
             break;
@@ -248,7 +298,7 @@ public class BandwidthControlRuleAction implements JSONString, Serializable
                 logger.warn("Missing session info: " + sess);
                 break;
             }
-            InetAddress address = sess.sessionEvent().getLocalAddr();
+            address = sess.sessionEvent().getLocalAddr();
             if ( address == null ) {
                 logger.warn("Unknown local address for session: " + sess);
                 break;
