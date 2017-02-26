@@ -107,6 +107,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private Reporting reportsNode = null;
     private HostTableImpl hostTableImpl = null;
     private DeviceTableImpl deviceTableImpl = null;
+    private UserTableImpl userTableImpl = null;
     private NetFilterLogger netFilterLogger = null;
     private InheritableThreadLocal<HttpServletRequest> threadRequest;
     private long lastLoggedWarningTime = System.currentTimeMillis();
@@ -299,6 +300,11 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return this.deviceTableImpl;
     }
 
+    public UserTable userTable()
+    {
+        return this.userTableImpl;
+    }
+    
     public LicenseManager licenseManager()
     {
         NodeManager nodeManager = this.nodeManager();
@@ -687,6 +693,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             json.put("dashboardManager", this.dashboardManager());
             json.put("hostTable", this.hostTable());
             json.put("deviceTable", this.deviceTable());
+            json.put("userTable", this.userTable());
             json.put("sessionMonitor", this.sessionMonitor());
             json.put("networkManager", this.networkManager());
             json.put("metricManager", this.metricManager());
@@ -834,6 +841,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         this.deviceTableImpl = new DeviceTableImpl();
 
         this.hostTableImpl = new HostTableImpl();
+
+        this.userTableImpl = new UserTableImpl();
         
         this.cloudManager = CloudManagerImpl.getInstance();
 

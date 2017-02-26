@@ -20,7 +20,12 @@ public interface HookManager
     public static String HOST_TABLE_QUOTA_GIVEN = "host-table-quota-given";
     public static String HOST_TABLE_QUOTA_EXCEEDED = "host-table-quota-exceeded";
     public static String HOST_TABLE_QUOTA_REMOVED = "host-table-quota-removed";
-
+    public static String USER_TABLE_REMOVE = "user-table-remove";
+    public static String USER_TABLE_ADD = "user-table-add";
+    public static String USER_TABLE_QUOTA_GIVEN = "user-table-quota-given";
+    public static String USER_TABLE_QUOTA_EXCEEDED = "user-table-quota-exceeded";
+    public static String USER_TABLE_QUOTA_REMOVED = "user-table-quota-removed";
+    
     public boolean isRegistered( String hookName, HookCallback callback );
 
     public boolean registerCallback( String groupName, HookCallback callback );
