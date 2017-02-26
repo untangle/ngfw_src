@@ -41,12 +41,9 @@ public class HostTableImpl implements HostTable
 {
     private static final int HIGH_WATER_SIZE = 12000; /* absolute max */
     private static final int LOW_WATER_SIZE = 10000; /* max size to reduce to when pruning map */
-
     private static final int CLEANER_SLEEP_TIME_MILLI = 60 * 1000; /* 60 seconds */
     private static final int CLEANER_LAST_ACCESS_MAX_TIME = 60 * 60 * 1000; /* 60 minutes */
-    
     private static final String HOSTS_SAVE_FILENAME = System.getProperty("uvm.settings.dir") + "/untangle-vm/hosts.js";
-
     private static final int PERIODIC_SAVE_DELAY = 1000 * 60 * 60 * 6; /* 6 hours */
 
     private final Logger logger = Logger.getLogger(getClass());
@@ -262,7 +259,7 @@ public class HostTableImpl implements HostTable
         /* Call hook listeners */
         UvmContextFactory.context().hookManager().callCallbacks( HookManager.HOST_TABLE_QUOTA_GIVEN, address );
 
-        UvmContextFactory.context().logEvent( new QuotaEvent( QuotaEvent.ACTION_GIVEN, address, reason, quotaBytes ) );
+        UvmContextFactory.context().logEvent( new QuotaEvent( QuotaEvent.ACTION_GIVEN, address.getHostAddress(), reason, quotaBytes ) );
         
         return;
     }
@@ -387,7 +384,7 @@ public class HostTableImpl implements HostTable
             /* Call hook listeners */
             UvmContextFactory.context().hookManager().callCallbacks( HookManager.HOST_TABLE_QUOTA_EXCEEDED, address );
 
-            UvmContextFactory.context().logEvent( new QuotaEvent( QuotaEvent.ACTION_EXCEEDED, address, null, entry.getQuotaSize()) );
+            UvmContextFactory.context().logEvent( new QuotaEvent( QuotaEvent.ACTION_EXCEEDED, address.getHostAddress(), null, entry.getQuotaSize()) );
             return true;
         }
 
@@ -478,7 +475,7 @@ public class HostTableImpl implements HostTable
         return this.maxActiveSize;
     }
 
-    public void clearTable()
+    public void clear()
     {
         this.hostTable.clear();
     }

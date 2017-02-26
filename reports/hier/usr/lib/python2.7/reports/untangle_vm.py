@@ -9,6 +9,7 @@ def generate_tables():
     __create_quotas_table()
     __create_host_table_updates_table()
     __create_device_table_updates_table()
+    __create_user_table_updates_table()
     __create_alerts_events_table()
     __create_settings_changes_table()
 
@@ -21,6 +22,7 @@ def cleanup_tables(cutoff):
     sql_helper.clean_table("quotas", cutoff)
     sql_helper.clean_table("host_table_updates", cutoff)
     sql_helper.clean_table("device_table_updates", cutoff)
+    sql_helper.clean_table("user_table_updates", cutoff)
     sql_helper.clean_table("alerts", cutoff)
 
 @sql_helper.print_timing
@@ -224,11 +226,12 @@ def __create_quotas_table(  ):
     sql_helper.create_table("""
 CREATE TABLE reports.quotas (
         time_stamp timestamp,
-        address inet,
+        entity text,
         action integer,
         size bigint,
         reason text)""", [], ["time_stamp"])
-    sql_helper.drop_column("quotas","event_id") #11.2 conversion
+    sql_helper.drop_column("quotas","address") #13.0 conversion
+    sql_helper.add_column("quotas","entity","text") #13.0 conversion
 
 @sql_helper.print_timing
 def __create_host_table_updates_table(  ):
@@ -248,3 +251,11 @@ CREATE TABLE reports.device_table_updates (
         value text,
         time_stamp timestamp)""",[],["time_stamp"])
         
+@sql_helper.print_timing
+def __create_user_table_updates_table(  ):
+    sql_helper.create_table("""
+CREATE TABLE reports.user_table_updates (
+        username text,
+        key text,
+        value text,
+        time_stamp timestamp)""",[],["time_stamp"])

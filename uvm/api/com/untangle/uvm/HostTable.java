@@ -4,15 +4,14 @@
 package com.untangle.uvm;
 
 import java.util.LinkedList;
-import java.util.Hashtable;
 import java.net.InetAddress;
 
 /**
  * The Host Table is responsible for storing known information about hosts.
  * Many different components use the host table to share known information about a given host (for example, its hostname).
- * Each host has a table of information known about it and these "attachments" can be read/written using keys
  *
  * The host table also contains penalty box methods which maintain all the host table attachments related to penalty box logic
+ * and other utility methods
  */
 public interface HostTable
 {
@@ -21,13 +20,13 @@ public interface HostTable
      * Gets the HostTableEtry for the specified host
      * Returns null if no entry for the provided address is found.
      */
-    HostTableEntry getHostTableEntry( InetAddress addr );
+    HostTableEntry getHostTableEntry( InetAddress address );
 
     /**
      * Gets the HostTableEtry for the specified host
      * If create is true a new entry will be created if no entry exists
      */
-    HostTableEntry getHostTableEntry( InetAddress addr, boolean create );
+    HostTableEntry getHostTableEntry( InetAddress address, boolean create );
 
     /**
      * Search for a HostTableEntry with specified MAC address 
@@ -45,10 +44,10 @@ public interface HostTable
     int getMaxActiveSize();
     
     /**
-     * Save the specified entry for the specified addr
+     * Save the specified entry for the specified address
      * Will overwrite existing value
      */
-    void setHostTableEntry( InetAddress addr, HostTableEntry entry );
+    void setHostTableEntry( InetAddress address, HostTableEntry entry );
 
     /**
      * Returns a duplicated list of all current hosts
@@ -101,7 +100,7 @@ public interface HostTable
      * Decrement the available quota by the provided amount
      * Utility function to set the appropriate attachment values
      */
-    boolean decrementQuota(InetAddress addr, long bytes);
+    boolean decrementQuota(InetAddress address, long bytes);
     
     /**
      * Check if the provided address has a quota that is exceeded
@@ -122,7 +121,7 @@ public interface HostTable
     /**
      * Clear the entire table (used by tests)
      */
-    void clearTable();
+    void clear();
 
     /**
      * Get the current size of the table
@@ -143,5 +142,5 @@ public interface HostTable
      * Remove a host table entry
      * returns the entry removed (or null if not found)
      */
-    HostTableEntry removeHostTableEntry( InetAddress addr );
+    HostTableEntry removeHostTableEntry( InetAddress address );
 }

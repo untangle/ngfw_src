@@ -73,10 +73,12 @@ public class GeographyManagerImpl implements GeographyManager
         if (!initFlag) return (null);
 
         CityResponse response = getCityObject(netAddress);
-        if (response == null) return (null);
+        if (response == null) return "XU";
         Country country = response.getCountry();
-        if (country == null) return (null);
-        return (country.getIsoCode());
+        if (country == null) return "XU";
+        String isoCode = country.getIsoCode();
+        if (isoCode == null) return "XU";
+        return isoCode;
     }
 
     public String getSubdivisionName(String netAddress)
