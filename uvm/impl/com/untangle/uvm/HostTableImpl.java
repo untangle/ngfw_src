@@ -25,7 +25,6 @@ import com.untangle.uvm.HostTableEntry;
 import com.untangle.uvm.util.Pulse;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.node.Node;
-import com.untangle.uvm.node.PenaltyBoxEvent;
 import com.untangle.uvm.node.QuotaEvent;
 import com.untangle.uvm.node.HostnameLookup;
 
@@ -150,101 +149,6 @@ public class HostTableImpl implements HostTable
         return new LinkedList<HostTableEntry>(hostTable.values());
     }
     
-    public synchronized void addHostToPenaltyBox( InetAddress address, int time_sec, String reason )
-    {
-        HostTableEntry entry = getHostTableEntry( address, true );
-        long entryTime = System.currentTimeMillis();
-        long exitTime  = entryTime + (((long)time_sec) * 1000L);
-
-        logger.info("Adding " + address.getHostAddress() + " to Penalty box for " + time_sec + " seconds");
-
-        /**
-         * Set Penalty Boxed flag
-         */
-        boolean currentFlag = entry.getPenaltyBoxed();
-        entry.setPenaltyBoxed(true);
-
-        /**
-         * If the entry time is null, set it.
-         * If it is not null, the host was probably already in the penalty box so don't update it
-         */
-        long currentEntryTime = entry.getPenaltyBoxEntryTime();
-        if (currentEntryTime == 0)
-            entry.setPenaltyBoxEntryTime( entryTime );
-        currentEntryTime = entryTime;
-
-        /**
-         * Update the exit time, if the proposed value is after the current value
-         */
-        long currentExitTime = entry.getPenaltyBoxExitTime();
-        if (currentExitTime == 0 || exitTime > currentExitTime)
-            entry.setPenaltyBoxExitTime( exitTime );
-        currentExitTime = exitTime;
-            
-        int action;
-        if ( currentFlag ) {
-            action = PenaltyBoxEvent.ACTION_REENTER; /* was already there */
-        } else {
-            action = PenaltyBoxEvent.ACTION_ENTER; /* new entry */
-        }
-
-        PenaltyBoxEvent evt = new PenaltyBoxEvent( action, address, new Date(currentEntryTime), new Date(currentExitTime), reason ) ;
-        UvmContextFactory.context().logEvent(evt);
-
-        /* Call hook listeners */
-        UvmContextFactory.context().hookManager().callCallbacks( HookManager.HOST_TABLE_PENALTY_BOX_ENTER, address );
-        
-        return;
-    }
-
-    public synchronized void releaseHostFromPenaltyBox( InetAddress address )
-    {
-        HostTableEntry entry = getHostTableEntry( address );
-        if (entry == null) /* host not in penalty box */
-            return;
-        
-        long now = System.currentTimeMillis();
-
-        /**
-         * Save previous values and remove from penalty box
-         */
-        boolean currentFlag = entry.getPenaltyBoxed();
-        long currentEntryTime = entry.getPenaltyBoxEntryTime();
-        long currentExitTime  = entry.getPenaltyBoxExitTime();
-        entry.setPenaltyBoxed( false );
-        entry.setPenaltyBoxEntryTime( 0 );
-        entry.setPenaltyBoxExitTime( 0 );
-        
-        if ( !currentFlag ) {
-            return;
-        }
-        if ( currentEntryTime == 0 ) {
-            logger.warn("Entry time not set for penalty boxed host");
-            return;
-        }
-        if ( currentExitTime == 0 ) {
-            logger.warn("Exit time not set for penalty boxed host");
-            return;
-        }
-        
-        /**
-         * If current date is before planned exit time, use it instead, otherwise just log the exit time
-         */
-        if ( now > currentExitTime ) {
-            logger.info("Removing " + address.getHostAddress() + " from Penalty box. (expired)");
-        } else {
-            logger.info("Removing " + address.getHostAddress() + " from Penalty box. (admin requested)");
-            currentExitTime = now; /* set exitTime to now, because the host was release prematurely */
-        }
-            
-        UvmContextFactory.context().logEvent( new PenaltyBoxEvent( PenaltyBoxEvent.ACTION_EXIT, address, new Date(currentEntryTime), new Date(currentExitTime), null ) );
-
-        /* Call hook listeners */
-        UvmContextFactory.context().hookManager().callCallbacks( HookManager.HOST_TABLE_PENALTY_BOX_EXIT, address );
-        
-        return;
-    }
-
     public synchronized void giveHostQuota( InetAddress address, long quotaBytes, int time_sec, String reason )
     {
         if (address == null) {
@@ -395,45 +299,6 @@ public class HostTableImpl implements HostTable
         return false;
     }
     
-    public boolean hostInPenaltyBox( InetAddress address )
-    {
-        if (address == null) {
-            logger.warn("Invalid argument: address is null");
-            return false;
-        }
-        HostTableEntry entry = getHostTableEntry( address );
-        if ( entry == null )
-            return false;
-        if ( !entry.getPenaltyBoxed() )
-            return false;
-
-        /**
-         * If the exit time has already passed the host is no longer penalty boxed
-         * As such, release the host from the penalty box immediately and return false
-         */
-        long exitTime = entry.getPenaltyBoxExitTime();
-        long now = System.currentTimeMillis();
-        if ( exitTime != 0 && now > exitTime ) {
-            releaseHostFromPenaltyBox( address );
-            return false;
-        }
-                
-        return true;
-    }
-
-    public LinkedList<HostTableEntry> getPenaltyBoxedHosts()
-    {
-        LinkedList<HostTableEntry> list = new LinkedList<HostTableEntry>(UvmContextFactory.context().hostTable().getHosts());
-
-        for (Iterator<HostTableEntry> i = list.iterator(); i.hasNext(); ) {
-            HostTableEntry entry = i.next();
-            if (! hostInPenaltyBox( entry.getAddress() ) )
-                i.remove();
-        }
-
-        return list;
-    }
-
     public LinkedList<HostTableEntry> getQuotaHosts()
     {
         LinkedList<HostTableEntry> list = new LinkedList<HostTableEntry>(UvmContextFactory.context().hostTable().getHosts());
@@ -492,7 +357,7 @@ public class HostTableImpl implements HostTable
         }
         logger.info("Removing host table entry: " + address.getHostAddress());
 
-        HostTableEvent event = new HostTableEvent( address, "remove", null );
+        HostTableEvent event = new HostTableEvent( address, "remove", null, null );
         UvmContextFactory.context().logEvent(event);
 
         HostTableEntry removed =  hostTable.remove( address );
@@ -504,7 +369,7 @@ public class HostTableImpl implements HostTable
     {
         HostTableEntry entry = new HostTableEntry();
 
-        HostTableEvent event = new HostTableEvent( address, "add", null );
+        HostTableEvent event = new HostTableEvent( address, "add", null, null );
         UvmContextFactory.context().logEvent(event);
         
         entry.setAddress( address );
@@ -719,17 +584,6 @@ public class HostTableImpl implements HostTable
                         updateHostnameReports( entry );
                         
                         /**
-                         * Check penalty box expiration
-                         * Remove from penalty box if expired
-                         */
-                        if ( entry.getPenaltyBoxed() ) {
-                            long exitTime = entry.getPenaltyBoxExitTime();
-                            if (now > exitTime) {
-                                releaseHostFromPenaltyBox( address );
-                            }
-                        }
-
-                        /**
                          * Check quota expiration
                          * Remove from quota if expired
                          */
@@ -749,7 +603,7 @@ public class HostTableImpl implements HostTable
                              * If this host table entry is storing vital information, don't delete it
                              */
                             if ( entry.getQuotaSize() > 0 ||
-                                 entry.getPenaltyBoxed() ||
+                                 entry.getTags().size() > 0 ||
                                  entry.getCaptivePortalAuthenticated() /* check authenticated flag instead of username because anonymous logins don't set username */
                                  ) {
                                 continue;

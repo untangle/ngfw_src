@@ -615,10 +615,12 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         rules.add( alertRule );
         
         matchers = new LinkedList<AlertRuleCondition>();
-        matcher1 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "class", "=", "*PenaltyBoxEvent*" ) );
+        matcher1 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "class", "=", "*HostTableEvent*" ) );
         matchers.add( matcher1 );
-        matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "action", "=", "1" ) );
+        matcher2 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "value", "=", "*penalty-box*" ) );
         matchers.add( matcher2 );
+        matcher3 = new AlertRuleCondition( AlertRuleCondition.ConditionType.FIELD_CONDITION, new AlertRuleConditionField( "key", "=", "tags" ) );
+        matchers.add( matcher3 );
         alertRule = new AlertRule( false, matchers, true, true, "Host put in penalty box", false, 0 );
         rules.add( alertRule );
 

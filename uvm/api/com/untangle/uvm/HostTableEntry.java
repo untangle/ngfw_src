@@ -50,10 +50,6 @@ public class HostTableEntry implements Serializable, JSONString
     private String usernameDirectoryConnector = null;
     private String usernameDevice = null;
     
-    private boolean penaltyBoxed = false;
-    private long    penaltyBoxExitTime = 0;
-    private long    penaltyBoxEntryTime = 0;
-
     private long quotaSize = 0; /* the quota size - 0 means no quota assigned */
     private long quotaRemaining = 0; /* the quota remaining */
     private long quotaIssueTime = 0; /* the issue time on the quota */
@@ -90,9 +86,6 @@ public class HostTableEntry implements Serializable, JSONString
         this.setCaptivePortalAuthenticated( other.getCaptivePortalAuthenticated() );
         this.setUsernameTunnel( other.getUsernameTunnel() );
         this.setUsernameOpenvpn( other.getUsernameOpenvpn() );
-        this.setPenaltyBoxed( other.getPenaltyBoxed() );
-        this.setPenaltyBoxExitTime( other.getPenaltyBoxExitTime() );
-        this.setPenaltyBoxEntryTime( other.getPenaltyBoxEntryTime() );
         this.setQuotaSize( other.getQuotaSize() );
         this.setQuotaRemaining( other.getQuotaRemaining() );
         this.setQuotaIssueTime( other.getQuotaIssueTime() );
@@ -320,36 +313,6 @@ public class HostTableEntry implements Serializable, JSONString
         updateAccessTime();
     }
 
-    public boolean getPenaltyBoxed() { return this.penaltyBoxed; }
-    public void setPenaltyBoxed( boolean newValue )
-    {
-        if ( newValue == this.penaltyBoxed )
-            return;
-        updateEvent( "penaltyBoxed", String.valueOf(this.penaltyBoxed), String.valueOf(newValue) );
-        this.penaltyBoxed = newValue;
-        updateAccessTime();
-    }
-
-    public long getPenaltyBoxExitTime() { return this.penaltyBoxExitTime; }
-    public void setPenaltyBoxExitTime( long newValue )
-    {
-        if ( newValue == this.penaltyBoxExitTime )
-            return;
-        updateEvent( "penaltyBoxExitTime", String.valueOf(this.penaltyBoxExitTime), String.valueOf(newValue) );
-        this.penaltyBoxExitTime = newValue;
-        updateAccessTime();
-    }
-
-    public long getPenaltyBoxEntryTime() { return this.penaltyBoxEntryTime; }
-    public void setPenaltyBoxEntryTime( long newValue )
-    {
-        if ( newValue == this.penaltyBoxEntryTime )
-            return;
-        updateEvent( "penaltyBoxEntryTime", String.valueOf(this.penaltyBoxEntryTime), String.valueOf(newValue) );
-        this.penaltyBoxEntryTime = newValue;
-        updateAccessTime();
-    }
-
     public long getQuotaSize() { return this.quotaSize; }
     public void setQuotaSize( long newValue )
     {
@@ -400,13 +363,13 @@ public class HostTableEntry implements Serializable, JSONString
         updateAccessTime();
     }
 
-    public List<Tag> getTags()
+    public synchronized List<Tag> getTags()
     {
         removeExpiredTags();
         return new LinkedList<Tag>(this.tags.values());
     }
     
-    public void setTags( List<Tag> newValue )
+    public synchronized void setTags( List<Tag> newValue )
     {
         HashMap<String,Tag> newSet = new HashMap<String,Tag>();
         if ( newValue != null ) {
@@ -421,19 +384,25 @@ public class HostTableEntry implements Serializable, JSONString
         updateAccessTime();
     }
 
-    public String getTagsString()
+    public synchronized String getTagsString()
     {
         return Tag.tagsToString( getTags() );
     }
 
-    public void addTag( Tag tag )
+    public synchronized void addTag( Tag tag )
     {
-        if ( tag == null || tag.getName() == null )
+        if ( tag == null || tag.getName() == null ) {
+            logger.warn("Invalid tag:" + tag);
             return;
+        }
+        if ( tag.isExpired() ) {
+            logger.info("Ignoring adding expired tag:" + tag);
+            return;
+        }
         this.tags.put( tag.getName(), tag );
     }
 
-    public void addTags( List<Tag> tags )
+    public synchronized void addTags( List<Tag> tags )
     {
         if ( tags == null )
             return;
@@ -442,7 +411,7 @@ public class HostTableEntry implements Serializable, JSONString
         }
     }
 
-    public boolean hasTag( String name )
+    public synchronized boolean hasTag( String name )
     {
         Tag t = this.tags.get( name );
         if ( t == null )
@@ -454,8 +423,9 @@ public class HostTableEntry implements Serializable, JSONString
         return true;
     }
 
-    public void removeExpiredTags()
+    public synchronized void removeExpiredTags()
     {
+        
         for ( Iterator<Tag> i = this.tags.values().iterator() ; i.hasNext() ; ) {
             Tag t = i.next();
             if ( t.isExpired() )
@@ -594,7 +564,7 @@ public class HostTableEntry implements Serializable, JSONString
         if ( newValue == null ) 
             newValue = "null";
 
-        HostTableEvent event = new HostTableEvent( this.address, key, newValue );
+        HostTableEvent event = new HostTableEvent( this.address, key, newValue, oldValue );
         UvmContextFactory.context().logEvent(event);
     }
     

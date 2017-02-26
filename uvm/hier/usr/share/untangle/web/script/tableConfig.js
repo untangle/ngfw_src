@@ -3468,59 +3468,6 @@ Ext.define('Ung.TableConfig', {
                     dataIndex: 'c_server_addr'
                 }]
             },
-            penaltybox: {
-                fields: [{
-                    name: 'time_stamp',
-                    sortType: 'asTimestamp'
-                }, {
-                    name: 'address',
-                    sortType: 'asIp'
-                }, {
-                    name: 'reason'
-                }, {
-                    name: 'start_time',
-                    sortType: 'asTimestamp'
-                }, {
-                    name: 'end_time',
-                    sortType: 'asTimestamp'
-                }],
-                columns: [{
-                    header: i18n._("Timestamp"),
-                    width: Ung.TableConfig.timestampFieldWidth,
-                    sortable: true,
-                    dataIndex: 'time_stamp',
-                    renderer: function(value) {
-                        return i18n.timestampFormat(value);
-                    }
-                }, {
-                    header: i18n._("Address"),
-                    width: Ung.TableConfig.ipFieldWidth,
-                    sortable: true,
-                    dataIndex: 'address'
-                }, {
-                    header: i18n._("Reason"),
-                    width: 120,
-                    sortable: true,
-                    flex: 1,
-                    dataIndex: 'reason'
-                }, {
-                    header: i18n._("Start Time"),
-                    width: Ung.TableConfig.timestampFieldWidth,
-                    sortable: true,
-                    dataIndex: 'start_time',
-                    renderer: function(value) {
-                        return i18n.timestampFormat(value);
-                    }
-                }, {
-                    header: i18n._("End Time"),
-                    width: Ung.TableConfig.timestampFieldWidth,
-                    sortable: true,
-                    dataIndex: 'end_time',
-                    renderer: function(value) {
-                        return i18n.timestampFormat(value);
-                    }
-                }]
-            },
             quotas: {
                 fields: [{
                     name: 'time_stamp',
