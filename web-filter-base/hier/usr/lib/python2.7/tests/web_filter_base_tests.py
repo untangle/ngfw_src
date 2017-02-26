@@ -111,11 +111,11 @@ class WebFilterBaseTests(unittest2.TestCase):
 
     @staticmethod
     def eventNodeName():
-        return "web_filter_lite"
+        return "web_filter"
 
     @staticmethod
     def displayName():
-        return "Web Filter Lite"
+        return "Web Filter"
 
     @staticmethod
     def initialSetUp(self):

@@ -17,5 +17,6 @@
     "timeStyle": "LINE",
     "title": "Interface Usage",
     "type": "TIME_GRAPH_DYNAMIC",
-    "seriesRenderer": "interface"
+    "seriesRenderer": "interface",
+    "approximation": "high"
 }

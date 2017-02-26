@@ -56,7 +56,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private static final String TIMESYNC_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-force-time-sync";
     
     private static final String PROPERTY_STORE_URL = "uvm.store.url";
-    private static final String DEFAULT_STORE_URL = "https://storeapi.untangle.com/api/v1";
+    private static final String DEFAULT_STORE_URL = "https://www.untangle.com/api/v1";
     private static final String PROPERTY_HELP_URL = "uvm.help.url";
     private static final String DEFAULT_HELP_URL = "http://wiki.untangle.com/get.php";
     private static final String PROPERTY_LEGAL_URL = "uvm.legal.url";
@@ -1008,19 +1008,9 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         logger.info("UvmContext destroyed");
     }
 
-    protected boolean refreshLibs()
-    {
-        return main.refreshLibs();
-    }
-
     protected void fatalError(String throwingLocation, Throwable x)
     {
         main.fatalError(throwingLocation, x);
-    }
-
-    protected boolean loadUvmResource(String name)
-    {
-        return main.loadUvmResource(name);
     }
 
     @SuppressWarnings({"rawtypes","unchecked"})

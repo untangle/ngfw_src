@@ -16,7 +16,7 @@
             "value": "Q"
         }
     ],
-    "defaultColumns": ["time_stamp","hostname","s_server_addr","addr","sender","subject","phish_blocker_is_spam","phish_blocker_action","phish_blocker_score"],
+    "defaultColumns": ["time_stamp","hostname","c_client_addr","s_server_addr","addr","sender","subject","phish_blocker_is_spam","phish_blocker_action","phish_blocker_score"],
     "description": "All email sessions detected as phishing attempts and quarantined.",
     "displayOrder": 1030,
     "javaClass": "com.untangle.node.reports.ReportEntry",

@@ -10,8 +10,8 @@
     "readOnly": true,
     "table": "http_events",
     "timeDataColumns": [
-        "sum(case when virus_blocker_lite_clean is not null then 1 else null end::int) as scanned",
-        "sum(case when virus_blocker_lite_clean is false then 1 else null end::int) as blocked"
+        "sum(case when virus_blocker_lite_clean is not null then 1 else 0 end) as scanned",
+        "sum(case when virus_blocker_lite_clean is false then 1 else 0 end) as blocked"
     ],
     "colors": [
         "#396c2b",

@@ -36,15 +36,6 @@ Depends: untangle-vm
 Description: Shield
  The Shield application.
 
-Package: untangle-node-web-filter-lite
-Architecture: all
-Conflicts: untangle-node-webfilter
-Replaces: untangle-node-webfilter
-Provides: untangle-node-webfilter
-Depends: untangle-vm, untangle-casing-http, untangle-base-web-filter, untangle-webfilter-init
-Description: Web Filter Lite
- The Web Filter Lite application.
-
 Package: untangle-node-web-monitor
 Architecture: all
 Depends: untangle-vm, untangle-casing-http, untangle-base-web-filter
@@ -119,7 +110,7 @@ Architecture: all
 Conflicts: untangle-node-reporting
 Replaces: untangle-node-reporting
 Provides: untangle-node-reporting
-Depends: untangle-vm, untangle-postgresql-config, sqlite3, python-sqlite
+Depends: untangle-vm, untangle-database-config
 Description: Reports
  The Reports application.
 

@@ -15,6 +15,11 @@ DAEMON_NAME="ut-pyconnector"
 BIN_NAME="/usr/share/untangle/bin/ut-pyconnector"
 PID_FILE="/var/run/ut-pyconnector.pid"
 LOG_FILE="/var/log/uvm/pyconnector.log"
+OPTIONS="-l ${LOG_FILE}"
+
+if [ -f /etc/default/pyconnector ] ; then
+    . /etc/default/pyconnector
+fi
 
 start()
 {
@@ -32,7 +37,7 @@ start()
     fi
 
     log_progress_msg "untangle-pyconnector"    
-    start-stop-daemon -m --pidfile ${PID_FILE} --name ${DAEMON_NAME} --background --start --startas ${BIN_NAME} -- -l ${LOG_FILE}
+    start-stop-daemon -m --pidfile ${PID_FILE} --name ${DAEMON_NAME} --background --start --startas ${BIN_NAME} -- ${OPTIONS}
 
     log_end_msg 0	
 }

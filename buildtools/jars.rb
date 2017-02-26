@@ -8,9 +8,7 @@ class Jars
       ThirdpartyJar.get(p)
     else
       b = File.basename(path)
-      paths = [ "/usr/share/java/uvm/#{b}",
-                "/usr/share/java/reports/#{b}",
-                "/usr/share/untangle/web/webstart/#{b}" ]
+      paths = [ "/usr/share/java/uvm/#{b}" ]
       p = paths.find do |f|
         File.exist?(f)
       end

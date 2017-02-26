@@ -94,7 +94,6 @@
     <script type="text/javascript" src="script/untangle-node-application-control-lite/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-reports/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-node-spam-blocker-lite/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-web-filter-lite/settings.js?s=${buildStamp}"></script>
 </c:if>
 
 <%--

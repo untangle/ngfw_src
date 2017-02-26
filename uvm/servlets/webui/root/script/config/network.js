@@ -5112,6 +5112,17 @@ Ext.define('Webui.config.network', {
                     if (Ext.isEmpty(value)) {
                         return i18n._("Not set");
                     } else {
+                        var v = value;
+                        switch(value[value.length-1]){
+                            case 'K':
+                                v = parseInt(value.substr(0,value.length - 1), 10);
+                                value = v * 1024;
+                                break;
+                            case 'M':
+                                v = parseInt(value.substr(0,value.length - 1), 10);
+                                value = v * 1024 * 1024;
+                                break;
+                        }
                         value = value / 1000;
                         var mbit_value = value/1000;
                         return Number(value).toFixed(2) + " kbps" + " (" + Number(mbit_value).toFixed(2) + " Mbit" + ")";
