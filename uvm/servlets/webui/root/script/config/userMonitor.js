@@ -1,7 +1,7 @@
 Ext.define('Webui.config.userMonitor', {
     extend: 'Ung.StatusWin',
     name: 'users',
-    helpSource: 'hosts',
+    helpSource: 'users',
     sortField:'bypassed',
     sortOrder: 'ASC',
     displayName: 'Users',
