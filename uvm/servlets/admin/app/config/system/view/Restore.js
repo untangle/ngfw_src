@@ -40,6 +40,7 @@ Ext.define('Ung.config.system.view.Restore', {
                 editable: false
             }, {
                 xtype: 'filefield',
+                itemId: 'restoreFile',
                 margin: '10 0 0 0',
                 fieldLabel: 'File'.t(),
                 name: 'file',
@@ -50,7 +51,7 @@ Ext.define('Ung.config.system.view.Restore', {
                 xtype: 'button',
                 margin: '10 0 0 155',
                 text: 'Restore from File'.t(),
-                handler: 'restoreFromFile'
+                handler: 'restoreFromFile',
             }, {
                 xtype: 'hidden',
                 name: 'type',

@@ -12,6 +12,7 @@ Ext.define('Ung.config.administration.view.Certificates', {
     items: [{
         title: 'Certificate Authority'.t(),
         region: 'center',
+        itemId: 'rootCertificateView',
         bodyPadding: 10,
         defaults: {
             labelWidth: 150,
@@ -45,9 +46,8 @@ Ext.define('Ung.config.administration.view.Certificates', {
             items: [{
                 xtype: 'button',
                 iconCls: 'fa fa-certificate',
-                text: 'Generate Certificate Authority',
+                text: 'Generate Certificate Authority'.t(),
                 certMode: 'ROOT',
-                hostName: null,
                 handler: 'generateCertificate'
             }, {
                 xtype: 'component',
@@ -57,7 +57,8 @@ Ext.define('Ung.config.administration.view.Certificates', {
             }, {
                 xtype: 'button',
                 iconCls: 'fa fa-download',
-                text: 'Download Root Certificate'
+                text: 'Download Root Certificate'.t(),
+                handler: 'downloadRootCertificate'
             }, {
                 xtype: 'component',
                 style: { fontSize: '11px', color: '#999' },
@@ -66,7 +67,8 @@ Ext.define('Ung.config.administration.view.Certificates', {
             }, {
                 xtype: 'button',
                 iconCls: 'fa fa-download',
-                text: 'Download Root Certificate Installer'
+                text: 'Download Root Certificate Installer'.t(),
+                handler: 'downloadRootCertificateInstaller'
             }, {
                 xtype: 'component',
                 style: { fontSize: '11px', color: '#999' },
@@ -91,26 +93,13 @@ Ext.define('Ung.config.administration.view.Certificates', {
             html: 'The Server Certificates list is used to select the SSL certificate to be used for each service provided by this server.  The <B>HTTPS</B> column selects the certificate used by the internal web server.  The <B>SMTPS</B> column selects the certificate to use for SMTP+STARTTLS when using SSL Inspector to scan inbound email.  The <B>IPSEC</B> column selects the certificate to use for the IPsec IKEv2 VPN server.'.t()
         }, {
             xtype: 'ungrid',
+            itemId: 'serverCertificateView',
             flex: 1,
             bind: '{certificates}',
 
             listProperty: 'serverCertificates.list',
 
             recordActions: ['@delete'],
-
-            bbar: [{
-                text: 'Generate Server Certificate'.t(),
-                handler: 'generateServerCert',
-                iconCls: 'fa fa-certificate'
-            }, {
-                text: 'Upload Server Certificate'.t(),
-                handler: 'generateServerCert',
-                iconCls: 'fa fa-upload'
-            }, {
-                text: 'Create Certificate Signing Request'.t(),
-                handler: 'generateServerCert',
-                iconCls: 'fa fa-certificate'
-            }],
 
             columns: [{
                 header: 'Subject'.t(),
@@ -144,6 +133,21 @@ Ext.define('Ung.config.administration.view.Certificates', {
                 width: 80,
                 dataIndex: 'ipsecServer'
             }]
+        }],
+        bbar: [{
+            text: 'Generate Server Certificate'.t(),
+            certMode: 'SERVER',
+            iconCls: 'fa fa-certificate',
+            handler: 'generateCertificate'
+        }, {
+            text: 'Upload Server Certificate'.t(),
+            // handler: 'generateServerCert',
+            iconCls: 'fa fa-upload'
+        }, {
+            text: 'Create Certificate Signing Request'.t(),
+            certMode: 'CSR',
+            iconCls: 'fa fa-certificate',
+            handler: 'generateCertificate'
         }]
     }, {
         region: 'east',

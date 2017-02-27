@@ -26,7 +26,7 @@ Ext.define('Ung.util.Rpc', {
                 Util.exceptionToast(ex);
                 dfrd.reject(ex);
             }
-            console.info(expression + ' (async data) ... OK');
+            // console.info(expression + ' (async data) ... OK');
             dfrd.resolve(result);
         });
 
@@ -72,7 +72,7 @@ Ext.define('Ung.util.Rpc', {
             var dfrd = new Ext.Deferred();
             args.unshift(function (result, ex) {
                 if (ex) { dfrd.reject(ex); }
-                console.info(expression + ' (async promise) ... OK');
+                // console.info(expression + ' (async promise) ... OK');
                 dfrd.resolve(result);
             });
             context[method].apply(null, args);
@@ -96,7 +96,7 @@ Ext.define('Ung.util.Rpc', {
         return function() {
             var dfrd = new Ext.Deferred();
             try {
-                console.info(expression + ' (direct promise) ... OK');
+                // console.info(expression + ' (direct promise) ... OK');
                 dfrd.resolve(context[method].call());
             } catch (ex) {
                 dfrd.reject(ex);
