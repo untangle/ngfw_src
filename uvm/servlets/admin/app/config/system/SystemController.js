@@ -157,7 +157,9 @@ Ext.define('Ung.config.system.SystemController', {
 
     // Support methods
     downloadSystemLogs: function () {
-        Ext.Msg.alert('Status', 'Not yet implemented!');
+        var downloadForm = document.getElementById('downloadForm');
+        downloadForm.type.value = 'SystemSupportLogs';
+        downloadForm.submit();
     },
 
     manualReboot: function () {
@@ -229,12 +231,31 @@ Ext.define('Ung.config.system.SystemController', {
 
     // Backup method(s)
     backupToFile: function () {
-        Ext.Msg.alert('Status', 'Not yet implemented!');
+        var downloadForm = document.getElementById('downloadForm');
+        downloadForm.type.value = 'backup';
+        downloadForm.submit();
     },
 
     // Restore method(s)
-    restoreFromFile: function () {
-        Ext.Msg.alert('Status', 'Not yet implemented!');
+    restoreFromFile: function (btn) {
+        var restoreFile = this.getView().down('#restoreFile').getValue();
+        if (!restoreFile || restoreFile.length === 0) {
+            Util.exceptionToast('Please select a file to upload.'.t());
+            return;
+        }
+        btn.up('form').submit({
+            waitMsg: 'Restoring from File...'.t(),
+            success: function (form, action) {
+                Ext.MessageBox.alert('Restore'.t(), action.result.msg);
+            },
+            failure: function (form, action) {
+                var errorMsg = 'The File restore procedure failed.'.t();
+                if (action.result && action.result.msg) {
+                    errorMsg = action.result.msg;
+                }
+                Ext.MessageBox.alert('Failed', errorMsg);
+            }
+        });
     },
 
     getHttpSettings: function () {

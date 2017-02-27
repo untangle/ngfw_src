@@ -105,18 +105,11 @@ Ext.define('Ung.config.system.view.Protocols', {
             allowNegative: false,
             minValue: 0,
             maxValue: 86400,
-            bind: '{smtpTimeout}'
-        }, {
-            xtype: 'radiogroup',
-            columns: 1,
-            vertical: true,
-            items: [{
-                boxLabel: 'Allow TLS encryption over SMTP.'.t(),
-                inputValue: true
-            }, {
-                boxLabel: 'Stop TLS encryption over SMTP.'.t(),
-                inputValue: false
-            }]
+            bind: {
+                value: '{smtpTimeout}',
+                hidden: '{!isExpertMode}'
+            },
+            hidden: true,
         }]
     }]
 

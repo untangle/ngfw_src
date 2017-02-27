@@ -30,8 +30,8 @@ Ext.define('Ung.config.system.view.Support', {
         items: [{
             xtype: 'button',
             text: 'Download System Logs'.t(),
-            handler: 'downloadSystemLogs',
-            iconCls: 'fa fa-download'
+            iconCls: 'fa fa-download',
+            handler: 'downloadSystemLogs'
         }]
     }, {
         title: 'Manual Reboot'.t(),

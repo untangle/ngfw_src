@@ -92,7 +92,6 @@ Ext.define('Ung.config.administration.AdministrationController', {
             Rpc.asyncPromise('rpc.skinManager.getSkinsList'),
             Rpc.asyncPromise('rpc.skinManager.getSettings')
         ], this).then(function(result) {
-            console.log(result);
             vm.set({
                 adminSettings: result[0],
                 systemSettings: result[1],
@@ -108,7 +107,8 @@ Ext.define('Ung.config.administration.AdministrationController', {
     },
 
     loadCertificates: function () {
-        var v = this.getView(),
+        var me = this,
+            v = this.getView(),
             vm = this.getViewModel();
 
         v.setLoading(true);
@@ -123,12 +123,49 @@ Ext.define('Ung.config.administration.AdministrationController', {
                 rootCertificateInformation: result[1],
                 serverCertificateVerification: result[2],
             });
+
+            try {
+                var networkSettings = rpc.networkManager.getNetworkSettings();
+                vm.set('hostName', networkSettings.hostName + (networkSettings.domainName ? '.' + networkSettings.domainName : ''));
+            } catch(ex) {
+                Util.exceptionToast(ex);
+            }
+
+            me.getHostName();
         }, function(ex) {
             console.error(ex);
             Util.exceptionToast(ex);
         }).always(function() {
             v.setLoading(false);
         });
+    },
+
+    refreshRootCertificate: function () {
+        var v = this.getView().down('#rootCertificateView'),
+            vm = this.getViewModel();
+        v.setLoading(true);
+        Rpc.asyncData('rpc.certificateManager.getRootCertificateInformation')
+            .then(function (result) {
+                vm.set('rootCertificateInformation', result);
+            }, function (ex) {
+                Util.exceptionToast(ex);
+            }).always(function () {
+                v.setLoading(false);
+            });
+    },
+
+    refreshServerCertificate: function () {
+        var v = this.getView().down('#serverCertificateView'),
+            vm = this.getViewModel();
+        v.setLoading(true);
+        Rpc.asyncData('rpc.certificateManager.getServerCertificateList')
+            .then(function (result) {
+                vm.set('serverCertificates', result);
+            }, function (ex) {
+                Util.exceptionToast(ex);
+            }).always(function () {
+                v.setLoading(false);
+            });
     },
 
     saveSettings: function () {
@@ -180,7 +217,7 @@ Ext.define('Ung.config.administration.AdministrationController', {
     generateCertificate: function (btn) {
         var me = this,
             certMode = btn.certMode,
-            hostName = btn.hostName,
+            hostName = btn.certMode === 'ROOT' ? null : this.getViewModel().get('hostName'),
             netStatus, addressList, i;
 
         try {
@@ -199,8 +236,10 @@ Ext.define('Ung.config.administration.AdministrationController', {
             addressList += netItem.v4Address;
         }
 
-        Ext.create('Ext.Window', {
+        this.certDialog = this.getView().add({
+            xtype: 'window',
             title: btn.getText(),
+            certMode: certMode,
             layout: 'fit',
             width: 600,
             autoShow: true,
@@ -215,15 +254,23 @@ Ext.define('Ung.config.administration.AdministrationController', {
                 bodyPadding: 10,
                 defaults: {
                     anchor: '100%',
-                    labelWidth: 150,
-                    labelAlign: 'right'
+                    labelWidth: 170,
+                    // labelAlign: 'right'
                     // listeners: {
                     //     render: helptipRenderer
                     // }
                 },
                 items: [{
+                    xtype: 'textfield',
+                    fieldLabel: '* ' + 'Common Name'.t() + ' (CN)',
+                    name: 'commonName',
+                    // helptip: 'The name entered in the CN (common name) field MUST be the fully-qualified domain name of the website for which you will be using the certificate (example.com). Do not include the http:// or https:// prefixes in your common name. Do NOT enter your personal name in this field."),
+                    allowBlank: false,
+                    value: hostName
+                }, {
                     xtype: 'combo',
-                    fieldLabel: 'Country'.t() + ' (C)',
+                    fieldLabel: '* ' + 'Country'.t() + ' (C)',
+                    name: 'country',
                     // helptip: 'Select the country in which your organization is legally registered."),
                     allowBlank: true,
                     store: me.countries,
@@ -231,73 +278,145 @@ Ext.define('Ung.config.administration.AdministrationController', {
                     editable: false
                 }, {
                     xtype: 'textfield',
-                    fieldLabel: 'State/Province'.t() + ' (ST)',
-                    // name: "State',
+                    fieldLabel: '* ' + 'State/Province'.t() + ' (ST)',
+                    name: 'state',
                     // helptip: i18n._('Name of state, province, region, territory where your organization is located. Please enter the full name. Do not abbreviate.'),
                     allowBlank: false
                 }, {
                     xtype: 'textfield',
-                    fieldLabel: 'City/Locality'.t() + ' (L)',
-                    // name: "Locality',
+                    fieldLabel: '* ' + 'City/Locality'.t() + ' (L)',
+                    name: 'locality',
                     // helptip: i18n._('Name of the city/locality in which your organization is registered/located. Please spell out the name of the city/locality. Do not abbreviate.'),
                     allowBlank: false
                 }, {
                     xtype: 'textfield',
-                    fieldLabel: 'Organization'.t() + ' (O)',
-                    // name: "Organization',
+                    fieldLabel: '* ' + 'Organization'.t() + ' (O)',
+                    name: 'organization',
                     // helptip: 'The name under which your business is legally registered. The listed organization must be the legal registrant of the domain name in the certificate request. If you are enrolling as a small business/sole proprietor, please enter the certificate requester's name in the Organization field, and the DBA (doing business as) name in the Organizational Unit field."),
                     allowBlank: false
                 }, {
                     xtype: 'textfield',
                     fieldLabel: 'Organizational Unit'.t() + ' (OU)',
-                    // name: "OrganizationalUnit',
+                    name: 'organizationalUnit',
                     // helptip: 'Optional. Use this field to differentiate between divisions within an organization. If applicable, you may enter the DBA (doing business as) name in this field."),
                     allowBlank: true
                 }, {
                     xtype: 'textfield',
-                    fieldLabel: 'Common Name'.t() + ' (CN)',
-                    // name: "CommonName',
-                    // helptip: 'The name entered in the CN (common name) field MUST be the fully-qualified domain name of the website for which you will be using the certificate (example.com). Do not include the http:// or https:// prefixes in your common name. Do NOT enter your personal name in this field."),
-                    allowBlank: false,
-                    // value: hostName
-                }, {
-                    xtype: 'textfield',
                     fieldLabel: 'Subject Alternative Names'.t(),
-                    // name: "AltNames',
+                    name: 'altNames',
                     // helptip: 'Optional. Use this field to enter a comma seperated list of one or more alternative host names or IP addresses that may be used to access the website for which you will be using the certificate."),
                     allowBlank: true,
-                    value: (certMode === 'ROOT' ? '' : addressList),
-                    hidden: certMode === 'ROOT'
+                    value: (certMode === 'ROOT' ? '' : addressList)
+                    // hidden: certMode === 'ROOT'
                 }],
                 buttons: [{
+                    xtype: 'button',
+                    text: 'Cancel'.t(),
+                    name: 'Cancel',
+                    width: 120,
+                    handler: 'cancelCertGenerator'
+                }, {
                     xtype: 'button',
                     text: 'Generate'.t(),
                     name: 'Accept',
                     width: 120,
                     formBind: true,
-                    handler: Ext.bind(function() {
-                        // this.certGeneratorWorker(certMode);
-                    }, this)
-                },{
-                    xtype: 'button',
-                    text: 'Cancel'.t(),
-                    name: 'Cancel',
-                    width: 120,
-                    handler: Ext.bind(function() {
-                        // this.certGeneratorWindow.close();
-                    }, this)
+                    handler: 'certGenerator'
                 }]
             }]
         });
-
+        this.certDialog.show();
     },
 
-    // generateCertificate: function () {
+    downloadRootCertificate: function () {
+        var downloadForm = document.getElementById('downloadForm');
+        downloadForm.type.value = 'root_certificate_download';
+        downloadForm.submit();
+    },
+    downloadRootCertificateInstaller: function () {
+        var downloadForm = document.getElementById('downloadForm');
+        downloadForm.type.value = 'root_certificate_installer_download';
+        downloadForm.submit();
+    },
+    certGenerator: function () {
+        var me = this,
+            form = this.certDialog.down('form'),
+            certMode = this.certDialog.certMode,
+            values = form.getValues(),
+            altNames = values.altNames;
 
-    // },
+        var certSubject = [
+            '/CN=' + values.commonName,
+            '/C='  + values.country,
+            '/ST='  + values.state,
+            '/L='  + values.locality,
+            '/O='  + values.organization,
+        ];
+        if (values.organizationalUnit,length > 0) {
+            certSubject.push('/OU=' + values.organizationalUnit);
+        }
+        certSubject = certSubject.join('');
 
+        if (altNames.length > 0) {
+            var hostnameRegex = /^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$/;
+            // Parse subject alt name list. For IP's prefix with both DNS: and IP:, for hostnames prefix with DNS:, otherwise is left unchanged
+            var altNameTokens = altNames.split(',');
+            var altNamesArray=[];
 
+            for (var i=0; i < altNameTokens.length; i++) {
+                var altName = altNameTokens[i].trim();
+                if (Ext.form.VTypes.ipAddress(altName)) {
+                    altName = 'IP:' + altName + ',DNS:' + altName;
+                } else if (hostnameRegex.test(altName)) {
+                    altName = 'DNS:' + altName;
+                }
+                altNamesArray.push(altName);
+            }
+            altNames = altNamesArray.join(',');
+        }
 
+        if (certMode === 'ROOT') {
+            me.certDialog.setLoading(true);
+            Rpc.asyncData('rpc.certificateManager.generateCertificateAuthority', certSubject, altNames)
+                .then(function (result) {
+                    Util.successToast('Certificate Authority generation successfully completed. Click OK to continue.'.t());
+                    me.certDialog.close();
+                    me.refreshRootCertificate();
+                }, function (ex) {
+                    Util.exceptionToast('Error during Certificate Authority generation.  Click OK to continue.'.t());
+                }).always(function () {
+                    me.certDialog.setLoading(false);
+                });
+        }
+
+        if (certMode === 'SERVER') {
+            me.certDialog.setLoading(true);
+            Rpc.asyncData('rpc.certificateManager.generateServerCertificate', certSubject, altNames)
+                .then(function (result) {
+                    me.certDialog.close();
+                    me.refreshServerCertificate();
+                }, function (ex) {
+                    Util.exceptionToast('Error during certificate generation.'.t());
+                }).always(function () {
+                    me.certDialog.setLoading(false);
+                });
+        }
+
+        if (certMode === 'CSR') {
+            var downloadForm = document.getElementById('downloadForm');
+            console.log(downloadForm);
+            downloadForm.type.value = 'certificate_request_download';
+            downloadForm.arg1.value = certSubject;
+            downloadForm.arg2.value = altNames;
+            downloadForm.submit();
+            this.certDialog.close();
+            return;
+        }
+
+    },
+    cancelCertGenerator: function () {
+        this.certDialog.close();
+    },
 
 
     addAccount: function () {

@@ -161,7 +161,6 @@ Ext.define('Ung.view.dashboard.DashboardController', {
             }
         }
         // dashboard.add(widgetComponents);
-        console.timeEnd('all');
         // this.populateMenus();
     },
 
