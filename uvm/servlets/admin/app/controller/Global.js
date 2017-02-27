@@ -9,6 +9,7 @@ Ext.define('Ung.controller.Global', {
         'Ung.util.Metrics',
         'Ung.view.main.Main',
         'Ung.overrides.form.field.VTypes',
+        'Ung.overrides.LoadMask',
         'Ung.view.shd.Sessions',
         'Ung.view.shd.Hosts',
         'Ung.view.shd.Devices',

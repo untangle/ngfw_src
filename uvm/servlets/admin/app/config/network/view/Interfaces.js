@@ -278,5 +278,22 @@ Ext.define('Ung.config.network.view.Interfaces', {
                 handler: 'getInterfaceArp'
             }]
         }]
-    }]
+    }
+    // {
+    //     region: 'east',
+    //     weight: 20,
+    //     bind: {
+    //         source: '{interfacesGrid.selection.data}'
+    //     },
+    //     title: 'Interface',
+    //     xtype: 'propertygrid',
+    //     split: true,
+    //     collapsible: true,
+    //     shadow: false,
+    //     animCollapse: false,
+    //     titleCollapse: true,
+    //     editable: false,
+    //     width: 400
+    // }
+    ]
 });

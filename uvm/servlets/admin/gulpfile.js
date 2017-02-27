@@ -71,7 +71,8 @@ gulp.task('build-module', function () {
         .pipe(jshint.reporter('default'))
         .pipe(jshint.reporter('fail'))
         .pipe(concat(moduleName + '.js'))
-        .pipe(removeEmptyLines({removeComments: true}))
+        .pipe(stripCode({ start_comment: 'requires-start', end_comment: 'requires-end' }))
+        // .pipe(removeEmptyLines({removeComments: true}))
         .pipe(uglify())
         .pipe(gulp.dest('../../../dist/usr/share/untangle/web/admin/script/config/'));
 });
