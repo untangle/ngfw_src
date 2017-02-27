@@ -850,3 +850,25 @@ span.fa:before {
     &-orange { color: orange; }
     &-yellow { color: yellow; }
 }
+
+
+
+.x-mask-msg {
+    border: 0;
+    background: transparent;
+}
+
+.x-mask-msg-inner {
+    text-align: center;
+    border: 0;
+    background: transparent;
+    padding: 2px;
+    i {
+        margin: 5px;
+    }
+}
+.x-mask-msg-text {
+    display: inline;
+    background: none;
+    padding: 5px;
+}

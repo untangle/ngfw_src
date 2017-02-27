@@ -55,7 +55,6 @@ Ext.define('Ung.cmp.RecordEditor', {
     // layout: 'border',
 
     modal: true,
-    constrain: true,
     // layout: {
     //     type: 'vbox',
     //     align: 'stretch'
