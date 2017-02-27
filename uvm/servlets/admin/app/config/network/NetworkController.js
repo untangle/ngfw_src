@@ -290,7 +290,7 @@ Ext.define('Ung.config.network.NetworkController', {
         Rpc.asyncData('rpc.networkManager.getUpnpManager', '--status', '')
             .then(function(result) {
                 console.log(result);
-                vm.set('upnpStatus', Ext.decode(result)['active']);
+                vm.set('upnpStatus', Ext.decode(result).active);
             }).always(function () {
                 view.setLoading(false);
             });
@@ -374,8 +374,7 @@ Ext.define('Ung.config.network.NetworkController', {
 
 
     editInterface: function (btn) {
-        var v = this.getView(),
-            vm = this.getViewModel();
+        var v = this.getView();
         // var win = Ext.create('config.interface');
         // this.editingRecord = btn.getWidgetRecord();
         this.dialog = v.add({

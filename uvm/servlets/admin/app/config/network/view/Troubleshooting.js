@@ -263,7 +263,7 @@ Ext.define('Ung.config.network.view.Troubleshooting', {
                         if (get('advanced')) {
                             // traceExpression = [this.advancedInput.getValue()];
                         } else {
-                            if (get('destination') !== null & get('destination').toLowerCase() !== 'any') {
+                            if (get('destination') !== null && get('destination').toLowerCase() !== 'any') {
                                 traceExpression.push('host ' + get('destination'));
                             }
                             if (get('port') !== null) {

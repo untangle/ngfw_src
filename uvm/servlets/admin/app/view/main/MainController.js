@@ -71,9 +71,9 @@ Ext.define('Ung.view.main.MainController', {
     onApps: function (policyId, node) {
         console.log('on apps');
         var vm = this.getViewModel();
-        var _policyId = policyId || 1,
-            _currentPolicy = vm.get('policyId'),
-            _newPolicy;
+        // var _policyId = policyId || 1,
+        //     _currentPolicy = vm.get('policyId'),
+        //     _newPolicy;
 
         //if (!_currentPolicy || _currentPolicy.get('policyId') !== policyId) {
             //_newPolicy = Ext.getStore('policies').findRecord('policyId', _policyId) || Ext.getStore('policies').findRecord('policyId', 1);

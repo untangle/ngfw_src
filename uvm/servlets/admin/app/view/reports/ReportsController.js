@@ -119,7 +119,7 @@ Ext.define('Ung.view.reports.ReportsController', {
     },
 
     getCurrentApplications: function () {
-        var app, i, vm = this.getViewModel(), me = this;
+        var app, i;
         var categories = [
             { categoryName: 'Hosts', type: 'system', url: 'hosts', displayName: 'Hosts'.t(), icon: '/skins/modern-rack/images/admin/config/icon_config_hosts.png' },
             { categoryName: 'Devices', type: 'system', url: 'devices', displayName: 'Devices'.t(), icon: '/skins/modern-rack/images/admin/config/icon_config_devices.png' },

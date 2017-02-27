@@ -111,7 +111,7 @@ Ext.define('Ung.config.system.SystemController', {
             vm.set('languageSettings.overrideTimestampFmt', '');
         }
 
-        var newDate = new Date(v.down('#regional').down('datefield').getValue()).getTime();
+        // var newDate = new Date(v.down('#regional').down('datefield').getValue()).getTime();
 
         Ext.Deferred.sequence([
             Rpc.asyncPromise('rpc.languageManager.setLanguageSettings', vm.get('languageSettings')),

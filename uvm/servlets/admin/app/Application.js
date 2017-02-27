@@ -25,11 +25,11 @@ Ext.define('Ung.Application', {
     },
 
     launch: function () {
-        var me = this;
+        // var me = this;
         // Rpc.rpc = me.rpc;
         // rpc.isExpertMode = true;
 
-        Ext.getStore('policies').loadData(me.rpc.appsViews);
+        Ext.getStore('policies').loadData(rpc.appsViews);
 
         Metrics.start();
 
