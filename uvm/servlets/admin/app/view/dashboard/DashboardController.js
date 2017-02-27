@@ -38,7 +38,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
     },
 
     init: function (view) {
-        var me = this, vm = view.getViewModel();
+        var vm = view.getViewModel();
 
         // update dashboard when Reports app is installed/removed or enabled/disabled
         // vm.bind('{reportsEnabled}', function() {
@@ -55,8 +55,8 @@ Ext.define('Ung.view.dashboard.DashboardController', {
      * before rendering the Dashboard the settings are fetched form the server
      */
     initDashboard: function () {
-        var me = this,
-            vm = me.getViewModel();
+        // var me = this,
+        //     vm = me.getViewModel();
         //me.populateMenus();
         // load the dashboard settings
 
@@ -108,7 +108,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         var vm = this.getViewModel(),
             dashboard = this.getView().lookupReference('dashboard'),
             widgets = Ext.getStore('widgets').getRange(),
-            i, widget, widgetComponents = [], entry;
+            i, widget, entry;
 
         // refresh the dashboard manager grid if the widgets were affected
         this.getView().lookupReference('dashboardNav').getView().refresh();
@@ -414,8 +414,8 @@ Ext.define('Ung.view.dashboard.DashboardController', {
     },
 
     resetDashboard: function () {
-        var me = this,
-            vm = this.getViewModel();
+        // var me = this,
+        //     vm = this.getViewModel();
         Ext.MessageBox.confirm('Warning'.t(),
             'This will overwrite the current dashboard settings with the defaults.'.t() + '<br/><br/>' +
             'Do you want to continue?'.t(),
