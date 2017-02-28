@@ -41,7 +41,7 @@ gulp.task('build-app', function () {
         .pipe(jshint.reporter('fail'))
         .pipe(concat('ung-all.js'))
         .pipe(stripCode({ start_comment: 'requires-start', end_comment: 'requires-end' }))
-        .pipe(uglify())
+        // .pipe(uglify())
         .pipe(gulp.dest('../../../dist/usr/share/untangle/web/admin/script/'));
 });
 

@@ -18,12 +18,14 @@ Ext.define('Ung.config.network.view.PortForwardRules', {
 
     items: [{
         xtype: 'ungrid',
+        name: 'Port Forward Rules',
         flex: 3,
 
-        tbar: ['@add'],
+        tbar: ['@add', '->', '@import', '@export'],
         recordActions: ['edit', 'delete', 'reorder'],
 
         listProperty: 'settings.portForwardRules.list',
+        recordJavaClass: 'com.untangle.uvm.network.PortForwardRule',
         ruleJavaClass: 'com.untangle.uvm.network.PortForwardRuleCondition',
 
         conditions: [
