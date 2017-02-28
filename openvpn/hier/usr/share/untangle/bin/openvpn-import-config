@@ -58,18 +58,6 @@ if [ $? != 0 ] ; then
     cleanup
 fi
 
-## Update the configuration file to log to a normal place
-sed -i -e "\$a log-append /var/log/openvpn.log" ${CONF_FILE}
-
-if [ $? != 0 ] ; then
-    echo "Sed failed"
-    cleanup
-fi
-
-## 9.4 zip file conversion - change 'dev tun0' to 'dev tun' so it uses first available tun device
-## This is so 9.4 zip files can be imported on 10.0
-sed -i -e "s/dev tun0/dev tun/" ${CONF_FILE}
-
 # copy keys 
 # "untangle-vpn" was the key directory name in 9.4 and prior
 # keep this to maintain backwards compatibility with 9.4 and prior

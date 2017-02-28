@@ -36,6 +36,7 @@ public class CaptivePortalSettings implements Serializable
     private boolean areConcurrentLoginsEnabled = true;
     private boolean alwaysUseSecureCapture = false;
     private boolean sessionCookiesEnabled = false;
+    private boolean useMacAddress = false;
     private int sessionCookiesTimeout = 3600 * 24;
     private PageType pageType = PageType.BASIC_MESSAGE;
     private String customFileName = "";
@@ -127,6 +128,16 @@ public class CaptivePortalSettings implements Serializable
     public void setUserTimeout(int newValue)
     {
         this.userTimeout = newValue;
+    }
+
+    public boolean getUseMacAddress()
+    {
+        return this.useMacAddress;
+    }
+
+    public void setUseMacAddress(boolean newValue)
+    {
+        this.useMacAddress = newValue;
     }
 
     public boolean getConcurrentLoginsEnabled()

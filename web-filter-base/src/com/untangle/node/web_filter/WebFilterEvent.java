@@ -4,6 +4,7 @@
 package com.untangle.node.web_filter;
 
 import com.untangle.node.http.RequestLine;
+import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.util.I18nUtil;
 
@@ -14,6 +15,7 @@ import com.untangle.uvm.util.I18nUtil;
 public class WebFilterEvent extends LogEvent
 {
     private RequestLine requestLine;
+    private SessionEvent sessionEvent;
     private Boolean blocked;
     private Boolean flagged;
     private Reason  reason;
@@ -22,9 +24,10 @@ public class WebFilterEvent extends LogEvent
     
     public WebFilterEvent() { }
 
-    public WebFilterEvent(RequestLine requestLine, Boolean blocked, Boolean flagged, Reason reason, String category, String nodeName)
+    public WebFilterEvent(RequestLine requestLine, SessionEvent sessionEvent, Boolean blocked, Boolean flagged, Reason reason, String category, String nodeName)
     {
         this.requestLine = requestLine;
+        this.sessionEvent = sessionEvent;
         this.blocked = blocked;
         this.flagged = flagged;
         this.reason = reason;
@@ -49,6 +52,9 @@ public class WebFilterEvent extends LogEvent
 
     public RequestLine getRequestLine() { return requestLine; }
     public void setRequestLine(RequestLine newValue) { this.requestLine = newValue; }
+
+    public SessionEvent getSessionEvent() { return sessionEvent; }
+    public void setSessionEvent(SessionEvent newValue) { this.sessionEvent = newValue; }
     
     @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
@@ -81,7 +87,6 @@ public class WebFilterEvent extends LogEvent
     {
         String appName;
         switch ( getNodeName().toLowerCase() ) {
-        case "web_filter_lite": appName = "Web Filter Lite"; break;
         case "web_filter": appName = "Web Filter"; break;
         case "web_monitor": appName = "Web Monitor"; break;
         default: appName = "Web Filter"; break;
@@ -103,8 +108,6 @@ public class WebFilterEvent extends LogEvent
     {
         String node = getNodeName().toLowerCase();
 
-        if ("web-filter-lite".equals(node))
-            return "web_filter_lite";
         if ("web-filter".equals(node))
             return "web_filter";
         if ("web-monitor".equals(node))

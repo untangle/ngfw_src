@@ -10,7 +10,7 @@
     "readOnly": true,
     "table": "device_table_updates",
      "timeDataColumns": [
-        "sum(CASE WHEN key='add' THEN 1 ELSE 0 END) as add"
+        "sum(CASE WHEN key='add' THEN 1 ELSE 0 END) as additions"
     ],
     "colors": [
         "#396c2b",

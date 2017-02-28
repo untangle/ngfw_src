@@ -34,7 +34,7 @@ public class CaptivePortalUserCookieTable
 
     public CaptivePortalUserEntry insertInactiveUser( CaptivePortalUserEntry local )
     {
-        userTable.put(local.getUserAddress(), local);
+        userTable.put(local.getUserNetAddress(), local);
 
         return (local);
     }

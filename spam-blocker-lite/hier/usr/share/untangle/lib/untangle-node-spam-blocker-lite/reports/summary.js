@@ -6,8 +6,8 @@
     "enabled": true,
     "javaClass": "com.untangle.node.reports.ReportEntry",
     "textColumns": [
-        "sum(case when spam_blocker_lite_is_spam is not null then 1 else null end::int) as scanned",
-        "sum(case when spam_blocker_lite_is_spam is true then 1 else null end::int) as blocked"
+        "sum(case when spam_blocker_lite_is_spam is not null then 1 else 0 end) as scanned",
+        "sum(case when spam_blocker_lite_is_spam is true then 1 else 0 end) as blocked"
     ],
     "conditions": [
         {

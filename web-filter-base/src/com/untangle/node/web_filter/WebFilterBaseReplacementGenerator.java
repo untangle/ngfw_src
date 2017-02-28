@@ -43,6 +43,6 @@ public class WebFilterBaseReplacementGenerator extends ReplacementGenerator<WebF
     @Override
     protected String getRedirectUrl(String nonce, String host, NodeSettings nodeSettings)
     {
-        return "http://" + host + "/web-filter-lite/blockpage?nonce=" + nonce + "&appid=" + nodeSettings.getId();
+        return "http://" + host + "/web-filter/blockpage?nonce=" + nonce + "&appid=" + nodeSettings.getId();
     }
 }

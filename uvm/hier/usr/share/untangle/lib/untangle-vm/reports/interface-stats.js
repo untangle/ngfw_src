@@ -18,5 +18,5 @@
     "title": "Interface Usage",
     "type": "TIME_GRAPH_DYNAMIC",
     "seriesRenderer": "interface",
-    "approximation": "max"
+    "approximation": "high"
 }

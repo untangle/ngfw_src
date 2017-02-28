@@ -303,10 +303,6 @@ public class FixedReports
         ReservedReports.add("web-filter-h0jelsttGp");
         // Top Domains Usage
         ReservedReports.add("web-filter-2nx8FA4VCB");
-        // Web Filter Lite Summary
-        ReservedReports.add("web-filter-lite-q97vptQHbv");
-        // Web Usage
-        ReservedReports.add("web-filter-lite-9dIdqhMNva");
         // Web Monitor Summary
         ReservedReports.add("web-monitor-q97vptQHbv");
         // Web Usage

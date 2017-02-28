@@ -1,7 +1,7 @@
 {
     "uniqueId": "intrusion-prevention-lyLTZYOp",
     "category": "Intrusion Prevention",
-    "description": "The amount of detected pintrusions over time.",
+    "description": "The amount of detected intrusions over time.",
     "displayOrder": 101,
     "enabled": true,
     "javaClass": "com.untangle.node.reports.ReportEntry",
