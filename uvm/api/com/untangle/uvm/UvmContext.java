@@ -169,11 +169,11 @@ public interface UvmContext
     OemManager oemManager();
 
     /**
-     * Get the <code>AlertManager</code> singleton.
+     * Get the <code>NotificationManager</code> singleton.
      *
-     * @return the AlertManager.
+     * @return the NotificationManager.
      */
-    AlertManager alertManager();
+    NotificationManager notificationManager();
 
     /**
      * Get the <code>BackupManager</code> singleton.
@@ -209,6 +209,13 @@ public interface UvmContext
      * @return the NetcapManager
      */
     NetcapManager netcapManager();
+
+    /**
+     * Get the EventManager
+     *
+     * @return the EventManager
+     */
+    EventManager eventManager();
 
     /**
      * Get the UploadManager

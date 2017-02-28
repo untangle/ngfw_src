@@ -1,7 +1,7 @@
 /**
- * $Id: AlertRuleConditionField.java 37267 2014-02-26 23:42:19Z dmorris $
+ * $Id: EventRuleConditionField.java 37267 2014-02-26 23:42:19Z dmorris $
  */
-package com.untangle.node.reports;
+package com.untangle.uvm.event;
 
 import java.util.Iterator;
 
@@ -13,14 +13,14 @@ import com.untangle.uvm.node.RuleCondition;
 import com.untangle.uvm.node.GlobMatcher;
 
 /**
- * This is a matching criteria for a Alert Control Rule
+ * This is a matching criteria for a Event Control Rule
  *
- * A AlertRule has a set of these to determine what traffic to match
+ * A EventRule has a set of these to determine what traffic to match
  */
 @SuppressWarnings("serial")
-public class AlertRuleConditionField
+public class EventRuleConditionField
 {
-    private static final Logger logger = Logger.getLogger( AlertRuleConditionField.class );
+    private static final Logger logger = Logger.getLogger( EventRuleConditionField.class );
 
     private String field;
     private String comparator;
@@ -28,9 +28,9 @@ public class AlertRuleConditionField
 
     private GlobMatcher stringGlobMatcher = null;
     
-    public AlertRuleConditionField() { }
+    public EventRuleConditionField() { }
 
-    public AlertRuleConditionField( String field, String comparator, String value )
+    public EventRuleConditionField( String field, String comparator, String value )
     {
         this.field = field;
         this.comparator = comparator;

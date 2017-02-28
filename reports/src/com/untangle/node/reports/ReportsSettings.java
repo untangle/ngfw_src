@@ -12,6 +12,7 @@ import org.json.JSONString;
 
 import com.untangle.uvm.node.IPMaskedAddress;
 import com.untangle.uvm.node.DayOfWeekMatcher;
+import com.untangle.uvm.event.AlertRule;
 
 /**
  * Settings for the Reports Node.

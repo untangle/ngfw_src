@@ -1,14 +1,14 @@
 {
-    "uniqueId": "reporting-498VRSufOw",
+    "uniqueId": "syslog-498VRSufOw",
     "category": "Events",
-    "description": "Alerts over time.",
+    "description": "Syslog events over time.",
     "displayOrder": 100,
     "enabled": true,
     "javaClass": "com.untangle.node.reports.ReportEntry",
     "orderDesc": false,
     "units": "alerts",
     "readOnly": true,
-    "table": "alerts",
+    "table": "syslog",
     "timeDataColumns": [
         "count(*) as alerts"
     ],
@@ -17,6 +17,6 @@
     ],
     "timeDataInterval": "AUTO",
     "timeStyle": "BAR_3D_OVERLAPPED",
-    "title": "Alerts",
+    "title": "Syslog",
     "type": "TIME_GRAPH"
 }
