@@ -32,11 +32,13 @@ ipsecHost = "10.111.56.96"
 ipsecHostLANIP = "192.168.235.96"
 ipsecPcLANIP = "192.168.235.83"
 ipsecHostLAN = "192.168.235.0/24"
+ipsecHostname = "ipsecsite.untangle.int"
 configuredHostIPs = [('10.112.11.55','192.168.2.1','192.168.2.0/24'), # ATS
                      ('10.111.56.49','192.168.10.49','192.168.10.0/24'), # QA 1
                      ('10.111.56.61','192.168.10.61','192.168.10.0/24'), # QA 2
                      ('10.111.56.56','10.111.56.56','10.111.56.15/32'), # QA 3 Bridged
-                     ('10.111.56.94','192.168.10.94','192.168.10.0/24')] # QA 4 Dual WAN
+                     ('10.111.56.94','192.168.10.94','192.168.10.0/24'), # QA 4 Dual WAN
+                     ('10.111.56.93','192.168.234.93','192.168.234.0/24')] # QA box .93
 
 # pdb.set_trace()
 
@@ -123,6 +125,18 @@ def createRadiusSettings():
         },
         "version": 1
     }
+    
+def createDNSRule( networkAddr, name):
+    return   {
+        "address": networkAddr,
+        "javaClass": "com.untangle.uvm.network.DnsStaticEntry",
+        "name": name
+             }
+               
+def addDNSRule(newRule):
+    netsettings = uvmContext.networkManager().getNetworkSettings()
+    netsettings['dnsSettings']['staticEntries']['list'].insert(0,newRule)
+    uvmContext.networkManager().setNetworkSettings(netsettings)  
     
 class IPsecTests(unittest2.TestCase):
 
@@ -255,6 +269,40 @@ class IPsecTests(unittest2.TestCase):
         # Send command for Windows VPN disconnect.
         vpnServerResult = remote_control.runCommand("rasdial.exe %s /d" % (wan_IP), host=l2tpClientHost)
         assert(found)
+
+    def test_060_createIpsecTunnelHostname(self):
+        originalSettings = uvmContext.networkManager().getNetworkSettings()
+        addDNSRule(createDNSRule("10.111.56.96","ipsecsite.untangle.int"))
+        global tunnelUp
+        if (ipsecHostResult != 0):
+            raise unittest2.SkipTest("No paried IPSec server available")
+        pre_events_enabled = global_functions.getStatusValue(node,"enabled")
+
+        wan_IP = uvmContext.networkManager().getFirstWanAddress()
+        pairMatchNotFound = True
+        listOfPairs = ""
+        for hostConfig in configuredHostIPs:
+            print hostConfig[0]
+            listOfPairs += str(hostConfig[0]) + ", "
+            if (wan_IP in hostConfig[0]):
+                appendTunnel(addIPSecTunnel(ipsecHostname,ipsecHostLAN,hostConfig[0],hostConfig[1],hostConfig[2]))
+                pairMatchNotFound = False
+        if (pairMatchNotFound):
+            raise unittest2.SkipTest("IPsec test only configed for IPs %s" % (listOfPairs))
+        timeout = 10
+        ipsecHostLANResult = 1
+        while (ipsecHostLANResult != 0 and timeout > 0):
+            timeout -= 1
+            time.sleep(1)
+            # ping the remote LAN to see if the IPsec tunnel is connected.
+            ipsecHostLANResult = remote_control.runCommand(("curl -s -4 --insecure -o /dev/null 'https://%s/'" % ipsecHostLANIP))
+        assert (ipsecHostLANResult == 0)
+        tunnelUp = True
+        uvmContext.networkManager().setNetworkSettings( originalSettings )
+        
+        # Check to see if the faceplate counters have incremented. 
+        post_events_enabled = global_functions.getStatusValue(node,"enabled")
+        assert(pre_events_enabled < post_events_enabled)
 
     @staticmethod
     def finalTearDown(self):
