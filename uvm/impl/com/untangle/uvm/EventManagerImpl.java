@@ -38,7 +38,7 @@ public class EventManagerImpl implements EventManager
 
     private static EventManagerImpl instance = null;
 
-    private final String settingsFilename = System.getProperty("uvm.settings.dir") + "/untangle-vm/" + "event.js";
+    private final String settingsFilename = System.getProperty("uvm.settings.dir") + "/untangle-vm/" + "events.js";
 
     private EventWriter eventWriter = new EventWriter();
 
