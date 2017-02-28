@@ -33,7 +33,7 @@ Ext.define('Ung.config.email.view.SafeList', {
         bind: '{globalSL}',
 
         tbar: ['@addInline'],
-        recordActions: ['@delete'],
+        recordActions: ['delete'],
         // listProperty: '',
         emptyRow: {
             emailAddress: 'email@' + rpc.hostname + '.com'

@@ -20,7 +20,7 @@ Ext.define('Ung.config.network.view.BypassRules', {
         xtype: 'ungrid',
 
         tbar: ['@add'],
-        recordActions: ['@edit', '@delete', '@reorder'],
+        recordActions: ['edit', 'delete', 'reorder'],
         listProperty: 'settings.bypassRules.list',
         ruleJavaClass: 'com.untangle.uvm.network.BypassRuleCondition',
         conditions: [

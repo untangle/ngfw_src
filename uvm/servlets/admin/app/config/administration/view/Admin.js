@@ -18,7 +18,7 @@ Ext.define('Ung.config.administration.view.Admin', {
 
         listProperty: 'adminSettings.users.list',
         tbar: ['@add'],
-        recordActions: ['@delete'],
+        recordActions: ['changePassword', 'delete'],
 
         emptyRow: {
             javaClass: 'com.untangle.uvm.AdminUserSettings',
@@ -35,36 +35,30 @@ Ext.define('Ung.config.administration.view.Admin', {
         columns: [{
             header: 'Username'.t(),
             width: 150,
-            dataIndex: 'username'
+            dataIndex: 'username',
+            editor: {
+                allowBlank: false,
+                emptyText: '[enter username]'.t(),
+                blankText: 'The username cannot be blank.'.t()
+            }
         }, {
             header: 'Description'.t(),
             flex: 1,
-            dataIndex: 'description'
+            dataIndex: 'description',
+            editor:{
+                emptyText: '[no description]'.t()
+            }
         }, {
             header: 'Email Address'.t(),
-            width: 150,
-            dataIndex: 'emailAddress'
-        }, {
-            header: 'Email Alerts'.t(),
-            dataIndex: 'emailAlerts',
-            align: 'center',
-            renderer: function (value) {
-                return value ? '<i class="fa fa-check"></i>' : '<i class="fa fa-minus"></i>';
+            width: 200,
+            dataIndex: 'emailAddress',
+            editor: {
+                emptyText: '[no email]'.t(),
+                vtype: 'email'
             }
         }, {
-            header: 'Email Summaries'.t(),
-            dataIndex: 'emailSummaries',
-            align: 'center',
-            renderer: function (value) {
-                return value ? '<i class="fa fa-check"></i>' : '<i class="fa fa-minus"></i>';
-            }
-        }, {
-            xtype: 'actioncolumn',
-            header: 'Change Password'.t(),
-            align: 'center',
-            width: 130,
-            iconCls: 'fa fa-lock',
-            handler: 'changePassword'
+            dataIndex: 'passwordHashBase64',
+            width: 250
         }],
         editorFields: [{
             xtype: 'textfield',

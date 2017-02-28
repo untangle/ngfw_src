@@ -73,7 +73,7 @@ gulp.task('build-module', function () {
         .pipe(concat(moduleName + '.js'))
         .pipe(stripCode({ start_comment: 'requires-start', end_comment: 'requires-end' }))
         // .pipe(removeEmptyLines({removeComments: true}))
-        .pipe(uglify())
+        // .pipe(uglify())
         .pipe(gulp.dest('../../../dist/usr/share/untangle/web/admin/script/config/'));
 });
 

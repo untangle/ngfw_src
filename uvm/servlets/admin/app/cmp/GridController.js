@@ -136,6 +136,70 @@ Ext.define('Ung.cmp.GridController', {
         //         console.log('fail');
         //     }
         // });
+    },
+
+    changePassword: function (view, rowIndex, colIndex, item, e, record) {
+        var me = this;
+        this.pswdDialog = this.getView().add({
+            xtype: 'window',
+            title: 'Change Password'.t() + ' for ' + record.get('username'),
+            modal: true,
+            resizable: false,
+            layout: 'fit',
+            width: 350,
+            items: [{
+                xtype: 'form',
+                layout: 'anchor',
+                border: false,
+                bodyPadding: 10,
+                defaults: {
+                    xtype: 'textfield',
+                    labelWidth: 120,
+                    labelAlign: 'right',
+                    anchor: '100%',
+                    inputType: 'password',
+                    allowBlank: false,
+                    listeners: {
+                        keyup: function (el) {
+                            var form = el.up('form'),
+                                vals = form.getForm().getValues();
+                            if (vals.pass1.length < 3 || vals.pass2.length < 3 || vals.pass1 !== vals.pass2) {
+                                form.down('#done').setDisabled(true);
+                            } else {
+                                form.down('#done').setDisabled(false);
+                            }
+                        }
+                    }
+                },
+                items: [{
+                    fieldLabel: 'Password'.t(),
+                    name: 'pass1',
+                    enableKeyEvents: true,
+                    // minLength: 3,
+                    // minLengthText: Ext.String.format('The password is shorter than the minimum {0} characters.'.t(), 3),
+                }, {
+                    fieldLabel: 'Confirm Password'.t(),
+                    name: 'pass2',
+                    enableKeyEvents: true
+                }],
+                buttons: [{
+                    text: 'Cancel'.t(),
+                    handler: function () {
+                        me.pswdDialog.close();
+                    }
+                }, {
+                    text: 'Done'.t(),
+                    itemId: 'done',
+                    disabled: true,
+                    // formBind: true
+                    handler: function (btn)  {
+                        record.set('password', btn.up('form').getForm().getValues().pass1);
+                        me.pswdDialog.close();
+                    }
+                }]
+            }]
+        });
+        this.pswdDialog.show();
     }
 
 });

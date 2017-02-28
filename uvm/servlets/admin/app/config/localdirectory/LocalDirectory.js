@@ -47,7 +47,7 @@ Ext.define('Ung.config.localdirectory.LocalDirectory', {
         title: 'Local Users'.t(),
 
         tbar: ['@add'],
-        recordActions: ['@edit', '@delete'],
+        recordActions: ['edit', 'delete'],
 
         listProperty: 'usersData.list',
 

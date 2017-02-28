@@ -107,8 +107,7 @@ Ext.define('Ung.config.administration.AdministrationController', {
     },
 
     loadCertificates: function () {
-        var me = this,
-            v = this.getView(),
+        var v = this.getView(),
             vm = this.getViewModel();
 
         v.setLoading(true);
@@ -130,8 +129,6 @@ Ext.define('Ung.config.administration.AdministrationController', {
             } catch(ex) {
                 Util.exceptionToast(ex);
             }
-
-            me.getHostName();
         }, function(ex) {
             console.error(ex);
             Util.exceptionToast(ex);
@@ -168,6 +165,16 @@ Ext.define('Ung.config.administration.AdministrationController', {
             });
     },
 
+    // validateCertificates: function () {
+    //     var vm = this.getViewModel();
+    //     Rpc.asyncData('rpc.certificateManager.validateActiveInspectorCertificates')
+    //         .then(function (result) {
+    //             vm.set('serverCertificateVerification', result);
+    //         }, function (ex) {
+    //             Util.exceptionToast(ex);
+    //         });
+    // },
+
     saveSettings: function () {
         var me = this,
             view = this.getView(),
@@ -177,7 +184,7 @@ Ext.define('Ung.config.administration.AdministrationController', {
             return;
         }
 
-        view.setLoading('Saving ...');
+        view.setLoading(true);
 
         view.query('ungrid').forEach(function (grid) {
             var store = grid.getStore();
@@ -197,14 +204,21 @@ Ext.define('Ung.config.administration.AdministrationController', {
             }
         });
 
+        // set certificates
+        view.down('#serverCertificateView').getStore().each(function (cert) {
+            if (cert.get('httpsServer')) { vm.set('systemSettings.webCertificate', cert.get('fileName')); }
+            if (cert.get('smtpsServer')) { vm.set('systemSettings.mailCertificate', cert.get('fileName')); }
+            if (cert.get('ipsecServer')) { vm.set('systemSettings.ipsecCertificate', cert.get('fileName')); }
+        });
+
         Ext.Deferred.sequence([
             Rpc.asyncPromise('rpc.adminManager.setSettings', vm.get('adminSettings')),
-            Rpc.asyncPromise('rpc.systemManager.setSettings', vm.get('systemSettings')),
             Rpc.asyncPromise('rpc.skinManager.setSettings', vm.get('skinSettings')),
+            Rpc.asyncPromise('rpc.systemManager.setSettings', vm.get('systemSettings'))
         ], this).then(function() {
             me.loadAdmin();
             me.loadCertificates();
-            window.location.reload();
+            // window.location.reload();
             Util.successToast('Administration'.t() + ' settings saved!');
         }, function(ex) {
             console.error(ex);
@@ -306,15 +320,18 @@ Ext.define('Ung.config.administration.AdministrationController', {
                     name: 'altNames',
                     // helptip: 'Optional. Use this field to enter a comma seperated list of one or more alternative host names or IP addresses that may be used to access the website for which you will be using the certificate."),
                     allowBlank: true,
-                    value: (certMode === 'ROOT' ? '' : addressList)
-                    // hidden: certMode === 'ROOT'
+                    value: (certMode === 'ROOT' ? '' : addressList),
+                    hidden: certMode === 'ROOT',
+                    disabled: certMode === 'ROOT'
                 }],
                 buttons: [{
                     xtype: 'button',
                     text: 'Cancel'.t(),
                     name: 'Cancel',
                     width: 120,
-                    handler: 'cancelCertGenerator'
+                    handler: function () {
+                        me.certDialog.close();
+                    }
                 }, {
                     xtype: 'button',
                     text: 'Generate'.t(),
@@ -404,7 +421,6 @@ Ext.define('Ung.config.administration.AdministrationController', {
 
         if (certMode === 'CSR') {
             var downloadForm = document.getElementById('downloadForm');
-            console.log(downloadForm);
             downloadForm.type.value = 'certificate_request_download';
             downloadForm.arg1.value = certSubject;
             downloadForm.arg2.value = altNames;
@@ -414,10 +430,88 @@ Ext.define('Ung.config.administration.AdministrationController', {
         }
 
     },
-    cancelCertGenerator: function () {
-        this.certDialog.close();
+
+    uploadServerCertificate: function () {
+        var me = this, v = this.getView();
+        this.uploadDialog = v.add({
+            xtype: 'window',
+            modal: true,
+            title: 'Upload Server Certificate'.t(),
+            items: [{
+                xtype: 'form',
+                url: 'upload',
+                border: false,
+                width: 400,
+                layout: 'anchor',
+                items: [{
+                    xtype: 'filefield',
+                    anchor: '100%',
+                    fieldLabel: 'File'.t(),
+                    name: 'filename',
+                    margin: 10,
+                    labelWidth: 50,
+                    allowBlank: false,
+                    validateOnBlur: false
+                }, {
+                    xtype: 'hidden',
+                    name: 'type',
+                    value: 'server_cert'
+                }],
+                buttons: [{
+                    text: 'Cancel'.t(),
+                    handler: function () {
+                        me.uploadDialog.close();
+                    }
+                }, {
+                    text: 'Upload Certificate'.t(),
+                    formBind: true,
+                    handler: function () {
+                        me.uploadDialog.down('form').submit({
+                            success: function(form, action) {
+                                me.uploadDialog.close();
+                                me.refreshServerCertificate();
+                                parent.gridCertList.reload();
+                            },
+                            failure: function(form, action) {
+                                me.uploadDialog.close();
+                                Util.exceptionToast('Failure'.t() + '<br/>' + action.result.msg);
+                            }
+                        });
+                    }
+                }]
+            }]
+        });
+        this.uploadDialog.show();
     },
 
+    deleteServerCert: function (view, rowIndex, colIndex, item, e, record) {
+        var me = this;
+        if (record.get('fileName') === 'apache.pem') {
+            Ext.MessageBox.alert('System Certificate'.t(), 'This is the default system certificate and cannot be removed.'.t());
+            return;
+        }
+        if (record.get('httpsServer') || record.get('smtpsServer') || record.get('ipsecServer')) {
+            Ext.MessageBox.alert('Certificate In Use'.t(), 'You can not delete a certificate that is assigned to one or more services.'.t());
+            return;
+        }
+        // if (this.isDirty()) {
+        //     Ext.MessageBox.alert('Unsaved Changes'.t() ,'You must apply unsaved changes changes before you can delete this certificate.'.t());
+        //     return;
+        // }
+        Ext.MessageBox.confirm('Are you sure you want to delete this certificate?'.t(),
+            '<strong>SUBJECT:</strong> ' + record.get('certSubject') + '<br/><br/><strong>ISSUER:</strong> ' + record.get('certIssuer'),
+            function(button) {
+                if (button === 'yes') {
+                    try {
+                        rpc.certificateManager.removeServerCertificate(record.get('fileName'));
+                        me.refreshServerCertificate();
+                        Util.successToast('Certificate removed'.t());
+                    } catch (ex) {
+                        Util.exceptionToast(ex);
+                    }
+                }
+            });
+    },
 
     addAccount: function () {
         Ext.MessageBox.show({
