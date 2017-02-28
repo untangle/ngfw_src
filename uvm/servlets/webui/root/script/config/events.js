@@ -45,7 +45,7 @@ Ext.define('Webui.config.events', {
             }}
         ];
     },
-    // AlertRules Panel
+    // Alert Rules Panel
     buildAlertRules: function() {
         this.panelAlertRules = Ext.create('Ext.panel.Panel',{
             name: 'alertRules',
@@ -64,7 +64,7 @@ Ext.define('Webui.config.events', {
                 settingsCmp: this,
                 hasReorder: true,
                 addAtTop: false,
-                title: i18n._("Event Rules"),
+                title: i18n._("Alert Rules"),
                 dataExpression: "getEventSettings().alertRules.list",
                 recordJavaClass: "com.untangle.uvm.event.AlertRule",
                 hasCopy: true,
@@ -73,8 +73,8 @@ Ext.define('Webui.config.events', {
                 emptyRow: {
                     "ruleId": null,
                     "enabled": true,
-                    "limitFrequency": false,
-                    "limitFrequencyMinutes": 0,
+                    "alertLimitFrequency": false,
+                    "alertLimitFrequencyMinutes": 0,
                     "description": ""
                 },
                 fields: [{
@@ -86,9 +86,9 @@ Ext.define('Webui.config.events', {
                 }, {
                     name: 'email'
                 }, {
-                    name: 'limitFrequency'
+                    name: 'alertLimitFrequency'
                 }, {
-                    name: 'limitFrequencyMinutes'
+                    name: 'alertLimitFrequencyMinutes'
                 }, {
                     name: 'thresholdEnabled'
                 }, {
@@ -244,7 +244,7 @@ Ext.define('Webui.config.events', {
                     items: [{
                         xtype:'checkbox',
                         labelWidth: 160,
-                        dataIndex: "limitFrequency",
+                        dataIndex: "alertLimitFrequency",
                         fieldLabel: i18n._("Limit Send Frequency")
                     },{
                         xtype: 'container',
@@ -254,7 +254,7 @@ Ext.define('Webui.config.events', {
                             xtype: 'numberfield',
                             labelWidth: 160,
                             width: 230,
-                            dataIndex: "limitFrequencyMinutes",
+                            dataIndex: "alertLimitFrequencyMinutes",
                             allowDecimals: false,
                             allowBlank: false,
                             minValue: 0,
@@ -270,8 +270,8 @@ Ext.define('Webui.config.events', {
             }],
             syncComponents: function () {
                 var sendEmail=this.down('checkbox[dataIndex=email]').getValue();
-                this.down('checkbox[dataIndex=limitFrequency]').setDisabled(!sendEmail);
-                this.down('numberfield[dataIndex=limitFrequencyMinutes]').setDisabled(!sendEmail);
+                this.down('checkbox[dataIndex=alertLimitFrequency]').setDisabled(!sendEmail);
+                this.down('numberfield[dataIndex=alertLimitFrequencyMinutes]').setDisabled(!sendEmail);
 
                 var thresholdEnabled=this.down('checkbox[dataIndex=thresholdEnabled]').getValue();
                 this.down('numberfield[dataIndex=thresholdLimit]').setDisabled(!thresholdEnabled);
@@ -300,8 +300,6 @@ Ext.define('Webui.config.events', {
                 "enabled": true,
                 "log": false,
                 "syslog": false,
-                "limitFrequency": false,
-                "limitFrequencyMinutes": 0,
                 "description": ""
             },
             fields: [{

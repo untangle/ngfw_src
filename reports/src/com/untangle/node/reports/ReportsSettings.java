@@ -67,8 +67,8 @@ public class ReportsSettings implements Serializable, JSONString
     public LinkedList<ReportsUser> getReportsUsers() { return this.reportsUsers; }
     public void setReportsUsers( LinkedList<ReportsUser> reportsUsers ) { this.reportsUsers = reportsUsers; }
 
-    public LinkedList<AlertRule> getEventRules() { return this.alertRules; }
-    public void setEventRules( LinkedList<AlertRule> newValue ) { this.alertRules = newValue; }
+    public LinkedList<AlertRule> getAlertRules() { return this.alertRules; }
+    public void setAlertRules( LinkedList<AlertRule> newValue ) { this.alertRules = newValue; }
     
     public LinkedList<EmailTemplate> getEmailTemplates() { return this.emailTemplates; }
     public void setEmailTemplates( LinkedList<EmailTemplate> newValue ) { this.emailTemplates = newValue; }

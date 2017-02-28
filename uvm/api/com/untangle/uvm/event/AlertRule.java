@@ -14,6 +14,8 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.util.Load;
 
+import com.untangle.uvm.event.EventRule;
+
 /**
  * This in the implementation of a Event Rule
  * 
@@ -25,8 +27,8 @@ public class AlertRule extends EventRule
 {
 	private Boolean email = false;
 
-    private Boolean limitFrequency = false;
-    private Integer limitFrequencyMinutes = 0;
+    private Boolean alertLimitFrequency = false;
+    private Integer alertLimitFrequencyMinutes = 0;
 
     private long lastEventTime = 0; /* stores the last time this rule sent an event */
 
@@ -39,8 +41,8 @@ public class AlertRule extends EventRule
     {
         super(enabled, conditions, log, description, thresholdEnabled,  thresholdLimit, thresholdTimeframeSec, thresholdGroupingField);
         this.setEmail( email );
-        this.setLimitFrequency( frequencyLimit );
-        this.setLimitFrequencyMinutes( frequencyMinutes );
+        this.setAlertLimitFrequency( frequencyLimit );
+        this.setAlertLimitFrequencyMinutes( frequencyMinutes );
     }
 
     public AlertRule( boolean enabled, List<EventRuleCondition> conditions, boolean log, boolean email, String description, boolean frequencyLimit, int frequencyMinutes )
@@ -52,11 +54,11 @@ public class AlertRule extends EventRule
     public Boolean getEmail() { return email; }
     public void setEmail( Boolean newValue ) { this.email = newValue; }
 
-    public Boolean getLimitFrequency() { return limitFrequency; }
-    public void setLimitFrequency( Boolean newValue ) { this.limitFrequency = newValue; }
+    public Boolean getAlertLimitFrequency() { return alertLimitFrequency; }
+    public void setAlertLimitFrequency( Boolean newValue ) { this.alertLimitFrequency = newValue; }
 
-    public Integer getLimitFrequencyMinutes() { return limitFrequencyMinutes; }
-    public void setLimitFrequencyMinutes( Integer newValue ) { this.limitFrequencyMinutes = newValue; }
+    public Integer getAlertLimitFrequencyMinutes() { return alertLimitFrequencyMinutes; }
+    public void setAlertLimitFrequencyMinutes( Integer newValue ) { this.alertLimitFrequencyMinutes = newValue; }
 
     public long lastEventTime()
     {
@@ -70,12 +72,12 @@ public class AlertRule extends EventRule
     
     public Boolean frequencyCheck()
     {
-        if ( this.getLimitFrequency() && this.getLimitFrequencyMinutes() > 0 ) {
+        if ( this.getAlertLimitFrequency() && this.getAlertLimitFrequencyMinutes() > 0 ) {
             long currentTime = System.currentTimeMillis();
             long lastEventTime = this.lastEventTime();
             long secondsSinceLastEvent = ( currentTime - lastEventTime ) / 1000;
             // if not enough time has elapsed, just return
-            if ( secondsSinceLastEvent < ( this.getLimitFrequencyMinutes() * 60 ) )
+            if ( secondsSinceLastEvent < ( this.getAlertLimitFrequencyMinutes() * 60 ) )
             {
                 return false;
             }

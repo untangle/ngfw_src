@@ -664,13 +664,16 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
     private void conversion_paths_13_0_0()
     {
         // Convert event rule paths to new locations for 12.2 to 13.0
-        // !!! change other classes and these to Event
-        String[] oldNames = new String[] {"com.untangle.node.reports.AlertRule",
-                                 "com.untangle.node.reports.AlertRuleCondition",
-                                 "com.untangle.node.reports.AlertRuleConditionField"};
-        String[] newNames = new String[] {"com.untangle.uvm.event.EventRule",
-                                 "com.untangle.uvm.event.EventRuleCondition",
-                                 "com.untangle.uvm.event.EventRuleConditionField"};
+        String[] oldNames = new String[] {
+                                "com.untangle.node.reports.AlertRuleCondition",
+                                "com.untangle.node.reports.AlertRuleConditionField",
+                                "com.untangle.node.reports.AlertRule"
+                             };
+        String[] newNames = new String[] {
+                                "com.untangle.uvm.event.EventRuleCondition",
+                                "com.untangle.uvm.event.EventRuleConditionField",
+                                "com.untangle.uvm.event.AlertRule"
+                             };
         for ( int i = 0 ; i < oldNames.length ; i++ ) {
             String oldStr = oldNames[i];
             String newStr = newNames[i];
@@ -683,15 +686,12 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         settings.setVersion( 5 );
 
         try {
-            // Move Alerts and syslog
-            logger.warn("**try getEventRules()");
-            if(settings.getEventRules() != null){
-                logger.warn("**got getEventRules()");
+            if(settings.getAlertRules() != null){
                 EventManager eventManager = UvmContextFactory.context().eventManager();
                 if(eventManager != null){
                     EventSettings eventSettings = eventManager.getSettings();
                     if(eventSettings != null){
-                        eventSettings.setAlertRules(settings.getEventRules());
+                        eventSettings.setAlertRules(settings.getAlertRules());
 
                         // Syslog
                         eventSettings.setSyslogEnabled(settings.getSyslogEnabled());
@@ -703,7 +703,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
 
                         eventManager.setSettings(eventSettings);
 
-                        settings.setEventRules(null);
+                        settings.setAlertRules(null);
                     }
                 }
             }
