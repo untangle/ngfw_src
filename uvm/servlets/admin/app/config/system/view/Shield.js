@@ -35,7 +35,7 @@ Ext.define('Ung.config.system.view.Shield', {
         },
 
         tbar: ['@add'],
-        recordActions: ['@edit', '@delete', '@reorder'],
+        recordActions: ['edit', 'delete', 'reorder'],
 
         listProperty: 'shieldSettings.rules.list',
         ruleJavaClass: 'com.untangle.node.shield.ShieldRuleCondition',

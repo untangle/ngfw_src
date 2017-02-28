@@ -20,7 +20,7 @@ Ext.define('Ung.config.network.view.NatRules', {
         flex: 3,
 
         tbar: ['@add'],
-        recordActions: ['@edit', '@delete', '@reorder'],
+        recordActions: ['edit', 'delete', 'reorder'],
 
         listProperty: 'settings.natRules.list',
         ruleJavaClass: 'com.untangle.uvm.network.NatRuleCondition',

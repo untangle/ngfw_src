@@ -102,22 +102,6 @@ Ext.define('Ung.cmp.Grid', {
         addInline: { text: 'Add'.t(), iconCls: 'fa fa-plus-circle fa-lg', handler: 'addRecordInline' },
         import: { text: 'Import'.t(), handler: 'importData' },
         export: { text: 'Export'.t(), handler: 'exportData' },
-        edit: {
-            iconCls: 'fa fa-pencil',
-            tooltip: 'Edit record'.t(),
-            handler: 'editRecord',
-            isDisabled: function (table, rowIndex, colIndex, item, record) {
-                return record.get('readOnly') || false;
-            }
-        },
-        delete: {
-            iconCls: 'fa fa-trash-o fa-red',
-            tooltip: 'Delete record'.t(),
-            handler: 'deleteRecord',
-            isDisabled: function (table, rowIndex, colIndex, item, record) {
-                return record.get('readOnly') || false;
-            }
-        },
         moveUp: { iconCls: 'fa fa-chevron-up', tooltip: 'Move Up'.t(), direction: -1, handler: 'moveUp' },
         moveDown: { iconCls: 'fa fa-chevron-down', tooltip: 'Move Down'.t(), direction: 1, handler: 'moveUp' }
     },
@@ -160,18 +144,50 @@ Ext.define('Ung.cmp.Grid', {
         if (this.recordActions) {
             for (i = 0; i < this.recordActions.length; i += 1) {
                 var action = this.recordActions[i];
-                if (action === '@edit' || action === '@delete') {
+                if (action === 'changePassword') {
                     columns.push({
                         xtype: 'actioncolumn',
-                        width: 60,
-                        header: action === '@edit' ? 'Edit'.t() : 'Delete'.t(),
+                        width: 120,
+                        header: 'Change Password'.t(),
                         align: 'center',
                         resizable: false,
                         tdCls: 'action-cell',
-                        items: [action]
+                        iconCls: 'fa fa-lock',
+                        handler: 'changePassword'
                     });
                 }
-                if (action === '@reorder') {
+                if (action === 'edit') {
+                    columns.push({
+                        xtype: 'actioncolumn',
+                        width: 60,
+                        header: 'Edit'.t(),
+                        align: 'center',
+                        resizable: false,
+                        tdCls: 'action-cell',
+                        iconCls: 'fa fa-pencil',
+                        handler: 'editRecord',
+                        isDisabled: function (table, rowIndex, colIndex, item, record) {
+                            return record.get('readOnly') || false;
+                        }
+                    });
+                }
+                if (action === 'delete') {
+                    columns.push({
+                        xtype: 'actioncolumn',
+                        width: 60,
+                        header: 'Delete'.t(),
+                        align: 'center',
+                        resizable: false,
+                        tdCls: 'action-cell',
+                        iconCls: 'fa fa-trash-o fa-red',
+                        handler: 'deleteRecord',
+                        isDisabled: function (table, rowIndex, colIndex, item, record) {
+                            return record.get('readOnly') || false;
+                        }
+                    });
+                }
+
+                if (action === 'reorder') {
                     Ext.apply(this.viewConfig, {
                         plugins: {
                             ptype: 'gridviewdragdrop',

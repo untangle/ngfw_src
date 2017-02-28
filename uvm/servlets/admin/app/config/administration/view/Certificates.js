@@ -3,7 +3,16 @@ Ext.define('Ung.config.administration.view.Certificates', {
     alias: 'widget.config.administration.certificates',
     itemId: 'certificates',
 
-    viewModel: true,
+    viewModel: {
+        formulas: {
+            rootCertValidStarting: function (get) {
+                return Ext.util.Format.date(new Date(get('rootCertificateInformation.dateValid.time')), 'timestamp_fmt'.t());
+            },
+            rootCertValidUntil: function (get) {
+                return Ext.util.Format.date(new Date(get('rootCertificateInformation.dateExpires.time')), 'timestamp_fmt'.t());
+            }
+        }
+    },
 
     title: 'Certificates'.t(),
 
@@ -14,6 +23,7 @@ Ext.define('Ung.config.administration.view.Certificates', {
         region: 'center',
         itemId: 'rootCertificateView',
         bodyPadding: 10,
+        scrollable: 'y',
         defaults: {
             labelWidth: 150,
             labelAlign: 'right'
@@ -25,21 +35,15 @@ Ext.define('Ung.config.administration.view.Certificates', {
         }, {
             xtype: 'displayfield',
             fieldLabel: 'Valid starting'.t(),
-            bind: '{rootCertificateInformation.dateValid.time}'
-            // id: 'rootca_status_notBefore',
-            // value: this.getRootCertificateInformation() == null ? "" : i18n.timestampFormat(this.getRootCertificateInformation().dateValid)
+            bind: '{rootCertValidStarting}'
         },{
             xtype: 'displayfield',
-            fieldLabel: 'Valid until',
-            bind: '{rootCertificateInformation.dateExpires.time}'
-            // id: 'rootca_status_notAfter',
-            // value: this.getRootCertificateInformation() == null ? "" : i18n.timestampFormat(this.getRootCertificateInformation().dateExpires)
+            fieldLabel: 'Valid until'.t(),
+            bind: '{rootCertValidUntil}'
         },{
             xtype: 'displayfield',
             fieldLabel: 'Subject DN'.t(),
             bind: '{rootCertificateInformation.certSubject}'
-            // id: 'rootca_status_subjectDN',
-            // value: this.getRootCertificateInformation() == null ? "" : this.getRootCertificateInformation().certSubject
         }, {
             xtype: 'container',
             margin: '10 0 0 0',
@@ -92,14 +96,15 @@ Ext.define('Ung.config.administration.view.Certificates', {
             padding: 10,
             html: 'The Server Certificates list is used to select the SSL certificate to be used for each service provided by this server.  The <B>HTTPS</B> column selects the certificate used by the internal web server.  The <B>SMTPS</B> column selects the certificate to use for SMTP+STARTTLS when using SSL Inspector to scan inbound email.  The <B>IPSEC</B> column selects the certificate to use for the IPsec IKEv2 VPN server.'.t()
         }, {
-            xtype: 'ungrid',
+            xtype: 'grid',
             itemId: 'serverCertificateView',
             flex: 1,
             bind: '{certificates}',
-
-            listProperty: 'serverCertificates.list',
-
-            recordActions: ['@delete'],
+            layout: 'fit',
+            trackMouseOver: false,
+            sortableColumns: false,
+            enableColumnHide: false,
+            forceFit: true,
 
             columns: [{
                 header: 'Subject'.t(),
@@ -112,26 +117,104 @@ Ext.define('Ung.config.administration.view.Certificates', {
             }, {
                 header: 'Date Valid'.t(),
                 width: 140,
-                dataIndex: 'dateValid'
+                dataIndex: 'dateValid',
+                renderer: function (date) {
+                    return date.time ? Ext.util.Format.date(new Date(date.time), 'timestamp_fmt'.t()) : '';
+                }
             }, {
                 header: 'Date Expires'.t(),
                 width: 140,
-                dataIndex: 'dateExpires'
+                dataIndex: 'dateExpires',
+                renderer: function (date) {
+                    return date.time ? Ext.util.Format.date(new Date(date.time), 'timestamp_fmt'.t()) : '';
+                }
             }, {
                 header: 'HTTPS'.t(),
                 xtype: 'checkcolumn',
                 width: 80,
-                dataIndex: 'httpsServer'
+                dataIndex: 'httpsServer',
+                listeners: {
+                    // don't allow uncheck - they must pick a different cert
+                    beforecheckchange: function (el, rowIndex, checked) {
+                        return checked ? true : false;
+                    },
+                    // when a new cert is selected uncheck all others
+                    checkchange: function (el, rowIndex, checked, record) {
+                        el.up('grid').getStore().each(function (rec) {
+                            if (rec !== record) {
+                                rec.set('httpsServer', false);
+                            }
+                        });
+                    }
+                }
             }, {
                 header: 'SMTPS'.t(),
                 xtype: 'checkcolumn',
                 width: 80,
-                dataIndex: 'smtpsServer'
+                dataIndex: 'smtpsServer',
+                listeners: {
+                    // don't allow uncheck - they must pick a different cert
+                    beforecheckchange: function (el, rowIndex, checked) {
+                        return checked ? true : false;
+                    },
+                    // when a new cert is selected uncheck all others
+                    checkchange: function (el, rowIndex, checked, record) {
+                        el.up('grid').getStore().each(function (rec) {
+                            if (rec !== record) {
+                                rec.set('smtpsServer', false);
+                            }
+                        });
+                    }
+                }
             }, {
                 header: 'IPSEC'.t(),
                 xtype: 'checkcolumn',
                 width: 80,
-                dataIndex: 'ipsecServer'
+                dataIndex: 'ipsecServer',
+                listeners: {
+                    // don't allow uncheck - they must pick a different cert
+                    beforecheckchange: function (el, rowIndex, checked) {
+                        return checked ? true : false;
+                    },
+                    // when a new cert is selected uncheck all others
+                    checkchange: function (el, rowIndex, checked, record) {
+                        el.up('grid').getStore().each(function (rec) {
+                            if (rec !== record) {
+                                rec.set('ipsecServer', false);
+                            }
+                        });
+                    }
+                }
+            }, {
+                xtype: 'actioncolumn',
+                header: 'View'.t(),
+                width: 60,
+                align: 'center',
+                resizable: false,
+                iconCls: 'fa fa-file-text',
+                tdCls: 'action-cell',
+                handler: function(view, rowIndex, colIndex, item, e, record) {
+                    var detail = '';
+                    detail += '<b>VALID:</b> ' + Ext.util.Format.date(new Date(record.get('dateValid').time), 'timestamp_fmt'.t()) + '<br/><br/>';
+                    detail += '<b>EXPIRES:</b> ' + Ext.util.Format.date(new Date(record.get('dateExpires').time), 'timestamp_fmt'.t()) + '<br/><br/>';
+                    detail += '<b>ISSUER:</b> ' + record.get('certIssuer') + '<br/><br/>';
+                    detail += '<b>SUBJECT:</b> ' + record.get('certSubject') + '<br/><br/>';
+                    detail += '<b>SAN:</b> ' + record.get('certNames') + '<br/><br/>';
+                    detail += '<b>EKU:</b> ' + record.get('certUsage') + '<br/><br/>';
+                    Ext.MessageBox.alert({ buttons: Ext.Msg.OK, maxWidth: 1024, title: 'Certificate Details'.t(), msg: '<tt>' + detail + '</tt>' });
+                }
+            }, {
+                xtype: 'actioncolumn',
+                header: 'Delete',
+                width: 60,
+                align: 'center',
+                resizable: false,
+                iconCls: 'fa fa-trash-o fa-red',
+                tdCls: 'action-cell',
+                handler: 'deleteServerCert',
+                isDisabled: function (view, rowIndex, colIndex, item, record) {
+                    return record.get('httpsServer') || record.get('smtpsServer') || record.get('ipsecServer');
+                }
             }]
         }],
         bbar: [{
@@ -141,8 +224,8 @@ Ext.define('Ung.config.administration.view.Certificates', {
             handler: 'generateCertificate'
         }, {
             text: 'Upload Server Certificate'.t(),
-            // handler: 'generateServerCert',
-            iconCls: 'fa fa-upload'
+            iconCls: 'fa fa-upload',
+            handler: 'uploadServerCertificate',
         }, {
             text: 'Create Certificate Signing Request'.t(),
             certMode: 'CSR',
@@ -153,9 +236,8 @@ Ext.define('Ung.config.administration.view.Certificates', {
         region: 'east',
         title: 'Server Certificate Verification'.t(),
         width: 300,
-        collapsible: true,
-        animCollapse: false,
-        titleCollapse: true,
+        collapsible: false,
+        split: true,
         bodyPadding: 10,
         items: [{
             xtype: 'component',

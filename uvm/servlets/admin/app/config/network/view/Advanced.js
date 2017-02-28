@@ -239,7 +239,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                             html: Ext.String.format('{0}Note{1}: Custom Rules only match <b>Bypassed</b> traffic.'.t(), '<font color="red">','</font>')
                         }],
 
-                        recordActions: ['@edit', '@delete', '@reorder'],
+                        recordActions: ['edit', 'delete', 'reorder'],
 
                         listProperty: 'settings.qosSettings.qosRules.list',
                         ruleJavaClass: 'com.untangle.uvm.network.QosRuleCondition',
@@ -456,7 +456,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                 title: 'Forward Filter Rules'.t(),
 
                 tbar: ['@add'],
-                recordActions: ['@edit', '@delete', '@reorder'],
+                recordActions: ['edit', 'delete', 'reorder'],
 
                 listProperty: 'settings.forwardFilterRules.list',
                 ruleJavaClass: 'com.untangle.uvm.network.FilterRuleCondition',
@@ -544,7 +544,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                 title: 'Input Filter Rules'.t(),
 
                 tbar: ['@add'],
-                recordActions: ['@edit', '@delete', '@reorder'],
+                recordActions: ['edit', 'delete', 'reorder'],
 
                 listProperty: 'settings.inputFilterRules.list',
                 ruleJavaClass: 'com.untangle.uvm.network.FilterRuleCondition',
@@ -743,7 +743,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                 title: 'Access Control Rules'.t(),
 
                 tbar: ['@add'],
-                recordActions: ['@edit', '@delete', '@reorder'],
+                recordActions: ['edit', 'delete', 'reorder'],
 
                 listProperty: 'settings.upnpSettings.upnpRules.list',
                 ruleJavaClass: 'com.untangle.uvm.network.UpnpRuleCondition',

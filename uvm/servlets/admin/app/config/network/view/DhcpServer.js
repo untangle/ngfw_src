@@ -15,7 +15,7 @@ Ext.define('Ung.config.network.view.DhcpServer', {
         title: 'Static DHCP Entries'.t(),
 
         tbar: ['@add'],
-        recordActions: ['@delete'],
+        recordActions: ['delete'],
 
         listProperty: 'settings.staticDhcpEntries.list',
 

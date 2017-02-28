@@ -135,7 +135,7 @@ Ext.define('Ung.cmp.RecordEditorController', {
                 });
             }
         }
-        // form.isValid();
+        form.isValid();
     },
 
     onApply: function () {

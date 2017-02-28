@@ -21,7 +21,7 @@ Ext.define('Ung.config.network.view.PortForwardRules', {
         flex: 3,
 
         tbar: ['@add'],
-        recordActions: ['@edit', '@delete', '@reorder'],
+        recordActions: ['edit', 'delete', 'reorder'],
 
         listProperty: 'settings.portForwardRules.list',
         ruleJavaClass: 'com.untangle.uvm.network.PortForwardRuleCondition',
