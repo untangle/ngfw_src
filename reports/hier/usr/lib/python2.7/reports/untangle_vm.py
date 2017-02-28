@@ -13,7 +13,7 @@ def generate_tables():
     __create_syslog_events_table()
     __create_settings_changes_table()
     # 13.0 conversion
-    if table_exists( "penaltybox" ):
+    if sql_helper.table_exists( "penaltybox" ):
         sql_helper.drop_table("penaltybox") 
 
 @sql_helper.print_timing
