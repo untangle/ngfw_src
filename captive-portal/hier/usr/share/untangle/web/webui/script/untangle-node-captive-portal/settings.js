@@ -83,8 +83,12 @@ Ext.define('Webui.untangle-node-captive-portal.settings', {
             dataFn: this.getRpcNode().getActiveUsers,
             recordJavaClass: "com.untangle.node.captive_portal.CaptureUserEntry",
             fields: [{
-                name: "userAddress",
+                name: "userNetAddress",
                 sortType: 'asIp'
+            },{
+                name: "userMacAddress"
+            },{
+                name: "macLogin",
             },{
                 name: "userName"
             },{
@@ -98,8 +102,17 @@ Ext.define('Webui.untangle-node-captive-portal.settings', {
             }],
             columns: [{
                 header: i18n._("IP Address"),
-                dataIndex:'userAddress',
+                dataIndex:'userNetAddress',
                 width: 150
+            },{
+                header: i18n._("MAC Address"),
+                dataIndex:'userMacAddress',
+                width: 200
+            },{
+                header: i18n._("Login Key"),
+                dataIndex: 'macLogin',
+                width: 120,
+                renderer: function(value) { return (value ? "MAC Address" : "IP Address"); }
             },{
                 header: i18n._("User Name"),
                 dataIndex:'userName',
@@ -128,10 +141,21 @@ Ext.define('Webui.untangle-node-captive-portal.settings', {
                 iconCls: 'icon-delete-row',
                 tooltip: i18n._("Click to logout"),
                 handler: Ext.bind(function(view, rowIndex, colIndex, item, e, record) {
-                    this.getRpcNode().userAdminLogout(Ext.bind(function(result, exception) {
-                        if(Ung.Util.handleException(exception)) return;
-                        this.gridCaptiveStatus.reload();
-                    },this), record.get("userAddress"));
+
+                    var netaddr = record.get("userNetAddress");
+                    var macaddr = record.get("userMacAddress");
+
+                    if ( (this.settings.useMacAddress == true) && (macaddr != null) && (macaddr.length > 12) ) {
+                        this.getRpcNode().userAdminMacLogout(Ext.bind(function(result, exception) {
+                            if(Ung.Util.handleException(exception)) return;
+                            this.gridCaptiveStatus.reload();
+                        },this), macaddr);
+                    } else {
+                        this.getRpcNode().userAdminNetLogout(Ext.bind(function(result, exception) {
+                            if(Ung.Util.handleException(exception)) return;
+                            this.gridCaptiveStatus.reload();
+                        },this), netaddr);
+                    }
                 }, this)
             }]
         });
@@ -578,6 +602,17 @@ Ext.define('Webui.untangle-node-captive-portal.settings', {
                     listeners: {
                         "change": Ext.bind(function(elem, checked) {
                             this.settings.sessionCookiesEnabled = checked;
+                        }, this)
+                    }
+                },{
+                    xtype: "checkbox",
+                    boxLabel: i18n._("Track logins using MAC address"),
+                    tooltip: i18n._("This will allow client authentication to be tracked by MAC address instead of IP address."),
+                    hideLabel: true,
+                    checked: this.settings.useMacAddress,
+                    listeners: {
+                        "change": Ext.bind(function(elem, checked) {
+                            this.settings.useMacAddress = checked;
                         }, this)
                     }
                 },{

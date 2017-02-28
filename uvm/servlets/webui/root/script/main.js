@@ -2082,7 +2082,6 @@ Ext.define("Ung.Main", {
                 handler: Ext.bind(function () {
                     var apps = [
                         { displayName: "Web Filter", name: 'untangle-node-web-filter'},
-                        //{ displayName: "Web Filter Lite", name: 'untangle-node-web-filter-lite'},
                         //{ displayName: "Virus Blocker", name: 'untangle-node-virus-blocker'},
                         //{ displayName: "Virus Blocker Lite", name: 'untangle-node-virus-blocker-lite'},
                         //{ displayName: "Spam Blocker", name: 'untangle-node-spam-blocker'},

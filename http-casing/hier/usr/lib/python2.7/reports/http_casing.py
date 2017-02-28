@@ -38,10 +38,6 @@ CREATE TABLE reports.http_events (
     s2c_content_type text,
     ad_blocker_cookie_ident text,
     ad_blocker_action character,
-    web_filter_lite_reason character(1),
-    web_filter_lite_category text,
-    web_filter_lite_blocked boolean,
-    web_filter_lite_flagged boolean,
     web_filter_reason character(1),
     web_filter_category text,
     web_filter_blocked boolean,
@@ -64,11 +60,10 @@ CREATE TABLE reports.http_events (
                                  "web_filter_blocked",
                                  "web_filter_flagged",
                                  "web_filter_category",
-                                 "web_filter_lite_blocked",
-                                 "web_filter_lite_flagged",
-                                 "web_filter_lite_category",
                                  "virus_blocker_clean",
                                  "virus_blocker_lite_clean",
                                  "ad_blocker_action"])
-
-
+    sql_helper.drop_column('http_events','web_filter_lite_blocked')  # 13.0
+    sql_helper.drop_column('http_events','web_filter_lite_flagged')  # 13.0
+    sql_helper.drop_column('http_events','web_filter_lite_category') # 13.0
+    sql_helper.drop_column('http_events','web_filter_lite_reason')   # 13.0

@@ -227,7 +227,7 @@ public class NotificationManagerImpl implements NotificationManager
             notificationList.add( i18nUtil.tr("Disk errors reported.") + "<br/>\n" + result.getOutput().replaceAll("\n","<br/>\n") );
         }
 
-        result = this.execManager.exec( "tail -n 15000 /var/log/kern.log | grep -m1 -B3 'I/O error'" );
+        result = this.execManager.exec( "tail -n 15000 /var/log/kern.log | grep -v 'dev fd0' | grep -m1 -B3 'I/O error'" );
         if ( result.getResult() == 0 ) {
             notificationList.add( i18nUtil.tr("Disk errors reported.") + "<br/>\n" + result.getOutput().replaceAll("\n","<br/>\n") );
         }
@@ -277,21 +277,10 @@ public class NotificationManagerImpl implements NotificationManager
         /**
          * Check for redundant apps
          */
-        List<Node> webFilterLiteList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-web-filter-lite");
-        List<Node> webFilterList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-web-filter");
         List<Node> spamBlockerLiteList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-spam-blocker-lite");
         List<Node> spamblockerList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-spamblocker");
         List<Node> webMonitorList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-web-monitor");
-
-        for (Node node1 : webFilterLiteList) {
-            for (Node node2 : webFilterList) {
-                if (node1.getNodeSettings().getId().equals(node2.getNodeSettings().getId()))
-                    continue;
-
-                if (node1.getNodeSettings().getPolicyId().equals(node2.getNodeSettings().getPolicyId()))
-                    notificationList.add(i18nUtil.tr("One or more racks contain redundant apps") + ": " + " Web Filter " + i18nUtil.tr("and") + " Web Filter Lite" );
-            }
-        }
+        List<Node> webFilterList = UvmContextFactory.context().nodeManager().nodeInstances("untangle-node-web-filter");
 
         for (Node node1 : webMonitorList) {
             for (Node node2 : webFilterList) {
