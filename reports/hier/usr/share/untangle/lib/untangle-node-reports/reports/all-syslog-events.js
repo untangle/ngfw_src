@@ -4,10 +4,10 @@
     "type": "EVENT_LIST",
     "conditions": [],
     "defaultColumns": ["time_stamp","description","summary_text","json"],
-    "description": "Log of all alerts created by alert rules.",
+    "description": "Log of all events created by syslog rules.",
     "displayOrder": 1010,
     "javaClass": "com.untangle.node.reports.ReportEntry",
-    "table": "alerts",
-    "title": "Alert Events",
-    "uniqueId": "reports-8XL9cbqQa9"
+    "table": "syslog",
+    "title": "Syslog Events",
+    "uniqueId": "syslog-8XL9cbqQa9"
 }

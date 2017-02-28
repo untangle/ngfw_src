@@ -1,7 +1,7 @@
 /**
  * $Id$
  */
-package com.untangle.node.reports;
+package com.untangle.uvm;
 
 import java.net.InetSocketAddress;
 import java.io.BufferedWriter;
@@ -12,6 +12,7 @@ import java.io.IOException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
+import com.untangle.uvm.event.EventSettings;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.logging.LogEvent;
 
@@ -20,13 +21,16 @@ import com.untangle.uvm.logging.LogEvent;
  */
 public class SyslogManagerImpl
 {
+    private static final Logger logger = Logger.getLogger(SyslogManagerImpl.class);
+
     private static final SyslogManagerImpl MANAGER = new SyslogManagerImpl();
+
+    public static final String LOG_TAG = "uvm";
+    public static final String LOG_TAG_PREFIX = LOG_TAG + "[0]: ";
 
     private static final String RSYSLOG = "/etc/init.d/rsyslog";
     private static final File CONF_FILE = new File("/etc/rsyslog.d/untangle-remote.conf");
-    private static final String CONF_LINE = ":msg, regex, \"uvm\\[[0-9]*\\]:\" @";
-
-    private static final Logger logger = Logger.getLogger(SyslogManagerImpl.class);
+    private static final String CONF_LINE = ":msg, startswith, \" " + LOG_TAG + "\\[\" @";
 
     private static boolean enabled;
 
@@ -37,37 +41,45 @@ public class SyslogManagerImpl
         return MANAGER;
     }
 
-    public static void sendSyslog( LogEvent e, String tag )
+    public static void sendSyslog( LogEvent e )
     {
-        if (!enabled)
+        if (!enabled){
             return;
+        }
 
         try {
-            logger.log(org.apache.log4j.Level.INFO, tag + " " + e.toJSONString());
+            logger.log(org.apache.log4j.Level.INFO, e.getTag() + " " + e.toJSONString());
         } catch (Exception exn) {
             logger.warn("Failed to syslog Event: " + e, exn);
         }
 
     }
 
-    public static void reconfigure(ReportsSettings reportsSettings)
+    public static void reconfigureCheck(String settingsFilename, EventSettings eventSettings)
     {
-        if (reportsSettings != null && reportsSettings.getSyslogEnabled()) {
-            enabled = true;
-            String hostname = reportsSettings.getSyslogHost();
-            int port = reportsSettings.getSyslogPort();
-            String protocol = reportsSettings.getSyslogProtocol();
+        File settingsFile = new File(settingsFilename);
 
-            /* int facility = reportsSettings.getSyslogFacility(); unused */
-            /* int threshold = reportsSettings.getSyslogThreshold(); unused */
-            // SyslogAppender sa = (SyslogAppender)logger.getAppender("EVENTS");
-            // sa.setFacility("LOCAL" + facility);
-            // sa.setThreshold(threshold);
+        if (settingsFile.lastModified() > CONF_FILE.lastModified()){
+            reconfigure(eventSettings);
+        }
+        setEnabled(eventSettings);
+
+    }
+
+    public static void reconfigure(EventSettings eventSettings)
+    {
+        if (eventSettings != null && eventSettings.getSyslogEnabled()) {
+            enabled = true;
+            String hostname = eventSettings.getSyslogHost();
+            int port = eventSettings.getSyslogPort();
+            String protocol = eventSettings.getSyslogProtocol();
 
             // set rsylsog conf
             String conf = CONF_LINE;
             if (protocol.equalsIgnoreCase("TCP"))
+            {
                 conf += "@";
+            }
             conf += hostname + ":" + port;
 
             // write conf file
@@ -86,6 +98,7 @@ public class SyslogManagerImpl
                 return;
             }
         } else {
+            // Remove rsyslog conf
             enabled = false;
             CONF_FILE.delete();
         }
@@ -96,10 +109,10 @@ public class SyslogManagerImpl
             UvmContextFactory.context().execManager().exec( RSYSLOG + " " + "restart" );
     }
     
-    public static void setEnabled(ReportsSettings reportsSettings)
+    public static void setEnabled(EventSettings eventSettings)
     {
         enabled = 
-            ( reportsSettings != null && reportsSettings.getSyslogEnabled()) 
+            ( eventSettings != null && eventSettings.getSyslogEnabled()) 
             ? true : false;
     }
 }

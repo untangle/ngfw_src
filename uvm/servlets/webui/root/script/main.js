@@ -175,14 +175,14 @@ Ext.define("Ung.Main", {
                     flex: 1
                 }, {
                     xtype: "container",
-                    cls: 'alert-container',
+                    cls: 'notification-container',
                     items: [{
                         xtype: "button",
-                        cls: 'main-menu-btn alert-button',
+                        cls: 'main-menu-btn notification-button',
                         scale: 'large',
                         arrowVisible: false,
                         html: '<i class="material-icons" style="color: #FFB300; vertical-align: middle; font-size: 20px;">warning</i>',
-                        itemId: "alertButton",
+                        itemId: "notificationButton",
                         hidden: true,
                         menuAlign: 'tr-br'
                     }]
@@ -1414,6 +1414,12 @@ Ext.define("Ung.Main", {
             helpSource: 'administration',
             className: 'Webui.config.administration'
         }, {
+            name: 'event',
+            displayName: i18n._('Events'),
+            iconClass: 'icon-config-events',
+            helpSource: 'events',
+            className: 'Webui.config.events'
+        }, {
             name: 'email',
             displayName: i18n._('Email'),
             iconClass: 'icon-config-email',
@@ -1505,25 +1511,25 @@ Ext.define("Ung.Main", {
                                  i18n._("Please upgrade to a newer browser."));
         }
     },
-    checkForAlerts: function (handler) {
+    checkForNotifications: function (handler) {
         //check for upgrades
-        rpc.alertManager.getAlerts(Ext.bind(function (result, exception, opt, handler) {
-            var alertButton = this.viewport.down("#alertButton");
-            var alertArr = '', i;
+        rpc.notificationManager.getNotifications(Ext.bind(function (result, exception, opt, handler) {
+            var notificationButton = this.viewport.down("#notificationButton");
+            var notificationArr = '', i;
 
             if (result != null && result.list.length > 0) {
-                alertButton.show();
-                alertArr += '<h3>' + i18n._('Alerts:') + '</h3><ul>';
+                notificationButton.show();
+                notificationArr += '<h3>' + i18n._('Notifications:') + '</h3><ul>';
                 for (i = 0; i < result.list.length; i += 1) {
-                    alertArr += '<li>' + i18n._(result.list[i]) + '</li>';
+                    notificationArr += '<li>' + i18n._(result.list[i]) + '</li>';
                 }
-                alertArr += '</ul>';
+                notificationArr += '</ul>';
             } else {
-                alertButton.hide();
+                notificationButton.hide();
             }
 
-            alertButton.setMenu(Ext.create('Ext.menu.Menu', {
-                cls: 'alert-dd',
+            notificationButton.setMenu(Ext.create('Ext.menu.Menu', {
+                cls: 'notification-dd',
                 plain: true,
                 shadow: false,
                 width: 250,
@@ -1534,15 +1540,15 @@ Ext.define("Ung.Main", {
                         color: '#CCC'
                     },
                     autoEl: {
-                        html: alertArr
+                        html: notificationArr
                     }
                 }, {
                     xtype: 'button',
-                    text: '<i class="material-icons" style="font-size: 16px;">help</i> ' + i18n._('Help with Administration Alerts'),
+                    text: '<i class="material-icons" style="font-size: 16px;">help</i> ' + i18n._('Help with Administration Notifications'),
                     margin: '0 10 10 10',
                     textAlign: 'left',
                     handler: function () {
-                        Ung.Main.openHelp('admin_alerts');
+                        Ung.Main.openHelp('admin_notifications');
                     }
                 }]
             }));
@@ -1649,7 +1655,7 @@ Ext.define("Ung.Main", {
     // build policies select box
     buildPolicies: function () {
         this.updatePolicySelector();
-        this.checkForAlerts();
+        this.checkForNotifications();
         this.checkForIE();
 
         Ung.Main.loadAppsView();

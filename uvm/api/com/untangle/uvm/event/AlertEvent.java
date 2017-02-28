@@ -1,7 +1,7 @@
 /**
- * $Id: AlertEvent.java 34225 2013-03-10 20:38:45Z dmorris $
+ * $Id: Event.java 34225 2013-03-10 20:38:45Z dmorris $
  */
-package com.untangle.node.reports;
+package com.untangle.uvm.event;
 
 import org.json.JSONObject;
 
@@ -9,8 +9,10 @@ import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.util.I18nUtil;
 
+import com.untangle.uvm.event.EventRule;
+
 /**
- * Log event for an "alert" event
+ * Log event for an event
  */
 @SuppressWarnings("serial")
 public class AlertEvent extends LogEvent
@@ -19,12 +21,12 @@ public class AlertEvent extends LogEvent
     private String summaryText;
     private JSONObject json;
     private LogEvent cause;
-    private Boolean alertSent;
-    private AlertRule causalRule;
+    private Boolean eventSent;
+    private EventRule causalRule;
     
     public AlertEvent() { }
 
-    public AlertEvent( String description, String summaryText, JSONObject json, LogEvent cause, AlertRule causalRule, Boolean alertSent )
+    public AlertEvent( String description, String summaryText, JSONObject json, LogEvent cause, EventRule causalRule, Boolean eventSent )
     {
         this.description = description;
         this.summaryText = summaryText;
@@ -45,15 +47,16 @@ public class AlertEvent extends LogEvent
     public LogEvent getCause() { return cause; }
     public void setCause( LogEvent newValue ) { this.cause = newValue; }
 
-    public Boolean getAlertSent() { return alertSent; }
-    public void setAlertSent( Boolean newValue ) { this.alertSent = newValue; }
+    public Boolean getEventSent() { return eventSent; }
+    public void setEventSent( Boolean newValue ) { this.eventSent = newValue; }
 
-    public AlertRule getCausalRule() { return causalRule; }
-    public void setCausalRule( AlertRule newValue ) { this.causalRule = newValue; }
+    public EventRule getCausalRule() { return causalRule; }
+    public void setCausalRule( EventRule newValue ) { this.causalRule = newValue; }
 
     @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
+        // !!! rename alerts to events
         String sql = "INSERT INTO " + schemaPrefix() + "alerts" + getPartitionTablePostfix() + " " +
             "(time_stamp, description, summary_text, json) " +
             "values " +
@@ -74,7 +77,7 @@ public class AlertEvent extends LogEvent
     @Override
     public String toSummaryString()
     {
-        String summary = I18nUtil.marktr("Alert Event") + " " + ( cause != null ? cause.toSummaryString() : "" );
+        String summary = I18nUtil.marktr("Event") + " " + ( cause != null ? cause.toSummaryString() : "" );
 
         return summary;
     }
