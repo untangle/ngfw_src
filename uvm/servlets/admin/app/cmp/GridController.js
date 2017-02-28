@@ -110,32 +110,131 @@ Ext.define('Ung.cmp.GridController', {
 
     // import/export features
     importData: function () {
-        Ext.widget('dataimporter', {
-
+        var me = this;
+        this.importDialog = this.getView().add({
+            xtype: 'window',
+            title: 'Import Settings'.t(),
+            modal: true,
+            layout: 'fit',
+            width: 450,
+            items: [{
+                xtype: 'form',
+                border: false,
+                url: 'gridSettings',
+                bodyPadding: 10,
+                layout: 'anchor',
+                items: [{
+                    xtype: 'radiogroup',
+                    name: 'importMode',
+                    simpleValue: true,
+                    value: 'replace',
+                    columns: 1,
+                    vertical: true,
+                    items: [
+                        { boxLabel: '<strong>' + 'Replace current settings'.t() + '</strong>', inputValue: 'replace' },
+                        { boxLabel: '<strong>' + 'Prepend to current settings'.t() + '</strong>', inputValue: 'prepend' },
+                        { boxLabel: '<strong>' + 'Append to current settings'.t() + '</strong>', inputValue: 'append' }
+                    ]
+                }, {
+                    xtype: 'component',
+                    margin: 10,
+                    html: 'with settings from'.t()
+                }, {
+                    xtype: 'filefield',
+                    anchor: '100%',
+                    fieldLabel: 'File'.t(),
+                    labelAlign: 'right',
+                    allowBlank: false,
+                    validateOnBlur: false
+                }, {
+                    xtype: 'hidden',
+                    name: 'type',
+                    value: 'import'
+                }],
+                buttons: [{
+                    text: 'Cancel'.t(),
+                    iconCls: 'fa fa-ban fa-red',
+                    handler: function () {
+                        me.importDialog.close();
+                    }
+                }, {
+                    text: 'Import'.t(),
+                    iconCls: 'fa fa-check',
+                    formBind: true,
+                    handler: function (btn) {
+                        btn.up('form').submit({
+                            waitMsg: 'Please wait while the settings are uploaded...'.t(),
+                            success: function(form, action) {
+                                if (!action.result) {
+                                    Ext.MessageBox.alert('Warning'.t(), 'Import failed.'.t());
+                                    return;
+                                }
+                                if (!action.result.success) {
+                                    Ext.MessageBox.alert('Warning'.t(), action.result.msg);
+                                    return;
+                                }
+                                me.importHandler(form.getValues().importMode, action.result.msg);
+                                me.importDialog.close();
+                            },
+                            failure: function(form, action) {
+                                Ext.MessageBox.alert('Warning'.t(), action.result.msg);
+                            }
+                        });
+                    }
+                }]
+            }],
         });
+        this.importDialog.show();
+    },
+
+    importHandler: function (importMode, newData) {
+        var grid = this.getView(),
+            vm = this.getViewModel(),
+            existingData = Ext.Array.pluck(grid.getStore().getRange(), 'data');
+
+        Ext.Array.forEach(existingData, function (rec, index) {
+            delete rec._id;
+        });
+
+        if (importMode === 'replace') {
+            grid.getStore().removeAll();
+        }
+        if (importMode === 'append') {
+            Ext.Array.insert(existingData, existingData.length, newData);
+            newData = existingData;
+        }
+        if (importMode === 'prepend') {
+            Ext.Array.insert(existingData, 0, newData);
+            newData = existingData;
+        }
+        vm.set(grid.listProperty, newData);
+        // grid.getView().refresh();
+    },
+
+    getExportData: function (useId) {
+        var data = Ext.Array.pluck(this.getView().getStore().getRange(), 'data');
+        Ext.Array.forEach(data, function (rec, index) {
+            delete rec._id;
+            if (useId) {
+                rec.id = index + 1;
+            }
+        });
+        return Ext.encode(data);
     },
 
     exportData: function () {
-        // to be implemented
+        var grid = this.getView(),
+            gridName = (grid.name !== null) ? grid.name : grid.recordJavaClass;
 
+        Ext.MessageBox.wait('Exporting Settings...'.t(), 'Please wait'.t());
 
-        // this.getView().down('#exportForm').submit();
-        // console.log('export');
-        // Ext.Ajax.request({
-        //     method: 'POST',
-        //     url: 'http://localhost:8002/webui/gridSettings', // test url
-        //     params: {
-        //         type: 'export',
-        //         gridName: 'a',
-        //         gridData: 'b'
-        //     },
-        //     success: function (resp) {
-        //         console.log('success');
-        //     },
-        //     failure: function (resp) {
-        //         console.log('fail');
-        //     }
-        // });
+        gridName = gridName.trim().replace(/ /g, '_');
+
+        var exportForm = document.getElementById('exportGridSettings');
+        exportForm.gridName.value = gridName;
+        exportForm.gridData.value = this.getExportData(false);
+        exportForm.submit();
+        Ext.MessageBox.hide();
     },
 
     changePassword: function (view, rowIndex, colIndex, item, e, record) {

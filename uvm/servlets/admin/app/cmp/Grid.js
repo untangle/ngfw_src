@@ -12,6 +12,15 @@ Ext.define('Ung.cmp.Grid', {
     /* requires-end */
     controller: 'ungrid',
 
+    actions: {
+        add: { text: 'Add'.t(), iconCls: 'fa fa-plus-circle fa-lg', handler: 'addRecord' },
+        addInline: { text: 'Add'.t(), iconCls: 'fa fa-plus-circle fa-lg', handler: 'addRecordInline' },
+        import: { text: 'Import'.t(), iconCls: 'fa fa-arrow-down', handler: 'importData' },
+        export: { text: 'Export'.t(), iconCls: 'fa fa-arrow-up', handler: 'exportData' },
+        // moveUp: { iconCls: 'fa fa-chevron-up', tooltip: 'Move Up'.t(), direction: -1, handler: 'moveUp' },
+        // moveDown: { iconCls: 'fa fa-chevron-down', tooltip: 'Move Down'.t(), direction: 1, handler: 'moveUp' }
+    },
+
     /**
      * @cfg {Array} tbar
      * Contains the grid action buttons placed in the top toolbar
@@ -92,19 +101,6 @@ Ext.define('Ung.cmp.Grid', {
 
 
 
-
-
-
-
-
-    actions: {
-        add: { text: 'Add'.t(), iconCls: 'fa fa-plus-circle fa-lg', handler: 'addRecord' },
-        addInline: { text: 'Add'.t(), iconCls: 'fa fa-plus-circle fa-lg', handler: 'addRecordInline' },
-        import: { text: 'Import'.t(), handler: 'importData' },
-        export: { text: 'Export'.t(), handler: 'exportData' },
-        moveUp: { iconCls: 'fa fa-chevron-up', tooltip: 'Move Up'.t(), direction: -1, handler: 'moveUp' },
-        moveDown: { iconCls: 'fa fa-chevron-down', tooltip: 'Move Down'.t(), direction: 1, handler: 'moveUp' }
-    },
 
     layout: 'fit',
     trackMouseOver: false,

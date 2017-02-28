@@ -105,7 +105,13 @@
             </div>
         </div>
 
-        <form name="downloadForm" id="downloadForm" method="POST" action="download">
+        <form name="exportGridSettings" id="exportGridSettings" method="post" action="gridSettings" style="display: none;">
+            <input type="hidden" name="gridName" value=""/>
+            <input type="hidden" name="gridData" value=""/>
+            <input type="hidden" name="type" value="export"/>
+        </form>
+
+        <form name="downloadForm" id="downloadForm" method="POST" action="download" style="display: none;">
             <input type="hidden" name="type" value="" />
             <input type="hidden" name="arg1" value="" />
             <input type="hidden" name="arg2" value="" />
