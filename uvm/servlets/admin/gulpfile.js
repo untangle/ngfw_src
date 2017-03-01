@@ -15,12 +15,36 @@ var gulp        = require('gulp'),
     removeEmptyLines = require('gulp-remove-empty-lines');
 
 var configModules = ['about', 'administration', 'email', 'localdirectory', 'network', 'system', 'upgrade'];
+var appsModules = [
+    'adblocker',
+    'applicationcontrol',
+    'bandwidthcontrol',
+    'brandingmanager',
+    'captiveportal',
+    'configurationbackup',
+    'directoryconnector',
+    'firewall',
+    'intrusionprevention',
+    'ipsecvpn',
+    'livesupport',
+    'openvpn',
+    'phishblocker',
+    'policymanager',
+    'reports',
+    'spamblocker',
+    'sslinspector',
+    'virusblocker',
+    'wanbalancer',
+    'wanfailover',
+    'webcache',
+    'webfilter'
+];
 var moduleName;
 
 /**
  * Builds the main ung-app.js
  */
-gulp.task('build-app', function () {
+gulp.task('build-ung', function () {
     // var classOrder = fs.readFileSync('.buildorder', 'UTF8').split('\r\n');
     gutil.log('Generate ' + gutil.colors.yellow('ung-all.js') + ' compressed bundle...');
 
@@ -50,7 +74,7 @@ gulp.task('build-app', function () {
  */
 gulp.task('build-config-modules', function () {
     for (var i = 0; i < configModules.length; i++) {
-        gulp.src(['./app/config/' + configModules[i] + '/**/*.js'])
+        gulp.src(['./config/' + configModules[i] + '/**/*.js'])
         .pipe(jshint())
         .pipe(jshint.reporter('default'))
         .pipe(jshint.reporter('fail'))
@@ -65,8 +89,8 @@ gulp.task('build-config-modules', function () {
 /**
  * Builds a single config module (used on watch task)
  */
-gulp.task('build-module', function () {
-    return gulp.src('./app/config/' + moduleName + '/**/*.js')
+gulp.task('build-config', function () {
+    return gulp.src('./config/' + moduleName + '/**/*.js')
         .pipe(jshint())
         .pipe(jshint.reporter('default'))
         .pipe(jshint.reporter('fail'))
@@ -76,6 +100,41 @@ gulp.task('build-module', function () {
         // .pipe(uglify())
         .pipe(gulp.dest('../../../dist/usr/share/untangle/web/admin/script/config/'));
 });
+
+
+/**
+ * Builds the apps modules
+ */
+gulp.task('build-apps-modules', function () {
+    for (var i = 0; i < appsModules.length; i++) {
+        gulp.src(['./apps/' + appsModules[i] + '/**/*.js'])
+        .pipe(jshint())
+        .pipe(jshint.reporter('default'))
+        .pipe(jshint.reporter('fail'))
+        .pipe(concat(appsModules[i] + '.js'))
+        .pipe(stripCode({ start_comment: 'requires-start', end_comment: 'requires-end' }))
+        .pipe(uglify())
+        .pipe(gulp.dest('../../../dist/usr/share/untangle/web/admin/script/apps/'));
+        gutil.log('Generate ' + gutil.colors.yellow('apps/' + appsModules[i] + '.js'));
+    }
+});
+
+/**
+ * Builds a single app module (used on watch task)
+ */
+gulp.task('build-app', function () {
+    return gulp.src('./apps/' + moduleName + '/**/*.js')
+        .pipe(jshint())
+        .pipe(jshint.reporter('default'))
+        .pipe(jshint.reporter('fail'))
+        .pipe(concat(moduleName + '.js'))
+        .pipe(stripCode({ start_comment: 'requires-start', end_comment: 'requires-end' }))
+        // .pipe(removeEmptyLines({removeComments: true}))
+        // .pipe(uglify())
+        .pipe(gulp.dest('../../../dist/usr/share/untangle/web/admin/script/apps/'));
+});
+
+
 
 /**
  * Builds the ung-all.css styles
@@ -93,8 +152,9 @@ gulp.task('build-scss', function () {
  */
 gulp.task('build', function (cb) {
     runSequence(
-        'build-app',
+        'build-ung',
         'build-config-modules',
+        'build-apps-modules',
         'build-scss',
         function (err) {
             if (err) {
@@ -109,17 +169,28 @@ gulp.task('build', function (cb) {
  * watch task used in development mode, it auto builds when files are changed
  */
 gulp.task('watch', ['build'], function () {
-    gulp.watch(['./app/!(config)/**/*js'], ['build-app']);
+    gulp.watch(['./app/**/*js'], ['build-ung']);
     gulp.watch('./sass/*.scss', ['build-scss']);
-    gulp.watch('./app/config/**/*.js', function (file) {
+    gulp.watch('./config/**/*.js', function (file) {
         var arr = slash(file.path).split('/');
         arr.pop(); // remove file name
         moduleName = arr.pop();
         if (moduleName === 'view') {
             moduleName = arr.pop();
         }
-        gulp.start('build-module', function () {
+        gulp.start('build-config', function () {
             gutil.log('Generate ' + gutil.colors.yellow('config/' + moduleName + '.js'));
+        });
+    });
+    gulp.watch('./apps/**/*.js', function (file) {
+        var arr = slash(file.path).split('/');
+        arr.pop(); // remove file name
+        moduleName = arr.pop();
+        if (moduleName === 'view') {
+            moduleName = arr.pop();
+        }
+        gulp.start('build-app', function () {
+            gutil.log('Generate ' + gutil.colors.yellow('apps/' + moduleName + '.js'));
         });
     });
 });

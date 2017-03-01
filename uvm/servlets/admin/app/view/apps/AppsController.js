@@ -70,6 +70,7 @@ Ext.define('Ung.view.apps.AppsController', {
                 nodes.push({
                     name: node.name,
                     displayName: node.displayName,
+                    url: '#apps/' + vm.get('policyId') + '/' + Util.appsMapping[node.name],
                     type: node.type,
                     viewPosition: node.viewPosition,
                     status: null,
@@ -88,6 +89,7 @@ Ext.define('Ung.view.apps.AppsController', {
                 nodes.push({
                     name: node.name,
                     displayName: node.displayName,
+                    url: '#apps/' + vm.get('policyId') + '/' + Util.appsMapping[node.name],
                     type: node.type,
                     viewPosition: node.viewPosition,
                     desc: me.nodeDesc[node.name],

@@ -55,7 +55,7 @@ Ext.define('Ung.controller.Global', {
             'expert': 'setExpertMode',
             'noexpert': 'setNoExpertMode',
             'apps/:policyId': 'onApps',
-            'apps/:policyId/:node': 'onApps',
+            'apps/:policyId/:app': 'onApps',
             'config': 'onConfig',
             'config/:configName': 'onConfig',
             'config/:configName/:configView': 'onConfig',
@@ -96,18 +96,48 @@ Ext.define('Ung.controller.Global', {
         // this.getViewModel().set('activeItem', 'dashboard');
     },
 
-    onApps: function (policyId, node) {
-        console.log(node);
+    onApps: function (policyId, app) {
+        var me = this;
+        console.log(app);
         this.getMainView().getViewModel().set('selectedNavItem', 'apps');
         this.getMainView().setActiveItem('apps');
 
-        if (node) {
-            if (node === 'install') {
+        if (app) {
+            if (app === 'install') {
                 console.log(this.getAppsView());
                 this.getAppsView().setActiveItem('installableApps');
             } else {
-                // vm.set('nodeName', node);
-                // vm.set('activeItem', 'settings');
+                me.getMainView().setLoading(true);
+                Ext.Loader.loadScript({
+                    url: 'script/apps/' + app + '.js',
+                    onLoad: function () {
+                        me.getMainView().setLoading(false);
+                        me.getMainView().add({
+                            xtype: 'app.' + app,
+                            region: 'center',
+                            itemId: 'configCard'
+                        });
+                        me.getMainView().setActiveItem('configCard');
+
+                        // if (configView) {
+                        //     console.log('here');
+                        //     me.getMainView().down('#configCard').setActiveItem(configView);
+                        // }
+
+                        // console.log('loaded');
+                        // Ext.require('Ung.config.network.Network', function () {
+                        //     console.log('require');
+                        // });
+                        // setTimeout(function() {
+                        //     me.getMainView().add({
+                        //         xtype: 'ung.config.network',
+                        //         region: 'center',
+                        //         itemId: 'configCard'
+                        //     });
+                        // }, 1000);
+                    }
+                });
+
             }
         } else {
             this.getAppsView().setActiveItem('installedApps');

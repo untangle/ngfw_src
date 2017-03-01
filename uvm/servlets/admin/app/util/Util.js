@@ -3,24 +3,36 @@ Ext.define('Ung.util.Util', {
     singleton: true,
 
     // node name to class mapping
-    nodeClassMapping: {
-        'untangle-node-web-filter': 'Ung.node.WebFilter',
-        'untangle-node-web-filter-lite': 'Ung.node.WebFilterLite',
-        'untangle-node-virus-blocker': 'Ung.node.VirusBlocker',
-        'untangle-node-virus-blocker-lite': 'Ung.node.VirusBlockerLite',
-        'untangle-node-spam-blocker': 'Ung.node.SpamBlocker',
-        'untangle-node-spam-blocker-lite': 'Ung.node.SpamBlockerLite',
-        'untangle-node-phish-blocker': 'Ung.node.PhishBlocker',
-        'untangle-node-web-cache': 'Ung.node.WebCache',
-        'untangle-node-bandwidth-control': 'Ung.node.BandwidthControl',
-        'untangle-casing-ssl-inspector': 'Ung.node.SslInspector',
-        'untangle-node-application-control': 'Ung.node.ApplicationControl',
-        'untangle-node-application-control-lite': 'Ung.node.ApplicationControlLite',
-        'untangle-node-captive-portal': 'Ung.node.CaptivePortal',
-        'untangle-node-firewall': 'Ung.node.Firewall',
-        'untangle-node-ad-blocker': 'Ung.node.AdBlocker',
+    appsMapping: {
+        'untangle-node-web-filter': 'webfilter',
+        'untangle-node-web-monitor': 'webmonitor',
+        'untangle-node-web-filter-lite': 'webfilterlite',
+        'untangle-node-virus-blocker': 'virusblocker',
+        'untangle-node-virus-blocker-lite': 'virusblockerlite',
+        'untangle-node-spam-blocker': 'spamblocker',
+        'untangle-node-spam-blocker-lite': 'spamblockerlite',
+        'untangle-node-phish-blocker': 'phishblocker',
+        'untangle-node-web-cache': 'webcache',
+        'untangle-node-bandwidth-control': 'bandwidthcontrol',
+        'untangle-casing-ssl-inspector': 'sslinspector',
+        'untangle-node-application-control': 'applicationcontrol',
+        'untangle-node-application-control-lite': 'applicationcontrollite',
+        'untangle-node-captive-portal': 'captiveportal',
+        'untangle-node-firewall': 'firewall',
+        'untangle-node-ad-blocker': 'adblocker',
 
-        'untangle-node-reports': 'Ung.node.Reports'
+        'untangle-node-reports': 'reports',
+        'untangle-node-policy-manager': 'policymanager',
+        'untangle-node-directory-connector': 'directoryconnector',
+        'untangle-node-wan-failover': 'wanfailover',
+        'untangle-node-wan-balancer': 'wanbalancer',
+        'untangle-node-ipsec-vpn': 'ipsecvpn',
+        'untangle-node-openvpn': 'openvpn',
+        'untangle-node-intrusion-prevention': 'intrusionprevention',
+        'untangle-node-configuration-backup': 'configurationbackup',
+        'untangle-node-branding-manager': 'brandingmanager',
+        'untangle-node-live-support': 'livesupport'
+
     },
 
     iconReportTitle: function (report) {
