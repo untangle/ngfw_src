@@ -2,11 +2,13 @@ Ext.define('Ung.apps.webfilter.Main', {
     extend: 'Ung.cmp.AppPanel',
     alias: 'widget.app.webfilter',
 
+    controller: 'app.webfilter',
+
     viewModel: {
         data: {
             nodeName: 'untangle-node-web-filter',
             appName: 'Web Filter'
-        }
+        },
     },
 
     items: [
