@@ -25,6 +25,7 @@ Ext.define('Ung.controller.Global', {
         'Widgets',
         'Sessions',
         'Hosts',
+        'Devices',
         'Conditions',
         'Countries',
         'Categories',
