@@ -16,7 +16,7 @@ Ext.define('Ung.view.apps.Apps', {
         stores: {
             apps: {
                 // data: '{appsData}',
-                fields: ['name', 'displayName', 'type', 'status'],
+                fields: ['name', 'displayName', 'url', 'type', 'status'],
                 sorters: [{
                     property: 'viewPosition',
                     direction: 'ASC'
@@ -84,7 +84,7 @@ Ext.define('Ung.view.apps.Apps', {
         tpl: '<p class="apps-title">' + 'Apps'.t() + '</p>' +
             '<tpl for=".">' +
                 '<tpl if="type === \'FILTER\'">' +
-                '<a href="#config" class="app-item">' +
+                '<a href="{url}" class="app-item">' +
                 '<span class="state {targetState}"><i class="fa fa-power-off"></i></span>' +
                 '<img src="' + '/skins/modern-rack/images/admin/apps/{name}_80x80.png" width=80 height=80/>' +
                 '<span class="app-name">{displayName}</span>' +
@@ -94,7 +94,7 @@ Ext.define('Ung.view.apps.Apps', {
             '<p class="apps-title">' + 'Service Apps'.t() + '</p>' +
             '<tpl for=".">' +
                 '<tpl if="type === \'SERVICE\'">' +
-                '<a href="#config" class="app-item">' +
+                '<a href="{url}" class="app-item">' +
                 '<span class="state {targetState}"><i class="fa fa-power-off"></i></span>' +
                 '<img src="' + '/skins/modern-rack/images/admin/apps/{name}_80x80.png" width=80 height=80/>' +
                 '<span class="app-name">{displayName}</span>' +
