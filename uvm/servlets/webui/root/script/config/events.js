@@ -49,7 +49,7 @@ Ext.define('Webui.config.events', {
     buildAlertRules: function() {
         this.panelAlertRules = Ext.create('Ext.panel.Panel',{
             name: 'alertRules',
-            helpSource: 'alert_rules',
+            helpSource: 'events_alert_rules',
             title: i18n._('Alert Rules'),
             layout: { type: 'vbox', align: 'stretch' },
             cls: 'ung-panel',
