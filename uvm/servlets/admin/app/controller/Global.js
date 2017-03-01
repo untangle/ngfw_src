@@ -108,12 +108,18 @@ Ext.define('Ung.controller.Global', {
                 this.getAppsView().setActiveItem('installableApps');
             } else {
                 me.getMainView().setLoading(true);
+                var policy = Ext.getStore('policies').findRecord('policyId', policyId);
+                var nodeInstance = policy.get('instances').list.filter(function (node) {
+                    return node.nodeName === 'untangle-node-web-filter';
+                })[0];
+
                 Ext.Loader.loadScript({
                     url: 'script/apps/' + app + '.js',
                     onLoad: function () {
                         me.getMainView().setLoading(false);
                         me.getMainView().add({
                             xtype: 'app.' + app,
+                            instance: nodeInstance,
                             region: 'center',
                             itemId: 'configCard'
                         });

@@ -65,7 +65,7 @@ Ext.define('Ung.view.apps.AppsController', {
             console.log(result);
             var nodes = [];
             vm.getStore('apps').removeAll();
-
+            console.log(result[0]);
             Ext.Array.each(result[0].nodeProperties.list, function (node) {
                 nodes.push({
                     name: node.name,
