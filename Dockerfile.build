@@ -12,3 +12,5 @@ RUN mkdir -p ${SRC}
 VOLUME ${SRC}
 
 WORKDIR ${SRC}
+
+ENTRYPOINT rake install
