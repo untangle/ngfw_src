@@ -1,11 +1,11 @@
-Ext.define('Ung.view.shd.HostsController', {
+Ext.define('Ung.view.shd.DevicesController', {
     extend: 'Ext.app.ViewController',
 
-    alias: 'controller.hosts',
+    alias: 'controller.devices',
 
     control: {
         '#': {
-            afterrender: 'getHosts',
+            afterrender: 'getDevices',
             deactivate: 'onDeactivate'
         }
     },
@@ -20,9 +20,9 @@ Ext.define('Ung.view.shd.HostsController', {
         vm.set('autoRefresh', btn.pressed);
 
         if (btn.pressed) {
-            me.getHosts();
+            me.getDevices();
             this.refreshInterval = setInterval(function () {
-                me.getHosts();
+                me.getDevices();
             }, 5000);
         } else {
             clearInterval(this.refreshInterval);
@@ -30,14 +30,14 @@ Ext.define('Ung.view.shd.HostsController', {
 
     },
 
-    getHosts: function () {
+    getDevices: function () {
         var me = this,
-            grid = me.getView().down('#hostsgrid');
+            grid = me.getView().down('#devicesgrid');
         grid.getView().setLoading(true);
-        Rpc.asyncData('rpc.hostTable.getHosts')
+        Rpc.asyncData('rpc.deviceTable.getDevices')
             .then(function(result) {
                 grid.getView().setLoading(false);
-                Ext.getStore('hosts').loadData(result.list);
+                Ext.getStore('devices').loadData(result.list);
                 grid.getSelectionModel().select(0);
                 // grid.getStore().setData(result.list);
             });
