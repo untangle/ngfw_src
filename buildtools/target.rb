@@ -316,27 +316,30 @@ end
 class JsBuilder < Target
   include Rake::DSL if defined?(Rake::DSL)
 
-  def initialize(package, name, path, dest)
+  @@WEB_DEST = "usr/share/untangle/web"
+
+  def initialize(package, name, sourcePaths, webDestDir)
     @name = name
-    @path = path
+    @path = sourcePaths.kind_of?(Array) ? sourcePaths : [sourcePaths]
+    @webDestDir = webDestDir
     @targetName = "js-builder:#{package.name}-#{@name}"
-    @destDir = "#{package.distDirectory}/usr/share/untangle/web/#{dest}"
 
-    @deps = FileList["#{@path}/**/*.js"]
+    @relativeDestPath = "#{@@WEB_DEST}/#{@webDestDir}/#{@name}.js"
 
-    @destFile = "#{@name}.js"
-    @destPath = "#{@destDir}/#{@destFile}"
+    @deps = @path.map { |p| FileList["#{p}/**/*.js"] }.flatten()
+    @destPath = "#{package.distDirectory}/#{@relativeDestPath}"
 
     super(package, @deps, @targetName)
   end
 
   def all
-    info "[jsbuild ] #{@name}: #{@path} -> #{@destPath}"
+    info "[jsbuild ] #{@name}: #{@path}/**/*.js -> #{@destPath}"
     concat
 #    minify
   end
 
-  def concat    
+  def concat
+    FileUtils.mkdir_p(File.dirname(@destPath))
     File.open(@destPath, 'w') do |f|
       @deps.each do |d|
         f.write(File.open(d).read())
@@ -350,14 +353,6 @@ class JsBuilder < Target
     end
     stamptask self => @destPath
   end
-
-  # def file?
-  #   true
-  # end
-
-  # def filename
-  #   @destPath
-  # end
 
   def to_s
     @targetName
