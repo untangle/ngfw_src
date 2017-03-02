@@ -1,14 +1,17 @@
 Ext.define('Ung.view.reports.Reports', {
     extend: 'Ext.container.Container',
     xtype: 'ung.reports',
+    itemId: 'reports',
+
     layout: 'border',
 
+    /* requires-start */
     requires: [
         'Ung.view.reports.ReportsController',
         'Ung.view.reports.ReportsModel',
         'Ung.model.Category'
     ],
-
+    /* requires-end */
     controller: 'reports',
     viewModel: {
         type: 'reports'
@@ -43,9 +46,9 @@ Ext.define('Ung.view.reports.Reports', {
             */
         },
         hidden: true,
+        store: 'categories',
         bind: {
             hidden: '{areCategoriesHidden}',
-            store: '{categories}'
         },
         columns: [{
             dataIndex: 'icon',
@@ -91,10 +94,11 @@ Ext.define('Ung.view.reports.Reports', {
             },
             columns: [{
                 dataIndex: 'title',
-                width: 20,
+                width: 25,
                 renderer: function (value, meta, record) {
-                    meta.tdCls = 'app-icon';
-                    return Ung.Util.iconReportTitle(record);
+                    // meta.tdCls = 'app-icon';
+                    // return Util.iconReportTitle(record);
+                    return '<i class="fa ' + record.get('icon') + ' fa-lg"></i>';
                 }
             }, {
                 dataIndex: 'title',
@@ -117,7 +121,7 @@ Ext.define('Ung.view.reports.Reports', {
                 renderer: function (value, meta) {
                     meta.tdCls = 'app-icon';
                     if (Ext.getStore('widgets').findRecord('entryId', value)) {
-                        return '<i class="material-icons" style="font-size: 14px; color: #999;">home</i>';
+                        return '<i class="fa fa-home fa-lg" style="font-size: 14px; color: #999;"></i>';
                     }
                     return '';
                 }
@@ -133,34 +137,28 @@ Ext.define('Ung.view.reports.Reports', {
                 border: false
             },
             items: [{
-                // initial view which displays all available categories / apps
+                xtype: 'dataview',
                 itemId: 'allCategoriesCard',
-                scrollable: true,
-                layout: {
-                    type: 'vbox',
-                    align: 'stretch'
-                    //pack: 'center'
-                },
-                items: [{
-                    xtype: 'component',
-                    cls: 'headline',
-                    margin: '50 0',
-                    html: 'Please select a category first!'
-                }, {
-                    xtype: 'component',
-                    itemId: 'categoriesLoader',
-                    margin: '50 0',
-                    cls: 'loader',
-                    html: '<div class="spinner"><div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div></div>'
-                }, {
-                    xtype: 'container',
-                    itemId: 'allCategoriesList',
-                    //layout: 'fit',
-                    //maxWidth: 600,
-                    style: {
-                        textAlign: 'center'
-                    }
-                }]
+                store: 'categories',
+                tpl: '<p class="apps-title">' + 'System'.t() + '</p>' +
+                    '<tpl for=".">' +
+                        '<tpl if="type === \'system\'">' +
+                        '<a href="#reports/{url}" class="app-item">' +
+                        '<img src="{icon}" width=80 height=80/>' +
+                        '<span class="app-name">{displayName}</span>' +
+                        '</a>' +
+                        '</tpl>' +
+                    '</tpl>' +
+                    '<p class="apps-title">' + 'Apps'.t() + '</p>' +
+                    '<tpl for=".">' +
+                        '<tpl if="type === \'app\'">' +
+                        '<a href="#reports/{url}" class="app-item">' +
+                        '<img src="{icon}" width=80 height=80/>' +
+                        '<span class="app-name">{displayName}</span>' +
+                        '</a>' +
+                        '</tpl>' +
+                    '</tpl>',
+                itemSelector: 'a'
             }, {
                 // view which displays all reports from a specific category
                 itemId: 'categoryCard',
@@ -208,7 +206,7 @@ Ext.define('Ung.view.reports.Reports', {
                     bbar: [{
                         xtype: 'component',
                         margin: '0 5 0 5',
-                        html: Ung.Util.iconTitle('', 'date_range-16')
+                        html: '<i class="fa fa-calendar fa-lg"></i>'
                     }, {
                         xtype: 'button',
                         bind: {
@@ -247,7 +245,8 @@ Ext.define('Ung.view.reports.Reports', {
                             }, {
                                 xtype: 'button',
                                 itemId: 'startDateTimeBtn',
-                                text: Ung.Util.iconTitle('OK'.t(), 'check-16')
+                                text: 'OK'.t(),
+                                iconCls: 'fa fa-check fa-lg'
                             }]
                         }
                     }, {
@@ -291,19 +290,23 @@ Ext.define('Ung.view.reports.Reports', {
                             }, {
                                 xtype: 'button',
                                 itemId: 'endDateTimeBtn',
-                                text: Ung.Util.iconTitle('OK'.t(), 'check-16')
+                                text: 'OK'.t(),
+                                iconCls: 'fa fa-check fa-lg'
                             }]
                         }
                     }, '-' , {
-                        text: Ung.Util.iconTitle('Refresh'.t(), 'update-16'),
+                        text: 'Refresh'.t(),
+                        iconCls: 'fa fa-refresh fa-lg',
                         itemId: 'refreshBtn'
                     }, '->', {
                         itemId: 'downloadBtn',
-                        text: Ung.Util.iconTitle('Download'.t(), 'file_download-16')
+                        text: 'Download'.t(),
+                        iconCls: 'fa fa-download fa-lg',
                     }, '-', {
                         itemId: 'dashboardBtn',
+                        iconCls: 'fa fa-home fa-lg',
                         bind: {
-                            text: '{dashboardBtnLabel}'
+                            text: '{isWidget ? "Remove from Dashboard" : "Add to Dashboard"}'
                         }
 
                     }]
@@ -337,7 +340,8 @@ Ext.define('Ung.view.reports.Reports', {
                             bodyPadding: 5
                         },
                         items: [{
-                            title: Ung.Util.iconTitle('Style'.t(), 'color_lens-16'),
+                            title: 'Style'.t(),
+                            iconCls: 'fa fa-eyedropper fa-lg',
                             layout: {
                                 type: 'vbox',
                                 align: 'stretch'
@@ -381,8 +385,8 @@ Ext.define('Ung.view.reports.Reports', {
                                         value: '{report.enabled}'
                                     },
                                     items: [
-                                        {text: 'YES'.t(), value: true },
-                                        {text: 'NO'.t(), value: false }
+                                        { text: 'YES'.t(), iconCls: 'fa fa-check fa-lg', value: true },
+                                        { text: 'NO'.t(), iconCls: 'fa fa-times fa-lg', value: false }
                                     ]
                                 }]
                             }, {
@@ -503,9 +507,11 @@ Ext.define('Ung.view.reports.Reports', {
                                 }
                             }]
                         }, {
-                            title: Ung.Util.iconTitle('Conditions'.t(), 'find_in_page-16')
+                            title: 'Conditions'.t(),
+                            iconCls: 'fa fa-filter fa-lg'
                         }, {
-                            title: Ung.Util.iconTitle('Advanced'.t(), 'settings-16'),
+                            title: 'Advanced'.t(),
+                            iconCls: 'fa fa-cog fa-lg',
                             scrollable: true,
                             layout: {
                                 type: 'vbox',
@@ -591,8 +597,8 @@ Ext.define('Ung.view.reports.Reports', {
                                         value: '{report.orderDesc}'
                                     },
                                     items: [
-                                        {text: Ung.Util.iconTitle('Ascending'.t(), 'arrow_upward-16'), value: true },
-                                        {text: Ung.Util.iconTitle('Descending'.t(), 'arrow_downward-16'), value: false }
+                                        {text: 'Ascending'.t(), iconCls: 'fa fa-sort-amount-asc', value: true },
+                                        {text: 'Descending'.t(), iconCls: 'fa fa-sort-amount-desc' , value: false }
                                     ]
                                 }]
                             }, {
@@ -608,25 +614,24 @@ Ext.define('Ung.view.reports.Reports', {
                             }]
                         }]
                     }],
-                    fbar: [/*{
-                        text: Ung.Util.iconTitle('Preview'.t(), 'rotate_left-16'),
-                        itemId: 'applyBtn',
-                        formBind: true
-                    },*/ {
-                        text: Ung.Util.iconTitle('Remove'.t(), 'delete-16'),
+                    fbar: [{
+                        text: 'Remove'.t(),
+                        iconCls: 'fa fa-trash fa-lg',
                         itemId: 'removeBtn',
                         bind: {
                             hidden: '{report.readOnly}'
                         }
                     }, {
-                        text: Ung.Util.iconTitle('Update'.t(), 'save-16'),
+                        text: 'Update'.t(),
+                        iconCls: 'fa fa-save fa-lg',
                         itemId: 'updateBtn',
                         formBind: true,
                         bind: {
                             hidden: '{report.readOnly}'
                         }
                     }, {
-                        text: Ung.Util.iconTitle('Save as New Report'.t(), 'add-16'),
+                        text: 'Save as New Report'.t(),
+                        iconCls: 'fa fa-plus-circle fa-lg',
                         itemId: 'saveNewBtn',
                         formBind: true
                     }]

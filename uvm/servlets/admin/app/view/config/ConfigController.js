@@ -1,58 +1,80 @@
 Ext.define('Ung.view.config.ConfigController', {
     extend: 'Ext.app.ViewController',
+
     alias: 'controller.config',
 
-    init: function () {
-        this.configItems = [
-            { name: 'Network', icon: 'icon_config_network.png' },
-            { name: 'Administration', icon: 'icon_config_admin.png' },
-            { name: 'Email', icon: 'icon_config_email.png' },
-            { name: 'Local Directory', icon: 'icon_config_directory.png' },
-            { name: 'Upgrade', icon: 'icon_config_upgrade.png' },
-            { name: 'System', icon: 'icon_config_system.png' },
-            { name: 'About', icon: 'icon_config_about.png' }
-        ];
-        this.toolItems = [
-            { name: 'Sessions', icon: 'icon_config_sessions.png' },
-            { name: 'Hosts', icon: 'icon_config_hosts.png' },
-            { name: 'Devices', icon: 'icon_config_devices.png' }
-        ];
+    control: {
+        '#': {
+            deactivate: 'onDeactivate'
+        },
+        '#subNav': {
+            selectionchange: 'onSelect'
+        }
     },
 
-    onBeforeRender: function () {
-        var config, tool, i, configs = [], tools = [];
-
-        for (i = 0; i < this.configItems.length; i += 1) {
-            config = this.configItems[i];
-            configs.push({
-                xtype: 'ung.configitem',
-                name: config.name.t(),
-                icon: config.icon,
-                href: '#config/' + config.name.toLowerCase().replace(/ /g, '')
-            });
+    listen: {
+        global: {
+            loadconfig: 'onLoadConfig'
         }
-
-        for (i = 0; i < this.toolItems.length; i += 1) {
-            tool = this.toolItems[i];
-            tools.push({
-                xtype: 'ung.configitem',
-                name: tool.name.t(),
-                icon: tool.icon,
-                href: '#' + tool.name.toLowerCase().replace(/ /g, '')
-            });
-        }
-
-        this.getView().lookupReference('configs').removeAll(true);
-        this.getView().lookupReference('configs').add(configs);
-        this.getView().lookupReference('tools').removeAll(true);
-        this.getView().lookupReference('tools').add(tools);
-
     },
 
-    onItemBeforeRender: function (item) {
-        item.el.on('click', function () {
-            Ung.app.redirectTo('#config/' + item.getViewModel().get('name'), true);
+    onSelect: function (el, sel) {
+        // console.log(selected);
+        sel.selected = true;
+    },
+
+
+    onLoadConfig: function (configName, configTab) {
+        var view = this.getView();
+        if (!configName) {
+            view.setActiveItem(1);
+            return;
+        }
+
+        if (view.down('#configCard')) {
+            view.down('#configCard').destroy();
+        }
+
+        var cfgName = configName.charAt(0).toUpperCase() + configName.slice(1).toLowerCase();
+
+        console.log(cfgName);
+
+        view.down('#subNav').getStore().each(function (item) {
+            if (item.get('url') === configName) {
+                item.set('selected', 'x-item-selected');
+            } else {
+                item.set('selected', '');
+            }
         });
+
+
+        view.setLoading('Loading ' + cfgName.t() + '...');
+        console.log(cfgName);
+        Ext.require('Ung.view.config.' + cfgName.toLowerCase() + '.' + cfgName, function () {
+            view.down('#configWrapper').add({
+                xtype: 'ung.config.' + cfgName.toLowerCase(),
+                region: 'center',
+                itemId: 'configCard'
+            });
+            view.setLoading(false);
+            view.setActiveItem(2);
+            console.log(configTab);
+            if (configTab) {
+                view.down('#configCard').setActiveItem(configTab);
+            }
+            // view.getViewModel().set('currentView', cfgName.toLowerCase());
+            // console.log(view.down('#subNav'));
+        });
+    },
+
+    onDeactivate: function (view) {
+        console.log('here');
+        // if (view.down('#configCard')) {
+        //     view.setActiveItem(0);
+        //     view.down('#configCard').destroy();
+        // }
+        // view.remove('configCard');
     }
+
 
 });

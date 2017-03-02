@@ -16,28 +16,32 @@ Ext.define('Ung.view.main.MainController', {
         vm.set('policyId', 1);
     },
 
-    routes: {
-        '': 'onDashboard',
-        'apps': 'onApps',
-        'apps/:policyId': 'onApps',
-        'apps/:policyId/:node': 'onApps',
-        'config': 'onConfig',
-        'reports': 'onReports'
-    },
+    // routes: {
+    //     '': 'onDashboard',
+    //     'apps': 'onApps',
+    //     'apps/:policyId': 'onApps',
+    //     'apps/:policyId/:node': 'onApps',
+    //     'config': 'onConfig',
+    //     'config/:configName': 'onConfig',
+    //     'reports': 'onReports',
+    //     'sessions': 'onSessions',
+    //     'hosts': 'onHosts',
+    //     'devices': 'onDevices'
+    // },
 
     onBeforeRender: function(view) {
         var vm = view.getViewModel();
 
-        vm.bind('{reportsEnabled}', function(enabled) {
-            if (enabled) {
-                view.down('#main').insert(3, {
-                    xtype: 'ung.reports',
-                    itemId: 'reports'
-                });
-            } else {
-                view.down('#main').remove('reports');
-            }
-        });
+        // vm.bind('{reportsEnabled}', function(enabled) {
+        //     if (enabled) {
+        //         view.down('#main').insert(3, {
+        //             xtype: 'ung.reports',
+        //             itemId: 'reports'
+        //         });
+        //     } else {
+        //         view.down('#main').remove('reports');
+        //     }
+        // });
 
         vm.set('reportsInstalled', rpc.nodeManager.node('untangle-node-reports') !== null);
         if (rpc.nodeManager.node('untangle-node-reports')) {
@@ -55,9 +59,9 @@ Ext.define('Ung.view.main.MainController', {
         //this.getViewModel().set('activeItem', Ext.util.History.getHash());
     },
 
-    afterRender: function () {
-        this.redirectTo(Ext.util.History.getHash(), true);
-    },
+    // afterRender: function () {
+    //     this.redirectTo(Ext.util.History.getHash(), true);
+    // },
 
     onDashboard: function () {
         console.log('on dashboard');
@@ -67,15 +71,17 @@ Ext.define('Ung.view.main.MainController', {
     onApps: function (policyId, node) {
         console.log('on apps');
         var vm = this.getViewModel();
-        var _policyId = policyId || 1,
-            _currentPolicy = vm.get('policyId'),
-            _newPolicy;
+        // var _policyId = policyId || 1,
+        //     _currentPolicy = vm.get('policyId'),
+        //     _newPolicy;
 
         //if (!_currentPolicy || _currentPolicy.get('policyId') !== policyId) {
             //_newPolicy = Ext.getStore('policies').findRecord('policyId', _policyId) || Ext.getStore('policies').findRecord('policyId', 1);
 
         vm.set('policyId', policyId);
         //}
+        // var view = 'Ung.view.apps.Apps';
+        // var ctrl = Ung.app.getController('Ung.view.apps.AppsController');
 
         if (node) {
             if (node === 'install') {
@@ -85,16 +91,50 @@ Ext.define('Ung.view.main.MainController', {
                 vm.set('activeItem', 'settings');
             }
         } else {
-            vm.set('activeItem', 'apps', true);
+            vm.set('activeItem', 'apps');
         }
     },
 
-    onConfig: function () {
+    onConfig: function (configName) {
         this.getViewModel().set('activeItem', 'config');
+        var view = this.getView();
+        this.getViewModel().set('activeItem', 'config');
+        if (configName) {
+            Ext.require('Ung.view.config.network.Network', function () {
+                view.down('#config').add({
+                    xtype: 'ung.config.network'
+                });
+                view.down('#config').setActiveItem(1);
+            });
+        } else {
+            view.down('#config').setActiveItem(0);
+        }
     },
 
     onReports: function () {
         this.getViewModel().set('activeItem', 'reports');
+    },
+
+
+    // sessions, hosts, devices
+
+    onSessions: function () {
+        // this.setShd('sessions');
+        this.getViewModel().set('activeItem', 'sessions');
+    },
+
+    onHosts: function () {
+        this.setShd('hosts');
+    },
+
+    onDevices: function () {
+        this.setShd('devices');
+    },
+
+    setShd: function (viewName) {
+        this.getViewModel().set('activeItem', 'shd');
+        this.getViewModel().set('shdActiveItem', viewName);
+        this.getView().down('#shdcenter').setActiveItem(viewName);
     }
 
 });
