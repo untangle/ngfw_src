@@ -110,20 +110,34 @@ Ext.define('Ung.controller.Global', {
                 me.getMainView().setLoading(true);
                 var policy = Ext.getStore('policies').findRecord('policyId', policyId);
                 var nodeInstance = policy.get('instances').list.filter(function (node) {
-                    return node.nodeName === 'untangle-node-web-filter';
+                    return node.nodeName === Util.appsMapping[app];
                 })[0];
 
                 Ext.Loader.loadScript({
                     url: 'script/apps/' + app + '.js',
                     onLoad: function () {
-                        me.getMainView().setLoading(false);
-                        me.getMainView().add({
-                            xtype: 'app.' + app,
-                            instance: nodeInstance,
-                            region: 'center',
-                            itemId: 'configCard'
+                        Ext.Deferred.sequence([
+                            Rpc.asyncPromise('rpc.nodeManager.node', nodeInstance.id),
+                            // Rpc.asyncPromise('rpc.networkManager.getInterfaceStatus'),
+                            // Rpc.asyncPromise('rpc.networkManager.getDeviceStatus'),
+                        ], this).then(function (result) {
+                            me.getMainView().setLoading(false);
+                            // me.getView().nodeManager = result[0];
+                            me.getMainView().add({
+                                xtype: 'app.' + app,
+                                region: 'center',
+                                itemId: 'configCard',
+                                appManager: result[0],
+                                viewModel: {
+                                    data: {
+                                        instance: nodeInstance,
+                                    }
+                                }
+                            });
+                            me.getMainView().setActiveItem('configCard');
+                        }, function (ex) {
+                            Util.exceptionToast(ex);
                         });
-                        me.getMainView().setActiveItem('configCard');
 
                         // if (configView) {
                         //     console.log('here');

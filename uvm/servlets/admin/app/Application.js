@@ -28,7 +28,14 @@ Ext.define('Ung.Application', {
 
         Ext.getStore('policies').loadData(rpc.appsViews);
 
+
         Metrics.start();
+        // setTimeout(function () {
+        //     Metrics.start();
+        // }, (10 - (new Date()).getSeconds() % 10) * 1000);
+
+
+
 
         Ext.get('app-loader').destroy();
 
