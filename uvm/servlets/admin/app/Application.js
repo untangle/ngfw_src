@@ -1,46 +1,45 @@
 // test
 Ext.define('Ung.Application', {
     extend: 'Ext.app.Application',
+    namespace: 'Ung',
+
     autoCreateViewport: false,
     name: 'Ung',
 
     rpc: null,
 
-    requires: [
-        'Ung.rpc.Rpc',
-        'Ung.util.Util',
-        'Ung.util.Metrics',
-        'Ung.view.main.Main',
-        'Ung.overrides.form.field.VTypes'
-    ],
-
-
-    stores: [
-        'Policies', 'Metrics', 'Stats', 'Reports', 'Widgets', 'Conditions', 'Countries', 'Categories', 'UnavailableApps'
-    ],
+    controllers: ['Global'],
 
     defaultToken : '',
 
-    // mainView: 'Ung.view.main.Main',
+    mainView: 'Ung.view.main.Main',
 
     init: function () {
-
+        if (!rpc.translations.decimal_sep) { rpc.translations.decimal_sep = '.'; }
+        if (!rpc.translations.thousand_sep) { rpc.translations.thousand_sep = ','; }
+        if (!rpc.translations.date_fmt) { rpc.translations.date_fmt = 'Y-m-d'; }
+        if (!rpc.translations.timestamp_fmt) { rpc.translations.timestamp_fmt = 'Y-m-d h:i:s a'; }
     },
 
     launch: function () {
+        // var me = this;
+        // Rpc.rpc = me.rpc;
+        // rpc.isExpertMode = true;
 
-        var me = this;
-        Rpc.rpc = me.rpc;
+        Ext.getStore('policies').loadData(rpc.appsViews);
 
-        Ext.getStore('policies').loadData(me.rpc.appsViews);
+        Metrics.start();
 
-        Ung.util.Metrics.start();
+        Ext.get('app-loader').destroy();
+
+        rpc.reportsManager = rpc.nodeManager.node('untangle-node-reports').getReportsManager();
 
         Ext.Deferred.parallel([
-            Rpc.getDashboardSettings,
-            Rpc.getReports,
-            Rpc.getUnavailableApps
+            Rpc.asyncPromise('rpc.dashboardManager.getSettings'),
+            Rpc.asyncPromise('rpc.reportsManager.getReportEntries'),
+            Rpc.asyncPromise('rpc.reportsManager.getUnavailableApplicationsMap')
         ]).then(function (result) {
+            // Ext.get('app-loader').destroy();
             Ung.dashboardSettings = result[0];
             Ext.getStore('widgets').loadData(result[0].widgets.list);
             if (result[1]) {
@@ -49,7 +48,9 @@ Ext.define('Ung.Application', {
             if (result[2]) {
                 Ext.getStore('unavailableApps').loadRawData(result[2].map);
             }
-            me.loadMainView();
+
+            Ext.fireEvent('init');
+            // me.loadMainView();
             //console.log(reports);
             //this.setWidgets();
         }, function (exception) {
@@ -80,7 +81,7 @@ Ext.define('Ung.Application', {
         //     //     // load unavailable apps needed for showing the widgets
         //     //     console.time('unavailApps');
         //     //     rpc.reportsManager.getUnavailableApplicationsMap(function (result, ex) {
-        //     //         if (ex) { Ung.Util.exceptionToast(ex); return false; }
+        //     //         if (ex) { Util.exceptionToast(ex); return false; }
 
         //     //         Ext.getStore('unavailableApps').loadRawData(result.map);
         //     //         Ext.getStore('widgets').loadData(settings.widgets.list);
@@ -95,21 +96,21 @@ Ext.define('Ung.Application', {
         // });
 
         // uncomment this to retreive the class load order inside browser
-        // Ung.Util.getClassOrder();
+        // Util.getClassOrder();
     },
 
     loadMainView: function () {
-        Ung.util.Metrics.start();
+        Util.Metrics.start();
         try {
             Ung.app.setMainView('Ung.view.main.Main');
         } catch (ex) {
             console.error(ex);
-            Ung.Util.exceptionToast(ex);
+            Util.exceptionToast(ex);
             return;
         }
 
         // start metrics
-        Ext.get('app-loader').destroy();
+        // Ext.get('app-loader').destroy();
 
         // destroy app loader
         // Ext.get('app-loader').addCls('removing');

@@ -7,7 +7,7 @@ Ext.define('Ung.view.reports.ReportsController', {
     },
 
     control: {
-        '#': { beforeactivate: 'onBeforeActivate', beforedeactivate: 'onBeforeDeactivate' },
+        '#': { activate: 'onBeforeActivate', beforedeactivate: 'onBeforeDeactivate' },
         '#categoriesGrid': { selectionchange: 'onCategorySelect' },
         '#reportsGrid': { selectionchange: 'onReportSelect' },
         '#chart': { afterrender: 'fetchReportData' },
@@ -31,6 +31,17 @@ Ext.define('Ung.view.reports.ReportsController', {
         '#dashboardBtn': { click: 'toggleDashboardWidget' }
     },
 
+    listen: {
+        global: {
+            init: 'getCurrentApplications',
+        },
+        store: {
+            '#categories': {
+                datachanged: 'onCategoriesLoad'
+            }
+        }
+    },
+
     /*
     listen: {
         store: {
@@ -40,6 +51,16 @@ Ext.define('Ung.view.reports.ReportsController', {
         }
     },
     */
+
+    onCategoriesLoad: function () {
+        // reports are already loaded
+        // console.log('cat load');
+        var vm = this.getViewModel();
+        if (vm.get('category')) {
+            var cat = Ext.getStore('categories').findRecord('categoryName', vm.get('category'));
+            this.getView().down('#categoriesGrid').getSelectionModel().select(cat);
+        }
+    },
 
     onBeforeActivate: function () {
         var vm = this.getViewModel();
@@ -72,84 +93,93 @@ Ext.define('Ung.view.reports.ReportsController', {
         vm.set({
             isNodeReporting: false,
             activeCard: 'allCategoriesCard',
-            category: null,
+            // category: null,
             report: null,
             categoriesData: null,
             startDateTime: null,
             endDateTime: null
         });
 
-        this.getCurrentApplications();
+        var me = this;
+        vm.bind('{category}', function (category) {
+            if (category) {
+                var cat = Ext.getStore('categories').findRecord('categoryName', category);
+                me.getView().down('#categoriesGrid').getSelectionModel().select(cat);
+            } else {
+                me.onBeforeDeactivate();
+            }
+        });
     },
 
     onBeforeDeactivate: function () {
         this.getView().down('#categoriesGrid').getSelectionModel().deselectAll();
         this.getView().down('#reportsGrid').getSelectionModel().deselectAll();
+        this.getViewModel().set('activeCard', 'allCategoriesCard');
         Ext.getStore('reports').clearFilter();
     },
 
     getCurrentApplications: function () {
-        var app, i, vm = this.getViewModel(), me = this;
+        var app, i;
         var categories = [
-            { categoryName: 'Hosts', displayName: 'Hosts'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_hosts.png' },
-            { categoryName: 'Devices', displayName: 'Devices'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_devices.png' },
-            { categoryName: 'Network', displayName: 'Network'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_network.png' },
-            { categoryName: 'Administration', displayName: 'Administration'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_admin.png' },
-            { categoryName: 'System', displayName: 'System'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_system.png' },
-            { categoryName: 'Shield', displayName: 'Shield'.t(), icon: resourcesBaseHref + '/skins/modern-rack/images/admin/apps/untangle-node-shield_17x17.png' }
+            { categoryName: 'Hosts', type: 'system', url: 'hosts', displayName: 'Hosts'.t(), icon: '/skins/modern-rack/images/admin/config/icon_config_hosts.png' },
+            { categoryName: 'Devices', type: 'system', url: 'devices', displayName: 'Devices'.t(), icon: '/skins/modern-rack/images/admin/config/icon_config_devices.png' },
+            { categoryName: 'Network', type: 'system', url: 'network', displayName: 'Network'.t(), icon: '/skins/modern-rack/images/admin/config/icon_config_network.png' },
+            { categoryName: 'Administration', type: 'system', url: 'administration', displayName: 'Administration'.t(), icon: '/skins/modern-rack/images/admin/config/icon_config_admin.png' },
+            { categoryName: 'System', type: 'system', url: 'system', displayName: 'System'.t(), icon: '/skins/modern-rack/images/admin/config/icon_config_system.png' },
+            { categoryName: 'Shield', type: 'system', url: 'shield', displayName: 'Shield'.t(), icon: '/skins/modern-rack/images/admin/apps/untangle-node-shield_17x17.png' }
         ];
 
-        rpc.reportsManager.getCurrentApplications(function (result, ex) {
-            if (ex) { Ung.Util.exceptionToast(ex); return false; }
 
+        Rpc.asyncData('rpc.reportsManager.getCurrentApplications').then(function (result) {
             for (i = 0; i < result.list.length; i += 1) {
                 app = result.list[i];
                 if (app.name !== 'untangle-node-branding-manager' && app.name !== 'untangle-node-live-support') {
                     categories.push({
                         categoryName: app.displayName,
-                        appName: app.name,
+                        type: 'app',
+                        url: app.name.replace('untangle-node-', ''),
                         displayName: app.displayName, // t()
-                        icon: resourcesBaseHref + '/skins/modern-rack/images/admin/apps/' + app.name + '_80x80.png'
+                        icon: '/skins/modern-rack/images/admin/apps/' + app.name + '_80x80.png'
                     });
                 }
             }
             Ext.getStore('categories').loadData(categories);
-            vm.set('categoriesData', Ext.getStore('categories').getRange());
-            //me.getView().down('#categoriesGrid').getSelectionModel().select(0);
+            // vm.set('categoriesData', Ext.getStore('categories').getRange());
+            // //me.getView().down('#categoriesGrid').getSelectionModel().select(0);
 
-            var allCategItems = [];
-            categories.forEach(function (category, idx) {
-                allCategItems.push({
-                    xtype: 'button',
-                    baseCls: 'category-btn',
-                    html: '<img src="' + category.icon + '"/><br/><span>' + category.displayName + '</span>',
-                    index: idx,
-                    handler: function () {
-                        me.getView().down('#categoriesGrid').getSelectionModel().select(this.index);
-                    }
-                });
-            });
-            me.getView().down('#allCategoriesList').removeAll();
+            // var allCategItems = [];
+            // categories.forEach(function (category, idx) {
+            //     allCategItems.push({
+            //         xtype: 'button',
+            //         baseCls: 'category-btn',
+            //         html: '<img src="' + category.icon + '"/><br/><span>' + category.displayName + '</span>',
+            //         index: idx,
+            //         handler: function () {
+            //             me.getView().down('#categoriesGrid').getSelectionModel().select(this.index);
+            //         }
+            //     });
+            // });
+            // me.getView().down('#allCategoriesList').removeAll();
 
-            if (me.getView().down('#categoriesLoader')) {
-                me.getView().down('#categoriesLoader').destroy();
-            }
+            // if (me.getView().down('#categoriesLoader')) {
+            //     me.getView().down('#categoriesLoader').destroy();
+            // }
 
-            me.getView().down('#allCategoriesList').add(allCategItems);
+            // me.getView().down('#allCategoriesList').add(allCategItems);
         });
     },
 
     getAvailableTables: function() {
         var me = this;
         if (rpc.reportsManager) {
-            rpc.reportsManager.getTables(function (result, ex) {
-                if (ex) { Ung.Util.exceptionToast(ex); return false; }
+            Rpc.asyncData('rpc.reportsManager.getTables').then(function (result) {
                 me.getViewModel().set('tableNames', result);
             });
         }
     },
 
     onCategorySelect: function (selModel, records) {
+        console.log('here');
         if (records.length === 0) {
             return false;
         }
@@ -161,7 +191,10 @@ Ext.define('Ung.view.reports.ReportsController', {
 
         this.getView().down('#reportsGrid').getSelectionModel().deselectAll();
 
+        Ung.app.redirectTo('#reports/' + records[0].get('url'));
+
         // filter reports based on selected category
+        console.log(records[0].get('categoryName'));
         Ext.getStore('reports').filter({
             property: 'category',
             value: records[0].get('categoryName'),
@@ -178,8 +211,8 @@ Ext.define('Ung.view.reports.ReportsController', {
         this.getView().down('#categoryReportsList').removeAll();
         Ext.getStore('reports').getRange().forEach(function (report) {
 
-            entryHtml = Ung.Util.iconReportTitle(report);
-            entryHtml += '<span class="ttl">' + (report.get('readOnly') ? report.get('title').t() : report.get('title')) + '</span><p>' +
+            // entryHtml = Util.iconReportTitle(report);
+            entryHtml = '<i class="fa ' + report.get('icon') + ' fa-lg"></i><span class="ttl">' + (report.get('readOnly') ? report.get('title').t() : report.get('title')) + '</span><p>' +
                           (report.get('readOnly') ? report.get('description').t() : report.get('description')) + '</p>';
             entries.push({
                 xtype: 'button',
@@ -260,23 +293,30 @@ Ext.define('Ung.view.reports.ReportsController', {
         chart.fireEvent('beginfetchdata');
 
         if (vm.get('report.type') !== 'EVENT_LIST') {
-            rpc.reportsManager.getDataForReportEntry(function (result, ex) {
-                if (ex) { Ung.Util.exceptionToast(ex); return false; }
-                chart.fireEvent('setseries', result.list);
-            }, chart.getEntry().getData(), vm.get('startDateTime'), vm.get('endDateTime'), -1);
+
+            Rpc.asyncData('rpc.reportsManager.getDataForReportEntry',
+                           chart.getEntry().getData(),
+                           vm.get('startDateTime'),
+                           vm.get('endDateTime'), -1)
+                .then(function(result) {
+                    chart.fireEvent('setseries', result.list);
+                });
         } else {
             var extraCond = null, limit = 100;
-            rpc.reportsManager.getEventsForDateRangeResultSet(function (result, ex) {
-                if (ex) { Ung.Util.exceptionToast(ex); return false; }
-                //console.log(result);
-                //this.loadResultSet(result);
-                result.getNextChunk(function (result2, ex2) {
-                    if (ex2) { Ung.Util.exceptionToast(ex2); return false; }
-                    console.log(result2);
-                    chart.fireEvent('setdata', result2.list);
-                }, 100);
+            Rpc.asyncData('rpc.reportsManager.getEventsForDateRangeResultSet',
+                           chart.getEntry().getData(),
+                           extraCond,
+                           limit,
+                           vm.get('startDateTime'),
+                           vm.get('endDateTime'))
+                .then(function(result) {
+                    result.getNextChunk(function (result2, ex2) {
+                        if (ex2) { Util.exceptionToast(ex2); return false; }
+                        // console.log(result2);
+                        chart.fireEvent('setdata', result2.list);
+                    }, 100);
 
-            }, chart.getEntry().getData(), extraCond, limit,  vm.get('startDateTime'), vm.get('endDateTime'));
+                });
         }
     },
 
@@ -349,24 +389,24 @@ Ext.define('Ung.view.reports.ReportsController', {
         report.set('uniqueId', 'report-' + Math.random().toString(36).substr(2));
         report.set('readOnly', false);
 
-        rpc.reportsManager.saveReportEntry(function (result, ex) {
-            if (ex) { Ung.Util.exceptionToast(ex); return false; }
-            vm.get('report').reject();
-            Ext.getStore('reports').add(report);
-            report.commit();
-            me.getView().down('#reportsGrid').getSelectionModel().select(report);
-            Ung.Util.successToast('<span style="color: yellow; font-weight: 600;">' + report.get('title') + ' report added!');
-        }, report.getData());
+        Rpc.asyncData('rpc.reportsManager.saveReportEntry', report.getData())
+            .then(function(result) {
+                vm.get('report').reject();
+                Ext.getStore('reports').add(report);
+                report.commit();
+                me.getView().down('#reportsGrid').getSelectionModel().select(report);
+                Util.successToast('<span style="color: yellow; font-weight: 600;">' + report.get('title') + ' report added!');
+            });
     },
 
     updateReport: function () {
         var vm = this.getViewModel();
 
-        rpc.reportsManager.saveReportEntry(function (result, ex) {
-            if (ex) { Ung.Util.exceptionToast(ex); return false; }
-            vm.get('report').commit();
-            Ung.Util.successToast('<span style="color: yellow; font-weight: 600;">' + vm.get('report.title') + '</span> report updated!');
-        }, vm.get('report').getData());
+        Rpc.asyncData('rpc.reportsManager.saveReportEntry', vm.get('report').getData())
+            .then(function(result) {
+                vm.get('report').commit();
+                Util.successToast('<span style="color: yellow; font-weight: 600;">' + vm.get('report.title') + '</span> report updated!');
+            });
     },
 
     removeReport: function () {
@@ -378,17 +418,16 @@ Ext.define('Ung.view.reports.ReportsController', {
             'Do you want to continue?'.t(),
             function (btn) {
                 if (btn === 'yes') {
-                    rpc.reportsManager.removeReportEntry(function (result, ex) {
-                        if (ex) { Ung.Util.exceptionToast(ex); return false; }
+                    Rpc.asyncData('rpc.reportsManager.removeReportEntry', vm.get('report').getData())
+                        .then(function(result) {
+                            Ext.getStore('reports').remove(vm.get('report'));
+                            me.buildReportsList();
+                            me.getView().down('#reportsGrid').getSelectionModel().deselectAll();
 
-                        Ext.getStore('reports').remove(vm.get('report'));
-                        me.buildReportsList();
-                        me.getView().down('#reportsGrid').getSelectionModel().deselectAll();
+                            Util.successToast('Report removed!');
 
-                        Ung.Util.successToast('Report removed!');
-
-                        me.toggleDashboardWidget();
-                    }, vm.get('report').getData());
+                            me.toggleDashboardWidget();
+                        });
                 }
             });
     },
@@ -401,15 +440,16 @@ Ext.define('Ung.view.reports.ReportsController', {
             if (record) {
                 Ext.getStore('widgets').remove(record);
                 Ung.dashboardSettings.widgets.list = Ext.Array.pluck(Ext.getStore('widgets').getRange(), 'data');
-                rpc.dashboardManager.setSettings(function (result, ex) {
-                    if (ex) { Ung.Util.exceptionToast(ex); return; }
-                    Ung.Util.successToast('<span style="color: yellow; font-weight: 600;">' + vm.get('report.title') + '</span> was removed from dashboard!');
-                    Ext.GlobalEvents.fireEvent('removewidget', vm.get('report.uniqueId'));
-                    vm.set('isWidget', !vm.get('isWidget'));
-                    me.getView().down('#reportsGrid').getView().refresh();
-                }, Ung.dashboardSettings);
+
+                Rpc.asyncData('rpc.dashboardManager.setSettings', Ung.dashboardSettings)
+                    .then(function(result) {
+                        Util.successToast('<span style="color: yellow; font-weight: 600;">' + vm.get('report.title') + '</span> was removed from dashboard!');
+                        Ext.GlobalEvents.fireEvent('removewidget', vm.get('report.uniqueId'));
+                        vm.set('isWidget', !vm.get('isWidget'));
+                        me.getView().down('#reportsGrid').getView().refresh();
+                    });
             } else {
-                Ung.Util.exceptionToast('<span style="color: yellow; font-weight: 600;">' + vm.get('report.title') + '</span> was not found on Dashboard!');
+                Util.exceptionToast('<span style="color: yellow; font-weight: 600;">' + vm.get('report.title') + '</span> was not found on Dashboard!');
             }
         } else {
             // add to dashboard
@@ -425,13 +465,15 @@ Ext.define('Ung.view.reports.ReportsController', {
             Ext.getStore('widgets').add(record);
 
             Ung.dashboardSettings.widgets.list = Ext.Array.pluck(Ext.getStore('widgets').getRange(), 'data');
-            rpc.dashboardManager.setSettings(function (result, ex) {
-                if (ex) { Ung.Util.exceptionToast(ex); return; }
-                Ung.Util.successToast('<span style="color: yellow; font-weight: 600;">' + vm.get('report.title') + '</span> was added to dashboard!');
-                Ext.GlobalEvents.fireEvent('addwidget', record, vm.get('report'));
-                vm.set('isWidget', !vm.get('isWidget'));
-                me.getView().down('#reportsGrid').getView().refresh();
-            }, Ung.dashboardSettings);
+
+            Rpc.asyncData('rpc.dashboardManager.setSettings', Ung.dashboardSettings)
+                .then(function (result, ex) {
+                    if (ex) { Util.exceptionToast(ex); return; }
+                    Util.successToast('<span style="color: yellow; font-weight: 600;">' + vm.get('report.title') + '</span> was added to dashboard!');
+                    Ext.GlobalEvents.fireEvent('addwidget', record, vm.get('report'));
+                    vm.set('isWidget', !vm.get('isWidget'));
+                    me.getView().down('#reportsGrid').getView().refresh();
+                });
         }
     }
 

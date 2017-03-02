@@ -5,6 +5,8 @@ Ext.define('Ung.view.node.Settings', {
     extend: 'Ext.panel.Panel',
     xtype: 'ung.nodesettings',
     layout: 'border',
+
+    /* requires-start */
     requires: [
         'Ung.view.node.SettingsController',
         'Ung.view.node.SettingsModel',
@@ -14,10 +16,9 @@ Ext.define('Ung.view.node.Settings', {
         'Ung.model.NodeMetric',
         'Ung.view.grid.Grid',
         'Ung.view.grid.Conditions',
-        'Ung.view.grid.ActionColumn',
         'Ung.model.GenericRule'
     ],
-
+    /* requires-end */
     controller: 'nodesettings',
     viewModel: {
         type: 'nodesettings'
@@ -65,11 +66,11 @@ Ext.define('Ung.view.node.Settings', {
         dock: 'bottom',
         items: [{
             xtype: 'button',
-            text: Ung.Util.iconTitle('Remove', 'remove_circle-16'),
+            text: 'Remove',
             handler: 'removeNode'
         }, {
             xtype: 'button',
-            text: Ung.Util.iconTitle('Save', 'save-16'),
+            text: 'Save',
             handler: 'saveSettings'
         }]
     }]

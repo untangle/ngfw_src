@@ -1,10 +1,11 @@
 Ext.define('Ung.chart.NodeChart', {
     extend: 'Ext.container.Container',
     alias: 'widget.nodechart',
+    /* requires-start */
     requires: [
         'Ung.chart.NodeChartController'
     ],
-
+    /* requires-end */
     controller: 'nodechart',
     viewModel: true,
 

@@ -1,10 +1,11 @@
 Ext.define('Ung.chart.TimeChart', {
     extend: 'Ext.container.Container',
     alias: 'widget.timechart',
+    /* requires-start */
     requires: [
         'Ung.chart.TimeChartController'
     ],
-
+    /* requires-end */
     controller: 'timechart',
     viewModel: true,
 
@@ -30,7 +31,6 @@ Ext.define('Ung.chart.TimeChart', {
         xtype: 'component',
         reference: 'loader',
         cls: 'loader',
-        hideMode: 'visibility',
-        html: '<div class="spinner"><div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div></div>'
+        hideMode: 'visibility'
     }]
 });
