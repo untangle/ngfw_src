@@ -313,6 +313,57 @@ class CopyFiles < Target
   end
 end
 
+class JsBuilder < Target
+  include Rake::DSL if defined?(Rake::DSL)
+
+  def initialize(package, name, path, dest)
+    @name = name
+    @path = path
+    @targetName = "js-builder:#{package.name}-#{@name}"
+    @destDir = "#{package.distDirectory}/usr/share/untangle/web/#{dest}"
+
+    @deps = FileList["#{@path}/**/*.js"]
+
+    @destFile = "#{@name}.js"
+    @destPath = "#{@destDir}/#{@destFile}"
+
+    super(package, @deps, @targetName)
+  end
+
+  def all
+    info "[jsbuild ] #{@name}: #{@path} -> #{@destPath}"
+    concat
+#    minify
+  end
+
+  def concat    
+    File.open(@destPath, 'w') do |f|
+      @deps.each do |d|
+        f.write(File.open(d).read())
+      end
+    end
+  end
+
+  def make_dependencies
+    file @destPath => @deps do 
+      all
+    end
+    stamptask self => @destPath
+  end
+
+  # def file?
+  #   true
+  # end
+
+  # def filename
+  #   @destPath
+  # end
+
+  def to_s
+    @targetName
+  end
+end
+
 class ServletBuilder < Target
   JspcClassPath = ['apache-ant-1.6.5/lib/ant.jar'].map { |n|
     "#{BuildEnv::downloads}/#{n}"
