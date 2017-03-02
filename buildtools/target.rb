@@ -334,16 +334,30 @@ class JsBuilder < Target
 
   def all
     info "[jsbuild ] #{@name}: #{@path}/**/*.js -> #{@destPath}"
-    concat
-#    minify
+    # read all deps into memory, as an array of content
+    data = @deps.map { |d| File.open(d).read() }
+
+    # start pipe'ing operations on that array
+    data = remove_comment(data)
+    data = minimize(data)
+
+    write(data) # write to destination file
   end
 
-  def concat
+  def minimize(data)
+    return data # FIXME: change no-op to actual minimizing
+  end
+
+  def remove_comment(data)
+    data.map do |d|
+      d.sub(/^\s*\/\*\s*requires-start\s*\*\/.+?^.*?\/\*\srequires-end\s*\*\/\s*$/m, "")
+    end
+  end
+
+  def write(data)
     FileUtils.mkdir_p(File.dirname(@destPath))
     File.open(@destPath, 'w') do |f|
-      @deps.each do |d|
-        f.write(File.open(d).read())
-      end
+      data.each { |d| f.write(d) }
     end
   end
 
