@@ -339,19 +339,29 @@ class JsBuilder < Target
 
     # start pipe'ing operations on that array
     data = remove_comment(data)
+    data = jshint(data)
     data = minimize(data)
 
     write(data) # write to destination file
-  end
-
-  def minimize(data)
-    return data # FIXME: change no-op to actual minimizing
   end
 
   def remove_comment(data)
     data.map do |d|
       d.sub(/^\s*\/\*\s*requires-start\s*\*\/.+?^.*?\/\*\srequires-end\s*\*\/\s*$/m, "")
     end
+  end
+
+  def jshint(data)
+    # FIXME: 2 options
+    #   1. change no-op to actual jshint call
+    #   2. remove this function and pass admin/**/*.js files to global
+    #      rake jslint target
+    return data
+  end
+
+  def minimize(data)
+    # FIXME: change no-op to actually minimizing passed-in content
+    return data
   end
 
   def write(data)
