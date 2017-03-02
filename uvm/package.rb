@@ -105,6 +105,32 @@ if ( jsFiles.length > 0 )
   end
 end
 
+JsBuilder.new(uvm_lib, "ung-all", "uvm/servlets/admin/app", "admin/script")
+
+['about', 'administration', 'email', 'localdirectory', 'network',
+ 'system', 'upgrade'].each do |n|
+  JsBuilder.new(uvm_lib, n, "uvm/servlets/admin/config/#{n}", "admin/script/config")
+end
+
+['adblocker', 'applicationcontrol', 'bandwidthcontrol',
+ 'brandingmanager', 'captiveportal', 'configurationbackup',
+ 'directoryconnector', 'firewall', 'intrusionprevention',
+ 'ipsecvpn', 'livesupport', 'openvpn', 'phishblocker',
+ 'policymanager', 'reports', 'spamblocker', 'sslinspector',
+ 'virusblocker', 'wanbalancer', 'wanfailover', 'webcache',
+ 'webfilter'].each do |n|
+  JsBuilder.new(uvm_lib, n, "uvm/servlets/admin/apps/#{n}", "admin/script/apps")
+end
+
+# FIXME: uncomment at some point
+# adminJsFiles = FileList["./uvm/servlets/admin/**/*.js"]
+# if ( adminJsFiles.length > 0 )
+#   adminJsFiles.each do |f|
+#     jsl = JsLintTarget.new(uvm_lib, [f], 'jslint', f)
+#     BuildEnv::SRC.jsLintTarget.register_dependency(jsl)
+#   end
+# end
+
 poFiles = FileList["./i18ntools/po/**/*.po"]
 if ( poFiles.length > 0 )
   poFiles.each do |f|
