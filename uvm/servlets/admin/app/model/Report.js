@@ -31,7 +31,12 @@ Ext.define ('Ung.model.Report', {
         'uniqueId',
         'units',
 
-
+        {
+            name: 'localizedTitle',
+            calculate: function (entry) {
+                return entry.title.t();
+            }
+        },
         {
             name: 'icon',
             calculate: function (entry) {

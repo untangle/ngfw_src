@@ -1,10 +1,25 @@
-Ext.define('Ung.chart.NodeChartController', {
+Ext.define('Ung.cmp.AppSessionsController', {
     extend: 'Ext.app.ViewController',
-    alias: 'controller.nodechart',
+    alias: 'controller.appsessions',
 
     init: function () {
         this.defaultColors = ['#00b000', '#3030ff', '#009090', '#00ffff', '#707070', '#b000b0', '#fff000', '#b00000', '#ff0000', '#ff6347', '#c0c0c0'];
     },
+
+    control: {
+        '#': {
+            afterrender: 'onAfterRender',
+            resize: 'onResize'
+        }
+    },
+    listen: {
+        store: {
+            '#metrics': {
+                datachanged: 'onAddPoint'
+            }
+        }
+    },
+    updateMetricsCount: 0,
 
     onAfterRender: function (view) {
         this.chart = new Highcharts.Chart({
@@ -12,15 +27,20 @@ Ext.define('Ung.chart.NodeChartController', {
                 type: 'areaspline',
                 //zoomType: 'x',
                 renderTo: view.lookupReference('nodechart').getEl().dom,
-                marginBottom: 15,
+                marginBottom: 20,
                 marginRight: 0,
-                //padding: [0, 0, 0, 0],
+                marginLeft: 0,
+                marginTop: 10,
+                padding: [0, 0, 0, 0],
                 backgroundColor: 'transparent',
                 animation: true,
                 style: {
                     fontFamily: 'Source Sans Pro',
                     fontSize: '12px'
                 }
+            },
+            exporting: {
+                enabled: false
             },
             title: null,
             credits: {
@@ -60,7 +80,7 @@ Ext.define('Ung.chart.NodeChartController', {
                 gridLineDashStyle: 'dash',
                 gridLineColor: '#EEE',
                 minRange: 1,
-                tickPixelInterval: 30,
+                tickPixelInterval: 50,
                 tickLength: 5,
                 tickWidth: 1,
                 //tickPosition: 'inside',
@@ -69,7 +89,7 @@ Ext.define('Ung.chart.NodeChartController', {
                 maxPadding: 0,
                 opposite: false,
                 labels: {
-                    align: 'right',
+                    align: 'left',
                     useHTML: true,
                     padding: 0,
                     style: {
@@ -83,24 +103,24 @@ Ext.define('Ung.chart.NodeChartController', {
                         //textShadow: '1px 1px 1px #000'
                         lineHeight: '11px'
                     },
-                    x: -10,
+                    x: 2,
                     y: 5
-                },
-                title: {
-                    align: 'high',
-                    offset: -10,
-                    y: 3,
-                    //rotation: 0,
-                    //text: entry.units,
-                    text: 'sessions',
-                    //textAlign: 'left',
-                    style: {
-                        fontFamily: 'Source Sans Pro',
-                        color: '#555',
-                        fontSize: '10px',
-                        fontWeight: 600
-                    }
                 }
+                // title: {
+                //     align: 'high',
+                //     offset: -10,
+                //     y: -5,
+                //     rotation: 0,
+                //     //text: entry.units,
+                //     text: 'sessions',
+                //     textAlign: 'left',
+                //     style: {
+                //         fontFamily: 'Source Sans Pro',
+                //         color: '#555',
+                //         fontSize: '10px',
+                //         fontWeight: 600
+                //     }
+                // }
             },
             legend: {
                 enabled: false
@@ -171,9 +191,9 @@ Ext.define('Ung.chart.NodeChartController', {
                         console.log('Unable to get current millis.');
                     }
                     time = Math.round(time/1000) * 1000;
-                    for (i = -39; i <= 0; i += 1) {
+                    for (i = -6; i <= 0; i += 1) {
                         data.push({
-                            x: time + i * 3000,
+                            x: time + i * 10000,
                             y: 0
                         });
                     }
@@ -181,6 +201,7 @@ Ext.define('Ung.chart.NodeChartController', {
                 }())
             }]
         });
+        // this.onAddPoint();
     },
 
     onResize: function () {
@@ -188,9 +209,18 @@ Ext.define('Ung.chart.NodeChartController', {
     },
 
     onAddPoint: function () {
-        var newVal = this.getViewModel().get('metrics').filter(function (metric) {
+        var vm = this.getViewModel();
+        if (vm.get('instance.targetState') !== 'RUNNING' && this.updateMetricsCount > 0) {
+            return;
+        }
+        this.updateMetricsCount++;
+        var appMetrics = Ext.getStore('metrics').findRecord('nodeId', vm.get('instance.id'));
+        var newVal = appMetrics.get('metrics').list.filter(function (metric) {
             return metric.name === 'live-sessions';
         })[0].value || 0;
+
+        // random for testing
+        newVal = Math.floor(Math.random() * 20) + 1;
 
         this.chart.series[0].addPoint({
             x: Date.now(),
