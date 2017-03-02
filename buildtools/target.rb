@@ -313,6 +313,76 @@ class CopyFiles < Target
   end
 end
 
+class JsBuilder < Target
+  include Rake::DSL if defined?(Rake::DSL)
+
+  @@WEB_DEST = "usr/share/untangle/web"
+
+  def initialize(package, name, sourcePaths, webDestDir)
+    @name = name
+    @path = sourcePaths.kind_of?(Array) ? sourcePaths : [sourcePaths]
+    @webDestDir = webDestDir
+    @targetName = "js-builder:#{package.name}-#{@name}"
+
+    @relativeDestPath = "#{@@WEB_DEST}/#{@webDestDir}/#{@name}.js"
+
+    @deps = @path.map { |p| FileList["#{p}/**/*.js"] }.flatten()
+    @destPath = "#{package.distDirectory}/#{@relativeDestPath}"
+
+    super(package, @deps, @targetName)
+  end
+
+  def all
+    info "[jsbuild ] #{@name}: #{@path}/**/*.js -> #{@destPath}"
+    # read all deps into memory, as an array of content
+    data = @deps.map { |d| File.open(d).read() }
+
+    # start pipe'ing operations on that array
+    data = remove_comment(data)
+    data = jshint(data)
+    data = minimize(data)
+
+    write(data) # write to destination file
+  end
+
+  def remove_comment(data)
+    data.map do |d|
+      d.sub(/^\s*\/\*\s*requires-start\s*\*\/.+?^.*?\/\*\srequires-end\s*\*\/\s*$/m, "")
+    end
+  end
+
+  def jshint(data)
+    # FIXME: 2 options
+    #   1. change no-op to actual jshint call
+    #   2. remove this function and pass admin/**/*.js files to global
+    #      rake jslint target
+    return data
+  end
+
+  def minimize(data)
+    # FIXME: change no-op to actually minimizing passed-in content
+    return data
+  end
+
+  def write(data)
+    FileUtils.mkdir_p(File.dirname(@destPath))
+    File.open(@destPath, 'w') do |f|
+      data.each { |d| f.write(d) }
+    end
+  end
+
+  def make_dependencies
+    file @destPath => @deps do 
+      all
+    end
+    stamptask self => @destPath
+  end
+
+  def to_s
+    @targetName
+  end
+end
+
 class ServletBuilder < Target
   JspcClassPath = ['apache-ant-1.6.5/lib/ant.jar'].map { |n|
     "#{BuildEnv::downloads}/#{n}"
