@@ -18,6 +18,11 @@ import com.untangle.uvm.node.IPMaskedAddress;
 @SuppressWarnings("serial")
 public class OpenVpnSettings implements java.io.Serializable, JSONString
 {
+    private static final int DEFAULT_PING_TIME    = 10;
+    private static final int DEFAULT_PING_TIMEOUT = 60;
+    private static final int DEFAULT_VERBOSITY    = 1;
+    static final int MANAGEMENT_PORT              = 1195;
+
     private String protocol = "udp"; /* "tcp" or "udp" */
     private int port = 1194;
     private String cipher = "AES-128-CBC";
@@ -28,6 +33,9 @@ public class OpenVpnSettings implements java.io.Serializable, JSONString
 
     private boolean serverEnabled = false;
     private boolean natOpenVpnTraffic = true;
+    
+    private LinkedList<OpenVpnConfigItem> clientConfiguration;
+    private LinkedList<OpenVpnConfigItem> serverConfiguration;
     
     /**
      * List of addresses visible to those connecting to the VPN
@@ -49,7 +57,79 @@ public class OpenVpnSettings implements java.io.Serializable, JSONString
      */
     private List<OpenVpnRemoteServer> remoteServers = new LinkedList<OpenVpnRemoteServer>();
 
-    public OpenVpnSettings() { }
+    public OpenVpnSettings()
+    {
+        serverConfiguration = new LinkedList<OpenVpnConfigItem>();
+        
+        serverConfiguration.add(new OpenVpnConfigItem("mode", "server", true));
+        serverConfiguration.add(new OpenVpnConfigItem("multihome", true));
+        serverConfiguration.add(new OpenVpnConfigItem("ca", "data/ca.crt", true));
+        serverConfiguration.add(new OpenVpnConfigItem("cert", "data/server.crt", true));
+        serverConfiguration.add(new OpenVpnConfigItem("key", "data/server.key", true));
+        serverConfiguration.add(new OpenVpnConfigItem("dh", "data/dh.pem", true));
+        serverConfiguration.add(new OpenVpnConfigItem("client-config-dir", "ccd", true));
+        serverConfiguration.add(new OpenVpnConfigItem("keepalive", Integer.toString(DEFAULT_PING_TIME) + " " + Integer.toString(DEFAULT_PING_TIMEOUT), true));
+        serverConfiguration.add(new OpenVpnConfigItem("user", "nobody", true));
+        serverConfiguration.add(new OpenVpnConfigItem("group", "nogroup", true));
+        serverConfiguration.add(new OpenVpnConfigItem("tls-server", true));
+        serverConfiguration.add(new OpenVpnConfigItem("comp-lzo", true));
+        serverConfiguration.add(new OpenVpnConfigItem("status", "openvpn-status.log", true));
+        serverConfiguration.add(new OpenVpnConfigItem("verb ", Integer.toString(DEFAULT_VERBOSITY), true));
+        serverConfiguration.add(new OpenVpnConfigItem("dev", "tun0", true));
+        serverConfiguration.add(new OpenVpnConfigItem("max-routes", "500", true));
+        serverConfiguration.add(new OpenVpnConfigItem("max-clients", "2048", true));
+
+        /* Only talk to clients with a client configuration file */
+        serverConfiguration.add(new OpenVpnConfigItem("ccd-exclusive", true));
+
+        /* Do not re-read key after SIGUSR1 */
+        serverConfiguration.add(new OpenVpnConfigItem("persist-key", true));
+        
+        /* Do not re-init tun0 after SIGUSR1 */
+        serverConfiguration.add(new OpenVpnConfigItem("persist-tun", true));
+        
+        /* Stop logging repeated messages (after 20). */
+        serverConfiguration.add(new OpenVpnConfigItem("mute", "20", true));
+        
+        /* Allow management from localhost */
+        serverConfiguration.add(new OpenVpnConfigItem("management 127.0.0.1", Integer.toString(MANAGEMENT_PORT), true));
+
+        /* persist pool address assignments */
+        serverConfiguration.add(new OpenVpnConfigItem("ifconfig-pool-persist", "/etc/openvpn/address-pool-assignments.txt", true));
+        
+        /* push register-dns to reset DNS on windows machines */
+        serverConfiguration.add(new OpenVpnConfigItem("push", "\"register-dns\"", true));
+
+        clientConfiguration = new LinkedList<OpenVpnConfigItem>();
+        
+        clientConfiguration.add(new OpenVpnConfigItem("client", true));
+        clientConfiguration.add(new OpenVpnConfigItem("resolv-retry", "20", true));
+        clientConfiguration.add(new OpenVpnConfigItem("keepalive", Integer.toString(DEFAULT_PING_TIME) + " " + Integer.toString(DEFAULT_PING_TIMEOUT), true));
+        clientConfiguration.add(new OpenVpnConfigItem("nobind", true));
+        clientConfiguration.add(new OpenVpnConfigItem("mute-replay-warnings", true));
+        clientConfiguration.add(new OpenVpnConfigItem("ns-cert-type", "server", true));
+        clientConfiguration.add(new OpenVpnConfigItem("comp-lzo", true));
+        clientConfiguration.add(new OpenVpnConfigItem("max-routes", "500", true));
+        clientConfiguration.add(new OpenVpnConfigItem("verb", Integer.toString(DEFAULT_VERBOSITY), true));
+        
+        /* Do not re-read key after SIGUSR1 */
+        clientConfiguration.add(new OpenVpnConfigItem("persist-key", true));
+        
+        /* Do not re-init tun0 after SIGUSR1 */
+        clientConfiguration.add(new OpenVpnConfigItem("persist-tun", true));
+        
+        /* notify server when exitting */
+        clientConfiguration.add(new OpenVpnConfigItem("explicit-exit-notify", "1", true));
+        
+        /* device */
+        clientConfiguration.add(new OpenVpnConfigItem("dev", "tun", true));
+    }
+
+    public LinkedList<OpenVpnConfigItem> getClientConfiguration() { return this.clientConfiguration; }
+    public void setClientConfiguration( LinkedList<OpenVpnConfigItem> argList) { this.clientConfiguration = argList; }
+
+    public LinkedList<OpenVpnConfigItem> getServerConfiguration() { return this.serverConfiguration; }
+    public void setServerConfiguration( LinkedList<OpenVpnConfigItem> argList) { this.serverConfiguration = argList; }
 
     public boolean getServerEnabled() { return this.serverEnabled; }
     public void setServerEnabled( boolean newValue ) { this.serverEnabled = newValue; }
