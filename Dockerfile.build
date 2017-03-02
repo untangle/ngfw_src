@@ -13,4 +13,4 @@ VOLUME ${SRC}
 
 WORKDIR ${SRC}
 
-ENTRYPOINT rake install
+ENTRYPOINT rake
