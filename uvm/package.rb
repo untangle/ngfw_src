@@ -105,7 +105,10 @@ if ( jsFiles.length > 0 )
   end
 end
 
-JsBuilder.new(uvm_lib, "ung-all", "uvm/servlets/admin/app", "admin/script")
+ungAllDirs = [ 'util', 'overrides', 'model', 'store', 'controller',
+               'chart', 'cmp', 'widget', 'view', 'Application.js' ]
+ungAllDirs.map! { |e| "uvm/servlets/admin/app/#{e}" }
+JsBuilder.new(uvm_lib, "ung-all", ungAllDirs, "admin/script")
 
 ['about', 'administration', 'email', 'localdirectory', 'network',
  'system', 'upgrade'].each do |n|
