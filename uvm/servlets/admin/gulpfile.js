@@ -144,7 +144,8 @@ gulp.task('build-scss', function () {
     return gulp.src('./sass/**/*.scss')
         .pipe(concat('ung-all.css'))
         .pipe(sass({outputStyle: 'compressed'}).on('error', sass.logError))
-        .pipe(gulp.dest('../../../dist/usr/share/untangle/web/admin/styles/'));
+        .pipe(gulp.dest('./root/styles/'));
+        //.pipe(gulp.dest('../../../dist/usr/share/untangle/web/admin/styles/'));
 });
 
 /**

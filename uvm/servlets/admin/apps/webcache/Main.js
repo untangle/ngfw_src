@@ -1,17 +1,12 @@
 Ext.define('Ung.apps.webcache.Main', {
     extend: 'Ung.cmp.AppPanel',
-    alias: 'widget.app.webcache',
+    alias: 'widget.app-webcache',
 
-    viewModel: {
-        data: {
-            nodeName: 'untangle-node-web-cache',
-            appName: 'Web Cache'
-        }
-    },
+    controller: 'app-webcache',
 
     items: [
-        { xtype: 'app.webcache.status' },
-        { xtype: 'app.webcache.cachebypass' }
+        { xtype: 'app-webcache-status' },
+        { xtype: 'app-webcache-cachebypass' }
     ]
 
 });
