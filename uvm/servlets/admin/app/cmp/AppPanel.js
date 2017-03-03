@@ -51,5 +51,26 @@ Ext.define('Ung.cmp.AppPanel', {
             var vm = this.getViewModel();
             Ung.app.redirectTo('#apps/' + vm.get('instance.policyId') + '/' + vm.get('urlName') + '/' + newCard.getItemId());
         }
+        // afterrender: function () {
+        //     // get settings
+        //     var me = this,
+        //         vm = this.getViewModel();
+        //     Rpc.asyncData('rpc.nodeManager.node', vm.get('instance.id'))
+        //         .then(function (result) {
+        //             me.appManager = result;
+        //             console.log(me.appManager);
+        //         });
+
+        //     // if(handler==null) {handler=Ext.emptyFn;}
+        //     // if (this.rpcNode === undefined) {
+        //     //     rpc.nodeManager.node(Ext.bind(function(result, exception) {
+        //     //         if(Ung.Util.handleException(exception)) return;
+        //     //         this.rpcNode = result;
+        //     //         handler.call(this);
+        //     //     }, this), this.nodeId);
+        //     // } else {
+        //     //     handler.call(this);
+        //     // }
+        // }
     }
 });
