@@ -374,7 +374,7 @@ public class HostTableImpl implements HostTable
         
         entry.setAddress( address );
 
-        checkForDevice( entry, address );
+        syncWithDeviceEntry( entry, address );
         
         updateHostnameDhcp( entry );
         updateHostnameReports( entry );
@@ -394,8 +394,10 @@ public class HostTableImpl implements HostTable
     /**
      * This funciton checks for a matching entry in the device table.
      * If it does not exist, it adds it
+     * It then sets all the appropriate fields in the host entry using the device entry
+     * and then updatse any fields in the device entry
      */
-    private void checkForDevice( HostTableEntry entry, InetAddress address )
+    private void syncWithDeviceEntry( HostTableEntry entry, InetAddress address )
     {
         String macAddress = UvmContextFactory.context().netcapManager().arpLookup( address.getHostAddress() );
         if ( macAddress == null )
@@ -424,6 +426,15 @@ public class HostTableImpl implements HostTable
         if ( deviceEntry.getMacVendor() != null )
             entry.setMacVendor( deviceEntry.getMacVendor() );
         entry.addTags( deviceEntry.getTags() );
+
+        /**
+         * Update Device Entry
+         */
+        if ( entry.getHostnameDhcp() != null ) {
+            deviceEntry.setHostname( entry.getHostnameDhcp() );
+        } else if ( entry.getHostnameDns() != null ) {
+            deviceEntry.setHostname( entry.getHostnameDns() );
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -516,7 +527,7 @@ public class HostTableImpl implements HostTable
                             continue;
                         }
 
-                        checkForDevice( entry, entry.getAddress() );
+                        syncWithDeviceEntry( entry, entry.getAddress() );
                         
                         hostTable.put( entry.getAddress(), entry );
                     } catch ( Exception e ) {
@@ -709,7 +720,7 @@ public class HostTableImpl implements HostTable
                         String currentHostname = entry.getHostname();
                         InetAddress address = entry.getAddress();
 
-                        checkForDevice( entry, address );
+                        syncWithDeviceEntry( entry, address );
 
                         if ( address == null ) {
                             if ( logger.isDebugEnabled() )
