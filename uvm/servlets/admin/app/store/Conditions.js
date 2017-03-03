@@ -5,10 +5,10 @@ Ext.define('Ung.store.Conditions', {
     data: [
         {name:'DST_ADDR', displayName: 'Destination Address'.t(), editorType: 'textfield', vtype:'ipall', visible: true },
         {name:'DST_PORT',displayName: 'Destination Port'.t(), editorType: 'textfield', vtype:'port', visible: true },
-        {name:'DST_INTF',displayName: 'Destination Interface'.t(), editorType: 'checkgroup', /*values: Ung.Util.getInterfaceList(true, false),*/ visible: true},
+        {name:'DST_INTF',displayName: 'Destination Interface'.t(), editorType: 'checkgroup', /*values: Util.getInterfaceList(true, false),*/ visible: true},
         {name:'SRC_ADDR',displayName: 'Source Address'.t(), editorType: 'textfield', visible: true, vtype:'ipall'},
         {name:'SRC_PORT',displayName: 'Source Port'.t(), editorType: 'textfield', vtype:'portMatcher', visible: rpc.isExpertMode},
-        {name:'SRC_INTF',displayName: 'Source Interface'.t(), editorType: 'checkgroup', /*values: Ung.Util.getInterfaceList(true, false),*/ visible: true},
+        {name:'SRC_INTF',displayName: 'Source Interface'.t(), editorType: 'checkgroup', /*values: Util.getInterfaceList(true, false),*/ visible: true},
         {name:'PROTOCOL',displayName: 'Protocol'.t(), editorType: 'checkgroup', values: [['TCP','TCP'],['UDP','UDP'],['any','any']], visible: true},
         {name:'USERNAME',displayName: 'Username'.t(), editorType: 'userselection', /*editor: Ext.create('Ung.UserEditorWindow',{}),*/ visible: true},
         {name:'CLIENT_HOSTNAME',displayName: 'Client Hostname'.t(), editorType: 'textfield', visible: true},
