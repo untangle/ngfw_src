@@ -91,6 +91,7 @@ public class HostTableEntry implements Serializable, JSONString
         this.setQuotaIssueTime( other.getQuotaIssueTime() );
         this.setQuotaExpirationTime( other.getQuotaExpirationTime() );
         this.setHttpUserAgent( other.getHttpUserAgent() );
+        this.setTags( other.getTags() );
     }
     
     public InetAddress getAddress() { return this.address; }

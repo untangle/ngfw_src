@@ -417,8 +417,8 @@ public class HostTableImpl implements HostTable
          */
         if ( deviceEntry.getHostname() != null )
             entry.setHostnameDevice( deviceEntry.getHostname() );
-        if ( deviceEntry.getDeviceUsername() != null )
-            entry.setUsernameDevice( deviceEntry.getDeviceUsername() );
+        if ( deviceEntry.getUsername() != null )
+            entry.setUsernameDevice( deviceEntry.getUsername() );
         if ( deviceEntry.getHttpUserAgent() != null )
             entry.setHttpUserAgent( deviceEntry.getHttpUserAgent() );
         if ( deviceEntry.getMacVendor() != null )
