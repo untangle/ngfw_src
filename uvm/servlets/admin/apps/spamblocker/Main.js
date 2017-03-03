@@ -1,6 +1,6 @@
 Ext.define('Ung.apps.spamblocker.Main', {
     extend: 'Ung.cmp.AppPanel',
-    alias: 'widget.app.spamblocker',
+    alias: 'widget.app-spamblocker',
 
     viewModel: {
         data: {
@@ -10,8 +10,8 @@ Ext.define('Ung.apps.spamblocker.Main', {
     },
 
     items: [
-        { xtype: 'app.spamblocker.status' },
-        { xtype: 'app.spamblocker.email' }
+        { xtype: 'app-spamblocker-status' },
+        { xtype: 'app-spamblocker-email' }
     ]
 
 });
