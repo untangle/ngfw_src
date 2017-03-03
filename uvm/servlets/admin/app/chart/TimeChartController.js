@@ -64,11 +64,14 @@ Ext.define('Ung.chart.TimeChartController', {
                 }
             },
             title: null,
+            lang: {
+                noData: ''
+            },
             noData: {
                 style: {
-                    fontSize: '16px',
+                    fontSize: '12px',
                     fontWeight: 'normal',
-                    color: '#999'
+                    color: '#CCC'
                 }
             },
             colors: (me.entry.get('colors') !== null && me.entry.get('colors') > 0) ? me.entry.get('colors') : me.defaultColors,
@@ -106,10 +109,10 @@ Ext.define('Ung.chart.TimeChartController', {
                 gridLineColor: '#EEE',
                 labels: {
                     style: {
-                        fontFamily: 'Source Sans Pro',
+                        fontFamily: 'Open Sans Condensed',
                         color: '#555',
-                        fontSize: '11px',
-                        fontWeight: 600
+                        fontSize: '10px',
+                        fontWeight: 700
                     },
                     y: 12
                 },
@@ -141,9 +144,9 @@ Ext.define('Ung.chart.TimeChartController', {
                     useHTML: true,
                     padding: 0,
                     style: {
-                        fontFamily: 'Source Sans Pro',
+                        fontFamily: 'Open Sans Condensed',
                         color: '#555',
-                        fontSize: '11px',
+                        fontSize: '10px',
                         fontWeight: 600,
                         background: 'rgba(255, 255, 255, 0.6)',
                         padding: '0 1px',
@@ -157,7 +160,7 @@ Ext.define('Ung.chart.TimeChartController', {
                         var finalVal = this.value;
 
                         if (me.entry.get('units') === 'bytes/s') {
-                            finalVal = Ung.Util.bytesToHumanReadable(this.value, true);
+                            finalVal = Util.bytesToHumanReadable(this.value, true);
                             /*
                             if (this.isLast) {
                                 return '<span style="color: #555; font-size: 12px;"><strong>' + finalVal + '</strong> (per second)</span>';

@@ -2,9 +2,11 @@ Ext.define('Ung.widget.NetworkLayout', {
     extend: 'Ext.container.Container',
     alias: 'widget.networklayoutwidget',
 
+    /* requires-start */
     requires: [
         'Ung.widget.InterfaceItem'
     ],
+    /* requires-end */
 
     controller: 'widget',
 
@@ -28,7 +30,7 @@ Ext.define('Ung.widget.NetworkLayout', {
         cls: 'header',
         itemId: 'header',
         html: '<h1>' + 'Network Layout'.t() + '</h1>' +
-            '<button class="action-btn"><i class="material-icons" data-action="refresh">refresh</i></button>'
+            '<button class="action-btn"><i class="fa fa-refresh" data-action="refresh"></i></button>'
     }, {
         //xtype: 'container',
         cls: 'net-layout',
@@ -43,7 +45,7 @@ Ext.define('Ung.widget.NetworkLayout', {
             xtype: 'component'
         },
         items: [{
-            html: '<img src="' + resourcesBaseHref + '/skins/default/images/admin/icons/interface-cloud.png" style="margin: 0 auto; display: block; height: 30px;"/>'
+            html: '<img src="' + '/skins/default/images/admin/icons/interface-cloud.png" style="margin: 0 auto; display: block; height: 30px;"/>'
         }, {
             xtype: 'container',
             cls: 'ifaces',
@@ -63,44 +65,44 @@ Ext.define('Ung.widget.NetworkLayout', {
             margin: '5 0 0 0',
             height: 40,
             bind: {
-                html: '<img src="' + resourcesBaseHref + '/skins/default/images/admin/icons/interface-devices.png"><br/>{deviceCount}'
+                html: '<img src="' + '/skins/default/images/admin/icons/interface-devices.png"><br/>{deviceCount}'
             }
         }]
     }],
 
     fetchData: function () {
         var me = this;
-        rpc.networkManager.getNetworkSettings(function (result, ex) {
-            me.fireEvent('afterdata');
-            if (ex) { Ung.Util.exceptionToast(ex); return false; }
-            me.down('#externalInterface').removeAll();
-            me.down('#internalInterface').removeAll();
-            Ext.each(result.interfaces.list, function (iface) {
-                if (!iface.disabled) {
-                    if (iface.isWan) {
-                        me.down('#externalInterface').add({
-                            xtype: 'interfaceitem',
-                            cls: 'iface wan',
-                            viewModel: {
-                                data: {
-                                    iface: iface
+        Rpc.asyncData('rpc.networkManager.getNetworkSettings')
+            .then(function(result) {
+                me.fireEvent('afterdata');
+                me.down('#externalInterface').removeAll();
+                me.down('#internalInterface').removeAll();
+                Ext.each(result.interfaces.list, function (iface) {
+                    if (!iface.disabled) {
+                        if (iface.isWan) {
+                            me.down('#externalInterface').add({
+                                xtype: 'interfaceitem',
+                                cls: 'iface wan',
+                                viewModel: {
+                                    data: {
+                                        iface: iface
+                                    }
                                 }
-                            }
-                        });
-                    } else {
-                        me.down('#internalInterface').add({
-                            xtype: 'interfaceitem',
-                            cls: 'iface',
-                            viewModel: {
-                                data: {
-                                    iface: iface
+                            });
+                        } else {
+                            me.down('#internalInterface').add({
+                                xtype: 'interfaceitem',
+                                cls: 'iface',
+                                viewModel: {
+                                    data: {
+                                        iface: iface
+                                    }
                                 }
-                            }
-                        });
+                            });
+                        }
                     }
-                }
+                });
             });
-        });
     }
 
     // fetchData: function () {

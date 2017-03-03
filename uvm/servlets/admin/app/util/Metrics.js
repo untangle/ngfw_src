@@ -1,6 +1,7 @@
 Ext.define('Ung.util.Metrics', {
+    alternateClassName: 'Metrics',
     singleton: true,
-    frequency: 3000,
+    frequency: 10000,
     interval: null,
     running: false,
 

@@ -1,6 +1,7 @@
 Ext.define('Ung.widget.Report', {
     extend: 'Ext.container.Container',
     alias: 'widget.reportwidget',
+    /* requires-start */
     requires: [
         //'Ung.widget.report.ReportController',
         'Ung.widget.ReportModel',
@@ -8,7 +9,7 @@ Ext.define('Ung.widget.Report', {
         'Ung.chart.PieChart',
         'Ung.chart.EventChart'
     ],
-
+    /* requires-end */
     controller: 'widget',
     viewModel: {
         type: 'reportwidget'
@@ -36,7 +37,7 @@ Ext.define('Ung.widget.Report', {
         itemId: 'header',
         bind: {
             html: '{title}' +
-                '<button class="action-btn"><i class="material-icons" data-action="refresh">refresh</i></button>'
+                '<button class="action-btn"><i class="fa fa-refresh" data-action="refresh"></i></button>'
         }
     }],
     // {
@@ -112,15 +113,16 @@ Ext.define('Ung.widget.Report', {
             } else {
                 // fetch chart data
                 this.lookupReference('chart').fireEvent('beginfetchdata');
-                Rpc.getReportData(entry.getData(), timeframe)
+                Rpc.asyncData('rpc.reportsManager.getDataForReportEntry', entry.getData(), timeframe, -1)
                     .then(function (response) {
                         me.fireEvent('afterdata');
                         me.lookupReference('chart').fireEvent('setseries', response.list);
                     }, function (exception) {
+                        console.log(exception);
                         me.fireEvent('afterdata');
                         me.lookupReference('chart').lookupReference('loader').hide();
-                        console.log(exception);
-                        // Ung.Util.exceptionToast(exception);
+
+                        // Util.exceptionToast(exception);
 
                         if (me.down('#exception')) {
                             me.remove('exception');
