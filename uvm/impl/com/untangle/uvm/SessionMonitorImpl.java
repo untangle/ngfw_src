@@ -184,6 +184,9 @@ public class SessionMonitorImpl implements SessionMonitor
                     session.setServerLatitude(sessionState.getSessionEvent().getServerLatitude());                    
                     session.setServerLongitude(sessionState.getSessionEvent().getServerLongitude());                    
 
+                    session.setTags(sessionState.getTags());
+                    session.setTagsString(sessionState.getTagsString());
+                    
                     /**
                      * The conntrack entry shows that this session has been redirect to the local host
                      * We need to overwrite that with the correct info
