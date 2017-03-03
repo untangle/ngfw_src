@@ -1,10 +1,15 @@
 Ext.define('Ung.apps.webfilter.MainController', {
     extend: 'Ext.app.ViewController',
-    alias: 'controller.app.webfilter',
+    alias: 'controller.app-webfilter',
 
     control: {
         '#': {
-            beforerender: 'onBeforeRender'
+            beforerender: 'onBeforeRender',
+            // beforetabchange: function (tab, newCard, oldCard) {
+            //     var vm = this.getViewModel();
+            //     Ung.app.redirectTo('#apps/' + vm.get('instance.policyId') + '/webfilter/' + newCard.getItemId());
+            //     // return false;
+            // }
         }
     },
 

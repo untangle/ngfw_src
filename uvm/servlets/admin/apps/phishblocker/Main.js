@@ -1,17 +1,10 @@
 Ext.define('Ung.apps.phishblocker.Main', {
     extend: 'Ung.cmp.AppPanel',
-    alias: 'widget.app.phishblocker',
-
-    viewModel: {
-        data: {
-            nodeName: 'untangle-node-phish-blocker',
-            appName: 'Phish Blocker'
-        }
-    },
+    alias: 'widget.app-phishblocker',
 
     items: [
-        { xtype: 'app.phishblocker.status' },
-        { xtype: 'app.phishblocker.email' }
+        { xtype: 'app-phishblocker-status' },
+        { xtype: 'app-phishblocker-email' }
     ]
 
 });

@@ -57,7 +57,6 @@ Ext.define('Ung.view.apps.AppsController', {
     // },
 
     getPolicies: function () {
-        console.log('on activate');
         var me = this;
         var vm = this.getViewModel();
 
@@ -106,7 +105,6 @@ Ext.define('Ung.view.apps.AppsController', {
      */
     filterInstalled: function () {
         this.getViewModel().set('onInstalledApps', true);
-        console.log('filter installed');
         var appsStore = this.getViewModel().getStore('apps');
 
         appsStore.clearFilter();

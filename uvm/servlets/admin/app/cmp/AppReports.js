@@ -9,7 +9,7 @@ Ext.define('Ung.cmp.AppReports', {
                 source: '{reports}',
                 filters: [{
                     property: 'category',
-                    value: '{appName}',
+                    value: '{props.displayName}',
                     exactMatch: true
                 }]
             }

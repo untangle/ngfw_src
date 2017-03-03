@@ -19,9 +19,9 @@ Ext.define('Ung.cmp.AppState', {
         formulas: {
             appState: function (get) {
                 if (get('instance.targetState') === 'RUNNING') {
-                    return Ext.String.format('{0} is enabled.'.t(), get('appName'));
+                    return Ext.String.format('{0} is enabled.'.t(), get('props.displayName'));
                 }
-                return Ext.String.format('{0} is disabled.'.t(), get('appName'));
+                return Ext.String.format('{0} is disabled.'.t(), get('props.displayName'));
             },
             appStateIcon: function (get) {
                 if (!get('instance.targetState')) {
