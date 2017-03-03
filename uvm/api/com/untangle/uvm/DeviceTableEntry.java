@@ -32,12 +32,11 @@ public class DeviceTableEntry implements Serializable, JSONString
      */
     private String      macAddress;
     private String      macVendor = null;
-    private String      deviceUsername = null;
+    private String      username = null;
     private String      hostname = null;
     private String      httpUserAgent = null;
-    
-    private long        lastSeenTime = 0;
-    private int         lastSeenInterfaceId = 0;
+    private int         interfaceId = 0;
+    private long        lastSessionTime = 0; /* time of the last new session */
 
     private HashMap<String,Tag> tags = new HashMap<String,Tag>();
     
@@ -63,10 +62,12 @@ public class DeviceTableEntry implements Serializable, JSONString
     {
         this.setMacAddress( other.getMacAddress() );
         this.setMacVendor( other.getMacVendor() );
-        this.setDeviceUsername( other.getDeviceUsername() );
+        this.setUsername( other.getUsername() );
         this.setHostname( other.getHostname() );
         this.setHttpUserAgent( other.getHttpUserAgent() );
-        this.setLastSeenTime( other.getLastSeenTime() );
+        this.setLastSessionTime( other.getLastSessionTime() );
+        this.setInterfaceId( other.getInterfaceId() );
+        this.setTags( other.getTags() );
     }
     
     public String getMacAddress() { return this.macAddress; }
@@ -78,22 +79,22 @@ public class DeviceTableEntry implements Serializable, JSONString
         updateEvent( "macAddress", this.macAddress, newValue );
     }
 
-    public long getLastSeenTime() { return this.lastSeenTime; }
-    public void setLastSeenTime( long newValue )
+    public long getLastSessionTime() { return this.lastSessionTime; }
+    public void setLastSessionTime( long newValue )
     {
-        if ( newValue == this.lastSeenTime )
+        if ( newValue == this.lastSessionTime )
             return;
-        this.lastSeenTime = newValue;
-        //updateEvent( "lastSeenTime", this.lastSeenTime, newValue );
+        //updateEvent( "lastSessionTime", String.valueOf(this.lastSessionTime), String.valueOf(newValue) );
+        this.lastSessionTime = newValue;
     }
-
-    public long getLastSeenInterfaceId() { return this.lastSeenInterfaceId; }
-    public void setLastSeenInterfaceId( int newValue )
+    
+    public int getInterfaceId() { return this.interfaceId; }
+    public void setInterfaceId( int newValue )
     {
-        if ( newValue == this.lastSeenInterfaceId )
+        if ( newValue == this.interfaceId )
             return;
-        this.lastSeenInterfaceId = newValue;
-        updateEvent( "lastSeenInterfaceId", String.valueOf(this.lastSeenInterfaceId), String.valueOf(newValue) );
+        updateEvent( "interfaceId", (new Integer(this.interfaceId)).toString(), new Integer(newValue).toString() );
+        this.interfaceId = newValue;
     }
     
     public String getMacVendor() { return this.macVendor; }
@@ -192,21 +193,21 @@ public class DeviceTableEntry implements Serializable, JSONString
         }
     }
     
-    public String getDeviceUsername()
+    public String getUsername()
     {
-        if ( "".equals(this.deviceUsername) )
+        if ( "".equals(this.username) )
              return null;
-        return this.deviceUsername;
+        return this.username;
     }
     
-    public void setDeviceUsername( String newValue )
+    public void setUsername( String newValue )
     {
         if ( "".equals(newValue) )
             newValue = null;
-        if ( Objects.equals( newValue, this.deviceUsername ) )
+        if ( Objects.equals( newValue, this.username ) )
             return;
-        updateEvent( "deviceUsername", this.deviceUsername, newValue );
-        this.deviceUsername = newValue;
+        updateEvent( "username", this.username, newValue );
+        this.username = newValue;
     }
     
     /**
@@ -243,11 +244,6 @@ public class DeviceTableEntry implements Serializable, JSONString
     public void enableLogging()
     {
         this.logChanges = true;
-    }
-
-    public void updateLastSeenTime()
-    {
-        this.lastSeenTime = System.currentTimeMillis();
     }
 
     private void updateEvent( String key, String oldValue, String newValue )

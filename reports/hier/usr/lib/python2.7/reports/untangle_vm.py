@@ -96,7 +96,8 @@ CREATE TABLE reports.sessions (
         bandwidth_control_rule integer,
         ssl_inspector_ruleid integer,
         ssl_inspector_status text,
-        ssl_inspector_detail text)""", 
+        ssl_inspector_detail text,
+        tags text)""", 
                                 ["session_id"],
                                 ["time_stamp",
                                  "hostname",
@@ -121,6 +122,7 @@ CREATE TABLE reports.sessions (
     sql_helper.add_column('sessions','local_addr','inet') # 12.2
     sql_helper.add_column('sessions','remote_addr','inet') # 12.2
     sql_helper.drop_column('sessions','shield_blocked') # 12.2
+    sql_helper.add_column('sessions','tags','text') # 13.0
 
 @sql_helper.print_timing
 def __create_session_minutes_table(  ):
@@ -178,7 +180,8 @@ CREATE TABLE reports.session_minutes (
         bandwidth_control_rule integer,
         ssl_inspector_ruleid integer,
         ssl_inspector_status text,
-        ssl_inspector_detail text)""", 
+        ssl_inspector_detail text,
+        tags text)""", 
                                 [],
                                 ["session_id",
                                  "time_stamp",
@@ -194,6 +197,7 @@ CREATE TABLE reports.session_minutes (
     sql_helper.add_column('session_minutes','local_addr','inet') # 12.2
     sql_helper.add_column('session_minutes','remote_addr','inet') # 12.2
     sql_helper.drop_column('session_minutes','shield_blocked') # 12.2
+    sql_helper.add_column('session_minutes','tags','text') # 13.0
         
 
 @sql_helper.print_timing

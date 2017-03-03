@@ -26,7 +26,7 @@ public class UserTableEntry implements Serializable, JSONString
     private String      username = null;
     private long        creationTime = 0;
     private long        lastAccessTime = 0;
-    private long        lastSeenTime = 0;
+    private long        lastSessionTime = 0; /* time of the last new session */
 
     private long quotaSize = 0; /* the quota size - 0 means no quota assigned */
     private long quotaRemaining = 0; /* the quota remaining */
@@ -49,6 +49,9 @@ public class UserTableEntry implements Serializable, JSONString
         this.setQuotaRemaining( other.getQuotaRemaining() );
         this.setQuotaIssueTime( other.getQuotaIssueTime() );
         this.setQuotaExpirationTime( other.getQuotaExpirationTime() );
+        this.setLastAccessTime( other.getLastAccessTime() );
+        this.setLastSessionTime( other.getLastSessionTime() );
+        this.setTags( other.getTags() );
     }
     
     public String getUsername() { return this.username; }
@@ -81,15 +84,16 @@ public class UserTableEntry implements Serializable, JSONString
         updateAccessTime();
     }
 
-    public long getLastSeenTime() { return this.lastSeenTime; }
-    public void setLastSeenTime( long newValue )
+    public long getLastSessionTime() { return this.lastSessionTime; }
+    public void setLastSessionTime( long newValue )
     {
-        if ( newValue == this.lastSeenTime )
+        if ( newValue == this.lastSessionTime )
             return;
-        this.lastSeenTime = newValue;
-        //updateEvent( "lastSeenTime", this.lastSeenTime, newValue );
+        //updateEvent( "lastSessionTime", String.valueOf(this.lastSessionTime), String.valueOf(newValue) );
+        this.lastSessionTime = newValue;
+        updateAccessTime();
     }
-    
+
     public long getQuotaSize() { return this.quotaSize; }
     public void setQuotaSize( long newValue )
     {

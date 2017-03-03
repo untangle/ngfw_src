@@ -122,7 +122,6 @@ public class DeviceTableImpl implements DeviceTable
             logger.info("Discovered new device: " + macAddress);
             newEntry = new DeviceTableEntry( macAddress );
             newEntry.enableLogging();
-            newEntry.updateLastSeenTime();
 
             addDevice( newEntry );
 
@@ -226,8 +225,8 @@ public class DeviceTableImpl implements DeviceTable
             if (list.size() > HIGH_WATER_SIZE) {
                 logger.info("Device list over max size, pruning oldest entries"); // remove entries with oldest (lowest) lastSeenTime
                 Collections.sort( list, new Comparator<DeviceTableEntry>() { public int compare(DeviceTableEntry o1, DeviceTableEntry o2) {
-                    if ( o1.getLastSeenTime() < o2.getLastSeenTime() ) return 1;
-                    if ( o1.getLastSeenTime() == o2.getLastSeenTime() ) return 0;
+                    if ( o1.getLastSessionTime() < o2.getLastSessionTime() ) return 1;
+                    if ( o1.getLastSessionTime() == o2.getLastSessionTime() ) return 0;
                     return -1;
                 } });
                 while ( list.size() > LOW_WATER_SIZE ) {

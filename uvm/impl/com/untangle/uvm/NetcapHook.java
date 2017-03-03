@@ -170,47 +170,13 @@ public abstract class NetcapHook implements Runnable
             } 
             
             /**
-             * Find Device Table Entry
+             * If host entry exists
+             * Update host entry and also update SessionGlobalState
              */
             if ( hostEntry != null ) {
-                String macAddress = hostEntry.getMacAddress();
-                if ( macAddress != null )
-                    deviceEntry = UvmContextFactory.context().deviceTable().getDevice( macAddress );
-                
-                /* update last session & last seen time */
                 hostEntry.setLastSessionTime( System.currentTimeMillis() );
-                if ( deviceEntry != null )
-                    deviceEntry.updateLastSeenTime();
-            }
-
-            /**
-             * Find User Table Entry
-             */
-            if ( hostEntry != null ) {
-                username = hostEntry.getUsername();
-
-                /* if we don't know the username from the host table, check the device table */
-                if ( username == null && deviceEntry != null ) {
-                    String deviceUsername = deviceEntry.getDeviceUsername();
-                    if ( deviceUsername != null ) {
-                        hostEntry.setUsernameDevice( deviceUsername );
-                        username = deviceUsername;
-                    }
-                }
-                /* if we know the username, set the username on the session */
-                if ( username != null && username.length() > 0 ) { 
-                    logger.debug( "user information: " + username );
-                    userEntry = UvmContextFactory.context().userTable().getUserTableEntry( username, true );
-                    sessionGlobalState.setUser( username );
-                    sessionGlobalState.attach( NodeSession.KEY_PLATFORM_USERNAME, username );
-                }
-            }
-                
-            /**
-             * Update entries
-             */
-            if ( hostEntry != null ) {
                 hostname = hostEntry.getHostname();
+                username = hostEntry.getUsername();
                 sessionGlobalState.addTags( hostEntry.getTags() );
 
                 if ( clientIntf != hostEntry.getInterfaceId() ) {
@@ -220,26 +186,58 @@ public abstract class NetcapHook implements Runnable
                     entitled = false;
                 }
             }
-            if ( deviceEntry != null ) {
-                sessionGlobalState.addTags( deviceEntry.getTags() );
-                if ( clientIntf != deviceEntry.getLastSeenInterfaceId() ) {
-                    deviceEntry.setLastSeenInterfaceId( clientIntf );
-                }
+
+            /**
+             * Find Device Table Entry
+             */
+            if ( hostEntry != null && hostEntry.getMacAddress() != null ) {
+                deviceEntry = UvmContextFactory.context().deviceTable().getDevice( hostEntry.getMacAddress() );
             }
+            /**
+             * If device exists
+             * Update device entry and also update SessionGlobalState
+             */
+            if ( deviceEntry != null ) {
+                deviceEntry.setLastSessionTime( System.currentTimeMillis() );
+                sessionGlobalState.addTags( deviceEntry.getTags() );
+                if ( clientIntf != deviceEntry.getInterfaceId() ) {
+                    deviceEntry.setInterfaceId( clientIntf );
+                }
+                if ( username == null ) /* if we don't know if from the host entry, use the device entry */
+                    username = deviceEntry.getUsername();
+                if ( hostname == null ) /* if we don't know if from the host entry, use the device entry */
+                    hostname = deviceEntry.getHostname();
+            }
+            
+            /**
+             * Find User Table Entry
+             */
+            if ( username != null ) {
+                userEntry = UvmContextFactory.context().userTable().getUserTableEntry( username, true );
+            }
+            /**
+             * If user exists
+             * Update device entry and also update SessionGlobalState
+             */
             if ( userEntry != null ) {
+                userEntry.setLastSessionTime( System.currentTimeMillis() );
                 sessionGlobalState.addTags( userEntry.getTags() );
             }
 
             /**
-             * If at this point the hostname is not known, determine it by all methods
-             * but do not update host table.
+             * If at this point the hostname is not known, determine it by all methods but do not update host table.
              */
             if ( hostname == null || hostname.length() == 0 ) {
                 hostname = SessionEvent.determineBestHostname( clientAddr, clientIntf, serverAddr, serverIntf );
             }
+            
+            sessionGlobalState.setUser( username );
+            sessionGlobalState.attach( NodeSession.KEY_PLATFORM_USERNAME, username );
             sessionGlobalState.attach( NodeSession.KEY_PLATFORM_HOSTNAME, hostname );
 
-            
+            /**
+             * Determine the policy to process this session
+             */
             PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().nodeManager().node("untangle-node-policy-manager");
             if ( policyManager != null && entitled ) {
                 PolicyManager.PolicyManagerResult result = policyManager.findPolicyId( sessionGlobalState.getProtocol(),
@@ -249,7 +247,6 @@ public abstract class NetcapHook implements Runnable
                 this.policyId  = result.policyId;
                 this.policyRuleId  = result.policyRuleId;
             }
-
             if ( this.policyId == null )
                 this.policyId = 1; /* Default Policy */
             if ( this.policyRuleId == null )
@@ -278,7 +275,8 @@ public abstract class NetcapHook implements Runnable
             sessionEvent.setSClientPort( serverSide.getClientPort() );
             sessionEvent.setSServerAddr( serverSide.getServerAddr() );
             sessionEvent.setSServerPort( serverSide.getServerPort() );
-
+            sessionEvent.setTagsString( sessionGlobalState.getTagsString() );
+            
             if ( UvmContextFactory.context().networkManager().isWanInterface( clientIntf ) ) {
                 sessionEvent.setLocalAddr( serverSide.getServerAddr() );
                 sessionEvent.setRemoteAddr( clientSide.getClientAddr() );

@@ -10,8 +10,8 @@
             "value": "%penalty-box%"
         }
     ],
-    "defaultColumns": ["time_stamp","address","reason","start_time","end_time"],
-    "description": "Shows when hosts are placed in the penalty box and when the penalty box expires.",
+    "defaultColumns": ["time_stamp","address","key","value","old_value"],
+    "description": "Shows when hosts are tagged with penalty-box or have the tag removed.",
     "displayOrder": 1012,
     "javaClass": "com.untangle.node.reports.ReportEntry",
     "table": "host_table_updates",
