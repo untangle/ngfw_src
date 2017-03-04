@@ -1,5 +1,14 @@
-/*
- * $Id: SslInspectorUnparserEventHandler.java 39802 2015-03-06 00:18:06Z mahotz $
+/**
+ * $Id: SslInspectorUnparserEventHandler.java,v 1.00 2017/03/03 19:29:18 dmorris Exp $
+ * 
+ * Copyright (c) 2003-2017 Untangle, Inc.
+ *
+ *
+ * This software is the confidential and proprietary information of
+ * Untangle, Inc. ("Confidential Information"). You shall
+ * not disclose such Confidential Information and shall use it only in
+ * accordance with the terms of the license agreement you entered into
+ * with Untangle.
  */
 
 package com.untangle.node.ssl_inspector;
