@@ -20,8 +20,17 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizardController', {
         Rpc.asyncData('rpc.networkManager.getNetworkSettings')
             .then(function (result) {
                 me.networkSettings = result;
-                console.log(result);
                 vm.set('interfaces', result.interfaces.list);
+
+                var u = 0, d = 0, intf;
+                for (var i = 0 ; i < result.interfaces.list.length ; i++ ) {
+                    intf = result.interfaces.list[i];
+                    if (intf.isWan) {
+                        u += intf.uploadBandwidthKbps || 0;
+                        d += intf.downloadBandwidthKbps || 0;
+                    }
+                }
+                vm.set('bandwidthLabel', Ext.String.format('Total: {0} kbps ({1} Mbit) download, {2} kbps ({3} Mbit) upload'.t(), d, d/1000, u, u/1000));
             });
     },
 
@@ -29,7 +38,6 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizardController', {
         var vm = this.getViewModel(),
             layout = this.getView().getLayout();
 
-        // console.log(panel);
         vm.set('prevBtn', layout.getPrev());
         if (layout.getPrev()) {
             vm.set('prevBtnText', layout.getPrev().getTitle());
@@ -115,6 +123,7 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizardController', {
             vm.get('quota.priority')
             );
         }
+
     },
 
     onPrev: function () {
@@ -122,5 +131,10 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizardController', {
         if (v.getLayout().getPrev()) {
             v.getLayout().prev();
         }
+    },
+
+    onFinish: function () {
+        this.getView().up('#configCard').getViewModel().set('isConfigured', this.getView().appManager.getSettings().configured);
+        this.getView().close();
     }
 });

@@ -64,6 +64,8 @@ Ext.define('Ung.view.apps.AppsController', {
             var nodes = [];
             vm.getStore('apps').removeAll();
 
+            Ext.getStore('policies').loadData(result);
+
             Ext.Array.each(result[0].nodeProperties.list, function (node) {
                 nodes.push({
                     name: node.name,
@@ -187,10 +189,12 @@ Ext.define('Ung.view.apps.AppsController', {
      * method which initialize the node installation
      */
     onInstallNode: function (view, record) {
+        var me = this;
         record.set('status', 'installing');
         Rpc.asyncData('rpc.nodeManager.instantiate', record.get('name'), 1)
         .then(function (result) {
-            record.set('status', 'installed');
+            // record.set('status', 'installed');
+            me.getPolicies();
         });
     }
 
