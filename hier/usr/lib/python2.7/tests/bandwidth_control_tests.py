@@ -586,7 +586,7 @@ class BandwidthControlTests(unittest2.TestCase):
         assert ((wget_speed_post) and (wget_speed_post))
         assert (wget_speed_pre * limitedAcceptanceRatio >  wget_speed_post)
 
-        events = global_functions.get_events('Hosts','Quota Events',None,5)
+        events = global_functions.get_events('Bandwidth Control','Quota Events',None,5)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5, 
                                                "action", 1, #quota given
@@ -652,7 +652,7 @@ class BandwidthControlTests(unittest2.TestCase):
         assert ((wget_speed_post) and (wget_speed_post))
         assert (wget_speed_pre * limitedAcceptanceRatio >  wget_speed_post)
 
-        events = global_functions.get_events('Hosts','Quota Events',None,5)
+        events = global_functions.get_events('Bandwidth Control','Quota Events',None,5)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5, 
                                                "action", 1, #quota given
