@@ -31,11 +31,13 @@ test_untangle_com_ip = socket.gethostbyname("test.untangle.com")
 run_ftp_inbound_tests = None
 wan_IP = None
 device_in_office = False
+dyndns_resolver = "216.146.35.35"
+#dyndns_resolver = "resolver1.dyndnsinternetguide.com"
 
 def getUsableName(dyn_checkip):
     selected_name = ""
     for hostname in dyn_names:
-        result = subprocess.check_output("host -R3 -4 " + hostname + " resolver1.dyndnsinternetguide.com", shell=True)
+        result = subprocess.check_output("host -R3 -4 " + hostname + " " + dyndns_resolver, shell=True)
         match = re.search(r'address \d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
         hostname_ip = (match.group()).replace('address ','')
         if dyn_checkip != hostname_ip:
@@ -814,21 +816,20 @@ class NetworkTests(unittest2.TestCase):
         assert (epsvResult == 0)
         assert (eprtResult == 0)
 
-    # Test static route that routing playboy.com to 127.0.0.1 makes it unreachable
+    # Test static route that routing test.untangle.com to 127.0.0.1 makes it unreachable
     def test_080_routes(self):
+        preResult = remote_control.isOnline()
+
+        # add a route to 127.0.0.1 to blackhole that IP
         setFirstLevelRule(createRouteRule(test_untangle_com_ip,32,"127.0.0.1"),'staticRoutes')
-        for i in range(0, 10):
-            wwwResult = remote_control.runCommand("wget -t 1 --no-check-certificate --timeout=3 https://www.untangle.com")
-            if (wwwResult == 0):
-                break
-            time.sleep(1)
-        testResult = remote_control.runCommand("wget -t 1 --timeout=3 http://test.untangle.com")
+
+        postResult = remote_control.runCommand("wget -t 1 --timeout=3 http://test.untangle.com")
+
         # restore setting before validating results
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
-        # verify other sites are still available.
-        assert (wwwResult == 0)
-        # Verify test.untangle.com is not accessible
-        assert (testResult != 0)
+
+        assert (preResult == 0)
+        assert (postResult != 0)
 
     # Test static DNS entry
     def test_090_DNS(self):
@@ -882,13 +883,13 @@ class NetworkTests(unittest2.TestCase):
         dynDNSUserName, dynDNSPassword = global_functions.getLiveAccountInfo("Dyndns")
         # account not found if message returned
         if dynDNSUserName == "message":
-            raise unittest2.SkipTest(googlePassword)
+            raise unittest2.SkipTest('no dyn user')
 
         # Clear the ddclient cache and set DynDNS info
         ddclientCacheFile = "/var/cache/ddclient/ddclient.cache"
         if os.path.isfile(ddclientCacheFile):
             os.remove(ddclientCacheFile)        
-        setDynDNS(dynDNSUserName, dynDNSPassword,dyn_hostname)
+        setDynDNS(dynDNSUserName, dynDNSPassword, dyn_hostname)
         
         # since Untangle uses our own servers for ddclient, test boxes will show the office IP addresses so lookup up internal IP
         outsideIP2 = global_functions.getIpAddress(base_URL=global_functions.tlsSmtpServerHost,localcall=True)
@@ -897,9 +898,11 @@ class NetworkTests(unittest2.TestCase):
         loopCounter = 60
         dynIpFound = False
         while loopCounter > 0 and not dynIpFound:
-            time.sleep(10)
+            # run force to get it to run now
+            subprocess.call(["ddclient","--force"],stdout=subprocess.PIPE,stderr=subprocess.PIPE) # force it to run faster
+            # time.sleep(10)
             loopCounter -= 1
-            result = remote_control.runCommand("host " + dyn_hostname + " resolver1.dyndnsinternetguide.com", stdout=True)
+            result = remote_control.runCommand("host " + dyn_hostname + " " + dyndns_resolver, stdout=True)
             match = re.search(r'address \d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
             dynIP = (match.group()).replace('address ','')
             print "IP address of outsideIP <%s> outsideIP2 <%s> dynIP <%s> " % (outsideIP,outsideIP2,dynIP)
@@ -1182,7 +1185,7 @@ class NetworkTests(unittest2.TestCase):
         uvmContext.systemManager().setSettings(origsystemSettings)
         assert(result == 1)
 
-    def test_140_sessionview(self):
+    def test_140_sessions(self):
         foundTestSession = False
         remote_control.runCommand("nohup netcat -d -4 test.untangle.com 80 >/dev/null 2>&1",stdout=False,nowait=True)
         loopLimit = 5
@@ -1204,7 +1207,7 @@ class NetworkTests(unittest2.TestCase):
         remote_control.runCommand("pkill netcat")
         assert(foundTestSession)
 
-    def test_141_hostview(self):
+    def test_141_host(self):
         foundTestSession = False
         remote_control.runCommand("nohup netcat -d -4 test.untangle.com 80 >/dev/null 2>&1",stdout=False,nowait=True)
         time.sleep(2) # since we launched netcat in background, give it a second to establish connection
@@ -1284,7 +1287,7 @@ class NetworkTests(unittest2.TestCase):
         netsettings['upnpSettings']['upnpEnabled'] = False
         uvmContext.networkManager().setNetworkSettings(netsettings)
         result = remote_control.runCommand("/usr/bin/upnpc -a %s 5559 5559 tcp >/dev/null 2>&1" % (remote_control.clientIP),stdout=False)
-        assert(result == 1)
+        assert(result != 0)
 
     # UPnP - Enabled
     def test_171_upnp_enabled_defaults(self):
@@ -1306,10 +1309,10 @@ class NetworkTests(unittest2.TestCase):
         netsettings['upnpSettings']['upnpEnabled'] = True
         netsettings['upnpSettings']['secureMode'] = True
         uvmContext.networkManager().setNetworkSettings(netsettings)
-        result = remote_control.runCommand("/usr/bin/upnpc -a %s 5559 5559 tcp >/dev/null 2>&1" % (remote_control.clientIP),stdout=False)
-        assert(result == 0)
-        result = remote_control.runCommand("/usr/bin/upnpc -a %s 5558 5558 tcp 2>&1 | grep ConflictInMappingEntry" % ("1.2.3.4"),stdout=False)
-        assert(result == 0)
+        result1 = remote_control.runCommand("/usr/bin/upnpc -a %s 5559 5559 tcp >/dev/null 2>&1" % (remote_control.clientIP),stdout=False)
+        result2 = remote_control.runCommand("/usr/bin/upnpc -a %s 5558 5558 tcp 2>&1 | grep ConflictInMappingEntry" % ("1.2.3.4"),stdout=False)
+        assert(result1 == 0)
+        assert(result2 == 0)
 
     # UPnP - Secure mode disabled
     def test_173_upnp_secure_mode_disabled(self):
@@ -1320,10 +1323,10 @@ class NetworkTests(unittest2.TestCase):
         netsettings['upnpSettings']['upnpEnabled'] = True
         netsettings['upnpSettings']['secureMode'] = False
         uvmContext.networkManager().setNetworkSettings(netsettings)
-        result = remote_control.runCommand("/usr/bin/upnpc -a %s 5559 5559 tcp >/dev/null 2>&1" % (remote_control.clientIP),stdout=False)
-        assert(result == 0)
-        result = remote_control.runCommand("/usr/bin/upnpc -a %s 5558 5558 tcp 2>&1 | grep ConflictInMappingEntry" % ("1.2.3.4"),stdout=False)
-        assert(result == 1)
+        result1 = remote_control.runCommand("/usr/bin/upnpc -a %s 5559 5559 tcp >/dev/null 2>&1" % (remote_control.clientIP),stdout=False)
+        result2 = remote_control.runCommand("/usr/bin/upnpc -a %s 5558 5558 tcp 2>&1 | grep ConflictInMappingEntry" % ("1.2.3.4"),stdout=False)
+        assert(result1 == 0)
+        assert(result2 == 1)
 
     # UPnP - Enabled, Deny rule
     def test_174_upnp_rules_deny_all(self):

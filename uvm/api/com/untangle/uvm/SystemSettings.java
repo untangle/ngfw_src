@@ -123,7 +123,7 @@ public class SystemSettings implements Serializable, JSONString
     public void setMailCertificate(String newValue) { this.mailCertificate = newValue; }
     public void setIpsecCertificate(String newValue) { this.ipsecCertificate = newValue; }
 
-    /* DEPRECATED in 12.1 - moved to network settings */
+    /* DEPRECATED in 12.2 - moved to network settings */
     /* DEPRECATED in 12.1 - moved to network settings */
     /* DEPRECATED in 12.1 - moved to network settings */
     private String publicUrlMethod;
@@ -135,7 +135,7 @@ public class SystemSettings implements Serializable, JSONString
     public void setPublicUrlAddress( String newValue ) { this.publicUrlAddress = newValue; }
     public int deprecated_getPublicUrlPort() { return this.publicUrlPort; }
     public void setPublicUrlPort( int newValue ) { this.publicUrlPort = newValue; }
-    /* DEPRECATED in 12.1 - moved to network settings */
+    /* DEPRECATED in 12.2 - moved to network settings */
     /* DEPRECATED in 12.1 - moved to network settings */
     /* DEPRECATED in 12.1 - moved to network settings */
 }

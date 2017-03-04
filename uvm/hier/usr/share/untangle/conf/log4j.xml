@@ -114,6 +114,10 @@
     <priority value="INFO"/>
   </category>
 
+  <category name="com.untangle.uvm.UserTableImpl">
+    <priority value="INFO"/>
+  </category>
+  
   <category name="com.untangle.uvm.ConntrackMonitorImpl">
     <priority value="INFO"/>
   </category>
