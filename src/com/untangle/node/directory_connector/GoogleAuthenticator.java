@@ -1,5 +1,14 @@
-/*
- * $Id: GoogleAuthenticator.java,v 1.00 2016/04/02 13:18:29 dmorris Exp $
+/**
+ * $Id: FacebookAuthenticator.java,v 1.00 2017/03/03 19:30:10 dmorris Exp $
+ * 
+ * Copyright (c) 2003-2017 Untangle, Inc.
+ *
+ *
+ * This software is the confidential and proprietary information of
+ * Untangle, Inc. ("Confidential Information"). You shall
+ * not disclose such Confidential Information and shall use it only in
+ * accordance with the terms of the license agreement you entered into
+ * with Untangle.
  */
 package com.untangle.node.directory_connector;
 
