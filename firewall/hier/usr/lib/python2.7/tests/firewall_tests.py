@@ -126,12 +126,12 @@ def nukeHostUsername():
 
 def setHostHostname(str):
     entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
-    entry['usernameDirectoryConnector'] = str
+    entry['hostnameDns'] = str
     uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
 
 def nukeHostHostname():
     entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
-    entry['usernameDirectoryConnector'] = None
+    entry['hostnameDns'] = None
     uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
     
 class FirewallTests(unittest2.TestCase):
