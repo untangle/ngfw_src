@@ -5,7 +5,7 @@ package com.untangle.node.virus_blocker;
 
 import java.io.Serializable;
 
-import com.untangle.uvm.node.TemplateValues;
+import com.untangle.node.smtp.TemplateValues;
 
 /**
  * Virus scan result.  <br><br> This class also implements {@link

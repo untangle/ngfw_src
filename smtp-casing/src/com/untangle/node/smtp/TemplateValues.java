@@ -1,7 +1,7 @@
 /**
  * $Id$
  */
-package com.untangle.uvm.node;
+package com.untangle.node.smtp;
 
 /**
  * A TemplateValues instance is used in conjunction with a

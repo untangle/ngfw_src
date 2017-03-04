@@ -1,7 +1,7 @@
 /**
  * $Id$
  */
-package com.untangle.uvm.node;
+package com.untangle.node.smtp;
 
 import java.util.ArrayList;
 import java.util.Arrays;
