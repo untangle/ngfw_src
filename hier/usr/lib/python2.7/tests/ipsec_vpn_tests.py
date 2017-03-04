@@ -65,6 +65,11 @@ def appendTunnel(newTunnel):
     ipsecSettings["tunnels"]["list"].append(newTunnel)
     node.setSettings(ipsecSettings)
 
+def nukeIPSecTunnels():
+    ipsecSettings = node.getSettings()
+    ipsecSettings["tunnels"]["list"] = []
+    node.setSettings(ipsecSettings)
+
 def createL2TPconfig(authType="LOCAL_DIRECTORY"):
     ipsecSettings = node.getSettings()
     ipsecSettings["authenticationType"] = authType
@@ -137,7 +142,7 @@ def addDNSRule(newRule):
     netsettings = uvmContext.networkManager().getNetworkSettings()
     netsettings['dnsSettings']['staticEntries']['list'].insert(0,newRule)
     uvmContext.networkManager().setNetworkSettings(netsettings)  
-    
+
 class IPsecTests(unittest2.TestCase):
 
     @staticmethod
@@ -210,14 +215,18 @@ class IPsecTests(unittest2.TestCase):
                
     def test_030_restartNetworkVerifyIpsecTunnel(self):
         # save a setting in networking and test ipsec tunnel is set connected.
+        global tunnelUp
         if (not tunnelUp):
             raise unittest2.SkipTest("Test test_020_createIpsecTunnel success required ")
         netsettings = uvmContext.networkManager().getNetworkSettings()
         uvmContext.networkManager().setNetworkSettings(netsettings)
         time.sleep(10) # wait for networking to restart
         ipsecHostLANResult = remote_control.runCommand(("curl -s -4 --insecure -o /dev/null 'https://%s/'" % ipsecHostLANIP))
-        assert (ipsecHostLANResult == 0)
         ipsecPcLanResult = remote_control.runCommand("ping -c 1 %s" % ipsecPcLANIP)
+        # delete tunnel
+        nukeIPSecTunnels()
+        tunnelUp = False
+        assert (ipsecHostLANResult == 0)
         assert (ipsecPcLanResult == 0)
         
     def test_040_windowsL2TPlocalDirectory(self):
@@ -273,7 +282,6 @@ class IPsecTests(unittest2.TestCase):
     def test_060_createIpsecTunnelHostname(self):
         originalSettings = uvmContext.networkManager().getNetworkSettings()
         addDNSRule(createDNSRule("10.111.56.96","ipsecsite.untangle.int"))
-        global tunnelUp
         if (ipsecHostResult != 0):
             raise unittest2.SkipTest("No paried IPSec server available")
         pre_events_enabled = global_functions.getStatusValue(node,"enabled")
@@ -296,12 +304,11 @@ class IPsecTests(unittest2.TestCase):
             time.sleep(1)
             # ping the remote LAN to see if the IPsec tunnel is connected.
             ipsecHostLANResult = remote_control.runCommand(("curl -s -4 --insecure -o /dev/null 'https://%s/'" % ipsecHostLANIP))
-        assert (ipsecHostLANResult == 0)
-        tunnelUp = True
         uvmContext.networkManager().setNetworkSettings( originalSettings )
-        
-        # Check to see if the faceplate counters have incremented. 
         post_events_enabled = global_functions.getStatusValue(node,"enabled")
+        nukeIPSecTunnels()
+        assert (ipsecHostLANResult == 0)
+        # Check to see if the faceplate counters have incremented. 
         assert(pre_events_enabled < post_events_enabled)
 
     @staticmethod
