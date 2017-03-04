@@ -25,8 +25,8 @@ import com.untangle.uvm.HostTableEntry;
 import com.untangle.uvm.util.Pulse;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.node.Node;
-import com.untangle.uvm.node.PenaltyBoxEvent;
 import com.untangle.uvm.node.QuotaEvent;
+import com.untangle.uvm.node.HostnameLookup;
 
 /**
  * HostTable stores a global table of all "local" IPs that have recently been seen.
@@ -41,12 +41,9 @@ public class HostTableImpl implements HostTable
 {
     private static final int HIGH_WATER_SIZE = 12000; /* absolute max */
     private static final int LOW_WATER_SIZE = 10000; /* max size to reduce to when pruning map */
-
     private static final int CLEANER_SLEEP_TIME_MILLI = 60 * 1000; /* 60 seconds */
     private static final int CLEANER_LAST_ACCESS_MAX_TIME = 60 * 60 * 1000; /* 60 minutes */
-    
     private static final String HOSTS_SAVE_FILENAME = System.getProperty("uvm.settings.dir") + "/untangle-vm/hosts.js";
-
     private static final int PERIODIC_SAVE_DELAY = 1000 * 60 * 60 * 6; /* 6 hours */
 
     private final Logger logger = Logger.getLogger(getClass());
@@ -113,6 +110,9 @@ public class HostTableImpl implements HostTable
 
     public HostTableEntry getHostTableEntry( InetAddress addr, boolean createIfNecessary )
     {
+        if ( addr == null )
+            return null;
+
         HostTableEntry entry = hostTable.get( addr );
 
         if ( entry == null && createIfNecessary ) {
@@ -149,101 +149,6 @@ public class HostTableImpl implements HostTable
         return new LinkedList<HostTableEntry>(hostTable.values());
     }
     
-    public synchronized void addHostToPenaltyBox( InetAddress address, int time_sec, String reason )
-    {
-        HostTableEntry entry = getHostTableEntry( address, true );
-        long entryTime = System.currentTimeMillis();
-        long exitTime  = entryTime + (((long)time_sec) * 1000L);
-
-        logger.info("Adding " + address.getHostAddress() + " to Penalty box for " + time_sec + " seconds");
-
-        /**
-         * Set Penalty Boxed flag
-         */
-        boolean currentFlag = entry.getPenaltyBoxed();
-        entry.setPenaltyBoxed(true);
-
-        /**
-         * If the entry time is null, set it.
-         * If it is not null, the host was probably already in the penalty box so don't update it
-         */
-        long currentEntryTime = entry.getPenaltyBoxEntryTime();
-        if (currentEntryTime == 0)
-            entry.setPenaltyBoxEntryTime( entryTime );
-        currentEntryTime = entryTime;
-
-        /**
-         * Update the exit time, if the proposed value is after the current value
-         */
-        long currentExitTime = entry.getPenaltyBoxExitTime();
-        if (currentExitTime == 0 || exitTime > currentExitTime)
-            entry.setPenaltyBoxExitTime( exitTime );
-        currentExitTime = exitTime;
-            
-        int action;
-        if ( currentFlag ) {
-            action = PenaltyBoxEvent.ACTION_REENTER; /* was already there */
-        } else {
-            action = PenaltyBoxEvent.ACTION_ENTER; /* new entry */
-        }
-
-        PenaltyBoxEvent evt = new PenaltyBoxEvent( action, address, new Date(currentEntryTime), new Date(currentExitTime), reason ) ;
-        UvmContextFactory.context().logEvent(evt);
-
-        /* Call hook listeners */
-        UvmContextFactory.context().hookManager().callCallbacks( HookManager.HOST_TABLE_PENALTY_BOX_ENTER, address );
-        
-        return;
-    }
-
-    public synchronized void releaseHostFromPenaltyBox( InetAddress address )
-    {
-        HostTableEntry entry = getHostTableEntry( address );
-        if (entry == null) /* host not in penalty box */
-            return;
-        
-        long now = System.currentTimeMillis();
-
-        /**
-         * Save previous values and remove from penalty box
-         */
-        boolean currentFlag = entry.getPenaltyBoxed();
-        long currentEntryTime = entry.getPenaltyBoxEntryTime();
-        long currentExitTime  = entry.getPenaltyBoxExitTime();
-        entry.setPenaltyBoxed( false );
-        entry.setPenaltyBoxEntryTime( 0 );
-        entry.setPenaltyBoxExitTime( 0 );
-        
-        if ( !currentFlag ) {
-            return;
-        }
-        if ( currentEntryTime == 0 ) {
-            logger.warn("Entry time not set for penalty boxed host");
-            return;
-        }
-        if ( currentExitTime == 0 ) {
-            logger.warn("Exit time not set for penalty boxed host");
-            return;
-        }
-        
-        /**
-         * If current date is before planned exit time, use it instead, otherwise just log the exit time
-         */
-        if ( now > currentExitTime ) {
-            logger.info("Removing " + address.getHostAddress() + " from Penalty box. (expired)");
-        } else {
-            logger.info("Removing " + address.getHostAddress() + " from Penalty box. (admin requested)");
-            currentExitTime = now; /* set exitTime to now, because the host was release prematurely */
-        }
-            
-        UvmContextFactory.context().logEvent( new PenaltyBoxEvent( PenaltyBoxEvent.ACTION_EXIT, address, new Date(currentEntryTime), new Date(currentExitTime), null ) );
-
-        /* Call hook listeners */
-        UvmContextFactory.context().hookManager().callCallbacks( HookManager.HOST_TABLE_PENALTY_BOX_EXIT, address );
-        
-        return;
-    }
-
     public synchronized void giveHostQuota( InetAddress address, long quotaBytes, int time_sec, String reason )
     {
         if (address == null) {
@@ -262,7 +167,7 @@ public class HostTableImpl implements HostTable
         /* Call hook listeners */
         UvmContextFactory.context().hookManager().callCallbacks( HookManager.HOST_TABLE_QUOTA_GIVEN, address );
 
-        UvmContextFactory.context().logEvent( new QuotaEvent( QuotaEvent.ACTION_GIVEN, address, reason, quotaBytes ) );
+        UvmContextFactory.context().logEvent( new QuotaEvent( QuotaEvent.ACTION_GIVEN, address.getHostAddress(), reason, quotaBytes ) );
         
         return;
     }
@@ -387,52 +292,13 @@ public class HostTableImpl implements HostTable
             /* Call hook listeners */
             UvmContextFactory.context().hookManager().callCallbacks( HookManager.HOST_TABLE_QUOTA_EXCEEDED, address );
 
-            UvmContextFactory.context().logEvent( new QuotaEvent( QuotaEvent.ACTION_EXCEEDED, address, null, entry.getQuotaSize()) );
+            UvmContextFactory.context().logEvent( new QuotaEvent( QuotaEvent.ACTION_EXCEEDED, address.getHostAddress(), null, entry.getQuotaSize()) );
             return true;
         }
 
         return false;
     }
     
-    public boolean hostInPenaltyBox( InetAddress address )
-    {
-        if (address == null) {
-            logger.warn("Invalid argument: address is null");
-            return false;
-        }
-        HostTableEntry entry = getHostTableEntry( address );
-        if ( entry == null )
-            return false;
-        if ( !entry.getPenaltyBoxed() )
-            return false;
-
-        /**
-         * If the exit time has already passed the host is no longer penalty boxed
-         * As such, release the host from the penalty box immediately and return false
-         */
-        long exitTime = entry.getPenaltyBoxExitTime();
-        long now = System.currentTimeMillis();
-        if ( exitTime != 0 && now > exitTime ) {
-            releaseHostFromPenaltyBox( address );
-            return false;
-        }
-                
-        return true;
-    }
-
-    public LinkedList<HostTableEntry> getPenaltyBoxedHosts()
-    {
-        LinkedList<HostTableEntry> list = new LinkedList<HostTableEntry>(UvmContextFactory.context().hostTable().getHosts());
-
-        for (Iterator<HostTableEntry> i = list.iterator(); i.hasNext(); ) {
-            HostTableEntry entry = i.next();
-            if (! hostInPenaltyBox( entry.getAddress() ) )
-                i.remove();
-        }
-
-        return list;
-    }
-
     public LinkedList<HostTableEntry> getQuotaHosts()
     {
         LinkedList<HostTableEntry> list = new LinkedList<HostTableEntry>(UvmContextFactory.context().hostTable().getHosts());
@@ -478,7 +344,7 @@ public class HostTableImpl implements HostTable
         return this.maxActiveSize;
     }
 
-    public void clearTable()
+    public void clear()
     {
         this.hostTable.clear();
     }
@@ -491,7 +357,7 @@ public class HostTableImpl implements HostTable
         }
         logger.info("Removing host table entry: " + address.getHostAddress());
 
-        HostTableEvent event = new HostTableEvent( address, "remove", null );
+        HostTableEvent event = new HostTableEvent( address, "remove", null, null );
         UvmContextFactory.context().logEvent(event);
 
         HostTableEntry removed =  hostTable.remove( address );
@@ -503,12 +369,15 @@ public class HostTableImpl implements HostTable
     {
         HostTableEntry entry = new HostTableEntry();
 
-        HostTableEvent event = new HostTableEvent( address, "add", null );
+        HostTableEvent event = new HostTableEvent( address, "add", null, null );
         UvmContextFactory.context().logEvent(event);
         
         entry.setAddress( address );
 
-        checkForDevice( entry, address );
+        syncWithDeviceEntry( entry, address );
+        
+        updateHostnameDhcp( entry );
+        updateHostnameReports( entry );
         
         int seatLimit = UvmContextFactory.context().licenseManager().getSeatLimit();
         int currentSize = getCurrentActiveSize();
@@ -525,8 +394,10 @@ public class HostTableImpl implements HostTable
     /**
      * This funciton checks for a matching entry in the device table.
      * If it does not exist, it adds it
+     * It then sets all the appropriate fields in the host entry using the device entry
+     * and then updatse any fields in the device entry
      */
-    private void checkForDevice( HostTableEntry entry, InetAddress address )
+    private void syncWithDeviceEntry( HostTableEntry entry, InetAddress address )
     {
         String macAddress = UvmContextFactory.context().netcapManager().arpLookup( address.getHostAddress() );
         if ( macAddress == null )
@@ -547,15 +418,25 @@ public class HostTableImpl implements HostTable
          * Restore known information from the device entry where able
          */
         if ( deviceEntry.getHostname() != null )
-            entry.setHostname( deviceEntry.getHostname() );
-        if ( deviceEntry.getDeviceUsername() != null )
-            entry.setUsernameDevice( deviceEntry.getDeviceUsername() );
+            entry.setHostnameDevice( deviceEntry.getHostname() );
+        if ( deviceEntry.getUsername() != null )
+            entry.setUsernameDevice( deviceEntry.getUsername() );
         if ( deviceEntry.getHttpUserAgent() != null )
             entry.setHttpUserAgent( deviceEntry.getHttpUserAgent() );
         if ( deviceEntry.getMacVendor() != null )
             entry.setMacVendor( deviceEntry.getMacVendor() );
+        entry.addTags( deviceEntry.getTags() );
+
+        /**
+         * Update Device Entry
+         */
+        if ( entry.getHostnameDhcp() != null ) {
+            deviceEntry.setHostname( entry.getHostnameDhcp() );
+        } else if ( entry.getHostnameDns() != null ) {
+            deviceEntry.setHostname( entry.getHostnameDns() );
+        }
     }
-    
+
     @SuppressWarnings("unchecked")
     public void saveHosts()
     {
@@ -603,6 +484,30 @@ public class HostTableImpl implements HostTable
             this.maxActiveSize = realSize;
     }
 
+    private static void updateHostnameDhcp( HostTableEntry entry )
+    {
+        HostnameLookup router = (HostnameLookup) UvmContextFactory.context().nodeManager().node("untangle-node-router");
+        String hostname = null;
+        if ( router != null ) {
+            hostname = router.lookupHostname( entry.getAddress() );
+        }
+        if ( hostname != null && hostname.length() > 0 ) {
+            entry.setHostnameDhcp( hostname );
+        }
+    }
+
+    private static void updateHostnameReports( HostTableEntry entry )
+    {
+        HostnameLookup reports = (HostnameLookup) UvmContextFactory.context().nodeManager().node("untangle-node-reports");
+        String hostname = null;
+        if ( reports != null ) {
+            hostname = reports.lookupHostname( entry.getAddress() );
+        }
+        if ( hostname != null && hostname.length() > 0 ) {
+            entry.setHostnameReports( hostname );
+        }
+    }
+
     @SuppressWarnings("unchecked")
     private void loadSavedHosts()
     {
@@ -622,7 +527,7 @@ public class HostTableImpl implements HostTable
                             continue;
                         }
 
-                        checkForDevice( entry, entry.getAddress() );
+                        syncWithDeviceEntry( entry, entry.getAddress() );
                         
                         hostTable.put( entry.getAddress(), entry );
                     } catch ( Exception e ) {
@@ -684,16 +589,11 @@ public class HostTableImpl implements HostTable
                         }
                         
                         /**
-                         * Check penalty box expiration
-                         * Remove from penalty box if expired
+                         * Update some metadata
                          */
-                        if ( entry.getPenaltyBoxed() ) {
-                            long exitTime = entry.getPenaltyBoxExitTime();
-                            if (now > exitTime) {
-                                releaseHostFromPenaltyBox( address );
-                            }
-                        }
-
+                        updateHostnameDhcp( entry );
+                        updateHostnameReports( entry );
+                        
                         /**
                          * Check quota expiration
                          * Remove from quota if expired
@@ -714,7 +614,7 @@ public class HostTableImpl implements HostTable
                              * If this host table entry is storing vital information, don't delete it
                              */
                             if ( entry.getQuotaSize() > 0 ||
-                                 entry.getPenaltyBoxed() ||
+                                 entry.getTags().size() > 0 ||
                                  entry.getCaptivePortalAuthenticated() /* check authenticated flag instead of username because anonymous logins don't set username */
                                  ) {
                                 continue;
@@ -820,7 +720,7 @@ public class HostTableImpl implements HostTable
                         String currentHostname = entry.getHostname();
                         InetAddress address = entry.getAddress();
 
-                        checkForDevice( entry, address );
+                        syncWithDeviceEntry( entry, address );
 
                         if ( address == null ) {
                             if ( logger.isDebugEnabled() )
@@ -858,7 +758,7 @@ public class HostTableImpl implements HostTable
                                 hostname = hostname.substring(0,firstdot);
                             
                             logger.debug("HostTable Reverse lookup hostname = " + hostname);
-                            entry.setHostname( hostname );
+                            entry.setHostnameDns( hostname );
                         } catch (java.net.UnknownHostException e ) {
                             //do nothing
                         } catch (Exception e) {

@@ -178,6 +178,11 @@ public class ConntrackMonitorImpl
                 return; /* no data with this event. return */
 
             UvmContextFactory.context().hostTable().decrementQuota( address, bytes );
+
+            com.untangle.uvm.HostTableEntry hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( address );
+            if ( hostEntry != null && hostEntry.getUsername() != null && !"".equals(hostEntry.getUsername())) {
+                UvmContextFactory.context().userTable().decrementQuota( hostEntry.getUsername(), bytes );
+            }
         }
         
         public void run()

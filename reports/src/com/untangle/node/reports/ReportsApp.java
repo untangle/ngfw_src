@@ -446,6 +446,8 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
     {
     }
     
+
+    
     private LinkedList<EmailTemplate> defaultEmailTemplates()
     {
         LinkedList<EmailTemplate> templates = new LinkedList<EmailTemplate>();
@@ -661,6 +663,10 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
 
     private void conversion_paths_13_0_0()
     {
+        int result = UvmContextFactory.context().execManager().execResult("/bin/grep -q com.untangle.node.reports.AlertRule " + System.getProperty("uvm.settings.dir") + "/" + "/untangle-node-reports/" + "/settings*.js");
+        if ( result != 0 )
+            return;
+
         // Convert event rule paths to new locations for 12.2 to 13.0
         String[] oldNames = new String[] {
                                 "com.untangle.node.reports.AlertRuleCondition",

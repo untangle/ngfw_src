@@ -47,6 +47,7 @@ public class SessionEvent extends LogEvent
     private String username;
     private String hostname;
     private String filterPrefix;
+    private String tagsString;
     
     public SessionEvent()
     {
@@ -208,6 +209,12 @@ public class SessionEvent extends LogEvent
      */
     public String getHostname() { return hostname; }
     public void setHostname(String hostname) { this.hostname = hostname; }
+
+    /**
+     * The tags associated with this session
+     */
+    public String getTagsString() { return this.tagsString; }
+    public void setTagsString(String newValue) { this.tagsString = newValue; }
     
     public String getProtocolName()
     {
@@ -262,9 +269,9 @@ public class SessionEvent extends LogEvent
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
         String sql = "INSERT INTO " + schemaPrefix() + "sessions" + getPartitionTablePostfix() + " " +
-            "(session_id, bypassed, entitled, time_stamp, protocol, icmp_type, end_time, hostname, username, filter_prefix, policy_id, policy_rule_id, local_addr, remote_addr, c_client_addr, c_client_port, c_server_addr, c_server_port, s_client_addr, s_client_port, s_server_addr, s_server_port, client_intf, server_intf, client_country, client_latitude, client_longitude, server_country, server_latitude, server_longitude) " +
+            "(session_id, bypassed, entitled, time_stamp, protocol, icmp_type, end_time, hostname, username, filter_prefix, policy_id, policy_rule_id, local_addr, remote_addr, c_client_addr, c_client_port, c_server_addr, c_server_port, s_client_addr, s_client_port, s_server_addr, s_server_port, client_intf, server_intf, client_country, client_latitude, client_longitude, server_country, server_latitude, server_longitude, tags) " +
             "values " +
-            "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?); ";
+            "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?); ";
 
         java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
         
@@ -299,6 +306,7 @@ public class SessionEvent extends LogEvent
         pstmt.setString(++i, getServerCountry());
         pstmt.setDouble(++i, (getServerLatitude() == null ? 0 : getServerLatitude()) );
         pstmt.setDouble(++i, (getServerLongitude() == null ? 0 : getServerLongitude()) );
+        pstmt.setString(++i, getTagsString());
         pstmt.addBatch();
         return;
     }

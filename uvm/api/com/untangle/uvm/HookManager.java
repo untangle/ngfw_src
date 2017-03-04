@@ -15,12 +15,16 @@ public interface HookManager
     public static String UVM_SETTINGS_CHANGE = "uvm-settings-change";
     public static String HOST_TABLE_REMOVE = "host-table-remove";
     public static String HOST_TABLE_ADD = "host-table-add";
-    public static String HOST_TABLE_PENALTY_BOX_ENTER = "host-table-penalty-box-enter";
-    public static String HOST_TABLE_PENALTY_BOX_EXIT = "host-table-penalty-box-exit";
+    public static String HOST_TABLE_TAGGED = "host-table-tagged";
     public static String HOST_TABLE_QUOTA_GIVEN = "host-table-quota-given";
     public static String HOST_TABLE_QUOTA_EXCEEDED = "host-table-quota-exceeded";
     public static String HOST_TABLE_QUOTA_REMOVED = "host-table-quota-removed";
-
+    public static String USER_TABLE_REMOVE = "user-table-remove";
+    public static String USER_TABLE_ADD = "user-table-add";
+    public static String USER_TABLE_QUOTA_GIVEN = "user-table-quota-given";
+    public static String USER_TABLE_QUOTA_EXCEEDED = "user-table-quota-exceeded";
+    public static String USER_TABLE_QUOTA_REMOVED = "user-table-quota-removed";
+    
     public boolean isRegistered( String hookName, HookCallback callback );
 
     public boolean registerCallback( String groupName, HookCallback callback );

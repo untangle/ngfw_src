@@ -4,7 +4,6 @@
 package com.untangle.uvm.node;
 
 import java.io.Serializable;
-import java.net.InetAddress;
 
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.util.I18nUtil;
@@ -20,7 +19,7 @@ public class QuotaEvent extends LogEvent implements Serializable
     
     private int action;
 
-    private InetAddress address;
+    private String entity;
 
     private String reason; 
 
@@ -28,10 +27,10 @@ public class QuotaEvent extends LogEvent implements Serializable
 
     public QuotaEvent() { }
 
-    public QuotaEvent(int action, InetAddress address, String reason, long quotaSize )
+    public QuotaEvent(int action, String entity, String reason, long quotaSize )
     {
         this.action = action;
-        this.address = address;
+        this.entity = entity;
         this.reason = reason;
         this.quotaSize = quotaSize;
     }
@@ -42,8 +41,8 @@ public class QuotaEvent extends LogEvent implements Serializable
     public String getReason() { return reason; }
     public void setReason( String reason ) { this.reason = reason; }
 
-    public InetAddress getAddress() { return address; }
-    public void setAddress( InetAddress address ) { this.address = address; }
+    public String getEntity() { return entity; }
+    public void setEntity( String entity ) { this.entity = entity; }
 
     public long getQuotaSize() { return quotaSize; }
     public void setQuotaSize( long quotaSize ) { this.quotaSize = quotaSize; }
@@ -52,7 +51,7 @@ public class QuotaEvent extends LogEvent implements Serializable
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
         String sql = "INSERT INTO " + schemaPrefix() + "quotas" + getPartitionTablePostfix() + " " +
-            "(time_stamp, address, action, reason, size ) " + 
+            "(time_stamp, entity, action, reason, size ) " + 
             "values " +
             "( ?, ?, ?, ?, ? )";
 
@@ -60,7 +59,7 @@ public class QuotaEvent extends LogEvent implements Serializable
 
         int i=0;
         pstmt.setTimestamp(++i, getTimeStamp());
-        pstmt.setObject(++i, getAddress().getHostAddress(), java.sql.Types.OTHER);
+        pstmt.setString(++i, getEntity());
         pstmt.setInt(++i, getAction());
         pstmt.setString(++i, getReason());
         pstmt.setLong(++i, getQuotaSize());
@@ -80,7 +79,7 @@ public class QuotaEvent extends LogEvent implements Serializable
             
         }
             
-        String summary = address.getHostAddress() + " " + action + " " + (quotaSize/(1024*1024)) + " " + "MB";
+        String summary = entity + " " + action + " " + (quotaSize/(1024*1024)) + " " + "MB";
         return summary;
     }
     
