@@ -24,13 +24,37 @@ Ext.define('Ung.apps.bandwidthcontrol.view.Status', {
                 '<h3>Bandwidth Control</h3>' +
                 '<p>' + 'Bandwidth Control monitors, manages, and shapes bandwidth usage on the network'.t() + '</p>'
         }, {
+            xtype: 'appstate',
+            hidden: true,
+            bind: {
+                hidden: '{!isConfigured}'
+            },
+        }, {
             title: '<i class="fa fa-cog"></i> ' + 'Configuration'.t(),
             padding: 10,
             margin: '20 0',
             cls: 'app-section',
             items: [{
                 xtype: 'component',
-                html: 'Bandwidth Control is unconfigured. Use the Wizard to configure Bandwidth Control.'.t()
+                html: 'Bandwidth Control is unconfigured. Use the Wizard to configure Bandwidth Control.'.t(),
+                hidden: true,
+                bind: {
+                    hidden: '{isConfigured}'
+                }
+            }, {
+                xtype: 'component',
+                html: 'Bandwidth Control is configured'.t(),
+                hidden: true,
+                bind: {
+                    hidden: '{!isConfigured}'
+                }
+            }, {
+                xtype: 'component',
+                html: 'Bandwidth Control is enabled, but QoS is not enabled. Bandwidth Control requires QoS to be enabled.'.t(),
+                hidden: true,
+                bind: {
+                    hidden: '{qosEnabled}'
+                }
             }, {
                 xtype: 'button',
                 margin: '10 0 0 0',
@@ -38,12 +62,6 @@ Ext.define('Ung.apps.bandwidthcontrol.view.Status', {
                 iconCls: 'fa fa-magic',
                 handler: 'runWizard'
             }]
-        }, {
-            xtype: 'appstate',
-            hidden: true,
-            bind: {
-                hidden: '{!isConfigured}'
-            },
         }, {
             xtype: 'appreports',
             hidden: true,

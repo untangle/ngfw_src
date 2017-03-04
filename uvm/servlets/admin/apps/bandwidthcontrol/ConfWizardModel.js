@@ -31,8 +31,7 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizardModel', {
                 }
                 this.set('confDetails', html);
             }
-        },
-
+        }
     },
 
     data: {

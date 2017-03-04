@@ -10,43 +10,44 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizard', {
     },
 
     width: 800,
-    height: 600,
+    height: 450,
 
     layout: 'card',
 
     defaults: {
         border: false,
-        scrollable: 'y'
+        scrollable: 'y',
+        bodyPadding: 10
     },
 
     items: [{
         title: 'Welcome'.t(),
         header: false,
         itemId: 'welcome',
+        layout: {
+            type: 'vbox'
+        },
         items: [{
             xtype: 'component',
             html: '<h2>' + 'Welcome to the Bandwidth Control Setup Wizard!'.t() + '</h2>',
-            margin: '10'
         }, {
             xtype: 'component',
-            html: 'This wizard will help guide you through your initial setup and configuration of Bandwidth Control.'.t(),
-            margin: '0 0 10 10'
+            html: '<p>' + 'This wizard will help guide you through your initial setup and configuration of Bandwidth Control.'.t() + '</p>',
         }, {
             xtype: 'component',
-            html: 'Bandwidth Control leverages information provided by other applications in the rack.'.t() + '<br/><br/>' +
-                'Web Filter (non-Lite) provides web site categorization.'.t() + '<br/>' +
-                'Application Control provides protocol profiling categorization.'.t() + '<br/>' +
-                'Application Control Lite provides protocol profiling categorization.'.t() + '<br/>' +
-                'Directory Connector provides username/group information.'.t() + '<br/><br/>' +
-                '<strong>' + 'For optimal Bandwidth Control performance install these applications.'.t() + '</strong>',
-            margin: '0 0 10 10'
+            html: '<p>' + 'Bandwidth Control leverages information provided by other applications in the rack.'.t() + '</p><ul>' +
+                '<li>' + 'Web Filter (non-Lite) provides web site categorization.'.t() + '</li>' +
+                '<li>' + 'Application Control provides protocol profiling categorization.'.t() + '</li>' +
+                '<li>' + 'Application Control Lite provides protocol profiling categorization.'.t() + '</li>' +
+                '<li>' + 'Directory Connector provides username/group information.'.t() + '</li></ul>' +
+                '<p><strong>' + 'For optimal Bandwidth Control performance install these applications.'.t() + '</strong></p>'
         }, {
             xtype: 'component',
-            html: 'WARNING: Completing this setup wizard will overwrite the previous settings with new settings. All previous settings will be lost!'.t(),
-            margin: '0 0 10 10'
+            html: '<i class="fa fa-exclamation-triangle fa-red"></i> ' + 'WARNING: Completing this setup wizard will overwrite the previous settings with new settings. All previous settings will be lost!'.t()
         }]
     }, {
         title: 'WAN Bandwidth'.t(),
+        header: false,
         itemId: 'wan',
         layout: {
             type: 'vbox',
@@ -54,21 +55,19 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizard', {
         },
         items: [{
             xtype: 'component',
-            html: '<h2>' + 'Configure WANs download and upload bandwidths'.t() + '</h2>',
-            margin: '10 10 0 10'
+            html: '<h2>' + 'Configure WANs download and upload bandwidths'.t() + '</h2>'
         }, {
             xtype: 'component',
-            html: Ext.String.format('{0}Note:{1} When enabling QoS valid Download Bandwidth and Upload Bandwidth limits must be set for all WAN interfaces.'.t(), '<font color="red">','</font>') + '<br/>' +
-                'It is suggested to set these around 95% to 100% of the actual measured bandwidth available for each WAN.'.t(),
-            margin: 10
+            html: '<p>' + Ext.String.format('{0}Note:{1} When enabling QoS valid Download Bandwidth and Upload Bandwidth limits must be set for all WAN interfaces.'.t(), '<font color="red">','</font>') + '<br/>' +
+                'It is suggested to set these around 95% to 100% of the actual measured bandwidth available for each WAN.'.t() + '</p>',
         }, {
             xtype: 'component',
-            html: '<i class="fa fa-exclamation-triangle fa-red"></i> <span style="color: red;">' + 'WARNING: These settings must be reasonably accurate for Bandwidth Control to operate properly!'.t() + '</span> <br/><br/>' +
-                Ext.String.format('Total: {0} kbps ({1} Mbit) download, {2} kbps ({3} Mbit) upload'.t(), 'd', 'd_Mbit', 'u', 'u_Mbit'),
-            margin: 10
+            bind: {
+                html: '<p><i class="fa fa-exclamation-triangle fa-red"></i> <span style="color: red;">' + 'WARNING: These settings must be reasonably accurate for Bandwidth Control to operate properly!'.t() + '</span> </p>' +
+                    '<p>{bandwidthLabel}</p>'
+            }
         }, {
             xtype: 'grid',
-            title: 'WANs'.t(),
             flex: 1,
             trackMouseOver: false,
             sortableColumns: false,
@@ -136,15 +135,14 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizard', {
         }]
     }, {
         title: 'Configuration'.t(),
+        header: false,
         itemId: 'configuration',
         items: [{
             xtype: 'component',
-            html: '<h2>' + 'Choose a starting configuration'.t() + '</h2>',
-            margin: '10 10 0 10'
+            html: '<h2>' + 'Choose a starting configuration'.t() + '</h2>'
         }, {
             xtype: 'component',
-            html: 'Several initial default configurations are available for Bandwidth Control. Please select the environment most like yours below.'.t(),
-            margin: 10
+            html: '<p>' + 'Several initial default configurations are available for Bandwidth Control. Please select the environment most like yours below.'.t() + '</p>',
         }, {
             xtype: 'combo',
             fieldLabel: 'Configuration'.t(),
@@ -171,15 +169,14 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizard', {
         }]
     }, {
         title: 'Quotas'.t(),
+        header: false,
         itemId: 'quotas',
         items: [{
             xtype: 'component',
-            html: '<h2>' + 'Configure Quotas'.t() + '</h2>',
-            margin: '10 10 0 10'
+            html: '<h2>' + 'Configure Quotas'.t() + '</h2>'
         }, {
             xtype: 'component',
-            html: 'Quotas for bandwidth can be set for certain hosts. This allows some hosts to be allocated high bandwidth, as long as it is remains within a certain usage quota; however, their bandwidth will be slowed if their usage is excessive.'.t(),
-            margin: 10
+            html: '<p>' + 'Quotas for bandwidth can be set for certain hosts. This allows some hosts to be allocated high bandwidth, as long as it is remains within a certain usage quota; however, their bandwidth will be slowed if their usage is excessive.'.t() + '</p>'
         }, {
             xtype: 'fieldset',
             checkboxToggle: true,
@@ -276,15 +273,14 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizard', {
         }]
     }, {
         title: 'Finish'.t(),
+        header: false,
         itemId: 'finish',
         items: [{
             xtype: 'component',
-            html: '<h2>' + 'Congratulations'.t() + '</h2>',
-            margin: '10 10 0 10'
+            html: '<h2>' + 'Congratulations'.t() + '</h2>'
         }, {
             xtype: 'component',
-            html: '<strong>' + 'Bandwidth Control is now configured and enabled.'.t() + '</strong>',
-            margin: 10
+            html: '<p><strong>' + 'Bandwidth Control is now configured and enabled.'.t() + '</strong></p>'
         }]
     }],
 
@@ -319,7 +315,7 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizard', {
                 hidden: '{nextBtn}'
             },
             iconCls: 'fa fa-check',
-            // handler: 'onNext'
+            handler: 'onFinish'
         }]
     }]
 

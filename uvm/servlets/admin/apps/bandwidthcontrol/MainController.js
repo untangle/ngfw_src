@@ -9,8 +9,11 @@ Ext.define('Ung.apps.bandwidthcontrol.MainController', {
     },
 
     onAfterRender: function (view) {
-        console.log(this.getView().appManager);
-        this.getViewModel().set('isConfigured', this.getView().appManager.getSettings().configured);
+        this.getViewModel().set({
+            isConfigured: this.getView().appManager.getSettings().configured,
+            // to fix qos retreival
+            qosEnabled: rpc.networkManager.getNetworkSettings().qosSettings.qosEnabled
+        });
     },
 
     runWizard: function (btn) {

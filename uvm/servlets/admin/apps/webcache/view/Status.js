@@ -4,6 +4,21 @@ Ext.define('Ung.apps.webcache.view.Status', {
     itemId: 'status',
     title: 'Status'.t(),
 
+    viewModel: {
+        formulas: {
+            stats: function (get) {
+                return [
+                    { name: 'Cache Hit Count'.t(), value: get('statistics.hitCount') },
+                    { name: 'Cache Miss Count'.t(), value: get('statistics.missCount') },
+                    { name: 'Cache Hit Bytes'.t(), value: get('statistics.hitBytes') },
+                    { name: 'Cache Miss Bytes'.t(), value: get('statistics.missBytes') },
+                    { name: 'User Bypass Count'.t(), value: get('statistics.bypassCount') },
+                    { name: 'System Bypass Count'.t(), value: get('statistics.systemCount') }
+                ];
+            }
+        }
+    },
+
     layout: 'border',
     items: [{
         region: 'center',
@@ -86,18 +101,11 @@ Ext.define('Ung.apps.webcache.view.Status', {
             border: false,
             nameColumnWidth: 250,
             sortableColumns: false,
+            hideHeaders: true,
             disabled: true,
             bind: {
                 disabled: '{instance.targetState !== "RUNNING"}',
-                source: '{statistics}'
-            },
-            sourceConfig: {
-                hitCount:    { displayName: 'Cache Hit Count'.t() },
-                missCount:   { displayName: 'Cache Miss Count'.t() },
-                hitBytes:    { displayName: 'Cache Hit Bytes'.t() },
-                missBytes:   { displayName: 'Cache Miss Bytes'.t() },
-                bypassCount: { displayName: 'User Bypass Count'.t() },
-                systemCount: { displayName: 'System Bypass Count'.t() }
+                store: { data: '{stats}' }
             },
             listeners: {
                 beforeedit: function () {

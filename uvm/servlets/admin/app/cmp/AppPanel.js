@@ -3,20 +3,9 @@ Ext.define('Ung.cmp.AppPanel', {
     alias: 'widget.apppanel',
     layout: 'fit',
 
-    // controller: {
-    //     config: {
-    //         control: {
-    //             '#': {
-    //                 tabchange: function () {
-    //                     console.log('tab change');
-    //                 }
-    //             }
-    //         }
-    //     }
-    // },
-
     dockedItems: [{
         xtype: 'toolbar',
+        dock: 'top',
         weight: -10,
         border: false,
         items: [{
@@ -28,11 +17,13 @@ Ext.define('Ung.cmp.AppPanel', {
             xtype: 'component',
             padding: '0 5',
             bind: { html: '<img src="/skins/modern-rack/images/admin/apps/{props.name}_17x17.png" style="vertical-align: middle;" width="17" height="17"/> <strong>{props.displayName}</strong>' }
-        }, '->', {
-            xtype: 'button',
-            text: 'View Reports'.t(),
-            iconCls: 'fa fa-line-chart fa-lg'
-        }],
+        }
+        // '->', {
+        //     xtype: 'button',
+        //     text: 'View Reports'.t(),
+        //     iconCls: 'fa fa-line-chart fa-lg'
+        // }
+        ],
     }, {
         xtype: 'toolbar',
         dock: 'bottom',
@@ -49,7 +40,7 @@ Ext.define('Ung.cmp.AppPanel', {
         // generic listener for all tabs in Apps, redirection
         beforetabchange: function (tab, newCard, oldCard) {
             var vm = this.getViewModel();
-            Ung.app.redirectTo('#apps/' + vm.get('instance.policyId') + '/' + vm.get('urlName') + '/' + newCard.getItemId());
+            Ung.app.redirectTo('#apps/' + vm.get('policyId') + '/' + vm.get('urlName') + '/' + newCard.getItemId());
         }
         // afterrender: function () {
         //     // get settings

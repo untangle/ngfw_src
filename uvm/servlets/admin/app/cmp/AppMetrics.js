@@ -5,6 +5,7 @@ Ext.define('Ung.cmp.AppMetrics', {
     border: false,
 
     nameColumnWidth: 250,
+    hideHeaders: true,
 
     viewModel: {
         data: {
