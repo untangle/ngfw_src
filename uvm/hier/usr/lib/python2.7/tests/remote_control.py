@@ -61,7 +61,7 @@ def runCommand( command, host=None, stdout=False, nowait=False):
     try:
         sshCommand = "ssh %s -i %s %s@%s \"%s\"" % ( sshOptions, hostKeyFile, hostUsername, host, command )
         # if verbosity > 1:
-        #    print "\nSSH cmd : %s" % sshCommand
+        #   print "\nSSH cmd : %s" % sshCommand
         if verbosity > 0:
             print "\nClient  : %s" % host
             print "Command : %s" % command
