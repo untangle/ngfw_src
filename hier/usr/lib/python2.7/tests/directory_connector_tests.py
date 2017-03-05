@@ -253,7 +253,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
         if (AD_RESULT != 0):
             raise unittest2.SkipTest("No AD server available")
         # remove leading and trailing spaces.
-        http_admin = system_properties.getHttpAdminUrl()
+        http_admin = system_properties.get_http_url()
         assert(http_admin)
 
         test_name = "randomName-" + "".join( [random.choice(string.letters) for i in xrange(15)] )
@@ -282,7 +282,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
         if (AD_RESULT != 0):
             raise unittest2.SkipTest("No AD server available")
         # remove leading and trailing spaces.
-        http_admin = system_properties.getHttpAdminUrl().title()
+        http_admin = system_properties.get_http_url().title()
         assert(http_admin)
 
         test_name = "randomName-" + "".join( [random.choice(string.letters) for i in xrange(15)] )
@@ -305,7 +305,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
         if (AD_RESULT != 0):
             raise unittest2.SkipTest("No AD server available")
         # remove leading and trailing spaces.
-        http_admin = system_properties.getHttpAdminUrl()
+        http_admin = system_properties.get_http_url()
         assert(http_admin)
 
         test_name = "randomName-" + "".join( [random.choice(string.letters) for i in xrange(15)] )
