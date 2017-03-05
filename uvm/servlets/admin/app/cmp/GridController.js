@@ -86,13 +86,22 @@ Ext.define('Ung.cmp.GridController', {
             conds = value.list,
             resp = [], i, valueRenderer = [];
 
+
         for (i = 0; i < conds.length; i += 1) {
             valueRenderer = [];
-            if (conds[i].conditionType === 'SRC_INTF' || conds[i].conditionType === 'DST_INTF') {
+
+            switch (conds[i].conditionType) {
+            case 'SRC_INTF':
+            case 'DST_INTF':
                 conds[i].value.toString().split(',').forEach(function (intfff) {
                     valueRenderer.push(Util.interfacesListNamesMap()[intfff]);
                 });
-            } else {
+                break;
+            case 'DST_LOCAL':
+            case 'WEB_FILTER_FLAGGED':
+                valueRenderer.push('true'.t());
+                break;
+            default:
                 valueRenderer = conds[i].value.toString().split(',');
             }
             resp.push(view.conditionsMap[conds[i].conditionType].displayName + '<strong>' + (conds[i].invert ? ' &nrArr; ' : ' &rArr; ') + '<span class="cond-val ' + (conds[i].invert ? 'invert' : '') + '">' + valueRenderer.join(', ') + '</span>' + '</strong>');

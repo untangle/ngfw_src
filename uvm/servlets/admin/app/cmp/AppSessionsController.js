@@ -209,6 +209,9 @@ Ext.define('Ung.cmp.AppSessionsController', {
     },
 
     onAddPoint: function () {
+        if (!this.chart) {
+            return;
+        }
         var vm = this.getViewModel();
         if (vm.get('instance.targetState') !== 'RUNNING' && this.updateMetricsCount > 0) {
             return;

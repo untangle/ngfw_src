@@ -22,13 +22,27 @@ Ext.define('Ung.cmp.GridEditorFields', {
         bind: '{record.ipv6Enabled}',
     },
 
-    blocked: {
+    blockedCombo: {
         xtype: 'combo',
         fieldLabel: 'Action'.t(),
         bind: '{record.blocked}',
         store: [[true, 'Block'.t()], [false, 'Pass'.t()]],
         queryMode: 'local',
         editable: false,
+    },
+
+    blocked: {
+        xtype: 'checkbox',
+        bind: '{record.blocked}',
+        fieldLabel: 'Block'.t(),
+        width: 100
+    },
+
+    flagged: {
+        xtype: 'checkbox',
+        bind: '{record.flagged}',
+        fieldLabel: 'Flag'.t(),
+        width: 100
     },
 
     allow: {
@@ -148,7 +162,17 @@ Ext.define('Ung.cmp.GridEditorFields', {
         bind: '{record.priority}',
         queryMode: 'local',
         editable: false
-    }
+    },
+
+    // string: {
+    //     xtype: 'textfield',
+    //     name: "Site",
+    //     dataIndex: "string",
+    //     fieldLabel: i18n._("Site"),
+    //     emptyText: i18n._("[enter site]"),
+    //     allowBlank: false,
+    //     width: 400,
+    // }
 
 });
 

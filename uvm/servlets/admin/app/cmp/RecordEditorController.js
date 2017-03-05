@@ -143,19 +143,18 @@ Ext.define('Ung.cmp.RecordEditorController', {
             vm = this.getViewModel(),
             store;
 
-        // if conditions grid
-        if (!this.action) {
-            if (v.down('grid')) {
-                store = v.down('grid').getStore();
+        if (v.down('grid')) {
+            store = v.down('grid').getStore();
 
-                if (store.getModifiedRecords().length > 0 || store.getRemovedRecords().length > 0 || store.getNewRecords().length > 0) {
-                    v.record.set('conditions', {
-                        javaClass: 'java.util.LinkedList',
-                        list: Ext.Array.pluck(store.getRange(), 'data')
-                    });
-                }
+            if (store.getModifiedRecords().length > 0 || store.getRemovedRecords().length > 0 || store.getNewRecords().length > 0) {
+                v.record.set('conditions', {
+                    javaClass: 'java.util.LinkedList',
+                    list: Ext.Array.pluck(store.getRange(), 'data')
+                });
             }
+        }
 
+        if (!this.action) {
             for (var field in vm.get('record').modified) {
                 if (field !== 'conditions') {
                     v.record.set(field, vm.get('record').get(field));
@@ -220,7 +219,7 @@ Ext.define('Ung.cmp.RecordEditorController', {
         var newCond = {
             conditionType: item.conditionType,
             invert: false,
-            javaClass: this.getViewModel().get('ruleJavaClass'),
+            javaClass: this.mainGrid.ruleJavaClass,
             value: ''
         };
         this.getView().down('grid').getStore().add(newCond);
