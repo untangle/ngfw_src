@@ -266,14 +266,14 @@ Ext.define('Ung.config.network.MainController', {
     refreshQosStatistics: function (cmp) {
         var view = cmp.isXType('button') ? cmp.up('grid') : cmp;
         view.setLoading(true);
-        Rpc.asyncData('rpc.execManager.execOutput', '/usr/share/untangle-netd/bin/qos-service.py status')
+        Rpc.asyncData('rpc.execManager.execOutput', '/usr/share/untangle-netd/bin/qos-status.py')
             .then(function (result) {
                 var list = [];
                 try {
                     list = eval(result);
                 } catch (e) {
                     Util.exceptionToast('Unable to get QoS statistics');
-                    console.error('Could not execute /usr/share/untangle-netd/bin/qos-service.py output: ', result, e);
+                    console.error('Could not execute /usr/share/untangle-netd/bin/qos-status.py output: ', result, e);
                 }
             }).always(function () {
                 view.setLoading(false);
