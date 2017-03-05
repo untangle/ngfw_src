@@ -358,6 +358,24 @@ public class NetworkManagerImpl implements NetworkManager
     }
 
     /**
+     * Get the IP address of the first non-WAN (LAN) interface
+     */
+    public InetAddress getFirstNonWanAddress()
+    {
+        if ( this.networkSettings == null || this.networkSettings.getInterfaces() == null ) {
+            return null;
+        }
+
+        for ( InterfaceSettings intfSettings : this.networkSettings.getInterfaces() ) {
+            if ( !intfSettings.getDisabled() && !intfSettings.getIsWan() ) {
+                return getInterfaceStatus( intfSettings.getInterfaceId() ).getV4Address();
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Convenience method to find the InterfaceSettings for the specified Id
      */
     public InterfaceSettings findInterfaceId( int interfaceId )
@@ -2141,7 +2159,14 @@ public class NetworkManagerImpl implements NetworkManager
             }
 
             /*
-             * If only /etc/miniupnpd/miniupnpd.conf has  been written, just restart miniupnpd
+             * If only miniupnp config has been written, just restart miniupnpd
+             */
+            if ( changedFiles.contains("/etc/miniupnpd/miniupnpd.conf") && changedFiles.contains("/etc/untangle-netd/post-network-hook.d/990-restart-upnp") && changedFiles.size() == 2 ) {
+                return new String[] {"/bin/true", "/etc/untangle-netd/post-network-hook.d/990-restart-upnp"};
+            }
+
+            /*
+             * If only miniupnp config has been written, just restart miniupnpd
              */
             if ( changedFiles.contains("/etc/miniupnpd/miniupnpd.conf") && changedFiles.size() == 1 ) {
                 return new String[] {"/bin/true", "/etc/untangle-netd/post-network-hook.d/990-restart-upnp"};

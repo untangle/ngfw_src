@@ -432,7 +432,9 @@ public class HostTableImpl implements HostTable
          */
         if ( entry.getHostnameDhcp() != null ) {
             deviceEntry.setHostname( entry.getHostnameDhcp() );
-        } else if ( entry.getHostnameDns() != null ) {
+        } else if ( entry.getHostnameDirectoryConnector() != null ) {
+            deviceEntry.setHostname( entry.getHostnameDirectoryConnector() );
+        }else if ( entry.getHostnameDns() != null ) {
             deviceEntry.setHostname( entry.getHostnameDns() );
         }
     }

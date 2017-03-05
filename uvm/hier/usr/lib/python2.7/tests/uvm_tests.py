@@ -66,7 +66,7 @@ class UvmTests(unittest2.TestCase):
 
     def test_011_helpLinks(self):
         output, error = subprocess.Popen(['find',
-                                          '%s/usr/share/untangle/web/webui/script/' % system_properties.getPrefix(),
+                                          '%s/usr/share/untangle/web/webui/script/' % system_properties.get_prefix(),
                                           '-name',
                                           '*.js',
                                           '-type',

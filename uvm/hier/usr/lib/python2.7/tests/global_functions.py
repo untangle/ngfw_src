@@ -4,6 +4,10 @@ import subprocess
 import time
 import datetime
 import re
+import socket
+import fcntl
+import struct
+import commands
 
 import remote_control
 import system_properties
@@ -315,12 +319,30 @@ def foundWans():
                 wanGateway =  interface['v4StaticGateway']
             elif interface['v4ConfigType'] == "AUTO":
                 nicDevice = str(interface['symbolicDev'])
-                wanIndex =  interface['interfaceId']
-                wanIP =  system_properties.__get_ip_address(nicDevice)
-                wanGateway =  system_properties.__get_gateway(nicDevice)
+                wanIndex = interface['interfaceId']
+                wanIP = __get_ip_address(nicDevice)
+                wanGateway = __get_gateway(nicDevice)
             if wanIP:
                 wanExtIP = getIpAddress(extra_options="--bind-address=" + wanIP,localcall=True)
                 wanExtIP = wanExtIP.rstrip()
                 wanTup = (wanIndex,wanIP,wanExtIP,wanGateway)
                 myWANs.append(wanTup)
     return myWANs
+
+
+def __get_ip_address(ifname):
+    print "ifname <%s>" % ifname
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    return socket.inet_ntoa(fcntl.ioctl(
+        s.fileno(),
+        0x8915,  # SIOCGIFADDR
+        struct.pack('256s', ifname[:15])
+    )[20:24])
+
+def __get_gateway(ifname):
+    cmd = "route -n | grep '[ \t]" + ifname + "' | grep 'UH[ \t]' | awk '{print $1}'"
+    status, output = commands.getstatusoutput(cmd)
+    if (not status) and output:
+        return output
+    else:
+        return None
