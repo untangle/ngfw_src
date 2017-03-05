@@ -1,13 +1,10 @@
-Ext.define('Ung.apps.webcache.MainController', {
+Ext.define('Ung.apps.virusblocker.MainController', {
     extend: 'Ext.app.ViewController',
-    alias: 'controller.app-webcache',
+    alias: 'controller.app-virusblocker',
 
     control: {
         '#': {
             afterrender: 'getSettings',
-        },
-        '#status': {
-            afterrender: 'statusAfterRender'
         }
     },
 
@@ -48,13 +45,7 @@ Ext.define('Ung.apps.webcache.MainController', {
             Util.successToast('Settings saved');
             me.getSettings();
         }, vm.get('settings'));
-    },
-
-    statusAfterRender: function () {
-        var me = this;
-        me.getView().appManager.getStatistics(function (result, ex) {
-            if (ex) { Util.exceptionToast(ex); return; }
-            me.getViewModel().set('statistics', result);
-        });
     }
+
+
 });

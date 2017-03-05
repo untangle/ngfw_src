@@ -1,6 +1,6 @@
-Ext.define('Ung.apps.webfilter.MainController', {
+Ext.define('Ung.apps.phishblocker.MainController', {
     extend: 'Ext.app.ViewController',
-    alias: 'controller.app-webfilter',
+    alias: 'controller.app-phishblocker',
 
     control: {
         '#': {
@@ -14,29 +14,24 @@ Ext.define('Ung.apps.webfilter.MainController', {
         v.appManager.getSettings(function (result, ex) {
             v.setLoading(false);
             if (ex) { Util.exceptionToast(ex); return; }
+            console.log(result);
             vm.set('settings', result);
         });
+
+        var lastUpdate = v.appManager.getLastUpdate();
+        // var lastUpdateCheck = v.appManager.getLastUpdateCheck();
+        // var signatureVersion = v.appManager.getSignatureVersion();
+
+
+        if (lastUpdate) {
+            vm.set('lastUpdate', 'Phish Blocker email signatures were last updated'.t() + ': <strong>' + Ext.util.Format.date(new Date(lastUpdate.time), 'timestamp_fmt'.t()) + '</strong>');
+        } else {
+            vm.set('lastUpdate', 'Phish Blocker email signatures were last updated'.t() + ': <strong>' + 'never'.t() + '</strong>');
+        }
     },
 
     setSettings: function () {
         var me = this, v = this.getView(), vm = this.getViewModel();
-
-        v.query('ungrid').forEach(function (grid) {
-            var store = grid.getStore();
-            if (store.getModifiedRecords().length > 0 ||
-                store.getNewRecords().length > 0 ||
-                store.getRemovedRecords().length > 0 ||
-                store.isReordered) {
-                store.each(function (record) {
-                    if (record.get('markedForDelete')) {
-                        record.drop();
-                    }
-                });
-                store.isReordered = undefined;
-                vm.set(grid.listProperty, Ext.Array.pluck(store.getRange(), 'data'));
-            }
-        });
-
         v.setLoading(true);
         v.appManager.setSettings(function (result, ex) {
             v.setLoading(false);

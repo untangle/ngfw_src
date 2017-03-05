@@ -16,7 +16,10 @@ Ext.define('Ung.cmp.AppPanel', {
         }, '-', {
             xtype: 'component',
             padding: '0 5',
-            bind: { html: '<img src="/skins/modern-rack/images/admin/apps/{props.name}_17x17.png" style="vertical-align: middle;" width="17" height="17"/> <strong>{props.displayName}</strong>' }
+            bind: {
+                html: '<img src="/skins/modern-rack/images/admin/apps/{props.name}_17x17.png" style="vertical-align: middle;" width="17" height="17"/> <strong>{props.displayName}</strong>' +
+                    ' <i class="fa fa-circle {!instance.targetState ? "fa-orange" : (instance.targetState === "RUNNING" ? "fa-green" : "fa-red") }"></i>'
+            }
         }
         // '->', {
         //     xtype: 'button',
@@ -32,7 +35,7 @@ Ext.define('Ung.cmp.AppPanel', {
             text: '<strong>' + 'Save'.t() + '</strong>',
             // scale: 'large',
             iconCls: 'fa fa-floppy-o fa-lg',
-            handler: 'saveSettings'
+            handler: 'setSettings'
         }]
     }],
 
@@ -42,26 +45,5 @@ Ext.define('Ung.cmp.AppPanel', {
             var vm = this.getViewModel();
             Ung.app.redirectTo('#apps/' + vm.get('policyId') + '/' + vm.get('urlName') + '/' + newCard.getItemId());
         }
-        // afterrender: function () {
-        //     // get settings
-        //     var me = this,
-        //         vm = this.getViewModel();
-        //     Rpc.asyncData('rpc.nodeManager.node', vm.get('instance.id'))
-        //         .then(function (result) {
-        //             me.appManager = result;
-        //             console.log(me.appManager);
-        //         });
-
-        //     // if(handler==null) {handler=Ext.emptyFn;}
-        //     // if (this.rpcNode === undefined) {
-        //     //     rpc.nodeManager.node(Ext.bind(function(result, exception) {
-        //     //         if(Ung.Util.handleException(exception)) return;
-        //     //         this.rpcNode = result;
-        //     //         handler.call(this);
-        //     //     }, this), this.nodeId);
-        //     // } else {
-        //     //     handler.call(this);
-        //     // }
-        // }
     }
 });

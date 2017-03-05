@@ -21,6 +21,22 @@ Ext.define('Ung.cmp.GridColumns', {
         width: 70
     },
 
+    flagged: {
+        xtype: 'checkcolumn',
+        header: 'Flagged'.t(),
+        dataIndex: 'flagged',
+        resizable: false,
+        width: 70
+    },
+
+    blocked: {
+        xtype: 'checkcolumn',
+        header: 'Blocked'.t(),
+        dataIndex: 'blocked',
+        resizable: false,
+        width: 70
+    },
+
     description: {
         header: 'Description',
         width: 200,
