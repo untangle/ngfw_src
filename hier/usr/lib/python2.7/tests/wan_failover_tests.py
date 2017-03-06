@@ -16,7 +16,6 @@ import test_registry
 import remote_control
 import pdb
 import global_functions
-import system_properties
 
 node = None
 orig_netsettings = None
