@@ -464,6 +464,13 @@ Ext.define("Ung.Main", {
                                 height: 30,
                                 margin: '0 10 0 0',
                                 handler: Ung.Main.showDevices
+                            }, {
+                                xtype: 'button',
+                                cls: 'action-button material-button',
+                                text: '<span>' + i18n._("Users") + '</span>',
+                                height: 30,
+                                margin: '0 10 0 0',
+                                handler: Ung.Main.showUsers
                             }]
                         }, {
                             xtype: 'container',
@@ -621,6 +628,22 @@ Ext.define("Ung.Main", {
                             height: 30,
                             margin: '0 10 0 0',
                             handler: Ung.Main.showDevices,
+                            plugins: 'responsive',
+                            responsiveConfig: {
+                                'width <= 550': {
+                                    hidden: true
+                                },
+                                'width > 550': {
+                                    hidden: false
+                                }
+                            }
+                        }, {
+                            xtype: 'button',
+                            cls: 'action-button material-button',
+                            text: '<span>' + i18n._("Users") + '</span>',
+                            height: 30,
+                            margin: '0 10 0 0',
+                            handler: Ung.Main.showUsers,
                             plugins: 'responsive',
                             responsiveConfig: {
                                 'width <= 550': {
@@ -1949,6 +1972,17 @@ Ext.define("Ung.Main", {
         Ext.require(['Webui.config.deviceMonitor'], function () {
             Ung.Main.deviceMonitorWin = Ext.create('Webui.config.deviceMonitor', {});
             Ung.Main.deviceMonitorWin.show();
+        }, this);
+    },
+    showUsers: function () {
+        Ext.require(['Webui.config.userMonitor'], function () {
+            Ung.Main.userMonitorWin = Ext.create('Webui.config.userMonitor', {});
+            Ung.Main.userMonitorWin.show();
+            Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
+            Ext.Function.defer(function () {
+                Ung.Main.userMonitorWin.gridCurrentUsers.reload();
+                Ext.MessageBox.hide();
+            }, 10, this);
         }, this);
     },
     showSessions: function () {

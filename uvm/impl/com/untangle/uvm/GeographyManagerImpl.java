@@ -38,9 +38,10 @@ public class GeographyManagerImpl implements GeographyManager
     private final static String GEOIP_DATABASE_FILE = "/var/cache/untangle-geoip/GeoLite2-City.mmdb";
     private final static String GEOIP_PREVIOUS_FILE = "/var/cache/untangle-geoip/GeoLite2-City.previous";
     private final static String GEOIP_UPDATE_FILE = "/var/cache/untangle-geoip/GeoLite2-City.update";
-
-    private static final String CLOUD_IP_DETECTION_URL = "http://www.untangle.com/ddclient/ip.php";
-
+    private final static String CLOUD_IP_DETECTION_URL = "http://www.untangle.com/ddclient/ip.php";
+    private final static String LOCAL_COUNTRY_CODE = "XL";
+    private final static String UNKNOWN_COUNTRY_CODE = "XL";
+    
     // we check for the update file once per hour which is more than enough
     private final static long DATABASE_CHECK_FREQUENCY = (60 * 60 * 1000L);
 
@@ -73,10 +74,12 @@ public class GeographyManagerImpl implements GeographyManager
         if (!initFlag) return (null);
 
         CityResponse response = getCityObject(netAddress);
-        if (response == null) return (null);
+        if (response == null) return UNKNOWN_COUNTRY_CODE;
         Country country = response.getCountry();
-        if (country == null) return (null);
-        return (country.getIsoCode());
+        if (country == null) return UNKNOWN_COUNTRY_CODE;
+        String isoCode = country.getIsoCode();
+        if (isoCode == null) return UNKNOWN_COUNTRY_CODE;
+        return isoCode;
     }
 
     public String getSubdivisionName(String netAddress)

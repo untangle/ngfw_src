@@ -1,6 +1,7 @@
 Ext.define('Ung.apps.spamblocker.view.Status', {
     extend: 'Ext.panel.Panel',
-    alias: 'widget.app.spamblocker.status',
+    alias: 'widget.app-spamblocker-status',
+    itemId: 'status',
     title: 'Status'.t(),
 
     viewModel: true,

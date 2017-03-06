@@ -13,7 +13,6 @@ import javax.mail.internet.InternetAddress;
 import org.apache.log4j.Logger;
 
 import com.untangle.node.smtp.mime.MIMEUtil;
-import com.untangle.uvm.node.TemplateValues;
 
 /**
  * Class representing an SmtpTransaction. Maintains the state of the transaction (see the enum, which I don't know how

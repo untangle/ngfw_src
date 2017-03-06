@@ -4,15 +4,11 @@
 package com.untangle.uvm;
 
 import java.util.LinkedList;
-import java.util.Hashtable;
 import java.net.InetAddress;
 
 /**
  * The Host Table is responsible for storing known information about hosts.
  * Many different components use the host table to share known information about a given host (for example, its hostname).
- * Each host has a table of information known about it and these "attachments" can be read/written using keys
- *
- * The host table also contains penalty box methods which maintain all the host table attachments related to penalty box logic
  */
 public interface HostTable
 {
@@ -21,13 +17,13 @@ public interface HostTable
      * Gets the HostTableEtry for the specified host
      * Returns null if no entry for the provided address is found.
      */
-    HostTableEntry getHostTableEntry( InetAddress addr );
+    HostTableEntry getHostTableEntry( InetAddress address );
 
     /**
      * Gets the HostTableEtry for the specified host
      * If create is true a new entry will be created if no entry exists
      */
-    HostTableEntry getHostTableEntry( InetAddress addr, boolean create );
+    HostTableEntry getHostTableEntry( InetAddress address, boolean create );
 
     /**
      * Search for a HostTableEntry with specified MAC address 
@@ -45,38 +41,15 @@ public interface HostTable
     int getMaxActiveSize();
     
     /**
-     * Save the specified entry for the specified addr
+     * Save the specified entry for the specified address
      * Will overwrite existing value
      */
-    void setHostTableEntry( InetAddress addr, HostTableEntry entry );
+    void setHostTableEntry( InetAddress address, HostTableEntry entry );
 
     /**
      * Returns a duplicated list of all current hosts
      */
     LinkedList<HostTableEntry> getHosts();
-
-    /**
-     * Add a host to the penalty box for the specified amount of time at the specified priority
-     * This sets all the appropriate attachments and calls the listeners
-     */
-    void addHostToPenaltyBox( InetAddress address, int time_sec, String reason );
-
-    /**
-     * Release a host from the penalty box
-     * This sets all the appropriate attachments and calls the listeners
-     */
-    void releaseHostFromPenaltyBox( InetAddress address );
-    
-    /**
-     * Checks if a host is in the penalty box
-     */
-    boolean hostInPenaltyBox( InetAddress address );
-
-    /**
-     * Returns a current list of all hosts in the penalty box
-     * This is used by the UI to display the list
-     */
-    LinkedList<HostTableEntry> getPenaltyBoxedHosts();
 
     /**
      * Give an address a quota
@@ -101,7 +74,7 @@ public interface HostTable
      * Decrement the available quota by the provided amount
      * Utility function to set the appropriate attachment values
      */
-    boolean decrementQuota(InetAddress addr, long bytes);
+    boolean decrementQuota(InetAddress address, long bytes);
     
     /**
      * Check if the provided address has a quota that is exceeded
@@ -122,7 +95,7 @@ public interface HostTable
     /**
      * Clear the entire table (used by tests)
      */
-    void clearTable();
+    void clear();
 
     /**
      * Get the current size of the table
@@ -143,5 +116,5 @@ public interface HostTable
      * Remove a host table entry
      * returns the entry removed (or null if not found)
      */
-    HostTableEntry removeHostTableEntry( InetAddress addr );
+    HostTableEntry removeHostTableEntry( InetAddress address );
 }

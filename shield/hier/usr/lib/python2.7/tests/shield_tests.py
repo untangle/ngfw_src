@@ -64,6 +64,29 @@ class ShieldTests(unittest2.TestCase):
                                                min_date=startTime)
         assert( found )
 
+    def test_021_shieldOffNmap(self):
+        # enable logging of blocked settings
+        netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings['logBlockedSessions'] = True
+        netsettings['logBypassedSessions'] = True
+        uvmContext.networkManager().setNetworkSettings(netsettings)
+
+        settings = node.getSettings()
+        settings['shieldEnabled'] = False
+        node.setSettings(settings)
+
+        startTime = datetime.now()
+        result = remote_control.runCommand("nmap -PN -sT -T5 --min-parallelism 15 -p10000-10100 1.2.3.5 2>&1 >/dev/null")
+        assert (result == 0)
+
+        events = global_functions.get_events('Shield','Blocked Session Events',None,1)
+        assert(events != None)
+        found = global_functions.check_events( events.get('list'), 5,
+                                               'c_client_addr', remote_control.clientIP,
+                                               's_server_addr', '1.2.3.5',
+                                               min_date=startTime)
+        assert( not found )
+
     @staticmethod
     def finalTearDown(self):
         global orig_netsettings

@@ -56,6 +56,7 @@ Ext.define('Ung.controller.Global', {
             'noexpert': 'setNoExpertMode',
             'apps/:policyId': 'onApps',
             'apps/:policyId/:app': 'onApps',
+            'apps/:policyId/:app/:view': 'onApps',
             'config': 'onConfig',
             'config/:configName': 'onConfig',
             'config/:configName/:configView': 'onConfig',
@@ -75,7 +76,7 @@ Ext.define('Ung.controller.Global', {
     },
 
     onActivate: function () {
-        console.log('activate');
+        // console.log('activate');
     },
 
     setExpertMode: function () {
@@ -96,41 +97,57 @@ Ext.define('Ung.controller.Global', {
         // this.getViewModel().set('activeItem', 'dashboard');
     },
 
-    onApps: function (policyId, app) {
+    onApps: function (policyId, app, view) {
         var me = this;
-        console.log(app);
+
         this.getMainView().getViewModel().set('selectedNavItem', 'apps');
-        this.getMainView().setActiveItem('apps');
 
         if (app) {
             if (app === 'install') {
-                console.log(this.getAppsView());
+                this.getMainView().setActiveItem('apps');
                 this.getAppsView().setActiveItem('installableApps');
             } else {
-                me.getMainView().setLoading(true);
-                var policy = Ext.getStore('policies').findRecord('policyId', policyId);
-                var nodeInstance = policy.get('instances').list.filter(function (node) {
-                    return node.nodeName === Util.appsMapping[app];
-                })[0];
+                if (me.getMainView().down('app-' + app)) {
+                    // if app card already exists activate it abd select given view
+                    me.getMainView().setActiveItem('configCard');
+                    me.getMainView().down('app-' + app).setActiveItem(view || 0);
+                    return;
+                } else {
+                    // eventually do not remove the old card
+                    me.getMainView().remove('configCard');
+                }
 
+                var policy = Ext.getStore('policies').findRecord('policyId', policyId);
+                var appInstance = Ext.Array.findBy(policy.get('instances').list, function (inst) {
+                    return inst.nodeName === Util.appsMapping[app];
+                });
+                var appProps = Ext.Array.findBy(policy.get('nodeProperties').list, function (prop) {
+                    return prop.name === Util.appsMapping[app];
+                });
+
+                // var appClass = Ext.ClassManager.getByAlias('widget.app-' + app);
+                me.getMainView().setLoading(true);
                 Ext.Loader.loadScript({
                     url: 'script/apps/' + app + '.js',
                     onLoad: function () {
                         Ext.Deferred.sequence([
-                            Rpc.asyncPromise('rpc.nodeManager.node', nodeInstance.id),
+                            Rpc.asyncPromise('rpc.nodeManager.node', appInstance.id),
                             // Rpc.asyncPromise('rpc.networkManager.getInterfaceStatus'),
                             // Rpc.asyncPromise('rpc.networkManager.getDeviceStatus'),
                         ], this).then(function (result) {
+                            // console.log(result[0]);
                             me.getMainView().setLoading(false);
-                            // me.getView().nodeManager = result[0];
                             me.getMainView().add({
-                                xtype: 'app.' + app,
+                                xtype: 'app-' + app,
                                 region: 'center',
                                 itemId: 'configCard',
                                 appManager: result[0],
+                                activeTab: view || 0,
                                 viewModel: {
                                     data: {
-                                        instance: nodeInstance,
+                                        instance: appInstance,
+                                        props: appProps,
+                                        urlName: app
                                     }
                                 }
                             });
@@ -138,34 +155,13 @@ Ext.define('Ung.controller.Global', {
                         }, function (ex) {
                             Util.exceptionToast(ex);
                         });
-
-                        // if (configView) {
-                        //     console.log('here');
-                        //     me.getMainView().down('#configCard').setActiveItem(configView);
-                        // }
-
-                        // console.log('loaded');
-                        // Ext.require('Ung.config.network.Network', function () {
-                        //     console.log('require');
-                        // });
-                        // setTimeout(function() {
-                        //     me.getMainView().add({
-                        //         xtype: 'ung.config.network',
-                        //         region: 'center',
-                        //         itemId: 'configCard'
-                        //     });
-                        // }, 1000);
                     }
                 });
-
             }
         } else {
+            this.getMainView().setActiveItem('apps');
             this.getAppsView().setActiveItem('installedApps');
-            // vm.set('activeItem', 'apps');
         }
-
-        // console.log(this);
-        // console.log(this.getAppsView());
     },
 
     onConfig: function (configName, configView) {
@@ -185,41 +181,9 @@ Ext.define('Ung.controller.Global', {
                         itemId: 'configCard'
                     });
                     me.getMainView().setActiveItem('configCard');
-
-                    // if (configView) {
-                    //     console.log('here');
-                    //     me.getMainView().down('#configCard').setActiveItem(configView);
-                    // }
-
-                    // console.log('loaded');
-                    // Ext.require('Ung.config.network.Network', function () {
-                    //     console.log('require');
-                    // });
-                    // setTimeout(function() {
-                    //     me.getMainView().add({
-                    //         xtype: 'ung.config.network',
-                    //         region: 'center',
-                    //         itemId: 'configCard'
-                    //     });
-                    // }, 1000);
                 }
             });
         }
-
-
-        // if (!configName) {
-        //     this.getMainView().getViewModel().set('selectedNavItem', 'config');
-        //     this.getMainView().setActiveItem('config');
-        // } else {
-        //     this.getMainView().add({
-        //         xtype: 'ung.config.network',
-        //         region: 'center',
-        //         itemId: 'configCard'
-        //     });
-        //     this.getMainView().setActiveItem('configCard');
-        // }
-        // this.getMainView().setActiveItem('#dashboard');
-        // this.getViewModel().set('activeItem', 'dashboard');
     },
 
     onReports: function (category) {

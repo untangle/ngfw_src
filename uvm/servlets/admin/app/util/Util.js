@@ -404,6 +404,31 @@ Ext.define('Ung.util.Util', {
             return false;
         }
         return true;
+    },
+
+    urlValidator2: function (url) {
+        if (url.match(/^([^:]+):\/\// ) !== null) {
+            return 'Site cannot contain URL protocol.'.t();
+        }
+        if (url.match(/^([^:]+):\d+\// ) !== null) {
+            return 'Site cannot contain port.'.t();
+        }
+        // strip "www." from beginning of rule
+        if (url.indexOf('www.') === 0) {
+            url = url.substr(4);
+        }
+        // strip "*." from beginning of rule
+        if (url.indexOf('*.') === 0) {
+            url = url.substr(2);
+        }
+        // strip "/" from the end
+        if (url.indexOf('/') === url.length - 1) {
+            url = url.substring(0, url.length - 1);
+        }
+        if (url.trim().length === 0) {
+            return 'Invalid URL specified'.t();
+        }
+        return true;
     }
 
 

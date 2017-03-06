@@ -15,7 +15,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMessage.RecipientType;
 
-import com.untangle.uvm.node.TemplateValues;
+import com.untangle.node.smtp.TemplateValues;
 
 /**
  * Class representing a MIMEMessage. Adds the strongly-typed {@link #getMMHeaders MIMEMessageHeaders} with convienence

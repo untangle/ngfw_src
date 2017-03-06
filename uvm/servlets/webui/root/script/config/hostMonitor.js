@@ -14,9 +14,8 @@ Ext.define('Webui.config.hostMonitor', {
             title: i18n._('Hosts')
         }];
         this.buildGridCurrentHosts();
-        this.buildGridPenaltyBox();
         this.buildGridQuotaBox();
-        this.buildTabPanel([this.gridCurrentHosts, this.gridPenaltyBox, this.gridQuotaBox]);
+        this.buildTabPanel([this.gridCurrentHosts, this.gridQuotaBox]);
         this.callParent(arguments);
     },
     closeWindow: function() {
@@ -50,13 +49,10 @@ Ext.define('Webui.config.hostMonitor', {
                         "lastSessionTime": 0,//d.getTime()+(i*86400000),
                         "lastCompletedTcpSessionTime": 0,//d.getTime()+(i*86400000),
                         "username": "testuser"+i,
-                        "usernameAdConnector": "uad"+ii,
+                        "usernameDirectoryConnector": "uad"+ii,
                         "captivePortalAuthenticated":(ii%2)==1,
                         "usernameCapture": "ucap"+(ii%50),
                         "usernameDevice": "udev"+(ii%50),
-                        "penaltyBoxed":(ii%2)==1,
-                        "penaltyBoxEntryTime": d.getTime()-(ii*86400000),
-                        "penaltyBoxExitTime": d.getTime()+(ii*86400000),
                         "quotaSize": ii * 10000,
                         "quotaRemaining": ii * 5000,
                         "quotaIssueTime": 0,
@@ -140,6 +136,34 @@ Ext.define('Webui.config.hostMonitor', {
                 name: "hostname",
                 type: 'string',
                 convert: Ung.Util.preventEmptyValueConverter
+            },{
+                name: "hostnameDns",
+                type: 'string',
+                convert: Ung.Util.preventEmptyValueConverter
+            },{
+                name: "hostnameDhcp",
+                type: 'string',
+                convert: Ung.Util.preventEmptyValueConverter
+            },{
+                name: "hostnameDirectoryConnector",
+                type: 'string',
+                convert: Ung.Util.preventEmptyValueConverter
+            },{
+                name: "hostnameOpenvpn",
+                type: 'string',
+                convert: Ung.Util.preventEmptyValueConverter
+            },{
+                name: "hostnameReports",
+                type: 'string',
+                convert: Ung.Util.preventEmptyValueConverter
+            },{
+                name: "hostnameDevice",
+                type: 'string',
+                convert: Ung.Util.preventEmptyValueConverter
+            },{
+                name: "hostnameSource",
+                type: 'string',
+                convert: Ung.Util.preventEmptyValueConverter
             }, {
                 name: "lastAccessTime"
             }, {
@@ -169,11 +193,19 @@ Ext.define('Webui.config.hostMonitor', {
                 type: 'boolean',
                 convert: Ung.Util.preventEmptyValueConverter
             },{
+                name: "tagsString",
+                type: 'string',
+                convert: Ung.Util.preventEmptyValueConverter
+            },{
                 name: "username",
                 type: 'string',
                 convert: Ung.Util.preventEmptyValueConverter
             },{
-                name: "usernameAdConnector",
+                name: "usernameSource",
+                type: 'string',
+                convert: Ung.Util.preventEmptyValueConverter
+            },{
+                name: "usernameDirectoryConnector",
                 type: 'string'
             },{
                 name: "captivePortalAuthenticated",
@@ -194,21 +226,6 @@ Ext.define('Webui.config.hostMonitor', {
                 name: "usernameOpenvpn",
                 type: 'string',
                 convert: Ung.Util.preventEmptyValueConverter
-            },{
-                name: "penaltyBoxed",
-                convert: Ung.Util.preventEmptyValueConverter
-            },{
-                name: "penaltyBoxEntryTime"
-            },{
-                name: "penaltyBoxEntryTimeDate",
-                mapping: "penaltyBoxEntryTime",
-                convert: dateConvertFn
-            },{
-                name: "penaltyBoxExitTime"
-            },{
-                name: "penaltyBoxExitTimeDate",
-                mapping: "penaltyBoxExitTime",
-                convert: dateConvertFn
             },{
                 name: "quotaSize",
                 convert: Ung.Util.preventEmptyValueConverter
@@ -259,6 +276,13 @@ Ext.define('Webui.config.hostMonitor', {
                 width: 100,
                 filter: {
                     type: 'number'
+                }
+            },{
+                header: i18n._("Tags"),
+                dataIndex: "tagsString",
+                width: 100,
+                filter: {
+                    type: 'string'
                 }
             }, {
                 hidden: true,
@@ -318,43 +342,61 @@ Ext.define('Webui.config.hostMonitor', {
                 filter: {
                     type: 'string'
                 }
+            }, {
+                header: i18n._("Hostname (DHCP)"),
+                dataIndex: "hostnameDhcp",
+                width: 100,
+                filter: {
+                    type: 'string'
+                }
+            }, {
+                header: i18n._("Hostname (DNS)"),
+                dataIndex: "hostnameDns",
+                width: 100,
+                filter: {
+                    type: 'string'
+                }
+            }, {
+                header: i18n._("Hostname (Directory Connector)"),
+                dataIndex: "hostnameDirectoryConnector",
+                width: 100,
+                filter: {
+                    type: 'string'
+                }
+            }, {
+                header: i18n._("Hostname (OpenVpn)"),
+                dataIndex: "hostnameOpenvpn",
+                width: 100,
+                filter: {
+                    type: 'string'
+                }
+            }, {
+                header: i18n._("Hostname (Reports)"),
+                dataIndex: "hostnameReports",
+                width: 100,
+                filter: {
+                    type: 'string'
+                }
+            }, {
+                header: i18n._("Hostname (Device)"),
+                dataIndex: "hostnameDevice",
+                width: 100,
+                filter: {
+                    type: 'string'
+                }
+            }, {
+                header: i18n._("Hostname (Source)"),
+                dataIndex: "hostnameSource",
+                width: 100,
+                filter: {
+                    type: 'string'
+                }
             },{
                 header: i18n._("Username"),
                 dataIndex: "username",
                 width: 100,
                 filter: {
                     type: 'string'
-                }
-            },{
-                header: i18n._("Penalty Boxed"),
-                dataIndex: "penaltyBoxed",
-                width: 100,
-                filter: {
-                    type: 'boolean'
-                }
-            },{
-                hidden: true,
-                header: i18n._("Penalty Box Entry Time"),
-                dataIndex: "penaltyBoxEntryTimeDate",
-                width: 100,
-                renderer: function(value, metaData, record) {
-                    var val=record.get("penaltyBoxEntryTime");
-                    return val == 0 || val == "" ? "" : i18n.timestampFormat(val);
-                },
-                filter: {
-                    type: 'date'
-                }
-            },{
-                hidden: true,
-                header: i18n._("Penalty Box Exit Time"),
-                dataIndex: "penaltyBoxExitTimeDate",
-                width: 100,
-                renderer: function(value, metaData, record) {
-                    var val=record.get("penaltyBoxExitTime");
-                    return val == 0 || val == "" ? "" : i18n.timestampFormat(val);
-                },
-                filter: {
-                    type: 'date'
                 }
             },{
                 header: i18n._("Quota Size"),
@@ -424,7 +466,7 @@ Ext.define('Webui.config.hostMonitor', {
             },{
                 hidden: true,
                 header: "Directory Connector" + " - " + i18n._("Username"),
-                dataIndex: "usernameAdConnector",
+                dataIndex: "usernameDirectoryConnector",
                 width: 100,
                 filter: {
                     type: 'string'
@@ -453,65 +495,16 @@ Ext.define('Webui.config.hostMonitor', {
                 filter: {
                     type: 'string'
                 }
+            },{
+                hidden: true,
+                header: i18n._("Username Source"),
+                dataIndex: "usernameSource",
+                width: 100,
+                filter: {
+                    type: 'string'
+                }
             }]
         });
-    },
-    buildGridPenaltyBox: function() {
-        this.gridPenaltyBox = Ext.create('Ung.grid.Panel',{
-            helpSource: 'host_viewer_penalty_box_hosts',
-            name: "PenaltyBoxHosts",
-            settingsCmp: this,
-            hasAdd: false,
-            hasEdit: false,
-            hasDelete: false,
-            hasRefresh: true,
-            title: i18n._("Penalty Box Hosts"),
-            qtip: i18n._("This shows all hosts currently in the Penalty Box."),
-            dataFn: Ext.bind(rpc.hostTable.getPenaltyBoxedHosts, this),
-            recordJavaClass: "com.untangle.uvm.HostTableEntry",
-            fields: [{
-                name: "address",
-                sortType: 'asIp'
-            },{
-                name: "penaltyBoxEntryTime"
-            },{
-                name: "penaltyBoxExitTime"
-            },{
-                name: "id"
-            }],
-            columns: [{
-                header: i18n._("IP Address"),
-                dataIndex: 'address',
-                width: 150
-            },{
-                header: i18n._("Entry Time"),
-                dataIndex: 'penaltyBoxEntryTime',
-                width: 180,
-                renderer: function(value) { return i18n.timestampFormat(value); }
-            },{
-                header: i18n._("Planned Exit Time"),
-                dataIndex: 'penaltyBoxExitTime',
-                width: 180,
-                renderer: function(value) { return i18n.timestampFormat(value); }
-            }, {
-                header: i18n._("Release host"),
-                xtype: 'actioncolumn',
-                width: 120,
-                items: [{
-                    tooltip: i18n._("Release host"),
-                    iconCls: 'icon-row icon-play',
-                    handler: Ext.bind(function(view, rowIndex, colIndex, item, e, record) {
-                        Ext.MessageBox.wait(i18n._("Releasing host..."), i18n._("Please wait"));
-                        rpc.hostTable.releaseHostFromPenaltyBox(Ext.bind(function(result,exception) {
-                            Ext.MessageBox.hide();
-                            if(Ung.Util.handleException(exception)) return;
-                            this.gridPenaltyBox.reload();
-                        }, this), record.data.address );
-                    }, this)
-                }]
-            }]
-        });
-
     },
     buildGridQuotaBox: function() {
         this.gridQuotaBox = Ext.create('Ung.grid.Panel',{

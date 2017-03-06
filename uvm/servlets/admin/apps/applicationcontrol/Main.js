@@ -1,18 +1,19 @@
 Ext.define('Ung.apps.applicationcontrol.Main', {
     extend: 'Ung.cmp.AppPanel',
-    alias: 'widget.app.applicationcontrol',
+    alias: 'widget.app-applicationcontrol',
+    controller: 'app-applicationcontrol',
 
     viewModel: {
-        data: {
-            nodeName: 'untangle-node-application-control',
-            appName: 'Application Control'
+        stores: {
+            protoRules: { data: '{settings.protoRules.list}' },
+            logicRules: { data: '{settings.logicRules.list}' }
         }
     },
 
     items: [
-        { xtype: 'app.applicationcontrol.status' },
-        { xtype: 'app.applicationcontrol.applications' },
-        { xtype: 'app.applicationcontrol.rules' }
+        { xtype: 'app-applicationcontrol-status' },
+        { xtype: 'app-applicationcontrol-applications' },
+        { xtype: 'app-applicationcontrol-rules' }
     ]
 
 });

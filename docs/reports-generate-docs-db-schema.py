@@ -473,15 +473,6 @@ dict['quotas'].update({
     'reason' : 'The reason for the action',
 })
 
-dict['penaltybox'] = copy.deepcopy(generic)
-dict['penaltybox'].update({
-    'table_description' : 'This table stores Penalty Box events',
-    'address' : 'The IP address of the host',
-    'reason' : 'The reason for the action',
-    'start_time' : 'The time the client entered the penalty box',
-    'end_time' : 'The time the client exited the penalty box',
-})
-
 dict['sessions'] = copy.deepcopy(generic)
 dict['sessions'].update({
     'table_description' : 'This table stores all scanned TCP/UDP sessions.',

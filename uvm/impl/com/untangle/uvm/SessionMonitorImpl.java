@@ -184,6 +184,9 @@ public class SessionMonitorImpl implements SessionMonitor
                     session.setServerLatitude(sessionState.getSessionEvent().getServerLatitude());                    
                     session.setServerLongitude(sessionState.getSessionEvent().getServerLongitude());                    
 
+                    session.setTags(sessionState.getTags());
+                    session.setTagsString(sessionState.getTagsString());
+                    
                     /**
                      * The conntrack entry shows that this session has been redirect to the local host
                      * We need to overwrite that with the correct info
@@ -225,10 +228,10 @@ public class SessionMonitorImpl implements SessionMonitor
             }
 
             /**
-             * Ignore sessions to 192.0.2.42
+             * Ignore sessions to 192.0.2.200
              */
-            if ( "192.0.2.42".equals( session.getPostNatServer().getHostAddress() ) ) {
-                logger.debug("Removing session from view (internal session to 192.0.2.42): " + session);
+            if ( "192.0.2.200".equals( session.getPostNatServer().getHostAddress() ) ) {
+                logger.debug("Removing session from view (internal session to 192.0.2.200): " + session);
                 i.remove();
                 continue;
             }

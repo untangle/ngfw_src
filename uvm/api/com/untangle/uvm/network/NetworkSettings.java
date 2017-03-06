@@ -60,6 +60,7 @@ public class NetworkSettings implements Serializable, JSONString
     private boolean logLocalInboundSessions = false;
     private boolean logBlockedSessions = false;
     private boolean vlansEnabled = true;
+    private int     lxcInterfaceId = 0;
 
     private int httpPort  = 80;
     private int httpsPort = 443;
@@ -183,6 +184,9 @@ public class NetworkSettings implements Serializable, JSONString
 
     public boolean getVlansEnabled() { return this.vlansEnabled; }
     public void setVlansEnabled( boolean newValue ) { this.vlansEnabled = newValue; }
+
+    public int getLxcInterfaceId() { return this.lxcInterfaceId; }
+    public void setLxcInterfaceId( int newValue ) { this.lxcInterfaceId = newValue; }
     
     /**
      * This determines the method used to calculate the publicy available URL used to reach Untangle resources

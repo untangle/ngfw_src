@@ -1,6 +1,7 @@
 Ext.define('Ung.apps.virusblocker.view.Status', {
     extend: 'Ext.panel.Panel',
-    alias: 'widget.app.virusblocker.status',
+    alias: 'widget.app-virusblocker-status',
+    itemId: 'status',
     title: 'Status'.t(),
 
     viewModel: true,

@@ -8,7 +8,7 @@ ip -4 rule ls
 echo
 
 echo " = IPv4 Table main = "
-ip -4 route show table main | grep -v '192.0.2.42'
+ip -4 route show table main | grep -v '192.0.2.'
 echo
 
 echo " = IPv4 Table balance = "

@@ -15,6 +15,9 @@ Ext.define('Ung.cmp.RecordEditorController', {
         }
     },
 
+    recordBind: null,
+    actionBind: null,
+
     conditionsGrid: {
         xtype: 'grid',
         trackMouseOver: false,
@@ -54,16 +57,11 @@ Ext.define('Ung.cmp.RecordEditorController', {
             widget: {
                 xtype: 'segmentedbutton',
                 bind: '{record.invert}',
-                // bind: {
-                //     value: '{record.invert}',
-                // },
                 items: [{
                     text: 'is'.t(),
-                    // iconCls: 'fa fa-check fa-green',
                     value: false
                 }, {
                     text: 'is NOT'.t(),
-                    // iconCls: 'fa fa-ban fa-red',
                     value: true
                 }]
             }
@@ -76,9 +74,6 @@ Ext.define('Ung.cmp.RecordEditorController', {
             widget: {
                 xtype: 'container',
                 padding: '0 3'
-                // layout: {
-                //     type: 'hbox'
-                // }
             },
             onWidgetAttach: 'onWidgetAttach'
         }, {
@@ -95,13 +90,14 @@ Ext.define('Ung.cmp.RecordEditorController', {
 
 
     onBeforeRender: function (v) {
+        var vm = this.getViewModel();
         this.mainGrid = v.up('grid');
 
         if (!v.record) {
             v.record = Ext.create('Ung.model.Rule', Ext.clone(this.mainGrid.emptyRow));
             v.record.set('markedForNew', true);
             this.action = 'add';
-            this.getViewModel().set({
+            vm.set({
                 record: v.record,
                 windowTitle: 'Add'.t()
             });
@@ -112,7 +108,24 @@ Ext.define('Ung.cmp.RecordEditorController', {
             });
         }
 
-
+        /**
+         * if record has action object
+         * hard to explain but needed to keep dirty state (show as modified)
+         */
+        if (v.record.get('action') && (typeof v.record.get('action') === 'object')) {
+            this.actionBind = vm.bind({
+                bindTo: '{_action}',
+                deep: true
+            }, function (actionObj) {
+                // console.log(actionObj);
+                // console.log(vm.get('record.action'));
+                // console.log(Ext.Object.equals(Ext.clone(actionObj), vm.get('record.action')));
+                // if (!Ext.Object.equals(actionObj, vm.get('record.action'))) {
+                vm.set('record.action', Ext.clone(actionObj));
+                // }
+            });
+            vm.set('_action', v.record.get('action'));
+        }
     },
 
     onAfterRender: function (view) {
@@ -141,21 +154,20 @@ Ext.define('Ung.cmp.RecordEditorController', {
     onApply: function () {
         var v = this.getView(),
             vm = this.getViewModel(),
-            store;
+            condStore;
 
-        // if conditions grid
-        if (!this.action) {
-            if (v.down('grid')) {
-                store = v.down('grid').getStore();
-
-                if (store.getModifiedRecords().length > 0 || store.getRemovedRecords().length > 0 || store.getNewRecords().length > 0) {
-                    v.record.set('conditions', {
-                        javaClass: 'java.util.LinkedList',
-                        list: Ext.Array.pluck(store.getRange(), 'data')
-                    });
-                }
+        // if conditions
+        if (v.down('grid')) {
+            condStore = v.down('grid').getStore();
+            if (condStore.getModifiedRecords().length > 0 || condStore.getRemovedRecords().length > 0 || condStore.getNewRecords().length > 0) {
+                v.record.set('conditions', {
+                    javaClass: 'java.util.LinkedList',
+                    list: Ext.Array.pluck(condStore.getRange(), 'data')
+                });
             }
+        }
 
+        if (!this.action) {
             for (var field in vm.get('record').modified) {
                 if (field !== 'conditions') {
                     v.record.set(field, vm.get('record').get(field));
@@ -171,7 +183,7 @@ Ext.define('Ung.cmp.RecordEditorController', {
     onCancel: function () {
         this.getView().close();
     },
-    // conditions grid
+
 
     onConditionsRender: function (conditionsGrid) {
         var conds = this.mainGrid.conditions, menuConditions = [], i;
@@ -220,7 +232,7 @@ Ext.define('Ung.cmp.RecordEditorController', {
         var newCond = {
             conditionType: item.conditionType,
             invert: false,
-            javaClass: this.getViewModel().get('ruleJavaClass'),
+            javaClass: this.mainGrid.ruleJavaClass,
             value: ''
         };
         this.getView().down('grid').getStore().add(newCond);
@@ -250,10 +262,6 @@ Ext.define('Ung.cmp.RecordEditorController', {
         container.removeAll(true);
 
         var condition = this.mainGrid.conditionsMap[record.get('conditionType')], i, ckItems = [];
-
-        // if (container.items.length >= 1) {
-        //     return;
-        // }
 
         switch (condition.type) {
         case 'boolean':
@@ -308,8 +316,9 @@ Ext.define('Ung.cmp.RecordEditorController', {
     },
 
     onDestroy: function () {
-        console.log('destroy');
         this.recordBind.destroy();
         this.recordBind = null;
+        this.actionBind.destroy();
+        this.actionBind = null;
     }
 });

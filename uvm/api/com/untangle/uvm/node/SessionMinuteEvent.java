@@ -96,7 +96,8 @@ public class SessionMinuteEvent extends LogEvent
             "bandwidth_control_rule, " + 
             "ssl_inspector_ruleid, " + 
             "ssl_inspector_status, " + 
-            "ssl_inspector_detail) " + 
+            "ssl_inspector_detail, " +
+            "tags) " +
             "SELECT " + 
             "?, ?, ?, " +
             "session_id, " + 
@@ -148,7 +149,8 @@ public class SessionMinuteEvent extends LogEvent
             "bandwidth_control_rule, " + 
             "ssl_inspector_ruleid, " + 
             "ssl_inspector_status, " + 
-            "ssl_inspector_detail " + 
+            "ssl_inspector_detail, " +
+            "tags " +
             "FROM " + schemaPrefix() + "sessions" + getSessionTablePostfix() + " as s WHERE s.session_id = ?";
 
         java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        

@@ -6,6 +6,10 @@ package com.untangle.uvm;
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.Objects;
+import java.util.List;
+import java.util.LinkedList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
@@ -28,13 +32,14 @@ public class DeviceTableEntry implements Serializable, JSONString
      */
     private String      macAddress;
     private String      macVendor = null;
-    private String      deviceUsername = null;
+    private String      username = null;
     private String      hostname = null;
     private String      httpUserAgent = null;
-    
-    private long        lastSeenTime = 0;
-    private int         lastSeenInterfaceId = 0;
+    private int         interfaceId = 0;
+    private long        lastSessionTime = 0; /* time of the last new session */
 
+    private HashMap<String,Tag> tags = new HashMap<String,Tag>();
+    
     private static final String IPV4_PATTERN = "^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])$";
     private static Pattern ipv4Pattern = Pattern.compile( IPV4_PATTERN );
 
@@ -57,10 +62,12 @@ public class DeviceTableEntry implements Serializable, JSONString
     {
         this.setMacAddress( other.getMacAddress() );
         this.setMacVendor( other.getMacVendor() );
-        this.setDeviceUsername( other.getDeviceUsername() );
+        this.setUsername( other.getUsername() );
         this.setHostname( other.getHostname() );
         this.setHttpUserAgent( other.getHttpUserAgent() );
-        this.setLastSeenTime( other.getLastSeenTime() );
+        this.setLastSessionTime( other.getLastSessionTime() );
+        this.setInterfaceId( other.getInterfaceId() );
+        this.setTags( other.getTags() );
     }
     
     public String getMacAddress() { return this.macAddress; }
@@ -72,22 +79,22 @@ public class DeviceTableEntry implements Serializable, JSONString
         updateEvent( "macAddress", this.macAddress, newValue );
     }
 
-    public long getLastSeenTime() { return this.lastSeenTime; }
-    public void setLastSeenTime( long newValue )
+    public long getLastSessionTime() { return this.lastSessionTime; }
+    public void setLastSessionTime( long newValue )
     {
-        if ( newValue == this.lastSeenTime )
+        if ( newValue == this.lastSessionTime )
             return;
-        this.lastSeenTime = newValue;
-        //updateEvent( "lastSeenTime", this.lastSeenTime, newValue );
+        //updateEvent( "lastSessionTime", String.valueOf(this.lastSessionTime), String.valueOf(newValue) );
+        this.lastSessionTime = newValue;
     }
-
-    public long getLastSeenInterfaceId() { return this.lastSeenInterfaceId; }
-    public void setLastSeenInterfaceId( int newValue )
+    
+    public int getInterfaceId() { return this.interfaceId; }
+    public void setInterfaceId( int newValue )
     {
-        if ( newValue == this.lastSeenInterfaceId )
+        if ( newValue == this.interfaceId )
             return;
-        this.lastSeenInterfaceId = newValue;
-        updateEvent( "lastSeenInterfaceId", String.valueOf(this.lastSeenInterfaceId), String.valueOf(newValue) );
+        updateEvent( "interfaceId", (new Integer(this.interfaceId)).toString(), new Integer(newValue).toString() );
+        this.interfaceId = newValue;
     }
     
     public String getMacVendor() { return this.macVendor; }
@@ -123,22 +130,84 @@ public class DeviceTableEntry implements Serializable, JSONString
         updateEvent( "httpUserAgent", String.valueOf(this.httpUserAgent), String.valueOf(newValue) );
         this.httpUserAgent = newValue;
     }
-    
-    public String getDeviceUsername()
+
+    public synchronized List<Tag> getTags()
     {
-        if ( "".equals(this.deviceUsername) )
-             return null;
-        return this.deviceUsername;
+        removeExpiredTags();
+        return new LinkedList<Tag>(this.tags.values());
+    }
+
+    public synchronized void setTags( List<Tag> newValue )
+    {
+        HashMap<String,Tag> newSet = new HashMap<String,Tag>();
+        if ( newValue != null ) {
+            for ( Tag t : newValue ) {
+                if ( t == null || t.getName() == null )
+                    continue;
+                newSet.put(t.getName(),t);
+            }
+        }
+        updateEvent( "tags", Tag.tagsToString(this.tags.values()), Tag.tagsToString(newSet.values()) );
+        this.tags = newSet;
+    }
+
+    public synchronized String getTagsString()
+    {
+        return Tag.tagsToString( getTags() );
+    }
+
+    public synchronized void addTag( Tag tag )
+    {
+        if ( tag == null || tag.getName() == null )
+            return;
+        this.tags.put( tag.getName(), tag );
+    }
+
+    public synchronized void addTags( List<Tag> tags )
+    {
+        if ( tags == null )
+            return;
+        for ( Tag tag : tags ) {
+            addTag( tag );
+        }
+    }
+
+    public synchronized boolean hasTag( String name )
+    {
+        Tag t = this.tags.get( name );
+        if ( t == null )
+            return false;
+        if ( t.isExpired() ) {
+            this.tags.remove( t.getName() );
+            return false;
+        }
+        return true;
+    }
+
+    public void removeExpiredTags()
+    {
+        for ( Iterator<Tag> i = this.tags.values().iterator() ; i.hasNext() ; ) {
+            Tag t = i.next();
+            if ( t.isExpired() )
+                i.remove();
+        }
     }
     
-    public void setDeviceUsername( String newValue )
+    public String getUsername()
+    {
+        if ( "".equals(this.username) )
+             return null;
+        return this.username;
+    }
+    
+    public void setUsername( String newValue )
     {
         if ( "".equals(newValue) )
             newValue = null;
-        if ( Objects.equals( newValue, this.deviceUsername ) )
+        if ( Objects.equals( newValue, this.username ) )
             return;
-        updateEvent( "deviceUsername", this.deviceUsername, newValue );
-        this.deviceUsername = newValue;
+        updateEvent( "username", this.username, newValue );
+        this.username = newValue;
     }
     
     /**
@@ -177,11 +246,6 @@ public class DeviceTableEntry implements Serializable, JSONString
         this.logChanges = true;
     }
 
-    public void updateLastSeenTime()
-    {
-        this.lastSeenTime = System.currentTimeMillis();
-    }
-
     private void updateEvent( String key, String oldValue, String newValue )
     {
         if ( !logChanges )
@@ -191,7 +255,7 @@ public class DeviceTableEntry implements Serializable, JSONString
         if ( newValue == null ) 
             newValue = "null";
 
-        DeviceTableEvent event = new DeviceTableEvent( this, this.macAddress, key, newValue );
+        DeviceTableEvent event = new DeviceTableEvent( this, this.macAddress, key, newValue, oldValue );
         UvmContextFactory.context().logEvent(event);
     }
 }

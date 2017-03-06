@@ -1,6 +1,7 @@
 Ext.define('Ung.apps.phishblocker.view.Status', {
     extend: 'Ext.panel.Panel',
-    alias: 'widget.app.phishblocker.status',
+    alias: 'widget.app-phishblocker-status',
+    itemId: 'status',
     title: 'Status'.t(),
 
     viewModel: true,
