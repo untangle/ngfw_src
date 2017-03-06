@@ -22,7 +22,6 @@ from uvm import Manager
 from uvm import Uvm
 import test_registry
 import remote_control
-import system_properties
 import global_functions
 
 node = None
@@ -66,7 +65,7 @@ class UvmTests(unittest2.TestCase):
 
     def test_011_helpLinks(self):
         output, error = subprocess.Popen(['find',
-                                          '%s/usr/share/untangle/web/webui/script/' % system_properties.get_prefix(),
+                                          '%s/usr/share/untangle/web/webui/script/' % global_functions.get_prefix(),
                                           '-name',
                                           '*.js',
                                           '-type',
