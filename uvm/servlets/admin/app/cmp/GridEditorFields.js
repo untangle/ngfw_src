@@ -63,6 +63,13 @@ Ext.define('Ung.cmp.GridEditorFields', {
         editable: false
     },
 
+    live: {
+        xtype: 'checkbox',
+        bind: '{record.live}',
+        fieldLabel: 'Enabled'.t(),
+        width: 100
+    },
+
     macAddress: {
         xtype: 'textfield',
         fieldLabel: 'MAC Address'.t(),

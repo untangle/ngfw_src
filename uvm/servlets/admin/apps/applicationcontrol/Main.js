@@ -3,6 +3,13 @@ Ext.define('Ung.apps.applicationcontrol.Main', {
     alias: 'widget.app-applicationcontrol',
     controller: 'app-applicationcontrol',
 
+    viewModel: {
+        stores: {
+            protoRules: { data: '{settings.protoRules.list}' },
+            logicRules: { data: '{settings.logicRules.list}' }
+        }
+    },
+
     items: [
         { xtype: 'app-applicationcontrol-status' },
         { xtype: 'app-applicationcontrol-applications' },

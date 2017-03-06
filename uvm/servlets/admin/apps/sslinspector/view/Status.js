@@ -36,20 +36,21 @@ Ext.define('Ung.apps.sslinspector.view.Status', {
         //     type: 'hbox'
         // },
         items: [{
-            xtype: 'appsessions',
             region: 'north',
-            height: 200,
-            split: true,
-        }, {
-            region: 'center',
+            height: 150,
+            resizable: false,
             bind: {
                 html: '{serverCertificateVerification}'
             }
         }, {
+            xtype: 'appsessions',
+            region: 'center',
+            height: 200
+        }, {
             xtype: 'appmetrics',
             region: 'south',
             split: true,
-            height: '40%'
+            height: 'auto'
         }]
     }]
 

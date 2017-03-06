@@ -16,6 +16,7 @@ Ext.define('Ung.cmp.RecordEditor', {
     closeAction: 'destroy',
 
     viewModel: true,
+
     disabled: true,
     bind: {
         title: '{windowTitle}',

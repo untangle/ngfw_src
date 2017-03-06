@@ -1,7 +1,26 @@
+Ext.define ('Ung.model.Action', {
+    extend: 'Ext.data.Model' ,
+    alias: 'model.action',
+    fields: [{
+        name: 'actionType', type: 'string'
+    }, {
+        name: 'priority', type: 'int'
+    }]
+    // proxy: {
+    //     // autoLoad: true,
+    //     type: 'memory',
+    //     reader: {
+    //         type: 'json',
+    //         // rootProperty: 'list'
+    //     }
+    // }
+});
+
 Ext.define ('Ung.model.Rule', {
     extend: 'Ext.data.Model' ,
 
     alias: 'model.rule',
+
 
     fields: [
         // { name: 'ruleId', type: 'auto', defaultValue: null },
@@ -10,7 +29,10 @@ Ext.define ('Ung.model.Rule', {
         // { name: 'conditions', type: 'auto' },
 
         { name: 'markedForDelete', defaultValue: false },
-        { name: 'markedForNew', defaultValue: false }
+        { name: 'markedForNew', defaultValue: false },
+        // { name: 'action', reference: 'action'}
+        { name: 'actionType', mapping: 'action.actionType' },
+        { name: 'priority', mapping: 'action.priority' },
 
         // { name: 'conditionsMap', mapping: function (data) {
         //     return data.conditions.list;

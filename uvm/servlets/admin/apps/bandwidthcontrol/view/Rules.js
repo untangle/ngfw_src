@@ -88,7 +88,15 @@ Ext.define('Ung.apps.bandwidthcontrol.view.Rules', {
         ruleId: 0,
         enabled: true,
         description: '',
-        action: '',
+        action: {
+            actionType: 'SET_PRIORITY',
+            javaClass: 'com.untangle.node.bandwidth_control.BandwidthControlRuleAction',
+            priority: 7,
+            quotaBytes: null,
+            quotaTime: null,
+            tagName: null,
+            tagTime: null
+        },
         conditions: {
             javaClass: 'java.util.LinkedList',
             list: []
@@ -100,46 +108,74 @@ Ext.define('Ung.apps.bandwidthcontrol.view.Rules', {
 
     columns: [
         Column.ruleId,
-        Column.enabled,
+        Column.live,
         Column.description,
         Column.conditions, {
             header: 'Action'.t(),
             dataIndex: 'action',
             width: 250,
-            renderer: function (action) {
-                return action.actionType;
-            }
-            // renderer: function(value) {
-            //     if (typeof value === 'undefined') {
-            //         return 'Unknown action'.t();
-            //     }
-            //     switch (value.actionType) {
-            //     case 'SET_PRIORITY': return 'Set Priority'.t() + ' [' + this.priorityRenderer(value.priority) + ']';
-            //     case 'TAG_HOST': return 'Tag Host'.t();
-            //     case 'APPLY_PENALTY_PRIORITY': return 'Apply Penalty Priority'.t(); // DEPRECATED
-            //     case 'GIVE_CLIENT_HOST_QUOTA': return 'Give Client a Quota'.t();
-            //     case 'GIVE_HOST_QUOTA': return 'Give Host a Quota'.t();
-            //     case 'GIVE_USER_QUOTA': return 'Give User a Quota'.t();
-            //     default: return 'Unknown Action: '.t() + value;
-            //     }
-            // }
+            renderer: 'actionRenderer'
         }
     ],
 
     // todo: continue this stuff
     editorFields: [
-        Field.enableRule(),
+        Field.live,
         Field.description,
         Field.conditions, {
             xtype: 'combo',
+            reference: 'actionType',
+            publishes: 'value',
             fieldLabel: 'Action Type'.t(),
-            bind: '{record.action}',
+            bind: '{_action.actionType}',
             allowBlank: false,
             editable: false,
-            store: [[true, 'Auto'.t()], [false, 'Custom'.t()]],
+            store: [
+                ['SET_PRIORITY', 'Set Priority'.t()],
+                ['PENALTY_BOX_CLIENT_HOST', 'Send Client to Penalty Box'.t()],
+                ['GIVE_HOST_QUOTA', 'Give Host a Quota'.t()],
+                ['GIVE_USER_QUOTA', 'Give User a Quota'.t()]
+            ],
             queryMode: 'local',
-        }
-
+        }, {
+            xtype: 'combo',
+            fieldLabel: 'Priority'.t(),
+            disabled: true,
+            bind: {
+                value: '{_action.priority}',
+                disabled: '{actionType.value !== "SET_PRIORITY"}'
+            },
+            allowBlank: false,
+            editable: false,
+            store:[
+                [1, 'Very High'.t()],
+                [2, 'High'.t()],
+                [3, 'Medium'.t()],
+                [4, 'Low'.t()],
+                [5, 'Limited'.t()],
+                [6, 'Limited More'.t()],
+                [7, 'Limited Severely'.t()]
+            ],
+            queryMode: 'local',
+        },
+        // {
+        //     xtype: 'container',
+        //     layout: {
+        //         type: 'hbox'
+        //     },
+        //     items: [{
+        //         xtype: 'numberfield',
+        //         bind: {
+        //             value: '{_action.tagTime}'
+        //         },
+        //         fieldLabel: 'Penalty Time'.t(),
+        //         allowBlank: false,
+        //         width: 350,
+        //         labelWidth: 150
+        //     }, {
+        //         xtype: 'displayfield',
+        //         html: 'seconds'.t()
+        //     }]
+        // }
     ]
-
 });
