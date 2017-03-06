@@ -16,17 +16,17 @@ def get_prefix():
     return prefix
 
 def get_lan_ip():
-    ip = uvmContext.networkManager().getFirstNonWanAddress()
+    ip = uvmContext.networkManager().getInterfaceHttpAddress( remote_control.interface )
     return ip
 
 def get_http_url():
-    ip = uvmContext.networkManager().getFirstNonWanAddress()
+    ip = uvmContext.networkManager().getInterfaceHttpAddress( remote_control.interface )
     httpPort = str(uvmContext.networkManager().getNetworkSettings().get('httpPort'))
     httpAdminUrl = "http://" + ip + ":" + httpPort + "/"
     return httpAdminUrl
 
 def get_https_url():
-    ip = uvmContext.networkManager().getFirstNonWanAddress()
+    ip = uvmContext.networkManager().getInterfaceHttpAddress( remote_control.interface )
     httpsPort = str(uvmContext.networkManager().getNetworkSettings().get('httpsPort'))
     httpsAdminUrl = "https://" + ip + ":" + httpsPort + "/"
     return httpsAdminUrl
