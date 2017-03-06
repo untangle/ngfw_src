@@ -76,7 +76,7 @@ class ShieldTests(unittest2.TestCase):
         node.setSettings(settings)
 
         startTime = datetime.now()
-        result = remote_control.runCommand("nmap -PN -sT -T5 --min-parallelism 15 -p10000-11000 1.2.3.5 2>&1 >/dev/null")
+        result = remote_control.runCommand("nmap -PN -sT -T5 --min-parallelism 15 -p10000-10100 1.2.3.5 2>&1 >/dev/null")
         assert (result == 0)
 
         events = global_functions.get_events('Shield','Blocked Session Events',None,1)
