@@ -228,7 +228,7 @@ class CaptivePortalTests(unittest2.TestCase):
         assert( found )
         # logout user to clean up test.
         # wget http://<internal IP>/capture/logout
-        result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_021b.out http://" + uvmContext.networkManager().getFirstNonWanAddress() + "/capture/logout")
+        result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_021b.out http://" + global_functions.get_lan_ip() + "/capture/logout")
         assert (result == 0)
         search = remote_control.runCommand("grep -q 'logged out' /tmp/capture_test_021b.out")
         assert (search == 0)
@@ -254,7 +254,7 @@ class CaptivePortalTests(unittest2.TestCase):
         # logout user to clean up test.
         # wget http://<internal IP>/capture/logout
         nodeWeb.setBlockedUrls(rules_orig)
-        result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_022b.out http://" + uvmContext.networkManager().getFirstNonWanAddress() + "/capture/logout")
+        result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_022b.out http://" + global_functions.get_lan_ip() + "/capture/logout")
         assert (result == 0)
         search = remote_control.runCommand("grep -q 'logged out' /tmp/capture_test_022b.out")
         assert (search == 0)
