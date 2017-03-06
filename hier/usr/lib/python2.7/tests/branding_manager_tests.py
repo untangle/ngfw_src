@@ -12,7 +12,7 @@ from uvm import Manager
 from uvm import Uvm
 import test_registry
 import remote_control
-import system_properties
+import global_functions
 from global_functions import uvmContextLongTimeout
 import pdb
 
@@ -117,7 +117,7 @@ class BrandingManagerTests(unittest2.TestCase):
         # Check login page for branding
         internalAdmin = None
         # print "IP address <%s>" % internalAdmin
-        result = remote_control.runCommand("wget -q -O - \"$@\" " + system_properties.get_http_url() ,stdout=True)
+        result = remote_control.runCommand("wget -q -O - \"$@\" " + global_functions.get_http_url() ,stdout=True)
         # print "page is <%s>" % result
         # Verify Title of blockpage as company name
         myRegex = re.compile('<title>(.*?)</title>', re.IGNORECASE|re.DOTALL)
@@ -138,7 +138,7 @@ class BrandingManagerTests(unittest2.TestCase):
         node.setSettings(nodeData)
 
         internalAdmin = None
-        result = remote_control.runCommand("wget -q -O - \"$@\" " + system_properties.get_http_url() ,stdout=True)
+        result = remote_control.runCommand("wget -q -O - \"$@\" " + global_functions.get_http_url() ,stdout=True)
         myRegex = re.compile('.*A regulation banner requirement containing a mix of text including <b>html<\/b> and<br\/>multiple<br\/>lines.*', re.DOTALL|re.MULTILINE)
         if re.match(myRegex,result):
             assert(True)
@@ -155,7 +155,7 @@ class BrandingManagerTests(unittest2.TestCase):
         node.setSettings(nodeData)
 
         internalAdmin = None
-        result = remote_control.runCommand("wget -q -O - \"$@\" " + system_properties.get_http_url() ,stdout=True)
+        result = remote_control.runCommand("wget -q -O - \"$@\" " + global_functions.get_http_url() ,stdout=True)
         myRegex = re.compile('.*A regulation banner requirement containing a mix of text including <b>html<\/b> and<br\/>multiple<br\/>lines.*', re.DOTALL|re.MULTILINE)
         if re.match(myRegex,result):
             assert(False)
