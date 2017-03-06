@@ -56,6 +56,7 @@ def addIPSecTunnel(remoteIP="", remoteLAN="", localIP="", localLANIP="", localLA
         "pfs": True, 
         "right": remoteIP,  # remote WAN
         "rightSubnet": remoteLAN, # remote LAN range
+        "rightId": "%any",
         "runmode": "start", 
         "secret": "supersecret"
     }    
@@ -203,7 +204,7 @@ class IPsecTests(unittest2.TestCase):
             timeout -= 1
             time.sleep(1)
             # ping the remote LAN to see if the IPsec tunnel is connected.
-            ipsecHostLANResult = remote_control.runCommand("wget -q -O /dev/null --no-check-certificate -4 -t 2 --timeout=5 https://%s/" % ipsecHostLANIP)
+            ipsecHostLANResult = remote_control.runCommand(("curl -s -4 --insecure -o /dev/null 'https://%s/'" % ipsecHostLANIP))
         assert (ipsecHostLANResult == 0)
         ipsecPcLanResult = remote_control.runCommand("ping -c 1 %s" % ipsecPcLANIP)
         assert (ipsecPcLanResult == 0)
@@ -221,7 +222,7 @@ class IPsecTests(unittest2.TestCase):
         netsettings = uvmContext.networkManager().getNetworkSettings()
         uvmContext.networkManager().setNetworkSettings(netsettings)
         time.sleep(10) # wait for networking to restart
-        ipsecHostLANResult = remote_control.runCommand("wget -q -O /dev/null --no-check-certificate -4 -t 2 --timeout=5 https://%s/" % ipsecHostLANIP)
+        ipsecHostLANResult = remote_control.runCommand(("curl -s -4 --insecure -o /dev/null 'https://%s/'" % ipsecHostLANIP))
         ipsecPcLanResult = remote_control.runCommand("ping -c 1 %s" % ipsecPcLANIP)
         # delete tunnel
         nukeIPSecTunnels()
@@ -303,7 +304,7 @@ class IPsecTests(unittest2.TestCase):
             timeout -= 1
             time.sleep(1)
             # ping the remote LAN to see if the IPsec tunnel is connected.
-            ipsecHostLANResult = remote_control.runCommand("wget -q -O /dev/null --no-check-certificate -4 -t 2 --timeout=5 https://%s/" % ipsecHostLANIP)
+            ipsecHostLANResult = remote_control.runCommand(("curl -s -4 --insecure -o /dev/null 'https://%s/'" % ipsecHostLANIP))
         uvmContext.networkManager().setNetworkSettings( originalSettings )
         post_events_enabled = global_functions.getStatusValue(node,"enabled")
         nukeIPSecTunnels()
