@@ -17,7 +17,6 @@ from uvm import Uvm
 import test_registry
 import remote_control
 import global_functions
-import system_properties
 
 node = None
 nodeData = None
