@@ -5,7 +5,6 @@ import sys
 import os
 import socket
 import re
-import system_properties
 import global_functions
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException

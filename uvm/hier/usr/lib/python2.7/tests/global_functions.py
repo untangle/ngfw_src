@@ -10,7 +10,6 @@ import struct
 import commands
 
 import remote_control
-import system_properties
 import ipaddr
 import smtplib
 import json
@@ -46,6 +45,7 @@ accountFile = "/tmp/account_login.json"
 
 uvmContext = Uvm().getUvmContext(timeout=120)
 uvmContextLongTimeout = Uvm().getUvmContext(timeout=300)
+prefix = "@PREFIX@"
 
 def getIpAddress(base_URL="test.untangle.com",extra_options="",localcall=False):
     timeout = 4
@@ -329,6 +329,25 @@ def foundWans():
                 myWANs.append(wanTup)
     return myWANs
 
+def get_prefix():
+    global prefix
+    return prefix
+
+def get_lan_ip():
+    ip = uvmContext.networkManager().getInterfaceHttpAddress( remote_control.interface )
+    return ip
+
+def get_http_url():
+    ip = uvmContext.networkManager().getInterfaceHttpAddress( remote_control.interface )
+    httpPort = str(uvmContext.networkManager().getNetworkSettings().get('httpPort'))
+    httpAdminUrl = "http://" + ip + ":" + httpPort + "/"
+    return httpAdminUrl
+
+def get_https_url():
+    ip = uvmContext.networkManager().getInterfaceHttpAddress( remote_control.interface )
+    httpsPort = str(uvmContext.networkManager().getNetworkSettings().get('httpsPort'))
+    httpsAdminUrl = "https://" + ip + ":" + httpsPort + "/"
+    return httpsAdminUrl
 
 def __get_ip_address(ifname):
     print "ifname <%s>" % ifname
