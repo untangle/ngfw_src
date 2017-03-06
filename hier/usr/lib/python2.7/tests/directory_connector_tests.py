@@ -8,7 +8,6 @@ import random
 import subprocess
 from uvm import Uvm
 import remote_control
-import system_properties
 import test_registry
 import global_functions
 import platform
@@ -253,7 +252,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
         if (AD_RESULT != 0):
             raise unittest2.SkipTest("No AD server available")
         # remove leading and trailing spaces.
-        http_admin = system_properties.get_http_url()
+        http_admin = global_functions.get_http_url()
         assert(http_admin)
 
         test_name = "randomName-" + "".join( [random.choice(string.letters) for i in xrange(15)] )
@@ -282,7 +281,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
         if (AD_RESULT != 0):
             raise unittest2.SkipTest("No AD server available")
         # remove leading and trailing spaces.
-        http_admin = system_properties.get_http_url().title()
+        http_admin = global_functions.get_http_url().title()
         assert(http_admin)
 
         test_name = "randomName-" + "".join( [random.choice(string.letters) for i in xrange(15)] )
@@ -305,7 +304,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
         if (AD_RESULT != 0):
             raise unittest2.SkipTest("No AD server available")
         # remove leading and trailing spaces.
-        http_admin = system_properties.get_http_url()
+        http_admin = global_functions.get_http_url()
         assert(http_admin)
 
         test_name = "randomName-" + "".join( [random.choice(string.letters) for i in xrange(15)] )
