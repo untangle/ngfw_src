@@ -7,7 +7,6 @@ import subprocess
 import socket
 import smtplib
 import re
-import system_properties
 
 from jsonrpc import ServiceProxy
 from jsonrpc import JSONRPCException

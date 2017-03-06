@@ -4,9 +4,12 @@ import subprocess
 import time
 import datetime
 import re
+import socket
+import fcntl
+import struct
+import commands
 
 import remote_control
-import system_properties
 import ipaddr
 import smtplib
 import json
@@ -42,6 +45,7 @@ accountFile = "/tmp/account_login.json"
 
 uvmContext = Uvm().getUvmContext(timeout=120)
 uvmContextLongTimeout = Uvm().getUvmContext(timeout=300)
+prefix = "@PREFIX@"
 
 def getIpAddress(base_URL="test.untangle.com",extra_options="",localcall=False):
     timeout = 4
@@ -174,21 +178,21 @@ def get_events( eventEntryCategory, eventEntryTitle, conditions, limit ):
 
     return reportsManager.getEvents( reportEntry, conditions, limit )
 
-def check_events( events, num_events, *args, **kwargs):
+def find_event( events, num_events, *args, **kwargs):
     if events == None:
-        return False
+        return None
     if num_events == 0:
-        return False
+        return None
     if len(events) == 0:
         print "No events in list"
-        return False
+        return None
     if kwargs.get('min_date') == None:
         min_date = datetime.datetime.now()-datetime.timedelta(minutes=12)
     else:
         min_date = kwargs.get('min_date')
     if (len(args) % 2) != 0:
         print "Invalid argument length"
-        return False
+        return None
     num_checked = 0
     while num_checked < num_events:
         if len(events) <= num_checked:
@@ -232,8 +236,11 @@ def check_events( events, num_events, *args, **kwargs):
                 break
 
         if allMatched:
-            return True
-    return False
+            return event
+    return None
+
+def check_events( events, num_events, *args, **kwargs):
+    return (find_event( events, num_events, *args, **kwargs) != None)
 
 def isInOfficeNetwork(wanIP):
     for officeNetworkTest in officeNetworks:
@@ -312,12 +319,49 @@ def foundWans():
                 wanGateway =  interface['v4StaticGateway']
             elif interface['v4ConfigType'] == "AUTO":
                 nicDevice = str(interface['symbolicDev'])
-                wanIndex =  interface['interfaceId']
-                wanIP =  system_properties.__get_ip_address(nicDevice)
-                wanGateway =  system_properties.__get_gateway(nicDevice)
+                wanIndex = interface['interfaceId']
+                wanIP = __get_ip_address(nicDevice)
+                wanGateway = __get_gateway(nicDevice)
             if wanIP:
                 wanExtIP = getIpAddress(extra_options="--bind-address=" + wanIP,localcall=True)
                 wanExtIP = wanExtIP.rstrip()
                 wanTup = (wanIndex,wanIP,wanExtIP,wanGateway)
                 myWANs.append(wanTup)
     return myWANs
+
+def get_prefix():
+    global prefix
+    return prefix
+
+def get_lan_ip():
+    ip = uvmContext.networkManager().getInterfaceHttpAddress( remote_control.interface )
+    return ip
+
+def get_http_url():
+    ip = uvmContext.networkManager().getInterfaceHttpAddress( remote_control.interface )
+    httpPort = str(uvmContext.networkManager().getNetworkSettings().get('httpPort'))
+    httpAdminUrl = "http://" + ip + ":" + httpPort + "/"
+    return httpAdminUrl
+
+def get_https_url():
+    ip = uvmContext.networkManager().getInterfaceHttpAddress( remote_control.interface )
+    httpsPort = str(uvmContext.networkManager().getNetworkSettings().get('httpsPort'))
+    httpsAdminUrl = "https://" + ip + ":" + httpsPort + "/"
+    return httpsAdminUrl
+
+def __get_ip_address(ifname):
+    print "ifname <%s>" % ifname
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    return socket.inet_ntoa(fcntl.ioctl(
+        s.fileno(),
+        0x8915,  # SIOCGIFADDR
+        struct.pack('256s', ifname[:15])
+    )[20:24])
+
+def __get_gateway(ifname):
+    cmd = "route -n | grep '[ \t]" + ifname + "' | grep 'UH[ \t]' | awk '{print $1}'"
+    status, output = commands.getstatusoutput(cmd)
+    if (not status) and output:
+        return output
+    else:
+        return None

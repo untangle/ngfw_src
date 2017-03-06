@@ -533,7 +533,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                     Field.enableIpv6,
                     Field.description,
                     Field.conditions,
-                    Field.blocked
+                    Field.blockedCombo
                 ]
             }, {
                 xtype: 'ungrid',
@@ -630,7 +630,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                     Field.enableIpv6,
                     Field.description,
                     Field.conditions,
-                    Field.blocked
+                    Field.blockedCombo
                 ]
             }]
         }, {

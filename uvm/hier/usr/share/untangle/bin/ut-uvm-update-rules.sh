@@ -6,7 +6,7 @@
 # If you pass -r as an option it will remove the rules regardless
 
 TUN_DEV=utun
-TUN_ADDR="192.0.2.42"
+TUN_ADDR="192.0.2.200"
 FORCE_REMOVE="false"
 
 MASK_BYPASS=$((0x01000000))
@@ -84,11 +84,10 @@ insert_iptables_rules()
 
     # We insert one -j DNAT rule for each local address
     # This is necessary so that the destination address is maintained when replying (with the SYN/ACK)
-    # with a regular REDIRECT a random (the first?) address is chosen to reply with (like 192.0.2.43) so for inbound connection the response may go out the wrong WAN
+    # with a regular REDIRECT a random (the first?) address is chosen to reply with (like 192.0.2.200) so for inbound connection the response may go out the wrong WAN
     for t_address in `ip -f inet addr show | awk '/^ *inet/ { sub( "/.*", "", $2 ) ; print $2 }'` ; do
         if [ "${t_address}" = "127.0.0.1" ]; then continue ; fi
-        if [ "${t_address}" = "192.0.2.42" ]; then continue ; fi
-        if [ "${t_address}" = "192.0.2.43" ]; then continue ; fi
+        if [ "${t_address}" = "192.0.2.200" ]; then continue ; fi
         ${IPTABLES} -A uvm-tcp-redirect -t nat -i ${TUN_DEV} -t nat -p tcp --destination ${t_address}  -j DNAT --to-destination ${t_address}:${TCP_REDIRECT_PORTS} -m comment --comment "Redirect reinjected packets to ${t_address} to the untangle-vm"
     done
     
@@ -129,7 +128,7 @@ insert_iptables_rules()
 
     # Unfortunately we have to give utun an address or the reinjection does not work
     # Use a bogus address
-    ifconfig ${TUN_DEV} ${TUN_ADDR} netmask 255.255.255.0 
+    ifconfig ${TUN_DEV} ${TUN_ADDR} netmask 255.255.255.252
     ifconfig ${TUN_DEV} up
 
     if [ -f /proc/sys/net/ipv4/conf/${TUN_DEV}/rp_filter ]; then

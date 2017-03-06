@@ -357,6 +357,13 @@ Ext.define('Webui.config.sessionMonitor', {
                 noText: 'false'
             }
         },{
+            header: i18n._("Tags"),
+            dataIndex: "tagsString",
+            width: 100,
+            filter: {
+                type: 'string'
+            }
+        },{
             header: i18n._("Username"),
             dataIndex: "platform-username",
             width: 100,
@@ -685,6 +692,9 @@ Ext.define('Webui.config.sessionMonitor', {
                 convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "portForwarded",
+                convert: Ung.Util.preventEmptyValueConverter
+            },{
+                name: "tagsString",
                 convert: Ung.Util.preventEmptyValueConverter
             },{
                 name: "platform-username",

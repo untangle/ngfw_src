@@ -86,18 +86,59 @@ Ext.define('Ung.cmp.GridController', {
             conds = value.list,
             resp = [], i, valueRenderer = [];
 
+
         for (i = 0; i < conds.length; i += 1) {
             valueRenderer = [];
-            if (conds[i].conditionType === 'SRC_INTF' || conds[i].conditionType === 'DST_INTF') {
+
+            switch (conds[i].conditionType) {
+            case 'SRC_INTF':
+            case 'DST_INTF':
                 conds[i].value.toString().split(',').forEach(function (intfff) {
                     valueRenderer.push(Util.interfacesListNamesMap()[intfff]);
                 });
-            } else {
+                break;
+            case 'DST_LOCAL':
+            case 'WEB_FILTER_FLAGGED':
+                valueRenderer.push('true'.t());
+                break;
+            default:
                 valueRenderer = conds[i].value.toString().split(',');
             }
             resp.push(view.conditionsMap[conds[i].conditionType].displayName + '<strong>' + (conds[i].invert ? ' &nrArr; ' : ' &rArr; ') + '<span class="cond-val ' + (conds[i].invert ? 'invert' : '') + '">' + valueRenderer.join(', ') + '</span>' + '</strong>');
         }
-        return resp.join(' &nbsp;&bull;&nbsp; ');
+        return resp.length > 0 ? resp.join(' &nbsp;&bull;&nbsp; ') : '<em>' + 'No conditions' + '</em>';
+    },
+
+    priorityRenderer: function(value) {
+        if (Ext.isEmpty(value)) {
+            return '';
+        }
+        switch (value) {
+        case 0: return '';
+        case 1: return 'Very High'.t();
+        case 2: return 'High'.t();
+        case 3: return 'Medium'.t();
+        case 4: return 'Low'.t();
+        case 5: return 'Limited'.t();
+        case 6: return 'Limited More'.t();
+        case 7: return 'Limited Severely'.t();
+        default: return Ext.String.format('Unknown Priority: {0}'.t(), value);
+        }
+    },
+
+    actionRenderer: function (value, metaData, record) {
+        if (typeof value === 'undefined') {
+            return 'Unknown action'.t();
+        }
+        switch(value.actionType) {
+        case 'SET_PRIORITY': return 'Set Priority' + ' [' + this.priorityRenderer(value.priority) + ']';
+        case 'TAG_HOST': return 'Tag Host'.t();
+        case 'APPLY_PENALTY_PRIORITY': return 'Apply Penalty Priority'.t(); // DEPRECATED
+        case 'GIVE_CLIENT_HOST_QUOTA': return 'Give Client a Quota'.t();
+        case 'GIVE_HOST_QUOTA': return 'Give Host a Quota'.t();
+        case 'GIVE_USER_QUOTA': return 'Give User a Quota'.t();
+        default: return 'Unknown Action: ' + value;
+        }
     },
 
     conditionRenderer: function (val) {

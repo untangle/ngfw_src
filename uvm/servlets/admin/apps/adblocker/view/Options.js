@@ -1,5 +1,6 @@
 Ext.define('Ung.apps.adblocker.view.Options', {
     extend: 'Ext.panel.Panel',
-    alias: 'widget.app.adblocker.options',
+    alias: 'widget.app-adblocker-options',
+    itemId: 'options',
     title: 'Options'.t()
 });

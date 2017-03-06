@@ -57,13 +57,14 @@ Ext.define('Ung.view.apps.AppsController', {
     // },
 
     getPolicies: function () {
-        console.log('on activate');
         var me = this;
         var vm = this.getViewModel();
 
         Rpc.asyncData('rpc.nodeManager.getAppsViews').then(function(result) {
             var nodes = [];
             vm.getStore('apps').removeAll();
+
+            Ext.getStore('policies').loadData(result);
 
             Ext.Array.each(result[0].nodeProperties.list, function (node) {
                 nodes.push({
@@ -106,7 +107,6 @@ Ext.define('Ung.view.apps.AppsController', {
      */
     filterInstalled: function () {
         this.getViewModel().set('onInstalledApps', true);
-        console.log('filter installed');
         var appsStore = this.getViewModel().getStore('apps');
 
         appsStore.clearFilter();
@@ -189,10 +189,12 @@ Ext.define('Ung.view.apps.AppsController', {
      * method which initialize the node installation
      */
     onInstallNode: function (view, record) {
+        var me = this;
         record.set('status', 'installing');
         Rpc.asyncData('rpc.nodeManager.instantiate', record.get('name'), 1)
         .then(function (result) {
-            record.set('status', 'installed');
+            // record.set('status', 'installed');
+            me.getPolicies();
         });
     }
 

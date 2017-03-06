@@ -5,9 +5,12 @@ import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 
 import org.json.JSONObject;
 import org.json.JSONString;
+
+import com.untangle.uvm.Tag;
 
 /**
  * This class represents a conntrack entry
@@ -44,6 +47,9 @@ public class SessionMonitorEntry implements Serializable, JSONString
     private Double serverLatitude;
     private Double serverLongitude;
 
+    private List<Tag> tags;
+    private String tagsString;
+    
     public String getProtocol() {return protocol;}
     public void   setProtocol( String protocol ) {this.protocol = protocol;}
 
@@ -100,6 +106,11 @@ public class SessionMonitorEntry implements Serializable, JSONString
     public Double  getServerLongitude() { return serverLongitude; }
     public void    setServerLongitude(Double serverLongitude) { this.serverLongitude = serverLongitude; }
 
+    public List<Tag> getTags() { return this.tags; }
+    public void setTags(List<Tag> newValue) { this.tags = newValue; }
+    public String getTagsString() { return this.tagsString; }
+    public void setTagsString(String newValue) { this.tagsString = newValue; }
+    
     /**
      * The following properties are UVM properties and are only set if you call MergedSessionMonitorEntrys
      */

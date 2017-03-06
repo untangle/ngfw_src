@@ -1,7 +1,7 @@
 Ext.define('Ung.cmp.RecordEditor', {
     extend: 'Ext.window.Window',
     width: 800,
-    height: 500,
+    height: 400,
 
     xtype: 'ung.cmp.recordeditor',
     /* requires-start */
@@ -16,6 +16,7 @@ Ext.define('Ung.cmp.RecordEditor', {
     closeAction: 'destroy',
 
     viewModel: true,
+
     disabled: true,
     bind: {
         title: '{windowTitle}',

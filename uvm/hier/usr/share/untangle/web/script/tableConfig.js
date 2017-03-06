@@ -196,6 +196,8 @@ Ext.define('Ung.TableConfig', {
                 }, {
                     name: 'username'
                 }, {
+                    name: 'tags'
+                }, {
                     name: 'policy_id'
                 }, {
                     name: 'policy_rule_id'
@@ -462,6 +464,11 @@ Ext.define('Ung.TableConfig', {
                         type: 'numeric'
                     }
                 }, {
+                    header: i18n._("Tags"),
+                    width: 150,
+                    sortable: true,
+                    dataIndex: 'tags'
+                }, {
                     header: i18n._('Filter Prefix'),
                     width: 120,
                     sortable: true,
@@ -686,6 +693,8 @@ Ext.define('Ung.TableConfig', {
                     name: 'hostname'
                 }, {
                     name: 'username'
+                }, {
+                    name: 'tags'
                 }, {
                     name: 'policy_id'
                 }, {
@@ -960,6 +969,11 @@ Ext.define('Ung.TableConfig', {
                     filter: {
                         type: 'numeric'
                     }
+                }, {
+                    header: i18n._("Tags"),
+                    width: 150,
+                    sortable: true,
+                    dataIndex: 'tags'
                 }, {
                     header: i18n._('Filter Prefix'),
                     width: 120,
@@ -2315,6 +2329,9 @@ Ext.define('Ung.TableConfig', {
                 }, {
                     name: 'value',
                     type: 'string'
+                }, {
+                    name: 'old_value',
+                    type: 'string'
                 }],
                 columns: [{
                     header: i18n._("Timestamp"),
@@ -2340,6 +2357,12 @@ Ext.define('Ung.TableConfig', {
                     flex: 1,
                     sortable: true,
                     dataIndex: 'value'
+                }, {
+                    header: i18n._("Old Value"),
+                    width: 150,
+                    flex: 1,
+                    sortable: true,
+                    dataIndex: 'old_value'
                 }]
             },
             device_table_updates: {
@@ -2354,6 +2377,9 @@ Ext.define('Ung.TableConfig', {
                     type: 'string'
                 }, {
                     name: 'value',
+                    type: 'string'
+                }, {
+                    name: 'old_value',
                     type: 'string'
                 }],
                 columns: [{
@@ -2380,6 +2406,61 @@ Ext.define('Ung.TableConfig', {
                     flex: 1,
                     sortable: true,
                     dataIndex: 'value'
+                }, {
+                    header: i18n._("Old Value"),
+                    width: 150,
+                    flex: 1,
+                    sortable: true,
+                    dataIndex: 'old_value'
+                }]
+            },
+            user_table_updates: {
+                fields: [{
+                    name: 'time_stamp',
+                    sortType: 'asTimestamp'
+                }, {
+                    name: 'username',
+                    type: 'string'
+                }, {
+                    name: 'key',
+                    type: 'string'
+                }, {
+                    name: 'value',
+                    type: 'string'
+                }, {
+                    name: 'old_value',
+                    type: 'string'
+                }],
+                columns: [{
+                    header: i18n._("Timestamp"),
+                    width: Ung.TableConfig.timestampFieldWidth,
+                    sortable: true,
+                    dataIndex: 'time_stamp',
+                    renderer: function(value) {
+                        return i18n.timestampFormat(value);
+                    }
+                }, {
+                    header: i18n._("Username"),
+                    width: Ung.TableConfig.usernameFieldWidth,
+                    sortable: true,
+                    dataIndex: 'username'
+                }, {
+                    header: i18n._("Key"),
+                    width: 150,
+                    sortable: true,
+                    dataIndex: 'key'
+                }, {
+                    header: i18n._("Value"),
+                    width: 150,
+                    flex: 1,
+                    sortable: true,
+                    dataIndex: 'value'
+                }, {
+                    header: i18n._("Old Value"),
+                    width: 150,
+                    flex: 1,
+                    sortable: true,
+                    dataIndex: 'old_value'
                 }]
             },
             configuration_backup_events: {
@@ -3504,59 +3585,6 @@ Ext.define('Ung.TableConfig', {
                     width: Ung.TableConfig.ipFieldWidth,
                     sortable: true,
                     dataIndex: 'c_server_addr'
-                }]
-            },
-            penaltybox: {
-                fields: [{
-                    name: 'time_stamp',
-                    sortType: 'asTimestamp'
-                }, {
-                    name: 'address',
-                    sortType: 'asIp'
-                }, {
-                    name: 'reason'
-                }, {
-                    name: 'start_time',
-                    sortType: 'asTimestamp'
-                }, {
-                    name: 'end_time',
-                    sortType: 'asTimestamp'
-                }],
-                columns: [{
-                    header: i18n._("Timestamp"),
-                    width: Ung.TableConfig.timestampFieldWidth,
-                    sortable: true,
-                    dataIndex: 'time_stamp',
-                    renderer: function(value) {
-                        return i18n.timestampFormat(value);
-                    }
-                }, {
-                    header: i18n._("Address"),
-                    width: Ung.TableConfig.ipFieldWidth,
-                    sortable: true,
-                    dataIndex: 'address'
-                }, {
-                    header: i18n._("Reason"),
-                    width: 120,
-                    sortable: true,
-                    flex: 1,
-                    dataIndex: 'reason'
-                }, {
-                    header: i18n._("Start Time"),
-                    width: Ung.TableConfig.timestampFieldWidth,
-                    sortable: true,
-                    dataIndex: 'start_time',
-                    renderer: function(value) {
-                        return i18n.timestampFormat(value);
-                    }
-                }, {
-                    header: i18n._("End Time"),
-                    width: Ung.TableConfig.timestampFieldWidth,
-                    sortable: true,
-                    dataIndex: 'end_time',
-                    renderer: function(value) {
-                        return i18n.timestampFormat(value);
-                    }
                 }]
             },
             quotas: {

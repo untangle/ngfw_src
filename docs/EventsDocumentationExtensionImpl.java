@@ -29,7 +29,6 @@ public class ExtensionImpl implements Runnable
     {
         classDescriptions.put("HostTableEvent","These events are created by the base system and inserted to the [[Database_Schema#host_table_updates|host_table_updates]] table when the host table is modified.");
         classDescriptions.put("DeviceTableEvent","These events are created by the base system and inserted to the [[Database_Schema#device_table_updates|device_table_updates]] table when the device list is modified.");
-        classDescriptions.put("PenaltyBoxEvent","These events are created by the [[Bandwidth Control]] and inserted to the [[Database_Schema#penaltybox|penaltybox]] table.");
         classDescriptions.put("SessionStatsEvent","These events are created by the base system and update the [[Database_Schema#sessions|sessions]] table when a session ends with the updated stats.");
         classDescriptions.put("SessionEvent","These events are created by the base system and update the [[Database_Schema#sessions|sessions]] table each time a session is created.");
         classDescriptions.put("SessionMinuteEvent","These events are created by the base system and update the [[Database_Schema#sessions|session_minutes]] table each minute a session exists.");

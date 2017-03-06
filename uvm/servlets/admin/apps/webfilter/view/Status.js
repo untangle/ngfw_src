@@ -1,6 +1,7 @@
 Ext.define('Ung.apps.webfilter.view.Status', {
     extend: 'Ext.panel.Panel',
-    alias: 'widget.app.webfilter.status',
+    alias: 'widget.app-webfilter-status',
+    itemId: 'status',
     title: 'Status'.t(),
 
     viewModel: true,

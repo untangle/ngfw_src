@@ -13,7 +13,6 @@ from uvm import Manager
 from uvm import Uvm
 import remote_control
 import test_registry
-import system_properties
 import global_functions
 
 defaultRackId = 1
@@ -194,7 +193,7 @@ class OpenVpnTests(unittest2.TestCase):
         result = os.system("wget -o /dev/null -t 1 --timeout=3 http://localhost"+clientLink+" -O /tmp/clientconfig.zip")
         assert (result == 0)
         # copy the config file to the remote PC, unzip the files and move to the openvpn directory on the remote device
-        result = os.system("scp -o 'StrictHostKeyChecking=no' -i " + system_properties.getPrefix() + "/usr/lib/python2.7/tests/testShell.key /tmp/clientconfig.zip testshell@" + global_functions.vpnClientVpnIP + ":/tmp/>/dev/null 2>&1")
+        result = os.system("scp -o 'StrictHostKeyChecking=no' -i " + global_functions.get_prefix() + "/usr/lib/python2.7/tests/testShell.key /tmp/clientconfig.zip testshell@" + global_functions.vpnClientVpnIP + ":/tmp/>/dev/null 2>&1")
         assert (result == 0)
 
         remote_control.runCommand("sudo unzip -o /tmp/clientconfig.zip -d /tmp/", host=global_functions.vpnClientVpnIP)
@@ -259,7 +258,7 @@ class OpenVpnTests(unittest2.TestCase):
         result = os.system("wget -o /dev/null -t 1 --timeout=3 http://localhost"+clientLink+" -O /tmp/clientconfig.zip")
         assert (result == 0)
         # Copy the config file to the remote PC, unzip the files and move to the openvpn directory on the remote device
-        os.system("scp -o 'StrictHostKeyChecking=no' -i " + system_properties.getPrefix() + "/usr/lib/python2.7/tests/testShell.key /tmp/clientconfig.zip testshell@" + global_functions.vpnClientVpnIP + ":/tmp/>/dev/null 2>&1")
+        os.system("scp -o 'StrictHostKeyChecking=no' -i " + global_functions.get_prefix() + "/usr/lib/python2.7/tests/testShell.key /tmp/clientconfig.zip testshell@" + global_functions.vpnClientVpnIP + ":/tmp/>/dev/null 2>&1")
         remote_control.runCommand("sudo unzip -o /tmp/clientconfig.zip -d /tmp/", host=global_functions.vpnClientVpnIP)
         remote_control.runCommand("sudo rm -f /etc/openvpn/*.conf; sudo rm -f /etc/openvpn/*.ovpn; sudo rm -rf /etc/openvpn/keys", host=global_functions.vpnClientVpnIP)
         remote_control.runCommand("sudo mv -f /tmp/untangle-vpn/* /etc/openvpn/", host=global_functions.vpnClientVpnIP)

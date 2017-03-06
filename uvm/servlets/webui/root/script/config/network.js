@@ -4521,10 +4521,10 @@ Ext.define('Webui.config.network', {
                     try {
                         list = eval(result);
                     } catch (e) {
-                        console.error("Could not execute /usr/share/untangle-netd/bin/qos-service.py output: ", result, e);
+                        console.error("Could not execute /usr/share/untangle-netd/bin/qos-status.py output: ", result, e);
                     }
                     handler ({list: list}, exception);
-                }, this), "/usr/share/untangle-netd/bin/qos-service.py status");
+                }, this), "/usr/share/untangle-netd/bin/qos-status.py");
             },
             initialLoad: function() {}, //Don't load automatically
             groupField:'interface_name',

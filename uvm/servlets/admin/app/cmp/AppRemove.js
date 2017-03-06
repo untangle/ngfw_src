@@ -52,6 +52,12 @@ Ext.define('Ung.cmp.AppRemove', {
                             }
 
                             vm.set('instance.targetState', null);
+
+                            // remove card
+                            if (Ung.app.getMainView().down('#configCard')) {
+                                Ung.app.getMainView().remove('configCard');
+                            }
+
                             Ung.app.redirectTo('#apps/1');
 
                             // todo: fire global event

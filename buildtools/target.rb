@@ -326,14 +326,18 @@ class JsBuilder < Target
 
     @relativeDestPath = "#{@@WEB_DEST}/#{@webDestDir}/#{@name}.js"
 
-    @deps = @path.map { |p| FileList["#{p}/**/*.js"] }.flatten()
+    @deps = @path.map do |p|
+      File::directory?(p) ? FileList["#{p}/**/*.js"] : p
+    end
+    @deps.flatten!
+
     @destPath = "#{package.distDirectory}/#{@relativeDestPath}"
 
     super(package, @deps, @targetName)
   end
 
   def all
-    info "[jsbuild ] #{@name}: #{@path}/**/*.js -> #{@destPath}"
+    info "[jsbuild ] #{@name}: #{@path} -> #{@destPath}"
     # read all deps into memory, as an array of content
     data = @deps.map { |d| File.open(d).read() }
 

@@ -227,7 +227,7 @@ public class Conntrack
         String server;
 
         // If its TCP, use the pre nat server side info instead
-        // For TCP sessions its 192.0.2.42 if its being redirected to a local IP for scanning
+        // For TCP sessions its 192.0.2.200 if its being redirected to a local IP for scanning
         if ( getProtocol() == 6 ) 
             server = (getPreNatServer() == null ? "null" : getPreNatServer().getHostAddress()) + ":" + getPreNatServerPort();
         else

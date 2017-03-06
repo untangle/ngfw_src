@@ -28,6 +28,8 @@ public interface NetworkManager
     
     InetAddress getFirstWanAddress();
 
+    InetAddress getFirstNonWanAddress();
+
     InetAddress getInterfaceHttpAddress( int clientIntf );
 
     InterfaceSettings findInterfaceId( int interfaceId );

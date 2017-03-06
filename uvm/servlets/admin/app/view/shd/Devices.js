@@ -43,9 +43,9 @@ Ext.define('Ung.view.shd.Devices', {
             { header: 'MAC Vendor'.t(), dataIndex: 'macVendor' },
             { header: 'Interface'.t(), dataIndex: 'lastSeenInterfaceId' },
             { header: 'Hostname'.t(), dataIndex: 'hostname' },
-            { header: 'Device Username'.t(), dataIndex: 'deviceUsername' },
+            { header: 'Username'.t(), dataIndex: 'username' },
             { header: 'HTTP'.t() + ' - ' + 'User Agent'.t(), dataIndex: 'httpUserAgent' },
-            { header: 'Last Seen Time'.t(), dataIndex: 'lastSeenTimeDate' },
+            { header: 'Last Seen Time'.t(), dataIndex: 'lastSessionTimeDate' },
         ]
     }, {
         region: 'east',
@@ -78,12 +78,12 @@ Ext.define('Ung.view.shd.Devices', {
             hidden: '{!devicesgrid.selection}'
         },
         sourceConfig: {
-            deviceUsername:      { displayName: 'Device Username'.t() },
+            username:            { displayName: 'Username'.t() },
             hostname:            { displayName: 'Hostname'.t() },
             hostnameKnown:       { displayName: 'Hostname Known'.t(), renderer: 'boolRenderer' },
             httpUserAgent:       { displayName: 'HTTP'.t() + ' - ' + 'User Agent'.t() },
             lastSeenInterfaceId: { displayName: 'Interface'.t() },
-            lastSeenTime:        { displayName: 'Last Seen Time'.t(), renderer: 'timestampRenderer' },
+            lastSessionTime:     { displayName: 'Last Seen Time'.t(), renderer: 'timestampRenderer' },
             macAddress:          { displayName: 'MAC Address'.t() },
             macVendor:           { displayName: 'MAC Vendor'.t() }
         },

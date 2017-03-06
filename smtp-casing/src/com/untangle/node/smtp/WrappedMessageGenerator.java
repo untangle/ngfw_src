@@ -12,9 +12,6 @@ import com.untangle.node.smtp.mime.MIMEUtil;
 import com.untangle.uvm.LanguageManager;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.node.Template;
-import com.untangle.uvm.node.TemplateValues;
-import com.untangle.uvm.node.TemplateValuesChain;
 
 /**
  * Class which wraps a MIMEMessage with another, providing templates for the resulting subject and body. <br>

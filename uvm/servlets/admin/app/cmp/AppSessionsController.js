@@ -24,7 +24,7 @@ Ext.define('Ung.cmp.AppSessionsController', {
     onAfterRender: function (view) {
         this.chart = new Highcharts.Chart({
             chart: {
-                type: 'areaspline',
+                type: 'area',
                 //zoomType: 'x',
                 renderTo: view.lookupReference('nodechart').getEl().dom,
                 marginBottom: 20,
@@ -150,9 +150,9 @@ Ext.define('Ung.cmp.AppSessionsController', {
                 }
             },
             plotOptions: {
-                areaspline: {
+                area: {
                     fillOpacity: 0.15,
-                    lineWidth: 1
+                    lineWidth: 2
                 },
                 spline: {
                     lineWidth: 2,
@@ -161,7 +161,7 @@ Ext.define('Ung.cmp.AppSessionsController', {
                 series: {
                     marker: {
                         enabled: true,
-                        radius: 0,
+                        radius: 3,
                         states: {
                             hover: {
                                 enabled: true,
@@ -209,6 +209,9 @@ Ext.define('Ung.cmp.AppSessionsController', {
     },
 
     onAddPoint: function () {
+        if (!this.chart) {
+            return;
+        }
         var vm = this.getViewModel();
         if (vm.get('instance.targetState') !== 'RUNNING' && this.updateMetricsCount > 0) {
             return;
@@ -220,7 +223,7 @@ Ext.define('Ung.cmp.AppSessionsController', {
         })[0].value || 0;
 
         // random for testing
-        newVal = Math.floor(Math.random() * 20) + 1;
+        newVal = Math.floor(Math.random() * 20) + 15;
 
         this.chart.series[0].addPoint({
             x: Date.now(),

@@ -13,7 +13,7 @@ import javax.mail.internet.MimeMessage;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.node.TemplateValues;
+import com.untangle.node.smtp.TemplateValues;
 
 /**
  * Class to encapsulate a SPAM report. <br>

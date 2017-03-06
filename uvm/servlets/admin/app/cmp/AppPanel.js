@@ -5,6 +5,7 @@ Ext.define('Ung.cmp.AppPanel', {
 
     dockedItems: [{
         xtype: 'toolbar',
+        dock: 'top',
         weight: -10,
         border: false,
         items: [{
@@ -15,12 +16,17 @@ Ext.define('Ung.cmp.AppPanel', {
         }, '-', {
             xtype: 'component',
             padding: '0 5',
-            bind: { html: '<img src="/skins/modern-rack/images/admin/apps/{nodeName}_17x17.png" style="vertical-align: middle;" width="17" height="17"/> <strong>{appName}</strong>' }
-        }, '->', {
-            xtype: 'button',
-            text: 'View Reports'.t(),
-            iconCls: 'fa fa-line-chart fa-lg'
-        }],
+            bind: {
+                html: '<img src="/skins/modern-rack/images/admin/apps/{props.name}_17x17.png" style="vertical-align: middle;" width="17" height="17"/> <strong>{props.displayName}</strong>' +
+                    ' <i class="fa fa-circle {!instance.targetState ? "fa-orange" : (instance.targetState === "RUNNING" ? "fa-green" : "fa-red") }"></i>'
+            }
+        }
+        // '->', {
+        //     xtype: 'button',
+        //     text: 'View Reports'.t(),
+        //     iconCls: 'fa fa-line-chart fa-lg'
+        // }
+        ],
     }, {
         xtype: 'toolbar',
         dock: 'bottom',
@@ -29,7 +35,15 @@ Ext.define('Ung.cmp.AppPanel', {
             text: '<strong>' + 'Save'.t() + '</strong>',
             // scale: 'large',
             iconCls: 'fa fa-floppy-o fa-lg',
-            handler: 'saveSettings'
+            handler: 'setSettings'
         }]
-    }]
+    }],
+
+    listeners: {
+        // generic listener for all tabs in Apps, redirection
+        beforetabchange: function (tab, newCard, oldCard) {
+            var vm = this.getViewModel();
+            Ung.app.redirectTo('#apps/' + vm.get('policyId') + '/' + vm.get('urlName') + '/' + newCard.getItemId());
+        }
+    }
 });

@@ -1,5 +1,6 @@
 Ext.define('Ung.apps.wanbalancer.view.RouteRules', {
     extend: 'Ext.panel.Panel',
-    alias: 'widget.app.wanbalancer.routerules',
+    alias: 'widget.app-wanbalancer-routerules',
+    itemId: 'routerules',
     title: 'Route Rules'.t()
 });
