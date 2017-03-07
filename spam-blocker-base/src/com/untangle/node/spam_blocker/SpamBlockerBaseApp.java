@@ -96,7 +96,7 @@ public abstract class SpamBlockerBaseApp extends NodeBase
         
         loadGreyList();
 
-        synchronized( this ) {
+        synchronized( SpamBlockerBaseApp.class ) {
             if ( greyListSaverPulse == null ) {
                 greyListSaverPulse = new Pulse("GreyListSaver", new GreyListSaver(), GREYLIST_SAVE_FREQUENCY);
                 greyListSaverPulse.start();
