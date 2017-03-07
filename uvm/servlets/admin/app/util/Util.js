@@ -4,35 +4,6 @@ Ext.define('Ung.util.Util', {
 
     // node name to class mapping
     appsMapping: {
-        // 'untangle-node-web-filter': 'webfilter',
-        // 'untangle-node-web-monitor': 'webmonitor',
-        // 'untangle-node-web-filter-lite': 'webfilterlite',
-        // 'untangle-node-virus-blocker': 'virusblocker',
-        // 'untangle-node-virus-blocker-lite': 'virusblockerlite',
-        // 'untangle-node-spam-blocker': 'spamblocker',
-        // 'untangle-node-spam-blocker-lite': 'spamblockerlite',
-        // 'untangle-node-phish-blocker': 'phishblocker',
-        // 'untangle-node-web-cache': 'webcache',
-        // 'untangle-node-bandwidth-control': 'bandwidthcontrol',
-        // 'untangle-casing-ssl-inspector': 'sslinspector',
-        // 'untangle-node-application-control': 'applicationcontrol',
-        // 'untangle-node-application-control-lite': 'applicationcontrollite',
-        // 'untangle-node-captive-portal': 'captiveportal',
-        // 'untangle-node-firewall': 'firewall',
-        // 'untangle-node-ad-blocker': 'adblocker',
-
-        // 'untangle-node-reports': 'reports',
-        // 'untangle-node-policy-manager': 'policymanager',
-        // 'untangle-node-directory-connector': 'directoryconnector',
-        // 'untangle-node-wan-failover': 'wanfailover',
-        // 'untangle-node-wan-balancer': 'wanbalancer',
-        // 'untangle-node-ipsec-vpn': 'ipsecvpn',
-        // 'untangle-node-openvpn': 'openvpn',
-        // 'untangle-node-intrusion-prevention': 'intrusionprevention',
-        // 'untangle-node-configuration-backup': 'configurationbackup',
-        // 'untangle-node-branding-manager': 'brandingmanager',
-        // 'untangle-node-live-support': 'livesupport'
-
         webfilter: 'untangle-node-web-filter',
         webmonitor: 'untangle-node-web-monitor',
         webfilterlite: 'untangle-node-web-filter-lite',
@@ -61,8 +32,44 @@ Ext.define('Ung.util.Util', {
         configurationbackup: 'untangle-node-configuration-backup',
         brandingmanager: 'untangle-node-branding-manager',
         livesupport: 'untangle-node-live-support'
+    },
 
+    categoriesMap: {
+        hosts: 'Hosts',
+        devices: 'Devices',
+        network: 'Network',
+        administration: 'Administration',
+        system: 'System',
+        shield: 'Shield',
 
+        webfilter: 'Web Filter',
+        webmonitor: 'Web Monitor',
+        webfilterlite: 'Web Filter Llite',
+        virusblocker: 'Virus Blocker',
+        virusblockerlite: 'Virus Blocker Lite',
+        spamblocker: 'Spam Blocker',
+        spamblockerlite: 'Spam Blocker Lite',
+        phishblocker: 'Phish Blocker',
+        webcache: 'Web Cache',
+        bandwidthcontrol: 'Bandwidth Control',
+        sslinspector: 'Ssl Inspector',
+        applicationcontrol: 'Application Control',
+        applicationcontrollite: 'Application Control Lite',
+        captiveportal: 'Captive Portal',
+        firewall: 'Firewall',
+        adblocker: 'Ad Blocker',
+
+        reports: 'Reports',
+        policymanager: 'Policy Manager',
+        directoryconnector: 'Directory Connector',
+        wanfailover: 'Wan Failover',
+        wanbalancer: 'Wan Balancer',
+        ipsecvpn: 'Ppsec Vpn',
+        openvpn: 'OpenVpn',
+        intrusionprevention: 'Intrusion Prevention',
+        configurationbackup: 'Configuration Backup',
+        brandingmanager: 'Branding Manager',
+        livesupport: 'Live Support'
     },
 
     iconReportTitle: function (report) {

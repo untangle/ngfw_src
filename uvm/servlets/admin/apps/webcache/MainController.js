@@ -56,5 +56,15 @@ Ext.define('Ung.apps.webcache.MainController', {
             if (ex) { Util.exceptionToast(ex); return; }
             me.getViewModel().set('statistics', result);
         });
+    },
+
+    clearCache: function (btn) {
+        var me = this;
+        Ext.MessageBox.wait('Clearing Cache...'.t(), 'Please wait'.t());
+        me.getView().appManager.clearSquidCache(function (result, ex) {
+            Ext.MessageBox.hide();
+            if (ex) { Util.exceptionToast(ex); return; }
+            me.lookupReference('clearCacheConsent').setValue(false);
+        });
     }
 });

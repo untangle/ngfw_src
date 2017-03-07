@@ -71,7 +71,8 @@ Ext.define('Ung.apps.webcache.view.Status', {
                     disabled: true,
                     bind: {
                         disabled: '{!clearCacheConsent.checked}'
-                    }
+                    },
+                    handler: 'clearCache'
                 }]
             }]
         }, {

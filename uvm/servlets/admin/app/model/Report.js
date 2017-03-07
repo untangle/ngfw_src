@@ -38,6 +38,12 @@ Ext.define ('Ung.model.Report', {
             }
         },
         {
+            name: 'url',
+            calculate: function (entry) {
+                return entry.category.replace(/ /g, '').toLowerCase() + '/' + entry.uniqueId;
+            }
+        },
+        {
             name: 'icon',
             calculate: function (entry) {
                 var icon;
