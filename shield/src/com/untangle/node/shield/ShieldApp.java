@@ -172,9 +172,10 @@ public class ShieldApp extends NodeBase
         String settingsFilename = System.getProperty("uvm.settings.dir") + "/" + "untangle-node-shield/" + "settings_"  + nodeID + ".js";
         String scriptFilename = System.getProperty("uvm.bin.dir") + "/shield-sync-settings.py";
         String networkSettingFilename = System.getProperty("uvm.settings.dir") + "/" + "untangle-vm/" + "network.js";
-        String output = UvmContextFactory.context().execManager().execOutput(scriptFilename + " -f " + settingsFilename + " -v -n " + networkSettingFilename);
+        String cmd = scriptFilename + " -f " + settingsFilename + " -v -n " + networkSettingFilename;
         if ( !enabled || this.settings.isShieldEnabled() != true )
-            output += " -d"; // disable
+            cmd += " -d"; // disable
+        String output = UvmContextFactory.context().execManager().execOutput(cmd);
         String lines[] = output.split("\\r?\\n");
         for ( String line : lines )
             logger.info("Sync Settings: " + line);
