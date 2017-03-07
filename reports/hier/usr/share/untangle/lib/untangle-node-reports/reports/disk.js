@@ -10,7 +10,7 @@
     "readOnly": true,
     "table": "server_events",
     "timeDataColumns": [
-        "round(((max(disk_total)-max(disk_free))::float/max(disk_total)::float)::numeric,4)*100 as disk_usage"
+        "round( CAST( (CAST((max(disk_total)-max(disk_free)) as float) / CAST(max(disk_total) as float)) as numeric),4)*100 as disk_usage"
     ],
     "colors": [
         "#396c2b"

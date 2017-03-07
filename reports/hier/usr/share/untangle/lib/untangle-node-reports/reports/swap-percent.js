@@ -10,7 +10,7 @@
     "readOnly": true,
     "table": "server_events",
     "timeDataColumns": [
-        "round(((max(swap_total)-max(swap_free))::float/(max(mem_total)+1)::float)::numeric,4)*100 as swap_usage"
+        "round( CAST( (CAST((max(swap_total)-max(swap_free)) as float) / CAST(max(swap_total) as float)) as numeric),4)*100 as swap_usage"
     ],
     "colors": [
         "#396c2b"
