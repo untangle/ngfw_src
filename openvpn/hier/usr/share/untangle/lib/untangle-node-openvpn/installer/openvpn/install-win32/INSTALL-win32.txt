@@ -1,60 +1,53 @@
-UPGRADING FROM 2.3-ALPHA1 AND EARLIER
-
-OpenVPN Windows installer went through major changes in
-2.3-alpha2. To avoid any unexpected behavior, it is strongly
-suggested to upgrade as follows.
-
-First backup configuration files and certificates from your
-current installation; by default they're in
-
-    C:\Program Files\OpenVPN\config (32-bit Windows)
-    C:\Program Files (x86)\OpenVPN\config (64-bit Windows)
-
-After this, stop the openvpn-gui or the openvpn service
-wrapper, if either of them is running and uninstall OpenVPN.
-Finally, remove the OpenVPN install directory entirely (e.g.
-using Windows Explorer as administrator).
-
-Finally, install the new version of OpenVPN and copy over
-your configuration files and certificates, which now go to
-
-    C:\Program Files\OpenVPN\config
-
-provided you did not install the 32-bit version on 64-bit
-Windows.
-
-IMPORTANT NOTE FOR WINDOWS VISTA/7 USERS
-
-Note that on Windows Vista, you will need to run the OpenVPN
-GUI with administrator privileges, so that it can add routes
-to the routing table that are pulled from the OpenVPN server.
-You can do this by right-clicking on the OpenVPN GUI
-desktop icon, and selecting "Run as administrator".
-
 GENERAL QUICKSTART FOR WINDOWS
 
-The OpenVPN Client requires a configuration file
-and key/certificate files. You should obtain
-these and save them to OpenVPN's configuration
-directory, usually C:\Program Files\OpenVPN\config.
+OpenVPN requires a configuration file and key/certificate files. You should 
+obtain these and save them to OpenVPN's configuration directory, usually 
+C:\Program Files\OpenVPN\config. Starting with OpenVPN 2.4-alpha1 you can also 
+put user-specific configurations to %USERPROFILE%\OpenVPN\config when using 
+OpenVPN GUI.
 
-You can run OpenVPN as a Windows system service or by using
-the client GUI. To use the OpenVPN GUI, double click on the
-desktop icon or start menu icon. The OpenVPN GUI is a
-system-tray applet, so an icon for the GUI will appear in
-the lower-right corner of the screen. Right click on the
-system tray icon, and a menu should appear showing the names
-of your OpenVPN configuration files, and giving you the
-option to connect.
+You can run OpenVPN as a Windows system service, by using OpenVPN GUI or from a 
+command-prompt. To use the OpenVPN GUI, double click on the desktop icon or 
+start menu icon. OpenVPN GUI is a system-tray applet, so an icon for the GUI 
+will appear in the lower-right corner of the screen. Right click on the system 
+tray icon, and a menu should appear showing the names of your OpenVPN 
+configuration files, and giving you the option to connect. Starting in OpenVPN 
+2.4-alpha1 admin privileges are no longer required for launching OpenVPN 
+connections using configuration files stored in the global config directory 
+(usually C:\Program Files\OpenVPN\config). Users who belong to the built-in 
+administrator group, or to the local "OpenVPN Administrator" group can also 
+store configuration files under %USERPROFILE%\OpenVPN\config. In both of these 
+cases OpenVPN Interactive Service needs to be running: if it is not, 
+administrator privileges are still required to successfully start OpenVPN 
+connections. For further details please refer to OpenVPN GUI documentation:
+
+    https://github.com/OpenVPN/openvpn-gui
+
+OpenVPN 2.4-alpha1 and later come bundled with three system services:
+
+    OpenVPNService (new, improved background service)
+    OpenVPNServiceInteractive (required to run GUI as non-admin)
+    OpenVPNServiceLegacy (deprecated background service)
+
+The installer starts OpenVPNServiceInteractive automatically and configures it 
+to start at system startup. This is done to allow unprivileged users to start 
+OpenVPN connections using OpenVPN GUI without any extra configuration.
+
+OpenVPNService is based on openvpnserv2, a complete rewrite of the OpenVPN 
+service wrapper. It is intended for launching OpenVPN instances that should be 
+up at all times, instead of being manually launched by a user. OpenVPNService is 
+able to restart individual OpenVPN processes if they crash, and it also works 
+properly on recent Windows versions. OpenVPNServiceLegacy tends to work poorly, 
+if at all, on newer Windows versions (8+) and its use is not recommended.
 
 BUILDING OPENVPN FOR WINDOWS
 
-Official OpenVPN Windows releases are cross-compiled on Linux using the
+Official OpenVPN Windows releases are cross-compiled on Linux using the 
 openvpn-build buildsystem:
 
     https://community.openvpn.net/openvpn/wiki/BuildingUsingGenericBuildsystem
 
-First setup the build environment as shown in the above article. Then fetch the
+First setup the build environment as shown in the above article. Then fetch the 
 openvpn-build repository:
 
     git clone https://github.com/OpenVPN/openvpn-build.git
