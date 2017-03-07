@@ -1,6 +1,6 @@
-Ext.define('Ung.apps.adblocker.MainController', {
+Ext.define('Ung.apps.firewall.MainController', {
     extend: 'Ext.app.ViewController',
-    alias: 'controller.app-adblocker',
+    alias: 'controller.app-firewall',
 
     control: {
         '#': {
@@ -46,4 +46,5 @@ Ext.define('Ung.apps.adblocker.MainController', {
             me.getSettings();
         }, vm.get('settings'));
     }
+
 });

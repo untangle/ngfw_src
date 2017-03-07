@@ -32,9 +32,9 @@ Ext.define('Ung.cmp.AppReports', {
         bind: '{appReports}',
         cls: 'app-reports',
         tpl: '<tpl for=".">' +
-                '<p><i class="fa {icon}"></i> <a href="#reports/{uniqueId}">{localizedTitle}</a></p>' +
+                '<a href="#reports/{url}"><i class="fa {icon}"></i> {localizedTitle}</a>' +
             '</tpl>',
-        itemSelector: 'p'
+        itemSelector: 'a'
     }]
 
 });

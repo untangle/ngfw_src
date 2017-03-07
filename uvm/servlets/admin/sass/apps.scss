@@ -388,21 +388,28 @@
 
 
 .app-reports {
-    -moz-column-width: 200px;
-    -webkit-column-width: 200px;
-    column-width: 200px;
-    p {
-        margin: 3px;
-    }
+    -moz-columns: 200px;
+    -webkit-columns: 200px;
+    columns: 200px;
+    column-fill: auto;
+    -moz-column-fill: auto;
+    -webkit-column-fill: auto;
     a {
         font-family: $custom-font;
         font-size: 12px;
         font-weight: 600;
         color: #555;
         text-decoration: none;
+        border-radius: 3px;
+        padding: 0 5px;
+        margin: 1px;
+        line-height: 1.5;
+        display: block;
+        transition: background .3s cubic-bezier(0.23, 1, 0.32, 1);
         &:hover {
             color: #000;
-            text-decoration: underline;
+            background: #EEE;
+            box-shadow: 0 0 2px #999;
         }
     }
 }
