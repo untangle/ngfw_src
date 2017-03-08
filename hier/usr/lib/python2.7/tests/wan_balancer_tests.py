@@ -201,7 +201,7 @@ class WanBalancerTests(unittest2.TestCase):
         nodeWanFailover.start()
         nodeWanFailoverData = nodeWanFailover.getSettings()
 
-        indexOfWans = global_functions.foundWans()
+        indexOfWans = global_functions.get_wan_tuples()
         orig_netsettings = uvmContext.networkManager().getNetworkSettings()
         ip_address_testdestination =  socket.gethostbyname("test.untangle.com")
 
@@ -210,14 +210,14 @@ class WanBalancerTests(unittest2.TestCase):
 
     # verify client is online
     def test_010_clientIsOnline(self):
-        result = remote_control.isOnline()
+        result = remote_control.is_online()
         assert (result == 0)
     
     def test_020_stickySession(self):
-        result = global_functions.getIpAddress()
+        result = global_functions.get_public_ip_address()
         print "Initial IP address %s" % result
         for x in range(0, 8):
-            result2 = global_functions.getIpAddress()
+            result2 = global_functions.get_public_ip_address()
             print "Test IP address %s" % result2
             assert (result == result2)
     
@@ -233,7 +233,7 @@ class WanBalancerTests(unittest2.TestCase):
             weightedIP = wanIndexTup[2]
             # Test that only the weighted interface is used 10 times
             for x in range(0, 9):
-                result = global_functions.getIpAddress()
+                result = global_functions.get_public_ip_address()
                 print "Weighted IP %s and retrieved IP %s" % (weightedIP, result)
                 assert (result == weightedIP)
             # reset weight to zero
@@ -249,7 +249,7 @@ class WanBalancerTests(unittest2.TestCase):
 
         # Test balanced
         # send netcat UDP to random IPs
-        result = remote_control.runCommand("for i in \`seq 100\` ; do echo \"test\" | netcat -u -w1 -q1 1.2.3.\$i 7 >/dev/null ; done",stdout=False)
+        result = remote_control.run_command("for i in \`seq 100\` ; do echo \"test\" | netcat -u -w1 -q1 1.2.3.\$i 7 >/dev/null ; done",stdout=False)
 
         events = global_functions.get_events('Network','All Sessions',None,20)
         assert(events != None)
@@ -274,7 +274,7 @@ class WanBalancerTests(unittest2.TestCase):
             buildSingleWanRouteRule("DST_ADDR",ip_address_testdestination,wanIndex)
             # Test that only the routed interface is used 10 times
             for x in range(0, 9):
-                result = global_functions.getIpAddress()
+                result = global_functions.get_public_ip_address()
                 print "Routed IP %s and retrieved IP %s" % (routedIP, result)
                 assert (result == routedIP)
         nukeWanBalancerRouteRules()
@@ -296,8 +296,8 @@ class WanBalancerTests(unittest2.TestCase):
         buildSingleWanRouteRule("DST_PORT",443,(port443Index))
 
         for x in range(0, 9):
-            result80 = global_functions.getIpAddress()
-            result443 = global_functions.getIpAddress(base_URL="https://test.untangle.com",extra_options="--no-check-certificate --secure-protocol=auto")
+            result80 = global_functions.get_public_ip_address()
+            result443 = global_functions.get_public_ip_address(base_URL="https://test.untangle.com",extra_options="--no-check-certificate --secure-protocol=auto")
             print "80 IP %s and 443 IP %s" % (result80, result443)
             assert (result80 == port80IP)
             assert (result443 == port443IP)
@@ -325,7 +325,7 @@ class WanBalancerTests(unittest2.TestCase):
             buildSingleWanRouteRule("DST_ADDR",ip_address_testdestination,routedIndexTup[0])
 
             for x in range(0, 9):
-                result = global_functions.getIpAddress()
+                result = global_functions.get_public_ip_address()
                 print "Routed IP %s and retrieved IP %s" % (routedIP, result)
                 assert (result == routedIP)
                 subprocess.check_output("ip route flush cache", shell=True)
@@ -345,11 +345,11 @@ class WanBalancerTests(unittest2.TestCase):
         routedIP = routedIndexTup[2]
         routedIPGateway = routedIndexTup[3]
         appendRouteRule(createRouteRule(ip_address_testdestination,32,routedIPGateway))
-        result1 = global_functions.getIpAddress()
+        result1 = global_functions.get_public_ip_address()
         print "Routed IP %s and retrieved IP %s" % (routedIP, result1)
         # Add WAN route IP to Balancer
         buildSingleWanRouteRule("DST_ADDR",ip_address_testdestination,weightedIndexTup[0])
-        result2 = global_functions.getIpAddress(extra_options="--no-check-certificate --secure-protocol=auto")
+        result2 = global_functions.get_public_ip_address(extra_options="--no-check-certificate --secure-protocol=auto")
         print "Routed IP %s and retrieved IP %s" % (routedIP, result2)
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
@@ -366,7 +366,7 @@ class WanBalancerTests(unittest2.TestCase):
         # create valid failover tests
         for wanIndexTup in indexOfWans:
             buildWanTestRule(wanIndexTup[0])
-        result = remote_control.isOnline()
+        result = remote_control.is_online()
         assert (result == 0)
         for wanIndexTup in indexOfWans:
             wanIndex = wanIndexTup[0]
@@ -390,7 +390,7 @@ class WanBalancerTests(unittest2.TestCase):
             time.sleep(10) # Let WAN balancer see that the heavy interface is down
             # Test that other interfaces are used 10 times
             for x in range(0, 9):
-                result = global_functions.getIpAddress()
+                result = global_functions.get_public_ip_address()
                 print "Weighted IP %s and retrieved IP %s" % (weightedIP, result)
                 assert (result != weightedIP)
             # reset weight to zero and interface to valid rule
@@ -422,7 +422,7 @@ class WanBalancerTests(unittest2.TestCase):
             # Test that only the routed interface is used 5 times2
             subprocess.check_output("ip route flush cache", shell=True)
             for x in range(0, 5):
-                result = remote_control.runCommand("wget --timeout=4 -q -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py",stdout=True)
+                result = remote_control.run_command("wget --timeout=4 -q -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py",stdout=True)
                 print "WAN Balancer Routed IP %s and retrieved IP %s" % (routedIP, result)
                 assert (result == routedIP)
             # now down the selected wan and see if traffic flows out the other wan
@@ -440,7 +440,7 @@ class WanBalancerTests(unittest2.TestCase):
             time.sleep(10) # Let WAN balancer see that the interface is down
             subprocess.check_output("ip route flush cache", shell=True)
             for x in range(0, 5):
-                result = global_functions.getIpAddress()
+                result = global_functions.get_public_ip_address()
                 print "WAN Down WAN Balancer Routed IP %s and retrieved IP %s" % (routedIP, result)
                 assert (result != routedIP)
 
@@ -470,7 +470,7 @@ class WanBalancerTests(unittest2.TestCase):
             # Test that only the routed interface is used 5 times
             subprocess.check_output("ip route flush cache", shell=True)
             for x in range(0, 5):
-                result = remote_control.runCommand("wget --timeout=4 -q -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py",stdout=True)
+                result = remote_control.run_command("wget --timeout=4 -q -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py",stdout=True)
                 print "Network Routed IP %s and retrieved IP %s" % (routedIP, result)
                 assert (result == routedIP)
             # now down the selected wan and see if traffic flows out the other wan
@@ -488,7 +488,7 @@ class WanBalancerTests(unittest2.TestCase):
             time.sleep(10) # Let WAN balancer see that the interface is down
             subprocess.check_output("ip route flush cache", shell=True)
             for x in range(0, 5):
-                result = global_functions.getIpAddress()
+                result = global_functions.get_public_ip_address()
                 print "WAN Down Network Routed IP %s and retrieved IP %s" % (routedIP, result)
                 assert (result == routedIP)
 
@@ -503,7 +503,7 @@ class WanBalancerTests(unittest2.TestCase):
         if (len(indexOfWans) < 2):
             raise unittest2.SkipTest("Need at least two WANS for combination of wan-balancer and wan failover tests")
 
-        pre_count = global_functions.getStatusValue(nodeWanFailover,"changed")
+        pre_count = global_functions.get_app_metric_value(nodeWanFailover,"changed")
         
         # raise unittest2.SkipTest('Skipping test_120_natOneToOneWanDown as not possible with current network layout ')
         netsettings = uvmContext.networkManager().getNetworkSettings()
@@ -528,7 +528,7 @@ class WanBalancerTests(unittest2.TestCase):
             # Test that only the routed interface is used 5 times
             subprocess.check_output("ip route flush cache", shell=True)
             for x in range(0, 5):
-                result = global_functions.getIpAddress()
+                result = global_functions.get_public_ip_address()
                 print "NAT 1:1 IP %s External IP %s and retrieved IP %s" % (wanIP, wanExternalIP, result)
                 assert (result == wanExternalIP)
             # now down the selected wan and see if traffic flows out the other wan
@@ -546,14 +546,14 @@ class WanBalancerTests(unittest2.TestCase):
             time.sleep(10) # Let WAN balancer see that the interface is down
             subprocess.check_output("ip route flush cache", shell=True)
             for x in range(0, 5):
-                result = global_functions.getIpAddress()
+                result = global_functions.get_public_ip_address()
                 print "WAN Down NAT 1:1 IP %s  External IP %s and retrieved IP %s" % (wanIP, wanExternalIP, result)
                 assert (result == wanExternalIP)
             uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
         nukeFailoverRules()
         # Check to see if the faceplate counters have incremented. 
-        post_count = global_functions.getStatusValue(nodeWanFailover,"changed")
+        post_count = global_functions.get_app_metric_value(nodeWanFailover,"changed")
         assert(pre_count < post_count)
                
     @staticmethod
