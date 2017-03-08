@@ -121,14 +121,14 @@ class WanFailoverTests(unittest2.TestCase):
         node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
         node.start()
         nodeData = node.getSettings()
-        indexOfWans = global_functions.foundWans()
+        indexOfWans = global_functions.get_wan_tuples()
 
     def setUp(self):
         pass
 
     # verify client is online
     def test_010_clientIsOnline(self):
-        result = remote_control.isOnline()
+        result = remote_control.is_online()
         assert (result == 0)
     
     def test_020_addPingTestForWans(self):
@@ -136,7 +136,7 @@ class WanFailoverTests(unittest2.TestCase):
         for wanIndexTup in indexOfWans:
             wanIndex = wanIndexTup[0]
             buildWanTestRule(wanIndex)
-        result = remote_control.isOnline()
+        result = remote_control.is_online()
         assert (result == 0)
         
     def test_025_addPingFailTestForWans(self):
@@ -154,7 +154,7 @@ class WanFailoverTests(unittest2.TestCase):
         offlineCount = offlineWanCount()
         assert (offlineCount > 0)                        
 
-        result = remote_control.isOnline()
+        result = remote_control.is_online()
         assert (result == 0)
 
         events = global_functions.get_events('WAN Failover','Outage Events',None,1)
@@ -174,7 +174,7 @@ class WanFailoverTests(unittest2.TestCase):
         waitForChangeInStatus()
 
         assert ( allWansOnline() )
-        result = remote_control.isOnline()
+        result = remote_control.is_online()
         assert (result == 0)
 
     def test_035_addArpFailTestForWans(self):
@@ -200,7 +200,7 @@ class WanFailoverTests(unittest2.TestCase):
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
         assert (wansOffline)                        
-        result = remote_control.isOnline()
+        result = remote_control.is_online()
         assert (result == 0)
 
     def test_040_addDNSTestForWans(self):
@@ -214,7 +214,7 @@ class WanFailoverTests(unittest2.TestCase):
         waitForChangeInStatus()
 
         assert( allWansOnline() )
-        result = remote_control.isOnline()
+        result = remote_control.is_online()
         assert (result == 0)        
 
     def test_045_addDNSFailTestForWans(self):
@@ -257,7 +257,7 @@ class WanFailoverTests(unittest2.TestCase):
         wansOnline = allWansOnline()
 
         assert (wansOnline)                        
-        result = remote_control.isOnline()
+        result = remote_control.is_online()
         assert (result == 0)        
 
     def test_055_addHTTPFailTestForWans(self):
@@ -274,7 +274,7 @@ class WanFailoverTests(unittest2.TestCase):
 
         wansOffline = allWansOffline()
         assert (wansOffline)                        
-        result = remote_control.isOnline()
+        result = remote_control.is_online()
         assert (result == 0)        
 
     def test_060_downJustOneWan(self):
@@ -304,7 +304,7 @@ class WanFailoverTests(unittest2.TestCase):
             if (len(indexOfWans) > 1):
                 # Skip the WAN IP address check part of the test if test box only has one WAN
                 for x in range(0, 8):
-                    result = global_functions.getIpAddress()
+                    result = global_functions.get_public_ip_address()
                     print "IP address %s and invalidWanIP %s" % (result,invalidWanIP)
                     assert (result != invalidWanIP)    
 
@@ -313,7 +313,7 @@ class WanFailoverTests(unittest2.TestCase):
             raise unittest2.SkipTest('Skipping a time consuming test')
         if (len(indexOfWans) < 2):
             raise unittest2.SkipTest("Need at least two WANS for test_065_downAllButOneWan")
-        pre_count = global_functions.getStatusValue(node,"changed")
+        pre_count = global_functions.get_app_metric_value(node,"changed")
 
         validWanIP = None
         # loop through the WANs keeping one up and the rest down.
@@ -339,12 +339,12 @@ class WanFailoverTests(unittest2.TestCase):
             assert( offlineWans > 0 )
 
             for x in range(0, 8):
-                result = global_functions.getIpAddress()
+                result = global_functions.get_public_ip_address()
                 print "IP address %s and validWanIP %s" % (result,validWanIP)
                 assert (result == validWanIP)    
 
         # Check to see if the faceplate counters have incremented. 
-        post_count = global_functions.getStatusValue(node,"changed")
+        post_count = global_functions.get_app_metric_value(node,"changed")
         assert(pre_count < post_count)
 
     @staticmethod
