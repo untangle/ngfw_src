@@ -20,8 +20,6 @@ Ext.define('Ung.apps.applicationcontrollite.view.Status', {
             xtype: 'appstate',
         }, {
             xtype: 'appreports'
-        }, {
-            xtype: 'appremove'
         }]
     }, {
         region: 'west',
@@ -39,6 +37,10 @@ Ext.define('Ung.apps.applicationcontrollite.view.Status', {
             xtype: 'appmetrics',
             region: 'center',
             height: '40%'
+        }],
+        bbar: [{
+            xtype: 'appremove',
+            width: '100%'
         }]
     }]
 

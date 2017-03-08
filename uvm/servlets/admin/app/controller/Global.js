@@ -125,6 +125,7 @@ Ext.define('Ung.controller.Global', {
                     return prop.name.replace('untangle-node-', '').replace('untangle-casing-', '') === app;
                 });
 
+                console.log(appProps);
                 // var appClass = Ext.ClassManager.getByAlias('widget.app-' + app);
                 me.getMainView().setLoading(true);
                 Ext.Loader.loadScript({

@@ -145,19 +145,21 @@ Ext.define('Ung.apps.openvpn.view.Status', {
 
         }, {
             xtype: 'appreports'
-        }, {
-            xtype: 'appremove'
         }]
     }, {
         region: 'west',
-        xtype: 'appmetrics',
         border: false,
         width: 350,
         minWidth: 300,
         split: true,
-        collapsible: true,
-        titleCollapse: true,
-        animCollapse: false
+        layout: 'fit',
+        items: [{
+            xtype: 'appmetrics',
+        }],
+        bbar: [{
+            xtype: 'appremove',
+            width: '100%'
+        }]
     }]
 
 });

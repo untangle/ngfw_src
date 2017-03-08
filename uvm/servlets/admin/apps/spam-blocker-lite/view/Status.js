@@ -1,6 +1,6 @@
-Ext.define('Ung.apps.spamblocker.view.Status', {
+Ext.define('Ung.apps.spamblockerlite.view.Status', {
     extend: 'Ext.panel.Panel',
-    alias: 'widget.app-spam-blocker-status',
+    alias: 'widget.app-spam-blocker-lite-status',
     itemId: 'status',
     title: 'Status'.t(),
 
@@ -15,8 +15,8 @@ Ext.define('Ung.apps.spamblocker.view.Status', {
         items: [{
             xtype: 'component',
             cls: 'app-desc',
-            html: '<img src="/skins/modern-rack/images/admin/apps/untangle-node-spam-blocker_80x80.png" width="80" height="80"/>' +
-                '<h3>Spam Blocker</h3>' +
+            html: '<img src="/skins/modern-rack/images/admin/apps/untangle-node-spam-blocker-lite_80x80.png" width="80" height="80"/>' +
+                '<h3>Spam Blocker Lite</h3>' +
                 '<p>' + 'Spam Blocker detects, blocks, and quarantines spam before it reaches users\' mailboxes.'.t() + '</p>'
         }, {
             xtype: 'appstate',

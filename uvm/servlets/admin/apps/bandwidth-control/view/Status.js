@@ -68,8 +68,6 @@ Ext.define('Ung.apps.bandwidthcontrol.view.Status', {
             bind: {
                 hidden: '{!isConfigured}'
             },
-        }, {
-            xtype: 'appremove'
         }]
     }, {
         region: 'west',
@@ -78,9 +76,6 @@ Ext.define('Ung.apps.bandwidthcontrol.view.Status', {
         minWidth: 300,
         split: true,
         layout: 'border',
-        // layout: {
-        //     type: 'hbox'
-        // },
         items: [{
             xtype: 'appsessions',
             region: 'north',
@@ -88,10 +83,11 @@ Ext.define('Ung.apps.bandwidthcontrol.view.Status', {
             split: true,
         }, {
             xtype: 'appmetrics',
-            region: 'center',
-            sourceConfig: {
-                // attachments:       { displayName: 'Attachments'.t() }
-            },
+            region: 'center'
+        }],
+        bbar: [{
+            xtype: 'appremove',
+            width: '100%'
         }]
     }]
 });

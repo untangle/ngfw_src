@@ -86,8 +86,6 @@ Ext.define('Ung.apps.captiveportal.view.Status', {
             }]
         }, {
             xtype: 'appreports'
-        }, {
-            xtype: 'appremove'
         }]
     }, {
         region: 'west',
@@ -107,6 +105,10 @@ Ext.define('Ung.apps.captiveportal.view.Status', {
         }, {
             xtype: 'appmetrics',
             region: 'center'
+        }],
+        bbar: [{
+            xtype: 'appremove',
+            width: '100%'
         }]
     }]
 });
