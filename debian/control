@@ -36,6 +36,16 @@ Depends: untangle-vm
 Description: Shield
  The Shield application.
 
+Package: untangle-node-branding-manager
+Architecture: all
+Section: non-free
+Depends: untangle-vm, untangle-node-license, netpbm
+Conflicts: untangle-node-branding
+Replaces: untangle-node-branding
+Provides: untangle-node-branding
+Description: The Untangle Branding Manager
+ The Untangle Branding Manager application.
+
 Package: untangle-node-bandwidth-control
 Architecture: all
 Section: non-free

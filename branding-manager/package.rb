@@ -1,5 +1,5 @@
 # -*-ruby-*-
 
-NodeBuilder.makeNode(HadesBuildEnv, 'untangle-node-branding-manager', 'branding-manager', [])
+NodeBuilder.makeNode(BuildEnv::SRC, 'untangle-node-branding-manager', 'branding-manager', [])
 
 
