@@ -115,13 +115,13 @@ JsBuilder.new(uvm_lib, "ung-all", ungAllDirs, "admin/script")
   JsBuilder.new(uvm_lib, n, "uvm/servlets/admin/config/#{n}", "admin/script/config")
 end
 
-['adblocker', 'applicationcontrol', 'bandwidthcontrol',
- 'brandingmanager', 'captiveportal', 'configurationbackup',
- 'directoryconnector', 'firewall', 'intrusionprevention',
- 'ipsecvpn', 'livesupport', 'openvpn', 'phishblocker',
- 'policymanager', 'reports', 'spamblocker', 'sslinspector',
- 'virusblocker', 'wanbalancer', 'wanfailover', 'webcache',
- 'webfilter'].each do |n|
+['ad-blocker', 'application-control', 'bandwidth-control',
+ 'branding-manager', 'captive-portal', 'configuration-backup',
+ 'directory-connector', 'firewall', 'intrusion-prevention',
+ 'ipsec-vpn', 'live-support', 'openvpn', 'phish-blocker',
+ 'policy-manager', 'reports', 'spam-blocker', 'ssl-inspector',
+ 'virus-blocker', 'wan-balancer', 'wan-failover', 'web-cache',
+ 'web-filter'].each do |n|
   JsBuilder.new(uvm_lib, n, "uvm/servlets/admin/apps/#{n}", "admin/script/apps")
 end
 
