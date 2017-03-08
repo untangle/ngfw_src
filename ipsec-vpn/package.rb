@@ -1,4 +1,4 @@
 # -*-ruby-*-
 
-NodeBuilder.makeNode(HadesBuildEnv, 'untangle-node-ipsec-vpn', 'ipsec-vpn', [])
+NodeBuilder.makeNode(BuildEnv::SRC, 'untangle-node-ipsec-vpn', 'ipsec-vpn', [])
 
