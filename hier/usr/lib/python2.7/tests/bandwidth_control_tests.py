@@ -221,7 +221,7 @@ class BandwidthControlTests(unittest2.TestCase):
         uvmContext.networkManager().setNetworkSettings( netsettings )
 
         # measure speed
-        preDownSpeedKbsec = global_functions.getDownloadSpeed()
+        preDownSpeedKbsec = global_functions.get_download_speed()
 
         # calculate QoS limits
         wanLimitKbit = int((preDownSpeedKbsec*8) * .9)
@@ -253,7 +253,7 @@ class BandwidthControlTests(unittest2.TestCase):
 
     # verify client is online
     def test_010_clientIsOnline(self):
-        result = remote_control.isOnline()
+        result = remote_control.is_online()
         assert (result == 0)
 
     def test_011_qosLimit(self):
@@ -261,7 +261,7 @@ class BandwidthControlTests(unittest2.TestCase):
 
         print "\nSetting WAN limit: %i Kbps" % (wanLimitKbit)
 
-        postDownSpeedKbsec = global_functions.getDownloadSpeed()
+        postDownSpeedKbsec = global_functions.get_download_speed()
 
         # since the limit is 90% of first measure, check that second measure is less than first measure
         assert (preDownSpeedKbsec >  postDownSpeedKbsec)
@@ -271,7 +271,7 @@ class BandwidthControlTests(unittest2.TestCase):
         nukeRules()
         priority_level = 7
         # Record average speed without bandwidth control configured
-        wget_speed_pre = global_functions.getDownloadSpeed()
+        wget_speed_pre = global_functions.get_download_speed()
 
         # Create SRC_ADDR based custom Q0S rule to limit bypass QoS
         netsettings = copy.deepcopy( origNetworkSettingsWithQoS )
@@ -280,7 +280,7 @@ class BandwidthControlTests(unittest2.TestCase):
         uvmContext.networkManager().setNetworkSettings( netsettings )
         
         # Download file and record the average speed in which the file was download
-        wget_speed_post = global_functions.getDownloadSpeed()
+        wget_speed_post = global_functions.get_download_speed()
 
         # Restore original network settings
         uvmContext.networkManager().setNetworkSettings( origNetworkSettingsWithQoS )
@@ -297,7 +297,7 @@ class BandwidthControlTests(unittest2.TestCase):
             raise unittest2.SkipTest('Skipping a time consuming test')
         # We will use iperf server and iperf for this test.
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
-        iperfAvailable = global_functions.verifyIperf(wan_IP)
+        iperfAvailable = global_functions.verify_iperf_configuration(wan_IP)
         if (not iperfAvailable):
             raise unittest2.SkipTest("Iperf server and/or iperf not available")
 
@@ -306,13 +306,13 @@ class BandwidthControlTests(unittest2.TestCase):
         netsettings['qosSettings']['qosRules']["list"].append( createQoSCustomRule("DST_PORT","5000", 1) )
         uvmContext.networkManager().setNetworkSettings( netsettings )
 
-        pre_UDP_speed = global_functions.getUDPSpeed( receiverIP=global_functions.iperfServer, senderIP=remote_control.clientIP, targetRate=targetSpeedMbit )
+        pre_UDP_speed = global_functions.get_udp_download_speed( receiverIP=global_functions.iperfServer, senderIP=remote_control.clientIP, targetRate=targetSpeedMbit )
 
         netsettings['qosSettings']['qosRules']['list'] = []
         netsettings['qosSettings']['qosRules']["list"].append( createQoSCustomRule("DST_PORT","5000", 7) )
         uvmContext.networkManager().setNetworkSettings( netsettings )
 
-        post_UDP_speed = global_functions.getUDPSpeed( receiverIP=global_functions.iperfServer, senderIP=remote_control.clientIP, targetRate=targetSpeedMbit )
+        post_UDP_speed = global_functions.get_udp_download_speed( receiverIP=global_functions.iperfServer, senderIP=remote_control.clientIP, targetRate=targetSpeedMbit )
         
         # Restore original network settings
 
@@ -327,7 +327,7 @@ class BandwidthControlTests(unittest2.TestCase):
         priority_level = 7
 
         # Record average speed without bandwidth control configured
-        wget_speed_pre = global_functions.getDownloadSpeed()
+        wget_speed_pre = global_functions.get_download_speed()
 
         # Create SRC_ADDR based custom Q0S rule to limit bypass QoS
         netsettings = copy.deepcopy( origNetworkSettingsWithQoS )
@@ -335,7 +335,7 @@ class BandwidthControlTests(unittest2.TestCase):
         uvmContext.networkManager().setNetworkSettings( netsettings )
         
         # Download file and record the average speed in which the file was download
-        wget_speed_post = global_functions.getDownloadSpeed()
+        wget_speed_post = global_functions.get_download_speed()
 
         # Restore original network settings
         uvmContext.networkManager().setNetworkSettings( origNetworkSettingsWithQoS )
@@ -351,13 +351,13 @@ class BandwidthControlTests(unittest2.TestCase):
         nukeRules()
         priority_level = 7
         # Record average speed without bandwidth control configured
-        wget_speed_pre = global_functions.getDownloadSpeed()
+        wget_speed_pre = global_functions.get_download_speed()
 
         # Create SRC_ADDR based rule to limit bandwidth
         appendRule(createBandwidthSingleConditionRule("SRC_ADDR",remote_control.clientIP,"SET_PRIORITY",priority_level))
 
         # Download file and record the average speed in which the file was download
-        wget_speed_post = global_functions.getDownloadSpeed()
+        wget_speed_post = global_functions.get_download_speed()
 
         printResults( wget_speed_pre, wget_speed_post, wget_speed_pre*0.1, wget_speed_pre*limitedAcceptanceRatio )
 
@@ -380,13 +380,13 @@ class BandwidthControlTests(unittest2.TestCase):
         test_untangle_IP = socket.gethostbyname("test.untangle.com")
         
         # Record average speed without bandwidth control configured
-        wget_speed_pre = global_functions.getDownloadSpeed()
+        wget_speed_pre = global_functions.get_download_speed()
         
         # Create DST_ADDR based rule to limit bandwidth
         appendRule(createBandwidthSingleConditionRule("DST_ADDR",test_untangle_IP,"SET_PRIORITY",priority_level))
 
         # Download file and record the average speed in which the file was download
-        wget_speed_post = global_functions.getDownloadSpeed()
+        wget_speed_post = global_functions.get_download_speed()
 
         printResults( wget_speed_pre, wget_speed_post, wget_speed_pre*0.1, wget_speed_pre*limitedAcceptanceRatio )
 
@@ -406,13 +406,13 @@ class BandwidthControlTests(unittest2.TestCase):
         priority_level = 7
 
         # Record average speed without bandwidth control configured
-        wget_speed_pre = global_functions.getDownloadSpeed()
+        wget_speed_pre = global_functions.get_download_speed()
         
         # Create DST_PORT based rule to limit bandwidth
         appendRule(createBandwidthSingleConditionRule("DST_PORT","80","SET_PRIORITY",priority_level))
 
         # Download file and record the average speed in which the file was download
-        wget_speed_post = global_functions.getDownloadSpeed()
+        wget_speed_post = global_functions.get_download_speed()
         
         printResults( wget_speed_pre, wget_speed_post, wget_speed_pre*0.1, wget_speed_pre*limitedAcceptanceRatio )
 
@@ -436,7 +436,7 @@ class BandwidthControlTests(unittest2.TestCase):
             raise unittest2.SkipTest('Skipping a time consuming test')
         # We will use iperf server and iperf for this test.
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
-        iperfAvailable = global_functions.verifyIperf(wan_IP)
+        iperfAvailable = global_functions.verify_iperf_configuration(wan_IP)
         if (not iperfAvailable):
             raise unittest2.SkipTest("Iperf server and/or iperf not available, skipping alternate port forwarding test")
         # Enabled QoS
@@ -445,13 +445,13 @@ class BandwidthControlTests(unittest2.TestCase):
 
         appendRule(createBandwidthSingleConditionRule("DST_PORT","5000","SET_PRIORITY",1))
             
-        pre_UDP_speed = global_functions.getUDPSpeed( receiverIP=global_functions.iperfServer, senderIP=remote_control.clientIP, targetRate=targetSpeedMbit )
+        pre_UDP_speed = global_functions.get_udp_download_speed( receiverIP=global_functions.iperfServer, senderIP=remote_control.clientIP, targetRate=targetSpeedMbit )
 
         # Create DST_PORT based rule to limit bandwidth
         nukeRules()
         appendRule(createBandwidthSingleConditionRule("DST_PORT","5000","SET_PRIORITY",7))
 
-        post_UDP_speed = global_functions.getUDPSpeed( receiverIP=global_functions.iperfServer, senderIP=remote_control.clientIP, targetRate=targetSpeedMbit )
+        post_UDP_speed = global_functions.get_udp_download_speed( receiverIP=global_functions.iperfServer, senderIP=remote_control.clientIP, targetRate=targetSpeedMbit )
 
         printResults( pre_UDP_speed, post_UDP_speed, (wanLimitKbit/8)*0.1, pre_UDP_speed*.9 )
         assert (post_UDP_speed < pre_UDP_speed*.9)
@@ -462,13 +462,13 @@ class BandwidthControlTests(unittest2.TestCase):
         priority_level = 7
         # This test might need web filter for untangle-casing-http to start
         # Record average speed without bandwidth control configured
-        wget_speed_pre = global_functions.getDownloadSpeed()
+        wget_speed_pre = global_functions.get_download_speed()
         
         # Create HTTP_HOST based rule to limit bandwidth
         appendRule(createBandwidthSingleConditionRule("HTTP_HOST","test.untangle.com","SET_PRIORITY",priority_level))
 
         # Download file and record the average speed in which the file was download
-        wget_speed_post = global_functions.getDownloadSpeed()
+        wget_speed_post = global_functions.get_download_speed()
         
         printResults( wget_speed_pre, wget_speed_post, wget_speed_pre*0.1, wget_speed_pre*limitedAcceptanceRatio )
 
@@ -488,13 +488,13 @@ class BandwidthControlTests(unittest2.TestCase):
         priority_level = 7
 
         # Record average speed without bandwidth control configured
-        wget_speed_pre = global_functions.getDownloadSpeed()
+        wget_speed_pre = global_functions.get_download_speed()
         
         # Create DST_ADDR based rule to limit bandwidth
         appendRule(createBandwidthSingleConditionRule("HTTP_CONTENT_LENGTH",">3000000","SET_PRIORITY",priority_level))
 
         # Download file and record the average speed in which the file was download
-        wget_speed_post = global_functions.getDownloadSpeed()
+        wget_speed_post = global_functions.get_download_speed()
 
         printResults( wget_speed_pre, wget_speed_post, wget_speed_pre*0.1, wget_speed_pre*limitedAcceptanceRatio )
 
@@ -511,12 +511,12 @@ class BandwidthControlTests(unittest2.TestCase):
     def test_050_webFilterFlaggedRule(self):
         global node, nodeWF
         nukeRules()
-        pre_count = global_functions.getStatusValue(node,"prioritize")
+        pre_count = global_functions.get_app_metric_value(node,"prioritize")
 
         priority_level = 7
         # This test might need web filter for untangle-casing-http to start
         # Record average speed without bandwidth control configured
-        wget_speed_pre = global_functions.getDownloadSpeed()
+        wget_speed_pre = global_functions.get_download_speed()
         
         # Create WEB_FILTER_FLAGGED based rule to limit bandwidth
         appendRule(createBandwidthSingleConditionRule("WEB_FILTER_FLAGGED","true","SET_PRIORITY",priority_level))
@@ -532,7 +532,7 @@ class BandwidthControlTests(unittest2.TestCase):
         nodeWF.setSettings(settingsWF)
 
         # Download file and record the average speed in which the file was download
-        wget_speed_post = global_functions.getDownloadSpeed()
+        wget_speed_post = global_functions.get_download_speed()
         
         printResults( wget_speed_pre, wget_speed_post, wget_speed_pre*0.1, wget_speed_pre*limitedAcceptanceRatio )
 
@@ -547,7 +547,7 @@ class BandwidthControlTests(unittest2.TestCase):
         assert( found )
 
         # Check to see if the faceplate counters have incremented. 
-        post_count = global_functions.getStatusValue(node,"prioritize")
+        post_count = global_functions.get_app_metric_value(node,"prioritize")
         assert(pre_count < post_count)
  
     def test_060_hostquota(self):
@@ -562,7 +562,7 @@ class BandwidthControlTests(unittest2.TestCase):
         uvmContext.hostTable().removeQuota(remote_control.clientIP)
         
         # Record average speed without bandwidth control configured
-        wget_speed_pre = global_functions.getDownloadSpeed()
+        wget_speed_pre = global_functions.get_download_speed()
         
         # Create rule to give quota
         appendRule(createBandwidthQuotaRule("HOST_HAS_NO_QUOTA","true","GIVE_HOST_QUOTA",given_quota))
@@ -570,13 +570,13 @@ class BandwidthControlTests(unittest2.TestCase):
         appendRule(createBandwidthSingleConditionRule("HOST_QUOTA_EXCEEDED","true","SET_PRIORITY",priority_level))
 
         # Download the file so quota is exceeded
-        global_functions.getDownloadSpeed()
+        global_functions.get_download_speed()
 
         # quota accounting occurs every 60 seconds, so we must wait at least 60 seconds
         time.sleep(60)
 
         # Download file and record the average speed in which the file was download
-        wget_speed_post = global_functions.getDownloadSpeed()
+        wget_speed_post = global_functions.get_download_speed()
         
         printResults( wget_speed_pre, wget_speed_post, wget_speed_pre*0.1, wget_speed_pre*limitedAcceptanceRatio )
 
@@ -614,7 +614,7 @@ class BandwidthControlTests(unittest2.TestCase):
         given_quota = 10000 # 10k 
 
         # Set this host's username
-        username = remote_control.runCommand("hostname -s", stdout=True)
+        username = remote_control.run_command("hostname -s", stdout=True)
         entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
         entry['usernameDirectoryConnector'] = username
         uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
@@ -623,7 +623,7 @@ class BandwidthControlTests(unittest2.TestCase):
         uvmContext.userTable().removeQuota(username)
         
         # Record average speed without bandwidth control configured
-        wget_speed_pre = global_functions.getDownloadSpeed()
+        wget_speed_pre = global_functions.get_download_speed()
         
         # Create rule to give quota
         appendRule(createBandwidthQuotaRule("USER_HAS_NO_QUOTA","true","GIVE_USER_QUOTA",given_quota))
@@ -632,13 +632,13 @@ class BandwidthControlTests(unittest2.TestCase):
         appendRule(createBandwidthSingleConditionRule("USER_QUOTA_EXCEEDED","true","SET_PRIORITY",priority_level))
 
         # Download the file so quota is exceeded
-        global_functions.getDownloadSpeed()
+        global_functions.get_download_speed()
 
         # quota accounting occurs every 60 seconds, so we must wait at least 60 seconds
         time.sleep(60)
 
         # Download file and record the average speed in which the file was download
-        wget_speed_post = global_functions.getDownloadSpeed()
+        wget_speed_post = global_functions.get_download_speed()
         
         printResults( wget_speed_pre, wget_speed_post, wget_speed_pre*0.1, wget_speed_pre*limitedAcceptanceRatio )
 
@@ -685,7 +685,7 @@ class BandwidthControlTests(unittest2.TestCase):
         appendRule(createBandwidthPenaltyRule("SRC_ADDR",remote_control.clientIP,"TAG_HOST","penalty-box",tag_time))
         
         # go to test.untangle.com 
-        result = remote_control.isOnline()
+        result = remote_control.is_online()
 
         # Look for tag
         entry = uvmContext.hostTable().getHostTableEntry(remote_control.clientIP)
