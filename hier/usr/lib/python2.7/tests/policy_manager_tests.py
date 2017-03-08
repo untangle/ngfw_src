@@ -141,35 +141,35 @@ class PolicyManagerTests(unittest2.TestCase):
             raise Exception('node %s already instantiated' % self.nodeName())
         node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
         nodeData = node.getSettings()
-        remote_control.runCommand("rm -f ./authpost\?*")
+        remote_control.run_command("rm -f ./authpost\?*")
 
     def setUp(self):
         pass
 
     # verify client is online
     def test_010_clientIsOnline(self):
-        result = remote_control.isOnline()
+        result = remote_control.is_online()
         assert (result == 0)
 
     # add a rack
     def test_011_addRack(self):
         global secondRackId
         secondRackId = addRack()
-        result = remote_control.isOnline()
+        result = remote_control.is_online()
         assert (result == 0)
 
     # remove a rack
     def test_012_removeRack(self):
         global secondRackId
         assert (removeRack(secondRackId))
-        result = remote_control.isOnline()
+        result = remote_control.is_online()
         assert (result == 0)
 
     # add a rack
     def test_021_addSecondRack(self):
         global secondRackId
         secondRackId = addRack(name="Second Rack")
-        result = remote_control.isOnline()
+        result = remote_control.is_online()
         assert (result == 0)
 
     # add firewall to second rack
@@ -193,7 +193,7 @@ class PolicyManagerTests(unittest2.TestCase):
         rules["list"].append(createFirewallSingleConditionRule("SRC_ADDR",remote_control.clientIP));
         blockRackFirewall.setRules(rules);
         # client should still be online
-        result = remote_control.isOnline()
+        result = remote_control.is_online()
         assert (result == 0)
         uvmContext.nodeManager().destroy( blockRackFirewall.getNodeSettings()["id"] )
         assert (removeRack(blockRackId))
@@ -214,20 +214,20 @@ class PolicyManagerTests(unittest2.TestCase):
         global secondRackId
         appendRule(createPolicySingleConditionRule("SRC_ADDR",remote_control.clientIP, secondRackId))
         # client should be offline
-        result = remote_control.isOnline(tries=1)
+        result = remote_control.is_online(tries=1)
         assert (result != 0)
         
     # send client back to default rack
     def test_025_removeRuleForSecondRack(self):
         nukeRules()
-        result = remote_control.isOnline()
+        result = remote_control.is_online()
         assert (result == 0)
 
     # add a third rack thats a child of second rack
     def test_026_addThirdRack(self):
         global thirdRackId
         thirdRackId = addRack(name="Third Rack", parentId=secondRackId)
-        result = remote_control.isOnline()
+        result = remote_control.is_online()
         assert (result == 0)
 
     # send client's traffic to third rack - should now be blocked by firewall inherited from second rack
@@ -235,7 +235,7 @@ class PolicyManagerTests(unittest2.TestCase):
         global thirdRackId
         appendRule(createPolicySingleConditionRule("SRC_ADDR",remote_control.clientIP, thirdRackId))
         # client should be offline
-        result = remote_control.isOnline(tries=1)
+        result = remote_control.is_online(tries=1)
         assert (result != 0)
 
     # add firewall to third rack - this should override the second rack's firewall with the block rule
@@ -243,7 +243,7 @@ class PolicyManagerTests(unittest2.TestCase):
         global thirdRackFirewall
         thirdRackFirewall = uvmContext.nodeManager().instantiate("untangle-node-firewall", thirdRackId)
         assert (thirdRackFirewall != None)
-        result = remote_control.isOnline()
+        result = remote_control.is_online()
         assert (result == 0)
 
     # disable firewall to third rack - even when disabled it should override the firewall in the second rack
@@ -251,7 +251,7 @@ class PolicyManagerTests(unittest2.TestCase):
         global thirdRackFirewall
         thirdRackFirewall.stop()
         assert (thirdRackFirewall != None)
-        result = remote_control.isOnline()
+        result = remote_control.is_online()
         assert (result == 0)
         thirdRackFirewall.start()
 
@@ -260,7 +260,7 @@ class PolicyManagerTests(unittest2.TestCase):
         global secondRackWebfilter
         secondRackWebfilter = uvmContext.nodeManager().instantiate("untangle-node-web-filter", secondRackId)
         assert (secondRackWebfilter != None)
-        result = remote_control.isOnline()
+        result = remote_control.is_online()
         assert (result == 0)
         # add a block rule
         newRule = { "blocked": True, "description": "desc", "flagged": True, "javaClass": "com.untangle.uvm.node.GenericRule", "string": "test.untangle.com/test/testPage1.html" }
@@ -268,13 +268,13 @@ class PolicyManagerTests(unittest2.TestCase):
         rules["list"].append(newRule)
         secondRackWebfilter.setBlockedUrls(rules)
         # verify traffic is now blocked (third rack inherits web filter from second rack)
-        result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q blockpage")
+        result = remote_control.run_command("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q blockpage")
         assert (result == 0)
 
     # direct traffic to second rack after local authentication
     def test_040_localCaptivePortalToSecondRack(self):
         global defaultRackCaptivePortal
-        remote_control.runCommand("rm -f /tmp/policy_test_040*")
+        remote_control.run_command("rm -f /tmp/policy_test_040*")
         defaultRackCaptivePortal = uvmContext.nodeManager().instantiate("untangle-node-captive-portal", defaultRackId)
         assert (defaultRackCaptivePortal != None)
         defaultRackCaptivePortalData = defaultRackCaptivePortal.getCaptivePortalSettings()
@@ -297,36 +297,36 @@ class PolicyManagerTests(unittest2.TestCase):
         appendRule(createPolicySingleConditionRule("USERNAME","[authenticated]", secondRackId))
         
         # check that basic captive page is shown
-        result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/policy_test_040.log -O /tmp/policy_test_040.out http://www.google.com/")
+        result = remote_control.run_command("wget -4 -t 2 --timeout=5 -a /tmp/policy_test_040.log -O /tmp/policy_test_040.out http://www.google.com/")
         assert (result == 0)
-        search = remote_control.runCommand("grep -q 'username and password' /tmp/policy_test_040.out")
+        search = remote_control.run_command("grep -q 'username and password' /tmp/policy_test_040.out")
         assert (search == 0)
 
         # check if local directory login and password works
-        ipfind = remote_control.runCommand("grep 'Location' /tmp/policy_test_040.log",stdout=True)
+        ipfind = remote_control.run_command("grep 'Location' /tmp/policy_test_040.log",stdout=True)
         ip = re.findall( r'[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}(?:[0-9:]{0,6})', ipfind )
         captureIP = ip[0]
         print 'Capture IP address is %s' % captureIP
         appid = str(defaultRackCaptivePortal.getNodeSettings()["id"])
         # print 'appid is %s' % appid  # debug line
-        result = remote_control.runCommand("wget -q -O /dev/null -t 2 --timeout=5   \'http://" + captureIP + "/capture/handler.py/authpost?username=test20&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=" + captureIP + "&uri=/\'")
+        result = remote_control.run_command("wget -q -O /dev/null -t 2 --timeout=5   \'http://" + captureIP + "/capture/handler.py/authpost?username=test20&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=" + captureIP + "&uri=/\'")
         assert (result == 0)
         # verify the username is assigned to the IP
         userHost = uvmContext.hostTable().getHostTableEntry(remote_control.clientIP)
         assert (userHost['username'] == "test20")
         userHost = uvmContext.hostTable().getHostTableEntry(remote_control.clientIP)
         # firewall on rack 2 is blocking all, we should not get the test.untangle.com page
-        result = remote_control.runCommand("wget -q -O /dev/null -4 -t 2 --timeout=5 -a /tmp/policy_test_040a.log -O /tmp/policy_test_040a.out http://www.google.com/")
-        search = remote_control.runCommand("grep -q 'Hi!' /tmp/policy_test_040a.out")
+        result = remote_control.run_command("wget -q -O /dev/null -4 -t 2 --timeout=5 -a /tmp/policy_test_040a.log -O /tmp/policy_test_040a.out http://www.google.com/")
+        search = remote_control.run_command("grep -q 'Hi!' /tmp/policy_test_040a.out")
         assert (search != 0)
         # Or the captive page
-        search = remote_control.runCommand("grep -q 'username and password' /tmp/policy_test_040a.out")
+        search = remote_control.run_command("grep -q 'username and password' /tmp/policy_test_040a.out")
         assert (search != 0)
         
         # Logout
-        result = remote_control.runCommand("wget -q -O /dev/null -4 -t 2 --timeout=5 -a /tmp/policy_test_040b.log -O /tmp/policy_test_040b.out http://" + captureIP + "/capture/logout")
+        result = remote_control.run_command("wget -q -O /dev/null -4 -t 2 --timeout=5 -a /tmp/policy_test_040b.log -O /tmp/policy_test_040b.out http://" + captureIP + "/capture/logout")
         assert (result == 0)
-        search = remote_control.runCommand("grep -q 'logged out' /tmp/policy_test_040b.out")
+        search = remote_control.run_command("grep -q 'logged out' /tmp/policy_test_040b.out")
         assert (search == 0)
         # remove captive portal and test user
         uvmContext.localDirectory().setUsers(removeLocalDirectoryUser())
@@ -348,7 +348,7 @@ class PolicyManagerTests(unittest2.TestCase):
         global thirdRackId
         nukeRules()
         assert (removeRack(thirdRackId))
-        result = remote_control.isOnline()
+        result = remote_control.is_online()
         assert (result == 0)
 
     # remove second rack
@@ -356,7 +356,7 @@ class PolicyManagerTests(unittest2.TestCase):
         global secondRackId
         nukeRules()
         assert (removeRack(secondRackId))
-        result = remote_control.isOnline()
+        result = remote_control.is_online()
         assert (result == 0)
 
     @staticmethod
