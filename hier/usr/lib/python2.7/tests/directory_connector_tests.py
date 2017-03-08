@@ -148,7 +148,7 @@ def register_username(http_admin_url, user):
     Register user name
     """
     register_url = http_admin_url + "userapi/registration\?username=" + user + "\&domain=adtesting.int\&hostname=adtest2\&action=login"
-    result = remote_control.runCommand(("wget -q -O /dev/null " + register_url))
+    result = remote_control.run_command(("wget -q -O /dev/null " + register_url))
     return result
 
 def register_username_old(http_admin_url, user):
@@ -156,7 +156,7 @@ def register_username_old(http_admin_url, user):
     Register old user name
     """
     register_url = http_admin_url + "adpb/registration\?username=" + user + "\&domain=adtesting.int\&hostname=adtest2\&action=login"
-    result = remote_control.runCommand(("wget -q -O /dev/null " + register_url))
+    result = remote_control.run_command(("wget -q -O /dev/null " + register_url))
     return result
 
 def find_name_in_host_table (hostname='test'):
@@ -165,7 +165,7 @@ def find_name_in_host_table (hostname='test'):
     """
     #  Test for username in session
     found_test_session = False
-    remote_control.runCommand("nohup netcat -d -4 test.untangle.com 80 >/dev/null 2>&1", stdout=False, nowait=True)
+    remote_control.run_command("nohup netcat -d -4 test.untangle.com 80 >/dev/null 2>&1", stdout=False, nowait=True)
     time.sleep(2) # since we launched netcat in background, give it a second to establish connection
     host_list = uvmContext.hostTable().getHosts()
     session_list = host_list['list']
@@ -176,7 +176,7 @@ def find_name_in_host_table (hostname='test'):
         if (session_list[i]['address'] == remote_control.clientIP) and (session_list[i]['username'] == hostname):
             found_test_session = True
             break
-    remote_control.runCommand("pkill netcat")
+    remote_control.run_command("pkill netcat")
     return found_test_session
     
 class DirectoryConnectorTests(unittest2.TestCase):
@@ -220,7 +220,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
         """
         Verify client is online
         """
-        result = remote_control.isOnline()
+        result = remote_control.is_online()
         assert (result == 0)
 
     def test_015_setADSettings_NonSecure(self):
@@ -429,10 +429,10 @@ class DirectoryConnectorTests(unittest2.TestCase):
         if platform.machine().startswith('arm'):
             raise unittest2.SkipTest('Not supported on ARM')
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
-        device_in_office = global_functions.isInOfficeNetwork(wan_IP)
+        device_in_office = global_functions.is_in_office_network(wan_IP)
         if (device_in_office):
             raise unittest2.SkipTest('Google Login not working in office')
-        googleUserName, googlePassword = global_functions.getLiveAccountInfo("Google")
+        googleUserName, googlePassword = global_functions.get_live_account_info("Google")
         print "username: %s\n " % str(googleUserName)
         if googlePassword != None:
             print "password: %s\n" % (len(googlePassword)*"*")
@@ -459,7 +459,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
         """
         if platform.machine().startswith('arm'):
             raise unittest2.SkipTest('Not supported on ARM')
-        facebookUserName, facebookPassword = global_functions.getLiveAccountInfo("Facebook")
+        facebookUserName, facebookPassword = global_functions.get_live_account_info("Facebook")
         print "username: %s\n " % str(facebookUserName)
         if facebookPassword != None:
             print "password: %s\n" % (len(facebookPassword)*"*")
