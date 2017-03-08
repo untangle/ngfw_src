@@ -1,4 +1,4 @@
 # -*-ruby-*-
 
-NodeBuilder.makeNode(HadesBuildEnv, 'untangle-node-live-support', 'live-support', [] )
+NodeBuilder.makeNode(BuildEnv::SRC, 'untangle-node-live-support', 'live-support', [] )
 
