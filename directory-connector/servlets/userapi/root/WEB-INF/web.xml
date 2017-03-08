@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- $Id: web.xml,v 1.00 2013/03/19 11:48:27 dmorris Exp $ -->
+
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee  http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" version="3.0" metadata-complete="true">
+  @JSP_PRE_COMPILED_SERVLETS@
+
+  <display-name>Active Directory PhoneBook Service</display-name>
+
+  <description>
+    Active Directory PhoneBook Service
+  </description>
+
+  <servlet>
+    <servlet-name>Registration</servlet-name>
+    <servlet-class>com.untangle.node.directory_connector.Registration</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>Registration</servlet-name>
+    <url-pattern>/registration</url-pattern>
+  </servlet-mapping>
+
+  <welcome-file-list>
+    <welcome-file>index.jsp</welcome-file>
+  </welcome-file-list>
+</web-app>
