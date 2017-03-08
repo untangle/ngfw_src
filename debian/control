@@ -36,6 +36,16 @@ Depends: untangle-vm
 Description: Shield
  The Shield application.
 
+Package: untangle-node-web-cache
+Architecture: all
+Section: non-free/net
+Depends: untangle-vm, untangle-node-license, untangle-squid-config
+Conflicts: untangle-node-webcache
+Replaces: untangle-node-webcache
+Provides: untangle-node-webcache
+Description: Web Cache
+ The Web Cache application.
+
 Package: untangle-node-wan-failover
 Architecture: all
 Section: non-free/net
