@@ -63,14 +63,14 @@ Ext.define('Ung.view.apps.AppsController', {
         Rpc.asyncData('rpc.nodeManager.getAppsViews').then(function(result) {
             var nodes = [];
             vm.getStore('apps').removeAll();
-
+            console.log(result);
             Ext.getStore('policies').loadData(result);
 
             Ext.Array.each(result[0].nodeProperties.list, function (node) {
                 nodes.push({
                     name: node.name,
                     displayName: node.displayName,
-                    url: '#apps/' + vm.get('policyId') + '/' + Ext.Object.getKey(Util.appsMapping, node.name),
+                    url: '#apps/' + vm.get('policyId') + '/' + node.displayName.replace(/ /g, '-').toLowerCase(),
                     type: node.type,
                     viewPosition: node.viewPosition,
                     status: null,
@@ -89,7 +89,7 @@ Ext.define('Ung.view.apps.AppsController', {
                 nodes.push({
                     name: node.name,
                     displayName: node.displayName,
-                    url: '#apps/' + vm.get('policyId') + '/' + Util.appsMapping[node.name],
+                    url: '#apps/' + vm.get('policyId') + '/' + node.displayName.replace(/ /g, '-').toLowerCase(),
                     type: node.type,
                     viewPosition: node.viewPosition,
                     desc: me.nodeDesc[node.name],
