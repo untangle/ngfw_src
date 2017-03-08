@@ -33,6 +33,7 @@ var appsModules = [
     'policy-manager',
     'reports',
     'spam-blocker',
+    'spam-blocker-lite',
     'ssl-inspector',
     'virus-blocker',
     'virus-blocker-lite',

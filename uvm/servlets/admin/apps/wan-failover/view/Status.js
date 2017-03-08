@@ -116,15 +116,20 @@ Ext.define('Ung.apps.wanfailover.view.Status', {
             }]
         }, {
             xtype: 'appreports'
-        }, {
-            xtype: 'appremove'
         }]
     }, {
         region: 'west',
-        xtype: 'appmetrics',
         border: false,
         width: 350,
         minWidth: 300,
-        split: true
+        split: true,
+        layout: 'fit',
+        items: [{
+            xtype: 'appmetrics',
+        }],
+        bbar: [{
+            xtype: 'appremove',
+            width: '100%'
+        }]
     }]
 });

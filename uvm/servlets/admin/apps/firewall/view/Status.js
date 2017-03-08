@@ -20,8 +20,6 @@ Ext.define('Ung.apps.firewall.view.Status', {
             xtype: 'appstate',
         }, {
             xtype: 'appreports'
-        }, {
-            xtype: 'appremove'
         }]
     }, {
         region: 'west',
@@ -29,13 +27,13 @@ Ext.define('Ung.apps.firewall.view.Status', {
         width: 350,
         minWidth: 300,
         split: true,
-        layout: 'border',
-        // layout: {
-        //     type: 'hbox'
-        // },
+        layout: 'fit',
         items: [{
             xtype: 'appmetrics',
-            region: 'center'
+        }],
+        bbar: [{
+            xtype: 'appremove',
+            width: '100%'
         }]
     }]
 

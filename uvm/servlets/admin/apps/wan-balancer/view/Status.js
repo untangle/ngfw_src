@@ -20,8 +20,6 @@ Ext.define('Ung.apps.wanbalancer.view.Status', {
             xtype: 'appstate',
         }, {
             xtype: 'appreports'
-        }, {
-            xtype: 'appremove'
         }]
     }, {
         region: 'west',
@@ -32,6 +30,10 @@ Ext.define('Ung.apps.wanbalancer.view.Status', {
         items: [{
             xtype: 'appmetrics',
             region: 'center'
+        }],
+        bbar: [{
+            xtype: 'appremove',
+            width: '100%'
         }]
     }]
 });

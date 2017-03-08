@@ -77,8 +77,6 @@ Ext.define('Ung.apps.webcache.view.Status', {
             }]
         }, {
             xtype: 'appreports'
-        }, {
-            xtype: 'appremove'
         }]
     }, {
         region: 'west',
@@ -87,9 +85,6 @@ Ext.define('Ung.apps.webcache.view.Status', {
         minWidth: 300,
         split: true,
         layout: 'border',
-        // layout: {
-        //     type: 'hbox'
-        // },
         items: [{
             xtype: 'appsessions',
             region: 'north',
@@ -117,10 +112,11 @@ Ext.define('Ung.apps.webcache.view.Status', {
             xtype: 'appmetrics',
             region: 'south',
             split: true,
-            height: '40%',
-            sourceConfig: {
-                // attachments:       { displayName: 'Attachments'.t() }
-            },
+            height: '40%'
+        }],
+        bbar: [{
+            xtype: 'appremove',
+            width: '100%'
         }]
     }]
 

@@ -22,8 +22,6 @@ Ext.define('Ung.apps.sslinspector.view.Status', {
             xtype: 'appstate',
         }, {
             xtype: 'appreports'
-        }, {
-            xtype: 'appremove'
         }]
     }, {
         region: 'west',
@@ -51,6 +49,10 @@ Ext.define('Ung.apps.sslinspector.view.Status', {
             region: 'south',
             split: true,
             height: 'auto'
+        }],
+        bbar: [{
+            xtype: 'appremove',
+            width: '100%'
         }]
     }]
 
