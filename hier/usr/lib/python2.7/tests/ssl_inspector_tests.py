@@ -89,15 +89,12 @@ class SslInspectorTests(unittest2.TestCase):
         nodeWeb = uvmContext.nodeManager().instantiate(self.nodeWeb(), defaultRackId)
         nodeWebData = nodeWeb.getSettings()
 
+        nodeData['ignoreRules']['list'].insert(0,createSSLInspectRule(testedServerDomainWildcard))
+        node.setSettings(nodeData)
+        
     def setUp(self):
         pass
 
-    def test_005_setInspectSelectedSiteTraffic(self):
-        global node, nodeData
-        nodeData['ignoreRules']['list'].insert(0,createSSLInspectRule(testedServerDomainWildcard))
-        node.setSettings(nodeData)
-
-    # verify client is online
     def test_010_clientIsOnline(self):
         result = remote_control.isOnline()
         assert (result == 0)
@@ -123,9 +120,9 @@ class SslInspectorTests(unittest2.TestCase):
             raise unittest2.SkipTest('SSL Inspector does not have Ignore Dropbox rule')
 
     def test_030_checkSslInspectorInspectorEventLog(self):
+        remote_control.runCommand('curl -s -4 --connect-timeout 10 --trace /tmp/ssl_test_040.trace --output /tmp/ssl_test_040.output --insecure https://%s' % (testedServerName))
         events = global_functions.get_events('SSL Inspector','All Sessions',None,5)
         assert(events != None)
-        print "List of events"
         found = global_functions.check_events( events.get('list'), 5,
                                             "ssl_inspector_status","INSPECTED",
                                             "ssl_inspector_detail",testedServerName)
