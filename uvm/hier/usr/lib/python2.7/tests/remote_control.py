@@ -11,7 +11,7 @@ from global_functions import uvmContext
 # exteral global variables
 clientIP = None
 hostUsername = "testshell"
-hostKeyFile = "@PREFIX@/usr/lib/python2.7/tests/testShell.key"
+hostKeyFile = "@PREFIX@/usr/lib/python2.7/tests/test_shell.key"
 logfile = None
 verbosity = 0
 sshOptions = "-o StrictHostKeyChecking=no -o ConnectTimeout=300 -o ConnectionAttempts=15"
