@@ -36,6 +36,16 @@ Depends: untangle-vm
 Description: Shield
  The Shield application.
 
+Package: untangle-node-application-control
+Architecture: all
+Section: non-free
+Depends: untangle-vm, untangle-node-license, untangle-classd
+Conflicts: untangle-node-classd
+Replaces: untangle-node-classd
+Provides: untangle-node-classd
+Description: Application Control
+ The Application Control application
+
 Package: untangle-node-web-filter
 Architecture: all
 Section: non-free
