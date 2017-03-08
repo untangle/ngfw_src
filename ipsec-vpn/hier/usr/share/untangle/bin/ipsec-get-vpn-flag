@@ -1,0 +1,13 @@
+#!/usr/bin/env python
+
+# We grab and print the value of vpnflag as zero or one
+from uvm.settings_reader import get_node_settings_item
+
+# Read the vpnflag from the IPsec node settings file
+vpnflag = get_node_settings_item("untangle-node-ipsec-vpn", "vpnflag")
+
+# If we don't get anything default to vpnflag disabled
+if (vpnflag == None):
+	vpnflag = str("False")
+
+print vpnflag
