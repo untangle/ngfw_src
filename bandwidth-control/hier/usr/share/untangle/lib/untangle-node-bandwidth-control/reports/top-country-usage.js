@@ -1,0 +1,21 @@
+{
+    "uniqueId": "bandwidth-control-FcYSKtAYq2",
+    "category": "Bandwidth Control",
+    "description": "The bandwidth usage by top countries.",
+    "displayOrder": 900,
+    "enabled": true,
+    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "orderDesc": false,
+    "units": "bytes/s",
+    "readOnly": true,
+    "table": "session_minutes",
+    "timeDataInterval": "AUTO",
+    "timeDataDynamicValue": "(s2c_bytes+c2s_bytes)/60",
+    "timeDataDynamicColumn": "server_country",
+    "timeDataDynamicLimit": "10",
+    "timeDataDynamicAggregationFunction": "sum",
+    "timeDataDynamicAllowNull": true,
+    "timeStyle": "AREA_STACKED",
+    "title": "Top Countries Usage",
+    "type": "TIME_GRAPH_DYNAMIC"
+}

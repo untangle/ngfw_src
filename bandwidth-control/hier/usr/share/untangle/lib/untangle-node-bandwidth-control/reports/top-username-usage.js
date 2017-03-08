@@ -1,0 +1,20 @@
+{
+    "uniqueId": "bandwidth-control-j3vFiCD9l2",
+    "category": "Bandwidth Control",
+    "description": "The bandwidth usage of the top usernames.",
+    "displayOrder": 400,
+    "enabled": true,
+    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "orderDesc": false,
+    "units": "bytes/s",
+    "readOnly": true,
+    "table": "session_minutes",
+    "timeDataInterval": "AUTO",
+    "timeDataDynamicValue": "(s2c_bytes+c2s_bytes)/60",
+    "timeDataDynamicColumn": "username",
+    "timeDataDynamicLimit": "10",
+    "timeDataDynamicAggregationFunction": "sum",
+    "timeStyle": "AREA_STACKED",
+    "title": "Top Usernames Usage",
+    "type": "TIME_GRAPH_DYNAMIC"
+}

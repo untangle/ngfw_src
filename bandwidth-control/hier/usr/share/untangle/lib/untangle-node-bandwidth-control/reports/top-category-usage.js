@@ -1,0 +1,21 @@
+{
+    "uniqueId": "bandwidth-control-9u1zEG6H0l",
+    "category": "Bandwidth Control",
+    "description": "The bandwidth usage of the top application categories.",
+    "displayOrder": 700,
+    "enabled": true,
+    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "orderDesc": false,
+    "units": "bytes/s",
+    "readOnly": true,
+    "table": "session_minutes",
+    "timeDataInterval": "AUTO",
+    "timeDataDynamicValue": "(s2c_bytes+c2s_bytes)/60",
+    "timeDataDynamicColumn": "application_control_category",
+    "timeDataDynamicLimit": "10",
+    "timeDataDynamicAggregationFunction": "sum",
+    "timeDataDynamicAllowNull": true,
+    "timeStyle": "AREA_STACKED",
+    "title": "Top Categories Usage",
+    "type": "TIME_GRAPH_DYNAMIC"
+}
