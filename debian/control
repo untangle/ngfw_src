@@ -36,6 +36,16 @@ Depends: untangle-vm
 Description: Shield
  The Shield application.
 
+Package: untangle-node-wan-failover
+Architecture: all
+Section: non-free/net
+Depends: untangle-vm, untangle-node-license, traceroute
+Conflicts: untangle-node-faild
+Replaces: untangle-node-faild
+Provides: untangle-node-faild
+Description: WAN Failover
+ The WAN Failover application.
+
 Package: untangle-node-wan-balancer
 Architecture: all
 Section: non-free/net
