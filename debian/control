@@ -36,6 +36,16 @@ Depends: untangle-vm
 Description: Shield
  The Shield application.
 
+Package: untangle-node-spam-blocker
+Architecture: all
+Section: non-free/net
+Depends: untangle-vm, untangle-spamcatd, untangle-node-license, untangle-base-spam-blocker, untangle-casing-smtp, untangle-spamassassin-update
+Conflicts: untangle-node-spamblocker
+Replaces: untangle-node-spamblocker
+Provides: untangle-node-spamblocker
+Description: Spam Blocker
+ The Spam Blocker application.
+
 Package: untangle-node-policy-manager
 Architecture: all
 Section: non-free/net
