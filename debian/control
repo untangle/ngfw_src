@@ -36,6 +36,16 @@ Depends: untangle-vm
 Description: Shield
  The Shield application.
 
+Package: untangle-node-configuration-backup
+Architecture: all
+Section: non-free
+Depends: untangle-vm, curl, untangle-node-license
+Conflicts: untangle-node-boxbackup
+Replaces: untangle-node-boxbackup
+Provides: untangle-node-boxbackup
+Description: Configuration Backup
+ The Configuration Backup application.
+
 Package: untangle-node-branding-manager
 Architecture: all
 Section: non-free
