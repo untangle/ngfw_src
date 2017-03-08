@@ -7,6 +7,6 @@ virus = BuildEnv::SRC['untangle-base-virus-blocker']
 
 deps = [smtp['src'], http['src'], ftp['src'], virus['src']]
 
-NodeBuilder.makeNode(HadesBuildEnv, 'untangle-node-virus-blocker', 'virus-blocker', deps )
+NodeBuilder.makeNode(BuildEnv::SRC, 'untangle-node-virus-blocker', 'virus-blocker', deps )
 
 

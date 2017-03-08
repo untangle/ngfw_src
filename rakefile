@@ -103,6 +103,7 @@ task :targets => :download do
   require "#{SRC_HOME}/policy-manager/package.rb"
   require "#{SRC_HOME}/spam-blocker/package.rb"
   require "#{SRC_HOME}/ssl-inspector/package.rb"
+  require "#{SRC_HOME}/virus-blocker/package.rb"
 end
 
 task :build => [:builduvmcore, :targets] do

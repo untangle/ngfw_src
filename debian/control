@@ -36,6 +36,16 @@ Depends: untangle-vm
 Description: Shield
  The Shield application.
 
+Package: untangle-node-virus-blocker
+Architecture: all
+Section: non-free/net
+Depends: untangle-vm, untangle-base-virus-blocker, untangle-bdamserver | untangle-kernel-modules-jessie-armel | untangle-kernel-modules-jessie-armhf, untangle-casing-http, untangle-casing-ftp, untangle-casing-smtp, untangle-node-license
+Conflicts: untangle-node-virusblocker
+Replaces: untangle-node-virusblocker
+Provides: untangle-node-virusblocker
+Description: Virus Blocker
+ The Virus Blocker application.
+
 Package: untangle-casing-ssl-inspector
 Architecture: all
 Section: non-free/net
