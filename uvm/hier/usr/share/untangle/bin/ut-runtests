@@ -200,10 +200,12 @@ def runTestSuite(suite):
         print "\n\n"
         print "="*70
         print test_name + " start [" + time.strftime("%Y-%m-%dT%H:%m:%S") + "]"
+        global_functions.set_test_start_time()
         results = unittest2.TextTestRunner( stream=logfile, verbosity=parser.verbosity ).run( test )
         print test_name + " end   [" + time.strftime("%Y-%m-%dT%H:%m:%S") + "]"
         print "="*70
-
+        sys.stdout.flush
+        
         if (parser.timedTests):
             testElapsedTime = time.time() - testStartTime
             timeString = "[%.1fs]" % testElapsedTime

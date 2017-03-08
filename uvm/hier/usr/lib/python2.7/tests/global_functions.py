@@ -2,12 +2,12 @@ import os
 import sys
 import subprocess
 import time
-import datetime
 import re
 import socket
 import fcntl
 import struct
 import commands
+import datetime
 
 import remote_control
 import ipaddr
@@ -46,6 +46,8 @@ accountFile = "/tmp/account_login.json"
 uvmContext = Uvm().getUvmContext(timeout=120)
 uvmContextLongTimeout = Uvm().getUvmContext(timeout=300)
 prefix = "@PREFIX@"
+
+test_start_time = None
 
 def getIpAddress(base_URL="test.untangle.com",extra_options="",localcall=False):
     timeout = 4
@@ -187,7 +189,7 @@ def find_event( events, num_events, *args, **kwargs):
         print "No events in list"
         return None
     if kwargs.get('min_date') == None:
-        min_date = datetime.datetime.now()-datetime.timedelta(minutes=12)
+        min_date = test_start_time
     else:
         min_date = kwargs.get('min_date')
     if (len(args) % 2) != 0:
@@ -349,6 +351,62 @@ def get_https_url():
     httpsAdminUrl = "https://" + ip + ":" + httpsPort + "/"
     return httpsAdminUrl
 
+def get_test_start_time():
+    global test_start_time
+    return test_start_time
+
+def set_test_start_time():
+    global test_start_time
+    test_start_time = datetime.datetime.now()
+
+def host_username_set(username):
+    entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
+    entry['usernameDirectoryConnector'] = username
+    uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
+
+def host_username_clear():
+    entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
+    entry['usernameDirectoryConnector'] = None
+    uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
+
+def host_tags_add(str):
+    entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
+    entry['tags']['list'].append( {
+        "javaClass": "com.untangle.uvm.Tag",
+        "name": str,
+        "expirationTime": 0
+    } )
+    uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
+
+def host_tags_clear():
+    entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
+    entry['tags']['list'] = []
+    uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
+    
+def user_tags_add(username, str):
+    entry = uvmContext.userTable().getUserTableEntry( username, True )
+    entry['tags']['list'].append( {
+        "javaClass": "com.untangle.uvm.Tag",
+        "name": str,
+        "expirationTime": 0
+    } )
+    uvmContext.userTable().setUserTableEntry( username, entry )
+
+def user_tags_clear(username):
+    entry = uvmContext.userTable().getUserTableEntry( username, True )
+    entry['tags']['list'] = []
+    uvmContext.userTable().setUserTableEntry( username, entry )
+
+def host_hostname_set(str):
+    entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
+    entry['hostnameDhcp'] = str
+    uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
+
+def host_hostname_clear():
+    entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
+    entry['hostnameDhcp'] = None
+    uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
+    
 def __get_ip_address(ifname):
     print "ifname <%s>" % ifname
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
