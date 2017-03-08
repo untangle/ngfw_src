@@ -1,3 +1,3 @@
 # -*-ruby-*-
 
-NodeBuilder.makeCasing(HadesBuildEnv, 'untangle-casing-ssl-inspector', 'ssl-inspector', [])
+NodeBuilder.makeCasing(BuildEnv::SRC, 'untangle-casing-ssl-inspector', 'ssl-inspector', [])

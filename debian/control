@@ -36,6 +36,16 @@ Depends: untangle-vm
 Description: Shield
  The Shield application.
 
+Package: untangle-casing-ssl-inspector
+Architecture: all
+Section: non-free/net
+Depends: untangle-vm, untangle-node-license
+Conflicts: untangle-casing-https
+Replaces: untangle-casing-https
+Provides: untangle-casing-https
+Description: SSL Casing
+ The SSL Casing Application
+
 Package: untangle-node-spam-blocker
 Architecture: all
 Section: non-free/net
