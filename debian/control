@@ -36,6 +36,16 @@ Depends: untangle-vm
 Description: Shield
  The Shield application.
 
+Package: untangle-node-live-support
+Architecture: all
+Section: non-free/net
+Depends: untangle-vm, untangle-node-license
+Conflicts: untangle-node-support
+Replaces: untangle-node-support
+Provides: untangle-node-support
+Description: Live Support
+ The Live Support application.
+
 Package: untangle-node-ipsec-vpn
 Architecture: all
 Section: non-free/net
