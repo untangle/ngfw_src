@@ -60,7 +60,7 @@ public class OpenVpnConfigItem
 
 // THIS IS FOR ECLIPSE - @formatter:on
 
-    public String toString()
+    public String getConfigString()
     {
         if (excludeFlag == true) return (null);
         if (customValue != null) return (optionName + " " + customValue);

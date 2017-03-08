@@ -90,9 +90,6 @@ public class OpenVpnSettings implements java.io.Serializable, JSONString
         
         /* Stop logging repeated messages (after 20). */
         serverConfiguration.add(new OpenVpnConfigItem("mute", "20", true));
-        
-        /* Allow management from localhost */
-        serverConfiguration.add(new OpenVpnConfigItem("management 127.0.0.1", Integer.toString(MANAGEMENT_PORT), true));
 
         /* persist pool address assignments */
         serverConfiguration.add(new OpenVpnConfigItem("ifconfig-pool-persist", "/etc/openvpn/address-pool-assignments.txt", true));
