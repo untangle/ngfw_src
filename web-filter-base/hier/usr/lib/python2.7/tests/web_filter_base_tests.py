@@ -127,7 +127,7 @@ class WebFilterBaseTests(unittest2.TestCase):
     def setUp(self):
         pass
 
-    def test_010_client_is_online(self):
+    def test_000_client_is_online(self):
         result = remote_control.is_online()
         assert (result == 0)
 

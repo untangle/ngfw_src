@@ -389,6 +389,22 @@ def host_tags_clear():
     entry['tags']['list'] = []
     uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
     
+def host_hostname_set(str):
+    entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
+    entry['hostnameDhcp'] = str
+    uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
+
+def host_hostname_clear():
+    entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
+    entry['hostnameDhcp'] = None
+    uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
+
+def host_quota_clear():
+    uvmContext.hostTable().removeQuota( remote_control.clientIP )
+
+def host_quota_give(bytes_size, seconds):
+    uvmContext.hostTable().giveHostQuota( remote_control.clientIP, bytes_size, seconds, "test" )
+
 def user_tags_add(username, str):
     entry = uvmContext.userTable().getUserTableEntry( username, True )
     entry['tags']['list'].append( {
@@ -403,15 +419,11 @@ def user_tags_clear(username):
     entry['tags']['list'] = []
     uvmContext.userTable().setUserTableEntry( username, entry )
 
-def host_hostname_set(str):
-    entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
-    entry['hostnameDhcp'] = str
-    uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
+def user_quota_clear(username):
+    uvmContext.userTable().removeQuota( username )
 
-def host_hostname_clear():
-    entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
-    entry['hostnameDhcp'] = None
-    uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
+def user_quota_give(username, bytes_size, seconds):
+    uvmContext.userTable().giveUserQuota( username, bytes_size, seconds, "test" )
     
 def __get_ip_address(ifname):
     print "ifname <%s>" % ifname
