@@ -119,10 +119,10 @@ Ext.define('Ung.controller.Global', {
 
                 var policy = Ext.getStore('policies').findRecord('policyId', policyId);
                 var appInstance = Ext.Array.findBy(policy.get('instances').list, function (inst) {
-                    return inst.nodeName === Util.appsMapping[app];
+                    return inst.nodeName.replace('untangle-node-', '').replace('untangle-casing-', '') === app;
                 });
                 var appProps = Ext.Array.findBy(policy.get('nodeProperties').list, function (prop) {
-                    return prop.name === Util.appsMapping[app];
+                    return prop.name.replace('untangle-node-', '').replace('untangle-casing-', '') === app;
                 });
 
                 // var appClass = Ext.ClassManager.getByAlias('widget.app-' + app);
