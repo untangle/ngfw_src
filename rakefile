@@ -94,6 +94,7 @@ task :targets => :download do
   require "#{SRC_HOME}/virus-blocker-lite/package.rb"
   require "#{SRC_HOME}/captive-portal/package.rb"
   require "#{SRC_HOME}/application-control/package.rb"
+  require "#{SRC_HOME}/bandwidth-control/package.rb"
 end
 
 task :build => [:builduvmcore, :targets] do

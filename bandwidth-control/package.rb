@@ -1,3 +1,3 @@
 # -*-ruby-*-
 
-NodeBuilder.makeNode(HadesBuildEnv, 'untangle-node-bandwidth-control', 'bandwidth-control', [])
+NodeBuilder.makeNode(BuildEnv::SRC, 'untangle-node-bandwidth-control', 'bandwidth-control', [])

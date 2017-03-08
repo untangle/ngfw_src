@@ -36,6 +36,16 @@ Depends: untangle-vm
 Description: Shield
  The Shield application.
 
+Package: untangle-node-bandwidth-control
+Architecture: all
+Section: non-free
+Depends: untangle-vm, untangle-node-license, gawk
+Conflicts: untangle-node-bandwidth
+Replaces: untangle-node-bandwidth
+Provides: untangle-node-banwidth
+Description: Bandwidth Control
+ The Bandwidth Control application.
+
 Package: untangle-node-application-control
 Architecture: all
 Section: non-free
