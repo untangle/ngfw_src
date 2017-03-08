@@ -69,7 +69,7 @@ class BrandingManagerTests(unittest2.TestCase):
 
     # verify client is online
     def test_010_clientIsOnline(self):
-        result = remote_control.isOnline()
+        result = remote_control.is_online()
         assert (result == 0)
 
     def test_020_changeBranding(self):
@@ -80,7 +80,7 @@ class BrandingManagerTests(unittest2.TestCase):
         nodeData['contactEmail'] = newContactEmail;
         node.setSettings(nodeData)
         # test blockpage has all the changes
-        result = remote_control.runCommand("wget -q -O - \"$@\" www.playboy.com",stdout=True)
+        result = remote_control.run_command("wget -q -O - \"$@\" www.playboy.com",stdout=True)
 
         # Verify Title of blockpage as company name
         myRegex = re.compile('<title>(.*?)</title>', re.IGNORECASE|re.DOTALL)
@@ -117,7 +117,7 @@ class BrandingManagerTests(unittest2.TestCase):
         # Check login page for branding
         internalAdmin = None
         # print "IP address <%s>" % internalAdmin
-        result = remote_control.runCommand("wget -q -O - \"$@\" " + global_functions.get_http_url() ,stdout=True)
+        result = remote_control.run_command("wget -q -O - \"$@\" " + global_functions.get_http_url() ,stdout=True)
         # print "page is <%s>" % result
         # Verify Title of blockpage as company name
         myRegex = re.compile('<title>(.*?)</title>', re.IGNORECASE|re.DOTALL)
@@ -138,7 +138,7 @@ class BrandingManagerTests(unittest2.TestCase):
         node.setSettings(nodeData)
 
         internalAdmin = None
-        result = remote_control.runCommand("wget -q -O - \"$@\" " + global_functions.get_http_url() ,stdout=True)
+        result = remote_control.run_command("wget -q -O - \"$@\" " + global_functions.get_http_url() ,stdout=True)
         myRegex = re.compile('.*A regulation banner requirement containing a mix of text including <b>html<\/b> and<br\/>multiple<br\/>lines.*', re.DOTALL|re.MULTILINE)
         if re.match(myRegex,result):
             assert(True)
@@ -155,7 +155,7 @@ class BrandingManagerTests(unittest2.TestCase):
         node.setSettings(nodeData)
 
         internalAdmin = None
-        result = remote_control.runCommand("wget -q -O - \"$@\" " + global_functions.get_http_url() ,stdout=True)
+        result = remote_control.run_command("wget -q -O - \"$@\" " + global_functions.get_http_url() ,stdout=True)
         myRegex = re.compile('.*A regulation banner requirement containing a mix of text including <b>html<\/b> and<br\/>multiple<br\/>lines.*', re.DOTALL|re.MULTILINE)
         if re.match(myRegex,result):
             assert(False)
