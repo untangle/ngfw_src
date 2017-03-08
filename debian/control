@@ -36,6 +36,13 @@ Depends: untangle-vm
 Description: Shield
  The Shield application.
 
+Package: untangle-node-license
+Architecture: all
+Section: non-free/net
+Depends: untangle-vm
+Description: The Untangle License Manager
+ Untangle License Manager.
+
 Package: untangle-node-web-cache
 Architecture: all
 Section: non-free/net

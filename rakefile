@@ -107,6 +107,7 @@ task :targets => :download do
   require "#{SRC_HOME}/wan-balancer/package.rb"
   require "#{SRC_HOME}/wan-failover/package.rb"
   require "#{SRC_HOME}/web-cache/package.rb"
+  require "#{SRC_HOME}/license/package.rb"
 end
 
 task :build => [:builduvmcore, :targets] do
