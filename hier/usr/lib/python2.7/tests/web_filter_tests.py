@@ -525,6 +525,165 @@ class WebFilterTests(WebFilterBaseTests):
         self.rules_clear()
         assert (result == 0)
         
+    def test_010_0000_rule_condition_host_has_no_quota(self):
+        "test HOST_HAS_NO_QUOTA"
+        global_functions.host_quota_clear()
+        self.rule_add("HOST_HAS_NO_QUOTA",remote_control.get_hostname())
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_host_has_no_quota_inverse(self):
+        "test HOST_HAS_NO_QUOTA non match"
+        global_functions.host_quota_give( 1000000, 60 )
+        self.rule_add("HOST_HAS_NO_QUOTA",None)
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
+        self.rules_clear()
+        global_functions.host_quota_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_user_has_no_quota(self):
+        "test USER_HAS_NO_QUOTA"
+        global_functions.host_username_set( remote_control.get_hostname() )
+        global_functions.user_quota_clear( remote_control.get_hostname() )
+        self.rule_add("USER_HAS_NO_QUOTA",remote_control.get_hostname())
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
+        self.rules_clear()
+        global_functions.host_username_clear()
+        global_functions.user_quota_clear( remote_control.get_hostname() )
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_user_has_no_quota_inverse(self):
+        "test USER_HAS_NO_QUOTA non match"
+        global_functions.host_username_set( remote_control.get_hostname() )
+        global_functions.user_quota_give( remote_control.get_hostname(), 100000, 60 )
+        self.rule_add("USER_HAS_NO_QUOTA",None)
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
+        self.rules_clear()
+        global_functions.host_username_clear()
+        global_functions.user_quota_clear( remote_control.get_hostname() )
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_user_has_no_quota_no_user(self):
+        "test USER_HAS_NO_QUOTA non match"
+        global_functions.host_username_clear()
+        self.rule_add("USER_HAS_NO_QUOTA",None)
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
+        self.rules_clear()
+        assert (result == 0)
+        
+    def test_010_0000_rule_condition_client_has_no_quota(self):
+        "test CLIENT_HAS_NO_QUOTA"
+        global_functions.host_quota_clear()
+        self.rule_add("CLIENT_HAS_NO_QUOTA",remote_control.get_hostname())
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_client_has_no_quota_inverse(self):
+        "test CLIENT_HAS_NO_QUOTA non match"
+        global_functions.host_quota_give( 1000000, 60 )
+        self.rule_add("CLIENT_HAS_NO_QUOTA",None)
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
+        self.rules_clear()
+        global_functions.host_quota_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_server_has_no_quota(self):
+        "test SERVER_HAS_NO_QUOTA match"
+        global_functions.host_quota_give( 1000000, 60 )
+        self.rule_add("SERVER_HAS_NO_QUOTA",None)
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
+        self.rules_clear()
+        global_functions.host_quota_clear()
+        assert (result == 0)
+        
+    def test_010_0000_rule_condition_host_quota_exceeded(self):
+        "test HOST_QUOTA_EXCEEDED"
+        global_functions.host_quota_give( 1000, 300 )
+        uvmContext.hostTable().decrementQuota( remote_control.clientIP, 10000 )
+        self.rule_add("HOST_QUOTA_EXCEEDED",remote_control.get_hostname())
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
+        assert (result == 0)
+        self.rules_clear()
+        global_functions.host_quota_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_host_quota_exceeded_inverse(self):
+        "test HOST_QUOTA_EXCEEDED non match"
+        global_functions.host_quota_clear()
+        self.rule_add("HOST_QUOTA_EXCEEDED",None)
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_client_quota_exceeded(self):
+        "test CLIENT_QUOTA_EXCEEDED"
+        global_functions.host_quota_give( 1000, 300 )
+        uvmContext.hostTable().decrementQuota( remote_control.clientIP, 10000 )
+        self.rule_add("CLIENT_QUOTA_EXCEEDED",remote_control.get_hostname())
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
+        assert (result == 0)
+        self.rules_clear()
+        global_functions.host_quota_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_client_quota_exceeded_inverse(self):
+        "test CLIENT_QUOTA_EXCEEDED non match"
+        global_functions.host_quota_clear()
+        self.rule_add("CLIENT_QUOTA_EXCEEDED",None)
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_server_quota_exceeded_inverse(self):
+        "test SERVER_QUOTA_EXCEEDED non match"
+        self.rule_add("SERVER_QUOTA_EXCEEDED",None)
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_user_quota_exceeded(self):
+        "test USER_QUOTA_EXCEEDED"
+        global_functions.host_username_set( remote_control.get_hostname() )
+        global_functions.user_quota_give( remote_control.get_hostname(), 1000, 300 )
+        uvmContext.userTable().decrementQuota( remote_control.get_hostname(), 10000 )
+        self.rule_add("USER_QUOTA_EXCEEDED",remote_control.get_hostname())
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
+        assert (result == 0)
+        self.rules_clear()
+        global_functions.user_quota_clear(remote_control.get_hostname())
+        global_functions.host_username_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_user_quota_exceeded_inverse(self):
+        "test USER_QUOTA_EXCEEDED non match"
+        global_functions.host_username_set( remote_control.get_hostname() )
+        global_functions.user_quota_give( remote_control.get_hostname(), 100000000, 300 )
+        self.rule_add("USER_QUOTA_EXCEEDED",None)
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
+        self.rules_clear()
+        global_functions.user_quota_clear(remote_control.get_hostname())
+        global_functions.host_username_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_user_quota_exceeded_no_quota(self):
+        "test USER_QUOTA_EXCEEDED non match"
+        global_functions.host_username_set( remote_control.get_hostname() )
+        global_functions.user_quota_clear( remote_control.get_hostname() )
+        self.rule_add("USER_QUOTA_EXCEEDED",None)
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_user_quota_exceeded_no_user(self):
+        "test USER_QUOTA_EXCEEDED non match"
+        global_functions.host_username_clear()
+        self.rule_add("USER_QUOTA_EXCEEDED",None)
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
+        self.rules_clear()
+        assert (result == 0)
+        
     @staticmethod
     def finalTearDown(self):
         global node
