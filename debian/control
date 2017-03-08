@@ -36,6 +36,16 @@ Depends: untangle-vm
 Description: Shield
  The Shield application.
 
+Package: untangle-node-directory-connector
+Architecture: all
+Section: non-free/net
+Depends: untangle-vm, untangle-node-license, libfreeradius-client-dev, freeradius-common, untangle-google-connector, xvfb
+Conflicts: libradius1, radiusclient1, untangle-node-adconnector
+Replaces: untangle-node-adconnector
+Provides: untangle-node-adconnector
+Description: The Untangle Directory Connector
+ The Untangle Directory Connector.
+
 Package: untangle-node-configuration-backup
 Architecture: all
 Section: non-free

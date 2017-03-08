@@ -1,9 +1,9 @@
 # -*-ruby-*-
 
-directory_connector = HadesBuildEnv['untangle-node-directory-connector']
+directory_connector = BuildEnv::SRC['untangle-node-directory-connector']
 
 deps = [Jars::Base, Jars::JRadius]
-NodeBuilder.makeNode(HadesBuildEnv, 'untangle-node-directory-connector', 'directory-connector', deps)
+NodeBuilder.makeNode(BuildEnv::SRC, 'untangle-node-directory-connector', 'directory-connector', deps)
 
 uvm_lib = BuildEnv::SRC['untangle-libuvm']
 nodedeps = [directory_connector['src']]
