@@ -12,93 +12,6 @@ from uvm import Uvm
 import remote_control
 import global_functions
 
-def addBlockedUrl(node, url, blocked=True, flagged=True, description="description"):
-    node_name = node.getAppName()
-    if ("monitor" in node_name):
-        newRule = { "blocked": False, "description": description, "flagged": flagged, "javaClass": "com.untangle.uvm.node.GenericRule", "string": url }
-    else:
-        newRule = { "blocked": blocked, "description": description, "flagged": flagged, "javaClass": "com.untangle.uvm.node.GenericRule", "string": url }
-    rules = node.getBlockedUrls()
-    rules["list"].append(newRule)
-    node.setBlockedUrls(rules)
-
-def nukeBlockedUrls(node):
-    rules = node.getBlockedUrls()
-    rules["list"] = []
-    node.setBlockedUrls(rules)
-
-def addPassedUrl(node, url, enabled=True, description="description"):
-    newRule =  { "enabled": enabled, "description": description, "javaClass": "com.untangle.uvm.node.GenericRule", "string": url }
-    rules = node.getPassedUrls()
-    rules["list"].append(newRule)
-    node.setPassedUrls(rules)
-
-def nukePassedUrls(node):
-    rules = node.getPassedUrls()
-    rules["list"] = []
-    node.setPassedUrls(rules)
-
-def addWebFilterRule(node, conditionType, conditionData, blocked=True, flagged=True, description="description"):
-    newRule =  {
-        "blocked": blocked,
-        "flagged": flagged,
-        "enabled": True,
-        "description": description,
-        "javaClass": "com.untangle.node.web_filter.WebFilterRule",
-            "conditions": {
-                "javaClass": "java.util.LinkedList",
-                "list": [
-                    {
-                        "conditionType": conditionType,
-                        "invert": False,
-                        "javaClass": "com.untangle.node.web_filter.WebFilterRuleCondition",
-                        "value": conditionData
-                    }
-                ]
-            }
-        }
-    rules = node.getFilterRules()
-    rules["list"].append(newRule)
-    node.setFilterRules(rules)
-
-def nukeWebFilterRules(node):
-    rules = node.getFilterRules()
-    rules["list"] = []
-    node.setFilterRules(rules)
-
-def getWebSiteResults(node, url="http://test.untangle.com", expected=None):
-    extra_opts = ""
-    node_name = node.getAppName()
-    if ("https" in url):
-        extra_opts = "--no-check-certificate "
-    if ((expected == None) or (("monitor" in node_name) and (expected == "blockpage"))):
-        result = remote_control.runCommand("wget -q -O /dev/null -4 -t 2 --timeout=5 " + extra_opts +  url)
-    else:
-        result = remote_control.runCommand("wget -q -O - " + extra_opts + url + " 2>&1 | grep -q " + expected)
-    return result
-    
-def checkEvents(node, host="", url="", isBlocked=True):
-    node_display_name = node.getNodeTitle()
-    isFlagged = isBlocked
-    if (("Monitor" in node_display_name) and isBlocked):
-        isBlocked = False
-    if (isBlocked):
-        event_list = "Blocked Web Events"
-    elif (isFlagged):
-        event_list = "Flagged Web Events"
-    else:
-        event_list = "All Web Events"
-#    event_list = "All Web Events"
-    time.sleep(1);
-    events = global_functions.get_events(node_display_name, event_list, None, 5)
-    assert(events != None)
-    found = global_functions.check_events( events.get('list'), 5,
-                                        "host", host,
-                                        "uri", url,
-                                        'web_filter_blocked', isBlocked,
-                                        'web_filter_flagged', isFlagged )
-    return found
-
 class WebFilterBaseTests(unittest2.TestCase):
 
     @staticmethod
@@ -117,9 +30,94 @@ class WebFilterBaseTests(unittest2.TestCase):
     def displayName():
         return "Web Filter"
 
+    def block_url_list_add(self, url, blocked=True, flagged=True, description="description"):
+        node_name = self.node.getAppName()
+        if ("monitor" in node_name):
+            newRule = { "blocked": False, "description": description, "flagged": flagged, "javaClass": "com.untangle.uvm.node.GenericRule", "string": url }
+        else:
+            newRule = { "blocked": blocked, "description": description, "flagged": flagged, "javaClass": "com.untangle.uvm.node.GenericRule", "string": url }
+        rules = self.node.getBlockedUrls()
+        rules["list"].append(newRule)
+        self.node.setBlockedUrls(rules)
+
+    def block_url_list_clear(self):
+        rules = self.node.getBlockedUrls()
+        rules["list"] = []
+        self.node.setBlockedUrls(rules)
+
+    def pass_url_list_add(self, url, enabled=True, description="description"):
+        newRule =  { "enabled": enabled, "description": description, "javaClass": "com.untangle.uvm.node.GenericRule", "string": url }
+        rules = self.node.getPassedUrls()
+        rules["list"].append(newRule)
+        self.node.setPassedUrls(rules)
+
+    def pass_url_list_clear(self):
+        rules = self.node.getPassedUrls()
+        rules["list"] = []
+        self.node.setPassedUrls(rules)
+
+    def rule_add(self, conditionType, conditionData, blocked=True, flagged=True, description="description"):
+        newRule =  {
+            "blocked": blocked,
+            "flagged": flagged,
+            "enabled": True,
+            "description": description,
+            "javaClass": "com.untangle.node.web_filter.WebFilterRule",
+                "conditions": {
+                    "javaClass": "java.util.LinkedList",
+                    "list": [
+                        {
+                            "conditionType": conditionType,
+                            "invert": False,
+                            "javaClass": "com.untangle.node.web_filter.WebFilterRuleCondition",
+                            "value": conditionData
+                        }
+                    ]
+                }
+            }
+        rules = self.node.getFilterRules()
+        rules["list"].append(newRule)
+        self.node.setFilterRules(rules)
+
+    def rules_clear(self):
+        rules = self.node.getFilterRules()
+        rules["list"] = []
+        self.node.setFilterRules(rules)
+
+    def get_web_request_results(self, url="http://test.untangle.com", expected=None):
+        extra_opts = ""
+        node_name = self.node.getAppName()
+        if ("https" in url):
+            extra_opts = "--no-check-certificate "
+        if ((expected == None) or (("monitor" in node_name) and (expected == "blockpage"))):
+            result = remote_control.runCommand("wget -q -O /dev/null -4 -t 2 --timeout=5 " + extra_opts +  url)
+        else:
+            result = remote_control.runCommand("wget -q -O - " + extra_opts + url + " 2>&1 | grep -q " + expected)
+        return result
+
+    def check_events(self, host="", uri="", blocked=True, flagged=None):
+        node_display_name = self.node.getNodeTitle()
+        if flagged == None:
+            flagged = blocked
+        if (("Monitor" in node_display_name) and blocked):
+            blocked = False
+        if (blocked):
+            event_list = "Blocked Web Events"
+        elif (flagged):
+            event_list = "Flagged Web Events"
+        else:
+            event_list = "All Web Events"
+        events = global_functions.get_events(node_display_name, event_list, None, 5)
+        assert(events != None)
+        found = global_functions.check_events( events.get('list'), 5,
+                                            "host", host,
+                                            "uri", uri,
+                                            'web_filter_blocked', blocked,
+                                            'web_filter_flagged', flagged )
+        return found
+    
     @staticmethod
     def initialSetUp(self):
-        global node
         if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
             raise Exception('node %s already instantiated' % self.nodeName())
         node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
@@ -129,350 +127,341 @@ class WebFilterBaseTests(unittest2.TestCase):
     def setUp(self):
         pass
 
-    # verify client is online
-    def test_010_clientIsOnline(self):
+    def test_010_client_is_online(self):
         result = remote_control.isOnline()
         assert (result == 0)
 
-    # verify porn site is blocked in default config
-    def test_011_defaultPornIsBlocked(self):
-        result = getWebSiteResults(self.node, url="http://playboy.com/", expected="blockpage")
+    def test_011_test_untangle_com_reachable(self):
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
         assert (result == 0)
-        found = checkEvents(self.node, "playboy.com", "/", True)
+        found = self.check_events("test.untangle.com", "/test/testPage1.html", False)
         assert( found )
 
-    # verify porn site is blocked in default config
-    def test_012_defaultPornIsBlockedWithSubdomain(self):
-        result = getWebSiteResults(self.node, url="http://www.playboy.com/", expected="blockpage")
+    def test_012_porn_is_blocked_by_default(self):
+        result = self.get_web_request_results(url="http://playboy.com/", expected="blockpage")
         assert (result == 0)
-        found = checkEvents(self.node, "www.playboy.com", "/", True)
+        found = self.check_events("playboy.com", "/", True)
         assert( found )
 
-    # verify porn site is blocked in default config
-    def test_013_defaultPornIsBlockedWithUrl(self):
-        result = getWebSiteResults(self.node, url="http://www.playboy.com/", expected="blockpage")
+    def test_013_porn_subdomain_is_blocked_by_default(self):
+        result = self.get_web_request_results(url="http://www.playboy.com/", expected="blockpage")
         assert (result == 0)
-        found = checkEvents(self.node, "www.playboy.com", "/", True)
+        found = self.check_events("www.playboy.com", "/", True)
         assert( found )
 
-    # verify porn site is blocked in default config
-    def test_014_defaultPornIsBlockedWithUrlAndSubdomain(self):
-        result = getWebSiteResults(self.node, url="http://www.playboy.com/bunnies.html", expected="blockpage")
+    def test_014_porn_subdomain_and_url_is_blocked_by_default(self):
+        result = self.get_web_request_results(url="http://www.playboy.com/bunnies.html", expected="blockpage")
         assert (result == 0)
-        found = checkEvents(self.node, "www.playboy.com", "/bunnies.html", True)
+        found = self.check_events("www.playboy.com", "/bunnies.html", True)
         assert( found )
 
-    # verify test site is not blocked in default config
-    def test_015_defaultTestSiteIsNotBlocked(self):
-        result = getWebSiteResults(self.node, url="http://test.untangle.com/test/testPage1.html", expected="text123")
+    def test_017_blockflag_url_right_side(self):
+        """verify that the right side is anchored with ".*$" """
+        self.block_url_list_add("test.untangle.com/test/")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
+        self.block_url_list_clear()
         assert (result == 0)
-        found = checkEvents(self.node, "test.untangle.com", "/test/testPage1.html", False)
+        found = self.check_events("test.untangle.com", "/test/testPage1.html", True)
         assert( found )
 
-    # verify that a block list entry does not match when the URI doesnt match exactly
-    def test_017_blockedUrl2(self):
-        addBlockedUrl(self.node, "test.untangle.com/test/testPage1.html")
-        # this test URL should NOT be blocked (testPage1 vs testPage2)
-        result = getWebSiteResults(self.node, url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
-        assert (result == 0)
-        nukeBlockedUrls(self.node)
-        found = checkEvents(self.node, "test.untangle.com", "/test/testPage1.html", True)
-        assert( found )
-
-    # verify that a block list entry correctly appends "(/.*)?" to the rigth side anchor
-    def test_018_blockedUrlRightSideAnchor(self):
-        addBlockedUrl(self.node, "test.untangle.com/test([\\\?/]\.\*)\?$")
-        # this test URL should NOT be blocked (testPage1 vs testPage2)
-        result0 = getWebSiteResults(self.node, url="http://test.untangle.com/testPage1.html", expected="text123")
-        result1 = getWebSiteResults(self.node, url="http://test.untangle.com/test/", expected="blockpage")
-        nukeBlockedUrls(self.node)
+    def test_018_blockflag_url_right_side_anchor(self):
+        """verify that the right side anchor is not added if a $ is specified"""
+        self.block_url_list_add("test.untangle.com/test/$")
+        result0 = self.get_web_request_results(url="http://test.untangle.com/testPage1.html", expected="text123")
+        result1 = self.get_web_request_results(url="http://test.untangle.com/test/", expected="blockpage")
+        self.block_url_list_clear()
         assert (result0 == 0)
         assert (result1 == 0)
-        found0 = checkEvents(self.node, "test.untangle.com", "/testPage1.html", False)
-        found1 = checkEvents(self.node, "test.untangle.com", "/test/", True)
+        found0 = self.check_events("test.untangle.com", "/testPage1.html", False)
+        found1 = self.check_events("test.untangle.com", "/test/", True)
         assert( found0 )
         assert( found1 )
 
-    # verify that a block list entry does not match when the URI capitalization is different
-    def test_019_blockedUrlCapitalization(self):
-        addBlockedUrl(self.node, "test.untangle.com/test/testPage1.html")
+    def test_020_blockflag_url_case_sensitivity(self):
+        """verify that a block list entry does not match when the URI capitalization is different"""
+        self.block_url_list_add("test.untangle.com/test/testPage1.html")
         # this test URL should NOT be blocked (capitalization is different)
-        result = getWebSiteResults(self.node, url="http://test.untangle.com/test/testpage1.html", expected="text123")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testpage1.html", expected="text123")
+        self.block_url_list_clear()
         assert (result == 0)
-        nukeBlockedUrls(self.node)
 
-    # verify that a block list glob functions with * at the end
-    def test_030_blockedUrlGlobStar(self):
-        addBlockedUrl(self.node, "test.untangle.com/test/test*")
-        # this test URL should be blocked
-        result = getWebSiteResults(self.node, url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
+    def test_021_blockflag_url_case_sensitivity_domain(self):
+        """verify that a block list entry does match when the DOMAIN capitalization is different"""
+        self.block_url_list_add("test.untangle.com/test/testPage1.html")
+        # this test URL should be blocked (capitalization of domain is different, URL captilatization is the same)
+        result = self.get_web_request_results(url="http://TEST.untangle.com/test/testPage1.html", expected="blockpage")
+        self.block_url_list_clear()
         assert (result == 0)
-        nukeBlockedUrls(self.node)
-        found = checkEvents(self.node, "test.untangle.com", "/test/testPage1.html", True)
+        
+    def test_030_blockflag_url_glob_star(self):
+        """verify that a block list glob functions with * at the end"""
+        self.block_url_list_add("test.untangle.com/test/test*")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
+        self.block_url_list_clear()
+        assert (result == 0)
+        found = self.check_events("test.untangle.com", "/test/testPage1.html", True)
         assert( found )
 
-    # verify that a block list glob functions with * at the end and at the beginning
-    def test_031_blockedUrlGlobStar(self):
-        addBlockedUrl(self.node, "tes*tangle.com/test/test*")
+    def test_031_blockflag_url_glob_star_multi(self):
+        """verify that a block list glob functions with * at the end and at the beginning"""
+        self.block_url_list_add("tes*tangle.com/test/test*")
         # this test URL should be blocked
-        result = getWebSiteResults(self.node, url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
+        self.block_url_list_clear()
         assert (result == 0)
-        nukeBlockedUrls(self.node)
-        found = checkEvents(self.node, "test.untangle.com", "/test/testPage1.html", True)
+        found = self.check_events("test.untangle.com", "/test/testPage1.html", True)
         assert( found )
 
-    # verify that a block list glob functions with * at the end and at the beginning and in the middle
-    def test_032_blockedUrlGlobStar(self):
-        addBlockedUrl(self.node, "*est*angle.com/test/test*")
+    def test_032_blockflag_url_glob_star_begin_and_end(self):
+        """verify that a block list glob functions with * at the end and at the beginning and in the middle"""
+        self.block_url_list_add("*est*angle.com/test/test*")
         # this test URL should be blocked
-        result = getWebSiteResults(self.node, url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
+        self.block_url_list_clear()
         assert (result == 0)
-        nukeBlockedUrls(self.node)
-        found = checkEvents(self.node, "test.untangle.com", "/test/testPage1.html", True)
+        found = self.check_events("test.untangle.com", "/test/testPage1.html", True)
         assert( found )
 
-    # verify that a block list glob matches the whole URL
-    def test_033_blockedUrlGlobStar(self):
-        addBlockedUrl(self.node, "test.untangle.com*")
+    def test_033_blockflag_url_glob_star_whoreuri(self):
+        """verify that a block list glob matches the whole URL"""
+        self.block_url_list_add("test.untangle.com*")
         # this test URL should be blocked
-        result = getWebSiteResults(self.node, url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
         assert (result == 0)
-        nukeBlockedUrls(self.node)
-        found = checkEvents(self.node, "test.untangle.com", "/test/testPage1.html", True)
+        self.block_url_list_clear()
+        found = self.check_events("test.untangle.com", "/test/testPage1.html", True)
         assert( found )
 
-    # verify that a block list glob * matches zero characters
-    def test_034_blockedUrlGlobStar(self):
-        addBlockedUrl(self.node, "te*st.untangle.com*")
+    def test_034_blockflag_url_glob_star_zerolen(self):
+        """verify that a block list glob * matches zero characters"""
+        self.block_url_list_add("te*st.untangle.com*")
         # this test URL should NOT be blocked
-        result = getWebSiteResults(self.node, url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
+        self.block_url_list_clear()
         assert (result == 0)
-        nukeBlockedUrls(self.node)
-        found = checkEvents(self.node, "test.untangle.com", "/test/testPage1.html", True)
+        found = self.check_events("test.untangle.com", "/test/testPage1.html", True)
         assert( found )
 
-    # verify that a block list glob * doesnt overmatch
-    def test_035_blockedUrlGlobStar(self):
-        addBlockedUrl(self.node, "test.untangle.com/test/testP*.html")
+    def test_035_blockflag_url_glob_star_no_overmatch(self):
+        """verify that a block list glob * doesnt overmatch"""
+        self.block_url_list_add("test.untangle.com/test/testP*.html")
         # this test URL should NOT be blocked (uri is different)
-        result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/test.html 2>&1 | grep -q text123")
-        nukeBlockedUrls(self.node)
+        self.block_url_list_clear()
+        result = self.get_web_request_results(url="http://test.untangle.com/test/test.html", expected="text123")
         assert (result == 0)
-        found = checkEvents(self.node, "test.untangle.com", "/test/test.html", False)
+        found = self.check_events("test.untangle.com", "/test/test.html", False)
         assert( found )
 
-    # verify that a block list glob ? matches a single character
-    def test_036_blockedUrlGlobQuestionMark(self):
-        addBlockedUrl(self.node, "te?t.untangle.com/test/testP?ge1.html")
+    def test_036_blockflag_url_glob_question_mark(self):
+        """verify that a block list glob ? matches a single character"""
+        self.block_url_list_add("te?t.untangle.com/test/testP?ge1.html")
         # this test URL should be blocked
-        result = getWebSiteResults(self.node, url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
+        self.block_url_list_clear()
         assert (result == 0)
-        nukeBlockedUrls(self.node)
-        found = checkEvents(self.node, "test.untangle.com", "/test/testPage1.html", True)
+        found = self.check_events("test.untangle.com", "/test/testPage1.html", True)
         assert( found )
 
-    # verify that a block list glob ? matches ONLY single character (but not two or more)
-    def test_037_blockedUrlGlobQuestionMark(self):
-        addBlockedUrl(self.node, "metalo?t.com/test/testP?.html")
+    def test_037_blockflag_url_glob_question_mark_only_one_char(self):
+        """verify that a block list glob ? matches ONLY single character (but not two or more)"""
+        self.block_url_list_add("metalo?t.com/test/testP?.html")
         # this test URL should NOT be blocked
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q text123")
-        nukeBlockedUrls(self.node)
+        self.block_url_list_clear()
         assert (result == 0)
-        found = checkEvents(self.node, "test.untangle.com", "/test/testPage1.html", False)
+        found = self.check_events("test.untangle.com", "/test/testPage1.html", False)
         assert( found )
 
-    # verify that the full URI is included in the match (even things after argument) bug #10067
-    def test_038_blockedUrlGlobArgument(self):
-        addBlockedUrl(self.node, "test.untangle.com/*foo*")
+    def test_038_blockflag_url_glob_argument(self):
+        """verify that the full URI is included in the match (even things in arguments) bug #10067"""
+        self.block_url_list_add("test.untangle.com/*foo*")
         # this test URL should NOT be blocked
-        result = getWebSiteResults(self.node, url="http://test.untangle.com/test/testPage1.html?arg=foobar", expected="blockpage")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html?arg=foobar", expected="blockpage")
+        self.block_url_list_clear()
         assert (result == 0)
-        nukeBlockedUrls(self.node)
-        found = checkEvents(self.node, "test.untangle.com", "/test/testPage1.html?arg=foobar", True)
+        found = self.check_events("test.untangle.com", "/test/testPage1.html?arg=foobar", True)
         assert( found )
 
-    # verify that untangle.com block rule also blocks test.untangle.com
-    def test_039_blockedUrlSubdomain(self):
-        addBlockedUrl(self.node, "untangle.com")
+    def test_039_blockflag_url_subdomain(self):
+        """verify that untangle.com block rule also blocks test.untangle.com"""
+        self.block_url_list_add("untangle.com")
         # this test URL should NOT be blocked
-        result = getWebSiteResults(self.node, url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
         assert (result == 0)
-        nukeBlockedUrls(self.node)
-        found = checkEvents(self.node, "test.untangle.com", "/test/testPage1.html", True)
+        self.block_url_list_clear()
+        found = self.check_events("test.untangle.com", "/test/testPage1.html", True)
         assert( found )
 
-    # verify that t.untangle.com block rule DOES NOT block test.untangle.com ( it should block foo.t.untangle.com though )
-    def test_040_blockedUrlSubdomain2(self):
-        addBlockedUrl(self.node, "t.untangle.com")
-        # this test URL should NOT be blocked
-        result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q text123")
-        nukeBlockedUrls(self.node)
-        assert (result == 0)
-        found = checkEvents(self.node, "test.untangle.com", "/test/testPage1.html", False)
-        assert( found )
-
-    # verify that a the action in taken from the first rule
-    def test_045_blockedUrlRuleOrder(self):
-        addBlockedUrl(self.node, "test.untangle.com/test/testPage1.html", blocked=False, flagged=True)
-        addBlockedUrl(self.node, "test.untangle.com", blocked=True, flagged=True)
+    def test_040_blockflag_url_subdomain_no_substring(self):
+        """verify that t.untangle.com block rule DOES NOT block test.untangle.com ( it should block foo.t.untangle.com though )"""
+        self.block_url_list_add("t.untangle.com")
         # this test URL should NOT be blocked
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q text123")
-        nukeBlockedUrls(self.node)
+        self.block_url_list_clear()
         assert (result == 0)
-        found = checkEvents(self.node, "test.untangle.com", "/test/testPage1.html", False)
+        found = self.check_events("test.untangle.com", "/test/testPage1.html", False)
         assert( found )
 
-    # verify that a the action in taken from the second rule (first rule doesn't match)
-    def test_046_blockedUrlRuleOrder(self):
-        addBlockedUrl(self.node, "test.untangle.com/test/testPage1.html", blocked=False, flagged=True)
-        addBlockedUrl(self.node, "test.untangle.com", blocked=True, flagged=True)
+    def test_045_blockflag_url_order(self):
+        """verify that a the action in taken from the first rule"""
+        self.block_url_list_add("test.untangle.com/test/testPage1.html", blocked=False, flagged=False)
+        self.block_url_list_add("test.untangle.com", blocked=True, flagged=True)
+        # this test URL should NOT be blocked
+        result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q text123")
+        self.block_url_list_clear()
+        assert (result == 0)
+        found = self.check_events("test.untangle.com", "/test/testPage1.html", blocked=False)
+        assert( found )
+
+    def test_046_blockflag_url_rule_order_inverse(self):
+        """verify that a the action in taken from the second rule (first rule doesn't match)"""
+        self.block_url_list_add("test.untangle.com/test/testPage1.html", blocked=False, flagged=True)
+        self.block_url_list_add("test.untangle.com", blocked=True, flagged=True)
         # this test URL should be blocked
-        result = getWebSiteResults(self.node, url="http://test.untangle.com/test/testPage2.html", expected="blockpage")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage2.html", expected="blockpage")
+        self.block_url_list_clear()
         assert (result == 0)
-        nukeBlockedUrls(self.node)
-        found = checkEvents(self.node, "test.untangle.com", "/test/testPage2.html", True)
+        found = self.check_events("test.untangle.com", "/test/testPage2.html", True)
         assert( found )
 
-    # verify that an entry in the pass list overrides a blocked category
-    def test_050_passedUrlOverridesBlockedCategory(self):
-        addPassedUrl(self.node, "playboy.com")
+    def test_050_pass_url_overrides_category(self):
+        """verify that an entry in the pass list overrides a blocked category"""
+        self.pass_url_list_add("playboy.com")
         # this test URL should NOT be blocked (porn is blocked by default, but playboy.com now on pass list
-        result1 = getWebSiteResults(self.node, url="http://playboy.com/")
-        result2 = getWebSiteResults(self.node, url="http://www.playboy.com/")
-        nukeBlockedUrls(self.node)
+        result1 = self.get_web_request_results(url="http://playboy.com/")
+        result2 = self.get_web_request_results(url="http://www.playboy.com/")
+        self.block_url_list_clear()
         assert (result1 == 0)
         assert (result2 == 0)
-        found1 = checkEvents(self.node, "playboy.com", "/", False)
-        found2 = checkEvents(self.node, "www.playboy.com", "/", False)
+        found1 = self.check_events("playboy.com", "/", False)
+        found2 = self.check_events("www.playboy.com", "/", False)
         assert( found1 )
         assert( found2 )
 
-    # verify that an entry in the pass list overrides a blocked category
-    def test_051_passedUrlOverridesBlockedUrl(self):
-        addBlockedUrl(self.node, "test.untangle.com")
-        addPassedUrl(self.node, "test.untangle.com/test/")
+    def test_051_pass_url_overrides_blocked_url(self):
+        """verify that an entry in the pass list overrides a blocked category"""
+        self.block_url_list_add("test.untangle.com")
+        self.pass_url_list_add("test.untangle.com/test/")
         # this test URL should NOT be blocked
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q text123")
-        nukeBlockedUrls(self.node)
-        nukePassedUrls(self.node)
+        self.block_url_list_clear()
+        self.pass_url_list_clear()
         assert (result == 0)
-        found = checkEvents(self.node, "test.untangle.com", "/test/testPage1.html", False)
+        found = self.check_events("test.untangle.com", "/test/testPage1.html", False)
         assert( found )
 
-    # verify that an entry in the pass list overrides a blocked category
-    def test_052_passedUrlOverridesBlockedMimeType(self):
-        nukeWebFilterRules(self.node)
-        addWebFilterRule(self.node, "WEB_FILTER_RESPONSE_CONTENT_TYPE","text/plain")
-        addPassedUrl(self.node, "test.untangle.com/test/")
+    def test_052_pass_url_overrides_rule_content_type(self):
+        """verify that an entry in the pass list overrides a blocked category"""
+        self.rules_clear()
+        self.rule_add("WEB_FILTER_RESPONSE_CONTENT_TYPE","text/plain")
+        self.pass_url_list_add("test.untangle.com/test/")
         # this test URL should NOT be blocked
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/test.txt 2>&1 | grep -q text123")
-        nukeBlockedUrls(self.node)
-        nukePassedUrls(self.node)
+        self.block_url_list_clear()
+        self.pass_url_list_clear()
         assert (result == 0)
 
-    # verify that an entry in the pass list overrides a blocked category
-    def test_053_passedUrlOverridesBlockedExtension(self):
-        nukeWebFilterRules(self.node)
-        addWebFilterRule(self.node, "WEB_FILTER_REQUEST_FILE_EXTENSION","txt")
-        addPassedUrl(self.node, "test.untangle.com/test/")
+    def test_053_pass_url_overrides_url_extension(self):
+        """verify that an entry in the pass list overrides a blocked category"""
+        self.rules_clear()
+        self.rule_add("WEB_FILTER_REQUEST_FILE_EXTENSION","txt")
+        self.pass_url_list_add("test.untangle.com/test/")
         # this test URL should NOT be blocked
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/test.txt 2>&1 | grep -q text123")
-        nukeBlockedUrls(self.node)
-        nukePassedUrls(self.node)
+        self.block_url_list_clear()
+        self.pass_url_list_clear()
         assert (result == 0)
-        found = checkEvents(self.node, "test.untangle.com", "/test/test.txt", False)
+        found = self.check_events("test.untangle.com", "/test/test.txt", False)
         assert( found )
 
-    # verify that an entry in the mime type block list functions
-    def test_060_blockedMimeType(self):
-        nukeWebFilterRules(self.node)
-        addWebFilterRule(self.node, "WEB_FILTER_RESPONSE_CONTENT_TYPE","text/plain")
+    def test_060_rule_condition_response_content_type(self):
+        """verify that WEB_FILTER_RESPONSE_CONTENT_TYPE matches"""
+        self.rules_clear()
+        self.rule_add("WEB_FILTER_RESPONSE_CONTENT_TYPE","text/plain")
         # this test URL should be blocked
-        result = getWebSiteResults(self.node, url="http://test.untangle.com/test/test.txt", expected="blockpage")
-        nukeWebFilterRules(self.node)
+        result = self.get_web_request_results(url="http://test.untangle.com/test/test.txt", expected="blockpage")
+        self.rules_clear()
         assert (result == 0)
-        found = checkEvents(self.node, "test.untangle.com", "/test/test.txt", True)
+        found = self.check_events("test.untangle.com", "/test/test.txt", True)
         assert( found )
 
-    # verify that an entry in the mime type block list doesn't overmatch
-    def test_061_blockedMimeType(self):
-        nukeWebFilterRules(self.node)
-        addWebFilterRule(self.node, "WEB_FILTER_RESPONSE_CONTENT_TYPE","text/plain")
+    def test_061_rule_condition_response_content_type_inverse(self):
+        """verify that WEB_FILTER_RESPONSE_CONTENT_TYPE does not overmatch"""
+        self.rules_clear()
+        self.rule_add("WEB_FILTER_RESPONSE_CONTENT_TYPE","text/plain")
         # this test URL should NOT be blocked (its text/html not text/plain)
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/test.html 2>&1 | grep -q text123")
-        nukeWebFilterRules(self.node)
+        self.rules_clear()
         assert (result == 0)
-        found = checkEvents(self.node, "test.untangle.com", "/test/test.html", False)
+        found = self.check_events("test.untangle.com", "/test/test.html", False)
         assert( found )
 
-    # verify that an entry in the file extension block list functions
-    def test_070_blockedExtension(self):
-        nukeWebFilterRules(self.node)
-        addWebFilterRule(self.node, "WEB_FILTER_REQUEST_FILE_EXTENSION","txt")
+    def test_070_rule_condition_request_file_extension(self):
+        """verify that WEB_FILTER_REQUEST_FILE_EXTENSION matches"""
+        self.rules_clear()
+        self.rule_add("WEB_FILTER_REQUEST_FILE_EXTENSION","txt")
         # this test URL should be blocked
-        result = getWebSiteResults(self.node, url="http://test.untangle.com/test/test.txt", expected="blockpage")
-        nukeWebFilterRules(self.node)
+        result = self.get_web_request_results(url="http://test.untangle.com/test/test.txt", expected="blockpage")
+        self.rules_clear()
         assert (result == 0)
-        found = checkEvents(self.node, "test.untangle.com", "/test/test.txt", True)
+        found = self.check_events("test.untangle.com", "/test/test.txt", True)
         assert( found )
 
-    # verify that an entry in the file extension block list doesn't overmatch
-    def test_071_blockedExtension(self):
-        nukeWebFilterRules(self.node)
-        addWebFilterRule(self.node, "WEB_FILTER_REQUEST_FILE_EXTENSION","txt")
+    def test_071_rule_condition_request_file_extension_inverse(self):
+        """verify that WEB_FILTER_REQUEST_FILE_EXTENSION does not overmatch"""
+        self.rules_clear()
+        self.rule_add("WEB_FILTER_REQUEST_FILE_EXTENSION","txt")
         # this test URL should NOT be blocked (its text/html not text/plain)
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/test.html 2>&1 | grep -q text123")
-        nukeWebFilterRules(self.node)
+        self.rules_clear()
         assert (result == 0)
-        found = checkEvents(self.node, "test.untangle.com", "/test/test.html", False)
+        found = self.check_events("test.untangle.com", "/test/test.html", False)
         assert( found )
 
-    # verify that an entry in the file extension block list doesn't overmatch
-    def test_072_blockedExtension(self):
-        nukeWebFilterRules(self.node)
-        addWebFilterRule(self.node, "WEB_FILTER_REQUEST_FILE_EXTENSION","tml") # not this should only block ".tml" not ".html"
+    def test_072_rule_condition_request_file_extension_anchored(self):
+        """verify that WEB_FILTER_REQUEST_FILE_EXTENSION does not overmatch by assuming a ."""
+        self.rules_clear()
+        self.rule_add("WEB_FILTER_REQUEST_FILE_EXTENSION","tml") # not this should only block ".tml" not ".html"
         # this test URL should NOT be blocked (its text/html not text/plain)
         result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/test.html 2>&1 | grep -q text123")
-        nukeWebFilterRules(self.node)
+        self.rules_clear()
         assert (result == 0)
-        found = checkEvents(self.node, "test.untangle.com", "/test/test.html", False)
+        found = self.check_events("test.untangle.com", "/test/test.html", False)
         assert( found )
 
-    # verify that an entry in the file extension block list functions
-    def test_073_blockedExtensionWithArgument(self):
-        nukeWebFilterRules(self.node)
-        addWebFilterRule(self.node, "WEB_FILTER_REQUEST_FILE_EXTENSION","txt")
+    def test_073_rule_condition_request_file_extension_with_arguments(self):
+        """verify that WEB_FILTER_REQUEST_FILE_EXTENSION matches with arguments"""
+        self.rules_clear()
+        self.rule_add("WEB_FILTER_REQUEST_FILE_EXTENSION","txt")
         # this test URL should be blocked
-        result = getWebSiteResults(self.node, url="http://test.untangle.com/test/test.txt?argument", expected="blockpage")
-        nukeWebFilterRules(self.node)
+        result = self.get_web_request_results(url="http://test.untangle.com/test/test.txt?argument", expected="blockpage")
+        self.rules_clear()
         assert (result == 0)
-        found = checkEvents(self.node, "test.untangle.com", "/test/test.txt?argument", True)
+        found = self.check_events("test.untangle.com", "/test/test.txt?argument", True)
         assert( found )
 
-    def test_101_eventlog_flaggedUrl(self):
+    def test_101_reports_flagged_url(self):
+        """check the Flagged Web Events report"""
         fname = sys._getframe().f_code.co_name
-        nukeBlockedUrls(self.node);
-        addBlockedUrl(self.node, "test.untangle.com/test/testPage1.html", blocked=False, flagged=True)
+        self.block_url_list_clear();
+        self.block_url_list_add("test.untangle.com/test/testPage1.html", blocked=False, flagged=True)
         # specify an argument so it isn't confused with other events
         result1 = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html?arg=%s 2>&1 >/dev/null" % fname)
-        time.sleep(1);
-
         events = global_functions.get_events(self.displayName(),'Flagged Web Events',None,5)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
-                                            "host","test.untangle.com",
-                                            "uri", ("/test/testPage1.html?arg=%s" % fname),
-                                            'web_filter_blocked', False,
-                                            'web_filter_flagged', True )
+                                               "host","test.untangle.com",
+                                               "uri", ("/test/testPage1.html?arg=%s" % fname),
+                                               'web_filter_blocked', False,
+                                               'web_filter_flagged', True )
         assert( found )
 
-    def test_102_eventlog_allUrls(self):
+    def test_102_reports_all_urls(self):
+        """check the All Web Events report"""
         fname = sys._getframe().f_code.co_name
-        nukeBlockedUrls(self.node);
+        self.block_url_list_clear();
         # specify an argument so it isn't confused with other events
         result1 = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html?arg=%s 2>&1 >/dev/null" % fname)
-        time.sleep(1);
-
         events = global_functions.get_events(self.displayName(),'All Web Events',None,5)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
@@ -482,87 +471,88 @@ class WebFilterBaseTests(unittest2.TestCase):
                                             'web_filter_flagged', False )
         assert( found )
 
-    # verify client is online
-    def test_510_clientIsOnlineHttps(self):
+    def test_510_client_is_online_https(self):
+        """verify client is online HTTPS"""
         global remote_control
         result = remote_control.runCommand("wget -q -O /dev/null -4 -t 2 --timeout=5 --no-check-certificate -o /dev/null https://test.untangle.com/")
         assert (result == 0)
 
-    # check for block page with HTTPS request
-    def test_530_httpsPornIsBlocked(self):
-        result = getWebSiteResults(self.node, url="https://www.playboy.com/", expected="blockpage")
+    def test_530_https_porn_is_blocked(self):
+        """check for block page with HTTPS request"""
+        result = self.get_web_request_results(url="https://www.playboy.com/", expected="blockpage")
         assert (result == 0)
-        found = checkEvents(self.node, "www.playboy.com", "/", True)
+        found = self.check_events("www.playboy.com", "/", True)
         assert( found )
 
-    # Check SNI block list handling
-    def test_550_httpsBlockListWithSNI(self):
-        addBlockedUrl(self.node, "test.untangle.com")
-        result = getWebSiteResults(self.node, url="https://test.untangle.com/test/testPage1.html", expected="blockpage")
+    def test_550_https_with_sni(self):
+        """Check SNI block list handling"""
+        self.block_url_list_add("test.untangle.com")
+        result = self.get_web_request_results(url="https://test.untangle.com/test/testPage1.html", expected="blockpage")
+        self.block_url_list_clear()
         assert (result == 0)
-        nukeBlockedUrls(self.node)
-        found = checkEvents(self.node, "test.untangle.com", "/", True)
+        found = self.check_events("test.untangle.com", "/", True)
         assert( found )
 
-    # verify that a block list glob * doesnt overmatch
-    def test_560_blockedUrlGlobStarWithSNI(self):
-        addBlockedUrl(self.node, "*st.untangle.com")
-        result = getWebSiteResults(self.node, url="https://test.untangle.com/test/testPage1.html", expected="blockpage")
+    def test_560_https_blockflag_glob_sni(self):
+        """verify that a block list glob * matches"""
+        self.block_url_list_add("*st.untangle.com")
+        result = self.get_web_request_results(url="https://test.untangle.com/test/testPage1.html", expected="blockpage")
+        self.block_url_list_clear()
         assert (result == 0)
-        nukeBlockedUrls(self.node)
-        found = checkEvents(self.node, "test.untangle.com", "/", True)
+        found = self.check_events("test.untangle.com", "/", True)
         assert( found )
 
-    # verify that a block list glob ? matches a single character
-    def test_561_blockedUrlGlobQuestionMarkWithSNI(self):
-        addBlockedUrl(self.node, "t?st.untangle.com")
-        result = getWebSiteResults(self.node, url="https://test.untangle.com/test/testPage1.html", expected="blockpage")
+    def test_561_https_blockflag_glob_question_mark(self):
+        """verify that a block list glob ? matches a single character"""
+        self.block_url_list_add("t?st.untangle.com")
+        result = self.get_web_request_results(url="https://test.untangle.com/test/testPage1.html", expected="blockpage")
+        self.block_url_list_clear()
         assert (result == 0)
-        nukeBlockedUrls(self.node)
-        found = checkEvents(self.node, "test.untangle.com", "/", True)
+        found = self.check_events("test.untangle.com", "/", True)
         assert( found )
 
-    # verify that untangle.com block rule also blocks test.untangle.com
-    def test_562_blockedUrlSubdomainWithSNI(self):
-        addBlockedUrl(self.node,"untangle.com")
+    def test_562_https_blockflag_subdomain(self):
+        """verify that untangle.com block rule also blocks test.untangle.com"""
+        self.block_url_list_add("untangle.com")
         # this test URL should NOT be blocked
-        result = getWebSiteResults(self.node, url="https://test.untangle.com/test/testPage1.html", expected="blockpage")
+        result = self.get_web_request_results(url="https://test.untangle.com/test/testPage1.html", expected="blockpage")
         assert (result == 0)
-        nukeBlockedUrls(self.node)
-        found = checkEvents(self.node, "test.untangle.com", "/", True)
+        self.block_url_list_clear()
+        found = self.check_events("test.untangle.com", "/", True)
         assert( found )
 
-     # verify that t.untangle.com block rule DOES NOT block test.untangle.com ( it should block foo.t.untangle.com though )
-    def test_563_blockedUrlSubdomain2WithSNI(self):
-        addBlockedUrl(self.node,"t.untangle.com")
+    def test_563_https_blockflag_subdomain_no_substring(self):
+        """verify that t.untangle.com block rule DOES NOT block test.untangle.com ( it should block foo.t.untangle.com though )"""
+        self.block_url_list_add("t.untangle.com")
         # this test URL should NOT be blocked
-        result = getWebSiteResults(self.node, url="https://test.untangle.com/test/testPage1.html", expected="text123")
+        result = self.get_web_request_results(url="https://test.untangle.com/test/testPage1.html", expected="text123")
+        self.block_url_list_clear()
         assert (result == 0)
-        nukeBlockedUrls(self.node)
-        found = checkEvents(self.node, "test.untangle.com", "/", False)
+        found = self.check_events("test.untangle.com", "/", False)
         assert( found )
 
-     # verify that an entry in the pass list overrides a blocked category
-    def test_564_passedUrlOverridesBlockedCategoryWithSNI(self):
-        addPassedUrl(self.node,"playboy.com")
+    def test_564_pass_url_works_with_https_sni(self):
+        """verify that an entry in the pass list overrides a blocked category"""
+        self.pass_url_list_add("playboy.com")
         # this test URL should NOT be blocked (porn is blocked by default, but playboy.com now on pass list
-        result = remote_control.runCommand("wget -q -4 -t 2 --timeout=8 --no-check-certificate -O - https://playboy.com/ 2>&1 | grep -q blockpage")
-        assert (result != 0)
-        result = remote_control.runCommand("wget -q -4 -t 2 --timeout=8 --no-check-certificate -O - https://www.playboy.com/ 2>&1 | grep -q blockpage")
-        assert (result != 0)
-        nukePassedUrls(self.node)
+        result1 = remote_control.runCommand("wget -q -4 -t 2 --timeout=8 --no-check-certificate -O - https://playboy.com/ 2>&1 | grep -q blockpage")
+        result2 = remote_control.runCommand("wget -q -4 -t 2 --timeout=8 --no-check-certificate -O - https://www.playboy.com/ 2>&1 | grep -q blockpage")
+        self.pass_url_list_clear()
+        assert (result1 != 0)
+        assert (result2 != 0)
 
-    def test_565_passedUrlOverridesBlockedUrlWithSNI(self):
-        addBlockedUrl(self.node,"untangle.com")
-        addPassedUrl(self.node,"test.untangle.com")
+    def test_565_pass_url_overrides_block_with_sni(self):
+        """verify that the pass list still overrides the block with SNI"""
+        self.block_url_list_add("untangle.com")
+        self.pass_url_list_add("test.untangle.com")
         # this test URL should NOT be blocked
         result = remote_control.runCommand("wget -q -4 -t 2 --timeout=8 --no-check-certificate -O - https://test.untangle.com/test/testPage1.html 2>&1 | grep -q text123")
-        nukeBlockedUrls(self.node)
-        nukePassedUrls(self.node)
+        self.block_url_list_clear()
+        self.pass_url_list_clear()
         assert (result == 0)
 
-    # Query eventlog
-    def test_600_queryEventLog(self):
+    def test_600_web_searches(self):
+        """check the web searches log correctly"""
         termTests = [{
             "host": "www.bing.com",
             "uri":  "/search?q=oneterm&qs=n&form=QBRE",
@@ -582,18 +572,16 @@ class WebFilterBaseTests(unittest2.TestCase):
             fname = sys._getframe().f_code.co_name
             eventTime = datetime.datetime.now()
             result1 = remote_control.runCommand("wget -q -O - 'http://%s%s' 2>&1 >/dev/null" % ( t["host"], t["uri"] ) )
-            time.sleep(1);
 
             events = global_functions.get_events(self.displayName(),'All Query Events',None,1)
             assert(events != None)
             found = global_functions.check_events( events.get('list'), 5,
-                                                "host", t["host"],
-                                                "term", t["term"])
+                                                   "host", t["host"],
+                                                   "term", t["term"])
             assert( found )
 
     @staticmethod
     def finalTearDown(self):
-        global node
-        if node != None:
+        if self.node != None:
             uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
-            node = None
+            self.node = None

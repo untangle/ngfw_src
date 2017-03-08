@@ -53,7 +53,7 @@ class ShieldTests(unittest2.TestCase):
         settings['shieldEnabled'] = True
         node.setSettings(settings)
 
-        startTime = datetime.now()
+        start_time = datetime.now()
         result = remote_control.runCommand("nmap -PN -sT -T5 --min-parallelism 15 -p10000-11000 1.2.3.4 2>&1 >/dev/null")
         assert (result == 0)
 
@@ -61,7 +61,7 @@ class ShieldTests(unittest2.TestCase):
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
                                                'c_client_addr', remote_control.clientIP,
-                                               min_date=startTime)
+                                               min_date=start_time)
         assert( found )
 
     def test_021_shieldOffNmap(self):
@@ -75,7 +75,7 @@ class ShieldTests(unittest2.TestCase):
         settings['shieldEnabled'] = False
         node.setSettings(settings)
 
-        startTime = datetime.now()
+        start_time = datetime.now()
         result = remote_control.runCommand("nmap -PN -sT -T5 --min-parallelism 15 -p10000-10100 1.2.3.5 2>&1 >/dev/null")
         assert (result == 0)
 
@@ -84,7 +84,7 @@ class ShieldTests(unittest2.TestCase):
         found = global_functions.check_events( events.get('list'), 5,
                                                'c_client_addr', remote_control.clientIP,
                                                's_server_addr', '1.2.3.5',
-                                               min_date=startTime)
+                                               min_date=start_time)
         assert( not found )
 
     @staticmethod

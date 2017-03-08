@@ -63,9 +63,9 @@ public class RuleCondition implements JSONString, Serializable
         HOST_HOSTNAME, /* glob */
         CLIENT_HOSTNAME, /* glob */
         SERVER_HOSTNAME, /* glob */
-        HOST_IN_PENALTY_BOX, /* none */
-        CLIENT_IN_PENALTY_BOX, /* none */
-        SERVER_IN_PENALTY_BOX, /* none */
+        HOST_IN_PENALTY_BOX, /* none */ /* DEPRECATED - uses TAGGED penalty-box */
+        CLIENT_IN_PENALTY_BOX, /* none */ /* DEPRECATED - uses TAGGED penalty-box */
+        SERVER_IN_PENALTY_BOX, /* none */ /* DEPRECATED - uses TAGGED penalty-box */
         HOST_HAS_NO_QUOTA, /* none */
         USER_HAS_NO_QUOTA, /* none */
         CLIENT_HAS_NO_QUOTA, /* none */
@@ -133,12 +133,13 @@ public class RuleCondition implements JSONString, Serializable
     protected RuleCondition.ConditionType matcherType = null;
     protected String value = null;
     protected Boolean invert = Boolean.FALSE;
-
+    
     /**
      * These internal are used in various matchers
-     * They are stored here so that repatitive evaluation is quicker
-     * They are prepared by calling _computeMatchers()
+     * They are stored here so that repetative evaluation is quick
+     * They are prepared by calling computeMatchers()
      */
+    private boolean initialized = false; /* marked as true once computeMatchers is called */
     private IPMatcher        ipMatcher        = null;
     private IntMatcher       intMatcher       = null;
     private IntfMatcher      intfMatcher      = null;
@@ -159,7 +160,6 @@ public class RuleCondition implements JSONString, Serializable
     {
         this.setValue(value);
         this.setConditionType(matcherType);
-        computeMatchers();
     }
 
     public RuleCondition( ConditionType matcherType, String value, Boolean invert )
@@ -167,7 +167,6 @@ public class RuleCondition implements JSONString, Serializable
         this.setValue(value);
         this.setConditionType(matcherType);
         this.setInvert(invert);
-        computeMatchers();
     }
     
     public ConditionType getConditionType()
@@ -178,8 +177,6 @@ public class RuleCondition implements JSONString, Serializable
     public void setConditionType( ConditionType type ) 
     {
         this.matcherType = type;
-        /* If the object is sufficiently initialized compute the cached computers */
-        if (this.matcherType != null && this.value != null ) computeMatchers();
     }
 
     public String getValue()
@@ -190,8 +187,6 @@ public class RuleCondition implements JSONString, Serializable
     public void setValue( String value)
     {
         this.value = value;
-        /* If the object is sufficiently initialized compute the cached computers */
-        if (this.matcherType != null && this.value != null ) computeMatchers();
     }
 
     public Boolean getInvert()
@@ -202,8 +197,6 @@ public class RuleCondition implements JSONString, Serializable
     public void setInvert( Boolean value )
     {
         this.invert = value;
-        /* If the object is sufficiently initialized compute the cached computers */
-        if ( this.matcherType != null && this.value != null ) computeMatchers();
     }
     
     @Override
@@ -224,6 +217,9 @@ public class RuleCondition implements JSONString, Serializable
      */
     public boolean matches( NodeSession sess )
     {
+        if (!initialized)
+            computeMatchers();
+
         try {
             if (this.getInvert())
                 return !_matches(sess);
@@ -245,6 +241,9 @@ public class RuleCondition implements JSONString, Serializable
                             InetAddress srcAddress, InetAddress dstAddress,
                             int srcPort, int dstPort)
     {
+        if (!initialized)
+            computeMatchers();
+        
         try {
             if (this.getInvert())
                 return !_matches( protocol, srcIntf, dstIntf, srcAddress, dstAddress, srcPort, dstPort );
@@ -262,6 +261,8 @@ public class RuleCondition implements JSONString, Serializable
      */
     protected void computeMatchers()
     {
+        this.initialized = true;
+        
         /**
          * Convert old style conditions
          */

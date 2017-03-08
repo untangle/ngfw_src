@@ -18,6 +18,7 @@ sshOptions = "-o StrictHostKeyChecking=no -o ConnectTimeout=300 -o ConnectionAtt
 quickTestsOnly = False
 interface = 0
 interfaceExternal = 0
+hostname = None
 
 __orig_stdout = None
 __orig_stderr = None
@@ -102,3 +103,9 @@ def isOnline( tries=12, host=None ):
         tries -= 1
     return onlineResults
 
+def get_hostname():
+    global hostname
+    if hostname != None:
+        return hostname
+    hostname = runCommand("hostname -s", stdout=True)
+    return hostname
