@@ -48,10 +48,7 @@ public class OpenVpnManager
     private static final String CLIENT_CONF_FILE_DIR  = "/tmp/openvpn/client-packages/"; 
     private static final String CLIENT_CONF_FILE_BASE = CLIENT_CONF_FILE_DIR + "/client-";
 
-    private static final String WIN_CLIENT_DEFAULTS[]  = new String[] {};
     private static final String WIN_EXTENSION          = "ovpn";
-
-    private static final String UNIX_CLIENT_DEFAULTS[] = new String[] {};
     private static final String UNIX_EXTENSION         = "conf";
 
     protected OpenVpnManager() { }
@@ -106,8 +103,8 @@ public class OpenVpnManager
 
     private void writeConfFiles( OpenVpnSettings settings, OpenVpnRemoteClient client )
     {
-        writeRemoteClientConfigurationFile( settings, client, UNIX_CLIENT_DEFAULTS, UNIX_EXTENSION );
-        writeRemoteClientConfigurationFile( settings, client, WIN_CLIENT_DEFAULTS,  WIN_EXTENSION );
+        writeRemoteClientConfigurationFile( settings, client, UNIX_EXTENSION );
+        writeRemoteClientConfigurationFile( settings, client, WIN_EXTENSION );
     }
     /**
      * Create all of the client zip configuration files
@@ -186,7 +183,7 @@ public class OpenVpnManager
         StringBuilder sb = new StringBuilder();
 
         for ( OpenVpnConfigItem item : settings.getServerConfiguration()) {
-            sb.append( item.toString() + "\n" );
+            if (item.getConfigString() != null) sb.append( item.getConfigString() + "\n" );
         }
 
         sb.append( "proto" + " " + settings.getProtocol() + "\n" );
@@ -197,6 +194,9 @@ public class OpenVpnManager
             sb.append( "client-to-client" + "\n");
         
         sb.append( "server" + " " +  settings.getAddressSpace().getMaskedAddress().getHostAddress() + " " + settings.getAddressSpace().getNetmask().getHostAddress() + "\n");
+
+        /* Allow management from localhost */
+        sb.append( "management 127.0.0.1 " +  Integer.toString(OpenVpnSettings.MANAGEMENT_PORT) + "\n");
 
         writeExports( sb, settings );
 
@@ -240,17 +240,23 @@ public class OpenVpnManager
     /**
      * Write a client configuration file (unix or windows)
      */
-    private void writeRemoteClientConfigurationFile( OpenVpnSettings settings, OpenVpnRemoteClient client, String[] defaults, String extension )
+    private void writeRemoteClientConfigurationFile( OpenVpnSettings settings, OpenVpnRemoteClient client, String extension )
     {
         final String KEY_DIR = "keys";
         StringBuilder sb = new StringBuilder();
 
-        /* Insert all of the default parameters */
+        /*
+         * Insert all of the default parameters that have not been customized
+         * for the argumented client. 
+         */
         for ( OpenVpnConfigItem item : settings.getClientConfiguration()) {
-            sb.append( item.toString() + "\n" );
+            if (findConfigItem(client.getClientConfigItems(), item.getOptionName()) == null)
+            if (item.getConfigString() != null) sb.append( item.getConfigString() + "\n" );
         }
-        for ( String line : defaults ) {
-            sb.append( line + "\n" );
+
+        /* Add any custom config items for the argumented client */
+        for ( OpenVpnConfigItem item : client.getClientConfigItems()) {
+            if (item.getConfigString() != null) sb.append( item.getConfigString() + "\n" );
         }
 
         sb.append( "proto" + " " + settings.getProtocol() + "\n" );
@@ -653,5 +659,20 @@ public class OpenVpnManager
             logger.error("Failed to start OpenVPN daemon (return code: " + result.getResult() + ")");
             throw new RuntimeException("Failed to start OpenVPN daemon");
         }
+    }
+
+    /**
+     * Searches a linked list of configuration items for a specific item 
+     */
+    private OpenVpnConfigItem findConfigItem(LinkedList<OpenVpnConfigItem> argList, String findName)
+    {
+        if (argList == null) return(null);
+
+        for ( OpenVpnConfigItem item : argList) {
+            if (item.getOptionName().equals(findName))
+            return(item);
+        }
+
+        return(null);
     }
 }
