@@ -27,21 +27,19 @@ __orig_stderr = None
 os.system("chmod 600 %s" % hostKeyFile)
 
 netsettings = uvmContext.networkManager().getNetworkSettings()
-i = 0
 for interface in netsettings['interfaces']['list']:
     if interface['name'] == "External":
-        interfaceExternal = i
+        interfaceExternal = interface.get('interfaceId')
         break
-    i += 1
 
-def __redirectOutput( logfile ):
+def __redirect_output( logfile ):
     global __orig_stderr, __orig_stdout
     __orig_stdout = sys.stdout
     __orig_stderr = sys.stderr
     sys.stdout = logfile
     sys.stderr = logfile
 
-def __restoreOutput():
+def __restore_output():
     global __orig_stderr, __orig_stdout
     sys.stdout = __orig_stdout
     sys.stderr = __orig_stderr
@@ -50,13 +48,13 @@ def __restoreOutput():
 # returns the exit code of the command
 # if stdout=True returns the output of the command
 # if nowait=True returns the initial output if stdout=True, 0 otherwise
-def runCommand( command, host=None, stdout=False, nowait=False):
+def run_command( command, host=None, stdout=False, nowait=False):
     global clientIP, hostUsername, hostKeyFile, sshOptions, logfile, verbosity
     if host == None:
         host = clientIP
 
     if logfile != None:
-        __redirectOutput( logfile )
+        __redirect_output( logfile )
 
     result = 1
     try:
@@ -90,16 +88,16 @@ def runCommand( command, host=None, stdout=False, nowait=False):
             return result
     finally:
         if logfile != None:
-            __restoreOutput()
+            __restore_output()
 
-def isOnline( tries=12, host=None ):
+def is_online( tries=5, host=None ):
     onlineResults = -1
     while tries > 0 and onlineResults != 0:
-        onlineResults = runCommand("wget -q -O /dev/null -4 -t 2 --timeout=5 http://test.untangle.com/", host=host)
+        onlineResults = run_command("wget -q -O /dev/null -4 -t 2 --timeout=5 http://test.untangle.com/", host=host)
         if onlineResults != 0:
             # check DNS and pings if offline
-            runCommand("host test.untangle.com", host=host)
-            runCommand("ping -c 1 test.untangle.com", host=host)
+            run_command("host test.untangle.com", host=host)
+            run_command("ping -c 1 test.untangle.com", host=host)
         tries -= 1
     return onlineResults
 
@@ -107,5 +105,5 @@ def get_hostname():
     global hostname
     if hostname != None:
         return hostname
-    hostname = runCommand("hostname -s", stdout=True)
+    hostname = run_command("hostname -s", stdout=True)
     return hostname

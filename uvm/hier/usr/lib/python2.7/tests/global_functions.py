@@ -49,7 +49,7 @@ prefix = "@PREFIX@"
 
 test_start_time = None
 
-def getIpAddress(base_URL="test.untangle.com",extra_options="",localcall=False):
+def get_public_ip_address(base_URL="test.untangle.com",extra_options="",localcall=False):
     timeout = 4
     result = ""
     while result == "" and timeout > 0:
@@ -57,10 +57,10 @@ def getIpAddress(base_URL="test.untangle.com",extra_options="",localcall=False):
         if localcall:
             result = subprocess.check_output("wget --timeout=4 " + extra_options + " -q -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py", shell=True)
         else:
-            result = remote_control.runCommand("wget --timeout=4 " + extra_options + " -q -O - \"$@\" " + base_URL + "/cgi-bin/myipaddress.py",stdout=True)
+            result = remote_control.run_command("wget --timeout=4 " + extra_options + " -q -O - \"$@\" " + base_URL + "/cgi-bin/myipaddress.py",stdout=True)
     return result
     
-def verifyIperf(wanIP):
+def verify_iperf_configuration(wanIP):
     # https://iperf.fr/
     global iperfServer
     # check if there is an iperf server on the same network
@@ -77,18 +77,18 @@ def verifyIperf(wanIP):
         print "iperf Server is unreachable."
         return False
     # Check to see if some other test is using iperf for UDP testing
-    iperfRunning = remote_control.runCommand("pidof iperf", host=iperfServer)
+    iperfRunning = remote_control.run_command("pidof iperf", host=iperfServer)
     if iperfRunning == 0:
         print "iperf is already running on server."
         return False
     # Check that the client has iperf
-    clientHasIperf = remote_control.runCommand("test -x /usr/bin/iperf")
+    clientHasIperf = remote_control.run_command("test -x /usr/bin/iperf")
     if clientHasIperf != 0:
         print "iperf not installed on client."
         return False
     return True
 
-def findSmtpServer(wan_IP):
+def find_smtp_server(wan_IP):
     smtp_IP = ""
     smtp_domain = "";
     match = False
@@ -115,7 +115,7 @@ def findSmtpServer(wan_IP):
 
     return smtp_IP,smtp_domain
 
-def getUDPSpeed( receiverIP, senderIP, targetIP=None, targetRate=None ):
+def get_udp_download_speed( receiverIP, senderIP, targetIP=None, targetRate=None ):
     if targetIP == None:
         targetIP = receiverIP
     if targetRate == None:
@@ -123,17 +123,17 @@ def getUDPSpeed( receiverIP, senderIP, targetIP=None, targetRate=None ):
 
     # Use iperf to get UDP speed.  Returns number the udp speed
     # start iperf receivier on server
-    remote_control.runCommand("iperf -s -p 5000 -u >/dev/null 2>&1 &", host=receiverIP)
+    remote_control.run_command("iperf -s -p 5000 -u >/dev/null 2>&1 &", host=receiverIP)
     # start the UDP generator on the client behind the Untangle.
     iperf_tries = 5
     while iperf_tries > 0:  # try iperf a few times if it fails to send UDP packets correctly.
-        report=remote_control.runCommand("iperf -c " + targetIP + " -u -p 5000 -b " + targetRate + " -t 10 -fK", host=senderIP, stdout=True)
+        report=remote_control.run_command("iperf -c " + targetIP + " -u -p 5000 -b " + targetRate + " -t 10 -fK", host=senderIP, stdout=True)
         if '%' in report:
             break
         else:
             iperf_tries -= 1
     # kill iperf receiver    
-    remote_control.runCommand("pkill iperf", host=receiverIP)
+    remote_control.run_command("pkill iperf", host=receiverIP)
 
     lines = report.split("\n")
     udp_speed = None
@@ -147,10 +147,10 @@ def getUDPSpeed( receiverIP, senderIP, targetIP=None, targetRate=None ):
             break
     return udp_speed
 
-def getDownloadSpeed():
+def get_download_speed():
     try:
         # Download file and record the average speed in which the file was download
-        result = remote_control.runCommand("wget -t 3 --timeout=60 -O /dev/null -o /dev/stdout http://test.untangle.com/5MB.zip 2>&1 | tail -2", stdout=True)
+        result = remote_control.run_command("wget -t 3 --timeout=60 -O /dev/null -o /dev/stdout http://test.untangle.com/5MB.zip 2>&1 | tail -2", stdout=True)
         match = re.search(r'([0-9.]+) [KM]B\/s', result)
         bandwidth_speed =  match.group(1)
         # cast string to float for comparsion.
@@ -178,7 +178,13 @@ def get_events( eventEntryCategory, eventEntryTitle, conditions, limit ):
         print "WARNING: Event entry not found: %s %s" % (eventEntryCategory, eventEntryTitle)
         return None
 
-    return reportsManager.getEvents( reportEntry, conditions, limit )
+    events = reportsManager.getEvents( reportEntry, conditions, limit )
+    if events == None:
+        return None
+
+    return events
+    # FIXME we should return the array instead
+    # return events.get('list')
 
 def find_event( events, num_events, *args, **kwargs):
     if events == None:
@@ -244,22 +250,22 @@ def find_event( events, num_events, *args, **kwargs):
 def check_events( events, num_events, *args, **kwargs):
     return (find_event( events, num_events, *args, **kwargs) != None)
 
-def isInOfficeNetwork(wanIP):
+def is_in_office_network(wanIP):
     for officeNetworkTest in officeNetworks:
         if ipaddr.IPv4Address(wanIP) in ipaddr.IPv4Network(officeNetworkTest):
             return True
             break
     return False
 
-def isBridged(wanIP):
-    result = remote_control.runCommand("ip -o -f inet addr show",stdout=True)
+def is_bridged(wanIP):
+    result = remote_control.run_command("ip -o -f inet addr show",stdout=True)
     match = re.search(r'\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}\/\d{1,3} brd', result)
     hostname_cidr = (match.group()).replace(' brd','')
     if ipaddr.IPv4Address(wanIP) in ipaddr.IPv4Network(hostname_cidr):
         return True
     return False
     
-def sendTestmessage(mailhost=smtpServerHost):
+def send_test_email(mailhost=smtpServerHost):
     sender = 'test@example.com'
     receivers = ['qa@example.com']
 
@@ -279,7 +285,7 @@ def sendTestmessage(mailhost=smtpServerHost):
        print "Error: unable to send email through " + mailhost + " " + str(e)
        return 0
 
-def getStatusValue(node, label):
+def get_app_metric_value(node, label):
     metric = node.getMetric(label)
     if metric == None:
         print "Missing metric: %s"%str(label) 
@@ -289,7 +295,7 @@ def getStatusValue(node, label):
         return 0
     return metric.get('value')
 
-def getLiveAccountInfo(accounttype):
+def get_live_account_info(accounttype):
     # Tries to file account password file and returns account and password if available
     accountFileServerPing = subprocess.call(["ping","-c","1",accountFileServer],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
     if accountFileServerPing != 0:
@@ -308,7 +314,7 @@ def getLiveAccountInfo(accounttype):
             return (account[1], account[2])
     return ("message",accounttype + " account not found")
 
-def foundWans():
+def get_wan_tuples():
     myWANs = []
     netsettings = uvmContext.networkManager().getNetworkSettings()
     for interface in netsettings['interfaces']['list']:
@@ -325,7 +331,7 @@ def foundWans():
                 wanIP = __get_ip_address(nicDevice)
                 wanGateway = __get_gateway(nicDevice)
             if wanIP:
-                wanExtIP = getIpAddress(extra_options="--bind-address=" + wanIP,localcall=True)
+                wanExtIP = get_public_ip_address(extra_options="--bind-address=" + wanIP,localcall=True)
                 wanExtIP = wanExtIP.rstrip()
                 wanTup = (wanIndex,wanIP,wanExtIP,wanGateway)
                 myWANs.append(wanTup)

@@ -46,17 +46,17 @@ class WebMonitorTests(WebFilterBaseTests):
 
     def test_016_flag_url(self):
         """verify basic URL blocking the the url block list"""
-        pre_events_scan = global_functions.getStatusValue(self.node, "scan")
-        pre_events_pass = global_functions.getStatusValue(self.node, "pass")
-        pre_events_block = global_functions.getStatusValue(self.node, "block")
+        pre_events_scan = global_functions.get_app_metric_value(self.node, "scan")
+        pre_events_pass = global_functions.get_app_metric_value(self.node, "pass")
+        pre_events_block = global_functions.get_app_metric_value(self.node, "block")
         self.block_url_list_add("test.untangle.com/test/testPage1.html")
         result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
         self.block_url_list_clear()
         assert ( result == 0 )
         # verify the faceplate counters have incremented.
-        post_events_scan = global_functions.getStatusValue(self.node, "scan")
-        post_events_pass = global_functions.getStatusValue(self.node, "pass")
-        post_events_block = global_functions.getStatusValue(self.node, "block")
+        post_events_scan = global_functions.get_app_metric_value(self.node, "scan")
+        post_events_pass = global_functions.get_app_metric_value(self.node, "pass")
+        post_events_block = global_functions.get_app_metric_value(self.node, "block")
         assert(pre_events_scan < post_events_scan)
         assert(pre_events_pass < post_events_pass)
         assert(pre_events_block == post_events_block)
