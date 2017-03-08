@@ -178,14 +178,14 @@ class IPsecTests(unittest2.TestCase):
 
     # verify client is online
     def test_010_clientIsOnline(self):
-        result = remote_control.isOnline()
+        result = remote_control.is_online()
         assert (result == 0)
 
     def test_020_createIpsecTunnel(self):
         global tunnelUp
         if (ipsecHostResult != 0):
             raise unittest2.SkipTest("No paried IPSec server available")
-        pre_events_enabled = global_functions.getStatusValue(node,"enabled")
+        pre_events_enabled = global_functions.get_app_metric_value(node,"enabled")
 
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
         pairMatchNotFound = True
@@ -204,14 +204,14 @@ class IPsecTests(unittest2.TestCase):
             timeout -= 1
             time.sleep(1)
             # ping the remote LAN to see if the IPsec tunnel is connected.
-            ipsecHostLANResult = remote_control.runCommand("wget -q -O /dev/null --no-check-certificate -4 -t 2 --timeout=5 https://%s/" % ipsecHostLANIP)
+            ipsecHostLANResult = remote_control.run_command("wget -q -O /dev/null --no-check-certificate -4 -t 2 --timeout=5 https://%s/" % ipsecHostLANIP)
         assert (ipsecHostLANResult == 0)
-        ipsecPcLanResult = remote_control.runCommand("ping -c 1 %s" % ipsecPcLANIP)
+        ipsecPcLanResult = remote_control.run_command("ping -c 1 %s" % ipsecPcLANIP)
         assert (ipsecPcLanResult == 0)
         tunnelUp = True
 
         # Check to see if the faceplate counters have incremented. 
-        post_events_enabled = global_functions.getStatusValue(node,"enabled")
+        post_events_enabled = global_functions.get_app_metric_value(node,"enabled")
         assert(pre_events_enabled < post_events_enabled)
                
     def test_030_restartNetworkVerifyIpsecTunnel(self):
@@ -222,8 +222,8 @@ class IPsecTests(unittest2.TestCase):
         netsettings = uvmContext.networkManager().getNetworkSettings()
         uvmContext.networkManager().setNetworkSettings(netsettings)
         time.sleep(10) # wait for networking to restart
-        ipsecHostLANResult = remote_control.runCommand("wget -q -O /dev/null --no-check-certificate -4 -t 2 --timeout=5 https://%s/" % ipsecHostLANIP)
-        ipsecPcLanResult = remote_control.runCommand("ping -c 1 %s" % ipsecPcLANIP)
+        ipsecHostLANResult = remote_control.run_command("wget -q -O /dev/null --no-check-certificate -4 -t 2 --timeout=5 https://%s/" % ipsecHostLANIP)
+        ipsecPcLanResult = remote_control.run_command("ping -c 1 %s" % ipsecPcLANIP)
         # delete tunnel
         nukeIPSecTunnels()
         tunnelUp = False
@@ -241,7 +241,7 @@ class IPsecTests(unittest2.TestCase):
         timeout = 480
         found = False
         # Send command for Windows VPN connect.
-        vpnServerResult = remote_control.runCommand("rasdial.exe %s %s %s" % (wan_IP,l2tpLocalUser,l2tpLocalPassword), host=l2tpClientHost)
+        vpnServerResult = remote_control.run_command("rasdial.exe %s %s %s" % (wan_IP,l2tpLocalUser,l2tpLocalPassword), host=l2tpClientHost)
         while not found and timeout > 0:
             timeout -= 1
             time.sleep(1)
@@ -250,7 +250,7 @@ class IPsecTests(unittest2.TestCase):
                 if user['clientUsername'] == l2tpLocalUser:
                     found = True
         # Send command for Windows VPN disconnect.
-        vpnServerResult = remote_control.runCommand("rasdial.exe %s /d" % (wan_IP), host=l2tpClientHost)
+        vpnServerResult = remote_control.run_command("rasdial.exe %s /d" % (wan_IP), host=l2tpClientHost)
         uvmContext.localDirectory().setUsers(removeLocalDirectoryUser())
         assert(found)
 
@@ -268,7 +268,7 @@ class IPsecTests(unittest2.TestCase):
         createL2TPconfig("RADIUS_SERVER")
         timeout = 480
         found = False
-        vpnServerResult = remote_control.runCommand("rasdial.exe %s %s %s" % (wan_IP,l2tpRadiusUser,l2tpRadiusPassword), host=l2tpClientHost)
+        vpnServerResult = remote_control.run_command("rasdial.exe %s %s %s" % (wan_IP,l2tpRadiusUser,l2tpRadiusPassword), host=l2tpClientHost)
         while not found and timeout > 0:
             timeout -= 1
             time.sleep(1)
@@ -277,7 +277,7 @@ class IPsecTests(unittest2.TestCase):
                 if user['clientUsername'] == l2tpRadiusUser:
                     found = True
         # Send command for Windows VPN disconnect.
-        vpnServerResult = remote_control.runCommand("rasdial.exe %s /d" % (wan_IP), host=l2tpClientHost)
+        vpnServerResult = remote_control.run_command("rasdial.exe %s /d" % (wan_IP), host=l2tpClientHost)
         assert(found)
 
     def test_060_createIpsecTunnelHostname(self):
@@ -285,7 +285,7 @@ class IPsecTests(unittest2.TestCase):
         addDNSRule(createDNSRule("10.111.56.96","ipsecsite.untangle.int"))
         if (ipsecHostResult != 0):
             raise unittest2.SkipTest("No paried IPSec server available")
-        pre_events_enabled = global_functions.getStatusValue(node,"enabled")
+        pre_events_enabled = global_functions.get_app_metric_value(node,"enabled")
 
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
         pairMatchNotFound = True
@@ -304,9 +304,9 @@ class IPsecTests(unittest2.TestCase):
             timeout -= 1
             time.sleep(1)
             # ping the remote LAN to see if the IPsec tunnel is connected.
-            ipsecHostLANResult = remote_control.runCommand("wget -q -O /dev/null --no-check-certificate -4 -t 2 --timeout=5 https://%s/" % ipsecHostLANIP)
+            ipsecHostLANResult = remote_control.run_command("wget -q -O /dev/null --no-check-certificate -4 -t 2 --timeout=5 https://%s/" % ipsecHostLANIP)
         uvmContext.networkManager().setNetworkSettings( originalSettings )
-        post_events_enabled = global_functions.getStatusValue(node,"enabled")
+        post_events_enabled = global_functions.get_app_metric_value(node,"enabled")
         nukeIPSecTunnels()
         assert (ipsecHostLANResult == 0)
         # Check to see if the faceplate counters have incremented. 
