@@ -98,6 +98,7 @@ task :targets => :download do
   require "#{SRC_HOME}/branding-manager/package.rb"
   require "#{SRC_HOME}/configuration-backup/package.rb"
   require "#{SRC_HOME}/directory-connector/package.rb"
+  require "#{SRC_HOME}/ipsec-vpn/package.rb"
 end
 
 task :build => [:builduvmcore, :targets] do
