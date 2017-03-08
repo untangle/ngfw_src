@@ -1,0 +1,432 @@
+/*
+ * $Id$
+ */
+package com.untangle.node.policy_manager;
+
+import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
+import org.json.JSONObject;
+
+import com.untangle.uvm.SessionMatcher;
+import com.untangle.uvm.SettingsManager;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.node.License;
+import com.untangle.uvm.node.PolicyManager.PolicyManagerResult;
+import com.untangle.uvm.node.Node;
+import com.untangle.uvm.util.Pulse;
+import com.untangle.uvm.vnet.NodeBase;
+import com.untangle.uvm.vnet.PipelineConnector;
+
+/**
+ * Implementation of the Policy Manager node
+ */
+public class PolicyManagerApp extends NodeBase implements com.untangle.uvm.node.PolicyManager
+{
+    private final Logger logger = Logger.getLogger(getClass());
+    private final PipelineConnector[] connectors = new PipelineConnector[] { };
+
+    private final Pulse cleanerPulse = new Pulse("policy-manager-session-cleaner", new SessionExpirationWorker(this), 60000);
+
+    private PolicyManagerSettings settings = new PolicyManagerSettings();
+    
+    public PolicyManagerApp( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
+    {
+        super( nodeSettings, nodeProperties );
+    }
+
+    public PolicyManagerSettings getSettings()
+    {
+        return this.settings;
+    }
+
+    public void setSettings( PolicyManagerSettings newSettings )
+    {
+        /**
+         * Set null IDs for new Policies
+         */
+        for( PolicySettings policy : newSettings.getPolicies()) 
+            if (policy.getPolicyId() == null) 
+                policy.setPolicyId(newSettings.nextAvailablePolicyId());
+
+        int idx = 0;
+        for( PolicyRule policyRule : newSettings.getRules()) 
+            policyRule.setRuleId( ++idx );
+        
+        /**
+         * Update nextPolicyId
+         * This is necessary in case they imported a bunch of policy
+         * that already have policyIds
+         */
+        updateNextPolicyIDIfNecessary( newSettings );
+        
+        /**
+         * sanity check settings
+         */
+        sanityCheck( newSettings );
+        
+        /**
+         * Save the settings
+         */
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+        String nodeID = this.getNodeSettings().getId().toString();
+        try {
+            settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "untangle-node-policy-manager/" + "settings_"  + nodeID + ".js", newSettings );
+        } catch (SettingsManager.SettingsException e) {
+            logger.warn("Failed to save settings.",e);
+            return;
+        }
+
+        /**
+         * Change current settings
+         */
+        this.settings = newSettings;
+        try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
+
+
+        /**
+         * Clear the cache in the pipeline foundry in case of changes to policy rules
+         */
+        UvmContextFactory.context().pipelineFoundry().clearCache();
+    }
+
+    public String getPolicyName( Integer policyId )
+    {
+        if ( policyId == null)
+            return "Policy-" + policyId;
+
+        PolicySettings settings = getPolicySettings( policyId );
+        if ( settings == null )
+            return "Policy-" + policyId;
+        else
+            return  settings.getName();
+        
+    }
+
+    public Integer getParentPolicyId( Integer policyId )
+    {
+        PolicySettings pSettings = getPolicySettings( policyId );
+
+        if (pSettings != null)
+            return pSettings.getParentId();
+
+        return null;
+    }
+
+    public PolicyManagerResult findPolicyId( short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort )
+    {
+        if ( !isLicenseValid() )
+            return new PolicyManagerResult(1,0);
+
+        for (PolicyRule rule : this.settings.getRules()) {
+            if (rule.isMatch(protocol,
+                             clientIntf, serverIntf,
+                             clientAddr, serverAddr,
+                             clientPort, serverPort)) {
+                return new PolicyManagerResult(rule.getTargetPolicy(),rule.getRuleId());
+            }
+
+        }
+
+        /* if none matched - return default policy (1) */
+        return new PolicyManagerResult(1,0);
+    }
+
+    public ArrayList<JSONObject> getPoliciesInfo()
+    {
+        ArrayList<JSONObject> policyList = new ArrayList<JSONObject>();
+        for ( PolicySettings policySettings: settings.getPolicies() ) {
+            try {
+                JSONObject json = new org.json.JSONObject();
+
+                json.put("policyId", policySettings.getPolicyId());
+                json.put("name", policySettings.getName());
+                policyList.add(json);
+            } catch (Exception e) {
+                logger.warn("Error generating policy list",e);
+            }
+        }
+        
+        return policyList;
+    }
+
+    public void initializeSettings()
+    {
+        logger.info("Initializing Settings...");
+        PolicyManagerSettings settings = new PolicyManagerSettings();
+        settings.getPolicies().add(new PolicySettings(1, "Default Policy", "The Default Policy", null));
+        this.setSettings(settings);
+    }
+
+    public int getPolicyGenerationDiff(Integer childId, Integer parentId)
+    {
+        if (null == childId) {
+            return 0;
+        }
+        
+        if (null == parentId) {
+            return -1;
+        }
+
+        int distance = 0;
+        logger.debug( "Checking the policy: <" + childId + " ->" + parentId);
+               
+        while (childId != null) {
+            logger.debug( "  checking the policy <" + childId + ">" );
+
+            if (childId.equals(parentId)) {
+                logger.debug( "  the policy <" + childId + "> matches." );
+                return distance;
+            }
+
+            childId = getParentPolicyId(childId);
+            distance++;
+        }
+
+        return -1;
+    }
+
+    public int[] getPolicyIds()
+    {
+        int size = settings.getPolicies().size();
+        int policyIds[] = new int[size];
+
+        int i = 0;
+        for ( PolicySettings policy : settings.getPolicies() ) {
+            policyIds[i] = policy.getPolicyId();
+            i++;
+        }
+
+        return policyIds;
+    }
+
+    protected void postInit()
+    {
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+        String nodeID = this.getNodeSettings().getId().toString();
+        PolicyManagerSettings readSettings = null;
+        String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-node-policy-manager/" + "settings_" + nodeID + ".js";
+
+        try {
+            readSettings = settingsManager.load( PolicyManagerSettings.class, settingsFileName );
+        } catch (SettingsManager.SettingsException e) {
+            logger.warn("Failed to load settings:",e);
+        }
+        
+        /**
+         * If there are still no settings, just initialize
+         */
+        if (readSettings == null) {
+            logger.warn("No settings found - Initializing new settings.");
+
+            this.initializeSettings();
+        }
+        else {
+            logger.info("Loading Settings...");
+
+            // UPDATE settings if necessary
+
+            // this is necessary because you could import settings in 9.3
+            // and possibly have a wrong nextPolicyId
+            updateNextPolicyIDIfNecessary(readSettings);
+            
+            this.settings = readSettings;
+            logger.debug("Settings: " + this.settings.toJSONString());
+        }
+    }
+
+    @Override
+    protected void preStop( boolean isPermanentTransition )
+    {
+        cleanerPulse.stop();
+    }
+
+    @Override
+    protected void postStart( boolean isPermanentTransition )
+    {
+        cleanerPulse.start();
+    }
+
+    @Override
+    protected void preDestroy()
+    {
+        super.preDestroy();
+
+        if ( this.settings.getPolicies().size() > 1 ) {
+            throw new RuntimeException( "Unable to destroy policy manager when there are " + this.settings.getPolicies().size() + " policies" );
+        }
+    }
+
+    @Override
+    protected PipelineConnector[] getConnectors()
+    {
+        return this.connectors;
+    }
+
+    private boolean isLicenseValid()
+    {
+        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.POLICY_MANAGER))
+            return true;
+        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.POLICY_MANAGER_OLDNAME))
+            return true;
+        return false;
+    }
+    
+    private PolicySettings getPolicySettings( Integer policyId )
+    {
+        return getPolicySettings( policyId, this.settings );
+    }
+
+    private PolicySettings getPolicySettings( Integer policyId, PolicyManagerSettings settings )
+    {
+        for (PolicySettings policy : settings.getPolicies()) {
+            if (policy.getPolicyId().equals(policyId))
+                return policy;
+        }
+        return null;
+    }
+
+    private void sanityCheck( PolicyManagerSettings settings )
+    {
+        if (settings == null)
+            throw new RuntimeException("NULL settings invalid");
+        if (settings.getPolicies() == null)
+            throw new RuntimeException("NULL policy list invalid");
+        if (settings.getRules() == null)
+            throw new RuntimeException("NULL rule list invalid");
+
+        boolean found = false;        
+        HashSet<Integer> policyIds = new HashSet<Integer>();
+        for ( PolicySettings policy : settings.getPolicies() ) {
+            if (policy.getPolicyId() == null)
+                throw new RuntimeException("NULL policy ID");
+            if (policy.getName() == null)
+                throw new RuntimeException("NULL policy Name");
+            if (policy.getPolicyId().equals(policy.getParentId()))
+                throw new RuntimeException("Policy can not have itself as a parent.");
+            if (policy.getPolicyId().equals(1))
+                found = true;
+            policyIds.add(policy.getPolicyId());
+        }
+        if (!found)
+            throw new RuntimeException("Missing policy Id 1. Can not remove the default policy. [1]");
+
+        for ( PolicySettings policy : settings.getPolicies() ) {
+
+            if (policy.getParentId() != null && policy.getParentId() != 0L && getPolicySettings(policy.getParentId(), settings) == null)
+                throw new RuntimeException("Missing policy Id " + policy.getParentId() + ". Can not remove parent of another policy/rack.");
+        }
+
+        for ( PolicySettings policy1 : settings.getPolicies() ) {
+            int dupeIds = 0;
+            for ( PolicySettings policy2 : settings.getPolicies() ) {
+                if (policy1.getPolicyId().equals(policy2.getPolicyId())) {
+                    dupeIds++; /* it should find itself */
+                    if (dupeIds > 1)
+                        throw new RuntimeException("Duplicate policy Id: " + policy1.getPolicyId());
+                } else {
+                    if (policy1.getName().equals(policy2.getName()))
+                        throw new RuntimeException("Duplicate policy name: " + policy1.getName());
+                }
+            }
+        }
+
+        for (PolicyRule rule : settings.getRules()) {
+            if (rule.getTargetPolicy() != null && rule.getTargetPolicy() != 0L) {
+                if (getPolicySettings(rule.getTargetPolicy(), settings) == null) {
+                    throw new RuntimeException("Missing policy Id " + rule.getTargetPolicy() + ". Policy is currently used in a policy rule.");
+                }
+            }
+        }
+
+        for ( Node node : UvmContextFactory.context().nodeManager().nodeInstances() ) {
+            if (node.getNodeSettings().getPolicyId() == null)
+                continue;
+            if (!policyIds.contains(node.getNodeSettings().getPolicyId()))
+                throw new RuntimeException("Missing policy: " + node.getNodeSettings().getPolicyId() + " (Required by " + node.getNodeProperties().getDisplayName() + " [" + node.getNodeSettings().getId() + "]). Cannot delete non-empty racks.");
+        }
+        
+
+        return;
+    }
+
+    
+    private static class SessionExpirationWorker implements Runnable
+    {
+        ExpiredPolicyMatcher matcher = new ExpiredPolicyMatcher();
+        PolicyManagerApp node;
+
+        public SessionExpirationWorker( PolicyManagerApp node)
+        {
+            this.node = node;
+        }
+        
+        public void run()
+        {
+            node.killMatchingSessionsGlobal(matcher);
+        }
+    }
+
+    private static class ExpiredPolicyMatcher implements SessionMatcher
+    {
+        private static final Logger logger = Logger.getLogger(ExpiredPolicyMatcher.class);
+
+        public boolean isMatch( Integer oldPolicyId, short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort, Map<String,Object> attachments )
+        {
+            PolicyManagerApp policyManager = (PolicyManagerApp) UvmContextFactory.context().nodeManager().node("untangle-node-policy-manager");
+            Integer newPolicyId = null;
+            Integer newPolicyRuleId = null;
+            if (policyManager != null) {
+                PolicyManagerResult result = policyManager.findPolicyId( protocol,
+                                                                         clientIntf, serverIntf,
+                                                                         clientAddr, serverAddr,
+                                                                         clientPort, serverPort );
+                if ( result != null ) {
+                    newPolicyId = result.policyId;
+                    newPolicyRuleId = result.policyRuleId;
+                }
+            }
+
+            if (logger.isDebugEnabled())
+                logger.debug("Evaluating session for policy switch: " +
+                             clientAddr.toString() + ":" + clientPort + " -> " +
+                             serverAddr.toString() + ":" + serverPort +
+                             " Old policy: " + oldPolicyId + " New policy: " + newPolicyId);
+
+            /** If either policy is null, just check if they are equal */
+            if (newPolicyId == null || oldPolicyId == null ) {
+                return newPolicyId != oldPolicyId;   
+            } else if (newPolicyId == oldPolicyId) {
+                return false;
+            } else if (newPolicyId.equals(oldPolicyId)) {
+                return false;
+            } else {
+                logger.info("Resetting session for policy switch: " +
+                            clientAddr.toString() + ":" + clientPort + " -> " +
+                            serverAddr.toString() + ":" + serverPort +
+                            " Old policy: " + oldPolicyId + " New policy: " + newPolicyId + " New rule ID: " + newPolicyRuleId);
+                return true;
+            }
+        }
+    }
+
+    /**
+     * Check to make sure nextPolicyId is bigger than any existisng policy ID
+     * This was somehow messed up in 9.3 or prior
+     */
+    private void updateNextPolicyIDIfNecessary( PolicyManagerSettings settings )
+    {
+        int biggestPolicyId = 1;
+        for (PolicySettings policy : settings.getPolicies()) {
+            if (policy.getPolicyId() > biggestPolicyId)
+                biggestPolicyId = policy.getPolicyId();
+        }
+        if (settings.getNextPolicyId() <= biggestPolicyId) {
+            logger.info("Updating next policy ID");
+            settings.setNextPolicyId( biggestPolicyId+1 );
+        }
+    }
+}

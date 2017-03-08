@@ -1,0 +1,22 @@
+{
+    "uniqueId": "policy-manager-hWC6KjOc8Y",
+    "category": "Policy Manager",
+    "description": "The amount of bandwidth per policy.",
+    "displayOrder": 100,
+    "enabled": true,
+    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "orderDesc": false,
+    "units": "bytes/s",
+    "readOnly": true,
+    "seriesRenderer": "policy_id",
+    "table": "session_minutes",
+    "timeDataInterval": "AUTO",
+    "timeDataDynamicValue": "(s2c_bytes+c2s_bytes)/60",
+    "timeDataDynamicColumn": "policy_id",
+    "timeDataDynamicLimit": "10",
+    "timeDataDynamicAggregationFunction": "sum",
+    "timeDataDynamicAllowNull": true,
+    "timeStyle": "AREA_STACKED",
+    "title": "Top Policy Usage",
+    "type": "TIME_GRAPH_DYNAMIC"
+}
