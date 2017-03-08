@@ -91,13 +91,13 @@ class ApplicationControlTests(unittest2.TestCase):
         node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
         nodeSettings = node.getSettings()
         # run a few sessions so that the classd daemon starts classifying
-        for i in range(2): remote_control.isOnline()
+        for i in range(2): remote_control.is_online()
 
     def setUp(self):
         pass
             
     def test_010_clientIsOnline(self):
-        result = remote_control.isOnline()
+        result = remote_control.is_online()
         assert (result == 0)
 
     def test_011_classdIsRunning(self):
@@ -105,24 +105,24 @@ class ApplicationControlTests(unittest2.TestCase):
         assert (result == 0)
 
     def test_020_protoRule_Default_Google(self):
-        result = remote_control.runCommand("wget -q -O /dev/null -4 -t 2 --timeout=5 http://www.google.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -4 -t 2 --timeout=5 http://www.google.com/")
         assert (result == 0)
 
     def test_021_protoRule_Block_Google(self):
         touchProtoRule("Google",True,True)
-        result = remote_control.runCommand("wget -q -O /dev/null -4 -t 2 --timeout=5 http://www.google.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -4 -t 2 --timeout=5 http://www.google.com/")
         assert (result != 0)
 
     def test_022_protoRule_Allow_Google(self):
         touchProtoRule("Google",False,False)
-        result = remote_control.runCommand("wget -4 -q -O /dev/null -t 2 --timeout=5 http://www.google.com/")
+        result = remote_control.run_command("wget -4 -q -O /dev/null -t 2 --timeout=5 http://www.google.com/")
         assert (result == 0)
 
     def test_023_protoRule_Facebook(self):
         touchProtoRule("Facebook",False,False)
-        result1 = remote_control.runCommand("wget --no-check-certificate -q -O /dev/null -4 -t 2 --timeout=5 https://facebook.com/")
+        result1 = remote_control.run_command("wget --no-check-certificate -q -O /dev/null -4 -t 2 --timeout=5 https://facebook.com/")
         touchProtoRule("Facebook",True,True)
-        result2 = remote_control.runCommand("wget --no-check-certificate -4 -q -O /dev/null -t 2 --timeout=5 https://facebook.com/")
+        result2 = remote_control.run_command("wget --no-check-certificate -4 -q -O /dev/null -t 2 --timeout=5 https://facebook.com/")
         touchProtoRule("Facebook",False,False)
         assert (result1 == 0)
         assert (result2 != 0)
@@ -130,9 +130,9 @@ class ApplicationControlTests(unittest2.TestCase):
     def test_024_protoRule_Dns(self):
         raise unittest2.SkipTest("Test not consistent, disabling.")
         touchProtoRule("DNS",False,False)
-        result1 = remote_control.runCommand("host -4 -W3 test.untangle.com 8.8.8.8")
+        result1 = remote_control.run_command("host -4 -W3 test.untangle.com 8.8.8.8")
         touchProtoRule("DNS",True,True)
-        result2 = remote_control.runCommand("host -4 -W3 test.untangle.com 8.8.8.8")
+        result2 = remote_control.run_command("host -4 -W3 test.untangle.com 8.8.8.8")
         touchProtoRule("DNS",False,False)
         assert (result1 == 0)
         assert (result2 != 0)
@@ -142,71 +142,71 @@ class ApplicationControlTests(unittest2.TestCase):
         pingResult = subprocess.call(["ping","-c","1",global_functions.ftpServer],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if pingResult:
             raise unittest2.SkipTest(global_functions.ftpServer + " not reachable")
-        result1 = remote_control.runCommand("wget -q -O /dev/null -4 -t 2 -o /dev/null --timeout=5 ftp://" + global_functions.ftpServer + "/")
+        result1 = remote_control.run_command("wget -q -O /dev/null -4 -t 2 -o /dev/null --timeout=5 ftp://" + global_functions.ftpServer + "/")
         touchProtoRule("FTP",True,True)
-        result2 = remote_control.runCommand("wget -q -O /dev/null -4 -t 2 -o /dev/null --timeout=5 ftp://" + global_functions.ftpServer + "/")
+        result2 = remote_control.run_command("wget -q -O /dev/null -4 -t 2 -o /dev/null --timeout=5 ftp://" + global_functions.ftpServer + "/")
         touchProtoRule("FTP",False,False)
         assert (result1 == 0)
         assert (result2 != 0)
 
     def test_026_protoRule_Pandora(self):
-        pre_count = global_functions.getStatusValue(node,"pass")
+        pre_count = global_functions.get_app_metric_value(node,"pass")
 
         touchProtoRule("Pandora",False,False)
-        result1 = remote_control.runCommand("wget --no-check-certificate -q -O /dev/null -4 -t 2 --timeout=5 https://pandora.com/")
+        result1 = remote_control.run_command("wget --no-check-certificate -q -O /dev/null -4 -t 2 --timeout=5 https://pandora.com/")
         touchProtoRule("Pandora",True,True)
-        result2 = remote_control.runCommand("wget --no-check-certificate -q -O /dev/null -4 -t 2 --timeout=5 https://pandora.com/")
+        result2 = remote_control.run_command("wget --no-check-certificate -q -O /dev/null -4 -t 2 --timeout=5 https://pandora.com/")
         touchProtoRule("Pandora",False,False)
         assert (result1 == 0)
         assert (result2 != 0)
 
         # Check to see if the faceplate counters have incremented. 
-        post_count = global_functions.getStatusValue(node,"pass")
+        post_count = global_functions.get_app_metric_value(node,"pass")
         assert(pre_count < post_count)
 
     def test_030_logicRule_Allow_Gmail(self):
-        result = remote_control.runCommand("wget --no-check-certificate -q -O /dev/null -4 -t 2 --timeout=5 https://mail.google.com/")
+        result = remote_control.run_command("wget --no-check-certificate -q -O /dev/null -4 -t 2 --timeout=5 https://mail.google.com/")
         assert (result == 0)
         
     def test_031_logicRule_Block_Gmail(self):
         nukeLogicRules()
         appendLogicRule(create2ConditionRule("PROTOCOL", "TCP", "APPLICATION_CONTROL_APPLICATION", "GMAIL"))
-        result = remote_control.runCommand("wget --no-check-certificate -q -O /dev/null -4 -t 2 --timeout=5 https://mail.google.com/")
+        result = remote_control.run_command("wget --no-check-certificate -q -O /dev/null -4 -t 2 --timeout=5 https://mail.google.com/")
         assert (result != 0)
 
     def test_031_logicRule_Block_Gmail_by_ProtoChain(self):
         nukeLogicRules()
         appendLogicRule(create2ConditionRule("PROTOCOL", "TCP", "APPLICATION_CONTROL_PROTOCHAIN", "*/SSL*"))
-        result = remote_control.runCommand("wget --no-check-certificate -q -O /dev/null -4 -t 2 --timeout=5 https://mail.google.com/")
+        result = remote_control.run_command("wget --no-check-certificate -q -O /dev/null -4 -t 2 --timeout=5 https://mail.google.com/")
         assert (result != 0)
 
     def test_032_logicRule_Block_Gmail_by_Category(self):
         nukeLogicRules()
         appendLogicRule(create2ConditionRule("PROTOCOL", "TCP", "APPLICATION_CONTROL_CATEGORY", "Mail"))
-        result = remote_control.runCommand("wget --no-check-certificate -q -O /dev/null -4 -t 2 --timeout=5 https://mail.google.com/")
+        result = remote_control.run_command("wget --no-check-certificate -q -O /dev/null -4 -t 2 --timeout=5 https://mail.google.com/")
         assert (result != 0)
 
     def test_033_logicRule_Block_Gmail_by_Productivity(self):
         nukeLogicRules()
         appendLogicRule(create2ConditionRule("PROTOCOL", "TCP", "APPLICATION_CONTROL_PRODUCTIVITY", ">2"))
-        result = remote_control.runCommand("wget --no-check-certificate -q -O /dev/null -4 -t 2 --timeout=5 https://mail.google.com/")
+        result = remote_control.run_command("wget --no-check-certificate -q -O /dev/null -4 -t 2 --timeout=5 https://mail.google.com/")
         assert (result != 0)
 
     def test_034_logicRule_Block_Gmail_by_Risk(self):
         nukeLogicRules()
         appendLogicRule(create2ConditionRule("PROTOCOL", "TCP", "APPLICATION_CONTROL_RISK", "<5"))
-        result = remote_control.runCommand("wget --no-check-certificate -q -O /dev/null -4 -t 2 --timeout=5 https://mail.google.com/")
+        result = remote_control.run_command("wget --no-check-certificate -q -O /dev/null -4 -t 2 --timeout=5 https://mail.google.com/")
         assert (result != 0)
 
     def test_034_logicRule_Block_Gmail_by_Confidence(self):
         nukeLogicRules()
         appendLogicRule(create2ConditionRule("PROTOCOL", "TCP", "APPLICATION_CONTROL_CONFIDENCE", ">50"))
-        result = remote_control.runCommand("wget --no-check-certificate -q -O /dev/null -4 -t 2 --timeout=5 https://mail.google.com/")
+        result = remote_control.run_command("wget --no-check-certificate -q -O /dev/null -4 -t 2 --timeout=5 https://mail.google.com/")
         assert (result != 0)
 
     def test_100_eventlog_Block_Google(self):
         touchProtoRule("Google",True,True)
-        result = remote_control.runCommand("wget -O /dev/null -4 -t 2 --timeout=5 http://www.google.com/")
+        result = remote_control.run_command("wget -O /dev/null -4 -t 2 --timeout=5 http://www.google.com/")
         assert (result != 0)
         time.sleep(1)
 
@@ -226,11 +226,11 @@ class ApplicationControlTests(unittest2.TestCase):
             print "Test %i" % i
             result = os.system("/etc/init.d/untangle-classd restart >/dev/null 2>&1")
             assert (result == 0)
-            result = remote_control.isOnline()
+            result = remote_control.is_online()
             assert (result == 0)
         # give it some time to recover for future tests
         for i in range(5):
-            result = remote_control.isOnline()
+            result = remote_control.is_online()
             time.sleep(1)
 
     @staticmethod
