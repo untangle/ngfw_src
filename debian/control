@@ -36,6 +36,16 @@ Depends: untangle-vm
 Description: Shield
  The Shield application.
 
+Package: untangle-node-web-filter
+Architecture: all
+Section: non-free
+Depends: untangle-vm, untangle-casing-http, untangle-base-web-filter, untangle-node-license
+Conflicts: untangle-node-sitefilter
+Replaces: untangle-node-sitefilter
+Provides: untangle-node-sitefilter
+Description: Web Filter
+ The Web Filter application.
+
 Package: untangle-node-web-monitor
 Architecture: all
 Depends: untangle-vm, untangle-casing-http, untangle-base-web-filter

@@ -8,8 +8,4 @@ deps << http['src']
 web_filter_base = BuildEnv::SRC['untangle-base-web-filter']
 deps << web_filter_base['src']
 
-web_filter = HadesBuildEnv['untangle-node-web-filter']
-
-NodeBuilder.makeNode(HadesBuildEnv, 'untangle-node-web-filter', 'web-filter', deps )
-deps << web_filter['src']
-
+NodeBuilder.makeNode(BuildEnv::SRC, 'untangle-node-web-filter', 'web-filter', deps )
