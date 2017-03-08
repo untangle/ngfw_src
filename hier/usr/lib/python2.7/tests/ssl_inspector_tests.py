@@ -96,31 +96,31 @@ class SslInspectorTests(unittest2.TestCase):
         pass
 
     def test_010_clientIsOnline(self):
-        result = remote_control.isOnline()
+        result = remote_control.is_online()
         assert (result == 0)
             
     def test_011_checkServerCertificate(self):
-        result = remote_control.runCommand('echo -n | openssl s_client -connect %s:443 -servername %s 2>/dev/null | grep -qi "untangle"' % (testedServerName, testedServerName))
+        result = remote_control.run_command('echo -n | openssl s_client -connect %s:443 -servername %s 2>/dev/null | grep -qi "untangle"' % (testedServerName, testedServerName))
         assert (result == 0)
 
     def test_015_checkWebFilterBlockInspected(self):
         addBlockedUrl(testedServerName)
-        remote_control.runCommand('curl -s -4 --connect-timeout 10 --trace-ascii /tmp/ssl_test_015.trace --output /tmp/ssl_test_015.output --insecure https://%s' % (testedServerName))
+        remote_control.run_command('curl -s -4 --connect-timeout 10 --trace-ascii /tmp/ssl_test_015.trace --output /tmp/ssl_test_015.output --insecure https://%s' % (testedServerName))
         nukeBlockedUrls()
-        result = remote_control.runCommand('grep blockpage /tmp/ssl_test_015.trace')
+        result = remote_control.run_command('grep blockpage /tmp/ssl_test_015.trace')
         assert (result == 0)
-        result = remote_control.runCommand("wget -q -4 -t 2 --timeout=5 --no-check-certificate -q -O - https://%s 2>&1 | grep -q blockpage" % (pornServerName))
+        result = remote_control.run_command("wget -q -4 -t 2 --timeout=5 --no-check-certificate -q -O - https://%s 2>&1 | grep -q blockpage" % (pornServerName))
         assert (result == 0)        
 
     def test_020_checkIgnoreCertificate(self):
         if findRule('Ignore Dropbox'):
-            result = remote_control.runCommand('echo -n | openssl s_client -connect www.dropbox.com:443 -servername www.dropbox.com 2>/dev/null | grep -q \'%s\'' % (dropboxIssuer))
+            result = remote_control.run_command('echo -n | openssl s_client -connect www.dropbox.com:443 -servername www.dropbox.com 2>/dev/null | grep -q \'%s\'' % (dropboxIssuer))
             assert (result == 0)
         else:
             raise unittest2.SkipTest('SSL Inspector does not have Ignore Dropbox rule')
 
     def test_030_checkSslInspectorInspectorEventLog(self):
-        remote_control.runCommand('curl -s -4 --connect-timeout 10 --trace /tmp/ssl_test_040.trace --output /tmp/ssl_test_040.output --insecure https://%s' % (testedServerName))
+        remote_control.run_command('curl -s -4 --connect-timeout 10 --trace /tmp/ssl_test_040.trace --output /tmp/ssl_test_040.output --insecure https://%s' % (testedServerName))
         events = global_functions.get_events('SSL Inspector','All Sessions',None,5)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
@@ -130,7 +130,7 @@ class SslInspectorTests(unittest2.TestCase):
 
     def test_040_checkWebFilterEventLog(self):
         addBlockedUrl(testedServerName)
-        remote_control.runCommand('curl -s -4 --connect-timeout 10 --trace /tmp/ssl_test_040.trace --output /tmp/ssl_test_040.output --insecure https://%s' % (testedServerName))
+        remote_control.run_command('curl -s -4 --connect-timeout 10 --trace /tmp/ssl_test_040.trace --output /tmp/ssl_test_040.output --insecure https://%s' % (testedServerName))
         nukeBlockedUrls()
 
         events = global_functions.get_events('Web Filter','Blocked Web Events',None,1)
@@ -171,7 +171,7 @@ class SslInspectorTests(unittest2.TestCase):
         uri = "/search?q=oneterm&qs=n&form=QBRE"
         for t in termTests:
             eventTime = datetime.datetime.now()
-            result = remote_control.runCommand("curl -s -4 -o /dev/null -A 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.1) Gecko/20061204 Firefox/2.0.0.1' --connect-timeout 10 --insecure 'https://%s%s'" % ( t["host"], t["uri"] ) )
+            result = remote_control.run_command("curl -s -4 -o /dev/null -A 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.1) Gecko/20061204 Firefox/2.0.0.1' --connect-timeout 10 --insecure 'https://%s%s'" % ( t["host"], t["uri"] ) )
             assert( result == 0 )
 
             events = global_functions.get_events('Web Filter','All Query Events',None,1)
