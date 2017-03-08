@@ -100,6 +100,7 @@ task :targets => :download do
   require "#{SRC_HOME}/directory-connector/package.rb"
   require "#{SRC_HOME}/ipsec-vpn/package.rb"
   require "#{SRC_HOME}/live-support/package.rb"
+  require "#{SRC_HOME}/policy-manager/package.rb"
 end
 
 task :build => [:builduvmcore, :targets] do
