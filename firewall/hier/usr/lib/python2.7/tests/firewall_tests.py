@@ -107,138 +107,138 @@ class FirewallTests(unittest2.TestCase):
 
     # verify client is online
     def test_010_clientIsOnline(self):
-        result = remote_control.isOnline()
+        result = remote_control.is_online()
         assert (result == 0)
 
     # verify client is online
     def test_011_defaultIsPass(self):
-        result = remote_control.runCommand("wget -q -O /dev/null http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null http://test.untangle.com/")
         assert (result == 0)
 
     # verify a block port 80 rule works
     def test_020_portDst(self):
         rules_clear()
         rule_append(create_rule_single_condition("DST_PORT","80"))
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify a block port 79-81 rule works
     def test_021_portRange(self):
         rules_clear()
         rule_append(create_rule_single_condition("DST_PORT","79-81"))
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify a block port 79,80,81 rule works
     def test_022_portComma(self):
         rules_clear()
         rule_append(create_rule_single_condition("DST_PORT","79,80,81"))
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify a block port 79,81 rule doesnt match 80
     def test_023_portComma2(self):
         rules_clear()
         rule_append(create_rule_single_condition("DST_PORT","79,81"))
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
     # verify a block port 79,80,81 rule works
     def test_024_portMixed(self):
         rules_clear()
         rule_append(create_rule_single_condition("DST_PORT","1- 5,80, 90-100"))
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify a block port any rule works
     def test_025_portAny(self):
         rules_clear()
         rule_append(create_rule_single_condition("DST_PORT","any"))
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify a block port >79 rule blocks 80
     def test_026_portGreaterThan(self):
         rules_clear()
         rule_append(create_rule_single_condition("DST_PORT",">79"))
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify a block port <81 rule blocks 80
     def test_027_portLessThan(self):
         rules_clear()
         rule_append(create_rule_single_condition("DST_PORT","<81"))
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify a block port <1 rule doesnt block 80
     def test_028_portLessThan2(self):
         rules_clear()
         rule_append(create_rule_single_condition("DST_PORT","<1"))
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
     # verify a block udp rule
     def test_028_portUdp(self):
         rules_clear()
         rule_append(create_rule_single_condition("DST_PORT","53"))
-        result = remote_control.runCommand("host test.untangle.com " + dnsServer)
+        result = remote_control.run_command("host test.untangle.com " + dnsServer)
         assert (result != 0)
 
     # verify src addr rule with any works
     def test_030_addressAny(self):
         rules_clear()
         rule_append(create_rule_single_condition("SRC_ADDR","any"))
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify src addr rule with IP works
     def test_031_addressIp(self):
         rules_clear()
         rule_append(create_rule_single_condition("SRC_ADDR",remote_control.clientIP))
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify src addr rule with CIDR works
     def test_032_addressCidr(self):
         rules_clear()
         rule_append(create_rule_single_condition("SRC_ADDR",remote_control.clientIP+"/24"))
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify src addr rule with commas works
     def test_033_addressComma(self):
         rules_clear()
         rule_append(create_rule_single_condition("SRC_ADDR","4.3.2.1, "+ remote_control.clientIP + ",  1.2.3.4/31"))
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify dst addr rule with any works
     def test_040_addressAnyDstCapital(self):
         rules_clear()
         rule_append( create_rule_single_condition("DST_ADDR","Any", blocked=True) )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify dst addr rule with IP works
     def test_041_addressIpDst(self):
         rules_clear()
         rule_append( create_rule_single_condition("DST_ADDR",testsiteIP, blocked=True) )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify dst addr rule with CIDR works
     def test_042_addressCidrDst(self):
         rules_clear()
         rule_append( create_rule_single_condition("DST_ADDR",testsiteIP+"/31", blocked=True) )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify dst addr rule with commas works
     def test_043_addressDstComma(self):
         rules_clear()
         rule_append( create_rule_single_condition("DST_ADDR","1.2.3.4/31," + testsiteIP+",5.6.7.8", blocked=True) )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify dst addr rule with commas works
@@ -250,7 +250,7 @@ class FirewallTests(unittest2.TestCase):
 
         rules_clear()
         rule_append( create_rule_single_condition("DST_ADDR",testsiteIPRange, blocked=True) )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify dst addr rule with commas works
@@ -263,69 +263,69 @@ class FirewallTests(unittest2.TestCase):
 
         rules_clear()
         rule_append( create_rule_single_condition("DST_ADDR",testsiteIPRange2, blocked=True) )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify protocol rule works
     def test_046_protocolTCP(self):
         rules_clear()
         rule_append( create_rule_single_condition("PROTOCOL","TCP", blocked=True) )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify protocol UDP not TCP block rule works
     def test_047_protocolUDPnotTCP(self):
         rules_clear()
         rule_append( create_rule_dual_condition("PROTOCOL","UDP", "DST_PORT", 53) )
-        result = remote_control.runCommand("host test.untangle.com " + dnsServer)
+        result = remote_control.run_command("host test.untangle.com " + dnsServer)
         assert (result != 0)
         # Use TCP version of DNS lookup.
-        result = remote_control.runCommand("host -T test.untangle.com " + dnsServer)
+        result = remote_control.run_command("host -T test.untangle.com " + dnsServer)
         assert (result == 0)
 
     # verify protocol TCP not UDP block rule works
     def test_048_protocolTCPnotUDP(self):
         rules_clear()
         rule_append( create_rule_dual_condition("PROTOCOL","TCP", "DST_PORT", 53) )
-        result = remote_control.runCommand("host test.untangle.com " + dnsServer)
+        result = remote_control.run_command("host test.untangle.com " + dnsServer)
         assert (result == 0)
         # Use TCP version of DNS lookup.
-        result = remote_control.runCommand("host -T test.untangle.com " + dnsServer)
+        result = remote_control.run_command("host -T test.untangle.com " + dnsServer)
         assert (result != 0)
 
     # verify src intf any rule works
     def test_050_intfDstAny(self):
         rules_clear()
         rule_append( create_rule_single_condition( "DST_INTF", "any" ) )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify dst intf number rule works
     def test_051_intfDst(self):
         rules_clear()
         # check if a multi-wan box.
-        indexOfWans = global_functions.foundWans()
+        indexOfWans = global_functions.get_wan_tuples()
         if (len(indexOfWans) < 2):
             rule_append( create_rule_single_condition( "DST_INTF", remote_control.interfaceExternal ) )
         else:
             for wanIndexTup in indexOfWans:
                 wanIndex = wanIndexTup[0]
                 rule_append( create_rule_single_condition( "DST_INTF", wanIndex ) )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify dst intf number rule doesnt match everythin
     def test_052_intfWrongIntf(self):
         rules_clear()
         rule_append( create_rule_single_condition( "DST_INTF", int(remote_control.interfaceExternal) + 1 ) )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
     # verify dst intf with commas blocks
     def test_053_intfCommas(self):
         rules_clear()
         # check if a multi-wan box.
-        indexOfWans = global_functions.foundWans()
+        indexOfWans = global_functions.get_wan_tuples()
         if (len(indexOfWans) < 2):
             rule_append( create_rule_single_condition( "DST_INTF", "99," + str(remote_control.interfaceExternal) +  ", 100" ) )
         else:
@@ -334,14 +334,14 @@ class FirewallTests(unittest2.TestCase):
                 interfaces_str += "," + str(wanIndexTup[0])
             interfaces_str += ",100"
             rule_append( create_rule_single_condition( "DST_INTF", interfaces_str ) )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify dst intf wan is blockde
     def test_054_intfWan(self):
         rules_clear()
         rule_append( create_rule_single_condition( "DST_INTF", "wan" ) )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify dst intf non_wan not blocked
@@ -349,90 +349,90 @@ class FirewallTests(unittest2.TestCase):
         rules_clear()
         # specify TCP so the DNS UDP session doesn't get blocked (if it happens to be inbound)
         rule_append( create_rule_dual_condition( "DST_INTF", "non_wan", "PROTOCOL", "tcp") )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
     # verify src intf any rule works
     def test_060_intfSrcAny(self):
         rules_clear()
         rule_append( create_rule_single_condition( "SRC_INTF", "any" ) )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify src intf number rule works
     def test_061_intfSrc(self):
         rules_clear()
         rule_append( create_rule_single_condition( "SRC_INTF", remote_control.interface ) )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify src intf number rule doesnt match everythin
     def test_062_intfSrcWrongIntf(self):
         rules_clear()
         rule_append( create_rule_single_condition( "SRC_INTF", int(remote_control.interface) + 1 ) )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
     # verify src intf with commas blocks
     def test_063_intfSrcCommas(self):
         rules_clear()
         rule_append( create_rule_single_condition( "SRC_INTF", "99," + str(remote_control.interface) +  ", 100" ) )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify src intf non_wan is blocked
     def test_064_intfSrcNonWan(self):
         rules_clear()
         rule_append( create_rule_single_condition( "SRC_INTF", "non_wan" ) )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify src intf wan not blocked
     def test_065_intfSrcWan(self):
         rules_clear()
         rule_append( create_rule_single_condition( "SRC_INTF", "wan" ) )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
     # verify GeoiP blocking does block stuff that is blocked
     def test_070_geoipClientCountryBlock(self):
         rules_clear()
         rule_append( create_rule_single_condition( "SERVER_COUNTRY", "CN,US,AU" ) )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify GeoIP blocking doesn't block stuff that isn't blocked
     def test_071_geoipClientCountryMiss(self):
         rules_clear()
         rule_append( create_rule_single_condition( "SERVER_COUNTRY", "CN,GB,AU" ) )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
     # verify GeoiP blocking does block stuff that is blocked
     def test_072_geoipHostCountryBlock(self):
         rules_clear()
         rule_append( create_rule_single_condition( "REMOTE_HOST_COUNTRY", "CN,US,AU" ) )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify GeoIP blocking doesn't block stuff that isn't blocked
     def test_073_geoipHostCountryMiss(self):
         rules_clear()
         rule_append( create_rule_single_condition( "REMOTE_HOST_COUNTRY", "CN,GB,AU" ) )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
     def test_080_tagHostCheckMissing(self):
         rules_clear()
         rule_append( create_rule_single_condition( "TAGGED", "NONEXISTANT-TAG" ) )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
     def test_081_tagHostBlock(self):
         rules_clear()
         global_functions.host_tags_add("testtag")
         rule_append( create_rule_single_condition( "TAGGED", "testtag" ) )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
         global_functions.host_tags_clear()
 
@@ -440,7 +440,7 @@ class FirewallTests(unittest2.TestCase):
         rules_clear()
         global_functions.host_tags_add("testtag")
         rule_append( create_rule_single_condition( "TAGGED", "*test*" ) )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         global_functions.host_tags_clear()
         assert (result != 0)
 
@@ -452,7 +452,7 @@ class FirewallTests(unittest2.TestCase):
         global_functions.host_tags_add("foobar3")
         global_functions.host_tags_add("foobar4")
         rule_append( create_rule_single_condition( "TAGGED", "*test*" ) )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         global_functions.host_tags_clear()
         assert (result != 0)
         
@@ -462,7 +462,7 @@ class FirewallTests(unittest2.TestCase):
         global_functions.host_username_set( username )
         global_functions.user_tags_add(username,"testtag")
         rule_append( create_rule_single_condition( "TAGGED", "testtag" ) )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         global_functions.user_tags_clear(username)
         global_functions.host_username_clear()
         assert (result != 0)
@@ -471,14 +471,14 @@ class FirewallTests(unittest2.TestCase):
     def test_100_serverPenaltyBox(self):
         rules_clear()
         rule_append( create_rule_single_condition( "SERVER_IN_PENALTY_BOX", None ) )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
         # verify client penalty box not blocked
     def test_101_clientPenaltyBox(self):
         rules_clear()
         rule_append( create_rule_single_condition( "CLIENT_IN_PENALTY_BOX", None ) )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
     # verify client penalty box is blocked when client in penalty box
@@ -486,7 +486,7 @@ class FirewallTests(unittest2.TestCase):
         rules_clear()
         global_functions.host_tags_add("penalty-box")
         rule_append( create_rule_single_condition( "CLIENT_IN_PENALTY_BOX", None ) )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
         global_functions.host_tags_clear()
 
@@ -494,7 +494,7 @@ class FirewallTests(unittest2.TestCase):
     def test_103_hostPenaltyBox(self):
         rules_clear()
         rule_append( create_rule_single_condition( "HOST_IN_PENALTY_BOX", None ) )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
     # verify client penalty box is blocked when client in penalty box
@@ -502,7 +502,7 @@ class FirewallTests(unittest2.TestCase):
         rules_clear()
         global_functions.host_tags_add("penalty-box")
         rule_append( create_rule_single_condition( "HOST_IN_PENALTY_BOX", None ) )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
         global_functions.host_tags_clear()
         
@@ -510,21 +510,21 @@ class FirewallTests(unittest2.TestCase):
     def test_110_clientQuotaAttainment(self):
         rules_clear()
         rule_append( create_rule_single_condition("CLIENT_QUOTA_ATTAINMENT", "<1.3", blocked=True) )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify client quota attainment condition
     def test_111_hostQuotaAttainment(self):
         rules_clear()
         rule_append( create_rule_single_condition("HOST_QUOTA_ATTAINMENT", "<1.3", blocked=True) )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
         
     # verify bogus user agent match not blocked
     def test_120_clientUserAgent(self):
         rules_clear()
         rule_append( create_rule_single_condition( "HTTP_USER_AGENT", "*testtesttesttesttesttesttest*" ) )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
     # verify bogus user agent match is blocked after setting agent
@@ -535,7 +535,7 @@ class FirewallTests(unittest2.TestCase):
 
         rules_clear()
         rule_append( create_rule_single_condition( "HTTP_USER_AGENT", "*Mozilla*" ) )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
         entry['httpUserAgent'] = None
@@ -545,7 +545,7 @@ class FirewallTests(unittest2.TestCase):
     def test_130_clientHostnameBogus(self):
         rules_clear()
         rule_append( create_rule_single_condition( "CLIENT_HOSTNAME", "*testtesttesttesttesttesttest*" ) )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
     # verify hostname match blocked after setting hostname
@@ -553,7 +553,7 @@ class FirewallTests(unittest2.TestCase):
         global_functions.host_hostname_set( remote_control.get_hostname() )
         rules_clear()
         rule_append( create_rule_single_condition( "CLIENT_HOSTNAME", remote_control.get_hostname() ) )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         global_functions.host_hostname_clear()
         assert (result != 0)
 
@@ -562,7 +562,7 @@ class FirewallTests(unittest2.TestCase):
         global_functions.host_hostname_set( remote_control.get_hostname() )
         rules_clear()
         rule_append( create_rule_single_condition( "HOST_HOSTNAME", remote_control.get_hostname() ) )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         global_functions.host_hostname_clear()
         assert (result != 0)
 
@@ -572,11 +572,11 @@ class FirewallTests(unittest2.TestCase):
 
         rules_clear()
         rule_append( create_rule_single_condition( "HOST_HOSTNAME", remote_control.get_hostname() + ",foobar") )
-        result1 = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result1 = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
 
         rules_clear()
         rule_append( create_rule_single_condition( "HOST_HOSTNAME", "foobar," + remote_control.get_hostname() ) )
-        result2 = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result2 = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
 
         global_functions.host_hostname_clear()
         assert (result1 != 0)
@@ -586,7 +586,7 @@ class FirewallTests(unittest2.TestCase):
     def test_140_clientUsername(self):
         rules_clear()
         rule_append( create_rule_single_condition( "USERNAME", "*testtesttesttesttesttesttest*" ) )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
     # verify bogus username match not blocked
@@ -595,7 +595,7 @@ class FirewallTests(unittest2.TestCase):
         global_functions.host_username_clear()
         rules_clear()
         rule_append( create_rule_single_condition( "USERNAME", "[unauthenticated]" ) )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify username matcher works
@@ -605,7 +605,7 @@ class FirewallTests(unittest2.TestCase):
 
         rules_clear()
         rule_append( create_rule_single_condition( "USERNAME", username ) )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
 
         global_functions.host_username_clear()
         assert (result != 0)
@@ -617,10 +617,10 @@ class FirewallTests(unittest2.TestCase):
 
         rules_clear()
         rule_append( create_rule_single_condition( "USERNAME", username + ",foobar" ) )
-        result1 = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result1 = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         rules_clear()
         rule_append( create_rule_single_condition( "USERNAME", "foobar," + username ) )
-        result2 = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result2 = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
 
         global_functions.host_username_clear()
         assert (result1 != 0)
@@ -633,7 +633,7 @@ class FirewallTests(unittest2.TestCase):
 
         rules_clear()
         rule_append( create_rule_single_condition( "USERNAME", username.lower() ) )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
         global_functions.host_username_clear()
@@ -645,11 +645,11 @@ class FirewallTests(unittest2.TestCase):
 
         rules_clear()
         rule_append( create_rule_single_condition( "USERNAME", username.upper() ) )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
         global_functions.host_username_clear()
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
     # verify "[authenticated]" matches any username
@@ -659,11 +659,11 @@ class FirewallTests(unittest2.TestCase):
 
         rules_clear()
         rule_append( create_rule_single_condition( "USERNAME", '[authenticated]' ) )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
         global_functions.host_username_clear()
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
         
     # verify "A*" matches "abc"
@@ -673,11 +673,11 @@ class FirewallTests(unittest2.TestCase):
 
         rules_clear()
         rule_append( create_rule_single_condition( "USERNAME", username[:1].upper()+'*' ) )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
         global_functions.host_username_clear()
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
     # verify "*" matches any username but not null
@@ -687,11 +687,11 @@ class FirewallTests(unittest2.TestCase):
 
         rules_clear()
         rule_append( create_rule_single_condition( "USERNAME", '*' ) )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
         global_functions.host_username_clear()
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
     # verify '' username matches null username (but not all usernames)
@@ -701,7 +701,7 @@ class FirewallTests(unittest2.TestCase):
 
         rules_clear()
         rule_append( create_rule_single_condition( "USERNAME", '' ) )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
         global_functions.host_username_clear()
@@ -710,7 +710,7 @@ class FirewallTests(unittest2.TestCase):
     def test_150_clientUsernameBlank2(self):
         rules_clear()
         rule_append( create_rule_single_condition( "USERNAME", '*', invert=True ) )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify block by client MAC
@@ -722,7 +722,7 @@ class FirewallTests(unittest2.TestCase):
 
         rules_clear()
         rule_append( create_rule_single_condition( "SRC_MAC", mac ) )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify block client MAC by *
@@ -733,7 +733,7 @@ class FirewallTests(unittest2.TestCase):
 
         rules_clear()
         rule_append( create_rule_single_condition( "SRC_MAC", "*" ) )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify block by client MAC in list
@@ -745,26 +745,26 @@ class FirewallTests(unittest2.TestCase):
 
         rules_clear()
         rule_append( create_rule_single_condition( "SRC_MAC", "11:22:33:44:55:66," + mac ) )
-        result1 = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result1 = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result1 != 0)
 
         rules_clear()
         rule_append( create_rule_single_condition( "SRC_MAC", mac + ",11:22:33:44:55:66" ) )
-        result2 = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result2 = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result2 != 0)
 
     # verify rules that a rule with two matching matchers works
     def test_700_ruleConditionDual(self):
         rules_clear()
         rule_append( create_rule_dual_condition("SRC_ADDR", remote_control.clientIP, "DST_PORT", 80) )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify rules that both MUST match for the session to be blocked
     def test_701_ruleConditionDualAnd(self):
         rules_clear()
         rule_append( create_rule_dual_condition("SRC_ADDR", remote_control.clientIP, "DST_PORT", 79) )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
     # verify rules evaluated in order
@@ -772,7 +772,7 @@ class FirewallTests(unittest2.TestCase):
         rules_clear()
         rule_append( create_rule_single_condition("SRC_ADDR", remote_control.clientIP, blocked=False) )
         rule_append( create_rule_single_condition("DST_PORT", "80") )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
     # verify rules evaluated in order
@@ -780,14 +780,14 @@ class FirewallTests(unittest2.TestCase):
         rules_clear()
         rule_append( create_rule_single_condition("DST_PORT", "80") )
         rule_append( create_rule_single_condition("SRC_ADDR", remote_control.clientIP, blocked=False) )
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
     # verify a session event
     def test_900_logEventLog(self):
         rules_clear()
         rule_append(create_rule_single_condition("DST_PORT","80",blocked=False,flagged=False))
-        result = remote_control.isOnline()
+        result = remote_control.is_online()
         assert (result == 0)
 
         events = global_functions.get_events('Firewall','All Events',None,1)
@@ -802,9 +802,9 @@ class FirewallTests(unittest2.TestCase):
     def test_901_blockEventLog(self):
         rules_clear()
         rule_append(create_rule_single_condition("DST_PORT","80"))
-        pre_events_block = global_functions.getStatusValue(node,"block")
+        pre_events_block = global_functions.get_app_metric_value(node,"block")
 
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
         events = global_functions.get_events('Firewall','Blocked Events',None,1)
@@ -817,14 +817,14 @@ class FirewallTests(unittest2.TestCase):
         assert( found )
 
         # Check to see if the faceplate counters have incremented.
-        post_events_block = global_functions.getStatusValue(node,"block")
+        post_events_block = global_functions.get_app_metric_value(node,"block")
         assert(pre_events_block < post_events_block)
 
     # verify a flagged sesion event
     def test_902_flagEventLog(self):
         rules_clear()
         rule_append(create_rule_single_condition("DST_PORT","80",blocked=False,flagged=True))
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
         events = global_functions.get_events('Firewall','Flagged Events',None,1)
@@ -840,9 +840,9 @@ class FirewallTests(unittest2.TestCase):
     def test_903_blockLocalEventLog(self):
         rules_clear()
         rule_append(create_rule_single_condition("CLIENT_COUNTRY","XL"))
-        pre_events_block = global_functions.getStatusValue(node,"block")
+        pre_events_block = global_functions.get_app_metric_value(node,"block")
 
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
 
         events = global_functions.get_events('Firewall','Blocked Events',None,1)
@@ -855,14 +855,14 @@ class FirewallTests(unittest2.TestCase):
         assert( found )
 
         # Check to see if the faceplate counters have incremented.
-        post_events_block = global_functions.getStatusValue(node,"block")
+        post_events_block = global_functions.get_app_metric_value(node,"block")
         assert(pre_events_block < post_events_block)
 
     # verify a flagged local sesion event
     def test_904_flagLocalEventLog(self):
         rules_clear()
         rule_append(create_rule_single_condition("CLIENT_COUNTRY","XL",blocked=False,flagged=True))
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result == 0)
 
         events = global_functions.get_events('Firewall','Flagged Events',None,1)

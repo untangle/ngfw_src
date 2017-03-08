@@ -24,18 +24,18 @@ canRelayTLS = True
 smtpServerHost = 'test.untangle.com'
 
 def getLatestMailSender():
-    remote_control.runCommand("rm -f mailpkg.tar") # remove all previous mail packages
-    results = remote_control.runCommand("wget -q http://test.untangle.com/test/mailpkg.tar")
+    remote_control.run_command("rm -f mailpkg.tar") # remove all previous mail packages
+    results = remote_control.run_command("wget -q http://test.untangle.com/test/mailpkg.tar")
     # print "Results from getting mailpkg.tar <%s>" % results
-    results = remote_control.runCommand("tar -xvf mailpkg.tar")
+    results = remote_control.run_command("tar -xvf mailpkg.tar")
     # print "Results from untaring mailpkg.tar <%s>" % results
 
 def sendSpamMail(host=smtpServerHost, useTLS=False):
     mailResult = None
     if useTLS:
-        mailResult = remote_control.runCommand("python mailsender.py --from=test@example.com --to=qa@example.com ./spam-mail/ --host=" + host + " --reconnect --series=30:0,150,100,50,25,0,180 --starttls", stdout=False, nowait=False)
+        mailResult = remote_control.run_command("python mailsender.py --from=test@example.com --to=qa@example.com ./spam-mail/ --host=" + host + " --reconnect --series=30:0,150,100,50,25,0,180 --starttls", stdout=False, nowait=False)
     else:
-        mailResult = remote_control.runCommand("python mailsender.py --from=test@example.com --to=qa@example.com ./spam-mail/ --host=" + host + " --reconnect --series=30:0,150,100,50,25,0,180")
+        mailResult = remote_control.run_command("python mailsender.py --from=test@example.com --to=qa@example.com ./spam-mail/ --host=" + host + " --reconnect --series=30:0,150,100,50,25,0,180")
     return mailResult
 
 def createSSLInspectRule(port="25"):
@@ -97,11 +97,11 @@ class SpamBlockerBaseTests(unittest2.TestCase):
         # nodeSSL.start() # leave node off. node doesn't auto-start
         nodeSSLData = nodeSSL.getSettings()
         try:
-            canRelay = global_functions.sendTestmessage(mailhost=smtpServerHost)
+            canRelay = global_functions.send_test_email(mailhost=smtpServerHost)
         except Exception,e:
             canRelay = False
         try:
-            canRelayTLS = global_functions.sendTestmessage(mailhost=global_functions.tlsSmtpServerHost)
+            canRelayTLS = global_functions.send_test_email(mailhost=global_functions.tlsSmtpServerHost)
         except Exception,e:
             canRelayTLS = False
         getLatestMailSender()
@@ -117,7 +117,7 @@ class SpamBlockerBaseTests(unittest2.TestCase):
 
     # verify client is online
     def test_010_clientIsOnline(self):
-        result = remote_control.isOnline()
+        result = remote_control.is_online()
         assert (result == 0)
 
     def test_020_smtpTest(self):
@@ -199,7 +199,7 @@ class SpamBlockerBaseTests(unittest2.TestCase):
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
         # find local SMTP sender
         fakeSmtpServerHost = "";
-        fakeSmtpServerHost, fakeSmtpdomain = global_functions.findSmtpServer(wan_IP)
+        fakeSmtpServerHost, fakeSmtpdomain = global_functions.find_smtp_server(wan_IP)
         if (fakeSmtpServerHost == None):
             raise unittest2.SkipTest("No local SMTP server")
         externalClientResult = subprocess.call(["ping","-c","1",fakeSmtpServerHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
@@ -211,10 +211,10 @@ class SpamBlockerBaseTests(unittest2.TestCase):
         nodeData['smtpConfig']['msgAction'] = "MARK"
         node.setSettings(nodeData)
         # remove previous smtp log file
-        remote_control.runCommand("sudo pkill -INT python",host=fakeSmtpServerHost)
-        remote_control.runCommand("sudo rm -f /tmp/test_070_checkForSMTPHeaders.log /tmp/qa@example.com.*", host=fakeSmtpServerHost)
+        remote_control.run_command("sudo pkill -INT python",host=fakeSmtpServerHost)
+        remote_control.run_command("sudo rm -f /tmp/test_070_checkForSMTPHeaders.log /tmp/qa@example.com.*", host=fakeSmtpServerHost)
         # Start mail sink
-        remote_control.runCommand("sudo python fakemail.py --host " + fakeSmtpServerHost + " --log /tmp/test_070_checkForSMTPHeaders.log --port 25 --path /tmp/ --background", host=fakeSmtpServerHost, stdout=False, nowait=True)
+        remote_control.run_command("sudo python fakemail.py --host " + fakeSmtpServerHost + " --log /tmp/test_070_checkForSMTPHeaders.log --port 25 --path /tmp/ --background", host=fakeSmtpServerHost, stdout=False, nowait=True)
         time.sleep(5) # the current mail sink takes a bit of time to start listening.
         sendSpamMail(host=fakeSmtpServerHost)
         # check for email file if there is no timeout
@@ -224,17 +224,17 @@ class SpamBlockerBaseTests(unittest2.TestCase):
             timeout -= 1
             time.sleep(1)
             # Check to see if the delivered email file is present
-            email_file = remote_control.runCommand("test -f /tmp/qa@example.com.1",host=fakeSmtpServerHost)
+            email_file = remote_control.run_command("test -f /tmp/qa@example.com.1",host=fakeSmtpServerHost)
             if (email_file == 0):
                 emailFound = True
                 
         # Either found email file or timed out so kill mail sink
-        remote_control.runCommand("sudo pkill -INT python",host=fakeSmtpServerHost)
+        remote_control.run_command("sudo pkill -INT python",host=fakeSmtpServerHost)
         nodeData['smtpConfig']['msgAction'] = "QUARANTINE"
         node.setSettings(nodeData)
         assert (timeout != 0)
         # look for added header in delivered email
-        emailContext=remote_control.runCommand("cat /tmp/qa@example.com.1",host=fakeSmtpServerHost, stdout=True)
+        emailContext=remote_control.run_command("cat /tmp/qa@example.com.1",host=fakeSmtpServerHost, stdout=True)
         lines = emailContext.split("\n")
         spamScore = 0
         requiredScore = 0
@@ -256,7 +256,7 @@ class SpamBlockerBaseTests(unittest2.TestCase):
 
     def test_080_checkAllowTLS(self):
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
-        if not global_functions.isInOfficeNetwork(wan_IP):
+        if not global_functions.is_in_office_network(wan_IP):
             raise unittest2.SkipTest("Not on office network, skipping")
         if (not canRelayTLS):
             raise unittest2.SkipTest('Unable to relay through ' + global_functions.tlsSmtpServerHost)
@@ -276,7 +276,7 @@ class SpamBlockerBaseTests(unittest2.TestCase):
     
     def test_090_checkTLSwSSLInspector(self):
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
-        if not global_functions.isInOfficeNetwork(wan_IP):
+        if not global_functions.is_in_office_network(wan_IP):
             raise unittest2.SkipTest("Not on office network, skipping")
         if (not canRelayTLS):
             raise unittest2.SkipTest('Unable to relay through ' + global_functions.tlsSmtpServerHost)

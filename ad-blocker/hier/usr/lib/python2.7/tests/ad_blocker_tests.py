@@ -78,23 +78,23 @@ class AdBlockerTests(unittest2.TestCase):
 
     # verify client is online
     def test_010_clientIsOnline(self):
-        result = remote_control.isOnline()
+        result = remote_control.is_online()
         assert (result == 0)
 
     # check that "ad" is blocked - can't use test.untangle.com because everything *untangle* is ignored
     def test_011_adIsBlocked(self):
-        result = remote_control.runCommand("wget -4 -q -O /dev/null http://ads.pubmatic.com/AdServer/js/showad.js")
+        result = remote_control.run_command("wget -4 -q -O /dev/null http://ads.pubmatic.com/AdServer/js/showad.js")
         assert (result != 0)
          
     def test_012_notBlocked(self):
-        result = remote_control.runCommand("wget -4 -q -O /dev/null http://www.google.com")
+        result = remote_control.run_command("wget -4 -q -O /dev/null http://www.google.com")
         assert (result == 0)
  
     def test_013_eventlog_blockedAd(self):
         fname = sys._getframe().f_code.co_name
         # specify an argument so it isn't confused with other events
         eventTime = datetime.datetime.now()
-        result = remote_control.runCommand("wget -4 -q -O /dev/null http://ads.pubmatic.com/AdServer/js/showad.js?arg=%s" % fname)
+        result = remote_control.run_command("wget -4 -q -O /dev/null http://ads.pubmatic.com/AdServer/js/showad.js?arg=%s" % fname)
         assert ( result != 0 )
 
         events = global_functions.get_events('Ad Blocker','Blocked Ad Events',None,1)
@@ -107,64 +107,64 @@ class AdBlockerTests(unittest2.TestCase):
         
     def test_014_userDefinedAdIsBlocked(self):
         addRule("google.com", True, "description", True)
-        result = remote_control.runCommand("wget -4 -q -O /dev/null http://www.google.com")
+        result = remote_control.run_command("wget -4 -q -O /dev/null http://www.google.com")
         nukeRules("userRules")
         assert (result != 0)
         
     def test_015_userDefinedAdNotBlocked(self):
         addRule("showad.js", True, "description", False)
-        result = remote_control.runCommand("wget -4 -q -O /dev/null http://ads.pubmatic.com/AdServer/js/showad.js")
+        result = remote_control.run_command("wget -4 -q -O /dev/null http://ads.pubmatic.com/AdServer/js/showad.js")
         nukeRules("userRules")
         assert (result == 0)
            
     def test_016_passSiteDisabled(self):
         addPassRule("ads.pubmatic.com", False, "passedUrls")
-        result = remote_control.runCommand("wget -4 -q -O /dev/null http://ads.pubmatic.com/AdServer/js/showad.js")
+        result = remote_control.run_command("wget -4 -q -O /dev/null http://ads.pubmatic.com/AdServer/js/showad.js")
         nukeRules("passedUrls")
         assert (result != 0)
          
     def test_017_passSiteEnabled(self):
         addPassRule("ads.pubmatic.com", True, "passedUrls")
-        result = remote_control.runCommand("wget -4 -q -O /dev/null http://ads.pubmatic.com/AdServer/js/showad.js")
+        result = remote_control.run_command("wget -4 -q -O /dev/null http://ads.pubmatic.com/AdServer/js/showad.js")
         nukeRules("passedUrls")
         assert (result == 0)
         
     def test_018_passClientDisabled(self):
         addPassRule(remote_control.clientIP, False, "passedClients")
-        result = remote_control.runCommand("wget -4 -q -O /dev/null http://ads.pubmatic.com/AdServer/js/showad.js")
+        result = remote_control.run_command("wget -4 -q -O /dev/null http://ads.pubmatic.com/AdServer/js/showad.js")
         nukeRules("passedClients")
         assert (result != 0)
          
     def test_019_passClientEnabled(self):
         addPassRule(remote_control.clientIP, True, "passedClients")
-        result = remote_control.runCommand("wget -4 -q -O /dev/null http://ads.pubmatic.com/AdServer/js/showad.js")
+        result = remote_control.run_command("wget -4 -q -O /dev/null http://ads.pubmatic.com/AdServer/js/showad.js")
         nukeRules("passedClients")
         assert (result == 0)
         
     # verify there is a accuweather cookie
     def test_100_accuweatherCookie(self):
         # remove any previous instance of testcookie.txt
-        remote_control.runCommand("/bin/rm -f testcookie.txt")
+        remote_control.run_command("/bin/rm -f testcookie.txt")
         # see if cookie is downloaded.
-        result = remote_control.runCommand("rm -f /tmp/testcookie.txt ; wget -4 -q -O /dev/null --save-cookies /tmp/testcookie.txt http://accuweather.com/ ; grep -q accuweather.com /tmp/testcookie.txt")
+        result = remote_control.run_command("rm -f /tmp/testcookie.txt ; wget -4 -q -O /dev/null --save-cookies /tmp/testcookie.txt http://accuweather.com/ ; grep -q accuweather.com /tmp/testcookie.txt")
         assert (result == 0)
  
     # verify a accuweather cookie can be blocked
     def test_101_accuweatherCookieEnabled(self):
         addCookieEnabled("accuweather.com")
         # remove any previous instance of testcookie.txt
-        remote_control.runCommand("/bin/rm -f /tmp/testcookie.txt")
+        remote_control.run_command("/bin/rm -f /tmp/testcookie.txt")
         # see if cookie is downloaded.
-        result = remote_control.runCommand("rm -f /tmp/testcookie.txt ; wget -4 -q -O /dev/null --save-cookies /tmp/testcookie.txt http://accuweather.com/ ; grep -q accuweather.com /tmp/testcookie.txt")
+        result = remote_control.run_command("rm -f /tmp/testcookie.txt ; wget -4 -q -O /dev/null --save-cookies /tmp/testcookie.txt http://accuweather.com/ ; grep -q accuweather.com /tmp/testcookie.txt")
         assert (result == 1)
          
     # verify a accuweather cookie can be blocked, but set both "enabled" and "blocked" params
     def test_102_accuweatherCookieBlockedEnabled(self):
         addCookieBlockedEnabled("www.accuweather.com")
         # remove any previous instance of testcookie.txt
-        remote_control.runCommand("/bin/rm -f /tmp/testcookie.txt")
+        remote_control.run_command("/bin/rm -f /tmp/testcookie.txt")
         # see if cookie is downloaded.
-        result = remote_control.runCommand("rm -f /tmp/testcookie.txt ; wget -4 -q -O /dev/null --save-cookies /tmp/testcookie.txt http://www.accuweather.com/ ; grep -q www.accuweather.com /tmp/testcookie.txt")
+        result = remote_control.run_command("rm -f /tmp/testcookie.txt ; wget -4 -q -O /dev/null --save-cookies /tmp/testcookie.txt http://www.accuweather.com/ ; grep -q www.accuweather.com /tmp/testcookie.txt")
         assert (result == 1)
 
     # verify update mechanism

@@ -62,7 +62,7 @@ class ApplicationControlLiteTests(unittest2.TestCase):
 
     # verify client is online
     def test_010_clientIsOnline(self):
-        result = remote_control.isOnline()
+        result = remote_control.is_online()
         assert (result == 0)
 
     def test_020_testHttpPatternLog(self):
@@ -72,7 +72,7 @@ class ApplicationControlLiteTests(unittest2.TestCase):
                     protocol="HTTP", 
                     category="Web", 
                     description="HyperText Transfer Protocol")
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         nukepatterns()
         assert (result == 0)
         time.sleep(3);
@@ -93,7 +93,7 @@ class ApplicationControlLiteTests(unittest2.TestCase):
                     blocked=True,
                     category="Web", 
                     description="HyperText Transfer Protocol")
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
         time.sleep(3);
 
@@ -113,7 +113,7 @@ class ApplicationControlLiteTests(unittest2.TestCase):
                     blocked=True,
                     category="Web", 
                     description="File Transfer Protocol")
-        result = remote_control.runCommand("wget -q -O /dev/null -4 -t 2 ftp://test.untangle.com")
+        result = remote_control.run_command("wget -q -O /dev/null -4 -t 2 ftp://test.untangle.com")
         assert (result != 0)
         time.sleep(3);
 
@@ -133,7 +133,7 @@ class ApplicationControlLiteTests(unittest2.TestCase):
                     blocked=False,
                     category="Web", 
                     description="Domain Name System")
-        result = remote_control.runCommand("host -R 1 www.google.com 8.8.8.8")
+        result = remote_control.run_command("host -R 1 www.google.com 8.8.8.8")
         assert (result == 0)
         time.sleep(3);
 
@@ -153,7 +153,7 @@ class ApplicationControlLiteTests(unittest2.TestCase):
                     blocked=True,
                     category="Web", 
                     description="Domain Name System")
-        result = remote_control.runCommand("host -R 1 www.google.com 8.8.8.8")
+        result = remote_control.run_command("host -R 1 www.google.com 8.8.8.8")
         assert (result != 0)
         time.sleep(3);
 

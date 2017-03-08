@@ -26,18 +26,18 @@ canRelayTLS = True
 smtpServerHost = 'test.untangle.com'
 
 def getLatestMailSender():
-    remote_control.runCommand("rm -f mailpkg.tar*") # remove all previous mail packages
-    results = remote_control.runCommand("wget -q -t 1 --timeout=3 http://test.untangle.com/test/mailpkg.tar")
+    remote_control.run_command("rm -f mailpkg.tar*") # remove all previous mail packages
+    results = remote_control.run_command("wget -q -t 1 --timeout=3 http://test.untangle.com/test/mailpkg.tar")
     # print "Results from getting mailpkg.tar <%s>" % results
-    results = remote_control.runCommand("tar -xvf mailpkg.tar")
+    results = remote_control.run_command("tar -xvf mailpkg.tar")
     # print "Results from untaring mailpkg.tar <%s>" % results
 
 def sendPhishMail(mailfrom="test", host=smtpServerHost, useTLS=False):
     mailResult = None
     if useTLS:
-        mailResult = remote_control.runCommand("python mailsender.py --from=" + mailfrom + "@example.com --to=qa@example.com ./phish-mail/ --host=" + host + " --reconnect --series=30:0,150,100,50,25,0,180 --starttls", stdout=False, nowait=False)
+        mailResult = remote_control.run_command("python mailsender.py --from=" + mailfrom + "@example.com --to=qa@example.com ./phish-mail/ --host=" + host + " --reconnect --series=30:0,150,100,50,25,0,180 --starttls", stdout=False, nowait=False)
     else:
-        mailResult = remote_control.runCommand("python mailsender.py --from=" + mailfrom + "@example.com --to=qa@example.com ./phish-mail/ --host=" + host + " --reconnect --series=30:0,150,100,50,25,0,180")
+        mailResult = remote_control.run_command("python mailsender.py --from=" + mailfrom + "@example.com --to=qa@example.com ./phish-mail/ --host=" + host + " --reconnect --series=30:0,150,100,50,25,0,180")
     return mailResult
 
 class PhishBlockerTests(unittest2.TestCase):
@@ -72,11 +72,11 @@ class PhishBlockerTests(unittest2.TestCase):
         nodeSSL = uvmContext.nodeManager().instantiate(self.nodeNameSSLInspector(), defaultRackId)
         # nodeSSL.start() # leave node off. node doesn't auto-start
         try:
-            canRelay = global_functions.sendTestmessage(mailhost=smtpServerHost)
+            canRelay = global_functions.send_test_email(mailhost=smtpServerHost)
         except Exception,e:
             canRelay = False
         try:
-            canRelayTLS = global_functions.sendTestmessage(mailhost=global_functions.tlsSmtpServerHost)
+            canRelayTLS = global_functions.send_test_email(mailhost=global_functions.tlsSmtpServerHost)
         except Exception,e:
             canRelayTLS = False
         getLatestMailSender()
@@ -104,19 +104,19 @@ class PhishBlockerTests(unittest2.TestCase):
 
     # verify client is online
     def test_010_clientIsOnline(self):
-        result = remote_control.isOnline()
+        result = remote_control.is_online()
         assert (result == 0)
 
     def test_020_smtpQuarantinedPhishBlockerTest(self):
         if (not canRelay):
             raise unittest2.SkipTest('Unable to relay through test.untangle.com')
-        pre_events_quarantine = global_functions.getStatusValue(node,"quarantine")
+        pre_events_quarantine = global_functions.get_app_metric_value(node,"quarantine")
 
         nodeData['smtpConfig']['scanWanMail'] = True
         nodeData['smtpConfig']['strength'] = 5
         node.setSettings(nodeData)
         # Get the IP address of test.untangle.com
-        result = remote_control.runCommand("host "+smtpServerHost, stdout=True)
+        result = remote_control.run_command("host "+smtpServerHost, stdout=True)
         match = re.search(r'\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
         ip_address_testuntangle = match.group()
 
@@ -151,7 +151,7 @@ class PhishBlockerTests(unittest2.TestCase):
         assert( found )
             
         # Check to see if the faceplate counters have incremented. 
-        post_events_quarantine = global_functions.getStatusValue(node,"quarantine")
+        post_events_quarantine = global_functions.get_app_metric_value(node,"quarantine")
         assert(pre_events_quarantine < post_events_quarantine)
         
     def test_030_smtpMarkPhishBlockerTest(self):
@@ -208,7 +208,7 @@ class PhishBlockerTests(unittest2.TestCase):
 
     def test_050_checkTLSBypass(self):
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
-        if not global_functions.isInOfficeNetwork(wan_IP):
+        if not global_functions.is_in_office_network(wan_IP):
             raise unittest2.SkipTest("Not on office network, skipping")
         if (not canRelayTLS):
             raise unittest2.SkipTest('Unable to relay through ' + global_functions.tlsSmtpServerHost)
@@ -219,7 +219,7 @@ class PhishBlockerTests(unittest2.TestCase):
     def test_060_checkTLSwSSLInspector(self):
         global nodeSSL
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
-        if not global_functions.isInOfficeNetwork(wan_IP):
+        if not global_functions.is_in_office_network(wan_IP):
             raise unittest2.SkipTest("Not on office network, skipping")
         externalClientResult = subprocess.call(["ping -c 1 " + global_functions.tlsSmtpServerHost + " >/dev/null 2>&1"],shell=True,stdout=None,stderr=None)            
         if (externalClientResult != 0):

@@ -34,7 +34,7 @@ orig_netsettings = None
 orig_mailsettings = None
 # pdb.set_trace()
 
-def sendTestmessage(smtpHost=global_functions.listFakeSmtpServerHosts[0]):
+def send_test_email(smtpHost=global_functions.listFakeSmtpServerHosts[0]):
     sender = 'test@example.com'
     receivers = ['qa@example.com']
     relaySuccess = False
@@ -45,7 +45,7 @@ def sendTestmessage(smtpHost=global_functions.listFakeSmtpServerHosts[0]):
 
     This is a test e-mail message.
     """
-    remote_control.runCommand("sudo python fakemail.py --host=" + smtpHost +" --log=/tmp/report_test.log --port 25 --background --path=/tmp/", host=smtpHost, stdout=False, nowait=True)
+    remote_control.run_command("sudo python fakemail.py --host=" + smtpHost +" --log=/tmp/report_test.log --port 25 --background --path=/tmp/", host=smtpHost, stdout=False, nowait=True)
     time.sleep(10) # its run in the background so wait for it to start
     
     try:
@@ -56,7 +56,7 @@ def sendTestmessage(smtpHost=global_functions.listFakeSmtpServerHosts[0]):
     except Exception, e:
        relaySuccess =  False
        
-    remote_control.runCommand("sudo pkill -INT python",host=smtpHost)
+    remote_control.run_command("sudo pkill -INT python",host=smtpHost)
     return relaySuccess
 
 def createDomainDNSentries(domain,dnsServer):
@@ -81,9 +81,9 @@ def createFakeEmailEnvironment(emailLogFile="report_test.log"):
     uvmContext.networkManager().setNetworkSettings(netsettings)
 
     # Remove old email and log files.
-    remote_control.runCommand("sudo rm -f /tmp/" + emailLogFile, host=fakeSmtpServerHost)
-    remote_control.runCommand("sudo rm -f /tmp/" + testEmailAddress + "*", host=fakeSmtpServerHost)
-    remote_control.runCommand("sudo python fakemail.py --host=" + fakeSmtpServerHost +" --log=/tmp/" + emailLogFile + " --port 25 --background --path=/tmp/", host=fakeSmtpServerHost, stdout=False, nowait=True)
+    remote_control.run_command("sudo rm -f /tmp/" + emailLogFile, host=fakeSmtpServerHost)
+    remote_control.run_command("sudo rm -f /tmp/" + testEmailAddress + "*", host=fakeSmtpServerHost)
+    remote_control.run_command("sudo python fakemail.py --host=" + fakeSmtpServerHost +" --log=/tmp/" + emailLogFile + " --port 25 --background --path=/tmp/", host=fakeSmtpServerHost, stdout=False, nowait=True)
 
 def findEmailContent(searchTerm1,searchTerm2,measureBegin=False,measureEnd=False):
     ifFound = False
@@ -91,18 +91,18 @@ def findEmailContent(searchTerm1,searchTerm2,measureBegin=False,measureEnd=False
     while not ifFound and timeout > 0:
         timeout -= 1
         time.sleep(1)
-        emailfile = remote_control.runCommand("ls -l /tmp/" + testEmailAddress + "*",host=fakeSmtpServerHost)
+        emailfile = remote_control.run_command("ls -l /tmp/" + testEmailAddress + "*",host=fakeSmtpServerHost)
         if (emailfile == 0):
             ifFound = True
         else:
             # unfreeze any messages in the exim queue
             subprocess.call(["exim","-qff"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-    grepContext=remote_control.runCommand("grep -i '" + searchTerm1 + "' /tmp/" + testEmailAddress + "*",host=fakeSmtpServerHost, stdout=True)
-    grepContext2=remote_control.runCommand("grep -i '" + searchTerm2 + "' /tmp/" + testEmailAddress + "*",host=fakeSmtpServerHost, stdout=True)
+    grepContext=remote_control.run_command("grep -i '" + searchTerm1 + "' /tmp/" + testEmailAddress + "*",host=fakeSmtpServerHost, stdout=True)
+    grepContext2=remote_control.run_command("grep -i '" + searchTerm2 + "' /tmp/" + testEmailAddress + "*",host=fakeSmtpServerHost, stdout=True)
 
     measureLength=0
     if measureBegin != False and measureEnd != False:
-        measureLength=remote_control.runCommand("sed -n '/" + measureBegin.replace('/', '\/').replace('"', '\\"') + "/,/" + measureEnd.replace('/', '\/').replace('"', '\\"') + "/p' /tmp/" + testEmailAddress + "* | wc -l",host=fakeSmtpServerHost, stdout=True)
+        measureLength=remote_control.run_command("sed -n '/" + measureBegin.replace('/', '\/').replace('"', '\\"') + "/,/" + measureEnd.replace('/', '\/').replace('"', '\\"') + "/p' /tmp/" + testEmailAddress + "* | wc -l",host=fakeSmtpServerHost, stdout=True)
     return(ifFound, grepContext, grepContext2, measureLength)
     
 def createFirewallSingleConditionRule( conditionType, value, blocked=True ):
@@ -261,7 +261,7 @@ class ReportsTests(unittest2.TestCase):
         # Skip checking relaying is possible if we have determined it as true on previous test.
         if canRelay == None:
             wan_IP = uvmContext.networkManager().getFirstWanAddress()
-            fakeSmtpServerHost, testdomain = global_functions.findSmtpServer(wan_IP)
+            fakeSmtpServerHost, testdomain = global_functions.find_smtp_server(wan_IP)
             testEmailAddress = "qa@" + testdomain                
             # print "fakeSmtpServerHost " + fakeSmtpServerHost
             if (fakeSmtpServerHost == ""):
@@ -271,12 +271,12 @@ class ReportsTests(unittest2.TestCase):
                 # print "fakeSmtpServerHostResult " + str(fakeSmtpServerHostResult)
                 if (fakeSmtpServerHostResult == 0):
                     try:
-                        canRelay = sendTestmessage(smtpHost=fakeSmtpServerHost)
+                        canRelay = send_test_email(smtpHost=fakeSmtpServerHost)
                     except Exception,e:
                         canRelay = False
 
         if canSyslog == None:
-            portResult = remote_control.runCommand("sudo lsof -i :514", host=fakeSmtpServerHost)
+            portResult = remote_control.run_command("sudo lsof -i :514", host=fakeSmtpServerHost)
             if portResult == 0:
                canSyslog = True
             else:
@@ -287,7 +287,7 @@ class ReportsTests(unittest2.TestCase):
                 
     # verify client is online
     def test_010_clientIsOnline(self):
-        result = remote_control.isOnline()
+        result = remote_control.is_online()
         assert (result == 0)
     
     def test_040_remoteSyslog(self):
@@ -322,7 +322,7 @@ class ReportsTests(unittest2.TestCase):
         node.setSettings(newSyslogSettings)
 
         # create some traffic (blocked by firewall and thus create a syslog event)
-        result = remote_control.isOnline(tries=1)
+        result = remote_control.is_online(tries=1)
         # flush out events
         node.flushEvents()
 
@@ -342,7 +342,7 @@ class ReportsTests(unittest2.TestCase):
         strings_to_find = ['\"blocked\":true',str('\"ruleId\":%i' % targetRuleId)]
         while (timeout > 0 and found_count < 2):
             # get syslog results on server
-            rsyslogResult = remote_control.runCommand("sudo tail -n 200 /var/log/localhost/localhost.log | grep 'FirewallEvent'", host=fakeSmtpServerHost, stdout=True)
+            rsyslogResult = remote_control.run_command("sudo tail -n 200 /var/log/localhost/localhost.log | grep 'FirewallEvent'", host=fakeSmtpServerHost, stdout=True)
             timeout -= 1
             for line in rsyslogResult.splitlines():
                 print "\nchecking line: %s " % line
@@ -389,7 +389,7 @@ class ReportsTests(unittest2.TestCase):
         emailFound, emailContext, emailContext2, measureLength = findEmailContent('Daily Reports','Content-Type: image/png; name=')
 
         # Kill the mail sink
-        remote_control.runCommand("sudo pkill -INT python",host=fakeSmtpServerHost)
+        remote_control.run_command("sudo pkill -INT python",host=fakeSmtpServerHost)
 
         # restore
         uvmContext.adminManager().setSettings(orig_adminsettings)
@@ -438,7 +438,7 @@ class ReportsTests(unittest2.TestCase):
         emailFound, emailContext, emailContext2, measureLength = findEmailContent('Custom Report','Administration-VWuRol5uWw')
 
         # Kill the mail sink
-        remote_control.runCommand("sudo pkill -INT python",host=fakeSmtpServerHost)
+        remote_control.run_command("sudo pkill -INT python",host=fakeSmtpServerHost)
 
         # restore
         uvmContext.adminManager().setSettings(orig_adminsettings)
@@ -485,7 +485,7 @@ class ReportsTests(unittest2.TestCase):
         emailFound, emailContext, emailContext2, measureLength = findEmailContent('Custom Report','Administration-VWuRol5uWw', 'Content-Type: image/png; name="Administration-VWuRol5uWw@untangle.com.png"', '---')
 
         # Kill the mail sink
-        remote_control.runCommand("sudo pkill -INT python",host=fakeSmtpServerHost)
+        remote_control.run_command("sudo pkill -INT python",host=fakeSmtpServerHost)
 
         # restore
         uvmContext.adminManager().setSettings(orig_adminsettings)

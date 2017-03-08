@@ -90,9 +90,9 @@ class WebFilterBaseTests(unittest2.TestCase):
         if ("https" in url):
             extra_opts = "--no-check-certificate "
         if ((expected == None) or (("monitor" in node_name) and (expected == "blockpage"))):
-            result = remote_control.runCommand("wget -q -O /dev/null -4 -t 2 --timeout=5 " + extra_opts +  url)
+            result = remote_control.run_command("wget -q -O /dev/null -4 -t 2 --timeout=5 " + extra_opts +  url)
         else:
-            result = remote_control.runCommand("wget -q -O - " + extra_opts + url + " 2>&1 | grep -q " + expected)
+            result = remote_control.run_command("wget -q -O - " + extra_opts + url + " 2>&1 | grep -q " + expected)
         return result
 
     def check_events(self, host="", uri="", blocked=True, flagged=None):
@@ -128,7 +128,7 @@ class WebFilterBaseTests(unittest2.TestCase):
         pass
 
     def test_010_client_is_online(self):
-        result = remote_control.isOnline()
+        result = remote_control.is_online()
         assert (result == 0)
 
     def test_011_test_untangle_com_reachable(self):
@@ -266,7 +266,7 @@ class WebFilterBaseTests(unittest2.TestCase):
         """verify that a block list glob ? matches ONLY single character (but not two or more)"""
         self.block_url_list_add("metalo?t.com/test/testP?.html")
         # this test URL should NOT be blocked
-        result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q text123")
+        result = remote_control.run_command("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q text123")
         self.block_url_list_clear()
         assert (result == 0)
         found = self.check_events("test.untangle.com", "/test/testPage1.html", False)
@@ -296,7 +296,7 @@ class WebFilterBaseTests(unittest2.TestCase):
         """verify that t.untangle.com block rule DOES NOT block test.untangle.com ( it should block foo.t.untangle.com though )"""
         self.block_url_list_add("t.untangle.com")
         # this test URL should NOT be blocked
-        result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q text123")
+        result = remote_control.run_command("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q text123")
         self.block_url_list_clear()
         assert (result == 0)
         found = self.check_events("test.untangle.com", "/test/testPage1.html", False)
@@ -307,7 +307,7 @@ class WebFilterBaseTests(unittest2.TestCase):
         self.block_url_list_add("test.untangle.com/test/testPage1.html", blocked=False, flagged=False)
         self.block_url_list_add("test.untangle.com", blocked=True, flagged=True)
         # this test URL should NOT be blocked
-        result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q text123")
+        result = remote_control.run_command("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q text123")
         self.block_url_list_clear()
         assert (result == 0)
         found = self.check_events("test.untangle.com", "/test/testPage1.html", blocked=False)
@@ -343,7 +343,7 @@ class WebFilterBaseTests(unittest2.TestCase):
         self.block_url_list_add("test.untangle.com")
         self.pass_url_list_add("test.untangle.com/test/")
         # this test URL should NOT be blocked
-        result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q text123")
+        result = remote_control.run_command("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q text123")
         self.block_url_list_clear()
         self.pass_url_list_clear()
         assert (result == 0)
@@ -356,7 +356,7 @@ class WebFilterBaseTests(unittest2.TestCase):
         self.rule_add("WEB_FILTER_RESPONSE_CONTENT_TYPE","text/plain")
         self.pass_url_list_add("test.untangle.com/test/")
         # this test URL should NOT be blocked
-        result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/test.txt 2>&1 | grep -q text123")
+        result = remote_control.run_command("wget -q -O - http://test.untangle.com/test/test.txt 2>&1 | grep -q text123")
         self.block_url_list_clear()
         self.pass_url_list_clear()
         assert (result == 0)
@@ -367,7 +367,7 @@ class WebFilterBaseTests(unittest2.TestCase):
         self.rule_add("WEB_FILTER_REQUEST_FILE_EXTENSION","txt")
         self.pass_url_list_add("test.untangle.com/test/")
         # this test URL should NOT be blocked
-        result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/test.txt 2>&1 | grep -q text123")
+        result = remote_control.run_command("wget -q -O - http://test.untangle.com/test/test.txt 2>&1 | grep -q text123")
         self.block_url_list_clear()
         self.pass_url_list_clear()
         assert (result == 0)
@@ -390,7 +390,7 @@ class WebFilterBaseTests(unittest2.TestCase):
         self.rules_clear()
         self.rule_add("WEB_FILTER_RESPONSE_CONTENT_TYPE","text/plain")
         # this test URL should NOT be blocked (its text/html not text/plain)
-        result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/test.html 2>&1 | grep -q text123")
+        result = remote_control.run_command("wget -q -O - http://test.untangle.com/test/test.html 2>&1 | grep -q text123")
         self.rules_clear()
         assert (result == 0)
         found = self.check_events("test.untangle.com", "/test/test.html", False)
@@ -412,7 +412,7 @@ class WebFilterBaseTests(unittest2.TestCase):
         self.rules_clear()
         self.rule_add("WEB_FILTER_REQUEST_FILE_EXTENSION","txt")
         # this test URL should NOT be blocked (its text/html not text/plain)
-        result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/test.html 2>&1 | grep -q text123")
+        result = remote_control.run_command("wget -q -O - http://test.untangle.com/test/test.html 2>&1 | grep -q text123")
         self.rules_clear()
         assert (result == 0)
         found = self.check_events("test.untangle.com", "/test/test.html", False)
@@ -423,7 +423,7 @@ class WebFilterBaseTests(unittest2.TestCase):
         self.rules_clear()
         self.rule_add("WEB_FILTER_REQUEST_FILE_EXTENSION","tml") # not this should only block ".tml" not ".html"
         # this test URL should NOT be blocked (its text/html not text/plain)
-        result = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/test.html 2>&1 | grep -q text123")
+        result = remote_control.run_command("wget -q -O - http://test.untangle.com/test/test.html 2>&1 | grep -q text123")
         self.rules_clear()
         assert (result == 0)
         found = self.check_events("test.untangle.com", "/test/test.html", False)
@@ -446,7 +446,7 @@ class WebFilterBaseTests(unittest2.TestCase):
         self.block_url_list_clear();
         self.block_url_list_add("test.untangle.com/test/testPage1.html", blocked=False, flagged=True)
         # specify an argument so it isn't confused with other events
-        result1 = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html?arg=%s 2>&1 >/dev/null" % fname)
+        result1 = remote_control.run_command("wget -q -O - http://test.untangle.com/test/testPage1.html?arg=%s 2>&1 >/dev/null" % fname)
         events = global_functions.get_events(self.displayName(),'Flagged Web Events',None,5)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
@@ -461,7 +461,7 @@ class WebFilterBaseTests(unittest2.TestCase):
         fname = sys._getframe().f_code.co_name
         self.block_url_list_clear();
         # specify an argument so it isn't confused with other events
-        result1 = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html?arg=%s 2>&1 >/dev/null" % fname)
+        result1 = remote_control.run_command("wget -q -O - http://test.untangle.com/test/testPage1.html?arg=%s 2>&1 >/dev/null" % fname)
         events = global_functions.get_events(self.displayName(),'All Web Events',None,5)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
@@ -474,7 +474,7 @@ class WebFilterBaseTests(unittest2.TestCase):
     def test_510_client_is_online_https(self):
         """verify client is online HTTPS"""
         global remote_control
-        result = remote_control.runCommand("wget -q -O /dev/null -4 -t 2 --timeout=5 --no-check-certificate -o /dev/null https://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -4 -t 2 --timeout=5 --no-check-certificate -o /dev/null https://test.untangle.com/")
         assert (result == 0)
 
     def test_530_https_porn_is_blocked(self):
@@ -535,8 +535,8 @@ class WebFilterBaseTests(unittest2.TestCase):
         """verify that an entry in the pass list overrides a blocked category"""
         self.pass_url_list_add("playboy.com")
         # this test URL should NOT be blocked (porn is blocked by default, but playboy.com now on pass list
-        result1 = remote_control.runCommand("wget -q -4 -t 2 --timeout=8 --no-check-certificate -O - https://playboy.com/ 2>&1 | grep -q blockpage")
-        result2 = remote_control.runCommand("wget -q -4 -t 2 --timeout=8 --no-check-certificate -O - https://www.playboy.com/ 2>&1 | grep -q blockpage")
+        result1 = remote_control.run_command("wget -q -4 -t 2 --timeout=8 --no-check-certificate -O - https://playboy.com/ 2>&1 | grep -q blockpage")
+        result2 = remote_control.run_command("wget -q -4 -t 2 --timeout=8 --no-check-certificate -O - https://www.playboy.com/ 2>&1 | grep -q blockpage")
         self.pass_url_list_clear()
         assert (result1 != 0)
         assert (result2 != 0)
@@ -546,7 +546,7 @@ class WebFilterBaseTests(unittest2.TestCase):
         self.block_url_list_add("untangle.com")
         self.pass_url_list_add("test.untangle.com")
         # this test URL should NOT be blocked
-        result = remote_control.runCommand("wget -q -4 -t 2 --timeout=8 --no-check-certificate -O - https://test.untangle.com/test/testPage1.html 2>&1 | grep -q text123")
+        result = remote_control.run_command("wget -q -4 -t 2 --timeout=8 --no-check-certificate -O - https://test.untangle.com/test/testPage1.html 2>&1 | grep -q text123")
         self.block_url_list_clear()
         self.pass_url_list_clear()
         assert (result == 0)
@@ -571,7 +571,7 @@ class WebFilterBaseTests(unittest2.TestCase):
         for t in termTests:
             fname = sys._getframe().f_code.co_name
             eventTime = datetime.datetime.now()
-            result1 = remote_control.runCommand("wget -q -O - 'http://%s%s' 2>&1 >/dev/null" % ( t["host"], t["uri"] ) )
+            result1 = remote_control.run_command("wget -q -O - 'http://%s%s' 2>&1 >/dev/null" % ( t["host"], t["uri"] ) )
 
             events = global_functions.get_events(self.displayName(),'All Query Events',None,1)
             assert(events != None)
