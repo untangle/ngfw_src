@@ -34,17 +34,17 @@ class WebCacheTests(unittest2.TestCase):
 
     # verify client is online
     def test_010_clientIsOnline(self):
-        result = remote_control.isOnline()
+        result = remote_control.is_online()
         assert (result == 0)
 
     def test_020_testBasicWebCache(self):
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
-        pre_events_hit = global_functions.getStatusValue(node,"hit")
+        pre_events_hit = global_functions.get_app_metric_value(node,"hit")
 
         node.clearSquidCache()
         for x in range(0, 10):
-            result = remote_control.runCommand("wget -q -O /dev/null -4 -t 2 --timeout=5 http://test.untangle.com/")
+            result = remote_control.run_command("wget -q -O /dev/null -4 -t 2 --timeout=5 http://test.untangle.com/")
             time.sleep(1)
         assert (result == 0)
         time.sleep(65) # summary-events only written every 60 seconds
@@ -56,7 +56,7 @@ class WebCacheTests(unittest2.TestCase):
         assert(events['list'][0]['hits'])
 
         # Check to see if the faceplate counters have incremented. 
-        post_events_hit = global_functions.getStatusValue(node,"hit")
+        post_events_hit = global_functions.get_app_metric_value(node,"hit")
 
         assert(pre_events_hit < post_events_hit)
 
