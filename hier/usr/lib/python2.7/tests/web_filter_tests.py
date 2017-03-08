@@ -50,15 +50,15 @@ class WebFilterTests(WebFilterBaseTests):
 
     def test_016_block_url(self):
         """verify basic URL blocking the the url block list"""
-        pre_events_scan = global_functions.getStatusValue(self.node, "scan")
-        pre_events_block = global_functions.getStatusValue(self.node, "block")
+        pre_events_scan = global_functions.get_app_metric_value(self.node, "scan")
+        pre_events_block = global_functions.get_app_metric_value(self.node, "block")
         self.block_url_list_add("test.untangle.com/test/testPage1.html")
         result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
         self.block_url_list_clear()
         assert ( result == 0 )
         # verify the faceplate counters have incremented.
-        post_events_scan = global_functions.getStatusValue(self.node, "scan")
-        post_events_block = global_functions.getStatusValue(self.node, "block")
+        post_events_scan = global_functions.get_app_metric_value(self.node, "scan")
+        post_events_block = global_functions.get_app_metric_value(self.node, "block")
         assert(pre_events_scan < post_events_scan)
         assert(pre_events_block < post_events_block)
 
@@ -69,7 +69,7 @@ class WebFilterTests(WebFilterBaseTests):
         self.block_url_list_add("test.untangle.com/test/testPage1.html", blocked=True, flagged=True)
         # specify an argument so it isn't confused with other events
         eventTime = datetime.datetime.now()
-        result1 = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html?arg=%s 2>&1 >/dev/null" % fname)
+        result1 = remote_control.run_command("wget -q -O - http://test.untangle.com/test/testPage1.html?arg=%s 2>&1 >/dev/null" % fname)
         events = global_functions.get_events(self.displayName(),'Blocked Web Events',None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
@@ -86,7 +86,7 @@ class WebFilterTests(WebFilterBaseTests):
         settings = self.node.getSettings()
         settings["passReferers"] = False
         self.node.setSettings(settings)
-        resultReferer = remote_control.runCommand("wget -q --header 'Referer: http://test.untangle.com/test/testPage1.html' -O - http://test.untangle.com/test/refererPage.html 2>&1 | grep -q 'Welcome to the referer page.'");
+        resultReferer = remote_control.run_command("wget -q --header 'Referer: http://test.untangle.com/test/testPage1.html' -O - http://test.untangle.com/test/refererPage.html 2>&1 | grep -q 'Welcome to the referer page.'");
         print "result %s passReferers %s" % (resultReferer,settings["passReferers"])
 
         self.block_url_list_clear()
@@ -100,7 +100,7 @@ class WebFilterTests(WebFilterBaseTests):
         settings = self.node.getSettings()
         settings["passReferers"] = True
         self.node.setSettings(settings)
-        resultReferer = remote_control.runCommand("wget -q --header 'Referer: http://test.untangle.com/test/testPage1.html' -O - http://test.untangle.com/test/refererPage.html 2>&1 | grep -q 'Welcome to the referer page.'");
+        resultReferer = remote_control.run_command("wget -q --header 'Referer: http://test.untangle.com/test/testPage1.html' -O - http://test.untangle.com/test/refererPage.html 2>&1 | grep -q 'Welcome to the referer page.'");
         print "result %s passReferers %s" % (resultReferer,settings["passReferers"])
 
         self.block_url_list_clear()
@@ -112,11 +112,11 @@ class WebFilterTests(WebFilterBaseTests):
         settings = self.node.getSettings()
         settings["enforceSafeSearch"] = False
         self.node.setSettings(settings)
-        result_without_safe = remote_control.runCommand("wget -q -O - '$@' -U 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7) Gecko/20040613 Firefox/0.8.0+)' 'http://www.google.com/search?hl=en&q=boobs&safe=off' | grep -q 'safe=off'");
+        result_without_safe = remote_control.run_command("wget -q -O - '$@' -U 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7) Gecko/20040613 Firefox/0.8.0+)' 'http://www.google.com/search?hl=en&q=boobs&safe=off' | grep -q 'safe=off'");
 
         settings["enforceSafeSearch"] = True
         self.node.setSettings(settings)
-        result_with_safe = remote_control.runCommand("wget -q -O - '$@' -U 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7) Gecko/20040613 Firefox/0.8.0+)' 'http://www.google.com/search?hl=en&q=boobs&safe=off' | grep -q 'safe=active'");
+        result_with_safe = remote_control.run_command("wget -q -O - '$@' -U 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7) Gecko/20040613 Firefox/0.8.0+)' 'http://www.google.com/search?hl=en&q=boobs&safe=off' | grep -q 'safe=active'");
 
         assert( result_without_safe == 0 )
         assert( result_with_safe == 0 )
@@ -128,13 +128,13 @@ class WebFilterTests(WebFilterBaseTests):
         settings["unblockMode"] = "Host"
         self.node.setSettings(settings)
         # this test URL should be blocked but allow
-        remote_control.runCommand("rm -f /tmp/web_filter_base_test_120.log")
-        result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/web_filter_base_test_120.log -O /tmp/web_filter_base_test_120.out http://test.untangle.com/test/testPage1.html")
-        resultButton = remote_control.runCommand("grep -q 'unblock' /tmp/web_filter_base_test_120.out")
-        resultBlock = remote_control.runCommand("grep -q 'blockpage' /tmp/web_filter_base_test_120.out")
+        remote_control.run_command("rm -f /tmp/web_filter_base_test_120.log")
+        result = remote_control.run_command("wget -4 -t 2 --timeout=5 -a /tmp/web_filter_base_test_120.log -O /tmp/web_filter_base_test_120.out http://test.untangle.com/test/testPage1.html")
+        resultButton = remote_control.run_command("grep -q 'unblock' /tmp/web_filter_base_test_120.out")
+        resultBlock = remote_control.run_command("grep -q 'blockpage' /tmp/web_filter_base_test_120.out")
 
         # get the IP address of the block page
-        ipfind = remote_control.runCommand("grep 'Location' /tmp/web_filter_base_test_120.log", stdout=True)
+        ipfind = remote_control.run_command("grep 'Location' /tmp/web_filter_base_test_120.log", stdout=True)
         # print 'ipFind %s' % ipfind
         ip = re.findall( r'[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}(?:[0-9:]{0,6})', ipfind )
         blockPageIP = ip[0]
@@ -145,8 +145,8 @@ class WebFilterTests(WebFilterBaseTests):
         unBlockParameters = "global=false&"+ paramaters + "&password="
         # print "unBlockParameters %s" % unBlockParameters
         print "wget -q -O /dev/null --post-data=\'" + unBlockParameters + "\' http://" + blockPageIP + "/" + self.shortNodeName() + "/unblock"
-        remote_control.runCommand("wget -q -O /dev/null --post-data=\'" + unBlockParameters + "\' http://" + blockPageIP + "/" + self.shortNodeName() + "/unblock")
-        resultUnBlock = remote_control.runCommand("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q text123")
+        remote_control.run_command("wget -q -O /dev/null --post-data=\'" + unBlockParameters + "\' http://" + blockPageIP + "/" + self.shortNodeName() + "/unblock")
+        resultUnBlock = remote_control.run_command("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q text123")
 
         self.block_url_list_clear()
         self.node.flushAllUnblockedSites()
@@ -167,13 +167,13 @@ class WebFilterTests(WebFilterBaseTests):
         self.node.setSettings(settings)
 
         # this test URL should be blocked but allow
-        remote_control.runCommand("rm -f /tmp/%s.log"%fname)
-        result = remote_control.runCommand("wget -4 -t 2 --timeout=5 -a /tmp/%s.log -O /tmp/%s.out http://test.untangle.com/test/testPage2.html"%(fname,fname))
-        resultButton = remote_control.runCommand("grep -q 'unblock' /tmp/%s.out"%fname)
-        resultBlock = remote_control.runCommand("grep -q 'blockpage' /tmp/%s.out"%fname)
+        remote_control.run_command("rm -f /tmp/%s.log"%fname)
+        result = remote_control.run_command("wget -4 -t 2 --timeout=5 -a /tmp/%s.log -O /tmp/%s.out http://test.untangle.com/test/testPage2.html"%(fname,fname))
+        resultButton = remote_control.run_command("grep -q 'unblock' /tmp/%s.out"%fname)
+        resultBlock = remote_control.run_command("grep -q 'blockpage' /tmp/%s.out"%fname)
 
         # get the IP address of the block page
-        ipfind = remote_control.runCommand("grep 'Location' /tmp/%s.log"%fname,stdout=True)
+        ipfind = remote_control.run_command("grep 'Location' /tmp/%s.log"%fname,stdout=True)
         print 'ipFind %s' % ipfind
         ip = re.findall( r'[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}(?:[0-9:]{0,6})', ipfind )
         blockPageIP = ip[0]
@@ -183,8 +183,8 @@ class WebFilterTests(WebFilterBaseTests):
         # Use unblock button.
         unBlockParameters = "global=false&"+ paramaters + "&password=atstest"
         # print "unBlockParameters %s" % unBlockParameters
-        remote_control.runCommand("wget -q -O /dev/null --post-data=\'" + unBlockParameters + "\' http://" + blockPageIP + "/" + self.shortNodeName() + "/unblock")
-        resultUnBlock = remote_control.runCommand("wget -O - http://test.untangle.com/test/testPage2.html 2>&1 | grep -q text123")
+        remote_control.run_command("wget -q -O /dev/null --post-data=\'" + unBlockParameters + "\' http://" + blockPageIP + "/" + self.shortNodeName() + "/unblock")
+        resultUnBlock = remote_control.run_command("wget -O - http://test.untangle.com/test/testPage2.html 2>&1 | grep -q text123")
 
         settings = self.node.getSettings()
         settings["unblockMode"] = "None"
@@ -345,7 +345,7 @@ class WebFilterTests(WebFilterBaseTests):
 
     def test_010_0000_rule_condition_username(self):
         "test USERNAME"
-        username = remote_control.runCommand("hostname -s", stdout=True)
+        username = remote_control.run_command("hostname -s", stdout=True)
         global_functions.host_username_set( username )
         self.rule_add("USERNAME",username)
         result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
