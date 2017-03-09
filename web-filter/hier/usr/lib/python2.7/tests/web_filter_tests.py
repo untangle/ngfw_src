@@ -505,7 +505,6 @@ class WebFilterTests(WebFilterBaseTests):
         global_functions.host_tags_add("penalty-box")
         self.rule_add("CLIENT_IN_PENALTY_BOX",None)
         result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
-        assert (result == 0)
         self.rules_clear()
         global_functions.host_tags_clear()
         assert (result == 0)
@@ -602,9 +601,8 @@ class WebFilterTests(WebFilterBaseTests):
         "test HOST_QUOTA_EXCEEDED"
         global_functions.host_quota_give( 1000, 300 )
         uvmContext.hostTable().decrementQuota( remote_control.clientIP, 10000 )
-        self.rule_add("HOST_QUOTA_EXCEEDED",remote_control.get_hostname())
+        self.rule_add("HOST_QUOTA_EXCEEDED",None)
         result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
-        assert (result == 0)
         self.rules_clear()
         global_functions.host_quota_clear()
         assert (result == 0)
@@ -621,9 +619,8 @@ class WebFilterTests(WebFilterBaseTests):
         "test CLIENT_QUOTA_EXCEEDED"
         global_functions.host_quota_give( 1000, 300 )
         uvmContext.hostTable().decrementQuota( remote_control.clientIP, 10000 )
-        self.rule_add("CLIENT_QUOTA_EXCEEDED",remote_control.get_hostname())
+        self.rule_add("CLIENT_QUOTA_EXCEEDED",None)
         result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
-        assert (result == 0)
         self.rules_clear()
         global_functions.host_quota_clear()
         assert (result == 0)
@@ -648,9 +645,8 @@ class WebFilterTests(WebFilterBaseTests):
         global_functions.host_username_set( remote_control.get_hostname() )
         global_functions.user_quota_give( remote_control.get_hostname(), 1000, 300 )
         uvmContext.userTable().decrementQuota( remote_control.get_hostname(), 10000 )
-        self.rule_add("USER_QUOTA_EXCEEDED",remote_control.get_hostname())
+        self.rule_add("USER_QUOTA_EXCEEDED",None)
         result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
-        assert (result == 0)
         self.rules_clear()
         global_functions.user_quota_clear(remote_control.get_hostname())
         global_functions.host_username_clear()
@@ -680,6 +676,143 @@ class WebFilterTests(WebFilterBaseTests):
         "test USER_QUOTA_EXCEEDED non match"
         global_functions.host_username_clear()
         self.rule_add("USER_QUOTA_EXCEEDED",None)
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_host_quota_attainment(self):
+        "test HOST_QUOTA_ATTAINMENT"
+        global_functions.host_quota_give( 1000, 300 )
+        uvmContext.hostTable().decrementQuota( remote_control.clientIP, 10000 )
+        self.rule_add("HOST_QUOTA_ATTAINMENT",">1.1")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
+        assert (result == 0)
+        self.rules_clear()
+        global_functions.host_quota_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_host_quota_attainment_inverse(self):
+        "test HOST_QUOTA_ATTAINMENT non match"
+        global_functions.host_quota_clear()
+        self.rule_add("HOST_QUOTA_ATTAINMENT",">.1")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_client_quota_attainment(self):
+        "test CLIENT_QUOTA_ATTAINMENT"
+        global_functions.host_quota_give( 1000, 300 )
+        uvmContext.hostTable().decrementQuota( remote_control.clientIP, 10000 )
+        self.rule_add("CLIENT_QUOTA_ATTAINMENT",">1.1")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
+        self.rules_clear()
+        global_functions.host_quota_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_client_quota_attainment_inverse(self):
+        "test CLIENT_QUOTA_ATTAINMENT non match"
+        global_functions.host_quota_clear()
+        self.rule_add("CLIENT_QUOTA_ATTAINMENT",">.1")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_server_quota_attainment_inverse(self):
+        "test SERVER_QUOTA_ATTAINMENT non match"
+        self.rule_add("SERVER_QUOTA_ATTAINMENT",">.1")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_user_quota_attainment(self):
+        "test USER_QUOTA_ATTAINMENT"
+        global_functions.host_username_set( remote_control.get_hostname() )
+        global_functions.user_quota_give( remote_control.get_hostname(), 1000, 300 )
+        uvmContext.userTable().decrementQuota( remote_control.get_hostname(), 10000 )
+        self.rule_add("USER_QUOTA_ATTAINMENT",">1.1")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
+        self.rules_clear()
+        global_functions.user_quota_clear(remote_control.get_hostname())
+        global_functions.host_username_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_user_quota_attainment_inverse(self):
+        "test USER_QUOTA_ATTAINMENT non match"
+        global_functions.host_username_set( remote_control.get_hostname() )
+        global_functions.user_quota_give( remote_control.get_hostname(), 100000000, 300 )
+        self.rule_add("USER_QUOTA_ATTAINMENT",">.5")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
+        self.rules_clear()
+        global_functions.user_quota_clear(remote_control.get_hostname())
+        global_functions.host_username_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_user_quota_attainment_no_quota(self):
+        "test USER_QUOTA_ATTAINMENT non match"
+        global_functions.host_username_set( remote_control.get_hostname() )
+        global_functions.user_quota_clear( remote_control.get_hostname() )
+        self.rule_add("USER_QUOTA_ATTAINMENT",">.1")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_user_quota_attainment_no_user(self):
+        "test USER_QUOTA_ATTAINMENT non match"
+        global_functions.host_username_clear()
+        self.rule_add("USER_QUOTA_ATTAINMENT",">.1")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_host_mac_vendor(self):
+        "test HOST_MAC_VENDOR"
+        entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
+        vendor = entry.get('macVendor')
+        if vendor == None:
+            raise unittest2.SkipTest('No MAC vendor')
+        self.rule_add("HOST_MAC_VENDOR",vendor)
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_host_mac_vendor_inverse(self):
+        "test HOST_MAC_VENDOR inverse"
+        self.rule_add("HOST_MAC_VENDOR","xyznevermatch")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_client_mac_vendor(self):
+        "test CLIENT_MAC_VENDO"
+        entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
+        vendor = entry.get('macVendor')
+        if vendor == None:
+            raise unittest2.SkipTest('No MAC vendor')
+        self.rule_add("CLIENT_MAC_VENDOR",vendor)
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_client_mac_vendor_inverse(self):
+        "test CLIENT_MAC_VENDOR inverse"
+        self.rule_add("CLIENT_MAC_VENDOR","xyznevermatch")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_server_mac_vendor_inverse(self):
+        "test SERVER_MAC_VENDOR inverse"
+        self.rule_add("SERVER_MAC_VENDOR","xyznevermatch")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_server_mac_vendor_no_entry(self):
+        "test SERVER_MAC_VENDOR if no host entry exists - * should not match null"
+        entry = uvmContext.hostTable().getHostTableEntry( socket.gethostbyname("test.untangle.com") )
+        if entry != None:
+            raise unittest2.SkipTest('Entry exists')
+        self.rule_add("SERVER_MAC_VENDOR",'*')
         result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
         self.rules_clear()
         assert (result == 0)
