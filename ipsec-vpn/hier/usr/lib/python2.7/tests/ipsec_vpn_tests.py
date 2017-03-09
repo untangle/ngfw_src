@@ -19,6 +19,7 @@ node = None
 nodeAD = None
 nodeDataRD = None
 tunnelUp = False
+orig_netsettings = None
 
 # hardcoded for ats testing
 radiusHost = "10.112.56.71"
@@ -133,12 +134,12 @@ def createRadiusSettings():
     }
     
 def createDNSRule( networkAddr, name):
-    return   {
+    return {
         "address": networkAddr,
         "javaClass": "com.untangle.uvm.network.DnsStaticEntry",
         "name": name
-             }
-               
+         }
+
 def addDNSRule(newRule):
     netsettings = uvmContext.networkManager().getNetworkSettings()
     netsettings['dnsSettings']['staticEntries']['list'].insert(0,newRule)
@@ -160,13 +161,15 @@ class IPsecTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        global node, ipsecHostResult, l2tpClientHostResult, nodeAD, nodeDataRD, radiusResult
+        global node, orig_netsettings, ipsecHostResult, l2tpClientHostResult, nodeAD, nodeDataRD, radiusResult
         tunnelUp = False
         if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
             raise Exception('node %s already instantiated' % self.nodeName())
         node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
         if (uvmContext.nodeManager().isInstantiated(self.nodeNameAD())):
             raise unittest2.SkipTest('node %s already instantiated' % self.nodeName())
+        if orig_netsettings == None:
+            orig_netsettings = uvmContext.networkManager().getNetworkSettings()
         nodeAD = uvmContext.nodeManager().instantiate(self.nodeNameAD(), defaultRackId)
         nodeDataRD = nodeAD.getSettings().get('radiusSettings')
         ipsecHostResult = subprocess.call(["ping","-c","1",ipsecHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
@@ -281,8 +284,6 @@ class IPsecTests(unittest2.TestCase):
         assert(found)
 
     def test_060_createIpsecTunnelHostname(self):
-        originalSettings = uvmContext.networkManager().getNetworkSettings()
-        addDNSRule(createDNSRule("10.111.56.96","ipsecsite.untangle.int"))
         if (ipsecHostResult != 0):
             raise unittest2.SkipTest("No paried IPSec server available")
         pre_events_enabled = global_functions.get_app_metric_value(node,"enabled")
@@ -290,6 +291,11 @@ class IPsecTests(unittest2.TestCase):
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
         pairMatchNotFound = True
         listOfPairs = ""
+        addDNSRule(createDNSRule(ipsecHost,ipsecHostname))
+        # verify L2TP is off  NGFW-7212
+        ipsecSettings = node.getSettings()
+        ipsecSettings["vpnflag"] = False
+        node.setSettings(ipsecSettings)
         for hostConfig in configuredHostIPs:
             print hostConfig[0]
             listOfPairs += str(hostConfig[0]) + ", "
@@ -305,7 +311,6 @@ class IPsecTests(unittest2.TestCase):
             time.sleep(1)
             # ping the remote LAN to see if the IPsec tunnel is connected.
             ipsecHostLANResult = remote_control.run_command("wget -q -O /dev/null --no-check-certificate -4 -t 2 --timeout=5 https://%s/" % ipsecHostLANIP)
-        uvmContext.networkManager().setNetworkSettings( originalSettings )
         post_events_enabled = global_functions.get_app_metric_value(node,"enabled")
         nukeIPSecTunnels()
         assert (ipsecHostLANResult == 0)
@@ -315,6 +320,9 @@ class IPsecTests(unittest2.TestCase):
     @staticmethod
     def finalTearDown(self):
         global node, nodeAD
+        # Restore original settings to return to initial settings
+        # print "orig_netsettings <%s>" % orig_netsettings
+        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         if node != None:
             uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
             node = None
