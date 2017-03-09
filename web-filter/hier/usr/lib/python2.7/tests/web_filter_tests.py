@@ -3,6 +3,7 @@ import time
 import sys
 import re
 import datetime
+import calendar
 import socket
 
 from jsonrpc import ServiceProxy
@@ -770,6 +771,7 @@ class WebFilterTests(WebFilterBaseTests):
         vendor = entry.get('macVendor')
         if vendor == None:
             raise unittest2.SkipTest('No MAC vendor')
+        vendor = "*" + vendor.split(None,1)[0] + "*"
         self.rule_add("HOST_MAC_VENDOR",vendor)
         result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
         self.rules_clear()
@@ -783,11 +785,12 @@ class WebFilterTests(WebFilterBaseTests):
         assert (result == 0)
 
     def test_010_0000_rule_condition_client_mac_vendor(self):
-        "test CLIENT_MAC_VENDO"
+        "test CLIENT_MAC_VENDOR"
         entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
         vendor = entry.get('macVendor')
         if vendor == None:
             raise unittest2.SkipTest('No MAC vendor')
+        vendor = "*" + vendor.split(None,1)[0] + "*"
         self.rule_add("CLIENT_MAC_VENDOR",vendor)
         result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
         self.rules_clear()
@@ -813,6 +816,58 @@ class WebFilterTests(WebFilterBaseTests):
         if entry != None:
             raise unittest2.SkipTest('Entry exists')
         self.rule_add("SERVER_MAC_VENDOR",'*')
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_day_of_week_number(self):
+        "test DAY_OF_WEEK by day number"
+        daynum = datetime.date.today().weekday() # 0 - monday 6 - sunday
+        daynum = ((daynum + 1) % 7) + 1 # 1 - sunday, 7 - saturday
+        self.rule_add("DAY_OF_WEEK",str(daynum))
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_day_of_week_name(self):
+        "test DAY_OF_WEEK by day name"
+        dayname = (calendar.day_name[datetime.date.today().weekday()]).lower()
+        self.rule_add("DAY_OF_WEEK",dayname)
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_day_of_week_list(self):
+        "test DAY_OF_WEEK in a list"
+        dayname = (calendar.day_name[datetime.date.today().weekday()]).lower()
+        print dayname
+        self.rule_add("DAY_OF_WEEK","xyz," + dayname + ",zyx")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
+        self.rules_clear()
+        assert (result == 0)
+        
+    def test_010_0000_rule_condition_day_of_week_inverse(self):
+        "test DAY_OF_WEEK inverse"
+        dayname = (calendar.day_name[datetime.date.today().weekday()]).lower()
+        self.rule_add("DAY_OF_WEEK","xyznevermatch")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
+        self.rules_clear()
+        assert (result == 0)
+        
+    def test_010_0000_rule_condition_time_of_day(self):
+        "test TIME_OF_DAY"
+        start_time = (datetime.datetime.today() - datetime.timedelta(hours=1)).strftime('%H:%M')
+        stop_time = (datetime.datetime.today() + datetime.timedelta(hours=1)).strftime('%H:%M')
+        self.rule_add("TIME_OF_DAY",start_time+"-"+stop_time)
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_time_of_day_inverse(self):
+        "test TIME_OF_DAY inverse"
+        start_time = (datetime.datetime.today() + datetime.timedelta(minutes=5)).strftime('%H:%M')
+        stop_time = (datetime.datetime.today() + datetime.timedelta(minutes=6)).strftime('%H:%M')
+        self.rule_add("TIME_OF_DAY",start_time+"-"+stop_time)
         result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
         self.rules_clear()
         assert (result == 0)
