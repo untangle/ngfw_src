@@ -494,7 +494,7 @@ cite {
     padding: 10px;
     h2 {
         margin: 0;
-        font-weight: 400;
+        font-weight: 600;
     }
     p {
         margin: 0;
@@ -849,6 +849,7 @@ span.fa:before {
     &-green { color: green; }
     &-orange { color: orange; }
     &-yellow { color: yellow; }
+    &-gray { color: #999; }
 }
 
 

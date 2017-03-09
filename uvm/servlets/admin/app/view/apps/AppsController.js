@@ -63,7 +63,6 @@ Ext.define('Ung.view.apps.AppsController', {
         Rpc.asyncData('rpc.nodeManager.getAppsViews').then(function(result) {
             var nodes = [];
             vm.getStore('apps').removeAll();
-            console.log(result);
             Ext.getStore('policies').loadData(result);
 
             Ext.Array.each(result[0].nodeProperties.list, function (node) {

@@ -79,6 +79,12 @@
                 }
                 Ext.apply(rpc, startUpInfo);
 
+                if (!rpc.translations.decimal_sep) { rpc.translations.decimal_sep = '.'; }
+                if (!rpc.translations.thousand_sep) { rpc.translations.thousand_sep = ','; }
+                if (!rpc.translations.date_fmt) { rpc.translations.date_fmt = 'Y-m-d'; }
+                if (!rpc.translations.timestamp_fmt) { rpc.translations.timestamp_fmt = 'Y-m-d h:i:s a'; }
+
+
                 String.prototype.t = function() {
                     return rpc.translations[this.valueOf()] || '<cite>' + this.valueOf() + '</cite>';
                 };
