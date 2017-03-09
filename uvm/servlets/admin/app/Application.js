@@ -15,10 +15,10 @@ Ext.define('Ung.Application', {
     mainView: 'Ung.view.main.Main',
 
     init: function () {
-        if (!rpc.translations.decimal_sep) { rpc.translations.decimal_sep = '.'; }
-        if (!rpc.translations.thousand_sep) { rpc.translations.thousand_sep = ','; }
-        if (!rpc.translations.date_fmt) { rpc.translations.date_fmt = 'Y-m-d'; }
-        if (!rpc.translations.timestamp_fmt) { rpc.translations.timestamp_fmt = 'Y-m-d h:i:s a'; }
+        // if (!rpc.translations.decimal_sep) { rpc.translations.decimal_sep = '.'; }
+        // if (!rpc.translations.thousand_sep) { rpc.translations.thousand_sep = ','; }
+        // if (!rpc.translations.date_fmt) { rpc.translations.date_fmt = 'Y-m-d'; }
+        // if (!rpc.translations.timestamp_fmt) { rpc.translations.timestamp_fmt = 'Y-m-d h:i:s a'; }
     },
 
     launch: function () {

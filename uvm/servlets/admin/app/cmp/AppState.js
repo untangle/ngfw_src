@@ -30,10 +30,10 @@ Ext.define('Ung.cmp.AppState', {
                 if (get('instance.targetState') === 'RUNNING') {
                     return 'fa-green';
                 }
-                return 'fa-flip-horizontal fa-red';
+                return 'fa-flip-horizontal fa-gray';
             },
             appStateTitle: function (get) {
-                var icon = '<i class="fa fa-power-off fa-red"></i>';
+                var icon = '<i class="fa fa-power-off fa-gray"></i>';
                 if (!get('instance.targetState')) {
                     icon =  '<i class="fa fa-power-off fa-orange"></i>';
                 }
