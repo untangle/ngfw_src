@@ -483,9 +483,10 @@ class JsLintTarget < Target
   protected
 
   def build()
-    info "[jslint  ] #{@filename}"
+    # info "[jslint  ] #{@filename}"
     command = "#{JS_LINT_COMMAND} #{@filename} #{JS_LINT_CONFIG}"
-    raise "jslint failed" unless Kernel.system command
+    # disable jslint for now as its only used to check the webui servlet
+    # raise "jslint failed" unless Kernel.system command
   end
 end
 
