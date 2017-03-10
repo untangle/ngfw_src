@@ -938,8 +938,11 @@ class NetworkTests(unittest2.TestCase):
         # get next IP not used
 
         # verify that this NIC is connected (otherwise keepalive wont claim address)
-        result = subprocess.check_output("mii-tool " + interface.get('symbolicDev'), shell=True)
-        if not "link ok" in result:
+        try:
+            result = subprocess.check_output("mii-tool " + interface.get('symbolicDev') + " 2>/dev/null", shell=True)
+            if not "link ok" in result:
+                raise unittest2.SkipTest('LAN not connected')
+        except:
             raise unittest2.SkipTest('LAN not connected')
 
         ipStep = 1
