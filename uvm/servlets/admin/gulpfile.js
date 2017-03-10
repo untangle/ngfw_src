@@ -41,7 +41,7 @@ var appsModules = [
     'wan-failover',
     'web-cache',
     'web-filter',
-    'web-filter-lite'
+    'web-monitor'
 ];
 var moduleName;
 

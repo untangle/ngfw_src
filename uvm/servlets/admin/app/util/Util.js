@@ -20,7 +20,6 @@ Ext.define('Ung.util.Util', {
     // appsMapping: {
     //     webfilter: 'untangle-node-web-filter',
     //     webmonitor: 'untangle-node-web-monitor',
-    //     webfilterlite: 'untangle-node-web-filter-lite',
     //     virusblocker: 'untangle-node-virus-blocker',
     //     virusblockerlite: 'untangle-node-virus-blocker-lite',
     //     spamblocker: 'untangle-node-spam-blocker',

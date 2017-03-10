@@ -1,6 +1,6 @@
-Ext.define('Ung.apps.webfilterlite.view.Status', {
+Ext.define('Ung.apps.webmonitor.view.Status', {
     extend: 'Ext.panel.Panel',
-    alias: 'widget.app-web-filter-lite-status',
+    alias: 'widget.app-web-monitor-status',
     itemId: 'status',
     title: 'Status'.t(),
 
@@ -15,9 +15,9 @@ Ext.define('Ung.apps.webfilterlite.view.Status', {
         items: [{
             xtype: 'component',
             cls: 'app-desc',
-            html: '<img src="/skins/modern-rack/images/admin/apps/untangle-node-web-filter-lite_80x80.png" width="80" height="80"/>' +
-                '<h3>Web Filter Lite</h3>' +
-                '<p>' + 'Web Filter scans and categorizes web traffic to monitor and enforce network usage policies.'.t() + '</p>'
+            html: '<img src="/skins/modern-rack/images/admin/apps/untangle-node-web-monitor_80x80.png" width="80" height="80"/>' +
+                '<h3>Web Monitor</h3>' +
+                '<p>' + 'Web Monitor scans and categorizes web traffic to monitor and enforce network usage policies.'.t() + '</p>'
         }, {
             xtype: 'appstate',
         }, {
