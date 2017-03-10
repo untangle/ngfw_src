@@ -820,6 +820,114 @@ class WebFilterTests(WebFilterBaseTests):
         self.rules_clear()
         assert (result == 0)
 
+    def test_010_0000_rule_condition_host_mac_vendor(self):
+        "test HOST_MAC_VENDOR"
+        entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
+        vendor = entry.get('macVendor')
+        if vendor == None:
+            raise unittest2.SkipTest('No MAC vendor')
+        vendor = "*" + vendor.split(None,1)[0] + "*"
+        self.rule_add("HOST_MAC_VENDOR",vendor)
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_host_mac_vendor_inverse(self):
+        "test HOST_MAC_VENDOR inverse"
+        self.rule_add("HOST_MAC_VENDOR","xyznevermatch")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_client_mac_vendor(self):
+        "test CLIENT_MAC_VENDOR"
+        entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
+        vendor = entry.get('macVendor')
+        if vendor == None:
+            raise unittest2.SkipTest('No MAC vendor')
+        vendor = "*" + vendor.split(None,1)[0] + "*"
+        self.rule_add("CLIENT_MAC_VENDOR",vendor)
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_client_mac_vendor_inverse(self):
+        "test CLIENT_MAC_VENDOR inverse"
+        self.rule_add("CLIENT_MAC_VENDOR","xyznevermatch")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_server_mac_vendor_inverse(self):
+        "test SERVER_MAC_VENDOR inverse"
+        self.rule_add("SERVER_MAC_VENDOR","xyznevermatch")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_server_mac_vendor_no_entry(self):
+        "test SERVER_MAC_VENDOR if no host entry exists - * should not match null"
+        entry = uvmContext.hostTable().getHostTableEntry( socket.gethostbyname("test.untangle.com") )
+        if entry != None:
+            raise unittest2.SkipTest('Entry exists')
+        self.rule_add("SERVER_MAC_VENDOR",'*')
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_host_mac(self):
+        "test HOST_MAC"
+        entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
+        mac = entry.get('macAddress')
+        if mac == None:
+            raise unittest2.SkipTest('No MAC address')
+        self.rule_add("HOST_MAC",mac)
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_host_mac_inverse(self):
+        "test HOST_MAC inverse"
+        self.rule_add("HOST_MAC","xy:xy:xy:xy:xy:xy")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_src_mac(self):
+        "test SRC_MAC"
+        entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
+        mac = entry.get('macAddress')
+        if mac == None:
+            raise unittest2.SkipTest('No MAC address')
+        self.rule_add("SRC_MAC",mac)
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_src_mac_inverse(self):
+        "test SRC_MAC inverse"
+        self.rule_add("SRC_MAC","xy:xy:xy:xy:xy:xy")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_dst_mac_inverse(self):
+        "test DST_MAC inverse"
+        self.rule_add("DST_MAC","xy:xy:xy:xy:xy:xy")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_dst_mac_no_entry(self):
+        "test DST_MAC if no host entry exists - * should not match null"
+        entry = uvmContext.hostTable().getHostTableEntry( socket.gethostbyname("test.untangle.com") )
+        if entry != None:
+            raise unittest2.SkipTest('Entry exists')
+        self.rule_add("DST_MAC",'*')
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
+        self.rules_clear()
+        assert (result == 0)
+        
     def test_010_0000_rule_condition_day_of_week_number(self):
         "test DAY_OF_WEEK by day number"
         daynum = datetime.date.today().weekday() # 0 - monday 6 - sunday
@@ -868,6 +976,128 @@ class WebFilterTests(WebFilterBaseTests):
         start_time = (datetime.datetime.today() + datetime.timedelta(minutes=5)).strftime('%H:%M')
         stop_time = (datetime.datetime.today() + datetime.timedelta(minutes=6)).strftime('%H:%M')
         self.rule_add("TIME_OF_DAY",start_time+"-"+stop_time)
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_http_host(self):
+        "test HTTP_HOST"
+        self.rule_add("HTTP_HOST","test.untangle.com")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_http_host_glob(self):
+        "test HTTP_HOST glob"
+        self.rule_add("HTTP_HOST","*untangle*")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_http_host_inverse(self):
+        "test HTTP_HOST"
+        self.rule_add("HTTP_HOST","xyznevermatch")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_http_referer(self):
+        "test HTTP_REFERER"
+        self.rule_add("HTTP_REFERER","*untangle*")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage", extra_options="--header 'Referer: http://test.untangle.com/test/testPage1.html'")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_http_referer_inverse(self):
+        "test HTTP_REFERER inverse (no referer so it should not be blocked)"
+        self.rule_add("HTTP_REFERER","*untangle*")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_http_uri(self):
+        "test HTTP_URI"
+        self.rule_add("HTTP_URI","*test*")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage", extra_options="--header 'Uri: http://test.untangle.com/test/testPage1.html'")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_http_uri_inverse(self):
+        "test HTTP_URI inverse (untangle string is not in URI)"
+        self.rule_add("HTTP_URI","*untangle*")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_http_url(self):
+        "test HTTP_URL"
+        self.rule_add("HTTP_URL","*test*")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_http_url_includes_domain(self):
+        "test HTTP_URL includes domain"
+        self.rule_add("HTTP_URL","*untangle*")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_http_url_domain_plus_uri(self):
+        "test HTTP_URL includes domain"
+        self.rule_add("HTTP_URL","*com/test*")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_http_url_inverse(self):
+        "test HTTP_URL inverse"
+        self.rule_add("HTTP_URL","*xyznevermatch*")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_http_content_type(self):
+        "test HTTP_CONTENT_TYPE"
+        self.rule_add("HTTP_CONTENT_TYPE","*text/html*")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_http_content_type_inverse(self):
+        "test HTTP_CONTENT_TYPE"
+        self.rule_add("HTTP_CONTENT_TYPE","*xyznevermatch*")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_http_content_length(self):
+        "test HTTP_CONTENT_LENGTH"
+        self.rule_add("HTTP_CONTENT_LENGTH",">1")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
+        self.rules_clear()
+        assert (result == 0)
+        
+    def test_010_0000_rule_condition_http_content_length_inverse(self):
+        "test HTTP_CONTENT_LENGTH"
+        self.rule_add("HTTP_CONTENT_LENGTH",">100000000")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_http_user_agent(self):
+        "test HTTP_USER_AGENT"
+        entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
+        if entry.get('httpUserAgent') == None or not('linux' in entry.get('httpUserAgent')):
+            raise unittest2.SkipTest('No usable user agent')
+        self.rule_add("HTTP_USER_AGENT","*linux*")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_http_user_agent_inverse(self):
+        "test HTTP_USER_AGENT inverse"
+        self.rule_add("HTTP_USER_AGENT","*xyznevermatch*")
         result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
         self.rules_clear()
         assert (result == 0)

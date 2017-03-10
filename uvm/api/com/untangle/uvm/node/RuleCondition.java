@@ -78,22 +78,20 @@ public class RuleCondition implements JSONString, Serializable
         USER_QUOTA_ATTAINMENT, /* 0.9 1.1 */
         CLIENT_QUOTA_ATTAINMENT, /* float .9 1.1 */
         SERVER_QUOTA_ATTAINMENT,/* float */
+        HOST_MAC, /* 00:11:22:33:44:55 */
+        SRC_MAC, /* 00:11:22:33:44:55 */ /* means src in iptables, client in uvm */
+        DST_MAC, /* 00:11:22:33:44:55 */ /* means dst in iptables, server in uvm */
         HOST_MAC_VENDOR, /* glob */
         CLIENT_MAC_VENDOR, /* glob */
         SERVER_MAC_VENDOR, /* glob */
-        
         DAY_OF_WEEK, /* "monday" "monday,tuesday" "any" */
         TIME_OF_DAY, /* "any" "10:00-11:00" */
-
-        DST_LOCAL, /* none - ONLY available in iptables rules */
-        HOST_MAC, /* 00:11:22:33:44:55 */
-        SRC_MAC, /* 00:11:22:33:44:55 */
-        DST_MAC, /* 00:11:22:33:44:55 */
-
         REMOTE_HOST_COUNTRY, /* US (ISO 3166 country code) */
         CLIENT_COUNTRY, /* US (ISO 3166 country code) */
         SERVER_COUNTRY, /* JP (ISO 3166 country code)*/
 
+        DST_LOCAL, /* none - ONLY available in iptables rules */
+        
         /* application specific matchers */
         HTTP_HOST, /* "playboy.com" "any" */
         HTTP_REFERER, /* "playboy.com" "any" */
@@ -102,7 +100,7 @@ public class RuleCondition implements JSONString, Serializable
         HTTP_CONTENT_TYPE, /* "image/jpeg" "any" */
         HTTP_CONTENT_LENGTH, /* "800" "any" */
         HTTP_USER_AGENT, /* "playboy.com" "any" */
-        HTTP_USER_AGENT_OS, /* "*Mozilla*" "any" */
+        HTTP_USER_AGENT_OS, /* DEPRECATED - uses HTTP_USER_AGENT */
         PROTOCOL_CONTROL_SIGNATURE, /* "Bittorrent" "*" */
         PROTOCOL_CONTROL_CATEGORY, /* "Networking" "*" */
         PROTOCOL_CONTROL_DESCRIPTION, /* "description" "*" */
