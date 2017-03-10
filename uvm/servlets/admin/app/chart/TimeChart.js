@@ -27,10 +27,5 @@ Ext.define('Ung.chart.TimeChart', {
         xtype: 'component',
         reference: 'timechart',
         cls: 'chart'
-    }, {
-        xtype: 'component',
-        reference: 'loader',
-        cls: 'loader',
-        hideMode: 'visibility'
     }]
 });

@@ -909,3 +909,14 @@ span.fa:before {
         }
     }
 }
+
+
+.x-colorpicker-field input {
+    background: none;
+    color: transparent;
+}
+.x-colorpicker-field-swatch {
+    width: auto;
+    left: 0;
+    right: 17px
+}

@@ -200,6 +200,9 @@ Ext.define('Ung.controller.Global', {
             }
         } else {
             reportsVm.set('categoryName', null);
+            reportsVm.set('category', null);
+            reportsVm.set('reportName', null);
+            reportsVm.set('report', null);
             reportsVm.set('activeCard', 'allCategories');
         }
         this.getMainView().setActiveItem('reports');

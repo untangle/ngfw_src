@@ -13,6 +13,14 @@ Ext.define('Ung.view.reports.Reports', {
     ],
     /* requires-end */
     controller: 'reports',
+
+    // tbar: [{
+    //     xtype: 'component',
+    //     bind: {
+    //         html: '{categoryName} | {categories.selection} | {reportName} | {report}'
+    //     }
+    // }],
+
     viewModel: {
         data: {
             categoryName: null, // as set in route

@@ -2,6 +2,8 @@ Ext.define('Ung.util.Util', {
     alternateClassName: 'Util',
     singleton: true,
 
+    defaultColors: ['#00b000', '#3030ff', '#009090', '#00ffff', '#707070', '#b000b0', '#fff000', '#b00000', '#ff0000', '#ff6347', '#c0c0c0'],
+
     // node name to class mapping
     // appsMapping: {
     //     'ad-blocker':           { node: 'untangle-node-ad-blocker' },

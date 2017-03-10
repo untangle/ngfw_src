@@ -7,8 +7,25 @@ Ext.define('Ung.view.reports.EntryController', {
             afterrender: 'onAfterRender'
         },
         '#chart': {
-            afterrender: 'fetchReportData'
+            // afterrender: 'fetchReportData'
         }
+    },
+
+    updateColors: function (store) {
+        var vm = this.getViewModel(),
+            newColors = [];
+        store.each(function (rec) {
+            newColors.push('#' + rec.get('color'));
+        });
+        vm.set('report.colors', newColors);
+    },
+
+    addColor: function (btn) {
+        btn.up('grid').getStore().add({color: 'FF0000'});
+        // var vm = this.getViewModel();
+        // var colors = vm.get('report.colors');
+        // colors.push('#FF0000');
+        // vm.set('report.colors', colors);
     },
 
     onAfterRender: function () {
@@ -20,6 +37,28 @@ Ext.define('Ung.view.reports.EntryController', {
             if (report) {
                 me.addChart(report);
             }
+        });
+        vm.bind('{report.colors}', function (entryColors) {
+            var colors = entryColors || Util.defaultColors,
+                // colorsCmp = [],
+                colorsStoreData = [];
+            colors.forEach(function (color) {
+                // colorsCmp.push({
+                //     bind: color,
+                // });
+                colorsStoreData.push({
+                    color: color.replace('#', '')
+                });
+            });
+            // me.getView().down('#colors').removeAll();
+            // me.getView().down('#colors').add(colorsCmp);
+
+            vm.set('_colorsData', colorsStoreData);
+
+            // console.log(colors);
+            // if (report) {
+            //     me.addChart(report);
+            // }
         });
     },
 
@@ -38,7 +77,12 @@ Ext.define('Ung.view.reports.EntryController', {
             holder.add({
                 xtype: 'piechart',
                 itemId: 'chart',
-                entry: report
+                // entry: report,
+                viewModel: {
+                    data: {
+                        entry: report
+                    }
+                }
             });
         }
 
@@ -71,7 +115,7 @@ Ext.define('Ung.view.reports.EntryController', {
         if (vm.get('report.type') !== 'EVENT_LIST') {
 
             Rpc.asyncData('rpc.reportsManager.getDataForReportEntry',
-                           chart.getEntry().getData(),
+                           chart.getViewModel().get('entry').getData(),
                            vm.get('startDate'),
                            vm.get('tillNow') ? null : vm.get('endDate'), -1)
                 .then(function(result) {
@@ -114,14 +158,16 @@ Ext.define('Ung.view.reports.EntryController', {
         report.set('uniqueId', 'report-' + Math.random().toString(36).substr(2));
         report.set('readOnly', false);
 
-        Rpc.asyncData('rpc.reportsManager.saveReportEntry', report.getData())
-            .then(function(result) {
-                vm.get('report').reject();
-                Ext.getStore('reports').add(report);
-                report.commit();
-                // me.getView().down('#reportsGrid').getSelectionModel().select(report);
-                Util.successToast('<span style="color: yellow; font-weight: 600;">' + report.get('title') + ' report added!');
-            });
+        console.log(report);
+
+        // Rpc.asyncData('rpc.reportsManager.saveReportEntry', report.getData())
+        //     .then(function(result) {
+        //         vm.get('report').reject();
+        //         Ext.getStore('reports').add(report);
+        //         report.commit();
+        //         // me.getView().down('#reportsGrid').getSelectionModel().select(report);
+        //         Util.successToast('<span style="color: yellow; font-weight: 600;">' + report.get('title') + ' report added!');
+        //     });
     }
 
 
