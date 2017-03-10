@@ -126,6 +126,12 @@ public interface NodeSession
     public final String KEY_HTTP_URL = "http-url";  /* String */
     public final String KEY_HTTP_CONTENT_TYPE = "http-content-type"; /* String */
     public final String KEY_HTTP_CONTENT_LENGTH = "http-content-length"; /* Long */
+    public final String KEY_HTTP_REQUEST_METHOD = "http-request-method"; /* String */
+    public final String KEY_HTTP_REQUEST_FILE_PATH = "http-request-file-path"; /* String */
+    public final String KEY_HTTP_REQUEST_FILE_NAME = "htpp-request-file-name"; /* String */
+    public final String KEY_HTTP_REQUEST_FILE_EXTENSION = "http-request-file-extension"; /* String */
+    public final String KEY_HTTP_RESPONSE_FILE_NAME = "http-response-file-name"; /* String */
+    public final String KEY_HTTP_RESPONSE_FILE_EXTENSION = "http-response-file-extension"; /* String */
     
     public final String KEY_FTP_FILE_NAME = "ftp-file-name";  /* String */
     public final String KEY_FTP_DATA_SESSION = "ftp-data-session";  /* Boolean */
@@ -137,13 +143,6 @@ public interface NodeSession
     public final String KEY_WEB_FILTER_BEST_CATEGORY_BLOCKED = "web-filter-best-category-blocked"; /* String */
     public final String KEY_WEB_FILTER_FLAGGED = "web-filter-flagged"; /* Boolean */
     public final String KEY_WEB_FILTER_CATEGORIES = "web-filter-categories"; /* List<String> */
-    public final String KEY_WEB_FILTER_REQUEST_METHOD = "web-filter-request-method"; /* String */
-    public final String KEY_WEB_FILTER_REQUEST_FILE_PATH = "web-filter-request-file-path"; /* String */
-    public final String KEY_WEB_FILTER_REQUEST_FILE_NAME = "web-filter-request-file-name"; /* String */
-    public final String KEY_WEB_FILTER_REQUEST_FILE_EXTENSION = "web-filter-request-file-extension"; /* String */
-    public final String KEY_WEB_FILTER_RESPONSE_CONTENT_TYPE = "web-filter-response-content-type"; /* String */
-    public final String KEY_WEB_FILTER_RESPONSE_FILE_NAME = "web-filter-response-file-name"; /* String */
-    public final String KEY_WEB_FILTER_RESPONSE_FILE_EXTENSION = "web-filter-response-file-extension"; /* String */
 
     public final String KEY_APPLICATION_CONTROL_APPLICATION = "application-control-application"; /* String */
     public final String KEY_APPLICATION_CONTROL_CATEGORY = "application-control-category"; /* String */
