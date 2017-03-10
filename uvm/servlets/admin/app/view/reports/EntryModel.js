@@ -9,7 +9,32 @@ Ext.define('Ung.view.reports.EntryModel', {
         tillNow: true
     },
 
+    stores: {
+        colors: {
+            data: '{_colorsData}',
+            proxy: {
+                type: 'memory',
+                fields: [{ name: 'color' }],
+                reader: { type: 'json' }
+            },
+            listeners: {
+                update: 'updateColors',
+                datachanged: 'updateColors'
+            }
+        }
+    },
+
     formulas: {
+        _colors: {
+            get: function (get) {
+                return get('report.colors');
+            },
+            set: function (value) {
+                console.log(this.get('report.colors'));
+            }
+        },
+
+
         _sd: {
             get: function (get) {
                 return get('startDate');

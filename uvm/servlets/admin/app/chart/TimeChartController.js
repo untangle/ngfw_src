@@ -13,7 +13,9 @@ Ext.define('Ung.chart.TimeChartController', {
         'AREA': { styleType: 'areaspline' },
         'AREA_STACKED': {styleType: 'areaspline', stacking: true },
         'BAR': {styleType: 'column', grouping: true },
+        'BAR_3D': {styleType: 'column', grouping: true },
         'BAR_OVERLAPPED': {styleType: 'column', overlapped: true },
+        'BAR_3D_OVERLAPPED': {styleType: 'column', overlapped: true },
         'BAR_STACKED': {styleType: 'column', stacking: true }
     },
     init: function () {
@@ -34,6 +36,7 @@ Ext.define('Ung.chart.TimeChartController', {
         case 'BAR_OVERLAPPED':
         case 'BAR_3D_OVERLAPPED':
         case 'BAR_STACKED':
+            console.log('here');
             type = 'column';
             break;
         default:
@@ -45,6 +48,8 @@ Ext.define('Ung.chart.TimeChartController', {
     onAfterRender: function (view) {
         var me = this;
         this.entry = view.getViewModel().get('entry') || this.getView().getEntry();
+
+        console.log(me.entry.get('timeStyle'));
 
         this.chart = new Highcharts.StockChart({
             chart: {
@@ -313,7 +318,8 @@ Ext.define('Ung.chart.TimeChartController', {
             colors = me.getViewModel().get('entry.colors') || this.defaultColors;
             */
 
-        this.getView().lookupReference('loader').hide(); // hide chart loader
+        this.getView().setLoading(false);
+        // this.getView().lookupReference('loader').hide(); // hide chart loader
 
 
         if (!timeDataColumns) {
@@ -391,7 +397,8 @@ Ext.define('Ung.chart.TimeChartController', {
     },
 
     onBeginFetchData: function() {
-        this.getView().lookupReference('loader').show();
+        // this.getView().lookupReference('loader').show();
+        this.getView().setLoading(true);
     }
 
 });

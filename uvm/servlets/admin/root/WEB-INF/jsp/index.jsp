@@ -10,11 +10,14 @@
         <script src="/highcharts/highstock.js"></script>
         <script src="/highcharts/highcharts-extra.js"></script>
 
-        <!-- ExtJS lib & theme-->
+        <!-- ExtJS lib & theme -->
         <script src="/ext6.2/ext-all-debug.js"></script>
         <script src="/ext6.2/classic/theme-${extjsTheme}/theme-${extjsTheme}.js"></script>
         <link href="/ext6.2/classic/theme-${extjsTheme}/resources/theme-${extjsTheme}-all.css" rel="stylesheet" />
 
+        <!-- ExtJS ux package -->
+        <script src="/ext6.2/ux-debug.js"></script>
+        <link href="/ext6.2/ux/classic/resources/ux-all.css" rel="stylesheet" />
 
         <%-- Triton theme already contains fontawesome --%>
         <c:if test="${extjsTheme!='triton'}">

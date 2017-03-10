@@ -11,7 +11,6 @@ Ext.define('Ung.chart.PieChart', {
 
     config: {
         widget: null,
-        entry: null
     },
 
     listeners: {
@@ -26,11 +25,5 @@ Ext.define('Ung.chart.PieChart', {
         xtype: 'component',
         reference: 'piechart',
         cls: 'chart'
-    }, {
-        xtype: 'component',
-        reference: 'loader',
-        cls: 'loader',
-        hideMode: 'visibility',
-        html: '<div class="spinner"><div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div></div>'
     }]
 });
