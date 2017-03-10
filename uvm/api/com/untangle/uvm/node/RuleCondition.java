@@ -101,6 +101,20 @@ public class RuleCondition implements JSONString, Serializable
         HTTP_CONTENT_LENGTH, /* "800" "any" */
         HTTP_USER_AGENT, /* "playboy.com" "any" */
         HTTP_USER_AGENT_OS, /* DEPRECATED - uses HTTP_USER_AGENT */
+        HTTP_REQUEST_METHOD, /* GET, PUT, OPTIONS, etc */
+        WEB_FILTER_REQUEST_METHOD, /* DEPRECATED - use  */
+        HTTP_REQUEST_FILE_PATH, /* /some/locaion/somefile.txt */
+        WEB_FILTER_REQUEST_FILE_PATH, /* DEPRECATED - use HTTP_REQUEST_FILE_PATH */
+        HTTP_REQUEST_FILE_NAME, /* somefile.txt */
+        WEB_FILTER_REQUEST_FILE_NAME, /* DEPRECATED - use HTTP_REQUEST_FILE_NAME */
+        HTTP_REQUEST_FILE_EXTENSION, /* txt */
+        WEB_FILTER_REQUEST_FILE_EXTENSION, /* DEPRECATED - use HTTP_REQUEST_FILE_EXTENSION */
+        WEB_FILTER_RESPONSE_CONTENT_TYPE, /* DEPRECATED - use HTTP_CONTENT_TYPE */
+        HTTP_RESPONSE_FILE_NAME, /* somefile.exe */
+        WEB_FILTER_RESPONSE_FILE_NAME, /* DEPRECATED - use HTTP_RESPONSE_FILE_NAME */
+        HTTP_RESPONSE_FILE_EXTENSION, /* zip */
+        WEB_FILTER_RESPONSE_FILE_EXTENSION, /* DEPRECATED - use HTTP_RESPONSE_FILE_EXTENSION */
+
         PROTOCOL_CONTROL_SIGNATURE, /* "Bittorrent" "*" */
         PROTOCOL_CONTROL_CATEGORY, /* "Networking" "*" */
         PROTOCOL_CONTROL_DESCRIPTION, /* "description" "*" */
@@ -115,13 +129,6 @@ public class RuleCondition implements JSONString, Serializable
         WEB_FILTER_CATEGORY, /* "Pornography" or "Porn*" */ 
         WEB_FILTER_CATEGORY_DESCRIPTION, /* *Nudity* */
         WEB_FILTER_FLAGGED, /* boolean */
-        WEB_FILTER_REQUEST_METHOD, /* GET, PUT, OPTIONS, etc */
-        WEB_FILTER_REQUEST_FILE_PATH, /* /some/locaion/somefile.txt */
-        WEB_FILTER_REQUEST_FILE_NAME, /* somefile.txt */
-        WEB_FILTER_REQUEST_FILE_EXTENSION, /* txt */
-        WEB_FILTER_RESPONSE_CONTENT_TYPE, /* video/mp4 */
-        WEB_FILTER_RESPONSE_FILE_NAME, /* somefile.exe */
-        WEB_FILTER_RESPONSE_FILE_EXTENSION, /* zip */
         SSL_INSPECTOR_SNI_HOSTNAME, /* "microsoft.com" */
         SSL_INSPECTOR_SUBJECT_DN, /* "CN=dropbox.com" */
         SSL_INSPECTOR_ISSUER_DN, /* "O=Thawte" */
@@ -386,6 +393,19 @@ public class RuleCondition implements JSONString, Serializable
         case HTTP_HOST:
         case HTTP_REFERER:
         case HTTP_CONTENT_TYPE:
+        case WEB_FILTER_RESPONSE_CONTENT_TYPE:
+        case HTTP_REQUEST_METHOD:
+        case WEB_FILTER_REQUEST_METHOD:
+        case HTTP_REQUEST_FILE_PATH:
+        case WEB_FILTER_REQUEST_FILE_PATH:
+        case HTTP_REQUEST_FILE_NAME:
+        case WEB_FILTER_REQUEST_FILE_NAME:
+        case HTTP_REQUEST_FILE_EXTENSION:
+        case WEB_FILTER_REQUEST_FILE_EXTENSION:
+        case HTTP_RESPONSE_FILE_NAME:
+        case WEB_FILTER_RESPONSE_FILE_NAME:
+        case HTTP_RESPONSE_FILE_EXTENSION:
+        case WEB_FILTER_RESPONSE_FILE_EXTENSION:
         case HTTP_USER_AGENT:
         case HTTP_USER_AGENT_OS:
         case PROTOCOL_CONTROL_SIGNATURE:
@@ -393,13 +413,6 @@ public class RuleCondition implements JSONString, Serializable
         case PROTOCOL_CONTROL_DESCRIPTION:
         case WEB_FILTER_CATEGORY:
         case WEB_FILTER_CATEGORY_DESCRIPTION:
-        case WEB_FILTER_REQUEST_METHOD:
-        case WEB_FILTER_REQUEST_FILE_PATH:
-        case WEB_FILTER_REQUEST_FILE_NAME:
-        case WEB_FILTER_REQUEST_FILE_EXTENSION:
-        case WEB_FILTER_RESPONSE_CONTENT_TYPE:
-        case WEB_FILTER_RESPONSE_FILE_NAME:
-        case WEB_FILTER_RESPONSE_FILE_EXTENSION:
         case APPLICATION_CONTROL_APPLICATION:
         case APPLICATION_CONTROL_CATEGORY:
         case APPLICATION_CONTROL_PROTOCHAIN:
@@ -680,9 +693,40 @@ public class RuleCondition implements JSONString, Serializable
             return globMatcher.isMatch( tmpStr );
 
         case HTTP_CONTENT_TYPE:
+        case WEB_FILTER_RESPONSE_CONTENT_TYPE:
             tmpStr = (String) sess.globalAttachment(NodeSession.KEY_HTTP_CONTENT_TYPE);
             return globMatcher.isMatch( tmpStr );
             
+        case HTTP_REQUEST_METHOD:            
+        case WEB_FILTER_REQUEST_METHOD:            
+            tmpStr = (String) sess.globalAttachment(NodeSession.KEY_HTTP_REQUEST_METHOD);
+            return globMatcher.isMatch( tmpStr );
+
+        case HTTP_REQUEST_FILE_PATH:
+        case WEB_FILTER_REQUEST_FILE_PATH:
+            tmpStr = (String) sess.globalAttachment(NodeSession.KEY_HTTP_REQUEST_FILE_PATH);
+            return globMatcher.isMatch( tmpStr );
+
+        case HTTP_REQUEST_FILE_NAME:
+        case WEB_FILTER_REQUEST_FILE_NAME:
+            tmpStr = (String) sess.globalAttachment(NodeSession.KEY_HTTP_REQUEST_FILE_NAME);
+            return globMatcher.isMatch( tmpStr );
+
+        case HTTP_REQUEST_FILE_EXTENSION:
+        case WEB_FILTER_REQUEST_FILE_EXTENSION:
+            tmpStr = (String) sess.globalAttachment(NodeSession.KEY_HTTP_REQUEST_FILE_EXTENSION);
+            return globMatcher.isMatch( tmpStr );
+
+        case HTTP_RESPONSE_FILE_NAME:
+        case WEB_FILTER_RESPONSE_FILE_NAME:
+            tmpStr = (String) sess.globalAttachment(NodeSession.KEY_HTTP_RESPONSE_FILE_NAME);
+            return globMatcher.isMatch( tmpStr );
+
+        case HTTP_RESPONSE_FILE_EXTENSION:
+        case WEB_FILTER_RESPONSE_FILE_EXTENSION:
+            tmpStr = (String) sess.globalAttachment(NodeSession.KEY_HTTP_RESPONSE_FILE_EXTENSION);
+            return globMatcher.isMatch( tmpStr );
+
         case HTTP_USER_AGENT_OS:
         case HTTP_USER_AGENT:
             hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( sess.getClientAddr() );
@@ -726,34 +770,6 @@ public class RuleCondition implements JSONString, Serializable
             if (flagged == null)
                 return false;
             return flagged.booleanValue();
-
-        case WEB_FILTER_REQUEST_METHOD:            
-            tmpStr = (String) sess.globalAttachment(NodeSession.KEY_WEB_FILTER_REQUEST_METHOD);
-            return globMatcher.isMatch( tmpStr );
-
-        case WEB_FILTER_REQUEST_FILE_PATH:
-            tmpStr = (String) sess.globalAttachment(NodeSession.KEY_WEB_FILTER_REQUEST_FILE_PATH);
-            return globMatcher.isMatch( tmpStr );
-
-        case WEB_FILTER_REQUEST_FILE_NAME:
-            tmpStr = (String) sess.globalAttachment(NodeSession.KEY_WEB_FILTER_REQUEST_FILE_NAME);
-            return globMatcher.isMatch( tmpStr );
-
-        case WEB_FILTER_REQUEST_FILE_EXTENSION:
-            tmpStr = (String) sess.globalAttachment(NodeSession.KEY_WEB_FILTER_REQUEST_FILE_EXTENSION);
-            return globMatcher.isMatch( tmpStr );
-
-        case WEB_FILTER_RESPONSE_CONTENT_TYPE:
-            tmpStr = (String) sess.globalAttachment(NodeSession.KEY_WEB_FILTER_RESPONSE_CONTENT_TYPE);
-            return globMatcher.isMatch( tmpStr );
-
-        case WEB_FILTER_RESPONSE_FILE_NAME:
-            tmpStr = (String) sess.globalAttachment(NodeSession.KEY_WEB_FILTER_RESPONSE_FILE_NAME);
-            return globMatcher.isMatch( tmpStr );
-
-        case WEB_FILTER_RESPONSE_FILE_EXTENSION:
-            tmpStr = (String) sess.globalAttachment(NodeSession.KEY_WEB_FILTER_RESPONSE_FILE_EXTENSION);
-            return globMatcher.isMatch( tmpStr );
 
         case TAGGED:
             for( Tag t : sess.getTags() ) {

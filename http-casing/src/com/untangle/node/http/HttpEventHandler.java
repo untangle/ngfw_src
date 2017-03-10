@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import org.apache.log4j.Logger;
 
@@ -351,6 +353,10 @@ public abstract class HttpEventHandler extends AbstractEventHandler
             state.requestLineToken = (RequestLineToken)token;
             state.requestLineToken = doRequestLine( session, state.requestLineToken );
 
+            String rmethod = state.requestLineToken.getMethod().toString();
+            if (rmethod != null)
+                session.globalAttach(NodeSession.KEY_HTTP_REQUEST_METHOD, rmethod);
+            
             switch ( state.requestMode ) {
             case QUEUEING:
                 state.requestQueue.add( state.requestLineToken );
@@ -395,6 +401,29 @@ public abstract class HttpEventHandler extends AbstractEventHandler
                 session.globalAttach( NodeSession.KEY_HTTP_URI, uri );
                 session.globalAttach( NodeSession.KEY_HTTP_URL, host + uri );
 
+                String fpath = null;
+                String fname = null;
+                String fext = null;
+                int loc;
+                try {
+                    // extract the full file path ignoring all params
+                    fpath = (new URI(uri)).toString();
+
+                    // find the last slash to extract the file name
+                    loc = fpath.lastIndexOf("/");
+                    if (loc != -1) fname = fpath.substring(loc + 1);
+
+                    // find the last dot to extract the file extension
+                    loc = fname.lastIndexOf(".");
+                    if (loc != -1) fext = fname.substring(loc + 1);
+
+                    if (fpath != null) session.globalAttach(NodeSession.KEY_HTTP_REQUEST_FILE_PATH, fpath);
+                    if (fname != null) session.globalAttach(NodeSession.KEY_HTTP_REQUEST_FILE_NAME, fname);
+                    if (fext != null) session.globalAttach(NodeSession.KEY_HTTP_REQUEST_FILE_EXTENSION, fext);
+                } catch (URISyntaxException e) {
+                }
+
+                
                 h = doRequestHeader( session, h );
 
                 host = h.getValue("host");
@@ -600,7 +629,6 @@ public abstract class HttpEventHandler extends AbstractEventHandler
                 String contentType = h.getValue("content-type");
                 if (contentType != null) {
                     session.globalAttach( NodeSession.KEY_HTTP_CONTENT_TYPE, contentType );
-                    session.globalAttach(NodeSession.KEY_WEB_FILTER_RESPONSE_CONTENT_TYPE, contentType);
                 }
                 String contentLength = h.getValue("content-length");
                 if (contentLength != null) {
@@ -611,11 +639,11 @@ public abstract class HttpEventHandler extends AbstractEventHandler
                 }
                 String fileName = findContentDispositionFilename(h);
                 if (fileName != null) {
-                    session.globalAttach(NodeSession.KEY_WEB_FILTER_RESPONSE_FILE_NAME, fileName);
+                    session.globalAttach(NodeSession.KEY_HTTP_RESPONSE_FILE_NAME, fileName);
                     // find the last dot to extract the file extension
                     int loc = fileName.lastIndexOf(".");
                     if (loc != -1)
-                        session.globalAttach(NodeSession.KEY_WEB_FILTER_RESPONSE_FILE_EXTENSION, fileName.substring(loc + 1));
+                        session.globalAttach(NodeSession.KEY_HTTP_RESPONSE_FILE_EXTENSION, fileName.substring(loc + 1));
 
                 }
                 h = doResponseHeader( session, h );

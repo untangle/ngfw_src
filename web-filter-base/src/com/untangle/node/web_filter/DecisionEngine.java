@@ -106,37 +106,6 @@ public abstract class DecisionEngine
             logger.error("Could not parse URI '" + uri + "'", e);
         }
 
-        if (sess != null) {
-            // first we attach the request method
-            String rmethod = requestLine.getMethod().toString();
-            if (rmethod != null) sess.globalAttach(NodeSession.KEY_WEB_FILTER_REQUEST_METHOD, rmethod);
-
-            // start with the URI from the request
-            String furi = uri.toString();
-            String fpath = null;
-            String fname = null;
-            String fext = null;
-            int loc;
-            try {
-                // extract the full file path ignoring all params
-                fpath = (new URI(uri.getPath())).toString();
-
-                // find the last slash to extract the file name
-                loc = fpath.lastIndexOf("/");
-                if (loc != -1) fname = fpath.substring(loc + 1);
-
-                // find the last dot to extract the file extension
-                loc = fname.lastIndexOf(".");
-                if (loc != -1) fext = fname.substring(loc + 1);
-
-                if (fpath != null) sess.globalAttach(NodeSession.KEY_WEB_FILTER_REQUEST_FILE_PATH, fpath);
-                if (fname != null) sess.globalAttach(NodeSession.KEY_WEB_FILTER_REQUEST_FILE_NAME, fname);
-                if (fext != null) sess.globalAttach(NodeSession.KEY_WEB_FILTER_REQUEST_FILE_EXTENSION, fext);
-
-            } catch (URISyntaxException e) {
-            }
-        }
-
         String host = uri.getHost();
         if (null == host) {
             host = header.getValue("host");
