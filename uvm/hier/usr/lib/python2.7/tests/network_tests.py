@@ -929,12 +929,19 @@ class NetworkTests(unittest2.TestCase):
         # Verify interface is found
         if interfaceNotFound:
             raise unittest2.SkipTest("No static enabled interface found")
-        interfaceId = netsettings['interfaces']['list'][i]['interfaceId']
-        interfaceIP = netsettings['interfaces']['list'][i]['v4StaticAddress']
-        interfacePrefix = netsettings['interfaces']['list'][i]['v4StaticPrefix']
+        interface = netsettings['interfaces']['list'][i]
+        interfaceId = interface.get('interfaceId')
+        interfaceIP = interface.get('v4StaticAddress')
+        interfacePrefix = interface.get('v4StaticPrefix')
         interfaceNet = interfaceIP + "/" + str(interfacePrefix)
-        print "using interface: %i %s\n" % (interfaceId, netsettings['interfaces']['list'][i]['name'])
+        print "using interface: %i %s\n" % (interfaceId, interface.get('name'))
         # get next IP not used
+
+        # verify that this NIC is connected (otherwise keepalive wont claim address)
+        result = subprocess.check_output("mii-tool " + interface.get('symbolicDev'), shell=True)
+        if not "link ok" in result:
+            raise unittest2.SkipTest('LAN not connected')
+
         ipStep = 1
         loopCounter = 10
         vrrpIP = None
@@ -955,8 +962,8 @@ class NetworkTests(unittest2.TestCase):
             ip = newip
         if (vrrpIP == None):
             raise unittest2.SkipTest("No IP found for VRRP")
-        # Set VRRP values
 
+        # Set VRRP values
         netsettings['interfaces']['list'][i]['vrrpAliases'] = {
             "javaClass": "java.util.LinkedList",
             "list": [{
