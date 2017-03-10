@@ -329,20 +329,6 @@ public abstract class DecisionEngine
             return null;
         }
 
-        // grab and attach response stuff so it can be used by the filter rules
-        String contentType = header.getValue("content-type");
-        String fileName = HttpEventHandler.findContentDispositionFilename(header);
-        if (sess != null) {
-            if (contentType != null) sess.globalAttach(NodeSession.KEY_WEB_FILTER_RESPONSE_CONTENT_TYPE, contentType);
-            if (fileName != null) {
-                sess.globalAttach(NodeSession.KEY_WEB_FILTER_RESPONSE_FILE_NAME, fileName);
-
-                // find the last dot to extract the file extension
-                int loc = fileName.lastIndexOf(".");
-                if (loc != -1) sess.globalAttach(NodeSession.KEY_WEB_FILTER_RESPONSE_FILE_EXTENSION, fileName.substring(loc + 1));
-            }
-        }
-
         URI uri = null;
         try {
             uri = new URI(requestLine.getRequestUri().normalize().toString().replaceAll("/+", "/"));
@@ -357,7 +343,7 @@ public abstract class DecisionEngine
         if (UrlMatchingUtil.checkSiteList(host, uri.toString(), node.getSettings().getPassedUrls()) != null) return null;
         if (checkUnblockedSites(host, uri, clientIp)) return null;
 
-        logger.debug("checkResponse: " + host + uri + " content: " + contentType);
+        logger.debug("checkResponse: " + host + uri);
 
         // not in any of the block or pass lists so check the filter rules
         WebFilterRule filterRule = checkFilterRules(sess, "RESPONSE");

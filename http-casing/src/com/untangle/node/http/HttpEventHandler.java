@@ -600,6 +600,7 @@ public abstract class HttpEventHandler extends AbstractEventHandler
                 String contentType = h.getValue("content-type");
                 if (contentType != null) {
                     session.globalAttach( NodeSession.KEY_HTTP_CONTENT_TYPE, contentType );
+                    session.globalAttach(NodeSession.KEY_WEB_FILTER_RESPONSE_CONTENT_TYPE, contentType);
                 }
                 String contentLength = h.getValue("content-length");
                 if (contentLength != null) {
@@ -608,7 +609,15 @@ public abstract class HttpEventHandler extends AbstractEventHandler
                         session.globalAttach(NodeSession.KEY_HTTP_CONTENT_LENGTH, contentLengthLong );
                     } catch (NumberFormatException e) { /* ignore it if it doesnt parse */ }
                 }
+                String fileName = findContentDispositionFilename(h);
+                if (fileName != null) {
+                    session.globalAttach(NodeSession.KEY_WEB_FILTER_RESPONSE_FILE_NAME, fileName);
+                    // find the last dot to extract the file extension
+                    int loc = fileName.lastIndexOf(".");
+                    if (loc != -1)
+                        session.globalAttach(NodeSession.KEY_WEB_FILTER_RESPONSE_FILE_EXTENSION, fileName.substring(loc + 1));
 
+                }
                 h = doResponseHeader( session, h );
 
                 switch ( state.responseMode ) {
