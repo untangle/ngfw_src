@@ -330,9 +330,9 @@ while True:
 elapsedTime = time.time() - startTime
     
 # if reports was added earlier, revert to original settings
-if reportsNode != None:
-    print "== UnInstalling untangle-node-reports =="
-    uvmContext.nodeManager().destroy( reportsNode.getNodeSettings()['id'] );
+# if reportsNode != None:
+#     print "== UnInstalling untangle-node-reports =="
+#     uvmContext.nodeManager().destroy( reportsNode.getNodeSettings()['id'] );
 
 print ""
 print "Tests complete. [%.1f seconds]" % elapsedTime
