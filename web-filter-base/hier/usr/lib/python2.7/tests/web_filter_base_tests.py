@@ -84,15 +84,15 @@ class WebFilterBaseTests(unittest2.TestCase):
         rules["list"] = []
         self.node.setFilterRules(rules)
 
-    def get_web_request_results(self, url="http://test.untangle.com", expected=None):
-        extra_opts = ""
+    def get_web_request_results(self, url="http://test.untangle.com", expected=None, extra_options=""):
         node_name = self.node.getAppName()
         if ("https" in url):
-            extra_opts = "--no-check-certificate "
+            extra_options += "--no-check-certificate "
         if ((expected == None) or (("monitor" in node_name) and (expected == "blockpage"))):
-            result = remote_control.run_command("wget -q -O /dev/null -4 -t 2 --timeout=5 " + extra_opts +  url)
+            result = remote_control.run_command("wget -q -O /dev/null -4 -t 2 --timeout=5 " + extra_options + " " +  url)
         else:
-            result = remote_control.run_command("wget -q -O - " + extra_opts + url + " 2>&1 | grep -q " + expected)
+            print "wget -q -O - " + extra_options + url + " 2>&1 | grep -q " + expected
+            result = remote_control.run_command("wget -q -O - " + extra_options + " " + url + " 2>&1 | grep -q " + expected)
         return result
 
     def check_events(self, host="", uri="", blocked=True, flagged=None):
