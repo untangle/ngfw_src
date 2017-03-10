@@ -8,7 +8,7 @@ Ext.define('Ung.apps.webmonitor.view.Categories', {
         xtype: 'tbtext',
         padding: '8 5',
         style: { fontSize: '12px', fontWeight: 600 },
-        html: 'Block or flag access to sites associated with the specified category.'.t()
+        html: 'Flag access to sites associated with the specified category.'.t()
     }],
 
     listProperty: 'settings.categories.list',
@@ -19,12 +19,6 @@ Ext.define('Ung.apps.webmonitor.view.Categories', {
         header: 'Category'.t(),
         width: 200,
         dataIndex: 'name'
-    }, {
-        xtype: 'checkcolumn',
-        width: 55,
-        header: 'Block'.t(),
-        dataIndex: 'blocked',
-        resizable: false
     }, {
         xtype: 'checkcolumn',
         width: 55,

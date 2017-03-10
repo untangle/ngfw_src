@@ -1,8 +1,8 @@
-Ext.define('Ung.apps.webmonitor.view.BlockSites', {
+Ext.define('Ung.apps.webmonitor.view.FlagSites', {
     extend: 'Ung.cmp.Grid',
-    alias:  'widget.app-web-monitor-blocksites',
-    itemId: 'blocksites',
-    title:  'Block Sites'.t(),
+    alias:  'widget.app-web-monitor-flagsites',
+    itemId: 'flagsites',
+    title:  'Flag Sites'.t(),
 
     dockedItems: [{
         xtype: 'toolbar',
@@ -11,7 +11,7 @@ Ext.define('Ung.apps.webmonitor.view.BlockSites', {
             xtype: 'tbtext',
             padding: '8 5',
             style: { fontSize: '12px', fontWeight: 600 },
-            html: 'Block or flag access to sites associated with the specified category.'.t()
+            html: 'Flag access to specific sites.'.t()
         }]
     }, {
         xtype: 'toolbar',
@@ -24,7 +24,7 @@ Ext.define('Ung.apps.webmonitor.view.BlockSites', {
     listProperty: 'settings.blockedUrls.list',
     emptyRow: {
         string: '',
-        blocked: true,
+        blocked: false,
         flagged: true,
         description: '',
         javaClass: 'com.untangle.uvm.node.GenericRule'
@@ -42,12 +42,6 @@ Ext.define('Ung.apps.webmonitor.view.BlockSites', {
             allowBlank: false,
             validator: Util.urlValidator
         }
-    }, {
-        xtype: 'checkcolumn',
-        width: 55,
-        header: 'Block'.t(),
-        dataIndex: 'blocked',
-        resizable: false
     }, {
         xtype: 'checkcolumn',
         width: 55,
@@ -73,10 +67,6 @@ Ext.define('Ung.apps.webmonitor.view.BlockSites', {
         allowBlank: false,
         width: 400,
         validator: Util.urlValidator
-    }, {
-        xtype: 'checkbox',
-        bind: '{record.blocked}',
-        fieldLabel: 'Block'.t()
     }, {
         xtype: 'checkbox',
         bind: '{record.flagged}',
