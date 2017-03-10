@@ -1101,6 +1101,131 @@ class WebFilterTests(WebFilterBaseTests):
         result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
         self.rules_clear()
         assert (result == 0)
+
+    def test_010_0000_rule_condition_web_filter_category(self):
+        "test WEB_FILTER_CATEGORY"
+        self.rule_add("WEB_FILTER_CATEGORY","Pornography")
+        result = self.get_web_request_results(url="http://playboy.com", expected="blockpage")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_web_filter_category_inverse(self):
+        "test WEB_FILTER_CATEGORY inverse"
+        self.rule_add("WEB_FILTER_CATEGORY","xyznevermatch")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_web_filter_category(self):
+        "test WEB_FILTER_CATEGORY_DESCRIPTION"
+        self.rule_add("WEB_FILTER_CATEGORY_DESCRIPTION","*sexual*")
+        result = self.get_web_request_results(url="http://playboy.com", expected="blockpage")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_web_filter_category_inverse(self):
+        "test WEB_FILTER_CATEGORY_DESCRIPTION"
+        self.rule_add("WEB_FILTER_CATEGORY_DESCRIPTION","xyznevermatch")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
+        self.rules_clear()
+
+    def test_010_0000_rule_condition_web_filter_request_method(self):
+        "test WEB_FILTER_REQUEST_METHOD"
+        self.rule_add("WEB_FILTER_REQUEST_METHOD","GET")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_web_filter_request_method_inverse(self):
+        "test WEB_FILTER_REQUEST_METHOD inverse"
+        self.rule_add("WEB_FILTER_REQUEST_METHOD","OPTIONS")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_web_filter_request_file_path(self):
+        "test WEB_FILTER_REQUEST_FILE_PATH"
+        self.rule_add("WEB_FILTER_REQUEST_FILE_PATH","*test*")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_web_filter_request_file_path_inverse(self):
+        "test WEB_FILTER_REQUEST_FILE_PATH inverse"
+        self.rule_add("WEB_FILTER_REQUEST_FILE_PATH","*untangle*")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_web_filter_request_file_name(self):
+        "test WEB_FILTER_REQUEST_FILE_NAME"
+        self.rule_add("WEB_FILTER_REQUEST_FILE_NAME","*testPage*")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_web_filter_request_file_name_inverse(self):
+        "test WEB_FILTER_REQUEST_FILE_NAME inverse"
+        self.rule_add("WEB_FILTER_REQUEST_FILE_NAME","*test/*")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_web_filter_request_file_extension(self):
+        "test WEB_FILTER_REQUEST_FILE_EXTENSION"
+        self.rule_add("WEB_FILTER_REQUEST_FILE_EXTENSION","html")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_web_filter_request_file_extension_inverse(self):
+        "test WEB_FILTER_REQUEST_FILE_EXTENSION inverse"
+        self.rule_add("WEB_FILTER_REQUEST_FILE_EXTENSION","*testPage*")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_web_filter_response_content_type(self):
+        "test WEB_FILTER_RESPONSE_CONTENT_TYPE"
+        self.rule_add("WEB_FILTER_RESPONSE_CONTENT_TYPE","*html*")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_web_filter_response_content_type_inverse(self):
+        "test WEB_FILTER_RESPONSE_CONTENT_TYPE inverse"
+        self.rule_add("WEB_FILTER_RESPONSE_CONTENT_TYPE","*pdf*")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_web_filter_response_file_name(self):
+        "test WEB_FILTER_RESPONSE_FILE_NAME"
+        self.rule_add("WEB_FILTER_RESPONSE_FILE_NAME","*zip*")
+        result = self.get_web_request_results(url="http://test.untangle.com/download.php?file=5MB.zip", expected="blockpage")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_web_filter_response_file_name_inverse(self):
+        "test WEB_FILTER_RESPONSE_FILE_NAME inverse"
+        self.rule_add("WEB_FILTER_RESPONSE_FILE_NAME","*test/*")
+        result = self.get_web_request_results(url="http://test.untangle.com/download.php?file=testPage1.html", expected="text123")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_web_filter_response_file_extension(self):
+        "test WEB_FILTER_RESPONSE_FILE_EXTENSION"
+        self.rule_add("WEB_FILTER_RESPONSE_FILE_EXTENSION","zip")
+        result = self.get_web_request_results(url="http://test.untangle.com/download.php?file=5MB.zip", expected="blockpage")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_web_filter_response_file_extension_inverse(self):
+        "test WEB_FILTER_RESPONSE_FILE_EXTENSION inverse"
+        self.rule_add("WEB_FILTER_RESPONSE_FILE_EXTENSION","zip")
+        result = self.get_web_request_results(url="http://test.untangle.com/download.php?file=testPage1.html", expected="text123")
+        self.rules_clear()
+        assert (result == 0)
         
     @staticmethod
     def finalTearDown(self):
