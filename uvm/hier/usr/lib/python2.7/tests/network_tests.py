@@ -466,6 +466,7 @@ class NetworkTests(unittest2.TestCase):
                 run_ftp_inbound_tests = False
 
     def setUp(self):
+        print
         pass
 
     def test_010_clientIsOnline(self):
@@ -913,6 +914,7 @@ class NetworkTests(unittest2.TestCase):
 
     # Test VRRP is active
     def test_110_VRRP(self):
+        "Test that a VRRP alias is pingable"
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
         netsettings = uvmContext.networkManager().getNetworkSettings()
@@ -927,9 +929,11 @@ class NetworkTests(unittest2.TestCase):
         # Verify interface is found
         if interfaceNotFound:
             raise unittest2.SkipTest("No static enabled interface found")
+        interfaceId = netsettings['interfaces']['list'][i]['interfaceId']
         interfaceIP = netsettings['interfaces']['list'][i]['v4StaticAddress']
         interfacePrefix = netsettings['interfaces']['list'][i]['v4StaticPrefix']
         interfaceNet = interfaceIP + "/" + str(interfacePrefix)
+        print "using interface: %i %s\n" % (interfaceId, netsettings['interfaces']['list'][i]['name'])
         # get next IP not used
         ipStep = 1
         loopCounter = 10
@@ -965,19 +969,18 @@ class NetworkTests(unittest2.TestCase):
         netsettings['interfaces']['list'][i]['vrrpId'] = 2
         netsettings['interfaces']['list'][i]['vrrpPriority'] = 1
         uvmContext.networkManager().setNetworkSettings(netsettings)
-        timeout = 12
-        pingResult = 1
-        onlineResults = 1
-        while timeout > 0 and (pingResult != 0 or onlineResults != 0):
-            time.sleep(10) # wait for settings to take affect
-            timeout -= 1
-            # Test that the VRRP is pingable
+
+        for x in range(3):
             pingResult = remote_control.run_command("ping -c 1 %s" % str(vrrpIP))
-            # check if still online
-            onlineResults = remote_control.is_online()
-        print "Timeout: %d" % timeout
+            if pingResult == 0:
+                break
+        isMaster = uvmContext.networkManager().isVrrpMaster(interfaceId)
+        onlineResults = remote_control.is_online()
+
         # Return to default network state
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+
+        assert (isMaster)
         assert (pingResult == 0)
         assert (onlineResults == 0)
 
