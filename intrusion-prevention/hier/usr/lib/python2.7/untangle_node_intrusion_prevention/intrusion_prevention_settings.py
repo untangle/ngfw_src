@@ -41,7 +41,7 @@ class IntrusionPreventionSettings:
     
     def __init__(self, node_id):
         self.node_id = node_id
-        self.file_name = "/usr/share/untangle/settings/untangle-node-intrusion-prevention/settings_" + self.node_id + ".js"
+        self.file_name = "@PREFIX@/usr/share/untangle/settings/untangle-node-intrusion-prevention/settings_" + self.node_id + ".js"
             
         self.rules = SnortRules(node_id)
         self.settings = {}
