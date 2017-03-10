@@ -11,7 +11,7 @@ Ext.define('Ung.apps.webmonitor.view.Rules', {
             xtype: 'tbtext',
             padding: '8 5',
             style: { fontSize: '12px', fontWeight: 600 },
-            html: 'Web Filter rules allow creating flexible block and pass conditions.'.t()
+            html: 'Web Monitor rules allow creating flexible flag and pass conditions.'.t()
         }]
     }, {
         xtype: 'toolbar',
@@ -52,7 +52,6 @@ Ext.define('Ung.apps.webmonitor.view.Rules', {
         Column.ruleId,
         Column.enabled,
         Column.flagged,
-        Column.blocked,
         Column.description,
         Column.conditions
     ],
@@ -61,7 +60,6 @@ Ext.define('Ung.apps.webmonitor.view.Rules', {
         Field.description,
         Field.conditions,
         Field.flagged,
-        Field.blocked
     ]
 
 });

@@ -11,7 +11,7 @@ Ext.define('Ung.apps.webmonitor.view.PassSites', {
             xtype: 'tbtext',
             padding: '8 5',
             style: { fontSize: '12px', fontWeight: 600 },
-            html: 'Allow access to the specified site regardless of matching block policies.'.t()
+            html: 'Allow unflagged access to the specified site regardless of matching policies.'.t()
         }]
     }, {
         xtype: 'toolbar',

@@ -16,7 +16,7 @@ Ext.define('Ung.apps.webmonitor.Main', {
     items: [
         { xtype: 'app-web-monitor-status' },
         { xtype: 'app-web-monitor-categories' },
-        { xtype: 'app-web-monitor-blocksites' },
+        { xtype: 'app-web-monitor-flagsites' },
         { xtype: 'app-web-monitor-passsites' },
         { xtype: 'app-web-monitor-passclients' },
         { xtype: 'app-web-monitor-rules' },
