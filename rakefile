@@ -22,7 +22,6 @@ task :uvm_clean do
   Kernel.system("if [ -f /var/run/uvm.pid ] && [ -f /proc/`cat /var/run/uvm.pid`/cmdline ] && grep -q #{SRC_HOME} /proc/`cat /var/run/uvm.pid`/cmdline ; then #{SRC_HOME}/dist/etc/init.d/untangle-vm stop ; fi")
   Kernel.system("if [ -f /var/run/uvm.pid ] && [ -f /proc/`cat /var/run/uvm.pid`/cmdline ] && grep -q #{SRC_HOME} /proc/`cat /var/run/uvm.pid`/cmdline ; then echo 'Killing UVM...' ; killall uvm ; fi")
   # change symlinks back to original
-  Kernel.system('if [ -L /usr/share/untangle/settings ] && [ -d /usr/share/untangle/settings.backup ] ; then sudo rm -f /usr/share/untangle/settings && sudo mv /usr/share/untangle/settings.backup /usr/share/untangle/settings ; fi')
   Kernel.system('if [ -L /usr/share/untangle/bin ] && [ -d /usr/share/untangle/bin.backup ] ; then sudo rm -f /usr/share/untangle/bin && sudo mv /usr/share/untangle/bin.backup /usr/share/untangle/bin ; fi')
   # remove apache file
   if File.exist?("/etc/apache2/uvm-dev.conf")
