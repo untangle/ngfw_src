@@ -163,7 +163,7 @@ class UvmTests(unittest2.TestCase):
 
         nodeDataSP = nodeSP.getSmtpNodeSettings()
         nodeSP.setSmtpNodeSettingsWithoutSafelists(nodeDataSP)
-        uvmContext.mailSender().send_test_email("test@example.com")
+        uvmContext.mailSender().sendTestMessage("test@example.com")
         time.sleep(2)
         # force exim to flush queue
         subprocess.call(["exim -qff >/dev/null 2>&1"],shell=True,stdout=None,stderr=None)
