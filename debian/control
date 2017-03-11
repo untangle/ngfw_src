@@ -8,7 +8,7 @@ Standards-Version: 3.8.0
 
 Package: untangle-libuvmcore
 Architecture: any
-Depends: ${misc:Depends}, libc6 (>= 2.3.2), libnetfilter-queue1 (>= 1.0.2+20141023+git329468), libnetfilter-conntrack3 (>= 1.0.4), gawk
+Depends: ${misc:Depends}, libc6 (>= 2.3.2), libnetfilter-queue1 (>= 1.0.2+20141023+git329468), libnetfilter-conntrack3 (>= 1.0.4), gawk, libsnmp-dev
 Description: Untangle Core Library
  Untangle Core Library files.
 
