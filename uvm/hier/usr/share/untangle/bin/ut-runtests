@@ -26,7 +26,7 @@ uvmContext = uvm.Uvm().getUvmContext()
 
 class ArgumentParser(object):
     def __init__(self):
-        self.clientIP = None
+        self.clientIP = "192.0.2.2"
         self.hostUsername = None
         self.hostKeyFile = None
         self.verbosity = 2 # changed to default 2 because jcoffin
@@ -39,7 +39,7 @@ class ArgumentParser(object):
         self.suitesToExclude = []
         self.testsToRun = ['all']
         self.testsToExclude = []
-        self.timedTests = False
+        self.timedTests = True
         self.quickTestsOnly = False
 
     def set_clientIP( self, arg ):
