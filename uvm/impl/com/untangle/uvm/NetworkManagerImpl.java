@@ -964,6 +964,10 @@ public class NetworkManagerImpl implements NetworkManager
                 throw new RuntimeException("Missing V4 Config Type");
         }
 
+        if ( networkSettings.getHttpsPort() == networkSettings.getHttpPort() ) {
+            throw new RuntimeException("HTTP and HTTPS services can not use the same port.");
+        }
+
         /**
          * Check that no two statically configured interfaces have the same masked address.
          * For example, don't let people put 192.168.1.100/24 on external and 192.168.1.101/24 on internal
