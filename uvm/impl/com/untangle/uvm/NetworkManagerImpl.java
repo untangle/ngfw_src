@@ -149,6 +149,7 @@ public class NetworkManagerImpl implements NetworkManager
             if ( this.networkSettings.getVersion() < 5 ) {
                 convertSettingsV5();
             }
+
             logger.debug( "Loading Settings: " + this.networkSettings.toJSONString() );
         }
 
@@ -1474,6 +1475,7 @@ public class NetworkManagerImpl implements NetworkManager
         qosSettings.setDnsPriority( 1 );
         qosSettings.setSshPriority( 0 );
         qosSettings.setOpenvpnPriority( 0 );
+        qosSettings.setQueueDiscipline( "fq_codel" );
 
         List<QosRule> qosRules = new LinkedList<QosRule>();
 
