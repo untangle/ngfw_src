@@ -205,6 +205,7 @@ def runTestSuite(suite):
         print test_name + " end   [" + time.strftime("%Y-%m-%dT%H:%m:%S") + "]"
         print "="*70
         sys.stdout.flush
+        global_functions.set_previous_test_name( test_name )
         
         if (parser.timedTests):
             testElapsedTime = time.time() - testStartTime

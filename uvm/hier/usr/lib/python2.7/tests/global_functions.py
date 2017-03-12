@@ -365,6 +365,14 @@ def set_test_start_time():
     global test_start_time
     test_start_time = datetime.datetime.now()
 
+def set_previous_test_name( name ):
+    global previous_test_name
+    previous_test_name = name
+
+def get_previous_test_name():
+    global previous_test_name
+    return previous_test_name
+    
 def host_username_set(username):
     entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
     entry['usernameDirectoryConnector'] = username

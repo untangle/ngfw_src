@@ -17,6 +17,8 @@ import org.json.JSONString;
 @SuppressWarnings("serial")
 public class QosSettings implements Serializable, JSONString
 {
+    private String queueDiscipline = "sfq";
+
     private boolean qosEnabled = false;
 
     private int defaultPriority = 3;
@@ -29,6 +31,9 @@ public class QosSettings implements Serializable, JSONString
     private List<QosPriority> qosPriorities = new LinkedList<QosPriority>();
 
     private List<QosRule> qosRules = new LinkedList<QosRule>();
+
+    public String getQueueDiscipline() { return this.queueDiscipline; }
+    public void setQueueDiscipline( String newValue ) { this.queueDiscipline = newValue; }
 
     public boolean getQosEnabled() { return this.qosEnabled; }
     public void setQosEnabled( boolean newValue ) { this.qosEnabled = newValue; }
