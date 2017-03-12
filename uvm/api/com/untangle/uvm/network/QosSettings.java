@@ -17,7 +17,7 @@ import org.json.JSONString;
 @SuppressWarnings("serial")
 public class QosSettings implements Serializable, JSONString
 {
-    private String queueDiscipline = "sfq";
+    private String queueDiscipline = "fq_codel";
 
     private boolean qosEnabled = false;
 
