@@ -4,7 +4,7 @@ Ext.define('Ung.config.events.view.Alerts', {
 
     title: 'Alerts'.t(),
 
-    layout: 'border',
+    bodyPadding: 10,
 
     items: [{
         xtype: 'ungrid',

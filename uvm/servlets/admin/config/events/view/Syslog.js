@@ -4,13 +4,10 @@ Ext.define('Ung.config.events.view.Syslog', {
 
     title: 'Syslog'.t(),
 
-    // bodyPadding: 10,
+    bodyPadding: 10,
 
     items:[{
         title: 'Remote Syslog Configuration'.t(),
-        defaults:{
-            margin: '0 10 10 10'
-        },
         items: [{
             xtype: 'component',
             html: 'If enabled logged events will be sent in real-time to a remote syslog for custom processing.'.t()
@@ -25,46 +22,6 @@ Ext.define('Ung.config.events.view.Syslog', {
                     ck.setValue(false);
                 }
             }
-            // xtype: 'radio',
-            // boxLabel: Ext.String.format('{0}Disable{1} Syslog Events. (This is the default setting.)'.t(), '<b>', '</b>'),
-            // hideLabel: true,
-            // name: 'syslogEnabled',
-            // checked: !this.getEventSettings().syslogEnabled,
-            // listeners: {
-            //     "change": {
-            //         fn: Ext.bind( function(elem, checked) {
-            //             this.getEventSettings().syslogEnabled = !checked;
-            //             if (checked) {
-            //                 this.panelSyslog.down("textfield[name=syslogHost]").disable();
-            //                 this.panelSyslog.down("numberfield[name=syslogPort]").disable();
-            //                 this.panelSyslog.down("combo[name=syslogProtocol]").disable();
-            //                 this.panelSyslog.down("component[name=syslogEventsSummary]").setVisible(false);
-            //                 this.panelSyslog.down("[name=syslogRules]").disable();
-            //             }
-            //         }, this)
-            //     }
-            // }
-        // },{
-        //     xtype: 'radio',
-        //     boxLabel: Ext.String.format(i18n._('{0}Enable{1} Syslog Events.'), '<b>', '</b>'),
-        //     hideLabel: true,
-        //     name: 'syslogEnabled',
-        //     checked: this.getEventSettings().syslogEnabled,
-        //     listeners: {
-        //         "change": {
-        //             fn: Ext.bind( function(elem, checked) {
-        //                 this.getEventSettings().syslogEnabled = checked;
-        //                 if (checked) {
-        //                     this.panelSyslog.down("textfield[name=syslogHost]").enable();
-        //                     this.panelSyslog.down("numberfield[name=syslogPort]").enable();
-        //                     this.panelSyslog.down("combo[name=syslogProtocol]").enable();
-        //                     this.panelSyslog.down("component[name=syslogEventsSummary]").setVisible(true);
-        //                     this.panelSyslog.down("component[name=syslogRules]").enable();
-        //                 }
-        //             }, this)
-        //         }
-        //     }
-        // }, {
         }, {
             xtype:'fieldset',
             collapsible: false,
