@@ -449,7 +449,26 @@ Ext.define('Ung.util.Util', {
             return 'Invalid URL specified'.t();
         }
         return true;
-    }
+    },
+
+    getStoreUrl: function(){
+        // non API store URL used for links like: My Account, Forgot Password
+        return rpc.storeUrl.replace('/api/v1', '/store/open.php');
+    },
+
+    getAbout: function (forceReload) {
+        if (rpc.about === undefined) {
+            var query = "";
+            query = query + "uid=" + rpc.serverUID;
+            query = query + "&" + "version=" + rpc.fullVersion;
+            query = query + "&" + "webui=true";
+            query = query + "&" + "lang=" + rpc.languageSettings.language;
+            query = query + "&" + "applianceModel=" + rpc.applianceModel;
+
+            rpc.about = query;
+        }
+        return rpc.about;
+    },
 
 
 });
