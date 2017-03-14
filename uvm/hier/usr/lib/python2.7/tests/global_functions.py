@@ -266,11 +266,11 @@ def is_bridged(wanIP):
     return False
     
 def send_test_email(mailhost=testServerHost):
-    sender = 'test@example.com'
-    receivers = ['qa@example.com']
+    sender = 'atstest@test.untangle.com'
+    receivers = ['atstest@test.untangle.com']
 
-    message = """From: Test <test@example.com>
-    To: Test Group <qa@example.com>
+    message = """From: Test <atstest@test.untangle.com>
+    To: Test Group <atstest@test.untangle.com>
     Subject: SMTP e-mail test
 
     This is a test e-mail message.
