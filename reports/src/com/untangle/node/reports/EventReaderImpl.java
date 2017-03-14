@@ -190,7 +190,7 @@ public class EventReaderImpl
         if (limit > 0) {
             String tmpStr = queryStr.toLowerCase();
             int limitIndex   = tmpStr.indexOf("limit");
-            if ( limit < 0 ) 
+            if ( limitIndex < 0 )
                 queryStr += " LIMIT " + limit + " ";
         }
 
