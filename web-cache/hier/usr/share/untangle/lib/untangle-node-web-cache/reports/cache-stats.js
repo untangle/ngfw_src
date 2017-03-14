@@ -20,7 +20,7 @@
         "#8c0000"
     ],
     "timeDataInterval": "AUTO",
-    "timeStyle": "BAR_3D_OVERLAPPED",
+    "timeStyle": "BAR_OVERLAPPED",
     "title": "Cache Hit/Miss Statistics",
     "type": "TIME_GRAPH"
 }

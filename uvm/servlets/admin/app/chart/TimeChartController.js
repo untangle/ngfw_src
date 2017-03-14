@@ -13,9 +13,9 @@ Ext.define('Ung.chart.TimeChartController', {
         'AREA': { styleType: 'areaspline' },
         'AREA_STACKED': {styleType: 'areaspline', stacking: true },
         'BAR': {styleType: 'column', grouping: true },
-        'BAR_3D': {styleType: 'column', grouping: true },
+        'BAR': {styleType: 'column', grouping: true },
         'BAR_OVERLAPPED': {styleType: 'column', overlapped: true },
-        'BAR_3D_OVERLAPPED': {styleType: 'column', overlapped: true },
+        'BAR_OVERLAPPED': {styleType: 'column', overlapped: true },
         'BAR_STACKED': {styleType: 'column', stacking: true }
     },
     init: function () {
@@ -32,9 +32,9 @@ Ext.define('Ung.chart.TimeChartController', {
             type = 'areaspline';
             break;
         case 'BAR':
-        case 'BAR_3D':
+        case 'BAR':
         case 'BAR_OVERLAPPED':
-        case 'BAR_3D_OVERLAPPED':
+        case 'BAR_OVERLAPPED':
         case 'BAR_STACKED':
             console.log('here');
             type = 'column';

@@ -181,8 +181,8 @@ Ext.define('Ung.view.reports.Entry', {
                             {text: 'Area'.t(), value: 'AREA', styleType: 'areaspline'},
                             {text: 'Stacked Area'.t(), value: 'AREA_STACKED', styleType: 'areaspline', stacked: true},
                             {text: 'Column'.t(), value: 'BAR', styleType: 'column', grouped: true},
-                            {text: 'Bar 3D'.t(), value: 'BAR_3D', styleType: 'column', grouped: true},
-                            {text: 'Bar 3D Overlapped'.t(), value: 'BAR_3D_OVERLAPPED', styleType: 'column', grouped: true},
+                            {text: 'Bar 3D'.t(), value: 'BAR', styleType: 'column', grouped: true},
+                            {text: 'Bar 3D Overlapped'.t(), value: 'BAR_OVERLAPPED', styleType: 'column', grouped: true},
                             {text: 'Overlapped Columns'.t(), value: 'BAR_OVERLAPPED', styleType: 'column', overlapped: true},
                             {text: 'Stacked Columns'.t(), value: 'BAR_STACKED', styleType: 'column', stacked : true}
                         ],

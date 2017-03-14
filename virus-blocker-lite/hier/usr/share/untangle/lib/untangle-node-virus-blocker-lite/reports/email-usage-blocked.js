@@ -24,7 +24,7 @@
         "#8c0000"
     ],
     "timeDataInterval": "AUTO",
-    "timeStyle": "BAR_3D_OVERLAPPED",
+    "timeStyle": "BAR_OVERLAPPED",
     "title": "Email Usage (blocked)",
     "type": "TIME_GRAPH"
 }
