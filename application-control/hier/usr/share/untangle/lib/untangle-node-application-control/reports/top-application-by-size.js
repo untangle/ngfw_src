@@ -9,9 +9,9 @@
     "orderDesc": true,
     "units": "bytes",
     "pieGroupColumn": "application_control_application",
-    "pieSumColumn": "coalesce(sum(p2c_bytes)+sum(p2s_bytes),0)",
+    "pieSumColumn": "coalesce(sum(s2c_bytes)+sum(c2s_bytes),0)",
     "readOnly": true,
-    "table": "sessions",
+    "table": "session_minutes",
     "conditions": [
         {
             "javaClass": "com.untangle.node.reports.SqlCondition",
