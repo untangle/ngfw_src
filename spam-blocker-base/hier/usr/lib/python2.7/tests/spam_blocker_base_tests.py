@@ -239,7 +239,6 @@ class SpamBlockerBaseTests(unittest2.TestCase):
                 emailFound = True
                 
         # Either found email file or timed out so kill mail sink
-        # remote_control.run_command("sudo pkill -INT python",host=fakeSmtpServerHost)
         nodeData['smtpConfig']['msgAction'] = "QUARANTINE"
         node.setSettings(nodeData)
         assert (timeout != 0)
