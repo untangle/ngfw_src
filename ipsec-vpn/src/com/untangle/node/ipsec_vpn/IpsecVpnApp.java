@@ -109,7 +109,7 @@ public class IpsecVpnApp extends NodeBase
         tmp.setConntype("tunnel");
         tmp.setDescription("Example 1");
         tmp.setSecret("NOTICEhowWEuseAniceLONGstringINthisEXAMPLEwhichWILLbeMUCHmoreSECUREthanAsingleWORD");
-        tmp.setRunmode("Start");
+        tmp.setRunmode("start");
         tmp.setLeft("198.51.100.1");
         tmp.setLeftSubnet("192.168.101.0/24");
         tmp.setRight("203.0.113.1");
@@ -122,7 +122,7 @@ public class IpsecVpnApp extends NodeBase
         tmp.setConntype("tunnel");
         tmp.setDescription("Example 2");
         tmp.setSecret("thisISanotherGREATexampleOFaPREsharedSECRETthatISveryLONGandTHUSreasonablySECURE");
-        tmp.setRunmode("Start");
+        tmp.setRunmode("start");
         tmp.setLeft("198.51.100.1");
         tmp.setLeftSubnet("10.10.0.0/16");
         tmp.setRight("203.0.113.1");
