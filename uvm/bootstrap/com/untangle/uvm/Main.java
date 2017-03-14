@@ -162,7 +162,7 @@ public class Main
         File uvmLibDir = new File(System.getProperty("uvm.lib.dir"));
         for (File f : uvmLibDir.listFiles()) {
             // exclude plugins directory - the PluginManager only loads classes from there
-            if (f.toString().contains("/plugins/"))
+            if (f.toString().contains("/plugins"))
                 continue;
             URL url = f.toURI().toURL();
             urls.add(url);
