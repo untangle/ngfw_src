@@ -3,8 +3,14 @@ Ext.define('Ung.apps.ipsecvpn.MainController', {
     alias: 'controller.app-ipsec-vpn',
 
     control: {
+        '#': {
+            afterrender: 'getSettings'
+        },
         '#status': {
             beforerender: 'onStatusBeforeRender'
+        },
+        '#ipsectunnels': {
+            beforerender: 'calculateNetworks'
         }
     },
 
@@ -77,5 +83,69 @@ Ext.define('Ung.apps.ipsecvpn.MainController', {
             Util.successToast('Settings saved');
             me.getSettings();
         }, vm.get('settings'));
+    },
+
+    calculateNetworks: function() {
+        var leftDefault = "0.0.0.0";
+        var leftSubnetDefault = "0.0.0.0/0";
+        var wanList = [];
+        var x,y;
+
+        // we need the interface list and the status list so we can get the IP address of active interfaces
+        var netSettings = rpc.networkManager.getNetworkSettings();
+        var intStatus = rpc.networkManager.getInterfaceStatus();
+
+        wanList.push(['', '- ' + 'Custom'.t() + ' -']);
+
+        // build the list of active WAN networks for the interface combo box and set the defaults for left and leftSubnet
+        for( x = 0 ; x <  netSettings.interfaces.list.length ; x++ )
+        {
+            var device = netSettings.interfaces.list[x];
+
+            if (! device.interfaceId) continue;
+            if (device.disabled) continue;
+
+            for( y = 0 ; y < intStatus.list.length ; y++ )
+            {
+                var status = intStatus.list[y];
+
+                if (! status.v4Address) continue;
+                if (! status.interfaceId) continue;
+                if (device.interfaceId != status.interfaceId) continue;
+
+                // found a WAN device
+                if (device.isWan)
+                {
+                    // add the address and name to the WAN list
+                    wanList.push([ status.v4Address, device.name]);
+
+                    // save the first WAN address to use as the default for new tunnels
+                    if (leftDefault == "0.0.0.0") leftDefault = status.v4Address;
+                }
+
+                // found a LAN devices
+                else
+                {
+                    // save the first LAN address to use as the default for new tunnels
+                    if (leftSubnetDefault == "0.0.0.0/0") leftSubnetDefault = (status.v4Address + "/" + status.v4PrefixLength)
+                }
+            }
+        }
+
+    Ung.apps.ipsecvpn.Data.leftDefault = leftDefault;
+    Ung.apps.ipsecvpn.Data.leftSubnetDefault = leftSubnetDefault
+    Ung.apps.ipsecvpn.Data.wanList = wanList;
+    },
+
+    configureAuthTarget: function (btn)
+    {
+        var vm = this.getViewModel(),
+        policyId = vm.get('policyId');
+
+        switch (this.getViewModel().get('settings.authenticationType')) {
+        case 'LOCAL_DIRECTORY': Ung.app.redirectTo('#config/localdirectory'); break;
+        case 'RADIUS': Ung.app.redirectTo('#apps/' + policyId + '/directoryconnector/radius'); break;
+        default: return;
+        }
     }
 });
