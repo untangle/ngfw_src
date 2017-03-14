@@ -8,6 +8,8 @@ import fcntl
 import struct
 import commands
 import datetime
+import random
+import string
 
 import remote_control
 import ipaddr
@@ -34,11 +36,10 @@ vpnServerVpnLanIP = "192.168.235.96"
 # special box with testshell in the sudoer group  - used to connect to vpn as client
 vpnClientVpnIP = "10.111.5.20"  
 
-smtpServerHost = 'test.untangle.com'
-tlsSmtpServerHost = '10.112.56.44'  # Vcenter VM Debian-ATS-TLS 
+testServerHost = 'test.untangle.com'
 # DNS MX record on 10.111.56.57 for domains untangletestvm.com and untangletest.com
-listFakeSmtpServerHosts = [('10.111.5.20','16','untangletest.com'),# Office network
-                            ('10.112.56.30','16','untangletestvm.com')]# ATS VM
+listSyslogServerHosts = [('10.111.5.20','16'),# Office network
+                            ('10.112.56.30','16')]# ATS VM
 
 accountFileServer = "10.112.56.44"
 accountFile = "/tmp/account_login.json"
@@ -88,18 +89,18 @@ def verify_iperf_configuration(wanIP):
         return False
     return True
 
-def find_smtp_server(wan_IP):
+def find_syslog_server(wan_IP):
     smtp_IP = ""
     smtp_domain = "";
     match = False
-    for smtpServerHostIP in listFakeSmtpServerHosts:
-        interfaceNet = smtpServerHostIP[0] + "/" + str(smtpServerHostIP[1])
+    for syslogerverHostIP in listSyslogServerHosts:
+        interfaceNet = syslogerverHostIP[0] + "/" + str(syslogerverHostIP[1])
         if ipaddr.IPAddress(wan_IP) in ipaddr.IPv4Network(interfaceNet):
             match = True
             break
 
         # Verify that it will pass through our WAN network
-        result = subprocess.check_output("traceroute -n -w 1 -q 1 " + smtpServerHostIP[0], shell=True)
+        result = subprocess.check_output("traceroute -n -w 1 -q 1 " + syslogerverHostIP[0], shell=True)
         space_split = result.split("\n")[1].strip().split()
         if len(space_split) > 1:
             try:
@@ -110,10 +111,9 @@ def find_smtp_server(wan_IP):
                 continue
 
     if match is True:
-        smtp_IP = smtpServerHostIP[0]
-        smtp_domain = smtpServerHostIP[2]
+        syslog_IP = syslogerverHostIP[0]
 
-    return smtp_IP,smtp_domain
+    return syslog_IP
 
 def get_udp_download_speed( receiverIP, senderIP, targetIP=None, targetRate=None ):
     if targetIP == None:
@@ -265,7 +265,7 @@ def is_bridged(wanIP):
         return True
     return False
     
-def send_test_email(mailhost=smtpServerHost):
+def send_test_email(mailhost=testServerHost):
     sender = 'test@example.com'
     receivers = ['qa@example.com']
 
@@ -372,7 +372,7 @@ def set_previous_test_name( name ):
 def get_previous_test_name():
     global previous_test_name
     return previous_test_name
-    
+  
 def host_username_set(username):
     entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
     entry['usernameDirectoryConnector'] = username
@@ -432,6 +432,9 @@ def user_quota_clear(username):
 
 def user_quota_give(username, bytes_size, seconds):
     uvmContext.userTable().giveUserQuota( username, bytes_size, seconds, "test" )
+    
+def random_email(length=10):
+   return ''.join(random.choice(string.lowercase) for i in range(length)) + "@" + testServerHost
     
 def __get_ip_address(ifname):
     print "ifname <%s>" % ifname
