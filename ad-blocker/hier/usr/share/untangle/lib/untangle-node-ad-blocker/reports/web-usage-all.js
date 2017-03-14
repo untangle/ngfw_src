@@ -18,7 +18,7 @@
         "#8c0000"
     ],
     "timeDataInterval": "AUTO",
-    "timeStyle": "BAR_3D",
+    "timeStyle": "BAR",
     "title": "Ads Blocked",
     "type": "TIME_GRAPH"
 }

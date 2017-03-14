@@ -16,7 +16,7 @@
         "#396c2b"
     ],
     "timeDataInterval": "AUTO",
-    "timeStyle": "BAR_3D_OVERLAPPED",
+    "timeStyle": "BAR_OVERLAPPED",
     "title": "Web Usage (scanned)",
     "type": "TIME_GRAPH"
 }

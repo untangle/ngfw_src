@@ -24,7 +24,7 @@
         "#396c2b"
     ],
     "timeDataInterval": "AUTO",
-    "timeStyle": "BAR_3D",
+    "timeStyle": "BAR",
     "title": "Inspected Sessions",
     "type": "TIME_GRAPH"
 }

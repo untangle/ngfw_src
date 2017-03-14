@@ -18,7 +18,7 @@
         "#e5e500"
     ],
     "timeDataInterval": "AUTO",
-    "timeStyle": "BAR_3D_OVERLAPPED",
+    "timeStyle": "BAR_OVERLAPPED",
     "title": "Cache Size Statistics",
     "type": "TIME_GRAPH"
 }

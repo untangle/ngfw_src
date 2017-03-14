@@ -16,7 +16,7 @@
         "#8c0000"
     ],
     "timeDataInterval": "AUTO",
-    "timeStyle": "BAR_3D_OVERLAPPED",
+    "timeStyle": "BAR_OVERLAPPED",
     "title": "Backup Usage (failed)",
     "type": "TIME_GRAPH"
 }

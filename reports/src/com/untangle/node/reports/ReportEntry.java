@@ -51,9 +51,9 @@ public class ReportEntry implements Serializable, JSONString
         BAR,
         BAR_OVERLAPPED,
         BAR_STACKED,
-        BAR_3D,
-        BAR_3D_OVERLAPPED,
-        BAR_3D_STACKED,
+        BAR_3D, /* DEPRECATED */
+        BAR_3D_OVERLAPPED, /* DEPRECATED */
+        BAR_3D_STACKED, /* DEPRECATED */
         LINE,
         AREA,
         AREA_STACKED
@@ -196,7 +196,18 @@ public class ReportEntry implements Serializable, JSONString
     public TimeDataInterval getTimeDataInterval() { return this.timeDataInterval; }
     public void setTimeDataInterval( TimeDataInterval newValue ) { this.timeDataInterval = newValue; }
 
-    public TimeStyle getTimeStyle() { return this.timeStyle; }
+    public TimeStyle getTimeStyle()
+    {
+        if (this.timeStyle == null) return null;
+        // remove obsolete styles
+        switch (this.timeStyle) {
+        case BAR_3D: return TimeStyle.BAR;
+        case BAR_3D_OVERLAPPED: return TimeStyle.BAR_OVERLAPPED;
+        case BAR_3D_STACKED: return TimeStyle.BAR_STACKED;
+        default: break;
+        }
+        return this.timeStyle;
+    }
     public void setTimeStyle( TimeStyle newValue ) { this.timeStyle = newValue; }
     
     public String[] getTimeDataColumns() { return this.timeDataColumns; }

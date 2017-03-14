@@ -16,7 +16,7 @@
         "#8c0000"
     ],
     "timeDataInterval": "AUTO",
-    "timeStyle": "BAR_3D_OVERLAPPED",
+    "timeStyle": "BAR_OVERLAPPED",
     "title": "Intrusion Detection (blocked)",
     "type": "TIME_GRAPH"
 }

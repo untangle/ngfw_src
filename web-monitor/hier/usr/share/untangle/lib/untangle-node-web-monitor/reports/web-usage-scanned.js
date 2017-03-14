@@ -16,7 +16,7 @@
         "#396c2b"
     ],
     "timeDataInterval": "AUTO",
-    "timeStyle": "BAR_3D",
+    "timeStyle": "BAR",
     "title": "Web Usage (scanned)",
     "type": "TIME_GRAPH"
 }

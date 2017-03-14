@@ -252,9 +252,9 @@ Ext.define('Ung.charts', {
             chartType = 'areaspline';
             break;
         case 'BAR':
-        case 'BAR_3D':
+        case 'BAR':
         case 'BAR_OVERLAPPED':
-        case 'BAR_3D_OVERLAPPED':
+        case 'BAR_OVERLAPPED':
         case 'BAR_STACKED':
             chartType = 'column';
             break;
@@ -801,12 +801,12 @@ Ext.define('Ung.charts', {
             chartType = 'areaspline';
             break;
         case 'BAR':
-        case 'BAR_3D':
+        case 'BAR':
         case 'BAR_STACKED':
             chartType = 'column';
             break;
         case 'BAR_OVERLAPPED':
-        case 'BAR_3D_OVERLAPPED':
+        case 'BAR_OVERLAPPED':
             columnOverlapped = true;
             chartType = 'column';
             break;
