@@ -468,7 +468,6 @@ Ext.define('Ung.util.Util', {
             rpc.about = query;
         }
         return rpc.about;
-    },
-
+    }
 
 });
