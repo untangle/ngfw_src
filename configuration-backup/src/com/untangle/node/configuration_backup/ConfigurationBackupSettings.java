@@ -25,7 +25,7 @@ public class ConfigurationBackupSettings implements Serializable
     public void setMinuteInHour( int newValue ) { this.minuteInHour = newValue; }
 
     public boolean getGoogleDriveEnabled() { return googleDriveEnabled; }
-    public void setGoogleDriveEnabledo( boolean newValue ) { this.googleDriveEnabled = newValue; }
+    public void setGoogleDriveEnabled( boolean newValue ) { this.googleDriveEnabled = newValue; }
 
     public String getGoogleDriveDirectory() { return googleDriveDirectory; }
     public void setGoogleDriveDirectory( String newValue ) { this.googleDriveDirectory = newValue; }

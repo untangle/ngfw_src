@@ -51,19 +51,19 @@ public class ConfigurationBackupApp extends NodeBase
         return this.settings;
     }
 
-    public void setSettings(final ConfigurationBackupSettings settings)
+    public void setSettings(final ConfigurationBackupSettings newSettings)
     {
         String nodeID = this.getNodeSettings().getId().toString();
         String settingsFile = System.getProperty("uvm.settings.dir") + "/untangle-node-configuration-backup/settings_" + nodeID + ".js";
 
-        this.settings = settings;
-
         try {
-            UvmContextFactory.context().settingsManager().save( settingsFile, settings );
+            UvmContextFactory.context().settingsManager().save( settingsFile, newSettings );
         } catch (Exception exn) {
             logger.error("Could not save ConfigurationBackup settings", exn);
             return;
         }
+
+        this.settings = newSettings;
 
         writeCronFile();
     }
