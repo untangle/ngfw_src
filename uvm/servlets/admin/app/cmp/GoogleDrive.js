@@ -4,8 +4,8 @@ Ext.define('Ung.cmp.GoogleDrive', {
     isConfigured: function () {
         var googleDriveConfigured = false, directoryConnectorLicense, directoryConnectorNode, googleManager;
         try{
-            directoryConnectorLicense = Rpc.directData('rpc.UvmContext.licenseManager').isLicenseValid("untangle-node-directory-connector");
-            directoryConnectorNode = Rpc.directData('rpc.UvmContext.appManager').app("untangle-node-directory-connector");
+            directoryConnectorLicense = Rpc.directData('rpc.UvmContext.licenseManager').isLicenseValid('untangle-node-directory-connector');
+            directoryConnectorNode = Rpc.directData('rpc.UvmContext.appManager').app('untangle-node-directory-connector');
             if( directoryConnectorLicense && directoryConnectorNode ){
                 googleManager = directoryConnectorNode.getGoogleManager();
                 if( googleManager && googleManager.isGoogleDriveConnected() ){
@@ -18,16 +18,16 @@ Ext.define('Ung.cmp.GoogleDrive', {
         return googleDriveConfigured;
     },
     configure: function () {
-        var node = Rpc.directData('rpc.UvmContext.appManager').app("untangle-node-directory-connector");
-        if (node != null) {
+        var node = Rpc.directData('rpc.UvmContext.appManager').app('untangle-node-directory-connector');
+        if (node !== null) {
             // var nodeCmp = Ung.Node.getCmp(node.nodeId);
             var nodeCmp = Ext.getCmp(node.nodeId);
-            if (nodeCmp != null) {
-                Ung.Main.target = "node.untangle-node-directory-connector.Google Connector";
+            if (nodeCmp !== null) {
+                Ung.Main.target = 'node.untangle-node-directory-connector.Google Connector';
                 nodeCmp.loadSettings();
             }
         } else {
-            Ext.MessageBox.alert("Error".t(), "Google Drive requires Directory Connector application.".t());
+            Ext.MessageBox.alert('Error'.t(), 'Google Drive requires Directory Connector application.'.t());
         }
     }
 });

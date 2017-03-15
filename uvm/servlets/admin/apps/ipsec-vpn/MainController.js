@@ -86,8 +86,8 @@ Ext.define('Ung.apps.ipsecvpn.MainController', {
     },
 
     calculateNetworks: function() {
-        var leftDefault = "0.0.0.0";
-        var leftSubnetDefault = "0.0.0.0/0";
+        var leftDefault = '0.0.0.0';
+        var leftSubnetDefault = '0.0.0.0/0';
         var wanList = [];
         var x,y;
 
@@ -102,16 +102,16 @@ Ext.define('Ung.apps.ipsecvpn.MainController', {
         {
             var device = netSettings.interfaces.list[x];
 
-            if (! device.interfaceId) continue;
-            if (device.disabled) continue;
+            if (! device.interfaceId) { continue; }
+            if (device.disabled) { continue; }
 
             for( y = 0 ; y < intStatus.list.length ; y++ )
             {
                 var status = intStatus.list[y];
 
-                if (! status.v4Address) continue;
-                if (! status.interfaceId) continue;
-                if (device.interfaceId != status.interfaceId) continue;
+                if (! status.v4Address) { continue; }
+                if (! status.interfaceId) { continue; }
+                if (device.interfaceId !== status.interfaceId) { continue; }
 
                 // found a WAN device
                 if (device.isWan)
@@ -120,27 +120,27 @@ Ext.define('Ung.apps.ipsecvpn.MainController', {
                     wanList.push([ status.v4Address, device.name]);
 
                     // save the first WAN address to use as the default for new tunnels
-                    if (leftDefault == "0.0.0.0") leftDefault = status.v4Address;
+                    if (leftDefault === '0.0.0.0') { leftDefault = status.v4Address; }
                 }
 
                 // found a LAN devices
                 else
                 {
                     // save the first LAN address to use as the default for new tunnels
-                    if (leftSubnetDefault == "0.0.0.0/0") leftSubnetDefault = (status.v4Address + "/" + status.v4PrefixLength)
+                    if (leftSubnetDefault === '0.0.0.0/0') { leftSubnetDefault = (status.v4Address + '/' + status.v4PrefixLength); }
                 }
             }
         }
 
-    Ung.apps.ipsecvpn.Data.leftDefault = leftDefault;
-    Ung.apps.ipsecvpn.Data.leftSubnetDefault = leftSubnetDefault
-    Ung.apps.ipsecvpn.Data.wanList = wanList;
+        Ung.apps.ipsecvpn.Data.leftDefault = leftDefault;
+        Ung.apps.ipsecvpn.Data.leftSubnetDefault = leftSubnetDefault;
+        Ung.apps.ipsecvpn.Data.wanList = wanList;
     },
 
     configureAuthTarget: function (btn)
     {
         var vm = this.getViewModel(),
-        policyId = vm.get('policyId');
+            policyId = vm.get('policyId');
 
         switch (this.getViewModel().get('settings.authenticationType')) {
         case 'LOCAL_DIRECTORY': Ung.app.redirectTo('#config/localdirectory'); break;

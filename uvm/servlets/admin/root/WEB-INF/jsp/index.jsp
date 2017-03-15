@@ -7,8 +7,8 @@
         <title>Untangle - ${buildStamp}</title>
 
         <script src="/jsonrpc/jsonrpc.js"></script>
-        <script src="/highcharts/highstock.js"></script>
-        <script src="/highcharts/highcharts-extra.js"></script>
+        <script src="/highcharts5/highstock.js"></script>
+        <script src="/highcharts5/highcharts-3d.js"></script>
 
         <!-- ExtJS lib & theme -->
         <script src="/ext6.2/ext-all-debug.js"></script>
@@ -91,6 +91,13 @@
                 String.prototype.t = function() {
                     return rpc.translations[this.valueOf()] || '<cite>' + this.valueOf() + '</cite>';
                 };
+
+                // Ext.application({
+                //     name: 'Ung',
+                //     extend: 'Ung.Application',
+                // });
+
+                console.log(rpc);
 
                 // load the untangle app only after the rpc is in place and translations set
                 Ext.Loader.loadScript({

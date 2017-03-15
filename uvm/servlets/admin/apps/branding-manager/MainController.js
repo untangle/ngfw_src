@@ -31,7 +31,7 @@ Ext.define('Ung.apps.brandingmanager.MainController', {
 
         v.setLoading(true);
 
-        if(me.originalDefaultLogo != vm.get('settings').defaultLogo){
+        if(me.originalDefaultLogo !== vm.get('settings').defaultLogo){
             me.needRackReload = true;
         }
 
@@ -43,17 +43,17 @@ Ext.define('Ung.apps.brandingmanager.MainController', {
         }, vm.get('settings'));
 
         if(me.needRackReload){
-            window.location.reload()
+            window.location.reload();
         }
 
     },
 
     onUpload: function( field, value, eOpts){
-        var formPanel = this.getView().down("form[name=upload_logo_form]");
+        var formPanel = this.getView().down('form[name=upload_logo_form]');
         var fileField = formPanel.down('filefield');
 
         if (fileField.getValue().length === 0) {
-            Ext.MessageBox.alert( "Failed".t(), 'Please select an image to upload.'.t() );
+            Ext.MessageBox.alert('Failed'.t(), 'Please select an image to upload.'.t() );
             return;
         }
 
@@ -61,14 +61,14 @@ Ext.define('Ung.apps.brandingmanager.MainController', {
             waitMsg: 'Please wait while your logo image is uploaded...'.t(),
             success: Ext.bind(function(form, action) {
                 this.needRackReload = true;
-                Ext.MessageBox.alert( "Succeeded".t(), "Upload Logo Succeeded.".t(),
+                Ext.MessageBox.alert( 'Succeeded'.t(), 'Upload Logo Succeeded.'.t(),
                     function() {
-                            fileField.reset();
+                        fileField.reset();
                     }
                 );
             }, this),
             failure: Ext.bind(function(form, action) {
-                Ext.MessageBox.alert( "Failed".t(), "Upload Logo Failed. The logo must be the correct dimensions and in GIF, PNG, or JPG format.".t() );
+                Ext.MessageBox.alert( 'Failed'.t(), 'Upload Logo Failed. The logo must be the correct dimensions and in GIF, PNG, or JPG format.'.t() );
             }, this)
         });
 

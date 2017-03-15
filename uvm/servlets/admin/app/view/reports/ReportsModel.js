@@ -8,6 +8,7 @@ Ext.define('Ung.view.reports.ReportsModel', {
         activeCard: 'allCategoriesCard', // allCategoriesCard, categoryCard, reportCard
         category: null,
         report: null,
+        entry: null,
         categoriesData: null,
         startDateTime: null,
         endDateTime: null

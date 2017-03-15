@@ -2,25 +2,16 @@ Ext.define('Ung.chart.TimeChartController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.timechart',
 
-    control: {
-        '#': {
-            resize: 'onResize'
-        }
+    onAfterRender: function (view) {
+        var me = this, vm = this.getViewModel();
+
+        // fetch data first
+        // vm.bind('{entry}', me.fetchData, me);
+        vm.bind('{entry.timeStyle}', me.setStyles, me);
+        vm.bind('{entry.colors}', me.setStyles, me);
+        vm.bind('{entry.timeDataInterval}', me.fetchData, me);
     },
 
-    styles: {
-        'LINE': { styleType: 'spline' },
-        'AREA': { styleType: 'areaspline' },
-        'AREA_STACKED': {styleType: 'areaspline', stacking: true },
-        'BAR': {styleType: 'column', grouping: true },
-        'BAR': {styleType: 'column', grouping: true },
-        'BAR_OVERLAPPED': {styleType: 'column', overlapped: true },
-        'BAR_OVERLAPPED': {styleType: 'column', overlapped: true },
-        'BAR_STACKED': {styleType: 'column', stacking: true }
-    },
-    init: function () {
-        this.defaultColors = ['#00b000', '#3030ff', '#009090', '#00ffff', '#707070', '#b000b0', '#fff000', '#b00000', '#ff0000', '#ff6347', '#c0c0c0'];
-    },
     setChartType: function (timeStyle) {
         var type = 'areaspline';
         switch (timeStyle) {
@@ -32,11 +23,10 @@ Ext.define('Ung.chart.TimeChartController', {
             type = 'areaspline';
             break;
         case 'BAR':
-        case 'BAR':
+        case 'BAR_3D':
         case 'BAR_OVERLAPPED':
-        case 'BAR_OVERLAPPED':
+        case 'BAR_3D_OVERLAPPED':
         case 'BAR_STACKED':
-            console.log('here');
             type = 'column';
             break;
         default:
@@ -45,24 +35,145 @@ Ext.define('Ung.chart.TimeChartController', {
         return type;
     },
 
-    onAfterRender: function (view) {
-        var me = this;
-        this.entry = view.getViewModel().get('entry') || this.getView().getEntry();
+    /**
+     * fetches report data via rpc
+     */
+    fetchData: function () {
+        var me = this, vm = this.getViewModel();
+        if (!vm.get('entry')) { return; }
+        me.getView().setLoading(true);
+        Rpc.asyncData('rpc.reportsManager.getDataForReportEntry',
+                        vm.get('entry').getData(),
+                        vm.get('startDate'),
+                        vm.get('tillNow') ? null : vm.get('endDate'), -1)
+            .then(function(result) {
+                me.getView().setLoading(false);
+                me.data = result.list;
+                me.setSeries();
+            });
+    },
 
-        console.log(me.entry.get('timeStyle'));
+    /**
+     * creates (normalize) series definition based on entry and data
+     */
+    setSeries: function () {
+        if (!this.data) { return; }
 
-        this.chart = new Highcharts.StockChart({
+        var me = this, vm = this.getViewModel(),
+            timeDataColumns = Ext.clone(vm.get('entry.timeDataColumns')),
+            i, j, newData, series = [];
+
+        if (!timeDataColumns) {
+            timeDataColumns = [];
+            for (j = 0; j < me.data.length; j += 1) {
+                for (var _column in me.data[j]) {
+                    if (me.data[j].hasOwnProperty(_column) && _column !== 'time_trunc' && _column !== 'time' && timeDataColumns.indexOf(_column) < 0) {
+                        timeDataColumns.push(_column);
+                    }
+                }
+            }
+        } else {
+            for (i = 0; i < timeDataColumns.length; i += 1) {
+                timeDataColumns[i] = timeDataColumns[i].split(' ').splice(-1)[0];
+            }
+        }
+
+        for (i = 0; i < timeDataColumns.length; i += 1) {
+            newData = [];
+            for (j = 0; j < me.data.length; j += 1) {
+                newData.push([
+                    me.data[j].time_trunc.time,
+                    me.data[j][timeDataColumns[i]] || 0
+                ]);
+            }
+            series.push({
+                name: timeDataColumns[i],
+                data: newData
+            });
+        }
+
+        if (!this.chart) {
+            this.buildChart(series);
+        } else {
+            while(this.chart.series.length > 0) {
+                this.chart.series[0].remove(false);
+            }
+            series.forEach(function (serie) {
+                me.chart.addSeries(serie, false, false);
+            });
+            me.chart.redraw();
+        }
+
+    },
+
+    /**
+     * updates the styles of the chart based on report entry conditions
+     */
+    setStyles: function () {
+        if (!this.chart) { return ;}
+
+        var me = this, entry = this.getViewModel().get('entry'),
+            isStacked = entry.get('timeStyle').indexOf('STACKED') >= 0,
+            isOverlapped = entry.get('timeStyle').indexOf('OVERLAPPED') >= 0,
+            colors = entry.get('colors') || Util.defaultColors;
+
+        // if (colors && isOverlapped) {
+        //     for (var i = 0; i < colors.length; i += 1) {
+        //         colors[i] = new Highcharts.Color(colors[i]).setOpacity(0.75).get('rgba');
+        //     }
+        // }
+
+        me.chart.update({
             chart: {
-                type: me.setChartType(me.entry.get('timeStyle')),
+                type: me.setChartType(entry.get('timeStyle'))
+            },
+            colors: colors,
+            plotOptions: {
+                series: {
+                    fillOpacity: isStacked ? 0.8 : 0.3,
+                    stacking: isStacked ? 'normal' : undefined,
+                    dataGrouping: {
+                        approximation: entry.get('approximation') || 'sum'
+                    }
+                },
+                column: {
+                    grouping: !isOverlapped
+                }
+            }
+        });
+
+        if (entry.get('timeStyle') === 'BAR_OVERLAPPED' || entry.get('timeStyle') === 'BAR_3D_OVERLAPPED') {
+            Ext.Array.each(me.chart.series, function (serie, idx) {
+                serie.update({
+                    pointPadding: (me.chart.series.length <= 3 ? 0.12 : 0.075) * (idx + 1)
+                }, false);
+            });
+            me.chart.redraw();
+        } else {
+            Ext.Array.each(me.chart.series, function (serie, idx) {
+                serie.update({
+                    pointPadding: 0.1
+                }, false);
+            });
+            me.chart.redraw();
+        }
+    },
+
+    buildChart: function (series) {
+        var me = this, entry = me.getViewModel().get('entry');
+
+        me.chart = new Highcharts.StockChart({
+            chart: {
+                type: me.setChartType(entry.get('timeStyle')),
                 zoomType: 'x',
-                renderTo: view.lookupReference('timechart').getEl().dom,
-                //marginBottom: !forDashboard ? 40 : 50,
+                renderTo: me.getView().lookupReference('timechart').getEl().dom,
+                animation: false,
+                // marginBottom: 10,
                 marginTop: 10,
                 //marginRight: 0,
                 //marginLeft: 0,
-                padding: [0, 0, 0, 0],
-                backgroundColor: 'transparent',
-                animation: false,
+                // padding: [0, 0, 0, 0],
+                // backgroundColor: 'transparent',
                 style: {
                     fontFamily: 'Source Sans Pro',
                     fontSize: '12px'
@@ -70,16 +181,18 @@ Ext.define('Ung.chart.TimeChartController', {
             },
             title: null,
             lang: {
-                noData: ''
+                noData: 'some text'
             },
             noData: {
                 style: {
+                    padding: 0,
                     fontSize: '12px',
                     fontWeight: 'normal',
-                    color: '#CCC'
-                }
+                    color: '#999'
+                },
+                useHTML: true
             },
-            colors: (me.entry.get('colors') !== null && me.entry.get('colors') > 0) ? me.entry.get('colors') : me.defaultColors,
+            // colors: (me.entry.get('colors') !== null && me.entry.get('colors') > 0) ? me.entry.get('colors') : me.defaultColors,
             navigator: {
                 enabled: false
             },
@@ -88,7 +201,7 @@ Ext.define('Ung.chart.TimeChartController', {
                 inputEnabled: false
             },
             scrollbar: {
-                enabled: false
+                enabled: true
             },
             credits: {
                 enabled: false
@@ -114,10 +227,9 @@ Ext.define('Ung.chart.TimeChartController', {
                 gridLineColor: '#EEE',
                 labels: {
                     style: {
-                        fontFamily: 'Roboto Condensed',
-                        color: '#555',
-                        fontSize: '10px',
-                        fontWeight: 700
+                        color: '#333',
+                        fontSize: '11px',
+                        fontWeight: 600
                     },
                     y: 12
                 },
@@ -127,8 +239,8 @@ Ext.define('Ung.chart.TimeChartController', {
             yAxis: {
                 allowDecimals: true,
                 min: 0,
-                minRange: me.entry.get('units') === 'percent' ? 100 : 0.4,
-                maxRange: me.entry.get('units') === 'percent' ? 100 : undefined,
+                minRange: entry.get('units') === 'percent' ? 100 : 0.4,
+                maxRange: entry.get('units') === 'percent' ? 100 : undefined,
                 lineColor: '#C0D0E0',
                 lineWidth: 1,
                 gridLineWidth: 1,
@@ -140,8 +252,8 @@ Ext.define('Ung.chart.TimeChartController', {
                 //tickPosition: 'inside',
                 showFirstLabel: false,
                 showLastLabel: true,
-                endOnTick: me.entry.get('units') !== 'percent',
-                tickInterval: me.entry.get('units') === 'percent' ? 20 : undefined,
+                endOnTick: entry.get('units') !== 'percent',
+                tickInterval: entry.get('units') === 'percent' ? 20 : undefined,
                 maxPadding: 0,
                 opposite: false,
                 labels: {
@@ -149,22 +261,16 @@ Ext.define('Ung.chart.TimeChartController', {
                     useHTML: true,
                     padding: 0,
                     style: {
-                        fontFamily: 'Roboto Condensed',
-                        color: '#555',
-                        fontSize: '10px',
-                        fontWeight: 600,
-                        background: 'rgba(255, 255, 255, 0.6)',
-                        padding: '0 1px',
-                        borderRadius: '2px',
-                        //textShadow: '1px 1px 1px #000'
-                        lineHeight: '11px'
+                        color: '#333',
+                        fontSize: '11px',
+                        fontWeight: 600
                     },
                     x: -10,
-                    y: 5,
+                    y: 4,
                     formatter: function() {
                         var finalVal = this.value;
 
-                        if (me.entry.get('units') === 'bytes/s') {
+                        if (entry.get('units') === 'bytes/s') {
                             finalVal = Util.bytesToHumanReadable(this.value, true);
                             /*
                             if (this.isLast) {
@@ -187,7 +293,7 @@ Ext.define('Ung.chart.TimeChartController', {
                     y: 3,
                     //rotation: 0,
                     //text: entry.units,
-                    text: me.entry.get('units'),
+                    text: entry.get('units'),
                     //textAlign: 'left',
                     style: {
                         fontFamily: 'Source Sans Pro',
@@ -201,7 +307,6 @@ Ext.define('Ung.chart.TimeChartController', {
                 enabled: true,
                 padding: 5,
                 margin: 0,
-                y: 10,
                 lineHeight: 12,
                 itemDistance: 10,
                 itemStyle: {
@@ -215,42 +320,36 @@ Ext.define('Ung.chart.TimeChartController', {
                 symbolRadius: 3
             },
             tooltip: {
-                shared: true,
-                animation: true,
-                followPointer: true,
-                backgroundColor: 'rgba(255, 255, 255, 0.7)',
-                borderWidth: 1,
-                borderColor: 'rgba(0, 0, 0, 0.1)',
-                style: {
-                    textAlign: 'right',
-                    fontFamily: 'Source Sans Pro',
-                    padding: '5px',
-                    fontSize: '10px',
-                    marginBottom: '40px'
-                },
-                //useHTML: true,
+                // enabled: true,
+                split: true,
+                distance: 30,
+                padding: 5,
+                // shared: false,
                 hideDelay: 0,
-                shadow: false,
-                headerFormat: '<span style="font-size: 11px; line-height: 1.5; font-weight: bold;">{point.key}</span><br/>',
-                pointFormatter: function () {
-                    var str = '<span>' + this.series.name + '</span>';
-                    if (me.entry.get('units') === 'bytes' || me.entry.get('units') === 'bytes/s') {
-                        str += ': <span style="color: ' + this.color + '; font-weight: bold;">' + this.y + '</span>';
-                    } else {
-                        str += ': <spanstyle="color: ' + this.color + '; font-weight: bold;">' + this.y + '</span> ' + me.entry.get('units');
-                    }
-                    return str + '<br/>';
-                }
-
+                // style: {
+                //     fontFamily: 'Source Sans Pro',
+                //     fontSize: '12px'
+                // }
+                // useHTML: true,
+                // headerFormat: '<span style="font-size: 11px; line-height: 1.5; font-weight: bold;">{point.key}</span><br/>',
+                // pointFormatter: function () {
+                //     var str = '<span>' + this.series.name + '</span>';
+                //     if (entry.get('units') === 'bytes' || entry.get('units') === 'bytes/s') {
+                //         str += ': <span style="color: ' + this.color + '; font-weight: bold;">' + this.y + '</span>';
+                //     } else {
+                //         str += ': <spanstyle="color: ' + this.color + '; font-weight: bold;">' + this.y + '</span> ' + entry.get('units');
+                //     }
+                //     return str + '<br/>';
+                // }
             },
             plotOptions: {
                 column: {
-                    edgeWidth: 0,
-                    borderWidth: 0,
+                    // edgeWidth: 0,
+                    // borderWidth: 0,
                     pointPadding: 0,
-                    groupPadding: 0.2,
+                    // groupPadding: 0.2,
                     dataGrouping: {
-                        groupPixelWidth: 40
+                        // groupPixelWidth: 40
                     },
                     pointPlacement: 'on',
                     dataLabels: {
@@ -267,11 +366,14 @@ Ext.define('Ung.chart.TimeChartController', {
                     }
                 },
                 areaspline: {
-                    lineWidth: 0
+                    lineWidth: 1,
+                    tooltip: {
+                        split: true
+                    }
                 },
                 spline: {
                     lineWidth: 2,
-                    softThreshold: false
+                    // softThreshold: false
                 },
                 series: {
                     animation: false,
@@ -297,108 +399,16 @@ Ext.define('Ung.chart.TimeChartController', {
                         }
                     }
                 }
-            }
+            },
+            series: series
         });
+
+        me.setStyles();
     },
 
     onResize: function () {
-        this.chart.reflow();
-    },
-
-    onSetSeries: function (data) {
-        //var newData = [], me = this;
-        var me = this, newData = [], i, j, _column,
-            timeDataColumns = Ext.clone(this.entry.get('timeDataColumns')),
-            style = this.entry.get('timeStyle'),
-            colors = this.entry.get('colors') || this.defaultColors;
-
-            /*
-            timeDataColumns = Ext.clone(me.getViewModel().get('entry.timeDataColumns')),
-            style = me.getViewModel().get('entry.timeStyle'),
-            colors = me.getViewModel().get('entry.colors') || this.defaultColors;
-            */
-
-        this.getView().setLoading(false);
-        // this.getView().lookupReference('loader').hide(); // hide chart loader
-
-
-        if (!timeDataColumns) {
-            timeDataColumns = [];
-            for (j = 0; j < data.length; j += 1) {
-                for (_column in data[j]) {
-                    if (data[j].hasOwnProperty(_column) && _column !== 'time_trunc' && _column !== 'time' && timeDataColumns.indexOf(_column) < 0) {
-                        timeDataColumns.push(_column);
-                    }
-                }
-            }
-        } else {
-            for (i = 0; i < timeDataColumns.length; i += 1) {
-                timeDataColumns[i] = timeDataColumns[i].split(' ').splice(-1)[0];
-            }
-        }
-
-        for (i = 0; i < timeDataColumns.length; i += 1) {
-            newData = [];
-            for (j = 0; j < data.length; j += 1) {
-                newData.push([
-                    data[j].time_trunc.time,
-                    data[j][timeDataColumns[i]] || 0
-                ]);
-            }
-            if (this.chart.get('series-' + timeDataColumns[i])) {
-                this.chart.get('series-' + timeDataColumns[i]).update({
-                    data: newData,
-                    type: me.styles[style].styleType,
-                    color: colors[i] || undefined,
-                    fillOpacity: (style === 'AREA_STACKED' || style === 'BAR_STACKED') ? 1 : 0.5,
-                    grouping: me.styles[style].grouping || false,
-                    stacking: me.styles[style].stacking || undefined,
-                    pointPadding: me.styles[style].overlapped ? (timeDataColumns.length <= 3 ? 0.10 : 0.075) * i : 0.1,
-                    visible: !(timeDataColumns[i] === 'total' && me.styles[style].stacking)
-                });
-            } else {
-                this.chart.addSeries({
-                    id: 'series-' + timeDataColumns[i],
-                    name: timeDataColumns[i],
-                    data: newData,
-                    type: me.styles[style].styleType,
-                    color: colors[i] || undefined,
-                    fillOpacity: (style === 'AREA_STACKED' || style === 'BAR_STACKED') ? 1 : 0.5,
-                    grouping: me.styles[style].grouping || false,
-                    stacking: me.styles[style].stacking || undefined,
-                    pointPlacement: 0,
-                    pointPadding: me.styles[style].overlapped ? (timeDataColumns.length <= 3 ? 0.12 : 0.075) * (i + 1) : 0.1,
-                    visible: !(timeDataColumns[i] === 'total' && me.styles[style].stacking)
-                }, false, false);
-            }
-        }
-        this.chart.redraw();
-
-    },
-
-    onSetStyle: function () {
-        var me = this,
-            style = me.getViewModel().get('entry.timeStyle'),
-            colors = me.getViewModel().get('entry.colors') || this.defaultColors;
         if (this.chart) {
-            var seriesLength = this.chart.series.length;
-            this.chart.series.forEach( function (series, idx) {
-                series.update({
-                    type: me.styles[style].styleType,
-                    color: colors[idx] || undefined,
-                    fillOpacity: (style === 'AREA_STACKED' || style === 'BAR_STACKED') ? 1 : 0.5,
-                    grouping: me.styles[style].grouping || false,
-                    stacking: me.styles[style].stacking || undefined,
-                    pointPadding: me.styles[style].overlapped ? (seriesLength <= 3 ? 0.15 : 0.075) * idx : 0.1,
-                    visible: !(series.name === 'total' && me.styles[style].stacking)
-                });
-            });
+            this.chart.reflow();
         }
-    },
-
-    onBeginFetchData: function() {
-        // this.getView().lookupReference('loader').show();
-        this.getView().setLoading(true);
     }
-
 });

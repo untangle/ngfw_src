@@ -2,88 +2,8 @@ Ext.define('Ung.util.Util', {
     alternateClassName: 'Util',
     singleton: true,
 
-    defaultColors: ['#00b000', '#3030ff', '#009090', '#00ffff', '#707070', '#b000b0', '#fff000', '#b00000', '#ff0000', '#ff6347', '#c0c0c0'],
+    defaultColors: ['#7cb5ec', '#434348', '#90ed7d', '#f7a35c', '#8085e9', '#f15c80', '#e4d354', '#2b908f', '#f45b5b', '#91e8e1'],
 
-    // node name to class mapping
-    // appsMapping: {
-    //     'ad-blocker':           { node: 'ad-blocker' },
-    //     'application-control':  { node: 'application-control' },
-    //     'bandwidth-control':    { node: 'bandwidth-control' },
-    //     'branding-manager':     { node: 'branding-manager' },
-    //     'captive-portal':       { node: 'captive-portal' },
-    //     'configuration-backup': { node: 'configuration-backup' },
-    //     'directory-connector':  { node: 'directory-connector' },
-    //     'firewall':             { node: 'firewall' },
-    // },
-
-
-    // appsMapping: {
-    //     webfilter: 'web-filter',
-    //     webmonitor: 'web-monitor',
-    //     virusblocker: 'virus-blocker',
-    //     virusblockerlite: 'virus-blocker-lite',
-    //     spamblocker: 'spam-blocker',
-    //     spamblockerlite: 'spam-blocker-lite',
-    //     phishblocker: 'phish-blocker',
-    //     webcache: 'web-cache',
-    //     bandwidthcontrol: 'bandwidth-control',
-    //     sslinspector: 'ssl-inspector',
-    //     applicationcontrol: 'application-control',
-    //     applicationcontrollite: 'application-control-lite',
-    //     captiveportal: 'captive-portal',
-    //     firewall: 'firewall',
-    //     'ad-blocker': 'ad-blocker',
-
-    //     reports: 'reports',
-    //     policymanager: 'policy-manager',
-    //     directoryconnector: 'directory-connector',
-    //     wanfailover: 'wan-failover',
-    //     wanbalancer: 'wan-balancer',
-    //     ipsecvpn: 'ipsec-vpn',
-    //     openvpn: 'openvpn',
-    //     intrusionprevention: 'intrusion-prevention',
-    //     configurationbackup: 'configuration-backup',
-    //     brandingmanager: 'branding-manager',
-    //     livesupport: 'live-support'
-    // },
-
-    // categoriesMap: {
-    //     hosts: 'Hosts',
-    //     devices: 'Devices',
-    //     network: 'Network',
-    //     administration: 'Administration',
-    //     system: 'System',
-    //     shield: 'Shield',
-
-    //     webfilter: 'Web Filter',
-    //     webmonitor: 'Web Monitor',
-    //     webfilterlite: 'Web Filter Llite',
-    //     virusblocker: 'Virus Blocker',
-    //     virusblockerlite: 'Virus Blocker Lite',
-    //     spamblocker: 'Spam Blocker',
-    //     spamblockerlite: 'Spam Blocker Lite',
-    //     phishblocker: 'Phish Blocker',
-    //     webcache: 'Web Cache',
-    //     bandwidthcontrol: 'Bandwidth Control',
-    //     sslinspector: 'Ssl Inspector',
-    //     applicationcontrol: 'Application Control',
-    //     applicationcontrollite: 'Application Control Lite',
-    //     captiveportal: 'Captive Portal',
-    //     firewall: 'Firewall',
-    //     adblocker: 'Ad Blocker',
-
-    //     reports: 'Reports',
-    //     policymanager: 'Policy Manager',
-    //     directoryconnector: 'Directory Connector',
-    //     wanfailover: 'Wan Failover',
-    //     wanbalancer: 'Wan Balancer',
-    //     ipsecvpn: 'Ppsec Vpn',
-    //     openvpn: 'OpenVpn',
-    //     intrusionprevention: 'Intrusion Prevention',
-    //     configurationbackup: 'Configuration Backup',
-    //     brandingmanager: 'Branding Manager',
-    //     livesupport: 'Live Support'
-    // },
 
     iconReportTitle: function (report) {
         var icon;

@@ -21,7 +21,7 @@ Ext.define('Ung.apps.configurationbackup.MainController', {
     },
 
     getSettings: function () {
-        var me = this, v = this.getView(), vm = this.getViewModel();
+        var v = this.getView(), vm = this.getViewModel();
         v.setLoading(true);
         v.appManager.getSettings(function (result, ex) {
             v.setLoading(false);
@@ -29,8 +29,8 @@ Ext.define('Ung.apps.configurationbackup.MainController', {
             vm.set('settings', result);
             var googleDrive = new Ung.cmp.GoogleDrive();
             vm.set( 'googleDriveIsConfigured', googleDrive.isConfigured() );
-            vm.set( 'googleDriveConfigure', function(){ googleDrive.configure()} );
-         });
+            vm.set( 'googleDriveConfigure', function(){ googleDrive.configure(); });
+        });
 
     },
 

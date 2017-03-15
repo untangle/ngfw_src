@@ -9,30 +9,33 @@ Ext.define('Ung.view.reports.EntryModel', {
         tillNow: true
     },
 
-    stores: {
-        colors: {
-            data: '{_colorsData}',
-            proxy: {
-                type: 'memory',
-                fields: [{ name: 'color' }],
-                reader: { type: 'json' }
-            },
-            listeners: {
-                update: 'updateColors',
-                datachanged: 'updateColors'
-            }
-        }
-    },
+    // stores: {
+    //     colors: {
+    //         data: '{_colorsData}',
+    //         proxy: {
+    //             type: 'memory',
+    //             fields: [{ name: 'color' }],
+    //             reader: { type: 'json' }
+    //         },
+    //         listeners: {
+    //             update: 'updateColors',
+    //             datachanged: 'updateColors'
+    //         }
+    //     }
+    // },
 
     formulas: {
-        _colors: {
-            get: function (get) {
-                return get('report.colors');
-            },
-            set: function (value) {
-                console.log(this.get('report.colors'));
-            }
+        _props: function (get) {
+            return get('entry').getData();
         },
+        // _colors: {
+        //     get: function (get) {
+        //         return get('report.colors');
+        //     },
+        //     set: function (value) {
+        //         console.log(this.get('report.colors'));
+        //     }
+        // },
 
 
         _sd: {
@@ -81,6 +84,7 @@ Ext.define('Ung.view.reports.EntryModel', {
                 this.set('endDate', ed);
             }
         },
+
         // startTime: {
         //     get: function (get) {
         //         return get('startDate');
@@ -115,26 +119,26 @@ Ext.define('Ung.view.reports.EntryModel', {
 
 
         reportHeading: function (get) {
-            if (get('report.readOnly')) {
-                return '<h2>' + get('report.title').t() + '</h2><p>' + get('report.description').t() + '</p>';
+            if (get('entry.readOnly')) {
+                return '<h2>' + get('entry.title').t() + '</h2><p>' + get('entry.description').t() + '</p>';
             }
-            return '<h2>' + get('report.title') + '</h2><p>' + get('report.description') + '</p>';
+            return '<h2>' + get('entry.title') + '</h2><p>' + get('entry.description') + '</p>';
         },
-        enableIcon: function (get) {
-            return get('report.enabled') ? 'fa-green' : 'fa-flip-horizontal fa-grey';
-        },
+        // enableIcon: function (get) {
+        //     return get('entry.enabled') ? 'fa-green' : 'fa-flip-horizontal fa-grey';
+        // },
 
         isTimeGraph: function (get) {
-            if (!get('report.type')) {
+            if (!get('entry.type')) {
                 return false;
             }
-            return get('report.type').indexOf('TIME_GRAPH') >= 0;
+            return get('entry.type').indexOf('TIME_GRAPH') >= 0;
         },
         isPieGraph: function (get) {
-            if (!get('report.type')) {
+            if (!get('entry.type')) {
                 return false;
             }
-            return get('report.type').indexOf('PIE_GRAPH') >= 0;
+            return get('entry.type').indexOf('PIE_GRAPH') >= 0;
         },
     }
 

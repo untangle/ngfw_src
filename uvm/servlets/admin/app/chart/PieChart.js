@@ -15,10 +15,7 @@ Ext.define('Ung.chart.PieChart', {
 
     listeners: {
         afterrender: 'onAfterRender',
-        resize: 'onResize',
-        setseries: 'onSetSeries',
-        //setstyle: 'onSetStyle',
-        beginfetchdata: 'onBeginFetchData'
+        resize: 'onResize'
     },
 
     items: [{

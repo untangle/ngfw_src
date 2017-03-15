@@ -44,8 +44,8 @@ Ext.define('Ung.view.reports.Reports', {
 
     items: [{
         xtype: 'grid',
-        reference: 'categories',
         region: 'west',
+        reference: 'categories',
         width: 200,
         split: true,
         border: false,
@@ -79,9 +79,11 @@ Ext.define('Ung.view.reports.Reports', {
             }
         }
     }, {
-        xtype: 'container',
         region: 'center',
         layout: 'border',
+
+        border: false,
+
         items: [{
             xtype: 'grid',
             reference: 'reports',
@@ -112,7 +114,10 @@ Ext.define('Ung.view.reports.Reports', {
                 dataIndex: 'title',
                 flex: 1,
                 renderer: function (value, meta, record) {
-                    return record.get('readOnly') ? value.t() : value;
+                    if (record.get('readOnly')) {
+                        return value.t();
+                    }
+                    return '<strong>' + value + '</strong>';
                 }
             }],
             listeners: {
@@ -129,7 +134,8 @@ Ext.define('Ung.view.reports.Reports', {
                 activeItem: '{activeCard}',
             },
             defaults: {
-                border: false
+                border: false,
+                bodyBorder: false
             },
             items: [{
                 xtype: 'dataview',
@@ -177,10 +183,9 @@ Ext.define('Ung.view.reports.Reports', {
             }, {
                 xtype: 'reports-entry',
                 itemId: 'report',
-                // bodyPadding: 10,
-                // bind: {
-                //     html: '<h3>{selectedReport.localizedTitle}</h3>'
-                // }
+                bind: {
+                    html: '<h3>{selectedReport.localizedTitle}</h3>',
+                }
             }]
         }]
     }]
