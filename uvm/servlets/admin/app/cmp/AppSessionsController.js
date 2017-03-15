@@ -26,7 +26,7 @@ Ext.define('Ung.cmp.AppSessionsController', {
             chart: {
                 type: 'area',
                 //zoomType: 'x',
-                renderTo: view.lookupReference('nodechart').getEl().dom,
+                renderTo: view.lookupReference('appchart').getEl().dom,
                 marginBottom: 20,
                 marginRight: 0,
                 marginLeft: 0,
@@ -217,7 +217,7 @@ Ext.define('Ung.cmp.AppSessionsController', {
             return;
         }
         this.updateMetricsCount++;
-        var appMetrics = Ext.getStore('metrics').findRecord('nodeId', vm.get('instance.id'));
+        var appMetrics = Ext.getStore('metrics').findRecord('appId', vm.get('instance.id'));
         var newVal = appMetrics.get('metrics').list.filter(function (metric) {
             return metric.name === 'live-sessions';
         })[0].value || 0;

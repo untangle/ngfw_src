@@ -773,7 +773,7 @@ Ext.define('Ung.grid.Panel', {
             };
             if ("deleted" == currentOp) {
                 index = this.getStore().indexOf(record);
-                this.getView().refreshNode(index);
+                this.getView().refreshApp(index);
             }
         } else {
             if ("deleted" == currentOp) {
@@ -787,7 +787,7 @@ Ext.define('Ung.grid.Panel', {
                         recData: record.data
                     };
                     index = this.getStore().indexOf(record);
-                    this.getView().refreshNode(index);
+                    this.getView().refreshApp(index);
                 }
             } else {
                 if ("added" == cd.op) {

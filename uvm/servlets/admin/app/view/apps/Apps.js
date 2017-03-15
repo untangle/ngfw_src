@@ -111,7 +111,7 @@ Ext.define('Ung.view.apps.Apps', {
         },
         tpl: '<p class="apps-title">' + 'Apps'.t() + '</p>' +'<tpl for=".">' +
             '<tpl if="type === \'FILTER\'">' +
-                '<div class="node-install-item {status}">' +
+                '<div class="app-install-item {status}">' +
                 '<img src="' + '/skins/modern-rack/images/admin/apps/{name}_80x80.png" width=80 height=80/>' +
                 '<i class="fa fa-download fa-3x"></i>' +
                 '<i class="fa fa-check fa-3x"></i>' +
@@ -123,7 +123,7 @@ Ext.define('Ung.view.apps.Apps', {
             '<p class="apps-title">' + 'Service Apps'.t() + '</p>' +
             '<tpl for=".">' +
                 '<tpl if="type === \'SERVICE\'">' +
-                '<div class="node-install-item {status}">' +
+                '<div class="app-install-item {status}">' +
                 '<img src="' + '/skins/modern-rack/images/admin/apps/{name}_80x80.png" width=80 height=80/>' +
                 '<i class="fa fa-download fa-3x"></i>' +
                 '<i class="fa fa-check fa-3x"></i>' +

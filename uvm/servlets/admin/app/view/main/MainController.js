@@ -20,7 +20,7 @@ Ext.define('Ung.view.main.MainController', {
     //     '': 'onDashboard',
     //     'apps': 'onApps',
     //     'apps/:policyId': 'onApps',
-    //     'apps/:policyId/:node': 'onApps',
+    //     'apps/:policyId/:app': 'onApps',
     //     'config': 'onConfig',
     //     'config/:configName': 'onConfig',
     //     'reports': 'onReports',
@@ -68,7 +68,7 @@ Ext.define('Ung.view.main.MainController', {
         this.getViewModel().set('activeItem', 'dashboard');
     },
 
-    onApps: function (policyId, node) {
+    onApps: function (policyId, app) {
         console.log('on apps');
         var vm = this.getViewModel();
         // var _policyId = policyId || 1,
@@ -83,11 +83,11 @@ Ext.define('Ung.view.main.MainController', {
         // var view = 'Ung.view.apps.Apps';
         // var ctrl = Ung.app.getController('Ung.view.apps.AppsController');
 
-        if (node) {
-            if (node === 'install') {
+        if (app) {
+            if (app === 'install') {
                 vm.set('activeItem', 'appsinstall');
             } else {
-                vm.set('appName', node);
+                vm.set('appName', app);
                 vm.set('activeItem', 'settings');
             }
         } else {

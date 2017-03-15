@@ -7,11 +7,11 @@ Ext.define('Ung.view.apps.AppsController', {
         '#installedApps': { activate: 'filterInstalled' },
         '#installableApps': {
             activate: 'filterInstallable',
-            select: 'onInstallNode'
+            select: 'onInstallApp'
         }
     },
 
-    nodeDesc: {
+    appDesc: {
         'web-filter': 'Web Filter scans and categorizes web traffic to monitor and enforce network usage policies.'.t(),
         'web-monitor': 'Web monitor scans and categorizes web traffic to monitor and enforce network usage policies.'.t(),
         'virus-blocker': 'Virus Blocker detects and blocks malware before it reaches users desktops or mailboxes.'.t(),
@@ -47,11 +47,11 @@ Ext.define('Ung.view.apps.AppsController', {
 
     // listen: {
     //     global: {
-    //         nodestatechange: 'updateNodes'
+    //         appstatechange: 'updateApps'
     //     },
     //     store: {
     //         '#policies': {
-    //             datachanged: 'updateNodes'
+    //             datachanged: 'updateApps'
     //         }
     //     }
     // },
@@ -61,48 +61,48 @@ Ext.define('Ung.view.apps.AppsController', {
         var vm = this.getViewModel();
 
         Rpc.asyncData('rpc.appManager.getAppsViews').then(function(result) {
-            var nodes = [];
+            var apps = [];
             vm.getStore('apps').removeAll();
             Ext.getStore('policies').loadData(result);
 
-            Ext.Array.each(result[0].appProperties.list, function (node) {
-                nodes.push({
-                    name: node.name,
-                    displayName: node.displayName,
-                    url: '#apps/' + vm.get('policyId') + '/' + node.displayName.replace(/ /g, '-').toLowerCase(),
-                    type: node.type,
-                    viewPosition: node.viewPosition,
+            Ext.Array.each(result[0].appProperties.list, function (app) {
+                apps.push({
+                    name: app.name,
+                    displayName: app.displayName,
+                    url: '#apps/' + vm.get('policyId') + '/' + app.displayName.replace(/ /g, '-').toLowerCase(),
+                    type: app.type,
+                    viewPosition: app.viewPosition,
                     status: null,
                     targetState: result[0].instances.list.filter(function (instance) {
-                        return node.name === instance.appName;
+                        return app.name === instance.appName;
                     })[0].targetState
                 });
 
                 // var tState = result[0].instances.list.filter(function (instance) {
-                //     return node.name === instance.nodeName;
+                //     return app.name === instance.appName;
                 // });
                 // console.log(tState[0]);
             });
 
-            Ext.Array.each(result[0].installable.list, function (node) {
-                nodes.push({
-                    name: node.name,
-                    displayName: node.displayName,
-                    url: '#apps/' + vm.get('policyId') + '/' + node.displayName.replace(/ /g, '-').toLowerCase(),
-                    type: node.type,
-                    viewPosition: node.viewPosition,
-                    desc: me.nodeDesc[node.name],
+            Ext.Array.each(result[0].installable.list, function (app) {
+                apps.push({
+                    name: app.name,
+                    displayName: app.displayName,
+                    url: '#apps/' + vm.get('policyId') + '/' + app.displayName.replace(/ /g, '-').toLowerCase(),
+                    type: app.type,
+                    viewPosition: app.viewPosition,
+                    desc: me.appDesc[app.name],
                     status: 'available'
                 });
             });
             // Ext.toast('Data loaded');
-            vm.getStore('apps').loadData(nodes);
+            vm.getStore('apps').loadData(apps);
         });
     },
 
     /**
      * Based on which view is activated (Apps or Install Apps)
-     * the nodes store is filtered to reflect current applications
+     * the apps store is filtered to reflect current applications
      */
     filterInstalled: function () {
         this.getViewModel().set('onInstalledApps', true);
@@ -141,40 +141,40 @@ Ext.define('Ung.view.apps.AppsController', {
     //     console.log(instance);
     // },
 
-    // updateNodes: function () {
+    // updateApps: function () {
     //     var vm = this.getViewModel(),
-    //         nodeInstance, i;
+    //         appInstance, i;
 
     //     rpc.appManager.getAppsViews(function(result, exception) {
     //         var policy = result.filter(function (p) {
     //             return parseInt(p.policyId) === parseInt(vm.get('policyId'));
     //         })[0];
 
-    //         var nodes = policy.appProperties.list,
+    //         var apps = policy.appProperties.list,
     //             instances = policy.instances.list;
 
-    //         for (i = 0; i < nodes.length; i += 1) {
-    //             nodeInstance = instances.filter(function (instance) {
-    //                 return instance.nodeName === nodes[i].name;
+    //         for (i = 0; i < apps.length; i += 1) {
+    //             appInstance = instances.filter(function (instance) {
+    //                 return instance.appName === apps[i].name;
     //             })[0];
-    //             // console.log(nodeInstance.targetState);
-    //             nodes[i].policyId = vm.get('policyId');
-    //             nodes[i].state = nodeInstance.targetState.toLowerCase();
+    //             // console.log(appInstance.targetState);
+    //             apps[i].policyId = vm.get('policyId');
+    //             apps[i].state = appInstance.targetState.toLowerCase();
     //         }
-    //         vm.set('nodes', nodes);
+    //         vm.set('apps', apps);
     //     });
     // },
 
     // onPolicy: function () {
     //     // this.getView().lookupReference('filters').removeAll();
     //     // this.getView().lookupReference('services').removeAll();
-    //     // this.updateNodes();
+    //     // this.updateApps();
     // },
 
     setPolicy: function (combo, newValue, oldValue) {
         if (oldValue !== null) {
             this.redirectTo('#apps/' + newValue, false);
-            this.updateNodes();
+            this.updateApps();
         }
     },
 
@@ -185,9 +185,9 @@ Ext.define('Ung.view.apps.AppsController', {
     // },
 
     /**
-     * method which initialize the node installation
+     * method which initialize the app installation
      */
-    onInstallNode: function (view, record) {
+    onInstallApp: function (view, record) {
         var me = this;
         record.set('status', 'installing');
         Rpc.asyncData('rpc.appManager.instantiate', record.get('name'), 1)

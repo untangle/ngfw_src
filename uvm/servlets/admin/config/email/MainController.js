@@ -11,7 +11,7 @@ Ext.define('Ung.config.email.MainController', {
     // mailSender: rpc.UvmContext.mailSender(),
     originalMailSender: null,
 
-    // smtpNode: rpc.appManager.app('smtp'),
+    // smtpApp: rpc.appManager.app('smtp'),
     // safelistAdminView: null,
 
     loadSettings: function (view) {

@@ -54,7 +54,7 @@ Ext.define('Ung.cmp.AppState', {
 
             if (vm.get('instance.targetState') === 'RUNNING') {
                 vm.set('instance.targetState', null);
-                // stop node
+                // stop app
                 appManager.stop(function (result, ex) {
                     if (ex) { Util.exceptionToast(ex); return false; }
                     appManager.getRunState(function (result2, ex2) {
@@ -69,12 +69,12 @@ Ext.define('Ung.cmp.AppState', {
 
                         // Util.successToast(vm.get('powerMessage'));
 
-                        // Ext.GlobalEvents.fireEvent('nodestatechange', result2, vm.get('nodeInstance'));
+                        // Ext.GlobalEvents.fireEvent('appstatechange', result2, vm.get('appInstance'));
                     });
                 });
             } else {
                 vm.set('instance.targetState', null);
-                // start node
+                // start app
                 appManager.start(function (result, ex) {
                     if (ex) {
                         Ext.Msg.alert('Error', ex.message);
@@ -93,7 +93,7 @@ Ext.define('Ung.cmp.AppState', {
                         // }
 
                         // Util.successToast(vm.get('powerMessage'));
-                        // Ext.GlobalEvents.fireEvent('nodestatechange', result2, vm.get('nodeInstance'));
+                        // Ext.GlobalEvents.fireEvent('appstatechange', result2, vm.get('appInstance'));
                     });
                 });
             }
