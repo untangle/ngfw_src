@@ -108,7 +108,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         xtype: 'combo',
         fieldLabel: 'Interface'.t(),
         editable: false,
-        store: Ung.apps.ipsecvpn.Data.wanList,
+//        store: Ung.apps.ipsecvpn.Data.wanList,
     }, {
         xtype: 'textfield',
         bind: '{record.left}',
@@ -161,29 +161,35 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         xtype:'combobox',
         bind: {
             value: '{record.phase1Cipher}',
-            hidden: '{!record.phase1Manual}'
+            hidden: '{!record.phase1Manual}',
+            store: '{P1CipherStore}'
         },
         fieldLabel: 'Encryption'.t(),
         editable: false,
-        store: 'P1CipherStore'
+        displayField: 'name',
+        valueField: 'value'
     }, {
         xtype:'combobox',
         bind: {
             value: '{record.phase1Hash}',
-            hidden: '{!record.phase1Manual}'
+            hidden: '{!record.phase1Manual}',
+            store: '{P1HashStore}'
         },
         fieldLabel: 'Hash'.t(),
         editable: false,
-        store: 'P1HashStore'
+        displayField: 'name',
+        valueField: 'value'
     }, {
         xtype:'combobox',
         bind: {
             value: '{record.phase1Group}',
-            hidden: '{!record.phase1Manual}'
+            hidden: '{!record.phase1Manual}',
+            store: '{P1GroupStore}'
         },
         fieldLabel: 'DH Key Group'.t(),
         editable: false,
-        store: 'P1GroupStore'
+        displayField: 'name',
+        valueField: 'value'
     }, {
         xtype:'numberfield',
         bind: {
@@ -203,29 +209,35 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         xtype:'combobox',
         bind: {
             value: '{record.phase2Cipher}',
-            hidden: '{!record.phase2Manual}'
+            hidden: '{!record.phase2Manual}',
+            store: '{P2CipherStore}'
         },
         fieldLabel: 'Encryption'.t(),
         editable: false,
-        store: 'P2CipherStore',
+        displayField: 'name',
+        valueField: 'value'
     }, {
         xtype:'combobox',
         bind: {
             value: '{record.phase2Hash}',
-            hidden: '{!record.phase2Manual}'
+            hidden: '{!record.phase2Manual}',
+            store: '{P2HashStore}'
         },
         fieldLabel: 'Hash'.t(),
         editable: false,
-        store: 'P2HashStore'
+        displayField: 'name',
+        valueField: 'value'
     }, {
         xtype:'combobox',
         bind: {
             value: '{record.phase2Group}',
-            hidden: '{!record.phase2Manual}'
+            hidden: '{!record.phase2Manual}',
+            store: '{P2GroupStore}'
         },
         fieldLabel: 'PFS Key Group'.t(),
         editable: false,
-        store: 'P2GroupStore'
+        displayField: 'name',
+        valueField: 'value'
     }, {
         xtype:'numberfield',
         bind: {
