@@ -28,17 +28,17 @@ public class AppsView implements Serializable
     private List<AppProperties> installable;
     private List<AppSettings> instances;
     private List<AppProperties> appProperties;
-    private Map<Long, List<AppMetric>> nodeMetrics;
+    private Map<Long, List<AppMetric>> appMetrics;
     private Map<String, License> licenseMap;
     private Map<Long, AppSettings.AppState> runStates;
 
-    public AppsView(int policyId, List<AppProperties> installable, List<AppSettings> instances, List<AppProperties> appProperties, Map<Long, List<AppMetric>> nodeMetrics, Map<String, License> license, Map<Long, AppSettings.AppState> runStates)
+    public AppsView(int policyId, List<AppProperties> installable, List<AppSettings> instances, List<AppProperties> appProperties, Map<Long, List<AppMetric>> appMetrics, Map<String, License> license, Map<Long, AppSettings.AppState> runStates)
     {
         this.policyId = policyId;
         this.installable = installable;
         this.instances = instances;
         this.appProperties = appProperties;
-        this.nodeMetrics = nodeMetrics;
+        this.appMetrics = appMetrics;
         this.licenseMap = license;
         this.runStates = runStates;
     }
@@ -47,14 +47,14 @@ public class AppsView implements Serializable
     public List<AppProperties> getInstallable() { return installable; }
     public List<AppSettings> getInstances() { return instances; }
     public List<AppProperties> getAppProperties() { return appProperties; }
-    public Map<Long, List<AppMetric>> getAppMetrics() { return nodeMetrics; }
+    public Map<Long, List<AppMetric>> getAppMetrics() { return appMetrics; }
     public Map<String, License> getLicenseMap() { return licenseMap; }
     public Map<Long, AppSettings.AppState> getRunStates() { return runStates; }
 
     @Override
     public String toString()
     {
-        return "AppsView\n  INSTALLABLE: " + installable + "\n  INSTANCES: " + instances + "\n  STAT DESCS: " + nodeMetrics;
+        return "AppsView\n  INSTALLABLE: " + installable + "\n  INSTANCES: " + instances + "\n  STAT DESCS: " + appMetrics;
     }
 
 }

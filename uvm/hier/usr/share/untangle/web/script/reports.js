@@ -1747,7 +1747,7 @@ Ext.define('Ung.panel.Reports', {
 
     statics: {
         isEvent: function (entry) {
-            return "com.untangle.node.reports.EventEntry" == entry.javaClass;
+            return "com.untangle.app.reports.EventEntry" == entry.javaClass;
         },
         getColumnRenderer: function (columnName) {
             if (!this.columnRenderers) {
@@ -2361,7 +2361,7 @@ Ext.define("Ung.panel.ExtraConditions", {
             isEmptyColumn = Ext.isEmpty(columnValue);
             if (!isEmptyColumn) {
                 conditions.push({
-                    "javaClass": "com.untangle.node.reports.SqlCondition",
+                    "javaClass": "com.untangle.app.reports.SqlCondition",
                     "column": columnValue,
                     "operator": operator.getValue(),
                     "value": value.getValue()

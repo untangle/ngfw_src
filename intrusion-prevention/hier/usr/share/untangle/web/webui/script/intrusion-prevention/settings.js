@@ -1,5 +1,5 @@
 Ext.define('Webui.intrusion-prevention.settings', {
-    extend:'Ung.NodeWin',
+    extend:'Ung.AppWin',
     statics: {
         preloadSettings: function(node){
             Ext.Ajax.request({

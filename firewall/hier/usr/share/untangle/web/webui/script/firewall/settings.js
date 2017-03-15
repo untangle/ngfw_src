@@ -1,5 +1,5 @@
 Ext.define('Webui.firewall.settings', {
-    extend:'Ung.NodeWin',
+    extend:'Ung.AppWin',
     panelRules: null,
     gridRules: null,
     gridEventLog: null,

@@ -1,5 +1,5 @@
 Ext.define('Webui.directory-connector.settings', {
-    extend:'Ung.NodeWin',
+    extend:'Ung.AppWin',
     panelUserNotificationApi: null,
     panelActiveDirectoryConnector: null,
     panelRadius: null,

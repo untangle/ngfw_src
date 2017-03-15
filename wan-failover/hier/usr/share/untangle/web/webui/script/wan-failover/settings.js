@@ -1,5 +1,5 @@
 Ext.define('Webui.wan-failover.settings', {
-    extend:'Ung.NodeWin',
+    extend:'Ung.AppWin',
     panelTests: null,
     gridWanStatus: null,
     gridTests: null,

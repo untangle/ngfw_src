@@ -1,6 +1,6 @@
 // SSL Inspector Settings
 Ext.define('Webui.ssl-inspector.settings', {
-    extend: 'Ung.NodeWin',
+    extend: 'Ung.AppWin',
     panelNodeConfiguration: null,
     gridTrustList: null,
     gridIgnoreRules: null,

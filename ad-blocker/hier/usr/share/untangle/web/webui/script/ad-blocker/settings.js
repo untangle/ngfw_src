@@ -1,5 +1,5 @@
 Ext.define('Webui.ad-blocker.settings', {
-    extend:'Ung.NodeWin',
+    extend:'Ung.AppWin',
     totalFiltersAvailable: null,
     totalFiltersEnabled:  null,
     totalCookiesAvailable: null,

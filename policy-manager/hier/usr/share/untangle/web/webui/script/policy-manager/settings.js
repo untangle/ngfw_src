@@ -1,5 +1,5 @@
 Ext.define('Webui.policy-manager.settings', {
-    extend:'Ung.NodeWin',
+    extend:'Ung.AppWin',
     gridRules: null,
     gridEventLog: null,
     getAppSummary: function() {

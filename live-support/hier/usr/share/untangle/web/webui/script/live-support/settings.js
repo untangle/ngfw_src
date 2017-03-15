@@ -1,5 +1,5 @@
 Ext.define('Webui.live-support.settings', {
-    extend:'Ung.NodeWin',
+    extend:'Ung.AppWin',
     hasReports: false,
     hasApply: false, // do not need save
     getAppSummary: function() {

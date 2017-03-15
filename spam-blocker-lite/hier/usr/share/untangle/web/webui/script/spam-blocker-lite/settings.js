@@ -1,5 +1,5 @@
 Ext.define('Webui.spam-blocker-lite.settings', {
-    extend:'Ung.NodeWin',
+    extend:'Ung.AppWin',
     emailPanel: null,
     gridEventLog: null,
     gridDnsblEventLog: null,

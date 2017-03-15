@@ -1,5 +1,5 @@
 Ext.define('Webui.branding-manager.settings', {
-    extend:'Ung.NodeWin',
+    extend:'Ung.AppWin',
     hasReports: false,
     panelBranding: null,
     getAppSummary: function() {

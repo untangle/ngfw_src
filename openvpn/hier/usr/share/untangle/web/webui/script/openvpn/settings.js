@@ -1,5 +1,5 @@
 Ext.define('Webui.openvpn.settings', {
-    extend:'Ung.NodeWin',
+    extend:'Ung.AppWin',
     groupsStore: null,
     panelClient: null,
     gridRemoteServers: null,

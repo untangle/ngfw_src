@@ -1,5 +1,5 @@
 Ext.define('Webui.ipsec-vpn.settings', {
-    extend:'Ung.NodeWin',
+    extend:'Ung.AppWin',
     panelOptions: null,
     gridTunnels: null,
     panelVPNConfig: null,

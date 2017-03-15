@@ -1,5 +1,5 @@
 Ext.define('Webui.captive-portal.settings', {
-    extend:'Ung.NodeWin',
+    extend:'Ung.AppWin',
     gridCaptiveStatus: null,
 
     panelCaptureRules: null,
