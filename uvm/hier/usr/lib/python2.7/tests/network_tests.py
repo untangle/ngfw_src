@@ -26,7 +26,7 @@ dyn_names = ['atstest.dnsalias.com', 'atstest2.dyndns-ip.com', 'atstest3.dnsalia
 
 defaultRackId = 1
 orig_netsettings = None
-test_untangle_com_ip = socket.gethostbyname("test.untangle.com")
+test_untangle_com_ip = socket.gethostbyname(global_functions.testServerHost)
 run_ftp_inbound_tests = None
 wan_IP = None
 device_in_office = False
@@ -891,7 +891,7 @@ class NetworkTests(unittest2.TestCase):
         setDynDNS(dynDNSUserName, dynDNSPassword, dyn_hostname)
         
         # since Untangle uses our own servers for ddclient, test boxes will show the office IP addresses so lookup up internal IP
-        outsideIP2 = global_functions.get_public_ip_address(base_URL=global_functions.tlsSmtpServerHost,localcall=True)
+        outsideIP2 = global_functions.get_public_ip_address(base_URL=global_functions.testServerHost,localcall=True)
         outsideIP2 = outsideIP2.rstrip()  # strip return character
 
         loopCounter = 60
