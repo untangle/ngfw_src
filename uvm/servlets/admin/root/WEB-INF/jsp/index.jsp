@@ -7,17 +7,13 @@
         <title>Untangle - ${buildStamp}</title>
 
         <script src="/jsonrpc/jsonrpc.js"></script>
-        <script src="/highcharts5/highstock.js"></script>
-        <script src="/highcharts5/highcharts-3d.js"></script>
+        <script src="/highcharts-5.0.9/highstock.js"></script>
+        <script src="/highcharts-5.0.9/highcharts-3d.js"></script>
 
         <!-- ExtJS lib & theme -->
         <script src="/ext6.2/ext-all-debug.js"></script>
         <script src="/ext6.2/classic/theme-${extjsTheme}/theme-${extjsTheme}.js"></script>
         <link href="/ext6.2/classic/theme-${extjsTheme}/resources/theme-${extjsTheme}-all.css" rel="stylesheet" />
-
-        <!-- ExtJS ux package -->
-        <script src="/ext6.2/ux-debug.js"></script>
-        <link href="/ext6.2/ux/classic/resources/ux-all.css" rel="stylesheet" />
 
         <%-- Triton theme already contains fontawesome --%>
         <c:if test="${extjsTheme!='triton'}">
