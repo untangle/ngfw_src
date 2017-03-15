@@ -74,7 +74,7 @@ Ext.define('Ung.view.apps.AppsController', {
                     viewPosition: node.viewPosition,
                     status: null,
                     targetState: result[0].instances.list.filter(function (instance) {
-                        return node.name === instance.nodeName;
+                        return node.name === instance.appName;
                     })[0].targetState
                 });
 

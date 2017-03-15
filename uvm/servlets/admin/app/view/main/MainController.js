@@ -87,7 +87,7 @@ Ext.define('Ung.view.main.MainController', {
             if (node === 'install') {
                 vm.set('activeItem', 'appsinstall');
             } else {
-                vm.set('nodeName', node);
+                vm.set('appName', node);
                 vm.set('activeItem', 'settings');
             }
         } else {

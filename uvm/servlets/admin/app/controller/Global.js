@@ -119,7 +119,7 @@ Ext.define('Ung.controller.Global', {
 
                 var policy = Ext.getStore('policies').findRecord('policyId', policyId);
                 var appInstance = Ext.Array.findBy(policy.get('instances').list, function (inst) {
-                    return inst.nodeName.replace('', '').replace('', '') === app;
+                    return inst.appName.replace('', '').replace('', '') === app;
                 });
                 var appProps = Ext.Array.findBy(policy.get('appProperties').list, function (prop) {
                     return prop.name.replace('', '').replace('', '') === app;
