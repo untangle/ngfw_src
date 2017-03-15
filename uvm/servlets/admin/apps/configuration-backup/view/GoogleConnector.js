@@ -31,8 +31,8 @@ Ext.define('Ung.apps.configurationbackup.view.GoogleConnector', {
                 text: 'Configure Google Drive'.t(),
                 //handler: Ung.Main.configureGoogleDrive
                 bind:{
-                	handler: '{googleDriveConfigure}'
-            	}
+                    handler: '{googleDriveConfigure}'
+                }
             }]
         } ,{
             xtype: 'fieldset',
@@ -80,7 +80,7 @@ Ext.define('Ung.apps.configurationbackup.view.GoogleConnector', {
                         tag: 'div',
                         'data-qtip': "The destination directory in google drive.".t()
                     }
-            	}]
+                }]
             }]
         }]
     }]
