@@ -35,13 +35,13 @@ import com.untangle.uvm.node.AppManagerSettings;
 import com.untangle.uvm.node.LicenseManager;
 import com.untangle.uvm.node.PolicyManager;
 import com.untangle.uvm.node.AppManager;
-import com.untangle.uvm.node.Node;
+import com.untangle.uvm.node.App;
 import com.untangle.uvm.node.AppProperties;
 import com.untangle.uvm.node.AppSettings;
 import com.untangle.uvm.node.License;
 import com.untangle.uvm.node.LicenseManager;
-import com.untangle.uvm.node.NodeMetric;
-import com.untangle.uvm.vnet.NodeBase;
+import com.untangle.uvm.node.AppMetric;
+import com.untangle.uvm.node.AppBase;
 
 /**
  * Implements AppManager.
@@ -53,9 +53,9 @@ public class AppManagerImpl implements AppManager
     private final Logger logger = Logger.getLogger(getClass());
 
     /**
-     * Stores a map of all currently loaded nodes from their nodeId to the Node instance
+     * Stores a map of all currently loaded nodes from their nodeId to the App instance
      */
-    private final Map<Long, Node> loadedAppsMap = new ConcurrentHashMap<Long, Node>();
+    private final Map<Long, App> loadedAppsMap = new ConcurrentHashMap<Long, App>();
 
     /**
      * Stores a map of all yet to be loaded nodes from their nodeId to their AppSettings
@@ -80,7 +80,7 @@ public class AppManagerImpl implements AppManager
         return this.settings;
     }
 
-    public void saveTargetState( Node node, AppSettings.AppState nodeState )
+    public void saveTargetState( App node, AppSettings.AppState nodeState )
     {
         if ( node == null ) {
             logger.error("Invalid argument saveTargetState(): node is null");
@@ -103,13 +103,13 @@ public class AppManagerImpl implements AppManager
         this._setSettings(this.settings);
     }
 
-    public List<Node> appInstances()
+    public List<App> appInstances()
     {
-        List<Node> nodeList = new ArrayList<Node>( loadedAppsMap.values() );
+        List<App> nodeList = new ArrayList<App>( loadedAppsMap.values() );
 
         // sort by view position, for convenience
-        Collections.sort(nodeList, new Comparator<Node>() {
-            public int compare(Node tci1, Node tci2) {
+        Collections.sort(nodeList, new Comparator<App>() {
+            public int compare(App tci1, App tci2) {
                 int rpi1 = tci1.getAppProperties().getViewPosition();
                 int rpi2 = tci2.getAppProperties().getViewPosition();
                 if (rpi1 == rpi2) {
@@ -125,7 +125,7 @@ public class AppManagerImpl implements AppManager
         return nodeList;
     }
 
-    public List<Node> nodeInstances()
+    public List<App> nodeInstances()
     {
         logger.warn("deprecated method called.", new Exception());
         return appInstances();
@@ -142,14 +142,14 @@ public class AppManagerImpl implements AppManager
         return appInstancesIds();
     }
     
-    public List<Node> appInstances( String nodeName )
+    public List<App> appInstances( String appName )
     {
-        nodeName = fixupName( nodeName ); // handle old names
+        appName = fixupName( appName ); // handle old names
         
-        List<Node> list = new LinkedList<Node>();
+        List<App> list = new LinkedList<App>();
 
-        for (Node node : loadedAppsMap.values()) {
-            if ( node.getAppProperties().getName().equals( nodeName ) ) {
+        for (App node : loadedAppsMap.values()) {
+            if ( node.getAppProperties().getName().equals( appName ) ) {
                 list.add( node );
             }
         }
@@ -157,33 +157,33 @@ public class AppManagerImpl implements AppManager
         return list;
     }
 
-    public List<Node> nodeInstances( String appName )
+    public List<App> nodeInstances( String appName )
     {
         logger.warn("deprecated method called.", new Exception());
         return appInstances( appName );
     }
     
-    public List<Node> appInstances( String name, Integer policyId )
+    public List<App> appInstances( String name, Integer policyId )
     {
         return appInstances( name, policyId, true);
     }
 
-    public List<Node> nodeInstances( String name, Integer policyId )
+    public List<App> nodeInstances( String name, Integer policyId )
     {
         logger.warn("deprecated method called.", new Exception());
         return appInstances( name, policyId, true );
     }
     
-    public List<Node> appInstances( String name, Integer policyId, boolean parents )
+    public List<App> appInstances( String name, Integer policyId, boolean parents )
     {
         name = fixupName( name ); // handle old names
 
-        List<Node> list = new ArrayList<Node>(loadedAppsMap.size());
+        List<App> list = new ArrayList<App>(loadedAppsMap.size());
 
-        for ( Node node : getAppsForPolicy( policyId, parents ) ) {
-            String nodeName = node.getAppProperties().getName();
+        for ( App node : getAppsForPolicy( policyId, parents ) ) {
+            String appName = node.getAppProperties().getName();
 
-            if ( nodeName.equals( name ) ) {
+            if ( appName.equals( name ) ) {
                 list.add( node );
             }
         }
@@ -191,18 +191,18 @@ public class AppManagerImpl implements AppManager
         return list;
     }
 
-    public List<Node> nodeInstances( String name, Integer policyId, boolean parents )
+    public List<App> nodeInstances( String name, Integer policyId, boolean parents )
     {
         logger.warn("deprecated method called.", new Exception());
         return appInstances( name, policyId, parents );
     }
     
-    public List<Node> appInstances( Integer policyId )
+    public List<App> appInstances( Integer policyId )
     {
         return getAppsForPolicy( policyId );
     }
 
-    public List<Node> nodeInstances( Integer policyId )
+    public List<App> nodeInstances( Integer policyId )
     {
         logger.warn("deprecated method called.", new Exception());
         return appInstances( policyId );
@@ -219,18 +219,18 @@ public class AppManagerImpl implements AppManager
         return appInstancesIds( policyId );
     }
 
-    protected List<Node> visibleApps( Integer policyId )
+    protected List<App> visibleApps( Integer policyId )
     {
-        List<Node> loadedNodes = appInstances();
-        List<Node> list = new ArrayList<Node>(loadedNodes.size());
+        List<App> loadedNodes = appInstances();
+        List<App> list = new ArrayList<App>(loadedNodes.size());
 
-        for (Node node : getAppsForPolicy( policyId )) {
+        for (App node : getAppsForPolicy( policyId )) {
             if ( !node.getAppProperties().getInvisible() ) {
                 list.add( node );
             }
         }
 
-        for (Node node : getAppsForPolicy( null /* services */ )) {
+        for (App node : getAppsForPolicy( null /* services */ )) {
             if ( !node.getAppProperties().getInvisible() ) {
                 list.add( node );
             }
@@ -239,58 +239,58 @@ public class AppManagerImpl implements AppManager
         return list;
     }
 
-    protected List<Node> visibleNodes( Integer policyId )
+    protected List<App> visibleNodes( Integer policyId )
     {
         logger.warn("deprecated method called.", new Exception());
         return visibleApps( policyId );
     }
 
-    public Node app( Long nodeId )
+    public App app( Long nodeId )
     {
         return loadedAppsMap.get( nodeId );
     }
 
-    public Node node( Long nodeId )
+    public App node( Long nodeId )
     {
         logger.warn("deprecated method called.", new Exception());
         return app( nodeId );
     }
 
-    public Node app( String name )
+    public App app( String name )
     {
         name = fixupName( name ); // handle old names
 
-        List<Node> nodes = appInstances( name );
+        List<App> nodes = appInstances( name );
         if( nodes.size() > 0 ){
             return nodes.get(0);
         }
         return null;
     }
 
-    public Node node( String name )
+    public App node( String name )
     {
         logger.warn("deprecated method called.", new Exception());
         return app( name );
     }
     
-    public Node instantiate( String nodeName ) throws Exception
+    public App instantiate( String appName ) throws Exception
     {
-        return instantiate( nodeName, 1 /* Default Policy ID */ );
+        return instantiate( appName, 1 /* Default Policy ID */ );
     }
 
-    public Node instantiate( String nodeName, Integer policyId ) throws Exception
+    public App instantiate( String appName, Integer policyId ) throws Exception
     {
-        nodeName = fixupName( nodeName ); // handle old names
+        appName = fixupName( appName ); // handle old names
 
-        logger.info("instantiate( name:" + nodeName + " , policy:" + policyId + " )");
+        logger.info("instantiate( name:" + appName + " , policy:" + policyId + " )");
 
-        if ( ! UvmContextFactory.context().licenseManager().isLicenseValid( nodeName ) ) {
-            logger.info( "No valid license for: " + nodeName );
-            logger.info( "Requesting trial for: " + nodeName );
-            UvmContextFactory.context().licenseManager().requestTrialLicense( nodeName );
+        if ( ! UvmContextFactory.context().licenseManager().isLicenseValid( appName ) ) {
+            logger.info( "No valid license for: " + appName );
+            logger.info( "Requesting trial for: " + appName );
+            UvmContextFactory.context().licenseManager().requestTrialLicense( appName );
         }
 
-        Node node = null;
+        App node = null;
         AppProperties appProperties = null;
         AppSettings appSettings = null;
 
@@ -298,12 +298,12 @@ public class AppManagerImpl implements AppManager
             if (!live)
                 throw new Exception("AppManager is shut down");
 
-            logger.info("initializing node: " + nodeName);
-            appProperties = getAppProperties( nodeName );
+            logger.info("initializing node: " + appName);
+            appProperties = getAppProperties( appName );
 
             if ( appProperties == null ) {
-                logger.error("Missing node properties for " + nodeName);
-                throw new Exception("Missing node properties for " + nodeName);
+                logger.error("Missing node properties for " + appName);
+                throw new Exception("Missing node properties for " + appName);
             }
 
             if ( ! checkArchitecture( appProperties.getSupportedArchitectures() ) ) {
@@ -324,31 +324,31 @@ public class AppManagerImpl implements AppManager
             if (appProperties.getType() == AppProperties.Type.SERVICE )
                 policyId = null;
 
-            if ( appInstances( nodeName, policyId, false ).size() >= 1 )
-                throw new Exception("Too many instances of " + nodeName + " in policy " + policyId + ".");
+            if ( appInstances( appName, policyId, false ).size() >= 1 )
+                throw new Exception("Too many instances of " + appName + " in policy " + policyId + ".");
             for ( AppSettings n2 : getSettings().getApps() ) {
-                String nodeName1 = nodeName;
-                String nodeName2 = n2.getAppName();
+                String appName1 = appName;
+                String appName2 = n2.getAppName();
                 Integer policyId1 = policyId;
                 Integer policyId2 = n2.getPolicyId();
                 /**
                  * If the node name and policies are equal, they are dupes
                  */
-                if ( nodeName1.equals(nodeName2) && ( (policyId1 == policyId2) || ( policyId1 != null && policyId1.equals(policyId2) ) ) )
-                     throw new Exception("Too many instances of " + nodeName + " in policy " + policyId + ".");
+                if ( appName1.equals(appName2) && ( (policyId1 == policyId2) || ( policyId1 != null && policyId1.equals(policyId2) ) ) )
+                     throw new Exception("Too many instances of " + appName + " in policy " + policyId + ".");
             }
 
-            appSettings = createNewAppSettings( policyId, nodeName );
+            appSettings = createNewAppSettings( policyId, appName );
 
             /**
              * Check all the basics
              */
             if (appSettings == null)
-                throw new Exception("Null appSettings: " + nodeName);
+                throw new Exception("Null appSettings: " + appName);
             if (appProperties == null)
-                throw new Exception("Null appProperties: " + nodeName);
+                throw new Exception("Null appProperties: " + appName);
 
-            node = NodeBase.loadClass( appProperties, appSettings, true );
+            node = AppBase.loadClass( appProperties, appSettings, true );
 
             if (node != null) {
                 loadedAppsMap.put( appSettings.getId(), node );
@@ -377,14 +377,14 @@ public class AppManagerImpl implements AppManager
         destroy( app( nodeId ));
     }
 
-    public void destroy( Node node ) throws Exception
+    public void destroy( App node ) throws Exception
     {
         if ( node == null) {
             throw new Exception("Node " + node + " not found");
         }
 
         synchronized (this) {
-            NodeBase nodeBase = (NodeBase) node;
+            AppBase nodeBase = (AppBase) node;
             nodeBase.destroyClass();
 
             /**
@@ -411,7 +411,7 @@ public class AppManagerImpl implements AppManager
     public Map<Long, AppSettings.AppState> allAppStates()
     {
         HashMap<Long, AppSettings.AppState> result = new HashMap<Long, AppSettings.AppState>();
-        for (Node node : loadedAppsMap.values()) {
+        for (App node : loadedAppsMap.values()) {
             result.put(node.getAppSettings().getId(), node.getRunState());
         }
 
@@ -424,15 +424,15 @@ public class AppManagerImpl implements AppManager
         return allAppStates();
     }
     
-    public boolean isInstantiated( String nodeName )
+    public boolean isInstantiated( String appName )
     {
-        return (this.app(nodeName) != null);
+        return (this.app(appName) != null);
     }
 
     public Map<Long, AppSettings> getAllAppSettings()
     {
         HashMap<Long, AppSettings> result = new HashMap<Long, AppSettings>();
-        for (Node node : loadedAppsMap.values()) {
+        for (App node : loadedAppsMap.values()) {
             result.put(node.getAppSettings().getId(), node.getAppSettings());
         }
         return result;
@@ -447,7 +447,7 @@ public class AppManagerImpl implements AppManager
     public Map<Long, AppProperties> getAllAppPropertiesMap()
     {
         HashMap<Long, AppProperties> result = new HashMap<Long, AppProperties>();
-        for (Node node : loadedAppsMap.values()) {
+        for (App node : loadedAppsMap.values()) {
             result.put(node.getAppSettings().getId(), node.getAppProperties());
         }
         return result;
@@ -489,8 +489,8 @@ public class AppManagerImpl implements AppManager
         /**
          * Build the license map
          */
-        List<Node> visibleNodes = nm.visibleApps( policyId );
-        for (Node node : visibleNodes) {
+        List<App> visibleNodes = nm.visibleApps( policyId );
+        for (App node : visibleNodes) {
             String n = node.getAppProperties().getName();
             licenseMap.put(n, lm.getLicense(n));
         }
@@ -519,8 +519,8 @@ public class AppManagerImpl implements AppManager
          * Build the nodeMetrics (stats in the UI)
          * Remove visible installableNodes from installableNodes
          */
-        Map<Long, List<NodeMetric>> nodeMetrics = new HashMap<Long, List<NodeMetric>>(visibleNodes.size());
-        for (Node visibleNode : visibleNodes) {
+        Map<Long, List<AppMetric>> nodeMetrics = new HashMap<Long, List<AppMetric>>(visibleNodes.size());
+        for (App visibleNode : visibleNodes) {
             Long nodeId = visibleNode.getAppSettings().getId();
             Integer nodePolicyId = visibleNode.getAppSettings().getPolicyId();
             nodeMetrics.put( nodeId , visibleNode.getMetrics());
@@ -538,7 +538,7 @@ public class AppManagerImpl implements AppManager
         /**
          * SPECIAL CASE: If Web Filter is installed in this rack OR licensed for non-trial, hide Web Monitor
          */
-        List<Node> webFilterNodes = UvmContextFactory.context().appManager().appInstances( "web-filter", policyId );
+        List<App> webFilterNodes = UvmContextFactory.context().appManager().appInstances( "web-filter", policyId );
         if (webFilterNodes != null && webFilterNodes.size() > 0) {
             installableNodesMap.remove("Web Monitor"); /* hide web monitor from left hand nav */
         }
@@ -552,7 +552,7 @@ public class AppManagerImpl implements AppManager
         /**
          * SPECIAL CASE: If Spam Blocker is installed in this rack OR licensed for non-trial, hide Spam Blocker Lite
          */
-        List<Node> spamBlockerNodes = UvmContextFactory.context().appManager().appInstances( "spam-blocker", policyId);
+        List<App> spamBlockerNodes = UvmContextFactory.context().appManager().appInstances( "spam-blocker", policyId);
         if (spamBlockerNodes != null && spamBlockerNodes.size() > 0) {
             installableNodesMap.remove("Spam Blocker Lite"); /* hide spam blocker lite from left hand nav */
         }
@@ -572,11 +572,11 @@ public class AppManagerImpl implements AppManager
         Collections.sort( installableNodes );
 
         List<AppProperties> appProperties = new LinkedList<AppProperties>();
-        for (Node node : visibleNodes) {
+        for (App node : visibleNodes) {
             appProperties.add(node.getAppProperties());
         }
         List<AppSettings> appSettings  = new LinkedList<AppSettings>();
-        for (Node node : visibleNodes) {
+        for (App node : visibleNodes) {
             appSettings.add(node.getAppSettings());
         }
 
@@ -610,7 +610,7 @@ public class AppManagerImpl implements AppManager
 
         if ( logger.isDebugEnabled() ) {
             logger.debug("Fininshed restarting nodes:");
-            for ( Node node : loadedAppsMap.values() ) {
+            for ( App node : loadedAppsMap.values() ) {
                 logger.info( node.getAppSettings().getId() + " " + node.getAppSettings().getAppName() );
             }
         }
@@ -624,7 +624,7 @@ public class AppManagerImpl implements AppManager
     {
         List<Runnable> tasks = new ArrayList<Runnable>();
 
-        for ( final Node node : loadedAppsMap.values() ) {
+        for ( final App node : loadedAppsMap.values() ) {
             Runnable r = new Runnable() {
                     public void run()
                     {
@@ -634,7 +634,7 @@ public class AppManagerImpl implements AppManager
                         logger.info("Stopping  : " + name + " (" + id + ")");
 
                         long startTime = System.currentTimeMillis();
-                        ((NodeBase)node).stopIfRunning( );
+                        ((AppBase)node).stopIfRunning( );
                         long endTime = System.currentTimeMillis();
 
                         logger.info("Stopped   : " + name + " (" + id + ") [" + ( ((float)(endTime - startTime))/1000.0f ) + " seconds]");
@@ -668,7 +668,7 @@ public class AppManagerImpl implements AppManager
             if (! nodeProps.getAutoLoad() )
                 continue;
 
-            List<Node> list = appInstances( nodeProps.getName() );
+            List<App> list = appInstances( nodeProps.getName() );
 
             /**
              * If a node is "autoLoad" and is not loaded, instantiate it
@@ -676,7 +676,7 @@ public class AppManagerImpl implements AppManager
             if ( list.size() == 0 ) {
                 try {
                     logger.info("Auto-loading new node: " + nodeProps.getName());
-                    Node node = instantiate( nodeProps.getName() );
+                    App node = instantiate( nodeProps.getName() );
 
                     if ( nodeProps.getAutoStart() ) {
                         node.start();
@@ -771,11 +771,11 @@ public class AppManagerImpl implements AppManager
                     {
                         public void run()
                         {
-                            NodeBase node = null;
+                            AppBase node = null;
                             try {
                                 logger.info("Restarting: " + name + " (" + appSettings.getId() + ")");
                                 long startTime = System.currentTimeMillis();
-                                node = (NodeBase) NodeBase.loadClass(nodeProps, appSettings, false);
+                                node = (AppBase) AppBase.loadClass(nodeProps, appSettings, false);
                                 long endTime   = System.currentTimeMillis();
                                 logger.info("Restarted : " + name + " (" + appSettings.getId() + ") [" + ( ((float)(endTime - startTime))/1000.0f ) + " seconds]");
 
@@ -864,16 +864,16 @@ public class AppManagerImpl implements AppManager
         return loadable;
     }
 
-    private boolean isLoaded( String nodeName )
+    private boolean isLoaded( String appName )
     {
-        if ( nodeName == null ) {
+        if ( appName == null ) {
             logger.warn("Invalid arguments");
             return false;
         }
         
-        for( Node n : loadedAppsMap.values() ) {
+        for( App n : loadedAppsMap.values() ) {
             String name = n.getAppSettings().getAppName();
-            if ( nodeName.equals( name ) ) {
+            if ( appName.equals( name ) ) {
                 return true;
             }
         }
@@ -970,7 +970,7 @@ public class AppManagerImpl implements AppManager
         return appProperties;
     }
 
-    private AppSettings createNewAppSettings( Integer policyId, String nodeName )
+    private AppSettings createNewAppSettings( Integer policyId, String appName )
     {
         long newAppId = settings.getNextAppId();
 
@@ -979,7 +979,7 @@ public class AppManagerImpl implements AppManager
          */
         settings.setNextAppId( newAppId + 1 );
 
-        return new AppSettings( newAppId, policyId, nodeName );
+        return new AppSettings( newAppId, policyId, appName );
     }
 
     private void saveNewAppSettings( AppSettings appSettings )
@@ -1004,12 +1004,12 @@ public class AppManagerImpl implements AppManager
         return parentList;
     }
 
-    private List<Node> getAppsForPolicy( Integer policyId )
+    private List<App> getAppsForPolicy( Integer policyId )
     {
         return getAppsForPolicy( policyId, true );
     }
 
-    private List<Node> getAppsForPolicy( Integer policyId, boolean parents )
+    private List<App> getAppsForPolicy( Integer policyId, boolean parents )
     {
         List<Integer> parentPolicies = null;
 
@@ -1028,17 +1028,17 @@ public class AppManagerImpl implements AppManager
          * parentAppSettingsArray[n] == list of loadedAppsMap in parentPolicies[n]
          * Policies are ordered parentAppSettingsArray[0] is the first parent, etc
          */
-        List<List<Node>> parentNodeArray = new ArrayList<List<Node>>(parentPolicies.size());
-        List<Node> thisPolicyNodes = new ArrayList<Node>();
+        List<List<App>> parentAppArray = new ArrayList<List<App>>(parentPolicies.size());
+        List<App> thisPolicyApps = new ArrayList<App>();
         for (int i = 0; i < parentPolicies.size(); i++) {
-            parentNodeArray.add(new ArrayList<Node>());
+            parentAppArray.add(new ArrayList<App>());
         }
 
         /*
          * Fill in the inner list, at the end each of these is the list of
          * nodes in the policy.
          */
-        for (Node node : loadedAppsMap.values()) {
+        for (App node : loadedAppsMap.values()) {
             Integer nodePolicyId = node.getAppSettings().getPolicyId();
 
             /**
@@ -1047,11 +1047,11 @@ public class AppManagerImpl implements AppManager
              */
             int i = parentPolicies.indexOf(nodePolicyId);
             if (i >= 0) {
-                parentNodeArray.get(i).add( node );
+                parentAppArray.get(i).add( node );
             } else if ( nodePolicyId == null && policyId == null ) {
-                thisPolicyNodes.add( node );
+                thisPolicyApps.add( node );
             } else if ( nodePolicyId != null && policyId != null && nodePolicyId.equals(policyId) ) {
-                thisPolicyNodes.add( node );
+                thisPolicyApps.add( node );
             }
         }
 
@@ -1060,17 +1060,17 @@ public class AppManagerImpl implements AppManager
          * And all the nodes from the parent IFF they don't already exists
          * will only add the first entry (which will be most specific node.
          */
-        List<Node> finalList = thisPolicyNodes;
+        List<App> finalList = thisPolicyApps;
         Set<String> names = new HashSet<String>();
 
-        for (Node node : thisPolicyNodes) {
+        for (App node : thisPolicyApps) {
             String n = node.getAppSettings().getAppName();
             if (!names.contains(n))
                 names.add(n);
         }
-        for (List<Node> parentPolicyList : parentNodeArray) {
+        for (List<App> parentPolicyList : parentAppArray) {
             if (parentPolicyList != null) {
-                for (Node node : parentPolicyList) {
+                for (App node : parentPolicyList) {
                     String n = node.getAppSettings().getAppName();
                     if (!names.contains(n)) {
                         names.add(n);
@@ -1103,7 +1103,7 @@ public class AppManagerImpl implements AppManager
         try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
     }
 
-    private List<Long> appToIdList( List<Node> apps )
+    private List<Long> appToIdList( List<App> apps )
     {
         if ( apps == null ) return null;
         List<Long> idList = apps.stream().map( a -> a.getAppSettings().getId() ).collect(Collectors.toCollection(ArrayList::new));

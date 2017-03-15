@@ -24,14 +24,14 @@ import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.IPMaskedAddress;
-import com.untangle.uvm.node.NodeMetric;
+import com.untangle.uvm.node.AppMetric;
 import com.untangle.uvm.node.PortRange;
 import com.untangle.uvm.node.License;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.vnet.Subscription;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Protocol;
-import com.untangle.uvm.vnet.NodeBase;
+import com.untangle.uvm.node.AppBase;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.ForkedEventHandler;
 import com.untangle.uvm.vnet.SessionEventHandler;
@@ -42,7 +42,7 @@ import com.untangle.uvm.servlet.UploadHandler;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.log4j.Logger;
 
-public class SslInspectorApp extends NodeBase
+public class SslInspectorApp extends AppBase
 {
     private final Logger logger = Logger.getLogger(SslInspectorApp.class);
 
@@ -68,12 +68,12 @@ public class SslInspectorApp extends NodeBase
     {
         super(appSettings, appProperties);
 
-        this.addMetric(new NodeMetric(STAT_INSPECTED, I18nUtil.marktr("Sessions inspected")));
-        this.addMetric(new NodeMetric(STAT_IGNORED, I18nUtil.marktr("Sessions ignored")));
-        this.addMetric(new NodeMetric(STAT_UNTRUSTED, I18nUtil.marktr("Sessions untrusted")));
-        this.addMetric(new NodeMetric(STAT_ABANDONED, I18nUtil.marktr("Sessions abandoned")));
-        this.addMetric(new NodeMetric(STAT_COUNTER, I18nUtil.marktr("Total sessions")));
-        this.addMetric(new NodeMetric(STAT_BLOCKED, I18nUtil.marktr("Sessions blocked")));
+        this.addMetric(new AppMetric(STAT_INSPECTED, I18nUtil.marktr("Sessions inspected")));
+        this.addMetric(new AppMetric(STAT_IGNORED, I18nUtil.marktr("Sessions ignored")));
+        this.addMetric(new AppMetric(STAT_UNTRUSTED, I18nUtil.marktr("Sessions untrusted")));
+        this.addMetric(new AppMetric(STAT_ABANDONED, I18nUtil.marktr("Sessions abandoned")));
+        this.addMetric(new AppMetric(STAT_COUNTER, I18nUtil.marktr("Total sessions")));
+        this.addMetric(new AppMetric(STAT_BLOCKED, I18nUtil.marktr("Sessions blocked")));
 
         SslInspectorParserEventHandler clientParser = new SslInspectorParserEventHandler(true, this);
         SslInspectorParserEventHandler serverParser = new SslInspectorParserEventHandler(false, this);

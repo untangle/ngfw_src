@@ -22,8 +22,8 @@ import com.untangle.uvm.DeviceTable;
 import com.untangle.uvm.DeviceTableEntry;
 import com.untangle.uvm.GeographyManager;
 import com.untangle.uvm.Tag;
-import com.untangle.uvm.vnet.NodeSession;
-import com.untangle.uvm.vnet.NodeSession;
+import com.untangle.uvm.vnet.AppSession;
+import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.node.IPMatcher;
 import com.untangle.uvm.node.IntMatcher;
 import com.untangle.uvm.node.IntfMatcher;
@@ -220,7 +220,7 @@ public class RuleCondition implements JSONString, Serializable
     /**
      * Returns true if this matcher matches the specified session
      */
-    public boolean matches( NodeSession sess )
+    public boolean matches( AppSession sess )
     {
         if (!initialized)
             computeMatchers();
@@ -447,7 +447,7 @@ public class RuleCondition implements JSONString, Serializable
         }
     }
 
-    private boolean _matches( NodeSession sess )
+    private boolean _matches( AppSession sess )
     {
         String  tmpStr = null;
         Integer tmpInt = null;
@@ -673,7 +673,7 @@ public class RuleCondition implements JSONString, Serializable
             return globMatcher.isMatch( tmpStr );
 
         case HTTP_URL:
-            tmpStr = (String) sess.globalAttachment(NodeSession.KEY_HTTP_URL);
+            tmpStr = (String) sess.globalAttachment(AppSession.KEY_HTTP_URL);
             if ( urlMatcher == null ) {
                 logger.warn("Invalid Url Matcher: " + this.urlMatcher);
                 return false;
@@ -681,50 +681,50 @@ public class RuleCondition implements JSONString, Serializable
             return urlMatcher.isMatch( tmpStr );
 
         case HTTP_HOST:
-            tmpStr = (String) sess.globalAttachment(NodeSession.KEY_HTTP_HOSTNAME);
+            tmpStr = (String) sess.globalAttachment(AppSession.KEY_HTTP_HOSTNAME);
             return globMatcher.isMatch( tmpStr );
 
         case HTTP_REFERER:
-            tmpStr = (String) sess.globalAttachment(NodeSession.KEY_HTTP_REFERER);
+            tmpStr = (String) sess.globalAttachment(AppSession.KEY_HTTP_REFERER);
             return globMatcher.isMatch( tmpStr );
             
         case HTTP_URI:
-            tmpStr = (String) sess.globalAttachment(NodeSession.KEY_HTTP_URI);
+            tmpStr = (String) sess.globalAttachment(AppSession.KEY_HTTP_URI);
             return globMatcher.isMatch( tmpStr );
 
         case HTTP_CONTENT_TYPE:
         case WEB_FILTER_RESPONSE_CONTENT_TYPE:
-            tmpStr = (String) sess.globalAttachment(NodeSession.KEY_HTTP_CONTENT_TYPE);
+            tmpStr = (String) sess.globalAttachment(AppSession.KEY_HTTP_CONTENT_TYPE);
             return globMatcher.isMatch( tmpStr );
             
         case HTTP_REQUEST_METHOD:            
         case WEB_FILTER_REQUEST_METHOD:            
-            tmpStr = (String) sess.globalAttachment(NodeSession.KEY_HTTP_REQUEST_METHOD);
+            tmpStr = (String) sess.globalAttachment(AppSession.KEY_HTTP_REQUEST_METHOD);
             return globMatcher.isMatch( tmpStr );
 
         case HTTP_REQUEST_FILE_PATH:
         case WEB_FILTER_REQUEST_FILE_PATH:
-            tmpStr = (String) sess.globalAttachment(NodeSession.KEY_HTTP_REQUEST_FILE_PATH);
+            tmpStr = (String) sess.globalAttachment(AppSession.KEY_HTTP_REQUEST_FILE_PATH);
             return globMatcher.isMatch( tmpStr );
 
         case HTTP_REQUEST_FILE_NAME:
         case WEB_FILTER_REQUEST_FILE_NAME:
-            tmpStr = (String) sess.globalAttachment(NodeSession.KEY_HTTP_REQUEST_FILE_NAME);
+            tmpStr = (String) sess.globalAttachment(AppSession.KEY_HTTP_REQUEST_FILE_NAME);
             return globMatcher.isMatch( tmpStr );
 
         case HTTP_REQUEST_FILE_EXTENSION:
         case WEB_FILTER_REQUEST_FILE_EXTENSION:
-            tmpStr = (String) sess.globalAttachment(NodeSession.KEY_HTTP_REQUEST_FILE_EXTENSION);
+            tmpStr = (String) sess.globalAttachment(AppSession.KEY_HTTP_REQUEST_FILE_EXTENSION);
             return globMatcher.isMatch( tmpStr );
 
         case HTTP_RESPONSE_FILE_NAME:
         case WEB_FILTER_RESPONSE_FILE_NAME:
-            tmpStr = (String) sess.globalAttachment(NodeSession.KEY_HTTP_RESPONSE_FILE_NAME);
+            tmpStr = (String) sess.globalAttachment(AppSession.KEY_HTTP_RESPONSE_FILE_NAME);
             return globMatcher.isMatch( tmpStr );
 
         case HTTP_RESPONSE_FILE_EXTENSION:
         case WEB_FILTER_RESPONSE_FILE_EXTENSION:
-            tmpStr = (String) sess.globalAttachment(NodeSession.KEY_HTTP_RESPONSE_FILE_EXTENSION);
+            tmpStr = (String) sess.globalAttachment(AppSession.KEY_HTTP_RESPONSE_FILE_EXTENSION);
             return globMatcher.isMatch( tmpStr );
 
         case HTTP_USER_AGENT_OS:
@@ -736,7 +736,7 @@ public class RuleCondition implements JSONString, Serializable
             return globMatcher.isMatch( tmpStr );
 
         case HTTP_CONTENT_LENGTH:
-            tmpLong = (Long) sess.globalAttachment(NodeSession.KEY_HTTP_CONTENT_LENGTH);
+            tmpLong = (Long) sess.globalAttachment(AppSession.KEY_HTTP_CONTENT_LENGTH);
             if ( tmpLong == null )
                 return false;
             if ( this.intMatcher == null ) {
@@ -746,27 +746,27 @@ public class RuleCondition implements JSONString, Serializable
             return this.intMatcher.isMatch( tmpLong );
             
         case PROTOCOL_CONTROL_SIGNATURE:
-            tmpStr = (String) sess.globalAttachment(NodeSession.KEY_APPLICATION_CONTROL_LITE_SIGNATURE);
+            tmpStr = (String) sess.globalAttachment(AppSession.KEY_APPLICATION_CONTROL_LITE_SIGNATURE);
             return globMatcher.isMatch( tmpStr );
                                                  
         case PROTOCOL_CONTROL_CATEGORY:
-            tmpStr = (String) sess.globalAttachment(NodeSession.KEY_APPLICATION_CONTROL_LITE_SIGNATURE_CATEGORY);
+            tmpStr = (String) sess.globalAttachment(AppSession.KEY_APPLICATION_CONTROL_LITE_SIGNATURE_CATEGORY);
             return globMatcher.isMatch( tmpStr );
 
         case PROTOCOL_CONTROL_DESCRIPTION:
-            tmpStr = (String) sess.globalAttachment(NodeSession.KEY_APPLICATION_CONTROL_LITE_SIGNATURE_DESCRIPTION);
+            tmpStr = (String) sess.globalAttachment(AppSession.KEY_APPLICATION_CONTROL_LITE_SIGNATURE_DESCRIPTION);
             return globMatcher.isMatch( tmpStr );
 
         case WEB_FILTER_CATEGORY:
-            tmpStr = (String) sess.globalAttachment(NodeSession.KEY_WEB_FILTER_BEST_CATEGORY_NAME);
+            tmpStr = (String) sess.globalAttachment(AppSession.KEY_WEB_FILTER_BEST_CATEGORY_NAME);
             return globMatcher.isMatch( tmpStr );
 
         case WEB_FILTER_CATEGORY_DESCRIPTION:
-            tmpStr = (String) sess.globalAttachment(NodeSession.KEY_WEB_FILTER_BEST_CATEGORY_DESCRIPTION);
+            tmpStr = (String) sess.globalAttachment(AppSession.KEY_WEB_FILTER_BEST_CATEGORY_DESCRIPTION);
             return globMatcher.isMatch( tmpStr );
 
         case WEB_FILTER_FLAGGED:
-            Boolean flagged = (Boolean) sess.globalAttachment(NodeSession.KEY_WEB_FILTER_FLAGGED);
+            Boolean flagged = (Boolean) sess.globalAttachment(AppSession.KEY_WEB_FILTER_FLAGGED);
             if (flagged == null)
                 return false;
             return flagged.booleanValue();
@@ -779,13 +779,13 @@ public class RuleCondition implements JSONString, Serializable
             return false;
 
         case USERNAME:
-            tmpStr = (String) sess.globalAttachment(NodeSession.KEY_PLATFORM_USERNAME);
+            tmpStr = (String) sess.globalAttachment(AppSession.KEY_PLATFORM_USERNAME);
             if (this.userMatcher.isMatch(tmpStr))
                 return true;
             return false;
 
         case DIRECTORY_CONNECTOR_GROUP:
-            String username = (String) sess.globalAttachment(NodeSession.KEY_PLATFORM_USERNAME);
+            String username = (String) sess.globalAttachment(AppSession.KEY_PLATFORM_USERNAME);
             if (username == null)
                 return false;
 
@@ -809,24 +809,24 @@ public class RuleCondition implements JSONString, Serializable
             return isMemberOf;
 
         case APPLICATION_CONTROL_APPLICATION:
-            tmpStr = (String) sess.globalAttachment(NodeSession.KEY_APPLICATION_CONTROL_APPLICATION);
+            tmpStr = (String) sess.globalAttachment(AppSession.KEY_APPLICATION_CONTROL_APPLICATION);
             return globMatcher.isMatch( tmpStr );
 
 
         case APPLICATION_CONTROL_CATEGORY:
-            tmpStr = (String) sess.globalAttachment(NodeSession.KEY_APPLICATION_CONTROL_CATEGORY);
+            tmpStr = (String) sess.globalAttachment(AppSession.KEY_APPLICATION_CONTROL_CATEGORY);
             return globMatcher.isMatch( tmpStr );
             
         case APPLICATION_CONTROL_PROTOCHAIN:
-            tmpStr = (String) sess.globalAttachment(NodeSession.KEY_APPLICATION_CONTROL_PROTOCHAIN);
+            tmpStr = (String) sess.globalAttachment(AppSession.KEY_APPLICATION_CONTROL_PROTOCHAIN);
             return globMatcher.isMatch( tmpStr );
 
         case APPLICATION_CONTROL_DETAIL:
-            tmpStr = (String) sess.globalAttachment(NodeSession.KEY_APPLICATION_CONTROL_DETAIL);
+            tmpStr = (String) sess.globalAttachment(AppSession.KEY_APPLICATION_CONTROL_DETAIL);
             return globMatcher.isMatch( tmpStr );
 
         case APPLICATION_CONTROL_CONFIDENCE:
-            tmpInt = (Integer) sess.globalAttachment(NodeSession.KEY_APPLICATION_CONTROL_CONFIDENCE);
+            tmpInt = (Integer) sess.globalAttachment(AppSession.KEY_APPLICATION_CONTROL_CONFIDENCE);
             if ( tmpInt == null )
                 return false;
             if (this.intMatcher == null) {
@@ -837,7 +837,7 @@ public class RuleCondition implements JSONString, Serializable
             return this.intMatcher.isMatch( tmpInt );
 
         case APPLICATION_CONTROL_PRODUCTIVITY:
-            tmpInt = (Integer) sess.globalAttachment(NodeSession.KEY_APPLICATION_CONTROL_PRODUCTIVITY);
+            tmpInt = (Integer) sess.globalAttachment(AppSession.KEY_APPLICATION_CONTROL_PRODUCTIVITY);
             if ( tmpInt == null )
                 return false;
             if (this.intMatcher == null) {
@@ -848,7 +848,7 @@ public class RuleCondition implements JSONString, Serializable
             return this.intMatcher.isMatch( tmpInt );
 
         case APPLICATION_CONTROL_RISK:
-            tmpInt = (Integer) sess.globalAttachment(NodeSession.KEY_APPLICATION_CONTROL_RISK);
+            tmpInt = (Integer) sess.globalAttachment(AppSession.KEY_APPLICATION_CONTROL_RISK);
             if ( tmpInt == null )
                 return false;
             if (this.intMatcher == null) {
@@ -880,15 +880,15 @@ public class RuleCondition implements JSONString, Serializable
             return globMatcher.isMatch( tmpStr );
 
         case SSL_INSPECTOR_SNI_HOSTNAME:
-            tmpStr = (String) sess.globalAttachment(NodeSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME);
+            tmpStr = (String) sess.globalAttachment(AppSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME);
             return globMatcher.isMatch( tmpStr );
 
         case SSL_INSPECTOR_SUBJECT_DN:
-            tmpStr = (String) sess.globalAttachment(NodeSession.KEY_SSL_INSPECTOR_SUBJECT_DN);
+            tmpStr = (String) sess.globalAttachment(AppSession.KEY_SSL_INSPECTOR_SUBJECT_DN);
             return globMatcher.isMatch( tmpStr );
 
         case SSL_INSPECTOR_ISSUER_DN:
-            tmpStr = (String) sess.globalAttachment(NodeSession.KEY_SSL_INSPECTOR_ISSUER_DN);
+            tmpStr = (String) sess.globalAttachment(AppSession.KEY_SSL_INSPECTOR_ISSUER_DN);
             return globMatcher.isMatch( tmpStr );
 
         case HOST_IN_PENALTY_BOX:

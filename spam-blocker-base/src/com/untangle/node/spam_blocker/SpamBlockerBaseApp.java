@@ -17,13 +17,13 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.Pulse;
-import com.untangle.uvm.vnet.NodeBase;
+import com.untangle.uvm.node.AppBase;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipelineConnector;
-import com.untangle.uvm.node.NodeMetric;
+import com.untangle.uvm.node.AppMetric;
 
-public abstract class SpamBlockerBaseApp extends NodeBase
+public abstract class SpamBlockerBaseApp extends AppBase
 {
     private static final Logger logger = Logger.getLogger( SpamBlockerBaseApp.class );
 
@@ -81,12 +81,12 @@ public abstract class SpamBlockerBaseApp extends NodeBase
             badEmailName = "Phish";
         }
 
-        this.addMetric(new NodeMetric(STAT_RECEIVED, I18nUtil.marktr("Messages received")));
-        this.addMetric(new NodeMetric(STAT_PASS, I18nUtil.marktr("Messages passed")));
-        this.addMetric(new NodeMetric(STAT_DROP, I18nUtil.marktr("Messages dropped")));
-        this.addMetric(new NodeMetric(STAT_MARK, I18nUtil.marktr("Messages marked")));
-        this.addMetric(new NodeMetric(STAT_QUARANTINE, I18nUtil.marktr("Messages quarantined")));
-        this.addMetric(new NodeMetric(STAT_SPAM, I18nUtil.marktr("Spam detected")));
+        this.addMetric(new AppMetric(STAT_RECEIVED, I18nUtil.marktr("Messages received")));
+        this.addMetric(new AppMetric(STAT_PASS, I18nUtil.marktr("Messages passed")));
+        this.addMetric(new AppMetric(STAT_DROP, I18nUtil.marktr("Messages dropped")));
+        this.addMetric(new AppMetric(STAT_MARK, I18nUtil.marktr("Messages marked")));
+        this.addMetric(new AppMetric(STAT_QUARANTINE, I18nUtil.marktr("Messages quarantined")));
+        this.addMetric(new AppMetric(STAT_SPAM, I18nUtil.marktr("Spam detected")));
 
         // We want to make sure that spam is before virus in the pipeline (towards the client for smtp)
         // Would want the tarpit event handler before the casing, this way if it blocks a session the casing doesn't have to be initialized.

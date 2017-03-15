@@ -10,7 +10,7 @@ import org.json.JSONObject;
 import org.json.JSONString;
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.vnet.NodeSession;
+import com.untangle.uvm.vnet.AppSession;
 
 @SuppressWarnings("serial")
 public class SslInspectorRule implements JSONString, Serializable
@@ -84,7 +84,7 @@ public class SslInspectorRule implements JSONString, Serializable
         return jO.toString();
     }
 
-    public boolean matches(NodeSession sess)
+    public boolean matches(AppSession sess)
     {
         if (!isLive())
             return false;

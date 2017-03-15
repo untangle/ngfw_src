@@ -25,7 +25,7 @@ import com.untangle.uvm.vnet.Token;
 import com.untangle.uvm.util.UrlMatchingUtil;
 import com.untangle.uvm.node.GenericRule;
 import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.vnet.AppTCPSession;
 
 /**
  * Blocks unwanted HTTP traffic - unwanted Ad URLs
@@ -42,7 +42,7 @@ public class AdBlockerHandler extends HttpEventHandler
     }
 
     @Override
-    public void handleTCPNewSession( NodeTCPSession session )
+    public void handleTCPNewSession( AppTCPSession session )
     {
         super.handleTCPNewSession( session );
         Map<RequestLineToken, List<String>> killers = new HashMap<RequestLineToken, List<String>>();
@@ -50,18 +50,18 @@ public class AdBlockerHandler extends HttpEventHandler
     }
     
     @Override
-    protected ChunkToken doRequestBody( NodeTCPSession session, ChunkToken c )
+    protected ChunkToken doRequestBody( AppTCPSession session, ChunkToken c )
     {
         return c;
     }
 
     @Override
-    protected void doRequestBodyEnd( NodeTCPSession session )
+    protected void doRequestBodyEnd( AppTCPSession session )
     {
     }
 
     @Override
-    protected HeaderToken doRequestHeader( NodeTCPSession sess, HeaderToken requestHeader )
+    protected HeaderToken doRequestHeader( AppTCPSession sess, HeaderToken requestHeader )
     {
 
         node.incrementScanCount();
@@ -85,24 +85,24 @@ public class AdBlockerHandler extends HttpEventHandler
     }
 
     @Override
-    protected RequestLineToken doRequestLine( NodeTCPSession session, RequestLineToken requestLine )
+    protected RequestLineToken doRequestLine( AppTCPSession session, RequestLineToken requestLine )
     {
         return requestLine;
     }
 
     @Override
-    protected ChunkToken doResponseBody( NodeTCPSession session, ChunkToken c )
+    protected ChunkToken doResponseBody( AppTCPSession session, ChunkToken c )
     {
         return c;
     }
 
     @Override
-    protected void doResponseBodyEnd( NodeTCPSession session )
+    protected void doResponseBodyEnd( AppTCPSession session )
     {
     }
 
     @Override
-    protected HeaderToken doResponseHeader( NodeTCPSession session, HeaderToken responseHeader )
+    protected HeaderToken doResponseHeader( AppTCPSession session, HeaderToken responseHeader )
     {
         // releaseResponse();
 
@@ -116,7 +116,7 @@ public class AdBlockerHandler extends HttpEventHandler
     }
 
     @Override
-    protected StatusLine doStatusLine( NodeTCPSession session, StatusLine statusLine )
+    protected StatusLine doStatusLine( AppTCPSession session, StatusLine statusLine )
     {
         releaseResponse( session );
         return statusLine;
@@ -132,7 +132,7 @@ public class AdBlockerHandler extends HttpEventHandler
      *            the requested path.
      * @return an HTML response.
      */
-    private String checkRequest( NodeTCPSession session, InetAddress clientIp, int port, RequestLineToken requestLine, HeaderToken header )
+    private String checkRequest( AppTCPSession session, InetAddress clientIp, int port, RequestLineToken requestLine, HeaderToken header )
     {
         if (!node.getSettings().getScanAds()){
             clientCookie( session, requestLine, header );
@@ -232,7 +232,7 @@ public class AdBlockerHandler extends HttpEventHandler
     // cookie stuff -----------------------------------------------------------
 
     @SuppressWarnings("unchecked")    
-    private void clientCookie( NodeTCPSession session, RequestLineToken requestLine, HeaderToken h )
+    private void clientCookie( AppTCPSession session, RequestLineToken requestLine, HeaderToken h )
     {
         if (!node.getSettings().getScanCookies())
             return;
@@ -333,7 +333,7 @@ public class AdBlockerHandler extends HttpEventHandler
     }
 
     @SuppressWarnings("unchecked")    
-    private HeaderToken addCookieKillers( NodeTCPSession session, RequestLineToken rl, HeaderToken h )
+    private HeaderToken addCookieKillers( AppTCPSession session, RequestLineToken rl, HeaderToken h )
     {
         Map<RequestLineToken, List<String>> killers = (Map<RequestLineToken, List<String>>) session.attachment();
 
@@ -353,7 +353,7 @@ public class AdBlockerHandler extends HttpEventHandler
         return h;
     }
 
-    private HeaderToken serverCookie( NodeTCPSession session, RequestLineToken rl, HeaderToken h )
+    private HeaderToken serverCookie( AppTCPSession session, RequestLineToken rl, HeaderToken h )
     {
         if (!node.getSettings().getScanCookies())
             return h;

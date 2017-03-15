@@ -247,7 +247,7 @@ public abstract class IPNewSessionRequestImpl implements IPNewSessionRequest
         return this.stringAttachments.get(key);
     }
 
-    public void copyAttachments( NodeSessionImpl session )
+    public void copyAttachments( AppSessionImpl session )
     {
         for( Map.Entry<String,Object> entry : stringAttachments.entrySet() ) {
             session.attach( entry.getKey(), entry.getValue() );

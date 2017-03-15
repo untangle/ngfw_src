@@ -1986,9 +1986,9 @@ Ext.define("Ung.Main", {
         }, this);
     },
     showSessions: function () {
-        Ung.Main.showNodeSessions(0);
+        Ung.Main.showAppSessions(0);
     },
-    showNodeSessions: function (nodeIdArg) {
+    showAppSessions: function (nodeIdArg) {
         Ext.require(['Webui.config.sessionMonitor'], function () {
             if (Ung.Main.sessionMonitorWin == null) {
                 Ung.Main.sessionMonitorWin = Ext.create('Webui.config.sessionMonitor', {});

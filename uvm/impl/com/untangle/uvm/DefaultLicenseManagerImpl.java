@@ -63,7 +63,7 @@ public class DefaultLicenseManagerImpl implements LicenseManager
         return this.licenses;
     }
 
-    public void requestTrialLicense( String nodeName ) throws Exception
+    public void requestTrialLicense( String appName ) throws Exception
     {
         return;
     }

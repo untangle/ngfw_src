@@ -13,17 +13,17 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.ByteBuffer;
 
-import com.untangle.uvm.vnet.NodeSession;
+import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.vnet.UDPNewSessionRequest;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.vnet.UDPNewSessionRequest;
-import com.untangle.uvm.vnet.NodeTCPSession;
-import com.untangle.uvm.vnet.NodeUDPSession;
+import com.untangle.uvm.vnet.AppTCPSession;
+import com.untangle.uvm.vnet.AppUDPSession;
 import com.untangle.uvm.vnet.IPPacketHeader;
-import com.untangle.uvm.vnet.NodeSession;
+import com.untangle.uvm.vnet.AppSession;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Level;
 
@@ -92,14 +92,14 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
     }
 
     @Override
-    public void handleTCPFinalized(NodeTCPSession session)
+    public void handleTCPFinalized(AppTCPSession session)
     {
         cleanupActiveSession(session, true);
         super.handleTCPFinalized(session);
     }
 
     @Override
-    public void handleTCPClientChunk(NodeTCPSession sess, ByteBuffer data)
+    public void handleTCPClientChunk(AppTCPSession sess, ByteBuffer data)
     {
         ApplicationControlStatus status = (ApplicationControlStatus) sess.attachment();
 
@@ -133,7 +133,7 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
     }
 
     @Override
-    public void handleTCPServerChunk(NodeTCPSession sess, ByteBuffer data)
+    public void handleTCPServerChunk(AppTCPSession sess, ByteBuffer data)
     {
         ApplicationControlStatus status = (ApplicationControlStatus) sess.attachment();
 
@@ -177,14 +177,14 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
     }
 
     @Override
-    public void handleUDPFinalized(NodeUDPSession session)
+    public void handleUDPFinalized(AppUDPSession session)
     {
         cleanupActiveSession(session, true);
         super.handleUDPFinalized(session);
     }
 
     @Override
-    public void handleUDPClientPacket(NodeUDPSession sess, ByteBuffer data, IPPacketHeader header)
+    public void handleUDPClientPacket(AppUDPSession sess, ByteBuffer data, IPPacketHeader header)
     {
         ApplicationControlStatus status = (ApplicationControlStatus) sess.attachment();
 
@@ -218,7 +218,7 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
     }
 
     @Override
-    public void handleUDPServerPacket(NodeUDPSession sess, ByteBuffer data, IPPacketHeader header)
+    public void handleUDPServerPacket(AppUDPSession sess, ByteBuffer data, IPPacketHeader header)
     {
         ApplicationControlStatus status = (ApplicationControlStatus) sess.attachment();
 
@@ -282,7 +282,7 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
         return;
     }
 
-    private TrafficAction processTraffic(boolean isClient, ApplicationControlStatus status, NodeSession sess, ByteBuffer data)
+    private TrafficAction processTraffic(boolean isClient, ApplicationControlStatus status, AppSession sess, ByteBuffer data)
     {
         // create string to pass session data to the classd daemon
         // string format = CMD:ID:DATALEN
@@ -330,19 +330,19 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
         }
 
         // update the global attachments
-        sess.globalAttach(NodeSession.KEY_APPLICATION_CONTROL_APPLICATION, status.application);
-        sess.globalAttach(NodeSession.KEY_APPLICATION_CONTROL_PROTOCHAIN, status.protochain);
-        sess.globalAttach(NodeSession.KEY_APPLICATION_CONTROL_DETAIL, status.detail);
-        sess.globalAttach(NodeSession.KEY_APPLICATION_CONTROL_CONFIDENCE, status.confidence);
+        sess.globalAttach(AppSession.KEY_APPLICATION_CONTROL_APPLICATION, status.application);
+        sess.globalAttach(AppSession.KEY_APPLICATION_CONTROL_PROTOCHAIN, status.protochain);
+        sess.globalAttach(AppSession.KEY_APPLICATION_CONTROL_DETAIL, status.detail);
+        sess.globalAttach(AppSession.KEY_APPLICATION_CONTROL_CONFIDENCE, status.confidence);
 
         // search for the application in the rules hashtable
         ApplicationControlProtoRule protoRule = node.settings.searchProtoRules(status.application);
 
         // match found so see if we need to block or flag
         if (protoRule != null) {
-            sess.globalAttach(NodeSession.KEY_APPLICATION_CONTROL_CATEGORY, protoRule.getCategory());
-            sess.globalAttach(NodeSession.KEY_APPLICATION_CONTROL_PRODUCTIVITY, protoRule.getProductivity());
-            sess.globalAttach(NodeSession.KEY_APPLICATION_CONTROL_RISK, protoRule.getRisk());
+            sess.globalAttach(AppSession.KEY_APPLICATION_CONTROL_CATEGORY, protoRule.getCategory());
+            sess.globalAttach(AppSession.KEY_APPLICATION_CONTROL_PRODUCTIVITY, protoRule.getProductivity());
+            sess.globalAttach(AppSession.KEY_APPLICATION_CONTROL_RISK, protoRule.getRisk());
 
             // first we handle protocols set for block
             if (protoRule.getBlock() == true) {
@@ -394,7 +394,7 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
         return processLogicRules(isClient, status, sess, data);
     }
 
-    private TrafficAction processLogicRules(boolean isClient, ApplicationControlStatus status, NodeSession sess, ByteBuffer data)
+    private TrafficAction processLogicRules(boolean isClient, ApplicationControlStatus status, AppSession sess, ByteBuffer data)
     {
         ApplicationControlLogicRule logicRule = findLogicRule(sess);
         TrafficAction action = null;
@@ -465,7 +465,7 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
         }
     }
 
-    public void cleanupActiveSession(NodeSession sess, boolean isFinalized)
+    public void cleanupActiveSession(AppSession sess, boolean isFinalized)
     {
         ApplicationControlStatus status = (ApplicationControlStatus) sess.attachment();
 
@@ -643,11 +643,11 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
     }
 
     // find the first matching classification rule
-    private ApplicationControlLogicRule findLogicRule(NodeSession sess)
+    private ApplicationControlLogicRule findLogicRule(AppSession sess)
     {
         List<ApplicationControlLogicRule> logicList = this.node.getSettings().getLogicRules();
 
-        logger.debug("Checking Rules against NodeSession : " + sess.getProtocol() + " " + sess.getOrigClientAddr().getHostAddress() + ":" + sess.getOrigClientPort() + " -> " + sess.getNewServerAddr().getHostAddress() + ":" + sess.getNewServerPort());
+        logger.debug("Checking Rules against AppSession : " + sess.getProtocol() + " " + sess.getOrigClientAddr().getHostAddress() + ":" + sess.getOrigClientPort() + " -> " + sess.getNewServerAddr().getHostAddress() + ":" + sess.getNewServerPort());
 
         if (logicList == null)
             return null;

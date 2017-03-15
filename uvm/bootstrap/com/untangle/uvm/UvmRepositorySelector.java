@@ -73,9 +73,9 @@ public class UvmRepositorySelector implements RepositorySelector
     /**
      * Set the current thread's logging config to the "Node" settings
      */
-    public void setLoggingNode(Long nodeId)
+    public void setLoggingApp(Long nodeId)
     {
-        this.setThreadLoggingInformation("node-" + nodeId.toString());
+        this.setThreadLoggingInformation("app-" + nodeId.toString());
     }
 
     /**

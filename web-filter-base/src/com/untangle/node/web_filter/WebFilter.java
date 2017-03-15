@@ -6,13 +6,13 @@ package com.untangle.node.web_filter;
 import java.util.List;
 
 import com.untangle.uvm.node.GenericRule;
-import com.untangle.uvm.node.Node;
+import com.untangle.uvm.node.App;
 
 /**
  * Interface the the WebFilter Node.
  *
  */
-public interface WebFilter extends Node
+public interface WebFilter extends App
 {
     WebFilterSettings getSettings();
     void setSettings(WebFilterSettings settings);

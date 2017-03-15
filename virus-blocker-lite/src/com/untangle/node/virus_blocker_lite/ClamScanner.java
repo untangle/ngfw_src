@@ -18,7 +18,7 @@ import com.untangle.node.virus_blocker.VirusCloudScanner;
 import com.untangle.node.virus_blocker.VirusCloudFeedback;
 import com.untangle.node.virus_blocker.VirusCloudResult;
 import com.untangle.node.clam.ClamScannerClientLauncher;
-import com.untangle.uvm.vnet.NodeSession;
+import com.untangle.uvm.vnet.AppSession;
 
 import org.apache.log4j.Logger;
 
@@ -44,7 +44,7 @@ public class ClamScanner implements VirusScanner
         return "virus_blocker_lite";
     }
 
-    public VirusScannerResult scanFile(File scanfile, NodeSession session)
+    public VirusScannerResult scanFile(File scanfile, AppSession session)
     {
         VirusBlockerState virusState = (VirusBlockerState) session.attachment();
 

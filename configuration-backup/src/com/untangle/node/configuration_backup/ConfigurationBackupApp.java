@@ -24,11 +24,11 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.node.License;
 import com.untangle.uvm.node.DirectoryConnector;
-import com.untangle.uvm.vnet.NodeBase;
+import com.untangle.uvm.node.AppBase;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.util.I18nUtil;
 
-public class ConfigurationBackupApp extends NodeBase
+public class ConfigurationBackupApp extends AppBase
 {
     private final Logger logger = Logger.getLogger(ConfigurationBackupApp.class);
 

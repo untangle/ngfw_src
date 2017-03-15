@@ -7,9 +7,9 @@ import java.nio.ByteBuffer;
 
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
-import com.untangle.uvm.vnet.NodeSession;
-import com.untangle.uvm.vnet.NodeTCPSession;
-import com.untangle.uvm.vnet.NodeUDPSession;
+import com.untangle.uvm.vnet.AppSession;
+import com.untangle.uvm.vnet.AppTCPSession;
+import com.untangle.uvm.vnet.AppUDPSession;
 import com.untangle.uvm.vnet.IPPacketHeader;
 import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
@@ -37,50 +37,50 @@ public class EventHandler extends AbstractEventHandler
     {
     }
 
-    public void handleTCPNewSession( NodeTCPSession session )
+    public void handleTCPNewSession( AppTCPSession session )
     {
         handleNewSession( session, Protocol.TCP );
     }
 
-    public void handleUDPNewSession( NodeUDPSession session )
+    public void handleUDPNewSession( AppUDPSession session )
     {
         handleNewSession( session, Protocol.UDP);
     }
 
-    private void handleNewSession(NodeSession session, Protocol protocol)
+    private void handleNewSession(AppSession session, Protocol protocol)
     {
     }
 
-    public void handleTCPFinalized( NodeTCPSession session )
+    public void handleTCPFinalized( AppTCPSession session )
     {
         handleFinalized( session, Protocol.TCP );
     }
 
-    public void handleUDPFinalized( NodeUDPSession session )
+    public void handleUDPFinalized( AppUDPSession session )
     {
         handleFinalized( session, Protocol.UDP );
     }
 
-    private void handleFinalized( NodeSession session, Protocol protocol )
+    private void handleFinalized( AppSession session, Protocol protocol )
     {
     }
 
-    public void handleTCPClientChunk( NodeTCPSession session, ByteBuffer data  )
+    public void handleTCPClientChunk( AppTCPSession session, ByteBuffer data  )
     {
         super.handleTCPClientChunk( session, data );
     }
 
-    public void handleTCPServerChunk( NodeTCPSession session, ByteBuffer data  )
+    public void handleTCPServerChunk( AppTCPSession session, ByteBuffer data  )
     {
         super.handleTCPServerChunk( session, data );
     }
 
-    public void handleUDPClientPacket( NodeUDPSession session, ByteBuffer data, IPPacketHeader header )
+    public void handleUDPClientPacket( AppUDPSession session, ByteBuffer data, IPPacketHeader header )
     {
         super.handleUDPClientPacket( session, data, header );
     }
 
-    public void handleUDPServerPacket( NodeUDPSession session, ByteBuffer data, IPPacketHeader header )
+    public void handleUDPServerPacket( AppUDPSession session, ByteBuffer data, IPPacketHeader header )
     {
         super.handleUDPServerPacket( session, data, header );
     }

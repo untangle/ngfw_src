@@ -15,7 +15,7 @@ import com.untangle.uvm.util.NonceFactory;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.node.AppSettings;
-import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.vnet.AppTCPSession;
 
 /**
  * Generates a replacement page for Nodes that block traffic.
@@ -64,23 +64,23 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
         return nonceFactory.removeNonce(nonce);
     }
 
-    public Token[] generateResponse( T o, NodeTCPSession session )
+    public Token[] generateResponse( T o, AppTCPSession session )
     {
         return generateResponse(o, session, null, null );
     }
 
-    public Token[] generateResponse( T o, NodeTCPSession session, String uri, HeaderToken requestHeader )
+    public Token[] generateResponse( T o, AppTCPSession session, String uri, HeaderToken requestHeader )
     {
         String n = generateNonce(o);
         return generateResponse(n, session, uri, requestHeader );
     }
 
-    public Token[] generateResponse( String nonce, NodeTCPSession session )
+    public Token[] generateResponse( String nonce, AppTCPSession session )
     {
         return generateResponse(nonce, session, null, null );
     }
 
-    public Token[] generateResponse( String nonce, NodeTCPSession session, String uri, HeaderToken requestHeader )
+    public Token[] generateResponse( String nonce, AppTCPSession session, String uri, HeaderToken requestHeader )
     {
         if (imagePreferred(uri, requestHeader)) {
             return generateSimplePage(nonce, true);
@@ -101,7 +101,7 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
         }
     }
 
-    public Token[] generateSimpleResponse( String nonce, NodeTCPSession session, String uri, HeaderToken requestHeader )
+    public Token[] generateSimpleResponse( String nonce, AppTCPSession session, String uri, HeaderToken requestHeader )
     {
         return generateSimplePage(nonce, imagePreferred(uri, requestHeader));
     }

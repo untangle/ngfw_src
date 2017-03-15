@@ -25,11 +25,11 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.Affinity;
-import com.untangle.uvm.vnet.NodeBase;
+import com.untangle.uvm.node.AppBase;
 import com.untangle.uvm.vnet.SessionEventHandler;
 import com.untangle.uvm.vnet.ForkedEventHandler;
 
-public class SmtpImpl extends NodeBase implements MailExport
+public class SmtpImpl extends AppBase implements MailExport
 {
     private static final long ONE_GB = (1024L * 1024L * 1024L);
 

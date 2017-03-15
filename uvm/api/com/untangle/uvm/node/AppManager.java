@@ -12,7 +12,7 @@ import com.untangle.uvm.node.AppSettings;
 import com.untangle.uvm.AppsView;
 
 /**
- * Local interface for managing Node instances.
+ * Local interface for managing App instances.
  */
 public interface AppManager
 {
@@ -22,122 +22,122 @@ public interface AppManager
     AppManagerSettings getSettings();
 
     /**
-     * Get <code>Node</code>s of all instantiated nodes.
+     * Get <code>App</code>s of all instantiated apps.
      *
-     * @return list of all node ids.
+     * @return list of all app ids.
      */
-    List<Node> appInstances();
-    List<Node> nodeInstances(); //deprecated version
+    List<App> appInstances();
+    List<App> nodeInstances(); //deprecated version
     List<Long> appInstancesIds();
     List<Long> nodeInstancesIds(); //deprecated version
     
     /**
-     * Node instances by name.
+     * App instances by name.
      *
-     * @param name name of the node.
-     * @return tids of corresponding nodes.
+     * @param name name of the app.
+     * @return tids of corresponding apps.
      */
-    List<Node> appInstances( String name );
-    List<Node> nodeInstances( String name ); //deprecated version
+    List<App> appInstances( String name );
+    List<App> nodeInstances( String name ); //deprecated version
 
     /**
-     * Node instances by policy.
+     * App instances by policy.
      *
-     * @param policy policy of node.
-     * @return tids of corresponding nodes.
+     * @param policy policy of app.
+     * @return tids of corresponding apps.
      */
-    List<Node> appInstances( Integer policyId );
-    List<Node> nodeInstances( Integer policyId ); //deprecated version
+    List<App> appInstances( Integer policyId );
+    List<App> nodeInstances( Integer policyId ); //deprecated version
     List<Long> appInstancesIds( Integer policyId );
     List<Long> nodeInstancesIds( Integer policyId ); //deprecated version
 
     /**
-     * Node instances by name policy, this gets the nodes in the parents to.
+     * App instances by name policy, this gets the apps in the parents to.
      *
-     * @param name name of node.
-     * @param policy policy of node.
-     * @return tids of corresponding nodes.
+     * @param name name of app.
+     * @param policy policy of app.
+     * @return tids of corresponding apps.
      */
-    List<Node> appInstances( String name, Integer policyId );
-    List<Node> nodeInstances( String name, Integer policyId ); //deprecated version
+    List<App> appInstances( String name, Integer policyId );
+    List<App> nodeInstances( String name, Integer policyId ); //deprecated version
 
     /**
-     * Node instances by name policy.
+     * App instances by name policy.
      *
-     * @param name name of node.
-     * @param policy policy of node.
-     * @param parents true to fetch the nodes in the parents as well.
-     * @return tids of corresponding nodes.
+     * @param name name of app.
+     * @param policy policy of app.
+     * @param parents true to fetch the apps in the parents as well.
+     * @return tids of corresponding apps.
      */
-    List<Node> appInstances( String name, Integer policyId, boolean parents );
-    List<Node> nodeInstances( String name, Integer policyId, boolean parents ); //deprecated version
+    List<App> appInstances( String name, Integer policyId, boolean parents );
+    List<App> nodeInstances( String name, Integer policyId, boolean parents ); //deprecated version
 
     /**
-     * Get the <code>Node</code> for this appId
+     * Get the <code>App</code> for this appId
      *
      * @param appId of the instance.
-     * @return the instance's <code>Node</code>.
+     * @return the instance's <code>App</code>.
      */
-    Node app( Long appId );
-    Node node( Long appId ); //deprecated version
+    App app( Long appId );
+    App node( Long appId ); //deprecated version
 
     /**
-     * Get the <code>Node</code> for a node instance;
-     * if the are more than a node instance for the provided name,
-     * the first node instance is returned.
+     * Get the <code>App</code> for a app instance;
+     * if the are more than a app instance for the provided name,
+     * the first app instance is returned.
      *
-     * @param name of the node.
-     * @return the instance's <code>Node</code>.
+     * @param name of the app.
+     * @return the instance's <code>App</code>.
      */
-    Node app( String name );
-    Node node( String name ); //deprecated version
+    App app( String name );
+    App node( String name ); //deprecated version
     
     /**
-     * Create a new node instance under the given policy.  Note
+     * Create a new app instance under the given policy.  Note
      * that it is an error to specify a non-null policy for a service,
      * or a null policy for a non-service.
      *
-     * @param name of the node.
+     * @param name of the app.
      * @param policy the policy this instance is applied to.
-     * @return the Node of the instance
+     * @return the App of the instance
      * @exception Exception if the instance cannot be created.
      */
-    Node instantiate( String name, Integer policyId ) throws Exception;
+    App instantiate( String name, Integer policyId ) throws Exception;
 
     /**
-     * Create a new node instance under the default policy, or in
-     * the null policy if the node is a service.
+     * Create a new app instance under the default policy, or in
+     * the null policy if the app is a service.
      *
-     * @param name of the node.
-     * @return the Node of the instance
+     * @param name of the app.
+     * @return the App of the instance
      * @exception Exception if the instance cannot be created.
      */
-    Node instantiate( String name ) throws Exception;
+    App instantiate( String name ) throws Exception;
 
     /**
-     * Destroy a node instance.
+     * Destroy a app instance.
      *
      * @param appId of instance to be destroyed.
      */
     void destroy( Long appId ) throws Exception;
 
     /**
-     * Save the new target state of the specified node
+     * Save the new target state of the specified app
      *
-     * @param node instance 
+     * @param app instance 
      */
-    void saveTargetState( Node node, AppSettings.AppState appState );
+    void saveTargetState( App app, AppSettings.AppState appState );
 
     /**
-     * Get the runtime state for all nodes in one call.
+     * Get the runtime state for all apps in one call.
      *
-     * @return a <code>Map</code> from node ID to AppState for all nodes
+     * @return a <code>Map</code> from app ID to AppState for all apps
      */
     Map<Long, AppSettings.AppState> allAppStates();
     Map<Long, AppSettings.AppState> allNodeStates(); //deprecated version
     
     /**
-     * Returns true if the given node/app is instantiated in the rack
+     * Returns true if the given app/app is instantiated in the rack
      * false otherwise
      *
      * Example arg: 'firewall'
@@ -145,25 +145,25 @@ public interface AppManager
     boolean isInstantiated( String appName );
     
     /**
-     * Get the appSettings for all nodes in one call.
+     * Get the appSettings for all apps in one call.
      *
-     * @return a <code>Map</code> from node ID to AppSettings for all nodes
+     * @return a <code>Map</code> from app ID to AppSettings for all apps
      */
     Map<Long, AppSettings> getAllAppSettings();
     Map<Long, AppSettings> allNodeSettings(); // deprecated version
 
     /**
-     * Get the appProperties for all installed nodes in one call.
+     * Get the appProperties for all installed apps in one call.
      *
-     * @return a <code>Map</code> from node ID to AppProperties for all installed nodes
+     * @return a <code>Map</code> from app ID to AppProperties for all installed apps
      */
     Map<Long, AppProperties> getAllAppPropertiesMap();
     Map<Long, AppProperties> allNodeProperties(); // deprecated version
     
     /**
-     * Get the appProperties for all nodes in one call.
+     * Get the appProperties for all apps in one call.
      *
-     * @return a <code>List</code> of AppProperties for all nodes
+     * @return a <code>List</code> of AppProperties for all apps
      */
     List<AppProperties> getAllAppProperties();
     List<AppProperties> getAllNodeProperties(); // deprecated version
@@ -172,14 +172,14 @@ public interface AppManager
      * Get the view of the apps/rack when the specified policy/rack is displayed
      *
      * @param p policy.
-     * @return visible nodes for this policy.
+     * @return visible apps for this policy.
      */
     AppsView getAppsView( Integer policyId );
 
     /**
      * Get the appsview for all policies
      *
-     * @return visible nodes for every policy.
+     * @return visible apps for every policy.
      */
     AppsView[] getAppsViews();
 

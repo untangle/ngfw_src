@@ -18,13 +18,13 @@ import com.untangle.uvm.HookCallback;
 import com.untangle.uvm.HookManager;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.node.License;
-import com.untangle.uvm.node.NodeMetric;
+import com.untangle.uvm.node.AppMetric;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipelineConnector;
-import com.untangle.uvm.vnet.NodeBase;
+import com.untangle.uvm.node.AppBase;
 
-public class BandwidthControlApp extends NodeBase
+public class BandwidthControlApp extends AppBase
 {
     public static final String STAT_PRIORITIZE = "prioritize";
     public static final String STAT_TAGGED = "tagged";
@@ -52,8 +52,8 @@ public class BandwidthControlApp extends NodeBase
     {
         super( appSettings, appProperties );
 
-        this.addMetric(new NodeMetric(STAT_PRIORITIZE, I18nUtil.marktr("Session prioritized")));
-        this.addMetric(new NodeMetric(STAT_TAGGED, I18nUtil.marktr("Host tagged")));
+        this.addMetric(new AppMetric(STAT_PRIORITIZE, I18nUtil.marktr("Session prioritized")));
+        this.addMetric(new AppMetric(STAT_TAGGED, I18nUtil.marktr("Host tagged")));
 
         this.connector = UvmContextFactory.context().pipelineFoundry().create("bandwidth", this, null, handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.SERVER, 20, true);
         this.connectors = new PipelineConnector[] { connector };

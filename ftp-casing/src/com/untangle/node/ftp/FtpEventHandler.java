@@ -15,7 +15,7 @@ import com.untangle.uvm.vnet.Token;
 import com.untangle.uvm.vnet.ReleaseToken;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.Fitting;
-import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.vnet.AppTCPSession;
 
 /**
  * State machine for FTP traffic.
@@ -31,32 +31,32 @@ public abstract class FtpEventHandler extends AbstractEventHandler
     
     protected FtpEventHandler() {}
 
-    protected void doCommand( NodeTCPSession session, FtpCommand command )
+    protected void doCommand( AppTCPSession session, FtpCommand command )
     {
         session.sendObjectToServer( command );
     }
 
-    protected void doReply( NodeTCPSession session, FtpReply reply )
+    protected void doReply( AppTCPSession session, FtpReply reply )
     {
         session.sendObjectToClient( reply );
     }
 
-    protected void doClientData( NodeTCPSession session, ChunkToken chunk )
+    protected void doClientData( AppTCPSession session, ChunkToken chunk )
     {
         session.sendObjectToServer( chunk );
     }
 
-    protected void doServerData( NodeTCPSession session, ChunkToken chunk )
+    protected void doServerData( AppTCPSession session, ChunkToken chunk )
     {
         session.sendObjectToClient( chunk );
     }
 
-    protected void doClientDataEnd( NodeTCPSession session ) { }
+    protected void doClientDataEnd( AppTCPSession session ) { }
     
-    protected void doServerDataEnd( NodeTCPSession session ) { }
+    protected void doServerDataEnd( AppTCPSession session ) { }
 
     @Override
-    public final void handleTCPServerObject( NodeTCPSession session, Object obj )
+    public final void handleTCPServerObject( AppTCPSession session, Object obj )
     {
         Token token = (Token) obj;
         if (token instanceof ReleaseToken) {
@@ -87,7 +87,7 @@ public abstract class FtpEventHandler extends AbstractEventHandler
     }
 
     @Override
-    public final void handleTCPClientObject( NodeTCPSession session, Object obj )
+    public final void handleTCPClientObject( AppTCPSession session, Object obj )
     {
         Token token = (Token) obj;
         if (token instanceof ReleaseToken) {
@@ -118,13 +118,13 @@ public abstract class FtpEventHandler extends AbstractEventHandler
     }
     
     @Override
-    public final void handleTCPClientFIN( NodeTCPSession session )
+    public final void handleTCPClientFIN( AppTCPSession session )
     {
         doClientDataEnd( session );
     }
 
     @Override
-    public final void handleTCPServerFIN( NodeTCPSession session )
+    public final void handleTCPServerFIN( AppTCPSession session )
     {
         doServerDataEnd( session );
     }

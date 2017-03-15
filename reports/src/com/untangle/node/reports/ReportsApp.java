@@ -47,11 +47,11 @@ import com.untangle.uvm.node.HostnameLookup;
 import com.untangle.uvm.servlet.DownloadHandler;
 import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.vnet.NodeBase;
+import com.untangle.uvm.node.AppBase;
 import com.untangle.uvm.vnet.PipelineConnector;
 import org.apache.commons.codec.binary.Base64;
 
-public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
+public class ReportsApp extends AppBase implements Reporting, HostnameLookup
 {
     public static final String REPORTS_EVENT_LOG_DOWNLOAD_HANDLER = "reportsEventLogExport";
     

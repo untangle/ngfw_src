@@ -13718,11 +13718,11 @@ msgid "Session Requests"
 msgstr "Sitzungsanforderungen"
 
 #: /ngfw/ngfw_src/uvm/impl/com/untangle/uvm/Dispatcher.java:98
-msgid "TCP NodeSession Requests"
+msgid "TCP AppSession Requests"
 msgstr "TCP Sitzungsanfragen"
 
 #: /ngfw/ngfw_src/uvm/impl/com/untangle/uvm/Dispatcher.java:99
-msgid "UDP NodeSession Requests"
+msgid "UDP AppSession Requests"
 msgstr "UDP Sitzungsanfragen"
 
 #: /ngfw/ngfw_src/uvm/impl/com/untangle/uvm/DefaultLicenseManagerImpl.java:58

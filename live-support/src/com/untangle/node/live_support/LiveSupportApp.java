@@ -3,12 +3,12 @@
  */
 package com.untangle.node.live_support;
 
-import com.untangle.uvm.vnet.NodeBase;
+import com.untangle.uvm.node.AppBase;
 import com.untangle.uvm.vnet.PipelineConnector;
 import org.apache.log4j.Logger;
 
 
-public class LiveSupportApp extends NodeBase
+public class LiveSupportApp extends AppBase
 {
     private final Logger logger = Logger.getLogger(getClass());
 

@@ -39,8 +39,8 @@ import com.untangle.node.smtp.quarantine.QuarantineNodeView;
 import com.untangle.node.smtp.safelist.SafelistNodeView;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.vnet.NodeSession;
-import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.vnet.AppSession;
+import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.network.InterfaceSettings;
 
@@ -144,31 +144,31 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
     }
 
     @Override
-    public boolean getScanningEnabled(NodeTCPSession session)
+    public boolean getScanningEnabled(AppTCPSession session)
     {
         return node.getSettings().getSmtpConfig().getScan();
     }
 
     @Override
-    public long getMaxServerWait(NodeTCPSession session)
+    public long getMaxServerWait(AppTCPSession session)
     {
         return this.timeout;
     }
 
     @Override
-    public long getMaxClientWait(NodeTCPSession session)
+    public long getMaxClientWait(AppTCPSession session)
     {
         return this.timeout;
     }
 
     @Override
-    public int getGiveUpSz(NodeTCPSession session)
+    public int getGiveUpSz(AppTCPSession session)
     {
         return node.getSettings().getSmtpConfig().getMsgSizeLimit();
     }
 
     @Override
-    public ScannedMessageResult blockPassOrModify(NodeTCPSession session, MimeMessage msg, SmtpTransaction tx, SmtpMessageEvent msgInfo)
+    public ScannedMessageResult blockPassOrModify(AppTCPSession session, MimeMessage msg, SmtpTransaction tx, SmtpMessageEvent msgInfo)
     {
         logger.debug("blockPassOrModify()");
 
@@ -311,7 +311,7 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
     }
 
     @Override
-    public void handleOpeningResponse(NodeTCPSession session, Response resp)
+    public void handleOpeningResponse(AppTCPSession session, Response resp)
     {
         // Note the receivedBy
         String[] rargs = resp.getArgs();
@@ -324,7 +324,7 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
     }
 
     @Override
-    public BlockOrPassResult blockOrPass(NodeTCPSession session, MimeMessage msg, SmtpTransaction tx, SmtpMessageEvent msgInfo)
+    public BlockOrPassResult blockOrPass(AppTCPSession session, MimeMessage msg, SmtpTransaction tx, SmtpMessageEvent msgInfo)
     {
 
         logger.debug("[handleMessageCanNotBlock]");
@@ -452,13 +452,13 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
     }
 
     @Override
-    protected boolean isAllowedExtension(String extension, NodeTCPSession session)
+    protected boolean isAllowedExtension(String extension, AppTCPSession session)
     {
         // Thread safety
         String str = extension.toUpperCase();
         if ("STARTTLS".equals(str)) {
             // if the SSL inspector is active we always allow STARTTLS
-            if (session.globalAttachment(NodeSession.KEY_SSL_INSPECTOR_SERVER_MANAGER) != null) return (true);
+            if (session.globalAttachment(AppSession.KEY_SSL_INSPECTOR_SERVER_MANAGER) != null) return (true);
             return node.getSettings().getSmtpConfig().getAllowTls();
         } else {
             return super.isAllowedExtension(extension, session);
@@ -466,12 +466,12 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
     }
 
     @Override
-    protected boolean isAllowedCommand(String command, NodeTCPSession session)
+    protected boolean isAllowedCommand(String command, AppTCPSession session)
     {
         String str = command.toUpperCase();
         if ("STARTTLS".equals(str)) {
             // if the SSL inspector is active we always allow STARTTLS
-            if (session.globalAttachment(NodeSession.KEY_SSL_INSPECTOR_SERVER_MANAGER) != null) return (true);
+            if (session.globalAttachment(AppSession.KEY_SSL_INSPECTOR_SERVER_MANAGER) != null) return (true);
             return node.getSettings().getSmtpConfig().getAllowTls();
         } else {
             return super.isAllowedCommand(command, session);
@@ -516,7 +516,7 @@ public class SpamSmtpHandler extends SmtpEventHandler implements TemplateTransla
     /**
      * Wrapper that handles exceptions, and returns null if there is a problem
      */
-    private File messageToFile(NodeTCPSession session, MimeMessage msg, SmtpTransaction tx)
+    private File messageToFile(AppTCPSession session, MimeMessage msg, SmtpTransaction tx)
     {
         // Build the "fake" received header for SpamAssassin
         InetAddress clientAddr = session.getClientAddr();

@@ -20,7 +20,7 @@ import com.untangle.uvm.vnet.EndMarkerToken;
 import com.untangle.node.http.HeaderToken;
 import com.untangle.uvm.vnet.ChunkToken;
 import com.untangle.uvm.vnet.Token;
-import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.vnet.AppTCPSession;
 
 public class CaptivePortalHttpHandler extends HttpEventHandler
 {
@@ -38,7 +38,7 @@ public class CaptivePortalHttpHandler extends HttpEventHandler
     // HttpEventHandler methods -----------------------------------------------
 
     @Override
-    protected HeaderToken doRequestHeader( NodeTCPSession session, HeaderToken requestHeader )
+    protected HeaderToken doRequestHeader( AppTCPSession session, HeaderToken requestHeader )
     {
         Token[] response = null;
 
@@ -121,42 +121,42 @@ public class CaptivePortalHttpHandler extends HttpEventHandler
     }
 
     @Override
-    protected ChunkToken doRequestBody( NodeTCPSession session, ChunkToken chunk )
+    protected ChunkToken doRequestBody( AppTCPSession session, ChunkToken chunk )
     {
         return chunk;
     }
 
     @Override
-    protected void doRequestBodyEnd( NodeTCPSession session )
+    protected void doRequestBodyEnd( AppTCPSession session )
     {
     }
 
     @Override
-    protected HeaderToken doResponseHeader( NodeTCPSession session, HeaderToken header )
+    protected HeaderToken doResponseHeader( AppTCPSession session, HeaderToken header )
     {
         releaseResponse( session );
         return header;
     }
 
     @Override
-    protected ChunkToken doResponseBody( NodeTCPSession session, ChunkToken chunk )
+    protected ChunkToken doResponseBody( AppTCPSession session, ChunkToken chunk )
     {
         return chunk;
     }
 
     @Override
-    protected void doResponseBodyEnd( NodeTCPSession session )
+    protected void doResponseBodyEnd( AppTCPSession session )
     {
     }
 
     @Override
-    protected RequestLineToken doRequestLine( NodeTCPSession session, RequestLineToken requestLine )
+    protected RequestLineToken doRequestLine( AppTCPSession session, RequestLineToken requestLine )
     {
         return requestLine;
     }
 
     @Override
-    protected StatusLine doStatusLine( NodeTCPSession session, StatusLine statusLine )
+    protected StatusLine doStatusLine( AppTCPSession session, StatusLine statusLine )
     {
         return statusLine;
     }

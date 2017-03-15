@@ -17,7 +17,7 @@ import com.untangle.uvm.vnet.TokenStreamer;
 import com.untangle.uvm.util.AsciiCharBuffer;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.Fitting;
-import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 
 /**
@@ -37,40 +37,40 @@ public class FtpServerParserEventHandler extends AbstractEventHandler
     }
 
     @Override
-    public void handleTCPNewSession( NodeTCPSession session )
+    public void handleTCPNewSession( AppTCPSession session )
     {
         session.serverLineBuffering( true );
     }
 
     @Override
-    public void handleTCPClientChunk( NodeTCPSession session, ByteBuffer data )
+    public void handleTCPClientChunk( AppTCPSession session, ByteBuffer data )
     {
         logger.warn("Received data when expect object");
         throw new RuntimeException("Received data when expect object");
     }
 
     @Override
-    public void handleTCPServerChunk( NodeTCPSession session, ByteBuffer data )
+    public void handleTCPServerChunk( AppTCPSession session, ByteBuffer data )
     {
         parse( session, data, true, false );
     }
 
     @Override
-    public void handleTCPClientObject( NodeTCPSession session, Object obj )
+    public void handleTCPClientObject( AppTCPSession session, Object obj )
     {
         logger.warn("Received object but expected data.");
         throw new RuntimeException("Received object but expected data.");
     }
     
     @Override
-    public void handleTCPServerObject( NodeTCPSession session, Object obj )
+    public void handleTCPServerObject( AppTCPSession session, Object obj )
     {
         logger.warn("Received object but expected data.");
         throw new RuntimeException("Received object but expected data.");
     }
     
     @Override
-    public void handleTCPClientDataEnd( NodeTCPSession session, ByteBuffer data )
+    public void handleTCPClientDataEnd( AppTCPSession session, ByteBuffer data )
     {
         if ( data.hasRemaining() ) {
             logger.warn("Received data when expect object");
@@ -79,25 +79,25 @@ public class FtpServerParserEventHandler extends AbstractEventHandler
     }
 
     @Override
-    public void handleTCPServerDataEnd( NodeTCPSession session, ByteBuffer data )
+    public void handleTCPServerDataEnd( AppTCPSession session, ByteBuffer data )
     {
         parse( session, data, true, true );
     }
 
     @Override
-    public void handleTCPClientFIN( NodeTCPSession session )
+    public void handleTCPClientFIN( AppTCPSession session )
     {
         logger.warn("Received unexpected event.");
         throw new RuntimeException("Received unexpected event.");
     }
 
     @Override
-    public void handleTCPServerFIN( NodeTCPSession session )
+    public void handleTCPServerFIN( AppTCPSession session )
     {
         endSession( session );
     }
 
-    private void parse( NodeTCPSession session, ByteBuffer data, boolean s2c, boolean last )
+    private void parse( AppTCPSession session, ByteBuffer data, boolean s2c, boolean last )
     {
         ByteBuffer buf = data;
         ByteBuffer dup = buf.duplicate();
@@ -127,7 +127,7 @@ public class FtpServerParserEventHandler extends AbstractEventHandler
         return;
     }
     
-    public void parse( NodeTCPSession session, ByteBuffer buf )
+    public void parse( AppTCPSession session, ByteBuffer buf )
     {
         Fitting fitting = session.pipelineConnector().getOutputFitting();
         if (Fitting.FTP_CTL_STREAM == fitting) {
@@ -141,7 +141,7 @@ public class FtpServerParserEventHandler extends AbstractEventHandler
         }
     }
 
-    public void parseEnd( NodeTCPSession session, ByteBuffer buf )
+    public void parseEnd( AppTCPSession session, ByteBuffer buf )
     {
         Fitting fitting = session.pipelineConnector().getOutputFitting();
         if ( fitting == Fitting.FTP_DATA_STREAM ) {
@@ -155,13 +155,13 @@ public class FtpServerParserEventHandler extends AbstractEventHandler
         }
     }
 
-    public void endSession( NodeTCPSession session )
+    public void endSession( AppTCPSession session )
     {
         session.shutdownClient();
         return;
     }
 
-    private void parseServerCtl( NodeTCPSession session, ByteBuffer buf )
+    private void parseServerCtl( AppTCPSession session, ByteBuffer buf )
     {
         ByteBuffer dup = buf.duplicate();
 
@@ -224,7 +224,7 @@ public class FtpServerParserEventHandler extends AbstractEventHandler
         return;
     }
 
-    private void parseServerData( NodeTCPSession session, ByteBuffer buf )
+    private void parseServerData( AppTCPSession session, ByteBuffer buf )
     {
         ChunkToken c = new ChunkToken(buf.duplicate());
         session.sendObjectToClient( c );

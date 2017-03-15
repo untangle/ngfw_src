@@ -26,7 +26,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.ReleaseToken;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
@@ -73,18 +73,18 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
     }
 
     @Override
-    public void handleTCPNewSession(NodeTCPSession session)
+    public void handleTCPNewSession(AppTCPSession session)
     {
 
         SslInspectorManager manager = new SslInspectorManager(session, clientSide, node);
 
         if (clientSide)
-            session.globalAttach(NodeTCPSession.KEY_SSL_INSPECTOR_CLIENT_MANAGER, manager);
+            session.globalAttach(AppTCPSession.KEY_SSL_INSPECTOR_CLIENT_MANAGER, manager);
         else
-            session.globalAttach(NodeTCPSession.KEY_SSL_INSPECTOR_SERVER_MANAGER, manager);
+            session.globalAttach(AppTCPSession.KEY_SSL_INSPECTOR_SERVER_MANAGER, manager);
 
         // attach something to let everyone else know we are working the session 
-        session.globalAttach(NodeTCPSession.KEY_SSL_INSPECTOR_SESSION_INSPECT, Boolean.TRUE);
+        session.globalAttach(AppTCPSession.KEY_SSL_INSPECTOR_SESSION_INSPECT, Boolean.TRUE);
 
         // set the server read buffer size and limit really large to deal
         // with huge certs that contain lots of subject alt names
@@ -94,7 +94,7 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
     }
 
     @Override
-    public void handleTCPClientChunk(NodeTCPSession session, ByteBuffer data)
+    public void handleTCPClientChunk(AppTCPSession session, ByteBuffer data)
     {
         if (clientSide) {
             streamParse(session, data, false);
@@ -105,7 +105,7 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
     }
 
     @Override
-    public void handleTCPServerChunk(NodeTCPSession session, ByteBuffer data)
+    public void handleTCPServerChunk(AppTCPSession session, ByteBuffer data)
     {
         if (clientSide) {
             logger.warn("Received unexpected event");
@@ -116,7 +116,7 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
     }
 
     @Override
-    public void handleTCPClientDataEnd(NodeTCPSession session, ByteBuffer data)
+    public void handleTCPClientDataEnd(AppTCPSession session, ByteBuffer data)
     {
         if (clientSide) {
             streamParse(session, data, false);
@@ -127,7 +127,7 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
     }
 
     @Override
-    public void handleTCPServerDataEnd(NodeTCPSession session, ByteBuffer data)
+    public void handleTCPServerDataEnd(AppTCPSession session, ByteBuffer data)
     {
         if (clientSide) {
             logger.warn("Received unexpected event");
@@ -139,7 +139,7 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
 
     // private methods --------------------------------------------------------
 
-    private void streamParse(NodeTCPSession session, ByteBuffer data, boolean s2c)
+    private void streamParse(AppTCPSession session, ByteBuffer data, boolean s2c)
     {
         SslInspectorManager manager = getManager(session);
         boolean tlsFlag = (s2c ? manager.tlsFlagServer : manager.tlsFlagClient);
@@ -194,7 +194,7 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         }
     }
 
-    public void parse(NodeTCPSession session, ByteBuffer data, SslInspectorManager manager)
+    public void parse(AppTCPSession session, ByteBuffer data, SslInspectorManager manager)
     {
         String sslProblem = null;
         String logDetail = null;
@@ -217,7 +217,7 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
             if (sslProblem == null) sslProblem = "Unknown SSL exception";
 
             if (sslProblem.contains("unrecognized_name")) {
-                String targetName = (String) session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME);
+                String targetName = (String) session.globalAttachment(AppTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME);
                 String targetHost = session.getServerAddr().getHostAddress().toString();
                 if ((targetName != null) && (targetHost != null)) {
                     String brokenServer = (targetHost + " | " + targetName);
@@ -242,7 +242,7 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         if (success == false) {
             // put something in the event log starting with any ssl message we extracted above
             logDetail = sslProblem;
-            if (logDetail == null) logDetail = (String) session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME);
+            if (logDetail == null) logDetail = (String) session.globalAttachment(AppTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME);
             if (logDetail == null) logDetail = session.getServerAddr().getHostAddress();
             SslInspectorLogEvent logevt = new SslInspectorLogEvent(session.sessionEvent(), 0, SslInspectorApp.STAT_ABANDONED, logDetail);
             node.logEvent(logevt);
@@ -261,7 +261,7 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
 
     // ------------------------------------------------------------------------
 
-    private void shutdownOtherSide(NodeTCPSession session, boolean killSession)
+    private void shutdownOtherSide(AppTCPSession session, boolean killSession)
     {
         ByteBuffer message = ByteBuffer.allocate(256);
 
@@ -274,17 +274,17 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
 
         SslInspectorManager manager = getManager(session);
         if (manager.getClientSide()) {
-            SslInspectorManager server = (SslInspectorManager) session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_SERVER_MANAGER);
+            SslInspectorManager server = (SslInspectorManager) session.globalAttachment(AppTCPSession.KEY_SSL_INSPECTOR_SERVER_MANAGER);
             server.getSession().simulateClientData(message);
         } else {
-            SslInspectorManager client = (SslInspectorManager) session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_CLIENT_MANAGER);
+            SslInspectorManager client = (SslInspectorManager) session.globalAttachment(AppTCPSession.KEY_SSL_INSPECTOR_CLIENT_MANAGER);
             client.getSession().simulateServerData(message);
         }
     }
 
     // ------------------------------------------------------------------------
 
-    private boolean parseWorker(NodeTCPSession session, ByteBuffer data) throws Exception
+    private boolean parseWorker(AppTCPSession session, ByteBuffer data) throws Exception
     {
         SslInspectorManager manager = getManager(session);
         boolean done = false;
@@ -342,7 +342,7 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
             node.incrementMetric(SslInspectorApp.STAT_IGNORED);
 
             // let everyone else know that we are ignoring the session
-            session.globalAttach(NodeTCPSession.KEY_SSL_INSPECTOR_SESSION_INSPECT, Boolean.FALSE);
+            session.globalAttach(AppTCPSession.KEY_SSL_INSPECTOR_SESSION_INSPECT, Boolean.FALSE);
 
             // release the session on both sides and send the original
             // message received from the server to the client
@@ -363,7 +363,7 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
             if ((manager.getClientSide() == false) && (manager.getSSLEngine().isInboundDone() == true)) {
 
                 // log the untrusted certificate event
-                String logDetail = (String) session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME);
+                String logDetail = (String) session.globalAttachment(AppTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME);
                 if (logDetail == null) logDetail = session.getServerAddr().getHostAddress();
 
                 SslInspectorLogEvent logevt = new SslInspectorLogEvent(session.sessionEvent(), 0, SslInspectorApp.STAT_UNTRUSTED, logDetail);
@@ -448,7 +448,7 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
      * server.
      */
 
-    private void handleClientHello(NodeTCPSession session, ByteBuffer data) throws Exception
+    private void handleClientHello(AppTCPSession session, ByteBuffer data) throws Exception
     {
         SslInspectorManager manager = getManager(session);
         java.security.cert.X509Certificate serverCert = null;
@@ -504,7 +504,7 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
 
         // if we found the SNI hostname attach it for the rule matcher
         if (sniHostname != null) {
-            session.globalAttach(NodeTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME, sniHostname);
+            session.globalAttach(AppTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME, sniHostname);
             logger.debug("SSL_INSPECTOR_SNI_HOSTNAME = " + sniHostname);
         }
 
@@ -515,9 +515,9 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
 
         // attach the subject and issuer names for use by the rule matcher
         if (serverCert != null) {
-            session.globalAttach(NodeTCPSession.KEY_SSL_INSPECTOR_SUBJECT_DN, serverCert.getSubjectDN().toString());
+            session.globalAttach(AppTCPSession.KEY_SSL_INSPECTOR_SUBJECT_DN, serverCert.getSubjectDN().toString());
             logger.debug("CERTCACHE FOUND SubjectDN = " + serverCert.getSubjectDN());
-            session.globalAttach(NodeTCPSession.KEY_SSL_INSPECTOR_ISSUER_DN, serverCert.getIssuerDN().toString());
+            session.globalAttach(AppTCPSession.KEY_SSL_INSPECTOR_ISSUER_DN, serverCert.getIssuerDN().toString());
             logger.debug("CERTCACHE FOUND IssuerDN = " + serverCert.getIssuerDN());
         }
 
@@ -526,13 +526,13 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         if (ruleMatch == null) {
             List<SslInspectorRule> ruleList = node.getSettings().getIgnoreRules();
 
-            logger.debug("Checking Rules against NodeTCPSession : " + session.getProtocol() + " " + session.getClientAddr().getHostAddress() + ":" + session.getClientPort() + " -> " + session.getServerAddr().getHostAddress() + ":" + session.getServerPort());
+            logger.debug("Checking Rules against AppTCPSession : " + session.getProtocol() + " " + session.getClientAddr().getHostAddress() + ":" + session.getClientPort() + " -> " + session.getServerAddr().getHostAddress() + ":" + session.getServerPort());
 
             for (SslInspectorRule rule : ruleList) {
                 if (rule.isLive() == false) continue;
                 if (rule.matches(session) == false) continue;
                 ruleMatch = rule;
-                logDetail = (String) session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME);
+                logDetail = (String) session.globalAttachment(AppTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME);
                 break;
             }
         }
@@ -567,7 +567,7 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
                 logger.debug("RULE MATCH EVENT = " + logevt.toString());
 
                 // let everyone else know that we are ignoring the session
-                session.globalAttach(NodeTCPSession.KEY_SSL_INSPECTOR_SESSION_INSPECT, Boolean.FALSE);
+                session.globalAttach(AppTCPSession.KEY_SSL_INSPECTOR_SESSION_INSPECT, Boolean.FALSE);
 
                 // release the session in the casing on the other side
                 shutdownOtherSide(session, false);
@@ -583,13 +583,13 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         if (ruleMatch != null) {
             // if we have a rule match and make it this far then it must have
             // been an inspect rule so we create an appropriate log event
-            logDetail = (String) session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME);
+            logDetail = (String) session.globalAttachment(AppTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME);
             if (logDetail == null) logDetail = ruleMatch.getDescription();
             logevt = new SslInspectorLogEvent(session.sessionEvent(), ruleMatch.getRuleId(), SslInspectorApp.STAT_INSPECTED, logDetail);
             logger.debug("RULE MATCH EVENT = " + logevt.toString());
         } else {
             // no rule match so create a default INSPECT log event
-            logDetail = (String) session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME);
+            logDetail = (String) session.globalAttachment(AppTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME);
             if (logDetail == null) logDetail = session.getServerAddr().getHostAddress();
             logevt = new SslInspectorLogEvent(session.sessionEvent(), 0, SslInspectorApp.STAT_INSPECTED, logDetail);
         }
@@ -603,13 +603,13 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         ByteBuffer wakeup = ByteBuffer.allocate(256);
         wakeup.put(SslInspectorManager.IPC_WAKEUP_MESSAGE);
         wakeup.flip();
-        SslInspectorManager server = (SslInspectorManager) session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_SERVER_MANAGER);
+        SslInspectorManager server = (SslInspectorManager) session.globalAttachment(AppTCPSession.KEY_SSL_INSPECTOR_SERVER_MANAGER);
         server.getSession().simulateClientData(wakeup);
     }
 
     // ------------------------------------------------------------------------
 
-    private boolean doNeedTask(NodeTCPSession session, ByteBuffer data) throws Exception
+    private boolean doNeedTask(AppTCPSession session, ByteBuffer data) throws Exception
     {
         SslInspectorManager manager = getManager(session);
         Runnable runnable;
@@ -624,7 +624,7 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
 
     // ------------------------------------------------------------------------
 
-    private boolean doNeedUnwrap(NodeTCPSession session, ByteBuffer data) throws Exception
+    private boolean doNeedUnwrap(AppTCPSession session, ByteBuffer data) throws Exception
     {
         SslInspectorManager manager = getManager(session);
         ByteBuffer target = ByteBuffer.allocate(32768);
@@ -684,7 +684,7 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
             ByteBuffer wakeup = ByteBuffer.allocate(256);
             wakeup.put(SslInspectorManager.IPC_WAKEUP_MESSAGE);
             wakeup.flip();
-            SslInspectorManager client = (SslInspectorManager) session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_CLIENT_MANAGER);
+            SslInspectorManager client = (SslInspectorManager) session.globalAttachment(AppTCPSession.KEY_SSL_INSPECTOR_CLIENT_MANAGER);
             client.getSession().simulateServerData(wakeup);
             return true;
         }
@@ -699,7 +699,7 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
 
     // ------------------------------------------------------------------------
 
-    private boolean doNeedWrap(NodeTCPSession session, ByteBuffer data) throws Exception
+    private boolean doNeedWrap(AppTCPSession session, ByteBuffer data) throws Exception
     {
         SslInspectorManager manager = getManager(session);
         ByteBuffer target = ByteBuffer.allocate(32768);
@@ -738,7 +738,7 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
 
     // ------------------------------------------------------------------------
 
-    private boolean doNotHandshaking(NodeTCPSession session, ByteBuffer data) throws Exception
+    private boolean doNotHandshaking(AppTCPSession session, ByteBuffer data) throws Exception
     {
         SslInspectorManager manager = getManager(session);
         ByteBuffer target = ByteBuffer.allocate(32768);
@@ -869,11 +869,11 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         return true;
     }
 
-    private SslInspectorManager getManager(NodeTCPSession session)
+    private SslInspectorManager getManager(AppTCPSession session)
     {
         if (clientSide)
-            return (SslInspectorManager) session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_CLIENT_MANAGER);
+            return (SslInspectorManager) session.globalAttachment(AppTCPSession.KEY_SSL_INSPECTOR_CLIENT_MANAGER);
         else
-            return (SslInspectorManager) session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_SERVER_MANAGER);
+            return (SslInspectorManager) session.globalAttachment(AppTCPSession.KEY_SSL_INSPECTOR_SERVER_MANAGER);
     }
 }

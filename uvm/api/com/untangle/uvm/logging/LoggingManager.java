@@ -24,8 +24,8 @@ public interface LoggingManager
     void setLoggingUvm();
 
     /**
-     * Set the logging context of this thread to the "node" configuration
+     * Set the logging context of this thread to the "app" configuration
      * log4j log calls after this will go to the associated node-nodeId.log file
      */
-    void setLoggingNode(Long nodeId);
+    void setLoggingApp(Long appId);
 }

@@ -21,8 +21,8 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.security.KeyStore;
 
-import com.untangle.uvm.vnet.NodeTCPSession;
-import com.untangle.uvm.vnet.NodeSession;
+import com.untangle.uvm.vnet.AppTCPSession;
+import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.CertificateManager;
 import com.untangle.uvm.UvmContextFactory;
 
@@ -31,13 +31,13 @@ import org.apache.log4j.Logger;
 public class WebFilterSSLEngine
 {
     private final Logger logger = Logger.getLogger(getClass());
-    private NodeTCPSession session;
+    private AppTCPSession session;
     private SSLContext sslContext;
     private SSLEngine sslEngine;
     private String nonceStr;
     private String nodeStr;
 
-    protected WebFilterSSLEngine(NodeTCPSession session, String nonceStr, String nodeStr)
+    protected WebFilterSSLEngine(AppTCPSession session, String nonceStr, String nodeStr)
     {
         String webCertFile = CertificateManager.CERT_STORE_PATH + UvmContextFactory.context().systemManager().getSettings().getWebCertificate().replaceAll("\\.pem", "\\.pfx");
         this.session = session;
@@ -86,7 +86,7 @@ public class WebFilterSSLEngine
 
         // null result means something went haywire
         if ( ! success ) {
-            session.globalAttach(NodeSession.KEY_WEB_FILTER_SSL_ENGINE, null);
+            session.globalAttach(AppSession.KEY_WEB_FILTER_SSL_ENGINE, null);
             session.resetClient();
             session.resetServer();
             session.release();
@@ -283,7 +283,7 @@ public class WebFilterSSLEngine
         result = sslEngine.wrap(ibuff, obuff);
 
         // we are done so cleanup attachment and release session
-        session.globalAttach(NodeSession.KEY_WEB_FILTER_SSL_ENGINE, null);
+        session.globalAttach(AppSession.KEY_WEB_FILTER_SSL_ENGINE, null);
         session.release();
 
         // return the now encrypted reply buffer back to the client

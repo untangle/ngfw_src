@@ -28,7 +28,7 @@ import com.untangle.node.smtp.handler.SmtpTransactionHandler.BlockOrPassResult;
 import com.untangle.uvm.vnet.ChunkToken;
 import com.untangle.uvm.vnet.Token;
 import com.untangle.uvm.vnet.ReleaseToken;
-import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 
@@ -80,29 +80,29 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
      * Get the size over-which this class should no longer buffer. After this point, the Buffering is abandoned and the
      * <i>giveup-then-trickle</i> state is entered.
      */
-    protected abstract int getGiveUpSz( NodeTCPSession session );
+    protected abstract int getGiveUpSz( AppTCPSession session );
 
     /**
      * The maximum time (in relative milliseconds) that the client can wait for a response to DATA transmission.
      */
-    protected abstract long getMaxClientWait( NodeTCPSession session );
+    protected abstract long getMaxClientWait( AppTCPSession session );
 
     /**
      * The maximum time that the server can wait for a subsequent ("DATA") command.
      */
-    protected abstract long getMaxServerWait( NodeTCPSession session );
+    protected abstract long getMaxServerWait( AppTCPSession session );
 
     /**
      * Return true if scanning is enabled for this session
      */
-    protected abstract boolean getScanningEnabled( NodeTCPSession session );
+    protected abstract boolean getScanningEnabled( AppTCPSession session );
 
     /**
      * If true, this handler will continue to buffer even after trickling has begun (<i>buffer-and-trickle</i> mode).
      * The MIMEMessage can no longer be modified (i.e. it will not be passed downstream) but {@link #blockOrPass
      * blockOrPass()} will still be called once the complete message has been seen.
      */
-    protected final boolean isBufferAndTrickle( NodeTCPSession session )
+    protected final boolean isBufferAndTrickle( AppTCPSession session )
     {
         SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
         return state.isBufferAndTrickle;
@@ -111,7 +111,7 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
     /**
      * Determines, based on timestamps, if trickling should begin
      */
-    protected boolean shouldBeginTrickle( NodeTCPSession session )
+    protected boolean shouldBeginTrickle( AppTCPSession session )
     {
         long maxWaitPeriod = Math.min( getMaxClientWait( session ), getMaxServerWait( session ) );
         SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
@@ -132,19 +132,19 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
         state.timestamp = System.currentTimeMillis();
     }
 
-    public void startShutingDown( NodeTCPSession session )
+    public void startShutingDown( AppTCPSession session )
     {
         SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
         state.shutingDownMode = true;
     }
 
-    public boolean isShutingDown( NodeTCPSession session )
+    public boolean isShutingDown( AppTCPSession session )
     {
         SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
         return state.shutingDownMode;
     }
 
-    public String getHeloName( NodeTCPSession session )
+    public String getHeloName( AppTCPSession session )
     {
         SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
         return state.heloName;
@@ -167,7 +167,7 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
         state.outstandingRequests.add(new OutstandingRequest(new ResponseCompletion()
         {
             @Override
-            public void handleResponse( NodeTCPSession session, Response resp )
+            public void handleResponse( AppTCPSession session, Response resp )
             {
                 handleOpeningResponse( session, resp );
             }
@@ -177,7 +177,7 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
     }
 
     @Override
-    public final void handleTCPClientObject( NodeTCPSession session, Object obj )
+    public final void handleTCPClientObject( AppTCPSession session, Object obj )
     {
         Token token = (Token) obj;
 
@@ -219,7 +219,7 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
     }
 
     @Override
-    public final void handleTCPServerObject( NodeTCPSession session, Object obj )
+    public final void handleTCPServerObject( AppTCPSession session, Object obj )
     {
         Token token = (Token) obj;
 
@@ -261,7 +261,7 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
     }
 
     // FROM Client
-    private final void handleClientTokenImpl( NodeTCPSession session, Token token )
+    private final void handleClientTokenImpl( AppTCPSession session, Token token )
     {
         SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
 
@@ -318,7 +318,7 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
     }
 
     // FROM Server
-    private final void handleServerTokenImpl( NodeTCPSession session, Token token )
+    private final void handleServerTokenImpl( AppTCPSession session, Token token )
     {
         SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
         if ( state.passthru || !getScanningEnabled( session ) ) {
@@ -360,7 +360,7 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
      * @param actions
      *            the available actions.
      */
-    public void handleOpeningResponse( NodeTCPSession session, Response resp )
+    public void handleOpeningResponse( AppTCPSession session, Response resp )
     {
         SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
         if ( state.shutingDownMode ) {
@@ -378,7 +378,7 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
      * returns true if the SMTP extension (advertisement) is allowed
      * can be overridden to customize supported extensions
      */
-    protected boolean isAllowedExtension( String extension, NodeTCPSession session )
+    protected boolean isAllowedExtension( String extension, AppTCPSession session )
     {
         // Thread safety
         String str = extension.toUpperCase();
@@ -394,7 +394,7 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
      * returns true if the SMTP command is allowed
      * can be overridden to customize supported commands
      */
-    protected boolean isAllowedCommand( String command, NodeTCPSession session )
+    protected boolean isAllowedCommand( String command, AppTCPSession session )
     {
         // Thread safety
         String str = command.toUpperCase();
@@ -411,7 +411,7 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
     /**
      * Process any Synthetic actions
      */
-    private void processSynths( NodeTCPSession session, List<Response> synths )
+    private void processSynths( AppTCPSession session, List<Response> synths )
     {
         if (synths == null) {
             return;
@@ -422,7 +422,7 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
         }
     }
 
-    private void followup( NodeTCPSession session, List<Response> immediateActions )
+    private void followup( AppTCPSession session, List<Response> immediateActions )
     {
         if (immediateActions != null && immediateActions.size() > 0) {
             processSynths( session, immediateActions );
@@ -432,7 +432,7 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
     /**
      * Method which removes any unknown ESMTP extensions
      */
-    private Response fixupEHLOResponse(Response resp, NodeTCPSession session)
+    private Response fixupEHLOResponse(Response resp, AppTCPSession session)
     {
 
         String[] respLines = resp.getArgs();
@@ -471,7 +471,7 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
         return str.substring(0, index);
     }
 
-    private void handleCommand( NodeTCPSession session, Command cmd )
+    private void handleCommand( AppTCPSession session, Command cmd )
     {
         SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
 
@@ -493,7 +493,7 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
             logger.debug("Enqueuing private response handler to EHLO command so unknown extensions can be disabled");
             sendCommandToServer( session, cmd, new ResponseCompletion() {
                     @Override
-                    public void handleResponse( NodeTCPSession session, Response resp )
+                    public void handleResponse( AppTCPSession session, Response resp )
                     {
                         logger.debug("Processing response to EHLO Command");
                         sendResponseToClient( session, fixupEHLOResponse(resp, session) );
@@ -533,7 +533,7 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
         followup( session, immediateActions );
     }
 
-    private void handleCommandInShutDown( NodeTCPSession session, Token token )
+    private void handleCommandInShutDown( AppTCPSession session, Token token )
     {
         // Check for our timeout
         if ( timedOut( session ) ) {
@@ -558,7 +558,7 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
         send421( session );
     }
 
-    private boolean timedOut( NodeTCPSession session )
+    private boolean timedOut( AppTCPSession session )
     {
         SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
         if (System.currentTimeMillis() > state.quitAt) {
@@ -577,7 +577,7 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
         return state.smtpTransactionHandler;
     }
 
-    private void handleBeginMIME( NodeTCPSession session, BeginMIMEToken token )
+    private void handleBeginMIME( AppTCPSession session, BeginMIMEToken token )
     {
         SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
         List<Response> immediateActions = new LinkedList<Response>();
@@ -586,7 +586,7 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
         followup( session, immediateActions );
     }
 
-    private void handleContinuedMIME( NodeTCPSession session, ContinuedMIMEToken token)
+    private void handleContinuedMIME( AppTCPSession session, ContinuedMIMEToken token)
     {
         List<Response> immediateActions = new LinkedList<Response>();
         SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
@@ -598,7 +598,7 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
         followup( session, immediateActions );
     }
 
-    private void handleResponse( NodeTCPSession session, Response resp)
+    private void handleResponse( AppTCPSession session, Response resp)
     {
         SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
         
@@ -619,7 +619,7 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
         processSynths( session, or.getAdditionalActions() );
     }
 
-    private void handleCompleteMIME( NodeTCPSession session, CompleteMIMEToken token )
+    private void handleCompleteMIME( AppTCPSession session, CompleteMIMEToken token )
     {
         SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
         SmtpTransactionHandler transactionHandler = getOrCreateTxHandler( state );
@@ -632,7 +632,7 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
     }
 
     @Override
-    public final void handleTCPClientFIN( NodeTCPSession session )
+    public final void handleTCPClientFIN( AppTCPSession session )
     {
         SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
         state.outstandingRequests.add(new OutstandingRequest(SmtpTransactionHandler.NOOP_RESPONSE_COMPLETION));
@@ -641,7 +641,7 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
     }
 
     @Override
-    public final void handleTCPServerFIN( NodeTCPSession session )
+    public final void handleTCPServerFIN( AppTCPSession session )
     {
         SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
         if (!state.shutingDownMode) {
@@ -653,7 +653,7 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
     }
 
     @Override
-    public void handleTCPFinalized( NodeTCPSession session )
+    public void handleTCPFinalized( AppTCPSession session )
     {
         SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
         if (state.smtpTransactionHandler != null && !state.shutingDownMode) {
@@ -662,13 +662,13 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
         session.cleanupTempFiles();
     }
 
-    public void sendResponseToClient( NodeTCPSession session, Response resp )
+    public void sendResponseToClient( AppTCPSession session, Response resp )
     {
         logger.debug("Sending response " + resp.getCode() + " to client");
         session.sendObjectToClient( resp );
     }
 
-    public void transactionEnded( NodeTCPSession session, SmtpTransactionHandler handler )
+    public void transactionEnded( AppTCPSession session, SmtpTransactionHandler handler )
     {
         SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
         if (state.smtpTransactionHandler == handler) {
@@ -677,7 +677,7 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
         }
     }
 
-    public void sendFINToServer( NodeTCPSession session, ResponseCompletion compl )
+    public void sendFINToServer( AppTCPSession session, ResponseCompletion compl )
     {
         SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
         logger.debug("Sending FIN to server");
@@ -685,13 +685,13 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
         session.shutdownServer();
     }
 
-    public void sendFINToClient( NodeTCPSession session )
+    public void sendFINToClient( AppTCPSession session )
     {
         logger.debug("Sending FIN to client");
         session.shutdownClient();
     }
 
-    public void sendCommandToServer( NodeTCPSession session, Command command, ResponseCompletion compl )
+    public void sendCommandToServer( AppTCPSession session, Command command, ResponseCompletion compl )
     {
         SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
         logger.debug("Sending Command " + command.getType() + " to server");
@@ -699,19 +699,19 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
         state.outstandingRequests.add(new OutstandingRequest(compl));
     }
 
-    public void sendBeginMIMEToServer( NodeTCPSession session, BeginMIMEToken token )
+    public void sendBeginMIMEToServer( AppTCPSession session, BeginMIMEToken token )
     {
         logger.debug("Sending BeginMIMEToken to server");
         session.sendObjectToServer( token );
     }
 
-    public void sendContinuedMIMEToServer( NodeTCPSession session, ContinuedMIMEToken token )
+    public void sendContinuedMIMEToServer( AppTCPSession session, ContinuedMIMEToken token )
     {
         logger.debug("Sending intermediate ContinuedMIMEToken to server");
         session.sendObjectToServer( token );
     }
 
-    public void sendFinalMIMEToServer( NodeTCPSession session, ContinuedMIMEToken token, ResponseCompletion compl )
+    public void sendFinalMIMEToServer( AppTCPSession session, ContinuedMIMEToken token, ResponseCompletion compl )
     {
         SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
         logger.debug("Sending final ContinuedMIMEToken to server");
@@ -719,7 +719,7 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
         state.outstandingRequests.add(new OutstandingRequest(compl));
     }
 
-    public void sentWholeMIMEToServer( NodeTCPSession session, CompleteMIMEToken token, ResponseCompletion compl )
+    public void sentWholeMIMEToServer( AppTCPSession session, CompleteMIMEToken token, ResponseCompletion compl )
     {
         SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
         logger.debug("Sending whole MIME to server");
@@ -735,7 +735,7 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
      * @param immediateActions
      * 
      */
-    public void appendSyntheticResponse( NodeTCPSession session, Response synth, List<Response> immediateActions )
+    public void appendSyntheticResponse( AppTCPSession session, Response synth, List<Response> immediateActions )
     {
         SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
         logger.debug("Appending synthetic response");
@@ -749,7 +749,7 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
     /**
      * Get the client IP address
      */
-    public InetAddress getClientAddress( NodeTCPSession session )
+    public InetAddress getClientAddress( AppTCPSession session )
     {
         return session.getClientAddr();
     }
@@ -758,7 +758,7 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
      * Re-enable the flow of Client tokens. If this method is called while Client Tokens are not
      * {@link #disableClientTokens disabled}, this has no effect.
      */
-    protected void enableClientTokens( NodeTCPSession session )
+    protected void enableClientTokens( AppTCPSession session )
     {
         SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
         if (!state.clientTokensEnabled) {
@@ -773,7 +773,7 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
      * Disable the flow of client tokens. No more calls to the Handler will be made with Client Tokens until the
      * {@link #enableClientTokens enable method} is called.
      */
-    protected void disableClientTokens( NodeTCPSession session )
+    protected void disableClientTokens( AppTCPSession session )
     {
         SmtpSessionState state = (SmtpSessionState) session.attachment( SESSION_STATE_KEY );
         if (state.clientTokensEnabled) {
@@ -784,12 +784,12 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
         }
     }
 
-    private void send421( NodeTCPSession session )
+    private void send421( AppTCPSession session )
     {
         session.sendObjectToClient( new Response(421, "Service not available, closing transmission channel") );
     }
 
-    public abstract ScannedMessageResult blockPassOrModify( NodeTCPSession session, MimeMessage m_msg, SmtpTransaction transaction, SmtpMessageEvent messageInfo );
+    public abstract ScannedMessageResult blockPassOrModify( AppTCPSession session, MimeMessage m_msg, SmtpTransaction transaction, SmtpMessageEvent messageInfo );
 
-    public abstract BlockOrPassResult blockOrPass( NodeTCPSession session, MimeMessage m_msg, SmtpTransaction transaction, SmtpMessageEvent messageInfo );
+    public abstract BlockOrPassResult blockOrPass( AppTCPSession session, MimeMessage m_msg, SmtpTransaction transaction, SmtpMessageEvent messageInfo );
 }

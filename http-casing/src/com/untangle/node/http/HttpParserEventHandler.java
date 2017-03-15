@@ -24,8 +24,8 @@ import com.untangle.uvm.vnet.Token;
 import com.untangle.uvm.vnet.TokenStreamer;
 import com.untangle.uvm.vnet.ReleaseToken;
 import com.untangle.uvm.node.MimeType;
-import com.untangle.uvm.vnet.NodeTCPSession;
-import com.untangle.uvm.vnet.NodeSession;
+import com.untangle.uvm.vnet.AppTCPSession;
+import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.node.http.HeaderToken;
 
@@ -99,7 +99,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
     // Parser methods ------------------------------------------------------
 
     @Override
-    public void handleTCPNewSession( NodeTCPSession session )
+    public void handleTCPNewSession( AppTCPSession session )
     {
         /**
          * FIXME move this somewhere else
@@ -121,7 +121,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
     }
     
     @Override
-    public void handleTCPClientChunk( NodeTCPSession session, ByteBuffer data )
+    public void handleTCPClientChunk( AppTCPSession session, ByteBuffer data )
     {
         if (clientSide) {
             parse( session, data, false, false );
@@ -132,7 +132,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
     }
 
     @Override
-    public void handleTCPServerChunk( NodeTCPSession session, ByteBuffer data )
+    public void handleTCPServerChunk( AppTCPSession session, ByteBuffer data )
     {
         if (clientSide) {
             logger.warn("Received data when expect object");
@@ -144,7 +144,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
     }
 
     @Override
-    public void handleTCPClientObject( NodeTCPSession session, Object obj )
+    public void handleTCPClientObject( AppTCPSession session, Object obj )
     {
         if ( obj instanceof ReleaseToken ) {
             session.sendObjectToServer( obj );
@@ -157,7 +157,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
     }
     
     @Override
-    public void handleTCPServerObject( NodeTCPSession session, Object obj )
+    public void handleTCPServerObject( AppTCPSession session, Object obj )
     {
         if ( obj instanceof ReleaseToken ) {
             session.sendObjectToClient( obj );
@@ -170,7 +170,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
     }
     
     @Override
-    public void handleTCPClientDataEnd( NodeTCPSession session, ByteBuffer data )
+    public void handleTCPClientDataEnd( AppTCPSession session, ByteBuffer data )
     {
         if (clientSide) {
             parse( session, data, false, true);
@@ -185,7 +185,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
     }
 
     @Override
-    public void handleTCPServerDataEnd( NodeTCPSession session, ByteBuffer data )
+    public void handleTCPServerDataEnd( AppTCPSession session, ByteBuffer data )
     {
         if (clientSide) {
             if ( data.hasRemaining() ) {
@@ -199,7 +199,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
     }
 
     @Override
-    public void handleTCPClientFIN( NodeTCPSession session )
+    public void handleTCPClientFIN( AppTCPSession session )
     {
         if (clientSide) {
             endSession( session );
@@ -212,7 +212,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
     }
 
     @Override
-    public void handleTCPServerFIN( NodeTCPSession session )
+    public void handleTCPServerFIN( AppTCPSession session )
     {
         if (clientSide) {
             logger.warn("Received unexpected event.");
@@ -224,7 +224,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
         return;
     }
     
-    private void parse( NodeTCPSession session, ByteBuffer data, boolean s2c, boolean last )
+    private void parse( AppTCPSession session, ByteBuffer data, boolean s2c, boolean last )
     {
         ByteBuffer buf = data;
         ByteBuffer dup = buf.duplicate();
@@ -284,7 +284,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
         }
     }
     
-    public void parse( NodeTCPSession session, ByteBuffer buffer, boolean last )
+    public void parse( AppTCPSession session, ByteBuffer buffer, boolean last )
     {
         HttpParserSessionState state = (HttpParserSessionState) session.attachment( STATE_KEY );
         cancelTimer( session );
@@ -719,7 +719,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
         }
     }
 
-    public void endSession( NodeTCPSession session )
+    public void endSession( AppTCPSession session )
     {
         HttpParserSessionState state = (HttpParserSessionState) session.attachment( STATE_KEY );
 
@@ -772,9 +772,9 @@ public class HttpParserEventHandler extends AbstractEventHandler
         return;
     }
 
-    public void handleTimer( NodeSession sess )
+    public void handleTimer( AppSession sess )
     {
-        NodeTCPSession session = (NodeTCPSession) sess;
+        AppTCPSession session = (AppTCPSession) sess;
         byte cs = session.clientState();
         byte ss = session.serverState();
 
@@ -782,8 +782,8 @@ public class HttpParserEventHandler extends AbstractEventHandler
             logger.debug("handling timer cs=" + cs + " ss=" + ss);
         }
 
-        if (cs == NodeTCPSession.HALF_OPEN_OUTPUT
-            && ss == NodeTCPSession.HALF_OPEN_INPUT) {
+        if (cs == AppTCPSession.HALF_OPEN_OUTPUT
+            && ss == AppTCPSession.HALF_OPEN_INPUT) {
             if (logger.isDebugEnabled()) {
                 logger.debug("closing session in halfstate");
             }
@@ -795,7 +795,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
 
     // private methods ---------------------------------------------------------
 
-    private Token firstLine( NodeTCPSession session, ByteBuffer data )
+    private Token firstLine( AppTCPSession session, ByteBuffer data )
     {
         HttpParserSessionState state = (HttpParserSessionState) session.attachment( STATE_KEY );
 
@@ -809,7 +809,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
     }
 
     // Request-Line   = Method SP Request-URI SP HTTP-Version CRLF
-    private RequestLineToken requestLine( NodeTCPSession session, ByteBuffer data )
+    private RequestLineToken requestLine( AppTCPSession session, ByteBuffer data )
     {
         HttpParserSessionState state = (HttpParserSessionState) session.attachment( STATE_KEY );
 
@@ -830,7 +830,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
     }
 
     // Status-Line = HTTP-Version SP Status-Code SP Reason-Phrase CRLF
-    private StatusLine statusLine( NodeTCPSession session, ByteBuffer data )
+    private StatusLine statusLine( AppTCPSession session, ByteBuffer data )
     {
         HttpParserSessionState state = (HttpParserSessionState) session.attachment( STATE_KEY );
 
@@ -906,7 +906,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
         return i;
     }
 
-    private HeaderToken header( NodeTCPSession session, ByteBuffer data )
+    private HeaderToken header( AppTCPSession session, ByteBuffer data )
     {
         HeaderToken header = new HeaderToken();
 
@@ -928,7 +928,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
     // field-content  = <the OCTETs making up the field-value
     //                  and consisting of either *TEXT or combinations
     //                  of token, separators, and quoted-string>
-    private void field( NodeTCPSession session, HeaderToken header, ByteBuffer data )
+    private void field( AppTCPSession session, HeaderToken header, ByteBuffer data )
     {
         HttpParserSessionState state = (HttpParserSessionState) session.attachment( STATE_KEY );
 
@@ -982,7 +982,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
         header.addField( key, value );
     }
 
-    private ChunkToken closedBody( NodeTCPSession session, ByteBuffer buffer )
+    private ChunkToken closedBody( AppTCPSession session, ByteBuffer buffer )
     {
         HttpParserSessionState state = (HttpParserSessionState) session.attachment( STATE_KEY );
 
@@ -1019,7 +1019,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
 
     // chunk          = chunk-size [ chunk-extension ] CRLF
     //                  chunk-data CRLF
-    private ChunkToken chunk( NodeTCPSession session, ByteBuffer buffer )
+    private ChunkToken chunk( AppTCPSession session, ByteBuffer buffer )
     {
         HttpParserSessionState state = (HttpParserSessionState) session.attachment( STATE_KEY );
 
@@ -1034,7 +1034,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
     }
 
     // Request-URI    = "*" | absoluteURI | abs_path | authority
-    private byte[] requestUri( NodeTCPSession session, ByteBuffer buffer )
+    private byte[] requestUri( AppTCPSession session, ByteBuffer buffer )
        
     {
         HttpParserSessionState state = (HttpParserSessionState) session.attachment( STATE_KEY );
@@ -1096,7 +1096,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
     // read *TEXT, folding LWS
     // TEXT           = <any OCTET except CTLs,
     //                  but including LWS>
-    private String eatText( NodeTCPSession session, ByteBuffer buffer )
+    private String eatText( AppTCPSession session, ByteBuffer buffer )
     {
         HttpParserSessionState state = (HttpParserSessionState) session.attachment( STATE_KEY );
         eatLws(buffer);
@@ -1204,7 +1204,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
     }
 
     // token          = 1*<any CHAR except CTLs or separators>
-    private String token( NodeTCPSession session, ByteBuffer buffer )
+    private String token( AppTCPSession session, ByteBuffer buffer )
     {
         HttpParserSessionState state = (HttpParserSessionState) session.attachment( STATE_KEY );
 
@@ -1302,7 +1302,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
         return isUpAlpha(b) || isLoAlpha(b);
     }
 
-    protected void lineBuffering( NodeTCPSession session, boolean oneLine )
+    protected void lineBuffering( AppTCPSession session, boolean oneLine )
     {
         if (clientSide)
             {
@@ -1312,7 +1312,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
         }
     }
 
-    protected long readLimit( NodeTCPSession session )
+    protected long readLimit( AppTCPSession session )
     {
         if (clientSide) {
             return session.clientReadLimit();
@@ -1321,7 +1321,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
         }
     }
 
-    protected void readLimit( NodeTCPSession session, long limit )
+    protected void readLimit( AppTCPSession session, long limit )
     {
         if (clientSide) {
             session.clientReadLimit(limit);
@@ -1330,12 +1330,12 @@ public class HttpParserEventHandler extends AbstractEventHandler
         }
     }
     
-    protected void scheduleTimer( NodeTCPSession session, long delay )
+    protected void scheduleTimer( AppTCPSession session, long delay )
     {
         session.scheduleTimer(delay);
     }
 
-    protected void cancelTimer( NodeTCPSession session )
+    protected void cancelTimer( AppTCPSession session )
     {
         session.cancelTimer();
     }
@@ -1360,7 +1360,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
     }
 
     @SuppressWarnings("unchecked")
-    RequestLineToken dequeueRequest( NodeTCPSession session, int statusCode )
+    RequestLineToken dequeueRequest( AppTCPSession session, int statusCode )
     {
         List<RequestLineToken> requests = (List<RequestLineToken>) session.globalAttachment( "http-request-queue" );
 

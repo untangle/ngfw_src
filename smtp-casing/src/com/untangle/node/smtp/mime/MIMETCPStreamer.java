@@ -17,7 +17,7 @@ import javax.mail.internet.MimeMessage;
 import org.apache.log4j.Logger;
 
 import com.untangle.node.smtp.SmtpMessageEvent;
-import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.vnet.TCPStreamer;
 
 /**
@@ -52,7 +52,7 @@ public class MIMETCPStreamer implements TCPStreamer
      *            if true, the MIMEMessage's {@link com.untangle.node.smtp.mime.MIMEPart#dispose dispose} method will be
      *            called when streaming is complete or an error is encountered.
      */
-    public MIMETCPStreamer(MimeMessage msg, SmtpMessageEvent messageInfo, int readChunkTokenSz, boolean disposeWhenComplete, NodeTCPSession session)
+    public MIMETCPStreamer(MimeMessage msg, SmtpMessageEvent messageInfo, int readChunkTokenSz, boolean disposeWhenComplete, AppTCPSession session)
     {
         m_msg = msg;
         m_chunkSz = readChunkTokenSz;

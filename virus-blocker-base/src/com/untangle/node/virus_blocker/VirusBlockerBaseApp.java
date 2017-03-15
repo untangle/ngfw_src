@@ -20,12 +20,12 @@ import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.GenericRule;
-import com.untangle.uvm.node.NodeMetric;
+import com.untangle.uvm.node.AppMetric;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
-import com.untangle.uvm.vnet.NodeBase;
-import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.node.AppBase;
+import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.vnet.Token;
@@ -34,7 +34,7 @@ import com.untangle.node.http.HeaderToken;
 /**
  * Virus Node.
  */
-public abstract class VirusBlockerBaseApp extends NodeBase
+public abstract class VirusBlockerBaseApp extends AppBase
 {
     private static final String STAT_SCAN = "scan";
     private static final String STAT_PASS = "pass";
@@ -117,11 +117,11 @@ public abstract class VirusBlockerBaseApp extends NodeBase
     {
         super(appSettings, appProperties);
 
-        this.addMetric(new NodeMetric(STAT_SCAN, I18nUtil.marktr("Documents scanned")));
-        this.addMetric(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Documents blocked")));
-        this.addMetric(new NodeMetric(STAT_PASS, I18nUtil.marktr("Documents passed")));
-        this.addMetric(new NodeMetric(STAT_REMOVE, I18nUtil.marktr("Infections removed")));
-        this.addMetric(new NodeMetric(STAT_PASS_POLICY, I18nUtil.marktr("Passed by policy")));
+        this.addMetric(new AppMetric(STAT_SCAN, I18nUtil.marktr("Documents scanned")));
+        this.addMetric(new AppMetric(STAT_BLOCK, I18nUtil.marktr("Documents blocked")));
+        this.addMetric(new AppMetric(STAT_PASS, I18nUtil.marktr("Documents passed")));
+        this.addMetric(new AppMetric(STAT_REMOVE, I18nUtil.marktr("Infections removed")));
+        this.addMetric(new AppMetric(STAT_PASS_POLICY, I18nUtil.marktr("Passed by policy")));
 
         this.virusFtpCtlHandler = new VirusFtpHandler(this);
         this.virusFtpDataHandler = new VirusFtpHandler(this);
@@ -203,12 +203,12 @@ public abstract class VirusBlockerBaseApp extends NodeBase
         return replacementGenerator.generateNonce(details);
     }
 
-    public Token[] generateResponse(String nonce, NodeTCPSession session, String uri)
+    public Token[] generateResponse(String nonce, AppTCPSession session, String uri)
     {
         return replacementGenerator.generateResponse(nonce, session, uri, null);
     }
 
-    public Token[] generateResponse(String nonce, NodeTCPSession session, String uri, HeaderToken header)
+    public Token[] generateResponse(String nonce, AppTCPSession session, String uri, HeaderToken header)
     {
         return replacementGenerator.generateResponse(nonce, session, uri, header);
     }

@@ -19,8 +19,8 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.vnet.AbstractEventHandler;
-import com.untangle.uvm.vnet.NodeTCPSession;
-import com.untangle.uvm.vnet.NodeSession;
+import com.untangle.uvm.vnet.AppTCPSession;
+import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import org.apache.log4j.Logger;
 
@@ -56,10 +56,10 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
         }
     }
 
-    public void handleTCPClientChunk(NodeTCPSession session, ByteBuffer data)
+    public void handleTCPClientChunk(AppTCPSession session, ByteBuffer data)
     {
         // grab the SSL Inspector status attachment
-        Boolean sslInspectorStatus = (Boolean) session.globalAttachment(NodeSession.KEY_SSL_INSPECTOR_SESSION_INSPECT);
+        Boolean sslInspectorStatus = (Boolean) session.globalAttachment(AppSession.KEY_SSL_INSPECTOR_SESSION_INSPECT);
 
         // if we find the attachment and it is true then we release the
         // session now since we'll see the unencrypted traffic later
@@ -70,7 +70,7 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
         }
 
         // see if there is an SSL engine attached to the session
-        WebFilterSSLEngine engine = (WebFilterSSLEngine) session.globalAttachment(NodeSession.KEY_WEB_FILTER_SSL_ENGINE);
+        WebFilterSSLEngine engine = (WebFilterSSLEngine) session.globalAttachment(AppSession.KEY_WEB_FILTER_SSL_ENGINE);
 
         if (engine != null) {
             // found an engine which means we've decided to block so we pass
@@ -85,7 +85,7 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
         }
     }
 
-    private void checkClientRequest(NodeTCPSession sess, ByteBuffer data)
+    private void checkClientRequest(AppTCPSession sess, ByteBuffer data)
     {
         java.security.cert.X509Certificate serverCert = null;
         ByteBuffer buff = data;
@@ -233,7 +233,7 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
         this.node.logEvent(evt);
 
         // attach the hostname we extracted to the session
-        sess.globalAttach(NodeSession.KEY_HTTP_HOSTNAME, domain);
+        sess.globalAttach(AppSession.KEY_HTTP_HOSTNAME, domain);
 
         HeaderToken h = new HeaderToken();
         h.addField("host", domain);
@@ -249,7 +249,7 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
             logger.debug("TCP: " + sess.getClientAddr().getHostAddress() + ":" + sess.getClientPort() + " -> " + sess.getServerAddr().getHostAddress() + ":" + sess.getServerPort());
 
             WebFilterSSLEngine engine = new WebFilterSSLEngine(sess, nonce, node.getAppSettings().getId().toString());
-            sess.globalAttach(NodeSession.KEY_WEB_FILTER_SSL_ENGINE, engine);
+            sess.globalAttach(AppSession.KEY_WEB_FILTER_SSL_ENGINE, engine);
             engine.handleClientData(buff);
             return;
         }

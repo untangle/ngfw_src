@@ -18,7 +18,7 @@ import org.apache.log4j.Logger;
 import com.untangle.node.http.RequestLineToken;
 import com.untangle.node.http.HeaderToken;
 import com.untangle.uvm.util.UrlMatchingUtil;
-import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.vnet.AppTCPSession;
 
 /**
  * Map search engine to their query URIs

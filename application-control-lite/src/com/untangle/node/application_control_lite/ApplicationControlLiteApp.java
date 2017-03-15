@@ -14,16 +14,16 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
-import com.untangle.uvm.node.NodeMetric;
+import com.untangle.uvm.node.AppMetric;
 import com.untangle.uvm.node.AppSettings;
 import com.untangle.uvm.node.AppProperties;
 import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.vnet.NodeBase;
+import com.untangle.uvm.node.AppBase;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipelineConnector;
 
-public class ApplicationControlLiteApp extends NodeBase 
+public class ApplicationControlLiteApp extends AppBase 
 {
     private static final String STAT_SCAN = "scan";
     private static final String STAT_DETECT = "detect";
@@ -44,9 +44,9 @@ public class ApplicationControlLiteApp extends NodeBase
     {
         super( appSettings, appProperties );
 
-        this.addMetric(new NodeMetric(STAT_SCAN, I18nUtil.marktr("Chunks scanned")));
-        this.addMetric(new NodeMetric(STAT_DETECT, I18nUtil.marktr("Sessions logged")));
-        this.addMetric(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Sessions blocked")));
+        this.addMetric(new AppMetric(STAT_SCAN, I18nUtil.marktr("Chunks scanned")));
+        this.addMetric(new AppMetric(STAT_DETECT, I18nUtil.marktr("Sessions logged")));
+        this.addMetric(new AppMetric(STAT_BLOCK, I18nUtil.marktr("Sessions blocked")));
         
         this.connector = UvmContextFactory.context().pipelineFoundry().create("application-control-lite", this, null, handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, 0, false);
         this.connectors = new PipelineConnector[] { connector };

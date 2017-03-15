@@ -34,7 +34,7 @@ copytruncate
 missingok
 }
 
-/var/log/uvm/node*.log {
+/var/log/uvm/app*.log {
 rotate 2
 size 500k
 compress

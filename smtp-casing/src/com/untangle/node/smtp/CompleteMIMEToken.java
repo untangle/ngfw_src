@@ -11,7 +11,7 @@ import org.apache.log4j.Logger;
 
 import com.untangle.node.smtp.mime.MIMETCPStreamer;
 import com.untangle.uvm.vnet.MetadataToken;
-import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.vnet.TCPStreamer;
 
 /**
@@ -53,7 +53,7 @@ public class CompleteMIMEToken extends MetadataToken
      * 
      * @return the TokenStreamer
      */
-    public TCPStreamer toUnstuffedTCPStreamer( boolean disposeWhenComplete, NodeTCPSession session )
+    public TCPStreamer toUnstuffedTCPStreamer( boolean disposeWhenComplete, AppTCPSession session )
     {
         m_logger.debug("About to return a new MIMETCPStreamer");
         return createMIMETCPStreamer( disposeWhenComplete, session );
@@ -64,7 +64,7 @@ public class CompleteMIMEToken extends MetadataToken
      * 
      * @return the TokenStreamer
      */
-    public TCPStreamer toStuffedTCPStreamer( boolean disposeWhenComplete, NodeTCPSession session )
+    public TCPStreamer toStuffedTCPStreamer( boolean disposeWhenComplete, AppTCPSession session )
     {
         m_logger.debug("About to return a new StuffingMIMETCPStreamer");
         return new StuffingMIMETCPStreamer(getMessage(), m_msgInfo, disposeWhenComplete, session);
@@ -73,7 +73,7 @@ public class CompleteMIMEToken extends MetadataToken
     /**
      * Method for subclasses to create a streamer.
      */
-    protected MIMETCPStreamer createMIMETCPStreamer( boolean disposeWhenComplete, NodeTCPSession session )
+    protected MIMETCPStreamer createMIMETCPStreamer( boolean disposeWhenComplete, AppTCPSession session )
     {
         return new MIMETCPStreamer(getMessage(), m_msgInfo, CHUNK_SZ, disposeWhenComplete, session);
     }
@@ -86,7 +86,7 @@ public class CompleteMIMEToken extends MetadataToken
         private ByteBuffer m_readBuf = ByteBuffer.allocate(CHUNK_SZ);
         private boolean m_readLast = false;
 
-        StuffingMIMETCPStreamer(MimeMessage msg, SmtpMessageEvent messageInfo, boolean disposeWhenComplete, NodeTCPSession session)
+        StuffingMIMETCPStreamer(MimeMessage msg, SmtpMessageEvent messageInfo, boolean disposeWhenComplete, AppTCPSession session)
         {
             super(msg, messageInfo, 0, disposeWhenComplete, session);
             m_logger.debug("Created Complete MIME message streamer (Stuffing)");

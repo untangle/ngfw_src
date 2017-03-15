@@ -38,7 +38,7 @@ import java.io.FileInputStream;
 import java.io.File;
 
 import com.untangle.uvm.network.InterfaceSettings;
-import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.CertificateManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.util.GlobUtil;
@@ -89,7 +89,7 @@ class SslInspectorManager
     }
 
     private final Logger logger = Logger.getLogger(getClass());
-    private final NodeTCPSession session;
+    private final AppTCPSession session;
     private final SslInspectorApp node;
 
     private X509Certificate peerCertificate;
@@ -113,7 +113,7 @@ class SslInspectorManager
     public boolean tlsFlagClient;
     public boolean tlsFlagServer;
 
-    public SslInspectorManager(NodeTCPSession session, boolean clientSide, SslInspectorApp node)
+    public SslInspectorManager(AppTCPSession session, boolean clientSide, SslInspectorApp node)
     {
         this.session = session;
         this.node = node;
@@ -134,7 +134,7 @@ class SslInspectorManager
             if (clientSide) {
                 // the server side casing should be finished with the
                 // SSL handshake by now so we grab the peer certificate
-                SslInspectorManager server = (SslInspectorManager) session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_SERVER_MANAGER);
+                SslInspectorManager server = (SslInspectorManager) session.globalAttachment(AppTCPSession.KEY_SSL_INSPECTOR_SERVER_MANAGER);
                 if (server == null) throw new Exception("Server SslInspectorManager attachment is missing");
 
                 X509Certificate cert = server.getPeerCertificate();
@@ -146,10 +146,10 @@ class SslInspectorManager
 
             else {
                 // we need the SNI hostname from the client side casing
-                SslInspectorManager client = (SslInspectorManager) session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_CLIENT_MANAGER);
+                SslInspectorManager client = (SslInspectorManager) session.globalAttachment(AppTCPSession.KEY_SSL_INSPECTOR_CLIENT_MANAGER);
                 if (client == null) throw new Exception("Client SslInspectorManager attachment is missing");
 
-                String sniHostname = (String) session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME);
+                String sniHostname = (String) session.globalAttachment(AppTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME);
 
                 logger.debug("Initializing SERVER SSLEngine");
                 initializeServerEngine(sniHostname);
@@ -245,7 +245,7 @@ class SslInspectorManager
              */
 
             // grab the SNI hostname so we can check against loaded cert
-            String sniHostname = (String) session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME);
+            String sniHostname = (String) session.globalAttachment(AppTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME);
             X509Certificate loadedCert = (X509Certificate) keyStore.getCertificate("default");
             if ((node.getSettings().getServerFakeHostname() == true) && (validateCertificate(loadedCert, sniHostname) == false)) {
 
@@ -430,7 +430,7 @@ class SslInspectorManager
         return (sslEngine);
     }
 
-    public NodeTCPSession getSession()
+    public AppTCPSession getSession()
     {
         return (session);
     }

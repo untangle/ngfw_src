@@ -10,7 +10,7 @@ import com.untangle.uvm.vnet.TCPStreamer;
 /**
  * A TCPSession is the most specific interface for VNet TCP sessions
  */
-public interface NodeTCPSession extends NodeSession
+public interface AppTCPSession extends AppSession
 {
     static final byte CLOSED = 0;
     static final byte EXPIRED = 0;
@@ -185,7 +185,7 @@ public interface NodeTCPSession extends NodeSession
 
     /**
      * Queue the provided buffers to be sent to the client or server
-     * side can be NodeSession.CLIENT or NodeSession.SERVER
+     * side can be AppSession.CLIENT or AppSession.SERVER
      */
     public void sendData( int side, ByteBuffer[] bufs2send );
 
@@ -201,7 +201,7 @@ public interface NodeTCPSession extends NodeSession
     
     /**
      * Queue the provided buffer to be sent to the client or server
-     * side can be NodeSession.CLIENT or NodeSession.SERVER
+     * side can be AppSession.CLIENT or AppSession.SERVER
      */
     public void sendData( int side, ByteBuffer buf2send );
 
@@ -221,7 +221,7 @@ public interface NodeTCPSession extends NodeSession
 
     /**
      * Set the client or server receive buffer to the provided buffer
-     * side can be NodeSession.CLIENT or NodeSession.SERVER
+     * side can be AppSession.CLIENT or AppSession.SERVER
      */
     public void setBuffer( int side, ByteBuffer buf );
 }

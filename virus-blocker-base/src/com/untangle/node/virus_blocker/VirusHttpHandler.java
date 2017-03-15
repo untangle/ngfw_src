@@ -23,7 +23,7 @@ import com.untangle.node.http.HeaderToken;
 import com.untangle.uvm.vnet.Token;
 import com.untangle.uvm.util.GlobUtil;
 import com.untangle.uvm.node.GenericRule;
-import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.vnet.AppTCPSession;
 
 /**
  * Virus handler for HTTP.
@@ -84,7 +84,7 @@ class VirusHttpHandler extends HttpEventHandler
     }
 
     @Override
-    public void handleTCPNewSession(NodeTCPSession session)
+    public void handleTCPNewSession(AppTCPSession session)
     {
         super.handleTCPNewSession(session);
         VirusHttpState state = new VirusHttpState();
@@ -92,7 +92,7 @@ class VirusHttpHandler extends HttpEventHandler
     }
 
     @Override
-    protected RequestLineToken doRequestLine(NodeTCPSession session, RequestLineToken requestLine)
+    protected RequestLineToken doRequestLine(AppTCPSession session, RequestLineToken requestLine)
     {
         VirusHttpState state = (VirusHttpState) session.attachment();
 
@@ -100,7 +100,7 @@ class VirusHttpHandler extends HttpEventHandler
     }
 
     @Override
-    protected HeaderToken doRequestHeader(NodeTCPSession session, HeaderToken requestHeader)
+    protected HeaderToken doRequestHeader(AppTCPSession session, HeaderToken requestHeader)
     {
         VirusHttpState state = (VirusHttpState) session.attachment();
         /* save host */
@@ -140,24 +140,24 @@ class VirusHttpHandler extends HttpEventHandler
     }
 
     @Override
-    protected ChunkToken doRequestBody(NodeTCPSession session, ChunkToken chunk)
+    protected ChunkToken doRequestBody(AppTCPSession session, ChunkToken chunk)
     {
         return chunk;
     }
 
     @Override
-    protected void doRequestBodyEnd(NodeTCPSession session)
+    protected void doRequestBodyEnd(AppTCPSession session)
     {
     }
 
     @Override
-    protected StatusLine doStatusLine(NodeTCPSession session, StatusLine statusLine)
+    protected StatusLine doStatusLine(AppTCPSession session, StatusLine statusLine)
     {
         return statusLine;
     }
 
     @Override
-    protected HeaderToken doResponseHeader(NodeTCPSession session, HeaderToken header)
+    protected HeaderToken doResponseHeader(AppTCPSession session, HeaderToken header)
     {
         VirusHttpState state = (VirusHttpState) session.attachment();
         logger.debug("doing response header");
@@ -204,14 +204,14 @@ class VirusHttpHandler extends HttpEventHandler
     }
 
     @Override
-    protected ChunkToken doResponseBody(NodeTCPSession session, ChunkToken chunk)
+    protected ChunkToken doResponseBody(AppTCPSession session, ChunkToken chunk)
     {
         VirusHttpState state = (VirusHttpState) session.attachment();
         return state.scan ? bufferOrTrickle(session, chunk) : chunk;
     }
 
     @Override
-    protected void doResponseBodyEnd(NodeTCPSession session)
+    protected void doResponseBodyEnd(AppTCPSession session)
     {
         VirusHttpState state = (VirusHttpState) session.attachment();
         if (state.scan) {
@@ -228,7 +228,7 @@ class VirusHttpHandler extends HttpEventHandler
         }
     }
 
-    private void scanFile(NodeTCPSession session)
+    private void scanFile(AppTCPSession session)
     {
         VirusHttpState state = (VirusHttpState) session.attachment();
         VirusScannerResult result;
@@ -346,7 +346,7 @@ class VirusHttpHandler extends HttpEventHandler
         return false;
     }
 
-    private void setupFile(NodeTCPSession session)
+    private void setupFile(AppTCPSession session)
     {
         VirusHttpState state = (VirusHttpState) session.attachment();
 
@@ -370,12 +370,12 @@ class VirusHttpHandler extends HttpEventHandler
     }
 
     @Override
-    public void handleTCPFinalized(NodeTCPSession session)
+    public void handleTCPFinalized(AppTCPSession session)
     {
         session.cleanupTempFiles();
     }
 
-    private ChunkToken bufferOrTrickle(NodeTCPSession session, ChunkToken chunk)
+    private ChunkToken bufferOrTrickle(AppTCPSession session, ChunkToken chunk)
     {
         VirusHttpState state = (VirusHttpState) session.attachment();
         ByteBuffer buf = chunk.getData();
@@ -426,7 +426,7 @@ class VirusHttpHandler extends HttpEventHandler
         }
     }
 
-    private ChunkToken trickle(NodeTCPSession session)
+    private ChunkToken trickle(AppTCPSession session)
     {
         if (logger.isDebugEnabled()) {
             logger.debug("handleTokenTrickle()");

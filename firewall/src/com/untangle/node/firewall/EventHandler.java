@@ -15,7 +15,7 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.Protocol;
-import com.untangle.uvm.vnet.NodeSession;
+import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.vnet.UDPNewSessionRequest;
 
@@ -54,7 +54,7 @@ public class EventHandler extends AbstractEventHandler
         int ruleIndex     = 0;
         FirewallRule matchedRule = null;
 
-        if ( Boolean.TRUE == request.globalAttachment( NodeSession.KEY_FTP_DATA_SESSION) ) {
+        if ( Boolean.TRUE == request.globalAttachment( AppSession.KEY_FTP_DATA_SESSION) ) {
             logger.info("Passing FTP related session: " + request);
             return;
         }

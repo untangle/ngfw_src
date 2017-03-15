@@ -21,7 +21,7 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.NotificationManager;
 import com.untangle.uvm.ExecManager;
 import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.node.Node;
+import com.untangle.uvm.node.App;
 import com.untangle.uvm.node.AppSettings;
 import com.untangle.uvm.node.PolicyManager;
 import com.untangle.uvm.node.Reporting;
@@ -277,13 +277,13 @@ public class NotificationManagerImpl implements NotificationManager
         /**
          * Check for redundant apps
          */
-        List<Node> spamBlockerLiteList = UvmContextFactory.context().appManager().appInstances("spam-blocker-lite");
-        List<Node> spamblockerList = UvmContextFactory.context().appManager().appInstances("spam-blocker");
-        List<Node> webMonitorList = UvmContextFactory.context().appManager().appInstances("web-monitor");
-        List<Node> webFilterList = UvmContextFactory.context().appManager().appInstances("web-filter");
+        List<App> spamBlockerLiteList = UvmContextFactory.context().appManager().appInstances("spam-blocker-lite");
+        List<App> spamblockerList = UvmContextFactory.context().appManager().appInstances("spam-blocker");
+        List<App> webMonitorList = UvmContextFactory.context().appManager().appInstances("web-monitor");
+        List<App> webFilterList = UvmContextFactory.context().appManager().appInstances("web-filter");
 
-        for (Node node1 : webMonitorList) {
-            for (Node node2 : webFilterList) {
+        for (App node1 : webMonitorList) {
+            for (App node2 : webFilterList) {
                 if (node1.getAppSettings().getId().equals(node2.getAppSettings().getId()))
                     continue;
 
@@ -292,8 +292,8 @@ public class NotificationManagerImpl implements NotificationManager
             }
         }
 
-        for (Node node1 : spamBlockerLiteList) {
-            for (Node node2 : spamblockerList) {
+        for (App node1 : spamBlockerLiteList) {
+            for (App node2 : spamblockerList) {
                 if (node1.getAppSettings().getId().equals(node2.getAppSettings().getId()))
                     continue;
 
@@ -509,16 +509,16 @@ public class NotificationManagerImpl implements NotificationManager
      */
     private void testSpamDNSServers(List<String> notificationList)
     {
-        List<Node> spamBlockerLiteList = UvmContextFactory.context().appManager().appInstances("spam-blocker-lite");
-        List<Node> spamblockerList = UvmContextFactory.context().appManager().appInstances("spam-blocker");
-        String nodeName = "Spam Blocker";
+        List<App> spamBlockerLiteList = UvmContextFactory.context().appManager().appInstances("spam-blocker-lite");
+        List<App> spamblockerList = UvmContextFactory.context().appManager().appInstances("spam-blocker");
+        String appName = "Spam Blocker";
 
         if (spamBlockerLiteList.size() == 0 && spamblockerList.size() == 0)
             return;
         if (spamBlockerLiteList.size() > 0)
-            nodeName = "Spam Blocker Lite";
+            appName = "Spam Blocker Lite";
         if (spamblockerList.size() > 0)
-            nodeName = "Spam Blocker";
+            appName = "Spam Blocker";
 
         for ( InterfaceSettings intf : UvmContextFactory.context().networkManager().getEnabledInterfaces() ) {
             if (!intf.getIsWan())
@@ -540,7 +540,7 @@ public class NotificationManagerImpl implements NotificationManager
                      "208.67.222.222".equals( dnsServer ) || /* openDNS */
                      "208.67.222.220".equals( dnsServer ) /* openDNS */ ) {
                     String notificationText = "";
-                    notificationText += nodeName + " " + i18nUtil.tr("is installed but an unsupported DNS server is used");
+                    notificationText += appName + " " + i18nUtil.tr("is installed but an unsupported DNS server is used");
                     notificationText += " (";
                     notificationText += intf.getName();
                     notificationText += ", ";
@@ -586,7 +586,7 @@ public class NotificationManagerImpl implements NotificationManager
 
                     if ( !found ) {
                         String notificationText = "";
-                        notificationText += nodeName + " " + i18nUtil.tr("is installed but a DNS server");
+                        notificationText += appName + " " + i18nUtil.tr("is installed but a DNS server");
                         notificationText += " (";
                         notificationText += intf.getName();
                         notificationText += ", ";
@@ -606,7 +606,7 @@ public class NotificationManagerImpl implements NotificationManager
     @SuppressWarnings("rawtypes")
     private void testZveloDNSServers(List<String> notificationList)
     {
-        List<Node> webFilterList = UvmContextFactory.context().appManager().appInstances("web-filter");
+        List<App> webFilterList = UvmContextFactory.context().appManager().appInstances("web-filter");
 
         if ( webFilterList.size() == 0 )
             return;
@@ -614,7 +614,7 @@ public class NotificationManagerImpl implements NotificationManager
         String query = null;
         try {
             Method method;
-            Node webFilter = webFilterList.get(0);
+            App webFilter = webFilterList.get(0);
 
             Class[] args = { String.class, String.class };
             method = webFilter.getClass().getMethod( "encodeDnsQuery", args );
@@ -772,7 +772,7 @@ public class NotificationManagerImpl implements NotificationManager
      */
     private void testShieldEnabled( List<String> notificationList )
     {
-        Node shield = UvmContextFactory.context().appManager().app("shield");
+        App shield = UvmContextFactory.context().appManager().app("shield");
         String notificationText = "";
         notificationText += i18nUtil.tr("The shield is disabled. This can cause performance and stability problems.");
 

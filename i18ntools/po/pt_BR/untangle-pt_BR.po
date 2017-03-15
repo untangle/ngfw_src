@@ -13648,11 +13648,11 @@ msgid "Session Requests"
 msgstr "Solicitações de sessão"
 
 #: /ngfw/ngfw_src/uvm/impl/com/untangle/uvm/Dispatcher.java:98
-msgid "TCP NodeSession Requests"
+msgid "TCP AppSession Requests"
 msgstr "Solicitações de sessão TCP"
 
 #: /ngfw/ngfw_src/uvm/impl/com/untangle/uvm/Dispatcher.java:99
-msgid "UDP NodeSession Requests"
+msgid "UDP AppSession Requests"
 msgstr "Solicitações de sessão UDP"
 
 #: /ngfw/ngfw_src/uvm/impl/com/untangle/uvm/DefaultLicenseManagerImpl.java:58

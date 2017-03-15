@@ -16,16 +16,16 @@ import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.HookCallback;
 import com.untangle.uvm.node.AppSettings;
 import com.untangle.uvm.node.License;
-import com.untangle.uvm.node.NodeMetric;
+import com.untangle.uvm.node.AppMetric;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.vnet.NodeBase;
+import com.untangle.uvm.node.AppBase;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipelineConnector;
 
-public class WanBalancerApp extends NodeBase
+public class WanBalancerApp extends AppBase
 {
     private static final String WAN_METRIC_PREFIX = "wan_";
 
@@ -46,7 +46,7 @@ public class WanBalancerApp extends NodeBase
     {
         super( appSettings, appProperties );
 
-        updateNodeMetrics( );
+        updateAppMetrics( );
 
         /* premium = false because the handler is just used for monitoring & stats so it should still handle traffic even for hosts over the limit */
         this.connector = UvmContextFactory.context().pipelineFoundry().create("wan-balancer", this, null, this.handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, 100, false );
@@ -179,7 +179,7 @@ public class WanBalancerApp extends NodeBase
             return;
         }
 
-        NodeMetric metric = this.getMetric( WAN_METRIC_PREFIX + serverIntf );
+        AppMetric metric = this.getMetric( WAN_METRIC_PREFIX + serverIntf );
         if ( metric == null ) {
             //this is true for all non-WAN dst interfaces, just return
             return;
@@ -211,10 +211,10 @@ public class WanBalancerApp extends NodeBase
         syncToSystem( true );
 
         // update faceplate metrics
-        updateNodeMetrics();
+        updateAppMetrics();
     }
 
-    private void updateNodeMetrics(  )
+    private void updateAppMetrics(  )
     {
         try {
             String uplinkName[] = new String[1 + IntfConstants.MAX_INTF];
@@ -226,13 +226,13 @@ public class WanBalancerApp extends NodeBase
             /* Delete all of the interfaces that are not included. */
             for ( InterfaceSettings intf : UvmContextFactory.context().networkManager().getEnabledInterfaces() ) {
                 int interfaceIndex = intf.getInterfaceId();
-                NodeMetric metric = this.getMetric( WAN_METRIC_PREFIX + interfaceIndex );
+                AppMetric metric = this.getMetric( WAN_METRIC_PREFIX + interfaceIndex );
             
                 if ( intf.getIsWan() ) {
                     if ( metric == null) {
                         String metricName = ( intf.getName() == null ) ? "unknown" : intf.getName();
                         String metricDisplayName = I18nUtil.tr( "Sessions on {0}", metricName, i18n_map );
-                        metric = new NodeMetric( WAN_METRIC_PREFIX + interfaceIndex, metricDisplayName );
+                        metric = new AppMetric( WAN_METRIC_PREFIX + interfaceIndex, metricDisplayName );
                         logger.info("Adding Metric [" + interfaceIndex + "]: " + metricDisplayName);
                         this.addMetric(metric);
                     }

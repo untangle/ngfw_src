@@ -3,7 +3,7 @@
  */
 package com.untangle.uvm;
 
-import com.untangle.uvm.node.Node;
+import com.untangle.uvm.node.App;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 
 /**
@@ -13,7 +13,7 @@ import com.untangle.uvm.vnet.AbstractEventHandler;
  */
 class ReleasedEventHandler extends AbstractEventHandler
 {
-    ReleasedEventHandler(Node node)
+    ReleasedEventHandler(App node)
     {
         super(node);
     }

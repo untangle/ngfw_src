@@ -11,10 +11,10 @@ import java.nio.ByteBuffer;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.HostTable;
 import com.untangle.uvm.vnet.AbstractEventHandler;
-import com.untangle.uvm.vnet.NodeSession;
-import com.untangle.uvm.vnet.NodeSession;
-import com.untangle.uvm.vnet.NodeTCPSession;
-import com.untangle.uvm.vnet.NodeUDPSession;
+import com.untangle.uvm.vnet.AppSession;
+import com.untangle.uvm.vnet.AppSession;
+import com.untangle.uvm.vnet.AppTCPSession;
+import com.untangle.uvm.vnet.AppUDPSession;
 import com.untangle.uvm.vnet.IPPacketHeader;
 import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
@@ -50,7 +50,7 @@ public class BandwidthControlEventHandler extends AbstractEventHandler
         _handleNewSessionRequest( sessionRequest, Protocol.UDP );
     }
 
-    public void handleTCPComplete( NodeTCPSession session )
+    public void handleTCPComplete( AppTCPSession session )
     {
         try {
             _handleSession( null, session, Protocol.TCP );
@@ -60,7 +60,7 @@ public class BandwidthControlEventHandler extends AbstractEventHandler
         }
     }
 
-    public void handleUDPComplete( NodeUDPSession session )
+    public void handleUDPComplete( AppUDPSession session )
     {
         try {
             _handleSession( null, session, Protocol.UDP );
@@ -70,26 +70,26 @@ public class BandwidthControlEventHandler extends AbstractEventHandler
         }
     }
 
-    public void handleUDPClientPacket( NodeUDPSession session, ByteBuffer data, IPPacketHeader header )
+    public void handleUDPClientPacket( AppUDPSession session, ByteBuffer data, IPPacketHeader header )
     {
         _handleSession( data, session, Protocol.UDP );
         session.sendServerPacket( data, header );
     }
 
-    public void handleUDPServerPacket( NodeUDPSession session, ByteBuffer data, IPPacketHeader header )
+    public void handleUDPServerPacket( AppUDPSession session, ByteBuffer data, IPPacketHeader header )
     {
         _handleSession( data, session, Protocol.UDP );
         session.sendClientPacket( data, header );
     }
 
-    public void handleTCPClientChunk( NodeTCPSession session, ByteBuffer data )
+    public void handleTCPClientChunk( AppTCPSession session, ByteBuffer data )
     {
         _handleSession( data, session, Protocol.TCP );
         session.sendDataToServer( data );
         return;
     }
 
-    public void handleTCPServerChunk( NodeTCPSession session, ByteBuffer data )
+    public void handleTCPServerChunk( AppTCPSession session, ByteBuffer data )
     {
         _handleSession( data, session, Protocol.TCP );
         session.sendDataToClient( data );
@@ -103,9 +103,9 @@ public class BandwidthControlEventHandler extends AbstractEventHandler
         
         logger.info("Reprioritizing Sessions for " + addr.getHostAddress() + " because \"" + reason + "\"");
 
-        for (NodeSession sess : this.node.liveNodeSessions()) {
+        for (AppSession sess : this.node.liveAppSessions()) {
             if (addr.equals(sess.getClientAddr()) || addr.equals(sess.getServerAddr())) {
-                logger.debug( "Reevaluating NodeSession : " + sess.getProtocol() + " " +
+                logger.debug( "Reevaluating AppSession : " + sess.getProtocol() + " " +
                               sess.getClientAddr().getHostAddress() + ":" + sess.getClientPort() + " -> " +
                               sess.getServerAddr().getHostAddress() + ":" + sess.getServerPort());
 
@@ -132,9 +132,9 @@ public class BandwidthControlEventHandler extends AbstractEventHandler
         
         logger.info("Reprioritizing Sessions for " + username + " because \"" + reason + "\"");
 
-        for (NodeSession sess : this.node.liveNodeSessions()) {
+        for (AppSession sess : this.node.liveAppSessions()) {
             if ( username.equals(sess.user())) {
-                logger.debug( "Reevaluating NodeSession : " + sess.getProtocol() + " " +
+                logger.debug( "Reevaluating AppSession : " + sess.getProtocol() + " " +
                               sess.getClientAddr().getHostAddress() + ":" + sess.getClientPort() + " -> " +
                               sess.getServerAddr().getHostAddress() + ":" + sess.getServerPort());
 
@@ -157,7 +157,7 @@ public class BandwidthControlEventHandler extends AbstractEventHandler
     private void _handleNewSessionRequest( IPNewSessionRequest request, Protocol protocol )
     {
         if ( logger.isDebugEnabled() ) {
-            logger.debug( "New NodeSession Request: " + protocol + " " +
+            logger.debug( "New AppSession Request: " + protocol + " " +
                           request.getOrigClientAddr().getHostAddress() + ":" + request.getOrigClientPort() + " -> " +
                           request.getNewServerAddr().getHostAddress() + ":" + request.getNewServerPort());
         }
@@ -166,7 +166,7 @@ public class BandwidthControlEventHandler extends AbstractEventHandler
         request.attach(sessInfo);
     }
 
-    private void _handleSession( ByteBuffer data, NodeSession sess, Protocol protocol )
+    private void _handleSession( ByteBuffer data, AppSession sess, Protocol protocol )
     {
         BandwidthControlSessionState sessInfo = (BandwidthControlSessionState)sess.attachment();
         if (sessInfo == null) {
@@ -202,17 +202,17 @@ public class BandwidthControlEventHandler extends AbstractEventHandler
 
     }
     
-    private BandwidthControlRule _findFirstMatch(NodeSession sess)
+    private BandwidthControlRule _findFirstMatch(AppSession sess)
     {
         return _findFirstMatch(sess, false);
     }
     
-    private BandwidthControlRule _findFirstMatch(NodeSession sess, boolean onlyPrioritizeRules)
+    private BandwidthControlRule _findFirstMatch(AppSession sess, boolean onlyPrioritizeRules)
     {
         List<BandwidthControlRule> rules = this.node.getRules();
 
         if ( logger.isDebugEnabled() ) {
-            logger.debug( "Checking Rules against NodeSession : " + sess.getProtocol() + " " +
+            logger.debug( "Checking Rules against AppSession : " + sess.getProtocol() + " " +
                           sess.getClientAddr().getHostAddress() + ":" + sess.getClientPort() + " -> " +
                           sess.getServerAddr().getHostAddress() + ":" + sess.getServerPort());
         }
@@ -231,14 +231,14 @@ public class BandwidthControlEventHandler extends AbstractEventHandler
             
             if (rule.getEnabled() && evalRule && rule.matches( sess )) {
                 if ( logger.isDebugEnabled() ) {
-                    logger.debug( "Matched NodeSession : " + sess.getProtocol() + " " +
+                    logger.debug( "Matched AppSession : " + sess.getProtocol() + " " +
                                   sess.getClientAddr().getHostAddress() + ":" + sess.getClientPort() + " -> " +
                                   sess.getServerAddr().getHostAddress() + ":" + sess.getServerPort() + " matches " + rule.getDescription());
                 }
                 return rule; /* check no further */
             } else {
                 if ( logger.isDebugEnabled() ) {
-                    logger.debug( "Checking Rule \"" + rule.getDescription() + "\" against NodeSession : " + sess.getProtocol() + " " +
+                    logger.debug( "Checking Rule \"" + rule.getDescription() + "\" against AppSession : " + sess.getProtocol() + " " +
                                   sess.getClientAddr().getHostAddress() + ":" + sess.getClientPort() + " -> " +
                                   sess.getServerAddr().getHostAddress() + ":" + sess.getServerPort());
                 }

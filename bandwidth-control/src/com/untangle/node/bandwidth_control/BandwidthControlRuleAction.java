@@ -18,7 +18,7 @@ import com.untangle.uvm.HostTableEntry;
 import com.untangle.uvm.HookManager;
 import com.untangle.uvm.Tag;
 import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.vnet.NodeSession;
+import com.untangle.uvm.vnet.AppSession;
 
 
 @SuppressWarnings("serial")
@@ -233,7 +233,7 @@ public class BandwidthControlRuleAction implements JSONString, Serializable
     /**
      * This applies the action to the given session
      */
-    public void apply( NodeSession sess )
+    public void apply( AppSession sess )
     {
         if (this.action == null) {
             logger.warn("Ignoring improperly initialized action");

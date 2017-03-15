@@ -43,16 +43,16 @@ import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.network.InterfaceStatus;
 import com.untangle.uvm.node.IPMaskedAddress;
-import com.untangle.uvm.node.NodeMetric;
+import com.untangle.uvm.node.AppMetric;
 import com.untangle.uvm.node.AppManager;
 import com.untangle.uvm.node.AppSettings;
-import com.untangle.uvm.vnet.NodeBase;
+import com.untangle.uvm.node.AppBase;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.servlet.DownloadHandler;
 
-public class IntrusionPreventionApp extends NodeBase
+public class IntrusionPreventionApp extends AppBase
 {
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -88,9 +88,9 @@ public class IntrusionPreventionApp extends NodeBase
         this.interfaceIds = calculateInterfaces( UvmContextFactory.context().networkManager().getNetworkSettings() );
         this.networkSettingsChangeHook = new IntrusionPreventionNetworkSettingsHook();
 
-        this.addMetric(new NodeMetric(STAT_SCAN, I18nUtil.marktr("Sessions scanned")));
-        this.addMetric(new NodeMetric(STAT_DETECT, I18nUtil.marktr("Sessions logged")));
-        this.addMetric(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Sessions blocked")));
+        this.addMetric(new AppMetric(STAT_SCAN, I18nUtil.marktr("Sessions scanned")));
+        this.addMetric(new AppMetric(STAT_DETECT, I18nUtil.marktr("Sessions logged")));
+        this.addMetric(new AppMetric(STAT_BLOCK, I18nUtil.marktr("Sessions blocked")));
 
         setScanCount(0);
         setDetectCount(0);

@@ -20,8 +20,8 @@ import com.untangle.uvm.vnet.ReleaseToken;
 import com.untangle.uvm.vnet.Token;
 import com.untangle.uvm.vnet.TokenStreamer;
 import com.untangle.uvm.vnet.TokenStreamerAdaptor;
-import com.untangle.uvm.vnet.NodeSession;
-import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.vnet.AppSession;
+import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.vnet.TCPStreamer;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 
@@ -99,77 +99,77 @@ public abstract class HttpEventHandler extends AbstractEventHandler
         super();
     }
 
-    protected abstract RequestLineToken doRequestLine( NodeTCPSession session, RequestLineToken rl );
-    protected abstract HeaderToken doRequestHeader( NodeTCPSession session, HeaderToken h );
-    protected abstract ChunkToken doRequestBody( NodeTCPSession session, ChunkToken c );
-    protected abstract void doRequestBodyEnd( NodeTCPSession session );
+    protected abstract RequestLineToken doRequestLine( AppTCPSession session, RequestLineToken rl );
+    protected abstract HeaderToken doRequestHeader( AppTCPSession session, HeaderToken h );
+    protected abstract ChunkToken doRequestBody( AppTCPSession session, ChunkToken c );
+    protected abstract void doRequestBodyEnd( AppTCPSession session );
 
-    protected abstract StatusLine doStatusLine( NodeTCPSession session, StatusLine sl );
-    protected abstract HeaderToken doResponseHeader( NodeTCPSession session, HeaderToken h );
-    protected abstract ChunkToken doResponseBody( NodeTCPSession session, ChunkToken c );
-    protected abstract void doResponseBodyEnd( NodeTCPSession session );
+    protected abstract StatusLine doStatusLine( AppTCPSession session, StatusLine sl );
+    protected abstract HeaderToken doResponseHeader( AppTCPSession session, HeaderToken h );
+    protected abstract ChunkToken doResponseBody( AppTCPSession session, ChunkToken c );
+    protected abstract void doResponseBodyEnd( AppTCPSession session );
 
-    protected ClientState getClientState( NodeTCPSession session )
+    protected ClientState getClientState( AppTCPSession session )
     {
         HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
         return state.clientState;
     }
 
-    protected ServerState getServerState( NodeTCPSession session )
+    protected ServerState getServerState( AppTCPSession session )
     {
         HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
         return state.serverState;
     }
 
-    protected RequestLineToken getRequestLine( NodeTCPSession session )
+    protected RequestLineToken getRequestLine( AppTCPSession session )
     {
         HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
         return state.requestLineToken;
     }
 
-    protected RequestLineToken getResponseRequest( NodeTCPSession session )
+    protected RequestLineToken getResponseRequest( AppTCPSession session )
     {
         HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
         return state.responseRequest;
     }
 
-    protected StatusLine getStatusLine( NodeTCPSession session )
+    protected StatusLine getStatusLine( AppTCPSession session )
     {
         HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
         return state.statusLine;
     }
 
-    protected String getResponseHost( NodeTCPSession session )
+    protected String getResponseHost( AppTCPSession session )
     {
         HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
         return state.hosts.get( state.responseRequest );
     }
 
-    protected boolean isRequestPersistent( NodeTCPSession session )
+    protected boolean isRequestPersistent( AppTCPSession session )
     {
         HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
         return state.requestPersistent;
     }
 
-    protected boolean isResponsePersistent( NodeTCPSession session )
+    protected boolean isResponsePersistent( AppTCPSession session )
     {
         HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
         return state.responsePersistent;
     }
 
-    protected Mode getRequestMode( NodeTCPSession session )
+    protected Mode getRequestMode( AppTCPSession session )
     {
         HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
         return state.requestMode;
     }
 
-    protected Mode getResponseMode( NodeTCPSession session )
+    protected Mode getResponseMode( AppTCPSession session )
     {
         HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
         return state.responseMode;
     }
 
-    protected void releaseRequest( NodeTCPSession session )
+    protected void releaseRequest( AppTCPSession session )
     {
         HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
         if ( state.task != Task.REQUEST ) {
@@ -181,17 +181,17 @@ public abstract class HttpEventHandler extends AbstractEventHandler
         state.requestMode = Mode.RELEASED;
     }
 
-    protected void streamClient( NodeTCPSession session, TokenStreamer streamer )
+    protected void streamClient( AppTCPSession session, TokenStreamer streamer )
     {
-        stream( session, NodeSession.CLIENT, streamer );
+        stream( session, AppSession.CLIENT, streamer );
     }
 
-    protected void streamServer( NodeTCPSession session, TokenStreamer streamer )
+    protected void streamServer( AppTCPSession session, TokenStreamer streamer )
     {
-        stream( session, NodeSession.SERVER, streamer );
+        stream( session, AppSession.SERVER, streamer );
     }
 
-    protected void stream( NodeTCPSession session, int side, TokenStreamer streamer )
+    protected void stream( AppTCPSession session, int side, TokenStreamer streamer )
     {
         HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
 
@@ -223,7 +223,7 @@ public abstract class HttpEventHandler extends AbstractEventHandler
         session.sendStreamer( side, tcpStreamer );
     }
 
-    protected void blockRequest( NodeTCPSession session, Token[] response)
+    protected void blockRequest( AppTCPSession session, Token[] response)
     {
         HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
 
@@ -237,7 +237,7 @@ public abstract class HttpEventHandler extends AbstractEventHandler
         state.requestResponse = response;
     }
 
-    protected void releaseResponse( NodeTCPSession session )
+    protected void releaseResponse( AppTCPSession session )
     {
         HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
 
@@ -250,7 +250,7 @@ public abstract class HttpEventHandler extends AbstractEventHandler
         state.responseMode = Mode.RELEASED;
     }
 
-    protected void blockResponse( NodeTCPSession session, Token[] response )
+    protected void blockResponse( AppTCPSession session, Token[] response )
     {
         HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
 
@@ -265,14 +265,14 @@ public abstract class HttpEventHandler extends AbstractEventHandler
     }
 
     @Override
-    public void handleTCPNewSession( NodeTCPSession session )
+    public void handleTCPNewSession( AppTCPSession session )
     {
         HttpSessionState state = new HttpSessionState();
         session.attach( SESSION_STATE_KEY, state );
     }
 
     @Override
-    public void handleTCPServerObject( NodeTCPSession session, Object obj )
+    public void handleTCPServerObject( AppTCPSession session, Object obj )
     {
         Token token = (Token) obj;
         if (token instanceof ReleaseToken) {
@@ -295,7 +295,7 @@ public abstract class HttpEventHandler extends AbstractEventHandler
     }
 
     @Override
-    public void handleTCPClientObject( NodeTCPSession session, Object obj )
+    public void handleTCPClientObject( AppTCPSession session, Object obj )
     {
         Token token = (Token) obj;
         if (token instanceof ReleaseToken) {
@@ -321,7 +321,7 @@ public abstract class HttpEventHandler extends AbstractEventHandler
         }
     }
     
-    public void releaseFlush( NodeTCPSession session )
+    public void releaseFlush( AppTCPSession session )
     {
         HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
 
@@ -342,7 +342,7 @@ public abstract class HttpEventHandler extends AbstractEventHandler
     // private methods --------------------------------------------------------
 
     @SuppressWarnings("fallthrough")
-    private void doHandleClientToken( NodeTCPSession session, Token token )
+    private void doHandleClientToken( AppTCPSession session, Token token )
     {
         HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
         state.clientState = nextClientState( state.clientState, token );
@@ -355,7 +355,7 @@ public abstract class HttpEventHandler extends AbstractEventHandler
 
             String rmethod = state.requestLineToken.getMethod().toString();
             if (rmethod != null)
-                session.globalAttach(NodeSession.KEY_HTTP_REQUEST_METHOD, rmethod);
+                session.globalAttach(AppSession.KEY_HTTP_REQUEST_METHOD, rmethod);
             
             switch ( state.requestMode ) {
             case QUEUEING:
@@ -396,10 +396,10 @@ public abstract class HttpEventHandler extends AbstractEventHandler
                 String host = h.getValue("host");
                 String referer = h.getValue("referer");
                 String uri = getRequestLine( session ).getRequestUri().normalize().getPath();
-                session.globalAttach( NodeSession.KEY_HTTP_HOSTNAME, host );
-                session.globalAttach( NodeSession.KEY_HTTP_REFERER, referer );
-                session.globalAttach( NodeSession.KEY_HTTP_URI, uri );
-                session.globalAttach( NodeSession.KEY_HTTP_URL, host + uri );
+                session.globalAttach( AppSession.KEY_HTTP_HOSTNAME, host );
+                session.globalAttach( AppSession.KEY_HTTP_REFERER, referer );
+                session.globalAttach( AppSession.KEY_HTTP_URI, uri );
+                session.globalAttach( AppSession.KEY_HTTP_URL, host + uri );
 
                 String fpath = null;
                 String fname = null;
@@ -417,9 +417,9 @@ public abstract class HttpEventHandler extends AbstractEventHandler
                     loc = fname.lastIndexOf(".");
                     if (loc != -1) fext = fname.substring(loc + 1);
 
-                    if (fpath != null) session.globalAttach(NodeSession.KEY_HTTP_REQUEST_FILE_PATH, fpath);
-                    if (fname != null) session.globalAttach(NodeSession.KEY_HTTP_REQUEST_FILE_NAME, fname);
-                    if (fext != null) session.globalAttach(NodeSession.KEY_HTTP_REQUEST_FILE_EXTENSION, fext);
+                    if (fpath != null) session.globalAttach(AppSession.KEY_HTTP_REQUEST_FILE_PATH, fpath);
+                    if (fname != null) session.globalAttach(AppSession.KEY_HTTP_REQUEST_FILE_NAME, fname);
+                    if (fext != null) session.globalAttach(AppSession.KEY_HTTP_REQUEST_FILE_EXTENSION, fext);
                 } catch (URISyntaxException e) {
                 }
 
@@ -568,7 +568,7 @@ public abstract class HttpEventHandler extends AbstractEventHandler
     }
 
     @SuppressWarnings("fallthrough")
-    private void doHandleServerToken( NodeTCPSession session, Token token )
+    private void doHandleServerToken( AppTCPSession session, Token token )
     {
         HttpSessionState state = (HttpSessionState) session.attachment( SESSION_STATE_KEY );
         state.serverState = nextServerState( state.serverState, token );
@@ -628,22 +628,22 @@ public abstract class HttpEventHandler extends AbstractEventHandler
                  */
                 String contentType = h.getValue("content-type");
                 if (contentType != null) {
-                    session.globalAttach( NodeSession.KEY_HTTP_CONTENT_TYPE, contentType );
+                    session.globalAttach( AppSession.KEY_HTTP_CONTENT_TYPE, contentType );
                 }
                 String contentLength = h.getValue("content-length");
                 if (contentLength != null) {
                     try {
                         Long contentLengthLong = Long.parseLong(contentLength);
-                        session.globalAttach(NodeSession.KEY_HTTP_CONTENT_LENGTH, contentLengthLong );
+                        session.globalAttach(AppSession.KEY_HTTP_CONTENT_LENGTH, contentLengthLong );
                     } catch (NumberFormatException e) { /* ignore it if it doesnt parse */ }
                 }
                 String fileName = findContentDispositionFilename(h);
                 if (fileName != null) {
-                    session.globalAttach(NodeSession.KEY_HTTP_RESPONSE_FILE_NAME, fileName);
+                    session.globalAttach(AppSession.KEY_HTTP_RESPONSE_FILE_NAME, fileName);
                     // find the last dot to extract the file extension
                     int loc = fileName.lastIndexOf(".");
                     if (loc != -1)
-                        session.globalAttach(NodeSession.KEY_HTTP_RESPONSE_FILE_EXTENSION, fileName.substring(loc + 1));
+                        session.globalAttach(AppSession.KEY_HTTP_RESPONSE_FILE_EXTENSION, fileName.substring(loc + 1));
 
                 }
                 h = doResponseHeader( session, h );

@@ -14,8 +14,8 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.Protocol;
-import com.untangle.uvm.vnet.NodeSession;
-import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.vnet.AppSession;
+import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.Token;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
@@ -67,7 +67,7 @@ class FtpNatHandler extends FtpEventHandler
     }
 
     @Override
-    protected void doCommand( NodeTCPSession session, FtpCommand command )
+    protected void doCommand( AppTCPSession session, FtpCommand command )
     {
         FtpFunction function = command.getFunction();
 
@@ -107,7 +107,7 @@ class FtpNatHandler extends FtpEventHandler
     }
 
     @Override
-    protected void doReply( NodeTCPSession session, FtpReply reply )
+    protected void doReply( AppTCPSession session, FtpReply reply )
     {
         int replyCode = reply.getReplyCode();
 
@@ -140,19 +140,19 @@ class FtpNatHandler extends FtpEventHandler
     }
 
     @Override
-    protected void doClientDataEnd( NodeTCPSession session )
+    protected void doClientDataEnd( AppTCPSession session )
     {
         session.shutdownServer();
     }
 
     @Override
-    protected void doServerDataEnd( NodeTCPSession session )
+    protected void doServerDataEnd( AppTCPSession session )
     {
         session.shutdownClient();
     }
 
     @Override
-    public void handleTCPFinalized( NodeTCPSession session )
+    public void handleTCPFinalized( AppTCPSession session )
     {
         SessionState sessionState = getSessionState( session );
         // cleanup all remaining redirects just in case
@@ -164,13 +164,13 @@ class FtpNatHandler extends FtpEventHandler
         }
     }
 
-    private void portCommand( NodeTCPSession session, FtpCommand command )
+    private void portCommand( AppTCPSession session, FtpCommand command )
     {
         handlePortCommand( session, command );
     }
 
     /* Handle a port command, this is the helper for both extended and normal commands */
-    private void handlePortCommand( NodeTCPSession session, FtpCommand command )
+    private void handlePortCommand( AppTCPSession session, FtpCommand command )
     {
         InetSocketAddress addr;
 
@@ -234,18 +234,18 @@ class FtpNatHandler extends FtpEventHandler
         return;
     }
 
-    private void eprtCommand( NodeTCPSession session, FtpCommand command )
+    private void eprtCommand( AppTCPSession session, FtpCommand command )
     {
         logger.debug( "Handling extended port command" );
         handlePortCommand( session, command );
     }
     
-    private void pasvCommand( NodeTCPSession session, FtpCommand command )
+    private void pasvCommand( AppTCPSession session, FtpCommand command )
     {
         session.sendObjectToServer( command );
     }
 
-    private void pasvReply( NodeTCPSession session, FtpReply reply )
+    private void pasvReply( AppTCPSession session, FtpReply reply )
     {
         InetSocketAddress origAddr;
 
@@ -300,12 +300,12 @@ class FtpNatHandler extends FtpEventHandler
         return;
     }
 
-    private void epsvCommand( NodeTCPSession session, FtpCommand command )
+    private void epsvCommand( AppTCPSession session, FtpCommand command )
     {
         session.sendObjectToServer( command );
     }
 
-    private void epsvReply( NodeTCPSession session, FtpReply reply )
+    private void epsvReply( AppTCPSession session, FtpReply reply )
     {
         SessionState sessionState = getSessionState( session );
         if ( sessionState == null ) {
@@ -350,7 +350,7 @@ class FtpNatHandler extends FtpEventHandler
         return;
     }
 
-    private SessionState getSessionState( NodeTCPSession session )
+    private SessionState getSessionState( AppTCPSession session )
     {
         SessionState sessionState = (SessionState) session.attachment();
         
