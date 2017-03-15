@@ -39,7 +39,11 @@ Ext.define('Ung.Application', {
 
         Ext.get('app-loader').destroy();
 
-        rpc.reportsManager = rpc.appManager.app('reports').getReportsManager();
+        try {
+            rpc.reportsManager = rpc.appManager.app('reports').getReportsManager();
+        } catch (ex) {
+            // console.log(ex);
+        }
 
         Ext.Deferred.parallel([
             Rpc.asyncPromise('rpc.dashboardManager.getSettings'),

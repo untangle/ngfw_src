@@ -490,11 +490,13 @@ cite {
 
 
 .report-header {
-    font-family: $custom-font;
-    padding: 10px;
+    font-family: $custom-font-condensed;
+    padding: 5px 10px;
     h2 {
         margin: 0;
-        font-weight: 600;
+        font-family: $custom-font-condensed;
+        font-weight: 400;
+        font-size: 24px;
     }
     p {
         margin: 0;
