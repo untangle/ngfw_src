@@ -1,5 +1,9 @@
-FROM untangle/ngfw/build
+FROM docker.untangle.int/ngfw:base
 MAINTAINER Sebastien Delafond <sdelafond@gmail.com>
+
+ENV SRC=/opt/untangle/ngfw_src
+RUN mkdir -p ${SRC}
+VOLUME ${SRC}
 
 WORKDIR ${SRC}
 
