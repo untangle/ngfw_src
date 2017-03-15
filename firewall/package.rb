@@ -1,3 +1,3 @@
 # -*-ruby-*-
 
-NodeBuilder.makeNode(BuildEnv::SRC, 'untangle-node-firewall', 'firewall')
+NodeBuilder.makeNode(BuildEnv::SRC, 'firewall', 'firewall')

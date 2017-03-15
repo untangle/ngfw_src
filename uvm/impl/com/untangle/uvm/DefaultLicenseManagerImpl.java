@@ -90,24 +90,24 @@ public class DefaultLicenseManagerImpl implements LicenseManager
     
     private boolean isGPLApp(String identifier)
     {
-        if ("untangle-node-ad-blocker".equals(identifier)) return true;
-        else if ("untangle-node-virus-blocker-lite".equals(identifier)) return true;
-        else if ("untangle-node-captive-portal".equals(identifier)) return true;
-        else if ("untangle-node-firewall".equals(identifier)) return true;
-        else if ("untangle-node-intrusion-prevention".equals(identifier)) return true;
-        else if ("untangle-node-openvpn".equals(identifier)) return true;
-        else if ("untangle-node-phish-blocker".equals(identifier)) return true;
-        else if ("untangle-node-application-control-lite".equals(identifier)) return true;
-        else if ("untangle-node-reports".equals(identifier)) return true;
-        else if ("untangle-node-router".equals(identifier)) return true;
-        else if ("untangle-node-shield".equals(identifier)) return true;
-        else if ("untangle-node-spam-blocker-lite".equals(identifier)) return true;
-        else if ("untangle-node-web-monitor".equals(identifier)) return true;
+        if ("ad-blocker".equals(identifier)) return true;
+        else if ("virus-blocker-lite".equals(identifier)) return true;
+        else if ("captive-portal".equals(identifier)) return true;
+        else if ("firewall".equals(identifier)) return true;
+        else if ("intrusion-prevention".equals(identifier)) return true;
+        else if ("openvpn".equals(identifier)) return true;
+        else if ("phish-blocker".equals(identifier)) return true;
+        else if ("application-control-lite".equals(identifier)) return true;
+        else if ("reports".equals(identifier)) return true;
+        else if ("router".equals(identifier)) return true;
+        else if ("shield".equals(identifier)) return true;
+        else if ("spam-blocker-lite".equals(identifier)) return true;
+        else if ("web-monitor".equals(identifier)) return true;
 
-        if ("untangle-node-license".equals(identifier)) return true;
-        else if ("untangle-casing-http".equals(identifier)) return true;
-        else if ("untangle-casing-ftp".equals(identifier)) return true;
-        else if ("untangle-casing-smtp".equals(identifier)) return true;
+        if ("license".equals(identifier)) return true;
+        else if ("http".equals(identifier)) return true;
+        else if ("ftp".equals(identifier)) return true;
+        else if ("smtp".equals(identifier)) return true;
 
         return false;
     }

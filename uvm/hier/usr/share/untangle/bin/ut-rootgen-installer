@@ -2,7 +2,7 @@
 #
 # Generate Windows installer for root certificate.
 #
-BRANDING_INSTALLER_PATH=@PREFIX@/usr/share/untangle/lib/untangle-node-branding-manager/root_certificate_installer/
+BRANDING_INSTALLER_PATH=@PREFIX@/usr/share/untangle/lib/branding-manager/root_certificate_installer/
 INSTALLER_PATH=@PREFIX@/usr/share/untangle/lib/untangle-vm/root_certificate_installer/
 if [ -d ${BRANDING_INSTALLER_PATH} ] ; then
 	# Use branding manager's installer configuration

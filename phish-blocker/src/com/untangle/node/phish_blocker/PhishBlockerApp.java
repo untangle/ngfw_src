@@ -32,7 +32,7 @@ public class PhishBlockerApp extends SpamBlockerBaseApp
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeSettings().getId().toString();
-        String settingsFile = System.getProperty("uvm.settings.dir") + "/untangle-node-phish-blocker/settings_" + nodeID + ".js";
+        String settingsFile = System.getProperty("uvm.settings.dir") + "/phish-blocker/settings_" + nodeID + ".js";
         PhishBlockerSettings readSettings = null;
         
         logger.info("Loading settings from " + settingsFile);
@@ -67,7 +67,7 @@ public class PhishBlockerApp extends SpamBlockerBaseApp
 
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeSettings().getId().toString();
-        String settingsFile = System.getProperty("uvm.settings.dir") + "/untangle-node-phish-blocker/settings_" + nodeID + ".js";
+        String settingsFile = System.getProperty("uvm.settings.dir") + "/phish-blocker/settings_" + nodeID + ".js";
 
         try {
             settingsManager.save( settingsFile, newSettings);

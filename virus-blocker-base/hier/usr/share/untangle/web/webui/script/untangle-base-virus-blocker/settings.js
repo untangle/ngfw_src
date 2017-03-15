@@ -1,4 +1,4 @@
-Ext.define('Webui.untangle-base-virus-blocker.settings', {
+Ext.define('Webui.virus-blocker-base.settings', {
     extend:'Ung.NodeWin',
     panelWeb:null,
     panelEmail: null,

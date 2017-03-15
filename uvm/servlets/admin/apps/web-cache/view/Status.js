@@ -28,7 +28,7 @@ Ext.define('Ung.apps.webcache.view.Status', {
         items: [{
             xtype: 'component',
             cls: 'app-desc',
-            html: '<img src="/skins/modern-rack/images/admin/apps/untangle-node-web-cache_80x80.png" width="80" height="80"/>' +
+            html: '<img src="/skins/modern-rack/images/admin/apps/web-cache_80x80.png" width="80" height="80"/>' +
                 '<h3>Web Cache</h3>' +
                 '<p>' + 'Web Cache stores and serves web content from local cache for increased speed and reduced bandwidth usage.'.t() + '</p>'
         }, {

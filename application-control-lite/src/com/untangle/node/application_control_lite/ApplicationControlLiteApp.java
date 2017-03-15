@@ -65,7 +65,7 @@ public class ApplicationControlLiteApp extends NodeBase
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeSettings().getId().toString();
-        String settingsFile = System.getProperty("uvm.settings.dir") + "/untangle-node-application-control-lite/settings_" + nodeID + ".js";
+        String settingsFile = System.getProperty("uvm.settings.dir") + "/application-control-lite/settings_" + nodeID + ".js";
 
         try {
             settingsManager.save( settingsFile, newSettings );
@@ -135,7 +135,7 @@ public class ApplicationControlLiteApp extends NodeBase
 
         String nodeID = this.getNodeSettings().getId().toString();
 
-        String settingsFile = System.getProperty("uvm.settings.dir") + "/untangle-node-application-control-lite/settings_" + nodeID + ".js";
+        String settingsFile = System.getProperty("uvm.settings.dir") + "/application-control-lite/settings_" + nodeID + ".js";
         ApplicationControlLiteSettings readSettings = null;
         
         logger.info("Loading settings from " + settingsFile);

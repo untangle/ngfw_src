@@ -2,15 +2,15 @@
 
 deps = []
 
-%w(untangle-casing-smtp untangle-casing-ftp untangle-casing-http).each do |c|
+%w(smtp ftp http).each do |c|
   deps << BuildEnv::SRC[c]['src']
 end
 
-virus = BuildEnv::SRC['untangle-base-virus-blocker']
+virus = BuildEnv::SRC['virus-blocker-base']
 
-NodeBuilder.makeBase(BuildEnv::SRC, 'untangle-base-virus-blocker', 'virus-blocker-base', deps)
+NodeBuilder.makeBase(BuildEnv::SRC, 'virus-blocker-base', 'virus-blocker-base', deps)
 
-http = BuildEnv::SRC['untangle-casing-http']
+http = BuildEnv::SRC['http']
 
 deps = [virus['src'], http['src']]
 

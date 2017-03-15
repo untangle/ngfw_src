@@ -11,13 +11,13 @@ Ext.define('Ung.config.email.MainController', {
     // mailSender: rpc.UvmContext.mailSender(),
     originalMailSender: null,
 
-    // smtpNode: rpc.nodeManager.node('untangle-casing-smtp'),
+    // smtpNode: rpc.nodeManager.node('smtp'),
     // safelistAdminView: null,
 
     loadSettings: function (view) {
         var vm = this.getViewModel(), me = this;
         rpc.mailSender = rpc.UvmContext.mailSender();
-        rpc.smtpSettings = rpc.nodeManager.node('untangle-casing-smtp');
+        rpc.smtpSettings = rpc.nodeManager.node('smtp');
         rpc.safelistAdminView = rpc.smtpSettings.getSafelistAdminView();
         rpc.quarantineMaintenenceView = rpc.smtpSettings.getQuarantineMaintenenceView();
 

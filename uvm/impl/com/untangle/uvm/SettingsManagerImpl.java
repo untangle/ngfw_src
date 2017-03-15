@@ -72,7 +72,48 @@ public class SettingsManagerImpl implements SettingsManager
      * This is the locks for the various files to guarantee synchronous file access
      */
     private final Map<String, Object> pathLocks = new HashMap<String, Object>();
-     
+
+    protected SettingsManagerImpl()
+    {
+    }
+
+    public void run13Conversion()
+    {
+            logger.warn("Converting old directory names ...");
+            logger.warn("Converting old directory names ...");
+            logger.warn("Converting old directory names ...");
+            logger.warn("Converting old directory names ...");
+            logger.warn("Converting old directory names ...");
+
+
+        // 13.0 conversion
+        if ( java.nio.file.Files.isDirectory(java.nio.file.Paths.get(System.getProperty("uvm.settings.dir") + "/untangle-node-shield")) ||
+             java.nio.file.Files.isDirectory(java.nio.file.Paths.get(System.getProperty("uvm.settings.dir") + "/untangle-casing-http")) ||
+             java.nio.file.Files.isDirectory(java.nio.file.Paths.get(System.getProperty("uvm.settings.dir") + "/untangle-node-reports")) ||
+             java.nio.file.Files.isDirectory(java.nio.file.Paths.get(System.getProperty("uvm.settings.dir") + "/untangle-node-firewall")) ) {
+
+            logger.warn("Converting old directory names ...");
+            
+            String[] cmds  = { "/usr/bin/rename 's/untangle-node-//' " + System.getProperty("uvm.settings.dir") + "/*",
+                               "/usr/bin/rename 's/untangle-casing-//' " + System.getProperty("uvm.settings.dir") + "/*",
+                               "service apache2 restart" };
+
+            for ( String command : cmds ) {
+                logger.warn("Converting old directory names: " + command);
+                
+                ExecManagerResult result = UvmContextFactory.context().execManager().exec( command );
+                try {
+                    String lines[] = result.getOutput().split("\\r?\\n");
+                    for ( String line : lines )
+                        logger.info( "conversion: " + line );
+                } catch (Exception e) {}
+            }
+
+            logger.warn("Converting old directory names ... done");
+            
+        }
+    }
+    
     /**
      * Documented in SettingsManager.java
      */
@@ -437,7 +478,7 @@ public class SettingsManagerImpl implements SettingsManager
                 if((UvmContextImpl.getInstance().threadRequest() != null) &&
                    (UvmContextImpl.getInstance().threadRequest().get() != null)){
                     username = UvmContextImpl.getInstance().threadRequest().get().getRemoteUser();
-                    HostnameLookup reports = (HostnameLookup) UvmContextFactory.context().nodeManager().node("untangle-node-reports");
+                    HostnameLookup reports = (HostnameLookup) UvmContextFactory.context().nodeManager().node("reports");
                     hostname = UvmContextImpl.getInstance().threadRequest().get().getRemoteAddr();
                     if( reports != null && hostname != null){
                         hostname = reports.lookupHostname(InetAddress.getByName(UvmContextImpl.getInstance().threadRequest().get().getRemoteAddr()));

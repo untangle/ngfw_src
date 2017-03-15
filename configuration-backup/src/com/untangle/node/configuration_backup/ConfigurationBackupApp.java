@@ -54,7 +54,7 @@ public class ConfigurationBackupApp extends NodeBase
     public void setSettings(final ConfigurationBackupSettings newSettings)
     {
         String nodeID = this.getNodeSettings().getId().toString();
-        String settingsFile = System.getProperty("uvm.settings.dir") + "/untangle-node-configuration-backup/settings_" + nodeID + ".js";
+        String settingsFile = System.getProperty("uvm.settings.dir") + "/configuration-backup/settings_" + nodeID + ".js";
 
         try {
             UvmContextFactory.context().settingsManager().save( settingsFile, newSettings );
@@ -113,7 +113,7 @@ public class ConfigurationBackupApp extends NodeBase
          * If google drive is enabled and licensed and configured
          * upload to google drive
          */
-        DirectoryConnector directoryConnector = (DirectoryConnector)UvmContextFactory.context().nodeManager().node("untangle-node-directory-connector");
+        DirectoryConnector directoryConnector = (DirectoryConnector)UvmContextFactory.context().nodeManager().node("directory-connector");
         if ( settings.getGoogleDriveEnabled() &&
              UvmContextFactory.context().licenseManager().isLicenseValid(License.DIRECTORY_CONNECTOR) &&
              directoryConnector != null &&
@@ -132,7 +132,7 @@ public class ConfigurationBackupApp extends NodeBase
     protected void postInit()
     {
         String nodeID = this.getNodeSettings().getId().toString();
-        String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-node-configuration-backup/settings_" + nodeID + ".js";
+        String settingsFileName = System.getProperty("uvm.settings.dir") + "/configuration-backup/settings_" + nodeID + ".js";
 
         ConfigurationBackupSettings readSettings = null;
         logger.info("Loading settings from " + settingsFileName );

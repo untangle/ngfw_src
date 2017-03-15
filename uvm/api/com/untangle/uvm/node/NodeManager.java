@@ -130,7 +130,7 @@ public interface NodeManager
      * Returns true if the given node/app is instantiated in the rack
      * false otherwise
      *
-     * Example arg: 'untangle-node-reports'
+     * Example arg: 'firewall'
      */
     boolean isInstantiated( String nodeName );
     

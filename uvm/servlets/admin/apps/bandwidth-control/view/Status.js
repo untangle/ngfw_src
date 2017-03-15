@@ -20,7 +20,7 @@ Ext.define('Ung.apps.bandwidthcontrol.view.Status', {
         items: [{
             xtype: 'component',
             cls: 'app-desc',
-            html: '<img src="/skins/modern-rack/images/admin/apps/untangle-node-bandwidth-control_80x80.png" width="80" height="80"/>' +
+            html: '<img src="/skins/modern-rack/images/admin/apps/bandwidth-control_80x80.png" width="80" height="80"/>' +
                 '<h3>Bandwidth Control</h3>' +
                 '<p>' + 'Bandwidth Control monitors, manages, and shapes bandwidth usage on the network'.t() + '</p>'
         }, {

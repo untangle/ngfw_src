@@ -1,4 +1,4 @@
 # -*-ruby-*-
 
-NodeBuilder.makeNode(BuildEnv::SRC, 'untangle-node-web-cache', 'web-cache', [])
+NodeBuilder.makeNode(BuildEnv::SRC, 'web-cache', 'web-cache', [])
 

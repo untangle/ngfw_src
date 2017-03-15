@@ -26,17 +26,17 @@ Ext.define('Ung.view.reports.ReportsController', {
             { categoryName: 'Network', type: 'system', url: 'network', displayName: 'Network'.t(), icon: '/skins/modern-rack/images/admin/config/icon_config_network.png' },
             { categoryName: 'Administration', type: 'system', url: 'administration', displayName: 'Administration'.t(), icon: '/skins/modern-rack/images/admin/config/icon_config_admin.png' },
             { categoryName: 'System', type: 'system', url: 'system', displayName: 'System'.t(), icon: '/skins/modern-rack/images/admin/config/icon_config_system.png' },
-            { categoryName: 'Shield', type: 'system', url: 'shield', displayName: 'Shield'.t(), icon: '/skins/modern-rack/images/admin/apps/untangle-node-shield_17x17.png' }
+            { categoryName: 'Shield', type: 'system', url: 'shield', displayName: 'Shield'.t(), icon: '/skins/modern-rack/images/admin/apps/shield_17x17.png' }
         ];
-        rpc.reportsManager = rpc.nodeManager.node('untangle-node-reports').getReportsManager();
+        rpc.reportsManager = rpc.nodeManager.node('reports').getReportsManager();
         Rpc.asyncData('rpc.reportsManager.getCurrentApplications').then(function (result) {
             for (i = 0; i < result.list.length; i += 1) {
                 app = result.list[i];
-                if (app.name !== 'untangle-node-branding-manager' && app.name !== 'untangle-node-live-support') {
+                if (app.name !== 'branding-manager' && app.name !== 'live-support') {
                     categories.push({
                         categoryName: app.displayName,
                         type: 'app',
-                        url: app.name.replace('untangle-node-', '').replace('untangle-casing-', ''),
+                        url: app.name.replace('', '').replace('', ''),
                         displayName: app.displayName, // t()
                         icon: '/skins/modern-rack/images/admin/apps/' + app.name + '_80x80.png'
                     });

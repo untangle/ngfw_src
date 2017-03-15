@@ -23,16 +23,16 @@ for f in $(find $t -type f -name '*.po'); do
         untangle-apache2-config)
             d=$work/pkgs/untangle-apache2-config
             ;;
-        untangle-base-virus-blocker)
+        virus-blocker-base)
             d=$work/src/virus-blocker-base
             ;;
-        untangle-base-web-filter)
+        web-filter-base)
             d=$work/src/web-filter-base
             ;;
-        untangle-base-spam-bolcker)
+        spam-bolcker-base)
             d=$work/src/spam-blocker-base
             ;;
-        untangle-casing-smtp)
+        smtp)
             d=$work/src/smtp-casing
             ;;
         untangle-install-wizard)
@@ -41,77 +41,77 @@ for f in $(find $t -type f -name '*.po'); do
         untangle-libuvm)
             d=$work/src/uvm
             ;;
-        untangle-node-ad-blocker)
+        ad-blocker)
             d=$work/src/ad-blocker
             ;;
-        untangle-node-directory-connector)
+        directory-connector)
             d=$hades/src/directory-connector
             ;;
-        untangle-node-bandwidth-control)
+        bandwidth-control)
             d=$hades/src/bandwidth
             ;;
-        untangle-node-configuration-backup)
+        configuration-backup)
             d=$hades/src/configuration-backup
             ;;
-        untangle-node-branding-manager)
+        branding-manager)
             d=$hades/src/branding
             ;;
-        untangle-node-spam-blocker)
+        spam-blocker)
             d=$hades/src/spam-blocker
             ;;
-        untangle-node-virus-blocker)
+        virus-blocker)
             d=$hades/src/virus-blocker
             ;;
-        untangle-node-wan-failover)
+        wan-failover)
             d=$hades/src/wan-failover
             ;;
-        untangle-node-firewall)
+        firewall)
             d=$work/src/firewall
             ;;
-        untangle-node-ips)
+        ips)
             d=$work/src/ips
             ;;
             ;;
-        untangle-node-license)
+        license)
             d=$hades/src/license
             ;;
-        untangle-node-openvpn)
+        openvpn)
             d=$work/src/openvpn
             ;;
-        untangle-node-phish-blocker)
+        phish-blocker)
             d=$work/src/phish-blocker
             ;;
-        untangle-node-policy-manager)
+        policy-manager)
             d=$hades/src/policy
             ;;
-        untangle-node-application-control-lite)
+        application-control-lite)
             d=$work/src/application-control-lite
             ;;
-        untangle-node-reports)
+        reports)
             d=$work/src/reporting
             ;;
-        untangle-node-shield)
+        shield)
             d=$work/src/shield
             ;;
-        untangle-node-web-filter)
+        web-filter)
             d=$hades/src/web-filter
             ;;
-        untangle-node-spam-blocker-lite)
+        spam-blocker-lite)
             d=$work/src/spam-blocker-lite
             ;;
-        untangle-node-wan-balancer)
+        wan-balancer)
             d=$hades/src/wan-balancer
             ;;
-        untangle-node-live-support)
+        live-support)
             d=$hades/src/support
             ;;
-        untangle-node-web-cache)
+        web-cache)
             d=$hades/src/web-cache
             ;;
-        untangle-node-ipsec-vpn)
+        ipsec-vpn)
             d=$hades/src/ipsec-vpn
             ;;
-        untangle-node-application-control)
+        application-control)
             d=$hades/src/application-control
             ;;
         untangle-system-stats*)

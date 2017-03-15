@@ -82,7 +82,7 @@ class VirusBlockerBaseTests(unittest2.TestCase):
 
     @staticmethod
     def nodeNameSSLInspector():
-        return "untangle-casing-ssl-inspector"
+        return "ssl-inspector"
 
     @staticmethod
     def initialSetUp(self):

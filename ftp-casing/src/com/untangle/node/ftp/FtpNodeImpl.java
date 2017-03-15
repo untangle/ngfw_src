@@ -54,7 +54,7 @@ public class FtpNodeImpl extends NodeBase
     public void setFtpSettings(final FtpSettings newSettings)
     {
         String nodeID = this.getNodeSettings().getId().toString();
-        String settingsFile = System.getProperty("uvm.settings.dir") + "/untangle-casing-ftp/settings_" + nodeID + ".js";
+        String settingsFile = System.getProperty("uvm.settings.dir") + "/ftp/settings_" + nodeID + ".js";
 
         try {
             UvmContextFactory.context().settingsManager().save( settingsFile, newSettings );
@@ -91,7 +91,7 @@ public class FtpNodeImpl extends NodeBase
     protected void postInit()
     {
         String nodeID = this.getNodeSettings().getId().toString();
-        String settingsFile = System.getProperty("uvm.settings.dir") + "/untangle-casing-ftp/settings_" + nodeID + ".js";
+        String settingsFile = System.getProperty("uvm.settings.dir") + "/ftp/settings_" + nodeID + ".js";
 
         FtpSettings readSettings = null;
         logger.info("Loading settings from " + settingsFile );

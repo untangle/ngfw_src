@@ -1,6 +1,6 @@
 # -*-ruby-*-
 
-smtp = BuildEnv::SRC['untangle-casing-smtp']
-spam = BuildEnv::SRC['untangle-base-spam-blocker'];
+smtp = BuildEnv::SRC['smtp']
+spam = BuildEnv::SRC['spam-blocker-base'];
 
-NodeBuilder.makeNode(BuildEnv::SRC, 'untangle-node-spam-blocker-lite', 'spam-blocker-lite', [smtp['src'], spam['src']])
+NodeBuilder.makeNode(BuildEnv::SRC, 'spam-blocker-lite', 'spam-blocker-lite', [smtp['src'], spam['src']])

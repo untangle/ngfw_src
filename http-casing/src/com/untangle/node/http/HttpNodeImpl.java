@@ -45,7 +45,7 @@ public class HttpNodeImpl extends NodeBase
     public void setHttpSettings(final HttpSettings newSettings)
     {
         String nodeID = this.getNodeSettings().getId().toString();
-        String settingsFile = System.getProperty("uvm.settings.dir") + "/untangle-casing-http/settings_" + nodeID + ".js";
+        String settingsFile = System.getProperty("uvm.settings.dir") + "/http/settings_" + nodeID + ".js";
 
         try {
             settingsManager.save( settingsFile, newSettings );
@@ -70,7 +70,7 @@ public class HttpNodeImpl extends NodeBase
     protected void postInit()
     {
         String nodeID = this.getNodeSettings().getId().toString();
-        String settingsFile = System.getProperty("uvm.settings.dir") + "/untangle-casing-http/settings_" + nodeID + ".js";
+        String settingsFile = System.getProperty("uvm.settings.dir") + "/http/settings_" + nodeID + ".js";
 
         HttpSettings readSettings = null;
         logger.info("Loading settings from " + settingsFile );

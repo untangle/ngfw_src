@@ -1,4 +1,4 @@
 # -*-ruby-*-
 
-NodeBuilder.makeNode(BuildEnv::SRC, 'untangle-node-license', 'license', [])
+NodeBuilder.makeNode(BuildEnv::SRC, 'license', 'license', [])
 

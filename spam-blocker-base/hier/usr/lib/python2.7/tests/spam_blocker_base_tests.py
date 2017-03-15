@@ -77,11 +77,11 @@ class SpamBlockerBaseTests(unittest2.TestCase):
 
     @staticmethod
     def nodeNameSpamCase():
-        return "untangle-casing-smtp"
+        return "smtp"
 
     @staticmethod
     def nodeNameSSLInspector():
-        return "untangle-casing-ssl-inspector"
+        return "ssl-inspector"
 
     @staticmethod
     def initialSetUp(self):

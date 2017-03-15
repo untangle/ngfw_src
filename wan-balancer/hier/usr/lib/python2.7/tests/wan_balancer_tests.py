@@ -176,11 +176,11 @@ class WanBalancerTests(unittest2.TestCase):
     
     @staticmethod
     def nodeName():
-        return "untangle-node-wan-balancer"
+        return "wan-balancer"
 
     @staticmethod
     def nodeNameWanFailover():
-        return "untangle-node-wan-failover"
+        return "wan-failover"
 
     @staticmethod
     def vendorName():

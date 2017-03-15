@@ -132,7 +132,7 @@ class PolicyManagerTests(unittest2.TestCase):
 
     @staticmethod
     def nodeName():
-        return "untangle-node-policy-manager"
+        return "policy-manager"
 
     @staticmethod
     def initialSetUp(self):
@@ -175,7 +175,7 @@ class PolicyManagerTests(unittest2.TestCase):
     # add firewall to second rack
     def test_022_addFirewallToSecondRack(self):
         global secondRackFirewall 
-        secondRackFirewall = uvmContext.nodeManager().instantiate("untangle-node-firewall", secondRackId)
+        secondRackFirewall = uvmContext.nodeManager().instantiate("firewall", secondRackId)
         assert (secondRackFirewall != None)
         # add a block rule for the client IP
         rules = secondRackFirewall.getRules()
@@ -186,7 +186,7 @@ class PolicyManagerTests(unittest2.TestCase):
     def test_023_childShouldNotEffectParent(self):
         # add a child that blocks everything
         blockRackId = addRack(name="Block Rack", parentId=defaultRackId)
-        blockRackFirewall = uvmContext.nodeManager().instantiate("untangle-node-firewall", blockRackId)
+        blockRackFirewall = uvmContext.nodeManager().instantiate("firewall", blockRackId)
         assert (blockRackFirewall != None)
         # add a block rule for the client IP
         rules = blockRackFirewall.getRules()
@@ -241,7 +241,7 @@ class PolicyManagerTests(unittest2.TestCase):
     # add firewall to third rack - this should override the second rack's firewall with the block rule
     def test_028_addFirewallToThirdRack(self):
         global thirdRackFirewall
-        thirdRackFirewall = uvmContext.nodeManager().instantiate("untangle-node-firewall", thirdRackId)
+        thirdRackFirewall = uvmContext.nodeManager().instantiate("firewall", thirdRackId)
         assert (thirdRackFirewall != None)
         result = remote_control.is_online()
         assert (result == 0)
@@ -258,7 +258,7 @@ class PolicyManagerTests(unittest2.TestCase):
     # add a node that requires a casing to second rack to make sure casing is inherited
     def test_030_addWebFilterToSecondRack(self):
         global secondRackWebfilter
-        secondRackWebfilter = uvmContext.nodeManager().instantiate("untangle-node-web-filter", secondRackId)
+        secondRackWebfilter = uvmContext.nodeManager().instantiate("web-filter", secondRackId)
         assert (secondRackWebfilter != None)
         result = remote_control.is_online()
         assert (result == 0)
@@ -275,7 +275,7 @@ class PolicyManagerTests(unittest2.TestCase):
     def test_040_localCaptivePortalToSecondRack(self):
         global defaultRackCaptivePortal
         remote_control.run_command("rm -f /tmp/policy_test_040*")
-        defaultRackCaptivePortal = uvmContext.nodeManager().instantiate("untangle-node-captive-portal", defaultRackId)
+        defaultRackCaptivePortal = uvmContext.nodeManager().instantiate("captive-portal", defaultRackId)
         assert (defaultRackCaptivePortal != None)
         defaultRackCaptivePortalData = defaultRackCaptivePortal.getCaptivePortalSettings()
         # turn default capture rule on and basic login

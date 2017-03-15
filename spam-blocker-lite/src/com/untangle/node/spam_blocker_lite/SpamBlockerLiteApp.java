@@ -25,7 +25,7 @@ public class SpamBlockerLiteApp extends SpamBlockerBaseApp
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeSettings().getId().toString();
-        String settingsFile = System.getProperty("uvm.settings.dir") + "/untangle-node-spam-blocker-lite/settings_" + nodeID + ".js";
+        String settingsFile = System.getProperty("uvm.settings.dir") + "/spam-blocker-lite/settings_" + nodeID + ".js";
 
         try {
             settingsManager.save( settingsFile, newSettings);
@@ -42,7 +42,7 @@ public class SpamBlockerLiteApp extends SpamBlockerBaseApp
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeSettings().getId().toString();
-        String settingsFile = System.getProperty("uvm.settings.dir") + "/untangle-node-spam-blocker-lite/settings_" + nodeID + ".js";
+        String settingsFile = System.getProperty("uvm.settings.dir") + "/spam-blocker-lite/settings_" + nodeID + ".js";
         SpamSettings readSettings = null;
         
         logger.info("Loading settings from " + settingsFile);

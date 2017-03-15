@@ -233,7 +233,7 @@ public class IntrusionPreventionApp extends NodeBase
     private void readNodeSettings()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String settingsFile = System.getProperty("uvm.settings.dir") + "/untangle-node-intrusion-prevention/settings_" + this.getNodeSettings().getId().toString() + ".js";
+        String settingsFile = System.getProperty("uvm.settings.dir") + "/intrusion-prevention/settings_" + this.getNodeSettings().getId().toString() + ".js";
 
         logger.info("Loading settings from " + settingsFile);
 
@@ -296,7 +296,7 @@ public class IntrusionPreventionApp extends NodeBase
     public String getSettingsFileName()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        return System.getProperty("uvm.settings.dir") + "/untangle-node-intrusion-prevention/settings_" + this.getNodeSettings().getId().toString() + ".js";
+        return System.getProperty("uvm.settings.dir") + "/intrusion-prevention/settings_" + this.getNodeSettings().getId().toString() + ".js";
     }
 
     public String getDefaultsSettingsFileName()
@@ -452,8 +452,8 @@ public class IntrusionPreventionApp extends NodeBase
                  * which we pass to the configuration management scripts to integrate into settings.
                  */
                 SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-                String tempPatchName = "/tmp/changedDataSet_untangle-node-intrusion-prevention_settings_" + nodeId + ".js";
-                String tempSettingsName = "/tmp/untangle-node-intrusion-prevention_settings_" + nodeId + ".js";
+                String tempPatchName = "/tmp/changedDataSet_intrusion-prevention_settings_" + nodeId + ".js";
+                String tempSettingsName = "/tmp/intrusion-prevention_settings_" + nodeId + ".js";
                 int verifyResult = 1;
                 try{
                     byte[] buffer = new byte[1024];
@@ -522,8 +522,8 @@ public class IntrusionPreventionApp extends NodeBase
                 }
             }else if(action.equals("export")){
                 SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-                String tempPatchName = "/tmp/changedDataSet_untangle-node-intrusion-prevention_settings_" + nodeId + ".js";
-                String tempSettingsName = "/tmp/untangle-node-intrusion-prevention_settings_" + nodeId + ".js";
+                String tempPatchName = "/tmp/changedDataSet_intrusion-prevention_settings_" + nodeId + ".js";
+                String tempSettingsName = "/tmp/intrusion-prevention_settings_" + nodeId + ".js";
                 int verifyResult = 1;
 
                 String changedSet = req.getParameter("arg4");

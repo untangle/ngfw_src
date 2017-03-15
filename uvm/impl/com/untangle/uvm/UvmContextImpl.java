@@ -317,7 +317,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         if ( nodeManager == null )
             return this.defaultLicenseManager;
         if (this.licenseManager == null ) {
-            this.licenseManager = (LicenseManager) nodeManager.node("untangle-node-license");
+            this.licenseManager = (LicenseManager) nodeManager.node("license");
             if (this.licenseManager == null) {
                 logger.debug("Failed to initialize license manager.");
                 return this.defaultLicenseManager;
@@ -730,7 +730,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             json.put("timeZoneOffset", this.systemManager().getTimeZoneOffset());
 
             boolean reportsEnabled = false;
-            Node reportsNode = UvmContextFactory.context().nodeManager().node("untangle-node-reports");
+            Node reportsNode = UvmContextFactory.context().nodeManager().node("reports");
             if(reportsNode != null && NodeState.RUNNING.equals(reportsNode.getRunState())) {
                 reportsEnabled = true;
             }
@@ -750,7 +750,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     {
         LinkedList<HostTableEntry> hosts = this.hostTableImpl.getHosts();
 
-        PolicyManager policyManager = (PolicyManager)this.nodeManager().node("untangle-node-policy-manager");
+        PolicyManager policyManager = (PolicyManager)this.nodeManager().node("policy-manager");
         
         LinkedList<String> hostnames = new LinkedList<String>();
         LinkedList<String> usernames = new LinkedList<String>();
@@ -836,6 +836,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             throw new IllegalStateException("register serializers should never fail!", e);
         }
 
+        this.settingsManager.run13Conversion(); // v13.0 conversion
+        
         this.netcapManager = NetcapManagerImpl.getInstance();
         
         createUID();
@@ -1149,7 +1151,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
                         return;
                     }
                     
-                    this.reportsNode = (Reporting) this.nodeManager.node("untangle-node-reports");
+                    this.reportsNode = (Reporting) this.nodeManager.node("reports");
                     // no reports node
                     if (this.reportsNode == null) {
                         if (System.currentTimeMillis() - this.lastLoggedWarningTime > 10000) {

@@ -438,7 +438,7 @@ class NetworkTests(unittest2.TestCase):
 
     @staticmethod
     def nodeNameFW():
-        return "untangle-node-firewall"
+        return "firewall"
 
     @staticmethod
     def vendorName():

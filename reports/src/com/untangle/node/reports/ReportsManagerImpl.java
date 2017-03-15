@@ -174,7 +174,7 @@ public class ReportsManagerImpl implements ReportsManager
         Map<String, String> unavailableApplicationsMap = new HashMap<String, String>();
 
         for ( NodeProperties nodeProperties : this.nodePropertiesList ) {
-            if("untangle-node-shield".equals(nodeProperties.getName())){
+            if("shield".equals(nodeProperties.getName())){
                 continue;
             }
             if ( nodeProperties.getInvisible() || 
@@ -511,7 +511,7 @@ public class ReportsManagerImpl implements ReportsManager
     public List<JSONObject> getPoliciesInfo()
     {
         ArrayList<JSONObject> policiesInfo = new ArrayList<JSONObject>();
-        PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().nodeManager().node("untangle-node-policy-manager");
+        PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().nodeManager().node("policy-manager");
         if ( policyManager != null ) {
             policiesInfo = policyManager.getPoliciesInfo();
         }

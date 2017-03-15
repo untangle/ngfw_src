@@ -96,7 +96,7 @@ public class WebCacheApp extends NodeBase
         String nodeID = getNodeSettings().getId().toString();
 
         try {
-            settingsManager.save( System.getProperty("uvm.settings.dir") + "/untangle-node-web-cache/settings_" + nodeID + ".js" , newSettings );
+            settingsManager.save( System.getProperty("uvm.settings.dir") + "/web-cache/settings_" + nodeID + ".js" , newSettings );
         }
         catch (Throwable t) {
             WebCacheStackDump.error(logger,"WebCacheApp","setSettings()",t);
@@ -170,7 +170,7 @@ public class WebCacheApp extends NodeBase
         WebCacheSettings readSettings = null;
 
         try {
-            readSettings = settingsManager.load( WebCacheSettings.class, System.getProperty("uvm.settings.dir") + "/untangle-node-web-cache/settings_" + nodeID + ".js" );
+            readSettings = settingsManager.load( WebCacheSettings.class, System.getProperty("uvm.settings.dir") + "/web-cache/settings_" + nodeID + ".js" );
 
             if (readSettings == null) {
                 settings = new WebCacheSettings();

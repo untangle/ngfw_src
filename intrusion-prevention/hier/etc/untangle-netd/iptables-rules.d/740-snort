@@ -21,7 +21,7 @@ TABLE_NAME_MANGLE=mangle
 TABLE_NAME_RAW=raw
 CHAIN_NAME=snort-scanning
 SNORT_QUEUE_NUM=2930
-SNORT_MAX_SCAN_SIZE=$(python -c "from uvm.settings_reader import get_node_settings_item; print get_node_settings_item('untangle-node-intrusion-prevention','max_scan_size');")
+SNORT_MAX_SCAN_SIZE=$(python -c "from uvm.settings_reader import get_node_settings_item; print get_node_settings_item('intrusion-prevention','max_scan_size');")
 if [ -z "${SNORT_MAX_SCAN_SIZE}" -o "${SNORT_MAX_SCAN_SIZE}" = "None" ] ; then
     SNORT_MAX_SCAN_SIZE=1024
 fi

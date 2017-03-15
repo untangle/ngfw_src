@@ -1,8 +1,8 @@
 # -*-ruby-*-
 
-NodeBuilder.makeCasing(BuildEnv::SRC, 'untangle-casing-smtp', 'smtp-casing')
+NodeBuilder.makeCasing(BuildEnv::SRC, 'smtp', 'smtp-casing')
 
-smtp = BuildEnv::SRC['untangle-casing-smtp']
+smtp = BuildEnv::SRC['smtp']
 
 jt = [smtp['src']]
 

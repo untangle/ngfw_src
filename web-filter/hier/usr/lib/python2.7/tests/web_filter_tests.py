@@ -26,7 +26,7 @@ class WebFilterTests(WebFilterBaseTests):
 
     @staticmethod
     def nodeName():
-        return "untangle-node-web-filter"
+        return "web-filter"
 
     @staticmethod
     def shortNodeName():

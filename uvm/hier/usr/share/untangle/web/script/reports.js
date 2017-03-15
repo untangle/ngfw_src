@@ -810,7 +810,7 @@ Ext.define('Ung.panel.Reports', {
                 { text : i18n._('Administration'), category : 'Administration', icon : _skinPath + 'config/icon_config_admin.png' },
                 { text : i18n._('Events'), category : 'Events', icon : _skinPath + 'config/icon_config_events.png' },
                 { text : i18n._('System'), category : 'System', icon : _skinPath + 'config/icon_config_system.png' },
-                { text : i18n._('Shield'), category : 'Shield', icon : _skinPath + 'apps/untangle-node-shield_17x17.png' }
+                { text : i18n._('Shield'), category : 'Shield', icon : _skinPath + 'apps/shield_17x17.png' }
             ];
 
         for (i = 0; i < staticItems.length; i += 1) {
@@ -835,7 +835,7 @@ Ext.define('Ung.panel.Reports', {
                 var app;
                 for (i = 0; i < currentApplications.length; i += 1) {
                     app = currentApplications[i];
-                    if (app.name != 'untangle-node-branding-manager' && app.name != 'untangle-node-live-support') {
+                    if (app.name != 'branding-manager' && app.name != 'live-support') {
 
                         _item = Ext.create('Ung.grid.ReportItemModel', {
                             text: i18n._(app.displayName),

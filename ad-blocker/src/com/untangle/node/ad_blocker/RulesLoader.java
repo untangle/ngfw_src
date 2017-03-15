@@ -22,11 +22,11 @@ import com.untangle.uvm.node.GenericRule;
 public class RulesLoader
 {
     public static final String RULE_FILE = System.getProperty("uvm.lib.dir")
-            + "/untangle-node-ad-blocker/adblock_easylist_2_0.txt";
+            + "/ad-blocker/adblock_easylist_2_0.txt";
     public static final String RULE_FILE_BACKUP = System.getProperty("uvm.lib.dir")
-            + "/untangle-node-ad-blocker/adblock_easylist_2_0_backup.txt";
+            + "/ad-blocker/adblock_easylist_2_0_backup.txt";
     private static final String COOKIE_LIST_GHOSTERY = System.getProperty("uvm.lib.dir")
-            + "/untangle-node-ad-blocker/ghostery-lsos.json";
+            + "/ad-blocker/ghostery-lsos.json";
     private static final Logger logger = Logger.getLogger(RulesLoader.class);
     
     private static final String LAST_UPDATE_LINE = "! Last modified:";

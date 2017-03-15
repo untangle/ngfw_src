@@ -340,7 +340,7 @@ public abstract class VirusBlockerBaseApp extends NodeBase
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeSettings().getId().toString();
         VirusSettings readSettings = null;
-        String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-node-" + this.getAppName() + "/" + "settings_" + nodeID + ".js";
+        String settingsFileName = System.getProperty("uvm.settings.dir") + "/" + this.getAppName() + "/" + "settings_" + nodeID + ".js";
 
         try {
             readSettings = settingsManager.load(VirusSettings.class, settingsFileName);
@@ -484,7 +484,7 @@ public abstract class VirusBlockerBaseApp extends NodeBase
          */
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeSettings().getId().toString();
-        String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-node-" + this.getAppName() + "/" + "settings_" + nodeID + ".js";
+        String settingsFileName = System.getProperty("uvm.settings.dir") + "/" + this.getAppName() + "/" + "settings_" + nodeID + ".js";
         try {
             settingsManager.save(settingsFileName, newSettings);
         } catch (SettingsManager.SettingsException e) {

@@ -17,7 +17,7 @@ class SmtpTests(unittest2.TestCase):
 
     @staticmethod
     def nodeName():
-        return "untangle-casing-smtp"
+        return "smtp"
 
     @staticmethod
     def initialSetUp(self):

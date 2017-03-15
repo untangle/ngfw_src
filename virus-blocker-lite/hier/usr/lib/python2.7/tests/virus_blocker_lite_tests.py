@@ -17,7 +17,7 @@ class VirusBlockerLiteTests(VirusBlockerBaseTests):
 
     @staticmethod
     def nodeName():
-        return "untangle-node-virus-blocker-lite"
+        return "virus-blocker-lite"
 
     @staticmethod
     def shortName():

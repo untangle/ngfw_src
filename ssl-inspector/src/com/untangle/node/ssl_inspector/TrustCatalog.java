@@ -20,7 +20,7 @@ import org.apache.log4j.Logger;
 
 class TrustCatalog
 {
-    private static String globalStoreFile = System.getProperty("uvm.lib.dir") + "/untangle-casing-ssl-inspector/trusted-ca-list.jks";
+    private static String globalStoreFile = System.getProperty("uvm.lib.dir") + "/ssl-inspector/trusted-ca-list.jks";
     private static String globalStorePass = "password";
     private static String trustStoreFile = System.getProperty("uvm.settings.dir") + "/untangle-certificates/trustStore.jks";
     private static String trustStorePass = "password";

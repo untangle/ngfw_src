@@ -86,7 +86,7 @@ public class WanBalancerApp extends NodeBase
          */
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeSettings().getId().toString();
-        String settingsFilename = System.getProperty("uvm.settings.dir") + "/" + "untangle-node-wan-balancer/" + "settings_"  + nodeID + ".js";
+        String settingsFilename = System.getProperty("uvm.settings.dir") + "/" + "wan-balancer/" + "settings_"  + nodeID + ".js";
         try {
             settingsManager.save( settingsFilename, newSettings );
         } catch (SettingsManager.SettingsException e) {
@@ -143,7 +143,7 @@ public class WanBalancerApp extends NodeBase
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeSettings().getId().toString();
         WanBalancerSettings readSettings = null;
-        String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-node-wan-balancer/" + "settings_" + nodeID + ".js";
+        String settingsFileName = System.getProperty("uvm.settings.dir") + "/wan-balancer/" + "settings_" + nodeID + ".js";
         
         try {
             readSettings = settingsManager.load( WanBalancerSettings.class, settingsFileName );
@@ -263,7 +263,7 @@ public class WanBalancerApp extends NodeBase
          * First we write a new 330-wan-balancer iptables script with the current settings
          */
         String nodeID = this.getNodeSettings().getId().toString();
-        String settingsFilename = System.getProperty("uvm.settings.dir") + "/" + "untangle-node-wan-balancer/" + "settings_"  + nodeID + ".js";
+        String settingsFilename = System.getProperty("uvm.settings.dir") + "/" + "wan-balancer/" + "settings_"  + nodeID + ".js";
         String scriptFilename = System.getProperty("uvm.bin.dir") + "/wan-balancer-sync-settings.py";
         String networkSettingFilename = System.getProperty("uvm.settings.dir") + "/" + "untangle-vm/" + "network.js";
         String output = UvmContextFactory.context().execManager().execOutput(scriptFilename + " -f " + settingsFilename + " -v -n " + networkSettingFilename);

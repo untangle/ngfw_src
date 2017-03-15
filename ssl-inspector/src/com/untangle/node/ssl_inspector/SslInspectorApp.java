@@ -101,7 +101,7 @@ public class SslInspectorApp extends NodeBase
     protected void preInit()
     {
         String nodeID = this.getNodeSettings().getId().toString();
-        String settingsFile = System.getProperty("uvm.settings.dir") + "/untangle-casing-ssl-inspector/settings_" + nodeID + ".js";
+        String settingsFile = System.getProperty("uvm.settings.dir") + "/ssl-inspector/settings_" + nodeID + ".js";
 
         SslInspectorSettings readSettings = null;
         logger.info("Loading settings from " + settingsFile);
@@ -169,7 +169,7 @@ public class SslInspectorApp extends NodeBase
     public void setSettings(final SslInspectorSettings newSettings)
     {
         String nodeID = this.getNodeSettings().getId().toString();
-        String settingsFile = System.getProperty("uvm.settings.dir") + "/untangle-casing-ssl-inspector/settings_" + nodeID + ".js";
+        String settingsFile = System.getProperty("uvm.settings.dir") + "/ssl-inspector/settings_" + nodeID + ".js";
 
         try {
             newSettings.setVersion(new Integer(2));

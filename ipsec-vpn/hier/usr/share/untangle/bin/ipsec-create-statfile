@@ -10,7 +10,7 @@ import os
 import sys
 
 # Read the L2TP virtual address pool from the IPsec node settings file
-addressPool = get_node_settings_item("untangle-node-ipsec-vpn", "virtualAddressPool")
+addressPool = get_node_settings_item("ipsec-vpn", "virtualAddressPool")
 
 # If not found we remove any existing interface status file and exit
 if addressPool == None:
@@ -35,7 +35,7 @@ file.write("}");
 file.close()
 
 # Read the GRE network address pool from the IPsec node settings file
-networkPool = get_node_settings_item("untangle-node-ipsec-vpn", "virtualNetworkPool")
+networkPool = get_node_settings_item("ipsec-vpn", "virtualNetworkPool")
 
 # If not found we remove any existing interface status file and exit
 if networkPool == None:

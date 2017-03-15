@@ -367,13 +367,13 @@ def load_rpc_manager(appid=None):
     # if no appid provided we lookup capture node by name
     # otherwise we use the appid passed to us
     if (appid == None):
-        captureNode = uvmContext.nodeManager().node("untangle-node-captive-portal")
+        captureNode = uvmContext.nodeManager().node("captive-portal")
     else:
         captureNode = uvmContext.nodeManager().node(int(appid))
 
     # if we can't find the node then throw an exception
     if (captureNode == None):
-        raise Exception("The uvm node manager could not locate untangle-node-captive-portal")
+        raise Exception("The uvm node manager could not locate captive-portal")
 
     return(captureNode)
 
@@ -393,26 +393,24 @@ def load_capture_settings(req,appid=None):
         companyName = oemName
 
     # if there is a company name in the branding manager it wins over everything else
-    brandco = get_node_settings_item('untangle-node-branding-manager','companyName')
+    brandco = get_node_settings_item('branding-manager','companyName')
     if (brandco != None):
         companyName = brandco
 
     try:
         if (appid == None):
-            captureSettings = get_node_settings('untangle-node-captive-portal')
+            captureSettings = get_node_settings('captive-portal')
         else:
             captureSettings = get_nodeid_settings(int(appid))
     except Exception as e:
         req.log_error("handler.py: Exception loading settings: %s" % str(e))
 
     if (captureSettings == None):
-        if (appid == None):
-            req.log_error("handler.py: Unable to load capture settings for appid: None")
-        else:
-            req.log_error("handler.py: Unable to load capture settings for appid: %s" % appid)
-
+        req.log_error("handler.py: Unable to load capture settings for appid: %s" % str(appid))
+        return None
     if (captureSettings.get('pageType') == None):
         req.log_error("handler.py: Missing required setting: pageType")
+        return None
 
     # add the company name to the node settings dictionary
     captureSettings['companyName'] = companyName

@@ -97,7 +97,7 @@ public class BrandingManagerImpl implements BrandingManager
         NodeManager nm = UvmContextFactory.context().nodeManager();
         if (nm == null) /* happens on shutdown */
             return null;
-        BrandingManager bnode = (BrandingManager)nm.node("untangle-node-branding-manager");
+        BrandingManager bnode = (BrandingManager)nm.node("branding-manager");
         if (bnode != null && (((NodeBase)bnode).getRunState() == NodeSettings.NodeState.RUNNING)) {
             return bnode;
         }

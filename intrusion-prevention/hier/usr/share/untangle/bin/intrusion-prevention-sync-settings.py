@@ -21,7 +21,7 @@ UNTANGLE_DIR = '%s/usr/lib/python%d.%d' % ( "@PREFIX@", sys.version_info[0], sys
 if ( "@PREFIX@" != ''):
     sys.path.insert(0, UNTANGLE_DIR)
 	
-import untangle_node_intrusion_prevention
+import intrusion_prevention
 
 def usage():
     """
@@ -100,29 +100,29 @@ def main(argv):
         print "node = " + node_id
         print "_debug = ",  _debug
 
-    defaults = untangle_node_intrusion_prevention.IntrusionPreventionDefaults()
+    defaults = intrusion_prevention.IntrusionPreventionDefaults()
     defaults.load()
 
     patch = None
     if patch_file_name != None:
-        patch = untangle_node_intrusion_prevention.IntrusionPreventionSettingsPatch()
+        patch = intrusion_prevention.IntrusionPreventionSettingsPatch()
         patch.load(patch_file_name)
 
-    snort_conf = untangle_node_intrusion_prevention.SnortConf()
+    snort_conf = intrusion_prevention.SnortConf()
 
     current_snort_rules = None
     if current_rules_path != None:
-        current_snort_rules = untangle_node_intrusion_prevention.SnortRules( node_id, current_rules_path )
+        current_snort_rules = intrusion_prevention.SnortRules( node_id, current_rules_path )
         current_snort_rules.load( True )
         current_snort_rules.update_categories(defaults, True)
 
     previous_snort_rules = None
     if previous_rules_path != None:
-        previous_snort_rules = untangle_node_intrusion_prevention.SnortRules( node_id, previous_rules_path )
+        previous_snort_rules = intrusion_prevention.SnortRules( node_id, previous_rules_path )
         previous_snort_rules.load( True )
         previous_snort_rules.update_categories(defaults, True)
 
-    settings = untangle_node_intrusion_prevention.IntrusionPreventionSettings( node_id )
+    settings = intrusion_prevention.IntrusionPreventionSettings( node_id )
     if settings.exists() == False:
         settings.create()
     else:

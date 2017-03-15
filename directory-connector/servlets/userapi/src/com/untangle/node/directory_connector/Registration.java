@@ -36,7 +36,7 @@ public class Registration extends HttpServlet
 
     protected void doGet( HttpServletRequest request,  HttpServletResponse response ) throws ServletException, IOException
     {
-        DirectoryConnectorApp directoryConnector = (DirectoryConnectorApp)UvmContextFactory.context().nodeManager().node("untangle-node-directory-connector");
+        DirectoryConnectorApp directoryConnector = (DirectoryConnectorApp)UvmContextFactory.context().nodeManager().node("directory-connector");
 
         String download = request.getParameter( "download" );
         if ( download != null && download.equals( "download" ) ) {

@@ -63,7 +63,7 @@ Ext.define('Webui.config.email', {
     getMailNode: function(forceReload) {
         if (forceReload || this.rpc.smtpNode === undefined) {
             try {
-                this.rpc.smtpNode = rpc.nodeManager.node("untangle-casing-smtp");
+                this.rpc.smtpNode = rpc.nodeManager.node("smtp");
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }

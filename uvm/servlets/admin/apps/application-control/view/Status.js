@@ -40,7 +40,7 @@ Ext.define('Ung.apps.applicationcontrol.view.Status', {
         items: [{
             xtype: 'component',
             cls: 'app-desc',
-            html: '<img src="/skins/modern-rack/images/admin/apps/untangle-node-application-control_80x80.png" width="80" height="80"/>' +
+            html: '<img src="/skins/modern-rack/images/admin/apps/application-control_80x80.png" width="80" height="80"/>' +
                 '<h3>Application Control</h3>' +
                 '<p>' + 'Application Control scans sessions and identifies the associated applications allowing each to be flagged and/or blocked.'.t() + '</p>'
         }, {

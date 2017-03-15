@@ -21,7 +21,7 @@ class WebMonitorTests(WebFilterBaseTests):
 
     @staticmethod
     def nodeName():
-        return "untangle-node-web-monitor"
+        return "web-monitor"
 
     @staticmethod
     def shortNodeName():

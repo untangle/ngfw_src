@@ -5,7 +5,7 @@
 # 
 
 CERT_DURATION=3650 # 10 years
-OPENSSL_CFG_FILE="@PREFIX@/usr/share/untangle/lib/untangle-node-openvpn/openssl.cnf"
+OPENSSL_CFG_FILE="@PREFIX@/usr/share/untangle/lib/openvpn/openssl.cnf"
 
 generateCA()
 {
@@ -13,8 +13,8 @@ generateCA()
     echo 
     echo "Building CA cert and key..."
 
-    CA_KEY="@PREFIX@/usr/share/untangle/settings/untangle-node-openvpn/ca.key"
-    CA_CRT="@PREFIX@/usr/share/untangle/settings/untangle-node-openvpn/ca.crt"
+    CA_KEY="@PREFIX@/usr/share/untangle/settings/openvpn/ca.key"
+    CA_CRT="@PREFIX@/usr/share/untangle/settings/openvpn/ca.crt"
 
     export COMMON_NAME="ca.domain"
     export KEY_COMMON_NAME="certificateAuthority"
@@ -34,8 +34,8 @@ generateServerKey()
     echo 
     echo "Building Server cert and key..."
 
-    SERVER_KEY="@PREFIX@/usr/share/untangle/settings/untangle-node-openvpn/server.key"
-    SERVER_CRT="@PREFIX@/usr/share/untangle/settings/untangle-node-openvpn/server.crt"
+    SERVER_KEY="@PREFIX@/usr/share/untangle/settings/openvpn/server.key"
+    SERVER_CRT="@PREFIX@/usr/share/untangle/settings/openvpn/server.crt"
 
     local serverCsrTmp=`mktemp || exit -3`
 
@@ -47,13 +47,13 @@ generateServerKey()
     openssl req -days ${CERT_DURATION} -nodes -new -keyout ${SERVER_KEY} -out ${serverCsrTmp} -extensions server -config ${OPENSSL_CFG_FILE} -batch
 
     # create the "database" file for openssl.cnf
-    rm -f @PREFIX@/usr/share/untangle/settings/untangle-node-openvpn/index.txt*
-    touch @PREFIX@/usr/share/untangle/settings/untangle-node-openvpn/index.txt
+    rm -f @PREFIX@/usr/share/untangle/settings/openvpn/index.txt*
+    touch @PREFIX@/usr/share/untangle/settings/openvpn/index.txt
 
     # create the serial file for openssl.cnf
-    rm -f @PREFIX@/usr/share/untangle/settings/untangle-node-openvpn/serial*
+    rm -f @PREFIX@/usr/share/untangle/settings/openvpn/serial*
     BASE_SERIAL=`printf '%04X%04X' ${RANDOM} ${RANDOM}`
-    echo ${BASE_SERIAL} > @PREFIX@/usr/share/untangle/settings/untangle-node-openvpn/serial
+    echo ${BASE_SERIAL} > @PREFIX@/usr/share/untangle/settings/openvpn/serial
 
     ## Sign the cretificate signing request
     openssl ca -days ${CERT_DURATION} -out ${SERVER_CRT} -in ${serverCsrTmp} -extensions server -config ${OPENSSL_CFG_FILE} -batch
@@ -69,13 +69,13 @@ generateServerKey()
 
 generateDiffieHellman()
 {
-    DH_PEM="@PREFIX@/usr/share/untangle/settings/untangle-node-openvpn/dh.pem"
+    DH_PEM="@PREFIX@/usr/share/untangle/settings/openvpn/dh.pem"
 
     ## Generate the diffie hellman parameters.
     # openssl dhparam -out $DH_PEM 2048
 
     # Grab a pregenerated dh.pem file
-    cp "@PREFIX@/usr/share/untangle/lib/untangle-node-openvpn/pregenerated_dh/dh2048-$(( ${RANDOM} % 10 )).pem" $DH_PEM
+    cp "@PREFIX@/usr/share/untangle/lib/openvpn/pregenerated_dh/dh2048-$(( ${RANDOM} % 10 )).pem" $DH_PEM
 }
 
 

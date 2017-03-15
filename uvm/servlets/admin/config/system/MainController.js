@@ -81,7 +81,7 @@ Ext.define('Ung.config.system.MainController', {
         var vm = this.getViewModel();
         v.setLoading(true);
         try {
-            vm.set('shieldSettings', rpc.nodeManager.node('untangle-node-shield').getSettings());
+            vm.set('shieldSettings', rpc.nodeManager.node('shield').getSettings());
             v.setLoading(false);
         }
         catch (ex) {
@@ -150,7 +150,7 @@ Ext.define('Ung.config.system.MainController', {
                 // store.commitChanges();
             }
         });
-        rpc.nodeManager.node('untangle-node-shield').setSettings(function (result, ex) { if (ex) { console.log('exception'); deferred.reject(ex); } deferred.resolve(); }, vm.get('shieldSettings'));
+        rpc.nodeManager.node('shield').setSettings(function (result, ex) { if (ex) { console.log('exception'); deferred.reject(ex); } deferred.resolve(); }, vm.get('shieldSettings'));
         return deferred.promise;
     },
 
@@ -261,7 +261,7 @@ Ext.define('Ung.config.system.MainController', {
     getHttpSettings: function () {
         var vm = this.getViewModel();
         try {
-            vm.set('httpSettings', rpc.nodeManager.node('untangle-casing-http').getHttpSettings());
+            vm.set('httpSettings', rpc.nodeManager.node('http').getHttpSettings());
         } catch (ex) {
             if (ex) { console.error(ex); Util.exceptionToast(ex); return; }
         }
@@ -269,7 +269,7 @@ Ext.define('Ung.config.system.MainController', {
     getFtpSettings: function () {
         var vm = this.getViewModel();
         try {
-            vm.set('ftpSettings', rpc.nodeManager.node('untangle-casing-ftp').getFtpSettings());
+            vm.set('ftpSettings', rpc.nodeManager.node('ftp').getFtpSettings());
         } catch (ex) {
             if (ex) { console.error(ex); Util.exceptionToast(ex); return; }
         }
@@ -278,7 +278,7 @@ Ext.define('Ung.config.system.MainController', {
     getSmtpSettings: function () {
         var vm = this.getViewModel();
         try {
-            vm.set('smtpSettings', rpc.nodeManager.node('untangle-casing-smtp').getSmtpNodeSettings());
+            vm.set('smtpSettings', rpc.nodeManager.node('smtp').getSmtpNodeSettings());
         } catch (ex) {
             if (ex) { console.error(ex); Util.exceptionToast(ex); return; }
         }

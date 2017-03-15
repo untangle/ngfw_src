@@ -2,7 +2,7 @@
 
 import sys
 
-reportsApp = uvm.nodeManager().node("untangle-node-reports");
+reportsApp = uvm.nodeManager().node("reports");
 try:
     reportsApp.runFixedReport()
 except:

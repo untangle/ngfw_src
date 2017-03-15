@@ -3,7 +3,7 @@ import sys
 
 nodeManager = uvm.nodeManager()
 
-node = nodeManager.node( "untangle-node-configuration-backup" )
+node = nodeManager.node( "configuration-backup" )
 
 if node == None:
     print "configuration-backup node not installed."

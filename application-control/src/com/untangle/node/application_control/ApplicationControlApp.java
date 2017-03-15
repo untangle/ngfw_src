@@ -124,7 +124,7 @@ public class ApplicationControlApp extends NodeBase
         newSettings.applyNodeRules(statistics);
 
         try {
-            settingsManager.save(System.getProperty("uvm.settings.dir") + "/untangle-node-application-control/settings_" + nodeID + ".js", newSettings);
+            settingsManager.save(System.getProperty("uvm.settings.dir") + "/application-control/settings_" + nodeID + ".js", newSettings);
         } catch (Exception e) {
             logger.error("setSettings()", e);
             return;
@@ -195,7 +195,7 @@ public class ApplicationControlApp extends NodeBase
     {
         ApplicationControlSettings readSettings = null;
         LinkedList<ApplicationControlProtoRule> workingList = null;
-        String settingsFile = (System.getProperty("uvm.settings.dir") + "/untangle-node-application-control/settings_" + nodeID + ".js");
+        String settingsFile = (System.getProperty("uvm.settings.dir") + "/application-control/settings_" + nodeID + ".js");
 
         try {
             // read our node settings from the file

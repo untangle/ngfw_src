@@ -63,7 +63,7 @@ class AdBlockerTests(unittest2.TestCase):
 
     @staticmethod
     def nodeName():
-        return "untangle-node-ad-blocker"
+        return "ad-blocker"
 
     @staticmethod
     def initialSetUp(self):

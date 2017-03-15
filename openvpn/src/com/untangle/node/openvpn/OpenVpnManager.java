@@ -493,19 +493,19 @@ public class OpenVpnManager
             String name = server.getName();
             logger.info( "Writing server configuration file for [" + name + "]" );
 
-            String cpCmd = "cp -f " + System.getProperty("uvm.settings.dir") + "/untangle-node-openvpn/remote-servers/" + name + ".conf /etc/openvpn/";
+            String cpCmd = "cp -f " + System.getProperty("uvm.settings.dir") + "/openvpn/remote-servers/" + name + ".conf /etc/openvpn/";
             UvmContextFactory.context().execManager().exec( cpCmd );
         }
 
         /**
          * Copy all keys in place
          */
-        UvmContextFactory.context().execManager().exec( "cp -rf " + System.getProperty("uvm.settings.dir") + "/untangle-node-openvpn/remote-servers/keys /etc/openvpn/" );
+        UvmContextFactory.context().execManager().exec( "cp -rf " + System.getProperty("uvm.settings.dir") + "/openvpn/remote-servers/keys /etc/openvpn/" );
         /**
          * "untangle-vpn" was the key directory name in 9.4 and prior
          * keep this to maintain backwards compatibility with 9.4 and prior
          */
-        UvmContextFactory.context().execManager().exec( "cp -rf " + System.getProperty("uvm.settings.dir") + "/untangle-node-openvpn/remote-servers/untangle-vpn /etc/openvpn/" );
+        UvmContextFactory.context().execManager().exec( "cp -rf " + System.getProperty("uvm.settings.dir") + "/openvpn/remote-servers/untangle-vpn /etc/openvpn/" );
     }
     
     private void writePushRoute( StringBuilder sb, InetAddress address, InetAddress netmask )

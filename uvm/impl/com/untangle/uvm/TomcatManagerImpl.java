@@ -72,7 +72,7 @@ public class TomcatManagerImpl implements TomcatManager
     private final StandardHost baseHost;
     private final String webAppRoot;
     
-    private static final String[] tldScanTargets = {"untangle-libuvm-taglib.jar","standard.jar","untangle-casing-smtp-servlet-quarantine.jar"};
+    private static final String[] tldScanTargets = {"untangle-libuvm-taglib.jar","standard.jar","smtp-servlet-quarantine.jar"};
 
     protected TomcatManagerImpl(UvmContextImpl uvmContext, InheritableThreadLocal<HttpServletRequest> threadRequest, String catalinaHome, String webAppRoot, String logDir)
     {

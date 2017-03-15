@@ -47,7 +47,7 @@ class ApplicationControlLiteTests(unittest2.TestCase):
 
     @staticmethod
     def nodeName():
-        return "untangle-node-application-control-lite"
+        return "application-control-lite"
 
     @staticmethod
     def initialSetUp(self):

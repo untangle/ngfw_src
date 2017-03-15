@@ -25,7 +25,7 @@ class ConfigurationBackupTests(unittest2.TestCase):
     
     @staticmethod
     def nodeName():
-        return "untangle-node-configuration-backup"
+        return "configuration-backup"
 
     @staticmethod
     def vendorName():

@@ -162,7 +162,7 @@ def runTestSuite(suite):
     if exit_flag:
         return
     
-    print "== Testing %s ==" % suite.nodeName()
+    print "== testing %s ==" % suite.nodeName()
     tests = unittest2.TestLoader().loadTestsFromTestCase(suite)
     failCount = 0
     skipCount = 0  # number of skipped tests.
@@ -227,7 +227,7 @@ def runTestSuite(suite):
                 # want to run finalTearDown
                 return failCount, skipCount, totalCount
         elif (len(results.skipped) > 0):
-            print "Test skipped  : %s %s" % (test_name, timeString)
+            print "Test skipped : %s %s" % (test_name, timeString)
             skipCount += 1
         else:
             print "Test success : %s %s " % (test_name, timeString)
@@ -241,9 +241,9 @@ def runTestSuite(suite):
 
     if (parser.timedTests):
         suiteElapsedTime = time.time() - suiteStartTime
-        print "== Testing %s [%.1fs] ==" % (suite.nodeName(),suiteElapsedTime)
+        print "== testing %s [%.1fs] ==" % (suite.nodeName(),suiteElapsedTime)
     else:
-        print "== Testing %s ==" % suite.nodeName()
+        print "== testing %s ==" % suite.nodeName()
     return failCount, skipCount, totalCount
 
 # Verify the test enviroment is setup correctly
@@ -252,7 +252,7 @@ def runTestEnvironmentTests():
     global logfile
     suite = unittest2.TestLoader().loadTestsFromTestCase(TestEnvironmentTests)
     # results = unittest2.TextTestRunner( stream=logfile, verbosity=parser.verbosity ).run( suite )
-    print "== Testing Test Environment =="
+    print "== testing environment =="
     for test in suite:
         results = unittest2.TextTestRunner( stream=logfile, verbosity=parser.verbosity ).run( test )
         if exit_flag:
@@ -263,7 +263,7 @@ def runTestEnvironmentTests():
             exit(1) # always fast fail on basic test environment tests
         else:
             print "Test success : %s " % test._testMethodName
-    print "== Testing Test Environment =="
+    print "== testing environment =="
 
 signal.signal(signal.SIGINT, signal_handler)
 
@@ -285,9 +285,9 @@ remote_control.quickTestsOnly = parser.quickTestsOnly
 
 # if reports isn't installed, install and start it - it is required
 reportsNode = None;
-if (not uvmContext.nodeManager().isInstantiated('untangle-node-reports')):
-    print "== Installing untangle-node-reports =="
-    reportsNode = uvmContext.nodeManager().instantiate('untangle-node-reports', None)
+if (not uvmContext.nodeManager().isInstantiated('reports')):
+    print "== Installing reports =="
+    reportsNode = uvmContext.nodeManager().instantiate('reports', None)
 
 if ("environment" in parser.suitesToRun or "all" in parser.suitesToRun) and "environment" not in parser.suitesToExclude:
     runTestEnvironmentTests()
@@ -332,7 +332,7 @@ elapsedTime = time.time() - startTime
     
 # if reports was added earlier, revert to original settings
 # if reportsNode != None:
-#     print "== UnInstalling untangle-node-reports =="
+#     print "== UnInstalling reports =="
 #     uvmContext.nodeManager().destroy( reportsNode.getNodeSettings()['id'] );
 
 print ""

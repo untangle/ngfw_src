@@ -106,7 +106,7 @@ class WanFailoverTests(unittest2.TestCase):
     
     @staticmethod
     def nodeName():
-        return "untangle-node-wan-failover"
+        return "wan-failover"
 
     @staticmethod
     def vendorName():

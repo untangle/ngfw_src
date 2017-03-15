@@ -158,15 +158,15 @@ class CaptivePortalTests(unittest2.TestCase):
 
     @staticmethod
     def nodeName():
-        return "untangle-node-captive-portal"
+        return "captive-portal"
 
     @staticmethod
     def nodeNameAD():
-        return "untangle-node-directory-connector"
+        return "directory-connector"
 
     @staticmethod
     def nodeNameWeb():
-        return "untangle-node-web-filter"
+        return "web-filter"
 
     @staticmethod
     def vendorName():

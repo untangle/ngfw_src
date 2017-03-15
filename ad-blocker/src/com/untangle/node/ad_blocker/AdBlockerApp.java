@@ -184,7 +184,7 @@ public class AdBlockerApp extends NodeBase
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeSettings().getId().toString();
         AdBlockerSettings readSettings = null;
-        String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-node-ad-blocker/" + "settings_" + nodeID + ".js";
+        String settingsFileName = System.getProperty("uvm.settings.dir") + "/ad-blocker/" + "settings_" + nodeID + ".js";
 
         try {
             readSettings = settingsManager.load(AdBlockerSettings.class, settingsFileName);
@@ -265,7 +265,7 @@ public class AdBlockerApp extends NodeBase
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeSettings().getId().toString();
         try {
-            settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "untangle-node-ad-blocker/" + "settings_" + nodeID + ".js", newSettings );
+            settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "ad-blocker/" + "settings_" + nodeID + ".js", newSettings );
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.", e);
             return;

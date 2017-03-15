@@ -10,8 +10,8 @@ class Manager(object):
     verbosity = 0
     
     def shortNameToPackageName(self,shortName):
-        if ( shortName == "http" or shortName == "ftp" or shortName == "mail" ): return "untangle-casing-" + shortName
-        return "untangle-node-" + shortName
+        if ( shortName == "http" or shortName == "ftp" or shortName == "mail" ): return "" + shortName
+        return "" + shortName
 
     def doAptTailLog(self, key ):
         print "Operation started, please apt.log for more information"

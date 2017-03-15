@@ -177,7 +177,7 @@ public class IpsecVpnApp extends NodeBase
         String nodeID = getNodeSettings().getId().toString();
 
         try {
-            settingsManager.save(System.getProperty("uvm.settings.dir") + "/untangle-node-ipsec-vpn/settings_" + nodeID + ".js", newSettings);
+            settingsManager.save(System.getProperty("uvm.settings.dir") + "/ipsec-vpn/settings_" + nodeID + ".js", newSettings);
         } catch (Exception exn) {
             logger.error("Failed to save settings: ", exn);
             return;
@@ -233,7 +233,7 @@ public class IpsecVpnApp extends NodeBase
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = getNodeSettings().getId().toString();
         IpsecVpnSettings readSettings = null;
-        String settingsFilename = System.getProperty("uvm.settings.dir") + "/untangle-node-ipsec-vpn/settings_" + nodeID + ".js";
+        String settingsFilename = System.getProperty("uvm.settings.dir") + "/ipsec-vpn/settings_" + nodeID + ".js";
 
         try {
             readSettings = settingsManager.load(IpsecVpnSettings.class, settingsFilename);

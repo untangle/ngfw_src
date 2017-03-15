@@ -17,7 +17,7 @@ class SpamBlockerTests(SpamBlockerBaseTests):
 
     @staticmethod
     def nodeName():
-        return "untangle-node-spam-blocker"
+        return "spam-blocker"
 
     @staticmethod
     def shortName():

@@ -1,9 +1,9 @@
 # -*-ruby-*-
 # $Id$
 
-reports = BuildEnv::SRC['untangle-node-reports']
+reports = BuildEnv::SRC['reports']
 
-NodeBuilder.makeNode(BuildEnv::SRC, 'untangle-node-reports', 'reports')
+NodeBuilder.makeNode(BuildEnv::SRC, 'reports', 'reports')
 
 jt = [reports['src']]
 ServletBuilder.new(reports, 'com.untangle.uvm.reports.jsp', ["reports/servlets/reports"], [], jt)

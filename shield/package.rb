@@ -1,3 +1,3 @@
 # -*-ruby-*-
 
-NodeBuilder.makeNode(BuildEnv::SRC, 'untangle-node-shield', 'shield' )
+NodeBuilder.makeNode(BuildEnv::SRC, 'shield', 'shield' )

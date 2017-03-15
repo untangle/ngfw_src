@@ -21,7 +21,7 @@ UNTANGLE_DIR = '%s/usr/lib/python%d.%d' % ( "@PREFIX@", sys.version_info[0], sys
 if ( "@PREFIX@" != ''):
     sys.path.insert(0, UNTANGLE_DIR)
 
-import untangle_node_intrusion_prevention
+import intrusion_prevention
 
 DEBUG = False
 CHUNK_SIZE = 1024 * 1024
@@ -81,7 +81,7 @@ class Update:
         ##
         nm = NodeManager(uvmContext)
         for instance in nm.get_instances():
-            if instance[1] == "untangle-node-intrusion-prevention" and instance[3] == "RUNNING":
+            if instance[1] == "intrusion-prevention" and instance[3] == "RUNNING":
                 self.node_ids.append(instance[0])
         
         return True

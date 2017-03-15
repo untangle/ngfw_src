@@ -41,11 +41,11 @@ class BrandingManagerTests(unittest2.TestCase):
     
     @staticmethod
     def nodeName():
-        return "untangle-node-branding-manager"
+        return "branding-manager"
 
     @staticmethod
     def nodeNameWeb():
-        return "untangle-node-web-filter"
+        return "web-filter"
 
     @staticmethod
     def vendorName():

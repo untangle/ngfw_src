@@ -1,4 +1,4 @@
-Ext.define('Webui.untangle-base-web-filter.settings', {
+Ext.define('Webui.web-filter-base.settings', {
     extend:'Ung.NodeWin',
     // called when the component is rendered
     initComponent: function() {

@@ -283,8 +283,7 @@ public class LanguageManagerImpl implements LanguageManager
                     ResourceBundle.clearCache(urlLoader);
 
                     try{
-                        i18n = I18nFactory.getI18n(source.getPrefix(), source.getResourcePath(),
-                                            urlLoader, locale, I18nFactory.NO_CACHE);
+                        i18n = I18nFactory.getI18n(source.getPrefix(), source.getResourcePath(), urlLoader, locale, I18nFactory.NO_CACHE);
                     }catch(MissingResourceException e){
                         // Do nothing.  Likely problem is the rare case of localization resource bundle has been deleted.
                     }
