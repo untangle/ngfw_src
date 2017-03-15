@@ -77,11 +77,10 @@ Ext.define('Ung.config.events.view.Syslog', {
         title: 'Syslog Rules'.t(),
         region: 'center',
 
-        bind: '{syslogRules}',
-
         hidden: true,
         disabled: true,
         bind: {
+            store: '{syslogRules}',
             hidden: '{settings.syslogEnabled == false}',
             disabled: '{settings.syslogEnabled == false}'
         },

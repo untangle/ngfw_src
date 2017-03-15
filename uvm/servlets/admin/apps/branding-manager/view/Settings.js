@@ -8,21 +8,21 @@ Ext.define('Ung.apps.brandingmanager.view.Settings', {
     withValidation: true,
 
     items:[{
-		title: 'Logo'.t(),
+        title: 'Logo'.t(),
         items: [{
-        	xtype: 'radiogroup',
-        	columns: 1,
-        	simpleValue: true,
-        	bind: '{settings.defaultLogo}',
-        	items:[{
-         		xtype: 'radio',
-            	boxLabel: 'Use Default Logo'.t(),
-            	inputValue: true
-        	}, {
-            	xtype: 'radio',
-            	boxLabel: 'Use Custom Logo. Maximum size is 166 x 100.'.t(),
-            	inputValue: false
-			}]
+            xtype: 'radiogroup',
+            columns: 1,
+            simpleValue: true,
+            bind: '{settings.defaultLogo}',
+            items:[{
+                xtype: 'radio',
+                boxLabel: 'Use Default Logo'.t(),
+                inputValue: true
+            }, {
+                xtype: 'radio',
+                boxLabel: 'Use Custom Logo. Maximum size is 166 x 100.'.t(),
+                inputValue: false
+            }]
         },{
             xtype: 'form',
             bodyStyle: 'padding:0px 0px 0px 25px',
@@ -45,7 +45,7 @@ Ext.define('Ung.apps.brandingmanager.view.Settings', {
                 buttonText: 'Select Image...'.t(),
                 width: 300,
                 listeners: {
-                	change: 'onUpload'
+                    change: 'onUpload'
                 }
             },{
                 xtype: 'hidden',
@@ -98,6 +98,6 @@ Ext.define('Ung.apps.brandingmanager.view.Settings', {
             height: 100,
             fieldLabel: 'Message Text'.t(),
             bind: '{settings.bannerMessage}'
-   		}]
+        }]
     }]
 });
