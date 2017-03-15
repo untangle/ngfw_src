@@ -16,6 +16,7 @@
         "supportedArchitectures" : {
             "javaClass": "java.util.LinkedList",
             "list": ["i386","amd64"]
-        }
+        },
+        "minimumMemory": 1600000000
 }
 
