@@ -97,13 +97,13 @@ if BuildEnv::SRC.isDevel
   BuildEnv::SRC.installTarget.register_dependency(isRegisteredFile)
 end
 
-jsFiles = FileList["./uvm/servlets/**/*.js"].exclude(/admin/)
-if ( jsFiles.length > 0 )
-  jsFiles.each do |f|
-    jsl = JsLintTarget.new(uvm_lib, [f], 'jslint', f)
-    BuildEnv::SRC.jsLintTarget.register_dependency(jsl)
-  end
-end
+# jsFiles = FileList["./uvm/servlets/**/*.js"].exclude(/admin/)
+# if ( jsFiles.length > 0 )
+#   jsFiles.each do |f|
+#     jsl = JsLintTarget.new(uvm_lib, [f], 'jslint', f)
+#     BuildEnv::SRC.jsLintTarget.register_dependency(jsl)
+#   end
+# end
 
 ungAllDirs = [ 'util', 'overrides', 'model', 'store', 'controller',
                'chart', 'cmp', 'widget', 'view', 'Application.js' ]
@@ -126,14 +126,7 @@ end
   JsBuilder.new(uvm_lib, n, "uvm/servlets/admin/apps/#{n}", "admin/script/apps")
 end
 
-# FIXME: uncomment at some point
-# adminJsFiles = FileList["./uvm/servlets/admin/**/*.js"]
-# if ( adminJsFiles.length > 0 )
-#   adminJsFiles.each do |f|
-#     jsl = JsLintTarget.new(uvm_lib, [f], 'jslint', f)
-#     BuildEnv::SRC.jsLintTarget.register_dependency(jsl)
-#   end
-# end
+JsLintTarget.new(uvm_lib, './uvm/servlets/admin', 'jslint-adminui')
 
 poFiles = FileList["./i18ntools/po/**/*.po"]
 if ( poFiles.length > 0 )

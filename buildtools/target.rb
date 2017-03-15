@@ -470,10 +470,14 @@ class JsLintTarget < Target
 
   attr_reader :filename
 
-  def initialize(package, deps, taskName, filename)
-    @targetName = "jslint:#{package.name}-#{taskName}-#{filename}"
-    super(package, deps, @targetName)
-    @filename = filename
+  def initialize(package, sourcePaths, taskName)
+    @path = sourcePaths.kind_of?(Array) ? sourcePaths : [sourcePaths]
+    @deps = @path.map do |p|
+      File::directory?(p) ? FileList["#{p}/**/*.js"] : p
+    end
+    @deps.flatten!
+    @targetName = "jslint:#{package.name}-#{taskName}"
+    super(package, @deps, @targetName)
   end
 
   def to_s
@@ -483,10 +487,9 @@ class JsLintTarget < Target
   protected
 
   def build()
-    # info "[jslint  ] #{@filename}"
-    command = "#{JS_LINT_COMMAND} #{@filename} #{JS_LINT_CONFIG}"
-    # disable jslint for now as its only used to check the webui servlet
-    # raise "jslint failed" unless Kernel.system command
+    info "[jslint  ] #{@path}"
+    command = "#{JS_LINT_COMMAND} #{@deps.join(' ')} #{JS_LINT_CONFIG}"
+    raise "jslint failed" unless Kernel.system command
   end
 end
 
