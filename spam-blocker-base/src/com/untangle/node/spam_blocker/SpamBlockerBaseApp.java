@@ -56,9 +56,9 @@ public abstract class SpamBlockerBaseApp extends NodeBase
     private static Pulse greyListSaverPulse = null;
     
     @SuppressWarnings("unchecked")
-    public SpamBlockerBaseApp( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties, SpamScanner scanner )
+    public SpamBlockerBaseApp( com.untangle.uvm.node.AppSettings appSettings, com.untangle.uvm.node.AppProperties appProperties, SpamScanner scanner )
     {
-        super( nodeSettings, nodeProperties );
+        super( appSettings, appProperties );
         
         this.scanner = scanner;
 

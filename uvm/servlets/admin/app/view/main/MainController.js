@@ -43,9 +43,9 @@ Ext.define('Ung.view.main.MainController', {
         //     }
         // });
 
-        vm.set('reportsInstalled', rpc.nodeManager.node('reports') !== null);
-        if (rpc.nodeManager.node('reports')) {
-            vm.set('reportsRunning', rpc.nodeManager.node('reports').getRunState() === 'RUNNING');
+        vm.set('reportsInstalled', rpc.appManager.app('reports') !== null);
+        if (rpc.appManager.app('reports')) {
+            vm.set('reportsRunning', rpc.appManager.app('reports').getRunState() === 'RUNNING');
         }
         vm.notify();
         /*

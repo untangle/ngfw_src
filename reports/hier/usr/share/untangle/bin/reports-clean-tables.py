@@ -4,8 +4,6 @@
 import getopt, logging, mx, os, os.path, re, sys, tempfile, time, shutil, datetime, traceback
 from subprocess import Popen, PIPE
 from psycopg2.extensions import DateFromMx, TimestampFromMx
-from uvm.settings_reader import get_node_settings_item
-from uvm.settings_reader import get_node_settings
 
 def usage():
      print """\

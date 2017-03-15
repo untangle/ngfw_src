@@ -25,9 +25,9 @@ public class RouterImpl extends NodeBase implements HostnameLookup
 
     private final Logger logger = Logger.getLogger( RouterImpl.class );
 
-    public RouterImpl( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
+    public RouterImpl( com.untangle.uvm.node.AppSettings appSettings, com.untangle.uvm.node.AppProperties appProperties )
     {
-        super( nodeSettings, nodeProperties );
+        super( appSettings, appProperties );
 
         this.handler          = new RouterEventHandler(this);
         this.dhcpMonitor      = new DhcpMonitor( this );

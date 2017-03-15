@@ -268,7 +268,7 @@ public class BandwidthControlRuleAction implements JSONString, Serializable
 
         case TAG_HOST:
             address = sess.sessionEvent().getLocalAddr();
-            reason = "Bandwidth Control" + " ( " + I18nUtil.marktr("policy") + ": " + this.node.getNodeSettings().getPolicyId() + " " + I18nUtil.marktr("rule") + ": " + this.rule.getRuleId() + ")";
+            reason = "Bandwidth Control" + " ( " + I18nUtil.marktr("policy") + ": " + this.node.getAppSettings().getPolicyId() + " " + I18nUtil.marktr("rule") + ": " + this.rule.getRuleId() + ")";
             logger.debug( "Applying Action    : " + "Tagging " + address + " with " + this.tagName + " for " + this.tagTimeSec + " seconds");
             HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry( address, true );
 
@@ -306,7 +306,7 @@ public class BandwidthControlRuleAction implements JSONString, Serializable
             logger.debug( "Applying Action    : " + "Give Host Quota: " + address);
 
             expireTime = calculateQuotaExpireTime( this.quotaTimeSec );
-            reason = "Bandwidth Control" + " ( " + I18nUtil.marktr("policy") + ": " + this.node.getNodeSettings().getPolicyId() + " " + I18nUtil.marktr("rule") + ": " + this.rule.getRuleId() + ")";
+            reason = "Bandwidth Control" + " ( " + I18nUtil.marktr("policy") + ": " + this.node.getAppSettings().getPolicyId() + " " + I18nUtil.marktr("rule") + ": " + this.rule.getRuleId() + ")";
             logger.debug("Giving " + address.getHostAddress() + " a Quota of " + this.quotaBytes + " bytes (expires in " + expireTime + " seconds)");
             UvmContextFactory.context().hostTable().giveHostQuota( address, this.quotaBytes, (int)expireTime, reason );
 
@@ -319,7 +319,7 @@ public class BandwidthControlRuleAction implements JSONString, Serializable
             }
 
             expireTime = calculateQuotaExpireTime( this.quotaTimeSec );
-            reason = "Bandwidth Control" + " ( " + I18nUtil.marktr("policy") + ": " + this.node.getNodeSettings().getPolicyId() + " " + I18nUtil.marktr("rule") + ": " + this.rule.getRuleId() + ")";
+            reason = "Bandwidth Control" + " ( " + I18nUtil.marktr("policy") + ": " + this.node.getAppSettings().getPolicyId() + " " + I18nUtil.marktr("rule") + ": " + this.rule.getRuleId() + ")";
             logger.debug("Giving " + sess.user() + " a Quota of " + this.quotaBytes + " bytes (expires in " + expireTime + " seconds)");
             UvmContextFactory.context().userTable().giveUserQuota( sess.user(), this.quotaBytes, (int)expireTime, reason );
 

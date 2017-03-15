@@ -30,7 +30,7 @@ class SpamBlockerTests(SpamBlockerBaseTests):
 
     # verify daemon is running
     def test_009_IsRunningAndSSL(self):
-        nodeSSL = nodeSP = uvmContext.nodeManager().node(self.nodeNameSSLInspector())
+        nodeSSL = nodeSP = uvmContext.appManager().app(self.nodeNameSSLInspector())
         nodeSSL.start()
         result = os.system("ps aux | grep spamd | grep -v grep >/dev/null 2>&1")
         assert (result == 0)

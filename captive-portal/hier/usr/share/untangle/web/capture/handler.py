@@ -1,6 +1,6 @@
-from uvm.settings_reader import get_node_settings_item
-from uvm.settings_reader import get_nodeid_settings
-from uvm.settings_reader import get_node_settings
+from uvm.settings_reader import get_app_settings_item
+from uvm.settings_reader import get_appid_settings
+from uvm.settings_reader import get_app_settings
 from uvm.settings_reader import get_settings_item
 from mod_python import apache
 from mod_python import util
@@ -87,17 +87,17 @@ def index(req):
     if captureSettings.get("sessionCookiesEnabled") == True and 'Cookie' in req.headers_in:
         cookie = HandlerCookie(req)
         if cookie.get_field("username") != None:
-            captureNode = load_rpc_manager(appid)
+            captureApp = load_rpc_manager(appid)
             # Process cookie if exists.
             address = req.get_remote_host(apache.REMOTE_NOLOOKUP,None)
 
-            if captureNode.isUserInCookieTable(address,cookie.get_field("username")):
+            if captureApp.isUserInCookieTable(address,cookie.get_field("username")):
                 # User was found in expired cookie table.
-                captureNode.removeUserFromCookieTable(address)
+                captureApp.removeUserFromCookieTable(address)
                 cookie.expire()
             elif ((cookie != None) and
                 (cookie.is_valid() == True) and
-                (captureNode.userActivate(address,cookie.get_field("username"),"agree",False) == 0)):
+                (captureApp.userActivate(address,cookie.get_field("username"),"agree",False) == 0)):
                 # Cookie checks out.  Active them, let them through.
                 redirectUrl = captureSettings.get('redirectUrl')
                 if (redirectUrl != None and len(redirectUrl) != 0 and (not redirectUrl.isspace())):
@@ -154,14 +154,14 @@ def authpost(req,username,password,method,nonce,appid,host,uri):
     # get the network address of the client
     address = req.get_remote_host(apache.REMOTE_NOLOOKUP,None)
 
-    # load the node settings
+    # load the app settings
     captureSettings = load_capture_settings(req,appid)
 
-    # setup the uvm and retrieve the node object so we can make the RPC call
-    captureNode = load_rpc_manager(appid)
+    # setup the uvm and retrieve the app object so we can make the RPC call
+    captureApp = load_rpc_manager(appid)
 
-    # call the node to authenticate the user
-    authResult = captureNode.userAuthenticate(address, username, urllib.quote(password))
+    # call the app to authenticate the user
+    authResult = captureApp.userAuthenticate(address, username, urllib.quote(password))
 
     # on successful login redirect to the redirectUrl if not empty
     # otherwise send them to the page originally requested
@@ -212,21 +212,21 @@ def authpost(req,username,password,method,nonce,appid,host,uri):
 # set to 'agree'.  When the agree box is enabled, it is configured as a checkbox
 # which will return 'agree' if checked.  If unchecked, it will not be included
 # in the POST data.  To handle this scenario, we use a function parameter
-# default of 'empty' which will cause node.userActivate to return false.
+# default of 'empty' which will cause app.userActivate to return false.
 
 def infopost(req,method,nonce,appid,host,uri,agree='empty'):
 
     # get the network address of the client
     address = req.get_remote_host(apache.REMOTE_NOLOOKUP,None)
 
-    # load the node settings
+    # load the app settings
     captureSettings = load_capture_settings(req,appid)
 
-    # setup the uvm and node objects so we can make the RPC call
-    captureNode = load_rpc_manager(appid)
+    # setup the uvm and app objects so we can make the RPC call
+    captureApp = load_rpc_manager(appid)
 
-    # call the node to authenticate the user
-    authResult = captureNode.userActivate(address,agree)
+    # call the app to authenticate the user
+    authResult = captureApp.userActivate(address,agree)
 
     # on successful login redirect to the redirectUrl if not empty
     # otherwise send them to the page originally requested
@@ -357,28 +357,28 @@ def split_args(args):
     return(canon_args)
 
 #-----------------------------------------------------------------------------
-# loads and returns the node RPC object needed for the authentication calls
+# loads and returns the app RPC object needed for the authentication calls
 
 def load_rpc_manager(appid=None):
 
     # first we get the uvm context
     uvmContext = Uvm().getUvmContext()
 
-    # if no appid provided we lookup capture node by name
+    # if no appid provided we lookup capture app by name
     # otherwise we use the appid passed to us
     if (appid == None):
-        captureNode = uvmContext.nodeManager().node("captive-portal")
+        captureApp = uvmContext.appManager().app("captive-portal")
     else:
-        captureNode = uvmContext.nodeManager().node(int(appid))
+        captureApp = uvmContext.appManager().app(int(appid))
 
-    # if we can't find the node then throw an exception
-    if (captureNode == None):
-        raise Exception("The uvm node manager could not locate captive-portal")
+    # if we can't find the app then throw an exception
+    if (captureApp == None):
+        raise Exception("The uvm app manager could not locate captive-portal")
 
-    return(captureNode)
+    return(captureApp)
 
 #-----------------------------------------------------------------------------
-# loads the node settings
+# loads the app settings
 
 def load_capture_settings(req,appid=None):
 
@@ -393,15 +393,15 @@ def load_capture_settings(req,appid=None):
         companyName = oemName
 
     # if there is a company name in the branding manager it wins over everything else
-    brandco = get_node_settings_item('branding-manager','companyName')
+    brandco = get_app_settings_item('branding-manager','companyName')
     if (brandco != None):
         companyName = brandco
 
     try:
         if (appid == None):
-            captureSettings = get_node_settings('captive-portal')
+            captureSettings = get_app_settings('captive-portal')
         else:
-            captureSettings = get_nodeid_settings(int(appid))
+            captureSettings = get_appid_settings(int(appid))
     except Exception as e:
         req.log_error("handler.py: Exception loading settings: %s" % str(e))
 
@@ -412,7 +412,7 @@ def load_capture_settings(req,appid=None):
         req.log_error("handler.py: Missing required setting: pageType")
         return None
 
-    # add the company name to the node settings dictionary
+    # add the company name to the app settings dictionary
     captureSettings['companyName'] = companyName
 
     # add some headers to prevent caching any of our stuff

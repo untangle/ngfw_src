@@ -39,7 +39,7 @@ public class VirusFtpEvent extends LogEvent
     public String getVirusName() { return virusName; }
     public void SetVirusName(String newValue) { this.virusName = newValue; }
     
-    public String getNodeName() { return nodeName; }
+    public String getAppName() { return nodeName; }
     public void setNodeName(String nodeName) { this.nodeName = nodeName; }
 
     public String getUri() { return uri; }
@@ -52,7 +52,7 @@ public class VirusFtpEvent extends LogEvent
             "(time_stamp, session_id, client_intf, server_intf, " + "c_client_addr, c_server_addr, " + 
             "s_client_addr, s_server_addr, policy_id, username, " + 
             " hostname, uri, " + 
-            getNodeName().toLowerCase() + "_clean, " + getNodeName().toLowerCase() + "_name "  +  ") values " + 
+            getAppName().toLowerCase() + "_clean, " + getAppName().toLowerCase() + "_name "  +  ") values " + 
             "( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
@@ -81,7 +81,7 @@ public class VirusFtpEvent extends LogEvent
     public String toSummaryString()
     {
         String appName;
-        switch ( getNodeName().toLowerCase() ) {
+        switch ( getAppName().toLowerCase() ) {
         case "virus_blocker_lite": appName = "Virus Blocker Lite"; break;
         case "virus_blocker": appName = "Virus Blocker"; break;
         default: appName = "Virus Blocker"; break;

@@ -93,14 +93,14 @@ class OpenVpnTests(unittest2.TestCase):
     @staticmethod
     def initialSetUp(self):
         global node, nodeWeb, nodeData, vpnHostResult, vpnClientResult, vpnServerResult
-        if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
+        if (uvmContext.appManager().isInstantiated(self.nodeName())):
             raise Exception('node %s already instantiated' % self.nodeName())
-        node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
+        node = uvmContext.appManager().instantiate(self.nodeName(), defaultRackId)
         node.start()
         nodeWeb = None
-        if (uvmContext.nodeManager().isInstantiated(self.nodeWebName())):
+        if (uvmContext.appManager().isInstantiated(self.nodeWebName())):
             raise Exception('node %s already instantiated' % self.nodeWebName())
-        nodeWeb = uvmContext.nodeManager().instantiate(self.nodeWebName(), defaultRackId)
+        nodeWeb = uvmContext.appManager().instantiate(self.nodeWebName(), defaultRackId)
         vpnHostResult = subprocess.call(["ping","-W","5","-c","1",global_functions.vpnServerVpnIP],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         vpnClientResult = subprocess.call(["ping","-W","5","-c","1",global_functions.vpnClientVpnIP],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         wanIP = uvmContext.networkManager().getFirstWanAddress()
@@ -304,10 +304,10 @@ class OpenVpnTests(unittest2.TestCase):
     def finalTearDown(self):
         global node, nodeWeb
         if node != None:
-            uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
+            uvmContext.appManager().destroy( node.getAppSettings()["id"] )
             node = None
         if nodeWeb != None:
-            uvmContext.nodeManager().destroy( nodeWeb.getNodeSettings()["id"] )
+            uvmContext.appManager().destroy( nodeWeb.getAppSettings()["id"] )
             nodeWeb = None
 
 test_registry.registerNode("openvpn", OpenVpnTests)

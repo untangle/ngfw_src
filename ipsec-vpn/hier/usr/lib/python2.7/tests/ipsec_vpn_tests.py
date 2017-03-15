@@ -163,14 +163,14 @@ class IPsecTests(unittest2.TestCase):
     def initialSetUp(self):
         global node, orig_netsettings, ipsecHostResult, l2tpClientHostResult, nodeAD, nodeDataRD, radiusResult
         tunnelUp = False
-        if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
+        if (uvmContext.appManager().isInstantiated(self.nodeName())):
             raise Exception('node %s already instantiated' % self.nodeName())
-        node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
-        if (uvmContext.nodeManager().isInstantiated(self.nodeNameAD())):
+        node = uvmContext.appManager().instantiate(self.nodeName(), defaultRackId)
+        if (uvmContext.appManager().isInstantiated(self.nodeNameAD())):
             raise unittest2.SkipTest('node %s already instantiated' % self.nodeName())
         if orig_netsettings == None:
             orig_netsettings = uvmContext.networkManager().getNetworkSettings()
-        nodeAD = uvmContext.nodeManager().instantiate(self.nodeNameAD(), defaultRackId)
+        nodeAD = uvmContext.appManager().instantiate(self.nodeNameAD(), defaultRackId)
         nodeDataRD = nodeAD.getSettings().get('radiusSettings')
         ipsecHostResult = subprocess.call(["ping","-c","1",ipsecHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         l2tpClientHostResult = subprocess.call(["ping","-c","1",l2tpClientHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
@@ -324,10 +324,10 @@ class IPsecTests(unittest2.TestCase):
         # print "orig_netsettings <%s>" % orig_netsettings
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         if node != None:
-            uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
+            uvmContext.appManager().destroy( node.getAppSettings()["id"] )
             node = None
         if nodeAD != None:
-            uvmContext.nodeManager().destroy( nodeAD.getNodeSettings()["id"] )
+            uvmContext.appManager().destroy( nodeAD.getAppSettings()["id"] )
             nodeAD = None
 
 test_registry.registerNode("ipsec-vpn", IPsecTests)

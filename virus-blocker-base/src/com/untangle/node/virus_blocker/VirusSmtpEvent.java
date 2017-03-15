@@ -48,7 +48,7 @@ public class VirusSmtpEvent extends LogEvent
     public String getAction() { return action; }
     public void setAction(String action) { this.action = action; }
 
-    public String getNodeName() { return nodeName; }
+    public String getAppName() { return nodeName; }
     public void setNodeName(String nodeName) { this.nodeName = nodeName; }
 
     @Override
@@ -60,8 +60,8 @@ public class VirusSmtpEvent extends LogEvent
         
         sql = "UPDATE " + schemaPrefix() + "mail_msgs" + messageInfo.getPartitionTablePostfix() + " " +
             "SET " +
-            getNodeName().toLowerCase() + "_clean = ?, " + 
-            getNodeName().toLowerCase() + "_name = ? " + 
+            getAppName().toLowerCase() + "_clean = ?, " + 
+            getAppName().toLowerCase() + "_name = ? " + 
             "WHERE " +
             "msg_id = ? " ;
         pstmt = getStatementFromCache( sql, statementCache, conn );        
@@ -73,8 +73,8 @@ public class VirusSmtpEvent extends LogEvent
         
         sql = "UPDATE " + schemaPrefix() + "mail_addrs" + messageInfo.getPartitionTablePostfix() + " " +
             "SET " +
-            getNodeName().toLowerCase() + "_clean = ?, " + 
-            getNodeName().toLowerCase() + "_name = ? " + 
+            getAppName().toLowerCase() + "_clean = ?, " + 
+            getAppName().toLowerCase() + "_name = ? " + 
             "WHERE " +
             "msg_id = ? " ;
         pstmt = getStatementFromCache( sql, statementCache, conn );        
@@ -91,7 +91,7 @@ public class VirusSmtpEvent extends LogEvent
     public String toSummaryString()
     {
         String appName;
-        switch ( getNodeName().toLowerCase() ) {
+        switch ( getAppName().toLowerCase() ) {
         case "virus_blocker_lite": appName = "Virus Blocker Lite"; break;
         case "virus_blocker": appName = "Virus Blocker"; break;
         default: appName = "Virus Blocker"; break;

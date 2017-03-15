@@ -54,7 +54,7 @@ public class WebFilterQueryEvent extends LogEvent
     public String getTerm() { return term; }
     public void setTerm( String term ) { this.term = term; }
 
-    public String getNodeName() { return nodeName; }
+    public String getAppName() { return nodeName; }
     public void setNodeName(String nodeName) { this.nodeName = nodeName; }
 
     public SessionEvent getSessionEvent() { return sessionEvent; }

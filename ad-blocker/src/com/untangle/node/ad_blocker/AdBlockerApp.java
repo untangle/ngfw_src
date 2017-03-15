@@ -14,8 +14,8 @@ import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.GenericRule;
 import com.untangle.uvm.node.NodeMetric;
-import com.untangle.uvm.node.NodeSettings;
-import com.untangle.uvm.node.NodeProperties;
+import com.untangle.uvm.node.AppSettings;
+import com.untangle.uvm.node.AppProperties;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.UrlMatchingUtil;
 import com.untangle.uvm.vnet.Affinity;
@@ -55,11 +55,11 @@ public class AdBlockerApp extends NodeBase
     private volatile Map<String, GenericRule> cookieDomainMap;
 
     // constructor ------------------------------------------------------------
-    public AdBlockerApp( NodeSettings nodeSettings, NodeProperties nodeProperties )
+    public AdBlockerApp( AppSettings appSettings, AppProperties appProperties )
     {
-        super(nodeSettings, nodeProperties);
+        super(appSettings, appProperties);
 
-        replacementGenerator = new AdBlockerReplacementGenerator(getNodeSettings());
+        replacementGenerator = new AdBlockerReplacementGenerator(getAppSettings());
 
         this.addMetric(new NodeMetric(STAT_SCAN, I18nUtil.marktr("Pages scanned")));
         this.addMetric(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Ads blocked")));
@@ -182,7 +182,7 @@ public class AdBlockerApp extends NodeBase
     protected void postInit()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeSettings().getId().toString();
+        String nodeID = this.getAppSettings().getId().toString();
         AdBlockerSettings readSettings = null;
         String settingsFileName = System.getProperty("uvm.settings.dir") + "/ad-blocker/" + "settings_" + nodeID + ".js";
 
@@ -263,7 +263,7 @@ public class AdBlockerApp extends NodeBase
          * Save the settings
          */
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeSettings().getId().toString();
+        String nodeID = this.getAppSettings().getId().toString();
         try {
             settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "ad-blocker/" + "settings_" + nodeID + ".js", newSettings );
         } catch (SettingsManager.SettingsException e) {

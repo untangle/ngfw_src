@@ -24,9 +24,9 @@ class WebCacheTests(unittest2.TestCase):
     @staticmethod
     def initialSetUp(self):
         global node
-        if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
+        if (uvmContext.appManager().isInstantiated(self.nodeName())):
             raise Exception('node %s already instantiated' % self.nodeName())
-        node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
+        node = uvmContext.appManager().instantiate(self.nodeName(), defaultRackId)
         node.start() # must be called since web cache doesn't auto-start
 
     def setUp(self):
@@ -64,7 +64,7 @@ class WebCacheTests(unittest2.TestCase):
     def finalTearDown(self):
         global node
         if node != None:
-            uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
+            uvmContext.appManager().destroy( node.getAppSettings()["id"] )
             node = None
         
 test_registry.registerNode("web-cache", WebCacheTests)

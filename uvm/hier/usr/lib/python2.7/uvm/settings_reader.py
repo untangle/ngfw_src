@@ -2,36 +2,40 @@ import simplejson as json
 
 #-----------------------------------------------------------------------------
 
+#@deprecated
 def get_node_settings(nodename):
+    return get_app_settings(nodename)
 
-    listfile = "@PREFIX@/usr/share/untangle/settings/untangle-vm/nodes.js"
+def get_app_settings(appname):
 
-    # find the settings for the argumented node name
+    listfile = "@PREFIX@/usr/share/untangle/settings/untangle-vm/apps.js"
+
+    # find the settings for the argumented app name
     try:
 
-        # read the node manager settings
+        # read the app manager settings
         file = open(listfile, "r")
         data = file.read()
         file.close()
 
-        # get the list of active nodes
-        nodeinfo = json.loads(data)
-        nodelist = nodeinfo['nodes']['list']
+        # get the list of active apps
+        appinfo = json.loads(data)
+        applist = appinfo['apps']['list']
 
-        nodeid = None
+        appid = None
 
-        # look for the target node name and grab the node id
-        for node in nodelist:
-            if (node['nodeName'] != nodename): continue
-            nodeid = node['id']
+        # look for the target app name and grab the app id
+        for app in applist:
+            if (app['appName'] != appname): continue
+            appid = app['id']
             break
 
         # not found so return empty string
-        if (nodeid == None): return(None)
+        if (appid == None): return(None)
 
-        # generate the settings file name using the node id we found above
-        nodefile = "@PREFIX@/usr/share/untangle/settings/" + nodename + "/settings_" + str(nodeid) + ".js"
-        file = open(nodefile, "r")
+        # generate the settings file name using the app id we found above
+        appfile = "@PREFIX@/usr/share/untangle/settings/" + appname + "/settings_" + str(appid) + ".js"
+        file = open(appfile, "r")
         data = file.read()
         file.close()
 
@@ -46,36 +50,40 @@ def get_node_settings(nodename):
 
 #-----------------------------------------------------------------------------
 
-def get_nodeid_settings(nodeid):
+#@deprecated
+def get_nodeid_settings(appid):
+    return get_appid_settings(appid)
 
-    listfile = "@PREFIX@/usr/share/untangle/settings/untangle-vm/nodes.js"
+def get_appid_settings(appid):
 
-    # find the settings for the argumented node id
+    listfile = "@PREFIX@/usr/share/untangle/settings/untangle-vm/apps.js"
+
+    # find the settings for the argumented app id
     try:
 
-        # read the node manager settings
+        # read the app manager settings
         file = open(listfile, "r")
         data = file.read()
         file.close()
 
-        # get the list of active nodes
-        nodeinfo = json.loads(data)
-        nodelist = nodeinfo['nodes']['list']
+        # get the list of active apps
+        appinfo = json.loads(data)
+        applist = appinfo['apps']['list']
 
-        nodename = None
+        appname = None
 
-        # look for the target node id and grab the node name
-        for node in nodelist:
-            if (node['id'] != nodeid): continue
-            nodename = node['nodeName']
+        # look for the target app id and grab the app name
+        for app in applist:
+            if (app['id'] != appid): continue
+            appname = app['appName']
             break
 
         # not found so return empty string
-        if (nodename == None): return(None)
+        if (appname == None): return(None)
 
-        # generate the settings file name using the node id we found above
-        nodefile = "@PREFIX@/usr/share/untangle/settings/" + nodename + "/settings_" + str(nodeid) + ".js"
-        file = open(nodefile, "r")
+        # generate the settings file name using the app id we found above
+        appfile = "@PREFIX@/usr/share/untangle/settings/" + appname + "/settings_" + str(appid) + ".js"
+        file = open(appfile, "r")
         data = file.read()
         file.close()
 
@@ -90,13 +98,21 @@ def get_nodeid_settings(nodeid):
 
 #-----------------------------------------------------------------------------
 
-def get_node_settings_item(nodename,itemname):
-    return get_settings_item_json(get_node_settings(nodename), itemname)
+#@deprecated
+def get_node_settings_item(appname,itemname):
+    return get_app_settings_item(appname,itemname)
+
+def get_app_settings_item(appname,itemname):
+    return get_settings_item_json(get_app_settings(appname), itemname)
 
 #-----------------------------------------------------------------------------
 
-def get_nodeid_settings_item(nodeid,itemname):
-    return get_settings_item_json(get_nodeid_settings(nodeid), itemname)
+#@deprecated
+def get_nodeid_settings_item(appid,itemname):
+    return get_appid_settings_item(appid,itemname)
+
+def get_appid_settings_item(appid,itemname):
+    return get_settings_item_json(get_appid_settings(appid), itemname)
 
 #-----------------------------------------------------------------------------
 

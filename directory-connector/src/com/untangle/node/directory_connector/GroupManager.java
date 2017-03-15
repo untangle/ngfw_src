@@ -19,7 +19,7 @@ import com.untangle.node.directory_connector.GroupEntry;
 import com.untangle.node.directory_connector.UserEntry;
 import com.untangle.uvm.node.License;
 import com.untangle.uvm.node.Node;
-import com.untangle.uvm.node.NodeSettings.NodeState;
+import com.untangle.uvm.node.AppSettings.AppState;
 import com.untangle.uvm.util.Pulse;
 import com.untangle.uvm.util.Pulse.PulseState;
 

@@ -14,8 +14,8 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.SessionMatcher;
-import com.untangle.uvm.node.NodeSettings;
-import com.untangle.uvm.node.NodeProperties;
+import com.untangle.uvm.node.AppSettings;
+import com.untangle.uvm.node.AppProperties;
 import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.vnet.NodeBase;
@@ -79,9 +79,9 @@ public class FirewallApp extends NodeBase
             }
         };
     
-    public FirewallApp( NodeSettings nodeSettings, NodeProperties nodeProperties )
+    public FirewallApp( AppSettings appSettings, AppProperties appProperties )
     {
-        super( nodeSettings, nodeProperties );
+        super( appSettings, appProperties );
 
         this.handler = new EventHandler(this);
 
@@ -176,7 +176,7 @@ public class FirewallApp extends NodeBase
     protected void postInit()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeSettings().getId().toString();
+        String nodeID = this.getAppSettings().getId().toString();
         FirewallSettings readSettings = null;
         String settingsFileName = System.getProperty("uvm.settings.dir") + "/firewall/" + "settings_" + nodeID + ".js";
 
@@ -272,7 +272,7 @@ public class FirewallApp extends NodeBase
          *
          * Also set flag to true if rule is blocked
          */
-        int idx = this.getNodeSettings().getPolicyId().intValue() * 100000;
+        int idx = this.getAppSettings().getPolicyId().intValue() * 100000;
         for (FirewallRule rule : newSettings.getRules()) {
             rule.setRuleId(++idx);
 
@@ -284,7 +284,7 @@ public class FirewallApp extends NodeBase
          * Save the settings
          */
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeSettings().getId().toString();
+        String nodeID = this.getAppSettings().getId().toString();
         try {
             settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "firewall/" + "settings_"  + nodeID + ".js", newSettings );
         } catch (SettingsManager.SettingsException e) {

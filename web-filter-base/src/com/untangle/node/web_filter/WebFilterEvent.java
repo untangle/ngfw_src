@@ -47,7 +47,7 @@ public class WebFilterEvent extends LogEvent
     public String getCategory() { return category; }
     public void setCategory( String newValue ) { this.category = newValue; }
 
-    public String getNodeName() { return nodeName; }
+    public String getAppName() { return nodeName; }
     public void setNodeName(String newValue) { this.nodeName = newValue; }
 
     public RequestLine getRequestLine() { return requestLine; }
@@ -86,7 +86,7 @@ public class WebFilterEvent extends LogEvent
     public String toSummaryString()
     {
         String appName;
-        switch ( getNodeName().toLowerCase() ) {
+        switch ( getAppName().toLowerCase() ) {
         case "web_filter": appName = "Web Filter"; break;
         case "web_monitor": appName = "Web Monitor"; break;
         default: appName = "Web Filter"; break;
@@ -106,7 +106,7 @@ public class WebFilterEvent extends LogEvent
 
     private String _getDatabaseColumnNamePrefix()
     {
-        String node = getNodeName().toLowerCase();
+        String node = getAppName().toLowerCase();
 
         if ("web-filter".equals(node))
             return "web_filter";

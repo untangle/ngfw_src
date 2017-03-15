@@ -13,6 +13,6 @@ Ext.define ('Ung.model.NodeProperty', {
         { name: 'type', type: 'string' },
         { name: 'viewPosition', type: 'int' },
         { name: 'className', type: 'string' },
-        { name: 'javaClass', type: 'string', defaultValue: 'com.untangle.uvm.node.NodeProperties' }
+        { name: 'javaClass', type: 'string', defaultValue: 'com.untangle.uvm.node.AppProperties' }
     ]
 });

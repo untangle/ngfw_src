@@ -11,7 +11,7 @@ import org.apache.log4j.Logger;
 import com.untangle.node.http.ReplacementGenerator;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.node.NodeSettings;
+import com.untangle.uvm.node.AppSettings;
 
 class CaptivePortalReplacementGenerator extends ReplacementGenerator<CaptivePortalBlockDetails>
 {
@@ -33,7 +33,7 @@ class CaptivePortalReplacementGenerator extends ReplacementGenerator<CaptivePort
 
 // THIS IS FOR ECLIPSE - @formatter:on
 
-    CaptivePortalReplacementGenerator(NodeSettings nodeId,CaptivePortalApp node)
+    CaptivePortalReplacementGenerator(AppSettings nodeId,CaptivePortalApp node)
     {
         super(nodeId);
         this.captureNode = node;
@@ -50,7 +50,7 @@ class CaptivePortalReplacementGenerator extends ReplacementGenerator<CaptivePort
     }
 
     @Override
-    protected String getRedirectUrl(String nonce, String host, NodeSettings nodeSettings)
+    protected String getRedirectUrl(String nonce, String host, AppSettings appSettings)
     {
         CaptivePortalBlockDetails details = getNonceData(nonce);
         logger.debug("getRedirectUrl " + details.toString());
@@ -61,7 +61,7 @@ class CaptivePortalReplacementGenerator extends ReplacementGenerator<CaptivePort
         
         String retval = (prefix + host + "/capture/handler.py/index?nonce=" + nonce);
         retval = (retval + "&method=" + details.getMethod());
-        retval = (retval + "&appid=" + nodeSettings.getId());
+        retval = (retval + "&appid=" + appSettings.getId());
         retval = (retval + "&host=" + details.getHost());
         retval = (retval + "&uri=" + details.getUri());
         return (retval);

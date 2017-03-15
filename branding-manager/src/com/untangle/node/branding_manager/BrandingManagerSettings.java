@@ -6,7 +6,7 @@ package com.untangle.node.branding_manager;
 import java.io.Serializable;
 
 import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.node.NodeSettings;
+import com.untangle.uvm.node.AppSettings;
 
 /**
  * Contains properties that a vendor may use to rebrand the product.

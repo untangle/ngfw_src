@@ -11,20 +11,20 @@ Ext.define('Ung.config.email.MainController', {
     // mailSender: rpc.UvmContext.mailSender(),
     originalMailSender: null,
 
-    // smtpNode: rpc.nodeManager.node('smtp'),
+    // smtpNode: rpc.appManager.app('smtp'),
     // safelistAdminView: null,
 
     loadSettings: function (view) {
         var vm = this.getViewModel(), me = this;
         rpc.mailSender = rpc.UvmContext.mailSender();
-        rpc.smtpSettings = rpc.nodeManager.node('smtp');
+        rpc.smtpSettings = rpc.appManager.app('smtp');
         rpc.safelistAdminView = rpc.smtpSettings.getSafelistAdminView();
         rpc.quarantineMaintenenceView = rpc.smtpSettings.getQuarantineMaintenenceView();
 
         view.setLoading(true);
         Ext.Deferred.sequence([
             Rpc.asyncPromise ('rpc.mailSender.getSettings'),
-            Rpc.asyncPromise ('rpc.smtpSettings.getSmtpNodeSettings'),
+            Rpc.asyncPromise ('rpc.smtpSettings.getSmtpSettings'),
             Rpc.asyncPromise ('rpc.safelistAdminView.getSafelistContents', 'GLOBAL'),
             Rpc.directPromise('rpc.safelistAdminView.getUserSafelistCounts'),
             Rpc.asyncPromise ('rpc.quarantineMaintenenceView.listInboxes'),
@@ -92,7 +92,7 @@ Ext.define('Ung.config.email.MainController', {
 
         Ext.Deferred.sequence([
             Rpc.asyncPromise('rpc.mailSender.setSettings', me.getViewModel().get('mailSender')),
-            Rpc.asyncPromise('rpc.smtpSettings.setSmtpNodeSettingsWithoutSafelists', vm.get('smtpSettings')),
+            Rpc.asyncPromise('rpc.smtpSettings.setSmtpSettingsWithoutSafelists', vm.get('smtpSettings')),
             Rpc.asyncPromise('rpc.safelistAdminView.replaceSafelist', 'GLOBAL', vm.get('globalSafeList'))
         ], this)
         .then(function() {

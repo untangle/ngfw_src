@@ -23,8 +23,8 @@ import com.untangle.node.smtp.EmailAddressPairRule;
 import com.untangle.node.smtp.EmailAddressRule;
 import com.untangle.node.smtp.GlobEmailAddressList;
 import com.untangle.node.smtp.GlobEmailAddressMapper;
-import com.untangle.node.smtp.SmtpNodeImpl;
-import com.untangle.node.smtp.SmtpNodeSettings;
+import com.untangle.node.smtp.SmtpImpl;
+import com.untangle.node.smtp.SmtpSettings;
 import com.untangle.node.smtp.mime.MIMEUtil;
 import com.untangle.node.smtp.quarantine.store.InboxSummary;
 import com.untangle.node.smtp.quarantine.store.QuarantineStore;
@@ -52,7 +52,7 @@ public class Quarantine implements QuarantineNodeView, QuarantineMaintenenceView
     private QuarantineSettings settings = new QuarantineSettings();
     private GlobEmailAddressList quarantineForList;
     private GlobEmailAddressMapper addressAliases;
-    private SmtpNodeImpl impl;
+    private SmtpImpl impl;
     private boolean opened = false;
 
     public Quarantine()
@@ -67,7 +67,7 @@ public class Quarantine implements QuarantineNodeView, QuarantineMaintenenceView
     /**
      * Properties are not maintained explicitly by the Quarantine (i.e. the UI does not talk to the Quarantine).
      */
-    public void setSettings(SmtpNodeImpl impl, QuarantineSettings settings)
+    public void setSettings(SmtpImpl impl, QuarantineSettings settings)
     {
         this.impl = impl;
         this.settings = settings;
@@ -428,10 +428,10 @@ public class Quarantine implements QuarantineNodeView, QuarantineMaintenenceView
         // Convert list to form which makes settings happy
         List<EmailAddressPairRule> newMappingsList = toEmailAddressPairRuleList(mappings);
 
-        SmtpNodeSettings settings = this.impl.getSmtpNodeSettings();
+        SmtpSettings settings = this.impl.getSmtpSettings();
         settings.getQuarantineSettings().setAddressRemaps(newMappingsList);
 
-        this.impl.setSmtpNodeSettings(settings);
+        this.impl.setSmtpSettings(settings);
     }
 
     @Override
@@ -459,10 +459,10 @@ public class Quarantine implements QuarantineNodeView, QuarantineMaintenenceView
         // Convert list to form which makes settings happy
         List<EmailAddressPairRule> newMappingsList = toEmailAddressPairRuleList(mappings);
 
-        SmtpNodeSettings settings = this.impl.getSmtpNodeSettings();
+        SmtpSettings settings = this.impl.getSmtpSettings();
         settings.getQuarantineSettings().setAddressRemaps(newMappingsList);
 
-        this.impl.setSmtpNodeSettings(settings);
+        this.impl.setSmtpSettings(settings);
 
         return true;
     }

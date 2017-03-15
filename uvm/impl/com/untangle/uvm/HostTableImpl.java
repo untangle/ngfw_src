@@ -488,7 +488,7 @@ public class HostTableImpl implements HostTable
 
     private static void updateHostnameDhcp( HostTableEntry entry )
     {
-        HostnameLookup router = (HostnameLookup) UvmContextFactory.context().nodeManager().node("router");
+        HostnameLookup router = (HostnameLookup) UvmContextFactory.context().appManager().app("router");
         String hostname = null;
         if ( router != null ) {
             hostname = router.lookupHostname( entry.getAddress() );
@@ -500,7 +500,7 @@ public class HostTableImpl implements HostTable
 
     private static void updateHostnameReports( HostTableEntry entry )
     {
-        HostnameLookup reports = (HostnameLookup) UvmContextFactory.context().nodeManager().node("reports");
+        HostnameLookup reports = (HostnameLookup) UvmContextFactory.context().appManager().app("reports");
         String hostname = null;
         if ( reports != null ) {
             hostname = reports.lookupHostname( entry.getAddress() );

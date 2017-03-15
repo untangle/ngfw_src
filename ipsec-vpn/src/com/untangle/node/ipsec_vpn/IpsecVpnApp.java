@@ -48,7 +48,7 @@ public class IpsecVpnApp extends NodeBase
 
     private static final Logger logger = Logger.getLogger(IpsecVpnApp.class);
     private final VirtualUserTable virtualUserTable = new VirtualUserTable();
-    private final Integer policyId = getNodeSettings().getPolicyId();
+    private final Integer policyId = getAppSettings().getPolicyId();
     private final PipelineConnector[] connectors = new PipelineConnector[0];
     private final IpsecVpnManager manager = new IpsecVpnManager();
 
@@ -62,9 +62,9 @@ public class IpsecVpnApp extends NodeBase
     protected IpsecVpnSettings settings;
     protected Timer timer;
 
-    public IpsecVpnApp(com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties)
+    public IpsecVpnApp(com.untangle.uvm.node.AppSettings appSettings, com.untangle.uvm.node.AppProperties appProperties)
     {
-        super(nodeSettings, nodeProperties);
+        super(appSettings, appProperties);
 
         logger.debug("IpsecVpnApp()");
 
@@ -174,7 +174,7 @@ public class IpsecVpnApp extends NodeBase
         }
 
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = getNodeSettings().getId().toString();
+        String nodeID = getAppSettings().getId().toString();
 
         try {
             settingsManager.save(System.getProperty("uvm.settings.dir") + "/ipsec-vpn/settings_" + nodeID + ".js", newSettings);
@@ -231,7 +231,7 @@ public class IpsecVpnApp extends NodeBase
     {
         logger.debug("postInit()");
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = getNodeSettings().getId().toString();
+        String nodeID = getAppSettings().getId().toString();
         IpsecVpnSettings readSettings = null;
         String settingsFilename = System.getProperty("uvm.settings.dir") + "/ipsec-vpn/settings_" + nodeID + ".js";
 

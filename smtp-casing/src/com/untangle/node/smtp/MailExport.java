@@ -8,7 +8,7 @@ import com.untangle.node.smtp.safelist.SafelistNodeView;
 
 public interface MailExport
 {
-    SmtpNodeSettings getExportSettings();
+    SmtpSettings getExportSettings();
 
     /**
      * Access the Object which is used to submit Mails to the quarantine.

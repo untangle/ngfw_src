@@ -15,8 +15,8 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.node.NodeMetric;
-import com.untangle.uvm.node.NodeSettings;
-import com.untangle.uvm.node.NodeProperties;
+import com.untangle.uvm.node.AppSettings;
+import com.untangle.uvm.node.AppProperties;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.Affinity;
@@ -36,13 +36,13 @@ public class ApplicationControlLiteApp extends NodeBase
 
     private final Logger logger = Logger.getLogger(ApplicationControlLiteApp.class);
 
-    private ApplicationControlLiteSettings nodeSettings = null;
+    private ApplicationControlLiteSettings appSettings = null;
 
     // constructors -----------------------------------------------------------
 
-    public ApplicationControlLiteApp( NodeSettings nodeSettings, NodeProperties nodeProperties )
+    public ApplicationControlLiteApp( AppSettings appSettings, AppProperties appProperties )
     {
-        super( nodeSettings, nodeProperties );
+        super( appSettings, appProperties );
 
         this.addMetric(new NodeMetric(STAT_SCAN, I18nUtil.marktr("Chunks scanned")));
         this.addMetric(new NodeMetric(STAT_DETECT, I18nUtil.marktr("Sessions logged")));
@@ -56,15 +56,15 @@ public class ApplicationControlLiteApp extends NodeBase
 
     public ApplicationControlLiteSettings getSettings()
     {
-        if( this.nodeSettings == null )
+        if( this.appSettings == null )
             logger.error("Settings not yet initialized. State: " + this.getRunState() );
-        return this.nodeSettings;
+        return this.appSettings;
     }
 
     public void setSettings(final ApplicationControlLiteSettings newSettings)
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeSettings().getId().toString();
+        String nodeID = this.getAppSettings().getId().toString();
         String settingsFile = System.getProperty("uvm.settings.dir") + "/application-control-lite/settings_" + nodeID + ".js";
 
         try {
@@ -74,19 +74,19 @@ public class ApplicationControlLiteApp extends NodeBase
             return;
         }
 
-        this.nodeSettings = newSettings;
+        this.appSettings = newSettings;
         
         reconfigure();
     }
 
     public int getPatternsTotal()
     {
-        return(nodeSettings.getPatterns().size());
+        return(appSettings.getPatterns().size());
     }
 
     public int getPatternsLogged()
     {
-        LinkedList<ApplicationControlLitePattern>list = nodeSettings.getPatterns();
+        LinkedList<ApplicationControlLitePattern>list = appSettings.getPatterns();
         int count = 0;
         
             for(int x = 0;x < list.size();x++)
@@ -100,7 +100,7 @@ public class ApplicationControlLiteApp extends NodeBase
 
     public int getPatternsBlocked()
     {
-        LinkedList<ApplicationControlLitePattern>list = nodeSettings.getPatterns();
+        LinkedList<ApplicationControlLitePattern>list = appSettings.getPatterns();
         int count = 0;
         
             for(int x = 0;x < list.size();x++)
@@ -133,7 +133,7 @@ public class ApplicationControlLiteApp extends NodeBase
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
 
-        String nodeID = this.getNodeSettings().getId().toString();
+        String nodeID = this.getAppSettings().getId().toString();
 
         String settingsFile = System.getProperty("uvm.settings.dir") + "/application-control-lite/settings_" + nodeID + ".js";
         ApplicationControlLiteSettings readSettings = null;
@@ -151,7 +151,7 @@ public class ApplicationControlLiteApp extends NodeBase
                 logger.warn("No settings found... initializing with defaults");
                 initializeSettings();
             } else {
-                nodeSettings = readSettings;
+                appSettings = readSettings;
                 reconfigure();
             }
         } catch (Exception exn) {
@@ -165,11 +165,11 @@ public class ApplicationControlLiteApp extends NodeBase
 
         logger.info("Reconfigure()");
 
-        if (nodeSettings == null) {
-            throw new RuntimeException("Failed to get ApplicationControlLite settings: " + nodeSettings);
+        if (appSettings == null) {
+            throw new RuntimeException("Failed to get ApplicationControlLite settings: " + appSettings);
         }
 
-        LinkedList<ApplicationControlLitePattern> curPatterns = nodeSettings.getPatterns();
+        LinkedList<ApplicationControlLitePattern> curPatterns = appSettings.getPatterns();
         if (curPatterns == null)
             logger.error("NULL pattern list. Continuing anyway...");
         else {
@@ -184,9 +184,9 @@ public class ApplicationControlLiteApp extends NodeBase
         }
 
         handler.patternSet(enabledPatternsSet);
-        handler.byteLimit(nodeSettings.getByteLimit());
-        handler.chunkLimit(nodeSettings.getChunkLimit());
-        handler.stripZeros(nodeSettings.isStripZeros());
+        handler.byteLimit(appSettings.getByteLimit());
+        handler.chunkLimit(appSettings.getChunkLimit());
+        handler.stripZeros(appSettings.isStripZeros());
     }
 
     void incrementScanCount()

@@ -18,7 +18,7 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.node.NodeSettings;
+import com.untangle.uvm.node.AppSettings;
 import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.vnet.Affinity;
@@ -36,9 +36,9 @@ public class ShieldApp extends NodeBase
 
     private ShieldSettings settings;
 
-    public ShieldApp( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
+    public ShieldApp( com.untangle.uvm.node.AppSettings appSettings, com.untangle.uvm.node.AppProperties appProperties )
     {
-        super( nodeSettings, nodeProperties );
+        super( appSettings, appProperties );
 
         this.connectors = new PipelineConnector[] { };
     }
@@ -57,7 +57,7 @@ public class ShieldApp extends NodeBase
          * Save the settings
          */
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeSettings().getId().toString();
+        String nodeID = this.getAppSettings().getId().toString();
         try {
             settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "shield/" + "settings_"  + nodeID + ".js", newSettings );
         } catch (SettingsManager.SettingsException e) {
@@ -103,7 +103,7 @@ public class ShieldApp extends NodeBase
     protected void postInit()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeSettings().getId().toString();
+        String nodeID = this.getAppSettings().getId().toString();
         ShieldSettings readSettings = null;
         String settingsFileName = System.getProperty("uvm.settings.dir") + "/shield/" + "settings_" + nodeID + ".js";
 
@@ -168,7 +168,7 @@ public class ShieldApp extends NodeBase
         /**
          * First we write a new SHIELD_RULES_FILE iptables script with the current settings
          */
-        String nodeID = this.getNodeSettings().getId().toString();
+        String nodeID = this.getAppSettings().getId().toString();
         String settingsFilename = System.getProperty("uvm.settings.dir") + "/" + "shield/" + "settings_"  + nodeID + ".js";
         String scriptFilename = System.getProperty("uvm.bin.dir") + "/shield-sync-settings.py";
         String networkSettingFilename = System.getProperty("uvm.settings.dir") + "/" + "untangle-vm/" + "network.js";

@@ -79,14 +79,14 @@ class SslInspectorTests(unittest2.TestCase):
     @staticmethod
     def initialSetUp(self):
         global node, nodeData, nodeWeb, nodeWebData
-        if uvmContext.nodeManager().isInstantiated(self.nodeName()):
+        if uvmContext.appManager().isInstantiated(self.nodeName()):
             raise Exception('node %s already instantiated' % self.nodeName())
-        node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
+        node = uvmContext.appManager().instantiate(self.nodeName(), defaultRackId)
         node.start() # must be called since the node doesn't auto-start
         nodeData = node.getSettings()
-        if (uvmContext.nodeManager().isInstantiated(self.nodeWeb())):
+        if (uvmContext.appManager().isInstantiated(self.nodeWeb())):
             raise Exception('node %s already instantiated' % self.nodeWeb())
-        nodeWeb = uvmContext.nodeManager().instantiate(self.nodeWeb(), defaultRackId)
+        nodeWeb = uvmContext.appManager().instantiate(self.nodeWeb(), defaultRackId)
         nodeWebData = nodeWeb.getSettings()
 
         nodeData['ignoreRules']['list'].insert(0,createSSLInspectRule(testedServerDomainWildcard))
@@ -185,10 +185,10 @@ class SslInspectorTests(unittest2.TestCase):
     def finalTearDown(self):
         global node, nodeWeb
         if node != None:
-            uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
+            uvmContext.appManager().destroy( node.getAppSettings()["id"] )
             node = None
         if nodeWeb != None:
-            uvmContext.nodeManager().destroy( nodeWeb.getNodeSettings()["id"])
+            uvmContext.appManager().destroy( nodeWeb.getAppSettings()["id"])
             nodeWeb = None
 
 test_registry.registerNode("ssl-inspector", SslInspectorTests)

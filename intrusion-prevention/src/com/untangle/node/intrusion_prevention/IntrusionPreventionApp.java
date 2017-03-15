@@ -44,8 +44,8 @@ import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.network.InterfaceStatus;
 import com.untangle.uvm.node.IPMaskedAddress;
 import com.untangle.uvm.node.NodeMetric;
-import com.untangle.uvm.node.NodeManager;
-import com.untangle.uvm.node.NodeSettings;
+import com.untangle.uvm.node.AppManager;
+import com.untangle.uvm.node.AppSettings;
 import com.untangle.uvm.vnet.NodeBase;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
@@ -79,9 +79,9 @@ public class IntrusionPreventionApp extends NodeBase
     private List<IPMaskedAddress> homeNetworks = null;
     private List<String> interfaceIds = null;
 
-    public IntrusionPreventionApp( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
+    public IntrusionPreventionApp( com.untangle.uvm.node.AppSettings appSettings, com.untangle.uvm.node.AppProperties appProperties )
     {
-        super( nodeSettings, nodeProperties );
+        super( appSettings, appProperties );
 
         handler = new EventHandler(this);
         this.homeNetworks = this.calculateHomeNetworks( UvmContextFactory.context().networkManager().getNetworkSettings(), false );
@@ -121,7 +121,7 @@ public class IntrusionPreventionApp extends NodeBase
     {
         logger.info("Post init");
 
-        readNodeSettings();
+        readAppSettings();
     }
 
     @Override
@@ -180,7 +180,7 @@ public class IntrusionPreventionApp extends NodeBase
 
         String configCmd = new String(System.getProperty("uvm.bin.dir") + 
             "/intrusion-prevention-create-config.py" + 
-            " --node_id " + this.getNodeSettings().getId().toString() +
+            " --node_id " + this.getAppSettings().getId().toString() +
             " --home_net " + homeNetValue + 
             " --interfaces " + interfacesValue + 
             " --iptables_script " + IPTABLES_SCRIPT
@@ -230,10 +230,10 @@ public class IntrusionPreventionApp extends NodeBase
 
     // private methods ---------------------------------------------------------
 
-    private void readNodeSettings()
+    private void readAppSettings()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String settingsFile = System.getProperty("uvm.settings.dir") + "/intrusion-prevention/settings_" + this.getNodeSettings().getId().toString() + ".js";
+        String settingsFile = System.getProperty("uvm.settings.dir") + "/intrusion-prevention/settings_" + this.getAppSettings().getId().toString() + ".js";
 
         logger.info("Loading settings from " + settingsFile);
 
@@ -296,7 +296,7 @@ public class IntrusionPreventionApp extends NodeBase
     public String getSettingsFileName()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        return System.getProperty("uvm.settings.dir") + "/intrusion-prevention/settings_" + this.getNodeSettings().getId().toString() + ".js";
+        return System.getProperty("uvm.settings.dir") + "/intrusion-prevention/settings_" + this.getAppSettings().getId().toString() + ".js";
     }
 
     public String getDefaultsSettingsFileName()
@@ -307,8 +307,8 @@ public class IntrusionPreventionApp extends NodeBase
     public void initializeSettings()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeId = this.getNodeSettings().getId().toString();
-        String tempFileName = "/tmp/settings_" + getNodeSettings().getNodeName() + "_" + nodeId + ".js";
+        String nodeId = this.getAppSettings().getId().toString();
+        String tempFileName = "/tmp/settings_" + getAppSettings().getAppName() + "_" + nodeId + ".js";
 
         String configCmd = new String(System.getProperty("uvm.bin.dir") + 
             "/intrusion-prevention-sync-settings.py" + 
@@ -399,8 +399,8 @@ public class IntrusionPreventionApp extends NodeBase
             String nodeId = req.getParameter("arg2");
 
             UvmContext uvm = UvmContextFactory.context();
-            NodeManager nm = uvm.nodeManager();
-            IntrusionPreventionApp node = (IntrusionPreventionApp) nm.node( Long.parseLong(nodeId) );
+            AppManager nm = uvm.appManager();
+            IntrusionPreventionApp node = (IntrusionPreventionApp) nm.app( Long.parseLong(nodeId) );
 
             if (node == null ) {
                 logger.warn("Invalid parameters: " + nodeId );

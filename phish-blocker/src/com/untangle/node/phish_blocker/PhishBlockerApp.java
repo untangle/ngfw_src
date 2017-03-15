@@ -23,15 +23,15 @@ public class PhishBlockerApp extends SpamBlockerBaseApp
     protected final PipelineConnector connector = UvmContextFactory.context().pipelineFoundry().create("phish-smtp", this, null, new PhishBlockerSmtpHandler( this ), Fitting.SMTP_TOKENS, Fitting.SMTP_TOKENS, Affinity.CLIENT, 20, false);
     protected final PipelineConnector[] connectors = new PipelineConnector[] { connector };
 
-    public PhishBlockerApp( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
+    public PhishBlockerApp( com.untangle.uvm.node.AppSettings appSettings, com.untangle.uvm.node.AppProperties appProperties )
     {
-        super( nodeSettings, nodeProperties, new PhishBlockerScanner() );
+        super( appSettings, appProperties, new PhishBlockerScanner() );
     }
 
-    private void readNodeSettings()
+    private void readAppSettings()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeSettings().getId().toString();
+        String nodeID = this.getAppSettings().getId().toString();
         String settingsFile = System.getProperty("uvm.settings.dir") + "/phish-blocker/settings_" + nodeID + ".js";
         PhishBlockerSettings readSettings = null;
         
@@ -66,7 +66,7 @@ public class PhishBlockerApp extends SpamBlockerBaseApp
         logger.info("setSettings()");
 
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeSettings().getId().toString();
+        String nodeID = this.getAppSettings().getId().toString();
         String settingsFile = System.getProperty("uvm.settings.dir") + "/phish-blocker/settings_" + nodeID + ".js";
 
         try {
@@ -113,7 +113,7 @@ public class PhishBlockerApp extends SpamBlockerBaseApp
     @Override
     protected void preInit()
     {
-        readNodeSettings();
+        readAppSettings();
         SpamSettings ps = getSettings();
         ps.getSmtpConfig().setBlockSuperSpam(false);
         initSpamDnsblList(ps);

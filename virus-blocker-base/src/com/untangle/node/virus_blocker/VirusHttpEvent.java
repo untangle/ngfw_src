@@ -40,7 +40,7 @@ public class VirusHttpEvent extends LogEvent
     public String getVirusName() { return virusName; }
     public void SetVirusName(String newValue) { this.virusName = newValue; }
 
-    public String getNodeName() { return nodeName; }
+    public String getAppName() { return nodeName; }
     public void setNodeName( String nodeName ) { this.nodeName = nodeName; }
 
     @Override
@@ -49,8 +49,8 @@ public class VirusHttpEvent extends LogEvent
         String sql =
             "UPDATE " + schemaPrefix() + "http_events" + requestLine.getHttpRequestEvent().getPartitionTablePostfix() + " " +
             "SET " +
-            getNodeName().toLowerCase() + "_clean = ?, " + 
-            getNodeName().toLowerCase() + "_name = ? "  + 
+            getAppName().toLowerCase() + "_clean = ?, " + 
+            getAppName().toLowerCase() + "_name = ? "  + 
             "WHERE " +
             "request_id = ? ";
 
@@ -69,7 +69,7 @@ public class VirusHttpEvent extends LogEvent
     public String toSummaryString()
     {
         String appName;
-        switch ( getNodeName().toLowerCase() ) {
+        switch ( getAppName().toLowerCase() ) {
         case "virus_blocker_lite": appName = "Virus Blocker Lite"; break;
         case "virus_blocker": appName = "Virus Blocker"; break;
         default: appName = "Virus Blocker"; break;

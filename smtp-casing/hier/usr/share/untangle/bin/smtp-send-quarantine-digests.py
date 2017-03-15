@@ -1,9 +1,9 @@
 #!@PREFIX@/usr/share/untangle/bin/ut-pycli -f 
 import sys
 
-nodeManager = uvm.nodeManager()
+appManager = uvm.appManager()
 
-node = nodeManager.node( "smtp" )
+node = appManager.app( "smtp" )
 
 if node == None:
     print "SMTP Casing not installed."

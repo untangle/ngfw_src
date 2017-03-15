@@ -189,7 +189,7 @@ def flush_events():
     """
     Clear Intrusion Prevention events
     """
-    reports = uvmContext.nodeManager().node("reports")
+    reports = uvmContext.appManager().app("reports")
     if (reports != None):
         reports.flushEvents()
 
@@ -233,11 +233,11 @@ class IntrusionPreventionTests(unittest2.TestCase):
     @staticmethod
     def initialSetUp(self):
         global node
-        if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
+        if (uvmContext.appManager().isInstantiated(self.nodeName())):
             raise Exception('node %s already instantiated' % self.nodeName())
-        node = uvmContext.nodeManager().instantiate(self.nodeName(), default_rack_id)
+        node = uvmContext.appManager().instantiate(self.nodeName(), default_rack_id)
 
-        self.intrusion_prevention_interface = IntrusionPreventionInterface(node.getNodeSettings()["id"])
+        self.intrusion_prevention_interface = IntrusionPreventionInterface(node.getAppSettings()["id"])
         self.intrusion_prevention_interface.setup()
 
         # create blank ruleset to start
@@ -253,7 +253,7 @@ class IntrusionPreventionTests(unittest2.TestCase):
         node.start() # must be called since intrusion-prevention doesn't auto-start
 
     def setUp(self):
-        self.intrusion_prevention_interface = IntrusionPreventionInterface(node.getNodeSettings()["id"])
+        self.intrusion_prevention_interface = IntrusionPreventionInterface(node.getAppSettings()["id"])
         self.intrusion_prevention_interface.setup()
         flush_events()
 
@@ -823,7 +823,7 @@ class IntrusionPreventionTests(unittest2.TestCase):
         global node
         if node == None:
             return
-        uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
+        uvmContext.appManager().destroy( node.getAppSettings()["id"] )
         node = None
         
 

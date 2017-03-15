@@ -334,7 +334,7 @@ Ext.define('Ung.UserEditorWindow', {
         var data = [];
         var node;
         try {
-            node = rpc.nodeManager.node("directory-connector");
+            node = rpc.appManager.node("directory-connector");
         } catch (e) {
             Ung.Util.rpcExHandler(e);
         }
@@ -478,7 +478,7 @@ Ext.define('Ung.GroupEditorWindow', {
         var data = [];
         var node;
         try {
-            node = rpc.nodeManager.node("directory-connector");
+            node = rpc.appManager.node("directory-connector");
         } catch (e) {
             Ung.Util.rpcExHandler(e);
         }

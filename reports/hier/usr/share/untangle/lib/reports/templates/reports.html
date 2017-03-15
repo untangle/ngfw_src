@@ -141,8 +141,8 @@ Summary
 </td>
 </tr>
 
-{% with reportsNode=nodeManager.node,reports %}
-	{% for report in reportsNode.getReportsManager.getReportEntries|in=getCategory,FixedReports.getConfigCategories|in=getType,allowedReportTypes|in=getUniqueId,enabledConfigIds|order=getCategory,FixedReports.getConfigCategories|order=getType,TEXT %}
+{% with reportsApp=appManager.node,reports %}
+	{% for report in reportsApp.getReportsManager.getReportEntries|in=getCategory,FixedReports.getConfigCategories|in=getType,allowedReportTypes|in=getUniqueId,enabledConfigIds|order=getCategory,FixedReports.getConfigCategories|order=getType,TEXT %}
 		{% cycle rowColors %}
 		<tr style="background-color:{{ rowColors }};">
 		<td><table>
@@ -154,7 +154,7 @@ Summary
 		</td></tr>
 		<tr>
 		{% if report.getType == TEXT %}
-			{% with reportRows=reportsNode.getReportsManager.getDataForReportEntry,report,startDate,endDate,null,-1 %}
+			{% with reportRows=reportsApp.getReportsManager.getDataForReportEntry,report,startDate,endDate,null,-1 %}
 				{% with reportRow=reportRows|first %}
 					<td>
 					{{ report.getTextString|format=reportRow,report.getTextColumns }}
@@ -188,18 +188,18 @@ Summary
 </td>
 </tr>
 
-{% with reportsNode=nodeManager.node,reports %}
-	{% for node in nodeManager.nodeInstances|distinct=getNodeProperties.getDisplayName %}
-		{% if node.getNodeProperties.getDisplayName not in FixedReports.getConfigCategories %}
-			{% with reports=reportsNode.getReportsManager.getReportEntries,node.getNodeProperties.getDisplayName|in=getType,allowedReportTypes|in=getUniqueId,enabledAppIds|order=getType,TEXT %}
+{% with reportsApp=appManager.node,reports %}
+	{% for node in appManager.nodeInstances|distinct=getAppProperties.getDisplayName %}
+		{% if node.getAppProperties.getDisplayName not in FixedReports.getConfigCategories %}
+			{% with reports=reportsApp.getReportsManager.getReportEntries,node.getAppProperties.getDisplayName|in=getType,allowedReportTypes|in=getUniqueId,enabledAppIds|order=getType,TEXT %}
 				{% if reports.size != 0 %}
 					<tr><td><table>
 					<tr style="background-color:#d0d0d0;">
 						<td style="width:48px;">
-						<img src="{{ attachment,/usr/share/untangle/web/skins/common/images/admin/apps/{{ node.getNodeProperties.getName }}_42x42.png|id=icon-{{ node.getNodeProperties.getName }}@untangle.com }}" />
+						<img src="{{ attachment,/usr/share/untangle/web/skins/common/images/admin/apps/{{ node.getAppProperties.getName }}_42x42.png|id=icon-{{ node.getAppProperties.getName }}@untangle.com }}" />
 						</td>
 						<td style="font-size:20px; color:#444444; font-weight:bold;">
-						{{ node.getNodeProperties.getDisplayName }}
+						{{ node.getAppProperties.getDisplayName }}
 						</td>
 					</tr>
 					</table></td></tr>
@@ -215,7 +215,7 @@ Summary
 						</td></tr>
 						<tr>
 						{% if report.getType == TEXT %}
-							{% with reportRows=reportsNode.getReportsManager.getDataForReportEntry,report,startDate,endDate,null,-1 %}
+							{% with reportRows=reportsApp.getReportsManager.getDataForReportEntry,report,startDate,endDate,null,-1 %}
 								{% with reportRow=reportRows|first %}
 									<td>
 									{{ report.getTextString|format=reportRow,report.getTextColumns }}

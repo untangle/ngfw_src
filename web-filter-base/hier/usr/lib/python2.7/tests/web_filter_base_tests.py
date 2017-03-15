@@ -118,10 +118,10 @@ class WebFilterBaseTests(unittest2.TestCase):
     
     @staticmethod
     def initialSetUp(self):
-        if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
+        if (uvmContext.appManager().isInstantiated(self.nodeName())):
             raise Exception('node %s already instantiated' % self.nodeName())
-        node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
-        nodemetrics = uvmContext.metricManager().getMetrics(node.getNodeSettings()["id"])
+        node = uvmContext.appManager().instantiate(self.nodeName(), defaultRackId)
+        nodemetrics = uvmContext.metricManager().getMetrics(node.getAppSettings()["id"])
         self.node = node
 
     def setUp(self):
@@ -583,5 +583,5 @@ class WebFilterBaseTests(unittest2.TestCase):
     @staticmethod
     def finalTearDown(self):
         if self.node != None:
-            uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
+            uvmContext.appManager().destroy( node.getAppSettings()["id"] )
             self.node = None

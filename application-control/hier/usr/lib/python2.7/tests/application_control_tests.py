@@ -15,19 +15,19 @@ import test_registry
 import global_functions
 
 defaultRackId = 1
-nodeSettings = None
+appSettings = None
 node = None
 
 #pdb.set_trace()
 
 def touchProtoRule( protoGusername, flag = True, block =True ):
-    global nodeSettings,node
-    for rec in nodeSettings['protoRules']['list']:
-        # print "nodeSettings: " + str(rec)
+    global appSettings,node
+    for rec in appSettings['protoRules']['list']:
+        # print "appSettings: " + str(rec)
         if (rec['name'] == protoGusername):
             rec['flag'] = flag
             rec['block'] = block
-    node.setSettings(nodeSettings)
+    node.setSettings(appSettings)
 
 def create2ConditionRule( matcher1Type, matcher1Value, matcher2Type, matcher2Value, blocked=True ):
     matcher1TypeStr = str(matcher1Type)
@@ -64,14 +64,14 @@ def create2ConditionRule( matcher1Type, matcher1Value, matcher2Type, matcher2Val
         };
 
 def nukeLogicRules():
-    global node, nodeSettings
-    nodeSettings['logicRules']['list'] = []
-    node.setSettings(nodeSettings)
+    global node, appSettings
+    appSettings['logicRules']['list'] = []
+    node.setSettings(appSettings)
 
 def appendLogicRule(newRule):
-    global node, nodeSettings
-    nodeSettings['logicRules']['list'].append(newRule)
-    node.setSettings(nodeSettings)
+    global node, appSettings
+    appSettings['logicRules']['list'].append(newRule)
+    node.setSettings(appSettings)
 
 class ApplicationControlTests(unittest2.TestCase):
 
@@ -85,11 +85,11 @@ class ApplicationControlTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        global nodeSettings, node
-        if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
+        global appSettings, node
+        if (uvmContext.appManager().isInstantiated(self.nodeName())):
             raise Exception('node %s already instantiated' % self.nodeName())
-        node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
-        nodeSettings = node.getSettings()
+        node = uvmContext.appManager().instantiate(self.nodeName(), defaultRackId)
+        appSettings = node.getSettings()
         # run a few sessions so that the classd daemon starts classifying
         for i in range(2): remote_control.is_online()
 
@@ -109,14 +109,13 @@ class ApplicationControlTests(unittest2.TestCase):
         assert (result == 0)
 
     def test_021_protoRule_Block_Google(self):
-        touchProtoRule("Google",True,True)
-        result = remote_control.run_command("wget -q -O /dev/null -4 -t 2 --timeout=5 http://www.google.com/")
-        assert (result != 0)
-
-    def test_022_protoRule_Allow_Google(self):
         touchProtoRule("Google",False,False)
-        result = remote_control.run_command("wget -4 -q -O /dev/null -t 2 --timeout=5 http://www.google.com/")
-        assert (result == 0)
+        result1 = remote_control.run_command("wget -4 -q -O /dev/null -t 2 --timeout=5 http://www.google.com/")
+        touchProtoRule("Google",True,True)
+        result2 = remote_control.run_command("wget -q -O /dev/null -4 -t 2 --timeout=5 http://www.google.com/")
+        touchProtoRule("Google",False,False)
+        assert (result1 == 0)
+        assert (result2 != 0)
 
     def test_023_protoRule_Facebook(self):
         touchProtoRule("Facebook",False,False)
@@ -237,7 +236,7 @@ class ApplicationControlTests(unittest2.TestCase):
     def finalTearDown(self):
         global node
         if node != None:
-            uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
+            uvmContext.appManager().destroy( node.getAppSettings()["id"] )
             node = None
 
 test_registry.registerNode("application-control", ApplicationControlTests)

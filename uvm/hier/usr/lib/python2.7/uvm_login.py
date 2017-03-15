@@ -34,14 +34,14 @@ def authenhandler(req):
 
 def get_settings_item(a,b):
     return None
-def get_node_settings_item(a,b):
+def get_app_settings_item(a,b):
     return None
 def get_uvm_settings_item(a,b):
     return None
 
 try:
     from uvm.settings_reader import get_settings_item
-    from uvm.settings_reader import get_node_settings_item
+    from uvm.settings_reader import get_app_settings_item
     from uvm.settings_reader import get_uvm_settings_item
 except ImportError:
     pass
@@ -259,7 +259,7 @@ def get_company_name():
     if oemName != None:
         company = oemName
 
-    brandco = get_node_settings_item('branding-manager','companyName')
+    brandco = get_app_settings_item('branding-manager','companyName')
     if (brandco != None):
         company = brandco
 

@@ -5,7 +5,7 @@ Ext.define('Ung.cmp.GoogleDrive', {
         var googleDriveConfigured = false, directoryConnectorLicense, directoryConnectorNode, googleManager;
         try{
             directoryConnectorLicense = Rpc.directData('rpc.UvmContext.licenseManager').isLicenseValid("untangle-node-directory-connector");
-            directoryConnectorNode = Rpc.directData('rpc.UvmContext.nodeManager').node("untangle-node-directory-connector");
+            directoryConnectorNode = Rpc.directData('rpc.UvmContext.appManager').app("untangle-node-directory-connector");
             if( directoryConnectorLicense && directoryConnectorNode ){
                 googleManager = directoryConnectorNode.getGoogleManager();
                 if( googleManager && googleManager.isGoogleDriveConnected() ){
@@ -18,7 +18,7 @@ Ext.define('Ung.cmp.GoogleDrive', {
         return googleDriveConfigured;
     },
     configure: function () {
-        var node = Rpc.directData('rpc.UvmContext.nodeManager').node("untangle-node-directory-connector");
+        var node = Rpc.directData('rpc.UvmContext.appManager').app("untangle-node-directory-connector");
         if (node != null) {
             // var nodeCmp = Ung.Node.getCmp(node.nodeId);
             var nodeCmp = Ext.getCmp(node.nodeId);

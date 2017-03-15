@@ -28,7 +28,7 @@ Ext.define('Ung.view.reports.ReportsController', {
             { categoryName: 'System', type: 'system', url: 'system', displayName: 'System'.t(), icon: '/skins/modern-rack/images/admin/config/icon_config_system.png' },
             { categoryName: 'Shield', type: 'system', url: 'shield', displayName: 'Shield'.t(), icon: '/skins/modern-rack/images/admin/apps/shield_17x17.png' }
         ];
-        rpc.reportsManager = rpc.nodeManager.node('reports').getReportsManager();
+        rpc.reportsManager = rpc.appManager.app('reports').getReportsManager();
         Rpc.asyncData('rpc.reportsManager.getCurrentApplications').then(function (result) {
             for (i = 0; i < result.list.length; i += 1) {
                 app = result.list[i];

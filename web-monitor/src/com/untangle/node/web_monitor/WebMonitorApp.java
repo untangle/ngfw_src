@@ -52,9 +52,9 @@ public class WebMonitorApp extends WebFilterBase
     private final PipelineConnector quicConnector = UvmContextFactory.context().pipelineFoundry().create("web-filter-quic", this, quicSub, quicHandler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, 2, true);
     private final PipelineConnector[] connectors = new PipelineConnector[] { httpConnector, httpsSniConnector, quicConnector };
 
-    public WebMonitorApp(com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties)
+    public WebMonitorApp(com.untangle.uvm.node.AppSettings appSettings, com.untangle.uvm.node.AppProperties appProperties)
     {
-        super(nodeSettings, nodeProperties);
+        super(appSettings, appProperties);
     }
 
     public boolean unblockSite(String nonce, boolean global, String password)
@@ -173,7 +173,7 @@ public class WebMonitorApp extends WebFilterBase
     @Override
     protected WebFilterReplacementGenerator buildReplacementGenerator()
     {
-        return new WebFilterReplacementGenerator(getNodeSettings());
+        return new WebFilterReplacementGenerator(getAppSettings());
     }
 
     @Override

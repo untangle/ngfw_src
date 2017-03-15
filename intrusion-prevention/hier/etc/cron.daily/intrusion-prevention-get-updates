@@ -44,7 +44,7 @@ class Update:
         self.url_file_name = self.working_directory + "/" + self.rules_file_name
         self.live_rules_file_name = self.base_directory + "/" + self.rules_file_name
         self.node_ids = []
-        self.node_manager = None
+        self.app_manager = None
 
     def setup(self):
         """
@@ -73,7 +73,7 @@ class Update:
             return False
 
         uvmContext = Uvm().getUvmContext( hostname="localhost", username=None, password=None, timeout=60 )
-        self.node_manager = uvmContext.nodeManager()
+        self.app_manager = uvmContext.appManager()
 
         ##
         ## Easier to parse the api for instances than reproducing what 
@@ -277,7 +277,7 @@ class Update:
         Synchronize configuration
         """
         for node_id in self.node_ids:
-            node = self.node_manager.node(node_id)
+            node = self.app_manager.app(node_id)
 
             temp_settings_file_name = "/tmp/" + str(node_id) + ".js"
             ## Syncronize

@@ -47,7 +47,7 @@ Ext.define('Ung.cmp.AppState', {
 
     controller: {
         onPower: function (btn) {
-            var nodeManager = this.getView().up('#configCard').appManager,
+            var appManager = this.getView().up('#configCard').appManager,
                 vm = this.getViewModel();
 
             btn.setDisabled(true);
@@ -55,15 +55,15 @@ Ext.define('Ung.cmp.AppState', {
             if (vm.get('instance.targetState') === 'RUNNING') {
                 vm.set('instance.targetState', null);
                 // stop node
-                nodeManager.stop(function (result, ex) {
+                appManager.stop(function (result, ex) {
                     if (ex) { Util.exceptionToast(ex); return false; }
-                    nodeManager.getRunState(function (result2, ex2) {
+                    appManager.getRunState(function (result2, ex2) {
                         if (ex2) { Util.exceptionToast(ex2); return false; }
                         vm.set('instance.targetState', result2);
                         // vm.notify();
                         btn.setDisabled(false);
 
-                        // if (nodeManager.getNodeProperties().name === 'reports') {
+                        // if (appManager.getAppProperties().name === 'reports') {
                         //     vm.getParent().set('reportsRunning', false);
                         // }
 
@@ -75,20 +75,20 @@ Ext.define('Ung.cmp.AppState', {
             } else {
                 vm.set('instance.targetState', null);
                 // start node
-                nodeManager.start(function (result, ex) {
+                appManager.start(function (result, ex) {
                     if (ex) {
                         Ext.Msg.alert('Error', ex.message);
                         btn.setDisabled(false);
                         return false;
                     }
-                    nodeManager.getRunState(function (result2, ex2) {
+                    appManager.getRunState(function (result2, ex2) {
                         if (ex2) { Util.exceptionToast(ex2); return false; }
                         vm.set('instance.targetState', result2);
                         console.log(vm.get('instance'));
                         // vm.notify();
                         btn.setDisabled(false);
 
-                        // if (nodeManager.getNodeProperties().name === 'reports') {
+                        // if (appManager.getAppProperties().name === 'reports') {
                         //     vm.getParent().set('reportsRunning', true);
                         // }
 

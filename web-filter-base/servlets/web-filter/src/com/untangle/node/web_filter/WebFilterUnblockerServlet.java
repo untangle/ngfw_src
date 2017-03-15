@@ -12,8 +12,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.node.NodeManager;
-import com.untangle.uvm.node.NodeSettings;
+import com.untangle.uvm.node.AppManager;
+import com.untangle.uvm.node.AppSettings;
 import com.untangle.node.web_filter.WebFilterBase;
 
 @SuppressWarnings("serial")
@@ -33,12 +33,12 @@ public class WebFilterUnblockerServlet extends HttpServlet
         String password = request.getParameter("password");
         boolean global = Boolean.parseBoolean(request.getParameter("global"));
 
-        NodeManager nm = UvmContextFactory.context().nodeManager();
+        AppManager nm = UvmContextFactory.context().appManager();
         WebFilterBase node = null;
         if ( node == null )
-            try {node = (WebFilterBase) nm.node( Long.parseLong(request.getParameter( "tid" )) );} catch (Exception e) {}
+            try {node = (WebFilterBase) nm.app( Long.parseLong(request.getParameter( "tid" )) );} catch (Exception e) {}
         if ( node == null )
-            try {node = (WebFilterBase) nm.node( Long.parseLong(request.getParameter( "appid" )) );} catch (Exception e) {}
+            try {node = (WebFilterBase) nm.app( Long.parseLong(request.getParameter( "appid" )) );} catch (Exception e) {}
 
         try {
             if ( node == null ) { 

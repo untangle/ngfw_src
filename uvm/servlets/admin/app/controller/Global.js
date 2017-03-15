@@ -121,7 +121,7 @@ Ext.define('Ung.controller.Global', {
                 var appInstance = Ext.Array.findBy(policy.get('instances').list, function (inst) {
                     return inst.nodeName.replace('', '').replace('', '') === app;
                 });
-                var appProps = Ext.Array.findBy(policy.get('nodeProperties').list, function (prop) {
+                var appProps = Ext.Array.findBy(policy.get('appProperties').list, function (prop) {
                     return prop.name.replace('', '').replace('', '') === app;
                 });
 
@@ -132,7 +132,7 @@ Ext.define('Ung.controller.Global', {
                     url: 'script/apps/' + app + '.js',
                     onLoad: function () {
                         Ext.Deferred.sequence([
-                            Rpc.asyncPromise('rpc.nodeManager.node', appInstance.id),
+                            Rpc.asyncPromise('rpc.appManager.node', appInstance.id),
                             // Rpc.asyncPromise('rpc.networkManager.getInterfaceStatus'),
                             // Rpc.asyncPromise('rpc.networkManager.getDeviceStatus'),
                         ], this).then(function (result) {

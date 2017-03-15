@@ -200,17 +200,17 @@ class DirectoryConnectorTests(unittest2.TestCase):
     @staticmethod
     def initialSetUp(self):
         global node, AD_RESULT, AD_RESULT, RADIUS_RESULT
-        if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
+        if (uvmContext.appManager().isInstantiated(self.nodeName())):
             raise Exception('node %s already instantiated' % self.nodeName())
-        node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
+        node = uvmContext.appManager().instantiate(self.nodeName(), defaultRackId)
         AD_RESULT = subprocess.call(["ping", "-c", "1", AD_HOST], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         RADIUS_RESULT = subprocess.call(["ping", "-c", "1", RADIUS_HOST], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         # enable google & facebook
-        nodeSettings = node.getSettings()
-        nodeSettings.get('googleSettings')['authenticationEnabled'] = True
-        nodeSettings.get('facebookSettings')['authenticationEnabled'] = True
-        node.setSettings(nodeSettings)
+        appSettings = node.getSettings()
+        appSettings.get('googleSettings')['authenticationEnabled'] = True
+        appSettings.get('facebookSettings')['authenticationEnabled'] = True
+        node.setSettings(appSettings)
 
         
     def setUp(self):
@@ -487,7 +487,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
         """
         global node
         if node != None:
-            uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
+            uvmContext.appManager().destroy( node.getAppSettings()["id"] )
             node = None
 
 test_registry.registerNode("directory-connector", DirectoryConnectorTests)

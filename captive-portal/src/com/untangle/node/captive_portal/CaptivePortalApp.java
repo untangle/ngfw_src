@@ -59,7 +59,7 @@ public class CaptivePortalApp extends NodeBase
 
     private final int CLEANUP_INTERVAL = 60000;
     private final Logger logger = Logger.getLogger(getClass());
-    private final Integer policyId = getNodeSettings().getPolicyId();
+    private final Integer policyId = getAppSettings().getPolicyId();
 
     private final String CAPTURE_CUSTOM_CREATE_SCRIPT = System.getProperty("uvm.home") + "/bin/captive-portal-custom-create";
     private final String CAPTURE_CUSTOM_REMOVE_SCRIPT = System.getProperty("uvm.home") + "/bin/captive-portal-custom-remove";
@@ -83,8 +83,8 @@ public class CaptivePortalApp extends NodeBase
     private final CaptivePortalReplacementGenerator replacementGenerator;
 
     private final SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-    private final String settingsFile = (System.getProperty("uvm.settings.dir") + "/captive-portal/settings_" + getNodeSettings().getId().toString()) + ".js";
-    private final String customPath = (System.getProperty("uvm.web.dir") + "/capture/custom_" + getNodeSettings().getId().toString());
+    private final String settingsFile = (System.getProperty("uvm.settings.dir") + "/captive-portal/settings_" + getAppSettings().getId().toString()) + ".js";
+    private final String customPath = (System.getProperty("uvm.web.dir") + "/capture/custom_" + getAppSettings().getId().toString());
 
     protected CaptivePortalUserCookieTable captureUserCookieTable = new CaptivePortalUserCookieTable();
     protected CaptivePortalUserTable captureUserTable;
@@ -95,12 +95,12 @@ public class CaptivePortalApp extends NodeBase
 
 // THIS IS FOR ECLIPSE - @formatter:off
 
-    public CaptivePortalApp( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
+    public CaptivePortalApp( com.untangle.uvm.node.AppSettings appSettings, com.untangle.uvm.node.AppProperties appProperties )
     {
-        super( nodeSettings, nodeProperties );
+        super( appSettings, appProperties );
 
         captureUserTable = new CaptivePortalUserTable(this);
-        replacementGenerator = new CaptivePortalReplacementGenerator(getNodeSettings(),this);
+        replacementGenerator = new CaptivePortalReplacementGenerator(getAppSettings(),this);
 
         UvmContextFactory.context().servletFileManager().registerUploadHandler(new CustomPageUploadHandler());
 
@@ -146,10 +146,10 @@ public class CaptivePortalApp extends NodeBase
         newSettings.setCheckServerCertificate(null);
 
         // first we commit the new settings to disk
-        saveNodeSettings(newSettings);
+        saveAppSettings(newSettings);
 
         // next we call the function to activate the new settings
-        applyNodeSettings(newSettings);
+        applyAppSettings(newSettings);
 
         // finally we validate all of the active sessions and cleanup
         // anything that is not allowed based on the new settings
@@ -222,10 +222,10 @@ public class CaptivePortalApp extends NodeBase
         initializeCookieKey(localSettings);
 
         // save the settings to disk
-        saveNodeSettings(localSettings);
+        saveAppSettings(localSettings);
 
         // apply the new settings to the node
-        applyNodeSettings(localSettings);
+        applyAppSettings(localSettings);
     }
 
     private void initializeCookieKey(CaptivePortalSettings settings)
@@ -235,7 +235,7 @@ public class CaptivePortalApp extends NodeBase
         settings.initBinaryKey(binaryKey);
     }
 
-    private CaptivePortalSettings loadNodeSettings()
+    private CaptivePortalSettings loadAppSettings()
     {
         CaptivePortalSettings readSettings = null;
 
@@ -258,24 +258,24 @@ public class CaptivePortalApp extends NodeBase
         return (readSettings);
     }
 
-    private void saveNodeSettings(CaptivePortalSettings argSettings)
+    private void saveAppSettings(CaptivePortalSettings argSettings)
     {
         // set a unique id for each capture rule
-        int idx = this.getNodeSettings().getPolicyId().intValue() * 100000;
+        int idx = this.getAppSettings().getPolicyId().intValue() * 100000;
         for (CaptureRule rule : argSettings.getCaptureRules())
             rule.setId(++idx);
 
         try {
             settingsManager.save(settingsFile, argSettings);
         } catch (Exception e) {
-            logger.warn("Error in saveNodeSettings", e);
+            logger.warn("Error in saveAppSettings", e);
             return;
         }
 
         logger.info("Saved node settings to " + settingsFile);
     }
 
-    private void applyNodeSettings(CaptivePortalSettings argSettings)
+    private void applyAppSettings(CaptivePortalSettings argSettings)
     {
         // this function is called when settings are loaded or initialized
         // it gives us a single place to do stuff when applying a new
@@ -385,7 +385,7 @@ public class CaptivePortalApp extends NodeBase
     @Override
     protected void postInit()
     {
-        CaptivePortalSettings readSettings = loadNodeSettings();
+        CaptivePortalSettings readSettings = loadAppSettings();
 
         if (readSettings == null) {
             // we didn't get anything from the load function so we call
@@ -397,9 +397,9 @@ public class CaptivePortalApp extends NodeBase
             // to the common apply function
             if (readSettings.getSecretKey() == null) {
                 initializeCookieKey(readSettings);
-                saveNodeSettings(readSettings);
+                saveAppSettings(readSettings);
             }
-            applyNodeSettings(readSettings);
+            applyAppSettings(readSettings);
         }
     }
 
@@ -474,7 +474,7 @@ public class CaptivePortalApp extends NodeBase
                 // we always want to use the stripped version internally
                 username = strippedUsername;
 
-                DirectoryConnector directoryConnector = (DirectoryConnector) UvmContextFactory.context().nodeManager().node("directory-connector");
+                DirectoryConnector directoryConnector = (DirectoryConnector) UvmContextFactory.context().appManager().app("directory-connector");
                 if (directoryConnector == null) break;
 
                 // try the original first and then the stripped version
@@ -497,7 +497,7 @@ public class CaptivePortalApp extends NodeBase
 
         case RADIUS:
             try {
-                DirectoryConnector directoryConnector = (DirectoryConnector) UvmContextFactory.context().nodeManager().node("directory-connector");
+                DirectoryConnector directoryConnector = (DirectoryConnector) UvmContextFactory.context().appManager().app("directory-connector");
                 if (directoryConnector != null) isAuthenticated = directoryConnector.radiusAuthenticate(username, password);
             } catch (Exception e) {
                 logger.warn("Radius authentication failure", e);
@@ -507,7 +507,7 @@ public class CaptivePortalApp extends NodeBase
 
         case GOOGLE:
             try {
-                DirectoryConnector directoryConnector = (DirectoryConnector) UvmContextFactory.context().nodeManager().node("directory-connector");
+                DirectoryConnector directoryConnector = (DirectoryConnector) UvmContextFactory.context().appManager().app("directory-connector");
                 if (directoryConnector != null) isAuthenticated = directoryConnector.googleAuthenticate(username, password);
             } catch (Exception e) {
                 logger.warn("Google authentication failure", e);
@@ -517,7 +517,7 @@ public class CaptivePortalApp extends NodeBase
 
         case FACEBOOK:
             try {
-                DirectoryConnector directoryConnector = (DirectoryConnector) UvmContextFactory.context().nodeManager().node("directory-connector");
+                DirectoryConnector directoryConnector = (DirectoryConnector) UvmContextFactory.context().appManager().app("directory-connector");
                 if (directoryConnector != null) isAuthenticated = directoryConnector.facebookAuthenticate(username, password);
             } catch (Exception e) {
                 logger.warn("Facebook authentication failure", e);
@@ -527,7 +527,7 @@ public class CaptivePortalApp extends NodeBase
 
         case ANY:
             try {
-                DirectoryConnector directoryConnector = (DirectoryConnector) UvmContextFactory.context().nodeManager().node("directory-connector");
+                DirectoryConnector directoryConnector = (DirectoryConnector) UvmContextFactory.context().appManager().app("directory-connector");
                 if (directoryConnector != null) isAuthenticated = directoryConnector.anyAuthenticate(username, password);
             } catch (Exception e) {
                 logger.warn("ANY authentication failure", e);
@@ -757,7 +757,7 @@ public class CaptivePortalApp extends NodeBase
     private void loadUserState()
     {
         try {
-            String filename = System.getProperty("uvm.conf.dir") + "/capture-users-" + this.getNodeSettings().getId().toString() + ".js";
+            String filename = System.getProperty("uvm.conf.dir") + "/capture-users-" + this.getAppSettings().getId().toString() + ".js";
             /**
              * If there is no save file, just return
              */
@@ -821,7 +821,7 @@ public class CaptivePortalApp extends NodeBase
     private void saveUserState()
     {
         try {
-            String filename = System.getProperty("uvm.conf.dir") + "/capture-users-" + this.getNodeSettings().getId().toString() + ".js";
+            String filename = System.getProperty("uvm.conf.dir") + "/capture-users-" + this.getAppSettings().getId().toString() + ".js";
             ArrayList<CaptivePortalUserEntry> users = this.captureUserTable.buildUserList();
             if (users.size() < 1) return;
 

@@ -137,9 +137,9 @@ class PolicyManagerTests(unittest2.TestCase):
     @staticmethod
     def initialSetUp(self):
         global nodeData, node
-        if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
+        if (uvmContext.appManager().isInstantiated(self.nodeName())):
             raise Exception('node %s already instantiated' % self.nodeName())
-        node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
+        node = uvmContext.appManager().instantiate(self.nodeName(), defaultRackId)
         nodeData = node.getSettings()
         remote_control.run_command("rm -f ./authpost\?*")
 
@@ -175,7 +175,7 @@ class PolicyManagerTests(unittest2.TestCase):
     # add firewall to second rack
     def test_022_addFirewallToSecondRack(self):
         global secondRackFirewall 
-        secondRackFirewall = uvmContext.nodeManager().instantiate("firewall", secondRackId)
+        secondRackFirewall = uvmContext.appManager().instantiate("firewall", secondRackId)
         assert (secondRackFirewall != None)
         # add a block rule for the client IP
         rules = secondRackFirewall.getRules()
@@ -186,7 +186,7 @@ class PolicyManagerTests(unittest2.TestCase):
     def test_023_childShouldNotEffectParent(self):
         # add a child that blocks everything
         blockRackId = addRack(name="Block Rack", parentId=defaultRackId)
-        blockRackFirewall = uvmContext.nodeManager().instantiate("firewall", blockRackId)
+        blockRackFirewall = uvmContext.appManager().instantiate("firewall", blockRackId)
         assert (blockRackFirewall != None)
         # add a block rule for the client IP
         rules = blockRackFirewall.getRules()
@@ -195,7 +195,7 @@ class PolicyManagerTests(unittest2.TestCase):
         # client should still be online
         result = remote_control.is_online()
         assert (result == 0)
-        uvmContext.nodeManager().destroy( blockRackFirewall.getNodeSettings()["id"] )
+        uvmContext.appManager().destroy( blockRackFirewall.getAppSettings()["id"] )
         assert (removeRack(blockRackId))
 
         # Get the IP address of test.untangle.com
@@ -241,7 +241,7 @@ class PolicyManagerTests(unittest2.TestCase):
     # add firewall to third rack - this should override the second rack's firewall with the block rule
     def test_028_addFirewallToThirdRack(self):
         global thirdRackFirewall
-        thirdRackFirewall = uvmContext.nodeManager().instantiate("firewall", thirdRackId)
+        thirdRackFirewall = uvmContext.appManager().instantiate("firewall", thirdRackId)
         assert (thirdRackFirewall != None)
         result = remote_control.is_online()
         assert (result == 0)
@@ -258,7 +258,7 @@ class PolicyManagerTests(unittest2.TestCase):
     # add a node that requires a casing to second rack to make sure casing is inherited
     def test_030_addWebFilterToSecondRack(self):
         global secondRackWebfilter
-        secondRackWebfilter = uvmContext.nodeManager().instantiate("web-filter", secondRackId)
+        secondRackWebfilter = uvmContext.appManager().instantiate("web-filter", secondRackId)
         assert (secondRackWebfilter != None)
         result = remote_control.is_online()
         assert (result == 0)
@@ -275,7 +275,7 @@ class PolicyManagerTests(unittest2.TestCase):
     def test_040_localCaptivePortalToSecondRack(self):
         global defaultRackCaptivePortal
         remote_control.run_command("rm -f /tmp/policy_test_040*")
-        defaultRackCaptivePortal = uvmContext.nodeManager().instantiate("captive-portal", defaultRackId)
+        defaultRackCaptivePortal = uvmContext.appManager().instantiate("captive-portal", defaultRackId)
         assert (defaultRackCaptivePortal != None)
         defaultRackCaptivePortalData = defaultRackCaptivePortal.getCaptivePortalSettings()
         # turn default capture rule on and basic login
@@ -307,7 +307,7 @@ class PolicyManagerTests(unittest2.TestCase):
         ip = re.findall( r'[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}(?:[0-9:]{0,6})', ipfind )
         captureIP = ip[0]
         print 'Capture IP address is %s' % captureIP
-        appid = str(defaultRackCaptivePortal.getNodeSettings()["id"])
+        appid = str(defaultRackCaptivePortal.getAppSettings()["id"])
         # print 'appid is %s' % appid  # debug line
         result = remote_control.run_command("wget -q -O /dev/null -t 2 --timeout=5   \'http://" + captureIP + "/capture/handler.py/authpost?username=test20&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=" + captureIP + "&uri=/\'")
         assert (result == 0)
@@ -330,18 +330,18 @@ class PolicyManagerTests(unittest2.TestCase):
         assert (search == 0)
         # remove captive portal and test user
         uvmContext.localDirectory().setUsers(removeLocalDirectoryUser())
-        uvmContext.nodeManager().destroy( defaultRackCaptivePortal.getNodeSettings()["id"] )
+        uvmContext.appManager().destroy( defaultRackCaptivePortal.getAppSettings()["id"] )
 
     # remove nodes from second rack
     def test_980_removeNodesFromSecondRack(self):
         global secondRackFirewall , secondRackWebfilter
-        uvmContext.nodeManager().destroy( secondRackFirewall.getNodeSettings()["id"] )
-        uvmContext.nodeManager().destroy( secondRackWebfilter.getNodeSettings()["id"] )
+        uvmContext.appManager().destroy( secondRackFirewall.getAppSettings()["id"] )
+        uvmContext.appManager().destroy( secondRackWebfilter.getAppSettings()["id"] )
 
     # remove nodes from third rack
     def test_981_removeNodesFromThirdRack(self):
         global thirdRackFirewall 
-        uvmContext.nodeManager().destroy( thirdRackFirewall.getNodeSettings()["id"] )
+        uvmContext.appManager().destroy( thirdRackFirewall.getAppSettings()["id"] )
 
     # remove third rack
     def test_982_removeSecondRack(self):
@@ -363,7 +363,7 @@ class PolicyManagerTests(unittest2.TestCase):
     def finalTearDown(self):
         global node
         if node != None:
-            uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
+            uvmContext.appManager().destroy( node.getAppSettings()["id"] )
             node = None
 
 

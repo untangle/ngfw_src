@@ -16,8 +16,8 @@ import com.untangle.node.http.BlockPageUtil;
 import com.untangle.uvm.BrandingManager;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.node.NodeManager;
-import com.untangle.uvm.node.NodeSettings;
+import com.untangle.uvm.node.AppManager;
+import com.untangle.uvm.node.AppSettings;
 import com.untangle.uvm.util.I18nUtil;
 
 @SuppressWarnings("serial")
@@ -29,15 +29,15 @@ public class BlockPageServlet extends HttpServlet
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
         UvmContext uvm = UvmContextFactory.context();
-        NodeManager nm = uvm.nodeManager();
+        AppManager nm = uvm.appManager();
 
         Map<String,String> i18n_map = UvmContextFactory.context().languageManager().getTranslations( "untangle" );
 
         WebFilter node = null;
         if ( node == null )
-            try {node = (WebFilter) nm.node( Long.parseLong(request.getParameter( "tid" )) );} catch (Exception e) {}
+            try {node = (WebFilter) nm.app( Long.parseLong(request.getParameter( "tid" )) );} catch (Exception e) {}
         if ( node == null )
-            try {node = (WebFilter) nm.node( Long.parseLong(request.getParameter( "appid" )) );} catch (Exception e) {}
+            try {node = (WebFilter) nm.app( Long.parseLong(request.getParameter( "appid" )) );} catch (Exception e) {}
             
         if ( node == null ) { 
             response.sendError( HttpServletResponse.SC_NOT_ACCEPTABLE, I18nUtil.tr( "App ID not found.", i18n_map ));

@@ -650,10 +650,10 @@ class NetworkTests(unittest2.TestCase):
     # Test that bypass rules bypass apps
     def test_060_bypassRules(self):
         nodeFW = None
-        if (uvmContext.nodeManager().isInstantiated(self.nodeNameFW())):
+        if (uvmContext.appManager().isInstantiated(self.nodeNameFW())):
             print "ERROR: Node %s already installed" % self.nodeNameFW()
             raise Exception('node %s already instantiated' % self.nodeNameFW())
-        nodeFW = uvmContext.nodeManager().instantiate(self.nodeNameFW(), defaultRackId)
+        nodeFW = uvmContext.appManager().instantiate(self.nodeNameFW(), defaultRackId)
         nukeFirstLevelRule('bypassRules')
         # verify port 80 is open
         result1 = remote_control.run_command("wget -q -O /dev/null http://test.untangle.com/")
@@ -672,7 +672,7 @@ class NetworkTests(unittest2.TestCase):
 
         events = global_functions.get_events('Network','Bypassed Sessions',None,100)
 
-        uvmContext.nodeManager().destroy( nodeFW.getNodeSettings()["id"] )
+        uvmContext.appManager().destroy( nodeFW.getAppSettings()["id"] )
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         assert (result1 == 0)
         assert (result2 != 0)
@@ -704,10 +704,10 @@ class NetworkTests(unittest2.TestCase):
     # Test FTP (outbound) in active and passive modes with a firewall block all rule (firewall should pass related sessions without special rules)
     def test_071_ftpModesFirewalled(self):
         nodeFW = None
-        if (uvmContext.nodeManager().isInstantiated(self.nodeNameFW())):
+        if (uvmContext.appManager().isInstantiated(self.nodeNameFW())):
             print "ERROR: Node %s already installed" % self.nodeNameFW()
             raise Exception('node %s already instantiated' % self.nodeNameFW())
-        nodeFW = uvmContext.nodeManager().instantiate(self.nodeNameFW(), defaultRackId)
+        nodeFW = uvmContext.appManager().instantiate(self.nodeNameFW(), defaultRackId)
 
         nukeFirstLevelRule('bypassRules')
 
@@ -719,7 +719,7 @@ class NetworkTests(unittest2.TestCase):
         epsvResult = remote_control.run_command("curl --epsv -s -o /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
         eprtResult = remote_control.run_command("curl --eprt -P - -s -o /dev/null ftp://" + global_functions.ftpServer + "/" + ftp_file_name)
 
-        uvmContext.nodeManager().destroy( nodeFW.getNodeSettings()["id"] )
+        uvmContext.appManager().destroy( nodeFW.getAppSettings()["id"] )
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
         print "portResult: %i eprtResult: %i pasvResult: %i epsvResult: %i" % (portResult,eprtResult,pasvResult,epsvResult)

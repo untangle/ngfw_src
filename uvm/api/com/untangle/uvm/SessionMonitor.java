@@ -6,7 +6,7 @@ package com.untangle.uvm;
 import java.util.List;
 
 import com.untangle.uvm.SessionMonitorEntry;
-import com.untangle.uvm.node.NodeSettings;
+import com.untangle.uvm.node.AppSettings;
 import com.untangle.uvm.vnet.NodeSession;
 
 public interface SessionMonitor

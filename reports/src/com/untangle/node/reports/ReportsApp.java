@@ -40,8 +40,8 @@ import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.event.EventRule;
 import com.untangle.uvm.event.EventSettings;
 import com.untangle.uvm.network.FilterRule;
-import com.untangle.uvm.node.NodeProperties;
-import com.untangle.uvm.node.NodeSettings;
+import com.untangle.uvm.node.AppProperties;
+import com.untangle.uvm.node.AppSettings;
 import com.untangle.uvm.node.Reporting;
 import com.untangle.uvm.node.HostnameLookup;
 import com.untangle.uvm.servlet.DownloadHandler;
@@ -76,9 +76,9 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
     
     private ReportsSettings settings;
     
-    public ReportsApp( NodeSettings nodeSettings, NodeProperties nodeProperties )
+    public ReportsApp( AppSettings appSettings, AppProperties appProperties )
     {
-        super( nodeSettings, nodeProperties );
+        super( appSettings, appProperties );
 
         determineDbDriver();
 
@@ -86,7 +86,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
             eventWriter = new EventWriterImpl( this );
         if (eventReader == null)
             eventReader = new EventReaderImpl( this );
-        ReportsManagerImpl.getInstance().setReportsNode( this );
+        ReportsManagerImpl.getInstance().setReportsApp( this );
         
         UvmContextFactory.context().servletFileManager().registerDownloadHandler( new EventLogExportDownloadHandler() );
         UvmContextFactory.context().servletFileManager().registerDownloadHandler( new ImageDownloadHandler() );
@@ -141,7 +141,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
          * Save the settings
          */
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeSettings().getId().toString();
+        String nodeID = this.getAppSettings().getId().toString();
         try {
             settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "reports/" + "settings_"  + nodeID + ".js", newSettings );
         } catch (SettingsManager.SettingsException e) {
@@ -346,7 +346,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
     protected void postInit()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeSettings().getId().toString();
+        String nodeID = this.getAppSettings().getId().toString();
         ReportsSettings readSettings = null;
         String settingsFileName = System.getProperty("uvm.settings.dir") + "/reports/" + "settings_" + nodeID + ".js";
 
@@ -885,7 +885,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
 
                 logger.info("Export CSV( name:" + name + " query: " + query + " columnList: " + columnListStr + ")");
 
-                ReportsApp reports = (ReportsApp) UvmContextFactory.context().nodeManager().node("reports");
+                ReportsApp reports = (ReportsApp) UvmContextFactory.context().appManager().app("reports");
                 if (reports == null) {
                     logger.warn("reports node not found");
                     return;

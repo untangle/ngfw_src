@@ -74,9 +74,9 @@ public class DirectoryConnectorApp extends NodeBase implements com.untangle.uvm.
      */
     private static boolean xvfbLaunched = false;
     
-    public DirectoryConnectorApp(com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties)
+    public DirectoryConnectorApp(com.untangle.uvm.node.AppSettings appSettings, com.untangle.uvm.node.AppProperties appProperties)
     {
-        super(nodeSettings, nodeProperties);
+        super(appSettings, appProperties);
     }
 
     @Override
@@ -102,7 +102,7 @@ public class DirectoryConnectorApp extends NodeBase implements com.untangle.uvm.
     protected void postInit()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeSettings().getId().toString();
+        String nodeID = this.getAppSettings().getId().toString();
         DirectoryConnectorSettings readSettings = null;
         String settingsFileName = System.getProperty("uvm.settings.dir") + "/directory-connector/" + "settings_" + nodeID + ".js";
 
@@ -162,7 +162,7 @@ public class DirectoryConnectorApp extends NodeBase implements com.untangle.uvm.
          * Save the settings
          */
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeSettings().getId().toString();
+        String nodeID = this.getAppSettings().getId().toString();
         try {
             settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "directory-connector/" + "settings_" + nodeID + ".js", newSettings );
         } catch (SettingsManager.SettingsException e) {

@@ -20,9 +20,9 @@ public class SpamBlockerApp extends SpamBlockerBaseApp
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    public SpamBlockerApp(com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties)
+    public SpamBlockerApp(com.untangle.uvm.node.AppSettings appSettings, com.untangle.uvm.node.AppProperties appProperties)
     {
-        super(nodeSettings, nodeProperties, new SpamBlockerScanner());
+        super(appSettings, appProperties, new SpamBlockerScanner());
     }
 
     {
@@ -32,7 +32,7 @@ public class SpamBlockerApp extends SpamBlockerBaseApp
     public void setSettings(SpamSettings newSettings)
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeSettings().getId().toString();
+        String nodeID = this.getAppSettings().getId().toString();
         String settingsFile = System.getProperty("uvm.settings.dir") + "/spam-blocker/settings_" + nodeID + ".js";
 
         try {
@@ -49,7 +49,7 @@ public class SpamBlockerApp extends SpamBlockerBaseApp
     protected void preInit()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeSettings().getId().toString();
+        String nodeID = this.getAppSettings().getId().toString();
         String settingsFile = System.getProperty("uvm.settings.dir") + "/spam-blocker/settings_" + nodeID + ".js";
         SpamSettings readSettings = null;
 
