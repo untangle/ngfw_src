@@ -23,8 +23,8 @@ import com.untangle.uvm.vnet.EndMarkerToken;
 import com.untangle.uvm.vnet.Token;
 import com.untangle.uvm.vnet.TokenStreamer;
 import com.untangle.uvm.vnet.TokenStreamerAdaptor;
-import com.untangle.uvm.vnet.NodeSession;
-import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.vnet.AppSession;
+import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.vnet.TCPStreamer;
 import com.untangle.uvm.node.GenericRule;
 import com.untangle.uvm.util.GlobUtil;
@@ -61,14 +61,14 @@ class VirusFtpHandler extends FtpEventHandler
     }
 
     @Override
-    public void handleTCPNewSession(NodeTCPSession session)
+    public void handleTCPNewSession(AppTCPSession session)
     {
         VirusFtpState state = new VirusFtpState();
         session.attach(state);
     }
 
     @Override
-    protected void doClientData(NodeTCPSession session, ChunkToken c)
+    protected void doClientData(AppTCPSession session, ChunkToken c)
     {
         VirusFtpState state = (VirusFtpState) session.attachment();
         if (node.getSettings().getScanFtp()) {
@@ -91,7 +91,7 @@ class VirusFtpHandler extends FtpEventHandler
     }
 
     @Override
-    protected void doServerData(NodeTCPSession session, ChunkToken c)
+    protected void doServerData(AppTCPSession session, ChunkToken c)
     {
         VirusFtpState state = (VirusFtpState) session.attachment();
         if (node.getSettings().getScanFtp()) {
@@ -114,7 +114,7 @@ class VirusFtpHandler extends FtpEventHandler
     }
 
     @Override
-    protected void doClientDataEnd(NodeTCPSession session)
+    protected void doClientDataEnd(AppTCPSession session)
     {
         VirusFtpState state = (VirusFtpState) session.attachment();
         logger.debug("doClientDataEnd()");
@@ -137,7 +137,7 @@ class VirusFtpHandler extends FtpEventHandler
     }
 
     @Override
-    protected void doServerDataEnd(NodeTCPSession session)
+    protected void doServerDataEnd(AppTCPSession session)
     {
         VirusFtpState state = (VirusFtpState) session.attachment();
         logger.debug("doServerDataEnd()");
@@ -160,7 +160,7 @@ class VirusFtpHandler extends FtpEventHandler
     }
 
     @Override
-    protected void doCommand(NodeTCPSession session, FtpCommand command)
+    protected void doCommand(AppTCPSession session, FtpCommand command)
     {
         // no longer have a setting for blocking partial fetches
         // it causes too many issues
@@ -179,7 +179,7 @@ class VirusFtpHandler extends FtpEventHandler
         return;
     }
 
-    protected void doReply(NodeTCPSession session, FtpReply reply)
+    protected void doReply(AppTCPSession session, FtpReply reply)
     {
         if (reply.getReplyCode() == FtpReply.PASV || reply.getReplyCode() == FtpReply.EPSV) {
             try {
@@ -193,7 +193,7 @@ class VirusFtpHandler extends FtpEventHandler
         return;
     }
 
-    private ChunkToken trickle(NodeTCPSession session, ByteBuffer b)
+    private ChunkToken trickle(AppTCPSession session, ByteBuffer b)
     {
         VirusFtpState state = (VirusFtpState) session.attachment();
         int l = b.remaining() * node.getTricklePercent() / 100;
@@ -213,7 +213,7 @@ class VirusFtpHandler extends FtpEventHandler
         return new ChunkToken(b);
     }
 
-    private TCPStreamer scan(NodeTCPSession session)
+    private TCPStreamer scan(AppTCPSession session)
     {
         VirusFtpState state = (VirusFtpState) session.attachment();
         VirusScannerResult result;
@@ -231,7 +231,7 @@ class VirusFtpHandler extends FtpEventHandler
             throw new RuntimeException("could not scan", exn);
         }
 
-        String fileName = (String) session.globalAttachment(NodeSession.KEY_FTP_FILE_NAME);
+        String fileName = (String) session.globalAttachment(AppSession.KEY_FTP_FILE_NAME);
         node.logEvent(new VirusFtpEvent(session.sessionEvent(), result.isClean(), result.getVirusName(), node.getName(), fileName));
 
         if (result.isClean()) {
@@ -247,12 +247,12 @@ class VirusFtpHandler extends FtpEventHandler
     }
 
     @Override
-    public void handleTCPFinalized(NodeTCPSession session)
+    public void handleTCPFinalized(AppTCPSession session)
     {
         session.cleanupTempFiles();
     }
 
-    private void createFile(NodeTCPSession session)
+    private void createFile(AppTCPSession session)
     {
         VirusFtpState state = (VirusFtpState) session.attachment();
 
@@ -288,7 +288,7 @@ class VirusFtpHandler extends FtpEventHandler
          */
         if (ctlSessionId != null) {
             String fileName = removeFileName(ctlSessionId);
-            if (fileName != null) session.globalAttach(NodeSession.KEY_FTP_FILE_NAME, fileName);
+            if (fileName != null) session.globalAttach(AppSession.KEY_FTP_FILE_NAME, fileName);
         }
 
     }

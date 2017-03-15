@@ -12,7 +12,7 @@ import com.untangle.node.spam_blocker.SpamReport;
 import com.untangle.node.spam_blocker.SpamSmtpConfig;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.vnet.AppTCPSession;
 
 /**
  * Protocol Handler which is called-back as scanable messages

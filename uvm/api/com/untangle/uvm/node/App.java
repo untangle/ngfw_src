@@ -5,14 +5,14 @@ package com.untangle.uvm.node;
 
 import java.util.List;
 
-import com.untangle.uvm.vnet.NodeSession;
+import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.logging.LogEvent;
 
 /**
  * Interface for a node instance, provides public runtime control
  * methods for manipulating the instance's state.
  */
-public interface Node
+public interface App
 {
     /**
      * Get the node Settings
@@ -63,7 +63,7 @@ public interface Node
     /**
      * Retrieve a list of node sessions currently being processed by this node
      */
-    List<NodeSession> liveNodeSessions();
+    List<AppSession> liveAppSessions();
     
     /**
      * Log an event
@@ -74,5 +74,5 @@ public interface Node
     /**
      * Return statistics tracked for this node (if any)
      */
-    List<NodeMetric> getMetrics();
+    List<AppMetric> getMetrics();
 }

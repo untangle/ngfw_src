@@ -20,11 +20,11 @@ import com.untangle.uvm.UvmState;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SessionMonitorEntry;
-import com.untangle.uvm.node.Node;
+import com.untangle.uvm.node.App;
 import com.untangle.uvm.node.AppManager;
 import com.untangle.uvm.node.SessionTuple;
 import com.untangle.uvm.node.SessionTuple;
-import com.untangle.uvm.vnet.NodeSession;
+import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.node.AppSettings;
 import com.untangle.uvm.node.SessionEvent;
 import com.untangle.uvm.network.InterfaceSettings;
@@ -105,13 +105,13 @@ public class SessionMonitorImpl implements SessionMonitor
     public List<SessionMonitorEntry> getMergedSessions(long nodeId)
     {
         List<SessionMonitorEntry> sessions = this._getConntrackSessionMonitorEntrys();
-        List<NodeSession> nodeSessions = null;;
+        List<AppSession> appSessions = null;;
 
-        Node node = null;
+        App node = null;
         if (nodeId > 0)
             node = UvmContextFactory.context().appManager().app(nodeId);
         if (node != null)
-            nodeSessions = node.liveNodeSessions();
+            appSessions = node.liveAppSessions();
 
         for (Iterator<SessionMonitorEntry> i = sessions.iterator(); i.hasNext(); ) {  
             SessionMonitorEntry session = i.next();
@@ -255,12 +255,12 @@ public class SessionMonitorImpl implements SessionMonitor
         /**
          * If a nodeId was specified remove all sessions not being touched by that nodeId
          */
-        if ( nodeSessions != null ) {
+        if ( appSessions != null ) {
             for (Iterator<SessionMonitorEntry> i = sessions.iterator(); i.hasNext(); ) {  
                 SessionMonitorEntry entry = i.next();
                 Long sessionId = entry.getSessionId();
                 boolean found = false;
-                for (NodeSession ns : nodeSessions) {
+                for (AppSession ns : appSessions) {
                     if ( sessionId != null && sessionId == ns.getSessionId() ) {
                         found = true;
                         break;

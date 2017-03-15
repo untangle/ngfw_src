@@ -15,7 +15,7 @@ import com.untangle.node.smtp.SASLExchangeToken;
 import com.untangle.uvm.vnet.ChunkToken;
 import com.untangle.uvm.vnet.Token;
 import com.untangle.uvm.vnet.ReleaseToken;
-import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 
 public class SmtpServerParserEventHandler extends AbstractEventHandler
@@ -30,17 +30,17 @@ public class SmtpServerParserEventHandler extends AbstractEventHandler
     }
 
     @Override
-    public void handleTCPNewSession( NodeTCPSession session )
+    public void handleTCPNewSession( AppTCPSession session )
     {
         SmtpSharedState serverSideSharedState = new SmtpSharedState();
         session.attach( SHARED_STATE_KEY, serverSideSharedState );
     }
 
     @Override
-    public void handleTCPClientChunk( NodeTCPSession session, ByteBuffer data )
+    public void handleTCPClientChunk( AppTCPSession session, ByteBuffer data )
     {
         // grab the SSL Inspector status attachment and release if set to false
-        Boolean sslInspectorStatus = (Boolean)session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_SESSION_INSPECT);
+        Boolean sslInspectorStatus = (Boolean)session.globalAttachment(AppTCPSession.KEY_SSL_INSPECTOR_SESSION_INSPECT);
 
         if ((sslInspectorStatus != null) && (sslInspectorStatus.booleanValue() == false)) {
             session.sendDataToServer(data);
@@ -53,10 +53,10 @@ public class SmtpServerParserEventHandler extends AbstractEventHandler
     }
 
     @Override
-    public void handleTCPServerChunk( NodeTCPSession session, ByteBuffer data )
+    public void handleTCPServerChunk( AppTCPSession session, ByteBuffer data )
     {
         // grab the SSL Inspector status attachment and release if set to false
-        Boolean sslInspectorStatus = (Boolean)session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_SESSION_INSPECT);
+        Boolean sslInspectorStatus = (Boolean)session.globalAttachment(AppTCPSession.KEY_SSL_INSPECTOR_SESSION_INSPECT);
 
         if ((sslInspectorStatus != null) && (sslInspectorStatus.booleanValue() == false)) {
             session.sendDataToClient(data);
@@ -68,10 +68,10 @@ public class SmtpServerParserEventHandler extends AbstractEventHandler
     }
 
     @Override
-    public void handleTCPClientObject( NodeTCPSession session, Object obj )
+    public void handleTCPClientObject( AppTCPSession session, Object obj )
     {
         // grab the SSL Inspector status attachment and release if set to false
-        Boolean sslInspectorStatus = (Boolean)session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_SESSION_INSPECT);
+        Boolean sslInspectorStatus = (Boolean)session.globalAttachment(AppTCPSession.KEY_SSL_INSPECTOR_SESSION_INSPECT);
 
         if ((sslInspectorStatus != null) && (sslInspectorStatus.booleanValue() == false)) {
             session.release();
@@ -83,10 +83,10 @@ public class SmtpServerParserEventHandler extends AbstractEventHandler
     }
     
     @Override
-    public void handleTCPServerObject( NodeTCPSession session, Object obj )
+    public void handleTCPServerObject( AppTCPSession session, Object obj )
     {
         // grab the SSL Inspector status attachment and release if set to false
-        Boolean sslInspectorStatus = (Boolean)session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_SESSION_INSPECT);
+        Boolean sslInspectorStatus = (Boolean)session.globalAttachment(AppTCPSession.KEY_SSL_INSPECTOR_SESSION_INSPECT);
 
         if ((sslInspectorStatus != null) && (sslInspectorStatus.booleanValue() == false)) {
             session.release();
@@ -98,7 +98,7 @@ public class SmtpServerParserEventHandler extends AbstractEventHandler
     }
     
     @Override
-    public void handleTCPClientDataEnd( NodeTCPSession session, ByteBuffer data )
+    public void handleTCPClientDataEnd( AppTCPSession session, ByteBuffer data )
     {
         if ( data.hasRemaining() ) {
             logger.warn("Received data when expect object");
@@ -107,25 +107,25 @@ public class SmtpServerParserEventHandler extends AbstractEventHandler
     }
 
     @Override
-    public void handleTCPServerDataEnd( NodeTCPSession session, ByteBuffer data )
+    public void handleTCPServerDataEnd( AppTCPSession session, ByteBuffer data )
     {
         parse( session, data, true, true );
     }
 
     @Override
-    public void handleTCPClientFIN( NodeTCPSession session )
+    public void handleTCPClientFIN( AppTCPSession session )
     {
         logger.warn("Received unexpected event.");
         throw new RuntimeException("Received unexpected event.");
     }
 
     @Override
-    public void handleTCPServerFIN( NodeTCPSession session )
+    public void handleTCPServerFIN( AppTCPSession session )
     {
         session.shutdownClient();
     }
     
-    private void parse( NodeTCPSession session, ByteBuffer data, boolean s2c, boolean last )
+    private void parse( AppTCPSession session, ByteBuffer data, boolean s2c, boolean last )
     {
         ByteBuffer buf = data;
         ByteBuffer dup = buf.duplicate();
@@ -154,7 +154,7 @@ public class SmtpServerParserEventHandler extends AbstractEventHandler
         }
     }
     
-    public void parse( NodeTCPSession session, ByteBuffer buf )
+    public void parse( AppTCPSession session, ByteBuffer buf )
     {
         try {
             if ( isPassthru( session ) ) {
@@ -171,7 +171,7 @@ public class SmtpServerParserEventHandler extends AbstractEventHandler
         }
     }
 
-    public final void parseEnd( NodeTCPSession session, ByteBuffer buf )
+    public final void parseEnd( AppTCPSession session, ByteBuffer buf )
     {
         if ( buf.hasRemaining() ) {
             session.sendObjectToClient( new ChunkToken(buf) );
@@ -181,7 +181,7 @@ public class SmtpServerParserEventHandler extends AbstractEventHandler
     }
     
     @SuppressWarnings("fallthrough")
-    protected void doParse( NodeTCPSession session, ByteBuffer buf )
+    protected void doParse( AppTCPSession session, ByteBuffer buf )
     {
         List<Token> toks = new ArrayList<Token>();
         boolean done = false;
@@ -281,7 +281,7 @@ public class SmtpServerParserEventHandler extends AbstractEventHandler
     /**
      * Is the casing currently in passthru mode
      */
-    protected boolean isPassthru( NodeTCPSession session )
+    protected boolean isPassthru( AppTCPSession session )
     {
         SmtpSharedState sharedState = (SmtpSharedState) session.attachment( SHARED_STATE_KEY );
         return sharedState.passthru;
@@ -292,7 +292,7 @@ public class SmtpServerParserEventHandler extends AbstractEventHandler
      * error by the caller, or the reciept of a passthru token.
      * 
      */
-    protected void declarePassthru( NodeTCPSession session)
+    protected void declarePassthru( AppTCPSession session)
     {
         SmtpSharedState sharedState = (SmtpSharedState) session.attachment( SHARED_STATE_KEY );
         sharedState.passthru = true;

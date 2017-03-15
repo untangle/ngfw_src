@@ -16,14 +16,14 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.SessionEvent;
 
 import com.untangle.uvm.vnet.IPPacketHeader;
-import com.untangle.uvm.vnet.NodeSession;
-import com.untangle.uvm.vnet.NodeUDPSession;
+import com.untangle.uvm.vnet.AppSession;
+import com.untangle.uvm.vnet.AppUDPSession;
 import com.untangle.uvm.vnet.IPStreamer;
 
 /**
  * This is the primary implementation class for UDP live sessions.
  */
-public class NodeUDPSessionImpl extends NodeSessionImpl implements NodeUDPSession
+public class AppUDPSessionImpl extends AppSessionImpl implements AppUDPSession
 {
     protected int[] maxPacketSize;
 
@@ -32,7 +32,7 @@ public class NodeUDPSessionImpl extends NodeSessionImpl implements NodeUDPSessio
     
     private final String logPrefix;
     
-    protected NodeUDPSessionImpl(Dispatcher disp, SessionEvent sessionEvent, int clientMaxPacketSize, int serverMaxPacketSize, UDPNewSessionRequestImpl request )
+    protected AppUDPSessionImpl(Dispatcher disp, SessionEvent sessionEvent, int clientMaxPacketSize, int serverMaxPacketSize, UDPNewSessionRequestImpl request )
     {
         super(disp, sessionEvent, request );
 
@@ -78,10 +78,10 @@ public class NodeUDPSessionImpl extends NodeSessionImpl implements NodeUDPSessio
     {
         if (clientIncomingSocketQueue() == null) {
             assert clientOutgoingSocketQueue() == null;
-            return NodeSession.EXPIRED;
+            return AppSession.EXPIRED;
         } else {
             assert clientOutgoingSocketQueue() != null;
-            return NodeSession.OPEN;
+            return AppSession.OPEN;
         }
     }
 
@@ -89,10 +89,10 @@ public class NodeUDPSessionImpl extends NodeSessionImpl implements NodeUDPSessio
     {
         if (serverIncomingSocketQueue() == null) {
             assert serverOutgoingSocketQueue() == null;
-            return NodeSession.EXPIRED;
+            return AppSession.EXPIRED;
         } else {
             assert serverOutgoingSocketQueue() != null;
-            return NodeSession.OPEN;
+            return AppSession.OPEN;
         }
     }
 

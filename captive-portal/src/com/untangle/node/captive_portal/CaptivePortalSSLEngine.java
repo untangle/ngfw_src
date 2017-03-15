@@ -21,8 +21,8 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.security.KeyStore;
 
-import com.untangle.uvm.vnet.NodeTCPSession;
-import com.untangle.uvm.vnet.NodeSession;
+import com.untangle.uvm.vnet.AppTCPSession;
+import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.CertificateManager;
 import com.untangle.uvm.UvmContextFactory;
 
@@ -33,7 +33,7 @@ public class CaptivePortalSSLEngine
 
     private final Logger logger = Logger.getLogger(getClass());
     private final CaptivePortalApp captureNode;
-    private NodeTCPSession session;
+    private AppTCPSession session;
     private SSLContext sslContext;
     private SSLEngine sslEngine;
     private String nodeStr;
@@ -70,7 +70,7 @@ public class CaptivePortalSSLEngine
 
     // ------------------------------------------------------------------------
 
-    public void handleClientData(NodeTCPSession session, ByteBuffer buff)
+    public void handleClientData(AppTCPSession session, ByteBuffer buff)
     {
         this.session = session;
         boolean success = false;
@@ -87,7 +87,7 @@ public class CaptivePortalSSLEngine
 
         // null result means something went haywire
         if (!success) {
-            session.globalAttach(NodeSession.KEY_CAPTIVE_PORTAL_SSL_ENGINE, null);
+            session.globalAttach(AppSession.KEY_CAPTIVE_PORTAL_SSL_ENGINE, null);
             session.resetClient();
             session.resetServer();
             session.release();
@@ -323,7 +323,7 @@ public class CaptivePortalSSLEngine
         result = sslEngine.wrap(ibuff, obuff);
 
         // we are done so we cleanup and release the session
-        session.globalAttach(NodeSession.KEY_CAPTIVE_PORTAL_SSL_ENGINE, null);
+        session.globalAttach(AppSession.KEY_CAPTIVE_PORTAL_SSL_ENGINE, null);
         session.release();
 
         // return the now encrypted reply buffer back to the client

@@ -9,7 +9,7 @@ import java.nio.ByteBuffer;
 /**
  * A UDPSession is the most specific interface for VNet UDP sessions
  */
-public interface NodeUDPSession extends NodeSession
+public interface AppUDPSession extends AppSession
 {
     static final int UDP_MAX_MESG_SIZE = 65536;
 

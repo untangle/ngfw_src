@@ -25,18 +25,18 @@ import com.untangle.uvm.node.License;
 import com.untangle.uvm.node.SessionTuple;
 import com.untangle.uvm.node.IPMaskedAddress;
 import com.untangle.uvm.node.PortRange;
-import com.untangle.uvm.node.NodeMetric;
+import com.untangle.uvm.node.AppMetric;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipelineConnector;
-import com.untangle.uvm.vnet.NodeBase;
-import com.untangle.uvm.vnet.NodeSession;
+import com.untangle.uvm.node.AppBase;
+import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.vnet.Subscription;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.logging.LogEvent;
 
-public class ApplicationControlApp extends NodeBase
+public class ApplicationControlApp extends AppBase
 {
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -77,10 +77,10 @@ public class ApplicationControlApp extends NodeBase
     {
         super(appSettings, appProperties);
 
-        this.addMetric(new NodeMetric(STAT_SCAN, I18nUtil.marktr("Session scanned")));
-        this.addMetric(new NodeMetric(STAT_PASS, I18nUtil.marktr("Sessions passed")));
-        this.addMetric(new NodeMetric(STAT_FLAG, I18nUtil.marktr("Sessions flagged")));
-        this.addMetric(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Sessions blocked")));
+        this.addMetric(new AppMetric(STAT_SCAN, I18nUtil.marktr("Session scanned")));
+        this.addMetric(new AppMetric(STAT_PASS, I18nUtil.marktr("Sessions passed")));
+        this.addMetric(new AppMetric(STAT_FLAG, I18nUtil.marktr("Sessions flagged")));
+        this.addMetric(new AppMetric(STAT_BLOCK, I18nUtil.marktr("Sessions blocked")));
 
         this.rawConnector = UvmContextFactory.context().pipelineFoundry().create("application_control-raw", this, null, rawHandler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.SERVER, 5, true);
         this.webConnector = UvmContextFactory.context().pipelineFoundry().create("application_control-web", this, null, webHandler, Fitting.HTTP_STREAM, Fitting.HTTP_STREAM, Affinity.SERVER, 5, true);
@@ -405,7 +405,7 @@ public class ApplicationControlApp extends NodeBase
             public boolean isMatch(Integer policyId, short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort, Map<String, Object> attachments)
             {
                 // find the application and if missing leave the session alone
-                String application = (String) attachments.get(NodeSession.KEY_APPLICATION_CONTROL_APPLICATION);
+                String application = (String) attachments.get(AppSession.KEY_APPLICATION_CONTROL_APPLICATION);
                 if (application == null) return (false);
 
                 // see if there is a rule for the application and if not leave the session alone

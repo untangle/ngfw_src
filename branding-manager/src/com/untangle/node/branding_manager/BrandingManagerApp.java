@@ -20,14 +20,14 @@ import org.apache.commons.fileupload.FileItem;
 
 import com.untangle.uvm.CertificateManager;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.vnet.NodeBase;
+import com.untangle.uvm.node.AppBase;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.node.License;
 import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.util.IOUtil;
 
-public class BrandingManagerApp extends NodeBase implements com.untangle.uvm.BrandingManager
+public class BrandingManagerApp extends AppBase implements com.untangle.uvm.BrandingManager
 {
     private static final File DEFAULT_LOGO = new File("/var/www/images/Logo150x96.png");;
     private static final File BRANDING_LOGO = new File("/var/www/images/BrandingLogo.png");

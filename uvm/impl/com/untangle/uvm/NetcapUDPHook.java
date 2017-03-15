@@ -17,7 +17,7 @@ import com.untangle.jvector.Source;
 import com.untangle.jvector.UDPSink;
 import com.untangle.jvector.UDPSource;
 import com.untangle.uvm.node.SessionEvent;
-import com.untangle.uvm.vnet.NodeUDPSession;
+import com.untangle.uvm.vnet.AppUDPSession;
 
 public class NetcapUDPHook implements NetcapCallback
 {
@@ -118,8 +118,8 @@ public class NetcapUDPHook implements NetcapCallback
 
             serviceSideAttributes = new UDPAttributes( clientAddr, clientPort, serverAddr, serverPort );
             
-            //serviceSideAttributes.ttl( ((NodeUDPSessionImpl)session).ttl()); XXX
-            //serviceSideAttributes.tos( ((NodeUDPSessionImpl)session).tos()); XXX
+            //serviceSideAttributes.ttl( ((AppUDPSessionImpl)session).ttl()); XXX
+            //serviceSideAttributes.tos( ((AppUDPSessionImpl)session).tos()); XXX
 
             /* Setup the marking */
             serviceSideAttributes.isMarkEnabled( true );
@@ -188,7 +188,7 @@ public class NetcapUDPHook implements NetcapCallback
             return new UDPSource( netcapUDPSession.serverMailbox(), serverSideListener );
         }
 
-        protected void initializeNodeSessions( SessionEvent sessionEvent )
+        protected void initializeAppSessions( SessionEvent sessionEvent )
         {
             UDPNewSessionRequestImpl prevRequest = null;
 
@@ -203,10 +203,10 @@ public class NetcapUDPHook implements NetcapCallback
                     request = new UDPNewSessionRequestImpl( prevRequest, agent, sessionEvent, sessionGlobalState );
                 }
 
-                NodeUDPSession session = agent.getDispatcher().newSession( request );
+                AppUDPSession session = agent.getDispatcher().newSession( request );
 
                 try {
-                    processSession( request, ((NodeUDPSessionImpl)session) );
+                    processSession( request, ((AppUDPSessionImpl)session) );
                 } catch (IllegalStateException e) {
                     logger.warn(agent.toString() + " Exception: ", e);
                     throw e;

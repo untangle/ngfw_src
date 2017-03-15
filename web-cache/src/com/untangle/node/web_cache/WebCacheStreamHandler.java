@@ -10,8 +10,8 @@ import java.io.IOException;
 
 import com.untangle.uvm.util.AsciiCharBuffer;
 import com.untangle.uvm.vnet.AbstractEventHandler;
-import com.untangle.uvm.vnet.NodeTCPSession;
-import com.untangle.uvm.vnet.NodeSession;
+import com.untangle.uvm.vnet.AppTCPSession;
+import com.untangle.uvm.vnet.AppSession;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Level;
 
@@ -28,7 +28,7 @@ public class WebCacheStreamHandler extends AbstractEventHandler
     }
 
     @Override
-    public void handleTCPNewSession( NodeTCPSession session )
+    public void handleTCPNewSession( AppTCPSession session )
     {
         logger.debug("WEBCACHE handleTCPNewSession()");
 
@@ -57,7 +57,7 @@ public class WebCacheStreamHandler extends AbstractEventHandler
     }
 
     @Override
-    public void handleTCPFinalized( NodeTCPSession session )
+    public void handleTCPFinalized( AppTCPSession session )
     {
         WebCacheSessionInfo sessInfo = (WebCacheSessionInfo)session.attachment();
         logger.debug("WEBCACHE handleTCPFinalized()");
@@ -71,7 +71,7 @@ public class WebCacheStreamHandler extends AbstractEventHandler
     }
 
     @Override
-    public void handleTCPClientChunk ( NodeTCPSession session, ByteBuffer data )
+    public void handleTCPClientChunk ( AppTCPSession session, ByteBuffer data )
     {
         ByteBuffer chunk = data;
         logger.debug("WEBCACHE handleTCPClientChunk received " + chunk.limit() + " bytes");
@@ -82,7 +82,7 @@ public class WebCacheStreamHandler extends AbstractEventHandler
     }
 
     @Override
-    public void handleTCPClientDataEnd( NodeTCPSession session, ByteBuffer data  )
+    public void handleTCPClientDataEnd( AppTCPSession session, ByteBuffer data  )
     {
         WebCacheSessionInfo sessInfo = (WebCacheSessionInfo)session.attachment();
         logger.debug("WEBCACHE handleTCPClientDataEnd");
@@ -92,7 +92,7 @@ public class WebCacheStreamHandler extends AbstractEventHandler
     }
 
     @Override
-    public void handleTCPServerChunk ( NodeTCPSession session, ByteBuffer data )
+    public void handleTCPServerChunk ( AppTCPSession session, ByteBuffer data )
     {
         if (node.SOCKET_DEBUG == true) logger.debug("WEBCACHE handleTCPServerChunk received " + data.limit() + " bytes");
 
@@ -103,7 +103,7 @@ public class WebCacheStreamHandler extends AbstractEventHandler
     }
 
     @Override
-    public void handleTCPServerDataEnd( NodeTCPSession session, ByteBuffer data )
+    public void handleTCPServerDataEnd( AppTCPSession session, ByteBuffer data )
     {
         WebCacheSessionInfo sessInfo = (WebCacheSessionInfo)session.attachment();
         logger.debug("WEBCACHE handleTCPServerDataEnd");
@@ -117,7 +117,7 @@ public class WebCacheStreamHandler extends AbstractEventHandler
      *  OPTIONS, GET, HEAD, POST, PUT, DELETE, TRACE, CONNECT
      */
 
-    private void processClientRequest( NodeTCPSession sess, ByteBuffer data )
+    private void processClientRequest( AppTCPSession sess, ByteBuffer data )
     {
         WebCacheSessionInfo sessInfo = (WebCacheSessionInfo)sess.attachment();
         ByteBuffer chunk = data;
@@ -396,7 +396,7 @@ public class WebCacheStreamHandler extends AbstractEventHandler
         return;
     }
 
-    private void processServerResponse( NodeTCPSession sess, ByteBuffer data )
+    private void processServerResponse( AppTCPSession sess, ByteBuffer data )
     {
         ByteBuffer chunk = data;
         WebCacheSessionInfo sessInfo = (WebCacheSessionInfo)sess.attachment();

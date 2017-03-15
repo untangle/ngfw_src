@@ -6,7 +6,7 @@ package com.untangle.node.spam_blocker;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.vnet.AbstractEventHandler;
-import com.untangle.uvm.vnet.NodeSession;
+import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 

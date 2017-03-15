@@ -23,7 +23,7 @@ import javax.net.ssl.SSLException;
 
 import com.untangle.uvm.vnet.Token;
 import com.untangle.uvm.vnet.ReleaseToken;
-import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 
 import org.apache.log4j.Logger;
@@ -58,7 +58,7 @@ public class SslInspectorUnparserEventHandler extends AbstractEventHandler
     // ------------------------------------------------------------------------
 
     @Override
-    public void handleTCPClientChunk(NodeTCPSession session, ByteBuffer data)
+    public void handleTCPClientChunk(AppTCPSession session, ByteBuffer data)
     {
         if (clientSide) {
             logger.warn("Received unexpected event");
@@ -69,7 +69,7 @@ public class SslInspectorUnparserEventHandler extends AbstractEventHandler
     }
 
     @Override
-    public void handleTCPServerChunk(NodeTCPSession session, ByteBuffer data)
+    public void handleTCPServerChunk(AppTCPSession session, ByteBuffer data)
     {
         if (clientSide) {
             streamUnparse(session, data, true);
@@ -80,7 +80,7 @@ public class SslInspectorUnparserEventHandler extends AbstractEventHandler
     }
 
     @Override
-    public void handleTCPClientDataEnd(NodeTCPSession session, ByteBuffer data)
+    public void handleTCPClientDataEnd(AppTCPSession session, ByteBuffer data)
     {
         if (clientSide) {
             logger.warn("Received unexpected event");
@@ -91,7 +91,7 @@ public class SslInspectorUnparserEventHandler extends AbstractEventHandler
     }
 
     @Override
-    public void handleTCPServerDataEnd(NodeTCPSession session, ByteBuffer data)
+    public void handleTCPServerDataEnd(AppTCPSession session, ByteBuffer data)
     {
         if (clientSide) {
             streamUnparse(session, data, true);
@@ -103,7 +103,7 @@ public class SslInspectorUnparserEventHandler extends AbstractEventHandler
 
     // private methods --------------------------------------------------------
 
-    private void streamUnparse(NodeTCPSession session, ByteBuffer data, boolean s2c)
+    private void streamUnparse(AppTCPSession session, ByteBuffer data, boolean s2c)
     {
         SslInspectorManager manager = getManager(session);
         boolean tlsFlag = (s2c ? manager.tlsFlagServer : manager.tlsFlagClient);
@@ -157,7 +157,7 @@ public class SslInspectorUnparserEventHandler extends AbstractEventHandler
         }
     }
 
-    public void unparse(NodeTCPSession session, ByteBuffer data, SslInspectorManager manager)
+    public void unparse(AppTCPSession session, ByteBuffer data, SslInspectorManager manager)
     {
         String sslProblem = null;
         String logDetail = null;
@@ -193,7 +193,7 @@ public class SslInspectorUnparserEventHandler extends AbstractEventHandler
         if (success == false) {
             // put something in the event log starting with any ssl message we extracted above
             logDetail = sslProblem;
-            if (logDetail == null) logDetail = (String) session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME);
+            if (logDetail == null) logDetail = (String) session.globalAttachment(AppTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME);
             if (logDetail == null) logDetail = session.getServerAddr().getHostAddress();
             SslInspectorLogEvent logevt = new SslInspectorLogEvent(session.sessionEvent(), 0, SslInspectorApp.STAT_ABANDONED, logDetail);
             node.logEvent(logevt);
@@ -212,7 +212,7 @@ public class SslInspectorUnparserEventHandler extends AbstractEventHandler
 
     // ------------------------------------------------------------------------
 
-    private void shutdownOtherSide(NodeTCPSession session, boolean killSession)
+    private void shutdownOtherSide(AppTCPSession session, boolean killSession)
     {
         ByteBuffer message = ByteBuffer.allocate(256);
 
@@ -225,17 +225,17 @@ public class SslInspectorUnparserEventHandler extends AbstractEventHandler
 
         SslInspectorManager manager = getManager(session);
         if (manager.getClientSide()) {
-            SslInspectorManager server = (SslInspectorManager) session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_SERVER_MANAGER);
+            SslInspectorManager server = (SslInspectorManager) session.globalAttachment(AppTCPSession.KEY_SSL_INSPECTOR_SERVER_MANAGER);
             server.getSession().simulateClientData(message);
         } else {
-            SslInspectorManager client = (SslInspectorManager) session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_CLIENT_MANAGER);
+            SslInspectorManager client = (SslInspectorManager) session.globalAttachment(AppTCPSession.KEY_SSL_INSPECTOR_CLIENT_MANAGER);
             client.getSession().simulateServerData(message);
         }
     }
 
     // ------------------------------------------------------------------------
 
-    private boolean unparseWorker(NodeTCPSession session, ByteBuffer data) throws Exception
+    private boolean unparseWorker(AppTCPSession session, ByteBuffer data) throws Exception
     {
         SslInspectorManager manager = getManager(session);
         ByteBuffer target = ByteBuffer.allocate(32768);
@@ -331,7 +331,7 @@ public class SslInspectorUnparserEventHandler extends AbstractEventHandler
 
     // ------------------------------------------------------------------------
 
-    private boolean doNeedTask(NodeTCPSession session, ByteBuffer data) throws Exception
+    private boolean doNeedTask(AppTCPSession session, ByteBuffer data) throws Exception
     {
         SslInspectorManager manager = getManager(session);
         Runnable runnable;
@@ -346,7 +346,7 @@ public class SslInspectorUnparserEventHandler extends AbstractEventHandler
 
     // ------------------------------------------------------------------------
 
-    private boolean doNeedWrap(NodeTCPSession session, ByteBuffer data, ByteBuffer target) throws Exception
+    private boolean doNeedWrap(AppTCPSession session, ByteBuffer data, ByteBuffer target) throws Exception
     {
         SslInspectorManager manager = getManager(session);
         SSLEngineResult result;
@@ -380,7 +380,7 @@ public class SslInspectorUnparserEventHandler extends AbstractEventHandler
 
     // ------------------------------------------------------------------------
 
-    private boolean doNotHandshaking(NodeTCPSession session, ByteBuffer data, ByteBuffer target) throws Exception
+    private boolean doNotHandshaking(AppTCPSession session, ByteBuffer data, ByteBuffer target) throws Exception
     {
         SslInspectorManager manager = getManager(session);
         SSLEngineResult result;
@@ -444,11 +444,11 @@ public class SslInspectorUnparserEventHandler extends AbstractEventHandler
         return true;
     }
 
-    private SslInspectorManager getManager(NodeTCPSession session)
+    private SslInspectorManager getManager(AppTCPSession session)
     {
         if (clientSide)
-            return (SslInspectorManager) session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_CLIENT_MANAGER);
+            return (SslInspectorManager) session.globalAttachment(AppTCPSession.KEY_SSL_INSPECTOR_CLIENT_MANAGER);
         else
-            return (SslInspectorManager) session.globalAttachment(NodeTCPSession.KEY_SSL_INSPECTOR_SERVER_MANAGER);
+            return (SslInspectorManager) session.globalAttachment(AppTCPSession.KEY_SSL_INSPECTOR_SERVER_MANAGER);
     }
 }

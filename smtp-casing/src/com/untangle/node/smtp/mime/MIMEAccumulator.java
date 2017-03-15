@@ -18,7 +18,7 @@ import javax.mail.internet.MimeMessage;
 import org.apache.log4j.Logger;
 
 import com.untangle.node.smtp.SmtpMessageEvent;
-import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.vnet.TCPStreamer;
 
 /**
@@ -174,7 +174,7 @@ public class MIMEAccumulator
      * @param pipeline
      *            the pipeline (for creating a temp file).
      */
-    public MIMEAccumulator( NodeTCPSession session ) throws IOException
+    public MIMEAccumulator( AppTCPSession session ) throws IOException
     {
         this.logger.debug("Opening temp file to buffer MIME");
         try {

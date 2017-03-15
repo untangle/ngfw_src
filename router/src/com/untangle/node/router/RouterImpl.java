@@ -10,11 +10,11 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
-import com.untangle.uvm.vnet.NodeBase;
+import com.untangle.uvm.node.AppBase;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.node.HostnameLookup;
 
-public class RouterImpl extends NodeBase implements HostnameLookup
+public class RouterImpl extends AppBase implements HostnameLookup
 {
     private final RouterEventHandler handler;
     private final DhcpMonitor dhcpMonitor;

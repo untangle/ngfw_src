@@ -1172,7 +1172,7 @@ Ext.define("Ung.FaceplateMetric", {
         this.chart = Ung.charts.nodeChart(chartContainerEl.dom, this.chartData);
         
         chartContainerEl.on("click", function(e) { 
-            Ung.Main.showNodeSessions( this.parentNodeId ); 
+            Ung.Main.showAppSessions( this.parentNodeId ); 
         }, this);
     },
     buildActiveMetrics: function () {

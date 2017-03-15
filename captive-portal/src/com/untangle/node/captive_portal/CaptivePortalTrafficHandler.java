@@ -12,10 +12,10 @@ import com.untangle.uvm.vnet.UDPNewSessionRequest;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
-import com.untangle.uvm.vnet.NodeTCPSession;
-import com.untangle.uvm.vnet.NodeUDPSession;
+import com.untangle.uvm.vnet.AppTCPSession;
+import com.untangle.uvm.vnet.AppUDPSession;
 import com.untangle.uvm.vnet.IPPacketHeader;
-import com.untangle.uvm.vnet.NodeSession;
+import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.UvmContextFactory;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Level;
@@ -45,7 +45,7 @@ public class CaptivePortalTrafficHandler extends AbstractEventHandler
 
         // if the https inspector has attached the session manager then
         // we can allow the traffic since it will come later as http
-        if (sessreq.globalAttachment(NodeSession.KEY_SSL_INSPECTOR_SERVER_MANAGER) != null) {
+        if (sessreq.globalAttachment(AppSession.KEY_SSL_INSPECTOR_SERVER_MANAGER) != null) {
             sessreq.release();
             return;
         }
@@ -95,7 +95,7 @@ public class CaptivePortalTrafficHandler extends AbstractEventHandler
         // so we add a special global attachment that the https handler uses
         // to detect sessions that need https-->http redirection
         if (sessreq.getNewServerPort() == 443) {
-            sessreq.globalAttach(NodeSession.KEY_CAPTIVE_PORTAL_REDIRECT, sessreq.getOrigClientAddr());
+            sessreq.globalAttach(AppSession.KEY_CAPTIVE_PORTAL_REDIRECT, sessreq.getOrigClientAddr());
             sessreq.release();
             return;
         }
@@ -173,7 +173,7 @@ public class CaptivePortalTrafficHandler extends AbstractEventHandler
     }
 
     @Override
-    public void handleUDPClientPacket( NodeUDPSession session, ByteBuffer data, IPPacketHeader header )
+    public void handleUDPClientPacket( AppUDPSession session, ByteBuffer data, IPPacketHeader header )
     {
         DNSPacket packet = new DNSPacket();
         ByteBuffer response = null;

@@ -16,15 +16,15 @@ import com.untangle.jvector.OutgoingSocketQueue;
 import com.untangle.jvector.ResetCrumb;
 import com.untangle.jvector.ShutdownCrumb;
 import com.untangle.uvm.node.SessionEvent;
-import com.untangle.uvm.vnet.NodeSession;
-import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.vnet.AppSession;
+import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.vnet.IPStreamer;
 import com.untangle.uvm.vnet.TCPStreamer;
 
 /**
  * This is the primary implementation class for TCP live sessions.
  */
-public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSession
+public class AppTCPSessionImpl extends AppSessionImpl implements AppTCPSession
 {
     private static final ByteBuffer EMPTY_BUF = ByteBuffer.allocate(0);
     private static final String TEMP_FILE_KEY = "temp_file_attachemnt_key";
@@ -36,7 +36,7 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
     protected boolean[] lineBuffering = new boolean[] { false, false };
     protected ByteBuffer[] readBuf = new ByteBuffer[] { null, null };
 
-    protected NodeTCPSessionImpl( Dispatcher disp, SessionEvent sessionEvent, int clientReadBufferSize, int serverReadBufferSize, IPNewSessionRequestImpl request )
+    protected AppTCPSessionImpl( Dispatcher disp, SessionEvent sessionEvent, int clientReadBufferSize, int serverReadBufferSize, IPNewSessionRequestImpl request )
     {
         super( disp, sessionEvent, request );
 
@@ -138,28 +138,28 @@ public class NodeTCPSessionImpl extends NodeSessionImpl implements NodeTCPSessio
     {
         if (clientIncomingSocketQueue() == null)
             if (clientOutgoingSocketQueue() == null)
-                return NodeSession.CLOSED;
+                return AppSession.CLOSED;
             else
-                return NodeSession.HALF_OPEN_OUTPUT;
+                return AppSession.HALF_OPEN_OUTPUT;
         else
             if (clientOutgoingSocketQueue() == null)
-                return NodeSession.HALF_OPEN_INPUT;
+                return AppSession.HALF_OPEN_INPUT;
             else
-                return NodeSession.OPEN;
+                return AppSession.OPEN;
     }
 
     public byte serverState()
     {
         if (serverIncomingSocketQueue() == null)
             if (serverOutgoingSocketQueue() == null)
-                return NodeSession.CLOSED;
+                return AppSession.CLOSED;
             else
-                return NodeSession.HALF_OPEN_OUTPUT;
+                return AppSession.HALF_OPEN_OUTPUT;
         else
             if (serverOutgoingSocketQueue() == null)
-                return NodeSession.HALF_OPEN_INPUT;
+                return AppSession.HALF_OPEN_INPUT;
             else
-                return NodeSession.OPEN;
+                return AppSession.OPEN;
     }
 
     public void shutdownServer()

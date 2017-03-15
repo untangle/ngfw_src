@@ -11,7 +11,7 @@ import java.util.Map;
 import com.untangle.uvm.node.AppProperties;
 import com.untangle.uvm.node.License;
 import com.untangle.uvm.node.AppSettings;
-import com.untangle.uvm.node.NodeMetric;
+import com.untangle.uvm.node.AppMetric;
 
 /**
  * The AppsView is an object that represents the current "view" of the apps tab
@@ -28,11 +28,11 @@ public class AppsView implements Serializable
     private List<AppProperties> installable;
     private List<AppSettings> instances;
     private List<AppProperties> appProperties;
-    private Map<Long, List<NodeMetric>> nodeMetrics;
+    private Map<Long, List<AppMetric>> nodeMetrics;
     private Map<String, License> licenseMap;
     private Map<Long, AppSettings.AppState> runStates;
 
-    public AppsView(int policyId, List<AppProperties> installable, List<AppSettings> instances, List<AppProperties> appProperties, Map<Long, List<NodeMetric>> nodeMetrics, Map<String, License> license, Map<Long, AppSettings.AppState> runStates)
+    public AppsView(int policyId, List<AppProperties> installable, List<AppSettings> instances, List<AppProperties> appProperties, Map<Long, List<AppMetric>> nodeMetrics, Map<String, License> license, Map<Long, AppSettings.AppState> runStates)
     {
         this.policyId = policyId;
         this.installable = installable;
@@ -47,7 +47,7 @@ public class AppsView implements Serializable
     public List<AppProperties> getInstallable() { return installable; }
     public List<AppSettings> getInstances() { return instances; }
     public List<AppProperties> getAppProperties() { return appProperties; }
-    public Map<Long, List<NodeMetric>> getNodeMetrics() { return nodeMetrics; }
+    public Map<Long, List<AppMetric>> getAppMetrics() { return nodeMetrics; }
     public Map<String, License> getLicenseMap() { return licenseMap; }
     public Map<Long, AppSettings.AppState> getRunStates() { return runStates; }
 

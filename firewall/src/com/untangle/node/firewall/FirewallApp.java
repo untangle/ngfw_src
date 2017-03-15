@@ -16,16 +16,16 @@ import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.node.AppSettings;
 import com.untangle.uvm.node.AppProperties;
-import com.untangle.uvm.node.NodeMetric;
+import com.untangle.uvm.node.AppMetric;
 import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.vnet.NodeBase;
+import com.untangle.uvm.node.AppBase;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.Protocol;
-import com.untangle.uvm.vnet.NodeSession;
+import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.vnet.PipelineConnector;
 
-public class FirewallApp extends NodeBase
+public class FirewallApp extends AppBase
 {
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -85,9 +85,9 @@ public class FirewallApp extends NodeBase
 
         this.handler = new EventHandler(this);
 
-        this.addMetric(new NodeMetric(STAT_PASS, I18nUtil.marktr("Sessions passed")));
-        this.addMetric(new NodeMetric(STAT_FLAG, I18nUtil.marktr("Sessions flagged")));
-        this.addMetric(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Sessions blocked")));
+        this.addMetric(new AppMetric(STAT_PASS, I18nUtil.marktr("Sessions passed")));
+        this.addMetric(new AppMetric(STAT_FLAG, I18nUtil.marktr("Sessions flagged")));
+        this.addMetric(new AppMetric(STAT_BLOCK, I18nUtil.marktr("Sessions blocked")));
 
         this.connector = UvmContextFactory.context().pipelineFoundry().create("firewall", this, null, handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, -900, false);
         this.connectors = new PipelineConnector[] { connector };

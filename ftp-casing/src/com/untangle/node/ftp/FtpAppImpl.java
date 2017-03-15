@@ -9,7 +9,7 @@ import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.vnet.Affinity;
-import com.untangle.uvm.vnet.NodeBase;
+import com.untangle.uvm.node.AppBase;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.ForkedEventHandler;
@@ -19,7 +19,7 @@ import com.untangle.uvm.vnet.PipelineConnector;
 /**
  * FTP node implementation.
  */
-public class FtpAppImpl extends NodeBase
+public class FtpAppImpl extends AppBase
 {
     private final Logger logger = Logger.getLogger(FtpAppImpl.class);
 

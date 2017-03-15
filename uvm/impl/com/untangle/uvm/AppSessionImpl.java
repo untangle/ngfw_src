@@ -19,9 +19,9 @@ import static com.untangle.uvm.Dispatcher.SESSION_ID_MDC_KEY;
 
 import com.untangle.uvm.Tag;
 import com.untangle.uvm.vnet.PipelineConnector;
-import com.untangle.uvm.vnet.NodeSession;
+import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.node.SessionEvent;
-import com.untangle.uvm.node.Node;
+import com.untangle.uvm.node.App;
 import com.untangle.uvm.node.AppSettings;
 import com.untangle.uvm.vnet.IPStreamer;
 import com.untangle.jnetcap.NetcapSession;
@@ -42,9 +42,9 @@ import org.apache.log4j.Logger;
 /**
  * Abstract base class for all live sessions
  */
-public abstract class NodeSessionImpl implements NodeSession
+public abstract class AppSessionImpl implements AppSession
 {
-    protected Logger logger = Logger.getLogger(NodeSessionImpl.class);
+    protected Logger logger = Logger.getLogger(AppSessionImpl.class);
 
     protected boolean released = false;
 
@@ -97,7 +97,7 @@ public abstract class NodeSessionImpl implements NodeSession
     protected HashMap<String,Object> stringAttachments = new HashMap<String,Object>();
     private static final String NO_KEY_VALUE = "NOKEY";
     
-    protected NodeSessionImpl( Dispatcher dispatcher, SessionEvent sessionEvent, IPNewSessionRequestImpl request )
+    protected AppSessionImpl( Dispatcher dispatcher, SessionEvent sessionEvent, IPNewSessionRequestImpl request )
     {
         this.dispatcher = dispatcher;
         this.pipelineConnector = dispatcher.pipelineConnector();
@@ -110,11 +110,11 @@ public abstract class NodeSessionImpl implements NodeSession
         if ( isVectored ) {
             this.isVectored           = true;
 
-            clientIncomingSocketQueue = new IncomingSocketQueue( pipelineConnector().node().getAppSettings().getAppName() + " client side");
-            clientOutgoingSocketQueue = new OutgoingSocketQueue( pipelineConnector().node().getAppSettings().getAppName() + " client side");
+            clientIncomingSocketQueue = new IncomingSocketQueue( pipelineConnector().app().getAppSettings().getAppName() + " client side");
+            clientOutgoingSocketQueue = new OutgoingSocketQueue( pipelineConnector().app().getAppSettings().getAppName() + " client side");
 
-            serverIncomingSocketQueue = new IncomingSocketQueue( pipelineConnector().node().getAppSettings().getAppName() + " server side");
-            serverOutgoingSocketQueue = new OutgoingSocketQueue( pipelineConnector().node().getAppSettings().getAppName() + " server side");
+            serverIncomingSocketQueue = new IncomingSocketQueue( pipelineConnector().app().getAppSettings().getAppName() + " server side");
+            serverOutgoingSocketQueue = new OutgoingSocketQueue( pipelineConnector().app().getAppSettings().getAppName() + " server side");
         } else {
             this.isVectored           = false;
 
@@ -364,7 +364,7 @@ public abstract class NodeSessionImpl implements NodeSession
     public void raze()
     {
         try {
-            UvmContextImpl.getInstance().loggingManager().setLoggingNode( pipelineConnector().node().getAppSettings().getId() );
+            UvmContextImpl.getInstance().loggingManager().setLoggingApp( pipelineConnector().app().getAppSettings().getId() );
             MDC.put(SESSION_ID_MDC_KEY, idForMDC());
 
             if ( this.clientIncomingSocketQueue != null )
@@ -636,7 +636,7 @@ public abstract class NodeSessionImpl implements NodeSession
     public void complete()
     {
         try {
-            UvmContextImpl.getInstance().loggingManager().setLoggingNode(pipelineConnector().node().getAppSettings().getId());
+            UvmContextImpl.getInstance().loggingManager().setLoggingApp(pipelineConnector().app().getAppSettings().getId());
             MDC.put(SESSION_ID_MDC_KEY, idForMDC());
 
             sendCompleteEvent();
@@ -655,7 +655,7 @@ public abstract class NodeSessionImpl implements NodeSession
     public void clientEvent(IncomingSocketQueue in)
     {
         try {
-            UvmContextImpl.getInstance().loggingManager().setLoggingNode(pipelineConnector().node().getAppSettings().getId());
+            UvmContextImpl.getInstance().loggingManager().setLoggingApp(pipelineConnector().app().getAppSettings().getId());
             readEvent(CLIENT, in);
         } finally {
             UvmContextImpl.getInstance().loggingManager().setLoggingUvm();
@@ -665,7 +665,7 @@ public abstract class NodeSessionImpl implements NodeSession
     public void serverEvent(IncomingSocketQueue in)
     {
         try {
-            UvmContextImpl.getInstance().loggingManager().setLoggingNode(pipelineConnector().node().getAppSettings().getId());
+            UvmContextImpl.getInstance().loggingManager().setLoggingApp(pipelineConnector().app().getAppSettings().getId());
             readEvent(SERVER, in);
         } finally {
             UvmContextImpl.getInstance().loggingManager().setLoggingUvm();
@@ -675,7 +675,7 @@ public abstract class NodeSessionImpl implements NodeSession
     public void clientEvent(OutgoingSocketQueue out)
     {
         try {
-            UvmContextImpl.getInstance().loggingManager().setLoggingNode(pipelineConnector().node().getAppSettings().getId());
+            UvmContextImpl.getInstance().loggingManager().setLoggingApp(pipelineConnector().app().getAppSettings().getId());
             writeEvent(CLIENT, out);
         } finally {
             UvmContextImpl.getInstance().loggingManager().setLoggingUvm();
@@ -685,7 +685,7 @@ public abstract class NodeSessionImpl implements NodeSession
     public void serverEvent(OutgoingSocketQueue out)
     {
         try {
-            UvmContextImpl.getInstance().loggingManager().setLoggingNode(pipelineConnector().node().getAppSettings().getId());
+            UvmContextImpl.getInstance().loggingManager().setLoggingApp(pipelineConnector().app().getAppSettings().getId());
             writeEvent(SERVER, out);
         } finally {
             UvmContextImpl.getInstance().loggingManager().setLoggingUvm();
@@ -693,12 +693,12 @@ public abstract class NodeSessionImpl implements NodeSession
     }
 
     /** The write side of the client has been closed from underneath
-     * the node, this is the same as an EPIPE, but is delivered
+     * the app, this is the same as an EPIPE, but is delivered
      * as an event */
     public void clientOutputResetEvent(OutgoingSocketQueue out)
     {
         try {
-            UvmContextImpl.getInstance().loggingManager().setLoggingNode(pipelineConnector().node().getAppSettings().getId());
+            UvmContextImpl.getInstance().loggingManager().setLoggingApp(pipelineConnector().app().getAppSettings().getId());
             MDC.put(SESSION_ID_MDC_KEY, idForMDC());
 
             IncomingSocketQueue in = clientIncomingSocketQueue();
@@ -718,12 +718,12 @@ public abstract class NodeSessionImpl implements NodeSession
     }
 
     /** The write side of the server has been closed from underneath
-     * the node, this is the same as an EPIPE, but is delivered
+     * the app, this is the same as an EPIPE, but is delivered
      * as an event */
     public void serverOutputResetEvent(OutgoingSocketQueue out)
     {
         try {
-            UvmContextImpl.getInstance().loggingManager().setLoggingNode(pipelineConnector().node().getAppSettings().getId());
+            UvmContextImpl.getInstance().loggingManager().setLoggingApp(pipelineConnector().app().getAppSettings().getId());
             MDC.put(SESSION_ID_MDC_KEY, idForMDC());
 
             IncomingSocketQueue in = serverIncomingSocketQueue();
@@ -938,7 +938,7 @@ public abstract class NodeSessionImpl implements NodeSession
      * had been received across the network directly from the client or server.
      * These functions were added specifically to allow the client and server
      * sides of the https-casing to pass messages back and forth without the data
-     * passing through all the other nodes subscribed to HTTP tokens.
+     * passing through all the other apps subscribed to HTTP tokens.
      */
     public void simulateClientData(ByteBuffer data)
     {
@@ -994,7 +994,7 @@ public abstract class NodeSessionImpl implements NodeSession
         String origClientAddr = ( getOrigClientAddr() != null ? getOrigClientAddr().getHostAddress() : "null" );
         String newServerAddr = ( getNewServerAddr() != null ? getNewServerAddr().getHostAddress() : "null" );
         return "" +
-            "[NodeSession-" + System.identityHashCode(this) + "]" +
+            "[AppSession-" + System.identityHashCode(this) + "]" +
             "[Session-" + getSessionId() + "] " +
             getProtocol() + " " +
             origClientAddr + ":" +
@@ -1165,7 +1165,7 @@ public abstract class NodeSessionImpl implements NodeSession
                 if ( isDebugEnabled ) {
                     logger.debug( "ShutdownEvent: server - " + out + " closed: " + out.isClosed());
                 }
-                /* If the node hasn't closed the socket queue yet, send the even */
+                /* If the app hasn't closed the socket queue yet, send the even */
                 if ( !out.isClosed()) {
                     /* This is equivalent to an EPIPE */
                     serverOutputResetEvent( out );

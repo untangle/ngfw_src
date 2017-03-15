@@ -11,7 +11,7 @@ import com.untangle.node.http.StatusLine;
 import com.untangle.uvm.vnet.ChunkToken;
 import com.untangle.node.http.HeaderToken;
 import com.untangle.uvm.vnet.Token;
-import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.vnet.AppTCPSession;
 
 /**
  * Blocks HTTP traffic that is on an active block list.
@@ -32,13 +32,13 @@ public class WebFilterBaseHandler extends HttpEventHandler
     // HttpEventHandler methods -----------------------------------------------
 
     @Override
-    protected RequestLineToken doRequestLine( NodeTCPSession session, RequestLineToken requestLine )
+    protected RequestLineToken doRequestLine( AppTCPSession session, RequestLineToken requestLine )
     {
         return requestLine;
     }
 
     @Override
-    protected HeaderToken doRequestHeader( NodeTCPSession sess, HeaderToken requestHeader )
+    protected HeaderToken doRequestHeader( AppTCPSession sess, HeaderToken requestHeader )
     {
         node.incrementScanCount();
 
@@ -64,23 +64,23 @@ public class WebFilterBaseHandler extends HttpEventHandler
     }
 
     @Override
-    protected ChunkToken doRequestBody( NodeTCPSession session, ChunkToken c )
+    protected ChunkToken doRequestBody( AppTCPSession session, ChunkToken c )
     {
         return c;
     }
 
     @Override
-    protected void doRequestBodyEnd( NodeTCPSession session )
+    protected void doRequestBodyEnd( AppTCPSession session )
     { }
 
     @Override
-    protected StatusLine doStatusLine( NodeTCPSession session, StatusLine statusLine )
+    protected StatusLine doStatusLine( AppTCPSession session, StatusLine statusLine )
     {
         return statusLine;
     }
 
     @Override
-    protected HeaderToken doResponseHeader( NodeTCPSession sess, HeaderToken responseHeader )
+    protected HeaderToken doResponseHeader( AppTCPSession sess, HeaderToken responseHeader )
     {
         if ( getStatusLine( sess ).getStatusCode() == 100 ) {
             releaseResponse( sess );
@@ -107,12 +107,12 @@ public class WebFilterBaseHandler extends HttpEventHandler
     }
 
     @Override
-    protected ChunkToken doResponseBody( NodeTCPSession session, ChunkToken c )
+    protected ChunkToken doResponseBody( AppTCPSession session, ChunkToken c )
     {
         return c;
     }
 
     @Override
-    protected void doResponseBodyEnd( NodeTCPSession session )
+    protected void doResponseBodyEnd( AppTCPSession session )
     { }
 }

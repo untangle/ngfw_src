@@ -16,15 +16,15 @@ import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.License;
 import com.untangle.uvm.node.PolicyManager.PolicyManagerResult;
-import com.untangle.uvm.node.Node;
+import com.untangle.uvm.node.App;
 import com.untangle.uvm.util.Pulse;
-import com.untangle.uvm.vnet.NodeBase;
+import com.untangle.uvm.node.AppBase;
 import com.untangle.uvm.vnet.PipelineConnector;
 
 /**
- * Implementation of the Policy Manager node
+ * Implementation of the Policy Manager app
  */
-public class PolicyManagerApp extends NodeBase implements com.untangle.uvm.node.PolicyManager
+public class PolicyManagerApp extends AppBase implements com.untangle.uvm.node.PolicyManager
 {
     private final Logger logger = Logger.getLogger(getClass());
     private final PipelineConnector[] connectors = new PipelineConnector[] { };
@@ -72,9 +72,9 @@ public class PolicyManagerApp extends NodeBase implements com.untangle.uvm.node.
          * Save the settings
          */
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getAppSettings().getId().toString();
+        String appID = this.getAppSettings().getId().toString();
         try {
-            settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "policy-manager/" + "settings_"  + nodeID + ".js", newSettings );
+            settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "policy-manager/" + "settings_"  + appID + ".js", newSettings );
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.",e);
             return;
@@ -206,9 +206,9 @@ public class PolicyManagerApp extends NodeBase implements com.untangle.uvm.node.
     protected void postInit()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getAppSettings().getId().toString();
+        String appID = this.getAppSettings().getId().toString();
         PolicyManagerSettings readSettings = null;
-        String settingsFileName = System.getProperty("uvm.settings.dir") + "/policy-manager/" + "settings_" + nodeID + ".js";
+        String settingsFileName = System.getProperty("uvm.settings.dir") + "/policy-manager/" + "settings_" + appID + ".js";
 
         try {
             readSettings = settingsManager.load( PolicyManagerSettings.class, settingsFileName );
@@ -342,11 +342,11 @@ public class PolicyManagerApp extends NodeBase implements com.untangle.uvm.node.
             }
         }
 
-        for ( Node node : UvmContextFactory.context().appManager().appInstances() ) {
-            if (node.getAppSettings().getPolicyId() == null)
+        for ( App app : UvmContextFactory.context().appManager().appInstances() ) {
+            if (app.getAppSettings().getPolicyId() == null)
                 continue;
-            if (!policyIds.contains(node.getAppSettings().getPolicyId()))
-                throw new RuntimeException("Missing policy: " + node.getAppSettings().getPolicyId() + " (Required by " + node.getAppProperties().getDisplayName() + " [" + node.getAppSettings().getId() + "]). Cannot delete non-empty racks.");
+            if (!policyIds.contains(app.getAppSettings().getPolicyId()))
+                throw new RuntimeException("Missing policy: " + app.getAppSettings().getPolicyId() + " (Required by " + app.getAppProperties().getDisplayName() + " [" + app.getAppSettings().getId() + "]). Cannot delete non-empty racks.");
         }
         
 
@@ -357,16 +357,16 @@ public class PolicyManagerApp extends NodeBase implements com.untangle.uvm.node.
     private static class SessionExpirationWorker implements Runnable
     {
         ExpiredPolicyMatcher matcher = new ExpiredPolicyMatcher();
-        PolicyManagerApp node;
+        PolicyManagerApp app;
 
-        public SessionExpirationWorker( PolicyManagerApp node)
+        public SessionExpirationWorker( PolicyManagerApp app)
         {
-            this.node = node;
+            this.app = app;
         }
         
         public void run()
         {
-            node.killMatchingSessionsGlobal(matcher);
+            app.killMatchingSessionsGlobal(matcher);
         }
     }
 

@@ -302,7 +302,7 @@
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.uvm.vnet.NodeBase">
+  <category name="com.untangle.uvm.node.AppBase">
     <priority value="INFO"/>
   </category>
 
@@ -321,15 +321,15 @@
     <priority value="WARN"/>
   </category>
 
-  <category name="com.untangle.uvm.NodeTCPSessionImpl">
+  <category name="com.untangle.uvm.AppTCPSessionImpl">
     <priority value="WARN"/>
   </category>
 
-  <category name="com.untangle.uvm.NodeUDPSessionImpl">
+  <category name="com.untangle.uvm.AppUDPSessionImpl">
     <priority value="WARN"/>
   </category>
 
-  <category name="com.untangle.uvm.NodeSessionImpl">
+  <category name="com.untangle.uvm.AppSessionImpl">
     <priority value="WARN"/>
   </category>
 

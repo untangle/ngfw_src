@@ -1,7 +1,7 @@
 /*
  * $Id$
  */
-package com.untangle.uvm.vnet;
+package com.untangle.uvm.node;
 
 import java.util.HashSet;
 import java.util.HashMap;
@@ -18,67 +18,61 @@ import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.MetricManager;
-import com.untangle.uvm.node.AppSettings;
+import com.untangle.uvm.vnet.AppSession;
+import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.node.AppSettings.AppState;
-import com.untangle.uvm.node.AppManager;
-import com.untangle.uvm.node.Node;
-import com.untangle.uvm.node.AppProperties;
-import com.untangle.uvm.node.AppSettings;
-import com.untangle.uvm.node.NodeMetric;
-import com.untangle.uvm.node.SessionTuple;
-import com.untangle.uvm.node.SessionTuple;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.logging.LogEvent;
 
 /**
- * A base class for node instances, both normal and casing.
+ * A base class for app instances, both normal and casing.
  *
  */
-public abstract class NodeBase implements Node
+public abstract class AppBase implements App
 {
-    private static final Logger staticLogger = Logger.getLogger(NodeBase.class);
-    private        final Logger logger       = Logger.getLogger(NodeBase.class);
+    private static final Logger staticLogger = Logger.getLogger(AppBase.class);
+    private        final Logger logger       = Logger.getLogger(AppBase.class);
 
     /**
-     * These are the (generic) settings for this node
-     * The node usually stores more app-specific settings in "settings"
-     * This holds the generic AppSettings that all nodes have.
+     * These are the (generic) settings for this app
+     * The app usually stores more app-specific settings in "settings"
+     * This holds the generic AppSettings that all apps have.
      */
     private AppSettings appSettings;
 
     /**
-     * These are the properties for this node
+     * These are the properties for this app
      */
     private AppProperties appProperties;
 
     /**
-     * This stores a set of parents of this node
-     * Parents are any nodes that this node depends on to operate properly
+     * This stores a set of parents of this app
+     * Parents are any apps that this app depends on to operate properly
      */
-    private Set<NodeBase> parents = new HashSet<NodeBase>();
+    private Set<AppBase> parents = new HashSet<AppBase>();
 
     /**
-     * This stores a set of children to this node
-     * Children are any nodes that depend on this node to operate properly
+     * This stores a set of children to this app
+     * Children are any apps that depend on this app to operate properly
      */
-    private Set<Node> children = new HashSet<Node>();
+    private Set<App> children = new HashSet<App>();
 
     /**
-     * These store this node's metrics (for display in the UI)
+     * These store this app's metrics (for display in the UI)
      * The hash map is for fast lookups
      * The list is to maintain order for the UI
      */
-    private Map<String, NodeMetric> metrics = new HashMap<String, NodeMetric>();
-    private List<NodeMetric> metricList = new ArrayList<NodeMetric>();
+    private Map<String, AppMetric> metrics = new HashMap<String, AppMetric>();
+    private List<AppMetric> metricList = new ArrayList<AppMetric>();
         
     private AppSettings.AppState currentState;
 
-    protected NodeBase( )
+    protected AppBase( )
     {
         currentState = AppState.LOADED;
     }
 
-    protected NodeBase( AppSettings appSettings, AppProperties appProperties )
+    protected AppBase( AppSettings appSettings, AppProperties appProperties )
     {
         this.appSettings = appSettings;
         this.appProperties = appProperties;
@@ -147,23 +141,23 @@ public abstract class NodeBase implements Node
         this.appProperties = appProperties;
     }
 
-    public void addParent( NodeBase parent )
+    public void addParent( AppBase parent )
     {
         parents.add(parent);
         parent.addChild(this);
     }
 
     /**
-     * Called when the node is new, initial settings should be
+     * Called when the app is new, initial settings should be
      * created and saved in this method.
      */
     public void initializeSettings() { }
 
-    public void resumeState( AppState nodeState ) 
+    public void resumeState( AppState appState ) 
     {
-        switch ( nodeState ) {
+        switch ( appState ) {
         case LOADED:
-            logger.debug("leaving node in LOADED state");
+            logger.debug("leaving app in LOADED state");
             break;
         case INITIALIZED:
             logger.debug("bringing into INITIALIZED state");
@@ -179,7 +173,7 @@ public abstract class NodeBase implements Node
             currentState = AppState.DESTROYED;
             break;
         default:
-            logger.warn("unknown state: " + nodeState);
+            logger.warn("unknown state: " + appState);
         }
     }
 
@@ -192,7 +186,7 @@ public abstract class NodeBase implements Node
 
     public void stopIfRunning()
     {
-        UvmContextFactory.context().loggingManager().setLoggingNode(appSettings.getId());
+        UvmContextFactory.context().loggingManager().setLoggingApp(appSettings.getId());
 
         switch ( currentState ) {
         case RUNNING:
@@ -236,56 +230,56 @@ public abstract class NodeBase implements Node
     }
 
     @SuppressWarnings("rawtypes")
-    public static final Node loadClass( AppProperties appProperties, AppSettings appSettings, boolean isNew ) throws Exception
+    public static final App loadClass( AppProperties appProperties, AppSettings appSettings, boolean isNew ) throws Exception
     {
         if ( appProperties == null || appSettings == null )
             throw new Exception("Invalid Arguments: null");
 
         try {
-            NodeBase node;
+            AppBase app;
 
-            Set<Node> parentNodes = new HashSet<Node>();
+            Set<App> parentApps = new HashSet<App>();
             if (appProperties.getParents() != null) {
                 for (String parent : appProperties.getParents()) {
-                    parentNodes.add(startParent(parent, appSettings.getPolicyId()));
+                    parentApps.add(startParent(parent, appSettings.getPolicyId()));
                 }
             }
 
-            UvmContextFactory.context().loggingManager().setLoggingNode(appSettings.getId());
+            UvmContextFactory.context().loggingManager().setLoggingApp(appSettings.getId());
 
             String appSettingsName = appSettings.getAppName();
             staticLogger.debug("setting app " + appSettingsName + " log4j repository");
 
             String className = appProperties.getClassName();
             java.lang.reflect.Constructor constructor = Class.forName(className).getConstructor(new Class<?>[]{AppSettings.class, AppProperties.class});
-            node = (NodeBase)constructor.newInstance( appSettings, appProperties );
+            app = (AppBase)constructor.newInstance( appSettings, appProperties );
 
-            node.setAppProperties( appProperties );
-            node.setAppSettings( appSettings );
+            app.setAppProperties( appProperties );
+            app.setAppSettings( appSettings );
                 
-            for (Node parentNode : parentNodes) {
-                node.addParent((NodeBase)parentNode);
+            for (App parentApp : parentApps) {
+                app.addParent((AppBase)parentApp);
             }
 
             if (isNew) {
-                node.initializeSettings( );
-                node.init();
+                app.initializeSettings( );
+                app.init();
             } else {
                 try {
-                    node.resumeState(appSettings.getTargetState());
+                    app.resumeState(appSettings.getTargetState());
                 }
                 catch (Exception exn) {
-                    staticLogger.error("Exception during node resumeState", exn);
+                    staticLogger.error("Exception during app resumeState", exn);
                     if ( exn.getCause() != null )
                         staticLogger.error("Cause", exn.getCause() );
-                    // still return the initialized node
+                    // still return the initialized app
                 }
             }
             
-            return node;
+            return app;
 
         } catch (Exception exn) {
-            staticLogger.error("Exception during node initialization", exn);
+            staticLogger.error("Exception during app initialization", exn);
             if ( exn.getCause() != null )
                 staticLogger.error("Cause", exn.getCause() );
             throw exn;
@@ -297,7 +291,7 @@ public abstract class NodeBase implements Node
     public final void destroyClass() throws Exception
     {
         try {
-            UvmContextFactory.context().loggingManager().setLoggingNode(appSettings.getId());
+            UvmContextFactory.context().loggingManager().setLoggingApp(appSettings.getId());
             if (this.getRunState() == AppSettings.AppState.RUNNING) {
                 this.stop();
             }
@@ -313,7 +307,7 @@ public abstract class NodeBase implements Node
     {
         List<SessionTuple> sessions = new LinkedList<SessionTuple>();
 
-        for (NodeSession sess : liveNodeSessions()) {
+        for (AppSession sess : liveAppSessions()) {
             SessionTuple tuple = new SessionTuple( sess.getProtocol(),
                                                    sess.getClientAddr(), sess.getServerAddr(),
                                                    sess.getClientPort(), sess.getServerPort() );
@@ -323,13 +317,13 @@ public abstract class NodeBase implements Node
         return sessions;
     }
 
-    public List<NodeSession> liveNodeSessions()
+    public List<AppSession> liveAppSessions()
     {
-        List<NodeSession> sessions = new LinkedList<NodeSession>();
+        List<AppSession> sessions = new LinkedList<AppSession>();
 
         if ( getConnectors() != null ) {
             for ( PipelineConnector connector : getConnectors() ) {
-                for ( NodeSession sess : connector.liveSessions() ) {
+                for ( AppSession sess : connector.liveSessions() ) {
                     /* create a new sessiontupleimpl so the list will be serialized properly */
                     sessions.add( sess );
                 }
@@ -339,14 +333,14 @@ public abstract class NodeBase implements Node
         return sessions;
     }
 
-    public List<NodeMetric> getMetrics()
+    public List<AppMetric> getMetrics()
     {
         return metricList;
     }
 
-    public NodeMetric getMetric( String name )
+    public AppMetric getMetric( String name )
     {
-        NodeMetric metric = metrics.get( name );
+        AppMetric metric = metrics.get( name );
         if ( metric == null )
             logger.warn("Metric not found: " + name);
         return metric;
@@ -369,9 +363,9 @@ public abstract class NodeBase implements Node
             return;
         }
         
-        NodeMetric metric = metrics.get(name);
+        AppMetric metric = metrics.get(name);
         if (metric == null) {
-            logger.warn("NodeMetric not found: " + name);
+            logger.warn("AppMetric not found: " + name);
             return;
         }
         metric.setValue( newValue );
@@ -384,9 +378,9 @@ public abstract class NodeBase implements Node
             return;
         }
         
-        NodeMetric metric = metrics.get(name);
+        AppMetric metric = metrics.get(name);
         if (metric == null) {
-            logger.warn("NodeMetric not found: " + name);
+            logger.warn("AppMetric not found: " + name);
             return;
         }
 
@@ -397,7 +391,7 @@ public abstract class NodeBase implements Node
         metric.setValue( value );
     }
 
-    public synchronized void addMetric( NodeMetric metric )
+    public synchronized void addMetric( AppMetric metric )
     {
         if (metrics.get(metric.getName()) != null) {
             //logger.warn("addMetric(): Metric already exists: \"" + metric.getName() + "\" - ignoring");
@@ -407,7 +401,7 @@ public abstract class NodeBase implements Node
         this.metricList.add( metric );
     }
 
-    public synchronized void removeMetric( NodeMetric metric )
+    public synchronized void removeMetric( AppMetric metric )
     {
         if ( metric == null ) {
             logger.warn("Invalid argument: null");
@@ -430,7 +424,7 @@ public abstract class NodeBase implements Node
     // protected methods -------------------------------------------------
 
     /**
-     * Called when the node is being uninstalled, rather than
+     * Called when the app is being uninstalled, rather than
      * just being taken down with the UVM.
      */
     protected void uninstall() { }
@@ -453,7 +447,7 @@ public abstract class NodeBase implements Node
      * Called just after connecting to PipelineConnector, but before starting.
      *
      * isPermanentTransition is true if this is the permanent (saved)
-     * This can be used to determine if this node is being started permanently
+     * This can be used to determine if this app is being started permanently
      */
     protected void preStart( boolean isPermanentTransition ) { } 
 
@@ -461,7 +455,7 @@ public abstract class NodeBase implements Node
      * Called just after starting PipelineConnector and making subscriptions.
      *
      * isPermanentTransition is true if this is the permanent (saved)
-     * This can be used to determine if this node is being started permanently
+     * This can be used to determine if this app is being started permanently
      */
     protected void postStart( boolean isPermanentTransition ) { } 
 
@@ -469,7 +463,7 @@ public abstract class NodeBase implements Node
      * Called just before stopping PipelineConnector and disconnecting.
      *
      * isPermanentTransition is true if this is the permanent (saved)
-     * This can be used to determine if this node is being stopped permanently
+     * This can be used to determine if this app is being stopped permanently
      */
     protected void preStop( boolean isPermanentTransition ) { } 
 
@@ -477,7 +471,7 @@ public abstract class NodeBase implements Node
      * Called after stopping PipelineConnector and disconnecting.
      *
      * isPermanentTransition is true if this is the permanent (saved)
-     * This can be used to determine if this node is being stopped permanently
+     * This can be used to determine if this app is being stopped permanently
      */
     protected void postStop( boolean isPermanentTransition ) { }
 
@@ -505,8 +499,8 @@ public abstract class NodeBase implements Node
     }
 
     /**
-     * This kills/resets all of the matching sessions for this node's sessions
-     * This includes "released" sessions that we processed previously by one of this node's pipespecs
+     * This kills/resets all of the matching sessions for this app's sessions
+     * This includes "released" sessions that we processed previously by one of this app's pipespecs
      */
     protected void killMatchingSessions( SessionMatcher matcher )
     {
@@ -521,7 +515,7 @@ public abstract class NodeBase implements Node
     }
     
     /**
-     * This kills all this node's sessions (for all its pipespecs)
+     * This kills all this app's sessions (for all its pipespecs)
      */
     public void killAllSessions()
     {
@@ -530,25 +524,25 @@ public abstract class NodeBase implements Node
             });
     }
 
-    private void addChild( Node child )
+    private void addChild( App child )
     {
         children.add(child);
     }
 
-    private boolean removeChild( Node child )
+    private boolean removeChild( App child )
     {
         return children.remove(child);
     }
 
-    private void changeState( AppState nodeState, boolean saveNewTargetState )
+    private void changeState( AppState appState, boolean saveNewTargetState )
     {
         if ( saveNewTargetState ) {
-            UvmContextFactory.context().appManager().saveTargetState( this, nodeState );
+            UvmContextFactory.context().appManager().saveTargetState( this, appState );
 
             UvmContextFactory.context().pipelineFoundry().clearCache();
         }
 
-        this.currentState = nodeState;
+        this.currentState = appState;
     }
 
     private void init( boolean saveNewTargetState ) 
@@ -559,7 +553,7 @@ public abstract class NodeBase implements Node
         }
 
         try {
-            UvmContextFactory.context().loggingManager().setLoggingNode( this.appSettings.getId()) ;
+            UvmContextFactory.context().loggingManager().setLoggingApp( this.appSettings.getId()) ;
 
             // if no valid license exists, request a trial license
             try {
@@ -588,14 +582,14 @@ public abstract class NodeBase implements Node
             return;
         }
 
-        for (NodeBase parent : parents) {
+        for (AppBase parent : parents) {
             if (AppState.INITIALIZED == parent.getRunState()) {
                 try {
-                    UvmContextFactory.context().loggingManager().setLoggingNode( parent.getAppSettings().getId() );
+                    UvmContextFactory.context().loggingManager().setLoggingApp( parent.getAppSettings().getId() );
                     if (parent.getRunState() == AppState.INITIALIZED) 
                         parent.start( false );
                 } finally {
-                    UvmContextFactory.context().loggingManager().setLoggingNode( appSettings.getId() );
+                    UvmContextFactory.context().loggingManager().setLoggingApp( appSettings.getId() );
                 }
             }
         }
@@ -604,13 +598,13 @@ public abstract class NodeBase implements Node
         try {
             changeState(AppState.RUNNING, saveNewTargetState);
         } catch (Exception e) {
-            logger.warn("Failed to start node",e);
+            logger.warn("Failed to start app",e);
             return;
         }
 
         try {
-            UvmContextFactory.context().loggingManager().setLoggingNode( this.appSettings.getId() );
-            logger.info("Starting   node " + this.getAppProperties().getName() + "(" + this.getAppProperties().getName() + ")" + " ...");
+            UvmContextFactory.context().loggingManager().setLoggingApp( this.appSettings.getId() );
+            logger.info("Starting   app " + this.getAppProperties().getName() + "(" + this.getAppProperties().getName() + ")" + " ...");
 
             try {
                 preStart( saveNewTargetState );
@@ -628,7 +622,7 @@ public abstract class NodeBase implements Node
                 logger.warn("Exception in postStart().", e);
             }
 
-            logger.info("Started    node " + this.getAppProperties().getName() + "(" + this.getAppProperties().getName() + ")" + " ...");
+            logger.info("Started    app " + this.getAppProperties().getName() + "(" + this.getAppProperties().getName() + ")" + " ...");
         } finally {
             UvmContextFactory.context().loggingManager().setLoggingUvm();
         }
@@ -645,34 +639,34 @@ public abstract class NodeBase implements Node
         try {
             changeState(AppState.INITIALIZED, saveNewTargetState);
         } catch (Exception e) {
-            logger.warn("Failed to stop node",e);
+            logger.warn("Failed to stop app",e);
             return;
         }
 
         try {
-            UvmContextFactory.context().loggingManager().setLoggingNode( this.appSettings.getId() );
-            logger.info("Stopping   node " + this.getAppProperties().getName() + "(" + this.getAppProperties().getName() + ")" + " ...");
+            UvmContextFactory.context().loggingManager().setLoggingApp( this.appSettings.getId() );
+            logger.info("Stopping   app " + this.getAppProperties().getName() + "(" + this.getAppProperties().getName() + ")" + " ...");
             preStop( saveNewTargetState );
             disconnectPipelineConnectors();
         } finally {
             UvmContextFactory.context().loggingManager().setLoggingUvm();
         }
 
-        for (NodeBase parent : parents) {
+        for (AppBase parent : parents) {
             if (AppState.RUNNING == parent.getRunState()) {
                 try {
-                    UvmContextFactory.context().loggingManager().setLoggingNode( parent.getAppSettings().getId() );
+                    UvmContextFactory.context().loggingManager().setLoggingApp( parent.getAppSettings().getId() );
                     parent.stopIfNotRequiredByChildren();
                 } finally {
-                    UvmContextFactory.context().loggingManager().setLoggingNode( appSettings.getId() );
+                    UvmContextFactory.context().loggingManager().setLoggingApp( appSettings.getId() );
                 }
             }
         }
 
         try {
-            UvmContextFactory.context().loggingManager().setLoggingNode( this.appSettings.getId() );
+            UvmContextFactory.context().loggingManager().setLoggingApp( this.appSettings.getId() );
             postStop( saveNewTargetState ); 
-            logger.info("Stopped    node " + this.getAppProperties().getName() + "(" + this.getAppProperties().getName() + ")" + " ...");
+            logger.info("Stopped    app " + this.getAppProperties().getName() + "(" + this.getAppProperties().getName() + ")" + " ...");
         } finally {
             UvmContextFactory.context().loggingManager().setLoggingUvm();
         }
@@ -686,17 +680,17 @@ public abstract class NodeBase implements Node
         }
 
         try {
-            UvmContextFactory.context().loggingManager().setLoggingNode( this.appSettings.getId() );
-            logger.info("Destroying node " + this.getAppProperties().getName() + "(" + this.getAppProperties().getName() + ")" + " ...");
+            UvmContextFactory.context().loggingManager().setLoggingApp( this.appSettings.getId() );
+            logger.info("Destroying app " + this.getAppProperties().getName() + "(" + this.getAppProperties().getName() + ")" + " ...");
             preDestroy();
-            for (NodeBase p : parents) {
+            for (AppBase p : parents) {
                 p.removeChild(this);
             }
             parents.clear();
             changeState(AppState.DESTROYED, saveNewTargetState);
 
             postDestroy(); // XXX if exception, state == ?
-            logger.info("Destroyed  node " + this.getAppProperties().getName() + "(" + this.getAppProperties().getName() + ")" + " ...");
+            logger.info("Destroyed  app " + this.getAppProperties().getName() + "(" + this.getAppProperties().getName() + ")" + " ...");
         } finally {
             UvmContextFactory.context().loggingManager().setLoggingUvm();
         }
@@ -710,15 +704,15 @@ public abstract class NodeBase implements Node
         /**
          * Return if any children are still running
          */
-        for (Node node : children) {
-            if (node.getRunState() == AppState.RUNNING) 
+        for (App app : children) {
+            if (app.getRunState() == AppState.RUNNING) 
                 return;
         } 
 
         stop( false );
     }
     
-    private final static Node startParent( String parent, Integer policyId ) throws Exception
+    private final static App startParent( String parent, Integer policyId ) throws Exception
     {
         if (null == parent) {
             return null;
@@ -726,27 +720,27 @@ public abstract class NodeBase implements Node
 
         staticLogger.debug( "Starting required parent: " + parent );
 
-        Node parentNode = getParentNode( parent, policyId );
+        App parentApp = getParentApp( parent, policyId );
 
-        if ( parentNode == null ) {
+        if ( parentApp == null ) {
             staticLogger.debug("Parent does not exist, instantiating");
 
-            parentNode = UvmContextFactory.context().appManager().instantiate(parent, policyId);
+            parentApp = UvmContextFactory.context().appManager().instantiate(parent, policyId);
         }
 
-        if ( parentNode == null ) {
+        if ( parentApp == null ) {
             throw new Exception("could not create parent: " + parent);
         } else {
-            return parentNode;
+            return parentApp;
         }
     }
 
-    private final static Node getParentNode( String parent, Integer childPolicyId )
+    private final static App getParentApp( String parent, Integer childPolicyId )
     {
-        for (Node node : UvmContextFactory.context().appManager().appInstances(parent)) {
-            Integer policyId = node.getAppSettings().getPolicyId();
+        for (App app : UvmContextFactory.context().appManager().appInstances(parent)) {
+            Integer policyId = app.getAppSettings().getPolicyId();
             if ( policyId == null || policyId.equals( childPolicyId ) )
-                return node;
+                return app;
         }
 
         return null;

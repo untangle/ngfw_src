@@ -24,7 +24,7 @@ import org.json.JSONObject;
 
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.node.LicenseManager;
-import com.untangle.uvm.node.Node;
+import com.untangle.uvm.node.App;
 import com.untangle.uvm.node.AppManager;
 import com.untangle.uvm.node.AppSettings.AppState;
 import com.untangle.uvm.node.PolicyManager;
@@ -737,7 +737,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             json.put("timeZoneOffset", this.systemManager().getTimeZoneOffset());
 
             boolean reportsEnabled = false;
-            Node reportsApp = UvmContextFactory.context().appManager().app("reports");
+            App reportsApp = UvmContextFactory.context().appManager().app("reports");
             if(reportsApp != null && AppState.RUNNING.equals(reportsApp.getRunState())) {
                 reportsEnabled = true;
             }
@@ -936,7 +936,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         mailSender.postInit();
 
-        logger.debug("restarting nodes");
+        logger.debug("restarting apps");
         appManager.init();
 
         tomcatManager.startTomcat();
@@ -1005,7 +1005,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             logger.error("could not stop MetricManager", exn);
         }
 
-        // stop nodes
+        // stop apps
         try {
             if ( appManager != null )
                 appManager.destroy();
@@ -1054,7 +1054,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
      * non-existent (uvm not running)
      * "launching" - UVM is being launched (by uvm script)
      * "booting" - UVM booting (phase 1 of startup)
-     * "starting" - nodes starting (phase 2 of startup)
+     * "starting" - apps starting (phase 2 of startup)
      * "running" 
      * "stopped" 
      */

@@ -29,11 +29,11 @@ import com.untangle.uvm.logging.InterfaceStatEvent;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.InterfaceSettings;
-import com.untangle.uvm.node.Node;
+import com.untangle.uvm.node.App;
 import com.untangle.uvm.node.AppManager;
 import com.untangle.uvm.node.SessionTuple;
 import com.untangle.uvm.node.AppSettings;
-import com.untangle.uvm.node.NodeMetric;
+import com.untangle.uvm.node.AppMetric;
 import com.untangle.uvm.util.Pulse;
 
 public class MetricManagerImpl implements MetricManager
@@ -81,7 +81,7 @@ public class MetricManagerImpl implements MetricManager
     {
         List<Long> nodeIds = new LinkedList<Long>();
 
-        for ( Node node : UvmContextImpl.getInstance().appManager().appInstances() ) {
+        for ( App node : UvmContextImpl.getInstance().appManager().appInstances() ) {
             nodeIds.add( node.getAppSettings().getId() );
         }
 
@@ -108,9 +108,9 @@ public class MetricManagerImpl implements MetricManager
         return json;
     }
 
-    public List<NodeMetric> getMetrics( Long nodeId )
+    public List<AppMetric> getMetrics( Long nodeId )
     {
-        Node node = UvmContextFactory.context().appManager().app( nodeId );
+        App node = UvmContextFactory.context().appManager().app( nodeId );
         if (node != null)
             return node.getMetrics();
         else {
@@ -134,9 +134,9 @@ public class MetricManagerImpl implements MetricManager
 
     // private methods --------------------------------------------------------
 
-    private Map<String, List<NodeMetric>> getMetrics( List<Long> nodeIds )
+    private Map<String, List<AppMetric>> getMetrics( List<Long> nodeIds )
     {
-        Map<String, List<NodeMetric>> stats = new HashMap<String, List<NodeMetric>>(nodeIds.size());
+        Map<String, List<AppMetric>> stats = new HashMap<String, List<AppMetric>>(nodeIds.size());
 
         for (Long nodeId : nodeIds) {
             stats.put( Long.toString(nodeId), getMetrics( nodeId ) );

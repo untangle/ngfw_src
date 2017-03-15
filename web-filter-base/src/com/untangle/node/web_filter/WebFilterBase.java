@@ -20,13 +20,13 @@ import com.untangle.uvm.node.AppSettings;
 import com.untangle.uvm.node.AppProperties;
 import com.untangle.uvm.node.GenericRule;
 import com.untangle.uvm.node.RuleCondition;
-import com.untangle.uvm.node.NodeMetric;
+import com.untangle.uvm.node.AppMetric;
 import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.vnet.NodeBase;
+import com.untangle.uvm.node.AppBase;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipelineConnector;
-import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.vnet.Token;
 import com.untangle.node.http.HeaderToken;
 
@@ -34,7 +34,7 @@ import com.untangle.node.http.HeaderToken;
  * The base implementation of the Web Filter. The web filter lite and web filter
  * implementation inherit this
  */
-public abstract class WebFilterBase extends NodeBase implements WebFilter
+public abstract class WebFilterBase extends AppBase implements WebFilter
 {
     private static final String STAT_SCAN = "scan";
     private static final String STAT_BLOCK = "block";
@@ -59,9 +59,9 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
 
         this.replacementGenerator = buildReplacementGenerator();
 
-        this.addMetric(new NodeMetric(STAT_SCAN, I18nUtil.marktr("Pages scanned")));
-        this.addMetric(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Pages blocked")));
-        this.addMetric(new NodeMetric(STAT_PASS, I18nUtil.marktr("Pages passed")));
+        this.addMetric(new AppMetric(STAT_SCAN, I18nUtil.marktr("Pages scanned")));
+        this.addMetric(new AppMetric(STAT_BLOCK, I18nUtil.marktr("Pages blocked")));
+        this.addMetric(new AppMetric(STAT_PASS, I18nUtil.marktr("Pages passed")));
 
         this.connector = UvmContextFactory.context().pipelineFoundry().create("web-filter", this, null, new WebFilterBaseHandler(this), Fitting.HTTP_TOKENS, Fitting.HTTP_TOKENS, Affinity.CLIENT, 3, isPremium());
         this.connectors = new PipelineConnector[] { connector };
@@ -282,7 +282,7 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
 
     public abstract boolean isPremium();
 
-    public Token[] generateResponse(String nonce, NodeTCPSession session, String uri, HeaderToken header)
+    public Token[] generateResponse(String nonce, AppTCPSession session, String uri, HeaderToken header)
     {
         return replacementGenerator.generateResponse(nonce, session, uri, header);
     }
@@ -458,7 +458,7 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
         return replacementGenerator.generateNonce(details);
     }
 
-    protected Token[] generateResponse(String nonce, NodeTCPSession session)
+    protected Token[] generateResponse(String nonce, AppTCPSession session)
     {
         return replacementGenerator.generateResponse(nonce, session);
     }

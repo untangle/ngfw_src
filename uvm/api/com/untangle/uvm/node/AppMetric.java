@@ -6,22 +6,22 @@ package com.untangle.uvm.node;
 import java.io.Serializable;
 
 @SuppressWarnings("serial")
-public class NodeMetric implements Serializable
+public class AppMetric implements Serializable
 {
     private String name;
     private String displayName;
     private Long value;
     
-    public NodeMetric() { }
+    public AppMetric() { }
 
-    public NodeMetric(String name, String displayName)
+    public AppMetric(String name, String displayName)
     {
         this.name = name;
         this.displayName = displayName;
         this.value = 0L;
     }
 
-    public NodeMetric(String name, String displayName, Long value)
+    public AppMetric(String name, String displayName, Long value)
     {
         this.name = name;
         this.displayName = displayName;
@@ -39,6 +39,6 @@ public class NodeMetric implements Serializable
 
     public String toString()
     {
-        return "NodeMetric[" + name + "] = " + value;
+        return "AppMetric[" + name + "] = " + value;
     }
 }

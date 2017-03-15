@@ -9,8 +9,8 @@ import org.json.JSONObject;
 import org.json.JSONString;
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.vnet.NodeSession;
-import com.untangle.uvm.vnet.NodeSession;
+import com.untangle.uvm.vnet.AppSession;
+import com.untangle.uvm.vnet.AppSession;
 
 /**
  * This in the implementation of a ApplicationControlLogicRule
@@ -91,7 +91,7 @@ public class ApplicationControlLogicRule implements JSONString, Serializable
         return jO.toString();
     }
 
-    public boolean matches(NodeSession sess)
+    public boolean matches(AppSession sess)
     {
         if (!isLive())
             return false;

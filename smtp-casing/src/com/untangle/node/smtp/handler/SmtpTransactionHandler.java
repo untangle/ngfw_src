@@ -12,7 +12,7 @@ import javax.mail.internet.MimeMessage;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.node.smtp.BeginMIMEToken;
 import com.untangle.node.smtp.Command;
 import com.untangle.node.smtp.CommandType;
@@ -65,7 +65,7 @@ public class SmtpTransactionHandler
     public static final ResponseCompletion PASSTHRU_RESPONSE_COMPLETION = new ResponseCompletion()
     {
         @Override
-        public void handleResponse( NodeTCPSession session, Response resp )
+        public void handleResponse( AppTCPSession session, Response resp )
         {
             logger.debug("Sending response " + resp.getCode() + " to client");
             session.sendObjectToClient( resp );
@@ -75,7 +75,7 @@ public class SmtpTransactionHandler
     public static final ResponseCompletion NOOP_RESPONSE_COMPLETION = new ResponseCompletion()
     {
         @Override
-        public void handleResponse( NodeTCPSession session, Response resp )
+        public void handleResponse( AppTCPSession session, Response resp )
         {
 
         }
@@ -98,7 +98,7 @@ public class SmtpTransactionHandler
         return tx;
     }
 
-    public void handleRSETCommand( NodeTCPSession session, Command command, SmtpEventHandler stateMachine )
+    public void handleRSETCommand( AppTCPSession session, Command command, SmtpEventHandler stateMachine )
     {
 
         logReceivedToken(command);
@@ -122,7 +122,7 @@ public class SmtpTransactionHandler
         }
     }
 
-    public void handleCommand( NodeTCPSession session, Command command, SmtpEventHandler stateMachine, List<Response> immediateActions )
+    public void handleCommand( AppTCPSession session, Command command, SmtpEventHandler stateMachine, List<Response> immediateActions )
     {
         logReceivedToken(command);
 
@@ -146,7 +146,7 @@ public class SmtpTransactionHandler
         }
     }
 
-    private void handleMAILOrRCPTCommand( NodeTCPSession session, Command command, SmtpEventHandler stateMachine, ResponseCompletion compl )
+    private void handleMAILOrRCPTCommand( AppTCPSession session, Command command, SmtpEventHandler stateMachine, ResponseCompletion compl )
     {
 
         logReceivedToken(command);
@@ -167,13 +167,13 @@ public class SmtpTransactionHandler
         }
     }
 
-    public void handleMAILCommand( NodeTCPSession session, final CommandWithEmailAddress command, SmtpEventHandler stateMachine )
+    public void handleMAILCommand( AppTCPSession session, final CommandWithEmailAddress command, SmtpEventHandler stateMachine )
     {
         getTransaction().fromRequest(command.getAddress());
         handleMAILOrRCPTCommand( session, command, stateMachine, new ResponseCompletion()
         {
             @Override
-            public void handleResponse( NodeTCPSession session, Response resp )
+            public void handleResponse( AppTCPSession session, Response resp )
             {
                 getTransaction().fromResponse(command.getAddress(), (resp.getCode() < 300));
                 logger.debug("Sending response " + resp.getCode() + " to client");
@@ -182,13 +182,13 @@ public class SmtpTransactionHandler
         });
     }
 
-    public void handleRCPTCommand( NodeTCPSession session, final CommandWithEmailAddress command, SmtpEventHandler stateMachine )
+    public void handleRCPTCommand( AppTCPSession session, final CommandWithEmailAddress command, SmtpEventHandler stateMachine )
     {
         getTransaction().toRequest(command.getAddress());
         handleMAILOrRCPTCommand( session, command, stateMachine, new ResponseCompletion()
         {
             @Override
-            public void handleResponse( NodeTCPSession session, Response resp )
+            public void handleResponse( AppTCPSession session, Response resp )
             {
                 getTransaction().toResponse(command.getAddress(), (resp.getCode() < 300));
                 logger.debug("Sending response " + resp.getCode() + " to client");
@@ -197,7 +197,7 @@ public class SmtpTransactionHandler
         });
     }
 
-    public void handleBeginMIME( NodeTCPSession session, BeginMIMEToken token, SmtpEventHandler stateMachine, List<Response> immediateActions )
+    public void handleBeginMIME( AppTCPSession session, BeginMIMEToken token, SmtpEventHandler stateMachine, List<Response> immediateActions )
     {
         logReceivedToken(token);
 
@@ -208,14 +208,14 @@ public class SmtpTransactionHandler
         handleMIMEChunkToken( session, true, false, null, stateMachine, immediateActions );
     }
 
-    public void handleContinuedMIME( NodeTCPSession session, ContinuedMIMEToken token, SmtpEventHandler stateMachine, List<Response> immediateActions )
+    public void handleContinuedMIME( AppTCPSession session, ContinuedMIMEToken token, SmtpEventHandler stateMachine, List<Response> immediateActions )
     {
         logReceivedToken(token);
 
         handleMIMEChunkToken( session, false, token.isLast(), token, stateMachine, immediateActions );
     }
 
-    public void handleCompleteMIME( NodeTCPSession session, CompleteMIMEToken token, SmtpEventHandler stateMachine, List<Response> immediateActions )
+    public void handleCompleteMIME( AppTCPSession session, CompleteMIMEToken token, SmtpEventHandler stateMachine, List<Response> immediateActions )
     {
 
         logReceivedToken(token);
@@ -247,7 +247,7 @@ public class SmtpTransactionHandler
         }
     }
 
-    private void handleMIMEChunkToken( final NodeTCPSession session,
+    private void handleMIMEChunkToken( final AppTCPSession session,
                                   boolean isFirst, boolean isLast,
                                   Token token,
                                   final SmtpEventHandler stateMachine,
@@ -289,7 +289,7 @@ public class SmtpTransactionHandler
                             stateMachine.sendCommandToServer( session, new Command(CommandType.DATA), new ResponseCompletion()
                             {
                                 @Override
-                                public void handleResponse( NodeTCPSession session, Response resp )
+                                public void handleResponse( AppTCPSession session, Response resp )
                                 {
                                     handleResponseAfterPassedMessage( session, stateMachine, resp );
                                 }
@@ -355,7 +355,7 @@ public class SmtpTransactionHandler
                         stateMachine.sendCommandToServer( session, new Command(CommandType.DATA), new ResponseCompletion()
                         {
                             @Override
-                            public void handleResponse( NodeTCPSession session, Response resp)
+                            public void handleResponse( AppTCPSession session, Response resp)
                             {
                                 handleMsgIncompleteDataContinuation( session, resp, stateMachine, BufTxState.DRAIN_MAIL );
                             }
@@ -371,7 +371,7 @@ public class SmtpTransactionHandler
                         stateMachine.sendCommandToServer( session, new Command(CommandType.DATA), new ResponseCompletion()
                         {
                             @Override
-                            public void handleResponse( NodeTCPSession session, Response resp )
+                            public void handleResponse( AppTCPSession session, Response resp )
                             {
                                 handleMsgIncompleteDataContinuation( session, resp, stateMachine, BufTxState.T_B_READING_MAIL );
                             }
@@ -394,7 +394,7 @@ public class SmtpTransactionHandler
                     stateMachine.sendFinalMIMEToServer( session, continuedToken, new ResponseCompletion()
                     {
                         @Override
-                        public void handleResponse( NodeTCPSession session, Response resp)
+                        public void handleResponse( AppTCPSession session, Response resp)
                         {
                             handleMailTransmissionContinuation( session, resp, stateMachine );
                         }
@@ -438,7 +438,7 @@ public class SmtpTransactionHandler
                             stateMachine.sendFinalMIMEToServer( session, continuedToken, new ResponseCompletion()
                             {
                                 @Override
-                                public void handleResponse( NodeTCPSession session, Response resp)
+                                public void handleResponse( AppTCPSession session, Response resp)
                                 {
                                     handleMailTransmissionContinuation( session, resp, stateMachine );
                                 }
@@ -495,7 +495,7 @@ public class SmtpTransactionHandler
      * @param stateMachine
      * @param resp
      */
-    private void handleResponseAfterPassedMessage( NodeTCPSession session, final SmtpEventHandler stateMachine, Response resp )
+    private void handleResponseAfterPassedMessage( AppTCPSession session, final SmtpEventHandler stateMachine, Response resp )
     {
         logReceivedResponse(resp);
         addToTxLog("Response to DATA command was " + resp.getCode());
@@ -518,7 +518,7 @@ public class SmtpTransactionHandler
                         new ResponseCompletion()
                         {
                             @Override
-                            public void handleResponse( NodeTCPSession session, Response resp )
+                            public void handleResponse( AppTCPSession session, Response resp )
                             {
                                 handleMailTransmissionContinuation( session, resp, stateMachine );
                             }
@@ -534,7 +534,7 @@ public class SmtpTransactionHandler
                         new ResponseCompletion()
                         {
                             @Override
-                            public void handleResponse( NodeTCPSession session, Response resp )
+                            public void handleResponse( AppTCPSession session, Response resp )
                             {
                                 handleMailTransmissionContinuation( session, resp, stateMachine );
                             }
@@ -597,7 +597,7 @@ public class SmtpTransactionHandler
      * Returns PASS if we should pass. If there is a parsing error, this also returns PASS. If the message was changed,
      * it'll just be picked-up implicitly.
      */
-    private BlockOrPassResult evaluateMessage( NodeTCPSession session, boolean canModify, SmtpEventHandler stateMachine)
+    private BlockOrPassResult evaluateMessage( AppTCPSession session, boolean canModify, SmtpEventHandler stateMachine)
     {
         if (msg == null) {
             msg = accumulator.parseBody(messageInfo);
@@ -621,7 +621,7 @@ public class SmtpTransactionHandler
         }
     }
 
-    public void handleMailTransmissionContinuation( NodeTCPSession session, Response resp, SmtpEventHandler stateMachine )
+    public void handleMailTransmissionContinuation( AppTCPSession session, Response resp, SmtpEventHandler stateMachine )
     {
         logReceivedResponse(resp);
         addToTxLog("Response to mail transmission command was " + resp.getCode());
@@ -637,7 +637,7 @@ public class SmtpTransactionHandler
         session.sendObjectToClient( resp );
     }
 
-    public void handleMsgIncompleteDataContinuation( NodeTCPSession session, Response resp, SmtpEventHandler stateMachine, BufTxState nextStateIfPositive )
+    public void handleMsgIncompleteDataContinuation( AppTCPSession session, Response resp, SmtpEventHandler stateMachine, BufTxState nextStateIfPositive )
     {
 
         logReceivedResponse(resp);

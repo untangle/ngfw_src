@@ -33,24 +33,24 @@ import com.untangle.uvm.HostTable;
 import com.untangle.uvm.HostTableEntry;
 import com.untangle.uvm.node.DirectoryConnector;
 import com.untangle.uvm.node.IPMaskedAddress;
-import com.untangle.uvm.node.NodeMetric;
+import com.untangle.uvm.node.AppMetric;
 import com.untangle.uvm.node.PortRange;
 import com.untangle.uvm.node.IPMatcher;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
-import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.vnet.Subscription;
 import com.untangle.uvm.vnet.PipelineConnector;
-import com.untangle.uvm.vnet.NodeSession;
+import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.vnet.Fitting;
-import com.untangle.uvm.vnet.NodeBase;
+import com.untangle.uvm.node.AppBase;
 import com.untangle.uvm.vnet.Token;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.node.http.ReplacementGenerator;
 
-public class CaptivePortalApp extends NodeBase
+public class CaptivePortalApp extends AppBase
 {
     public enum BlingerType
     {
@@ -104,11 +104,11 @@ public class CaptivePortalApp extends NodeBase
 
         UvmContextFactory.context().servletFileManager().registerUploadHandler(new CustomPageUploadHandler());
 
-        addMetric(new NodeMetric(STAT_SESSALLOW, I18nUtil.marktr("Sessions Allowed")));
-        addMetric(new NodeMetric(STAT_SESSBLOCK, I18nUtil.marktr("Sessions Blocked")));
-        addMetric(new NodeMetric(STAT_SESSQUERY, I18nUtil.marktr("DNS Lookups")));
-        addMetric(new NodeMetric(STAT_AUTHGOOD, I18nUtil.marktr("Login Success")));
-        addMetric(new NodeMetric(STAT_AUTHFAIL, I18nUtil.marktr("Login Failure")));
+        addMetric(new AppMetric(STAT_SESSALLOW, I18nUtil.marktr("Sessions Allowed")));
+        addMetric(new AppMetric(STAT_SESSBLOCK, I18nUtil.marktr("Sessions Blocked")));
+        addMetric(new AppMetric(STAT_SESSQUERY, I18nUtil.marktr("DNS Lookups")));
+        addMetric(new AppMetric(STAT_AUTHGOOD, I18nUtil.marktr("Login Success")));
+        addMetric(new AppMetric(STAT_AUTHFAIL, I18nUtil.marktr("Login Failure")));
 
         this.trafficConnector = UvmContextFactory.context().pipelineFoundry().create("capture-octet", this, null, new CaptivePortalTrafficHandler( this ), Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, -2, false);
         this.httpsConnector = UvmContextFactory.context().pipelineFoundry().create("capture-https", this, httpsSub, httpsHandler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, -1, false);
@@ -412,7 +412,7 @@ public class CaptivePortalApp extends NodeBase
         UvmContextFactory.context().execManager().exec(CAPTURE_CUSTOM_REMOVE_SCRIPT + " " + customPath);
     }
 
-    protected Token[] generateResponse(CaptivePortalBlockDetails block, NodeTCPSession session)
+    protected Token[] generateResponse(CaptivePortalBlockDetails block, AppTCPSession session)
     {
         return replacementGenerator.generateResponse(block, session);
     }
@@ -728,7 +728,7 @@ public class CaptivePortalApp extends NodeBase
         captureUserCookieTable.removeActiveUser(address);
     }
 
-    public CaptureRule checkCaptureRules(NodeTCPSession session)
+    public CaptureRule checkCaptureRules(AppTCPSession session)
     {
         List<CaptureRule> ruleList = captureSettings.getCaptureRules();
 

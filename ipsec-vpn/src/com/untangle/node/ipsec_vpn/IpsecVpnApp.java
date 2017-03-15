@@ -23,12 +23,12 @@ import com.untangle.uvm.ExecManager;
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.node.IPMaskedAddress;
 import com.untangle.uvm.node.License;
-import com.untangle.uvm.node.NodeMetric;
-import com.untangle.uvm.vnet.NodeBase;
+import com.untangle.uvm.node.AppMetric;
+import com.untangle.uvm.node.AppBase;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.util.I18nUtil;
 
-public class IpsecVpnApp extends NodeBase
+public class IpsecVpnApp extends AppBase
 {
     private final static String GRAB_LOGFILE_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-logfile";
     private final static String GRAB_VIRTUALLOGFILE_SCRIPT = System.getProperty("uvm.home") + "/bin/l2tpd-logfile";
@@ -68,10 +68,10 @@ public class IpsecVpnApp extends NodeBase
 
         logger.debug("IpsecVpnApp()");
 
-        this.addMetric(new NodeMetric(STAT_CONFIGURED, I18nUtil.marktr("Configured Tunnels")));
-        this.addMetric(new NodeMetric(STAT_DISABLED, I18nUtil.marktr("Disabled Tunnels")));
-        this.addMetric(new NodeMetric(STAT_ENABLED, I18nUtil.marktr("Enabled Tunnels")));
-        this.addMetric(new NodeMetric(STAT_VIRTUAL, I18nUtil.marktr("VPN Clients")));
+        this.addMetric(new AppMetric(STAT_CONFIGURED, I18nUtil.marktr("Configured Tunnels")));
+        this.addMetric(new AppMetric(STAT_DISABLED, I18nUtil.marktr("Disabled Tunnels")));
+        this.addMetric(new AppMetric(STAT_ENABLED, I18nUtil.marktr("Enabled Tunnels")));
+        this.addMetric(new AppMetric(STAT_VIRTUAL, I18nUtil.marktr("VPN Clients")));
 
         try {
             fixStrongswanConfig();

@@ -6,7 +6,7 @@ package com.untangle.node.http;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.vnet.SessionEventHandler;
 import com.untangle.uvm.vnet.ForkedEventHandler;
-import com.untangle.uvm.vnet.NodeBase;
+import com.untangle.uvm.node.AppBase;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.Affinity;
@@ -18,7 +18,7 @@ import com.untangle.uvm.UvmContextFactory;
 /**
  * An HTTP casing node.
  */
-public class HttpImpl extends NodeBase
+public class HttpImpl extends AppBase
 {
     private SessionEventHandler clientSideHandler = new ForkedEventHandler( new HttpParserEventHandler(true,this), new HttpUnparserEventHandler(true,this) );
     private SessionEventHandler serverSideHandler = new ForkedEventHandler( new HttpUnparserEventHandler(false,this), new HttpParserEventHandler(false,this) );

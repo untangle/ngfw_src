@@ -14,7 +14,7 @@ import org.json.JSONObject;
 import org.json.JSONString;
 
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.vnet.NodeSession;
+import com.untangle.uvm.vnet.AppSession;
 
 public class VirusCloudFeedback extends Thread
 {
@@ -25,13 +25,13 @@ public class VirusCloudFeedback extends Thread
 
     VirusBlockerState virusState = null;
     long fileLength = 0;
-    NodeSession session = null;
+    AppSession session = null;
     String vendorName = null;
     String threatName = null;
     String threatType = null;
     VirusCloudResult cloudResult = null;
 
-    public VirusCloudFeedback(VirusBlockerState virusState, String vendorName, String threatName, String threatType, long fileLength, NodeSession session, VirusCloudResult cloudResult)
+    public VirusCloudFeedback(VirusBlockerState virusState, String vendorName, String threatName, String threatType, long fileLength, AppSession session, VirusCloudResult cloudResult)
     {
         this.virusState = virusState;
         this.vendorName = vendorName;
@@ -55,11 +55,11 @@ public class VirusCloudFeedback extends Thread
             json.put("threatType", threatType);
             if (cloudResult != null) json.put("cloudResult", cloudResult);
             if (session != null) {
-                if (session.globalAttachment(NodeSession.KEY_HTTP_HOSTNAME) != null) json.put(NodeSession.KEY_HTTP_HOSTNAME, session.globalAttachment(NodeSession.KEY_HTTP_HOSTNAME));
-                if (session.globalAttachment(NodeSession.KEY_HTTP_URI) != null) json.put(NodeSession.KEY_HTTP_URI, session.globalAttachment(NodeSession.KEY_HTTP_URI));
-                if (session.globalAttachment(NodeSession.KEY_HTTP_URL) != null) json.put(NodeSession.KEY_HTTP_URL, session.globalAttachment(NodeSession.KEY_HTTP_URL));
-                if (session.globalAttachment(NodeSession.KEY_HTTP_REFERER) != null) json.put(NodeSession.KEY_HTTP_REFERER, session.globalAttachment(NodeSession.KEY_HTTP_REFERER));
-                if (session.globalAttachment(NodeSession.KEY_FTP_FILE_NAME) != null) json.put(NodeSession.KEY_FTP_FILE_NAME, session.globalAttachment(NodeSession.KEY_FTP_FILE_NAME));
+                if (session.globalAttachment(AppSession.KEY_HTTP_HOSTNAME) != null) json.put(AppSession.KEY_HTTP_HOSTNAME, session.globalAttachment(AppSession.KEY_HTTP_HOSTNAME));
+                if (session.globalAttachment(AppSession.KEY_HTTP_URI) != null) json.put(AppSession.KEY_HTTP_URI, session.globalAttachment(AppSession.KEY_HTTP_URI));
+                if (session.globalAttachment(AppSession.KEY_HTTP_URL) != null) json.put(AppSession.KEY_HTTP_URL, session.globalAttachment(AppSession.KEY_HTTP_URL));
+                if (session.globalAttachment(AppSession.KEY_HTTP_REFERER) != null) json.put(AppSession.KEY_HTTP_REFERER, session.globalAttachment(AppSession.KEY_HTTP_REFERER));
+                if (session.globalAttachment(AppSession.KEY_FTP_FILE_NAME) != null) json.put(AppSession.KEY_FTP_FILE_NAME, session.globalAttachment(AppSession.KEY_FTP_FILE_NAME));
                 if (session.getOrigClientAddr() != null) json.put("clientAddr", session.getOrigClientAddr().getHostAddress());
                 if (session.getNewServerAddr() != null) json.put("serverAddr", session.getNewServerAddr().getHostAddress());
                 json.put("clientPort", session.getOrigClientPort());

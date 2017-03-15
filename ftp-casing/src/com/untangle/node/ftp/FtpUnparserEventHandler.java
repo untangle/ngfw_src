@@ -13,7 +13,7 @@ import com.untangle.uvm.vnet.Token;
 import com.untangle.uvm.vnet.ReleaseToken;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.Fitting;
-import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.vnet.TCPStreamer;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 
@@ -32,21 +32,21 @@ class FtpUnparserEventHandler extends AbstractEventHandler
     }
 
     @Override
-    public void handleTCPClientChunk( NodeTCPSession session, ByteBuffer data )
+    public void handleTCPClientChunk( AppTCPSession session, ByteBuffer data )
     {
         logger.warn("Received data when expect object. ClientSide:" + clientSide);
         throw new RuntimeException("Received data when expect object");
     }
 
     @Override
-    public void handleTCPServerChunk( NodeTCPSession session, ByteBuffer data )
+    public void handleTCPServerChunk( AppTCPSession session, ByteBuffer data )
     {
         logger.warn("Received data when expect object. ClientSide:" + clientSide);
         throw new RuntimeException("Received data when expect object");
     }
 
     @Override
-    public void handleTCPClientObject( NodeTCPSession session, Object obj )
+    public void handleTCPClientObject( AppTCPSession session, Object obj )
     {
         if (clientSide) {
             logger.warn("Received object but expected data.");
@@ -58,7 +58,7 @@ class FtpUnparserEventHandler extends AbstractEventHandler
     }
     
     @Override
-    public void handleTCPServerObject( NodeTCPSession session, Object obj )
+    public void handleTCPServerObject( AppTCPSession session, Object obj )
     {
         if (clientSide) {
             unparse( session, obj, true );
@@ -70,7 +70,7 @@ class FtpUnparserEventHandler extends AbstractEventHandler
     }
 
     @Override
-    public void handleTCPClientDataEnd( NodeTCPSession session, ByteBuffer data )
+    public void handleTCPClientDataEnd( AppTCPSession session, ByteBuffer data )
     {
         if ( data.hasRemaining() ) {
             logger.warn("Received data when expect object");
@@ -79,7 +79,7 @@ class FtpUnparserEventHandler extends AbstractEventHandler
     }
 
     @Override
-    public void handleTCPServerDataEnd( NodeTCPSession session, ByteBuffer data )
+    public void handleTCPServerDataEnd( AppTCPSession session, ByteBuffer data )
     {
         if ( data.hasRemaining() ) {
             logger.warn("Received data when expect object");
@@ -88,7 +88,7 @@ class FtpUnparserEventHandler extends AbstractEventHandler
     }
     
     @Override
-    public void handleTCPClientFIN( NodeTCPSession session )
+    public void handleTCPClientFIN( AppTCPSession session )
     {
         if (clientSide) {
             // do nothing
@@ -98,7 +98,7 @@ class FtpUnparserEventHandler extends AbstractEventHandler
     }
 
     @Override
-    public void handleTCPServerFIN( NodeTCPSession session )
+    public void handleTCPServerFIN( AppTCPSession session )
     {
         if (clientSide) {
             session.shutdownClient();
@@ -107,7 +107,7 @@ class FtpUnparserEventHandler extends AbstractEventHandler
         }
     }
 
-    private void unparse( NodeTCPSession session, Object obj, boolean s2c )
+    private void unparse( AppTCPSession session, Object obj, boolean s2c )
     {
         Token token = (Token) obj;
 
@@ -132,7 +132,7 @@ class FtpUnparserEventHandler extends AbstractEventHandler
         }
     }
 
-    public void unparse( NodeTCPSession session, Token token )
+    public void unparse( AppTCPSession session, Token token )
     {
         InetSocketAddress socketAddress = null;
         if (token instanceof FtpReply) { // XXX tacky
@@ -186,7 +186,7 @@ class FtpUnparserEventHandler extends AbstractEventHandler
             session.sendDataToServer( token.getBytes() );
     }
 
-    public void endSession( NodeTCPSession session )
+    public void endSession( AppTCPSession session )
     {
         FtpEventHandler.removeDataSockets(session.getSessionId());
         if ( clientSide )

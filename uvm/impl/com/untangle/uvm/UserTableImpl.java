@@ -22,7 +22,7 @@ import com.untangle.uvm.UserTable;
 import com.untangle.uvm.UserTableEntry;
 import com.untangle.uvm.util.Pulse;
 import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.node.Node;
+import com.untangle.uvm.node.App;
 import com.untangle.uvm.node.QuotaEvent;
 
 /**

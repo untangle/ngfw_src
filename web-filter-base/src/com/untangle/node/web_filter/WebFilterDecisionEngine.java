@@ -40,8 +40,8 @@ import com.untangle.node.web_filter.WebFilterBase;
 import com.untangle.node.web_filter.WebFilterSettings;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.License;
-import com.untangle.uvm.vnet.NodeTCPSession;
-import com.untangle.uvm.vnet.NodeSession;
+import com.untangle.uvm.vnet.AppTCPSession;
+import com.untangle.uvm.vnet.AppSession;
 
 /**
  * Does blacklist lookups from zvelo API.
@@ -89,7 +89,7 @@ public class WebFilterDecisionEngine extends DecisionEngine
     }
 
     @Override
-    public String checkRequest( NodeTCPSession sess, InetAddress clientIp, int port, RequestLineToken requestLine, HeaderToken header )
+    public String checkRequest( AppTCPSession sess, InetAddress clientIp, int port, RequestLineToken requestLine, HeaderToken header )
     {
         if (! isLicenseValid()) {
             return null;
@@ -108,7 +108,7 @@ public class WebFilterDecisionEngine extends DecisionEngine
     }
 
     @Override
-    public String checkResponse( NodeTCPSession sess, InetAddress clientIp, RequestLineToken requestLine, HeaderToken header )
+    public String checkResponse( AppTCPSession sess, InetAddress clientIp, RequestLineToken requestLine, HeaderToken header )
     {
         if (! isLicenseValid()) {
             return null;

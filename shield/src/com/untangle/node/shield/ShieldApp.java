@@ -19,14 +19,14 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.AppSettings;
-import com.untangle.uvm.node.NodeMetric;
+import com.untangle.uvm.node.AppMetric;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
-import com.untangle.uvm.vnet.NodeBase;
+import com.untangle.uvm.node.AppBase;
 import com.untangle.uvm.vnet.PipelineConnector;
 
-public class ShieldApp extends NodeBase
+public class ShieldApp extends AppBase
 {
     private final Logger logger = Logger.getLogger(ShieldApp.class);
 

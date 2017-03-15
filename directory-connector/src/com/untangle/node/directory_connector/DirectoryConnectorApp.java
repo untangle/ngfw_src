@@ -21,12 +21,12 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
-import com.untangle.uvm.vnet.NodeBase;
+import com.untangle.uvm.node.AppBase;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.node.License;
 import com.untangle.uvm.util.I18nUtil;
 
-public class DirectoryConnectorApp extends NodeBase implements com.untangle.uvm.node.DirectoryConnector
+public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.node.DirectoryConnector
 {
     private static final String FILE_DISCLAIMER = "# This file is created and maintained by the Untangle Directory Connector\n# service. If you modify this file manually, your changes may be overridden.\n\n";
     private static final String USERAPI_WEBAPP_OLD = "adpb";

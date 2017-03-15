@@ -2305,12 +2305,12 @@ msgid "Session Requests"
 msgstr "XSession RequestsX"
 
 #: /ngfw/ngfw_src/uvm/impl/com/untangle/uvm/Dispatcher.java:98
-msgid "TCP NodeSession Requests"
-msgstr "XTCP NodeSession RequestsX"
+msgid "TCP AppSession Requests"
+msgstr "XTCP AppSession RequestsX"
 
 #: /ngfw/ngfw_src/uvm/impl/com/untangle/uvm/Dispatcher.java:99
-msgid "UDP NodeSession Requests"
-msgstr "XUDP NodeSession RequestsX"
+msgid "UDP AppSession Requests"
+msgstr "XUDP AppSession RequestsX"
 
 #: /ngfw/ngfw_src/uvm/impl/com/untangle/uvm/TomcatManagerImpl.java:381
 msgid "HTTP administration is disabled."

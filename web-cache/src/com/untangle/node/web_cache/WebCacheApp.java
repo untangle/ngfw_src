@@ -17,16 +17,16 @@ import com.untangle.uvm.node.License;
 import com.untangle.uvm.node.IPMaskedAddress;
 import com.untangle.uvm.node.PortRange;
 import com.untangle.uvm.node.SessionTuple;
-import com.untangle.uvm.node.NodeMetric;
+import com.untangle.uvm.node.AppMetric;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipelineConnector;
-import com.untangle.uvm.vnet.NodeBase;
+import com.untangle.uvm.node.AppBase;
 import com.untangle.uvm.vnet.Subscription;
 import com.untangle.uvm.util.I18nUtil;
 
-public class WebCacheApp extends NodeBase
+public class WebCacheApp extends AppBase
 {
     private final Logger logger = Logger.getLogger(getClass());
     private final Subscription webSub = new Subscription(Protocol.TCP,IPMaskedAddress.anyAddr,PortRange.ANY,IPMaskedAddress.anyAddr,new PortRange(80,80));
@@ -66,10 +66,10 @@ public class WebCacheApp extends NodeBase
 
         logger.debug("WebCache WebCacheApp()");
 
-        this.addMetric(new NodeMetric(STAT_HIT, I18nUtil.marktr("Cache hits")));
-        this.addMetric(new NodeMetric(STAT_MISS, I18nUtil.marktr("Cache misses")));
-        this.addMetric(new NodeMetric(STAT_USER_BYPASS, I18nUtil.marktr("User Bypass")));
-        this.addMetric(new NodeMetric(STAT_SYSTEM_BYPASS, I18nUtil.marktr("System Bypass")));
+        this.addMetric(new AppMetric(STAT_HIT, I18nUtil.marktr("Cache hits")));
+        this.addMetric(new AppMetric(STAT_MISS, I18nUtil.marktr("Cache misses")));
+        this.addMetric(new AppMetric(STAT_USER_BYPASS, I18nUtil.marktr("User Bypass")));
+        this.addMetric(new AppMetric(STAT_SYSTEM_BYPASS, I18nUtil.marktr("System Bypass")));
 
         this.connector = UvmContextFactory.context().pipelineFoundry().create("web-cache", this, webSub, s_handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.SERVER, 16, true );
         this.connectors = new PipelineConnector[] { connector };

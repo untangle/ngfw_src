@@ -17,7 +17,7 @@ import javax.net.ssl.HttpsURLConnection;
 import org.json.JSONObject;
 import org.json.JSONString;
 
-import com.untangle.uvm.vnet.NodeSession;
+import com.untangle.uvm.vnet.AppSession;
 
 public class VirusBlockerScannerLauncher extends VirusScannerLauncher
 {
@@ -31,7 +31,7 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
     /**
      * Create a Launcher for the give file
      */
-    public VirusBlockerScannerLauncher( File scanfile, NodeSession session, boolean cloudScan, boolean localScan )
+    public VirusBlockerScannerLauncher( File scanfile, AppSession session, boolean cloudScan, boolean localScan )
     {
         super(scanfile, session);
 
@@ -66,7 +66,7 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
             scanfilePath = "n/a";
         }
 
-        VirusBlockerState virusState = (VirusBlockerState) nodeSession.attachment();
+        VirusBlockerState virusState = (VirusBlockerState) appSession.attachment();
 
         logger.debug("Scanning FILE: " + scanfilePath + " MD5: " + virusState.fileHash);
 
@@ -176,12 +176,12 @@ public class VirusBlockerScannerLauncher extends VirusScannerLauncher
 
             // if BD returned positive result we send the feedback
             if ((retcode == 222) || (retcode == 223)) {
-                feedback = new VirusCloudFeedback(virusState, "BD", threatName, threatType, scanFileLength, nodeSession, cloudResult);
+                feedback = new VirusCloudFeedback(virusState, "BD", threatName, threatType, scanFileLength, appSession, cloudResult);
             }
 
             // if no BD feedback and cloud returned positive result we also send feedback
             if ((feedback == null) && (cloudResult != null) && (cloudResult.getItemCategory() != null) && (cloudResult.getItemClass() != null) && (cloudResult.getItemConfidence() == 100)) {
-                feedback = new VirusCloudFeedback(virusState, "UT", cloudResult.getItemCategory(), cloudResult.getItemClass(), scanFileLength, nodeSession, cloudResult);
+                feedback = new VirusCloudFeedback(virusState, "UT", cloudResult.getItemCategory(), cloudResult.getItemClass(), scanFileLength, appSession, cloudResult);
             }
 
             // if we have a feedback object start it up now

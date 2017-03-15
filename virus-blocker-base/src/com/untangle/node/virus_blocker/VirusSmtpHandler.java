@@ -30,8 +30,8 @@ import com.untangle.node.smtp.mime.MIMEUtil;
 import com.untangle.node.smtp.mime.HeaderNames;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.vnet.NodeSession;
-import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.vnet.AppSession;
+import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.node.GenericRule;
 import com.untangle.uvm.util.GlobUtil;
 
@@ -70,25 +70,25 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
     }
 
     @Override
-    public boolean getScanningEnabled(NodeTCPSession session)
+    public boolean getScanningEnabled(AppTCPSession session)
     {
         return node.getSettings().getScanSmtp();
     }
 
     @Override
-    public long getMaxServerWait(NodeTCPSession session)
+    public long getMaxServerWait(AppTCPSession session)
     {
         return timeout;
     }
 
     @Override
-    public long getMaxClientWait(NodeTCPSession session)
+    public long getMaxClientWait(AppTCPSession session)
     {
         return timeout;
     }
 
     @Override
-    public int getGiveUpSz(NodeTCPSession session)
+    public int getGiveUpSz(AppTCPSession session)
     {
         return Integer.MAX_VALUE;
     }
@@ -109,7 +109,7 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
     }
 
     @Override
-    public ScannedMessageResult blockPassOrModify(NodeTCPSession session, MimeMessage msg, SmtpTransaction tx, SmtpMessageEvent msgInfo)
+    public ScannedMessageResult blockPassOrModify(AppTCPSession session, MimeMessage msg, SmtpTransaction tx, SmtpMessageEvent msgInfo)
     {
         logger.debug("Message[" + msgInfo.getMessageId() + "] blockPassOrModify()");
         this.node.incrementScanCount();
@@ -217,7 +217,7 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
     }
 
     @Override
-    public BlockOrPassResult blockOrPass(NodeTCPSession session, MimeMessage msg, SmtpTransaction tx, SmtpMessageEvent msgInfo)
+    public BlockOrPassResult blockOrPass(AppTCPSession session, MimeMessage msg, SmtpTransaction tx, SmtpMessageEvent msgInfo)
     {
         logger.debug("Message[" + msgInfo.getMessageId() + "] blockOrPass()");
         this.node.incrementScanCount();
@@ -313,13 +313,13 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
     }
 
     @Override
-    protected boolean isAllowedExtension(String extension, NodeTCPSession session)
+    protected boolean isAllowedExtension(String extension, AppTCPSession session)
     {
         // Thread safety
         String str = extension.toUpperCase();
         if ("STARTTLS".equals(str)) {
             // if the SSL inspector is active we always allow STARTTLS
-            if (session.globalAttachment(NodeSession.KEY_SSL_INSPECTOR_SERVER_MANAGER) != null) return (true);
+            if (session.globalAttachment(AppSession.KEY_SSL_INSPECTOR_SERVER_MANAGER) != null) return (true);
             return node.getSettings().getSmtpAllowTls();
         } else {
             return super.isAllowedExtension(extension, session);
@@ -327,12 +327,12 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
     }
 
     @Override
-    protected boolean isAllowedCommand(String command, NodeTCPSession session)
+    protected boolean isAllowedCommand(String command, AppTCPSession session)
     {
         String str = command.toUpperCase();
         if ("STARTTLS".equals(str)) {
             // if the SSL inspector is active we always allow STARTTLS
-            if (session.globalAttachment(NodeSession.KEY_SSL_INSPECTOR_SERVER_MANAGER) != null) return (true);
+            if (session.globalAttachment(AppSession.KEY_SSL_INSPECTOR_SERVER_MANAGER) != null) return (true);
             return node.getSettings().getSmtpAllowTls();
         } else {
             return super.isAllowedCommand(command, session);
@@ -342,7 +342,7 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
     /**
      * Returns null if there was an error.
      */
-    private VirusScannerResult scanPart(NodeTCPSession session, Part part)
+    private VirusScannerResult scanPart(AppTCPSession session, Part part)
     {
         // Get the part as a file
         VirusSmtpState state = null;
@@ -373,7 +373,7 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
         }
     }
 
-    private VirusSmtpState partToFile(NodeTCPSession session, Part part)
+    private VirusSmtpState partToFile(AppTCPSession session, Part part)
     {
         VirusSmtpState state = new VirusSmtpState();
         state.memoryMode = node.getSettings().getForceMemoryMode();

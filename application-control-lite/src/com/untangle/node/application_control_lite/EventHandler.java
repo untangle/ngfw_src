@@ -10,10 +10,10 @@ import java.util.regex.Pattern;
 
 import com.untangle.uvm.util.AsciiCharBuffer;
 import com.untangle.uvm.vnet.AbstractEventHandler;
-import com.untangle.uvm.vnet.NodeSession;
-import com.untangle.uvm.vnet.NodeSession;
-import com.untangle.uvm.vnet.NodeTCPSession;
-import com.untangle.uvm.vnet.NodeUDPSession;
+import com.untangle.uvm.vnet.AppSession;
+import com.untangle.uvm.vnet.AppSession;
+import com.untangle.uvm.vnet.AppTCPSession;
+import com.untangle.uvm.vnet.AppUDPSession;
 import com.untangle.uvm.vnet.IPPacketHeader;
 import org.apache.log4j.Logger;
 
@@ -48,7 +48,7 @@ public class EventHandler extends AbstractEventHandler
         this.node = node;
     }
 
-    public void handleTCPNewSession ( NodeTCPSession session )
+    public void handleTCPNewSession ( AppTCPSession session )
     {
         SessionInfo sessInfo = new SessionInfo();
         // We now don't allocate memory until we need it.
@@ -57,7 +57,7 @@ public class EventHandler extends AbstractEventHandler
         session.attach(sessInfo);
     }
 
-    public void handleUDPNewSession ( NodeUDPSession session )
+    public void handleUDPNewSession ( AppUDPSession session )
     {
         SessionInfo sessInfo = new SessionInfo();
         // We now don't allocate memory until we need it.
@@ -66,27 +66,27 @@ public class EventHandler extends AbstractEventHandler
         session.attach(sessInfo);
     }
 
-    public void handleTCPClientChunk ( NodeTCPSession session, ByteBuffer data )
+    public void handleTCPClientChunk ( AppTCPSession session, ByteBuffer data )
     {
         _handleChunk( data.duplicate(), session, true );
         session.sendDataToServer( data );
         return;
     }
 
-    public void handleTCPServerChunk ( NodeTCPSession session, ByteBuffer data )
+    public void handleTCPServerChunk ( AppTCPSession session, ByteBuffer data )
     {
         _handleChunk( data.duplicate(), session, true );
         session.sendDataToClient( data );
         return;
     }
 
-    public void handleUDPClientPacket ( NodeUDPSession session, ByteBuffer data, IPPacketHeader header ) 
+    public void handleUDPClientPacket ( AppUDPSession session, ByteBuffer data, IPPacketHeader header ) 
     {
         _handleChunk( data.duplicate(), session, false );
         session.sendServerPacket( data, header );
     }
 
-    public void handleUDPServerPacket ( NodeUDPSession session, ByteBuffer data, IPPacketHeader header ) 
+    public void handleUDPServerPacket ( AppUDPSession session, ByteBuffer data, IPPacketHeader header ) 
     {
         _handleChunk( data.duplicate(), session, true );
         session.sendClientPacket( data, header );
@@ -112,7 +112,7 @@ public class EventHandler extends AbstractEventHandler
         _stripZeros = stripZeros;
     }
 
-    private void _handleChunk ( ByteBuffer chunk, NodeSession sess, boolean server )
+    private void _handleChunk ( ByteBuffer chunk, AppSession sess, boolean server )
     {
         SessionInfo sessInfo = (SessionInfo)sess.attachment();
 
@@ -187,18 +187,18 @@ public class EventHandler extends AbstractEventHandler
         if (elem != null) {
             sessInfo.protocol = elem.getProtocol();
             String l4prot = "";
-            if (sess instanceof NodeTCPSession)
+            if (sess instanceof AppTCPSession)
                 l4prot = "TCP";
-            if (sess instanceof NodeUDPSession)
+            if (sess instanceof AppUDPSession)
                 l4prot = "UDP";
 
             /**
              * Tag the session with metadata
              */
-            sess.globalAttach(NodeSession.KEY_APPLICATION_CONTROL_LITE_SIGNATURE,elem.getProtocol());
-            sess.globalAttach(NodeSession.KEY_APPLICATION_CONTROL_LITE_SIGNATURE_CATEGORY,elem.getCategory());
-            sess.globalAttach(NodeSession.KEY_APPLICATION_CONTROL_LITE_SIGNATURE_DESCRIPTION,elem.getDescription());
-            sess.globalAttach(NodeSession.KEY_APPLICATION_CONTROL_LITE_SIGNATURE_MATCHED,Boolean.TRUE);
+            sess.globalAttach(AppSession.KEY_APPLICATION_CONTROL_LITE_SIGNATURE,elem.getProtocol());
+            sess.globalAttach(AppSession.KEY_APPLICATION_CONTROL_LITE_SIGNATURE_CATEGORY,elem.getCategory());
+            sess.globalAttach(AppSession.KEY_APPLICATION_CONTROL_LITE_SIGNATURE_DESCRIPTION,elem.getDescription());
+            sess.globalAttach(AppSession.KEY_APPLICATION_CONTROL_LITE_SIGNATURE_MATCHED,Boolean.TRUE);
                               
             node.incrementDetectCount();
 
@@ -215,13 +215,13 @@ public class EventHandler extends AbstractEventHandler
             if (elem.isBlocked()) {
                 node.incrementBlockCount();
 
-                if (sess instanceof NodeTCPSession) {
-                    ((NodeTCPSession)sess).resetClient();
-                    ((NodeTCPSession)sess).resetServer();
+                if (sess instanceof AppTCPSession) {
+                    ((AppTCPSession)sess).resetClient();
+                    ((AppTCPSession)sess).resetServer();
                 }
-                else if (sess instanceof NodeUDPSession) {
-                    ((NodeUDPSession)sess).expireClient(); /* XXX correct? */
-                    ((NodeUDPSession)sess).expireServer(); /* XXX correct? */
+                else if (sess instanceof AppUDPSession) {
+                    ((AppUDPSession)sess).expireClient(); /* XXX correct? */
+                    ((AppUDPSession)sess).expireServer(); /* XXX correct? */
                 }
             }
             else {
@@ -236,13 +236,13 @@ public class EventHandler extends AbstractEventHandler
             if (logger.isDebugEnabled())
                 logger.debug("Giving up after " + bufferSize + " bytes and " + (sessInfo.clientChunkCount+sessInfo.serverChunkCount) + " chunks");
 
-            sess.globalAttach(NodeSession.KEY_APPLICATION_CONTROL_LITE_SIGNATURE_MATCHED,Boolean.FALSE);
+            sess.globalAttach(AppSession.KEY_APPLICATION_CONTROL_LITE_SIGNATURE_MATCHED,Boolean.FALSE);
             sess.attach(null);
             sess.release();
         }
     }
 
-    private ApplicationControlLitePattern _findMatch ( SessionInfo sessInfo, NodeSession sess, boolean server )
+    private ApplicationControlLitePattern _findMatch ( SessionInfo sessInfo, AppSession sess, boolean server )
     {
         AsciiCharBuffer buffer = server ? sessInfo.serverBuffer : sessInfo.clientBuffer;
         AsciiCharBuffer toScan = buffer.asReadOnlyBuffer();

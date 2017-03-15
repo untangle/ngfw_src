@@ -1,7 +1,7 @@
 package com.untangle.node.smtp.handler;
 
 import com.untangle.node.smtp.Response;
-import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.vnet.AppTCPSession;
 
 public interface ResponseCompletion
 {
@@ -18,5 +18,5 @@ public interface ResponseCompletion
      * @param actions
      *            the set of available actions.
      */
-    public void handleResponse( NodeTCPSession session, Response resp );
+    public void handleResponse( AppTCPSession session, Response resp );
 }

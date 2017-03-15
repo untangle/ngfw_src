@@ -7,7 +7,7 @@ import com.untangle.uvm.BrandingManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.AppSettings;
 import com.untangle.uvm.node.AppManager;
-import com.untangle.uvm.vnet.NodeBase;
+import com.untangle.uvm.node.AppBase;
 
 public class BrandingManagerImpl implements BrandingManager
 {
@@ -98,7 +98,7 @@ public class BrandingManagerImpl implements BrandingManager
         if (nm == null) /* happens on shutdown */
             return null;
         BrandingManager bnode = (BrandingManager)nm.app("branding-manager");
-        if (bnode != null && (((NodeBase)bnode).getRunState() == AppSettings.AppState.RUNNING)) {
+        if (bnode != null && (((AppBase)bnode).getRunState() == AppSettings.AppState.RUNNING)) {
             return bnode;
         }
 

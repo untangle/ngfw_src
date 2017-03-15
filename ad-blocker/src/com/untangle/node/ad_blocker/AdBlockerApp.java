@@ -13,21 +13,21 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.GenericRule;
-import com.untangle.uvm.node.NodeMetric;
+import com.untangle.uvm.node.AppMetric;
 import com.untangle.uvm.node.AppSettings;
 import com.untangle.uvm.node.AppProperties;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.UrlMatchingUtil;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
-import com.untangle.uvm.vnet.NodeBase;
-import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.node.AppBase;
+import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.vnet.Token;
 import com.untangle.node.http.BlockDetails;
 import com.untangle.node.http.HeaderToken;
 
-public class AdBlockerApp extends NodeBase
+public class AdBlockerApp extends AppBase
 {
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -61,9 +61,9 @@ public class AdBlockerApp extends NodeBase
 
         replacementGenerator = new AdBlockerReplacementGenerator(getAppSettings());
 
-        this.addMetric(new NodeMetric(STAT_SCAN, I18nUtil.marktr("Pages scanned")));
-        this.addMetric(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Ads blocked")));
-        this.addMetric(new NodeMetric(STAT_PASS, I18nUtil.marktr("Pages passed")));
+        this.addMetric(new AppMetric(STAT_SCAN, I18nUtil.marktr("Pages scanned")));
+        this.addMetric(new AppMetric(STAT_BLOCK, I18nUtil.marktr("Ads blocked")));
+        this.addMetric(new AppMetric(STAT_PASS, I18nUtil.marktr("Pages passed")));
 
         this.connector = UvmContextFactory.context().pipelineFoundry().create("ad-blocker-http", this, null, new AdBlockerHandler( this ), Fitting.HTTP_TOKENS, Fitting.HTTP_TOKENS, Affinity.CLIENT, 5, false);
         this.connectors = new PipelineConnector[] { connector };
@@ -152,7 +152,7 @@ public class AdBlockerApp extends NodeBase
         return replacementGenerator.generateNonce(details);
     }
 
-    Token[] generateResponse(String nonce, NodeTCPSession session, String uri, HeaderToken header)
+    Token[] generateResponse(String nonce, AppTCPSession session, String uri, HeaderToken header)
     {
         return replacementGenerator.generateSimpleResponse(nonce, session, uri, header);
     }

@@ -18,8 +18,8 @@ import org.apache.log4j.Logger;
 
 import com.untangle.uvm.LanguageManager;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.vnet.NodeTCPSession;
-import com.untangle.uvm.vnet.NodeSession;
+import com.untangle.uvm.vnet.AppTCPSession;
+import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.util.UrlMatchingUtil;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.node.GenericRule;
@@ -84,7 +84,7 @@ public abstract class DecisionEngine
      * @return an HTML response (null means the site is passed and no response
      *         is given).
      */
-    public String checkRequest(NodeTCPSession sess, InetAddress clientIp, int port, RequestLineToken requestLine, HeaderToken header)
+    public String checkRequest(AppTCPSession sess, InetAddress clientIp, int port, RequestLineToken requestLine, HeaderToken header)
     {
         Boolean isFlagged = false; /*
                                     * this stores whether this visit should be
@@ -122,11 +122,11 @@ public abstract class DecisionEngine
 
         // tag the session with the metadata
         if (sess != null) {
-            sess.globalAttach(NodeSession.KEY_WEB_FILTER_BEST_CATEGORY_ID, bestCategory.getId());
-            sess.globalAttach(NodeSession.KEY_WEB_FILTER_BEST_CATEGORY_NAME, bestCategory.getName());
-            sess.globalAttach(NodeSession.KEY_WEB_FILTER_BEST_CATEGORY_DESCRIPTION, bestCategory.getDescription());
-            sess.globalAttach(NodeSession.KEY_WEB_FILTER_BEST_CATEGORY_FLAGGED, bestCategory.getFlagged());
-            sess.globalAttach(NodeSession.KEY_WEB_FILTER_BEST_CATEGORY_BLOCKED, bestCategory.getBlocked());
+            sess.globalAttach(AppSession.KEY_WEB_FILTER_BEST_CATEGORY_ID, bestCategory.getId());
+            sess.globalAttach(AppSession.KEY_WEB_FILTER_BEST_CATEGORY_NAME, bestCategory.getName());
+            sess.globalAttach(AppSession.KEY_WEB_FILTER_BEST_CATEGORY_DESCRIPTION, bestCategory.getDescription());
+            sess.globalAttach(AppSession.KEY_WEB_FILTER_BEST_CATEGORY_FLAGGED, bestCategory.getFlagged());
+            sess.globalAttach(AppSession.KEY_WEB_FILTER_BEST_CATEGORY_BLOCKED, bestCategory.getBlocked());
         }
 
         // check client IP pass list
@@ -257,7 +257,7 @@ public abstract class DecisionEngine
 
             if (bestCategory.getBlocked()) reason = Reason.BLOCK_CATEGORY;
 
-            if (sess != null) sess.globalAttach(NodeSession.KEY_WEB_FILTER_FLAGGED, isFlagged);
+            if (sess != null) sess.globalAttach(AppSession.KEY_WEB_FILTER_FLAGGED, isFlagged);
 
             /**
              * Always log an event if the site was categorized
@@ -290,7 +290,7 @@ public abstract class DecisionEngine
      * when the response comes) If for any reason the visit is block a nonce is
      * returned. Otherwise null is return and the response is passed
      */
-    public String checkResponse(NodeTCPSession sess, InetAddress clientIp, RequestLineToken requestLine, HeaderToken header)
+    public String checkResponse(AppTCPSession sess, InetAddress clientIp, RequestLineToken requestLine, HeaderToken header)
     {
         String catStr = null;
 
@@ -318,7 +318,7 @@ public abstract class DecisionEngine
         WebFilterRule filterRule = checkFilterRules(sess, "RESPONSE");
 
         if (sess != null) {
-            catStr = (String) sess.globalAttachment(NodeSession.KEY_WEB_FILTER_BEST_CATEGORY_NAME);
+            catStr = (String) sess.globalAttachment(AppSession.KEY_WEB_FILTER_BEST_CATEGORY_NAME);
         }
 
         if ((filterRule != null) && (filterRule.getBlocked())) {
@@ -434,7 +434,7 @@ public abstract class DecisionEngine
      * Checks the given URL against sites in the block list Returns the given
      * rule if a rule matches, otherwise null
      */
-    private GenericRule checkUrlList(NodeTCPSession sess, String host, String uri, RequestLineToken requestLine)
+    private GenericRule checkUrlList(AppTCPSession sess, String host, String uri, RequestLineToken requestLine)
     {
         String catStr = null;
 
@@ -444,7 +444,7 @@ public abstract class DecisionEngine
         if (rule == null) return null;
 
         if (sess != null) {
-            catStr = (String) sess.globalAttachment(NodeSession.KEY_WEB_FILTER_BEST_CATEGORY_NAME);
+            catStr = (String) sess.globalAttachment(AppSession.KEY_WEB_FILTER_BEST_CATEGORY_NAME);
         }
 
         if (catStr == null) catStr = rule.getDescription();
@@ -465,7 +465,7 @@ public abstract class DecisionEngine
     /**
      * Check the given URL against the categories (and their settings)
      */
-    private GenericRule checkCategory(NodeTCPSession sess, InetAddress clientIp, String host, int port, RequestLineToken requestLine)
+    private GenericRule checkCategory(AppTCPSession sess, InetAddress clientIp, String host, int port, RequestLineToken requestLine)
     {
         URI reqUri = requestLine.getRequestUri();
 
@@ -563,7 +563,7 @@ public abstract class DecisionEngine
     /**
      * Look for any web filter rules that match the session
      */
-    private WebFilterRule checkFilterRules(NodeSession sess, String checkCaller)
+    private WebFilterRule checkFilterRules(AppSession sess, String checkCaller)
     {
         if (sess == null) return (null);
 

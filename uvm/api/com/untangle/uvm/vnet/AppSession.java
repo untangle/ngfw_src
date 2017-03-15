@@ -14,7 +14,7 @@ import java.net.InetAddress;
 /**
  * The base Sessoin interface
  */
-public interface NodeSession
+public interface AppSession
 {
     public static final int CLIENT = 0;
     public static final int SERVER = 1;

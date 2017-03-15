@@ -22,14 +22,14 @@ import com.untangle.uvm.ExecManager;
 import com.untangle.uvm.HookCallback;
 import com.untangle.uvm.node.AppSettings;
 import com.untangle.uvm.node.License;
-import com.untangle.uvm.node.NodeMetric;
+import com.untangle.uvm.node.AppMetric;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.vnet.NodeBase;
+import com.untangle.uvm.node.AppBase;
 import com.untangle.uvm.vnet.PipelineConnector;
 
-public class WanFailoverApp extends NodeBase
+public class WanFailoverApp extends AppBase
 {    
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -59,11 +59,11 @@ public class WanFailoverApp extends NodeBase
     {
         super( appSettings, appProperties );
 
-        this.addMetric(new NodeMetric(STAT_CONNECTED, I18nUtil.marktr("Connected WANs")));
-        this.addMetric(new NodeMetric(STAT_DISCONNECTED, I18nUtil.marktr("Disconnected WANs")));
-        this.addMetric(new NodeMetric(STAT_CHANGE, I18nUtil.marktr("WAN Change")));
-        this.addMetric(new NodeMetric(STAT_RECONNECTS, I18nUtil.marktr("Reconnects")));
-        this.addMetric(new NodeMetric(STAT_DISCONNECTS, I18nUtil.marktr("Disconnects")));
+        this.addMetric(new AppMetric(STAT_CONNECTED, I18nUtil.marktr("Connected WANs")));
+        this.addMetric(new AppMetric(STAT_DISCONNECTED, I18nUtil.marktr("Disconnected WANs")));
+        this.addMetric(new AppMetric(STAT_CHANGE, I18nUtil.marktr("WAN Change")));
+        this.addMetric(new AppMetric(STAT_RECONNECTS, I18nUtil.marktr("Reconnects")));
+        this.addMetric(new AppMetric(STAT_DISCONNECTS, I18nUtil.marktr("Disconnects")));
     }
 
     @Override

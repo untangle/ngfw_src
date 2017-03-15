@@ -23,14 +23,14 @@ import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.network.InterfaceStatus;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.node.AppSettings;
-import com.untangle.uvm.node.NodeMetric;
+import com.untangle.uvm.node.AppMetric;
 import com.untangle.uvm.node.IPMaskedAddress;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
-import com.untangle.uvm.vnet.NodeBase;
+import com.untangle.uvm.node.AppBase;
 import com.untangle.uvm.vnet.PipelineConnector;
 
-public class OpenVpnNodeImpl extends NodeBase
+public class OpenVpnNodeImpl extends AppBase
 {
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -63,8 +63,8 @@ public class OpenVpnNodeImpl extends NodeBase
         this.openVpnMonitor   = new OpenVpnMonitor( this );
         this.openVpnHookCallback = new OpenVpnHookCallback();
 
-        this.addMetric(new NodeMetric(STAT_PASS, I18nUtil.marktr("Sessions passed")));
-        this.addMetric(new NodeMetric(STAT_CONNECT, I18nUtil.marktr("Clients Connected")));
+        this.addMetric(new AppMetric(STAT_PASS, I18nUtil.marktr("Sessions passed")));
+        this.addMetric(new AppMetric(STAT_CONNECT, I18nUtil.marktr("Clients Connected")));
 
         this.connector = UvmContextFactory.context().pipelineFoundry().create("openvpn", this, null, handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, 10, false);
         this.connectors = new PipelineConnector[] { connector };

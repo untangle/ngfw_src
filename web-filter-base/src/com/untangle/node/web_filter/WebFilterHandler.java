@@ -9,7 +9,7 @@ import com.untangle.node.http.HeaderToken;
 import com.untangle.uvm.vnet.Token;
 import com.untangle.node.web_filter.WebFilterBase;
 import com.untangle.node.web_filter.WebFilterHandler;
-import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.vnet.AppTCPSession;
 
 /**
  * Blocks HTTP traffic that is on an active block list.
@@ -24,7 +24,7 @@ public class WebFilterHandler extends WebFilterBaseHandler
     }
 
     @Override
-    protected HeaderToken doRequestHeader( NodeTCPSession session, HeaderToken requestHeader )
+    protected HeaderToken doRequestHeader( AppTCPSession session, HeaderToken requestHeader )
     {
         node.incrementScanCount();
 
