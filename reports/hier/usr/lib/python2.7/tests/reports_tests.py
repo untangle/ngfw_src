@@ -354,7 +354,7 @@ class ReportsTests(unittest2.TestCase):
         3. Custom report with test not in default.
         """
         if (not canRelay):
-            raise unittest2.SkipTest('Unable to relay through ' + testServerHost)
+            raise unittest2.SkipTest('Unable to relay through ' + global_functions.testServerHost)
 
         current_method_name = inspect.stack()[0][3]
 
@@ -411,7 +411,7 @@ class ReportsTests(unittest2.TestCase):
         3. Custom report with test not in default.
         """
         if (not canRelay):
-            raise unittest2.SkipTest('Unable to relay through ' + testServerHost)
+            raise unittest2.SkipTest('Unable to relay through ' + global_functions.testServerHost)
 
         current_method_name = inspect.stack()[0][3]
 
