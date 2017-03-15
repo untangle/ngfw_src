@@ -1211,7 +1211,7 @@ Ext.define("Ung.Main", {
             }
         }
     },
-    buildApps: function () {
+    buildApps2: function () {
         //build apps
         Ung.MetricManager.stop();
         this.policySelector.hide();
@@ -1337,7 +1337,7 @@ Ext.define("Ung.Main", {
             this.parentPolicy.setVisible(parentRackName != null);
             this.appPreviews = {};
             Ung.Main.buildApps();
-            Ung.Main.buildApps();
+            Ung.Main.buildApps2();
         }, this);
         Ung.Util.RetryHandler.retry(rpc.appManager.getAppsView, rpc.appManager, [ rpc.currentPolicy.policyId ], callback, 1500, 10);
     },
@@ -1348,7 +1348,7 @@ Ext.define("Ung.Main", {
             }
             rpc.rackView = result;
             //Ung.Main.buildApps(); - disable app removal from 'Install' view, when install finishes
-            Ung.Main.buildApps();
+            Ung.Main.buildApps2();
         }, this);
         Ung.Util.RetryHandler.retry(rpc.appManager.getAppsView, rpc.appManager, [ rpc.currentPolicy.policyId ], callback, 1500, 10);
     },
