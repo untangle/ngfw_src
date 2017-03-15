@@ -8,7 +8,7 @@ Standards-Version: 3.8.0
 
 Package: untangle-libuvmcore
 Architecture: any
-Depends: ${misc:Depends}, libc6 (>= 2.3.2), libnetfilter-queue1 (>= 1.0.2+20141023+git329468), libnetfilter-conntrack3 (>= 1.0.4), gawk, libsnmp-dev
+Depends: ${misc:Depends}
 Description: Untangle Core Library
  Untangle Core Library files.
 
@@ -166,7 +166,7 @@ Description: The Untangle Branding Manager
 Package: untangle-node-bandwidth-control
 Architecture: all
 Section: non-free
-Depends: untangle-vm, untangle-node-license, gawk
+Depends: untangle-vm, untangle-node-license
 Conflicts: untangle-node-bandwidth
 Replaces: untangle-node-bandwidth
 Provides: untangle-node-banwidth
@@ -258,7 +258,7 @@ Architecture: all
 Conflicts: untangle-node-idps, untangle-node-ips
 Replaces: untangle-node-idps, untangle-node-ips
 Provides: untangle-node-idps, untangle-node-ips
-Depends: untangle-vm, untangle-snort-config, snort (>= 2.9.8.2), libdaq0 (>= 2.0.6)
+Depends: untangle-vm, untangle-snort-config
 Description: Intrusion Prevention
  The Intrusion Prevention application.
 
@@ -324,7 +324,10 @@ Description: Platform Thirdparty Libraries
 Package: untangle-vm
 Architecture: all
 Conflicts: untangle-libnetfilter-queue-dev, untangle-libnetfilter-queue0
-Depends: untangle-development-runtime (> 13.0.0)
+Depends: untangle-libuvm,
+         untangle-libuvmcore (>= 11.1),
+         untangle-libuvmthirdparty,
+         untangle-development-runtime (> 13.0.0)
 Description: Platform
  The Platform.
 
