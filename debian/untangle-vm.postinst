@@ -59,4 +59,10 @@ rm -rf /usr/share/untangle/web/reports/data
 rm -rf /usr/lib/python2.7/reports/node
 sed -e 's/stable-121\s/stable-122 /g' -i /etc/apt/sources.list.d/untangle.list
 
+# 13.0 upgrade
+rm -rf /usr/share/untangle/lib/untangle-node-idps
+rm -rf /usr/share/untangle/lib/untangle-node-ips
+rm -rf /usr/share/untangle/lib/untangle-node-web-filter-lite
+
+
 exit 0

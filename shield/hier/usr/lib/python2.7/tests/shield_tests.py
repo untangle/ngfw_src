@@ -23,7 +23,7 @@ class ShieldTests(unittest2.TestCase):
 
     @staticmethod
     def nodeName():
-        return "untangle-node-shield"
+        return "shield"
 
     @staticmethod
     def initialSetUp(self):

@@ -188,7 +188,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
         """
         Node name
         """
-        return "untangle-node-directory-connector"
+        return "directory-connector"
 
     @staticmethod
     def vendorName():

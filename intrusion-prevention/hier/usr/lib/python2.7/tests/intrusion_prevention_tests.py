@@ -189,7 +189,7 @@ def flush_events():
     """
     Clear Intrusion Prevention events
     """
-    reports = uvmContext.nodeManager().node("untangle-node-reports")
+    reports = uvmContext.nodeManager().node("reports")
     if (reports != None):
         reports.flushEvents()
 
@@ -228,7 +228,7 @@ class IntrusionPreventionTests(unittest2.TestCase):
         """
         Get Node name
         """
-        return "untangle-node-intrusion-prevention"
+        return "intrusion-prevention"
 
     @staticmethod
     def initialSetUp(self):

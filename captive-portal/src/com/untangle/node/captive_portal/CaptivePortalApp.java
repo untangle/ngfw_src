@@ -83,7 +83,7 @@ public class CaptivePortalApp extends NodeBase
     private final CaptivePortalReplacementGenerator replacementGenerator;
 
     private final SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-    private final String settingsFile = (System.getProperty("uvm.settings.dir") + "/untangle-node-captive-portal/settings_" + getNodeSettings().getId().toString()) + ".js";
+    private final String settingsFile = (System.getProperty("uvm.settings.dir") + "/captive-portal/settings_" + getNodeSettings().getId().toString()) + ".js";
     private final String customPath = (System.getProperty("uvm.web.dir") + "/capture/custom_" + getNodeSettings().getId().toString());
 
     protected CaptivePortalUserCookieTable captureUserCookieTable = new CaptivePortalUserCookieTable();
@@ -474,7 +474,7 @@ public class CaptivePortalApp extends NodeBase
                 // we always want to use the stripped version internally
                 username = strippedUsername;
 
-                DirectoryConnector directoryConnector = (DirectoryConnector) UvmContextFactory.context().nodeManager().node("untangle-node-directory-connector");
+                DirectoryConnector directoryConnector = (DirectoryConnector) UvmContextFactory.context().nodeManager().node("directory-connector");
                 if (directoryConnector == null) break;
 
                 // try the original first and then the stripped version
@@ -497,7 +497,7 @@ public class CaptivePortalApp extends NodeBase
 
         case RADIUS:
             try {
-                DirectoryConnector directoryConnector = (DirectoryConnector) UvmContextFactory.context().nodeManager().node("untangle-node-directory-connector");
+                DirectoryConnector directoryConnector = (DirectoryConnector) UvmContextFactory.context().nodeManager().node("directory-connector");
                 if (directoryConnector != null) isAuthenticated = directoryConnector.radiusAuthenticate(username, password);
             } catch (Exception e) {
                 logger.warn("Radius authentication failure", e);
@@ -507,7 +507,7 @@ public class CaptivePortalApp extends NodeBase
 
         case GOOGLE:
             try {
-                DirectoryConnector directoryConnector = (DirectoryConnector) UvmContextFactory.context().nodeManager().node("untangle-node-directory-connector");
+                DirectoryConnector directoryConnector = (DirectoryConnector) UvmContextFactory.context().nodeManager().node("directory-connector");
                 if (directoryConnector != null) isAuthenticated = directoryConnector.googleAuthenticate(username, password);
             } catch (Exception e) {
                 logger.warn("Google authentication failure", e);
@@ -517,7 +517,7 @@ public class CaptivePortalApp extends NodeBase
 
         case FACEBOOK:
             try {
-                DirectoryConnector directoryConnector = (DirectoryConnector) UvmContextFactory.context().nodeManager().node("untangle-node-directory-connector");
+                DirectoryConnector directoryConnector = (DirectoryConnector) UvmContextFactory.context().nodeManager().node("directory-connector");
                 if (directoryConnector != null) isAuthenticated = directoryConnector.facebookAuthenticate(username, password);
             } catch (Exception e) {
                 logger.warn("Facebook authentication failure", e);
@@ -527,7 +527,7 @@ public class CaptivePortalApp extends NodeBase
 
         case ANY:
             try {
-                DirectoryConnector directoryConnector = (DirectoryConnector) UvmContextFactory.context().nodeManager().node("untangle-node-directory-connector");
+                DirectoryConnector directoryConnector = (DirectoryConnector) UvmContextFactory.context().nodeManager().node("directory-connector");
                 if (directoryConnector != null) isAuthenticated = directoryConnector.anyAuthenticate(username, password);
             } catch (Exception e) {
                 logger.warn("ANY authentication failure", e);

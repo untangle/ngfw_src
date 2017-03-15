@@ -63,7 +63,7 @@ Ext.define('Ung.cmp.AppState', {
                         // vm.notify();
                         btn.setDisabled(false);
 
-                        // if (nodeManager.getNodeProperties().name === 'untangle-node-reports') {
+                        // if (nodeManager.getNodeProperties().name === 'reports') {
                         //     vm.getParent().set('reportsRunning', false);
                         // }
 
@@ -88,7 +88,7 @@ Ext.define('Ung.cmp.AppState', {
                         // vm.notify();
                         btn.setDisabled(false);
 
-                        // if (nodeManager.getNodeProperties().name === 'untangle-node-reports') {
+                        // if (nodeManager.getNodeProperties().name === 'reports') {
                         //     vm.getParent().set('reportsRunning', true);
                         // }
 

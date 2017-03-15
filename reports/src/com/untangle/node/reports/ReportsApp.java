@@ -143,7 +143,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeSettings().getId().toString();
         try {
-            settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "untangle-node-reports/" + "settings_"  + nodeID + ".js", newSettings );
+            settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "reports/" + "settings_"  + nodeID + ".js", newSettings );
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.",e);
             return;
@@ -283,7 +283,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
 
     public void forceFlush()
     {
-        logger.warn("forceFlush() ...");
+        logger.info("forceFlush() ...");
         if (ReportsApp.eventWriter != null)
             ReportsApp.eventWriter.forceFlush();
     }
@@ -348,7 +348,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeSettings().getId().toString();
         ReportsSettings readSettings = null;
-        String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-node-reports/" + "settings_" + nodeID + ".js";
+        String settingsFileName = System.getProperty("uvm.settings.dir") + "/reports/" + "settings_" + nodeID + ".js";
 
         conversion_paths_13_0_0();
 
@@ -663,7 +663,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
 
     private void conversion_paths_13_0_0()
     {
-        int result = UvmContextFactory.context().execManager().execResult("/bin/grep -q com.untangle.node.reports.AlertRule " + System.getProperty("uvm.settings.dir") + "/" + "/untangle-node-reports/" + "/settings*.js");
+        int result = UvmContextFactory.context().execManager().execResult("/bin/grep -q com.untangle.node.reports.AlertRule " + System.getProperty("uvm.settings.dir") + "/" + "/reports/" + "/settings*.js");
         if ( result != 0 )
             return;
 
@@ -681,7 +681,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
         for ( int i = 0 ; i < oldNames.length ; i++ ) {
             String oldStr = oldNames[i];
             String newStr = newNames[i];
-            UvmContextFactory.context().execManager().execResult("/bin/sed -e 's/" + oldStr + "/" + newStr + "/g' -i " + System.getProperty("uvm.settings.dir") + "/" + "/untangle-node-reports/" + "/*");
+            UvmContextFactory.context().execManager().execResult("/bin/sed -e 's/" + oldStr + "/" + newStr + "/g' -i " + System.getProperty("uvm.settings.dir") + "/" + "/reports/" + "/*");
         }
     }
 
@@ -885,7 +885,7 @@ public class ReportsApp extends NodeBase implements Reporting, HostnameLookup
 
                 logger.info("Export CSV( name:" + name + " query: " + query + " columnList: " + columnListStr + ")");
 
-                ReportsApp reports = (ReportsApp) UvmContextFactory.context().nodeManager().node("untangle-node-reports");
+                ReportsApp reports = (ReportsApp) UvmContextFactory.context().nodeManager().node("reports");
                 if (reports == null) {
                     logger.warn("reports node not found");
                     return;

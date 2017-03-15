@@ -14,7 +14,7 @@ UNTANGLE_DIR = '%s/usr/lib/python%d.%d' % ( "@PREFIX@", sys.version_info[0], sys
 if ( "@PREFIX@" != ''):
     sys.path.insert(0, UNTANGLE_DIR)
 	
-import untangle_node_intrusion_prevention
+import intrusion_prevention
 
 def usage():
     """
@@ -68,19 +68,19 @@ def main(argv):
         print "node_id = " + node_id
         print "_debug = ",  _debug
 
-    settings = untangle_node_intrusion_prevention.IntrusionPreventionSettings( node_id )
+    settings = intrusion_prevention.IntrusionPreventionSettings( node_id )
     if settings.exists() == False:
         print "cannot find settings file"
         sys.exit()
     settings.load()
 
-    snort_conf = untangle_node_intrusion_prevention.SnortConf( _debug=_debug )
+    snort_conf = intrusion_prevention.SnortConf( _debug=_debug )
    
     rules = settings.get_rules()
     rules.save(snort_conf.get_variable( "RULE_PATH" ), classtypes, categories, msgs )
     rules.save(snort_conf.get_variable( "PREPROC_RULE_PATH" ), classtypes, categories, msgs )
     
-    intrusion_prevention_event_map = untangle_node_intrusion_prevention.IntrusionPreventionEventMap( rules )
+    intrusion_prevention_event_map = intrusion_prevention.IntrusionPreventionEventMap( rules )
     intrusion_prevention_event_map.save()
 	
     # Override snort configuration variables with settings variables
@@ -98,7 +98,7 @@ def main(argv):
         interfaces = default_interfaces
 
     for include in snort_conf.get_includes():
-        match_include_rule = re.search( untangle_node_intrusion_prevention.SnortConf.include_rulepath_regex, include["file_name"] )
+        match_include_rule = re.search( intrusion_prevention.SnortConf.include_rulepath_regex, include["file_name"] )
         if match_include_rule:
             snort_conf.set_include( include["file_name"], False )
     snort_conf.set_include( "$RULE_PATH/" + os.path.basename( rules.get_file_name() ) )
@@ -106,7 +106,7 @@ def main(argv):
 			
     snort_conf.save()
 	
-    snort_debian_conf = untangle_node_intrusion_prevention.SnortDebianConf( _debug=_debug )
+    snort_debian_conf = intrusion_prevention.SnortDebianConf( _debug=_debug )
 
     queue_num = "0"
     ipf = open( iptables_script )

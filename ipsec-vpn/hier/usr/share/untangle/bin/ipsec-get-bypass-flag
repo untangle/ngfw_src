@@ -4,7 +4,7 @@
 from uvm.settings_reader import get_node_settings_item
 
 # Read the bypassflag from the IPsec node settings file
-bypassflag = get_node_settings_item("untangle-node-ipsec-vpn", "bypassflag")
+bypassflag = get_node_settings_item("ipsec-vpn", "bypassflag")
 
 # If we don't get anything default to bypass mode for legacy compatibility
 if (bypassflag == None):

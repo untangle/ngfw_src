@@ -1,4 +1,4 @@
 # -*-ruby-*-
 
-NodeBuilder.makeNode(BuildEnv::SRC, 'untangle-node-wan-balancer', 'wan-balancer', [] )
+NodeBuilder.makeNode(BuildEnv::SRC, 'wan-balancer', 'wan-balancer', [] )
 

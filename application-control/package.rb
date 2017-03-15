@@ -1,4 +1,4 @@
 # -*-ruby-*-
 
-NodeBuilder.makeNode(BuildEnv::SRC, 'untangle-node-application-control', 'application-control', [])
+NodeBuilder.makeNode(BuildEnv::SRC, 'application-control', 'application-control', [])
 

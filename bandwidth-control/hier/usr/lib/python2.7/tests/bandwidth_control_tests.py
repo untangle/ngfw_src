@@ -185,11 +185,11 @@ class BandwidthControlTests(unittest2.TestCase):
 
     @staticmethod
     def nodeName():
-        return "untangle-node-bandwidth-control"
+        return "bandwidth-control"
 
     @staticmethod
     def nodeNameWF():
-        return "untangle-node-web-filter"
+        return "web-filter"
 
     @staticmethod
     def vendorName():
@@ -460,7 +460,7 @@ class BandwidthControlTests(unittest2.TestCase):
         global node
         nukeRules()
         priority_level = 7
-        # This test might need web filter for untangle-casing-http to start
+        # This test might need web filter for http to start
         # Record average speed without bandwidth control configured
         wget_speed_pre = global_functions.get_download_speed()
         
@@ -514,7 +514,7 @@ class BandwidthControlTests(unittest2.TestCase):
         pre_count = global_functions.get_app_metric_value(node,"prioritize")
 
         priority_level = 7
-        # This test might need web filter for untangle-casing-http to start
+        # This test might need web filter for http to start
         # Record average speed without bandwidth control configured
         wget_speed_pre = global_functions.get_download_speed()
         

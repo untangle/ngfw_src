@@ -179,15 +179,15 @@ class ReportsTests(unittest2.TestCase):
 
     @staticmethod
     def nodeName():
-        return "untangle-node-reports"
+        return "reports"
 
     @staticmethod
     def nodeFirewallName():
-        return "untangle-node-firewall"
+        return "firewall"
 
     @staticmethod
     def nodeWanFailoverName():
-        return "untangle-node-wan-failover"
+        return "wan-failover"
 
     @staticmethod
     def vendorName():

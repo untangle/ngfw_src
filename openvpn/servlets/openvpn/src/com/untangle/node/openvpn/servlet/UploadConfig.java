@@ -46,7 +46,7 @@ public class UploadConfig extends HttpServlet
     protected void doPost( HttpServletRequest request,  HttpServletResponse response )
         throws ServletException, IOException
     {
-        OpenVpnNodeImpl node = (OpenVpnNodeImpl) UvmContextFactory.context().nodeManager().node( "untangle-node-openvpn" );
+        OpenVpnNodeImpl node = (OpenVpnNodeImpl) UvmContextFactory.context().nodeManager().node( "openvpn" );
 
         if ( node == null ) {
             logger.warn( "Unable to retrieve the OpenVPN node." );

@@ -56,7 +56,7 @@ Ext.define('Ung.reportsViewer', {
                 text : i18n._("Shield"),
                 category : "Shield",
                 leaf : true,
-                icon :'/skins/'+rpc.skinSettings.skinName+'/images/admin/apps/untangle-node-shield_17x17.png' 
+                icon :'/skins/'+rpc.skinSettings.skinName+'/images/admin/apps/shield_17x17.png' 
             } ]
         }];
 
@@ -104,7 +104,7 @@ Ext.define('Ung.reportsViewer', {
                 var i, app, apps = [];
                 for (i = 0; i < currentApplications.length; i++) {
                     app = currentApplications[i];
-                    if(app.name != 'untangle-node-branding-manager' && app.name != 'untangle-node-live-support' ) {
+                    if(app.name != 'branding-manager' && app.name != 'live-support' ) {
                         apps.push({
                             text : app.displayName,
                             category : app.displayName,

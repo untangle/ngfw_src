@@ -1,3 +1,3 @@
 # -*-ruby-*-
 
-NodeBuilder.makeNode(BuildEnv::SRC, 'untangle-node-application-control-lite', 'application-control-lite')
+NodeBuilder.makeNode(BuildEnv::SRC, 'application-control-lite', 'application-control-lite')

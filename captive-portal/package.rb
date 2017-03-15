@@ -1,6 +1,6 @@
 # -*-ruby-*-
 
-http = BuildEnv::SRC['untangle-casing-http']
+http = BuildEnv::SRC['http']
 
-NodeBuilder.makeNode(BuildEnv::SRC, 'untangle-node-captive-portal', 'captive-portal', [http['src']])
+NodeBuilder.makeNode(BuildEnv::SRC, 'captive-portal', 'captive-portal', [http['src']])
 

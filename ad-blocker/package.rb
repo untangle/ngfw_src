@@ -1,5 +1,5 @@
 # -*-ruby-*-
 
-http = BuildEnv::SRC['untangle-casing-http']
+http = BuildEnv::SRC['http']
 
-NodeBuilder.makeNode(BuildEnv::SRC, 'untangle-node-ad-blocker', 'ad-blocker', [http['src']])
+NodeBuilder.makeNode(BuildEnv::SRC, 'ad-blocker', 'ad-blocker', [http['src']])

@@ -131,6 +131,8 @@ public class NodeManagerImpl implements NodeManager
 
     public List<Node> nodeInstances( String nodeName )
     {
+        nodeName = fixupName( nodeName ); // handle old names
+        
         List<Node> list = new LinkedList<Node>();
 
         for (Node node : loadedNodesMap.values()) {
@@ -149,6 +151,8 @@ public class NodeManagerImpl implements NodeManager
 
     public List<Node> nodeInstances( String name, Integer policyId, boolean parents )
     {
+        name = fixupName( name ); // handle old names
+
         List<Node> list = new ArrayList<Node>(loadedNodesMap.size());
 
         for ( Node node : getNodesForPolicy( policyId, parents ) ) {
@@ -199,6 +203,8 @@ public class NodeManagerImpl implements NodeManager
 
     public Node node( String name )
     {
+        name = fixupName( name ); // handle old names
+
         List<Node> nodes = nodeInstances( name );
         if( nodes.size() > 0 ){
             return nodes.get(0);
@@ -213,6 +219,8 @@ public class NodeManagerImpl implements NodeManager
 
     public Node instantiate( String nodeName, Integer policyId ) throws Exception
     {
+        nodeName = fixupName( nodeName ); // handle old names
+
         logger.info("instantiate( name:" + nodeName + " , policy:" + policyId + " )");
 
         if ( ! UvmContextFactory.context().licenseManager().isLicenseValid( nodeName ) ) {
@@ -445,7 +453,7 @@ public class NodeManagerImpl implements NodeManager
         /**
          * SPECIAL CASE: If Web Filter is installed in this rack OR licensed for non-trial, hide Web Monitor
          */
-        List<Node> webFilterNodes = UvmContextFactory.context().nodeManager().nodeInstances( "untangle-node-web-filter", policyId );
+        List<Node> webFilterNodes = UvmContextFactory.context().nodeManager().nodeInstances( "web-filter", policyId );
         if (webFilterNodes != null && webFilterNodes.size() > 0) {
             installableNodesMap.remove("Web Monitor"); /* hide web monitor from left hand nav */
         }
@@ -459,7 +467,7 @@ public class NodeManagerImpl implements NodeManager
         /**
          * SPECIAL CASE: If Spam Blocker is installed in this rack OR licensed for non-trial, hide Spam Blocker Lite
          */
-        List<Node> spamBlockerNodes = UvmContextFactory.context().nodeManager().nodeInstances( "untangle-node-spam-blocker", policyId);
+        List<Node> spamBlockerNodes = UvmContextFactory.context().nodeManager().nodeInstances( "spam-blocker", policyId);
         if (spamBlockerNodes != null && spamBlockerNodes.size() > 0) {
             installableNodesMap.remove("Spam Blocker Lite"); /* hide spam blocker lite from left hand nav */
         }
@@ -492,7 +500,7 @@ public class NodeManagerImpl implements NodeManager
 
     public AppsView[] getAppsViews()
     {
-        PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().nodeManager().node("untangle-node-policy-manager");
+        PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().nodeManager().node("policy-manager");
 
         if ( policyManager == null ) {
             AppsView[] views = new AppsView[] { getAppsView(1) };
@@ -816,8 +824,9 @@ public class NodeManagerImpl implements NodeManager
             // look for and remove old nodes that no longer exist
             LinkedList<NodeSettings> cleanList = new LinkedList<NodeSettings>();
             for (NodeSettings item : readSettings.getNodes()) {
-                if (item.getNodeName().equals("untangle-node-webfilter-lite")) continue;
-                if (item.getNodeName().equals("untangle-node-ips")) continue;
+                if (item.getNodeName().equals("webfilter-lite")) continue;
+                if (item.getNodeName().equals("ips")) continue;
+                if (item.getNodeName().equals("idps")) continue;
                 cleanList.add(item);
             }
 
@@ -852,7 +861,7 @@ public class NodeManagerImpl implements NodeManager
     }
 
     /**
-     * Get NodeProperties from the node name (ie "untangle-node-firewall")
+     * Get NodeProperties from the node name (ie "firewall")
      */
     private NodeProperties getNodeProperties( String name )
     {
@@ -898,7 +907,7 @@ public class NodeManagerImpl implements NodeManager
 
     private List<Integer> getParentPolicies( Integer policyId )
     {
-        PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().nodeManager().node("untangle-node-policy-manager");
+        PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().nodeManager().node("policy-manager");
         List<Integer> parentList = new ArrayList<Integer>();
         if (policyManager == null)
             return parentList;
@@ -1045,5 +1054,15 @@ public class NodeManagerImpl implements NodeManager
             }
         }
         return false;
+    }
+
+    private String fixupName( String name )
+    {
+        if ( name == null )
+            return null;
+        name = name.replaceAll("untangle-node-","").replaceAll("untangle-casing-","");
+        if ( name.contains("untangle-base") )
+            name = name.replaceAll("untangle-base-","") + "-base";
+        return name;
     }
 }

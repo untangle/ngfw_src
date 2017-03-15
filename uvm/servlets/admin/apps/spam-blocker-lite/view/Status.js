@@ -15,7 +15,7 @@ Ext.define('Ung.apps.spamblockerlite.view.Status', {
         items: [{
             xtype: 'component',
             cls: 'app-desc',
-            html: '<img src="/skins/modern-rack/images/admin/apps/untangle-node-spam-blocker-lite_80x80.png" width="80" height="80"/>' +
+            html: '<img src="/skins/modern-rack/images/admin/apps/spam-blocker-lite_80x80.png" width="80" height="80"/>' +
                 '<h3>Spam Blocker Lite</h3>' +
                 '<p>' + 'Spam Blocker detects, blocks, and quarantines spam before it reaches users\' mailboxes.'.t() + '</p>'
         }, {

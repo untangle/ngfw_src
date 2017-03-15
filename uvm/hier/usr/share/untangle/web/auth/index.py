@@ -140,7 +140,7 @@ def _valid_token(req, token):
         return False
 
 def _reports_valid_login(req, realm, username, password, log=True):
-    users = get_node_settings_item('untangle-node-reports','reportsUsers')
+    users = get_node_settings_item('reports','reportsUsers')
     if users == None:
         return False;
     if users['list'] == None:
@@ -214,7 +214,7 @@ def _write_login_form(req, title, host, error_msg):
     if default_username == "":
         focus_field_id = "username"
 
-    banner_msg = get_node_settings_item('untangle-node-branding-manager','bannerMessage')
+    banner_msg = get_node_settings_item('branding-manager','bannerMessage')
     if banner_msg != None and banner_msg != "":
         banner_msg = banner_msg.replace("\n", "<br/>")
         banner_msg = "<p>" + banner_msg.encode('utf-8') + "</p>"

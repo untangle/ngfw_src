@@ -77,7 +77,7 @@ class ApplicationControlTests(unittest2.TestCase):
 
     @staticmethod
     def nodeName():
-        return "untangle-node-application-control"
+        return "application-control"
 
     @staticmethod
     def vendorName():

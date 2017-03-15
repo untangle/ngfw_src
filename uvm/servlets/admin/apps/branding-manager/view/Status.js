@@ -13,7 +13,7 @@ Ext.define('Ung.apps.brandingmanager.view.Status', {
         items: [{
             xtype: 'component',
             cls: 'app-desc',
-            html: '<img src="/skins/modern-rack/images/admin/apps/untangle-node-branding-manager_80x80.png" width="80" height="80"/>' +
+            html: '<img src="/skins/modern-rack/images/admin/apps/branding-manager_80x80.png" width="80" height="80"/>' +
                 '<h3>Branding Manager</h3>' +
                 '<p>' + 'The Branding Settings are used to set the logo and contact information that will be seen by users (e.g. reports).'.t() + '</p>'
         }, {

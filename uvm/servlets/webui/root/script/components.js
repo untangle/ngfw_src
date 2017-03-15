@@ -448,7 +448,7 @@ Ext.define("Ung.Node", {
             if(panelStatus) {
                 panelStatus.updatePower(this.isRunning());
             }
-            if(this.name=="untangle-node-reports") {
+            if(this.name=="reports") {
                 rpc.reportsEnabled = this.isRunning();
                 Ung.Main.updateReportsDependencies();
             }
@@ -657,7 +657,7 @@ Ext.define("Ung.Node", {
                     }
                 }
             }
-            if(nodeName == "untangle-node-reports") {
+            if(nodeName == "reports") {
                 rpc.reportsEnabled = false;
                 delete rpc.nodeReports;
                 delete rpc.reportsManager;
@@ -665,7 +665,7 @@ Ext.define("Ung.Node", {
             } else {
                 Ung.dashboard.loadDashboard();
             }
-            if(nodeName == "untangle-node-policy-manager") {
+            if(nodeName == "policy-manager") {
                 Ung.Main.loadPolicies();
             } else {
                 Ung.Main.updateAppsView();
@@ -1153,9 +1153,9 @@ Ext.define("Ung.FaceplateMetric", {
             }
         }
         //Do not show chart graph for these apps even though they have the live-sessions metrics
-        if(this.nodeName === "untangle-node-firewall" ||
-           this.nodeName === "untangle-node-openvpn" ||
-           this.nodeName === "untangle-node-wan-balancer") {
+        if(this.nodeName === "firewall" ||
+           this.nodeName === "openvpn" ||
+           this.nodeName === "wan-balancer") {
                 this.hasChart = false;
         }
         var chartContainerEl = this.getEl().down("div[class=chart]");
@@ -1493,9 +1493,9 @@ Ext.define('Ung.panel.Status', {
                 metric = node.metrics.list[i];
                 if(metric.name=="live-sessions") {
                     this.hasChart = true;
-                    if( node.name === "untangle-node-firewall" ||
-                        node.name === "untangle-node-openvpn" ||
-                        node.name === "untangle-node-wan-balancer" ){
+                    if( node.name === "firewall" ||
+                        node.name === "openvpn" ||
+                        node.name === "wan-balancer" ){
                         this.hasChart = false;
                     }
                 }

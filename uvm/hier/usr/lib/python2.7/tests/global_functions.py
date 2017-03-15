@@ -164,7 +164,7 @@ def get_download_speed():
         return None
 
 def get_events( eventEntryCategory, eventEntryTitle, conditions, limit ):
-    reports = uvmContextLongTimeout.nodeManager().node("untangle-node-reports")
+    reports = uvmContextLongTimeout.nodeManager().node("reports")
     if reports == None:
         print "WARNING: reports app not found"
         return None

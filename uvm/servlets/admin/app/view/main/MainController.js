@@ -43,9 +43,9 @@ Ext.define('Ung.view.main.MainController', {
         //     }
         // });
 
-        vm.set('reportsInstalled', rpc.nodeManager.node('untangle-node-reports') !== null);
-        if (rpc.nodeManager.node('untangle-node-reports')) {
-            vm.set('reportsRunning', rpc.nodeManager.node('untangle-node-reports').getRunState() === 'RUNNING');
+        vm.set('reportsInstalled', rpc.nodeManager.node('reports') !== null);
+        if (rpc.nodeManager.node('reports')) {
+            vm.set('reportsRunning', rpc.nodeManager.node('reports').getRunState() === 'RUNNING');
         }
         vm.notify();
         /*

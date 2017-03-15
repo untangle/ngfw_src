@@ -52,7 +52,7 @@ Ext.define("Ung.Main", {
         Ext.applyIf(rpc, startupInfo);
         //Had to get policyManager this way because startupInfo.policyManager contains sometimes an object instead of a callableReference
         try {
-            rpc.policyManager = rpc.nodeManager.node("untangle-node-policy-manager");
+            rpc.policyManager = rpc.nodeManager.node("policy-manager");
         } catch (e) {
             Ung.Util.rpcExHandler(e);
         }
@@ -1136,7 +1136,7 @@ Ext.define("Ung.Main", {
     getNodeReports: function (forceReload) {
         if (forceReload || rpc.nodeReports === undefined) {
             try {
-                rpc.nodeReports = rpc.nodeManager.node("untangle-node-reports");
+                rpc.nodeReports = rpc.nodeManager.node("reports");
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
@@ -1411,7 +1411,7 @@ Ext.define("Ung.Main", {
             if (completeFn) {
                 completeFn();
             }
-            if (nodeProperties.name == "untangle-node-reports") {
+            if (nodeProperties.name == "reports") {
                 rpc.reportsEnabled = true;
                 Ung.Main.updateReportsDependencies();
             } else {
@@ -1614,7 +1614,7 @@ Ext.define("Ung.Main", {
         var place = (node.type == "FILTER") ? this.filterNodes : this.serviceNodes;
         place.add(nodeCmp);
         Ung.AppItem.setLoading(node.name, false);
-        if (node.name == 'untangle-node-policy-manager') {
+        if (node.name == 'policy-manager') {
             // refresh rpc.policyManager to properly handle the case when the policy manager is removed and then re-added to the application list
             rpc.nodeManager.node(Ext.bind(function (result, exception) {
                 if (Ung.Util.handleException(exception)) {
@@ -1623,7 +1623,7 @@ Ext.define("Ung.Main", {
                 this.policySelector.show();
                 Ext.getCmp('policyManagerToolItem').show();
                 rpc.policyManager = result;
-            }, this), "untangle-node-policy-manager");
+            }, this), "policy-manager");
         }
     },
     addNodePreview: function (nodeProperties) {
@@ -2002,7 +2002,7 @@ Ext.define("Ung.Main", {
         }, this);
     },
     showPolicyManager: function () {
-        var node = Ung.Main.getNode("untangle-node-policy-manager");
+        var node = Ung.Main.getNode("policy-manager");
         if (node != null) {
             var nodeCmp = Ung.Node.getCmp(node.nodeId);
             if (nodeCmp != null) {
@@ -2056,8 +2056,8 @@ Ext.define("Ung.Main", {
     isGoogleDriveConfigured: function () {
         var googleDriveConfigured = false, directoryConnectorLicense, directoryConnectorNode, googleManager;
         try {
-            directoryConnectorLicense = Ung.Main.getLicenseManager().isLicenseValid("untangle-node-directory-connector");
-            directoryConnectorNode = rpc.nodeManager.node("untangle-node-directory-connector");
+            directoryConnectorLicense = Ung.Main.getLicenseManager().isLicenseValid("directory-connector");
+            directoryConnectorNode = rpc.nodeManager.node("directory-connector");
             if (directoryConnectorLicense && directoryConnectorNode) {
                 googleManager = directoryConnectorNode.getGoogleManager();
                 if (googleManager && googleManager.isGoogleDriveConnected()) {
@@ -2070,11 +2070,11 @@ Ext.define("Ung.Main", {
         return googleDriveConfigured;
     },
     configureGoogleDrive: function () {
-        var node = Ung.Main.getNode("untangle-node-directory-connector");
+        var node = Ung.Main.getNode("directory-connector");
         if (node != null) {
             var nodeCmp = Ung.Node.getCmp(node.nodeId);
             if (nodeCmp != null) {
-                Ung.Main.target = "node.untangle-node-directory-connector.Google Connector";
+                Ung.Main.target = "node.directory-connector.Google Connector";
                 nodeCmp.loadSettings();
             }
         } else {
@@ -2115,47 +2115,47 @@ Ext.define("Ung.Main", {
                 text: i18n._("Yes, install the recommended apps."),
                 handler: Ext.bind(function () {
                     var apps = [
-                        { displayName: "Web Filter", name: 'untangle-node-web-filter'},
-                        //{ displayName: "Virus Blocker", name: 'untangle-node-virus-blocker'},
-                        //{ displayName: "Virus Blocker Lite", name: 'untangle-node-virus-blocker-lite'},
-                        //{ displayName: "Spam Blocker", name: 'untangle-node-spam-blocker'},
-                        //{ displayName: "Spam Blocker Lite", name: 'untangle-node-spam-blocker-lite'},
-                        //{ displayName: "Phish Blocker", name: 'untangle-node-phish-blocker'},
-                        //{ displayName: "Web Cache", name: 'untangle-node-web-cache'},
-                        { displayName: "Bandwidth Control", name: 'untangle-node-bandwidth-control'},
-                        { displayName: "SSL Inspector", name: 'untangle-casing-ssl'},
-                        { displayName: "Application Control", name: 'untangle-node-application-control'},
-                        //{ displayName: "Application Control Lite", name: 'untangle-node-application-control-lite'},
-                        { displayName: "Captive Portal", name: 'untangle-node-captive-portal'},
-                        { displayName: "Firewall", name: 'untangle-node-firewall'},
-                        //{ displayName: "Intrusion Prevention", name: 'untangle-node-intrusion-prevention'},
-                        //{ displayName: "Ad Blocker", name: 'untangle-node-ad-blocker'},
-                        { displayName: "Reports", name: 'untangle-node-reports'},
-                        { displayName: "Policy Manager", name: 'untangle-node-policy-manager'},
-                        { displayName: "Directory Connector", name: 'untangle-node-directory-connector'},
-                        //{ displayName: "WAN Failover", name: 'untangle-node-wan-failover'},
-                        //{ displayName: "WAN Balancer", name: 'untangle-node-wan-balancer'},
-                        { displayName: "IPsec VPN", name: 'untangle-node-ipsec-vpn'},
-                        { displayName: "OpenVPN", name: 'untangle-node-openvpn'},
-                        { displayName: "Configuration Backup", name: 'untangle-node-configuration-backup'},
-                        { displayName: "Branding Manager", name: 'untangle-node-branding-manager'},
-                        { displayName: "Live Support", name: 'untangle-node-live-support'}];
+                        { displayName: "Web Filter", name: 'web-filter'},
+                        //{ displayName: "Virus Blocker", name: 'virus-blocker'},
+                        //{ displayName: "Virus Blocker Lite", name: 'virus-blocker-lite'},
+                        //{ displayName: "Spam Blocker", name: 'spam-blocker'},
+                        //{ displayName: "Spam Blocker Lite", name: 'spam-blocker-lite'},
+                        //{ displayName: "Phish Blocker", name: 'phish-blocker'},
+                        //{ displayName: "Web Cache", name: 'web-cache'},
+                        { displayName: "Bandwidth Control", name: 'bandwidth-control'},
+                        { displayName: "SSL Inspector", name: 'ssl'},
+                        { displayName: "Application Control", name: 'application-control'},
+                        //{ displayName: "Application Control Lite", name: 'application-control-lite'},
+                        { displayName: "Captive Portal", name: 'captive-portal'},
+                        { displayName: "Firewall", name: 'firewall'},
+                        //{ displayName: "Intrusion Prevention", name: 'intrusion-prevention'},
+                        //{ displayName: "Ad Blocker", name: 'ad-blocker'},
+                        { displayName: "Reports", name: 'reports'},
+                        { displayName: "Policy Manager", name: 'policy-manager'},
+                        { displayName: "Directory Connector", name: 'directory-connector'},
+                        //{ displayName: "WAN Failover", name: 'wan-failover'},
+                        //{ displayName: "WAN Balancer", name: 'wan-balancer'},
+                        { displayName: "IPsec VPN", name: 'ipsec-vpn'},
+                        { displayName: "OpenVPN", name: 'openvpn'},
+                        { displayName: "Configuration Backup", name: 'configuration-backup'},
+                        { displayName: "Branding Manager", name: 'branding-manager'},
+                        { displayName: "Live Support", name: 'live-support'}];
 
                     // only install WAN failover/balancer apps if more than 2 interfaces
                     try {
                         var networkSettings = Ung.Main.getNetworkSettings();
                         if (networkSettings.interfaces.list.length > 2) {
-                            apps.push({ displayName: "WAN Failover", name: 'untangle-node-wan-failover'});
-                            apps.push({ displayName: "WAN Balancer", name: 'untangle-node-wan-balancer'});
+                            apps.push({ displayName: "WAN Failover", name: 'wan-failover'});
+                            apps.push({ displayName: "WAN Balancer", name: 'wan-balancer'});
                         }
                     } catch (e) {}
 
                     // only install this on 1gig+ machines
                     if (Ung.Main.totalMemoryMb > 900) {
-                        apps.splice(2, 0, { displayName: "Phish Blocker", name: 'untangle-node-phish-blocker'});
-                        apps.splice(2, 0, { displayName: "Spam Blocker", name: 'untangle-node-spam-blocker'});
-                        apps.splice(2, 0, { displayName: "Virus Blocker Lite", name: 'untangle-node-virus-blocker-lite'});
-                        apps.splice(2, 0, { displayName: "Virus Blocker", name: 'untangle-node-virus-blocker'});
+                        apps.splice(2, 0, { displayName: "Phish Blocker", name: 'phish-blocker'});
+                        apps.splice(2, 0, { displayName: "Spam Blocker", name: 'spam-blocker'});
+                        apps.splice(2, 0, { displayName: "Virus Blocker Lite", name: 'virus-blocker-lite'});
+                        apps.splice(2, 0, { displayName: "Virus Blocker", name: 'virus-blocker'});
                     }
 
                     var fn = function (appsToInstall) {

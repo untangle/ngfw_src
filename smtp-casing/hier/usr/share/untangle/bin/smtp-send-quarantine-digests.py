@@ -3,7 +3,7 @@ import sys
 
 nodeManager = uvm.nodeManager()
 
-node = nodeManager.node( "untangle-casing-smtp" )
+node = nodeManager.node( "smtp" )
 
 if node == None:
     print "SMTP Casing not installed."

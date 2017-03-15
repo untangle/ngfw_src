@@ -21,11 +21,11 @@ sleep .5
 
 # Verify/set the links to the settings files from /etc/openvpn
 mkdir -p /etc/openvpn/data
-ln -fs @PREFIX@/usr/share/untangle/settings/untangle-node-openvpn/server.key /etc/openvpn/data/server.key
-ln -fs @PREFIX@/usr/share/untangle/settings/untangle-node-openvpn/server.crt /etc/openvpn/data/server.crt
-ln -fs @PREFIX@/usr/share/untangle/settings/untangle-node-openvpn/ca.key /etc/openvpn/data/ca.key
-ln -fs @PREFIX@/usr/share/untangle/settings/untangle-node-openvpn/ca.crt /etc/openvpn/data/ca.crt
-ln -fs @PREFIX@/usr/share/untangle/settings/untangle-node-openvpn/dh.pem /etc/openvpn/data/dh.pem
+ln -fs @PREFIX@/usr/share/untangle/settings/openvpn/server.key /etc/openvpn/data/server.key
+ln -fs @PREFIX@/usr/share/untangle/settings/openvpn/server.crt /etc/openvpn/data/server.crt
+ln -fs @PREFIX@/usr/share/untangle/settings/openvpn/ca.key /etc/openvpn/data/ca.key
+ln -fs @PREFIX@/usr/share/untangle/settings/openvpn/ca.crt /etc/openvpn/data/ca.crt
+ln -fs @PREFIX@/usr/share/untangle/settings/openvpn/dh.pem /etc/openvpn/data/dh.pem
 
 echo "Starting the openvpn server"
 

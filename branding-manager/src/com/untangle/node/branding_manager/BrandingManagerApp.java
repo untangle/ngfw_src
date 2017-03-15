@@ -41,7 +41,7 @@ public class BrandingManagerApp extends NodeBase implements com.untangle.uvm.Bra
         NON_QUOTED
     }
 
-    private static final String ROOT_CA_INSTALLER_DIRECTORY_NAME = System.getProperty("uvm.lib.dir") + "/untangle-node-branding-manager/root_certificate_installer";
+    private static final String ROOT_CA_INSTALLER_DIRECTORY_NAME = System.getProperty("uvm.lib.dir") + "/branding-manager/root_certificate_installer";
     private static final HashMap<FILE_PARSE_TYPE, String> ROOT_CA_INSTALLER_PARSE_FILE_NAMES;
 
     public enum REGEX_TYPE {
@@ -71,7 +71,7 @@ public class BrandingManagerApp extends NodeBase implements com.untangle.uvm.Bra
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeSettings().getId().toString();
-        String settingsFile = System.getProperty("uvm.settings.dir") + "/untangle-node-branding-manager/settings_" + nodeID + ".js";
+        String settingsFile = System.getProperty("uvm.settings.dir") + "/branding-manager/settings_" + nodeID + ".js";
         BrandingManagerSettings readSettings = null;
 
         logger.info("Loading settings from " + settingsFile);
@@ -152,7 +152,7 @@ public class BrandingManagerApp extends NodeBase implements com.untangle.uvm.Bra
 
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeSettings().getId().toString();
-        String settingsFile = System.getProperty("uvm.settings.dir") + "/untangle-node-branding-manager/settings_" + nodeID +".js";
+        String settingsFile = System.getProperty("uvm.settings.dir") + "/branding-manager/settings_" + nodeID +".js";
 
         try {
             settingsManager.save( settingsFile, newSettings );

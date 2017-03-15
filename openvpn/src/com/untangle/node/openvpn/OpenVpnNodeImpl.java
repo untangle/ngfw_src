@@ -82,7 +82,7 @@ public class OpenVpnNodeImpl extends NodeBase
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeSettings().getId().toString();
         OpenVpnSettings readSettings = null;
-        String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-node-openvpn/" + "settings_" + nodeID + ".js";
+        String settingsFileName = System.getProperty("uvm.settings.dir") + "/openvpn/" + "settings_" + nodeID + ".js";
 
         try {
             readSettings = settingsManager.load( OpenVpnSettings.class, settingsFileName );
@@ -163,14 +163,14 @@ public class OpenVpnNodeImpl extends NodeBase
         UvmContextFactory.context().execManager().exec( "rm -rf " + "/etc/openvpn/data/*" );
         UvmContextFactory.context().execManager().exec( "rm -rf " + "/etc/openvpn/ccd/*" );
         UvmContextFactory.context().execManager().exec( "rm -f " + "/etc/openvpn/server.conf" );
-        UvmContextFactory.context().execManager().exec( "rm -f " + System.getProperty("uvm.settings.dir") + "/untangle-node-openvpn/remote-clients/*" );
-        UvmContextFactory.context().execManager().exec( "rm -f " + System.getProperty("uvm.settings.dir") + "/untangle-node-openvpn/*.key" );
-        UvmContextFactory.context().execManager().exec( "rm -f " + System.getProperty("uvm.settings.dir") + "/untangle-node-openvpn/*.pem" );
-        UvmContextFactory.context().execManager().exec( "rm -f " + System.getProperty("uvm.settings.dir") + "/untangle-node-openvpn/*.crt" );
-        UvmContextFactory.context().execManager().exec( "rm -f " + System.getProperty("uvm.settings.dir") + "/untangle-node-openvpn/index*" );
-        UvmContextFactory.context().execManager().exec( "rm -f " + System.getProperty("uvm.settings.dir") + "/untangle-node-openvpn/serial*" );
-        UvmContextFactory.context().execManager().exec( "rm -f " + System.getProperty("uvm.settings.dir") + "/untangle-node-openvpn/server*" );
-        UvmContextFactory.context().execManager().exec( "rm -rf " + System.getProperty("uvm.settings.dir") + "/untangle-node-openvpn/remote-servers/*" );
+        UvmContextFactory.context().execManager().exec( "rm -f " + System.getProperty("uvm.settings.dir") + "/openvpn/remote-clients/*" );
+        UvmContextFactory.context().execManager().exec( "rm -f " + System.getProperty("uvm.settings.dir") + "/openvpn/*.key" );
+        UvmContextFactory.context().execManager().exec( "rm -f " + System.getProperty("uvm.settings.dir") + "/openvpn/*.pem" );
+        UvmContextFactory.context().execManager().exec( "rm -f " + System.getProperty("uvm.settings.dir") + "/openvpn/*.crt" );
+        UvmContextFactory.context().execManager().exec( "rm -f " + System.getProperty("uvm.settings.dir") + "/openvpn/index*" );
+        UvmContextFactory.context().execManager().exec( "rm -f " + System.getProperty("uvm.settings.dir") + "/openvpn/serial*" );
+        UvmContextFactory.context().execManager().exec( "rm -f " + System.getProperty("uvm.settings.dir") + "/openvpn/server*" );
+        UvmContextFactory.context().execManager().exec( "rm -rf " + System.getProperty("uvm.settings.dir") + "/openvpn/remote-servers/*" );
     }
     
     public void initializeSettings()
@@ -217,7 +217,7 @@ public class OpenVpnNodeImpl extends NodeBase
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeSettings().getId().toString();
         try {
-            settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "untangle-node-openvpn/" + "settings_"  + nodeID + ".js", newSettings );
+            settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "openvpn/" + "settings_"  + nodeID + ".js", newSettings );
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.",e);
             return;

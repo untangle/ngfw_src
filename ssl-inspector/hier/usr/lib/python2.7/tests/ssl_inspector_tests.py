@@ -70,11 +70,11 @@ class SslInspectorTests(unittest2.TestCase):
 
     @staticmethod
     def nodeName():
-        return "untangle-casing-ssl-inspector"
+        return "ssl-inspector"
 
     @staticmethod
     def nodeWeb():
-        return "untangle-node-web-filter"
+        return "web-filter"
 
     @staticmethod
     def initialSetUp(self):

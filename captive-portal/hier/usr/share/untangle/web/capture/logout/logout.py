@@ -72,13 +72,12 @@ def load_rpc_manager_list(appid=None):
     # first we get the uvm context
     uvmContext = Uvm().getUvmContext()
 
-    # if no appid provided we lookup capture nodes by name
     if (appid == None):
         nodelist = uvmContext.nodeManager().nodeInstancesIds()
         for item in nodelist['list']:
             node = uvmContext.nodeManager().node(long(item))
             name = node.getNodeSettings()['nodeName']
-            if (name == 'untangle-node-captive-portal'):
+            if (name == 'captive-portal'):
                 captureList.append(node)
     # appid was passed so use it
     else:
@@ -87,7 +86,7 @@ def load_rpc_manager_list(appid=None):
 
     # if we can't find the node then throw an exception
     if (len(captureList) == 0):
-        raise Exception("The uvm node manager could not locate untangle-node-captive-portal")
+        raise Exception("The uvm node manager could not locate captive-portal")
 
     return(captureList)
 
@@ -102,12 +101,12 @@ def load_capture_settings(req,appid=None):
     if (oemName != None):
         companyName = oemName
 
-    brandco = get_node_settings_item('untangle-node-branding-manager','companyName')
+    brandco = get_node_settings_item('branding-manager','companyName')
     if (brandco != None):
         companyName = brandco
 
     if (appid == None):
-        captureSettings = get_node_settings('untangle-node-captive-portal')
+        captureSettings = get_node_settings('captive-portal')
     else:
         captureSettings = get_nodeid_settings(long(appid))
 

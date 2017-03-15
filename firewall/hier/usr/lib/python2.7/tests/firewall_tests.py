@@ -89,7 +89,7 @@ class FirewallTests(unittest2.TestCase):
 
     @staticmethod
     def nodeName():
-        return "untangle-node-firewall"
+        return "firewall"
 
     @staticmethod
     def vendorName():

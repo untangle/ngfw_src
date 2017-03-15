@@ -80,11 +80,11 @@ class OpenVpnTests(unittest2.TestCase):
 
     @staticmethod
     def nodeName():
-        return "untangle-node-openvpn"
+        return "openvpn"
 
     @staticmethod
     def nodeWebName():
-        return "untangle-node-web-filter"
+        return "web-filter"
 
     @staticmethod
     def vendorName():

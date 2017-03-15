@@ -13,7 +13,7 @@ Ext.define('Ung.apps.wanfailover.view.Status', {
         items: [{
             xtype: 'component',
             cls: 'app-desc',
-            html: '<img src="/skins/modern-rack/images/admin/apps/untangle-node-wan-failover_80x80.png" width="80" height="80"/>' +
+            html: '<img src="/skins/modern-rack/images/admin/apps/wan-failover_80x80.png" width="80" height="80"/>' +
                 '<h3>WAN Failover</h3>' +
                 '<p>' + 'WAN Failover detects WAN outages and re-routes traffic to any other available WANs to maximize network uptime.'.t() + '</p>' +
                 '<p>' + '<b>NOTE:</b> Tests must be configured using the <i>Tests</i> tab to determine the connectivity of each WAN.'.t() + '</p>'

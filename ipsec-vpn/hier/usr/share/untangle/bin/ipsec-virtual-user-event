@@ -21,11 +21,11 @@ if (len(sys.argv) < 6):
 uvmContext = Uvm().getUvmContext()
 
 # now we get the IPsec node instance
-ipsecNode = uvmContext.nodeManager().node("untangle-node-ipsec-vpn")
+ipsecNode = uvmContext.nodeManager().node("ipsec-vpn")
 
 # if we can't find the node then throw an exception
 if (ipsecNode == None):
-    raise Exception("The uvm node manager could not locate untangle-node-capture")
+    raise Exception("The uvm node manager could not locate ipsec-vpn app")
 
 # found the node so call the right function based on first argument
 if (sys.argv[1] == "CONNECT"):

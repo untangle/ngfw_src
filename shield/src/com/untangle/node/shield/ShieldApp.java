@@ -59,7 +59,7 @@ public class ShieldApp extends NodeBase
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeSettings().getId().toString();
         try {
-            settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "untangle-node-shield/" + "settings_"  + nodeID + ".js", newSettings );
+            settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "shield/" + "settings_"  + nodeID + ".js", newSettings );
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.",e);
             return;
@@ -105,7 +105,7 @@ public class ShieldApp extends NodeBase
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeSettings().getId().toString();
         ShieldSettings readSettings = null;
-        String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-node-shield/" + "settings_" + nodeID + ".js";
+        String settingsFileName = System.getProperty("uvm.settings.dir") + "/shield/" + "settings_" + nodeID + ".js";
 
         try {
             readSettings = settingsManager.load( ShieldSettings.class, settingsFileName );
@@ -169,7 +169,7 @@ public class ShieldApp extends NodeBase
          * First we write a new SHIELD_RULES_FILE iptables script with the current settings
          */
         String nodeID = this.getNodeSettings().getId().toString();
-        String settingsFilename = System.getProperty("uvm.settings.dir") + "/" + "untangle-node-shield/" + "settings_"  + nodeID + ".js";
+        String settingsFilename = System.getProperty("uvm.settings.dir") + "/" + "shield/" + "settings_"  + nodeID + ".js";
         String scriptFilename = System.getProperty("uvm.bin.dir") + "/shield-sync-settings.py";
         String networkSettingFilename = System.getProperty("uvm.settings.dir") + "/" + "untangle-vm/" + "network.js";
         String cmd = scriptFilename + " -f " + settingsFilename + " -v -n " + networkSettingFilename;

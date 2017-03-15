@@ -19,36 +19,36 @@ public class License implements Serializable
     /**
      * Various Names
      */
-    public static final String DIRECTORY_CONNECTOR = "untangle-node-directory-connector";
-    public static final String DIRECTORY_CONNECTOR_OLDNAME = "untangle-node-adconnector";
-    public static final String BANDWIDTH_CONTROL = "untangle-node-bandwidth-control";
-    public static final String BANDWIDTH_CONTROL_OLDNAME = "untangle-node-bandwidth";
-    public static final String CONFIGURATION_BACKUP = "untangle-node-configuration-backup";
-    public static final String CONFIGURATION_BACKUP_OLDNAME = "untangle-node-boxbackup";
-    public static final String BRANDING_MANAGER = "untangle-node-branding-manager";
-    public static final String BRANDING_MANAGER_OLDNAME = "untangle-node-branding";
-    public static final String VIRUS_BLOCKER = "untangle-node-virus-blocker";
-    public static final String VIRUS_BLOCKER_OLDNAME = "untangle-node-virusblocker";
-    public static final String SPAM_BLOCKER = "untangle-node-spam-blocker";
-    public static final String SPAM_BLOCKER_OLDNAME = "untangle-node-spamblocker";
-    public static final String WAN_FAILOVER = "untangle-node-wan-failover";
-    public static final String WAN_FAILOVER_OLDNAME = "untangle-node-faild";
-    public static final String IPSEC_VPN = "untangle-node-ipsec-vpn";
-    public static final String IPSEC_VPN_OLDNAME = "untangle-node-ipsec";
-    public static final String POLICY_MANAGER = "untangle-node-policy-manager";
-    public static final String POLICY_MANAGER_OLDNAME = "untangle-node-policy";
-    public static final String WEB_FILTER = "untangle-node-web-filter";
-    public static final String WEB_FILTER_OLDNAME = "untangle-node-sitefilter";
-    public static final String WAN_BALANCER = "untangle-node-wan-balancer";
-    public static final String WAN_BALANCER_OLDNAME = "untangle-node-splitd";
-    public static final String WEB_CACHE = "untangle-node-web-cache";
-    public static final String WEB_CACHE_OLDNAME = "untangle-node-webcache";
-    public static final String APPLICATION_CONTROL = "untangle-node-application-control";
-    public static final String APPLICATION_CONTROL_OLDNAME = "untangle-node-classd";
-    public static final String SSL_INSPECTOR = "untangle-casing-ssl-inspector";
-    public static final String SSL_INSPECTOR_OLDNAME = "untangle-casing-https";
-    public static final String LIVE_SUPPORT = "untangle-node-live-support";
-    public static final String LIVE_SUPPORT_OLDNAME = "untangle-node-support";
+    public static final String DIRECTORY_CONNECTOR = "directory-connector";
+    public static final String DIRECTORY_CONNECTOR_OLDNAME = "adconnector";
+    public static final String BANDWIDTH_CONTROL = "bandwidth-control";
+    public static final String BANDWIDTH_CONTROL_OLDNAME = "bandwidth";
+    public static final String CONFIGURATION_BACKUP = "configuration-backup";
+    public static final String CONFIGURATION_BACKUP_OLDNAME = "boxbackup";
+    public static final String BRANDING_MANAGER = "branding-manager";
+    public static final String BRANDING_MANAGER_OLDNAME = "branding";
+    public static final String VIRUS_BLOCKER = "virus-blocker";
+    public static final String VIRUS_BLOCKER_OLDNAME = "virusblocker";
+    public static final String SPAM_BLOCKER = "spam-blocker";
+    public static final String SPAM_BLOCKER_OLDNAME = "spamblocker";
+    public static final String WAN_FAILOVER = "wan-failover";
+    public static final String WAN_FAILOVER_OLDNAME = "faild";
+    public static final String IPSEC_VPN = "ipsec-vpn";
+    public static final String IPSEC_VPN_OLDNAME = "ipsec";
+    public static final String POLICY_MANAGER = "policy-manager";
+    public static final String POLICY_MANAGER_OLDNAME = "policy";
+    public static final String WEB_FILTER = "web-filter";
+    public static final String WEB_FILTER_OLDNAME = "sitefilter";
+    public static final String WAN_BALANCER = "wan-balancer";
+    public static final String WAN_BALANCER_OLDNAME = "splitd";
+    public static final String WEB_CACHE = "web-cache";
+    public static final String WEB_CACHE_OLDNAME = "webcache";
+    public static final String APPLICATION_CONTROL = "application-control";
+    public static final String APPLICATION_CONTROL_OLDNAME = "classd";
+    public static final String SSL_INSPECTOR = "ssl-inspector";
+    public static final String SSL_INSPECTOR_OLDNAME = "https";
+    public static final String LIVE_SUPPORT = "live-support";
+    public static final String LIVE_SUPPORT_OLDNAME = "support";
     
     /** Identifier for the product this license is for */
     private String name;

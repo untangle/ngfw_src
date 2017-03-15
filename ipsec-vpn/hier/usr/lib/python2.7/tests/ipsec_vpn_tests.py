@@ -149,11 +149,11 @@ class IPsecTests(unittest2.TestCase):
 
     @staticmethod
     def nodeName():
-        return "untangle-node-ipsec-vpn"
+        return "ipsec-vpn"
 
     @staticmethod
     def nodeNameAD():
-        return "untangle-node-directory-connector"
+        return "directory-connector"
 
     @staticmethod
     def vendorName():

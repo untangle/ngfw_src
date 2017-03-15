@@ -1,4 +1,4 @@
 # -*-ruby-*-
 
-NodeBuilder.makeNode(BuildEnv::SRC, 'untangle-node-configuration-backup', 'configuration-backup', [] )
+NodeBuilder.makeNode(BuildEnv::SRC, 'configuration-backup', 'configuration-backup', [] )
 

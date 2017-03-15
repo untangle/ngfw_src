@@ -1,4 +1,4 @@
 # -*-ruby-*-
 
-NodeBuilder.makeNode(BuildEnv::SRC, 'untangle-node-ipsec-vpn', 'ipsec-vpn', [])
+NodeBuilder.makeNode(BuildEnv::SRC, 'ipsec-vpn', 'ipsec-vpn', [])
 

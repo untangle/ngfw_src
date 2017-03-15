@@ -52,7 +52,7 @@ class NodeManager(Manager):
 
     def api_instances(self):
         for v in self.get_instances():
-            print "%-4s\t%-25s\t%-15s\t%s" % (v[0], v[1], v[3], v[2])
+            print "%-4s\t%-21s\t%-15s\t%s" % (v[0], v[1], v[3], v[2])
 
     def api_sessions(self,nodeIdString = None):
         if ( nodeIdString != None ): nodeIds = [ int(nodeIdString) ]
@@ -62,7 +62,7 @@ class NodeManager(Manager):
             self.__print_sessions(nodeId)
 
     def __get_policy_name(self,policyId):
-        node = self.__nodeManager.node( "untangle-node-policy-manager" )
+        node = self.__nodeManager.node( "policy-manager" )
         if node == None:
             if (policyId == 1):
                 return "Default Policy"

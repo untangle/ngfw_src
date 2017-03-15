@@ -19,7 +19,7 @@ class WebCacheTests(unittest2.TestCase):
 
     @staticmethod
     def nodeName():
-        return "untangle-node-web-cache"
+        return "web-cache"
 
     @staticmethod
     def initialSetUp(self):

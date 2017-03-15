@@ -13,7 +13,7 @@ Ext.define('Ung.apps.policymanager.view.Status', {
         items: [{
             xtype: 'component',
             cls: 'app-desc',
-            html: '<img src="/skins/modern-rack/images/admin/apps/untangle-node-policy-manager_80x80.png" width="80" height="80"/>' +
+            html: '<img src="/skins/modern-rack/images/admin/apps/policy-manager_80x80.png" width="80" height="80"/>' +
                 '<h3>Policy Manager</h3>' +
                 '<p>' + 'Policy Manager enables administrators to create different policies and handle different sessions with different policies based on rules.'.t() + '</p>'
         }, {

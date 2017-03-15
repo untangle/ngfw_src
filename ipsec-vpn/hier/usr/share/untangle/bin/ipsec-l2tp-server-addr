@@ -10,7 +10,7 @@ from uvm.settings_reader import get_node_settings_item
 serverAddress = str("0.0.0.0")
 
 # Read the virtual address pool from the IPsec node settings file
-addressPool = get_node_settings_item("untangle-node-ipsec-vpn", "virtualAddressPool")
+addressPool = get_node_settings_item("ipsec-vpn", "virtualAddressPool")
 
 # If we have good config data we use the first address for the server
 if (addressPool != None):

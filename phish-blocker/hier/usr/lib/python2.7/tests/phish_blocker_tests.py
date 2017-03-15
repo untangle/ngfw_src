@@ -43,7 +43,7 @@ class PhishBlockerTests(unittest2.TestCase):
 
     @staticmethod
     def nodeName():
-        return "untangle-node-phish-blocker"
+        return "phish-blocker"
 
     @staticmethod
     def vendorName():
@@ -51,11 +51,11 @@ class PhishBlockerTests(unittest2.TestCase):
 
     @staticmethod
     def nodeNameSpamCase():
-        return "untangle-casing-smtp"
+        return "smtp"
 
     @staticmethod
     def nodeNameSSLInspector():
-        return "untangle-casing-ssl-inspector"
+        return "ssl-inspector"
 
     @staticmethod
     def initialSetUp(self):

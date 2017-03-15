@@ -332,7 +332,7 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeSettings().getId().toString();
         WebFilterSettings readSettings = null;
-        String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-node-" + this.getAppName() + "/" + "settings_" + nodeID + ".js";
+        String settingsFileName = System.getProperty("uvm.settings.dir") + "/" + this.getAppName() + "/" + "settings_" + nodeID + ".js";
 
         /**
          * First we try to load the existing settings
@@ -498,7 +498,7 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String nodeID = this.getNodeSettings().getId().toString();
         try {
-            settingsManager.save(System.getProperty("uvm.settings.dir") + "/" + "untangle-node-" + this.getAppName() + "/" + "settings_" + nodeID + ".js", newSettings);
+            settingsManager.save(System.getProperty("uvm.settings.dir") + "/" + "" + this.getAppName() + "/" + "settings_" + nodeID + ".js", newSettings);
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.", e);
             return;

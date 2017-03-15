@@ -174,6 +174,8 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
          */
         License license = null;
         License oldLicense = null;
+        License longLicense = null;
+        License oldLongLicense = null;
 
         license = this.licenseMap.get(identifier);
         logger.debug("getLicense(" + identifier + ") = " + license );
@@ -182,6 +184,18 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
         if ( oldIdentifier != null ) {
             oldLicense = this.licenseMap.get(oldIdentifier);
             logger.debug("getLicense(" + oldIdentifier + ") = " + oldLicense );
+
+            String oldLongIdentifier = getLongIdentifier(identifier);
+            if ( oldLongIdentifier != null ) {
+                oldLongLicense = this.licenseMap.get(oldLongIdentifier);
+                logger.debug("getLicense(" + oldLongIdentifier + ") = " + oldLongLicense );
+            }
+
+        }
+        String longIdentifier = getLongIdentifier(identifier);
+        if ( longIdentifier != null ) {
+            longLicense = this.licenseMap.get(longIdentifier);
+            logger.debug("getLicense(" + longIdentifier + ") = " + longLicense );
         }
 
         /**
@@ -189,12 +203,22 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
          */
         if (license != null && license.getValid())
             return license;
+        if (longLicense != null && longLicense.getValid())
+            return longLicense;
         if (oldLicense != null && oldLicense.getValid())
             return oldLicense;
+        if (oldLongLicense != null && oldLongLicense.getValid())
+            return oldLongLicense;
+
         if (license != null)
             return license;
+        if (longLicense != null)
+            return longLicense;
         if (oldLicense != null)
             return oldLicense;
+        if (oldLongLicense != null)
+            return oldLongLicense;
+
 
         /**
          * Special for development environment
@@ -319,7 +343,7 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
          * We do all these different calls so that the product supports any version of the license server
          */
 
-        String libitemName = nodeName.replace("node","libitem").replace("casing","libitem");
+        String libitemName = "untangle-libitem-" + nodeName;
         String urlStr  = licenseUrl + "?action=startTrial&uid=" + UvmContextFactory.context().getServerUID() + "&node=" + nodeName + "&appliance=" + UvmContextFactory.context().isAppliance();
         String urlStr2 = licenseUrl + "?action=startTrial&uid=" + UvmContextFactory.context().getServerUID() + "&libitem=" + libitemName + "&appliance=" + UvmContextFactory.context().isAppliance();
 
@@ -360,8 +384,8 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
             oldName = License.LIVE_SUPPORT_OLDNAME; break;
         }
         if ( oldName != null ) {
+            String oldLibitemName = "untangle-libitem-" + oldName;
             urlStr3 = licenseUrl + "?action=startTrial&uid=" + UvmContextFactory.context().getServerUID() + "&node=" + oldName + "&appliance=" + UvmContextFactory.context().isAppliance();
-            String oldLibitemName = oldName.replace("node","libitem").replace("casing","libitem");
             urlStr4 = licenseUrl + "?action=startTrial&uid=" + UvmContextFactory.context().getServerUID() + "&libitem=" + oldLibitemName + "&appliance=" + UvmContextFactory.context().isAppliance();
         }
         
@@ -926,22 +950,39 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
     {
         switch ( identifier ) {
         case "untangle-node-ad-blocker": return true;
+        case "ad-blocker": return true;
         case "untangle-node-virus-blocker-lite": return true;
+        case "virus-blocker-lite": return true;
         case "untangle-node-captive-portal": return true;
+        case "captive-portal": return true;
         case "untangle-node-firewall": return true;
+        case "firewall": return true;
         case "untangle-node-intrusion-prevention": return true;
+        case "intrusion-prevention": return true;
         case "untangle-node-openvpn": return true;
+        case "openvpn": return true;
         case "untangle-node-phish-blocker": return true;
+        case "phish-blocker": return true;
         case "untangle-node-application-control-lite": return true;
+        case "application-control-lite": return true;
         case "untangle-node-router": return true;
+        case "router": return true;
         case "untangle-node-reports": return true;
+        case "reports": return true;
         case "untangle-node-shield": return true;
+        case "shield": return true;
         case "untangle-node-spam-blocker-lite": return true;
+        case "spam-blocker-lite": return true;
         case "untangle-node-web-monitor": return true;
+        case "web-monitor": return true;
         case "untangle-node-license": return true;
+        case "license": return true;
         case "untangle-casing-http": return true;
+        case "http": return true;
         case "untangle-casing-ftp": return true;
+        case "ftp": return true;
         case "untangle-casing-smtp": return true;
+        case "smtp": return true;
         default: return false;
         }
     }
@@ -949,9 +990,13 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
     private boolean isObsoleteApp(String identifier)
     {
         if ("untangle-node-kav".equals(identifier)) return true;
+        if ("kav".equals(identifier)) return true;
         if ("untangle-node-commtouch".equals(identifier)) return true;
+        if ("commtouch".equals(identifier)) return true;
         if ("untangle-node-commtouchav".equals(identifier)) return true;
+        if ("commtouchav".equals(identifier)) return true;
         if ("untangle-node-commtouchas".equals(identifier)) return true;
+        if ("commtouchas".equals(identifier)) return true;
         return false;
     }
     
@@ -993,6 +1038,13 @@ public class LicenseManagerImpl extends NodeBase implements LicenseManager
         return null;
     }
 
+    private String getLongIdentifier(String identifier)
+    {
+        if ( identifier.contains("untangle-node-"))
+            return identifier;
+        else
+            return identifier.replaceAll("untangle-node-","");
+    }
     
     private void _setValidAndStatus(License license)
     {

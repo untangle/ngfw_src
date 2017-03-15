@@ -70,7 +70,7 @@ Ext.define('Webui.config.system', {
     getHttpNode: function(forceReload) {
         if (forceReload || this.rpc.httpNode === undefined) {
             try {
-                this.rpc.httpNode = rpc.nodeManager.node("untangle-casing-http");
+                this.rpc.httpNode = rpc.nodeManager.node("http");
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
@@ -95,7 +95,7 @@ Ext.define('Webui.config.system', {
     getFtpNode: function(forceReload) {
         if (forceReload || this.rpc.ftpNode === undefined) {
             try {
-                this.rpc.ftpNode = rpc.nodeManager.node("untangle-casing-ftp");
+                this.rpc.ftpNode = rpc.nodeManager.node("ftp");
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
@@ -119,7 +119,7 @@ Ext.define('Webui.config.system', {
     getSmtpNode: function(forceReload) {
         if (forceReload || this.rpc.smtpNode === undefined) {
             try {
-                this.rpc.smtpNode = rpc.nodeManager.node("untangle-casing-smtp");
+                this.rpc.smtpNode = rpc.nodeManager.node("smtp");
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
@@ -142,7 +142,7 @@ Ext.define('Webui.config.system', {
     getShieldNode: function(forceReload) {
         if (forceReload || this.rpc.shieldNode === undefined) {
             try {
-                this.rpc.shieldNode = rpc.nodeManager.node("untangle-node-shield");
+                this.rpc.shieldNode = rpc.nodeManager.node("shield");
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }

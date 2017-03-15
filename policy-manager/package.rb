@@ -1,2 +1,2 @@
 # -*-ruby-*-
-NodeBuilder.makeNode(BuildEnv::SRC, 'untangle-node-policy-manager', 'policy-manager', [] )
+NodeBuilder.makeNode(BuildEnv::SRC, 'policy-manager', 'policy-manager', [] )

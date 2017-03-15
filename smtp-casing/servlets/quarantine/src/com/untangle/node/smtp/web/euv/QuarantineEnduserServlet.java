@@ -150,7 +150,7 @@ public class QuarantineEnduserServlet extends HttpServlet
     private void initRemoteRefs()
     {
         try {
-            SmtpNodeImpl mt = (SmtpNodeImpl) UvmContextFactory.context().nodeManager().nodeInstances("untangle-casing-smtp").get(0);
+            SmtpNodeImpl mt = (SmtpNodeImpl) UvmContextFactory.context().nodeManager().nodeInstances("smtp").get(0);
             m_mailNode = mt;
             m_quarantine = mt.getQuarantineUserView();
             m_safelist = mt.getSafelistManipulation();

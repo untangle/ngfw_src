@@ -40,7 +40,7 @@ public class FacebookAuthenticator
 
     public static boolean authenticate(String username, String password)
     {
-        DirectoryConnectorApp directoryConnector = (DirectoryConnectorApp)UvmContextFactory.context().nodeManager().node("untangle-node-directory-connector");
+        DirectoryConnectorApp directoryConnector = (DirectoryConnectorApp)UvmContextFactory.context().nodeManager().node("directory-connector");
         if ( directoryConnector != null )
             directoryConnector.startXvfbIfNecessary();
 
