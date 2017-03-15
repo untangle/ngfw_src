@@ -67,24 +67,24 @@ Ext.define('Webui.config.system', {
         }
         return this.rpc.accessSettings;
     },
-    getHttpNode: function(forceReload) {
-        if (forceReload || this.rpc.httpNode === undefined) {
+    getHttpApp: function(forceReload) {
+        if (forceReload || this.rpc.httpApp === undefined) {
             try {
-                this.rpc.httpNode = rpc.appManager.node("http");
+                this.rpc.httpApp = rpc.appManager.app("http");
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
 
         }
-        return this.rpc.httpNode;
+        return this.rpc.httpApp;
     },
     isHttpLoaded: function(forceReload) {
-        return this.getHttpNode(forceReload) !== null;
+        return this.getHttpApp(forceReload) !== null;
     },
     getHttpSettings: function(forceReload) {
         if (forceReload || this.rpc.httpSettings === undefined) {
             try {
-                this.rpc.httpSettings = this.getHttpNode(forceReload).getHttpSettings();
+                this.rpc.httpSettings = this.getHttpApp(forceReload).getHttpSettings();
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
@@ -92,70 +92,70 @@ Ext.define('Webui.config.system', {
         }
         return this.rpc.httpSettings;
     },
-    getFtpNode: function(forceReload) {
-        if (forceReload || this.rpc.ftpNode === undefined) {
+    getFtpApp: function(forceReload) {
+        if (forceReload || this.rpc.ftpApp === undefined) {
             try {
-                this.rpc.ftpNode = rpc.appManager.node("ftp");
+                this.rpc.ftpApp = rpc.appManager.app("ftp");
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
 
         }
-        return this.rpc.ftpNode;
+        return this.rpc.ftpApp;
     },
     isFtpLoaded: function(forceReload) {
-        return this.getFtpNode(forceReload) !== null;
+        return this.getFtpApp(forceReload) !== null;
     },
     getFtpSettings: function(forceReload) {
         if (forceReload || this.rpc.ftpSettings === undefined) {
             try {
-                this.rpc.ftpSettings = this.getFtpNode(forceReload).getFtpSettings();
+                this.rpc.ftpSettings = this.getFtpApp(forceReload).getFtpSettings();
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
         }
         return this.rpc.ftpSettings;
     },
-    getSmtpNode: function(forceReload) {
-        if (forceReload || this.rpc.smtpNode === undefined) {
+    getSmtpApp: function(forceReload) {
+        if (forceReload || this.rpc.smtpApp === undefined) {
             try {
-                this.rpc.smtpNode = rpc.appManager.node("smtp");
+                this.rpc.smtpApp = rpc.appManager.app("smtp");
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
         }
-        return this.rpc.smtpNode;
+        return this.rpc.smtpApp;
     },
     isMailLoaded: function(forceReload) {
-        return this.getSmtpNode(forceReload) !== null;
+        return this.getSmtpApp(forceReload) !== null;
     },
     getSmtpSettings: function(forceReload) {
         if (forceReload || this.rpc.mailSettings === undefined) {
             try {
-                this.rpc.mailSettings = this.getSmtpNode(forceReload).getSmtpSettings();
+                this.rpc.mailSettings = this.getSmtpApp(forceReload).getSmtpSettings();
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
         }
         return this.rpc.mailSettings;
     },
-    getShieldNode: function(forceReload) {
-        if (forceReload || this.rpc.shieldNode === undefined) {
+    getShieldApp: function(forceReload) {
+        if (forceReload || this.rpc.shieldApp === undefined) {
             try {
-                this.rpc.shieldNode = rpc.appManager.node("shield");
+                this.rpc.shieldApp = rpc.appManager.app("shield");
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
         }
-        return this.rpc.shieldNode;
+        return this.rpc.shieldApp;
     },
     isShieldLoaded: function(forceReload) {
-        return this.getShieldNode(forceReload) !== null;
+        return this.getShieldApp(forceReload) !== null;
     },
     getShieldSettings: function(forceReload) {
         if (forceReload || this.rpc.shieldSettings === undefined) {
             try {
-                this.rpc.shieldSettings = this.getShieldNode().getSettings();
+                this.rpc.shieldSettings = this.getShieldApp().getSettings();
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
@@ -1379,7 +1379,7 @@ Ext.define('Webui.config.system', {
 
         // save http settings
         if (this.isHttpLoaded()) {
-            this.getHttpNode().setHttpSettings(Ext.bind(function(result, exception) {
+            this.getHttpApp().setHttpSettings(Ext.bind(function(result, exception) {
                 this.afterSave(exception, isApply);
             }, this), this.getHttpSettings());
         } else {
@@ -1388,7 +1388,7 @@ Ext.define('Webui.config.system', {
 
         // save ftp settings
         if (this.isFtpLoaded()) {
-            this.getFtpNode().setFtpSettings(Ext.bind(function(result, exception) {
+            this.getFtpApp().setFtpSettings(Ext.bind(function(result, exception) {
                 this.afterSave(exception, isApply);
             }, this), this.getFtpSettings());
         } else {
@@ -1397,7 +1397,7 @@ Ext.define('Webui.config.system', {
 
         // save mail settings
         if (this.isMailLoaded()) {
-            this.getSmtpNode().setSmtpSettings(Ext.bind(function(result, exception) {
+            this.getSmtpApp().setSmtpSettings(Ext.bind(function(result, exception) {
                 this.afterSave(exception, isApply);
             }, this), this.getSmtpSettings());
         } else {
@@ -1407,7 +1407,7 @@ Ext.define('Webui.config.system', {
         // save shield settings
         if (this.isShieldLoaded()) {
             this.getShieldSettings().rules.list = this.gridShieldRules.getList();
-            this.getShieldNode().setSettings(Ext.bind(function(result, exception) {
+            this.getShieldApp().setSettings(Ext.bind(function(result, exception) {
                 this.afterSave(exception, isApply);
             }, this), this.getShieldSettings());
         } else {

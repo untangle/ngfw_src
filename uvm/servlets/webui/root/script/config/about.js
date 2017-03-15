@@ -146,7 +146,7 @@ Ext.define('Webui.config.about', {
                     tooltip: i18n._('Refresh'),
                     iconCls: 'icon-refresh',
                     handler: Ext.bind(function() {
-                        //reload licenses for each node in rack
+                        //reload licenses for each app in rack
                         Ung.Main.reloadLicenses();
                         //reload grid
                         this.gridLicenses.reload();

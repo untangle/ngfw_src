@@ -26,9 +26,9 @@ Ext.define('Ung.cmp.AppRemove', {
 
         Ext.Msg.confirm('Warning:'.t(), message, function(btn) {
             if (btn === 'yes') {
-                // var nodeItem = settingsView.up('#main').down('#apps').down('#' + vm.get('nodeInstance.nodeName'));
-                //nodeItem.setDisabled(true);
-                // nodeItem.addCls('remove');
+                // var appItem = settingsView.up('#main').down('#apps').down('#' + vm.get('appInstance.appName'));
+                //appItem.setDisabled(true);
+                // appItem.addCls('remove');
                 // Ung.app.redirectTo('#apps/' + vm.get('policyId'));
                 mainView.setLoading(true);
                 Rpc.asyncData('rpc.appManager.destroy', vm.get('instance.id'))
@@ -55,7 +55,7 @@ Ext.define('Ung.cmp.AppRemove', {
                         Ung.app.redirectTo('#apps/1');
 
                         // todo: fire global event
-                        // Ext.GlobalEvents.fireEvent('nodeinstall', 'remove', nodeItem.node);
+                        // Ext.GlobalEvents.fireEvent('appinstall', 'remove', appItem.app);
                     }, function (ex) {
                         Util.exceptionToast(ex);
                     });

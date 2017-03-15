@@ -66,7 +66,7 @@
 
     // Environments
     "browser"       : true,     // Web Browser (window, document, etc)
-    "browserify"    : false,    // Browserify (node.js code in the browser)
+    "browserify"    : false,    // Browserify (app.js code in the browser)
     "couch"         : false,    // CouchDB
     "devel"         : true,     // Development/debugging (alert, confirm, etc)
     "dojo"          : false,    // Dojo Toolkit
@@ -74,7 +74,7 @@
     "jquery"        : false,    // jQuery
     "mocha"         : true,     // Mocha
     "mootools"      : false,    // MooTools
-    "node"          : false,    // Node.js
+    "app"          : false,    // App.js
     "nonstandard"   : false,    // Widely adopted globals (escape, unescape, etc)
     "phantom"       : false,    // PhantomJS
     "prototypejs"   : false,    // Prototype and Scriptaculous

@@ -60,18 +60,18 @@ Ext.define('Webui.config.email', {
         }
     },
 
-    getMailNode: function(forceReload) {
-        if (forceReload || this.rpc.smtpNode === undefined) {
+    getMailApp: function(forceReload) {
+        if (forceReload || this.rpc.smtpApp === undefined) {
             try {
-                this.rpc.smtpNode = rpc.appManager.node("smtp");
+                this.rpc.smtpApp = rpc.appManager.app("smtp");
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
         }
-        return this.rpc.smtpNode;
+        return this.rpc.smtpApp;
     },
     isMailLoaded: function(forceReload) {
-        return this.getMailNode(forceReload) != null;
+        return this.getMailApp(forceReload) != null;
     },
     getMailSettings: function(forceReload) {
         if (forceReload || this.rpc.mailSettings === undefined) {
@@ -86,7 +86,7 @@ Ext.define('Webui.config.email', {
     getMailAppSettings: function(forceReload) {
         if (forceReload || this.rpc.smtpAppSettings === undefined) {
             try {
-                this.rpc.smtpAppSettings = this.getMailNode().getSmtpSettings();
+                this.rpc.smtpAppSettings = this.getMailApp().getSmtpSettings();
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
@@ -96,7 +96,7 @@ Ext.define('Webui.config.email', {
     getSafelistAdminView: function(forceReload) {
         if (forceReload || this.rpc.safelistAdminView === undefined) {
             try {
-                this.rpc.safelistAdminView = this.getMailNode().getSafelistAdminView();
+                this.rpc.safelistAdminView = this.getMailApp().getSafelistAdminView();
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
@@ -106,7 +106,7 @@ Ext.define('Webui.config.email', {
     getQuarantineMaintenenceView: function(forceReload) {
         if (forceReload || this.rpc.quarantineMaintenenceView === undefined) {
             try {
-                this.rpc.quarantineMaintenenceView = this.getMailNode().getQuarantineMaintenenceView();
+                this.rpc.quarantineMaintenenceView = this.getMailApp().getQuarantineMaintenenceView();
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
@@ -1238,11 +1238,11 @@ Ext.define('Webui.config.email', {
 
         if( this.isMailLoaded() ) {
             var quarantineSettings = this.getMailAppSettings().quarantineSettings;
-            // save mail node settings
+            // save mail app settings
             quarantineSettings.allowedAddressPatterns.javaClass="java.util.LinkedList";
             quarantineSettings.allowedAddressPatterns.list = this.quarantinableAddressesGrid.getList();
             quarantineSettings.addressRemaps.list = this.quarantineForwardsGrid.getList();
-            this.getMailNode().setSmtpSettingsWithoutSafelists(Ext.bind(function(result, exception) {
+            this.getMailApp().setSmtpSettingsWithoutSafelists(Ext.bind(function(result, exception) {
                 if(Ung.Util.handleException(exception)) return;
                 // save global safelist
                 if ( this.loadedGlobalSafelist == true) {

@@ -19,7 +19,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
     listen: {
         global: {
             // init: 'loadWidgets',
-            nodeinstall: 'onNodeInstall',
+            appinstall: 'onAppInstall',
             removewidget: 'onRemoveWidget',
             addwidget: 'onAddWidget',
             reportsInstall: 'loadWidgets'
@@ -165,20 +165,20 @@ Ext.define('Ung.view.dashboard.DashboardController', {
     },
 
     /**
-     * when a node is installed or removed apply changes to dashboard
+     * when a app is installed or removed apply changes to dashboard
      */
-    onNodeInstall: function (action, node) {
+    onAppInstall: function (action, app) {
         // refresh dashboard manager grid
         this.getView().lookupReference('dashboardNav').getView().refresh();
 
         var dashboard = this.getView().lookupReference('dashboard'),
             widgets = Ext.getStore('widgets').getRange(), widget, entry, i;
 
-        // traverse all widgets and add/remove those with report category as the passed node
+        // traverse all widgets and add/remove those with report category as the passed app
         for (i = 0; i < widgets.length; i += 1 ) {
             widget = widgets[i];
             entry = Ext.getStore('reports').findRecord('uniqueId', widget.get('entryId'));
-            if (entry && entry.get('category') === node.displayName) {
+            if (entry && entry.get('category') === app.displayName) {
                 // remove widget placeholder
                 dashboard.remove(widget.get('entryId'));
                 if (action === 'install') {
@@ -387,7 +387,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
     /**
      * todo: after drag sort event
      */
-    onDrop: function (node, data, overModel, dropPosition) {
+    onDrop: function (app, data, overModel, dropPosition) {
         var dashboard = this.getView().lookupReference('dashboard');
         //console.log(data.view.getStore().findExact('entryId', data.records[0].get('entryId')));
         //console.log(data.records);
@@ -554,7 +554,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                     { displayName: 'Network', icon: '/skins/modern-rack/images/admin/config/icon_config_network.png' },
                     { displayName: 'Administration', icon: '/skins/modern-rack/images/admin/config/icon_config_admin.png' },
                     { displayName: 'System', icon: '/skins/modern-rack/images/admin/config/icon_config_system.png' },
-                    { displayName: 'Shield', icon: '/skins/modern-rack/images/admin/apps/untangle-node-shield_17x17.png' }
+                    { displayName: 'Shield', icon: '/skins/modern-rack/images/admin/apps/untangle-app-shield_17x17.png' }
                 ];
                 result.list.forEach(function (app) {
                     categories.push({

@@ -1126,7 +1126,7 @@ Ext.define('Webui.config.network', {
                             },
                             listeners: {
                                 "drop": {
-                                    fn:  Ext.bind(function(node, data, overModel, dropPosition, eOpts) {
+                                    fn:  Ext.bind(function(app, data, overModel, dropPosition, eOpts) {
                                         var i = 0;
                                         this.mapDevicesStore.each( Ext.bind(function( currentRow ) {
                                             var intf=this.currentInterfaces[i];

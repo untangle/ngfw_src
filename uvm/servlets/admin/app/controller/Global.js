@@ -132,7 +132,7 @@ Ext.define('Ung.controller.Global', {
                     url: 'script/apps/' + app + '.js',
                     onLoad: function () {
                         Ext.Deferred.sequence([
-                            Rpc.asyncPromise('rpc.appManager.node', appInstance.id),
+                            Rpc.asyncPromise('rpc.appManager.app', appInstance.id),
                             // Rpc.asyncPromise('rpc.networkManager.getInterfaceStatus'),
                             // Rpc.asyncPromise('rpc.networkManager.getDeviceStatus'),
                         ], this).then(function (result) {

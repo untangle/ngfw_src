@@ -4,8 +4,7 @@ Ext.define('Ung.apps.directoryconnector.Main', {
 
     viewModel: {
         data: {
-            nodeName: 'directory-connector',
-            appName: 'Directory Connector'
+            appName: 'directory-connector'
         }
     },
 

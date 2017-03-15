@@ -20,7 +20,7 @@ Ext.define('Webui.config.sessionMonitor', {
         this.gridCurrentSessions.stopAutoRefresh(true);
         this.hide();
     },
-    getSessions: function(handler, nodeId) {
+    getSessions: function(handler, appId) {
         if (!this.isVisible()) {
              handler({javaClass:"java.util.LinkedList", list:[]});
              return;
@@ -105,22 +105,22 @@ Ext.define('Webui.config.sessionMonitor', {
                 }
             }
             handler({javaClass:"java.util.LinkedList", list:sessions});
-        }, this), nodeId);
+        }, this), appId);
     },
     getAppList: function() {
         var appList=[{value:0, name: i18n._("All Sessions")}];
-        var nodeIds, allAppProperties, allAppSettings;
+        var appIds, allAppProperties, allAppSettings;
         try {
-            nodeIds = rpc.appManager.nodeInstancesIds();
+            appIds = rpc.appManager.appInstancesIds();
             allAppProperties = rpc.appManager.allAppProperties();
             allAppSettings = rpc.appManager.allAppSettings();
         } catch (e) {
             Ung.Util.rpcExHandler(e);
         }
-        for (var i = 0 ; i < nodeIds.list.length ; i++) {
-            var nodeId = nodeIds.list[i];
-            var appProperties = allAppProperties.map[nodeId];
-            var appSettings = allAppSettings.map[nodeId];
+        for (var i = 0 ; i < appIds.list.length ; i++) {
+            var appId = appIds.list[i];
+            var appProperties = allAppProperties.map[appId];
+            var appSettings = allAppSettings.map[appId];
             if (appProperties.viewPosition != null) {
                 appList.push({value: appSettings.id, name: i18n._('Sessions for') + ' ' + appProperties.displayName + " [" + Ung.Main.getPolicyName(appSettings.policyId) + "] "});
             }

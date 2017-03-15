@@ -87,11 +87,11 @@ Ext.define('Ung.apps.ipsecvpn.view.Status', {
                 //     tooltip: i18n._("Click to disconnect client"),
                 //     handler: Ext.bind(function(view, rowIndex, colIndex, item, e, record) {
                 //         this.gridVirtualUsers.setLoading(i18n._("Disconnecting..."));
-                //         this.getRpcNode().virtualUserDisconnect(Ext.bind(function(result, exception) {
+                //         this.getRpcApp().virtualUserDisconnect(Ext.bind(function(result, exception) {
                 //             this.gridVirtualUsers.setLoading(false);
                 //             if(Ung.Util.handleException(exception)) return;
-                //             // it takes a second or two for the node to HUP the pppd daemon and the ip-down script
-                //             // to call the node to remove the client from the active user list so instead of
+                //             // it takes a second or two for the app to HUP the pppd daemon and the ip-down script
+                //             // to call the app to remove the client from the active user list so instead of
                 //             // calling reload here we just remove the disconnected row from the grid
                 //             this.gridVirtualUsers.getStore().remove(record);
                 //         }, this), record.get("clientAddress"), record.get("clientUsername"));

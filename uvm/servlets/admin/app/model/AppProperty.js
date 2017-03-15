@@ -1,4 +1,4 @@
-Ext.define ('Ung.model.NodeProperty', {
+Ext.define ('Ung.model.AppProperty', {
     extend: 'Ext.data.Model' ,
     fields: [
         { name: 'autoLoad', type: 'bool' },
@@ -7,7 +7,7 @@ Ext.define ('Ung.model.NodeProperty', {
         { name: 'hasPowerButton', type: 'bool' },
         { name: 'invisible', type: 'bool' },
         { name: 'name', type: 'string' },
-        { name: 'nodeBase', type: 'string' },
+        { name: 'appBase', type: 'string' },
         { name: 'parents', type: 'auto' },
         { name: 'supportedArchitectures', type: 'auto' },
         { name: 'type', type: 'string' },

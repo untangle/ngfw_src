@@ -2,12 +2,12 @@ Ext.define('Ung.cmp.GoogleDrive', {
     alias: 'widget.googledrive',
 
     isConfigured: function () {
-        var googleDriveConfigured = false, directoryConnectorLicense, directoryConnectorNode, googleManager;
+        var googleDriveConfigured = false, directoryConnectorLicense, directoryConnectorApp, googleManager;
         try{
-            directoryConnectorLicense = Rpc.directData('rpc.UvmContext.licenseManager').isLicenseValid('untangle-node-directory-connector');
-            directoryConnectorNode = Rpc.directData('rpc.UvmContext.appManager').app('untangle-node-directory-connector');
-            if( directoryConnectorLicense && directoryConnectorNode ){
-                googleManager = directoryConnectorNode.getGoogleManager();
+            directoryConnectorLicense = Rpc.directData('rpc.UvmContext.licenseManager').isLicenseValid('untangle-app-directory-connector');
+            directoryConnectorApp = Rpc.directData('rpc.UvmContext.appManager').app('untangle-app-directory-connector');
+            if( directoryConnectorLicense && directoryConnectorApp ){
+                googleManager = directoryConnectorApp.getGoogleManager();
                 if( googleManager && googleManager.isGoogleDriveConnected() ){
                     googleDriveConfigured = true;
                 }
@@ -18,13 +18,13 @@ Ext.define('Ung.cmp.GoogleDrive', {
         return googleDriveConfigured;
     },
     configure: function () {
-        var node = Rpc.directData('rpc.UvmContext.appManager').app('untangle-node-directory-connector');
-        if (node !== null) {
-            // var nodeCmp = Ung.Node.getCmp(node.nodeId);
-            var nodeCmp = Ext.getCmp(node.nodeId);
-            if (nodeCmp !== null) {
-                Ung.Main.target = 'node.untangle-node-directory-connector.Google Connector';
-                nodeCmp.loadSettings();
+        var app = Rpc.directData('rpc.UvmContext.appManager').app('untangle-app-directory-connector');
+        if (app !== null) {
+            // var appCmp = Ung.App.getCmp(app.appId);
+            var appCmp = Ext.getCmp(app.appId);
+            if (appCmp !== null) {
+                Ung.Main.target = 'app.untangle-app-directory-connector.Google Connector';
+                appCmp.loadSettings();
             }
         } else {
             Ext.MessageBox.alert('Error'.t(), 'Google Drive requires Directory Connector application.'.t());
