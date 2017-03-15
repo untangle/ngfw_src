@@ -48,15 +48,6 @@ Ext.define('Ung.apps.brandingmanager.MainController', {
 
     },
 
-    clearHostCache: function () {
-        Ext.MessageBox.wait('Clearing Host Cache...'.t(), 'Please Wait'.t());
-        this.getView().appManager.clearCache(function (result, ex) {
-            Ext.MessageBox.hide();
-            if (ex) { Util.exceptionToast('There was an error clearing the host cache, please try again.'.t()); return; }
-            Util.successToast('The Host Cache was cleared succesfully.'.t());
-        }, true);
-    },
-
     onUpload: function( field, value, eOpts){
         var formPanel = this.getView().down("form[name=upload_logo_form]");
         var fileField = formPanel.down('filefield');
