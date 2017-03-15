@@ -1,5 +1,5 @@
 Ext.define('Webui.configuration-backup.settings', {
-    extend:'Ung.NodeWin',
+    extend:'Ung.AppWin',
     gridEventLog: null,
     getAppSummary: function() {
         return i18n._('Configuration Backup automatically creates backups of settings uploads them to <i>My Account</i> and <i>Google Drive</i>.');

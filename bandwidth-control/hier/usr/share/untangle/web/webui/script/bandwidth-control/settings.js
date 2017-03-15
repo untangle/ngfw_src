@@ -1,5 +1,5 @@
 Ext.define('Webui.bandwidth-control.settings', {
-    extend:'Ung.NodeWin',
+    extend:'Ung.AppWin',
     getAppSummary: function() {
         return i18n._("Bandwidth Control monitors, manages, and shapes bandwidth usage on the network");
     },

@@ -1,6 +1,6 @@
 // Application Control settings
 Ext.define('Webui.application-control.settings', {
-    extend: 'Ung.NodeWin',
+    extend: 'Ung.AppWin',
     nodeStats: null,
     gridProtoRules: null,
     gridLogicRules: null,

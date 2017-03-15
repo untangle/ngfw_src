@@ -1,5 +1,5 @@
 Ext.define('Webui.phish-blocker.settings', {
-    extend:'Ung.NodeWin',
+    extend:'Ung.AppWin',
     lastUpdate: null,
     lastCheck: null,
     signatureVersion: null,

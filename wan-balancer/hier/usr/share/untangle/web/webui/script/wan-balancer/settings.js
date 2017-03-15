@@ -1,5 +1,5 @@
 Ext.define('Webui.wan-balancer.settings', {
-    extend:'Ung.NodeWin',
+    extend:'Ung.AppWin',
     getAppSummary: function() {
         return i18n._("WAN Balancer spreads network traffic across multiple internet connections for better performance.");
     },

@@ -1,5 +1,5 @@
 Ext.define('Webui.web-filter-base.settings', {
-    extend:'Ung.NodeWin',
+    extend:'Ung.AppWin',
     // called when the component is rendered
     initComponent: function() {
         this.buildUrlValidator();

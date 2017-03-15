@@ -1,5 +1,5 @@
 Ext.define('Webui.web-cache.settings', {
-    extend: 'Ung.NodeWin',
+    extend: 'Ung.AppWin',
     gridProtocolList: null,
     gridEventLog: null,
     getAppSummary: function() {

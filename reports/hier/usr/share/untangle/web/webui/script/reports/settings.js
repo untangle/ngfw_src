@@ -1,6 +1,6 @@
 
 Ext.define('Webui.reports.settings', {
-    extend:'Ung.NodeWin',
+    extend:'Ung.AppWin',
     hasReports: false,
     panelUsers: null,
     panelSyslog: null,

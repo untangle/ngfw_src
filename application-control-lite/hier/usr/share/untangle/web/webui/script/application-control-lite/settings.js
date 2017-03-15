@@ -1,5 +1,5 @@
 Ext.define('Webui.application-control-lite.settings', {
-    extend: 'Ung.NodeWin',
+    extend: 'Ung.AppWin',
     gridProtocolList: null,
     gridEventLog: null,
     getAppSummary: function() {

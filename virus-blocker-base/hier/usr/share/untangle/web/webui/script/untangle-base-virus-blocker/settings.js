@@ -1,5 +1,5 @@
 Ext.define('Webui.virus-blocker-base.settings', {
-    extend:'Ung.NodeWin',
+    extend:'Ung.AppWin',
     panelWeb:null,
     panelEmail: null,
     panelFtp: null,
