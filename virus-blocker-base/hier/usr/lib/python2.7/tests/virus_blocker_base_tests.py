@@ -21,8 +21,7 @@ node = None
 nodeSSL = None
 nodeSSLData = None
 canRelay = True
-canRelayTLS = True
-testsite = "test.untangle.com"
+testsite = global_functions.testServerHost
 testsiteIP = socket.gethostbyname(testsite)
 
 def addPassSite(site, enabled=True, description="description"):
@@ -86,7 +85,7 @@ class VirusBlockerBaseTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        global node,md5StdNum, nodeSSL, nodeSSLData, canRelay, canRelayTLS
+        global node,md5StdNum, nodeSSL, nodeSSLData, canRelay
         # download eicar and trojan files before installing virus blocker
         remote_control.run_command("rm -f /tmp/eicar /tmp/std_022_ftpVirusBlocked_file /tmp/temp_022_ftpVirusPassSite_file")
         result = remote_control.run_command("wget -q -O /tmp/eicar http://test.untangle.com/virus/eicar.com")
@@ -102,10 +101,6 @@ class VirusBlockerBaseTests(unittest2.TestCase):
             canRelay = global_functions.send_test_email(mailhost=testsiteIP)
         except Exception,e:
             canRelay = False
-        try:
-            canRelayTLS = global_functions.send_test_email(mailhost=global_functions.tlsSmtpServerHost)
-        except Exception,e:
-            canRelayTLS = False
 
         if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
             raise unittest2.SkipTest('node %s already instantiated' % self.nodeName())
@@ -299,7 +294,7 @@ class VirusBlockerBaseTests(unittest2.TestCase):
         if platform.machine().startswith('arm'):
             raise unittest2.SkipTest("local scanner not available on ARM")
         if (not canRelay):
-            raise unittest2.SkipTest('Unable to relay through test.untangle.com')
+            raise unittest2.SkipTest('Unable to relay through ' + testsiteIP)
         startTime = datetime.now()
         fname = sys._getframe().f_code.co_name
         # download the email script
@@ -382,8 +377,8 @@ class VirusBlockerBaseTests(unittest2.TestCase):
     def test_110_eventlog_smtpSSLVirus(self):
         if platform.machine().startswith('arm'):
             raise unittest2.SkipTest("local scanner not available on ARM")
-        if (not canRelayTLS):
-            raise unittest2.SkipTest('Unable to relay through ' + global_functions.tlsSmtpServerHost)
+        if (not canRelay):
+            raise unittest2.SkipTest('Unable to relay through ' + testsiteIP)
         startTime = datetime.now()
         fname = sys._getframe().f_code.co_name
         # download the email script
@@ -397,7 +392,7 @@ class VirusBlockerBaseTests(unittest2.TestCase):
         nodeSSL.setSettings(nodeSSLData)
         nodeSSL.start()
         # email the file
-        result = remote_control.run_command("/tmp/email_script.py --server=%s --from=junk@test.untangle.com --to=junk@test.untangle.com --subject='%s' --body='body' --file=/tmp/eicar --starttls" % (global_functions.tlsSmtpServerHost, fname),nowait=False)
+        result = remote_control.run_command("/tmp/email_script.py --server=%s --from=junk@test.untangle.com --to=junk@test.untangle.com --subject='%s' --body='body' --file=/tmp/eicar --starttls" % (testsiteIP, fname),nowait=False)
         nodeSSL.stop()
         assert (result == 0)
 
@@ -407,7 +402,7 @@ class VirusBlockerBaseTests(unittest2.TestCase):
         found = global_functions.check_events( events.get('list'), 5,
                                             "addr", "junk@test.untangle.com",
                                             "subject", str(fname),
-                                            's_server_addr', global_functions.tlsSmtpServerHost,
+                                            's_server_addr', testsiteIP,
                                             self.shortName() + '_clean', False,
                                             min_date=startTime)
         assert( found )
