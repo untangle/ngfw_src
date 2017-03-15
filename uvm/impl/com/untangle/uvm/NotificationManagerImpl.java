@@ -22,7 +22,7 @@ import com.untangle.uvm.NotificationManager;
 import com.untangle.uvm.ExecManager;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.node.Node;
-import com.untangle.uvm.node.NodeSettings;
+import com.untangle.uvm.node.AppSettings;
 import com.untangle.uvm.node.PolicyManager;
 import com.untangle.uvm.node.Reporting;
 import com.untangle.uvm.network.NetworkSettings;
@@ -239,13 +239,13 @@ public class NotificationManagerImpl implements NotificationManager
      */
     private void testDupeApps(List<String> notificationList)
     {
-        LinkedList<NodeSettings> nodeSettingsList = UvmContextFactory.context().nodeManager().getSettings().getNodes();
+        LinkedList<AppSettings> appSettingsList = UvmContextFactory.context().appManager().getSettings().getApps();
 
         /**
          * Check each node for dupe nodes
          */
-        for (NodeSettings n1 : nodeSettingsList ) {
-            for (NodeSettings n2 : nodeSettingsList ) {
+        for (AppSettings n1 : appSettingsList ) {
+            for (AppSettings n2 : appSettingsList ) {
                 if (n1.getId().equals(n2.getId()))
                     continue;
 
@@ -254,11 +254,11 @@ public class NotificationManagerImpl implements NotificationManager
                  * Check both for == and .equals so null is handled
                  */
                 if (n1.getPolicyId() == null || n2.getPolicyId() == null) {
-                    if (n1.getPolicyId() == n2.getPolicyId() && n1.getNodeName().equals(n2.getNodeName()))
-                        notificationList.add( i18nUtil.tr("Services contains two or more") + " " + n1.getNodeName() );
+                    if (n1.getPolicyId() == n2.getPolicyId() && n1.getAppName().equals(n2.getAppName()))
+                        notificationList.add( i18nUtil.tr("Services contains two or more") + " " + n1.getAppName() );
                 } else {
-                    if (n1.getPolicyId().equals(n2.getPolicyId()) && n1.getNodeName().equals(n2.getNodeName()))
-                        notificationList.add(i18nUtil.tr("A policy/rack") + " [" + n1.getPolicyId() + "] " + i18nUtil.tr("contains two or more") + " " + n1.getNodeName());
+                    if (n1.getPolicyId().equals(n2.getPolicyId()) && n1.getAppName().equals(n2.getAppName()))
+                        notificationList.add(i18nUtil.tr("A policy/rack") + " [" + n1.getPolicyId() + "] " + i18nUtil.tr("contains two or more") + " " + n1.getAppName());
                 }
             }
         }
@@ -277,27 +277,27 @@ public class NotificationManagerImpl implements NotificationManager
         /**
          * Check for redundant apps
          */
-        List<Node> spamBlockerLiteList = UvmContextFactory.context().nodeManager().nodeInstances("spam-blocker-lite");
-        List<Node> spamblockerList = UvmContextFactory.context().nodeManager().nodeInstances("spam-blocker");
-        List<Node> webMonitorList = UvmContextFactory.context().nodeManager().nodeInstances("web-monitor");
-        List<Node> webFilterList = UvmContextFactory.context().nodeManager().nodeInstances("web-filter");
+        List<Node> spamBlockerLiteList = UvmContextFactory.context().appManager().appInstances("spam-blocker-lite");
+        List<Node> spamblockerList = UvmContextFactory.context().appManager().appInstances("spam-blocker");
+        List<Node> webMonitorList = UvmContextFactory.context().appManager().appInstances("web-monitor");
+        List<Node> webFilterList = UvmContextFactory.context().appManager().appInstances("web-filter");
 
         for (Node node1 : webMonitorList) {
             for (Node node2 : webFilterList) {
-                if (node1.getNodeSettings().getId().equals(node2.getNodeSettings().getId()))
+                if (node1.getAppSettings().getId().equals(node2.getAppSettings().getId()))
                     continue;
 
-                if (node1.getNodeSettings().getPolicyId().equals(node2.getNodeSettings().getPolicyId()))
+                if (node1.getAppSettings().getPolicyId().equals(node2.getAppSettings().getPolicyId()))
                     notificationList.add(i18nUtil.tr("One or more racks contain redundant apps") + ": " + " Web Filter " + i18nUtil.tr("and") + " Web Monitor" );
             }
         }
 
         for (Node node1 : spamBlockerLiteList) {
             for (Node node2 : spamblockerList) {
-                if (node1.getNodeSettings().getId().equals(node2.getNodeSettings().getId()))
+                if (node1.getAppSettings().getId().equals(node2.getAppSettings().getId()))
                     continue;
 
-                if (node1.getNodeSettings().getPolicyId().equals(node2.getNodeSettings().getPolicyId()))
+                if (node1.getAppSettings().getPolicyId().equals(node2.getAppSettings().getPolicyId()))
                     notificationList.add(i18nUtil.tr("One or more racks contain redundant apps") + ": " + " Spam Blocker " + i18nUtil.tr("and") + " Spam Blocker Lite" );
             }
         }
@@ -509,8 +509,8 @@ public class NotificationManagerImpl implements NotificationManager
      */
     private void testSpamDNSServers(List<String> notificationList)
     {
-        List<Node> spamBlockerLiteList = UvmContextFactory.context().nodeManager().nodeInstances("spam-blocker-lite");
-        List<Node> spamblockerList = UvmContextFactory.context().nodeManager().nodeInstances("spam-blocker");
+        List<Node> spamBlockerLiteList = UvmContextFactory.context().appManager().appInstances("spam-blocker-lite");
+        List<Node> spamblockerList = UvmContextFactory.context().appManager().appInstances("spam-blocker");
         String nodeName = "Spam Blocker";
 
         if (spamBlockerLiteList.size() == 0 && spamblockerList.size() == 0)
@@ -606,7 +606,7 @@ public class NotificationManagerImpl implements NotificationManager
     @SuppressWarnings("rawtypes")
     private void testZveloDNSServers(List<String> notificationList)
     {
-        List<Node> webFilterList = UvmContextFactory.context().nodeManager().nodeInstances("web-filter");
+        List<Node> webFilterList = UvmContextFactory.context().appManager().appInstances("web-filter");
 
         if ( webFilterList.size() == 0 )
             return;
@@ -712,7 +712,7 @@ public class NotificationManagerImpl implements NotificationManager
     {
         final double MAX_AVG_TIME_WARN = 50.0;
 
-        Reporting reports = (Reporting) UvmContextFactory.context().nodeManager().node("reports");
+        Reporting reports = (Reporting) UvmContextFactory.context().appManager().app("reports");
         /* if reports not installed - no events - just return */
         if (reports == null)
             return;
@@ -736,7 +736,7 @@ public class NotificationManagerImpl implements NotificationManager
     {
         final long MAX_TIME_DELAY_SEC = 600; /* 10 minutes */
 
-        Reporting reports = (Reporting) UvmContextFactory.context().nodeManager().node("reports");
+        Reporting reports = (Reporting) UvmContextFactory.context().appManager().app("reports");
         /* if reports not installed - no events - just return */
         if (reports == null)
             return;
@@ -772,11 +772,11 @@ public class NotificationManagerImpl implements NotificationManager
      */
     private void testShieldEnabled( List<String> notificationList )
     {
-        Node shield = UvmContextFactory.context().nodeManager().node("shield");
+        Node shield = UvmContextFactory.context().appManager().app("shield");
         String notificationText = "";
         notificationText += i18nUtil.tr("The shield is disabled. This can cause performance and stability problems.");
 
-        if ( shield.getRunState() != NodeSettings.NodeState.RUNNING ) {
+        if ( shield.getRunState() != AppSettings.AppState.RUNNING ) {
             notificationList.add(notificationText);
             return;
         }

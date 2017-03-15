@@ -14,8 +14,8 @@ import javax.servlet.http.HttpServletResponse;
 import com.untangle.uvm.BrandingManager;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.node.NodeManager;
-import com.untangle.uvm.node.NodeSettings;
+import com.untangle.uvm.node.AppManager;
+import com.untangle.uvm.node.AppSettings;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.node.http.BlockPageUtil;  
 import com.untangle.node.virus_blocker.VirusBlockDetails;
@@ -30,11 +30,11 @@ public class BlockPageServlet extends HttpServlet
         throws ServletException, IOException
     {
         UvmContext uvm = UvmContextFactory.context();
-        NodeManager nm = uvm.nodeManager();
+        AppManager nm = uvm.appManager();
 
         Map<String,String> i18n_map = UvmContextFactory.context().languageManager().getTranslations( "untangle" );
         
-        VirusBlockerBaseApp node = (VirusBlockerBaseApp) nm.node( Long.parseLong(request.getParameter( "tid" )) );
+        VirusBlockerBaseApp node = (VirusBlockerBaseApp) nm.app( Long.parseLong(request.getParameter( "tid" )) );
         if ( node == null || !(node instanceof VirusBlockerBaseApp)) {
             response.sendError( HttpServletResponse.SC_NOT_ACCEPTABLE, 
                                 I18nUtil.tr( "Feature is not installed.", i18n_map ));
@@ -49,7 +49,7 @@ public class BlockPageServlet extends HttpServlet
             return;
         }
         request.setAttribute( "reason", blockDetails.getReason());
-        VirusBlockPageParameters params = new VirusBlockPageParameters( node.getNodeProperties().getDisplayName(), blockDetails );
+        VirusBlockPageParameters params = new VirusBlockPageParameters( node.getAppProperties().getDisplayName(), blockDetails );
                                                          
         BlockPageUtil.getInstance().handle( request, response, this, params );        
     }

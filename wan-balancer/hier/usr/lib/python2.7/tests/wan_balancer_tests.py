@@ -189,15 +189,15 @@ class WanBalancerTests(unittest2.TestCase):
     @staticmethod
     def initialSetUp(self):
         global indexOfWans, node, nodeData, nodeWanFailover, nodeDataWanFailover, orig_netsettings, ip_address_testdestination
-        if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
+        if (uvmContext.appManager().isInstantiated(self.nodeName())):
             raise Exception('node %s already instantiated' % self.nodeName())
-        node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
+        node = uvmContext.appManager().instantiate(self.nodeName(), defaultRackId)
         node.start()
         nodeData = node.getSettings()
 
-        if (uvmContext.nodeManager().isInstantiated(self.nodeNameWanFailover())):
+        if (uvmContext.appManager().isInstantiated(self.nodeNameWanFailover())):
             raise Exception('node %s already instantiated' % self.nodeNameWanFailover())
-        nodeWanFailover = uvmContext.nodeManager().instantiate(self.nodeNameWanFailover(), defaultRackId)
+        nodeWanFailover = uvmContext.appManager().instantiate(self.nodeNameWanFailover(), defaultRackId)
         nodeWanFailover.start()
         nodeWanFailoverData = nodeWanFailover.getSettings()
 
@@ -561,10 +561,10 @@ class WanBalancerTests(unittest2.TestCase):
         global node, nodeWanFailover
         # Restore original settings to return to initial settings
         if node != None:
-            uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
+            uvmContext.appManager().destroy( node.getAppSettings()["id"] )
             node = None
         if nodeWanFailover != None:
-            uvmContext.nodeManager().destroy( nodeWanFailover.getNodeSettings()["id"] )
+            uvmContext.appManager().destroy( nodeWanFailover.getAppSettings()["id"] )
             nodeWanFailover = None
         if orig_netsettings != None:
             uvmContext.networkManager().setNetworkSettings(orig_netsettings)

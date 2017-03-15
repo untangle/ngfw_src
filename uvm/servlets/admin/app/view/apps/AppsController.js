@@ -60,12 +60,12 @@ Ext.define('Ung.view.apps.AppsController', {
         var me = this;
         var vm = this.getViewModel();
 
-        Rpc.asyncData('rpc.nodeManager.getAppsViews').then(function(result) {
+        Rpc.asyncData('rpc.appManager.getAppsViews').then(function(result) {
             var nodes = [];
             vm.getStore('apps').removeAll();
             Ext.getStore('policies').loadData(result);
 
-            Ext.Array.each(result[0].nodeProperties.list, function (node) {
+            Ext.Array.each(result[0].appProperties.list, function (node) {
                 nodes.push({
                     name: node.name,
                     displayName: node.displayName,
@@ -137,7 +137,7 @@ Ext.define('Ung.view.apps.AppsController', {
     //     }, this.onPolicy, this);
     // },
 
-    // onNodeStateChange: function (state, instance) {
+    // onAppStateChange: function (state, instance) {
     //     console.log(instance);
     // },
 
@@ -145,12 +145,12 @@ Ext.define('Ung.view.apps.AppsController', {
     //     var vm = this.getViewModel(),
     //         nodeInstance, i;
 
-    //     rpc.nodeManager.getAppsViews(function(result, exception) {
+    //     rpc.appManager.getAppsViews(function(result, exception) {
     //         var policy = result.filter(function (p) {
     //             return parseInt(p.policyId) === parseInt(vm.get('policyId'));
     //         })[0];
 
-    //         var nodes = policy.nodeProperties.list,
+    //         var nodes = policy.appProperties.list,
     //             instances = policy.instances.list;
 
     //         for (i = 0; i < nodes.length; i += 1) {
@@ -190,7 +190,7 @@ Ext.define('Ung.view.apps.AppsController', {
     onInstallNode: function (view, record) {
         var me = this;
         record.set('status', 'installing');
-        Rpc.asyncData('rpc.nodeManager.instantiate', record.get('name'), 1)
+        Rpc.asyncData('rpc.appManager.instantiate', record.get('name'), 1)
         .then(function (result) {
             // record.set('status', 'installed');
             me.getPolicies();

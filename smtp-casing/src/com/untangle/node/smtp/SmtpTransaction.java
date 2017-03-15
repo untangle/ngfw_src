@@ -40,7 +40,7 @@ public final class SmtpTransaction implements TemplateValues
     private static final String SMTP_TX_TEMPLATE_PREFIX = "SMTPTransaction:".toLowerCase();
     private static final String TO_TV = "TO".toLowerCase();
     private static final String FROM_TV = "FROM".toLowerCase();
-    private final Logger logger = Logger.getLogger(SmtpNodeImpl.class);
+    private final Logger logger = Logger.getLogger(SmtpImpl.class);
 
     /**
      * Enum of Transaction states.

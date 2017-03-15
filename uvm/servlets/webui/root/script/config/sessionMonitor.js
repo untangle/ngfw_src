@@ -109,20 +109,20 @@ Ext.define('Webui.config.sessionMonitor', {
     },
     getAppList: function() {
         var appList=[{value:0, name: i18n._("All Sessions")}];
-        var nodeIds, allNodeProperties, allNodeSettings;
+        var nodeIds, allAppProperties, allAppSettings;
         try {
-            nodeIds = rpc.nodeManager.nodeInstancesIds();
-            allNodeProperties = rpc.nodeManager.allNodeProperties();
-            allNodeSettings = rpc.nodeManager.allNodeSettings();
+            nodeIds = rpc.appManager.nodeInstancesIds();
+            allAppProperties = rpc.appManager.allAppProperties();
+            allAppSettings = rpc.appManager.allAppSettings();
         } catch (e) {
             Ung.Util.rpcExHandler(e);
         }
         for (var i = 0 ; i < nodeIds.list.length ; i++) {
             var nodeId = nodeIds.list[i];
-            var nodeProperties = allNodeProperties.map[nodeId];
-            var nodeSettings = allNodeSettings.map[nodeId];
-            if (nodeProperties.viewPosition != null) {
-                appList.push({value: nodeSettings.id, name: i18n._('Sessions for') + ' ' + nodeProperties.displayName + " [" + Ung.Main.getPolicyName(nodeSettings.policyId) + "] "});
+            var appProperties = allAppProperties.map[nodeId];
+            var appSettings = allAppSettings.map[nodeId];
+            if (appProperties.viewPosition != null) {
+                appList.push({value: appSettings.id, name: i18n._('Sessions for') + ' ' + appProperties.displayName + " [" + Ung.Main.getPolicyName(appSettings.policyId) + "] "});
             }
         }
         return appList;

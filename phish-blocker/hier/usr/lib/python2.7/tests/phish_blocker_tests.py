@@ -60,15 +60,15 @@ class PhishBlockerTests(unittest2.TestCase):
     @staticmethod
     def initialSetUp(self):
         global node, nodeData, nodeSP, nodeDataSP, nodeSSL, canRelay
-        if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
+        if (uvmContext.appManager().isInstantiated(self.nodeName())):
             raise unittest2.SkipTest('node %s already instantiated' % self.nodeName())
-        node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
+        node = uvmContext.appManager().instantiate(self.nodeName(), defaultRackId)
         nodeData = node.getSettings()
-        nodeSP = uvmContext.nodeManager().node(self.nodeNameSpamCase())
-        nodeDataSP = nodeSP.getSmtpNodeSettings()
-        if uvmContext.nodeManager().isInstantiated(self.nodeNameSSLInspector()):
+        nodeSP = uvmContext.appManager().app(self.nodeNameSpamCase())
+        nodeDataSP = nodeSP.getSmtpSettings()
+        if uvmContext.appManager().isInstantiated(self.nodeNameSSLInspector()):
             raise Exception('node %s already instantiated' % self.nodeNameSSLInspector())
-        nodeSSL = uvmContext.nodeManager().instantiate(self.nodeNameSSLInspector(), defaultRackId)
+        nodeSSL = uvmContext.appManager().instantiate(self.nodeNameSSLInspector(), defaultRackId)
         # nodeSSL.start() # leave node off. node doesn't auto-start
         try:
             canRelay = global_functions.send_test_email(mailhost=smtpServerHost)
@@ -232,10 +232,10 @@ class PhishBlockerTests(unittest2.TestCase):
     def finalTearDown(self):
         global node, nodeSSL
         if node != None:
-            uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
+            uvmContext.appManager().destroy( node.getAppSettings()["id"] )
             node = None
         if nodeSSL != None:
-            uvmContext.nodeManager().destroy( nodeSSL.getNodeSettings()["id"] )
+            uvmContext.appManager().destroy( nodeSSL.getAppSettings()["id"] )
             nodeSSL = None
 
 test_registry.registerNode("phish-blocker", PhishBlockerTests)

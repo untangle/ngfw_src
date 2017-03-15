@@ -285,9 +285,9 @@ remote_control.quickTestsOnly = parser.quickTestsOnly
 
 # if reports isn't installed, install and start it - it is required
 reportsNode = None;
-if (not uvmContext.nodeManager().isInstantiated('reports')):
+if (not uvmContext.appManager().isInstantiated('reports')):
     print "== Installing reports =="
-    reportsNode = uvmContext.nodeManager().instantiate('reports', None)
+    reportsNode = uvmContext.appManager().instantiate('reports', None)
 
 if ("environment" in parser.suitesToRun or "all" in parser.suitesToRun) and "environment" not in parser.suitesToExclude:
     runTestEnvironmentTests()
@@ -333,7 +333,7 @@ elapsedTime = time.time() - startTime
 # if reports was added earlier, revert to original settings
 # if reportsNode != None:
 #     print "== UnInstalling reports =="
-#     uvmContext.nodeManager().destroy( reportsNode.getNodeSettings()['id'] );
+#     uvmContext.appManager().destroy( reportsNode.getAppSettings()['id'] );
 
 print ""
 print "Tests complete. [%.1f seconds]" % elapsedTime

@@ -48,9 +48,9 @@ public class BandwidthControlApp extends NodeBase
     private final UserQuotaExceededHook userQuotaExceededHook = new UserQuotaExceededHook();
     private final UserQuotaRemovedHook userQuotaRemovedHook = new UserQuotaRemovedHook();
    
-    public BandwidthControlApp( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
+    public BandwidthControlApp( com.untangle.uvm.node.AppSettings appSettings, com.untangle.uvm.node.AppProperties appProperties )
     {
-        super( nodeSettings, nodeProperties );
+        super( appSettings, appProperties );
 
         this.addMetric(new NodeMetric(STAT_PRIORITIZE, I18nUtil.marktr("Session prioritized")));
         this.addMetric(new NodeMetric(STAT_TAGGED, I18nUtil.marktr("Host tagged")));
@@ -63,7 +63,7 @@ public class BandwidthControlApp extends NodeBase
     protected void postInit()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeSettings().getId().toString();
+        String nodeID = this.getAppSettings().getId().toString();
         BandwidthControlSettings readSettings = null;
         try {
             readSettings = settingsManager.load( BandwidthControlSettings.class, System.getProperty("uvm.settings.dir") + "/bandwidth-control/" + "settings_" + nodeID + ".js" );
@@ -323,7 +323,7 @@ public class BandwidthControlApp extends NodeBase
              * Save the settings
              */
             SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-            String nodeID = this.getNodeSettings().getId().toString();
+            String nodeID = this.getAppSettings().getId().toString();
             try {
                 settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "bandwidth-control" + "/" + "settings_" + nodeID + ".js", newSettings );
             } catch (SettingsManager.SettingsException e) {
@@ -357,7 +357,7 @@ public class BandwidthControlApp extends NodeBase
          * set the new ID of each rule
          * We use 100,000 * nodeId as a starting point so rule IDs don't overlap with other firewall
          */
-        int idx = this.getNodeSettings().getPolicyId().intValue() * 100000;
+        int idx = this.getAppSettings().getPolicyId().intValue() * 100000;
         for (BandwidthControlRule rule : rules) {
             idx++;
             rule.setRuleId(idx);

@@ -65,7 +65,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
             END_MARKER_STATE,
             };
     
-    private final HttpNodeImpl node;
+    private final HttpImpl node;
     
     private int maxHeader;
     private boolean blockLongHeaders;
@@ -90,7 +90,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
 
     // constructors -----------------------------------------------------------
 
-    protected HttpParserEventHandler( boolean clientSide, HttpNodeImpl node )
+    protected HttpParserEventHandler( boolean clientSide, HttpImpl node )
     {
         this.clientSide = clientSide;
         this.node = node;

@@ -14,7 +14,7 @@ import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.HookCallback;
-import com.untangle.uvm.node.NodeSettings;
+import com.untangle.uvm.node.AppSettings;
 import com.untangle.uvm.node.License;
 import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.network.NetworkSettings;
@@ -42,9 +42,9 @@ public class WanBalancerApp extends NodeBase
         
     private boolean inReactivation = false;
 
-    public WanBalancerApp( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
+    public WanBalancerApp( com.untangle.uvm.node.AppSettings appSettings, com.untangle.uvm.node.AppProperties appProperties )
     {
-        super( nodeSettings, nodeProperties );
+        super( appSettings, appProperties );
 
         updateNodeMetrics( );
 
@@ -85,7 +85,7 @@ public class WanBalancerApp extends NodeBase
          * Save the settings
          */
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeSettings().getId().toString();
+        String nodeID = this.getAppSettings().getId().toString();
         String settingsFilename = System.getProperty("uvm.settings.dir") + "/" + "wan-balancer/" + "settings_"  + nodeID + ".js";
         try {
             settingsManager.save( settingsFilename, newSettings );
@@ -141,7 +141,7 @@ public class WanBalancerApp extends NodeBase
     protected void postInit() 
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeSettings().getId().toString();
+        String nodeID = this.getAppSettings().getId().toString();
         WanBalancerSettings readSettings = null;
         String settingsFileName = System.getProperty("uvm.settings.dir") + "/wan-balancer/" + "settings_" + nodeID + ".js";
         
@@ -262,7 +262,7 @@ public class WanBalancerApp extends NodeBase
         /**
          * First we write a new 330-wan-balancer iptables script with the current settings
          */
-        String nodeID = this.getNodeSettings().getId().toString();
+        String nodeID = this.getAppSettings().getId().toString();
         String settingsFilename = System.getProperty("uvm.settings.dir") + "/" + "wan-balancer/" + "settings_"  + nodeID + ".js";
         String scriptFilename = System.getProperty("uvm.bin.dir") + "/wan-balancer-sync-settings.py";
         String networkSettingFilename = System.getProperty("uvm.settings.dir") + "/" + "untangle-vm/" + "network.js";

@@ -43,7 +43,7 @@ public class CaptivePortalHttpsHandler extends AbstractEventHandler
         // first we remove the attachment
         sessreq.globalAttach(NodeSession.KEY_CAPTIVE_PORTAL_REDIRECT, null);
 
-        CaptivePortalSSLEngine engine = new CaptivePortalSSLEngine(node.getNodeSettings().getId().toString(),captureNode);
+        CaptivePortalSSLEngine engine = new CaptivePortalSSLEngine(node.getAppSettings().getId().toString(),captureNode);
         sessreq.globalAttach(NodeSession.KEY_CAPTIVE_PORTAL_SSL_ENGINE, engine);
     }
 

@@ -15,9 +15,9 @@ public class LiveSupportApp extends NodeBase
     private final PipelineConnector[] connectors = new PipelineConnector[] {};
     
     // constructor ------------------------------------------------------------
-    public LiveSupportApp( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
+    public LiveSupportApp( com.untangle.uvm.node.AppSettings appSettings, com.untangle.uvm.node.AppProperties appProperties )
     {
-        super( nodeSettings, nodeProperties );
+        super( appSettings, appProperties );
     }
 
     @Override

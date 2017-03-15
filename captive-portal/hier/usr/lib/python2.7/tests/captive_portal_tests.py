@@ -175,21 +175,21 @@ class CaptivePortalTests(unittest2.TestCase):
     @staticmethod
     def initialSetUp(self):
         global nodeData, node, nodeDataRD, nodeDataAD, nodeAD, nodeWeb, adResult, radiusResult, test_untangle_com_ip, captureIP
-        if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
+        if (uvmContext.appManager().isInstantiated(self.nodeName())):
             print "ERROR: Node %s already installed" % self.nodeName()
             raise unittest2.SkipTest('node %s already instantiated' % self.nodeName())
-        node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
+        node = uvmContext.appManager().instantiate(self.nodeName(), defaultRackId)
         nodeData = node.getCaptivePortalSettings()
-        if (uvmContext.nodeManager().isInstantiated(self.nodeNameAD())):
+        if (uvmContext.appManager().isInstantiated(self.nodeNameAD())):
             print "ERROR: Node %s already installed" % self.nodeNameAD()
             raise unittest2.SkipTest('node %s already instantiated' % self.nodeName())
-        nodeAD = uvmContext.nodeManager().instantiate(self.nodeNameAD(), defaultRackId)
+        nodeAD = uvmContext.appManager().instantiate(self.nodeNameAD(), defaultRackId)
         nodeDataAD = nodeAD.getSettings().get('activeDirectorySettings')
         nodeDataRD = nodeAD.getSettings().get('radiusSettings')
-        if (uvmContext.nodeManager().isInstantiated(self.nodeNameWeb())):
+        if (uvmContext.appManager().isInstantiated(self.nodeNameWeb())):
             print "ERROR: Node %s already installed" % self.nodeNameWeb()
             raise unittest2.SkipTest('node %s already instantiated' % self.nodeNameWeb())
-        nodeWeb = uvmContext.nodeManager().instantiate(self.nodeNameWeb(), defaultRackId)
+        nodeWeb = uvmContext.appManager().instantiate(self.nodeNameWeb(), defaultRackId)
         adResult = subprocess.call(["ping","-c","1",AD_HOST],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         radiusResult = subprocess.call(["ping","-c","1",radiusHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         # Create local directory user 'test20'
@@ -277,7 +277,7 @@ class CaptivePortalTests(unittest2.TestCase):
         assert (search == 0)
 
         # Verify anonymous works
-        appid = str(node.getNodeSettings()["id"])
+        appid = str(node.getAppSettings()["id"])
         print 'appid is %s' % appid  # debug line
         result = remote_control.run_command("wget -O /tmp/capture_test_023a.out  \'" + global_functions.get_http_url() + "capture/handler.py/infopost?method=GET&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&agree=agree&submit=Continue&host=test.untangle.com&uri=/\'")
         assert (result == 0)
@@ -309,7 +309,7 @@ class CaptivePortalTests(unittest2.TestCase):
         assert (result == 0)
 
         # Verify anonymous works
-        appid = str(node.getNodeSettings()["id"])
+        appid = str(node.getAppSettings()["id"])
         print 'appid is %s' % appid  # debug line
         result = remote_control.run_command("wget -O /tmp/capture_test_024a.out  \'" + global_functions.get_http_url() + "/capture/handler.py/infopost?method=GET&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&agree=agree&submit=Continue&host=test.untangle.com&uri=/\'")
         assert (result == 0)
@@ -343,7 +343,7 @@ class CaptivePortalTests(unittest2.TestCase):
         assert (search == 0)
 
         # Verify anonymous works
-        appid = str(node.getNodeSettings()["id"])
+        appid = str(node.getAppSettings()["id"])
         print 'appid is %s' % appid  # debug line
         result = remote_control.run_command("curl -s --connect-timeout 10 -L -o /tmp/capture_test_025a.out --insecure  \'" + global_functions.get_http_url() + "/capture/handler.py/infopost?method=GET&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&agree=agree&submit=Continue&host=test.untangle.com&uri=/\'")
         assert (result == 0)
@@ -375,7 +375,7 @@ class CaptivePortalTests(unittest2.TestCase):
         assert (search == 0)
 
         # check if local directory login and password
-        appid = str(node.getNodeSettings()["id"])
+        appid = str(node.getAppSettings()["id"])
         # print 'appid is %s' % appid  # debug line
         result = remote_control.run_command("wget -O /tmp/capture_test_030a.out  \'" + global_functions.get_http_url() + "/capture/handler.py/authpost?username=" + localUserName + "&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
         assert (result == 0)
@@ -411,7 +411,7 @@ class CaptivePortalTests(unittest2.TestCase):
         assert (search == 0)
 
         # check if local directory login and password
-        appid = str(node.getNodeSettings()["id"])
+        appid = str(node.getAppSettings()["id"])
         # print 'appid is %s' % appid  # debug line
         result = remote_control.run_command("wget -O /tmp/capture_test_030a.out  \'" + global_functions.get_http_url() + "/capture/handler.py/authpost?username=" + localUserName + "&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
         assert (result == 0)
@@ -464,7 +464,7 @@ class CaptivePortalTests(unittest2.TestCase):
         assert (search == 0)
 
         # check if local directory login and password
-        appid = str(node.getNodeSettings()["id"])
+        appid = str(node.getAppSettings()["id"])
         # print 'appid is %s' % appid  # debug line
         result = remote_control.run_command("wget -O /tmp/capture_test_032a.out  \'" + global_functions.get_http_url() + "/capture/handler.py/authpost?username=" + googleUserName + "&password=" + googlePassword + "&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
         assert (result == 0)
@@ -512,7 +512,7 @@ class CaptivePortalTests(unittest2.TestCase):
         assert (search == 0)
 
         # check if local directory login and password
-        appid = str(node.getNodeSettings()["id"])
+        appid = str(node.getAppSettings()["id"])
         # print 'appid is %s' % appid  # debug line
         result = remote_control.run_command("wget -O /tmp/capture_test_032a.out  \'" + global_functions.get_http_url() + "/capture/handler.py/authpost?username=" + facebookUserName + "&password=" + facebookPassword + "&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
         assert (result == 0)
@@ -554,7 +554,7 @@ class CaptivePortalTests(unittest2.TestCase):
         assert (search == 0)
 
         # check if AD login and password
-        appid = str(node.getNodeSettings()["id"])
+        appid = str(node.getAppSettings()["id"])
         # print 'appid is %s' % appid  # debug line
         result = remote_control.run_command("wget -O /tmp/capture_test_035a.out  \'" + global_functions.get_http_url() + "/capture/handler.py/authpost?username=" + adUserName + "&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
         assert (result == 0)
@@ -627,7 +627,7 @@ class CaptivePortalTests(unittest2.TestCase):
         assert (search == 0)
 
         # check if RADIUS login and password
-        appid = str(node.getNodeSettings()["id"])
+        appid = str(node.getAppSettings()["id"])
         # print 'appid is %s' % appid  # debug line
         result = remote_control.run_command("wget -O /tmp/capture_test_040a.out  \'" + global_functions.get_http_url() + "/capture/handler.py/authpost?username=normal&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'",stdout=True)
         search = remote_control.run_command("grep -q 'Hi!' /tmp/capture_test_040a.out")
@@ -641,7 +641,7 @@ class CaptivePortalTests(unittest2.TestCase):
         assert (search == 0)
 
         # check if RADIUS login and password a second time.
-        appid = str(node.getNodeSettings()["id"])
+        appid = str(node.getAppSettings()["id"])
         # print 'appid is %s' % appid  # debug line
         result = remote_control.run_command("wget -O /tmp/capture_test_040c.out  \'" + global_functions.get_http_url() + "/capture/handler.py/authpost?username=normal&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'",stdout=True)
         search = remote_control.run_command("grep -q 'Hi!' /tmp/capture_test_040c.out")
@@ -684,7 +684,7 @@ class CaptivePortalTests(unittest2.TestCase):
         assert (search == 0)
 
         # check if local directory login and password
-        appid = str(node.getNodeSettings()["id"])
+        appid = str(node.getAppSettings()["id"])
 
         # connect and auth to get cookie
         result = remote_control.run_command("wget -O " + capture_file_name + "  \'" + global_functions.get_http_url() + "/capture/handler.py/authpost?username=test20&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\' --save-cookies " + cookie_file_name)
@@ -748,7 +748,7 @@ class CaptivePortalTests(unittest2.TestCase):
         assert (search == 0)
 
         # check if local directory login and password
-        appid = str(node.getNodeSettings()["id"])
+        appid = str(node.getAppSettings()["id"])
 
         # connect and auth to get cookie
         result = remote_control.run_command("wget -O " + capture_file_name + "  \'" + global_functions.get_http_url() + "/capture/handler.py/authpost?username=test20&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\' --save-cookies " + cookie_file_name)
@@ -794,7 +794,7 @@ class CaptivePortalTests(unittest2.TestCase):
         node.setSettings(nodeData)
 
         # # check if local directory login and password
-        appid = str(node.getNodeSettings()["id"])
+        appid = str(node.getAppSettings()["id"])
 
         result = remote_control.run_command("wget -O " + capture_file_name + "  \'" + global_functions.get_http_url() + "/capture/handler.py/index?nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\' --load-cookies " + savedCookieFileName)
         assert (result == 0)
@@ -824,7 +824,7 @@ class CaptivePortalTests(unittest2.TestCase):
         assert (search == 0)
 
         # check if local directory login and password
-        appid = str(node.getNodeSettings()["id"])
+        appid = str(node.getAppSettings()["id"])
         # print 'appid is %s' % appid  # debug line
         result = remote_control.run_command("wget -O /tmp/capture_test_060a.out  \'" + global_functions.get_http_url() + "/capture/handler.py/authpost?username=" + localUserName + "&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
         assert (result == 0)
@@ -847,13 +847,13 @@ class CaptivePortalTests(unittest2.TestCase):
         global node, nodeAD, nodeWeb
         uvmContext.localDirectory().setUsers(removeLocalDirectoryUser())
         if node != None:
-            uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
+            uvmContext.appManager().destroy( node.getAppSettings()["id"] )
             node = None
         if nodeAD != None:
-            uvmContext.nodeManager().destroy( nodeAD.getNodeSettings()["id"] )
+            uvmContext.appManager().destroy( nodeAD.getAppSettings()["id"] )
             nodeAD = None
         if nodeWeb != None:
-            uvmContext.nodeManager().destroy( nodeWeb.getNodeSettings()["id"] )
+            uvmContext.appManager().destroy( nodeWeb.getAppSettings()["id"] )
             nodeWeb = None
 
 test_registry.registerNode("captive-portal", CaptivePortalTests)

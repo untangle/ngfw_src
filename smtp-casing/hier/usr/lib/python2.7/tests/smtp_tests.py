@@ -22,10 +22,10 @@ class SmtpTests(unittest2.TestCase):
     @staticmethod
     def initialSetUp(self):
         global node
-        if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
-            node = uvmContext.nodeManager().node(self.nodeName())
+        if (uvmContext.appManager().isInstantiated(self.nodeName())):
+            node = uvmContext.appManager().app(self.nodeName())
         else:
-            node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
+            node = uvmContext.appManager().instantiate(self.nodeName(), defaultRackId)
 
     def setUp(self):
         pass

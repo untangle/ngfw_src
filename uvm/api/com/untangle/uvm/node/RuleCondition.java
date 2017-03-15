@@ -789,7 +789,7 @@ public class RuleCondition implements JSONString, Serializable
             if (username == null)
                 return false;
 
-            DirectoryConnector directoryConnector = (DirectoryConnector)UvmContextFactory.context().nodeManager().node("directory-connector");
+            DirectoryConnector directoryConnector = (DirectoryConnector)UvmContextFactory.context().appManager().app("directory-connector");
             boolean isMemberOf = false;
 
             if (directoryConnector.isMemberOf( username, value )) 
@@ -1211,7 +1211,7 @@ public class RuleCondition implements JSONString, Serializable
             if ( tmpStr == null )
                 return false;
 
-            DirectoryConnector directoryConnector = (DirectoryConnector)UvmContextFactory.context().nodeManager().node("directory-connector");
+            DirectoryConnector directoryConnector = (DirectoryConnector)UvmContextFactory.context().appManager().app("directory-connector");
             boolean isMemberOf = false;
 
             if (directoryConnector.isMemberOf( tmpStr, value )) 

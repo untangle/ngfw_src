@@ -60,9 +60,9 @@ public class WebCacheApp extends NodeBase
     // set this value to enable raw socket logging
     protected final boolean SOCKET_DEBUG = false;
 
-    public WebCacheApp( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
+    public WebCacheApp( com.untangle.uvm.node.AppSettings appSettings, com.untangle.uvm.node.AppProperties appProperties )
     {
-        super( nodeSettings, nodeProperties );
+        super( appSettings, appProperties );
 
         logger.debug("WebCache WebCacheApp()");
 
@@ -93,7 +93,7 @@ public class WebCacheApp extends NodeBase
     {
         logger.debug("WebCache setSettings()");
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = getNodeSettings().getId().toString();
+        String nodeID = getAppSettings().getId().toString();
 
         try {
             settingsManager.save( System.getProperty("uvm.settings.dir") + "/web-cache/settings_" + nodeID + ".js" , newSettings );
@@ -166,7 +166,7 @@ public class WebCacheApp extends NodeBase
     protected void postInit()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = getNodeSettings().getId().toString();
+        String nodeID = getAppSettings().getId().toString();
         WebCacheSettings readSettings = null;
 
         try {

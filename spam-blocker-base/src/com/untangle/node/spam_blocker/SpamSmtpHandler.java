@@ -22,7 +22,7 @@ import org.apache.log4j.Logger;
 
 import com.untangle.node.smtp.MailExport;
 import com.untangle.node.smtp.MailExportFactory;
-import com.untangle.node.smtp.SmtpNodeSettings;
+import com.untangle.node.smtp.SmtpSettings;
 import com.untangle.node.smtp.SmtpMessageEvent;
 import com.untangle.node.smtp.Response;
 import com.untangle.node.smtp.SmtpTransaction;

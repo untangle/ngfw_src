@@ -14,7 +14,7 @@ import com.untangle.uvm.vnet.Token;
 import com.untangle.uvm.util.NonceFactory;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.NetworkManager;
-import com.untangle.uvm.node.NodeSettings;
+import com.untangle.uvm.node.AppSettings;
 import com.untangle.uvm.vnet.NodeTCPSession;
 
 /**
@@ -38,11 +38,11 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
     private static final Pattern IMAGE_PATTERN = Pattern.compile(".*((jpg)|(jpeg)|(gif)|(png)|(ico))", Pattern.CASE_INSENSITIVE);
 
     private final NonceFactory<T> nonceFactory = new NonceFactory<T>();
-    private final NodeSettings nodeId;
+    private final AppSettings nodeId;
 
     // constructors -----------------------------------------------------------
 
-    public ReplacementGenerator( NodeSettings nodeId )
+    public ReplacementGenerator( AppSettings nodeId )
     {
         this.nodeId = nodeId;
     }
@@ -109,9 +109,9 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
     // protected methods ------------------------------------------------------
 
     protected abstract String getReplacement( T data );
-    protected abstract String getRedirectUrl( String nonce, String host, NodeSettings nodeId );
+    protected abstract String getRedirectUrl( String nonce, String host, AppSettings nodeId );
 
-    protected NodeSettings getNodeSettings()
+    protected AppSettings getAppSettings()
     {
         return this.nodeId;
     }

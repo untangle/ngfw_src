@@ -1,13 +1,13 @@
 #!@PREFIX@/usr/share/untangle/bin/ut-pycli -f 
 import sys
 
-nodeManager = uvm.nodeManager()
+appManager = uvm.appManager()
 
-node = nodeManager.node( "configuration-backup" )
+app = appManager.app( "configuration-backup" )
 
-if node == None:
-    print "configuration-backup node not installed."
+if app == None:
+    print "configuration-backup app not installed."
     sys.exit(0)
 
-node.sendBackup()
+app.sendBackup()
 sys.exit(0)

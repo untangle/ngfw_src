@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.node.smtp.SmtpNodeImpl;
+import com.untangle.node.smtp.SmtpImpl;
 import com.untangle.node.smtp.quarantine.QuarantineSettings;
 import com.untangle.node.smtp.quarantine.QuarantineUserView;
 import com.untangle.node.smtp.safelist.SafelistManipulation;
@@ -30,7 +30,7 @@ public class QuarantineEnduserServlet extends HttpServlet
     private final Logger m_logger = Logger.getLogger(QuarantineEnduserServlet.class);
 
     private static QuarantineEnduserServlet s_instance;
-    private SmtpNodeImpl m_mailNode;
+    private SmtpImpl m_mailNode;
     private QuarantineUserView m_quarantine;
     private SafelistManipulation m_safelist;
 
@@ -86,7 +86,7 @@ public class QuarantineEnduserServlet extends HttpServlet
      *
      * @return the Quarantine node view.
      */
-    public SmtpNodeImpl getSmtpNode()
+    public SmtpImpl getSmtpNode()
     {
         if(m_safelist == null) {
             initRemoteRefs();
@@ -127,7 +127,7 @@ public class QuarantineEnduserServlet extends HttpServlet
         if (null == m_mailNode) {
             initRemoteRefs();
         }
-        QuarantineSettings qSettings = m_mailNode.getSmtpNodeSettings().getQuarantineSettings();
+        QuarantineSettings qSettings = m_mailNode.getSmtpSettings().getQuarantineSettings();
         String maxDaysToIntern = new Long(qSettings.getMaxMailIntern() / QuarantineSettings.DAY).toString();
         //m_logger.info("maxDaysToIntern: " + maxDaysToIntern);
         return maxDaysToIntern;
@@ -138,7 +138,7 @@ public class QuarantineEnduserServlet extends HttpServlet
         if (null == m_mailNode) {
             initRemoteRefs();
         }
-        QuarantineSettings qSettings = m_mailNode.getSmtpNodeSettings().getQuarantineSettings();
+        QuarantineSettings qSettings = m_mailNode.getSmtpSettings().getQuarantineSettings();
         String maxDaysIdleInbox = new Long(qSettings.getMaxIdleInbox() / QuarantineSettings.DAY).toString();
         //m_logger.info("maxDaysIdleInbox: " + maxDaysIdleInbox);
         return maxDaysIdleInbox;
@@ -150,7 +150,7 @@ public class QuarantineEnduserServlet extends HttpServlet
     private void initRemoteRefs()
     {
         try {
-            SmtpNodeImpl mt = (SmtpNodeImpl) UvmContextFactory.context().nodeManager().nodeInstances("smtp").get(0);
+            SmtpImpl mt = (SmtpImpl) UvmContextFactory.context().appManager().appInstances("smtp").get(0);
             m_mailNode = mt;
             m_quarantine = mt.getQuarantineUserView();
             m_safelist = mt.getSafelistManipulation();

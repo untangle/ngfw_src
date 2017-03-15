@@ -113,9 +113,9 @@ public abstract class VirusBlockerBaseApp extends NodeBase
 
     // constructors -----------------------------------------------------------
 
-    public VirusBlockerBaseApp(com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
+    public VirusBlockerBaseApp(com.untangle.uvm.node.AppSettings appSettings, com.untangle.uvm.node.AppProperties appProperties )
     {
-        super(nodeSettings, nodeProperties);
+        super(appSettings, appProperties);
 
         this.addMetric(new NodeMetric(STAT_SCAN, I18nUtil.marktr("Documents scanned")));
         this.addMetric(new NodeMetric(STAT_BLOCK, I18nUtil.marktr("Documents blocked")));
@@ -144,7 +144,7 @@ public abstract class VirusBlockerBaseApp extends NodeBase
             fileScannerAvailable = false;
         }
 
-        this.replacementGenerator = new VirusReplacementGenerator(getNodeSettings());
+        this.replacementGenerator = new VirusReplacementGenerator(getAppSettings());
 
         String nodeName = getName();
     }
@@ -338,7 +338,7 @@ public abstract class VirusBlockerBaseApp extends NodeBase
     protected void postInit()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeSettings().getId().toString();
+        String nodeID = this.getAppSettings().getId().toString();
         VirusSettings readSettings = null;
         String settingsFileName = System.getProperty("uvm.settings.dir") + "/" + this.getAppName() + "/" + "settings_" + nodeID + ".js";
 
@@ -483,7 +483,7 @@ public abstract class VirusBlockerBaseApp extends NodeBase
          * Save the settings
          */
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeSettings().getId().toString();
+        String nodeID = this.getAppSettings().getId().toString();
         String settingsFileName = System.getProperty("uvm.settings.dir") + "/" + this.getAppName() + "/" + "settings_" + nodeID + ".js";
         try {
             settingsManager.save(settingsFileName, newSettings);

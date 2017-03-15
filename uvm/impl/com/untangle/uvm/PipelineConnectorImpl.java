@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.node.Node;
-import com.untangle.uvm.node.NodeProperties;
+import com.untangle.uvm.node.AppProperties;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.vnet.NodeSession;
 import com.untangle.uvm.vnet.NodeTCPSession;
@@ -115,9 +115,9 @@ public class PipelineConnectorImpl implements PipelineConnector
         return outputFitting;
     }
 
-    public NodeProperties nodeProperties()
+    public AppProperties appProperties()
     {
-        return node().getNodeProperties();
+        return node().getAppProperties();
     }
 
     public long[] liveSessionIds()
@@ -136,7 +136,7 @@ public class PipelineConnectorImpl implements PipelineConnector
     }
     
     /**
-     * This is called by the Node (or NodeManager?) to disconnect
+     * This is called by the Node (or AppManager?) to disconnect
      * from a live PipelineConnector. Since it is live we must be sure to shut down the
      * Dispatcher nicely (in comparison to shutdown, below).
      *

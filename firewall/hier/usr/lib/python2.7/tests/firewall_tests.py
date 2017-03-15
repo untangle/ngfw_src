@@ -98,9 +98,9 @@ class FirewallTests(unittest2.TestCase):
     @staticmethod
     def initialSetUp(self):
         global node
-        if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
+        if (uvmContext.appManager().isInstantiated(self.nodeName())):
             raise Exception('node %s already instantiated' % self.nodeName())
-        node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
+        node = uvmContext.appManager().instantiate(self.nodeName(), defaultRackId)
 
     def setUp(self):
         pass
@@ -878,7 +878,7 @@ class FirewallTests(unittest2.TestCase):
     def finalTearDown(self):
         global node
         if node != None:
-            uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
+            uvmContext.appManager().destroy( node.getAppSettings()["id"] )
         node = None
 
 test_registry.registerNode("firewall", FirewallTests)

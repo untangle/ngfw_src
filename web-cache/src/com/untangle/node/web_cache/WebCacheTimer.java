@@ -49,7 +49,7 @@ public class WebCacheTimer extends TimerTask
         if ((diffHitCount | diffMissCount | diffBypassCount | diffSystemCount | diffHitBytes | diffMissBytes) == 0) return;
 
         // counters have increased so write the log event
-        WebCacheEvent event = new WebCacheEvent(node.getNodeSettings().getPolicyId(),diffHitCount,diffMissCount,diffBypassCount,diffSystemCount,diffHitBytes,diffMissBytes);
+        WebCacheEvent event = new WebCacheEvent(node.getAppSettings().getPolicyId(),diffHitCount,diffMissCount,diffBypassCount,diffSystemCount,diffHitBytes,diffMissBytes);
         node.logEvent(event);
         logger.debug("WebCacheTimer.CaptureStatistics() =" + event.toString());
 

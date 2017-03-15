@@ -31,9 +31,9 @@ Ext.define('Ung.cmp.AppRemove', {
                 // nodeItem.addCls('remove');
                 // Ung.app.redirectTo('#apps/' + vm.get('policyId'));
                 mainView.setLoading(true);
-                Rpc.asyncData('rpc.nodeManager.destroy', vm.get('instance.id'))
+                Rpc.asyncData('rpc.appManager.destroy', vm.get('instance.id'))
                     .then(function (result) {
-                        Rpc.asyncData('rpc.nodeManager.getAppsViews')
+                        Rpc.asyncData('rpc.appManager.getAppsViews')
                             .then(function (policies) {
                                 Ext.getStore('policies').loadData(policies);
                             });

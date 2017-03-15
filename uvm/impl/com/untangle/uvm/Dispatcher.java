@@ -18,8 +18,8 @@ import org.apache.log4j.MDC;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.Node;
-import com.untangle.uvm.node.NodeProperties;
-import com.untangle.uvm.node.NodeManager;
+import com.untangle.uvm.node.AppProperties;
+import com.untangle.uvm.node.AppManager;
 import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.vnet.NodeBase;
@@ -141,7 +141,7 @@ public class Dispatcher
     public NodeTCPSession newSession( TCPNewSessionRequestImpl request )
     {
         try {
-            UvmContextImpl.getInstance().loggingManager().setLoggingNode(node.getNodeSettings().getId());
+            UvmContextImpl.getInstance().loggingManager().setLoggingNode(node.getAppSettings().getId());
             MDC.put(SESSION_ID_MDC_KEY, "TCP_" + request.id());
             return newSessionInternal(request);
         } finally {
@@ -153,7 +153,7 @@ public class Dispatcher
     public NodeUDPSession newSession( UDPNewSessionRequestImpl request )
     {
         try {
-            UvmContextImpl.getInstance().loggingManager().setLoggingNode(node.getNodeSettings().getId());
+            UvmContextImpl.getInstance().loggingManager().setLoggingNode(node.getAppSettings().getId());
             MDC.put(SESSION_ID_MDC_KEY, "UDP_" + request.id());
             return newSessionInternal(request);
         } finally {

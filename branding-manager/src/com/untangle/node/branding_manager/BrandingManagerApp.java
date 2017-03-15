@@ -62,15 +62,15 @@ public class BrandingManagerApp extends NodeBase implements com.untangle.uvm.Bra
 
     private BrandingManagerSettings settings = null;
 
-    public BrandingManagerApp( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
+    public BrandingManagerApp( com.untangle.uvm.node.AppSettings appSettings, com.untangle.uvm.node.AppProperties appProperties )
     {
-        super( nodeSettings, nodeProperties );
+        super( appSettings, appProperties );
     }
 
-    private void readNodeSettings()
+    private void readAppSettings()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeSettings().getId().toString();
+        String nodeID = this.getAppSettings().getId().toString();
         String settingsFile = System.getProperty("uvm.settings.dir") + "/branding-manager/settings_" + nodeID + ".js";
         BrandingManagerSettings readSettings = null;
 
@@ -97,7 +97,7 @@ public class BrandingManagerApp extends NodeBase implements com.untangle.uvm.Bra
         }
     }
 
-    private void writeNodeSettings(BrandingManagerSettings argSettings)
+    private void writeAppSettings(BrandingManagerSettings argSettings)
     {
     }
 
@@ -113,7 +113,7 @@ public class BrandingManagerApp extends NodeBase implements com.untangle.uvm.Bra
     @Override
     protected void postInit()
     {
-        readNodeSettings();
+        readAppSettings();
         setFileLogo(settings.binary_getLogo());
         UvmContextFactory.context().servletFileManager().registerUploadHandler( new LogoUploadHandler(this) );
     }
@@ -151,7 +151,7 @@ public class BrandingManagerApp extends NodeBase implements com.untangle.uvm.Bra
         logger.debug("setSettings(): " + newSettings.getCompanyName());
 
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeSettings().getId().toString();
+        String nodeID = this.getAppSettings().getId().toString();
         String settingsFile = System.getProperty("uvm.settings.dir") + "/branding-manager/settings_" + nodeID +".js";
 
         try {

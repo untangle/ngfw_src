@@ -43,10 +43,10 @@ class WebFilterTests(WebFilterBaseTests):
     @staticmethod
     def initialSetUp(self):
         global node
-        if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
+        if (uvmContext.appManager().isInstantiated(self.nodeName())):
             raise Exception('node %s already instantiated' % self.nodeName())
-        node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
-        nodemetrics = uvmContext.metricManager().getMetrics(node.getNodeSettings()["id"])
+        node = uvmContext.appManager().instantiate(self.nodeName(), defaultRackId)
+        nodemetrics = uvmContext.metricManager().getMetrics(node.getAppSettings()["id"])
         self.node = node
 
     def test_016_block_url(self):
@@ -1231,7 +1231,7 @@ class WebFilterTests(WebFilterBaseTests):
     def finalTearDown(self):
         global node
         if node != None:
-            uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
+            uvmContext.appManager().destroy( node.getAppSettings()["id"] )
             node = None
 
 test_registry.registerNode("web-filter", WebFilterTests)

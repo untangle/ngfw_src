@@ -64,9 +64,9 @@ public class SslInspectorApp extends NodeBase
     private TrustManagerFactory trustFactory;
     private SslInspectorSettings settings;
 
-    public SslInspectorApp(com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties)
+    public SslInspectorApp(com.untangle.uvm.node.AppSettings appSettings, com.untangle.uvm.node.AppProperties appProperties)
     {
-        super(nodeSettings, nodeProperties);
+        super(appSettings, appProperties);
 
         this.addMetric(new NodeMetric(STAT_INSPECTED, I18nUtil.marktr("Sessions inspected")));
         this.addMetric(new NodeMetric(STAT_IGNORED, I18nUtil.marktr("Sessions ignored")));
@@ -100,7 +100,7 @@ public class SslInspectorApp extends NodeBase
     @Override
     protected void preInit()
     {
-        String nodeID = this.getNodeSettings().getId().toString();
+        String nodeID = this.getAppSettings().getId().toString();
         String settingsFile = System.getProperty("uvm.settings.dir") + "/ssl-inspector/settings_" + nodeID + ".js";
 
         SslInspectorSettings readSettings = null;
@@ -168,7 +168,7 @@ public class SslInspectorApp extends NodeBase
 
     public void setSettings(final SslInspectorSettings newSettings)
     {
-        String nodeID = this.getNodeSettings().getId().toString();
+        String nodeID = this.getAppSettings().getId().toString();
         String settingsFile = System.getProperty("uvm.settings.dir") + "/ssl-inspector/settings_" + nodeID + ".js";
 
         try {

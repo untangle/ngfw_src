@@ -54,15 +54,15 @@ class BrandingManagerTests(unittest2.TestCase):
     @staticmethod
     def initialSetUp(self):
         global nodeData, node, nodeWeb
-        if (uvmContextLongTimeout.nodeManager().isInstantiated(self.nodeName())):
+        if (uvmContextLongTimeout.appManager().isInstantiated(self.nodeName())):
             print "ERROR: Node %s already installed" % self.nodeName()
             raise Exception('node %s already instantiated' % self.nodeName())
-        node = uvmContextLongTimeout.nodeManager().instantiate(self.nodeName(), defaultRackId)
+        node = uvmContextLongTimeout.appManager().instantiate(self.nodeName(), defaultRackId)
         nodeData = node.getSettings()
-        if (uvmContextLongTimeout.nodeManager().isInstantiated(self.nodeNameWeb())):
+        if (uvmContextLongTimeout.appManager().isInstantiated(self.nodeNameWeb())):
             print "ERROR: Node %s already installed" % self.nodeNameWeb()
             raise Exception('node %s already instantiated' % self.nodeNameWeb())
-        nodeWeb = uvmContextLongTimeout.nodeManager().instantiate(self.nodeNameWeb(), defaultRackId)
+        nodeWeb = uvmContextLongTimeout.appManager().instantiate(self.nodeNameWeb(), defaultRackId)
 
     def setUp(self):
         pass
@@ -168,10 +168,10 @@ class BrandingManagerTests(unittest2.TestCase):
         if node != None:
             # Restore original settings to return to initial settings
             setDefaultBrandingManagerSettings()
-            uvmContextLongTimeout.nodeManager().destroy( node.getNodeSettings()["id"] )
+            uvmContextLongTimeout.appManager().destroy( node.getAppSettings()["id"] )
             node = None
         if nodeWeb != None:
-            uvmContextLongTimeout.nodeManager().destroy( nodeWeb.getNodeSettings()["id"] )
+            uvmContextLongTimeout.appManager().destroy( nodeWeb.getAppSettings()["id"] )
             nodeWeb = None
 
 test_registry.registerNode("branding-manager", BrandingManagerTests)

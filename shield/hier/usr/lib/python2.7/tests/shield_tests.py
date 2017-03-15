@@ -30,9 +30,9 @@ class ShieldTests(unittest2.TestCase):
         global node,default_enabled, orig_netsettings
         if orig_netsettings == None:
             orig_netsettings = uvmContext.networkManager().getNetworkSettings()
-        if (not uvmContext.nodeManager().isInstantiated(self.nodeName())):
+        if (not uvmContext.appManager().isInstantiated(self.nodeName())):
             raise Exception('node %s already instantiated' % self.nodeName())
-        node = uvmContext.nodeManager().node(self.nodeName())
+        node = uvmContext.appManager().app(self.nodeName())
         default_enabled = node.getSettings()['shieldEnabled']
 
     def setUp(self):

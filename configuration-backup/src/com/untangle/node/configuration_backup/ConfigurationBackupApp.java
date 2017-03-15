@@ -41,9 +41,9 @@ public class ConfigurationBackupApp extends NodeBase
 
     private ConfigurationBackupSettings settings = null;
 
-    public ConfigurationBackupApp( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
+    public ConfigurationBackupApp( com.untangle.uvm.node.AppSettings appSettings, com.untangle.uvm.node.AppProperties appProperties )
     {
-        super( nodeSettings, nodeProperties );
+        super( appSettings, appProperties );
     }
 
     public ConfigurationBackupSettings getSettings()
@@ -53,7 +53,7 @@ public class ConfigurationBackupApp extends NodeBase
 
     public void setSettings(final ConfigurationBackupSettings newSettings)
     {
-        String nodeID = this.getNodeSettings().getId().toString();
+        String nodeID = this.getAppSettings().getId().toString();
         String settingsFile = System.getProperty("uvm.settings.dir") + "/configuration-backup/settings_" + nodeID + ".js";
 
         try {
@@ -113,7 +113,7 @@ public class ConfigurationBackupApp extends NodeBase
          * If google drive is enabled and licensed and configured
          * upload to google drive
          */
-        DirectoryConnector directoryConnector = (DirectoryConnector)UvmContextFactory.context().nodeManager().node("directory-connector");
+        DirectoryConnector directoryConnector = (DirectoryConnector)UvmContextFactory.context().appManager().app("directory-connector");
         if ( settings.getGoogleDriveEnabled() &&
              UvmContextFactory.context().licenseManager().isLicenseValid(License.DIRECTORY_CONNECTOR) &&
              directoryConnector != null &&
@@ -131,7 +131,7 @@ public class ConfigurationBackupApp extends NodeBase
     @Override
     protected void postInit()
     {
-        String nodeID = this.getNodeSettings().getId().toString();
+        String nodeID = this.getAppSettings().getId().toString();
         String settingsFileName = System.getProperty("uvm.settings.dir") + "/configuration-backup/settings_" + nodeID + ".js";
 
         ConfigurationBackupSettings readSettings = null;

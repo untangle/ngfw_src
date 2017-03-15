@@ -18,7 +18,7 @@ class Manager(object):
 
     def buildNodeId(self, nodeIdStr ):
         nodeId = int( nodeIdStr )
-        return {'javaClass': 'com.untangle.uvm.node.NodeSettings', 'id': nodeId, 'name': "%d" % ( nodeId ) }
+        return {'javaClass': 'com.untangle.uvm.node.AppSettings', 'id': nodeId, 'name': "%d" % ( nodeId ) }
 
     def buildDate(self,seconds):
         return { 'javaClass' : 'java.util.Date', 'time' : ( seconds * 1000 ) }

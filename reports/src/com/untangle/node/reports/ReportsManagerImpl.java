@@ -25,8 +25,8 @@ import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.WebBrowser;
 import com.untangle.uvm.network.InterfaceSettings;
-import com.untangle.uvm.node.NodeProperties;
-import com.untangle.uvm.node.NodeSettings;
+import com.untangle.uvm.node.AppProperties;
+import com.untangle.uvm.node.AppSettings;
 import com.untangle.uvm.node.PolicyManager;
 
 public class ReportsManagerImpl implements ReportsManager
@@ -52,15 +52,15 @@ public class ReportsManagerImpl implements ReportsManager
     /**
      * This stores all the node properties. It is used to reference information about the different nodes/categories
      */
-    private List<NodeProperties> nodePropertiesList = null;
+    private List<AppProperties> appPropertiesList = null;
 
     protected ReportsManagerImpl()
     {
-        this.nodePropertiesList = UvmContextFactory.context().nodeManager().getAllNodeProperties();
+        this.appPropertiesList = UvmContextFactory.context().appManager().getAllAppProperties();
 
         // sort by view position
-        Collections.sort(this.nodePropertiesList, new Comparator<NodeProperties>() {
-            public int compare(NodeProperties np1, NodeProperties np2) {
+        Collections.sort(this.appPropertiesList, new Comparator<AppProperties>() {
+            public int compare(AppProperties np1, AppProperties np2) {
                 int vp1 = np1.getViewPosition();
                 int vp2 = np2.getViewPosition();
                 if (vp1 == vp2) {
@@ -86,14 +86,14 @@ public class ReportsManagerImpl implements ReportsManager
         return instance;
     }
 
-    public void setReportsNode( ReportsApp node )
+    public void setReportsApp( ReportsApp node )
     {
         ReportsManagerImpl.node = node;
     }
     
     public boolean isReportsEnabled()
     {
-        return node != null && NodeSettings.NodeState.RUNNING.equals(node.getRunState());
+        return node != null && AppSettings.AppState.RUNNING.equals(node.getRunState());
     }
 
     public List<ReportEntry> getReportEntries()
@@ -119,13 +119,13 @@ public class ReportsManagerImpl implements ReportsManager
          * If the license is not valid, return an empty list
          * If the category isnt an app name, just continue.
          */
-        NodeProperties nodeProperties = findNodeProperties( category );
-        if ( nodeProperties != null ) {
-            if ( ! UvmContextFactory.context().licenseManager().isLicenseValid( nodeProperties.getName() ) ) {
+        AppProperties appProperties = findAppProperties( category );
+        if ( appProperties != null ) {
+            if ( ! UvmContextFactory.context().licenseManager().isLicenseValid( appProperties.getName() ) ) {
                 logger.warn("Not showing report entries for \"" + category + "\" because of invalid license."); 
                 return entries;
             }
-            if ( UvmContextFactory.context().nodeManager().node( nodeProperties.getName() ) == null ) {
+            if ( UvmContextFactory.context().appManager().app( appProperties.getName() ) == null ) {
                 logger.warn("Not showing report entries for \"" + category + "\" because it isnt installed."); 
                 return entries;
             }
@@ -145,21 +145,21 @@ public class ReportsManagerImpl implements ReportsManager
     {
         ArrayList<JSONObject> currentApplications = new ArrayList<JSONObject>();
 
-        for ( NodeProperties nodeProperties : this.nodePropertiesList ) {
-            if ( nodeProperties.getInvisible()) {
+        for ( AppProperties appProperties : this.appPropertiesList ) {
+            if ( appProperties.getInvisible()) {
                 continue;
             }
-            if ( UvmContextFactory.context().nodeManager().node( nodeProperties.getName() ) == null ) {
+            if ( UvmContextFactory.context().appManager().app( appProperties.getName() ) == null ) {
                 continue;
             }
-            if ( ! UvmContextFactory.context().licenseManager().isLicenseValid( nodeProperties.getName() ) ) {
+            if ( ! UvmContextFactory.context().licenseManager().isLicenseValid( appProperties.getName() ) ) {
                 continue;
             }
             org.json.JSONObject json = new org.json.JSONObject();
 
             try {
-                json.put("displayName", nodeProperties.getDisplayName());
-                json.put("name", nodeProperties.getName());
+                json.put("displayName", appProperties.getDisplayName());
+                json.put("name", appProperties.getName());
             } catch (Exception e) {
                 logger.error( "Error generating Current Applications list", e );
             }
@@ -173,14 +173,14 @@ public class ReportsManagerImpl implements ReportsManager
     {
         Map<String, String> unavailableApplicationsMap = new HashMap<String, String>();
 
-        for ( NodeProperties nodeProperties : this.nodePropertiesList ) {
-            if("shield".equals(nodeProperties.getName())){
+        for ( AppProperties appProperties : this.appPropertiesList ) {
+            if("shield".equals(appProperties.getName())){
                 continue;
             }
-            if ( nodeProperties.getInvisible() || 
-                    UvmContextFactory.context().nodeManager().node( nodeProperties.getName() ) == null ||
-                    !UvmContextFactory.context().licenseManager().isLicenseValid( nodeProperties.getName() ) ) {
-                unavailableApplicationsMap.put(nodeProperties.getDisplayName(), nodeProperties.getName());
+            if ( appProperties.getInvisible() || 
+                    UvmContextFactory.context().appManager().app( appProperties.getName() ) == null ||
+                    !UvmContextFactory.context().licenseManager().isLicenseValid( appProperties.getName() ) ) {
+                unavailableApplicationsMap.put(appProperties.getDisplayName(), appProperties.getName());
             }
         }
 
@@ -511,7 +511,7 @@ public class ReportsManagerImpl implements ReportsManager
     public List<JSONObject> getPoliciesInfo()
     {
         ArrayList<JSONObject> policiesInfo = new ArrayList<JSONObject>();
-        PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().nodeManager().node("policy-manager");
+        PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().appManager().app("policy-manager");
         if ( policyManager != null ) {
             policiesInfo = policyManager.getPoliciesInfo();
         }
@@ -726,12 +726,12 @@ public class ReportsManagerImpl implements ReportsManager
         }
     }    
 
-    private NodeProperties findNodeProperties( String displayName )
+    private AppProperties findAppProperties( String displayName )
     {
         if ( displayName == null )
             return null;
         
-        for ( NodeProperties props : this.nodePropertiesList ) {
+        for ( AppProperties props : this.appPropertiesList ) {
             if ( displayName.equals( props.getDisplayName() ) )
                 return props;
         }

@@ -33,9 +33,9 @@ public class PolicyManagerApp extends NodeBase implements com.untangle.uvm.node.
 
     private PolicyManagerSettings settings = new PolicyManagerSettings();
     
-    public PolicyManagerApp( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
+    public PolicyManagerApp( com.untangle.uvm.node.AppSettings appSettings, com.untangle.uvm.node.AppProperties appProperties )
     {
-        super( nodeSettings, nodeProperties );
+        super( appSettings, appProperties );
     }
 
     public PolicyManagerSettings getSettings()
@@ -72,7 +72,7 @@ public class PolicyManagerApp extends NodeBase implements com.untangle.uvm.node.
          * Save the settings
          */
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeSettings().getId().toString();
+        String nodeID = this.getAppSettings().getId().toString();
         try {
             settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "policy-manager/" + "settings_"  + nodeID + ".js", newSettings );
         } catch (SettingsManager.SettingsException e) {
@@ -206,7 +206,7 @@ public class PolicyManagerApp extends NodeBase implements com.untangle.uvm.node.
     protected void postInit()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeSettings().getId().toString();
+        String nodeID = this.getAppSettings().getId().toString();
         PolicyManagerSettings readSettings = null;
         String settingsFileName = System.getProperty("uvm.settings.dir") + "/policy-manager/" + "settings_" + nodeID + ".js";
 
@@ -342,11 +342,11 @@ public class PolicyManagerApp extends NodeBase implements com.untangle.uvm.node.
             }
         }
 
-        for ( Node node : UvmContextFactory.context().nodeManager().nodeInstances() ) {
-            if (node.getNodeSettings().getPolicyId() == null)
+        for ( Node node : UvmContextFactory.context().appManager().appInstances() ) {
+            if (node.getAppSettings().getPolicyId() == null)
                 continue;
-            if (!policyIds.contains(node.getNodeSettings().getPolicyId()))
-                throw new RuntimeException("Missing policy: " + node.getNodeSettings().getPolicyId() + " (Required by " + node.getNodeProperties().getDisplayName() + " [" + node.getNodeSettings().getId() + "]). Cannot delete non-empty racks.");
+            if (!policyIds.contains(node.getAppSettings().getPolicyId()))
+                throw new RuntimeException("Missing policy: " + node.getAppSettings().getPolicyId() + " (Required by " + node.getAppProperties().getDisplayName() + " [" + node.getAppSettings().getId() + "]). Cannot delete non-empty racks.");
         }
         
 
@@ -376,7 +376,7 @@ public class PolicyManagerApp extends NodeBase implements com.untangle.uvm.node.
 
         public boolean isMatch( Integer oldPolicyId, short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort, Map<String,Object> attachments )
         {
-            PolicyManagerApp policyManager = (PolicyManagerApp) UvmContextFactory.context().nodeManager().node("policy-manager");
+            PolicyManagerApp policyManager = (PolicyManagerApp) UvmContextFactory.context().appManager().app("policy-manager");
             Integer newPolicyId = null;
             Integer newPolicyRuleId = null;
             if (policyManager != null) {

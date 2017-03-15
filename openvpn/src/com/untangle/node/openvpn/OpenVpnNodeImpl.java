@@ -22,7 +22,7 @@ import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.network.InterfaceStatus;
 import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.node.NodeSettings;
+import com.untangle.uvm.node.AppSettings;
 import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.node.IPMaskedAddress;
 import com.untangle.uvm.vnet.Affinity;
@@ -55,9 +55,9 @@ public class OpenVpnNodeImpl extends NodeBase
 
     private boolean isWebAppDeployed = false;
     
-    public OpenVpnNodeImpl( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
+    public OpenVpnNodeImpl( com.untangle.uvm.node.AppSettings appSettings, com.untangle.uvm.node.AppProperties appProperties )
     {
-        super( nodeSettings, nodeProperties );
+        super( appSettings, appProperties );
 
         this.handler          = new EventHandler( this );
         this.openVpnMonitor   = new OpenVpnMonitor( this );
@@ -80,7 +80,7 @@ public class OpenVpnNodeImpl extends NodeBase
     protected void postInit()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeSettings().getId().toString();
+        String nodeID = this.getAppSettings().getId().toString();
         OpenVpnSettings readSettings = null;
         String settingsFileName = System.getProperty("uvm.settings.dir") + "/openvpn/" + "settings_" + nodeID + ".js";
 
@@ -215,7 +215,7 @@ public class OpenVpnNodeImpl extends NodeBase
          * Save the settings
          */
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeSettings().getId().toString();
+        String nodeID = this.getAppSettings().getId().toString();
         try {
             settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "openvpn/" + "settings_"  + nodeID + ".js", newSettings );
         } catch (SettingsManager.SettingsException e) {
@@ -238,7 +238,7 @@ public class OpenVpnNodeImpl extends NodeBase
          * Restart the daemon
          */
         try {
-            if ( getRunState() == NodeSettings.NodeState.RUNNING ) {
+            if ( getRunState() == AppSettings.AppState.RUNNING ) {
                 this.openVpnManager.restart();
             }
         } catch ( Exception exn ) {

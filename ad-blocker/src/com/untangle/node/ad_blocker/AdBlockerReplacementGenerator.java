@@ -5,7 +5,7 @@ package com.untangle.node.ad_blocker;
 
 import com.untangle.node.http.BlockDetails;
 import com.untangle.node.http.ReplacementGenerator;
-import com.untangle.uvm.node.NodeSettings;
+import com.untangle.uvm.node.AppSettings;
 
 public class AdBlockerReplacementGenerator extends ReplacementGenerator<BlockDetails>
 {
@@ -23,7 +23,7 @@ public class AdBlockerReplacementGenerator extends ReplacementGenerator<BlockDet
     //         + "<p>URI: %s</p>"
     //         + "</BODY></HTML>";
 
-    AdBlockerReplacementGenerator(NodeSettings tid)
+    AdBlockerReplacementGenerator(AppSettings tid)
     {
         super(tid);
     }
@@ -35,7 +35,7 @@ public class AdBlockerReplacementGenerator extends ReplacementGenerator<BlockDet
     }
 
     @Override
-    protected String getRedirectUrl(String nonce, String host, NodeSettings nodeSettings)
+    protected String getRedirectUrl(String nonce, String host, AppSettings appSettings)
     {
         // no need to redirect; we generate a simple response page
         return null;

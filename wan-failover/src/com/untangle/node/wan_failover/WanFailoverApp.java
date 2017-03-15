@@ -20,7 +20,7 @@ import com.untangle.uvm.IntfConstants;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.ExecManager;
 import com.untangle.uvm.HookCallback;
-import com.untangle.uvm.node.NodeSettings;
+import com.untangle.uvm.node.AppSettings;
 import com.untangle.uvm.node.License;
 import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.network.NetworkSettings;
@@ -55,9 +55,9 @@ public class WanFailoverApp extends NodeBase
     
     private boolean inReactivation = false;
     
-    public WanFailoverApp( com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties )
+    public WanFailoverApp( com.untangle.uvm.node.AppSettings appSettings, com.untangle.uvm.node.AppProperties appProperties )
     {
-        super( nodeSettings, nodeProperties );
+        super( appSettings, appProperties );
 
         this.addMetric(new NodeMetric(STAT_CONNECTED, I18nUtil.marktr("Connected WANs")));
         this.addMetric(new NodeMetric(STAT_DISCONNECTED, I18nUtil.marktr("Disconnected WANs")));
@@ -122,7 +122,7 @@ public class WanFailoverApp extends NodeBase
     protected void postInit()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeSettings().getId().toString();
+        String nodeID = this.getAppSettings().getId().toString();
         WanFailoverSettings readSettings = null;
         String settingsFileName = System.getProperty("uvm.settings.dir") + "/wan-failover/" + "settings_" + nodeID + ".js";
 
@@ -201,7 +201,7 @@ public class WanFailoverApp extends NodeBase
          * Save the settings
          */
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeSettings().getId().toString();
+        String nodeID = this.getAppSettings().getId().toString();
         try {
             settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "wan-failover/" + "settings_"  + nodeID + ".js", newSettings );
         } catch (SettingsManager.SettingsException e) {

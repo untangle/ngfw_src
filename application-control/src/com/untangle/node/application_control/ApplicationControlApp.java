@@ -54,8 +54,8 @@ public class ApplicationControlApp extends NodeBase
     private final PipelineConnector[] connectors;
 
     private final SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-    private final String nodeID = getNodeSettings().getId().toString();
-    private final int policyId = getNodeSettings().getPolicyId().intValue();
+    private final String nodeID = getAppSettings().getId().toString();
+    private final int policyId = getAppSettings().getPolicyId().intValue();
 
     protected final InetSocketAddress daemonAddress = new InetSocketAddress("127.0.0.1", 8123);
     protected SocketChannel daemonSocket;
@@ -73,9 +73,9 @@ public class ApplicationControlApp extends NodeBase
     private static int nodeInstanceCount = 0;
     private final int nodeInstanceNum;
 
-    public ApplicationControlApp(com.untangle.uvm.node.NodeSettings nodeSettings, com.untangle.uvm.node.NodeProperties nodeProperties)
+    public ApplicationControlApp(com.untangle.uvm.node.AppSettings appSettings, com.untangle.uvm.node.AppProperties appProperties)
     {
-        super(nodeSettings, nodeProperties);
+        super(appSettings, appProperties);
 
         this.addMetric(new NodeMetric(STAT_SCAN, I18nUtil.marktr("Session scanned")));
         this.addMetric(new NodeMetric(STAT_PASS, I18nUtil.marktr("Sessions passed")));

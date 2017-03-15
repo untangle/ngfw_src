@@ -197,13 +197,13 @@ class ReportsTests(unittest2.TestCase):
     def initialSetUp(self):
         global node, orig_settings, orig_netsettings, testServerHost, testEmailAddress, canRelay, canSyslog, syslogServerHost
         orig_netsettings = uvmContext.networkManager().getNetworkSettings()
-        if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
+        if (uvmContext.appManager().isInstantiated(self.nodeName())):
             # report node is normally installed.
             # print "Node %s already installed" % self.nodeName()
             # raise Exception('node %s already instantiated' % self.nodeName())
-            node = uvmContext.nodeManager().node(self.nodeName())
+            node = uvmContext.appManager().app(self.nodeName())
         else:
-            node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
+            node = uvmContext.appManager().instantiate(self.nodeName(), defaultRackId)
         reportSettings = node.getSettings()
         orig_settings = copy.deepcopy(reportSettings)
 
@@ -235,11 +235,11 @@ class ReportsTests(unittest2.TestCase):
             raise unittest2.SkipTest('Unable to syslog through ' + syslogServerHost)
 
         nodeFirewall = None
-        if (uvmContext.nodeManager().isInstantiated(self.nodeFirewallName())):
+        if (uvmContext.appManager().isInstantiated(self.nodeFirewallName())):
             print "Node %s already installed" % self.nodeFirewallName()
-            nodeFirewall = uvmContext.nodeManager().node(self.nodeFirewallName())
+            nodeFirewall = uvmContext.appManager().app(self.nodeFirewallName())
         else:
-            nodeFirewall = uvmContext.nodeManager().instantiate(self.nodeFirewallName(), defaultRackId)
+            nodeFirewall = uvmContext.appManager().instantiate(self.nodeFirewallName(), defaultRackId)
 
         # Install firewall rule to generate syslog events
         rules = nodeFirewall.getRules()
@@ -271,7 +271,7 @@ class ReportsTests(unittest2.TestCase):
 
         # remove firewall
         if nodeFirewall != None:
-            uvmContext.nodeManager().destroy( nodeFirewall.getNodeSettings()["id"] )
+            uvmContext.appManager().destroy( nodeFirewall.getAppSettings()["id"] )
         nodeFirewall = None
         
         # parse the output and look for a rule that matches the expected values

@@ -11,7 +11,7 @@ import org.json.JSONObject;
 import org.json.JSONString;
 
 import com.untangle.uvm.node.GenericRule;
-import com.untangle.uvm.node.NodeSettings;
+import com.untangle.uvm.node.AppSettings;
 
 /**
  * WebFilter settings.

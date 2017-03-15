@@ -139,13 +139,13 @@ class UvmTests(unittest2.TestCase):
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
         # Test mail setting in config -> email -> outgoing server
-        if (uvmContext.nodeManager().isInstantiated(self.nodeNameSpamCase())):
+        if (uvmContext.appManager().isInstantiated(self.nodeNameSpamCase())):
             print "smtp case present"
         else:
             print "smtp not present"
-            uvmContext.nodeManager().instantiate(self.nodeNameSpamCase(), 1)
-        nodeSP = uvmContext.nodeManager().node(self.nodeNameSpamCase())
-        origNodeDataSP = nodeSP.getSmtpNodeSettings()
+            uvmContext.appManager().instantiate(self.nodeNameSpamCase(), 1)
+        nodeSP = uvmContext.appManager().app(self.nodeNameSpamCase())
+        origNodeDataSP = nodeSP.getSmtpSettings()
         origMailsettings = uvmContext.mailSender().getSettings()
         # print nodeDataSP
         getLatestMailPkg();
@@ -161,8 +161,8 @@ class UvmTests(unittest2.TestCase):
         uvmContext.mailSender().setSettings(newMailsettings)
         time.sleep(10) # give it time for exim to restart
 
-        nodeDataSP = nodeSP.getSmtpNodeSettings()
-        nodeSP.setSmtpNodeSettingsWithoutSafelists(nodeDataSP)
+        nodeDataSP = nodeSP.getSmtpSettings()
+        nodeSP.setSmtpSettingsWithoutSafelists(nodeDataSP)
         uvmContext.mailSender().sendTestMessage("test@example.com")
         time.sleep(2)
         # force exim to flush queue
@@ -172,7 +172,7 @@ class UvmTests(unittest2.TestCase):
         # Kill mail sink
         remote_control.run_command("pkill -INT python")
         uvmContext.mailSender().setSettings(origMailsettings)
-        nodeSP.setSmtpNodeSettingsWithoutSafelists(origNodeDataSP)
+        nodeSP.setSmtpSettingsWithoutSafelists(origNodeDataSP)
         result = remote_control.run_command("grep -q 'Untangle Server Test Message' /tmp/test@example.com.1")
         assert(result==0)
 

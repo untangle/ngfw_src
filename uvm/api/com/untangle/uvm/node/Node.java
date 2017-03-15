@@ -19,39 +19,39 @@ public interface Node
      * This returns the generic settings that all nodes share
      * getSettings returns the node-specific settings
      */
-    NodeSettings getNodeSettings();
+    AppSettings getAppSettings();
 
     /**
      * Get the node immutable Properties 
      */
-    NodeProperties getNodeProperties();
+    AppProperties getAppProperties();
 
     /**
      * Get the current run state of this node
      */
-    NodeSettings.NodeState getRunState();
+    AppSettings.AppState getRunState();
 
     /**
      * Connects to PipelineConnector and starts. The node instance reads its
      * configuration each time this method is called. A call to this method
      * is only valid when the instance is in the
-     * {@link NodeState#INITIALIZED} state. After successful return,
-     * the instance will be in the {@link NodeState#RUNNING} state.
+     * {@link AppState#INITIALIZED} state. After successful return,
+     * the instance will be in the {@link AppState#RUNNING} state.
      *
      * @exception IllegalStateException if not called in the {@link
-     * NodeState#INITIALIZED} state.
+     * AppState#INITIALIZED} state.
      */
     void start() throws Exception;
 
     /**
      * Stops node and disconnects from the PipelineConnector. A call to
      * this method is only valid when the instance is in the {@link
-     * NodeState#RUNNING} state. After successful return, the
-     * instance will be in the {@link NodeState#INITIALIZED}
+     * AppState#RUNNING} state. After successful return, the
+     * instance will be in the {@link AppState#INITIALIZED}
      * state.
      *
      * @exception IllegalStateException if not called in the {@link
-     * NodeState#RUNNING} state.
+     * AppState#RUNNING} state.
      */
     void stop() throws Exception;
 

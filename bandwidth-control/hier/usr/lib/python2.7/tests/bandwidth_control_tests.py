@@ -202,16 +202,16 @@ class BandwidthControlTests(unittest2.TestCase):
     @staticmethod
     def initialSetUp(self):
         global node, nodeWF, origNetworkSettings, origNetworkSettingsWithQoS, origNetworkSettingsWithoutQoS, preDownSpeedKbsec, wanLimitKbit, wanLimitMbit
-        if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
+        if (uvmContext.appManager().isInstantiated(self.nodeName())):
             raise Exception('node %s already instantiated' % self.nodeName())
-        node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
+        node = uvmContext.appManager().instantiate(self.nodeName(), defaultRackId)
         settings = node.getSettings()
         settings["configured"] = True
         node.setSettings(settings)        
         node.start()
-        if (uvmContext.nodeManager().isInstantiated(self.nodeNameWF())):
+        if (uvmContext.appManager().isInstantiated(self.nodeNameWF())):
             raise Exception('node %s already instantiated' % self.nodeNameWF())
-        nodeWF = uvmContext.nodeManager().instantiate(self.nodeNameWF(), defaultRackId)
+        nodeWF = uvmContext.appManager().instantiate(self.nodeNameWF(), defaultRackId)
         if origNetworkSettings == None:
             origNetworkSettings = uvmContext.networkManager().getNetworkSettings()
 
@@ -718,10 +718,10 @@ class BandwidthControlTests(unittest2.TestCase):
         if origNetworkSettings != None:
             uvmContext.networkManager().setNetworkSettings( origNetworkSettings )
         if node != None:
-            uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
+            uvmContext.appManager().destroy( node.getAppSettings()["id"] )
             node = None
         if nodeWF != None:
-            uvmContext.nodeManager().destroy( nodeWF.getNodeSettings()["id"] )
+            uvmContext.appManager().destroy( nodeWF.getAppSettings()["id"] )
             nodeWF = None
 
 

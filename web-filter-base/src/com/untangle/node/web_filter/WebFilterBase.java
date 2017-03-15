@@ -16,8 +16,8 @@ import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.PasswordUtil;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.node.NodeSettings;
-import com.untangle.uvm.node.NodeProperties;
+import com.untangle.uvm.node.AppSettings;
+import com.untangle.uvm.node.AppProperties;
 import com.untangle.uvm.node.GenericRule;
 import com.untangle.uvm.node.RuleCondition;
 import com.untangle.uvm.node.NodeMetric;
@@ -42,7 +42,7 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
     private static int web_filter_deployCount = 0;
 
     protected static final Logger logger = Logger.getLogger(WebFilterBase.class);
-    private final int policyId = getNodeSettings().getPolicyId().intValue();
+    private final int policyId = getAppSettings().getPolicyId().intValue();
 
     protected final PipelineConnector connector;
     protected final PipelineConnector[] connectors;
@@ -53,9 +53,9 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
 
     protected final UnblockedSitesMonitor unblockedSitesMonitor;
 
-    public WebFilterBase(NodeSettings nodeSettings, NodeProperties nodeProperties)
+    public WebFilterBase(AppSettings appSettings, AppProperties appProperties)
     {
-        super(nodeSettings, nodeProperties);
+        super(appSettings, appProperties);
 
         this.replacementGenerator = buildReplacementGenerator();
 
@@ -296,7 +296,7 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
     public void initializeCommonSettings(WebFilterSettings settings)
     {
         if (logger.isDebugEnabled()) {
-            logger.debug(getNodeSettings() + " init settings");
+            logger.debug(getAppSettings() + " init settings");
         }
     }
 
@@ -317,7 +317,7 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
 
     protected WebFilterBaseReplacementGenerator buildReplacementGenerator()
     {
-        return new WebFilterBaseReplacementGenerator(getNodeSettings());
+        return new WebFilterBaseReplacementGenerator(getAppSettings());
     }
 
     @Override
@@ -330,7 +330,7 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
     protected void postInit()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeSettings().getId().toString();
+        String nodeID = this.getAppSettings().getId().toString();
         WebFilterSettings readSettings = null;
         String settingsFileName = System.getProperty("uvm.settings.dir") + "/" + this.getAppName() + "/" + "settings_" + nodeID + ".js";
 
@@ -496,7 +496,7 @@ public abstract class WebFilterBase extends NodeBase implements WebFilter
          * Save the settings
          */
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getNodeSettings().getId().toString();
+        String nodeID = this.getAppSettings().getId().toString();
         try {
             settingsManager.save(System.getProperty("uvm.settings.dir") + "/" + "" + this.getAppName() + "/" + "settings_" + nodeID + ".js", newSettings);
         } catch (SettingsManager.SettingsException e) {

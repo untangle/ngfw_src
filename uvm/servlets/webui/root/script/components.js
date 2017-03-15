@@ -132,7 +132,7 @@ Ext.define("Ung.form.DayOfWeekMatcherField", {
 
 Ext.define("Ung.AppItem", {
     extend: "Ext.Component",
-    nodeProperties: null,
+    appProperties: null,
     cls: 'app-item',
     statics: {
         //Global map to keep loading flag of the apps
@@ -154,19 +154,19 @@ Ext.define("Ung.AppItem", {
         }
     },
     initComponent: function() {
-        this.id = "app-item_" + this.nodeProperties.name;
+        this.id = "app-item_" + this.appProperties.name;
         this.callParent(arguments);
     },
     afterRender: function() {
         this.callParent(arguments);
         this.getEl().set({
-            'name': this.nodeProperties.name
+            'name': this.appProperties.name
         });
         var html = Ung.AppItem.template.applyTemplate({
             skin: rpc.skinSettings.skinName,
             id: this.getId(),
-            name: this.nodeProperties.name,
-            text: this.nodeProperties.displayName
+            name: this.appProperties.name,
+            text: this.appProperties.displayName
         });
         this.getEl().insertHtml("afterBegin", html);
         this.getEl().on("click", function(e) {
@@ -177,7 +177,7 @@ Ext.define("Ung.AppItem", {
     },
     //Sync progress bar status
     syncProgress: function() {
-        if(Ung.AppItem.loadingFlags[this.nodeProperties.name]) {
+        if(Ung.AppItem.loadingFlags[this.appProperties.name]) {
             if(this.rendered) {
                 this.addCls('progress');
             }
@@ -189,10 +189,10 @@ Ext.define("Ung.AppItem", {
     },
     // install node
     installNode: function( completeFn ) {
-        if(Ung.AppItem.loadingFlags[this.nodeProperties.name]) {
+        if(Ung.AppItem.loadingFlags[this.appProperties.name]) {
             return;
         }
-        Ung.Main.installNode(this.nodeProperties, this, completeFn);
+        Ung.Main.installNode(this.appProperties, this, completeFn);
     }
 });
 
@@ -275,8 +275,8 @@ Ext.define("Ung.Node", {
             config.runState="INITIALIZED";
         }
         this.subCmps = [];
-        if( config.nodeSettings.policyId != null ) {
-            this.isNodeEditable = (config.nodeSettings.policyId == rpc.currentPolicy.policyId);
+        if( config.appSettings.policyId != null ) {
+            this.isNodeEditable = (config.appSettings.policyId == rpc.currentPolicy.policyId);
         }
         this.callParent(arguments);
     },
@@ -536,7 +536,7 @@ Ext.define("Ung.Node", {
     getRpcNode: function(handler) {
         if(handler==null) {handler=Ext.emptyFn;}
         if (this.rpcNode === undefined) {
-            rpc.nodeManager.node(Ext.bind(function(result, exception) {
+            rpc.appManager.node(Ext.bind(function(result, exception) {
                 if(Ung.Util.handleException(exception)) return;
                 this.rpcNode = result;
                 handler.call(this);
@@ -545,15 +545,15 @@ Ext.define("Ung.Node", {
             handler.call(this);
         }
     },
-    getNodeProperties: function(handler) {
+    getAppProperties: function(handler) {
         if(handler==null) {handler=Ext.emptyFn;}
         if(this.rpcNode == null) {
             return;
         }
-        if (this.nodeProperties === undefined) {
-            this.rpcNode.getNodeProperties(Ext.bind(function(result, exception) {
+        if (this.appProperties === undefined) {
+            this.rpcNode.getAppProperties(Ext.bind(function(result, exception) {
                 if(Ung.Util.handleException(exception)) return;
-                this.nodeProperties = result;
+                this.appProperties = result;
                 handler.call(this);
             }, this));
         } else {
@@ -563,7 +563,7 @@ Ext.define("Ung.Node", {
     // load Node
     loadNode: function(handler) {
         if(handler==null) {handler=Ext.emptyFn;}
-        Ext.bind(this.getRpcNode, this, [Ext.bind(this.getNodeProperties, this,[handler])]).call(this);
+        Ext.bind(this.getRpcNode, this, [Ext.bind(this.getAppProperties, this,[handler])]).call(this);
     },
     loadSettings: function() {
         Ext.MessageBox.wait(i18n._("Loading Settings..."), i18n._("Please wait"));
@@ -597,7 +597,7 @@ Ext.define("Ung.Node", {
             this.settingsWin=Ext.create(this.settingsClassName, {
                 name: this.name,
                 nodeId: this.nodeId,
-                nodeProperties: this.nodeProperties,
+                appProperties: this.appProperties,
                 displayName: this.displayName,
                 helpSource: this.helpSource,
                 rpcNode: this.rpcNode,
@@ -607,7 +607,7 @@ Ext.define("Ung.Node", {
             this.settingsWin = Ext.create('Ung.NodeWin',{
                 name: this.name,
                 nodeId: this.nodeId,
-                nodeProperties: this.nodeProperties,
+                appProperties: this.appProperties,
                 displayName: this.displayName,
                 helpSource: this.helpSource,
                 rpcNode: this.rpcNode,
@@ -634,7 +634,7 @@ Ext.define("Ung.Node", {
             this.getEl().mask();
             this.getEl().fadeOut({ opacity: 0.1, duration: 2500, remove: false, useDisplay:false});
         }
-        rpc.nodeManager.destroy(Ext.bind(function(result, exception) {
+        rpc.appManager.destroy(Ext.bind(function(result, exception) {
             if(Ung.Util.handleException(exception, Ext.bind(function() {
                 if(this.getEl()) {
                     this.getEl().unmask();

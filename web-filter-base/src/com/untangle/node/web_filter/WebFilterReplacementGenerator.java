@@ -8,21 +8,21 @@ import java.net.InetAddress;
 import com.untangle.node.web_filter.WebFilterBlockDetails;
 import com.untangle.node.web_filter.WebFilterReplacementGenerator;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.node.NodeSettings;
+import com.untangle.uvm.node.AppSettings;
 
 /**
  * ReplacementGenerator for Web Filter.
  */
 public class WebFilterReplacementGenerator extends WebFilterBaseReplacementGenerator
 {
-    public WebFilterReplacementGenerator(NodeSettings nodeSettings)
+    public WebFilterReplacementGenerator(AppSettings appSettings)
     {
-        super(nodeSettings);
+        super(appSettings);
     }
 
     @Override
-    protected String getRedirectUrl(String nonce, String host, NodeSettings nodeSettings)
+    protected String getRedirectUrl(String nonce, String host, AppSettings appSettings)
     {
-        return "http://" + host + "/web-filter/blockpage?nonce=" + nonce + "&appid=" + nodeSettings.getId();
+        return "http://" + host + "/web-filter/blockpage?nonce=" + nonce + "&appid=" + appSettings.getId();
     }
 }

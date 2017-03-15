@@ -248,7 +248,7 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
             logger.debug(" ----------------BLOCKED: " + domain + " traffic----------------");
             logger.debug("TCP: " + sess.getClientAddr().getHostAddress() + ":" + sess.getClientPort() + " -> " + sess.getServerAddr().getHostAddress() + ":" + sess.getServerPort());
 
-            WebFilterSSLEngine engine = new WebFilterSSLEngine(sess, nonce, node.getNodeSettings().getId().toString());
+            WebFilterSSLEngine engine = new WebFilterSSLEngine(sess, nonce, node.getAppSettings().getId().toString());
             sess.globalAttach(NodeSession.KEY_WEB_FILTER_SSL_ENGINE, engine);
             engine.handleClientData(buff);
             return;

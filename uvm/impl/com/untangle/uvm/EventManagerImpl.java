@@ -12,7 +12,7 @@ import com.untangle.uvm.event.SyslogRule;
 import com.untangle.uvm.event.EventRuleCondition;
 import com.untangle.uvm.event.EventRuleConditionField;
 import com.untangle.uvm.node.Node;
-import com.untangle.uvm.node.NodeSettings;
+import com.untangle.uvm.node.AppSettings;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.SyslogManagerImpl;

@@ -2,7 +2,7 @@
 
 import sys
 
-reportsApp = uvm.nodeManager().node("reports");
+reportsApp = uvm.appManager().app("reports");
 try:
     reportsApp.runFixedReport()
 except:

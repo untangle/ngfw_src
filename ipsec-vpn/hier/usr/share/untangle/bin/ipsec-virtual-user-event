@@ -21,7 +21,7 @@ if (len(sys.argv) < 6):
 uvmContext = Uvm().getUvmContext()
 
 # now we get the IPsec node instance
-ipsecNode = uvmContext.nodeManager().node("ipsec-vpn")
+ipsecNode = uvmContext.appManager().app("ipsec-vpn")
 
 # if we can't find the node then throw an exception
 if (ipsecNode == None):

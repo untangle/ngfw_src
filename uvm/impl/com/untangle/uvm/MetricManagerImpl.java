@@ -30,9 +30,9 @@ import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.node.Node;
-import com.untangle.uvm.node.NodeManager;
+import com.untangle.uvm.node.AppManager;
 import com.untangle.uvm.node.SessionTuple;
-import com.untangle.uvm.node.NodeSettings;
+import com.untangle.uvm.node.AppSettings;
 import com.untangle.uvm.node.NodeMetric;
 import com.untangle.uvm.util.Pulse;
 
@@ -81,8 +81,8 @@ public class MetricManagerImpl implements MetricManager
     {
         List<Long> nodeIds = new LinkedList<Long>();
 
-        for ( Node node : UvmContextImpl.getInstance().nodeManager().nodeInstances() ) {
-            nodeIds.add( node.getNodeSettings().getId() );
+        for ( Node node : UvmContextImpl.getInstance().appManager().appInstances() ) {
+            nodeIds.add( node.getAppSettings().getId() );
         }
 
         org.json.JSONObject json = new org.json.JSONObject();
@@ -110,7 +110,7 @@ public class MetricManagerImpl implements MetricManager
 
     public List<NodeMetric> getMetrics( Long nodeId )
     {
-        Node node = UvmContextFactory.context().nodeManager().node( nodeId );
+        Node node = UvmContextFactory.context().appManager().app( nodeId );
         if (node != null)
             return node.getMetrics();
         else {

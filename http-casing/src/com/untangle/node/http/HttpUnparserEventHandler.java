@@ -36,7 +36,7 @@ public class HttpUnparserEventHandler extends AbstractEventHandler
     private static final int CONTENT_LENGTH_ENCODING = 1;
     private static final int CHUNKED_ENCODING = 2;
 
-    private final HttpNodeImpl node;
+    private final HttpImpl node;
     private final boolean clientSide;
     
     // used to keep request with header
@@ -47,7 +47,7 @@ public class HttpUnparserEventHandler extends AbstractEventHandler
         protected int transferEncoding;
     }
 
-    public HttpUnparserEventHandler( boolean clientSide, HttpNodeImpl node )
+    public HttpUnparserEventHandler( boolean clientSide, HttpImpl node )
     {
         this.clientSide = clientSide;
         this.node = node;

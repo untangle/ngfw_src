@@ -10,7 +10,7 @@ import org.jabsorb.JSONSerializer;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.LoggingManager;
 import com.untangle.uvm.node.LicenseManager;
-import com.untangle.uvm.node.NodeManager;
+import com.untangle.uvm.node.AppManager;
 import com.untangle.uvm.servlet.ServletFileManager;
 import com.untangle.uvm.vnet.PipelineFoundry;
 
@@ -20,11 +20,12 @@ import com.untangle.uvm.vnet.PipelineFoundry;
 public interface UvmContext
 {
     /**
-     * Get the <code>NodeManager</code> singleton.
+     * Get the <code>AppManager</code> singleton.
      *
-     * @return the NodeManager.
+     * @return the AppManager.
      */
-    NodeManager nodeManager();
+    AppManager appManager();
+    AppManager nodeManager(); /* DEPRECATED - use appManager() */
 
     /**
      * Get the <code>LoggingManager</code> singleton.

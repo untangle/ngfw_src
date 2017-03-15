@@ -70,7 +70,7 @@ Ext.define('Webui.config.system', {
     getHttpNode: function(forceReload) {
         if (forceReload || this.rpc.httpNode === undefined) {
             try {
-                this.rpc.httpNode = rpc.nodeManager.node("http");
+                this.rpc.httpNode = rpc.appManager.node("http");
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
@@ -95,7 +95,7 @@ Ext.define('Webui.config.system', {
     getFtpNode: function(forceReload) {
         if (forceReload || this.rpc.ftpNode === undefined) {
             try {
-                this.rpc.ftpNode = rpc.nodeManager.node("ftp");
+                this.rpc.ftpNode = rpc.appManager.node("ftp");
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
@@ -119,7 +119,7 @@ Ext.define('Webui.config.system', {
     getSmtpNode: function(forceReload) {
         if (forceReload || this.rpc.smtpNode === undefined) {
             try {
-                this.rpc.smtpNode = rpc.nodeManager.node("smtp");
+                this.rpc.smtpNode = rpc.appManager.node("smtp");
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
@@ -129,10 +129,10 @@ Ext.define('Webui.config.system', {
     isMailLoaded: function(forceReload) {
         return this.getSmtpNode(forceReload) !== null;
     },
-    getSmtpNodeSettings: function(forceReload) {
+    getSmtpSettings: function(forceReload) {
         if (forceReload || this.rpc.mailSettings === undefined) {
             try {
-                this.rpc.mailSettings = this.getSmtpNode(forceReload).getSmtpNodeSettings();
+                this.rpc.mailSettings = this.getSmtpNode(forceReload).getSmtpSettings();
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
@@ -142,7 +142,7 @@ Ext.define('Webui.config.system', {
     getShieldNode: function(forceReload) {
         if (forceReload || this.rpc.shieldNode === undefined) {
             try {
-                this.rpc.shieldNode = rpc.nodeManager.node("shield");
+                this.rpc.shieldNode = rpc.appManager.node("shield");
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
@@ -570,11 +570,11 @@ Ext.define('Webui.config.system', {
                     boxLabel: i18n._("Enable processing of SMTP traffic.  (This is the default setting)"),
                     hideLabel: true,
                     name: "SMTP",
-                    checked: this.getSmtpNodeSettings().smtpEnabled,
+                    checked: this.getSmtpSettings().smtpEnabled,
                     listeners: {
                         "change": {
                             fn: Ext.bind(function(elem, checked) {
-                                this.getSmtpNodeSettings().smtpEnabled = checked;
+                                this.getSmtpSettings().smtpEnabled = checked;
                             }, this)
                         }
                     }
@@ -583,11 +583,11 @@ Ext.define('Webui.config.system', {
                     boxLabel: i18n._("Disable processing of SMTP traffic."),
                     hideLabel: true,
                     name: "SMTP",
-                    checked: !this.getSmtpNodeSettings().smtpEnabled,
+                    checked: !this.getSmtpSettings().smtpEnabled,
                     listeners: {
                         "change": {
                             fn: Ext.bind(function(elem, checked) {
-                                this.getSmtpNodeSettings().smtpEnabled = !checked;
+                                this.getSmtpSettings().smtpEnabled = !checked;
                             }, this)
                         }
                     }
@@ -597,7 +597,7 @@ Ext.define('Webui.config.system', {
                     fieldLabel : i18n._("SMTP timeout (seconds)"),
                     name : "SMTP timeout",
                     id: "system_protocolSettings_smtpTimeout",
-                    value : this.getSmtpNodeSettings().smtpTimeout/1000,
+                    value : this.getSmtpSettings().smtpTimeout/1000,
                     width: 250,
                     allowDecimals: false,
                     allowNegative: false,
@@ -606,7 +606,7 @@ Ext.define('Webui.config.system', {
                     listeners : {
                         "change" : {
                             fn : Ext.bind(function(elem, newValue) {
-                                this.getSmtpNodeSettings().smtpTimeout = newValue*1000;
+                                this.getSmtpSettings().smtpTimeout = newValue*1000;
                             }, this)
                         }
                     }
@@ -616,11 +616,11 @@ Ext.define('Webui.config.system', {
                     boxLabel : i18n._("Allow TLS encryption over SMTP."),
                     hideLabel : true,
                     name : "AllowTLS",
-                    checked : this.getSmtpNodeSettings().smtpAllowTLS,
+                    checked : this.getSmtpSettings().smtpAllowTLS,
                     listeners : {
                         "check" : {
                             fn : Ext.bind(function(elem, checked) {
-                                this.getSmtpNodeSettings().smtpAllowTLS = checked;
+                                this.getSmtpSettings().smtpAllowTLS = checked;
                             }, this)
                         }
                     }
@@ -630,11 +630,11 @@ Ext.define('Webui.config.system', {
                     boxLabel : i18n._("Stop TLS encryption over SMTP."),
                     hideLabel : true,
                     name : "AllowTLS",
-                    checked : !this.getSmtpNodeSettings().smtpAllowTLS,
+                    checked : !this.getSmtpSettings().smtpAllowTLS,
                     listeners : {
                         "check" : {
                             fn : Ext.bind(function(elem, checked) {
-                                this.getSmtpNodeSettings().smtpAllowTLS = !checked;
+                                this.getSmtpSettings().smtpAllowTLS = !checked;
                             }, this)
                         }
                     }
@@ -1397,9 +1397,9 @@ Ext.define('Webui.config.system', {
 
         // save mail settings
         if (this.isMailLoaded()) {
-            this.getSmtpNode().setSmtpNodeSettings(Ext.bind(function(result, exception) {
+            this.getSmtpNode().setSmtpSettings(Ext.bind(function(result, exception) {
                 this.afterSave(exception, isApply);
-            }, this), this.getSmtpNodeSettings());
+            }, this), this.getSmtpSettings());
         } else {
             this.saveSemaphore--;
         }

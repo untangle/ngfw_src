@@ -18,8 +18,8 @@ import javax.mail.internet.InternetAddress;
 import org.apache.log4j.Logger;
 
 import com.untangle.node.smtp.GlobEmailAddressMapper;
-import com.untangle.node.smtp.SmtpNodeImpl;
-import com.untangle.node.smtp.SmtpNodeSettings;
+import com.untangle.node.smtp.SmtpImpl;
+import com.untangle.node.smtp.SmtpSettings;
 import com.untangle.node.smtp.quarantine.Quarantine;
 
 /**
@@ -30,8 +30,8 @@ public class SafelistManager implements SafelistAdminView, SafelistNodeView
     private final Logger m_logger = Logger.getLogger(SafelistManager.class);
     private final Quarantine quarantine;
 
-    private SmtpNodeImpl mlImpl;
-    private SmtpNodeSettings mlSettings;
+    private SmtpImpl mlImpl;
+    private SmtpSettings mlSettings;
 
     // caches of values
     private Map<String, List<String>> m_sndrsByRcpnt = new HashMap<String, List<String>>();
@@ -45,7 +45,7 @@ public class SafelistManager implements SafelistAdminView, SafelistNodeView
     /**
      * The Safelist manager "cheats" and lets the MailTranformImpl maintain the persistence for settings
      */
-    public void setSettings(SmtpNodeImpl mlImpl, SmtpNodeSettings mlSettings)
+    public void setSettings(SmtpImpl mlImpl, SmtpSettings mlSettings)
     {
         this.mlImpl = mlImpl;
         this.mlSettings = mlSettings;
@@ -525,7 +525,7 @@ public class SafelistManager implements SafelistAdminView, SafelistNodeView
 
         mlSettings.setSafelistSettings(safelists);
 
-        mlImpl.setSmtpNodeSettings(mlSettings);
+        mlImpl.setSmtpSettings(mlSettings);
 
         return;
     }

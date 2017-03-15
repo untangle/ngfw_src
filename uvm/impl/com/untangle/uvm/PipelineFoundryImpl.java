@@ -21,7 +21,7 @@ import org.apache.log4j.Logger;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.node.SessionTuple;
 import com.untangle.uvm.node.Node;
-import com.untangle.uvm.node.NodeSettings;
+import com.untangle.uvm.node.AppSettings;
 import com.untangle.uvm.node.PolicyManager;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Subscription;
@@ -316,7 +316,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
             /**
              * If this pipelineConnector is not on this policy, skip it
              */
-            if ( ! policyMatch( pipelineConnector.getNode().getNodeSettings().getPolicyId(), policyId) )
+            if ( ! policyMatch( pipelineConnector.getNode().getAppSettings().getPolicyId(), policyId) )
                 continue;
             
 
@@ -386,10 +386,10 @@ public class PipelineFoundryImpl implements PipelineFoundry
         Map<PipelineConnectorImpl, Integer> fittingDistance = new HashMap<PipelineConnectorImpl, Integer>();
 
         List<String> enabledNodesInPolicy = new LinkedList<String>();
-        List<Node> nodesInPolicy = UvmContextFactory.context().nodeManager().nodeInstances( policyId );
+        List<Node> nodesInPolicy = UvmContextFactory.context().appManager().appInstances( policyId );
         for (Node node : nodesInPolicy) {
-            if (node.getRunState() == NodeSettings.NodeState.RUNNING)
-                enabledNodesInPolicy.add(node.getNodeProperties().getName());
+            if (node.getRunState() == AppSettings.AppState.RUNNING)
+                enabledNodesInPolicy.add(node.getAppProperties().getName());
         }
 
         /**
@@ -409,13 +409,13 @@ public class PipelineFoundryImpl implements PipelineFoundry
         for (Iterator<PipelineConnectorImpl> i = acList.iterator(); i.hasNext();) {
             PipelineConnectorImpl pipelineConnector = i.next();
 
-            Integer nodePolicyId = pipelineConnector.node().getNodeSettings().getPolicyId();
+            Integer nodePolicyId = pipelineConnector.node().getAppSettings().getPolicyId();
 
             if (nodePolicyId == null) {
                 continue;
             }
 
-            String nodeName = pipelineConnector.node().getNodeProperties().getName();
+            String nodeName = pipelineConnector.node().getAppProperties().getName();
 
             /**
              * Remove the items that are not enabled in this policy
@@ -462,14 +462,14 @@ public class PipelineFoundryImpl implements PipelineFoundry
         for (Iterator<PipelineConnectorImpl> i = acList.iterator(); i.hasNext();) {
             PipelineConnectorImpl pipelineConnector = i.next();
 
-            Integer nodePolicyId = pipelineConnector.node().getNodeSettings().getPolicyId();
+            Integer nodePolicyId = pipelineConnector.node().getAppSettings().getPolicyId();
 
             /* Keep items in the NULL Racks */
             if (nodePolicyId == null) {
                 continue;
             }
 
-            String nodeName = pipelineConnector.node().getNodeProperties().getName();
+            String nodeName = pipelineConnector.node().getAppProperties().getName();
 
             Integer n = numParents.get(nodeName);
 
@@ -504,7 +504,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
      */
     public int getPolicyGenerationDiff(Integer childId, Integer parentId)
     {
-        PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().nodeManager().node("policy-manager");
+        PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().appManager().app("policy-manager");
 
         if ( policyManager != null )
             return policyManager.getPolicyGenerationDiff( childId, parentId );
@@ -528,7 +528,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
      */
     private boolean policyMatch( Integer nodePolicy, Integer policyId )
     {
-        PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().nodeManager().node("policy-manager");
+        PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().appManager().app("policy-manager");
 
         /**
          * If nodePolicy is null its a service so it matches all policies
