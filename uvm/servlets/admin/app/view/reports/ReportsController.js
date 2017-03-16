@@ -25,25 +25,24 @@ Ext.define('Ung.view.reports.ReportsController', {
             { categoryName: 'Devices', type: 'system', url: 'devices', displayName: 'Devices'.t(), icon: '/skins/modern-rack/images/admin/config/icon_config_devices.png' },
             { categoryName: 'Network', type: 'system', url: 'network', displayName: 'Network'.t(), icon: '/skins/modern-rack/images/admin/config/icon_config_network.png' },
             { categoryName: 'Administration', type: 'system', url: 'administration', displayName: 'Administration'.t(), icon: '/skins/modern-rack/images/admin/config/icon_config_admin.png' },
-            { categoryName: 'System', type: 'system', url: 'system', displayName: 'System'.t(), icon: '/skins/modern-rack/images/admin/config/icon_config_system.png' },
-            { categoryName: 'Shield', type: 'system', url: 'shield', displayName: 'Shield'.t(), icon: '/skins/modern-rack/images/admin/apps/untangle-app-shield_17x17.png' }
+            { categoryName: 'System', type: 'system', url: 'system', displayName: 'System'.t(), icon: '/skins/modern-rack/images/admin/config/icon_config_system.png' }
         ];
 
         try {
-            rpc.reportsManager = rpc.appManager.app('untangle-app-reports').getReportsManager();
+            rpc.reportsManager = rpc.appManager.app('reports').getReportsManager();
         } catch (ex) {
-            // console.log(ex);
+            console.log(ex);
             return;
         }
 
         Rpc.asyncData('rpc.reportsManager.getCurrentApplications').then(function (result) {
             for (i = 0; i < result.list.length; i += 1) {
                 app = result.list[i];
-                if (app.name !== 'untangle-app-branding-manager' && app.name !== 'untangle-app-live-support') {
+                if (app.name !== 'branding-manager' && app.name !== 'live-support') {
                     categories.push({
                         categoryName: app.displayName,
                         type: 'app',
-                        url: app.name.replace('untangle-app-', '').replace('untangle-casing-', ''),
+                        url: app.name,
                         displayName: app.displayName, // t()
                         icon: '/skins/modern-rack/images/admin/apps/' + app.name + '_80x80.png'
                     });
@@ -52,6 +51,11 @@ Ext.define('Ung.view.reports.ReportsController', {
             Ext.getStore('categories').loadData(categories);
             vm.set('category', categGrid.getStore().findRecord('categoryName', vm.get('categoryName')));
         });
+
+        // Rpc.asyncData('rpc.reportsManager.getConditionQuickAddHints').then(function (result) {
+        //     console.log(result);
+        // });
+
 
         vm.bind('{categoryName}', function (categoryName) {
             var categStore = me.lookupReference('categories').getStore();

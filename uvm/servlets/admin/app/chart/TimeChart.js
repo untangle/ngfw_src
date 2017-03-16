@@ -10,8 +10,10 @@ Ext.define('Ung.chart.TimeChart', {
     viewModel: true,
 
     config: {
-        widget: null,
+        isWidget: false,
     },
+
+    bodyBorder: false,
 
     listeners: {
         afterrender: 'onAfterRender',

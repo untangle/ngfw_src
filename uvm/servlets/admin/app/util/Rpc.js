@@ -60,7 +60,7 @@ Ext.define('Ung.util.Rpc', {
             method = ns.pop(),
             context = window;
 
-        ns.forEach(function(part) { console.log(part); context = context[part]; });
+        ns.forEach(function(part) { context = context[part]; });
 
         if (!context.hasOwnProperty(method) || !Ext.isFunction(context[method])) {
             console.error('Error: No such RPC method: \'' + expression + '\'');

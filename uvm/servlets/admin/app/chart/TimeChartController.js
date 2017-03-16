@@ -41,15 +41,28 @@ Ext.define('Ung.chart.TimeChartController', {
     fetchData: function () {
         var me = this, vm = this.getViewModel();
         if (!vm.get('entry')) { return; }
-        me.getView().setLoading(true);
+        if (me.chart) {
+            me.chart.showLoading('<i class="fa fa-spinner fa-spin fa-2x fa-fw"></i>');
+        } else {
+            me.getView().setLoading(true);
+        }
         Rpc.asyncData('rpc.reportsManager.getDataForReportEntry',
                         vm.get('entry').getData(),
                         vm.get('startDate'),
                         vm.get('tillNow') ? null : vm.get('endDate'), -1)
             .then(function(result) {
-                me.getView().setLoading(false);
+                if (me.chart) {
+                    me.chart.hideLoading();
+                } else {
+                    me.getView().setLoading(false);
+                }
+
                 me.data = result.list;
                 me.setSeries();
+
+                if (me.getView().up('reports-entry')) {
+                    me.getView().up('reports-entry').getController().setCurrentData(result.list);
+                }
             });
     },
 
@@ -101,6 +114,7 @@ Ext.define('Ung.chart.TimeChartController', {
             series.forEach(function (serie) {
                 me.chart.addSeries(serie, false, false);
             });
+            me.setStyles();
             me.chart.redraw();
         }
 
@@ -115,13 +129,13 @@ Ext.define('Ung.chart.TimeChartController', {
         var me = this, entry = this.getViewModel().get('entry'),
             isStacked = entry.get('timeStyle').indexOf('STACKED') >= 0,
             isOverlapped = entry.get('timeStyle').indexOf('OVERLAPPED') >= 0,
-            colors = entry.get('colors') || Util.defaultColors;
+            colors = Ext.clone(entry.get('colors')) || Ext.clone(Util.defaultColors);
 
-        // if (colors && isOverlapped) {
-        //     for (var i = 0; i < colors.length; i += 1) {
-        //         colors[i] = new Highcharts.Color(colors[i]).setOpacity(0.75).get('rgba');
-        //     }
-        // }
+        if (colors) {
+            for (var i = 0; i < colors.length; i += 1) {
+                colors[i] = isOverlapped ? new Highcharts.Color(colors[i]).setOpacity(0.5).get('rgba') : colors[i];
+            }
+        }
 
         me.chart.update({
             chart: {
@@ -130,14 +144,32 @@ Ext.define('Ung.chart.TimeChartController', {
             colors: colors,
             plotOptions: {
                 series: {
-                    fillOpacity: isStacked ? 0.8 : 0.3,
                     stacking: isStacked ? 'normal' : undefined,
                     dataGrouping: {
                         approximation: entry.get('approximation') || 'sum'
                     }
                 },
+                spline: {
+                    dataGrouping: {
+                        groupPixelWidth: 16
+                    },
+                },
+                areaspline: {
+                    fillOpacity: 0.3,
+                    dataGrouping: {
+                        groupPixelWidth: 16
+                    },
+                },
                 column: {
-                    grouping: !isOverlapped
+                    shadow: !isOverlapped,
+                    grouping: !isOverlapped,
+                    groupPadding: 0.15,
+                    dataGrouping: {
+                        groupPixelWidth: isStacked ? 50 : 80
+                    },
+                    tooltip: {
+                        enabled: false
+                    }
                 }
             }
         });
@@ -145,7 +177,7 @@ Ext.define('Ung.chart.TimeChartController', {
         if (entry.get('timeStyle') === 'BAR_OVERLAPPED' || entry.get('timeStyle') === 'BAR_3D_OVERLAPPED') {
             Ext.Array.each(me.chart.series, function (serie, idx) {
                 serie.update({
-                    pointPadding: (me.chart.series.length <= 3 ? 0.12 : 0.075) * (idx + 1)
+                    pointPadding: (me.chart.series.length <= 3 ? 0.1 : 0.075) * idx
                 }, false);
             });
             me.chart.redraw();
@@ -160,7 +192,7 @@ Ext.define('Ung.chart.TimeChartController', {
     },
 
     buildChart: function (series) {
-        var me = this, entry = me.getViewModel().get('entry');
+        var me = this, entry = me.getViewModel().get('entry'), isWidget = me.getView().getIsWidget();
 
         me.chart = new Highcharts.StockChart({
             chart: {
@@ -168,7 +200,7 @@ Ext.define('Ung.chart.TimeChartController', {
                 zoomType: 'x',
                 renderTo: me.getView().lookupReference('timechart').getEl().dom,
                 animation: false,
-                // marginBottom: 10,
+                // marginBottom: isWidget ? 0 : 10,
                 marginTop: 10,
                 //marginRight: 0,
                 //marginLeft: 0,
@@ -201,7 +233,8 @@ Ext.define('Ung.chart.TimeChartController', {
                 inputEnabled: false
             },
             scrollbar: {
-                enabled: true
+                enabled: false
+                // enabled: !isWidget // disabled if is widget
             },
             credits: {
                 enabled: false
@@ -307,6 +340,7 @@ Ext.define('Ung.chart.TimeChartController', {
                 enabled: true,
                 padding: 5,
                 margin: 0,
+                y: isWidget ? 15 : 0,
                 lineHeight: 12,
                 itemDistance: 10,
                 itemStyle: {
@@ -326,10 +360,7 @@ Ext.define('Ung.chart.TimeChartController', {
                 padding: 5,
                 // shared: false,
                 hideDelay: 0,
-                // style: {
-                //     fontFamily: 'Source Sans Pro',
-                //     fontSize: '12px'
-                // }
+                pointFormat: '<span style="color: {point.color}">\u25CF</span> <strong>{series.name}</strong>: {point.y}<br/>',
                 // useHTML: true,
                 // headerFormat: '<span style="font-size: 11px; line-height: 1.5; font-weight: bold;">{point.key}</span><br/>',
                 // pointFormatter: function () {
@@ -346,11 +377,9 @@ Ext.define('Ung.chart.TimeChartController', {
                 column: {
                     // edgeWidth: 0,
                     // borderWidth: 0,
-                    pointPadding: 0,
+                    // pointPadding: 0,
                     // groupPadding: 0.2,
-                    dataGrouping: {
-                        // groupPixelWidth: 40
-                    },
+                    borderWidth: 1,
                     pointPlacement: 'on',
                     dataLabels: {
                         enabled: false,
