@@ -17,12 +17,12 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.MDC;
 
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.node.App;
-import com.untangle.uvm.node.AppProperties;
-import com.untangle.uvm.node.AppManager;
-import com.untangle.uvm.node.AppMetric;
+import com.untangle.uvm.app.App;
+import com.untangle.uvm.app.AppProperties;
+import com.untangle.uvm.app.AppManager;
+import com.untangle.uvm.app.AppMetric;
 import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.node.AppBase;
+import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.vnet.AppUDPSession;

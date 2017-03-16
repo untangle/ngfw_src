@@ -26,7 +26,7 @@ Ext.define('Ung.apps.webcache.view.CacheBypass', {
     emptyRow: {
         live: true,
         hostname: '',
-        javaClass: 'com.untangle.node.web_cache.WebCacheRule'
+        javaClass: 'com.untangle.app.web_cache.WebCacheRule'
     },
 
     bind: '{rules}',

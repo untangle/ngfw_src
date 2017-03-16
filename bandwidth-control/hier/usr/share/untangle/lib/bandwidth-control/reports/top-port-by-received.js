@@ -4,7 +4,7 @@
     "description": "The sum of the data received grouped by server port.",
     "displayOrder": 502,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",
     "orderDesc": true,
     "units": "MB",

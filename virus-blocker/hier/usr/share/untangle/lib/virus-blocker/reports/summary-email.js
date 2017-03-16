@@ -4,7 +4,7 @@
     "description": "A summary of virus blocking actions for Email activity.",
     "displayOrder": 3,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "textColumns": [
         "sum(case when virus_blocker_clean is not null then 1 else 0 end) as scanned",
         "sum(case when virus_blocker_clean is false then 1 else 0 end) as blocked"
@@ -12,7 +12,7 @@
     "conditions": [
         {
             "column": "addr_kind",
-            "javaClass": "com.untangle.node.reports.SqlCondition",
+            "javaClass": "com.untangle.app.reports.SqlCondition",
             "operator": "=",
             "value": "B"
         }

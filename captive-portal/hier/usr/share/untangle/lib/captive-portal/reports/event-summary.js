@@ -4,7 +4,7 @@
     "description": "A summary of Captive Portal activity.",
     "displayOrder": 100,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",
     "orderDesc": true,
     "units": "hits",

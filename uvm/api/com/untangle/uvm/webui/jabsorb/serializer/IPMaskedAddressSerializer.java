@@ -9,7 +9,7 @@ import org.jabsorb.serializer.ObjectMatch;
 import org.jabsorb.serializer.SerializerState;
 import org.jabsorb.serializer.UnmarshallException;
 
-import com.untangle.uvm.node.IPMaskedAddress;
+import com.untangle.uvm.app.IPMaskedAddress;
 
 @SuppressWarnings({"serial","unchecked","rawtypes"})
 public class IPMaskedAddressSerializer extends AbstractSerializer

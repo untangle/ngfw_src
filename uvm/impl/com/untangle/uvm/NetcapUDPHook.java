@@ -16,7 +16,7 @@ import com.untangle.jvector.Sink;
 import com.untangle.jvector.Source;
 import com.untangle.jvector.UDPSink;
 import com.untangle.jvector.UDPSource;
-import com.untangle.uvm.node.SessionEvent;
+import com.untangle.uvm.app.SessionEvent;
 import com.untangle.uvm.vnet.AppUDPSession;
 
 public class NetcapUDPHook implements NetcapCallback

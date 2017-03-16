@@ -24,7 +24,7 @@ def create_rule_single_condition( conditionType, value, blocked=True, flagged=Tr
     conditionTypeStr = str(conditionType)
     valueStr = str(value)
     return {
-        "javaClass": "com.untangle.node.firewall.FirewallRule",
+        "javaClass": "com.untangle.app.firewall.FirewallRule",
         "id": 1,
         "enabled": True,
         "description": "Single Matcher: " + conditionTypeStr + " = " + valueStr,
@@ -35,7 +35,7 @@ def create_rule_single_condition( conditionType, value, blocked=True, flagged=Tr
             "list": [
                 {
                     "invert": invert,
-                    "javaClass": "com.untangle.node.firewall.FirewallRuleCondition",
+                    "javaClass": "com.untangle.app.firewall.FirewallRuleCondition",
                     "conditionType": conditionTypeStr,
                     "value": valueStr
                     }
@@ -49,7 +49,7 @@ def create_rule_dual_condition( conditionType, value, conditionType2, value2, bl
     conditionTypeStr2 = str(conditionType2)
     valueStr2 = str(value2)
     return {
-        "javaClass": "com.untangle.node.firewall.FirewallRule",
+        "javaClass": "com.untangle.app.firewall.FirewallRule",
         "id": 1,
         "enabled": True,
         "description": "Dual Matcher: " + conditionTypeStr + " = " + valueStr + " && " + conditionTypeStr2 + " = " + valueStr2,
@@ -60,13 +60,13 @@ def create_rule_dual_condition( conditionType, value, conditionType2, value2, bl
             "list": [
                 {
                     "invert": invert,
-                    "javaClass": "com.untangle.node.firewall.FirewallRuleCondition",
+                    "javaClass": "com.untangle.app.firewall.FirewallRuleCondition",
                     "conditionType": conditionTypeStr,
                     "value": valueStr
                     },
                 {
                     "invert": invert,
-                    "javaClass": "com.untangle.node.firewall.FirewallRuleCondition",
+                    "javaClass": "com.untangle.app.firewall.FirewallRuleCondition",
                     "conditionType": conditionTypeStr2,
                     "value": valueStr2
                     }

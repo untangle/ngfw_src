@@ -9,8 +9,8 @@ import org.jabsorb.JSONSerializer;
 
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.LoggingManager;
-import com.untangle.uvm.node.LicenseManager;
-import com.untangle.uvm.node.AppManager;
+import com.untangle.uvm.app.LicenseManager;
+import com.untangle.uvm.app.AppManager;
 import com.untangle.uvm.servlet.ServletFileManager;
 import com.untangle.uvm.vnet.PipelineFoundry;
 

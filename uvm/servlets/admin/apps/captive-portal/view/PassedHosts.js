@@ -27,7 +27,7 @@ Ext.define('Ung.apps.captiveportal.view.PassedHosts', {
             log: false,
             address: '0.0.0.0',
             description: '',
-            javaClass: 'com.untangle.node.captive_portal.PassedAddress'
+            javaClass: 'com.untangle.app.captive_portal.PassedAddress'
         },
         columns: [
             Column.live,{

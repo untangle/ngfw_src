@@ -49,7 +49,7 @@ Ext.define('Webui.application-control-lite.settings', {
             helpSource: 'application_control_lite_signatures',
             title: i18n._("Signatures"),
             dataProperty: "patterns",
-            recordJavaClass: "com.untangle.node.application_control_lite.ApplicationControlLitePattern",
+            recordJavaClass: "com.untangle.app.application_control_lite.ApplicationControlLitePattern",
             emptyRow: {
                 "protocol": "",
                 "category": "",

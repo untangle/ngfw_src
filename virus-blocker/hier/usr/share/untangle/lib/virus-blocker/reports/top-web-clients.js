@@ -4,7 +4,7 @@
     "description": "The top web clients by blocked virus count.",
     "displayOrder": 105,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",
     "orderDesc": true,
     "units": "hits",
@@ -13,7 +13,7 @@
     "conditions": [
         {
             "column": "virus_blocker_clean",
-            "javaClass": "com.untangle.node.reports.SqlCondition",
+            "javaClass": "com.untangle.app.reports.SqlCondition",
             "operator": "=",
             "value": "false"
         }

@@ -4,7 +4,7 @@
     "description": "The number of intrusions blocked by destination IP address.",
     "displayOrder": 702,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",
     "orderDesc": true,
     "units": "hits",
@@ -12,7 +12,7 @@
     "pieSumColumn": "count(*)",
     "conditions": [{
         "column": "blocked",
-        "javaClass": "com.untangle.node.reports.SqlCondition",
+        "javaClass": "com.untangle.app.reports.SqlCondition",
         "operator": "=",
         "value": "true"
     }],

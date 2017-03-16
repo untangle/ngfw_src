@@ -22,7 +22,7 @@ Ext.define('Ung.apps.firewall.view.Rules', {
     recordActions: ['edit', 'delete', 'reorder'],
 
     listProperty: 'settings.rules.list',
-    ruleJavaClass: 'com.untangle.node.firewall.FirewallRuleCondition',
+    ruleJavaClass: 'com.untangle.app.firewall.FirewallRuleCondition',
 
 
     emptyRow: {
@@ -35,7 +35,7 @@ Ext.define('Ung.apps.firewall.view.Rules', {
             javaClass: 'java.util.LinkedList',
             list: []
         },
-        javaClass: 'com.untangle.node.firewall.FirewallRule'
+        javaClass: 'com.untangle.app.firewall.FirewallRule'
     },
 
     bind: '{rules}',

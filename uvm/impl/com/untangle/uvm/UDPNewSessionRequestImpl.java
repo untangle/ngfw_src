@@ -4,7 +4,7 @@
 package com.untangle.uvm;
 
 import com.untangle.jnetcap.NetcapUDPSession;
-import com.untangle.uvm.node.SessionEvent;
+import com.untangle.uvm.app.SessionEvent;
 import com.untangle.uvm.vnet.AppUDPSession;
 import com.untangle.uvm.vnet.UDPNewSessionRequest;
 

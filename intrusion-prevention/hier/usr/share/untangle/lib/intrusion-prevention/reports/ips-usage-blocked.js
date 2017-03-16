@@ -4,7 +4,7 @@
     "description": "The amount of blocked intrusions over time.",
     "displayOrder": 102,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderDesc": false,
     "units": "hits",
     "readOnly": true,

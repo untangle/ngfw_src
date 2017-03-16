@@ -4,7 +4,7 @@
     "description": "The top blocked sessions by host.",
     "displayOrder": 400,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",
     "orderDesc": true,
     "units": "sessions",
@@ -14,7 +14,7 @@
     "table": "sessions",
     "conditions": [
         {
-            "javaClass": "com.untangle.node.reports.SqlCondition",
+            "javaClass": "com.untangle.app.reports.SqlCondition",
             "column": "application_control_lite_blocked",
             "operator": "=",
             "value": "TRUE"

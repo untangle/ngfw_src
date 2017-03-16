@@ -4,7 +4,7 @@
     "description": "The amount of active hosts by time.",
     "displayOrder": 100,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderDesc": false,
     "units": "hosts",
     "readOnly": true,

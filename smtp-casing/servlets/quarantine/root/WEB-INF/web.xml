@@ -9,25 +9,25 @@
 
   <servlet>
     <servlet-name>QuarantineMain</servlet-name>
-    <servlet-class>com.untangle.node.smtp.web.euv.QuarantineEnduserServlet</servlet-class>
+    <servlet-class>com.untangle.app.smtp.web.euv.QuarantineEnduserServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
 
   <servlet>
     <servlet-name>InboxMaintenenceServlet</servlet-name>
-    <servlet-class>com.untangle.node.smtp.web.euv.InboxMaintenenceServlet</servlet-class>
+    <servlet-class>com.untangle.app.smtp.web.euv.InboxMaintenenceServlet</servlet-class>
     <load-on-startup>2</load-on-startup>
   </servlet>
 
   <servlet>
     <servlet-name>RequestServlet</servlet-name>
-    <servlet-class>com.untangle.node.smtp.web.euv.RequestServlet</servlet-class>
+    <servlet-class>com.untangle.app.smtp.web.euv.RequestServlet</servlet-class>
     <load-on-startup>2</load-on-startup>
   </servlet>
 
   <servlet>
     <servlet-name>JSONRPCServlet</servlet-name>
-    <servlet-class>com.untangle.node.smtp.web.euv.UtJsonRpcServlet</servlet-class>
+    <servlet-class>com.untangle.app.smtp.web.euv.UtJsonRpcServlet</servlet-class>
     <init-param>
       <param-name>gzip_threshold</param-name>
       <param-value>200</param-value>
@@ -36,7 +36,7 @@
   
   <servlet>
     <servlet-name>I18NServlet</servlet-name>
-    <servlet-class>com.untangle.node.smtp.web.euv.I18NServlet</servlet-class>
+    <servlet-class>com.untangle.app.smtp.web.euv.I18NServlet</servlet-class>
   </servlet>
   
   <servlet-mapping>

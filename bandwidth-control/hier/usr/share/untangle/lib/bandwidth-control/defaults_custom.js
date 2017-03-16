@@ -1,7 +1,7 @@
 {
     "settingsVersion":5,
     "configured":true,
-    "javaClass":"com.untangle.node.bandwidth_control.BandwidthControlSettings",
+    "javaClass":"com.untangle.app.bandwidth_control.BandwidthControlSettings",
     "rules":{
         "javaClass":"java.util.LinkedList",
         "list":[]

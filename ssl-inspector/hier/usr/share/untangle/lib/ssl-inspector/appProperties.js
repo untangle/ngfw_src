@@ -1,6 +1,6 @@
 {
-        "javaClass": "com.untangle.uvm.node.AppProperties",
-        "className" : "com.untangle.node.ssl_inspector.SslInspectorApp",
+        "javaClass": "com.untangle.uvm.app.AppProperties",
+        "className" : "com.untangle.app.ssl_inspector.SslInspectorApp",
         "name" : "ssl-inspector",
         "displayName" : "SSL Inspector",
         "type" : "FILTER",

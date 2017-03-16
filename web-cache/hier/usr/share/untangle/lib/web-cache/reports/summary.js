@@ -4,7 +4,7 @@
     "description": "A summary of Web Cache actions.",
     "displayOrder": 8,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "textColumns": [
         "sum(hits + misses + bypasses) as scanned",
         "sum(hits) as cached"

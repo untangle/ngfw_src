@@ -4,7 +4,7 @@
     "description": "A summary of IPsec VPN actions.",
     "displayOrder": 17,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "textColumns": [
         "round(coalesce(sum(in_bytes+out_bytes),0)/1024/1024) as megabytes"
     ],

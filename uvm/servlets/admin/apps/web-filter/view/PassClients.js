@@ -26,7 +26,7 @@ Ext.define('Ung.apps.webfilter.view.PassClients', {
         string: '1.2.3.4',
         enabled: true,
         description: '',
-        javaClass: 'com.untangle.uvm.node.GenericRule'
+        javaClass: 'com.untangle.uvm.app.GenericRule'
     },
 
     bind: '{passedClients}',

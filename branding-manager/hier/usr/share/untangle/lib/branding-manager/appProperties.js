@@ -1,6 +1,6 @@
 {
-        "javaClass": "com.untangle.uvm.node.AppProperties",
-        "className" : "com.untangle.node.branding_manager.BrandingManagerApp",
+        "javaClass": "com.untangle.uvm.app.AppProperties",
+        "className" : "com.untangle.app.branding_manager.BrandingManagerApp",
         "name" : "branding-manager",
         "displayName" : "Branding Manager",
         "type" : "SERVICE",

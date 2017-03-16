@@ -22,7 +22,7 @@ Ext.define('Ung.apps.applicationcontrol.view.Rules', {
     recordActions: ['edit', 'delete', 'reorder'],
 
     listProperty: 'settings.logicRules.list',
-    ruleJavaClass: 'com.untangle.node.application_control.ApplicationControlLogicRuleCondition',
+    ruleJavaClass: 'com.untangle.app.application_control.ApplicationControlLogicRuleCondition',
 
 
     emptyRow: {
@@ -31,14 +31,14 @@ Ext.define('Ung.apps.applicationcontrol.view.Rules', {
         description: '',
         action: {
             actionType: 'BLOCK',
-            javaClass: 'com.untangle.node.application_control.ApplicationControlLogicRuleAction',
+            javaClass: 'com.untangle.app.application_control.ApplicationControlLogicRuleAction',
             flag: true
         },
         conditions: {
             javaClass: 'java.util.LinkedList',
             list: []
         },
-        javaClass: 'com.untangle.node.application_control.ApplicationControlLogicRule'
+        javaClass: 'com.untangle.app.application_control.ApplicationControlLogicRule'
     },
 
     bind: '{logicRules}',

@@ -5,9 +5,9 @@ package com.untangle.uvm;
 
 import com.untangle.uvm.BrandingManager;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.node.AppSettings;
-import com.untangle.uvm.node.AppManager;
-import com.untangle.uvm.node.AppBase;
+import com.untangle.uvm.app.AppSettings;
+import com.untangle.uvm.app.AppManager;
+import com.untangle.uvm.app.AppBase;
 
 public class BrandingManagerImpl implements BrandingManager
 {

@@ -477,7 +477,7 @@ Ext.define('Webui.ssl-inspector.settings', {
             title: i18n._("Rules"),
             qtip: i18n._("Ignore rules are used to configure traffic which should be ignored by the inspection engine."),
             dataProperty: "ignoreRules",
-            recordJavaClass: "com.untangle.node.ssl_inspector.SslInspectorRule",
+            recordJavaClass: "com.untangle.app.ssl_inspector.SslInspectorRule",
             emptyRow: {
                 "live": true,
                 "ruleId": 0,
@@ -545,7 +545,7 @@ Ext.define('Webui.ssl-inspector.settings', {
                 items:[{
                     xtype: 'rulebuilder',
                     settingsCmp: this,
-                    javaClass: "com.untangle.node.ssl_inspector.SslInspectorRuleCondition",
+                    javaClass: "com.untangle.app.ssl_inspector.SslInspectorRuleCondition",
                     dataIndex: "conditions",
                     conditions: this.getConditions()
                 }]
@@ -576,7 +576,7 @@ Ext.define('Webui.ssl-inspector.settings', {
                     getValue: function() {
                         var actionType  = this.down('combo[name="actionType"]').getValue();
                         var action = {
-                            javaClass: "com.untangle.node.ssl_inspector.SslInspectorRuleAction",
+                            javaClass: "com.untangle.app.ssl_inspector.SslInspectorRuleAction",
                             actionType: actionType,
                             //must override toString in order for all objects not to appear the same
                             toString: function() {

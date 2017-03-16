@@ -9,8 +9,8 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.node.License;
-import com.untangle.uvm.node.LicenseManager;
+import com.untangle.uvm.app.License;
+import com.untangle.uvm.app.LicenseManager;
 import com.untangle.uvm.util.I18nUtil;
 
 public class DefaultLicenseManagerImpl implements LicenseManager

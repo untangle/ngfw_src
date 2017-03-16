@@ -22,8 +22,8 @@ import com.untangle.uvm.UserTable;
 import com.untangle.uvm.UserTableEntry;
 import com.untangle.uvm.util.Pulse;
 import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.node.App;
-import com.untangle.uvm.node.QuotaEvent;
+import com.untangle.uvm.app.App;
+import com.untangle.uvm.app.QuotaEvent;
 
 /**
  * The User Table stores a list of recently encountered users and any metadata about them

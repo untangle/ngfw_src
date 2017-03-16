@@ -4,14 +4,14 @@
     "description": "The amount of inspected SSL sessions over time.",
     "displayOrder": 101,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderDesc": false,
     "units": "hits",
     "readOnly": true,
     "table": "sessions",
     "conditions": [
         {
-            "javaClass": "com.untangle.node.reports.SqlCondition",
+            "javaClass": "com.untangle.app.reports.SqlCondition",
             "column": "ssl_inspector_status",
             "operator": "=",
             "value": "INSPECTED"

@@ -4,7 +4,7 @@
     "description": "The amount of blocked FTP requests over time.",
     "displayOrder": 203,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderDesc": false,
     "units": "hits",
     "readOnly": true,

@@ -9,8 +9,8 @@ import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.node.App;
-import com.untangle.uvm.node.AppProperties;
+import com.untangle.uvm.app.App;
+import com.untangle.uvm.app.AppProperties;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.vnet.AppTCPSession;
@@ -20,7 +20,7 @@ import com.untangle.uvm.vnet.Subscription;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.vnet.SessionEventHandler;
-import com.untangle.uvm.node.App;
+import com.untangle.uvm.app.App;
 
 /**
  * PipelineConnectorImpl is the implementation of a single PipelineConnector.
@@ -174,7 +174,7 @@ public class PipelineConnectorImpl implements PipelineConnector
         return activeSessions.remove( session );
     }
 
-    public boolean matches( com.untangle.uvm.node.SessionTuple tuple )
+    public boolean matches( com.untangle.uvm.app.SessionTuple tuple )
     {
         if ( !enabled ) {
             return false;

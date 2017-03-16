@@ -89,7 +89,7 @@ Ext.define('Webui.policy-manager.settings', {
                 addAtTop: false,
                 title: i18n._("Racks"),
                 dataProperty: "policies",
-                recordJavaClass: "com.untangle.node.policy_manager.PolicySettings",
+                recordJavaClass: "com.untangle.app.policy_manager.PolicySettings",
                 emptyRow: {
                     "name": i18n._("New Rack"),
                     "description": "",
@@ -194,7 +194,7 @@ Ext.define('Webui.policy-manager.settings', {
             addAtTop: false,
             title: i18n._("Rules"),
             dataProperty:'rules',
-            recordJavaClass: "com.untangle.node.policy_manager.PolicyRule",
+            recordJavaClass: "com.untangle.app.policy_manager.PolicyRule",
             emptyRow: {
                 "ruleId": -1,
                 "enabled": true,
@@ -261,7 +261,7 @@ Ext.define('Webui.policy-manager.settings', {
                 items:[{
                     xtype:'rulebuilder',
                     settingsCmp: this,
-                    javaClass: "com.untangle.node.policy_manager.PolicyRuleCondition",
+                    javaClass: "com.untangle.app.policy_manager.PolicyRuleCondition",
                     dataIndex: "conditions",
                     conditions: this.getConditions()
                 }]

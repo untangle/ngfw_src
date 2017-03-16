@@ -4,7 +4,7 @@
     "description": "The amount of cached and uncached web data over time.",
     "displayOrder": 200,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderDesc": false,
     "units": "bytes",
     "readOnly": true,

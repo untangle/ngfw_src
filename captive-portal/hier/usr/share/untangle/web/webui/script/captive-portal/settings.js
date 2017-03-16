@@ -81,7 +81,7 @@ Ext.define('Webui.captive-portal.settings', {
             title: i18n._("Active Sessions"),
             qtip: i18n._("The Active Sessions list shows authenticated users."),
             dataFn: this.getRpcNode().getActiveUsers,
-            recordJavaClass: "com.untangle.node.captive_portal.CaptureUserEntry",
+            recordJavaClass: "com.untangle.app.captive_portal.CaptureUserEntry",
             fields: [{
                 name: "userNetAddress",
                 sortType: 'asIp'
@@ -181,7 +181,7 @@ Ext.define('Webui.captive-portal.settings', {
                 addAtTop: false,
                 title: i18n._("Rules"),
                 dataProperty:'captureRules',
-                recordJavaClass: "com.untangle.node.captive_portal.CaptureRule",
+                recordJavaClass: "com.untangle.app.captive_portal.CaptureRule",
                 emptyRow: {
                     "ruleId": 0,
                     "enabled": true,
@@ -248,7 +248,7 @@ Ext.define('Webui.captive-portal.settings', {
                     items:[{
                         xtype:'rulebuilder',
                         settingsCmp: this,
-                        javaClass: "com.untangle.node.captive_portal.CaptureRuleCondition",
+                        javaClass: "com.untangle.app.captive_portal.CaptureRuleCondition",
                         dataIndex: "conditions",
                         conditions: this.getConditions()
                     }]
@@ -307,7 +307,7 @@ Ext.define('Webui.captive-portal.settings', {
             hasEdit: false,
             columnsDefaultSortable: false,
             dataProperty: dataProperty,
-            recordJavaClass: "com.untangle.node.captive_portal.PassedAddress",
+            recordJavaClass: "com.untangle.app.captive_portal.PassedAddress",
             emptyRow: {
                 "live": true,
                 "log": false,

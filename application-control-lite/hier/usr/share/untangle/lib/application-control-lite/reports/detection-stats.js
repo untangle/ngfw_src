@@ -4,7 +4,7 @@
     "description": "The number of logged and blocked sessions over time.",
     "displayOrder": 99,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderDesc": false,
     "units": "sessions",
     "readOnly": true,
@@ -20,7 +20,7 @@
 
     "conditions": [
         {
-        "javaClass": "com.untangle.node.reports.SqlCondition",
+        "javaClass": "com.untangle.app.reports.SqlCondition",
         "column": "application_control_lite_protocol",
         "operator": "is",
         "value": "not null"

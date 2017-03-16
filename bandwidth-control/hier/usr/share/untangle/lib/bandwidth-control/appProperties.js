@@ -1,6 +1,6 @@
 {
-        "javaClass": "com.untangle.uvm.node.AppProperties",
-        "className" : "com.untangle.node.bandwidth_control.BandwidthControlApp",
+        "javaClass": "com.untangle.uvm.app.AppProperties",
+        "className" : "com.untangle.app.bandwidth_control.BandwidthControlApp",
         "name" : "bandwidth-control",
         "displayName" : "Bandwidth Control",
         "type" : "FILTER",

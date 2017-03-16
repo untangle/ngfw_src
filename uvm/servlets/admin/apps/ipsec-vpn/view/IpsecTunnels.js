@@ -22,7 +22,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
     recordActions: ['edit', 'delete'],
     listProperty: 'settings.tunnels.list',
     emptyRow: {
-        javaClass: 'com.untangle.node.ipsec_vpn.IpsecVpnTunnel',
+        javaClass: 'com.untangle.app.ipsec_vpn.IpsecVpnTunnel',
         'active': true,
         'ikeVersion': 1,
         'conntype': 'tunnel',

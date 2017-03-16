@@ -1,6 +1,6 @@
 {
-        "javaClass": "com.untangle.uvm.node.AppProperties",
-        "className" : "com.untangle.node.ad_blocker.AdBlockerApp",
+        "javaClass": "com.untangle.uvm.app.AppProperties",
+        "className" : "com.untangle.app.ad_blocker.AdBlockerApp",
         "name" : "ad-blocker",
         "displayName" : "Ad Blocker",
         "type" : "FILTER",

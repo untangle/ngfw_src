@@ -87,7 +87,7 @@ Ext.define('Webui.virus-blocker-base.settings', {
             settingsCmp: this,
             title: i18n._("File Extensions"),
             dataProperty: "httpFileExtensions",
-            recordJavaClass: "com.untangle.uvm.node.GenericRule",
+            recordJavaClass: "com.untangle.uvm.app.GenericRule",
             emptyRow: {
                 "string": "",
                 "enabled": true,
@@ -155,7 +155,7 @@ Ext.define('Webui.virus-blocker-base.settings', {
             settingsCmp: this,
             title: i18n._("MIME Types"),
             dataProperty: "httpMimeTypes",
-            recordJavaClass: "com.untangle.uvm.node.GenericRule",
+            recordJavaClass: "com.untangle.uvm.app.GenericRule",
             emptyRow: {
                 "string": "",
                 "enabled": true,
@@ -317,7 +317,7 @@ Ext.define('Webui.virus-blocker-base.settings', {
             flex: 1,
             title: i18n._("Pass Sites"),
             dataProperty: "passSites",
-            recordJavaClass: "com.untangle.uvm.node.GenericRule",
+            recordJavaClass: "com.untangle.uvm.app.GenericRule",
             emptyRow: {
                 "string": "",
                 "enabled": true,

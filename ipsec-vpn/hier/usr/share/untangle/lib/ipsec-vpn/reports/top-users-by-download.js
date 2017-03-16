@@ -4,7 +4,7 @@
     "description": "The top IPsec users grouped by amount of data downloaded.",
     "displayOrder": 200,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "client_username",
     "orderDesc": true,
     "units": "bytes",
@@ -14,7 +14,7 @@
     "table": "ipsec_user_events",
     "conditions": [
         {
-            "javaClass": "com.untangle.node.reports.SqlCondition",
+            "javaClass": "com.untangle.app.reports.SqlCondition",
             "column": "elapsed_time",
             "operator": "is",
             "value": "not null"

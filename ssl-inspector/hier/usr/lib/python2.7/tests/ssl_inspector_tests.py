@@ -28,7 +28,7 @@ def createSSLInspectRule(url=testedServerDomainWildcard):
         "action": {
             "actionType": "INSPECT",
             "flag": False,
-            "javaClass": "com.untangle.node.ssl_inspector.SslInspectorRuleAction"
+            "javaClass": "com.untangle.app.ssl_inspector.SslInspectorRuleAction"
         },
         "conditions": {
             "javaClass": "java.util.LinkedList",
@@ -36,13 +36,13 @@ def createSSLInspectRule(url=testedServerDomainWildcard):
                 {
                     "conditionType": "SSL_INSPECTOR_SNI_HOSTNAME",
                     "invert": False,
-                    "javaClass": "com.untangle.node.ssl_inspector.SslInspectorRuleCondition",
+                    "javaClass": "com.untangle.app.ssl_inspector.SslInspectorRuleCondition",
                     "value": url
                 }
             ]
         },
         "description": url,
-        "javaClass": "com.untangle.node.ssl_inspector.SslInspectorRule",
+        "javaClass": "com.untangle.app.ssl_inspector.SslInspectorRule",
         "live": True,
         "ruleId": 1
     };
@@ -56,7 +56,7 @@ def findRule(target_description):
     return found
     
 def addBlockedUrl(url, blocked=True, flagged=True, description="description"):
-    newRule = { "blocked": blocked, "description": description, "flagged": flagged, "javaClass": "com.untangle.uvm.node.GenericRule", "string": url }
+    newRule = { "blocked": blocked, "description": description, "flagged": flagged, "javaClass": "com.untangle.uvm.app.GenericRule", "string": url }
     rules = nodeWeb.getBlockedUrls()
     rules["list"].append(newRule)
     nodeWeb.setBlockedUrls(rules)

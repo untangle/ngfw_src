@@ -33,9 +33,9 @@ class WebFilterBaseTests(unittest2.TestCase):
     def block_url_list_add(self, url, blocked=True, flagged=True, description="description"):
         node_name = self.node.getAppName()
         if ("monitor" in node_name):
-            newRule = { "blocked": False, "description": description, "flagged": flagged, "javaClass": "com.untangle.uvm.node.GenericRule", "string": url }
+            newRule = { "blocked": False, "description": description, "flagged": flagged, "javaClass": "com.untangle.uvm.app.GenericRule", "string": url }
         else:
-            newRule = { "blocked": blocked, "description": description, "flagged": flagged, "javaClass": "com.untangle.uvm.node.GenericRule", "string": url }
+            newRule = { "blocked": blocked, "description": description, "flagged": flagged, "javaClass": "com.untangle.uvm.app.GenericRule", "string": url }
         rules = self.node.getBlockedUrls()
         rules["list"].append(newRule)
         self.node.setBlockedUrls(rules)
@@ -46,7 +46,7 @@ class WebFilterBaseTests(unittest2.TestCase):
         self.node.setBlockedUrls(rules)
 
     def pass_url_list_add(self, url, enabled=True, description="description"):
-        newRule =  { "enabled": enabled, "description": description, "javaClass": "com.untangle.uvm.node.GenericRule", "string": url }
+        newRule =  { "enabled": enabled, "description": description, "javaClass": "com.untangle.uvm.app.GenericRule", "string": url }
         rules = self.node.getPassedUrls()
         rules["list"].append(newRule)
         self.node.setPassedUrls(rules)
@@ -62,14 +62,14 @@ class WebFilterBaseTests(unittest2.TestCase):
             "flagged": flagged,
             "enabled": True,
             "description": description,
-            "javaClass": "com.untangle.node.web_filter.WebFilterRule",
+            "javaClass": "com.untangle.app.web_filter.WebFilterRule",
                 "conditions": {
                     "javaClass": "java.util.LinkedList",
                     "list": [
                         {
                             "conditionType": conditionType,
                             "invert": False,
-                            "javaClass": "com.untangle.node.web_filter.WebFilterRuleCondition",
+                            "javaClass": "com.untangle.app.web_filter.WebFilterRuleCondition",
                             "value": conditionData
                         }
                     ]

@@ -35,12 +35,12 @@ def create2ConditionRule( matcher1Type, matcher1Value, matcher2Type, matcher2Val
     matcher2TypeStr = str(matcher2Type)
     matcher2ValueStr = str(matcher2Value)
     return {
-        "javaClass": "com.untangle.node.application_control.ApplicationControlLogicRule",
+        "javaClass": "com.untangle.app.application_control.ApplicationControlLogicRule",
         "description": "2-ConditionRule: " + matcher1TypeStr + " = " + matcher1ValueStr + " && " + matcher2TypeStr + " = " + matcher2ValueStr,
         "live": True,
         "id": 1,
         "action": {
-            "javaClass": "com.untangle.node.application_control.ApplicationControlLogicRuleAction",
+            "javaClass": "com.untangle.app.application_control.ApplicationControlLogicRuleAction",
             "actionType": "BLOCK",
             "flag": True
             },
@@ -49,13 +49,13 @@ def create2ConditionRule( matcher1Type, matcher1Value, matcher2Type, matcher2Val
             "list": [
                 {
                     "invert": False,
-                    "javaClass": "com.untangle.node.application_control.ApplicationControlLogicRuleCondition",
+                    "javaClass": "com.untangle.app.application_control.ApplicationControlLogicRuleCondition",
                     "conditionType": matcher1TypeStr,
                     "value": matcher1ValueStr
                     },
                 {
                     "invert": False,
-                    "javaClass": "com.untangle.node.application_control.ApplicationControlLogicRuleCondition",
+                    "javaClass": "com.untangle.app.application_control.ApplicationControlLogicRuleCondition",
                     "conditionType": matcher2TypeStr,
                     "value": matcher2ValueStr
                     }

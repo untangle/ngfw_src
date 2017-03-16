@@ -35,19 +35,19 @@ def createBandwidthSingleConditionRule( conditionType, value, actionType="SET_PR
     return {
         "action": {
             "actionType": actionType,
-            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleAction",
+            "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRuleAction",
             "priority": priorityValue
             },
         "description": "test bandwidth rule",
         "ruleId": 1,
-        "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRule",
+        "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRule",
         "enabled": True,
         "conditions": {
             "javaClass": "java.util.LinkedList",
             "list": [
                 {
                     "invert": False,
-                    "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
+                    "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRuleCondition",
                     "conditionType": conditionTypeStr,
                     "value": valueStr
                 }
@@ -61,20 +61,20 @@ def createBandwidthPenaltyRule( conditionType, value, actionType="PENALTY_BOX_CL
     return {
         "action": {
             "actionType": actionType,
-            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleAction",
+            "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRuleAction",
             "tagName" : tagName,
             "tagTime": tagTime
         },
         "description": "penalty",
         "ruleId": 1,
         "enabled": True,
-        "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRule",
+        "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRule",
         "conditions": {
             "javaClass": "java.util.LinkedList",
             "list": [
                 {
                     "invert": False,
-                    "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
+                    "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRuleCondition",
                     "conditionType": conditionTypeStr,
                     "value": value
                 }
@@ -88,20 +88,20 @@ def createBandwidthQuotaRule( conditionType, value, actionType, quotaValue=100 )
     return {
         "action": {
             "actionType": actionType,
-            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleAction",
+            "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRuleAction",
             "quotaBytes": quotaValue,
             "quotaTime": -3
         },
         "description": "quota",
         "ruleId": 2,
         "enabled": True,
-        "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRule",
+        "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRule",
         "conditions": {
             "javaClass": "java.util.LinkedList",
             "list": [
                 {
                     "invert": False,
-                    "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
+                    "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRuleCondition",
                     "conditionType": conditionTypeStr,
                     "value": valueStr
                 }

@@ -4,7 +4,7 @@
     "description": "A summary of configuration backup actions.",
     "displayOrder": 20,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "textColumns": [
         "count(*) as total",
         "sum(case when success is true then 1 else 0 end) as passed",

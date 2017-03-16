@@ -1,6 +1,6 @@
 {
-        "javaClass": "com.untangle.uvm.node.AppProperties",
-        "className" : "com.untangle.node.phish_blocker.PhishBlockerApp",
+        "javaClass": "com.untangle.uvm.app.AppProperties",
+        "className" : "com.untangle.app.phish_blocker.PhishBlockerApp",
         "appBase" : "spam-blocker-base",
         "name" : "phish-blocker",
         "displayName" : "Phish Blocker",

@@ -4,7 +4,7 @@
     "description": "The number of bytes destined to each interface.",
     "displayOrder": 200,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "server_intf",
     "orderDesc": false,
     "units": "bytes",

@@ -4,7 +4,7 @@
     "conditions": [
         {
             "column": "web_filter_blocked",
-            "javaClass": "com.untangle.node.reports.SqlCondition",
+            "javaClass": "com.untangle.app.reports.SqlCondition",
             "operator": "=",
             "value": "true"
         }
@@ -12,7 +12,7 @@
     "description": "The number of blocked web request grouped by hostname.",
     "displayOrder": 403,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",
     "orderDesc": true,
     "units": "hits",

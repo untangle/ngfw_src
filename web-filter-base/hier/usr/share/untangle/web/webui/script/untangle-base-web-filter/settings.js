@@ -123,7 +123,7 @@ Ext.define('Webui.web-filter-base.settings', {
             hasAdd: false,
             hasDelete: false,
             dataProperty: "categories",
-            recordJavaClass: "com.untangle.uvm.node.GenericRule",
+            recordJavaClass: "com.untangle.uvm.app.GenericRule",
             sortField: 'name',
             fields: this.genericRuleFields,
             columns: [{
@@ -244,7 +244,7 @@ Ext.define('Webui.web-filter-base.settings', {
             settingsCmp: this,
             flex: 1,
             dataProperty: "blockedUrls",
-            recordJavaClass: "com.untangle.uvm.node.GenericRule",
+            recordJavaClass: "com.untangle.uvm.app.GenericRule",
             emptyRow: {
                 "string": "",
                 "blocked": true,
@@ -349,7 +349,7 @@ Ext.define('Webui.web-filter-base.settings', {
             flex: 1,
             title: i18n._("Sites"),
             dataProperty: "passedUrls",
-            recordJavaClass: "com.untangle.uvm.node.GenericRule",
+            recordJavaClass: "com.untangle.uvm.app.GenericRule",
             emptyRow: {
                 "string": "",
                 "enabled": true,
@@ -438,7 +438,7 @@ Ext.define('Webui.web-filter-base.settings', {
             settingsCmp: this,
             title: i18n._("Client IP addresses"),
             dataProperty: "passedClients",
-            recordJavaClass: "com.untangle.uvm.node.GenericRule",
+            recordJavaClass: "com.untangle.uvm.app.GenericRule",
             emptyRow: {
                 "string": "1.2.3.4",
                 "enabled": true,
@@ -531,7 +531,7 @@ Ext.define('Webui.web-filter-base.settings', {
             title: i18n._("Rules"),
             qtip: i18n._("Web Filter rules allow creating flexible block and pass conditions."),
             dataProperty: "filterRules",
-            recordJavaClass: "com.untangle.node.web_filter.WebFilterRule",
+            recordJavaClass: "com.untangle.app.web_filter.WebFilterRule",
             emptyRow: {
                 "enabled": true,
                 "ruleId": 0,
@@ -607,7 +607,7 @@ Ext.define('Webui.web-filter-base.settings', {
                 items:[{
                     xtype: 'rulebuilder',
                     settingsCmp: this,
-                    javaClass: "com.untangle.node.web_filter.WebFilterRuleCondition",
+                    javaClass: "com.untangle.app.web_filter.WebFilterRuleCondition",
                     dataIndex: "conditions",
                     conditions: this.getConditions()
                 }]

@@ -4,7 +4,7 @@
     "description": "The bandwidth usage by priority.",
     "displayOrder": 800,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderDesc": false,
     "units": "bytes/s",
     "readOnly": true,

@@ -1,6 +1,6 @@
 {
-        "javaClass": "com.untangle.uvm.node.AppProperties",
-        "className" : "com.untangle.node.wan_failover.WanFailoverApp",
+        "javaClass": "com.untangle.uvm.app.AppProperties",
+        "className" : "com.untangle.app.wan_failover.WanFailoverApp",
         "name" : "wan-failover",
         "displayName" : "WAN Failover",
         "type" : "SERVICE",

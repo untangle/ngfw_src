@@ -4,7 +4,7 @@
     "description": "The number of blocked ads grouped by website.",
     "displayOrder": 304,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",
     "orderDesc": true,
     "units": "hits",
@@ -13,7 +13,7 @@
      "conditions": [
         {
             "column": "ad_blocker_action",
-            "javaClass": "com.untangle.node.reports.SqlCondition",
+            "javaClass": "com.untangle.app.reports.SqlCondition",
             "operator": "=",
             "value": "B"
         }

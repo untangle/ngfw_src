@@ -44,7 +44,7 @@ def create_ad_settings(ldap_secure=False):
             "OUFilter": "",
             "domain": AD_DOMAIN,
             "enabled": True,
-            "javaClass": "com.untangle.node.directory_connector.ActiveDirectorySettings",
+            "javaClass": "com.untangle.app.directory_connector.ActiveDirectorySettings",
             "superuser": AD_ADMIN,
             "superuserPass": AD_PASSWORD
        },
@@ -52,16 +52,16 @@ def create_ad_settings(ldap_secure=False):
             "port": 1812, 
             "enabled": False, 
             "authenticationMethod": "PAP", 
-            "javaClass": "com.untangle.node.directory_connector.RadiusSettings", 
+            "javaClass": "com.untangle.app.directory_connector.RadiusSettings", 
             "server": RADIUS_HOST, 
             "sharedSecret": "mysharedsecret"
         },
         "googleSettings": {
-            "javaClass": "com.untangle.node.directory_connector.GoogleSettings",
+            "javaClass": "com.untangle.app.directory_connector.GoogleSettings",
             "authenticationEnabled": True
         },
         "facebookSettings": {
-            "javaClass": "com.untangle.node.directory_connector.FacebookSettings",
+            "javaClass": "com.untangle.app.directory_connector.FacebookSettings",
             "authenticationEnabled": True
         }
     }
@@ -79,7 +79,7 @@ def create_radius_settings():
             "LDAPPort": "636", 
             "OUFilter": "", 
             "domain": AD_DOMAIN, 
-            "javaClass": "com.untangle.node.directory_connector.ActiveDirectorySettings", 
+            "javaClass": "com.untangle.app.directory_connector.ActiveDirectorySettings", 
             "LDAPHost": AD_HOST, 
             "superuser": AD_ADMIN
         }, 
@@ -87,16 +87,16 @@ def create_radius_settings():
             "port": 1812, 
             "enabled": True, 
             "authenticationMethod": "PAP", 
-            "javaClass": "com.untangle.node.directory_connector.RadiusSettings", 
+            "javaClass": "com.untangle.app.directory_connector.RadiusSettings", 
             "server": RADIUS_HOST, 
             "sharedSecret": "chakas"
         },
         "googleSettings": {
-            "javaClass": "com.untangle.node.directory_connector.GoogleSettings",
+            "javaClass": "com.untangle.app.directory_connector.GoogleSettings",
             "authenticationEnabled": True
         },
         "facebookSettings": {
-            "javaClass": "com.untangle.node.directory_connector.FacebookSettings",
+            "javaClass": "com.untangle.app.directory_connector.FacebookSettings",
             "authenticationEnabled": True
         }
     }

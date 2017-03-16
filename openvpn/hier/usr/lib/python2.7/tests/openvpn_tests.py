@@ -34,7 +34,7 @@ def setUpClient(vpn_enabled=True,vpn_export=False,vpn_exportNetwork="127.0.0.1",
             "export": vpn_export, 
             "exportNetwork": vpn_exportNetwork, 
             "groupId": vpn_groupId, 
-            "javaClass": "com.untangle.node.openvpn.OpenVpnRemoteClient", 
+            "javaClass": "com.untangle.app.openvpn.OpenVpnRemoteClient", 
             "name": vpn_name
     }
 

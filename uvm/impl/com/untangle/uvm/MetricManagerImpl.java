@@ -29,11 +29,11 @@ import com.untangle.uvm.logging.InterfaceStatEvent;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.InterfaceSettings;
-import com.untangle.uvm.node.App;
-import com.untangle.uvm.node.AppManager;
-import com.untangle.uvm.node.SessionTuple;
-import com.untangle.uvm.node.AppSettings;
-import com.untangle.uvm.node.AppMetric;
+import com.untangle.uvm.app.App;
+import com.untangle.uvm.app.AppManager;
+import com.untangle.uvm.app.SessionTuple;
+import com.untangle.uvm.app.AppSettings;
+import com.untangle.uvm.app.AppMetric;
 import com.untangle.uvm.util.Pulse;
 
 public class MetricManagerImpl implements MetricManager

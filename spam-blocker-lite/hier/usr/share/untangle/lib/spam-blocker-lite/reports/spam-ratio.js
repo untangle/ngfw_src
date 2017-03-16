@@ -4,7 +4,7 @@
     "description": "The ratio of spam (true) to ham (false)",
     "displayOrder": 200,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "spam_blocker_lite_is_spam",
     "orderDesc": true,
     "units": "msg",
@@ -13,13 +13,13 @@
     "conditions": [
         {
             "column": "spam_blocker_lite_is_spam",
-            "javaClass": "com.untangle.node.reports.SqlCondition",
+            "javaClass": "com.untangle.app.reports.SqlCondition",
             "operator": "is",
             "value": "not null"
         },
         {
             "column": "addr_kind",
-            "javaClass": "com.untangle.node.reports.SqlCondition",
+            "javaClass": "com.untangle.app.reports.SqlCondition",
             "operator": "=",
             "value": "B"
         }

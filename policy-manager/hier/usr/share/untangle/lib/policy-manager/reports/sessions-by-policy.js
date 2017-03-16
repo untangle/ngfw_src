@@ -4,7 +4,7 @@
     "description": "The number of sessions for each policy.",
     "displayOrder": 200,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "policy_id",
     "orderDesc": false,
     "units": "sessions",

@@ -38,7 +38,7 @@ Ext.define('Ung.apps.virusblocker.view.Advanced', {
             string: '',
             enabled: true,
             description: '',
-            javaClass: 'com.untangle.uvm.node.GenericRule'
+            javaClass: 'com.untangle.uvm.app.GenericRule'
         },
 
         bind: '{fileExtensions}',
@@ -95,7 +95,7 @@ Ext.define('Ung.apps.virusblocker.view.Advanced', {
             string: '',
             enabled: true,
             description: '',
-            javaClass: 'com.untangle.uvm.node.GenericRule'
+            javaClass: 'com.untangle.uvm.app.GenericRule'
         },
 
         bind: '{mimeTypes}',

@@ -31,17 +31,17 @@ import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.NetcapManager;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.node.AppManagerSettings;
-import com.untangle.uvm.node.LicenseManager;
-import com.untangle.uvm.node.PolicyManager;
-import com.untangle.uvm.node.AppManager;
-import com.untangle.uvm.node.App;
-import com.untangle.uvm.node.AppProperties;
-import com.untangle.uvm.node.AppSettings;
-import com.untangle.uvm.node.License;
-import com.untangle.uvm.node.LicenseManager;
-import com.untangle.uvm.node.AppMetric;
-import com.untangle.uvm.node.AppBase;
+import com.untangle.uvm.app.AppManagerSettings;
+import com.untangle.uvm.app.LicenseManager;
+import com.untangle.uvm.app.PolicyManager;
+import com.untangle.uvm.app.AppManager;
+import com.untangle.uvm.app.App;
+import com.untangle.uvm.app.AppProperties;
+import com.untangle.uvm.app.AppSettings;
+import com.untangle.uvm.app.License;
+import com.untangle.uvm.app.LicenseManager;
+import com.untangle.uvm.app.AppMetric;
+import com.untangle.uvm.app.AppBase;
 
 /**
  * Implements AppManager.
@@ -631,13 +631,13 @@ public class AppManagerImpl implements AppManager
                         String name = node.getAppProperties().getName();
                         Long id = node.getAppSettings().getId();
 
-                        logger.info("Stopping  : " + name + " (" + id + ")");
+                        logger.info("Stopping  : " + name + " [" + id + "]");
 
                         long startTime = System.currentTimeMillis();
                         ((AppBase)node).stopIfRunning( );
                         long endTime = System.currentTimeMillis();
 
-                        logger.info("Stopped   : " + name + " (" + id + ") [" + ( ((float)(endTime - startTime))/1000.0f ) + " seconds]");
+                        logger.info("Stopped   : " + name + " [" + id + "] [" + ( ((float)(endTime - startTime))/1000.0f ) + " seconds]");
 
                         loadedAppsMap.remove( node.getAppSettings().getId() );
                     }
@@ -737,7 +737,7 @@ public class AppManagerImpl implements AppManager
 
             if ( loadable.size() > 0 ) {
                 for (AppSettings ns : loadable)
-                    logger.info("Loading in this pass[" + passCount + "]: " + ns.getAppName() + " (" + ns.getId() + ")");
+                    logger.info("Loading in this pass[" + passCount + "]: " + ns.getAppName() + " [" + ns.getId() + "]");
                 startUnloaded( loadable );
             }
 
@@ -773,11 +773,11 @@ public class AppManagerImpl implements AppManager
                         {
                             AppBase node = null;
                             try {
-                                logger.info("Restarting: " + name + " (" + appSettings.getId() + ")");
+                                logger.info("Restarting: " + name + " [" + appSettings.getId() + "]");
                                 long startTime = System.currentTimeMillis();
                                 node = (AppBase) AppBase.loadClass(nodeProps, appSettings, false);
                                 long endTime   = System.currentTimeMillis();
-                                logger.info("Restarted : " + name + " (" + appSettings.getId() + ") [" + ( ((float)(endTime - startTime))/1000.0f ) + " seconds]");
+                                logger.info("Restarted : " + name + " [" + appSettings.getId() + "] [" + ( ((float)(endTime - startTime))/1000.0f ) + " seconds]");
 
                                 // add to loaded nodes
                                 loadedAppsMap.put( appSettings.getId(), node );

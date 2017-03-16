@@ -1,6 +1,6 @@
 {
-        "javaClass": "com.untangle.uvm.node.AppProperties",
-        "className" : "com.untangle.node.spam_blocker_lite.SpamBlockerLiteApp",
+        "javaClass": "com.untangle.uvm.app.AppProperties",
+        "className" : "com.untangle.app.spam_blocker_lite.SpamBlockerLiteApp",
         "appBase" : "spam-blocker-base",
         "name" : "spam-blocker-lite",
         "displayName" : "Spam Blocker Lite",

@@ -3,7 +3,7 @@
  */
 package com.untangle.uvm;
 
-import com.untangle.uvm.node.App;
+import com.untangle.uvm.app.App;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 
 /**

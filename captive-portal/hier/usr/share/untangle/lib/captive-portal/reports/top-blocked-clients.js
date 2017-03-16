@@ -4,7 +4,7 @@
     "description": "The top clients that were blocked by Captive Portal because they were not logged in.",
     "displayOrder": 300,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",
     "orderDesc": true,
     "units": "hits",
@@ -14,7 +14,7 @@
     "table": "captive_portal_user_events",
     "conditions": [
         {
-            "javaClass": "com.untangle.node.reports.SqlCondition",
+            "javaClass": "com.untangle.app.reports.SqlCondition",
             "column": "event_info",
             "operator": "=",
             "value": "FAILED"

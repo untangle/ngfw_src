@@ -10,7 +10,7 @@ Ext.define ('Ung.model.GenericRule', {
         { name: 'enabled', type: 'boolean', defaultValue: true },
         { name: 'id', defaultValue: null },
         { name: 'readOnly', type: 'boolean', defaultValue: null },
-        { name: 'javaClass', type: 'string', defaultValue: 'com.untangle.uvm.node.GenericRule' }
+        { name: 'javaClass', type: 'string', defaultValue: 'com.untangle.uvm.app.GenericRule' }
     ],
     proxy: {
         autoLoad: true,

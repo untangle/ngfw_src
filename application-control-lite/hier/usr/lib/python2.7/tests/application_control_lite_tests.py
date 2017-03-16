@@ -31,7 +31,7 @@ def addPatterns(definition, blocked=False, log=True, protocol="protocol", descri
                 "category": category, 
                 "definition": definition, 
                 "description": description, 
-                "javaClass": "com.untangle.node.application_control_lite.ApplicationControlLitePattern", 
+                "javaClass": "com.untangle.app.application_control_lite.ApplicationControlLitePattern", 
                 "log": log, 
                 "protocol": protocol, 
                 "quality": ""

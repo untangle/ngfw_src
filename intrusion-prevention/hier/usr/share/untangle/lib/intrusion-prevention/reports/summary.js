@@ -4,7 +4,7 @@
     "description": "A summary of intrusion detection and prevention actions.",
     "displayOrder": 19,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "textColumns": [
         "count(*) as detected"
     ],

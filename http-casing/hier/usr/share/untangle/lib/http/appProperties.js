@@ -1,6 +1,6 @@
 {
-        "javaClass": "com.untangle.uvm.node.AppProperties",
-        "className" : "com.untangle.node.http.HttpImpl",
+        "javaClass": "com.untangle.uvm.app.AppProperties",
+        "className" : "com.untangle.app.http.HttpImpl",
         "name" : "http",
         "displayName" : "HTTP Casing",
         "type" : "SERVICE",

@@ -4,7 +4,7 @@
     "conditions": [
         {
             "column": "application_control_flagged",
-            "javaClass": "com.untangle.node.reports.SqlCondition",
+            "javaClass": "com.untangle.app.reports.SqlCondition",
             "operator": "=",
             "value": "true"
         }
@@ -12,7 +12,7 @@
     "description": "The number of flagged sessions grouped by client.",
     "displayOrder": 501,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",
     "orderDesc": true,
     "units": "sessions",

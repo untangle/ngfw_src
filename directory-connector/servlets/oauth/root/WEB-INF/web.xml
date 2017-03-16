@@ -13,7 +13,7 @@
   
   <servlet>
     <servlet-name>OauthHandler</servlet-name>
-    <servlet-class>com.untangle.node.directory_connector.OauthHandler</servlet-class>
+    <servlet-class>com.untangle.app.directory_connector.OauthHandler</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
 

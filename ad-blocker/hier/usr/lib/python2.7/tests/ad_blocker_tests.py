@@ -17,21 +17,21 @@ node = None
 
 def addCookieEnabled(url, enabled=True, description="description"):
     global node
-    newRule =  { "enabled": enabled, "description": description, "javaClass": "com.untangle.uvm.node.GenericRule", "string": url }
+    newRule =  { "enabled": enabled, "description": description, "javaClass": "com.untangle.uvm.app.GenericRule", "string": url }
     rules = node.getCookies()
     rules["list"].append(newRule)
     node.setCookies(rules)
     
 def addCookieBlockedEnabled(url, enabled=True, description="description"):
     global node
-    newRule =  { "enabled": enabled, "blocked": "", "description": description, "javaClass": "com.untangle.uvm.node.GenericRule", "string": url }
+    newRule =  { "enabled": enabled, "blocked": "", "description": description, "javaClass": "com.untangle.uvm.app.GenericRule", "string": url }
     rules = node.getCookies()
     rules["list"].append(newRule)
     node.setCookies(rules)
     
 def addRule(url, enabled=True, description="description", blocked=True):
     global node
-    newRule =  { "enabled": enabled, "description": description, "javaClass": "com.untangle.uvm.node.GenericRule", "string": url, "blocked": blocked }
+    newRule =  { "enabled": enabled, "description": description, "javaClass": "com.untangle.uvm.app.GenericRule", "string": url, "blocked": blocked }
     
     settings = node.getSettings()
     userList = settings["userRules"]
@@ -50,7 +50,7 @@ def nukeRules(listName):
     
 def addPassRule(url, enabled, listName):
     global node
-    newRule =  { "enabled": enabled, "description": "description", "javaClass": "com.untangle.uvm.node.GenericRule", "string": url }
+    newRule =  { "enabled": enabled, "description": "description", "javaClass": "com.untangle.uvm.app.GenericRule", "string": url }
     
     settings = node.getSettings()
     passList = settings[listName]

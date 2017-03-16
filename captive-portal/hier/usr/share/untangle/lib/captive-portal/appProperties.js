@@ -1,6 +1,6 @@
 {
-        "javaClass": "com.untangle.uvm.node.AppProperties",
-        "className" : "com.untangle.node.captive_portal.CaptivePortalApp",
+        "javaClass": "com.untangle.uvm.app.AppProperties",
+        "className" : "com.untangle.app.captive_portal.CaptivePortalApp",
         "name" : "captive-portal",
         "displayName" : "Captive Portal",
         "type" : "FILTER",

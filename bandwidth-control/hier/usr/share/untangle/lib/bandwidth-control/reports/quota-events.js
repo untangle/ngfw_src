@@ -7,7 +7,7 @@
     "defaultColumns": ["time_stamp","entity","action","size","reason"],
     "description": "Shows when quotas are assigned or expired.",
     "displayOrder": 1011,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "table": "quotas",
     "title": "Quota Events"
 }

@@ -6,7 +6,7 @@ package com.untangle.uvm.vnet;
 import java.util.List;
 
 import com.untangle.uvm.vnet.Fitting;
-import com.untangle.uvm.node.App;
+import com.untangle.uvm.app.App;
 
 /**
  * The <code>PipelineConnector</code> interface represents an active PipelineConnector.

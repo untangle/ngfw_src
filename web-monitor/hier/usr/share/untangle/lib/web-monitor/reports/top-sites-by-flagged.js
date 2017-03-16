@@ -4,7 +4,7 @@
     "description": "The number of flagged web requests grouped by website.",
     "displayOrder": 302,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",
     "orderDesc": true,
     "units": "hits",
@@ -13,7 +13,7 @@
      "conditions": [
         {
             "column": "web_filter_flagged",
-            "javaClass": "com.untangle.node.reports.SqlCondition",
+            "javaClass": "com.untangle.app.reports.SqlCondition",
             "operator": "=",
             "value": "true"
         }

@@ -160,7 +160,7 @@ Ext.define('Ung.config.email.view.Quarantine', {
                 recordActions: ['delete'],
                 listProperty: 'smtpSettings.quarantineSettings.allowedAddressPatterns.list',
                 emptyRow: {
-                    javaClass: 'com.untangle.node.smtp.EmailAddressRule',
+                    javaClass: 'com.untangle.app.smtp.EmailAddressRule',
                     address: ''
                 },
 
@@ -209,7 +209,7 @@ Ext.define('Ung.config.email.view.Quarantine', {
 
                 listProperty: 'smtpSettings.quarantineSettings.addressRemaps.list',
                 emptyRow: {
-                    javaClass: 'com.untangle.node.smtp.EmailAddressPairRule',
+                    javaClass: 'com.untangle.app.smtp.EmailAddressPairRule',
                     address1: '',
                     address2: '',
                 },

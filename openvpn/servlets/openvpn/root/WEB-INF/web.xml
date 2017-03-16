@@ -13,7 +13,7 @@
   <!-- Download the windows setup or configuration file -->
   <servlet>
     <servlet-name>Downloader</servlet-name>
-    <servlet-class>com.untangle.node.openvpn.servlet.Downloader</servlet-class>
+    <servlet-class>com.untangle.app.openvpn.servlet.Downloader</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
 
@@ -35,7 +35,7 @@
   <!-- Upload server zip config -->
   <servlet>
     <servlet-name>UploadConfig</servlet-name>
-    <servlet-class>com.untangle.node.openvpn.servlet.UploadConfig</servlet-class>
+    <servlet-class>com.untangle.app.openvpn.servlet.UploadConfig</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
 

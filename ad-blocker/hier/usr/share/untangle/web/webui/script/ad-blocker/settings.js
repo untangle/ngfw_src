@@ -199,7 +199,7 @@ Ext.define('Webui.ad-blocker.settings', {
             hasInlineEditor:  isEditable,
             title: i18n._(nameStr),
             dataProperty: property,
-            recordJavaClass: "com.untangle.uvm.node.GenericRule",
+            recordJavaClass: "com.untangle.uvm.app.GenericRule",
             emptyRow: {
                 "string": "",
                 "enabled": true,
@@ -286,7 +286,7 @@ Ext.define('Webui.ad-blocker.settings', {
             hasInlineEditor:  isEditable,
             title: i18n._(nameStr),
             dataProperty: property,
-            recordJavaClass: "com.untangle.uvm.node.GenericRule",
+            recordJavaClass: "com.untangle.uvm.app.GenericRule",
             emptyRow: {
                 "string": "",
                 "enabled": true
@@ -372,7 +372,7 @@ Ext.define('Webui.ad-blocker.settings', {
             settingsCmp: this,
             title: i18n._("Passed Sites"),
             dataProperty: "passedUrls",
-            recordJavaClass: "com.untangle.uvm.node.GenericRule",
+            recordJavaClass: "com.untangle.uvm.app.GenericRule",
             emptyRow: {
                 "string": "",
                 "enabled": true,
@@ -439,7 +439,7 @@ Ext.define('Webui.ad-blocker.settings', {
             settingsCmp: this,
             title: i18n._("Passed Client IP addresses"),
             dataProperty: "passedClients",
-            recordJavaClass: "com.untangle.uvm.node.GenericRule",
+            recordJavaClass: "com.untangle.uvm.app.GenericRule",
             emptyRow: {
                 "string": "1.2.3.4",
                 "enabled": true,

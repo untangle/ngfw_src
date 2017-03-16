@@ -4,7 +4,7 @@
     "description": "A summary of ad blocker actions.",
     "displayOrder": 12,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "textColumns": [
         "sum(CASE WHEN ad_blocker_action='B' OR ad_blocker_action='P' THEN 1 ELSE 0 END) as ads_detected",
         "sum(CASE WHEN ad_blocker_action='B' THEN 1 ELSE 0 END) as ads_blocked",

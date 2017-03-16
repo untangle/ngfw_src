@@ -41,7 +41,7 @@ Ext.define('Ung.apps.ad-blocker.view.CookieFilters', {
         emptyRow: {
             string: '',
             enabled: true,
-            javaClass: 'com.untangle.uvm.node.GenericRule'
+            javaClass: 'com.untangle.uvm.app.GenericRule'
         },
 
         columns: [

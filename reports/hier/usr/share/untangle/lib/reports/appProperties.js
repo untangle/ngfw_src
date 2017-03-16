@@ -1,6 +1,6 @@
 {
-        "javaClass": "com.untangle.uvm.node.AppProperties",
-        "className" : "com.untangle.node.reports.ReportsApp",
+        "javaClass": "com.untangle.uvm.app.AppProperties",
+        "className" : "com.untangle.app.reports.ReportsApp",
         "name" : "reports",
         "displayName" : "Reports",
         "type" : "SERVICE",

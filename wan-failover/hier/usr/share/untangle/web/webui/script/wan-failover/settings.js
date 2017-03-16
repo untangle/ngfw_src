@@ -47,7 +47,7 @@ Ext.define('Webui.wan-failover.settings', {
             hasRefresh: true,
             title: i18n._("WAN Status"),
             qtip: i18n._("This shows the current status of each WAN Interface."),
-            recordJavaClass: "com.untangle.node.wan_failover.WanStatus",
+            recordJavaClass: "com.untangle.app.wan_failover.WanStatus",
             dataFn: this.getRpcNode().getWanStatus,
             fields: [{
                 name: "interfaceId"
@@ -148,7 +148,7 @@ Ext.define('Webui.wan-failover.settings', {
             settingsCmp: this,
             dataProperty: "tests",
             title: i18n._( "Failure Detection Tests" ),
-            recordJavaClass: "com.untangle.node.wan_failover.WanTestSettings",
+            recordJavaClass: "com.untangle.app.wan_failover.WanTestSettings",
             emptyRow: {
                 "enabled": true,
                 "description": "",

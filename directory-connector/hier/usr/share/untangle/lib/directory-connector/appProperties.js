@@ -1,6 +1,6 @@
 {
-        "javaClass": "com.untangle.uvm.node.AppProperties",
-        "className" : "com.untangle.node.directory_connector.DirectoryConnectorApp",
+        "javaClass": "com.untangle.uvm.app.AppProperties",
+        "className" : "com.untangle.app.directory_connector.DirectoryConnectorApp",
         "name" : "directory-connector",
         "displayName" : "Directory Connector",
         "type" : "SERVICE",

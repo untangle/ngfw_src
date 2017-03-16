@@ -16,8 +16,8 @@ import org.apache.log4j.Logger;
 import com.untangle.jnetcap.NetcapSession;
 import com.untangle.jnetcap.NetcapTCPSession;
 import com.untangle.jnetcap.NetcapUDPSession;
-import com.untangle.uvm.node.SessionEvent;
-import com.untangle.uvm.node.SessionTuple;
+import com.untangle.uvm.app.SessionEvent;
+import com.untangle.uvm.app.SessionTuple;
 
 /**
  * This stores the global system-wide state for a given session

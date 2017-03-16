@@ -4,7 +4,7 @@
     "description": "The top logged sessions by user.",
     "displayOrder": 700,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",
     "orderDesc": true,
     "units": "sessions",
@@ -14,13 +14,13 @@
     "table": "sessions",
     "conditions": [
         {
-            "javaClass": "com.untangle.node.reports.SqlCondition",
+            "javaClass": "com.untangle.app.reports.SqlCondition",
             "column": "application_control_lite_blocked",
             "operator": "=",
             "value": "FALSE"
         },
         {
-        "javaClass": "com.untangle.node.reports.SqlCondition",
+        "javaClass": "com.untangle.app.reports.SqlCondition",
         "column": "application_control_lite_protocol",
         "operator": "is",
         "value": "not null"

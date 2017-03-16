@@ -4,7 +4,7 @@
     "description": "The number of intrusions blocked by rule.",
     "displayOrder": 202,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",
     "orderDesc": true,
     "units": "hits",
@@ -12,7 +12,7 @@
     "pieSumColumn": "count(*)",
     "conditions": [{
         "column": "blocked",
-        "javaClass": "com.untangle.node.reports.SqlCondition",
+        "javaClass": "com.untangle.app.reports.SqlCondition",
         "operator": "=",
         "value": "true"
     }],

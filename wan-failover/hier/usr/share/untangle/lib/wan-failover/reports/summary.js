@@ -4,13 +4,13 @@
     "description": "A summary of WAN Failover actions.",
     "displayOrder": 14,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "textColumns": [
         "count(*) as outages"
     ],
     "conditions": [
         {
-            "javaClass": "com.untangle.node.reports.SqlCondition",
+            "javaClass": "com.untangle.app.reports.SqlCondition",
             "column": "action",
             "operator": "=",
             "value": "DISCONNECTED"

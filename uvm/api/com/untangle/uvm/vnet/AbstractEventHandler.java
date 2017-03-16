@@ -5,8 +5,8 @@ package com.untangle.uvm.vnet;
 
 import java.nio.ByteBuffer;
 
-import com.untangle.uvm.node.AppBase;
-import com.untangle.uvm.node.App;
+import com.untangle.uvm.app.AppBase;
+import com.untangle.uvm.app.App;
 import com.untangle.uvm.vnet.SessionEventHandler;
 
 /**

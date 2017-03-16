@@ -1,6 +1,6 @@
 {
-        "javaClass": "com.untangle.uvm.node.AppProperties",
-        "className" : "com.untangle.node.firewall.FirewallApp",
+        "javaClass": "com.untangle.uvm.app.AppProperties",
+        "className" : "com.untangle.app.firewall.FirewallApp",
         "name" : "firewall",
         "displayName" : "Firewall",
         "type" : "FILTER",

@@ -1210,7 +1210,7 @@ Ext.define('Webui.config.system', {
             addAtTop: false,
             title: i18n._("Shield Rules"),
             dataExpression:'getShieldSettings().rules.list',
-            recordJavaClass: "com.untangle.node.shield.ShieldRule",
+            recordJavaClass: "com.untangle.app.shield.ShieldRule",
             emptyRow: {
                 "ruleId": -1,
                 "enabled": true,
@@ -1278,7 +1278,7 @@ Ext.define('Webui.config.system', {
                 items:[{
                     xtype:'rulebuilder',
                     settingsCmp: this,
-                    javaClass: "com.untangle.node.shield.ShieldRuleCondition",
+                    javaClass: "com.untangle.app.shield.ShieldRuleCondition",
                     dataIndex: "conditions",
                     conditions: this.getShieldConditions()
                 }]

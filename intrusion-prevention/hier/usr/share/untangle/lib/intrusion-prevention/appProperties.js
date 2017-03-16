@@ -1,6 +1,6 @@
 {
-        "javaClass": "com.untangle.uvm.node.AppProperties",
-        "className" : "com.untangle.node.intrusion_prevention.IntrusionPreventionApp",
+        "javaClass": "com.untangle.uvm.app.AppProperties",
+        "className" : "com.untangle.app.intrusion_prevention.IntrusionPreventionApp",
         "name" : "intrusion-prevention",
         "displayName" : "Intrusion Prevention",
         "type" : "SERVICE",

@@ -1,6 +1,6 @@
 {
-        "javaClass": "com.untangle.uvm.node.AppProperties",
-        "className" : "com.untangle.node.configuration_backup.ConfigurationBackupApp",
+        "javaClass": "com.untangle.uvm.app.AppProperties",
+        "className" : "com.untangle.app.configuration_backup.ConfigurationBackupApp",
         "name" : "configuration-backup",
         "displayName" : "Configuration Backup",
         "type" : "SERVICE",

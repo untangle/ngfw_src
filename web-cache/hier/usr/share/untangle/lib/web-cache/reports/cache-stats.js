@@ -4,7 +4,7 @@
     "description": "The number of cache hits, misses, and sessions bypassed over time.",
     "displayOrder": 100,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderDesc": false,
     "units": "sessions",
     "readOnly": true,

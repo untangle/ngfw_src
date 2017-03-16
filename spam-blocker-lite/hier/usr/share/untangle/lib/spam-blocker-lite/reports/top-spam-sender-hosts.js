@@ -4,7 +4,7 @@
     "description": "The number of IP addresses sending spam.",
     "displayOrder": 202,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",
     "orderDesc": true,
     "units": "msgs",
@@ -13,13 +13,13 @@
     "conditions": [
         {
             "column": "spam_blocker_lite_is_spam",
-            "javaClass": "com.untangle.node.reports.SqlCondition",
+            "javaClass": "com.untangle.app.reports.SqlCondition",
             "operator": "=",
             "value": "true"
         },
         {
             "column": "addr_kind",
-            "javaClass": "com.untangle.node.reports.SqlCondition",
+            "javaClass": "com.untangle.app.reports.SqlCondition",
             "operator": "=",
             "value": "B"
         }

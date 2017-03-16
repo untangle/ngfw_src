@@ -4,7 +4,7 @@
     "description": "The amount of blocked sessions over time.",
     "displayOrder": 101,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderDesc": false,
     "units": "hits",
     "readOnly": true,
@@ -15,7 +15,7 @@
     "conditions": [
         {
             "column": "filter_prefix",
-            "javaClass": "com.untangle.node.reports.SqlCondition",
+            "javaClass": "com.untangle.app.reports.SqlCondition",
             "operator": "=",
             "value": "shield_blocked"
         }

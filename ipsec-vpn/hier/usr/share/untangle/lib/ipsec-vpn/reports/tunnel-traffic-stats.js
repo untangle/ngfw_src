@@ -4,7 +4,7 @@
     "description": "The amount of traffic for each IPsec tunnel.",
     "displayOrder": 90,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",
     "orderDesc": false,
     "units": "bytes",

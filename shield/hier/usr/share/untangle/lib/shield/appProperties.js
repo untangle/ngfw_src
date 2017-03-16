@@ -1,6 +1,6 @@
 {
-        "javaClass": "com.untangle.uvm.node.AppProperties",
-        "className" : "com.untangle.node.shield.ShieldApp",
+        "javaClass": "com.untangle.uvm.app.AppProperties",
+        "className" : "com.untangle.app.shield.ShieldApp",
         "name" : "shield",
         "displayName" : "Shield",
         "type" : "SERVICE",
