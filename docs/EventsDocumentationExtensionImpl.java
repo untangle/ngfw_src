@@ -1,6 +1,6 @@
 /**
  * To use this, rename it ExtensionImpl.java
- * put it in ~/work/src/reports/src/com/untangle/node/reports
+ * put it in ~/work/src/reports/src/com.untangle.app/reports
  * then run rake
  * then restart the UVM and tail console.log
  * It will attempt to print the event object documentation into console.log
@@ -181,7 +181,7 @@ public class ExtensionImpl implements Runnable
         attributeDescriptions.put("blocked","True if blocked, false otherwise");
         attributeDescriptions.put("flagged","True if flagged, false otherwise");
         attributeDescriptions.put("category","The category");
-        attributeDescriptions.put("nodeName","The name of the application");
+        attributeDescriptions.put("appName","The name of the application");
         attributeDescriptions.put("application","The application");
         attributeDescriptions.put("protochain","The protochain");
         attributeDescriptions.put("state","The state");

@@ -6,7 +6,7 @@ package com.untangle.uvm;
 import java.util.List;
 import java.net.InetAddress;
 
-import com.untangle.uvm.node.IPMaskedAddress;
+import com.untangle.uvm.app.IPMaskedAddress;
 import com.untangle.uvm.network.InterfaceStatus;
 import com.untangle.uvm.network.DeviceStatus;
 import com.untangle.uvm.network.InterfaceSettings;

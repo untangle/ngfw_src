@@ -19,7 +19,7 @@ Ext.define('Ung.apps.openvpn.view.Status', {
         items: [{
             xtype: 'component',
             cls: 'app-desc',
-            html: '<img src="/skins/modern-rack/images/admin/apps/untangle-node-openvpn_80x80.png" width="80" height="80"/>' +
+            html: '<img src="/skins/modern-rack/images/admin/apps/openvpn_80x80.png" width="80" height="80"/>' +
                 '<h3>OpenVPN</h3>' +
                 '<p>' + 'OpenVPN provides secure network access and tunneling to remote users and sites using the OpenVPN protocol.'.t() + '</p>'
         }, {
@@ -145,19 +145,21 @@ Ext.define('Ung.apps.openvpn.view.Status', {
 
         }, {
             xtype: 'appreports'
-        }, {
-            xtype: 'appremove'
         }]
     }, {
         region: 'west',
-        xtype: 'appmetrics',
         border: false,
         width: 350,
         minWidth: 300,
         split: true,
-        collapsible: true,
-        titleCollapse: true,
-        animCollapse: false
+        layout: 'fit',
+        items: [{
+            xtype: 'appmetrics',
+        }],
+        bbar: [{
+            xtype: 'appremove',
+            width: '100%'
+        }]
     }]
 
 });

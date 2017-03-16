@@ -7,7 +7,7 @@
     "defaultColumns": ["time_stamp","address","key","value"],
     "description": "All updates to users in the user table.",
     "displayOrder": 1010,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "table": "user_table_updates",
     "title": "Users Events"
 }

@@ -1,0 +1,17 @@
+#!/bin/sh
+
+# make sure all of the modules we need are loaded
+modprobe ah4
+modprobe ah6
+modprobe esp4
+modprobe esp6
+modprobe xfrm4_tunnel
+modprobe xfrm6_tunnel
+modprobe xfrm_user
+modprobe ip_tunnel
+modprobe tunnel4
+modprobe tunnel6
+modprobe xfrm4_mode_tunnel
+modprobe xfrm6_mode_tunnel
+modprobe xfrm_ipcomp
+modprobe deflate

@@ -139,7 +139,7 @@ diff -urN python-jsonrpc-r19/jsonrpc/modpywrapper.py python-jsonrpc-r19.modified
 diff -urN python-jsonrpc-r19/jsonrpc/proxy.py python-jsonrpc-r19.modified//jsonrpc/proxy.py
 --- python-jsonrpc-r19/jsonrpc/proxy.py	2007-06-03 15:08:20.000000000 -0700
 +++ python-jsonrpc-r19.modified//jsonrpc/proxy.py	2014-05-08 12:31:28.000000000 -0700
-@@ -19,31 +19,97 @@
+@@ -19,31 +19,112 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  """
  
@@ -213,14 +213,29 @@ diff -urN python-jsonrpc-r19/jsonrpc/proxy.py python-jsonrpc-r19.modified//jsonr
 +        if resp.has_key( 'error' ) and resp['error'] != None:
 +            print "A little error: ", resp['error']
 +            raise JSONRPCException(resp['error'])
++        self.__fix_callable_refs( resp )
 +        result = resp['result']
-+        if ( type( result ) is types.DictType ) and result.has_key( 'JSONRPCType' ) and ( result['JSONRPCType'] == "CallableReference" ) and result.has_key( 'objectID' ):
-+            return ServiceProxy(self.__serviceURL, ".obj#%s" % result['objectID'], self.__handler, self.nonce)
 +
 +        if resp.has_key( 'fixups' ) and type( resp['fixups'] ) is types.ListType:
 +            self.__handle_fixups__( result, resp['fixups'] )
 +        
 +        return result
++
++    def __fix_callable_refs( self, json_obj ):
++        if json_obj == None:
++            return
++        if type( json_obj ) is types.ListType:
++            for index,v in enumerate(json_obj):
++                if ( type( v ) is types.DictType ) and v.has_key( 'JSONRPCType' ) and ( v['JSONRPCType'] == "CallableReference" ) and v.has_key( 'objectID' ):
++                    json_obj[index] = ServiceProxy(self.__serviceURL, ".obj#%s" % v['objectID'], self.__handler, self.nonce)
++                else:
++                    self.__fix_callable_refs( v )
++        if type( json_obj ) is types.DictType:
++            for k, v in json_obj.items():
++                if ( type( v ) is types.DictType ) and v.has_key( 'JSONRPCType' ) and ( v['JSONRPCType'] == "CallableReference" ) and v.has_key( 'objectID' ):
++                    json_obj[k] = ServiceProxy(self.__serviceURL, ".obj#%s" % v['objectID'], self.__handler, self.nonce)
++                else:
++                    self.__fix_callable_refs( v )
 +
 +    def __handle_fixups__( self, result, fixups ):
 +        ## Iterate all of the fixups, 

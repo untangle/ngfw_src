@@ -19,10 +19,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.node.SessionTuple;
-import com.untangle.uvm.node.Node;
-import com.untangle.uvm.node.NodeSettings;
-import com.untangle.uvm.node.PolicyManager;
+import com.untangle.uvm.app.SessionTuple;
+import com.untangle.uvm.app.App;
+import com.untangle.uvm.app.AppSettings;
+import com.untangle.uvm.app.PolicyManager;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Subscription;
 
@@ -34,7 +34,7 @@ import com.untangle.uvm.vnet.SessionEventHandler;
 
 /**
  * Implements PipelineFoundry.
- * PipelineFoundry is responsible for building a list of processing nodes for each session
+ * PipelineFoundry is responsible for building a list of processing apps for each session
  *
  * When new sessions are created weld() is called to create the list of <code>PipelineConnectors</code>
  * weld() first finds a list of all PipelineConnectors for the given policyId and fitting type (stream, http, etc)
@@ -83,7 +83,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
 
     /**
      * "weld" is builds a list of all the interested pipelineAgents for a given session
-     * It does so based on the given policyId and all the nodes/apps given subscriptions.
+     * It does so based on the given policyId and all the apps/apps given subscriptions.
      */
     public List<PipelineConnectorImpl> weld( Long sessionId, SessionTuple sessionTuple, Integer policyId, boolean includePremium )
     {
@@ -141,7 +141,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
          * We now iterate through each and remove ones that are not interested
          */
         long ft0 = System.nanoTime();
-        String nodeList = "nodes: [ ";
+        String appList = "apps: [ ";
         for (Iterator<PipelineConnectorImpl> i = pipelineConnectorList.iterator(); i.hasNext();) {
             PipelineConnectorImpl pipelineConnector = i.next();
 
@@ -153,17 +153,17 @@ public class PipelineFoundryImpl implements PipelineFoundry
                 i.remove(); 
             } else {
                 // keep in pipelineConnectorList
-                nodeList += pipelineConnector.getName() + " ";
+                appList += pipelineConnector.getName() + " ";
             }
         }
-        nodeList += "]";
+        appList += "]";
         long ft1 = System.nanoTime();
 
         Long t1 = System.nanoTime();
         if (logger.isDebugEnabled()) {
             logger.debug("session_id: " + sessionId +
                          " policyId: " + policyId + " " +
-                         nodeList );
+                         appList );
             logger.debug("session_id: " + sessionId +
                          " total time: " + (t1 - t0) +
                          " weld time: " + (ct1 - ct0) +
@@ -173,14 +173,14 @@ public class PipelineFoundryImpl implements PipelineFoundry
         return pipelineConnectorList;
     }
 
-    public PipelineConnector create( String name, Node node, Subscription subscription, SessionEventHandler listener, Fitting inputFitting, Fitting outputFitting, Affinity affinity, Integer affinityStrength, boolean premium )
+    public PipelineConnector create( String name, App app, Subscription subscription, SessionEventHandler listener, Fitting inputFitting, Fitting outputFitting, Affinity affinity, Integer affinityStrength, boolean premium )
     {
-        return new PipelineConnectorImpl( name, node, subscription, listener, inputFitting, outputFitting, affinity, affinityStrength, premium, null );
+        return new PipelineConnectorImpl( name, app, subscription, listener, inputFitting, outputFitting, affinity, affinityStrength, premium, null );
     }
 
-    public PipelineConnector create( String name, Node node, Subscription subscription, SessionEventHandler listener, Fitting inputFitting, Fitting outputFitting, Affinity affinity, Integer affinityStrength, boolean premium, String buddy )
+    public PipelineConnector create( String name, App app, Subscription subscription, SessionEventHandler listener, Fitting inputFitting, Fitting outputFitting, Affinity affinity, Integer affinityStrength, boolean premium, String buddy )
     {
-        return new PipelineConnectorImpl( name, node, subscription, listener, inputFitting, outputFitting, affinity, affinityStrength, premium, buddy );
+        return new PipelineConnectorImpl( name, app, subscription, listener, inputFitting, outputFitting, affinity, affinityStrength, premium, buddy );
     }
     
     /**
@@ -275,13 +275,13 @@ public class PipelineFoundryImpl implements PipelineFoundry
 
                     pipelineConnectorList = new LinkedList<PipelineConnectorImpl>();
 
-                    List<PipelineConnectorImpl> availablePipelineConnectorsNodes = new LinkedList<PipelineConnectorImpl>( this.pipelineConnectors );
+                    List<PipelineConnectorImpl> availablePipelineConnectorsApps = new LinkedList<PipelineConnectorImpl>( this.pipelineConnectors );
 
-                    removeUnnecessaryPipelineConnectors( policyId, availablePipelineConnectorsNodes, includePremium );
-                    printPipelineConnectorList( "available connectors: ", availablePipelineConnectorsNodes );
+                    removeUnnecessaryPipelineConnectors( policyId, availablePipelineConnectorsApps, includePremium );
+                    printPipelineConnectorList( "available connectors: ", availablePipelineConnectorsApps );
 
                     addPipelineConnectors( pipelineConnectorList,
-                                           availablePipelineConnectorsNodes,
+                                           availablePipelineConnectorsApps,
                                            fitting, policyId );
 
                     fittingCache.put( fitting, pipelineConnectorList );
@@ -316,7 +316,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
             /**
              * If this pipelineConnector is not on this policy, skip it
              */
-            if ( ! policyMatch( pipelineConnector.getNode().getNodeSettings().getPolicyId(), policyId) )
+            if ( ! policyMatch( pipelineConnector.getApp().getAppSettings().getPolicyId(), policyId) )
                 continue;
             
 
@@ -377,7 +377,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
     }
 
     /**
-     * Remove "duplicate" nodes from a given pipeline of pipelineConnectors
+     * Remove "duplicate" apps from a given pipeline of pipelineConnectors
      * For example, if there are two Web Filters in a given list, it will remove the one from the parent rack.
      */
     private void removeUnnecessaryPipelineConnectors( Integer policyId, List<PipelineConnectorImpl> acList, boolean includePremium )
@@ -385,11 +385,11 @@ public class PipelineFoundryImpl implements PipelineFoundry
         Map<String, Integer> numParents = new HashMap<String, Integer>();
         Map<PipelineConnectorImpl, Integer> fittingDistance = new HashMap<PipelineConnectorImpl, Integer>();
 
-        List<String> enabledNodesInPolicy = new LinkedList<String>();
-        List<Node> nodesInPolicy = UvmContextFactory.context().nodeManager().nodeInstances( policyId );
-        for (Node node : nodesInPolicy) {
-            if (node.getRunState() == NodeSettings.NodeState.RUNNING)
-                enabledNodesInPolicy.add(node.getNodeProperties().getName());
+        List<String> enabledAppsInPolicy = new LinkedList<String>();
+        List<App> appsInPolicy = UvmContextFactory.context().appManager().appInstances( policyId );
+        for (App app : appsInPolicy) {
+            if (app.getRunState() == AppSettings.AppState.RUNNING)
+                enabledAppsInPolicy.add(app.getAppProperties().getName());
         }
 
         /**
@@ -409,69 +409,69 @@ public class PipelineFoundryImpl implements PipelineFoundry
         for (Iterator<PipelineConnectorImpl> i = acList.iterator(); i.hasNext();) {
             PipelineConnectorImpl pipelineConnector = i.next();
 
-            Integer nodePolicyId = pipelineConnector.node().getNodeSettings().getPolicyId();
+            Integer appPolicyId = pipelineConnector.app().getAppSettings().getPolicyId();
 
-            if (nodePolicyId == null) {
+            if (appPolicyId == null) {
                 continue;
             }
 
-            String nodeName = pipelineConnector.node().getNodeProperties().getName();
+            String appName = pipelineConnector.app().getAppProperties().getName();
 
             /**
              * Remove the items that are not enabled in this policy
              * This is to ensure that if an app is in the child and not enabled, it is not inherited from the parent
              */
-            if (!enabledNodesInPolicy.contains(nodeName)) {
+            if (!enabledAppsInPolicy.contains(appName)) {
                 i.remove();
                 continue;
             }
 
 
-            Integer n = numParents.get(nodeName);
-            int distance = getPolicyGenerationDiff(policyId, nodePolicyId);
+            Integer n = numParents.get(appName);
+            int distance = getPolicyGenerationDiff(policyId, appPolicyId);
 
             if (distance < 0) {
-                /* Removing nodes that are not in this policy */
-                logger.debug("The policy " + policyId + " is not a child of " + nodePolicyId);
+                /* Removing apps that are not in this policy */
+                logger.debug("The policy " + policyId + " is not a child of " + appPolicyId);
                 i.remove();
                 continue;
             }
 
             fittingDistance.put(pipelineConnector, distance);
 
-            /* If an existing node is closer then this node, remove this node. */
+            /* If an existing app is closer then this app, remove this app. */
             if (n == null) {
                 /**
-                 * If we haven't seen another node at any distance, add it to
+                 * If we haven't seen another app at any distance, add it to
                  * the hash
                  */
-                numParents.put(nodeName, distance);
+                numParents.put(appName, distance);
                 continue;
             } else if (distance == n) {
-                /* Keep nodes at the same distance */
+                /* Keep apps at the same distance */
                 continue;
             } else if (distance < n) {
                 /**
-                 * Current node is closer then the other one, have to remove the
-                 * other node done on another iteration
+                 * Current app is closer then the other one, have to remove the
+                 * other app done on another iteration
                  */
-                numParents.put(nodeName, distance);
+                numParents.put(appName, distance);
             }
         }
 
         for (Iterator<PipelineConnectorImpl> i = acList.iterator(); i.hasNext();) {
             PipelineConnectorImpl pipelineConnector = i.next();
 
-            Integer nodePolicyId = pipelineConnector.node().getNodeSettings().getPolicyId();
+            Integer appPolicyId = pipelineConnector.app().getAppSettings().getPolicyId();
 
             /* Keep items in the NULL Racks */
-            if (nodePolicyId == null) {
+            if (appPolicyId == null) {
                 continue;
             }
 
-            String nodeName = pipelineConnector.node().getNodeProperties().getName();
+            String appName = pipelineConnector.app().getAppProperties().getName();
 
-            Integer n = numParents.get(nodeName);
+            Integer n = numParents.get(appName);
 
             if (n == null) {
                 logger.warn("numParents null for non-null policy.");
@@ -504,7 +504,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
      */
     public int getPolicyGenerationDiff(Integer childId, Integer parentId)
     {
-        PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().nodeManager().node("untangle-node-policy-manager");
+        PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().appManager().app("policy-manager");
 
         if ( policyManager != null )
             return policyManager.getPolicyGenerationDiff( childId, parentId );
@@ -521,24 +521,24 @@ public class PipelineFoundryImpl implements PipelineFoundry
     }
 
     /**
-     * This returns true if the nodePolicy would process the session on policyId
-     * This is true if nodePolicy == null (its a service app and thus processes all sessions)
-     * This is true if policyId == nodePolicy (its a filtering app and lives in the policyId rack)
-     * or if one of policyId's parents' policyId == nodePolicy. (its a filtering app and lives one of policyId rack's parents, grandparents, etc)
+     * This returns true if the appPolicy would process the session on policyId
+     * This is true if appPolicy == null (its a service app and thus processes all sessions)
+     * This is true if policyId == appPolicy (its a filtering app and lives in the policyId rack)
+     * or if one of policyId's parents' policyId == appPolicy. (its a filtering app and lives one of policyId rack's parents, grandparents, etc)
      */
-    private boolean policyMatch( Integer nodePolicy, Integer policyId )
+    private boolean policyMatch( Integer appPolicy, Integer policyId )
     {
-        PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().nodeManager().node("untangle-node-policy-manager");
+        PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().appManager().app("policy-manager");
 
         /**
-         * If nodePolicy is null its a service so it matches all policies
+         * If appPolicy is null its a service so it matches all policies
          */
-        if ( nodePolicy == null )
+        if ( appPolicy == null )
             return true;
 
         /**
          * policyId == null means "No Rack"
-         * so no nodes match this policy (except services which are handled above)
+         * so no apps match this policy (except services which are handled above)
          */
         if ( policyId == null ) {
             return false;
@@ -547,7 +547,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
         /**
          * Otherwise test for equality
          */
-        if ( policyId.equals(nodePolicy) )
+        if ( policyId.equals(appPolicy) )
             return true;
 
         /**
@@ -557,15 +557,15 @@ public class PipelineFoundryImpl implements PipelineFoundry
             return false;
 
         /**
-         * Recursively check the parent rack of the nodePolicy
+         * Recursively check the parent rack of the appPolicy
          */
         for ( Integer parentId = policyManager.getParentPolicyId( policyId ) ; parentId != null ; parentId = policyManager.getParentPolicyId( parentId ) ) {
             /**
-             * does this node live in the parent of the session's policy?
-             * if so then this node should process this session
+             * does this app live in the parent of the session's policy?
+             * if so then this app should process this session
              * dupes will be removed later...
              */
-            if ( parentId.equals( nodePolicy ) )
+            if ( parentId.equals( appPolicy ) )
                 return true;
         }
 

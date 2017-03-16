@@ -25,7 +25,7 @@ public class UvmState implements Serializable
 
     /**
      * Initialized, but not running. We've run init() but not yet started
-     * the nodes or Tomcat.
+     * the apps or Tomcat.
      */
     public static final UvmState INITIALIZED;
 

@@ -58,7 +58,7 @@ Ext.define ('Ung.model.Rule', {
         // { name: 'category', type: 'string', defaultValue: null },
         // { name: 'id', defaultValue: null },
         // { name: 'readOnly', type: 'boolean', defaultValue: null },
-        // { name: 'javaClass', type: 'string', defaultValue: 'com.untangle.node.bandwidth_control.BandwidthControlRule' },
+        // { name: 'javaClass', type: 'string', defaultValue: 'com.untangle.app.bandwidth_control.BandwidthControlRule' },
 
         // { name: 'action', type: 'auto'},
         // { name: 'actionType', type: 'string', mapping: 'action.actionType', defaultValue: 'SET_PRIORITY' },

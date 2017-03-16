@@ -9,8 +9,8 @@ import org.json.JSONObject;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.node.RuleCondition;
-import com.untangle.uvm.node.GlobMatcher;
+import com.untangle.uvm.app.RuleCondition;
+import com.untangle.uvm.app.GlobMatcher;
 
 /**
  * This is a matching criteria for a Event Control Rule

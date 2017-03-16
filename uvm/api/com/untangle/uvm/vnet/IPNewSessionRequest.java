@@ -5,8 +5,8 @@ package com.untangle.uvm.vnet;
 
 import java.net.InetAddress;
 
-import com.untangle.uvm.node.SessionEvent;
-import com.untangle.uvm.node.SessionTuple;
+import com.untangle.uvm.app.SessionEvent;
+import com.untangle.uvm.app.SessionTuple;
 
 /**
  * The new IP session request interface
@@ -64,8 +64,8 @@ public interface IPNewSessionRequest extends NewSessionRequest
 
     /**
      * Release this session from processing.
-     * If called in the SessionRequest handler, the session is entirely released from this node
-     * If called later, then the session still flows through this node, but no events are called.
+     * If called in the SessionRequest handler, the session is entirely released from this app
+     * If called later, then the session still flows through this app, but no events are called.
      */
     void release();
 

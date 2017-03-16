@@ -17,7 +17,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.node.SessionEvent;
+import com.untangle.uvm.app.SessionEvent;
 import com.untangle.uvm.UvmContextFactory;
 
 /*

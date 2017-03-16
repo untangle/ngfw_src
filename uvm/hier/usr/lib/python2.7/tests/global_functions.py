@@ -2,12 +2,14 @@ import os
 import sys
 import subprocess
 import time
-import datetime
 import re
 import socket
 import fcntl
 import struct
 import commands
+import datetime
+import random
+import string
 
 import remote_control
 import ipaddr
@@ -34,11 +36,10 @@ vpnServerVpnLanIP = "192.168.235.96"
 # special box with testshell in the sudoer group  - used to connect to vpn as client
 vpnClientVpnIP = "10.111.5.20"  
 
-smtpServerHost = 'test.untangle.com'
-tlsSmtpServerHost = '10.112.56.44'  # Vcenter VM Debian-ATS-TLS 
+testServerHost = 'test.untangle.com'
 # DNS MX record on 10.111.56.57 for domains untangletestvm.com and untangletest.com
-listFakeSmtpServerHosts = [('10.111.5.20','16','untangletest.com'),# Office network
-                            ('10.112.56.30','16','untangletestvm.com')]# ATS VM
+listSyslogServerHosts = [('10.111.5.20','16'),# Office network
+                            ('10.112.56.30','16')]# ATS VM
 
 accountFileServer = "10.112.56.44"
 accountFile = "/tmp/account_login.json"
@@ -47,7 +48,9 @@ uvmContext = Uvm().getUvmContext(timeout=120)
 uvmContextLongTimeout = Uvm().getUvmContext(timeout=300)
 prefix = "@PREFIX@"
 
-def getIpAddress(base_URL="test.untangle.com",extra_options="",localcall=False):
+test_start_time = None
+
+def get_public_ip_address(base_URL="test.untangle.com",extra_options="",localcall=False):
     timeout = 4
     result = ""
     while result == "" and timeout > 0:
@@ -55,10 +58,10 @@ def getIpAddress(base_URL="test.untangle.com",extra_options="",localcall=False):
         if localcall:
             result = subprocess.check_output("wget --timeout=4 " + extra_options + " -q -O - \"$@\" test.untangle.com/cgi-bin/myipaddress.py", shell=True)
         else:
-            result = remote_control.runCommand("wget --timeout=4 " + extra_options + " -q -O - \"$@\" " + base_URL + "/cgi-bin/myipaddress.py",stdout=True)
+            result = remote_control.run_command("wget --timeout=4 " + extra_options + " -q -O - \"$@\" " + base_URL + "/cgi-bin/myipaddress.py",stdout=True)
     return result
     
-def verifyIperf(wanIP):
+def verify_iperf_configuration(wanIP):
     # https://iperf.fr/
     global iperfServer
     # check if there is an iperf server on the same network
@@ -75,29 +78,29 @@ def verifyIperf(wanIP):
         print "iperf Server is unreachable."
         return False
     # Check to see if some other test is using iperf for UDP testing
-    iperfRunning = remote_control.runCommand("pidof iperf", host=iperfServer)
+    iperfRunning = remote_control.run_command("pidof iperf", host=iperfServer)
     if iperfRunning == 0:
         print "iperf is already running on server."
         return False
     # Check that the client has iperf
-    clientHasIperf = remote_control.runCommand("test -x /usr/bin/iperf")
+    clientHasIperf = remote_control.run_command("test -x /usr/bin/iperf")
     if clientHasIperf != 0:
         print "iperf not installed on client."
         return False
     return True
 
-def findSmtpServer(wan_IP):
+def find_syslog_server(wan_IP):
     smtp_IP = ""
     smtp_domain = "";
     match = False
-    for smtpServerHostIP in listFakeSmtpServerHosts:
-        interfaceNet = smtpServerHostIP[0] + "/" + str(smtpServerHostIP[1])
+    for syslogerverHostIP in listSyslogServerHosts:
+        interfaceNet = syslogerverHostIP[0] + "/" + str(syslogerverHostIP[1])
         if ipaddr.IPAddress(wan_IP) in ipaddr.IPv4Network(interfaceNet):
             match = True
             break
 
         # Verify that it will pass through our WAN network
-        result = subprocess.check_output("traceroute -n -w 1 -q 1 " + smtpServerHostIP[0], shell=True)
+        result = subprocess.check_output("traceroute -n -w 1 -q 1 " + syslogerverHostIP[0], shell=True)
         space_split = result.split("\n")[1].strip().split()
         if len(space_split) > 1:
             try:
@@ -108,12 +111,11 @@ def findSmtpServer(wan_IP):
                 continue
 
     if match is True:
-        smtp_IP = smtpServerHostIP[0]
-        smtp_domain = smtpServerHostIP[2]
+        syslog_IP = syslogerverHostIP[0]
 
-    return smtp_IP,smtp_domain
+    return syslog_IP
 
-def getUDPSpeed( receiverIP, senderIP, targetIP=None, targetRate=None ):
+def get_udp_download_speed( receiverIP, senderIP, targetIP=None, targetRate=None ):
     if targetIP == None:
         targetIP = receiverIP
     if targetRate == None:
@@ -121,17 +123,17 @@ def getUDPSpeed( receiverIP, senderIP, targetIP=None, targetRate=None ):
 
     # Use iperf to get UDP speed.  Returns number the udp speed
     # start iperf receivier on server
-    remote_control.runCommand("iperf -s -p 5000 -u >/dev/null 2>&1 &", host=receiverIP)
+    remote_control.run_command("iperf -s -p 5000 -u >/dev/null 2>&1 &", host=receiverIP)
     # start the UDP generator on the client behind the Untangle.
     iperf_tries = 5
     while iperf_tries > 0:  # try iperf a few times if it fails to send UDP packets correctly.
-        report=remote_control.runCommand("iperf -c " + targetIP + " -u -p 5000 -b " + targetRate + " -t 10 -fK", host=senderIP, stdout=True)
+        report=remote_control.run_command("iperf -c " + targetIP + " -u -p 5000 -b " + targetRate + " -t 10 -fK", host=senderIP, stdout=True)
         if '%' in report:
             break
         else:
             iperf_tries -= 1
     # kill iperf receiver    
-    remote_control.runCommand("pkill iperf", host=receiverIP)
+    remote_control.run_command("pkill iperf", host=receiverIP)
 
     lines = report.split("\n")
     udp_speed = None
@@ -145,10 +147,10 @@ def getUDPSpeed( receiverIP, senderIP, targetIP=None, targetRate=None ):
             break
     return udp_speed
 
-def getDownloadSpeed():
+def get_download_speed():
     try:
         # Download file and record the average speed in which the file was download
-        result = remote_control.runCommand("wget -t 3 --timeout=60 -O /dev/null -o /dev/stdout http://test.untangle.com/5MB.zip 2>&1 | tail -2", stdout=True)
+        result = remote_control.run_command("wget -t 3 --timeout=60 -O /dev/null -o /dev/stdout http://test.untangle.com/5MB.zip 2>&1 | tail -2", stdout=True)
         match = re.search(r'([0-9.]+) [KM]B\/s', result)
         bandwidth_speed =  match.group(1)
         # cast string to float for comparsion.
@@ -162,7 +164,7 @@ def getDownloadSpeed():
         return None
 
 def get_events( eventEntryCategory, eventEntryTitle, conditions, limit ):
-    reports = uvmContextLongTimeout.nodeManager().node("untangle-node-reports")
+    reports = uvmContextLongTimeout.appManager().app("reports")
     if reports == None:
         print "WARNING: reports app not found"
         return None
@@ -176,7 +178,13 @@ def get_events( eventEntryCategory, eventEntryTitle, conditions, limit ):
         print "WARNING: Event entry not found: %s %s" % (eventEntryCategory, eventEntryTitle)
         return None
 
-    return reportsManager.getEvents( reportEntry, conditions, limit )
+    events = reportsManager.getEvents( reportEntry, conditions, limit )
+    if events == None:
+        return None
+
+    return events
+    # FIXME we should return the array instead
+    # return events.get('list')
 
 def find_event( events, num_events, *args, **kwargs):
     if events == None:
@@ -187,7 +195,7 @@ def find_event( events, num_events, *args, **kwargs):
         print "No events in list"
         return None
     if kwargs.get('min_date') == None:
-        min_date = datetime.datetime.now()-datetime.timedelta(minutes=12)
+        min_date = test_start_time
     else:
         min_date = kwargs.get('min_date')
     if (len(args) % 2) != 0:
@@ -242,27 +250,27 @@ def find_event( events, num_events, *args, **kwargs):
 def check_events( events, num_events, *args, **kwargs):
     return (find_event( events, num_events, *args, **kwargs) != None)
 
-def isInOfficeNetwork(wanIP):
+def is_in_office_network(wanIP):
     for officeNetworkTest in officeNetworks:
         if ipaddr.IPv4Address(wanIP) in ipaddr.IPv4Network(officeNetworkTest):
             return True
             break
     return False
 
-def isBridged(wanIP):
-    result = remote_control.runCommand("ip -o -f inet addr show",stdout=True)
+def is_bridged(wanIP):
+    result = remote_control.run_command("ip -o -f inet addr show",stdout=True)
     match = re.search(r'\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}\/\d{1,3} brd', result)
     hostname_cidr = (match.group()).replace(' brd','')
     if ipaddr.IPv4Address(wanIP) in ipaddr.IPv4Network(hostname_cidr):
         return True
     return False
     
-def sendTestmessage(mailhost=smtpServerHost):
-    sender = 'test@example.com'
-    receivers = ['qa@example.com']
+def send_test_email(mailhost=testServerHost):
+    sender = 'atstest@test.untangle.com'
+    receivers = ['atstest@test.untangle.com']
 
-    message = """From: Test <test@example.com>
-    To: Test Group <qa@example.com>
+    message = """From: Test <atstest@test.untangle.com>
+    To: Test Group <atstest@test.untangle.com>
     Subject: SMTP e-mail test
 
     This is a test e-mail message.
@@ -277,8 +285,8 @@ def sendTestmessage(mailhost=smtpServerHost):
        print "Error: unable to send email through " + mailhost + " " + str(e)
        return 0
 
-def getStatusValue(node, label):
-    metric = node.getMetric(label)
+def get_app_metric_value(app, label):
+    metric = app.getMetric(label)
     if metric == None:
         print "Missing metric: %s"%str(label) 
         return 0
@@ -287,7 +295,7 @@ def getStatusValue(node, label):
         return 0
     return metric.get('value')
 
-def getLiveAccountInfo(accounttype):
+def get_live_account_info(accounttype):
     # Tries to file account password file and returns account and password if available
     accountFileServerPing = subprocess.call(["ping","-c","1",accountFileServer],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
     if accountFileServerPing != 0:
@@ -306,7 +314,7 @@ def getLiveAccountInfo(accounttype):
             return (account[1], account[2])
     return ("message",accounttype + " account not found")
 
-def foundWans():
+def get_wan_tuples():
     myWANs = []
     netsettings = uvmContext.networkManager().getNetworkSettings()
     for interface in netsettings['interfaces']['list']:
@@ -323,7 +331,7 @@ def foundWans():
                 wanIP = __get_ip_address(nicDevice)
                 wanGateway = __get_gateway(nicDevice)
             if wanIP:
-                wanExtIP = getIpAddress(extra_options="--bind-address=" + wanIP,localcall=True)
+                wanExtIP = get_public_ip_address(extra_options="--bind-address=" + wanIP,localcall=True)
                 wanExtIP = wanExtIP.rstrip()
                 wanTup = (wanIndex,wanIP,wanExtIP,wanGateway)
                 myWANs.append(wanTup)
@@ -349,6 +357,85 @@ def get_https_url():
     httpsAdminUrl = "https://" + ip + ":" + httpsPort + "/"
     return httpsAdminUrl
 
+def get_test_start_time():
+    global test_start_time
+    return test_start_time
+
+def set_test_start_time():
+    global test_start_time
+    test_start_time = datetime.datetime.now()
+
+def set_previous_test_name( name ):
+    global previous_test_name
+    previous_test_name = name
+
+def get_previous_test_name():
+    global previous_test_name
+    return previous_test_name
+  
+def host_username_set(username):
+    entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
+    entry['usernameDirectoryConnector'] = username
+    uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
+
+def host_username_clear():
+    entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
+    entry['usernameDirectoryConnector'] = None
+    uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
+
+def host_tags_add(str):
+    entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
+    entry['tags']['list'].append( {
+        "javaClass": "com.untangle.uvm.Tag",
+        "name": str,
+        "expirationTime": 0
+    } )
+    uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
+
+def host_tags_clear():
+    entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
+    entry['tags']['list'] = []
+    uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
+    
+def host_hostname_set(str):
+    entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
+    entry['hostnameDhcp'] = str
+    uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
+
+def host_hostname_clear():
+    entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
+    entry['hostnameDhcp'] = None
+    uvmContext.hostTable().setHostTableEntry( remote_control.clientIP, entry )
+
+def host_quota_clear():
+    uvmContext.hostTable().removeQuota( remote_control.clientIP )
+
+def host_quota_give(bytes_size, seconds):
+    uvmContext.hostTable().giveHostQuota( remote_control.clientIP, bytes_size, seconds, "test" )
+
+def user_tags_add(username, str):
+    entry = uvmContext.userTable().getUserTableEntry( username, True )
+    entry['tags']['list'].append( {
+        "javaClass": "com.untangle.uvm.Tag",
+        "name": str,
+        "expirationTime": 0
+    } )
+    uvmContext.userTable().setUserTableEntry( username, entry )
+
+def user_tags_clear(username):
+    entry = uvmContext.userTable().getUserTableEntry( username, True )
+    entry['tags']['list'] = []
+    uvmContext.userTable().setUserTableEntry( username, entry )
+
+def user_quota_clear(username):
+    uvmContext.userTable().removeQuota( username )
+
+def user_quota_give(username, bytes_size, seconds):
+    uvmContext.userTable().giveUserQuota( username, bytes_size, seconds, "test" )
+    
+def random_email(length=10):
+   return ''.join(random.choice(string.lowercase) for i in range(length)) + "@" + testServerHost
+    
 def __get_ip_address(ifname):
     print "ifname <%s>" % ifname
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)

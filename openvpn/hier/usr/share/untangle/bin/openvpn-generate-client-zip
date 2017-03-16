@@ -18,7 +18,7 @@ if [ -z "${siteName}" ]; then
     exit -3
 fi
 
-SETTINGS_DIR="@PREFIX@/usr/share/untangle/settings/untangle-node-openvpn"
+SETTINGS_DIR="@PREFIX@/usr/share/untangle/settings/openvpn"
 PACKAGE_DIR="/tmp/openvpn/client-packages"
 
 WIN_CONFIG_FILE=${PACKAGE_DIR}/client-${commonName}.ovpn

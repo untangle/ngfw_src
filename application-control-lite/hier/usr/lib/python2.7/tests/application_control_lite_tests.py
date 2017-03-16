@@ -15,14 +15,14 @@ import test_registry
 import global_functions
 
 defaultRackId = 1
-node = None
+app = None
 
 def nukepatterns():
-    settings = node.getSettings()
+    settings = app.getSettings()
     patterns = settings["patterns"]
     patterns["list"] = [];
     settings["patterns"] = patterns
-    node.setSettings(settings)
+    app.setSettings(settings)
 
 def addPatterns(definition, blocked=False, log=True, protocol="protocol", description="description", category="category"):
     newPatterns = { 
@@ -31,38 +31,38 @@ def addPatterns(definition, blocked=False, log=True, protocol="protocol", descri
                 "category": category, 
                 "definition": definition, 
                 "description": description, 
-                "javaClass": "com.untangle.node.application_control_lite.ApplicationControlLitePattern", 
+                "javaClass": "com.untangle.app.application_control_lite.ApplicationControlLitePattern", 
                 "log": log, 
                 "protocol": protocol, 
                 "quality": ""
     }
 
-    settings = node.getSettings()
+    settings = app.getSettings()
     patterns = settings["patterns"]
     patterns["list"].append(newPatterns)
     settings["patterns"] = patterns
-    node.setSettings(settings)
+    app.setSettings(settings)
 
 class ApplicationControlLiteTests(unittest2.TestCase):
 
     @staticmethod
-    def nodeName():
-        return "untangle-node-application-control-lite"
+    def appName():
+        return "application-control-lite"
 
     @staticmethod
     def initialSetUp(self):
-        global node
-        if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
-            raise Exception('node %s already instantiated' % self.nodeName())
-        node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
-        node.start() # must be called since ad blocker doesn't auto-start
+        global app
+        if (uvmContext.appManager().isInstantiated(self.appName())):
+            raise Exception('app %s already instantiated' % self.appName())
+        app = uvmContext.appManager().instantiate(self.appName(), defaultRackId)
+        app.start() # must be called since ad blocker doesn't auto-start
 
     def setUp(self):
         pass
 
     # verify client is online
     def test_010_clientIsOnline(self):
-        result = remote_control.isOnline()
+        result = remote_control.is_online()
         assert (result == 0)
 
     def test_020_testHttpPatternLog(self):
@@ -72,12 +72,12 @@ class ApplicationControlLiteTests(unittest2.TestCase):
                     protocol="HTTP", 
                     category="Web", 
                     description="HyperText Transfer Protocol")
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         nukepatterns()
         assert (result == 0)
         time.sleep(3);
 
-        events = global_functions.get_events('Application Control Lite','All Events',None,1)
+        events = global_functions.get_events('Application Control Lite','All Events',None,5)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
                                             'c_client_addr', remote_control.clientIP,
@@ -93,11 +93,11 @@ class ApplicationControlLiteTests(unittest2.TestCase):
                     blocked=True,
                     category="Web", 
                     description="HyperText Transfer Protocol")
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
         time.sleep(3);
 
-        events = global_functions.get_events('Application Control Lite','All Events',None,1)
+        events = global_functions.get_events('Application Control Lite','All Events',None,5)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
                                             'c_client_addr', remote_control.clientIP,
@@ -113,7 +113,7 @@ class ApplicationControlLiteTests(unittest2.TestCase):
                     blocked=True,
                     category="Web", 
                     description="File Transfer Protocol")
-        result = remote_control.runCommand("wget -q -O /dev/null -4 -t 2 ftp://test.untangle.com")
+        result = remote_control.run_command("wget -q -O /dev/null -4 -t 2 ftp://test.untangle.com")
         assert (result != 0)
         time.sleep(3);
 
@@ -133,7 +133,7 @@ class ApplicationControlLiteTests(unittest2.TestCase):
                     blocked=False,
                     category="Web", 
                     description="Domain Name System")
-        result = remote_control.runCommand("host -R 1 www.google.com 8.8.8.8")
+        result = remote_control.run_command("host -R 1 www.google.com 8.8.8.8")
         assert (result == 0)
         time.sleep(3);
 
@@ -153,7 +153,7 @@ class ApplicationControlLiteTests(unittest2.TestCase):
                     blocked=True,
                     category="Web", 
                     description="Domain Name System")
-        result = remote_control.runCommand("host -R 1 www.google.com 8.8.8.8")
+        result = remote_control.run_command("host -R 1 www.google.com 8.8.8.8")
         assert (result != 0)
         time.sleep(3);
 
@@ -167,10 +167,10 @@ class ApplicationControlLiteTests(unittest2.TestCase):
 
     @staticmethod
     def finalTearDown(self):
-        global node
-        if node != None:
-            uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
-            node = None
+        global app
+        if app != None:
+            uvmContext.appManager().destroy( app.getAppSettings()["id"] )
+            app = None
         
 
-test_registry.registerNode("application-control-lite", ApplicationControlLiteTests)
+test_registry.registerApp("application-control-lite", ApplicationControlLiteTests)

@@ -13,88 +13,88 @@ import test_registry
 import global_functions
 
 defaultRackId = 1
-node = None
+app = None
 
 def addCookieEnabled(url, enabled=True, description="description"):
-    global node
-    newRule =  { "enabled": enabled, "description": description, "javaClass": "com.untangle.uvm.node.GenericRule", "string": url }
-    rules = node.getCookies()
+    global app
+    newRule =  { "enabled": enabled, "description": description, "javaClass": "com.untangle.uvm.app.GenericRule", "string": url }
+    rules = app.getCookies()
     rules["list"].append(newRule)
-    node.setCookies(rules)
+    app.setCookies(rules)
     
 def addCookieBlockedEnabled(url, enabled=True, description="description"):
-    global node
-    newRule =  { "enabled": enabled, "blocked": "", "description": description, "javaClass": "com.untangle.uvm.node.GenericRule", "string": url }
-    rules = node.getCookies()
+    global app
+    newRule =  { "enabled": enabled, "blocked": "", "description": description, "javaClass": "com.untangle.uvm.app.GenericRule", "string": url }
+    rules = app.getCookies()
     rules["list"].append(newRule)
-    node.setCookies(rules)
+    app.setCookies(rules)
     
 def addRule(url, enabled=True, description="description", blocked=True):
-    global node
-    newRule =  { "enabled": enabled, "description": description, "javaClass": "com.untangle.uvm.node.GenericRule", "string": url, "blocked": blocked }
+    global app
+    newRule =  { "enabled": enabled, "description": description, "javaClass": "com.untangle.uvm.app.GenericRule", "string": url, "blocked": blocked }
     
-    settings = node.getSettings()
+    settings = app.getSettings()
     userList = settings["userRules"]
     userList["list"] = [newRule]
     settings["userRules"] = userList
        
-    node.setSettings(settings) 
+    app.setSettings(settings) 
     
 def nukeRules(listName):
-    settings = node.getSettings()
+    settings = app.getSettings()
     userList = settings[listName]
     userList["list"] = []
     settings[listName] = userList
        
-    node.setSettings(settings) 
+    app.setSettings(settings) 
     
 def addPassRule(url, enabled, listName):
-    global node
-    newRule =  { "enabled": enabled, "description": "description", "javaClass": "com.untangle.uvm.node.GenericRule", "string": url }
+    global app
+    newRule =  { "enabled": enabled, "description": "description", "javaClass": "com.untangle.uvm.app.GenericRule", "string": url }
     
-    settings = node.getSettings()
+    settings = app.getSettings()
     passList = settings[listName]
     passList["list"] = [newRule]
     settings[listName] = passList
            
-    node.setSettings(settings)
+    app.setSettings(settings)
     
 class AdBlockerTests(unittest2.TestCase):
 
     @staticmethod
-    def nodeName():
-        return "untangle-node-ad-blocker"
+    def appName():
+        return "ad-blocker"
 
     @staticmethod
     def initialSetUp(self):
-        global node
-        if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
-            raise Exception('node %s already instantiated' % self.nodeName())
-        node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
-        node.start() # must be called since ad blocker doesn't auto-start
+        global app
+        if (uvmContext.appManager().isInstantiated(self.appName())):
+            raise Exception('app %s already instantiated' % self.appName())
+        app = uvmContext.appManager().instantiate(self.appName(), defaultRackId)
+        app.start() # must be called since ad blocker doesn't auto-start
 
     def setUp(self):
         pass
 
     # verify client is online
     def test_010_clientIsOnline(self):
-        result = remote_control.isOnline()
+        result = remote_control.is_online()
         assert (result == 0)
 
     # check that "ad" is blocked - can't use test.untangle.com because everything *untangle* is ignored
     def test_011_adIsBlocked(self):
-        result = remote_control.runCommand("wget -4 -q -O /dev/null http://ads.pubmatic.com/AdServer/js/showad.js")
+        result = remote_control.run_command("wget -4 -q -O /dev/null http://ads.pubmatic.com/AdServer/js/showad.js")
         assert (result != 0)
          
     def test_012_notBlocked(self):
-        result = remote_control.runCommand("wget -4 -q -O /dev/null http://www.google.com")
+        result = remote_control.run_command("wget -4 -q -O /dev/null http://www.google.com")
         assert (result == 0)
  
     def test_013_eventlog_blockedAd(self):
         fname = sys._getframe().f_code.co_name
         # specify an argument so it isn't confused with other events
         eventTime = datetime.datetime.now()
-        result = remote_control.runCommand("wget -4 -q -O /dev/null http://ads.pubmatic.com/AdServer/js/showad.js?arg=%s" % fname)
+        result = remote_control.run_command("wget -4 -q -O /dev/null http://ads.pubmatic.com/AdServer/js/showad.js?arg=%s" % fname)
         assert ( result != 0 )
 
         events = global_functions.get_events('Ad Blocker','Blocked Ad Events',None,1)
@@ -107,70 +107,70 @@ class AdBlockerTests(unittest2.TestCase):
         
     def test_014_userDefinedAdIsBlocked(self):
         addRule("google.com", True, "description", True)
-        result = remote_control.runCommand("wget -4 -q -O /dev/null http://www.google.com")
+        result = remote_control.run_command("wget -4 -q -O /dev/null http://www.google.com")
         nukeRules("userRules")
         assert (result != 0)
         
     def test_015_userDefinedAdNotBlocked(self):
         addRule("showad.js", True, "description", False)
-        result = remote_control.runCommand("wget -4 -q -O /dev/null http://ads.pubmatic.com/AdServer/js/showad.js")
+        result = remote_control.run_command("wget -4 -q -O /dev/null http://ads.pubmatic.com/AdServer/js/showad.js")
         nukeRules("userRules")
         assert (result == 0)
            
     def test_016_passSiteDisabled(self):
         addPassRule("ads.pubmatic.com", False, "passedUrls")
-        result = remote_control.runCommand("wget -4 -q -O /dev/null http://ads.pubmatic.com/AdServer/js/showad.js")
+        result = remote_control.run_command("wget -4 -q -O /dev/null http://ads.pubmatic.com/AdServer/js/showad.js")
         nukeRules("passedUrls")
         assert (result != 0)
          
     def test_017_passSiteEnabled(self):
         addPassRule("ads.pubmatic.com", True, "passedUrls")
-        result = remote_control.runCommand("wget -4 -q -O /dev/null http://ads.pubmatic.com/AdServer/js/showad.js")
+        result = remote_control.run_command("wget -4 -q -O /dev/null http://ads.pubmatic.com/AdServer/js/showad.js")
         nukeRules("passedUrls")
         assert (result == 0)
         
     def test_018_passClientDisabled(self):
         addPassRule(remote_control.clientIP, False, "passedClients")
-        result = remote_control.runCommand("wget -4 -q -O /dev/null http://ads.pubmatic.com/AdServer/js/showad.js")
+        result = remote_control.run_command("wget -4 -q -O /dev/null http://ads.pubmatic.com/AdServer/js/showad.js")
         nukeRules("passedClients")
         assert (result != 0)
          
     def test_019_passClientEnabled(self):
         addPassRule(remote_control.clientIP, True, "passedClients")
-        result = remote_control.runCommand("wget -4 -q -O /dev/null http://ads.pubmatic.com/AdServer/js/showad.js")
+        result = remote_control.run_command("wget -4 -q -O /dev/null http://ads.pubmatic.com/AdServer/js/showad.js")
         nukeRules("passedClients")
         assert (result == 0)
         
     # verify there is a accuweather cookie
     def test_100_accuweatherCookie(self):
         # remove any previous instance of testcookie.txt
-        remote_control.runCommand("/bin/rm -f testcookie.txt")
+        remote_control.run_command("/bin/rm -f testcookie.txt")
         # see if cookie is downloaded.
-        result = remote_control.runCommand("rm -f /tmp/testcookie.txt ; wget -4 -q -O /dev/null --save-cookies /tmp/testcookie.txt http://accuweather.com/ ; grep -q accuweather.com /tmp/testcookie.txt")
+        result = remote_control.run_command("rm -f /tmp/testcookie.txt ; wget -4 -q -O /dev/null --save-cookies /tmp/testcookie.txt http://accuweather.com/ ; grep -q accuweather.com /tmp/testcookie.txt")
         assert (result == 0)
  
     # verify a accuweather cookie can be blocked
     def test_101_accuweatherCookieEnabled(self):
         addCookieEnabled("accuweather.com")
         # remove any previous instance of testcookie.txt
-        remote_control.runCommand("/bin/rm -f /tmp/testcookie.txt")
+        remote_control.run_command("/bin/rm -f /tmp/testcookie.txt")
         # see if cookie is downloaded.
-        result = remote_control.runCommand("rm -f /tmp/testcookie.txt ; wget -4 -q -O /dev/null --save-cookies /tmp/testcookie.txt http://accuweather.com/ ; grep -q accuweather.com /tmp/testcookie.txt")
+        result = remote_control.run_command("rm -f /tmp/testcookie.txt ; wget -4 -q -O /dev/null --save-cookies /tmp/testcookie.txt http://accuweather.com/ ; grep -q accuweather.com /tmp/testcookie.txt")
         assert (result == 1)
          
     # verify a accuweather cookie can be blocked, but set both "enabled" and "blocked" params
     def test_102_accuweatherCookieBlockedEnabled(self):
         addCookieBlockedEnabled("www.accuweather.com")
         # remove any previous instance of testcookie.txt
-        remote_control.runCommand("/bin/rm -f /tmp/testcookie.txt")
+        remote_control.run_command("/bin/rm -f /tmp/testcookie.txt")
         # see if cookie is downloaded.
-        result = remote_control.runCommand("rm -f /tmp/testcookie.txt ; wget -4 -q -O /dev/null --save-cookies /tmp/testcookie.txt http://www.accuweather.com/ ; grep -q www.accuweather.com /tmp/testcookie.txt")
+        result = remote_control.run_command("rm -f /tmp/testcookie.txt ; wget -4 -q -O /dev/null --save-cookies /tmp/testcookie.txt http://www.accuweather.com/ ; grep -q www.accuweather.com /tmp/testcookie.txt")
         assert (result == 1)
 
     # verify update mechanism
     def test_110_updateAdBlockRules(self):
-        node.updateList()
-        result = node.getListLastUpdate()
+        app.updateList()
+        result = app.getListLastUpdate()
         today_str = datetime.datetime.utcnow().strftime("%d %b %Y")
         yesterday_str = (datetime.datetime.utcnow() - datetime.timedelta(days=1)).strftime("%d %b %Y")
         print "Last Update: \"%s\"" % (result)
@@ -180,10 +180,10 @@ class AdBlockerTests(unittest2.TestCase):
 
     @staticmethod
     def finalTearDown(self):
-        global node
-        if node != None:
-            uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
-        node = None
+        global app
+        if app != None:
+            uvmContext.appManager().destroy( app.getAppSettings()["id"] )
+        app = None
         
 
-test_registry.registerNode("ad-blocker", AdBlockerTests)
+test_registry.registerApp("ad-blocker", AdBlockerTests)

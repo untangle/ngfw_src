@@ -2,68 +2,8 @@ Ext.define('Ung.util.Util', {
     alternateClassName: 'Util',
     singleton: true,
 
-    // node name to class mapping
-    appsMapping: {
-        // 'untangle-node-web-filter': 'webfilter',
-        // 'untangle-node-web-monitor': 'webmonitor',
-        // 'untangle-node-web-filter-lite': 'webfilterlite',
-        // 'untangle-node-virus-blocker': 'virusblocker',
-        // 'untangle-node-virus-blocker-lite': 'virusblockerlite',
-        // 'untangle-node-spam-blocker': 'spamblocker',
-        // 'untangle-node-spam-blocker-lite': 'spamblockerlite',
-        // 'untangle-node-phish-blocker': 'phishblocker',
-        // 'untangle-node-web-cache': 'webcache',
-        // 'untangle-node-bandwidth-control': 'bandwidthcontrol',
-        // 'untangle-casing-ssl-inspector': 'sslinspector',
-        // 'untangle-node-application-control': 'applicationcontrol',
-        // 'untangle-node-application-control-lite': 'applicationcontrollite',
-        // 'untangle-node-captive-portal': 'captiveportal',
-        // 'untangle-node-firewall': 'firewall',
-        // 'untangle-node-ad-blocker': 'adblocker',
+    defaultColors: ['#7cb5ec', '#434348', '#90ed7d', '#f7a35c', '#8085e9', '#f15c80', '#e4d354', '#2b908f', '#f45b5b', '#91e8e1'],
 
-        // 'untangle-node-reports': 'reports',
-        // 'untangle-node-policy-manager': 'policymanager',
-        // 'untangle-node-directory-connector': 'directoryconnector',
-        // 'untangle-node-wan-failover': 'wanfailover',
-        // 'untangle-node-wan-balancer': 'wanbalancer',
-        // 'untangle-node-ipsec-vpn': 'ipsecvpn',
-        // 'untangle-node-openvpn': 'openvpn',
-        // 'untangle-node-intrusion-prevention': 'intrusionprevention',
-        // 'untangle-node-configuration-backup': 'configurationbackup',
-        // 'untangle-node-branding-manager': 'brandingmanager',
-        // 'untangle-node-live-support': 'livesupport'
-
-        webfilter: 'untangle-node-web-filter',
-        webmonitor: 'untangle-node-web-monitor',
-        webfilterlite: 'untangle-node-web-filter-lite',
-        virusblocker: 'untangle-node-virus-blocker',
-        virusblockerlite: 'untangle-node-virus-blocker-lite',
-        spamblocker: 'untangle-node-spam-blocker',
-        spamblockerlite: 'untangle-node-spam-blocker-lite',
-        phishblocker: 'untangle-node-phish-blocker',
-        webcache: 'untangle-node-web-cache',
-        bandwidthcontrol: 'untangle-node-bandwidth-control',
-        sslinspector: 'untangle-casing-ssl-inspector',
-        applicationcontrol: 'untangle-node-application-control',
-        applicationcontrollite: 'untangle-node-application-control-lite',
-        captiveportal: 'untangle-node-captive-portal',
-        firewall: 'untangle-node-firewall',
-        adblocker: 'untangle-node-ad-blocker',
-
-        reports: 'untangle-node-reports',
-        policymanager: 'untangle-node-policy-manager',
-        directoryconnector: 'untangle-node-directory-connector',
-        wanfailover: 'untangle-node-wan-failover',
-        wanbalancer: 'untangle-node-wan-balancer',
-        ipsecvpn: 'untangle-node-ipsec-vpn',
-        openvpn: 'untangle-node-openvpn',
-        intrusionprevention: 'untangle-node-intrusion-prevention',
-        configurationbackup: 'untangle-node-configuration-backup',
-        brandingmanager: 'untangle-node-branding-manager',
-        livesupport: 'untangle-node-live-support'
-
-
-    },
 
     iconReportTitle: function (report) {
         var icon;
@@ -429,7 +369,35 @@ Ext.define('Ung.util.Util', {
             return 'Invalid URL specified'.t();
         }
         return true;
-    }
+    },
 
+    // formats a timestamp - expects a timestamp integer or an onject literal with 'time' property
+    timestampFormat: function(v) {
+        if (!v || typeof v === 'string') {
+            return '';
+        }
+        var date = new Date();
+        date.setTime(v.time === null ? v : v.time);
+        return Ext.util.Format.date(date, 'timestamp_fmt'.t());
+    },
+
+    getStoreUrl: function(){
+        // non API store URL used for links like: My Account, Forgot Password
+        return rpc.storeUrl.replace('/api/v1', '/store/open.php');
+    },
+
+    getAbout: function (forceReload) {
+        if (rpc.about === undefined) {
+            var query = "";
+            query = query + "uid=" + rpc.serverUID;
+            query = query + "&" + "version=" + rpc.fullVersion;
+            query = query + "&" + "webui=true";
+            query = query + "&" + "lang=" + rpc.languageSettings.language;
+            query = query + "&" + "applianceModel=" + rpc.applianceModel;
+
+            rpc.about = query;
+        }
+        return rpc.about;
+    }
 
 });

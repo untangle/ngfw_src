@@ -10,13 +10,13 @@ import java.io.Serializable;
 import org.json.JSONObject;
 import org.json.JSONString;
 
-import com.untangle.uvm.node.IPMaskedAddress;
-import com.untangle.uvm.node.DayOfWeekMatcher;
+import com.untangle.uvm.app.IPMaskedAddress;
+import com.untangle.uvm.app.DayOfWeekMatcher;
 import com.untangle.uvm.event.AlertRule;
 import com.untangle.uvm.event.SyslogRule;
 
 /**
- * Settings for the Reports Node.
+ * Settings for the Reports App.
  */
 @SuppressWarnings("serial")
 public class EventSettings implements Serializable, JSONString

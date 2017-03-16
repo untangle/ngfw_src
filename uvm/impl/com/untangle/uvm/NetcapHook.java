@@ -26,14 +26,14 @@ import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.GeographyManager;
 import com.untangle.uvm.HostTable;
 import com.untangle.uvm.HostTableEntry;
-import com.untangle.uvm.node.SessionTuple;
-import com.untangle.uvm.node.SessionTuple;
-import com.untangle.uvm.node.SessionEvent;
-import com.untangle.uvm.node.SessionNatEvent;
-import com.untangle.uvm.node.SessionStatsEvent;
-import com.untangle.uvm.node.PolicyManager;
-import com.untangle.uvm.vnet.NodeSession;
-import com.untangle.uvm.node.HostnameLookup;
+import com.untangle.uvm.app.SessionTuple;
+import com.untangle.uvm.app.SessionTuple;
+import com.untangle.uvm.app.SessionEvent;
+import com.untangle.uvm.app.SessionNatEvent;
+import com.untangle.uvm.app.SessionStatsEvent;
+import com.untangle.uvm.app.PolicyManager;
+import com.untangle.uvm.vnet.AppSession;
+import com.untangle.uvm.app.HostnameLookup;
 
 /**
  * Helper class for the IP session hooks.
@@ -52,14 +52,14 @@ public abstract class NetcapHook implements Runnable
     private static final SessionTableImpl sessionTable = SessionTableImpl.getInstance();
 
     /**
-     * List of all of the nodes( PipelineConnectorImpls )
+     * List of all of the apps( PipelineConnectorImpls )
      */
     protected List<PipelineConnectorImpl> pipelineConnectors;
     protected Integer policyId = null;
     protected Integer policyRuleId = null;
 
-    protected List<NodeSessionImpl> sessionList = new ArrayList<NodeSessionImpl>();
-    protected List<NodeSessionImpl> releasedSessionList = new ArrayList<NodeSessionImpl>();
+    protected List<AppSessionImpl> sessionList = new ArrayList<AppSessionImpl>();
+    protected List<AppSessionImpl> releasedSessionList = new ArrayList<AppSessionImpl>();
 
     protected Source clientSource;
     protected Sink   clientSink;
@@ -232,13 +232,13 @@ public abstract class NetcapHook implements Runnable
             }
             
             sessionGlobalState.setUser( username );
-            sessionGlobalState.attach( NodeSession.KEY_PLATFORM_USERNAME, username );
-            sessionGlobalState.attach( NodeSession.KEY_PLATFORM_HOSTNAME, hostname );
+            sessionGlobalState.attach( AppSession.KEY_PLATFORM_USERNAME, username );
+            sessionGlobalState.attach( AppSession.KEY_PLATFORM_HOSTNAME, hostname );
 
             /**
              * Determine the policy to process this session
              */
-            PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().nodeManager().node("untangle-node-policy-manager");
+            PolicyManager policyManager = (PolicyManager) UvmContextFactory.context().appManager().app("policy-manager");
             if ( policyManager != null && entitled ) {
                 PolicyManager.PolicyManagerResult result = policyManager.findPolicyId( sessionGlobalState.getProtocol(),
                                                                                        netcapSession.clientSide().interfaceId(), netcapSession.serverSide().interfaceId(),
@@ -324,8 +324,8 @@ public abstract class NetcapHook implements Runnable
             /* log the session event */
             UvmContextFactory.context().logEvent( sessionEvent );
 
-            /* Initialize all of the nodes, sending the request events to each in turn */
-            initializeNodeSessions( sessionEvent );
+            /* Initialize all of the apps, sending the request events to each in turn */
+            initializeAppSessions( sessionEvent );
 
             int tupleHashCodeNew =
                 sessionEvent.getSClientAddr().hashCode() + 
@@ -347,7 +347,7 @@ public abstract class NetcapHook implements Runnable
             /* Connect to the server */
             serverActionCompleted = connectServerIfNecessary( sessionEvent );
 
-            /* Now generate the server side since the nodes may have
+            /* Now generate the server side since the apps may have
              * modified the sessionEvent (we can't do it until we connect
              * to the server since that is what actually modifies the
              * session global state. */
@@ -364,18 +364,18 @@ public abstract class NetcapHook implements Runnable
              * to iterate the session list twice, but the list is
              * typically small and this logic may get very complex
              * otherwise */
-            for ( Iterator<NodeSessionImpl> iter = sessionList.iterator(); iter.hasNext() ; ) {
-                NodeSessionImpl nodeSession = iter.next();
-                if ( !nodeSession.isVectored() ) {
-                    logger.debug( "Removing non-vectored nodeSession from the nodeSession list" + nodeSession );
+            for ( Iterator<AppSessionImpl> iter = sessionList.iterator(); iter.hasNext() ; ) {
+                AppSessionImpl appSession = iter.next();
+                if ( !appSession.isVectored() ) {
+                    logger.debug( "Removing non-vectored appSession from the appSession list" + appSession );
                     iter.remove();
-                    /* Append to the released nodeSession list */
-                    releasedSessionList.add( nodeSession );
+                    /* Append to the released appSession list */
+                    releasedSessionList.add( appSession );
                 }
 
                 // Complete (if we completed both server and client)
                 if (serverActionCompleted && clientActionCompleted)
-                    nodeSession.complete();
+                    appSession.complete();
             }
 
             /* Only start vectoring if the session is alive */
@@ -596,7 +596,7 @@ public abstract class NetcapHook implements Runnable
 
         if ( sessionList.isEmpty() ) {
             if ( state == IPNewSessionRequestImpl.ENDPOINTED ) {
-                throw new IllegalStateException( "Endpointed session without any nodes" );
+                throw new IllegalStateException( "Endpointed session without any apps" );
             }
 
             clientSource = makeClientSource();
@@ -611,10 +611,10 @@ public abstract class NetcapHook implements Runnable
             Source prevSource = null;
 
             boolean first = true;
-            NodeSessionImpl prevSession = null;
-            Iterator<NodeSessionImpl> iter = sessionList.iterator();
+            AppSessionImpl prevSession = null;
+            Iterator<AppSessionImpl> iter = sessionList.iterator();
             do {
-                NodeSessionImpl session = null;
+                AppSessionImpl session = null;
                 try { session = iter.next(); } catch ( Exception e ) {};
 
                 Source source;
@@ -630,7 +630,7 @@ public abstract class NetcapHook implements Runnable
                     sink   = makeServerSink();
                 }
                 if ( first ) {
-                    // If this is the first node, start things with the actual client source/sink
+                    // If this is the first app, start things with the actual client source/sink
                     prevSource = makeClientSource();
                     prevSink = makeClientSink();
                     first = false;
@@ -663,7 +663,7 @@ public abstract class NetcapHook implements Runnable
     }
 
     @SuppressWarnings("fallthrough")
-    protected void processSession( IPNewSessionRequestImpl request, NodeSessionImpl session )
+    protected void processSession( IPNewSessionRequestImpl request, AppSessionImpl session )
     {
         if ( logger.isDebugEnabled())
             logger.debug( "Processing session: with state: " + request.state() + " session: " + session );
@@ -724,20 +724,20 @@ public abstract class NetcapHook implements Runnable
     }
 
     /**
-     * Call finalize on each node session that participates in this
+     * Call finalize on each app session that participates in this
      * session, also raze all of the sinks associated with the
      * sessionEvent.  This is just an extra precaution just in case they
      * were not razed by the pipeline.
      */
     private void razeSessions()
     {
-        for ( Iterator<NodeSessionImpl> iter = sessionList.iterator() ; iter.hasNext() ; ) {
-            NodeSessionImpl session = iter.next();
+        for ( Iterator<AppSessionImpl> iter = sessionList.iterator() ; iter.hasNext() ; ) {
+            AppSessionImpl session = iter.next();
             session.raze();
         }
 
-        for ( Iterator<NodeSessionImpl> iter = releasedSessionList.iterator() ; iter.hasNext() ; ) {
-            NodeSessionImpl session = iter.next();
+        for ( Iterator<AppSessionImpl> iter = releasedSessionList.iterator() ; iter.hasNext() ; ) {
+            AppSessionImpl session = iter.next();
             /* Raze all of the released sessions */
             session.raze();
         }
@@ -751,7 +751,7 @@ public abstract class NetcapHook implements Runnable
     /**
      * Call this to fake vector a reset before starting vectoring</p>
      * @return True if the reset made it all the way through, false if
-     *   a node endpointed.
+     *   a app endpointed.
      */
     private boolean vectorReset()
     {
@@ -765,8 +765,8 @@ public abstract class NetcapHook implements Runnable
         // Iterate through each session passing the reset.
         ResetCrumb reset = ResetCrumb.getInstanceNotAcked();
 
-        for ( ListIterator<NodeSessionImpl> iter = sessionList.listIterator( size ) ; iter.hasPrevious(); ) {
-            NodeSessionImpl session = iter.previous();
+        for ( ListIterator<AppSessionImpl> iter = sessionList.listIterator( size ) ; iter.hasPrevious(); ) {
+            AppSessionImpl session = iter.previous();
 
             if ( !session.isVectored()) {
                 logger.debug( "vectorReset: skipping non-vectored session" );
@@ -905,7 +905,7 @@ public abstract class NetcapHook implements Runnable
     protected abstract Source makeClientSource();
     protected abstract Source makeServerSource();
 
-    protected abstract void initializeNodeSessions( SessionEvent sessionEvent );
+    protected abstract void initializeAppSessions( SessionEvent sessionEvent );
     protected abstract void raze();
 
     /**

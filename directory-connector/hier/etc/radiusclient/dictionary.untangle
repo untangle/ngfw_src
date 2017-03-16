@@ -1,0 +1,2 @@
+INCLUDE /etc/radiusclient/dictionary
+INCLUDE /etc/radiusclient/dictionary.microsoft

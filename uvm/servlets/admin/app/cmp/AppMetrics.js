@@ -47,15 +47,15 @@ Ext.define('Ung.cmp.AppMetrics', {
             }
             this.updateMetricsCount++;
             var gridSource = {};
-            var appMetrics = Ext.getStore('metrics').findRecord('nodeId', vm.get('instance.id'));
+            var appMetrics = Ext.getStore('metrics').findRecord('appId', vm.get('instance.id'));
             if (appMetrics) {
                 appMetrics.get('metrics').list.forEach(function (metric) {
                     gridSource[metric.displayName.t()] = metric.value;
                 });
             }
             vm.set('metrics', gridSource);
-            // if (this.getView().down('nodechart')) {
-            //     this.getView().down('nodechart').fireEvent('addPoint');
+            // if (this.getView().down('appchart')) {
+            //     this.getView().down('appchart').fireEvent('addPoint');
             // }
         }
     },

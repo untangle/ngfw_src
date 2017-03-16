@@ -33,7 +33,7 @@ Ext.define('Ung.view.dashboard.Queue', {
     },
     process: function () {
         var me = this;
-        // ensure processing is false in some cases when ir remains true
+        // ensure processing is false in some cases when it remains true
         clearTimeout(this.tout);
         this.tout = setTimeout(function () {
             me.processing = false;
@@ -49,7 +49,10 @@ Ext.define('Ung.view.dashboard.Queue', {
 
             //if (this.inView(widget)) {
             if (!widget.isHidden()) {
-                widget.fetchData();
+                if (widget.down('#chart')) {
+                    console.log('here');
+                    widget.down('#chart').getController().fetchData();
+                }
             } else {
                 widget.toQueue = true;
                 Ung.view.dashboard.Queue.next();

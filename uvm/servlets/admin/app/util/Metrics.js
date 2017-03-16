@@ -30,11 +30,11 @@ Ext.define('Ung.util.Metrics', {
             Ext.getStore('stats').loadRawData(result.systemStats);
             // console.log(result.systemStats);
 
-            for (var nodeId in result.metrics) {
-                if (result.metrics.hasOwnProperty(nodeId)) {
+            for (var appId in result.metrics) {
+                if (result.metrics.hasOwnProperty(appId)) {
                     data.push({
-                        nodeId: nodeId,
-                        metrics: result.metrics[nodeId]
+                        appId: appId,
+                        metrics: result.metrics[appId]
                     });
                 }
             }

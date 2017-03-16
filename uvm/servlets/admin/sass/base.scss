@@ -490,11 +490,13 @@ cite {
 
 
 .report-header {
-    font-family: $custom-font;
-    padding: 10px;
+    font-family: $custom-font-condensed;
+    padding: 5px 10px;
     h2 {
         margin: 0;
+        font-family: $custom-font-condensed;
         font-weight: 400;
+        font-size: 24px;
     }
     p {
         margin: 0;
@@ -849,6 +851,7 @@ span.fa:before {
     &-green { color: green; }
     &-orange { color: orange; }
     &-yellow { color: yellow; }
+    &-gray { color: #999; }
 }
 
 
@@ -871,4 +874,51 @@ span.fa:before {
     display: inline;
     background: none;
     padding: 5px;
+}
+
+
+.cat-reports {
+    text-align: center;
+    padding: 0 10px;
+    a {
+        text-align: left;
+        color: #555;
+        width: 250px;
+        height: 80px;
+        margin: 5px 10px;
+        vertical-align: top;
+        font-family: $custom-font;
+        display: inline-block;
+        text-decoration: none;
+        position: relative;
+        padding: 10px 10px 10px 55px;
+        border-radius: 5px;
+        line-height: 1;
+        span {
+            font-weight: 600;
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 5px;
+            display: inline-block;
+        }
+        i {
+            position: absolute;
+            left: 10px;
+            top: 10px;
+        }
+        &:hover {
+            background: #EEE;
+        }
+    }
+}
+
+
+.x-colorpicker-field input {
+    background: none;
+    color: transparent;
+}
+.x-colorpicker-field-swatch {
+    width: auto;
+    left: 0;
+    right: 17px
 }

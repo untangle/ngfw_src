@@ -9,8 +9,8 @@ import org.jabsorb.JSONSerializer;
 
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.LoggingManager;
-import com.untangle.uvm.node.LicenseManager;
-import com.untangle.uvm.node.NodeManager;
+import com.untangle.uvm.app.LicenseManager;
+import com.untangle.uvm.app.AppManager;
 import com.untangle.uvm.servlet.ServletFileManager;
 import com.untangle.uvm.vnet.PipelineFoundry;
 
@@ -20,11 +20,12 @@ import com.untangle.uvm.vnet.PipelineFoundry;
 public interface UvmContext
 {
     /**
-     * Get the <code>NodeManager</code> singleton.
+     * Get the <code>AppManager</code> singleton.
      *
-     * @return the NodeManager.
+     * @return the AppManager.
      */
-    NodeManager nodeManager();
+    AppManager appManager();
+    AppManager nodeManager(); /* DEPRECATED - use appManager() */
 
     /**
      * Get the <code>LoggingManager</code> singleton.
@@ -243,7 +244,7 @@ public interface UvmContext
 
     /**
      * Create a new singleton exec manager
-     * This is usual for nodes that need their own exec managers
+     * This is usual for apps that need their own exec managers
      * You must call close on the execmanager!
      */
     ExecManager createExecManager();

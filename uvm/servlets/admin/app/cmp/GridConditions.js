@@ -78,6 +78,26 @@ Ext.define('Ung.cmp.GridConditions', {
 
     protocol: function (protocols) {
         return { name: 'PROTOCOL', displayName: 'Protocol'.t(), type: 'checkboxgroup', values: protocols };
+    },
+
+    fieldCondition: {
+        name: 'FIELD_CONDITION',
+        displayName: 'Field condition'.t(),
+        //type: "editor",
+        // editor: Ext.create('Ung.FieldConditionWindow',{}),
+        type: "textfield",
+        // editor: Ext.create('Ung.FieldConditionWindow',{}),
+        visible: true,
+        disableInvert: true,
+        allowMultiple: true,
+        allowBlank: false,
+        formatValue: function(value) {
+            var result= "";
+            if(value) {
+                result = value.field + " " + value.comparator + " " + value.value;
+            }
+            return result;
+        }
     }
 
 });

@@ -15,10 +15,10 @@ Ext.define('Ung.Application', {
     mainView: 'Ung.view.main.Main',
 
     init: function () {
-        if (!rpc.translations.decimal_sep) { rpc.translations.decimal_sep = '.'; }
-        if (!rpc.translations.thousand_sep) { rpc.translations.thousand_sep = ','; }
-        if (!rpc.translations.date_fmt) { rpc.translations.date_fmt = 'Y-m-d'; }
-        if (!rpc.translations.timestamp_fmt) { rpc.translations.timestamp_fmt = 'Y-m-d h:i:s a'; }
+        // if (!rpc.translations.decimal_sep) { rpc.translations.decimal_sep = '.'; }
+        // if (!rpc.translations.thousand_sep) { rpc.translations.thousand_sep = ','; }
+        // if (!rpc.translations.date_fmt) { rpc.translations.date_fmt = 'Y-m-d'; }
+        // if (!rpc.translations.timestamp_fmt) { rpc.translations.timestamp_fmt = 'Y-m-d h:i:s a'; }
     },
 
     launch: function () {
@@ -39,7 +39,11 @@ Ext.define('Ung.Application', {
 
         Ext.get('app-loader').destroy();
 
-        rpc.reportsManager = rpc.nodeManager.node('untangle-node-reports').getReportsManager();
+        try {
+            rpc.reportsManager = rpc.appManager.app('reports').getReportsManager();
+        } catch (ex) {
+            // console.log(ex);
+        }
 
         Ext.Deferred.parallel([
             Rpc.asyncPromise('rpc.dashboardManager.getSettings'),
@@ -74,7 +78,7 @@ Ext.define('Ung.Application', {
         //     console.timeEnd('dash');
         //     Ext.getStore('widgets').loadData(settings.widgets.list);
 
-        //     if (me.rpc.nodeManager.node('untangle-node-reports')) {
+        //     if (me.rpc.appManager.app('reports')) {
         //         Rpc.loadReports().then(function (reports) {
         //             Ext.getStore('reports').loadData(reports.list);
         //             me.loadMainView();

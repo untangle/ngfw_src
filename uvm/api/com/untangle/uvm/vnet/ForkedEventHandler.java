@@ -7,7 +7,7 @@ import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.ArrayList;
 
-import com.untangle.uvm.node.Node;
+import com.untangle.uvm.app.App;
 import com.untangle.uvm.vnet.SessionEventHandler;
 
 /**
@@ -15,10 +15,10 @@ import com.untangle.uvm.vnet.SessionEventHandler;
  * all client events to a clientEventHandler and server events to a serverEventHandler
  *
  * This is useful if you have 2 or more event handlers that you want to share
- * the same NodeSession and exist in the same place in the pipeline.
+ * the same AppSession and exist in the same place in the pipeline.
  *
  * Example: clientEventHandler and serverEventHandler want to exist at the same place in the pipeline
- * and share the same NodeSession (and associated attachments/state).
+ * and share the same AppSession (and associated attachments/state).
  * You can create a ForkedEventHandler that contains both clientEventHandler and serverEventHandler.
  * 
  * All client events go to clientEventHandler
@@ -39,7 +39,7 @@ public class ForkedEventHandler extends AbstractEventHandler
     }
 
     @Override
-    public void handleTimer( NodeSession session )
+    public void handleTimer( AppSession session )
     {
         clientEventHandler.handleTimer( session );
         serverEventHandler.handleTimer( session );
@@ -53,94 +53,94 @@ public class ForkedEventHandler extends AbstractEventHandler
     }
 
     @Override
-    public void handleTCPNewSession( NodeTCPSession session )
+    public void handleTCPNewSession( AppTCPSession session )
     {
         clientEventHandler.handleTCPNewSession( session );
         serverEventHandler.handleTCPNewSession( session );
     }
 
     @Override
-    public void handleTCPClientDataEnd( NodeTCPSession session, ByteBuffer data )
+    public void handleTCPClientDataEnd( AppTCPSession session, ByteBuffer data )
     {
         clientEventHandler.handleTCPClientDataEnd( session, data );
     }
 
     @Override
-    public void handleTCPServerDataEnd( NodeTCPSession session, ByteBuffer data )
+    public void handleTCPServerDataEnd( AppTCPSession session, ByteBuffer data )
     {
         serverEventHandler.handleTCPServerDataEnd( session, data );
     }
 
     @Override
-    public void handleTCPClientFIN( NodeTCPSession session )
+    public void handleTCPClientFIN( AppTCPSession session )
     {
         clientEventHandler.handleTCPClientFIN( session );
     }
 
     @Override
-    public void handleTCPServerFIN( NodeTCPSession session )
+    public void handleTCPServerFIN( AppTCPSession session )
     {
         serverEventHandler.handleTCPServerFIN( session );
     }
 
     @Override
-    public void handleTCPClientRST( NodeTCPSession session )
+    public void handleTCPClientRST( AppTCPSession session )
     {
         clientEventHandler.handleTCPClientRST( session );
     }
 
     @Override
-    public void handleTCPServerRST( NodeTCPSession session )
+    public void handleTCPServerRST( AppTCPSession session )
     {
         serverEventHandler.handleTCPServerRST( session );
     }
 
     @Override
-    public void handleTCPFinalized( NodeTCPSession session )
+    public void handleTCPFinalized( AppTCPSession session )
     {
         clientEventHandler.handleTCPFinalized( session );
         serverEventHandler.handleTCPFinalized( session );
     }
 
     @Override
-    public void handleTCPComplete( NodeTCPSession session )
+    public void handleTCPComplete( AppTCPSession session )
     {
         clientEventHandler.handleTCPComplete( session );
         serverEventHandler.handleTCPComplete( session );
     }
 
     @Override
-    public void handleTCPClientChunk( NodeTCPSession session, ByteBuffer data )
+    public void handleTCPClientChunk( AppTCPSession session, ByteBuffer data )
     {
         clientEventHandler.handleTCPClientChunk( session, data );
     }
 
     @Override
-    public void handleTCPServerChunk( NodeTCPSession session, ByteBuffer data )
+    public void handleTCPServerChunk( AppTCPSession session, ByteBuffer data )
     {
         serverEventHandler.handleTCPServerChunk( session, data );
     }
 
     @Override
-    public void handleTCPClientObject( NodeTCPSession session, Object obj )
+    public void handleTCPClientObject( AppTCPSession session, Object obj )
     {
         clientEventHandler.handleTCPClientObject( session, obj );
     }
 
     @Override
-    public void handleTCPServerObject( NodeTCPSession session, Object obj )
+    public void handleTCPServerObject( AppTCPSession session, Object obj )
     {
         serverEventHandler.handleTCPServerObject( session, obj );
     }
     
     @Override
-    public void handleTCPClientWritable( NodeTCPSession session )
+    public void handleTCPClientWritable( AppTCPSession session )
     {
         clientEventHandler.handleTCPClientWritable( session );
     }
 
     @Override
-    public void handleTCPServerWritable( NodeTCPSession session )
+    public void handleTCPServerWritable( AppTCPSession session )
     {
         serverEventHandler.handleTCPServerWritable( session );
     }
@@ -153,58 +153,58 @@ public class ForkedEventHandler extends AbstractEventHandler
     }
 
     @Override
-    public void handleUDPNewSession( NodeUDPSession session )
+    public void handleUDPNewSession( AppUDPSession session )
     {
         clientEventHandler.handleUDPNewSession( session );
         serverEventHandler.handleUDPNewSession( session );
     }
 
     @Override
-    public void handleUDPClientExpired( NodeUDPSession session )
+    public void handleUDPClientExpired( AppUDPSession session )
     {
         clientEventHandler.handleUDPClientExpired( session );
     }
 
     @Override
-    public void handleUDPServerExpired( NodeUDPSession session )
+    public void handleUDPServerExpired( AppUDPSession session )
     {
         serverEventHandler.handleUDPServerExpired( session );
     }
 
     @Override
-    public void handleUDPClientWritable( NodeUDPSession session )
+    public void handleUDPClientWritable( AppUDPSession session )
     {
         clientEventHandler.handleUDPClientWritable( session );
     }
 
     @Override
-    public void handleUDPServerWritable( NodeUDPSession session )
+    public void handleUDPServerWritable( AppUDPSession session )
     {
         serverEventHandler.handleUDPServerWritable( session );
     }
     
     @Override
-    public void handleUDPFinalized( NodeUDPSession session )
+    public void handleUDPFinalized( AppUDPSession session )
     {
         clientEventHandler.handleUDPFinalized( session );
         serverEventHandler.handleUDPFinalized( session );
     }
 
     @Override
-    public void handleUDPComplete( NodeUDPSession session )
+    public void handleUDPComplete( AppUDPSession session )
     {
         clientEventHandler.handleUDPComplete( session );
         serverEventHandler.handleUDPComplete( session );
     }
 
     @Override
-    public void handleUDPClientPacket( NodeUDPSession session, ByteBuffer data, IPPacketHeader header )
+    public void handleUDPClientPacket( AppUDPSession session, ByteBuffer data, IPPacketHeader header )
     {
         clientEventHandler.handleUDPClientPacket( session, data, header );
     }
 
     @Override
-    public void handleUDPServerPacket( NodeUDPSession session, ByteBuffer data, IPPacketHeader header )
+    public void handleUDPServerPacket( AppUDPSession session, ByteBuffer data, IPPacketHeader header )
     {
         serverEventHandler.handleUDPServerPacket( session, data, header );
     }

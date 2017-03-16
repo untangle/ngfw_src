@@ -16,8 +16,8 @@ import org.apache.log4j.Logger;
 
 import com.untangle.jnetcap.Netcap;
 import com.untangle.jnetcap.Conntrack;
-import com.untangle.uvm.node.SessionTuple;
-import com.untangle.uvm.node.SessionMinuteEvent;
+import com.untangle.uvm.app.SessionTuple;
+import com.untangle.uvm.app.SessionMinuteEvent;
 import com.untangle.uvm.util.Pulse;
 
 public class ConntrackMonitorImpl

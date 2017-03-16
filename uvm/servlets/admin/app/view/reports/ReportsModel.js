@@ -4,10 +4,11 @@ Ext.define('Ung.view.reports.ReportsModel', {
     alias: 'viewmodel.reports',
 
     data: {
-        isNodeReporting: false,
+        isAppReporting: false,
         activeCard: 'allCategoriesCard', // allCategoriesCard, categoryCard, reportCard
         category: null,
         report: null,
+        entry: null,
         categoriesData: null,
         startDateTime: null,
         endDateTime: null
@@ -19,7 +20,7 @@ Ext.define('Ung.view.reports.ReportsModel', {
         },
 
         areCategoriesHidden: function (get) {
-            return !get('isCategorySelected') || get('isNodeReporting');
+            return !get('isCategorySelected') || get('isAppReporting');
         },
 
         reportHeading: function (get) {

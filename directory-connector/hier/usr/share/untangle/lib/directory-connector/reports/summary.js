@@ -1,0 +1,16 @@
+{
+    "uniqueId": "directory-connector-upl31dqKb1",
+    "category": "Directory Connector",
+    "description": "A summary of Directory Connector actions.",
+    "displayOrder": 13,
+    "enabled": true,
+    "javaClass": "com.untangle.app.reports.ReportEntry",
+    "textColumns": [
+        "sum(case when type='I' then 1 else 0 end) as logins"
+    ],
+    "textString": "Directory Connector processed {0} logins.", 
+    "readOnly": true,
+    "table": "directory_connector_login_events",
+    "title": "Directory Connector Summary",
+    "type": "TEXT"
+}

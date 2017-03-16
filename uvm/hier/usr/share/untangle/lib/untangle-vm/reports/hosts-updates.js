@@ -7,7 +7,7 @@
     "defaultColumns": ["time_stamp","address","key","value","old_value"],
     "description": "All updates to hosts in the host table.",
     "displayOrder": 1010,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "table": "host_table_updates",
     "title": "Hosts Events"
 }

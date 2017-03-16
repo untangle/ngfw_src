@@ -23,12 +23,12 @@ import org.jabsorb.JSONSerializer;
 import org.json.JSONObject;
 
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.node.LicenseManager;
-import com.untangle.uvm.node.Node;
-import com.untangle.uvm.node.NodeManager;
-import com.untangle.uvm.node.NodeSettings.NodeState;
-import com.untangle.uvm.node.PolicyManager;
-import com.untangle.uvm.node.Reporting;
+import com.untangle.uvm.app.LicenseManager;
+import com.untangle.uvm.app.App;
+import com.untangle.uvm.app.AppManager;
+import com.untangle.uvm.app.AppSettings.AppState;
+import com.untangle.uvm.app.PolicyManager;
+import com.untangle.uvm.app.Reporting;
 import com.untangle.uvm.servlet.ServletFileManager;
 import com.untangle.uvm.servlet.ServletUtils;
 
@@ -76,7 +76,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private NetworkManagerImpl networkManager;
     private ConnectivityTesterImpl connectivityTester;
     private PipelineFoundryImpl pipelineFoundry;
-    private NodeManagerImpl nodeManager;
+    private AppManagerImpl appManager;
     private CertificateManagerImpl certificateManager;
     private GeographyManagerImpl geographyManager;
     private NetcapManagerImpl netcapManager;
@@ -105,7 +105,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private SystemManagerImpl systemManager;
     private DashboardManagerImpl dashboardManager;
     private JSONSerializer serializer;
-    private Reporting reportsNode = null;
+    private Reporting reportsApp = null;
     private HostTableImpl hostTableImpl = null;
     private DeviceTableImpl deviceTableImpl = null;
     private UserTableImpl userTableImpl = null;
@@ -176,9 +176,15 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         return this.daemonManager;
     }
 
-    public NodeManager nodeManager()
+    public AppManager appManager()
     {
-        return this.nodeManager;
+        return this.appManager;
+    }
+
+    public AppManager nodeManager()
+    {
+        logger.warn("nodeManager() will be deprecated soon.", new Exception());
+        return appManager();
     }
 
     public LoggingManagerImpl loggingManager()
@@ -313,11 +319,11 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     
     public LicenseManager licenseManager()
     {
-        NodeManager nodeManager = this.nodeManager();
-        if ( nodeManager == null )
+        AppManager appManager = this.appManager();
+        if ( appManager == null )
             return this.defaultLicenseManager;
         if (this.licenseManager == null ) {
-            this.licenseManager = (LicenseManager) nodeManager.node("untangle-node-license");
+            this.licenseManager = (LicenseManager) appManager().app("license");
             if (this.licenseManager == null) {
                 logger.debug("Failed to initialize license manager.");
                 return this.defaultLicenseManager;
@@ -654,12 +660,12 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
     public void logEvent(LogEvent evt)
     {
-        if (this.reportsNode == null)
-            getReportsNode();
-        if (this.reportsNode == null)
+        if (this.reportsApp == null)
+            getReportsApp();
+        if (this.reportsApp == null)
             return;
 
-        this.reportsNode.logEvent(evt);
+        this.reportsApp.logEvent(evt);
         this.eventManager.logEvent(evt);
     }
 
@@ -693,7 +699,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         try {
             json.put("languageManager", this.languageManager());
             json.put("skinManager", this.skinManager());
-            json.put("nodeManager", this.nodeManager());
+            json.put("appManager", this.appManager()); // remove me
+            json.put("appManager", this.appManager());
             json.put("notificationManager", this.notificationManager());
             json.put("adminManager", this.adminManager());
             json.put("eventManager", this.eventManager());
@@ -708,7 +715,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             json.put("brandingManager", this.brandingManager());
             json.put("execManager", this.execManager());
             json.put("settingsManager", this.settingsManager());
-            json.put("appsViews", this.nodeManager().getAppsViews());
+            json.put("appsViews", this.appManager().getAppsViews());
 
             json.put("languageSettings", this.languageManager().getLanguageSettings());
             json.put("version", this.version());
@@ -730,8 +737,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             json.put("timeZoneOffset", this.systemManager().getTimeZoneOffset());
 
             boolean reportsEnabled = false;
-            Node reportsNode = UvmContextFactory.context().nodeManager().node("untangle-node-reports");
-            if(reportsNode != null && NodeState.RUNNING.equals(reportsNode.getRunState())) {
+            App reportsApp = UvmContextFactory.context().appManager().app("reports");
+            if(reportsApp != null && AppState.RUNNING.equals(reportsApp.getRunState())) {
                 reportsEnabled = true;
             }
             json.put("reportsEnabled", reportsEnabled);
@@ -750,7 +757,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     {
         LinkedList<HostTableEntry> hosts = this.hostTableImpl.getHosts();
 
-        PolicyManager policyManager = (PolicyManager)this.nodeManager().node("untangle-node-policy-manager");
+        PolicyManager policyManager = (PolicyManager)this.appManager().app("policy-manager");
         
         LinkedList<String> hostnames = new LinkedList<String>();
         LinkedList<String> usernames = new LinkedList<String>();
@@ -836,6 +843,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             throw new IllegalStateException("register serializers should never fail!", e);
         }
 
+        this.settingsManager.run13Conversion(); // v13.0 conversion
+        
         this.netcapManager = NetcapManagerImpl.getInstance();
         
         createUID();
@@ -890,7 +899,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         this.dashboardManager = new DashboardManagerImpl();
         
-        this.nodeManager = new NodeManagerImpl();
+        this.appManager = new AppManagerImpl();
 
         this.metricManager = new MetricManagerImpl();
 
@@ -927,8 +936,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         mailSender.postInit();
 
-        logger.debug("restarting nodes");
-        nodeManager.init();
+        logger.debug("restarting apps");
+        appManager.init();
 
         tomcatManager.startTomcat();
         tomcatManager.writeWelcomeFile();
@@ -996,12 +1005,12 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             logger.error("could not stop MetricManager", exn);
         }
 
-        // stop nodes
+        // stop apps
         try {
-            if ( nodeManager != null )
-                nodeManager.destroy();
+            if ( appManager != null )
+                appManager.destroy();
         } catch (Exception exn) {
-            logger.error("could not destroy NodeManager", exn);
+            logger.error("could not destroy AppManager", exn);
         }
 
         // stop netcap
@@ -1045,7 +1054,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
      * non-existent (uvm not running)
      * "launching" - UVM is being launched (by uvm script)
      * "booting" - UVM booting (phase 1 of startup)
-     * "starting" - nodes starting (phase 2 of startup)
+     * "starting" - apps starting (phase 2 of startup)
      * "running" 
      * "stopped" 
      */
@@ -1135,31 +1144,31 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         }
     }
 
-    private void getReportsNode()
+    private void getReportsApp()
     {
         synchronized (this) {
-            if (this.reportsNode == null) {
+            if (this.reportsApp == null) {
                 try {
-                    // nodeManager not initialized yet
-                    if ( this.nodeManager == null ) {
+                    // appManager not initialized yet
+                    if ( this.appManager == null ) {
                         if (System.currentTimeMillis() - this.lastLoggedWarningTime > 10000) {
-                            logger.warn("Reports node not found, discarding event(s)");
+                            logger.warn("Reports app not found, discarding event(s)");
                             this.lastLoggedWarningTime = System.currentTimeMillis();
                         }
                         return;
                     }
                     
-                    this.reportsNode = (Reporting) this.nodeManager.node("untangle-node-reports");
-                    // no reports node
-                    if (this.reportsNode == null) {
+                    this.reportsApp = (Reporting) this.appManager().app("reports");
+                    // no reports app
+                    if (this.reportsApp == null) {
                         if (System.currentTimeMillis() - this.lastLoggedWarningTime > 10000) {
-                            logger.warn("Reports node not found, discarding event(s)");
+                            logger.warn("Reports app not found, discarding event(s)");
                             this.lastLoggedWarningTime = System.currentTimeMillis();
                         }
                         return;
                     }
                 } catch (Exception e) {
-                    logger.warn("Unable to initialize reports Node", e);
+                    logger.warn("Unable to initialize reports app", e);
                     return;
                 }
             }

@@ -9,7 +9,7 @@ import org.jabsorb.serializer.ObjectMatch;
 import org.jabsorb.serializer.SerializerState;
 import org.jabsorb.serializer.UnmarshallException;
 
-import com.untangle.uvm.node.MimeType;
+import com.untangle.uvm.app.MimeType;
 
 @SuppressWarnings({"serial","unchecked","rawtypes"})
 public class MimeTypeSerializer extends AbstractSerializer

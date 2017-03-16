@@ -30,10 +30,10 @@ Ext.define('Ung.cmp.AppState', {
                 if (get('instance.targetState') === 'RUNNING') {
                     return 'fa-green';
                 }
-                return 'fa-flip-horizontal fa-red';
+                return 'fa-flip-horizontal fa-gray';
             },
             appStateTitle: function (get) {
-                var icon = '<i class="fa fa-power-off fa-red"></i>';
+                var icon = '<i class="fa fa-power-off fa-gray"></i>';
                 if (!get('instance.targetState')) {
                     icon =  '<i class="fa fa-power-off fa-orange"></i>';
                 }
@@ -47,53 +47,53 @@ Ext.define('Ung.cmp.AppState', {
 
     controller: {
         onPower: function (btn) {
-            var nodeManager = this.getView().up('#configCard').appManager,
+            var appManager = this.getView().up('#configCard').appManager,
                 vm = this.getViewModel();
 
             btn.setDisabled(true);
 
             if (vm.get('instance.targetState') === 'RUNNING') {
                 vm.set('instance.targetState', null);
-                // stop node
-                nodeManager.stop(function (result, ex) {
+                // stop app
+                appManager.stop(function (result, ex) {
                     if (ex) { Util.exceptionToast(ex); return false; }
-                    nodeManager.getRunState(function (result2, ex2) {
+                    appManager.getRunState(function (result2, ex2) {
                         if (ex2) { Util.exceptionToast(ex2); return false; }
                         vm.set('instance.targetState', result2);
                         // vm.notify();
                         btn.setDisabled(false);
 
-                        // if (nodeManager.getNodeProperties().name === 'untangle-node-reports') {
+                        // if (appManager.getAppProperties().name === 'reports') {
                         //     vm.getParent().set('reportsRunning', false);
                         // }
 
                         // Util.successToast(vm.get('powerMessage'));
 
-                        // Ext.GlobalEvents.fireEvent('nodestatechange', result2, vm.get('nodeInstance'));
+                        // Ext.GlobalEvents.fireEvent('appstatechange', result2, vm.get('appInstance'));
                     });
                 });
             } else {
                 vm.set('instance.targetState', null);
-                // start node
-                nodeManager.start(function (result, ex) {
+                // start app
+                appManager.start(function (result, ex) {
                     if (ex) {
                         Ext.Msg.alert('Error', ex.message);
                         btn.setDisabled(false);
                         return false;
                     }
-                    nodeManager.getRunState(function (result2, ex2) {
+                    appManager.getRunState(function (result2, ex2) {
                         if (ex2) { Util.exceptionToast(ex2); return false; }
                         vm.set('instance.targetState', result2);
                         console.log(vm.get('instance'));
                         // vm.notify();
                         btn.setDisabled(false);
 
-                        // if (nodeManager.getNodeProperties().name === 'untangle-node-reports') {
+                        // if (appManager.getAppProperties().name === 'reports') {
                         //     vm.getParent().set('reportsRunning', true);
                         // }
 
                         // Util.successToast(vm.get('powerMessage'));
-                        // Ext.GlobalEvents.fireEvent('nodestatechange', result2, vm.get('nodeInstance'));
+                        // Ext.GlobalEvents.fireEvent('appstatechange', result2, vm.get('appInstance'));
                     });
                 });
             }

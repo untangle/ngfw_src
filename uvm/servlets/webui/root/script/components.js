@@ -132,7 +132,7 @@ Ext.define("Ung.form.DayOfWeekMatcherField", {
 
 Ext.define("Ung.AppItem", {
     extend: "Ext.Component",
-    nodeProperties: null,
+    appProperties: null,
     cls: 'app-item',
     statics: {
         //Global map to keep loading flag of the apps
@@ -154,30 +154,30 @@ Ext.define("Ung.AppItem", {
         }
     },
     initComponent: function() {
-        this.id = "app-item_" + this.nodeProperties.name;
+        this.id = "app-item_" + this.appProperties.name;
         this.callParent(arguments);
     },
     afterRender: function() {
         this.callParent(arguments);
         this.getEl().set({
-            'name': this.nodeProperties.name
+            'name': this.appProperties.name
         });
         var html = Ung.AppItem.template.applyTemplate({
             skin: rpc.skinSettings.skinName,
             id: this.getId(),
-            name: this.nodeProperties.name,
-            text: this.nodeProperties.displayName
+            name: this.appProperties.name,
+            text: this.appProperties.displayName
         });
         this.getEl().insertHtml("afterBegin", html);
         this.getEl().on("click", function(e) {
             e.preventDefault();
-            this.installNode();
+            this.installApp();
         }, this);
         this.syncProgress();
     },
     //Sync progress bar status
     syncProgress: function() {
-        if(Ung.AppItem.loadingFlags[this.nodeProperties.name]) {
+        if(Ung.AppItem.loadingFlags[this.appProperties.name]) {
             if(this.rendered) {
                 this.addCls('progress');
             }
@@ -187,12 +187,12 @@ Ext.define("Ung.AppItem", {
     beforeDestroy: function() {
         this.callParent(arguments);
     },
-    // install node
-    installNode: function( completeFn ) {
-        if(Ung.AppItem.loadingFlags[this.nodeProperties.name]) {
+    // install app
+    installApp: function( completeFn ) {
+        if(Ung.AppItem.loadingFlags[this.appProperties.name]) {
             return;
         }
-        Ung.Main.installNode(this.nodeProperties, this, completeFn);
+        Ung.Main.installApp(this.appProperties, this, completeFn);
     }
 });
 
@@ -221,33 +221,33 @@ Ext.define("Ung.ConfigItem", {
     }
 });
 
-// Node Class
-Ext.define("Ung.Node", {
+// App Class
+Ext.define("Ung.App", {
     extend: "Ext.Component",
     statics: {
-        // Get node component by nodeId
-        getCmp: function(nodeId) {
-            return Ext.getCmp("node_" + nodeId);
+        // Get app component by appId
+        getCmp: function(appId) {
+            return Ext.getCmp("app_" + appId);
         },
         template: new Ext.Template(
-            '<div class="node-cap" style="display:{isNodeEditable}"></div><div class="node-image"><img src="{image}"/></div>', '<div class="node-label">{displayName}</div>',
-            '<div class="node-faceplate-info">{licenseMessage}</div>',
-            '<div class="node-metrics" id="node-metrics_{id}"></div>',
-            '<div class="node-state" id="node-state_{id}" name="State"></div>',
-            '<div class="{nodePowerCls}" id="node-power_{id}" name="Power"></div>',
-            '<div class="node-buttons" id="node-buttons_{id}"></div>')
+            '<div class="app-cap" style="display:{isAppEditable}"></div><div class="app-image"><img src="{image}"/></div>', '<div class="app-label">{displayName}</div>',
+            '<div class="app-faceplate-info">{licenseMessage}</div>',
+            '<div class="app-metrics" id="app-metrics_{id}"></div>',
+            '<div class="app-state" id="app-state_{id}" name="State"></div>',
+            '<div class="{appPowerCls}" id="app-power_{id}" name="Power"></div>',
+            '<div class="app-buttons" id="app-buttons_{id}"></div>')
     },
-    cls: "node",
-    // ---Node specific attributes------
-    // node name
+    cls: "app",
+    // ---App specific attributes------
+    // app name
     name: null,
-    // node image
+    // app image
     image: null,
     // mackage description
     md: null,
     // --------------------------------
     hasPowerButton: null,
-    // node state
+    // app state
     state: null, // on, off, attention
     // is powered on,
     powerOn: null,
@@ -259,24 +259,24 @@ Ext.define("Ung.Node", {
     settingsWin: null,
     // settings Class name
     settingsClassName: null,
-    // list of available metrics for this node/app
+    // list of available metrics for this app/app
     metrics: null,
     // which metrics are shown on the faceplate
     activeMetrics: [0,1,2,3],
     faceplateMetrics: null,
     buttonsPanel: null,
     subCmps: null,
-    //can the node be edited on the gui
-    isNodeEditable: true,
+    //can the app be edited on the gui
+    isAppEditable: true,
     constructor: function(config) {
-        this.id = "node_" + config.nodeId;
+        this.id = "app_" + config.appId;
         config.helpSource=config.displayName.toLowerCase().replace(/ /g,"_");
         if(config.runState==null) {
             config.runState="INITIALIZED";
         }
         this.subCmps = [];
-        if( config.nodeSettings.policyId != null ) {
-            this.isNodeEditable = (config.nodeSettings.policyId == rpc.currentPolicy.policyId);
+        if( config.appSettings.policyId != null ) {
+            this.isAppEditable = (config.appSettings.policyId == rpc.currentPolicy.policyId);
         }
         this.callParent(arguments);
     },
@@ -291,7 +291,7 @@ Ext.define("Ung.Node", {
         }
         Ext.destroy(this.subCmps);
         if(this.hasPowerButton) {
-            var powerButton = Ext.get('node-power_' + this.getId());
+            var powerButton = Ext.get('app-power_' + this.getId());
             if(powerButton) {
                 powerButton.clearListeners();
             }
@@ -300,7 +300,7 @@ Ext.define("Ung.Node", {
     },
     afterRender: function() {
         this.callParent(arguments);
-        Ung.NodePreview.removeNode(this.name);
+        Ung.AppPreview.removeApp(this.name);
         this.getEl().set({
             'name': this.name
         });
@@ -317,23 +317,23 @@ Ext.define("Ung.Node", {
             this.license.trial = Math.random()>0.5;
             this.license.valid = Math.random()>0.5;
         }
-        var templateHTML = Ung.Node.template.applyTemplate({
+        var templateHTML = Ung.App.template.applyTemplate({
             'id': this.getId(),
             'image': this.image,
-            'isNodeEditable': this.isNodeEditable ? "none": "",
+            'isAppEditable': this.isAppEditable ? "none": "",
             'displayName': this.displayName,
-            'nodePowerCls': this.hasPowerButton?((this.license && !this.license.valid)?"node-power node-power-expired":"node-power"):"",
+            'appPowerCls': this.hasPowerButton?((this.license && !this.license.valid)?"app-power app-power-expired":"app-power"):"",
             'licenseMessage': this.getLicenseMessage()
         });
         this.getEl().insertHtml("afterBegin", templateHTML);
         
         if(rpc.skinInfo.appsViewType == "list") {
-            if(this.isNodeEditable) {
+            if(this.isAppEditable) {
                 this.getEl().on('click', this.loadSettings, this);
             }
         } else {
             this.buttonsPanel = Ext.create('Ext.container.Container',{
-                renderTo: 'node-buttons_' + this.getId(),
+                renderTo: 'app-buttons_' + this.getId(),
                 width: 290,
                 layout: 'hbox',
                 style: {marginTop: '5px'},
@@ -343,7 +343,7 @@ Ext.define("Ung.Node", {
                 items: [{
                     xtype: "button",
                     name: "Show Settings",
-                    iconCls: 'node-settings-icon',
+                    iconCls: 'app-settings-icon',
                     text: i18n._('Settings'),
                     handler: Ext.bind(function() {
                         this.loadSettings();
@@ -360,7 +360,7 @@ Ext.define("Ung.Node", {
                 },{
                     xtype: "button",
                     name: "Buy",
-                    id: 'node-buy-button_'+this.getId(),
+                    id: 'app-buy-button_'+this.getId(),
                     iconCls: 'icon-buy',
                     hidden: !(this.license != null && this.license.trial), //show only if trial license
                     cls: 'buy-button',
@@ -370,7 +370,7 @@ Ext.define("Ung.Node", {
             });
             this.subCmps.push(this.buttonsPanel);
             if(this.hasPowerButton) {
-                Ext.get('node-power_' + this.getId()).on('click', this.onPowerClick, this);
+                Ext.get('app-power_' + this.getId()).on('click', this.onPowerClick, this);
                 this.subCmps.push(Ext.create('Ext.tip.ToolTip', {
                     html: [
                        '<div style="text-align: left;">',
@@ -383,23 +383,23 @@ Ext.define("Ung.Node", {
                            i18n._('indicates that the application is saving or refreshing settings.'),
                        '<br/><b>' + i18n._("Clear") + '</b> ' + i18n._('indicates that the application is OFF, and may be turned ON by the user.'),
                        '</div>'].join(''),
-                    target: 'node-state_' + this.getId(),
+                    target: 'app-state_' + this.getId(),
                     showDelay: 20,
                     dismissDelay: 0,
                     hideDelay: 0
                 }));
                 this.subCmps.push(Ext.create('Ext.tip.ToolTip', {
                     html: i18n._('The <B>Power Button</B> allows you to turn a application ON and OFF.'),
-                    target: 'node-power_' + this.getId(),
+                    target: 'app-power_' + this.getId(),
                     showDelay: 20,
                     dismissDelay: 0,
                     hideDelay: 0
                 }));
             }
-            if(!this.isNodeEditable) {
+            if(!this.isAppEditable) {
                 this.subCmps.push(Ext.create('Ext.tip.ToolTip', {
                     html: i18n._('This app belongs to the parent rack shown above.<br/> To access the settings for this app, select the parent rack.'),
-                    target: 'node_' + this.nodeId,
+                    target: 'app_' + this.appId,
                     showDelay: 20,
                     dismissDelay: 0,
                     hideDelay: 0
@@ -407,9 +407,9 @@ Ext.define("Ung.Node", {
             }
             this.initMetrics();
         }
-        this.nodeStateContainer = document.getElementById('node-state_' + this.getId());
-        if(!this.isNodeEditable) {
-            this.nodeStateContainer.style.cursor = "default";
+        this.appStateContainer = document.getElementById('app-state_' + this.getId());
+        if(!this.isAppEditable) {
+            this.appStateContainer.style.cursor = "default";
         }
         this.updateRunState(this.runState, true);
     },
@@ -419,8 +419,8 @@ Ext.define("Ung.Node", {
     },
     setState: function(state) {
         this.state = state;
-        if(this.hasPowerButton && this.nodeStateContainer) {
-            this.nodeStateContainer.className = "node-state icon-state-" + this.state;
+        if(this.hasPowerButton && this.appStateContainer) {
+            this.appStateContainer.className = "app-state icon-state-" + this.state;
         }
     },
     setPowerOn: function(powerOn) {
@@ -448,7 +448,7 @@ Ext.define("Ung.Node", {
             if(panelStatus) {
                 panelStatus.updatePower(this.isRunning());
             }
-            if(this.name=="untangle-node-reports") {
+            if(this.name=="reports") {
                 rpc.reportsEnabled = this.isRunning();
                 Ung.Main.updateReportsDependencies();
             }
@@ -489,16 +489,16 @@ Ext.define("Ung.Node", {
         if(this.state=="attention") {
             return;
         }
-        this.loadNode(Ext.bind(function() {
+        this.loadApp(Ext.bind(function() {
             this.setPowerOn(true);
             this.setState("attention");
-            this.rpcNode.start(Ext.bind(function(result, exception) {
+            this.rpcApp.start(Ext.bind(function(result, exception) {
                 if(Ung.Util.handleException(exception, Ext.bind(function(message, details) {
                     var title = Ext.String.format( i18n._( "Unable to start {0}" ), this.displayName );
                     Ung.Util.showWarningMessage(title, details);
                     this.updateRunState(this.runState);
                 }, this),"noAlert")) return;
-                this.rpcNode.getRunState(Ext.bind(function(result, exception) {
+                this.rpcApp.getRunState(Ext.bind(function(result, exception) {
                     if(Ung.Util.handleException(exception)) return;
                     this.updateRunState(result);
                     if(Ext.isFunction(handler)) {
@@ -512,13 +512,13 @@ Ext.define("Ung.Node", {
         if(this.state=="attention") {
             return;
         }
-        this.loadNode(Ext.bind(function() {
+        this.loadApp(Ext.bind(function() {
             this.setPowerOn(false);
             this.setState("attention");
-            this.rpcNode.stop(Ext.bind(function(result, exception) {
+            this.rpcApp.stop(Ext.bind(function(result, exception) {
                 this.resetMetrics();
                 if(Ung.Util.handleException(exception)) return;
-                this.rpcNode.getRunState(Ext.bind(function(result, exception) {
+                this.rpcApp.getRunState(Ext.bind(function(result, exception) {
                     if(Ung.Util.handleException(exception)) return;
                     this.updateRunState(result);
                 }, this));
@@ -531,39 +531,39 @@ Ext.define("Ung.Node", {
     },
     //on Buy Now Action
     onBuyNowAction: function() {
-        Ung.Main.openLibItemStore( this.name.replace("-node-","-libitem-"));
+        Ung.Main.openLibItemStore( this.name.replace("-app-","-libitem-"));
     },
-    getRpcNode: function(handler) {
+    getRpcApp: function(handler) {
         if(handler==null) {handler=Ext.emptyFn;}
-        if (this.rpcNode === undefined) {
-            rpc.nodeManager.node(Ext.bind(function(result, exception) {
+        if (this.rpcApp === undefined) {
+            rpc.appManager.app(Ext.bind(function(result, exception) {
                 if(Ung.Util.handleException(exception)) return;
-                this.rpcNode = result;
+                this.rpcApp = result;
                 handler.call(this);
-            }, this), this.nodeId);
+            }, this), this.appId);
         } else {
             handler.call(this);
         }
     },
-    getNodeProperties: function(handler) {
+    getAppProperties: function(handler) {
         if(handler==null) {handler=Ext.emptyFn;}
-        if(this.rpcNode == null) {
+        if(this.rpcApp == null) {
             return;
         }
-        if (this.nodeProperties === undefined) {
-            this.rpcNode.getNodeProperties(Ext.bind(function(result, exception) {
+        if (this.appProperties === undefined) {
+            this.rpcApp.getAppProperties(Ext.bind(function(result, exception) {
                 if(Ung.Util.handleException(exception)) return;
-                this.nodeProperties = result;
+                this.appProperties = result;
                 handler.call(this);
             }, this));
         } else {
             handler.call(this);
         }
     },
-    // load Node
-    loadNode: function(handler) {
+    // load App
+    loadApp: function(handler) {
         if(handler==null) {handler=Ext.emptyFn;}
-        Ext.bind(this.getRpcNode, this, [Ext.bind(this.getNodeProperties, this,[handler])]).call(this);
+        Ext.bind(this.getRpcApp, this, [Ext.bind(this.getAppProperties, this,[handler])]).call(this);
     },
     loadSettings: function() {
         Ext.MessageBox.wait(i18n._("Loading Settings..."), i18n._("Please wait"));
@@ -574,15 +574,15 @@ Ext.define("Ung.Node", {
     },
     // init settings
     initSettings: function() {
-        Ext.bind(this.loadNode, this,[Ext.bind(this.preloadSettings, this)]).call(this);
+        Ext.bind(this.loadApp, this,[Ext.bind(this.preloadSettings, this)]).call(this);
     },
-    //get node settings async before node settings load
+    //get app settings async before app settings load
     preloadSettings: function(handler) {
-        var nodeClass = Ext.ClassManager.get(this.settingsClassName);
-        if( nodeClass != null && Ext.isFunction( nodeClass.preloadSettings ) ) {
-            nodeClass.preloadSettings(this);
-        } else if(Ext.isFunction(this.rpcNode.getSettings)) {
-            this.rpcNode.getSettings(Ext.bind(function(result, exception) {
+        var appClass = Ext.ClassManager.get(this.settingsClassName);
+        if( appClass != null && Ext.isFunction( appClass.preloadSettings ) ) {
+            appClass.preloadSettings(this);
+        } else if(Ext.isFunction(this.rpcApp.getSettings)) {
+            this.rpcApp.getSettings(Ext.bind(function(result, exception) {
                 if(Ung.Util.handleException(exception)) return;
                 this.openSettings.call(this, result);
             }, this));
@@ -596,24 +596,24 @@ Ext.define("Ung.Node", {
         if (this.settingsClassName !== null) {
             this.settingsWin=Ext.create(this.settingsClassName, {
                 name: this.name,
-                nodeId: this.nodeId,
-                nodeProperties: this.nodeProperties,
+                appId: this.appId,
+                appProperties: this.appProperties,
                 displayName: this.displayName,
                 helpSource: this.helpSource,
-                rpcNode: this.rpcNode,
+                rpcApp: this.rpcApp,
                 settings: settings
             });
         } else {
-            this.settingsWin = Ext.create('Ung.NodeWin',{
+            this.settingsWin = Ext.create('Ung.AppWin',{
                 name: this.name,
-                nodeId: this.nodeId,
-                nodeProperties: this.nodeProperties,
+                appId: this.appId,
+                appProperties: this.appProperties,
                 displayName: this.displayName,
                 helpSource: this.helpSource,
-                rpcNode: this.rpcNode,
+                rpcApp: this.rpcApp,
                 items: [{
                     bodyStyle: "padding: 15px 5px 5px 15px;",
-                    html: Ext.String.format(i18n._("Error: There is no settings class for the node '{0}'."), this.name)
+                    html: Ext.String.format(i18n._("Error: There is no settings class for the app '{0}'."), this.name)
                 }]
             });
         }
@@ -627,64 +627,64 @@ Ext.define("Ung.Node", {
         Ext.MessageBox.hide();
     },
 
-    // remove node
+    // remove app
     removeAction: function() {
         this.setState("attention");
         if(this.getEl()) {
             this.getEl().mask();
             this.getEl().fadeOut({ opacity: 0.1, duration: 2500, remove: false, useDisplay:false});
         }
-        rpc.nodeManager.destroy(Ext.bind(function(result, exception) {
+        rpc.appManager.destroy(Ext.bind(function(result, exception) {
             if(Ung.Util.handleException(exception, Ext.bind(function() {
                 if(this.getEl()) {
                     this.getEl().unmask();
                     this.getEl().stopAnimation();
                 }
             }, this),"alert")) return;
-            var nodeName = "";
+            var appName = "";
             if (this) {
                 if(this.getEl()) {
                     this.getEl().stopAnimation();
                 }
-                nodeName = this.name;
+                appName = this.name;
                 var cmp = this;
                 Ext.destroy(cmp);
                 cmp = null;
-                for (var i = 0; i < Ung.Main.nodes.length; i++) {
-                    if (nodeName == Ung.Main.nodes[i].name) {
-                        Ung.Main.nodes.splice(i, 1);
+                for (var i = 0; i < Ung.Main.apps.length; i++) {
+                    if (appName == Ung.Main.apps[i].name) {
+                        Ung.Main.apps.splice(i, 1);
                         break;
                     }
                 }
             }
-            if(nodeName == "untangle-node-reports") {
+            if(appName == "reports") {
                 rpc.reportsEnabled = false;
-                delete rpc.nodeReports;
+                delete rpc.appReports;
                 delete rpc.reportsManager;
                 Ung.Main.updateReportsDependencies();
             } else {
                 Ung.dashboard.loadDashboard();
             }
-            if(nodeName == "untangle-node-policy-manager") {
+            if(appName == "policy-manager") {
                 Ung.Main.loadPolicies();
             } else {
                 Ung.Main.updateAppsView();
             }
             
-        }, this), this.nodeId);
+        }, this), this.appId);
     },
     // initialize faceplate metrics
     initMetrics: function() {
         if(this.metrics != null && this.metrics.list != null) {
             if( this.metrics.list.length > 0 ) {
                 this.faceplateMetrics = Ext.create('Ung.FaceplateMetric', {
-                    nodeName: this.name,
+                    appName: this.name,
                     displayName: this.displayName,
                     parentId: this.getId(),
-                    parentNodeId: this.nodeId,
+                    parentAppId: this.appId,
                     metrics: this.metrics
                 });
-                this.faceplateMetrics.render('node-metrics_' + this.getId());
+                this.faceplateMetrics.render('app-metrics_' + this.getId());
                 this.subCmps.push(this.faceplateMetrics);
             }
         }
@@ -716,14 +716,14 @@ Ext.define("Ung.Node", {
             this.license.valid = Math.random() > 0.5;
         }
         if(this.getEl()) {
-            this.getEl().down("div[class=node-faceplate-info]").dom.innerHTML=this.getLicenseMessage();
-            document.getElementById("node-power_"+this.getId()).className=this.hasPowerButton?(this.license && !this.license.valid)?"node-power node-power-expired":"node-power":"";
-            var nodeBuyButton=Ext.getCmp("node-buy-button_"+this.getId());
-            if(nodeBuyButton) {
+            this.getEl().down("div[class=app-faceplate-info]").dom.innerHTML=this.getLicenseMessage();
+            document.getElementById("app-power_"+this.getId()).className=this.hasPowerButton?(this.license && !this.license.valid)?"app-power app-power-expired":"app-power":"";
+            var appBuyButton=Ext.getCmp("app-buy-button_"+this.getId());
+            if(appBuyButton) {
                 if(this.license && this.license.trial) {
-                    nodeBuyButton.show();
+                    appBuyButton.show();
                 } else {
-                    nodeBuyButton.hide();
+                    appBuyButton.hide();
                 }
             }
         }
@@ -734,22 +734,22 @@ Ext.define("Ung.Node", {
     }
 });
 
-Ext.define("Ung.NodePreview", {
+Ext.define("Ung.AppPreview", {
     extend: "Ext.Component",
-    cls: 'node',
+    cls: 'app',
     statics: {
-        template: new Ext.Template('<div class="node-image"><img src="{image}"/></div>', '<div class="node-label">{displayName}</div>'),
-        removeNode: function(nodeName) {
-            Ext.destroy(Ext.getCmp("node_preview_"+nodeName));
+        template: new Ext.Template('<div class="app-image"><img src="{image}"/></div>', '<div class="app-label">{displayName}</div>'),
+        removeApp: function(appName) {
+            Ext.destroy(Ext.getCmp("app_preview_"+appName));
         }
     },
     constructor: function(config) {
-        Ung.Main.nodePreviews[config.name] = Ext.clone(config);
-        this.id = "node_preview_" + config.name;
+        Ung.Main.appPreviews[config.name] = Ext.clone(config);
+        this.id = "app_preview_" + config.name;
         this.callParent(arguments);
     },
     afterRender: function() {
-        var templateHTML = Ung.NodePreview.template.applyTemplate({
+        var templateHTML = Ung.AppPreview.template.applyTemplate({
             'id': this.getId(),
             'image': '/skins/'+rpc.skinSettings.skinName+'/images/admin/apps/'+this.name+'_80x80.png',
             'displayName': this.displayName
@@ -763,8 +763,8 @@ Ext.define("Ung.NodePreview", {
         if(this.getEl()) {
             this.getEl().stopAnimation();
         }
-        if(Ung.Main.nodePreviews[this.name] !== undefined) {
-            delete Ung.Main.nodePreviews[this.name];
+        if(Ung.Main.appPreviews[this.name] !== undefined) {
+            delete Ung.Main.appPreviews[this.name];
         }
         this.callParent(arguments);
     }
@@ -844,12 +844,12 @@ Ung.MetricManager = {
             Ung.dashboard.updateStats();
 
             var i;
-            for (i = 0; i < Ung.Main.nodes.length; i++) {
-                var nodeCmp = Ung.Node.getCmp(Ung.Main.nodes[i].nodeId);
+            for (i = 0; i < Ung.Main.apps.length; i++) {
+                var appCmp = Ung.App.getCmp(Ung.Main.apps[i].appId);
 
-                if (nodeCmp && nodeCmp.isRunning()) {
-                    nodeCmp.metrics = result.metrics[Ung.Main.nodes[i].nodeId];
-                    nodeCmp.updateMetrics();
+                if (appCmp && appCmp.isRunning()) {
+                    appCmp.metrics = result.metrics[Ung.Main.apps[i].appId];
+                    appCmp.updateMetrics();
                 }
             }
         }, this));
@@ -1113,7 +1113,7 @@ Ext.define("Ung.FaceplateMetric", {
     extend: "Ext.Component",
     html: '<div class="chart"></div><div class="system"><div class="system-box"></div></div>',
     parentId: null,
-    parentNodeId: null,
+    parentAppId: null,
     byteCountCurrent: null,
     byteCountLast: null,
     sessionCountCurrent: null,
@@ -1153,13 +1153,13 @@ Ext.define("Ung.FaceplateMetric", {
             }
         }
         //Do not show chart graph for these apps even though they have the live-sessions metrics
-        if(this.nodeName === "untangle-node-firewall" ||
-           this.nodeName === "untangle-node-openvpn" ||
-           this.nodeName === "untangle-node-wan-balancer") {
+        if(this.appName === "firewall" ||
+           this.appName === "openvpn" ||
+           this.appName === "wan-balancer") {
                 this.hasChart = false;
         }
         var chartContainerEl = this.getEl().down("div[class=chart]");
-        //Do not build chart graph if the node doesn't have live-session metrics
+        //Do not build chart graph if the app doesn't have live-session metrics
         if( !this.hasChart ) {
             chartContainerEl.hide();
             return;
@@ -1169,17 +1169,17 @@ Ext.define("Ung.FaceplateMetric", {
         for(i=0; i<this.chartDataLength; i++) {
             this.chartData.push({time:i, sessions:0});
         }
-        this.chart = Ung.charts.nodeChart(chartContainerEl.dom, this.chartData);
+        this.chart = Ung.charts.appChart(chartContainerEl.dom, this.chartData);
         
         chartContainerEl.on("click", function(e) { 
-            Ung.Main.showNodeSessions( this.parentNodeId ); 
+            Ung.Main.showAppSessions( this.parentAppId ); 
         }, this);
     },
     buildActiveMetrics: function () {
-        var nodeCmp = Ext.getCmp(this.parentId);
-        var activeMetrics = nodeCmp.activeMetrics;
+        var appCmp = Ext.getCmp(this.parentId);
+        var activeMetrics = appCmp.activeMetrics;
         if(activeMetrics.length>4) {
-            Ext.MessageBox.alert(i18n._("Warning"), Ext.String.format(i18n._("The app {0} has {1} metrics. The maximum number of metrics is {2}."),nodeCmp.displayName ,activeMetrics.length,4));
+            Ext.MessageBox.alert(i18n._("Warning"), Ext.String.format(i18n._("The app {0} has {1} metrics. The maximum number of metrics is {2}."),appCmp.displayName ,activeMetrics.length,4));
         }
         var metricsLen=Math.min(activeMetrics.length,4);
         var i, nameDiv, valueDiv;
@@ -1195,7 +1195,7 @@ Ext.define("Ung.FaceplateMetric", {
         // fill in name and value
         for(i=0; i<metricsLen;i++) {
             var metricIndex=activeMetrics[i];
-            var metric = nodeCmp.metrics.list[metricIndex];
+            var metric = appCmp.metrics.list[metricIndex];
             if (metric != null && metric !== undefined) {
                 nameDiv=document.getElementById('systemName_' + this.getId() + '_' + i);
                 valueDiv=document.getElementById('systemValue_' + this.getId() + '_' + i);
@@ -1207,13 +1207,13 @@ Ext.define("Ung.FaceplateMetric", {
         }
     },
     showMetricSettings: function() {
-        var nodeCmp = Ext.getCmp(this.parentId);
+        var appCmp = Ext.getCmp(this.parentId);
         this.newActiveMetrics=[];
         var i;
         if(this.configWin==null) {
             var configItems=[];
-            for(i=0;i<nodeCmp.metrics.list.length;i++) {
-                var metric = nodeCmp.metrics.list[i];
+            for(i=0;i<appCmp.metrics.list.length;i++) {
+                var metric = appCmp.metrics.list[i];
                 configItems.push({
                     xtype: 'checkbox',
                     boxLabel: i18n._(metric.displayName),
@@ -1293,8 +1293,8 @@ Ext.define("Ung.FaceplateMetric", {
         for(i=0;i<this.configWin.items.length;i++) {
             this.configWin.items.get(i).setValue(false);
         }
-        for(i=0 ; i<nodeCmp.activeMetrics.length ; i++ ) {
-            var metricIndex = nodeCmp.activeMetrics[i];
+        for(i=0 ; i<appCmp.activeMetrics.length ; i++ ) {
+            var metricIndex = appCmp.activeMetrics[i];
             var metricItem=this.configWin.items.get(metricIndex);
             if (metricItem != null)
                 metricItem.setValue(true);
@@ -1302,18 +1302,18 @@ Ext.define("Ung.FaceplateMetric", {
         this.configWin.show();
     },
     updateActiveMetrics: function() {
-        var nodeCmp = Ext.getCmp(this.parentId);
-        nodeCmp.activeMetrics = this.newActiveMetrics;
+        var appCmp = Ext.getCmp(this.parentId);
+        appCmp.activeMetrics = this.newActiveMetrics;
         this.buildActiveMetrics();
     },
     update: function(metrics) {
         // update counts
-        var nodeCmp = Ext.getCmp(this.parentId);
-        var activeMetrics = nodeCmp.activeMetrics;
+        var appCmp = Ext.getCmp(this.parentId);
+        var activeMetrics = appCmp.activeMetrics;
         var i;
         for (i = 0; i < activeMetrics.length; i++) {
             var metricIndex = activeMetrics[i];
-            var metric = nodeCmp.metrics.list[metricIndex];
+            var metric = appCmp.metrics.list[metricIndex];
             if (metric != null && metric !== undefined) {
                 var newValue="&nbsp;";
                 newValue = metric.value;
@@ -1329,12 +1329,12 @@ Ext.define("Ung.FaceplateMetric", {
                 this.chartData[i].sessions=this.chartData[i+1].sessions;
                 reloadChart = (reloadChart || (this.chartData[i].sessions != 0));
             }
-            this.currentSessions = this.getCurrentSessions(nodeCmp.metrics);
+            this.currentSessions = this.getCurrentSessions(appCmp.metrics);
             reloadChart = (reloadChart || (this.currentSessions!=0));
             this.chartData[this.chartData.length-1].sessions=this.currentSessions;
 
             if(reloadChart) {
-                Ung.charts.nodeChartUpdate(this.chart, this.chartData);
+                Ung.charts.appChartUpdate(this.chart, this.chartData);
             }
         }
     },
@@ -1363,7 +1363,7 @@ Ext.define("Ung.FaceplateMetric", {
             for(i = 0; i<this.chartData.length; i++) {
                 this.chartData[i].sessions=0;
             }
-            Ung.charts.nodeChartUpdate(this.chart, this.chartData);
+            Ung.charts.appChartUpdate(this.chart, this.chartData);
             for (i = 0; i < 4; i++) {
                 var valueDiv = document.getElementById('systemValue_' + this.getId() + '_' + i);
                 valueDiv.innerHTML = "&nbsp;";
@@ -1420,18 +1420,18 @@ Ext.define('Ung.panel.Status', {
         if(!this.title) {
             this.title = i18n._('Status');
         }
-        this.nodeId = this.settingsCmp.nodeId;
+        this.appId = this.settingsCmp.appId;
         this.displayName = this.settingsCmp.displayName;
-        var node = Ung.Node.getCmp(this.nodeId);
+        var app = Ung.App.getCmp(this.appId);
         this.items = [{
             xtype: 'fieldset',
             title: i18n._('Summary'),
             html: this.settingsCmp.getAppSummary()
         }];
 
-        if(node.hasPowerButton) {
+        if(app.hasPowerButton) {
             this.hasPowerSection = true;
-            var isRunning = node.isRunning();
+            var isRunning = app.isRunning();
             this.items.push({
                 title: i18n._('Power'),
                 name: 'powerSection',
@@ -1445,18 +1445,18 @@ Ext.define('Ung.panel.Status', {
                     xtype: 'button',
                     margin: '10 0 0 0',
                     name: 'powerButton',
-                    disabled: (node.license && !node.license.valid),
+                    disabled: (app.license && !app.license.valid),
                     iconCls: 'app-power-button',
                     text: isRunning ? i18n._("Disable") : i18n._("Enable"),
                     handler: function(button) {
                         this.updateToAttention();
-                        Ung.Node.getCmp(this.nodeId).onPowerClick();
+                        Ung.App.getCmp(this.appId).onPowerClick();
                     },
                     scope: this
                 }]
             });
         }
-        if(node.license && (node.license.trial || !node.license.valid)) {
+        if(app.license && (app.license.trial || !app.license.valid)) {
             this.hasLicenseSection = true;
             this.items.push({
                 title: i18n._('License'),
@@ -1465,17 +1465,17 @@ Ext.define('Ung.panel.Status', {
                     xtype: 'component',
                     name: 'licenseStatus',
                     cls: 'app-status-disabled',
-                    html: node.getLicenseMessage()
+                    html: app.getLicenseMessage()
                 }, {
                     xtype: "button",
                     name: 'licenseBuyButton',
                     margin: '10 0 0 0',
                     iconCls: 'icon-buy',
-                    hidden: !node.license.trial,
+                    hidden: !app.license.trial,
                     cls: 'buy-button',
                     text: i18n._('Buy Now'),
                     handler: function() {
-                        Ung.Node.getCmp(this.nodeId).onBuyNowAction();
+                        Ung.App.getCmp(this.appId).onBuyNowAction();
                     },
                     scope: this
                 }]
@@ -1485,17 +1485,17 @@ Ext.define('Ung.panel.Status', {
             this.items.push.apply(this.items, this.itemsAfterLicense);
         }
         
-        if(node.metrics && node.metrics.list.length>0) {
+        if(app.metrics && app.metrics.list.length>0) {
             this.hasMetrics = true;
             var viewportWidth = Ung.Main.viewport.getWidth();
             var metricsItems = [], metric, hasChart=false;
-            for(var i=0; i<node.metrics.list.length; i++) {
-                metric = node.metrics.list[i];
+            for(var i=0; i<app.metrics.list.length; i++) {
+                metric = app.metrics.list[i];
                 if(metric.name=="live-sessions") {
                     this.hasChart = true;
-                    if( node.name === "untangle-node-firewall" ||
-                        node.name === "untangle-node-openvpn" ||
-                        node.name === "untangle-node-wan-balancer" ){
+                    if( app.name === "firewall" ||
+                        app.name === "openvpn" ||
+                        app.name === "wan-balancer" ){
                         this.hasChart = false;
                     }
                 }
@@ -1574,7 +1574,7 @@ Ext.define('Ung.panel.Status', {
             licenseSection.setVisible(licenseSectionVisible);
             if(licenseSectionVisible) {
                 var licenseStatus = this.down("[name=licenseStatus]");
-                licenseStatus.update({'html': Ung.Node.getCmp(this.nodeId).getLicenseMessage()});
+                licenseStatus.update({'html': Ung.App.getCmp(this.appId).getLicenseMessage()});
                 var licenseBuyButton = this.down("button[name=licenseBuyButton]");
                 licenseBuyButton.setVisible(license && license.trial);
             }

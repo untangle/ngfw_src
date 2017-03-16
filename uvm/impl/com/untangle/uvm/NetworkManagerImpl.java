@@ -52,8 +52,8 @@ import com.untangle.uvm.network.DhcpStaticEntry;
 import com.untangle.uvm.network.UpnpSettings;
 import com.untangle.uvm.network.UpnpRule;
 import com.untangle.uvm.network.UpnpRuleCondition;
-import com.untangle.uvm.node.IPMaskedAddress;
-import com.untangle.uvm.node.RuleCondition;
+import com.untangle.uvm.app.IPMaskedAddress;
+import com.untangle.uvm.app.RuleCondition;
 import com.untangle.uvm.servlet.DownloadHandler;
 
 /**
@@ -149,6 +149,7 @@ public class NetworkManagerImpl implements NetworkManager
             if ( this.networkSettings.getVersion() < 5 ) {
                 convertSettingsV5();
             }
+
             logger.debug( "Loading Settings: " + this.networkSettings.toJSONString() );
         }
 
@@ -963,6 +964,10 @@ public class NetworkManagerImpl implements NetworkManager
                 throw new RuntimeException("Missing V4 Config Type");
         }
 
+        if ( networkSettings.getHttpsPort() == networkSettings.getHttpPort() ) {
+            throw new RuntimeException("HTTP and HTTPS services can not use the same port.");
+        }
+
         /**
          * Check that no two statically configured interfaces have the same masked address.
          * For example, don't let people put 192.168.1.100/24 on external and 192.168.1.101/24 on internal
@@ -1474,6 +1479,7 @@ public class NetworkManagerImpl implements NetworkManager
         qosSettings.setDnsPriority( 1 );
         qosSettings.setSshPriority( 0 );
         qosSettings.setOpenvpnPriority( 0 );
+        qosSettings.setQueueDiscipline( "fq_codel" );
 
         List<QosRule> qosRules = new LinkedList<QosRule>();
 

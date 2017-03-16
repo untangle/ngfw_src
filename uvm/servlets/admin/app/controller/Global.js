@@ -119,19 +119,20 @@ Ext.define('Ung.controller.Global', {
 
                 var policy = Ext.getStore('policies').findRecord('policyId', policyId);
                 var appInstance = Ext.Array.findBy(policy.get('instances').list, function (inst) {
-                    return inst.nodeName === Util.appsMapping[app];
+                    return inst.appName.replace('', '').replace('', '') === app;
                 });
-                var appProps = Ext.Array.findBy(policy.get('nodeProperties').list, function (prop) {
-                    return prop.name === Util.appsMapping[app];
+                var appProps = Ext.Array.findBy(policy.get('appProperties').list, function (prop) {
+                    return prop.name.replace('', '').replace('', '') === app;
                 });
 
+                console.log(appProps);
                 // var appClass = Ext.ClassManager.getByAlias('widget.app-' + app);
                 me.getMainView().setLoading(true);
                 Ext.Loader.loadScript({
                     url: 'script/apps/' + app + '.js',
                     onLoad: function () {
                         Ext.Deferred.sequence([
-                            Rpc.asyncPromise('rpc.nodeManager.node', appInstance.id),
+                            Rpc.asyncPromise('rpc.appManager.app', appInstance.id),
                             // Rpc.asyncPromise('rpc.networkManager.getInterfaceStatus'),
                             // Rpc.asyncPromise('rpc.networkManager.getDeviceStatus'),
                         ], this).then(function (result) {
@@ -186,15 +187,25 @@ Ext.define('Ung.controller.Global', {
         }
     },
 
-    onReports: function (category) {
-        if (category) {
-            this.getReportsView().getViewModel().set('category', category.replace(/-/g, ' '));
+    onReports: function (categoryName, reportName) {
+        var reportsVm = this.getReportsView().getViewModel();
+        if (categoryName) {
+            reportsVm.set('categoryName', categoryName.replace(/-/g, ' '));
+            if (!reportName) {
+                reportsVm.set('activeCard', 'category');
+                reportsVm.set('reportName', null);
+            } else {
+                reportsVm.set('reportName', reportName);
+                reportsVm.set('activeCard', 'report');
+            }
         } else {
-            this.getReportsView().getViewModel().set('category', null);
+            reportsVm.set('categoryName', null);
+            reportsVm.set('category', null);
+            reportsVm.set('reportName', null);
+            reportsVm.set('report', null);
+            reportsVm.set('activeCard', 'allCategories');
         }
-        this.getMainView().getViewModel().set('selectedNavItem', 'reports');
         this.getMainView().setActiveItem('reports');
-        // console.log(this.getReportsView().getViewModel());
     },
 
     onSessions: function () {

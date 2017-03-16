@@ -16,8 +16,8 @@ import org.apache.log4j.Logger;
 import com.untangle.jnetcap.NetcapSession;
 import com.untangle.jnetcap.NetcapTCPSession;
 import com.untangle.jnetcap.NetcapUDPSession;
-import com.untangle.uvm.node.SessionEvent;
-import com.untangle.uvm.node.SessionTuple;
+import com.untangle.uvm.app.SessionEvent;
+import com.untangle.uvm.app.SessionTuple;
 
 /**
  * This stores the global system-wide state for a given session
@@ -60,9 +60,9 @@ public class SessionGlobalState
 
     /**
      * Stores a list of the original agents/pipelinespecs processing this session
-     * Note: Even if a node/agent releases a session it will still be in this list
+     * Note: Even if a app/agent releases a session it will still be in this list
      * This is used for resetting sessions with killMatchingSessions so we can only reset
-     * sessions that were originally processed by the node calling killMatchingSessions
+     * sessions that were originally processed by the app calling killMatchingSessions
      */
     private List<PipelineConnectorImpl> originalAgents;
     

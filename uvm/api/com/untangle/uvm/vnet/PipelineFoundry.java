@@ -6,11 +6,11 @@ package com.untangle.uvm.vnet;
 import java.net.InetSocketAddress;
 
 import com.untangle.uvm.vnet.Fitting;
-import com.untangle.uvm.node.SessionEvent;
+import com.untangle.uvm.app.SessionEvent;
 import com.untangle.uvm.vnet.SessionEventHandler;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Subscription;
-import com.untangle.uvm.node.Node;
+import com.untangle.uvm.app.App;
 
 /**
  * Compiles pipes based on subscriptions and interest sets.
@@ -25,7 +25,7 @@ public interface PipelineFoundry
 
     void addConnectionFittingHint( InetSocketAddress socketAddress, Fitting fitting );
 
-    PipelineConnector create( String name, Node node, Subscription subscription, SessionEventHandler listener, Fitting inputFitting, Fitting outputFitting, Affinity affinity, Integer affinityStrength, boolean premium );
+    PipelineConnector create( String name, App app, Subscription subscription, SessionEventHandler listener, Fitting inputFitting, Fitting outputFitting, Affinity affinity, Integer affinityStrength, boolean premium );
 
-    PipelineConnector create( String name, Node node, Subscription subscription, SessionEventHandler listener, Fitting inputFitting, Fitting outputFitting, Affinity affinity, Integer affinityStrength, boolean premium, String buddy );
+    PipelineConnector create( String name, App app, Subscription subscription, SessionEventHandler listener, Fitting inputFitting, Fitting outputFitting, Affinity affinity, Integer affinityStrength, boolean premium, String buddy );
 }
