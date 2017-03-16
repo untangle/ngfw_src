@@ -1,2 +1,2 @@
 # -*-ruby-*-
-NodeBuilder.makeNode(BuildEnv::SRC, 'policy-manager', 'policy-manager', [] )
+AppBuilder.makeApp(BuildEnv::SRC, 'policy-manager', 'policy-manager', [] )

@@ -1,4 +1,4 @@
 # -*-ruby-*-
 
-NodeBuilder.makeNode(BuildEnv::SRC, 'configuration-backup', 'configuration-backup', [] )
+AppBuilder.makeApp(BuildEnv::SRC, 'configuration-backup', 'configuration-backup', [] )
 

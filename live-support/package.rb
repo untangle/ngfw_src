@@ -1,4 +1,4 @@
 # -*-ruby-*-
 
-NodeBuilder.makeNode(BuildEnv::SRC, 'live-support', 'live-support', [] )
+AppBuilder.makeApp(BuildEnv::SRC, 'live-support', 'live-support', [] )
 

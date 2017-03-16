@@ -1,3 +1,3 @@
 # -*-ruby-*-
 
-NodeBuilder.makeCasing(BuildEnv::SRC, 'ssl-inspector', 'ssl-inspector', [])
+AppBuilder.makeCasing(BuildEnv::SRC, 'ssl-inspector', 'ssl-inspector', [])

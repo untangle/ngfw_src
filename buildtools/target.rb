@@ -392,10 +392,10 @@ class ServletBuilder < Target
     "#{BuildEnv::downloads}/#{n}"
   } + ["#{ENV['JAVA_HOME']}/lib/tools.jar"];
 
-  def initialize(package, pkgname, path, libdeps = [], nodedeps = [], ms = [], common = [BuildEnv::SERVLET_COMMON], jsp_list = nil)
+  def initialize(package, pkgname, path, libdeps = [], appdeps = [], ms = [], common = [BuildEnv::SERVLET_COMMON], jsp_list = nil)
     @pkgname = pkgname
     @path = path
-    @nodedeps = nodedeps
+    @appdeps = appdeps
     @jsp_list = Set.new(jsp_list)
     if path.kind_of?(Array) then
       path = path[0]
@@ -436,7 +436,7 @@ class ServletBuilder < Target
     end
     uvm_lib = BuildEnv::SRC['untangle-libuvm']
 
-    jardeps = libdeps + @nodedeps + Jars::Base
+    jardeps = libdeps + @appdeps + Jars::Base
     jardeps << uvm_lib["api"] 
 
     @srcJar = JarTarget.build_target(package, jardeps, suffix, "#{path}/src", false)

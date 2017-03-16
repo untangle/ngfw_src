@@ -6,4 +6,4 @@ deps = []
   deps << BuildEnv::SRC[c]['src']
 end
 
-NodeBuilder.makeBase(BuildEnv::SRC, 'clam-base', 'clam-base', deps)
+AppBuilder.makeBase(BuildEnv::SRC, 'clam-base', 'clam-base', deps)

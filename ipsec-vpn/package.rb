@@ -1,4 +1,4 @@
 # -*-ruby-*-
 
-NodeBuilder.makeNode(BuildEnv::SRC, 'ipsec-vpn', 'ipsec-vpn', [])
+AppBuilder.makeApp(BuildEnv::SRC, 'ipsec-vpn', 'ipsec-vpn', [])
 

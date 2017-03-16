@@ -1,6 +1,6 @@
 # -*-ruby-*-
 
-NodeBuilder.makeNode(BuildEnv::SRC, 'openvpn', 'openvpn')
+AppBuilder.makeApp(BuildEnv::SRC, 'openvpn', 'openvpn')
 
 openvpn = BuildEnv::SRC['openvpn']
 
