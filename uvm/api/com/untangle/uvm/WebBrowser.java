@@ -23,8 +23,6 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOf;
-
 import com.untangle.uvm.util.IOUtil;
 
 /*
@@ -100,7 +98,7 @@ public class WebBrowser
             options.addArguments("--no-sandbox");
             options.addArguments("--user-data-dir=" + tempDirectory);
             driver = new ChromeDriver(service, options);
-            wait = new WebDriverWait(driver, 120);
+            wait = new WebDriverWait(driver, 300);
         }catch(UnreachableBrowserException e){
             logger.warn("Unable to open driver, ", e);
         }
@@ -164,8 +162,7 @@ public class WebBrowser
 		Boolean found = false;
         found = wait.until(new ExpectedCondition<Boolean>() {
         	public Boolean apply(WebDriver driver) {
-                if(driver.findElement(By.id(elementId)) != null &&
-                    visibilityOf(driver.findElement(By.id(elementId))) != null){
+                if( driver.findElement(By.id(elementId)) != null ){
                     return true;
                 }
                 return false;

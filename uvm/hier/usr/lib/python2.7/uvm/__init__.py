@@ -1,4 +1,4 @@
-from uvm.node_manager import NodeManager
+from uvm.app_manager import AppManager
 from uvm.system_manager import SystemManager
 from uvm.logging_manager import LoggingManager
 from uvm.uvm_manager import UvmManager

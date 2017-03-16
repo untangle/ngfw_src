@@ -1,6 +1,6 @@
-from uvm.settings_reader import get_node_settings_item
-from uvm.settings_reader import get_nodeid_settings
-from uvm.settings_reader import get_node_settings
+from uvm.settings_reader import get_app_settings_item
+from uvm.settings_reader import get_appid_settings
+from uvm.settings_reader import get_app_settings
 from uvm.settings_reader import get_settings_item
 from mod_python import apache
 from uvm import Uvm
@@ -24,19 +24,19 @@ def index(req):
     page = file.read();
     file.close()
 
-    # load the node settings
+    # load the app settings
     captureSettings = load_capture_settings(req)
 
-    # setup the uvm and node objects so we can make the RPC call
+    # setup the uvm and app objects so we can make the RPC call
     captureList = load_rpc_manager_list()
 
     # track the number of successful calls to userLogout
     exitCount = 0
 
-    # call the logout function for each node instance
+    # call the logout function for each app instance
     cookie_key = "__ngfwcp"
-    for node in captureList:
-        exitResult = node.userLogout(address)
+    for app in captureList:
+        exitResult = app.userLogout(address)
         cookies = Cookie.get_cookie(req, cookie_key)
         if cookies != None:
             value = {}
@@ -62,37 +62,36 @@ def index(req):
     return(page)
 
 #-----------------------------------------------------------------------------
-# loads and returns the node RPC objects needed for the authentication calls
+# loads and returns the app RPC objects needed for the authentication calls
 
 def load_rpc_manager_list(appid=None):
 
-    # create a list for all of the nodes we discover
+    # create a list for all of the apps we discover
     captureList = list()
 
     # first we get the uvm context
     uvmContext = Uvm().getUvmContext()
 
-    # if no appid provided we lookup capture nodes by name
     if (appid == None):
-        nodelist = uvmContext.nodeManager().nodeInstancesIds()
-        for item in nodelist['list']:
-            node = uvmContext.nodeManager().node(long(item))
-            name = node.getNodeSettings()['nodeName']
-            if (name == 'untangle-node-captive-portal'):
-                captureList.append(node)
+        applist = uvmContext.appManager().appInstancesIds()
+        for item in applist['list']:
+            app = uvmContext.appManager().app(long(item))
+            name = app.getAppSettings()['appName']
+            if (name == 'captive-portal'):
+                captureList.append(app)
     # appid was passed so use it
     else:
-        node = uvmContext.nodeManager().node(long(appid))
-        captureList.append(node)
+        app = uvmContext.appManager().app(long(appid))
+        captureList.append(app)
 
-    # if we can't find the node then throw an exception
+    # if we can't find the app then throw an exception
     if (len(captureList) == 0):
-        raise Exception("The uvm node manager could not locate untangle-node-captive-portal")
+        raise Exception("The uvm app manager could not locate captive-portal")
 
     return(captureList)
 
 #-----------------------------------------------------------------------------
-# loads the node settings
+# loads the app settings
 
 def load_capture_settings(req,appid=None):
 
@@ -102,16 +101,16 @@ def load_capture_settings(req,appid=None):
     if (oemName != None):
         companyName = oemName
 
-    brandco = get_node_settings_item('untangle-node-branding-manager','companyName')
+    brandco = get_app_settings_item('branding-manager','companyName')
     if (brandco != None):
         companyName = brandco
 
     if (appid == None):
-        captureSettings = get_node_settings('untangle-node-captive-portal')
+        captureSettings = get_app_settings('captive-portal')
     else:
-        captureSettings = get_nodeid_settings(long(appid))
+        captureSettings = get_appid_settings(long(appid))
 
-    # add the company name to the node settings dictionary
+    # add the company name to the app settings dictionary
     captureSettings['companyName'] = companyName
 
     # add some headers to prevent caching any of our stuff

@@ -5,12 +5,12 @@ import sys
 
 sys.path.insert(0, '@PREFIX@/usr/lib/python%d.%d/' % sys.version_info[:2])
 from uvm.settings_reader import get_uvm_settings_item
-from uvm.settings_reader import get_node_settings_item
+from uvm.settings_reader import get_app_settings_item
 
 
 def usage():
     print """\
-usage: %s [options] uvm|node basename|node settings_name
+usage: %s [options] uvm|app basename|app settings_name
 Options:
   -l | --lower                  lower case output
   -d | --default                default value if setting is None/null
@@ -43,10 +43,10 @@ for opt in opts:
 
 if location == "uvm":
     setting = get_uvm_settings_item(base, name)
-elif location == "node":
-    setting = get_node_settings_item(base, name)
+elif location == "app":
+    setting = get_app_settings_item(base, name)
 else:
-    print "usage: %s [uvm|node] [basename|node] settings_name" % sys.argv[0]
+    print "usage: %s [uvm|app] [basename|app] settings_name" % sys.argv[0]
     sys.exit(1)
 
 if setting == None:

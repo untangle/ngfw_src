@@ -20,6 +20,7 @@ Ext.define('Ung.view.config.Config', {
         store: {data: [
                 { name: 'Network'.t(), url: 'network', icon: 'icon_config_network.png' },
                 { name: 'Administration'.t(), url: 'administration', icon: 'icon_config_admin.png' },
+                { name: 'Events'.t(), url: 'events', icon: 'icon_config_events.png' },
                 { name: 'Email'.t(), url: 'email', icon: 'icon_config_email.png' },
                 { name: 'Local Directory'.t(), url: 'localdirectory', icon: 'icon_config_directory.png' },
                 { name: 'Upgrade'.t(), url: 'upgrade', icon: 'icon_config_upgrade.png' },

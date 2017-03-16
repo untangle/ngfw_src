@@ -91,21 +91,24 @@ function getInterfaceStatus()
         BUS="usb"
     fi
     if [ -f /sys/class/net/${t_intf}/device/uevent ] && [ ! -z "$BUS" ] ; then
+
         # find vendor ID
         VENDOR_ID="`awk '/(PCI_ID|PRODUCT)/ { sub( /^[^=]*=/, "" ); sub( /:/, "" ); print tolower($0) }' /sys/class/net/${t_intf}/device/uevent`"
         VENDOR_ID_SHORT="`awk '/(PCI_ID|PRODUCT)/ { sub( /^[^=]*=/, "" ); sub( /:.*/, "" ); print tolower($0) }' /sys/class/net/${t_intf}/device/uevent`"
 
-        # read from vendor definition file (included in package pciutils)
-        VENDOR=""
-        if [ -f /usr/share/misc/$BUS.ids ] ; then
-            VENDOR="`awk \"/^${VENDOR_ID}/ { \\\$1 = \\\"\\\" ; print \\\$0 }\" /usr/share/misc/$BUS.ids`"
-            if [ -z "$VENDOR" ] ; then
-                VENDOR="`awk \"/^${VENDOR_ID_SHORT}/ { \\\$1 = \\\"\\\" ; print \\\$0 }\" /usr/share/misc/$BUS.ids`"
+        if [ ! -z "$VENDOR_ID" ] || [ ! -z "$VENDOR_ID_SHORT" ] ; then
+            # read from vendor definition file (included in package pciutils)
+            VENDOR=""
+            if [ -f /usr/share/misc/$BUS.ids ] ; then
+                VENDOR="`awk \"/^${VENDOR_ID}/ { \\\$1 = \\\"\\\" ; print \\\$0 }\" /usr/share/misc/$BUS.ids`"
+                if [ -z "$VENDOR" ] ; then
+                    VENDOR="`awk \"/^${VENDOR_ID_SHORT}/ { \\\$1 = \\\"\\\" ; print \\\$0 }\" /usr/share/misc/$BUS.ids`"
+                fi
             fi
-        fi
 
-        # strip whitespace
-        VENDOR="`echo $VENDOR | sed -e 's/^ *//g;s/ *$//g'`"
+            # strip whitespace
+            VENDOR="`echo $VENDOR | sed -e 's/^ *//g;s/ *$//g'`"
+        fi
     fi
     if [ -f /sys/class/net/${t_intf}/address ] ; then
         MAC_ADDR="`cat /sys/class/net/${t_intf}/address`"

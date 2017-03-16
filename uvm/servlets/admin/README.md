@@ -17,7 +17,7 @@ more up to date architecture that will allow new features to be added with ease 
 ## Project structure
 
 * *app* - the main folder which contains all the application class files properly namespaced
-* *root/app/node* - contains app specific settings view; each app has it's own settings; this are in separate files because are requested on demand when settings are loaded and are equivalent with existing *settings.js* files
+* *root/app/app* - contains app specific settings view; each app has it's own settings; this are in separate files because are requested on demand when settings are loaded and are equivalent with existing *settings.js* files
 * *root/res/base.css* - is the main compiled css file
 * *root/script/bootstrap.js* - the application bootstrap file which intializes the RPC backend connector and translations;
 this initialization is required prior application creation
@@ -38,7 +38,7 @@ this initialization is required prior application creation
 >
 > For now this works fine, in the future it might be possible to automate this process.
 
-> The ```/root/app```, ```/root/res``` and ```ung-all-*``` bundle files are generated using NodeJS and Gulp.
+> The ```/root/app```, ```/root/res``` and ```ung-all-*``` bundle files are generated using AppJS and Gulp.
 > This might be changed in the future and use rake for this build process.
 >
 > The above files should not be modified directly in *root* folder but in *app* and *scss* folders, then built.
@@ -46,12 +46,12 @@ this initialization is required prior application creation
 ## Development guide
 ### Prerequisites
 
-For development/build it is required to have [NodeJS/NPM](https://nodejs.org) installed.
+For development/build it is required to have [AppJS/NPM](https://appjs.org) installed.
 
-**Install node/npm**
+**Install app/npm**
 ```
-curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
-sudo apt-get install -y nodejs
+curl -sL https://deb.appsource.com/setup_4.x | sudo -E bash -
+sudo apt-get install -y appjs
 ```
 
 **Install gulp**
@@ -63,7 +63,7 @@ From this folder, run the following command:
 ```
 npm install
 ```
-This will install the required node packages into a folder *node_modules*, and might take a minute or more.
+This will install the required app packages into a folder *app_modules*, and might take a minute or more.
 
 ### Gulp
 
@@ -75,4 +75,4 @@ After build task is finished, run ```rake``` to deploy the files into *./dist*.
 
 ### Furthe notes
 The development of this project is still in an early phase.
-Some config icons are missing because the node name does not match icon name.
+Some config icons are missing because the app name does not match icon name.

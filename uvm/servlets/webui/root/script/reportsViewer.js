@@ -13,7 +13,7 @@ Ext.define('Ung.reportsViewer', {
             this.callParent(arguments);
             return;
         }
-        var treeNodes = [ {
+        var treeApps = [ {
             text : i18n._('Summary'),
             category : 'Summary',
             leaf : true,
@@ -56,7 +56,7 @@ Ext.define('Ung.reportsViewer', {
                 text : i18n._("Shield"),
                 category : "Shield",
                 leaf : true,
-                icon :'/skins/'+rpc.skinSettings.skinName+'/images/admin/apps/untangle-node-shield_17x17.png' 
+                icon :'/skins/'+rpc.skinSettings.skinName+'/images/admin/apps/shield_17x17.png' 
             } ]
         }];
 
@@ -76,7 +76,7 @@ Ext.define('Ung.reportsViewer', {
             store : Ext.create('Ext.data.TreeStore', {
                 root : {
                     expanded : true,
-                    children : treeNodes
+                    children : treeApps
                 }
             }),
             selModel : {
@@ -104,7 +104,7 @@ Ext.define('Ung.reportsViewer', {
                 var i, app, apps = [];
                 for (i = 0; i < currentApplications.length; i++) {
                     app = currentApplications[i];
-                    if(app.name != 'untangle-node-branding-manager' && app.name != 'untangle-node-live-support' ) {
+                    if(app.name != 'branding-manager' && app.name != 'live-support' ) {
                         apps.push({
                             text : app.displayName,
                             category : app.displayName,
@@ -130,14 +130,14 @@ Ext.define('Ung.reportsViewer', {
         if(Ung.Main.target) {
             var targetTokens = Ung.Main.target.split(".");
             if(targetTokens.length >= 2 && targetTokens[1] !=null ) {
-                var rootNode = this.treepanel.getStore().getRoot();
-                rootNode.cascadeBy({
-                    before: function(node) {
-                        if(node.get("category") == targetTokens[1]){
+                var rootApp = this.treepanel.getStore().getRoot();
+                rootApp.cascadeBy({
+                    before: function(app) {
+                        if(app.get("category") == targetTokens[1]){
                             if(targetTokens.length >= 4 && targetTokens[2] !=null && targetTokens[3] !=null ) {
                                 this.initialEntry={type: targetTokens[2], entryId: targetTokens[3]};
                             }
-                            this.treepanel.getSelectionModel().select(node);
+                            this.treepanel.getSelectionModel().select(app);
                             delete this.initialEntry;
                             return false;
                         }

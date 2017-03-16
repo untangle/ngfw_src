@@ -10,7 +10,7 @@ import java.net.InetAddress;
 import com.untangle.jnetcap.NetcapSession;
 import com.untangle.jnetcap.Endpoint;
 import com.untangle.jnetcap.Endpoints;
-import com.untangle.uvm.node.SessionEvent;
+import com.untangle.uvm.app.SessionEvent;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 
 public abstract class IPNewSessionRequestImpl implements IPNewSessionRequest
@@ -247,7 +247,7 @@ public abstract class IPNewSessionRequestImpl implements IPNewSessionRequest
         return this.stringAttachments.get(key);
     }
 
-    public void copyAttachments( NodeSessionImpl session )
+    public void copyAttachments( AppSessionImpl session )
     {
         for( Map.Entry<String,Object> entry : stringAttachments.entrySet() ) {
             session.attach( entry.getKey(), entry.getValue() );

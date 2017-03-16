@@ -3,7 +3,7 @@
  */
 package com.untangle.uvm.network;
 
-import com.untangle.uvm.node.RuleCondition;
+import com.untangle.uvm.app.RuleCondition;
 
 
 /**

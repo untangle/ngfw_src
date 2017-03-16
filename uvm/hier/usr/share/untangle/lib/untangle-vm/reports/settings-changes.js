@@ -4,7 +4,7 @@
     "description": "The number of settings changes over time.",
     "displayOrder": 101,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderDesc": false,
     "units": "changes",
     "readOnly": true,

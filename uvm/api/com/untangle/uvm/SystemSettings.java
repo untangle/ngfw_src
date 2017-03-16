@@ -9,7 +9,7 @@ import java.util.LinkedList;
 import org.json.JSONObject;
 import org.json.JSONString;
 
-import com.untangle.uvm.node.DayOfWeekMatcher;
+import com.untangle.uvm.app.DayOfWeekMatcher;
 
 /**
  * System settings.

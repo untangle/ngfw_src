@@ -10,15 +10,15 @@ class Manager(object):
     verbosity = 0
     
     def shortNameToPackageName(self,shortName):
-        if ( shortName == "http" or shortName == "ftp" or shortName == "mail" ): return "untangle-casing-" + shortName
-        return "untangle-node-" + shortName
+        if ( shortName == "http" or shortName == "ftp" or shortName == "mail" ): return "" + shortName
+        return "" + shortName
 
     def doAptTailLog(self, key ):
         print "Operation started, please apt.log for more information"
 
-    def buildNodeId(self, nodeIdStr ):
-        nodeId = int( nodeIdStr )
-        return {'javaClass': 'com.untangle.uvm.node.NodeSettings', 'id': nodeId, 'name': "%d" % ( nodeId ) }
+    def buildAppId(self, appIdStr ):
+        appId = int( appIdStr )
+        return {'javaClass': 'com.untangle.uvm.app.AppSettings', 'id': appId, 'name': "%d" % ( appId ) }
 
     def buildDate(self,seconds):
         return { 'javaClass' : 'java.util.Date', 'time' : ( seconds * 1000 ) }

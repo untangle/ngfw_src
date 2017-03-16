@@ -46,10 +46,10 @@ if [ -z "$SITENAME" ] ; then
 fi
 
 ## Copy in the necessary files
-mkdir -p @PREFIX@/usr/share/untangle/settings/untangle-node-openvpn/remote-servers/
-mkdir -p @PREFIX@/usr/share/untangle/settings/untangle-node-openvpn/remote-servers/keys/
+mkdir -p @PREFIX@/usr/share/untangle/settings/openvpn/remote-servers/
+mkdir -p @PREFIX@/usr/share/untangle/settings/openvpn/remote-servers/keys/
 
-CONF_FILE="@PREFIX@/usr/share/untangle/settings/untangle-node-openvpn/remote-servers/${SITENAME}.conf"
+CONF_FILE="@PREFIX@/usr/share/untangle/settings/openvpn/remote-servers/${SITENAME}.conf"
 
 cp ${TMPDIR}/untangle-vpn/*.conf ${CONF_FILE}
 
@@ -63,12 +63,12 @@ fi
 # keep this to maintain backwards compatibility with 9.4 and prior
 if [ -d ${TMPDIR}/untangle-vpn/untangle-vpn ] ; then
     echo "${TMPDIR}/untangle-vpn/untangle-vpn exists"
-    mkdir -p @PREFIX@/usr/share/untangle/settings/untangle-node-openvpn/remote-servers/untangle-vpn/
-    cp -r ${TMPDIR}/untangle-vpn/untangle-vpn/* @PREFIX@/usr/share/untangle/settings/untangle-node-openvpn/remote-servers/untangle-vpn/
+    mkdir -p @PREFIX@/usr/share/untangle/settings/openvpn/remote-servers/untangle-vpn/
+    cp -r ${TMPDIR}/untangle-vpn/untangle-vpn/* @PREFIX@/usr/share/untangle/settings/openvpn/remote-servers/untangle-vpn/
 fi
 
 if [ -d ${TMPDIR}/untangle-vpn/keys ] ; then
-    cp -r ${TMPDIR}/untangle-vpn/keys/* @PREFIX@/usr/share/untangle/settings/untangle-node-openvpn/remote-servers/keys/
+    cp -r ${TMPDIR}/untangle-vpn/keys/* @PREFIX@/usr/share/untangle/settings/openvpn/remote-servers/keys/
 fi
 
 if [ $? != 0 ] ; then

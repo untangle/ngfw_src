@@ -38,7 +38,6 @@ public class GeographyManagerImpl implements GeographyManager
     private final static String GEOIP_DATABASE_FILE = "/var/cache/untangle-geoip/GeoLite2-City.mmdb";
     private final static String GEOIP_PREVIOUS_FILE = "/var/cache/untangle-geoip/GeoLite2-City.previous";
     private final static String GEOIP_UPDATE_FILE = "/var/cache/untangle-geoip/GeoLite2-City.update";
-    private final static String CLOUD_IP_DETECTION_URL = "http://www.untangle.com/ddclient/ip.php";
     private final static String LOCAL_COUNTRY_CODE = "XL";
     private final static String UNKNOWN_COUNTRY_CODE = "XL";
     
@@ -148,42 +147,6 @@ public class GeographyManagerImpl implements GeographyManager
         }
 
         return (coordinates);
-    }
-
-    public String detectPublicNetworkAddress()
-    {
-        try {
-            URL myurl = new URL(CLOUD_IP_DETECTION_URL + "?activation=" + UvmContextFactory.context().getServerUID());
-            HttpURLConnection mycon = (HttpURLConnection) myurl.openConnection();
-            mycon.setRequestMethod("GET");
-            mycon.setRequestProperty("User-Agent", "Untangle NGFW GeographyManager");
-            mycon.setDoOutput(false);
-            mycon.setDoInput(true);
-            mycon.connect();
-
-            DataInputStream input = new DataInputStream(mycon.getInputStream());
-            StringBuilder builder = new StringBuilder(256);
-
-            for (int c = input.read(); c != -1; c = input.read()) {
-                builder.append((char) c);
-            }
-
-            input.close();
-            mycon.disconnect();
-
-            return (builder.toString());
-        } catch (Exception exn) {
-            return (null);
-        }
-    }
-
-    public Coordinates getPublicNetworkAddressCoordinates()
-    {
-        if (!initFlag) return (null);
-
-        String netAddress = detectPublicNetworkAddress();
-        if (netAddress == null) return (null);
-        return (getCoordinates(netAddress));
     }
 
     private CityResponse getCityObject(String netAddress)

@@ -25,7 +25,7 @@ Ext.define('Webui.config.email', {
         this.getMailSettings();
         this.buildOutgoingServer();
         if( this.isMailLoaded() ) {
-            this.getMailNodeSettings();
+            this.getMailAppSettings();
             this.buildEmailSafeList();
             this.buildQuarantine();
         }
@@ -60,18 +60,18 @@ Ext.define('Webui.config.email', {
         }
     },
 
-    getMailNode: function(forceReload) {
-        if (forceReload || this.rpc.smtpNode === undefined) {
+    getMailApp: function(forceReload) {
+        if (forceReload || this.rpc.smtpApp === undefined) {
             try {
-                this.rpc.smtpNode = rpc.nodeManager.node("untangle-casing-smtp");
+                this.rpc.smtpApp = rpc.appManager.app("smtp");
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
         }
-        return this.rpc.smtpNode;
+        return this.rpc.smtpApp;
     },
     isMailLoaded: function(forceReload) {
-        return this.getMailNode(forceReload) != null;
+        return this.getMailApp(forceReload) != null;
     },
     getMailSettings: function(forceReload) {
         if (forceReload || this.rpc.mailSettings === undefined) {
@@ -83,20 +83,20 @@ Ext.define('Webui.config.email', {
         }
         return this.rpc.mailSettings;
     },
-    getMailNodeSettings: function(forceReload) {
-        if (forceReload || this.rpc.smtpNodeSettings === undefined) {
+    getMailAppSettings: function(forceReload) {
+        if (forceReload || this.rpc.smtpAppSettings === undefined) {
             try {
-                this.rpc.smtpNodeSettings = this.getMailNode().getSmtpNodeSettings();
+                this.rpc.smtpAppSettings = this.getMailApp().getSmtpSettings();
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
         }
-        return this.rpc.smtpNodeSettings;
+        return this.rpc.smtpAppSettings;
     },
     getSafelistAdminView: function(forceReload) {
         if (forceReload || this.rpc.safelistAdminView === undefined) {
             try {
-                this.rpc.safelistAdminView = this.getMailNode().getSafelistAdminView();
+                this.rpc.safelistAdminView = this.getMailApp().getSafelistAdminView();
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
@@ -106,7 +106,7 @@ Ext.define('Webui.config.email', {
     getQuarantineMaintenenceView: function(forceReload) {
         if (forceReload || this.rpc.quarantineMaintenenceView === undefined) {
             try {
-                this.rpc.quarantineMaintenenceView = this.getMailNode().getQuarantineMaintenenceView();
+                this.rpc.quarantineMaintenenceView = this.getMailApp().getQuarantineMaintenenceView();
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
@@ -664,7 +664,7 @@ Ext.define('Webui.config.email', {
                     name: 'Maximum Holding Time (days)',
                     fieldLabel: i18n._('Maximum Holding Time (days)'),
                     allowBlank: false,
-                    value: this.getMailNodeSettings().quarantineSettings.maxMailIntern/(1440*60*1000),
+                    value: this.getMailAppSettings().quarantineSettings.maxMailIntern/(1440*60*1000),
                     regex: /^([0-9]|[0-9][0-9])$/,
                     regexText: i18n._('Maximum Holding Time must be a number in range 0-99'),
                     width: 270,
@@ -672,7 +672,7 @@ Ext.define('Webui.config.email', {
                         "change": {
                             fn: Ext.bind(function(elem, newValue) {
                                 var millisecValue = newValue * 1440*60*1000;
-                                this.getMailNodeSettings().quarantineSettings.maxMailIntern = millisecValue;
+                                this.getMailAppSettings().quarantineSettings.maxMailIntern = millisecValue;
                             }, this)
                         }
                     }
@@ -681,7 +681,7 @@ Ext.define('Webui.config.email', {
                     name: 'Send Daily Quarantine Digest Emails',
                     id: 'quarantine_sendDailyDigest',
                     fieldLabel: i18n._('Send Daily Quarantine Digest Emails'),
-                    checked: this.getMailNodeSettings().quarantineSettings.sendDailyDigests,
+                    checked: this.getMailAppSettings().quarantineSettings.sendDailyDigests,
                     width: 320,
                     listeners: {
                         "afterrender": {
@@ -695,7 +695,7 @@ Ext.define('Webui.config.email', {
                         },
                         "change": {
                             fn: Ext.bind(function(elem, newValue) {
-                                this.getMailNodeSettings().quarantineSettings.sendDailyDigests = newValue;
+                                this.getMailAppSettings().quarantineSettings.sendDailyDigests = newValue;
                                 if(newValue) {
                                     Ext.getCmp('quarantine_dailySendingTime').enable();
                                 } else {
@@ -713,13 +713,13 @@ Ext.define('Webui.config.email', {
                     allowBlank: false,
                     increment: 1,
                     width: 320,
-                    value: this.getFormattedTime(this.getMailNodeSettings().quarantineSettings.digestHourOfDay, this.getMailNodeSettings().quarantineSettings.digestMinuteOfDay),
+                    value: this.getFormattedTime(this.getMailAppSettings().quarantineSettings.digestHourOfDay, this.getMailAppSettings().quarantineSettings.digestMinuteOfDay),
                     listeners: {
                         "change": {
                             fn: Ext.bind(function(elem, newValue) {
                                 if (newValue && newValue instanceof Date) {
-                                    this.getMailNodeSettings().quarantineSettings.digestMinuteOfDay = newValue.getMinutes();
-                                    this.getMailNodeSettings().quarantineSettings.digestHourOfDay = newValue.getHours();
+                                    this.getMailAppSettings().quarantineSettings.digestMinuteOfDay = newValue.getMinutes();
+                                    this.getMailAppSettings().quarantineSettings.digestHourOfDay = newValue.getHours();
                                 }
                             }, this)
                         }
@@ -852,8 +852,8 @@ Ext.define('Webui.config.email', {
                 name: 'Quarantinable Addresses',
                 settingsCmp: this,
                 height: 250,
-                dataExpression: "getMailNodeSettings().quarantineSettings.allowedAddressPatterns.list",
-                recordJavaClass: "com.untangle.node.smtp.EmailAddressRule",
+                dataExpression: "getMailAppSettings().quarantineSettings.allowedAddressPatterns.list",
+                recordJavaClass: "com.untangle.app.smtp.EmailAddressRule",
                 emptyRow: {
                     "address": ""
                 },
@@ -891,8 +891,8 @@ Ext.define('Webui.config.email', {
                 name: 'Quarantine Forwards',
                 settingsCmp: this,
                 height: 250,
-                dataExpression: "getMailNodeSettings().quarantineSettings.addressRemaps.list",
-                recordJavaClass: "com.untangle.node.smtp.EmailAddressPairRule",
+                dataExpression: "getMailAppSettings().quarantineSettings.addressRemaps.list",
+                recordJavaClass: "com.untangle.app.smtp.EmailAddressPairRule",
                 emptyRow: {
                     "address1": "",
                     "address2": ""
@@ -1237,12 +1237,12 @@ Ext.define('Webui.config.email', {
         }, this), this.getMailSettings());
 
         if( this.isMailLoaded() ) {
-            var quarantineSettings = this.getMailNodeSettings().quarantineSettings;
-            // save mail node settings
+            var quarantineSettings = this.getMailAppSettings().quarantineSettings;
+            // save mail app settings
             quarantineSettings.allowedAddressPatterns.javaClass="java.util.LinkedList";
             quarantineSettings.allowedAddressPatterns.list = this.quarantinableAddressesGrid.getList();
             quarantineSettings.addressRemaps.list = this.quarantineForwardsGrid.getList();
-            this.getMailNode().setSmtpNodeSettingsWithoutSafelists(Ext.bind(function(result, exception) {
+            this.getMailApp().setSmtpSettingsWithoutSafelists(Ext.bind(function(result, exception) {
                 if(Ung.Util.handleException(exception)) return;
                 // save global safelist
                 if ( this.loadedGlobalSafelist == true) {
@@ -1258,7 +1258,7 @@ Ext.define('Webui.config.email', {
                     // Decrement the save semaphore
                     this.afterSave(null, isApply);
                 }
-            }, this), this.getMailNodeSettings());
+            }, this), this.getMailAppSettings());
         }
     },
     afterSave: function(exception, isApply) {
@@ -1269,7 +1269,7 @@ Ext.define('Webui.config.email', {
             if(isApply) {
                 this.getMailSettings(true);
                 if( this.isMailLoaded() ) {
-                    this.getMailNodeSettings(true);
+                    this.getMailAppSettings(true);
                 }
                 this.clearDirty();
                 Ext.MessageBox.hide();

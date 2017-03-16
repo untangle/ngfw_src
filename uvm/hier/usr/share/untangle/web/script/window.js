@@ -291,17 +291,17 @@ Ext.define("Ung.SettingsWin", {
         return true;
     }
 });
-// Node Settings Window
-Ext.define("Ung.NodeWin", {
+// App Settings Window
+Ext.define("Ung.AppWin", {
     extend: "Ung.SettingsWin",
     hasReports: true,
-    node: null,
+    app: null,
     getAppSummary: function() {
         return "";
     },
     constructor: function(config) {
         var name = config.name || this.name;
-        this.id = "nodeWin_" + name + "_" + rpc.currentPolicy.policyId;
+        this.id = "appWin_" + name + "_" + rpc.currentPolicy.policyId;
         this.callParent(arguments);
     },
     initComponent: function() {
@@ -371,31 +371,31 @@ Ext.define("Ung.NodeWin", {
             i18n._("Would you like to continue?");
         Ext.Msg.confirm(i18n._("Warning:"), message, Ext.bind(function(btn, text) {
             if (btn == 'yes') {
-                var nodeCmp = Ung.Node.getCmp(this.nodeId);
+                var appCmp = Ung.App.getCmp(this.appId);
                 this.toRemove = true;
                 this.closeWindow();
-                if(nodeCmp) {
-                    nodeCmp.removeAction();
+                if(appCmp) {
+                    appCmp.removeAction();
                 }
             }
         }, this));
     },
-    // get rpcNode object
-    getRpcNode: function() {
-        return this.rpcNode;
+    // get rpcApp object
+    getRpcApp: function() {
+        return this.rpcApp;
     },
-    // get node settings object
+    // get app settings object
     getSettings: function(handler) {
         if (handler !== undefined || this.settings === undefined) {
             if(Ext.isFunction(handler)) {
-                this.getRpcNode().getSettings(Ext.bind(function(result, exception) {
+                this.getRpcApp().getSettings(Ext.bind(function(result, exception) {
                     if(Ung.Util.handleException(exception)) return;
                     this.settings = result;
                     handler.call(this);
                 }, this));
             } else {
                 try {
-                    this.settings = this.getRpcNode().getSettings();
+                    this.settings = this.getRpcApp().getSettings();
                 } catch (e) {
                     Ung.Util.rpcExHandler(e);
                 }
@@ -404,7 +404,7 @@ Ext.define("Ung.NodeWin", {
         return this.settings;
     },
     save: function(isApply) {
-        this.getRpcNode().setSettings( Ext.bind(function(result,exception) {
+        this.getRpcApp().setSettings( Ext.bind(function(result,exception) {
             Ext.MessageBox.hide();
             if(Ung.Util.handleException(exception)) return;
             if (!isApply) {
@@ -423,10 +423,10 @@ Ext.define("Ung.NodeWin", {
         }, this), this.getSettings());
     },
     reload: function() {
-        var nodeCmp = Ung.Node.getCmp(this.nodeId);
+        var appCmp = Ung.App.getCmp(this.appId);
         this.closeWindow();
-        if(nodeCmp) {
-            nodeCmp.loadSettings();
+        if(appCmp) {
+            appCmp.loadSettings();
         }
     },
     buildTabPanel: function(itemsArray) {

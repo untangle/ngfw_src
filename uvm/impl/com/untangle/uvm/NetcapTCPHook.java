@@ -15,8 +15,8 @@ import com.untangle.jvector.Sink;
 import com.untangle.jvector.Source;
 import com.untangle.jvector.TCPSink;
 import com.untangle.jvector.TCPSource;
-import com.untangle.uvm.node.SessionEvent;
-import com.untangle.uvm.vnet.NodeTCPSession;
+import com.untangle.uvm.app.SessionEvent;
+import com.untangle.uvm.vnet.AppTCPSession;
 
 public class NetcapTCPHook implements NetcapCallback
 {
@@ -211,7 +211,7 @@ public class NetcapTCPHook implements NetcapCallback
             return new TCPSource( netcapTCPSession.serverSide().fd(), serverSideListener );
         }
 
-        protected void initializeNodeSessions( SessionEvent sessionEvent )
+        protected void initializeAppSessions( SessionEvent sessionEvent )
         {
             TCPNewSessionRequestImpl prevRequest = null;
 
@@ -230,10 +230,10 @@ public class NetcapTCPHook implements NetcapCallback
                     logger.warn("NULL DISPATCHER XXX " + agent.getName());
                 }
                     
-                NodeTCPSession session = agent.getDispatcher().newSession( request );
+                AppTCPSession session = agent.getDispatcher().newSession( request );
 
                 try {
-                    processSession( request, ((NodeTCPSessionImpl)session) );
+                    processSession( request, ((AppTCPSessionImpl)session) );
                 } catch (IllegalStateException e) {
                     logger.warn(agent.toString() + " Exception: ", e);
                     throw e;

@@ -325,7 +325,7 @@ Ext.define('Ung.setupWizard.Interfaces', {
                 },
                 listeners: {
                     'drop': {
-                        fn: function (node, data, overModel, dropPosition, options) {
+                        fn: function (app, data, overModel, dropPosition, options) {
                             var i = 0;
                             var interfaceList = this.networkSettings.interfaces.list;
                             this.interfaceStore.each(function (currentRow) {

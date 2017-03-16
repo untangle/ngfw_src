@@ -34,12 +34,12 @@
     </layout>
   </appender>
 
-  <appender name="NODELOG" class="org.apache.log4j.net.SyslogAppender">
+  <appender name="APPLOG" class="org.apache.log4j.net.SyslogAppender">
     <param name="SyslogHost" value="localhost"/>
     <param name="Facility" value="LOCAL1"/>
     <param name="Threshold" value="ALL"/>
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="@NodeLogFileName@: [%c{1}] &lt;%X{SessionID}&gt; %-5p %m%n"/>
+      <param name="ConversionPattern" value="@AppLogFileName@: [%c{1}] &lt;%X{SessionID}&gt; %-5p %m%n"/>
     </layout>
   </appender>
 
@@ -138,171 +138,171 @@
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.util">
+  <category name="com.untangle.app.util">
     <priority value="INFO"/>
   </category>
 
   <!-- ============================================== -->
-  <!-- Untangle App/Node Categories                   -->
+  <!-- Untangle App/App Categories                   -->
   <!-- ============================================== -->
 
-  <category name="com.untangle.uvm.node">
+  <category name="com.untangle.uvm.app">
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.util">
+  <category name="com.untangle.app.util">
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.token">
+  <category name="com.untangle.app.token">
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.router">
+  <category name="com.untangle.app.router">
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.ad_blocker">
+  <category name="com.untangle.app.ad_blocker">
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.directory_connector">
+  <category name="com.untangle.app.directory_connector">
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.bandwidth_control">
+  <category name="com.untangle.app.bandwidth_control">
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.configuration-backup">
+  <category name="com.untangle.app.configuration-backup">
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.branding_manager">
+  <category name="com.untangle.app.branding_manager">
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.captive_portal">
+  <category name="com.untangle.app.captive_portal">
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.application_control">
+  <category name="com.untangle.app.application_control">
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.wan_failover">
+  <category name="com.untangle.app.wan_failover">
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.firewall">
+  <category name="com.untangle.app.firewall">
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.ftp">
+  <category name="com.untangle.app.ftp">
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.http">
+  <category name="com.untangle.app.http">
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.ssl_inspector">
+  <category name="com.untangle.app.ssl_inspector">
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.intrusion_prevention">
+  <category name="com.untangle.app.intrusion_prevention">
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.ipsec_vpn">
+  <category name="com.untangle.app.ipsec_vpn">
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.license">
+  <category name="com.untangle.app.license">
     <priority value="WARN"/>
   </category>
 
-  <category name="com.untangle.node.openvpn">
+  <category name="com.untangle.app.openvpn">
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.phish_blocker">
+  <category name="com.untangle.app.phish_blocker">
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.policy_manager">
+  <category name="com.untangle.app.policy_manager">
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.application_control_lite">
+  <category name="com.untangle.app.application_control_lite">
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.reports">
+  <category name="com.untangle.app.reports">
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.shield">
+  <category name="com.untangle.app.shield">
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.smtp">
+  <category name="com.untangle.app.smtp">
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.spam">
+  <category name="com.untangle.app.spam">
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.spam_blocker">
+  <category name="com.untangle.app.spam_blocker">
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.spam_blocker_lite">
+  <category name="com.untangle.app.spam_blocker_lite">
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.wan_balancer">
+  <category name="com.untangle.app.wan_balancer">
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.live_support">
+  <category name="com.untangle.app.live_support">
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.clam">
+  <category name="com.untangle.app.clam">
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.virus">
+  <category name="com.untangle.app.virus">
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.virus_blocker">
+  <category name="com.untangle.app.virus_blocker">
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.virus_blocker_lite">
+  <category name="com.untangle.app.virus_blocker_lite">
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.web_cache">
+  <category name="com.untangle.app.web_cache">
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.web_filter">
+  <category name="com.untangle.app.web_filter">
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node.web_monitor">
+  <category name="com.untangle.app.web_monitor">
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.node">
+  <category name="com.untangle.app">
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.uvm.vnet.NodeBase">
+  <category name="com.untangle.uvm.app.AppBase">
     <priority value="INFO"/>
   </category>
 
@@ -321,15 +321,15 @@
     <priority value="WARN"/>
   </category>
 
-  <category name="com.untangle.uvm.NodeTCPSessionImpl">
+  <category name="com.untangle.uvm.AppTCPSessionImpl">
     <priority value="WARN"/>
   </category>
 
-  <category name="com.untangle.uvm.NodeUDPSessionImpl">
+  <category name="com.untangle.uvm.AppUDPSessionImpl">
     <priority value="WARN"/>
   </category>
 
-  <category name="com.untangle.uvm.NodeSessionImpl">
+  <category name="com.untangle.uvm.AppSessionImpl">
     <priority value="WARN"/>
   </category>
 

@@ -2,478 +2,110 @@ Ext.define('Ung.view.reports.ReportsController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.reports',
 
-    init: function () {
-        this.getAvailableTables();
-    },
-
     control: {
-        '#': { activate: 'onBeforeActivate', beforedeactivate: 'onBeforeDeactivate' },
-        '#categoriesGrid': { selectionchange: 'onCategorySelect' },
-        '#reportsGrid': { selectionchange: 'onReportSelect' },
-        '#chart': { afterrender: 'fetchReportData' },
-
-        '#startDate': { select: 'onSelectStartDate' },
-        '#startTime': { select: 'onSelectStartTime' },
-        '#startDateTimeBtn': { click: 'setStartDateTime' },
-        '#endDate': { select: 'onSelectEndDate' },
-        '#endTime': { select: 'onSelectEndTime' },
-        '#endtDateTimeBtn': { click: 'setEndDateTime' },
-
-        '#refreshBtn': { click: 'fetchReportData' },
-        '#applyBtn': { click: 'fetchReportData' },
-        '#chartStyleBtn': { toggle: 'fetchReportData' },
-        '#timeIntervalBtn': { toggle: 'fetchReportData' },
-
-        '#saveNewBtn': { click: 'saveReport' },
-        '#updateBtn': { click: 'updateReport' },
-        '#removeBtn': { click: 'removeReport' },
-
-        '#dashboardBtn': { click: 'toggleDashboardWidget' }
-    },
-
-    listen: {
-        global: {
-            init: 'getCurrentApplications',
-        },
-        store: {
-            '#categories': {
-                datachanged: 'onCategoriesLoad'
-            }
+        '#': {
+            beforerender: 'onAfterRender',
+            deactivate: 'onDeactivate'
         }
     },
 
-    /*
     listen: {
         store: {
             '#reports': {
-                remove: 'onRemoveReport'
+                datachanged: 'onReportsLoad'
             }
         }
     },
-    */
 
-    onCategoriesLoad: function () {
-        // reports are already loaded
-        // console.log('cat load');
+    onAfterRender: function () {
+        var me = this, app, i, categGrid = this.lookupReference('categories');
         var vm = this.getViewModel();
-        if (vm.get('category')) {
-            var cat = Ext.getStore('categories').findRecord('categoryName', vm.get('category'));
-            this.getView().down('#categoriesGrid').getSelectionModel().select(cat);
-        }
-    },
-
-    onBeforeActivate: function () {
-        var vm = this.getViewModel();
-
-        // if Reports inside Node settings
-        if (this.getView().getInitCategory()) {
-            vm.set({
-                isNodeReporting: true,
-                activeCard: 'categoryCard',
-                category: null,
-                report: null,
-                categoriesData: null,
-                startDateTime: null,
-                endDateTime: null
-            });
-
-            this.getView().down('#categoriesGrid').setCollapsed(false); // expand categories panel if collapsed
-
-            // filter reports based on selected category
-            Ext.getStore('reports').filter({
-                property: 'category',
-                value: this.getView().getInitCategory().categoryName,
-                exactMatch: true
-            });
-            this.buildReportsList();
-            return;
-        }
-
-        // if main Reports view
-        vm.set({
-            isNodeReporting: false,
-            activeCard: 'allCategoriesCard',
-            // category: null,
-            report: null,
-            categoriesData: null,
-            startDateTime: null,
-            endDateTime: null
-        });
-
-        var me = this;
-        vm.bind('{category}', function (category) {
-            if (category) {
-                var cat = Ext.getStore('categories').findRecord('categoryName', category);
-                me.getView().down('#categoriesGrid').getSelectionModel().select(cat);
-            } else {
-                me.onBeforeDeactivate();
-            }
-        });
-    },
-
-    onBeforeDeactivate: function () {
-        this.getView().down('#categoriesGrid').getSelectionModel().deselectAll();
-        this.getView().down('#reportsGrid').getSelectionModel().deselectAll();
-        this.getViewModel().set('activeCard', 'allCategoriesCard');
-        Ext.getStore('reports').clearFilter();
-    },
-
-    getCurrentApplications: function () {
-        var app, i;
         var categories = [
             { categoryName: 'Hosts', type: 'system', url: 'hosts', displayName: 'Hosts'.t(), icon: '/skins/modern-rack/images/admin/config/icon_config_hosts.png' },
             { categoryName: 'Devices', type: 'system', url: 'devices', displayName: 'Devices'.t(), icon: '/skins/modern-rack/images/admin/config/icon_config_devices.png' },
             { categoryName: 'Network', type: 'system', url: 'network', displayName: 'Network'.t(), icon: '/skins/modern-rack/images/admin/config/icon_config_network.png' },
             { categoryName: 'Administration', type: 'system', url: 'administration', displayName: 'Administration'.t(), icon: '/skins/modern-rack/images/admin/config/icon_config_admin.png' },
-            { categoryName: 'System', type: 'system', url: 'system', displayName: 'System'.t(), icon: '/skins/modern-rack/images/admin/config/icon_config_system.png' },
-            { categoryName: 'Shield', type: 'system', url: 'shield', displayName: 'Shield'.t(), icon: '/skins/modern-rack/images/admin/apps/untangle-node-shield_17x17.png' }
+            { categoryName: 'System', type: 'system', url: 'system', displayName: 'System'.t(), icon: '/skins/modern-rack/images/admin/config/icon_config_system.png' }
         ];
 
+        try {
+            rpc.reportsManager = rpc.appManager.app('reports').getReportsManager();
+        } catch (ex) {
+            console.log(ex);
+            return;
+        }
 
         Rpc.asyncData('rpc.reportsManager.getCurrentApplications').then(function (result) {
             for (i = 0; i < result.list.length; i += 1) {
                 app = result.list[i];
-                if (app.name !== 'untangle-node-branding-manager' && app.name !== 'untangle-node-live-support') {
+                if (app.name !== 'branding-manager' && app.name !== 'live-support') {
                     categories.push({
                         categoryName: app.displayName,
                         type: 'app',
-                        url: app.name.replace('untangle-node-', ''),
+                        url: app.name,
                         displayName: app.displayName, // t()
                         icon: '/skins/modern-rack/images/admin/apps/' + app.name + '_80x80.png'
                     });
                 }
             }
             Ext.getStore('categories').loadData(categories);
-            // vm.set('categoriesData', Ext.getStore('categories').getRange());
-            // //me.getView().down('#categoriesGrid').getSelectionModel().select(0);
-
-            // var allCategItems = [];
-            // categories.forEach(function (category, idx) {
-            //     allCategItems.push({
-            //         xtype: 'button',
-            //         baseCls: 'category-btn',
-            //         html: '<img src="' + category.icon + '"/><br/><span>' + category.displayName + '</span>',
-            //         index: idx,
-            //         handler: function () {
-            //             me.getView().down('#categoriesGrid').getSelectionModel().select(this.index);
-            //         }
-            //     });
-            // });
-            // me.getView().down('#allCategoriesList').removeAll();
-
-            // if (me.getView().down('#categoriesLoader')) {
-            //     me.getView().down('#categoriesLoader').destroy();
-            // }
-
-            // me.getView().down('#allCategoriesList').add(allCategItems);
-        });
-    },
-
-    getAvailableTables: function() {
-        var me = this;
-        if (rpc.reportsManager) {
-            Rpc.asyncData('rpc.reportsManager.getTables').then(function (result) {
-                me.getViewModel().set('tableNames', result);
-            });
-        }
-    },
-
-    onCategorySelect: function (selModel, records) {
-        console.log('here');
-        if (records.length === 0) {
-            return false;
-        }
-
-        this.getViewModel().set('activeCard', 'categoryCard'); // set category view card as active
-        this.getViewModel().set('category', records[0]);
-        this.getViewModel().set('report', null);
-        this.getView().down('#categoriesGrid').setCollapsed(false); // expand categories panel if collapsed
-
-        this.getView().down('#reportsGrid').getSelectionModel().deselectAll();
-
-        Ung.app.redirectTo('#reports/' + records[0].get('url'));
-
-        // filter reports based on selected category
-        console.log(records[0].get('categoryName'));
-        Ext.getStore('reports').filter({
-            property: 'category',
-            value: records[0].get('categoryName'),
-            exactMatch: true
-        });
-        this.buildReportsList();
-    },
-
-    buildReportsList: function () {
-        var me = this;
-        var entries = [], entryHtml = '';
-
-        // add reports list in category view card
-        this.getView().down('#categoryReportsList').removeAll();
-        Ext.getStore('reports').getRange().forEach(function (report) {
-
-            // entryHtml = Util.iconReportTitle(report);
-            entryHtml = '<i class="fa ' + report.get('icon') + ' fa-lg"></i><span class="ttl">' + (report.get('readOnly') ? report.get('title').t() : report.get('title')) + '</span><p>' +
-                          (report.get('readOnly') ? report.get('description').t() : report.get('description')) + '</p>';
-            entries.push({
-                xtype: 'button',
-                html: entryHtml,
-                baseCls: 'entry-btn',
-                //cls: (!entries[i].readOnly && entries[i].type !== 'EVENT_LIST') ? 'entry-btn custom' : 'entry-btn',
-                border: false,
-                textAlign: 'left',
-                item: report,
-                handler: function () {
-                    //console.log('handler');
-                    me.getView().down('#reportsGrid').getSelectionModel().select(this.item);
-                    //_that.entryList.getSelectionModel().select(this.item);
-                }
-            });
-        });
-        this.getView().down('#categoryReportsList').add(entries);
-    },
-
-    onReportSelect: function (selModel, records) {
-        if (records.length === 0) {
-            this.getViewModel().set({
-                activeCard: 'categoryCard'
-            });
-            return;
-        }
-        var report = records[0],
-            chartContainer = this.getView().down('#report');
-
-        this.getViewModel().set({
-            activeCard: 'reportCard',
-            report: report
+            vm.set('category', categGrid.getStore().findRecord('categoryName', vm.get('categoryName')));
         });
 
-        this.getView().down('#customization').setActiveItem(0);
-        chartContainer.remove('chart');
-
-        if (report.get('type') === 'TIME_GRAPH' || report.get('type') === 'TIME_GRAPH_DYNAMIC') {
-            chartContainer.add({
-                xtype: 'timechart',
-                itemId: 'chart',
-                entry: report
-            });
-        }
-
-        if (report.get('type') === 'PIE_GRAPH') {
-            chartContainer.add({
-                xtype: 'piechart',
-                itemId: 'chart',
-                entry: report
-            });
-        }
-
-        if (report.get('type') === 'EVENT_LIST') {
-            chartContainer.add({
-                xtype: 'eventchart',
-                itemId: 'chart',
-                entry: report
-            });
-        }
-
-        if (report.get('type') === 'TEXT') {
-            chartContainer.add({
-                xtype: 'component',
-                itemId: 'chart',
-                html: 'Not Implemented'
-            });
-        }
+        // Rpc.asyncData('rpc.reportsManager.getConditionQuickAddHints').then(function (result) {
+        //     console.log(result);
+        // });
 
 
-    },
-
-    fetchReportData: function () {
-        var me = this,
-            vm = me.getViewModel(),
-            chart = me.getView().down('#chart');
-
-        chart.fireEvent('beginfetchdata');
-
-        if (vm.get('report.type') !== 'EVENT_LIST') {
-
-            Rpc.asyncData('rpc.reportsManager.getDataForReportEntry',
-                           chart.getEntry().getData(),
-                           vm.get('startDateTime'),
-                           vm.get('endDateTime'), -1)
-                .then(function(result) {
-                    chart.fireEvent('setseries', result.list);
-                });
-        } else {
-            var extraCond = null, limit = 100;
-            Rpc.asyncData('rpc.reportsManager.getEventsForDateRangeResultSet',
-                           chart.getEntry().getData(),
-                           extraCond,
-                           limit,
-                           vm.get('startDateTime'),
-                           vm.get('endDateTime'))
-                .then(function(result) {
-                    result.getNextChunk(function (result2, ex2) {
-                        if (ex2) { Util.exceptionToast(ex2); return false; }
-                        // console.log(result2);
-                        chart.fireEvent('setdata', result2.list);
-                    }, 100);
-
-                });
-        }
-    },
-
-    onSelectStartDate: function (picker, date) {
-        var vm = this.getViewModel(), _date;
-        if (!vm.get('startDateTime')) {
-            this.getViewModel().set('startDateTime', date);
-        } else {
-            _date = new Date(vm.get('startDateTime'));
-            _date.setDate(date.getDate());
-            _date.setMonth(date.getMonth());
-            vm.set('startDateTime', _date);
-        }
-    },
-
-    onSelectStartTime: function (combo, record) {
-        var vm = this.getViewModel(), _date;
-        if (!vm.get('startDateTime')) {
-            _date = new Date();
-            //_date = _date.setDate(_date.getDate() - 1);
-        } else {
-            _date = new Date(vm.get('startDateTime'));
-        }
-        _date.setHours(record.get('date').getHours());
-        _date.setMinutes(record.get('date').getMinutes());
-        vm.set('startDateTime', _date);
-    },
-
-    setStartDateTime: function () {
-        var view = this.getView();
-        console.log(this.getViewModel().get('startDateTime'));
-        view.down('#startDateTimeMenu').hide();
-    },
-
-    onSelectEndDate: function (picker, date) {
-        var vm = this.getViewModel(), _date;
-        if (!vm.get('endDateTime')) {
-            this.getViewModel().set('endDateTime', date);
-        } else {
-            _date = new Date(vm.get('endDateTime'));
-            _date.setDate(date.getDate());
-            _date.setMonth(date.getMonth());
-            vm.set('endDateTime', _date);
-        }
-    },
-
-    onSelectEndTime: function (combo, record) {
-        var vm = this.getViewModel(), _date;
-        if (!vm.get('endDateTime')) {
-            _date = new Date();
-            //_date = _date.setDate(_date.getDate() - 1);
-        } else {
-            _date = new Date(vm.get('endDateTime'));
-        }
-        _date.setHours(record.get('date').getHours());
-        _date.setMinutes(record.get('date').getMinutes());
-        vm.set('endDateTime', _date);
-    },
-
-    setEndDateTime: function () {
-        var view = this.getView();
-        view.down('#endDateTimeMenu').hide();
-    },
-
-    saveReport: function () {
-        var me = this, report,
-            vm = this.getViewModel();
-
-        report = vm.get('report').copy(null);
-        report.set('uniqueId', 'report-' + Math.random().toString(36).substr(2));
-        report.set('readOnly', false);
-
-        Rpc.asyncData('rpc.reportsManager.saveReportEntry', report.getData())
-            .then(function(result) {
-                vm.get('report').reject();
-                Ext.getStore('reports').add(report);
-                report.commit();
-                me.getView().down('#reportsGrid').getSelectionModel().select(report);
-                Util.successToast('<span style="color: yellow; font-weight: 600;">' + report.get('title') + ' report added!');
-            });
-    },
-
-    updateReport: function () {
-        var vm = this.getViewModel();
-
-        Rpc.asyncData('rpc.reportsManager.saveReportEntry', vm.get('report').getData())
-            .then(function(result) {
-                vm.get('report').commit();
-                Util.successToast('<span style="color: yellow; font-weight: 600;">' + vm.get('report.title') + '</span> report updated!');
-            });
-    },
-
-    removeReport: function () {
-        var me = this,
-            vm = this.getViewModel();
-
-        Ext.MessageBox.confirm('Warning'.t(),
-            'This will remove also the Widget from Dashboard'.t() + '<br/><br/>' +
-            'Do you want to continue?'.t(),
-            function (btn) {
-                if (btn === 'yes') {
-                    Rpc.asyncData('rpc.reportsManager.removeReportEntry', vm.get('report').getData())
-                        .then(function(result) {
-                            Ext.getStore('reports').remove(vm.get('report'));
-                            me.buildReportsList();
-                            me.getView().down('#reportsGrid').getSelectionModel().deselectAll();
-
-                            Util.successToast('Report removed!');
-
-                            me.toggleDashboardWidget();
-                        });
-                }
-            });
-    },
-
-    toggleDashboardWidget: function () {
-        var vm = this.getViewModel(), record, me = this;
-        if (vm.get('isWidget')) {
-            // remove from dashboard
-            record = Ext.getStore('widgets').findRecord('entryId', vm.get('report.uniqueId'));
-            if (record) {
-                Ext.getStore('widgets').remove(record);
-                Ung.dashboardSettings.widgets.list = Ext.Array.pluck(Ext.getStore('widgets').getRange(), 'data');
-
-                Rpc.asyncData('rpc.dashboardManager.setSettings', Ung.dashboardSettings)
-                    .then(function(result) {
-                        Util.successToast('<span style="color: yellow; font-weight: 600;">' + vm.get('report.title') + '</span> was removed from dashboard!');
-                        Ext.GlobalEvents.fireEvent('removewidget', vm.get('report.uniqueId'));
-                        vm.set('isWidget', !vm.get('isWidget'));
-                        me.getView().down('#reportsGrid').getView().refresh();
-                    });
-            } else {
-                Util.exceptionToast('<span style="color: yellow; font-weight: 600;">' + vm.get('report.title') + '</span> was not found on Dashboard!');
+        vm.bind('{categoryName}', function (categoryName) {
+            var categStore = me.lookupReference('categories').getStore();
+            if (categStore) {
+                this.set('category', categStore.findRecord('categoryName', vm.get('categoryName')));
             }
-        } else {
-            // add to dashboard
-            record = Ext.create('Ung.model.Widget', {
-                displayColumns: vm.get('report.displayColumns'),
-                enabled: true,
-                entryId: vm.get('report.uniqueId'),
-                javaClass: 'com.untangle.uvm.DashboardWidgetSettings',
-                refreshIntervalSec: 60,
-                timeframe: 3600,
-                type: 'ReportEntry'
-            });
-            Ext.getStore('widgets').add(record);
+        });
 
-            Ung.dashboardSettings.widgets.list = Ext.Array.pluck(Ext.getStore('widgets').getRange(), 'data');
+        vm.bind('{reportName}', function (reportName) {
+            if (!reportName) {
+                vm.set('report', null);
+                return;
+            }
+            // remove the last space - hack for when reports are finished to load
+            // so the specific report item can be selected
+            reportName = reportName.replace(/ /g, '');
 
-            Rpc.asyncData('rpc.dashboardManager.setSettings', Ung.dashboardSettings)
-                .then(function (result, ex) {
-                    if (ex) { Util.exceptionToast(ex); return; }
-                    Util.successToast('<span style="color: yellow; font-weight: 600;">' + vm.get('report.title') + '</span> was added to dashboard!');
-                    Ext.GlobalEvents.fireEvent('addwidget', record, vm.get('report'));
-                    vm.set('isWidget', !vm.get('isWidget'));
-                    me.getView().down('#reportsGrid').getView().refresh();
+            var reportsStore = me.lookupReference('reports').getStore(), report;
+            if (reportsStore.data.length) {
+                report = reportsStore.queryBy(function (entry) {
+                    return entry.get('category') === vm.get('category.categoryName') &&
+                        entry.get('title').replace(/[^0-9a-z\s]/gi, '').replace(/\s+/g, '-').toLowerCase() === reportName;
                 });
+                if (report && report.length > 0) {
+                    // main reference from the store
+                    vm.set('report', report.getAt(0));
+                    // report reference copy on which modifications are made
+                    vm.set('entry', report.getAt(0).copy(null));
+                }
+            }
+        });
+    },
+
+    onDeactivate: function () {
+        var entryView = this.getView().down('reports-entry');
+        if (entryView) {
+            if (entryView.down('#chart')) {
+                entryView.remove('chart');
+            }
+        }
+    },
+
+    /**
+     * this is used when the entire app loads directly on report page
+     * in this case, after reports are loaded, the reportName vm prop is updated just to triger the binding
+     */
+    onReportsLoad: function () {
+        var vm = this.getViewModel();
+        if (vm.get('reportName')) {
+            vm.set('reportName', vm.get('reportName') + ' ');
         }
     }
 

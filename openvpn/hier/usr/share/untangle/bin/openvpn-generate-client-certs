@@ -6,12 +6,12 @@
 
 commonName="${1}"
 
-SETTINGS_DIR="@PREFIX@/usr/share/untangle/settings/untangle-node-openvpn"
+SETTINGS_DIR="@PREFIX@/usr/share/untangle/settings/openvpn"
 
 CLIENT_KEY="${SETTINGS_DIR}/remote-clients/client-${commonName}.key"
 CLIENT_CRT="${SETTINGS_DIR}/remote-clients/client-${commonName}.crt"
 
-OPENSSL_CFG_FILE="@PREFIX@/usr/share/untangle/lib/untangle-node-openvpn/openssl.cnf"
+OPENSSL_CFG_FILE="@PREFIX@/usr/share/untangle/lib/openvpn/openssl.cnf"
 CERT_DURATION=3650 # 10 years
 
 generateClientKey()

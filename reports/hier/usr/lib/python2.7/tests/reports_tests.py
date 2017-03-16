@@ -22,42 +22,15 @@ from global_functions import uvmContext
 prefix = "@PREFIX@"
 
 defaultRackId = 1
-node = None
+app = None
 canRelay = None
 canSyslog = None
-fakeSmtpServerHost = ""
-fakeSmtpServerHostResult = -1
-testdomain = ""
-testEmailAddress = ""
 orig_settings = None
 orig_netsettings = None
 orig_mailsettings = None
+syslogServerHost = ""
+testEmailAddress = ""
 # pdb.set_trace()
-
-def sendTestmessage(smtpHost=global_functions.listFakeSmtpServerHosts[0]):
-    sender = 'test@example.com'
-    receivers = ['qa@example.com']
-    relaySuccess = False
-    
-    message = """From: Test <test@example.com>
-    To: Test Group <qa@example.com>
-    Subject: SMTP e-mail test
-
-    This is a test e-mail message.
-    """
-    remote_control.runCommand("sudo python fakemail.py --host=" + smtpHost +" --log=/tmp/report_test.log --port 25 --background --path=/tmp/", host=smtpHost, stdout=False, nowait=True)
-    time.sleep(10) # its run in the background so wait for it to start
-    
-    try:
-       smtpObj = smtplib.SMTP(smtpHost)
-       smtpObj.sendmail(sender, receivers, message)
-       relaySuccess = True
-    # except smtplib.SMTPException, e:
-    except Exception, e:
-       relaySuccess =  False
-       
-    remote_control.runCommand("sudo pkill -INT python",host=smtpHost)
-    return relaySuccess
 
 def createDomainDNSentries(domain,dnsServer):
     return {
@@ -67,49 +40,25 @@ def createDomainDNSentries(domain,dnsServer):
     }
     
 def createFakeEmailEnvironment(emailLogFile="report_test.log"):
-    global orig_mailsettings
+    global orig_mailsettings, testEmailAddress
+    testEmailAddress = global_functions.random_email()
     orig_mailsettings = uvmContext.mailSender().getSettings()
     new_mailsettings = copy.deepcopy(orig_mailsettings)
     new_mailsettings['sendMethod'] = 'DIRECT'
     new_mailsettings['fromAddress'] = testEmailAddress
     uvmContext.mailSender().setSettings(new_mailsettings)
 
-    # set untangletest email to get to fakeSmtpServerHost where fake SMTP sink is running using special DNS server
+    # set untangletest email to get to testServerHost where fake SMTP sink is running using special DNS server
     netsettings = uvmContext.networkManager().getNetworkSettings()
     # Add Domain DNS Server for special test domains of untangletestvm.com and untangletest.com
-    netsettings['dnsSettings']['localServers']['list'].append(createDomainDNSentries(testdomain,global_functions.specialDnsServer))
+    netsettings['dnsSettings']['localServers']['list'].append(createDomainDNSentries(global_functions.testServerHost,global_functions.specialDnsServer))
     uvmContext.networkManager().setNetworkSettings(netsettings)
 
-    # Remove old email and log files.
-    remote_control.runCommand("sudo rm -f /tmp/" + emailLogFile, host=fakeSmtpServerHost)
-    remote_control.runCommand("sudo rm -f /tmp/" + testEmailAddress + "*", host=fakeSmtpServerHost)
-    remote_control.runCommand("sudo python fakemail.py --host=" + fakeSmtpServerHost +" --log=/tmp/" + emailLogFile + " --port 25 --background --path=/tmp/", host=fakeSmtpServerHost, stdout=False, nowait=True)
-
-def findEmailContent(searchTerm1,searchTerm2,measureBegin=False,measureEnd=False):
-    ifFound = False
-    timeout = 30
-    while not ifFound and timeout > 0:
-        timeout -= 1
-        time.sleep(1)
-        emailfile = remote_control.runCommand("ls -l /tmp/" + testEmailAddress + "*",host=fakeSmtpServerHost)
-        if (emailfile == 0):
-            ifFound = True
-        else:
-            # unfreeze any messages in the exim queue
-            subprocess.call(["exim","-qff"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-    grepContext=remote_control.runCommand("grep -i '" + searchTerm1 + "' /tmp/" + testEmailAddress + "*",host=fakeSmtpServerHost, stdout=True)
-    grepContext2=remote_control.runCommand("grep -i '" + searchTerm2 + "' /tmp/" + testEmailAddress + "*",host=fakeSmtpServerHost, stdout=True)
-
-    measureLength=0
-    if measureBegin != False and measureEnd != False:
-        measureLength=remote_control.runCommand("sed -n '/" + measureBegin.replace('/', '\/').replace('"', '\\"') + "/,/" + measureEnd.replace('/', '\/').replace('"', '\\"') + "/p' /tmp/" + testEmailAddress + "* | wc -l",host=fakeSmtpServerHost, stdout=True)
-    return(ifFound, grepContext, grepContext2, measureLength)
-    
 def createFirewallSingleConditionRule( conditionType, value, blocked=True ):
     conditionTypeStr = str(conditionType)
     valueStr = str(value)
     return {
-        "javaClass": "com.untangle.node.firewall.FirewallRule", 
+        "javaClass": "com.untangle.app.firewall.FirewallRule", 
         "id": 1, 
         "enabled": True, 
         "description": "Single Matcher: " + conditionTypeStr + " = " + valueStr, 
@@ -120,7 +69,7 @@ def createFirewallSingleConditionRule( conditionType, value, blocked=True ):
             "list": [
                 {
                     "invert": False, 
-                    "javaClass": "com.untangle.node.firewall.FirewallRuleCondition", 
+                    "javaClass": "com.untangle.app.firewall.FirewallRuleCondition", 
                     "conditionType": conditionTypeStr, 
                     "value": valueStr
                     }
@@ -139,7 +88,7 @@ def createReportsUser(profile_email=testEmailAddress, email_template_id=1):
                     email_template_id
                 ]
             },
-            "javaClass": "com.untangle.node.reports.ReportsUser",
+            "javaClass": "com.untangle.app.reports.ReportsUser",
             "onlineAccess": False,
             "passwordHashBase64": ""
     }
@@ -174,28 +123,28 @@ def createAlertRule(description, matcherField, operator, value, matcherField2, o
             "thresholdGroupingField": thresholdGroupingField,
             "description": description,
             "enabled": True,
-            "javaClass": "com.untangle.node.reports.AlertRule",
+            "javaClass": "com.untangle.app.reports.AlertRule",
             "log": True,
             "conditions": {
                 "javaClass": "java.util.LinkedList",
                 "list": [
                     {
-                        "javaClass": "com.untangle.node.reports.AlertRuleCondition",
+                        "javaClass": "com.untangle.app.reports.AlertRuleCondition",
                         "conditionType": "FIELD_CONDITION",
                         "value": {
                             "comparator": operator,
                             "field": matcherField,
-                            "javaClass": "com.untangle.node.reports.AlertRuleConditionField",
+                            "javaClass": "com.untangle.app.reports.AlertRuleConditionField",
                             "value": value
                         }
                     },
                     {
-                        "javaClass": "com.untangle.node.reports.AlertRuleCondition",
+                        "javaClass": "com.untangle.app.reports.AlertRuleCondition",
                         "conditionType": "FIELD_CONDITION",
                         "value": {
                             "comparator": operator2,
                             "field": matcherField2,
-                            "javaClass": "com.untangle.node.reports.AlertRuleConditionField",
+                            "javaClass": "com.untangle.app.reports.AlertRuleConditionField",
                             "value": value2
                         }
                     }
@@ -219,7 +168,7 @@ def createEmailTemplate(mobile=False):
         },
         "interval": 86400,
         "intervalWeekStart": 1,
-        "javaClass": "com.untangle.node.reports.EmailTemplate",
+        "javaClass": "com.untangle.app.reports.EmailTemplate",
         "mobile": mobile,
         "readOnly": False,
         "templateId": 2,
@@ -229,16 +178,16 @@ def createEmailTemplate(mobile=False):
 class ReportsTests(unittest2.TestCase):
 
     @staticmethod
-    def nodeName():
-        return "untangle-node-reports"
+    def appName():
+        return "reports"
 
     @staticmethod
-    def nodeFirewallName():
-        return "untangle-node-firewall"
+    def appFirewallName():
+        return "firewall"
 
     @staticmethod
-    def nodeWanFailoverName():
-        return "untangle-node-wan-failover"
+    def appWanFailoverName():
+        return "wan-failover"
 
     @staticmethod
     def vendorName():
@@ -246,37 +195,28 @@ class ReportsTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        global node, orig_settings, orig_netsettings, fakeSmtpServerHost, fakeSmtpServerHostResult, testdomain, testEmailAddress, canRelay, canSyslog
+        global app, orig_settings, orig_netsettings, testServerHost, testEmailAddress, canRelay, canSyslog, syslogServerHost
         orig_netsettings = uvmContext.networkManager().getNetworkSettings()
-        if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
-            # report node is normally installed.
-            # print "Node %s already installed" % self.nodeName()
-            # raise Exception('node %s already instantiated' % self.nodeName())
-            node = uvmContext.nodeManager().node(self.nodeName())
+        if (uvmContext.appManager().isInstantiated(self.appName())):
+            # report app is normally installed.
+            # print "App %s already installed" % self.appName()
+            # raise Exception('app %s already instantiated' % self.appName())
+            app = uvmContext.appManager().app(self.appName())
         else:
-            node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
-        reportSettings = node.getSettings()
+            app = uvmContext.appManager().instantiate(self.appName(), defaultRackId)
+        reportSettings = app.getSettings()
         orig_settings = copy.deepcopy(reportSettings)
 
         # Skip checking relaying is possible if we have determined it as true on previous test.
-        if canRelay == None:
-            wan_IP = uvmContext.networkManager().getFirstWanAddress()
-            fakeSmtpServerHost, testdomain = global_functions.findSmtpServer(wan_IP)
-            testEmailAddress = "qa@" + testdomain                
-            # print "fakeSmtpServerHost " + fakeSmtpServerHost
-            if (fakeSmtpServerHost == ""):
-                canRelay = None
-            else: 
-                fakeSmtpServerHostResult = subprocess.call(["ping","-c","1",fakeSmtpServerHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-                # print "fakeSmtpServerHostResult " + str(fakeSmtpServerHostResult)
-                if (fakeSmtpServerHostResult == 0):
-                    try:
-                        canRelay = sendTestmessage(smtpHost=fakeSmtpServerHost)
-                    except Exception,e:
-                        canRelay = False
+        try:
+            canRelay = global_functions.send_test_email()
+        except Exception,e:
+            canRelay = False
 
         if canSyslog == None:
-            portResult = remote_control.runCommand("sudo lsof -i :514", host=fakeSmtpServerHost)
+            wan_IP = uvmContext.networkManager().getFirstWanAddress()
+            syslogServerHost = global_functions.find_syslog_server(wan_IP)
+            portResult = remote_control.run_command("sudo lsof -i :514", host=syslogServerHost)
             if portResult == 0:
                canSyslog = True
             else:
@@ -287,54 +227,52 @@ class ReportsTests(unittest2.TestCase):
                 
     # verify client is online
     def test_010_clientIsOnline(self):
-        result = remote_control.isOnline()
+        result = remote_control.is_online()
         assert (result == 0)
     
     def test_040_remoteSyslog(self):
-        if (fakeSmtpServerHostResult != 0):
-            raise unittest2.SkipTest("Syslog server unreachable")        
         if (not canSyslog):
-            raise unittest2.SkipTest('Unable to syslog through ' + fakeSmtpServerHost)
+            raise unittest2.SkipTest('Unable to syslog through ' + syslogServerHost)
 
-        nodeFirewall = None
-        if (uvmContext.nodeManager().isInstantiated(self.nodeFirewallName())):
-            print "Node %s already installed" % self.nodeFirewallName()
-            nodeFirewall = uvmContext.nodeManager().node(self.nodeFirewallName())
+        appFirewall = None
+        if (uvmContext.appManager().isInstantiated(self.appFirewallName())):
+            print "App %s already installed" % self.appFirewallName()
+            appFirewall = uvmContext.appManager().app(self.appFirewallName())
         else:
-            nodeFirewall = uvmContext.nodeManager().instantiate(self.nodeFirewallName(), defaultRackId)
+            appFirewall = uvmContext.appManager().instantiate(self.appFirewallName(), defaultRackId)
 
         # Install firewall rule to generate syslog events
-        rules = nodeFirewall.getRules()
+        rules = appFirewall.getRules()
         rules["list"].append(createFirewallSingleConditionRule("SRC_ADDR",remote_control.clientIP));
-        nodeFirewall.setRules(rules);
-        rules = nodeFirewall.getRules()
+        appFirewall.setRules(rules);
+        rules = appFirewall.getRules()
         # Get rule ID
         for rule in rules['list']:
             if rule['enabled'] and rule['block']:
                 targetRuleId = rule['ruleId']
                 break
         # Setup syslog to send events to syslog host
-        newSyslogSettings = node.getSettings()
+        newSyslogSettings = app.getSettings()
         newSyslogSettings["syslogEnabled"] = True
         newSyslogSettings["syslogPort"] = 514
         newSyslogSettings["syslogProtocol"] = "UDP"
-        newSyslogSettings["syslogHost"] = fakeSmtpServerHost
-        node.setSettings(newSyslogSettings)
+        newSyslogSettings["syslogHost"] = syslogServerHost
+        app.setSettings(newSyslogSettings)
 
         # create some traffic (blocked by firewall and thus create a syslog event)
-        result = remote_control.isOnline(tries=1)
+        result = remote_control.is_online(tries=1)
         # flush out events
-        node.flushEvents()
+        app.flushEvents()
 
         # remove the firewall rule aet syslog back to original settings
-        node.setSettings(orig_settings)
+        app.setSettings(orig_settings)
         rules["list"]=[];
-        nodeFirewall.setRules(rules);
+        appFirewall.setRules(rules);
 
         # remove firewall
-        if nodeFirewall != None:
-            uvmContext.nodeManager().destroy( nodeFirewall.getNodeSettings()["id"] )
-        nodeFirewall = None
+        if appFirewall != None:
+            uvmContext.appManager().destroy( appFirewall.getAppSettings()["id"] )
+        appFirewall = None
         
         # parse the output and look for a rule that matches the expected values
         timeout = 5
@@ -342,7 +280,7 @@ class ReportsTests(unittest2.TestCase):
         strings_to_find = ['\"blocked\":true',str('\"ruleId\":%i' % targetRuleId)]
         while (timeout > 0 and found_count < 2):
             # get syslog results on server
-            rsyslogResult = remote_control.runCommand("sudo tail -n 200 /var/log/localhost/localhost.log | grep 'FirewallEvent'", host=fakeSmtpServerHost, stdout=True)
+            rsyslogResult = remote_control.run_command("sudo tail -n 200 /var/log/localhost/localhost.log | grep 'FirewallEvent'", host=syslogServerHost, stdout=True)
             timeout -= 1
             for line in rsyslogResult.splitlines():
                 print "\nchecking line: %s " % line
@@ -364,7 +302,7 @@ class ReportsTests(unittest2.TestCase):
         - Administrator email account gets
         """
         if (not canRelay):
-            raise unittest2.SkipTest('Unable to relay through ' + fakeSmtpServerHost)
+            raise unittest2.SkipTest('Unable to relay through ' + global_functions.testServerHost)
 
         current_method_name = inspect.stack()[0][3]
 
@@ -378,27 +316,36 @@ class ReportsTests(unittest2.TestCase):
         uvmContext.adminManager().setSettings(adminsettings)
 
         # Clear all report users
-        settings = node.getSettings()
+        settings = app.getSettings()
         settings["reportsUsers"]["list"] = settings["reportsUsers"]["list"][:1]
-        node.setSettings(settings)
+        app.setSettings(settings)
 
         # trigger alert
         subprocess.call([prefix+"/usr/share/untangle/bin/reports-generate-fixed-reports.py"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
 
         # look for alert email
-        emailFound, emailContext, emailContext2, measureLength = findEmailContent('Daily Reports','Content-Type: image/png; name=')
-
-        # Kill the mail sink
-        remote_control.runCommand("sudo pkill -INT python",host=fakeSmtpServerHost)
+        remote_control.run_command("rm -f /tmp/test_100_email_report_admin_file")
+        emailFound = False
+        emailContextFound1 = ""
+        emailContextFound2 = ""
+        timeout = 60
+        while not emailFound and timeout > 0:
+            timeout -= 1
+            time.sleep(1)
+            # Check to see if the delivered email file is present
+            result = remote_control.run_command("wget -q --timeout=5 -O /tmp/test_100_email_report_admin_file http://test.untangle.com/cgi-bin/getEmail.py?toaddress=" + testEmailAddress + " 2>&1")
+            if (result == 0):
+                emailFound = True
+                emailContextFound1 = remote_control.run_command("grep -i 'Daily Reports' /tmp/test_100_email_report_admin_file 2>&1", stdout=True)
+                emailContextFound2 = remote_control.run_command("grep -i 'Content-Type: image/png; name=' /tmp/test_100_email_report_admin_file 2>&1", stdout=True)
 
         # restore
         uvmContext.adminManager().setSettings(orig_adminsettings)
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
         assert(emailFound)
-        print emailContext
-        print emailContext2
-        assert(('Daily Reports' in emailContext) and ('Content-Type: image/png; name=' in emailContext2))
+        # assert(('Daily Reports' in emailContext) and ('Content-Type: image/png; name=' in emailContext))
+        assert((emailContextFound1) and (emailContextFound2))
 
     def test_101_email_admin_override_custom_report(self):
         """
@@ -407,7 +354,7 @@ class ReportsTests(unittest2.TestCase):
         3. Custom report with test not in default.
         """
         if (not canRelay):
-            raise unittest2.SkipTest('Unable to relay through ' + fakeSmtpServerHost)
+            raise unittest2.SkipTest('Unable to relay through ' + global_functions.testServerHost)
 
         current_method_name = inspect.stack()[0][3]
 
@@ -420,7 +367,7 @@ class ReportsTests(unittest2.TestCase):
         adminsettings['users']['list'].append(createAdminUser(useremail=testEmailAddress))
         uvmContext.adminManager().setSettings(adminsettings)
 
-        settings = node.getSettings()
+        settings = app.getSettings()
         # Add custom template with a test not in daily reports
         settings["emailTemplates"]["list"] = settings["emailTemplates"]["list"][:1]
         settings["emailTemplates"]["list"].append(createEmailTemplate())
@@ -428,24 +375,34 @@ class ReportsTests(unittest2.TestCase):
         # Add report user with testEmailAddress
         settings["reportsUsers"]["list"] = settings["reportsUsers"]["list"][:1]
         settings["reportsUsers"]["list"].append(createReportsUser(profile_email=testEmailAddress, email_template_id=2))
-        node.setSettings(settings)
+        app.setSettings(settings)
 
         # trigger alert
         subprocess.call([prefix+"/usr/share/untangle/bin/reports-generate-fixed-reports.py"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
 
         # look for alert email
         ## look for new template name, custom
-        emailFound, emailContext, emailContext2, measureLength = findEmailContent('Custom Report','Administration-VWuRol5uWw')
-
-        # Kill the mail sink
-        remote_control.runCommand("sudo pkill -INT python",host=fakeSmtpServerHost)
+        remote_control.run_command("rm -f /tmp/test_101_email_admin_override_custom_report_file")
+        emailFound = False
+        emailContextFound1 = ""
+        emailContextFound2 = ""
+        timeout = 60
+        while not emailFound and timeout > 0:
+            timeout -= 1
+            time.sleep(1)
+            # Check to see if the delivered email file is present
+            result = remote_control.run_command("wget -q --timeout=5 -O /tmp/test_100_email_report_admin_file http://test.untangle.com/cgi-bin/getEmail.py?toaddress=" + testEmailAddress + " 2>&1")
+            if (result == 0):
+                emailFound = True
+                emailContextFound1 = remote_control.run_command("grep -i 'Custom Report' /tmp/test_101_email_admin_override_custom_report_file 2>&1", stdout=True)
+                emailContextFound2 = remote_control.run_command("grep -i 'Administration-VWuRol5uWw' /tmp/test_101_email_admin_override_custom_report_file 2>&1", stdout=True)
 
         # restore
         uvmContext.adminManager().setSettings(orig_adminsettings)
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
         assert(emailFound)
-        assert(('Custom Report' in emailContext) and ('Content-Type: image/png; name=' in emailContext2))
+        assert((emailContextFound1) and (emailContextFound2))
 
     def test_102_email_admin_override_custom_report_mobile(self):
         """
@@ -454,7 +411,7 @@ class ReportsTests(unittest2.TestCase):
         3. Custom report with test not in default.
         """
         if (not canRelay):
-            raise unittest2.SkipTest('Unable to relay through ' + fakeSmtpServerHost)
+            raise unittest2.SkipTest('Unable to relay through ' + global_functions.testServerHost)
 
         current_method_name = inspect.stack()[0][3]
 
@@ -467,7 +424,7 @@ class ReportsTests(unittest2.TestCase):
         adminsettings['users']['list'].append(createAdminUser(useremail=testEmailAddress))
         uvmContext.adminManager().setSettings(adminsettings)
 
-        settings = node.getSettings()
+        settings = app.getSettings()
         # Add custom template with a test not in daily reports
         settings["emailTemplates"]["list"] = settings["emailTemplates"]["list"][:1]
         settings["emailTemplates"]["list"].append(createEmailTemplate(mobile=True))
@@ -475,32 +432,45 @@ class ReportsTests(unittest2.TestCase):
         # Add report user with testEmailAddress
         settings["reportsUsers"]["list"] = settings["reportsUsers"]["list"][:1]
         settings["reportsUsers"]["list"].append(createReportsUser(profile_email=testEmailAddress, email_template_id=2))
-        node.setSettings(settings)
+        app.setSettings(settings)
 
         # trigger alert
         subprocess.call([prefix+"/usr/share/untangle/bin/reports-generate-fixed-reports.py"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
 
         # look for alert email
         ## look for new template name, custom
-        emailFound, emailContext, emailContext2, measureLength = findEmailContent('Custom Report','Administration-VWuRol5uWw', 'Content-Type: image/png; name="Administration-VWuRol5uWw@untangle.com.png"', '---')
-
-        # Kill the mail sink
-        remote_control.runCommand("sudo pkill -INT python",host=fakeSmtpServerHost)
-
+        # emailFound, emailContext, emailContext2, measureLength = findEmailContent('Custom Report','Administration-VWuRol5uWw', 'Content-Type: image/png; name="Administration-VWuRol5uWw@untangle.com.png"', '---')
+        remote_control.run_command("rm -f /tmp/test_102_email_admin_override_custom_report_mobile_file")
+        emailFound = False
+        emailContextFound1 = ""
+        emailContextFound2 = ""
+        timeout = 60
+        while not emailFound and timeout > 0:
+            timeout -= 1
+            time.sleep(1)
+            # Check to see if the delivered email file is present
+            result = remote_control.run_command("wget -q --timeout=5 -O /tmp/test_102_email_admin_override_custom_report_mobile_file http://test.untangle.com/cgi-bin/getEmail.py?toaddress=" + testEmailAddress + " 2>&1")
+            if (result == 0):
+                emailFound = True
+                emailContextFound1 = remote_control.run_command("grep -i 'Custom Report' /tmp/test_102_email_admin_override_custom_report_mobile_file 2>&1", stdout=True)
+                emailContextFound2 = remote_control.run_command("grep -i 'Administration-VWuRol5uWw' /tmp/test_102_email_admin_override_custom_report_mobile_file 2>&1", stdout=True)
+                measureBegin = 'Content-Type: image/png; name="Administration-VWuRol5uWw@untangle.com.png"'
+                measureEnd = '---'
+                measureLength = remote_control.run_command("sed -n '/" + measureBegin.replace('/', '\/').replace('"', '\\"') + "/,/" + measureEnd.replace('/', '\/').replace('"', '\\"') + "/p' /tmp/test_102_email_admin_override_custom_report_mobile_file* | wc -l", stdout=True)
         # restore
         uvmContext.adminManager().setSettings(orig_adminsettings)
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
         assert(emailFound)
-        assert(('Custom Report' in emailContext) and ('Content-Type: image/png; name=' in emailContext2) and (int(measureLength) < 80))
+        assert((emailContextFound1) and (emailContextFound2) and (int(measureLength) < 80))
 
     @staticmethod
     def finalTearDown(self):
-        global node
-        if node != None:
-            node.setSettings(orig_settings)
+        global app
+        if app != None:
+            app.setSettings(orig_settings)
         if orig_mailsettings != None:
             uvmContext.mailSender().setSettings(orig_mailsettings)
-        node = None
+        app = None
 
-test_registry.registerNode("reports", ReportsTests)
+test_registry.registerApp("reports", ReportsTests)

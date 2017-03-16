@@ -26,7 +26,7 @@ import com.untangle.uvm.CertCacheManager;
  * from external servers.  This allows us to do rule processing and make
  * other decisions based on the cert contents.  It was orignally written
  * for use in the SSL Inspector to allow cert based ignore rules, but later
- * moved into the uvm for use by web filter and possibly other nodes.  We need
+ * moved into the uvm for use by web filter and possibly other apps.  We need
  * this because an SSL connection doesn't see the server certificate until
  * after the handshake has started, at which point it is too late to cleanly
  * release the session.  To solve the problem we open a separate connection

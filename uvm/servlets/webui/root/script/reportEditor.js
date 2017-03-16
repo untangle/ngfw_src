@@ -78,16 +78,16 @@ Ext.define("Ung.window.ReportEditor", {
             fields: ["displayName"],
             data: []
         });
-        rpc.nodeManager.getAllNodeProperties(Ext.bind(function (result, exception) {
+        rpc.appManager.getAllAppProperties(Ext.bind(function (result, exception) {
             if (Ung.Util.handleException(exception)) {
                 return;
             }
             var data = [{displayName: 'System'}],
-                nodeProperties = result.list,
+                appProperties = result.list,
                 i;
-            for (i = 0; i < nodeProperties.length; i += 1) {
-                if (!nodeProperties[i].invisible || nodeProperties[i].displayName == 'Shield') {
-                    data.push(nodeProperties[i]);
+            for (i = 0; i < appProperties.length; i += 1) {
+                if (!appProperties[i].invisible || appProperties[i].displayName == 'Shield') {
+                    data.push(appProperties[i]);
                 }
             }
             categoryStore.loadData(data);
@@ -127,7 +127,7 @@ Ext.define("Ung.window.ReportEditor", {
             hasImportExport: false,
             dataIndex: 'conditions',
             columnsDefaultSortable: false,
-            recordJavaClass: "com.untangle.node.reports.SqlCondition",
+            recordJavaClass: "com.untangle.app.reports.SqlCondition",
             emptyRow: {
                 "column": "",
                 "operator": "=",

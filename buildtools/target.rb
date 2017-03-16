@@ -392,10 +392,10 @@ class ServletBuilder < Target
     "#{BuildEnv::downloads}/#{n}"
   } + ["#{ENV['JAVA_HOME']}/lib/tools.jar"];
 
-  def initialize(package, pkgname, path, libdeps = [], nodedeps = [], ms = [], common = [BuildEnv::SERVLET_COMMON], jsp_list = nil)
+  def initialize(package, pkgname, path, libdeps = [], appdeps = [], ms = [], common = [BuildEnv::SERVLET_COMMON], jsp_list = nil)
     @pkgname = pkgname
     @path = path
-    @nodedeps = nodedeps
+    @appdeps = appdeps
     @jsp_list = Set.new(jsp_list)
     if path.kind_of?(Array) then
       path = path[0]
@@ -436,7 +436,7 @@ class ServletBuilder < Target
     end
     uvm_lib = BuildEnv::SRC['untangle-libuvm']
 
-    jardeps = libdeps + @nodedeps + Jars::Base
+    jardeps = libdeps + @appdeps + Jars::Base
     jardeps << uvm_lib["api"] 
 
     @srcJar = JarTarget.build_target(package, jardeps, suffix, "#{path}/src", false)
@@ -470,10 +470,14 @@ class JsLintTarget < Target
 
   attr_reader :filename
 
-  def initialize(package, deps, taskName, filename)
-    @targetName = "jslint:#{package.name}-#{taskName}-#{filename}"
-    super(package, deps, @targetName)
-    @filename = filename
+  def initialize(package, sourcePaths, taskName)
+    @path = sourcePaths.kind_of?(Array) ? sourcePaths : [sourcePaths]
+    @deps = @path.map do |p|
+      File::directory?(p) ? FileList["#{p}/**/*.js"] : p
+    end
+    @deps.flatten!
+    @targetName = "jslint:#{package.name}-#{taskName}"
+    super(package, @deps, @targetName)
   end
 
   def to_s
@@ -483,8 +487,8 @@ class JsLintTarget < Target
   protected
 
   def build()
-    info "[jslint  ] #{@filename}"
-    command = "#{JS_LINT_COMMAND} #{@filename} #{JS_LINT_CONFIG}"
+    info "[jslint  ] #{@path}"
+    command = "#{JS_LINT_COMMAND} #{@deps.join(' ')} #{JS_LINT_CONFIG}"
     raise "jslint failed" unless Kernel.system command
   end
 end

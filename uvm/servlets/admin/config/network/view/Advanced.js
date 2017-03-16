@@ -71,33 +71,37 @@ Ext.define('Ung.config.network.view.Advanced', {
         }, {
             title: 'QoS'.t(),
 
-            layout: 'fit',
-
-            dockedItems: [{
-                xtype: 'toolbar',
-                dock: 'top',
-                padding: '8 5',
-                style: { fontSize: '12px' },
-                items: [{
-                    xtype: 'checkbox',
-                    fieldLabel: 'Enabled'.t(),
-                    labelAlign: 'right',
-                    bind: '{settings.qosSettings.qosEnabled}'
-                }, {
-                    xtype: 'combo',
-                    fieldLabel: 'Default Priority'.t(),
-                    labelAlign: 'right',
-                    bind: {
-                        store: '{qosPriorityNoDefaultStore}',
-                        value: '{settings.qosSettings.defaultPriority}',
-                        disabled: '{!settings.qosSettings.qosEnabled}'
-                    },
-                    queryMode: 'local',
-                    editable: false
-                }]
-            }],
-
             items: [{
+                xtype: 'combo',
+                fieldLabel: 'Queue Discipline'.t(),
+                labelAlign: 'right',
+                padding: 5,
+                width: 400,
+                bind: {
+                    store: '{queueDisciplineStore}',
+                    value: '{settings.qosSettings.queueDiscipline}'
+                },
+                queryMode: 'local',
+                editable: false
+            }, {
+                xtype: 'checkbox',
+                padding: 5,
+                fieldLabel: 'QoS Enabled'.t(),
+                labelAlign: 'right',
+                bind: '{settings.qosSettings.qosEnabled}'
+            }, {
+                xtype: 'combo',
+                padding: 5,
+                fieldLabel: 'Default Priority'.t(),
+                labelAlign: 'right',
+                bind: {
+                    store: '{qosPriorityNoDefaultStore}',
+                    value: '{settings.qosSettings.defaultPriority}',
+                    disabled: '{!settings.qosSettings.qosEnabled}'
+                },
+                queryMode: 'local',
+                editable: false
+            }, {
                 xtype: 'tabpanel',
                 // tabPosition: 'left',
                 // tabRotation: 0,
@@ -116,7 +120,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                         padding: '8 5',
                         style: { fontSize: '12px' },
                         html: Ext.String.format('{0}Note{1}: When enabling QoS valid Download Bandwidth and Upload Bandwidth limits must be set for all WAN interfaces.'.t(), '<font color="red">','</font>') + '<br/>'
-                            // Ext.String.format('Total: {0} kbps ({1} Mbit) download, {2} kbps ({3} Mbit) upload'.t(), d, d_Mbit, u, u_Mbit )
+                        // Ext.String.format('Total: {0} kbps ({1} Mbit) download, {2} kbps ({3} Mbit) upload'.t(), d, d_Mbit, u, u_Mbit )
                     }],
 
                     listProperty: 'settings.interfaces.list',
@@ -303,13 +307,13 @@ Ext.define('Ung.config.network.view.Advanced', {
                             dataIndex: 'priority',
                             renderer: function (value) {
                                 switch (value) {
-                                case 1: return 'Very High'.t();
-                                case 2: return 'High'.t();
-                                case 3: return 'Medium'.t();
-                                case 4: return 'Low'.t();
-                                case 5: return 'Limited'.t();
-                                case 6: return 'Limited More'.t();
-                                case 7: return 'Limited Severely'.t();
+                                  case 1: return 'Very High'.t();
+                                  case 2: return 'High'.t();
+                                  case 3: return 'Medium'.t();
+                                  case 4: return 'Low'.t();
+                                  case 5: return 'Limited'.t();
+                                  case 6: return 'Limited More'.t();
+                                  case 7: return 'Limited Severely'.t();
                                 }
                             }
                         }],
@@ -712,11 +716,11 @@ Ext.define('Ung.config.network.view.Advanced', {
                         } else {
                             var v = value;
                             switch (value[value.length-1]) {
-                            case 'K':
+                              case 'K':
                                 v = parseInt(value.substr(0,value.length - 1), 10);
                                 value = v * 1024;
                                 break;
-                            case 'M':
+                              case 'M':
                                 v = parseInt(value.substr(0,value.length - 1), 10);
                                 value = v * 1024 * 1024;
                                 break;
@@ -826,7 +830,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                 padding: '8 5',
                 style: { fontSize: '12px' },
                 html: '<strong>' + 'Custom dnsmasq options.'.t() + '</strong> <br/>' +
-                      '<i class="fa fa-exclamation-triangle" style="color: red;"></i> ' + 'Warning: Invalid syntax will halt all DHCP & DNS services.'.t()
+                    '<i class="fa fa-exclamation-triangle" style="color: red;"></i> ' + 'Warning: Invalid syntax will halt all DHCP & DNS services.'.t()
             }],
             layout: 'fit',
             items: [{
@@ -872,15 +876,15 @@ Ext.define('Ung.config.network.view.Advanced', {
                 width: 250,
                 renderer: function (value) {
                     switch (value) {
-                    case 'AUTO': return 'Auto'.t();
-                    case 'M10000_FULL_DUPLEX': return '10000 Mbps, Full Duplex'.t();
-                    case 'M10000_HALF_DUPLEX': return '10000 Mbps, Half Duplex'.t();
-                    case 'M1000_FULL_DUPLEX': return '1000 Mbps, Full Duplex'.t();
-                    case 'M1000_HALF_DUPLEX': return '1000 Mbps, Half Duplex'.t();
-                    case 'M100_FULL_DUPLEX': return '100 Mbps, Full Duplex'.t();
-                    case 'M100_HALF_DUPLEX': return '100 Mbps, Half Duplex'.t();
-                    case 'M10_FULL_DUPLEX': return '10 Mbps, Full Duplex'.t();
-                    case 'M10_HALF_DUPLEX': return '10 Mbps, Half Duplex'.t();
+                      case 'AUTO': return 'Auto'.t();
+                      case 'M10000_FULL_DUPLEX': return '10000 Mbps, Full Duplex'.t();
+                      case 'M10000_HALF_DUPLEX': return '10000 Mbps, Half Duplex'.t();
+                      case 'M1000_FULL_DUPLEX': return '1000 Mbps, Full Duplex'.t();
+                      case 'M1000_HALF_DUPLEX': return '1000 Mbps, Half Duplex'.t();
+                      case 'M100_FULL_DUPLEX': return '100 Mbps, Full Duplex'.t();
+                      case 'M100_HALF_DUPLEX': return '100 Mbps, Half Duplex'.t();
+                      case 'M10_FULL_DUPLEX': return '10 Mbps, Full Duplex'.t();
+                      case 'M10_HALF_DUPLEX': return '10 Mbps, Half Duplex'.t();
                     }
                 },
                 editor: {

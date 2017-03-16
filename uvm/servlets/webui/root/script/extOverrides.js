@@ -24,7 +24,7 @@ Ext.override(Ext.form.field.Base, {
                 if(this.xtype=='checkbox') {
                     target = this.labelEl;
                 } else {
-                    target = this.container.dom.parentNode.childNodes[0];
+                    target = this.container.dom.parentApp.childApps[0];
                 }
             } catch(exn) {
                 //don't bother if there's nothing to target

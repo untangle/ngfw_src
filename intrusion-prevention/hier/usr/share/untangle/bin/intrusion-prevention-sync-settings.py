@@ -21,7 +21,7 @@ UNTANGLE_DIR = '%s/usr/lib/python%d.%d' % ( "@PREFIX@", sys.version_info[0], sys
 if ( "@PREFIX@" != ''):
     sys.path.insert(0, UNTANGLE_DIR)
 	
-import untangle_node_intrusion_prevention
+import intrusion_prevention
 
 def usage():
     """
@@ -32,7 +32,7 @@ def usage():
     print "settings\tSettings configuration file name"
     print "conf\t\tSnort configuration file name"
     print "rules\t\tSnort rule file name"
-    print "node\t\tNode identifier"
+    print "app\t\tApp identifier"
     print "debug\t\tEnable debugging"
         
 def main(argv):
@@ -45,13 +45,13 @@ def main(argv):
     previous_rules_path = None
     settings_file_name = None
     status_file_name = None
-    node_id = None
+    app_id = None
     patch_file_name = None
     settings_file_name = None
     export_mode = False
 	
     try:
-        opts, args = getopt.getopt(argv, "hsrpnace:d", ["help", "settings=", "rules=", "previous_rules=", "node_id=", "status=", "patch=", "export", "debug"] )
+        opts, args = getopt.getopt(argv, "hsrpnace:d", ["help", "settings=", "rules=", "previous_rules=", "app_id=", "status=", "patch=", "export", "debug"] )
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -62,8 +62,8 @@ def main(argv):
             sys.exit()
         elif opt in ( "-d", "--debug"):
             _debug = True
-        elif opt in ( "-n", "--node_id"):
-            node_id = arg
+        elif opt in ( "-n", "--app_id"):
+            app_id = arg
         elif opt in ( "-r", "--rules"):
             current_rules_path = arg
         elif opt in ( "-p", "--previous_rules"):
@@ -77,8 +77,8 @@ def main(argv):
         elif opt in ( "-e", "--export"):
             export_mode = True
 
-    if node_id == None:
-        print "Missing node_id"
+    if app_id == None:
+        print "Missing app_id"
         sys.exit(1)
 
     # if current_rules_path == None:
@@ -97,32 +97,32 @@ def main(argv):
             print "previous_rules_path = " + previous_rules_path
         if settings_file_name != None:
             print "settings_file_name = " + settings_file_name
-        print "node = " + node_id
+        print "app = " + app_id
         print "_debug = ",  _debug
 
-    defaults = untangle_node_intrusion_prevention.IntrusionPreventionDefaults()
+    defaults = intrusion_prevention.IntrusionPreventionDefaults()
     defaults.load()
 
     patch = None
     if patch_file_name != None:
-        patch = untangle_node_intrusion_prevention.IntrusionPreventionSettingsPatch()
+        patch = intrusion_prevention.IntrusionPreventionSettingsPatch()
         patch.load(patch_file_name)
 
-    snort_conf = untangle_node_intrusion_prevention.SnortConf()
+    snort_conf = intrusion_prevention.SnortConf()
 
     current_snort_rules = None
     if current_rules_path != None:
-        current_snort_rules = untangle_node_intrusion_prevention.SnortRules( node_id, current_rules_path )
+        current_snort_rules = intrusion_prevention.SnortRules( app_id, current_rules_path )
         current_snort_rules.load( True )
         current_snort_rules.update_categories(defaults, True)
 
     previous_snort_rules = None
     if previous_rules_path != None:
-        previous_snort_rules = untangle_node_intrusion_prevention.SnortRules( node_id, previous_rules_path )
+        previous_snort_rules = intrusion_prevention.SnortRules( app_id, previous_rules_path )
         previous_snort_rules.load( True )
         previous_snort_rules.update_categories(defaults, True)
 
-    settings = untangle_node_intrusion_prevention.IntrusionPreventionSettings( node_id )
+    settings = intrusion_prevention.IntrusionPreventionSettings( app_id )
     if settings.exists() == False:
         settings.create()
     else:

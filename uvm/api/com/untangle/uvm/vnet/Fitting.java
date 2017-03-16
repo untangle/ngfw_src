@@ -4,7 +4,7 @@
 package com.untangle.uvm.vnet;
 
 /**
- * Describes the type of the stream between two nodes.
+ * Describes the type of the stream between two apps.
  */
 public enum Fitting
 {

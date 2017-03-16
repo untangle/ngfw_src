@@ -3,7 +3,7 @@
 # Script to look for a CA line in the output of OpenSSL.  This
 # was a pain to do in Java.  Exits with "0" if a CA, 1 otherwise
 #
-# Used by Java file com.untangle.node.util.OpenSSLCAWrapper
+# Used by Java file com.untangle.app.util.OpenSSLCAWrapper
 #
 FOO=`openssl x509 -in ${1} -text | sed -n '/X509v3 Basic Constraints/ {n;p}' | grep "CA:TRUE"`
 

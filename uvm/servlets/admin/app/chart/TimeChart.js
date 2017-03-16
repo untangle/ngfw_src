@@ -10,27 +10,19 @@ Ext.define('Ung.chart.TimeChart', {
     viewModel: true,
 
     config: {
-        widget: null,
-        entry: null
+        isWidget: false,
     },
+
+    bodyBorder: false,
 
     listeners: {
         afterrender: 'onAfterRender',
-        resize: 'onResize',
-        setseries: 'onSetSeries',
-        //setstyle: 'onSetStyle',
-        //setcolors: 'onSetColors',
-        beginfetchdata: 'onBeginFetchData'
+        resize: 'onResize'
     },
 
     items: [{
         xtype: 'component',
         reference: 'timechart',
         cls: 'chart'
-    }, {
-        xtype: 'component',
-        reference: 'loader',
-        cls: 'loader',
-        hideMode: 'visibility'
     }]
 });

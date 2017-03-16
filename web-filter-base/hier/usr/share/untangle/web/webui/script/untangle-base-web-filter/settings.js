@@ -1,5 +1,5 @@
-Ext.define('Webui.untangle-base-web-filter.settings', {
-    extend:'Ung.NodeWin',
+Ext.define('Webui.web-filter-base.settings', {
+    extend:'Ung.AppWin',
     // called when the component is rendered
     initComponent: function() {
         this.buildUrlValidator();
@@ -42,8 +42,21 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
             {name:"HTTP_REFERER",displayName: i18n._("HTTP: Referer"), type: "text", visible: true},
             {name:"HTTP_URI",displayName: i18n._("HTTP: URI"), type: "text", visible: true},
             {name:"HTTP_URL",displayName: i18n._("HTTP: URL"), type: "text", visible: true},
-            {name:"HTTP_CONTENT_TYPE",displayName: i18n._("HTTP: Content Type"), type: "text", visible: true},
             {name:"HTTP_CONTENT_LENGTH",displayName: i18n._("HTTP: Content Length"), type: "text", visible: true},
+            {name:"HTTP_REQUEST_METHOD",displayName: i18n._("HTTP: Request Method"), type: "text", visible: true},
+            {name:"WEB_FILTER_REQUEST_METHOD",displayName: i18n._("HTTP: Request Method"), type: "text", visible: false},
+            {name:"HTTP_REQUEST_FILE_PATH",displayName: i18n._("HTTP: Request File Path"), type: "text", visible: true},
+            {name:"WEB_FILTER_REQUEST_FILE_PATH",displayName: i18n._("HTTP: Request File Path"), type: "text", visible: false},
+            {name:"HTTP_REQUEST_FILE_NAME",displayName: i18n._("HTTP: Request File Name"), type: "text", visible: true},
+            {name:"WEB_FILTER_REQUEST_FILE_NAME",displayName: i18n._("HTTP: Request File Name"), type: "text", visible: false},
+            {name:"HTTP_REQUEST_FILE_EXTENSION",displayName: i18n._("HTTP: Request File Extension"), type: "text", visible: true},
+            {name:"WEB_FILTER_REQUEST_FILE_EXTENSION",displayName: i18n._("HTTP: Request File Extension"), type: "text", visible: false},
+            {name:"HTTP_CONTENT_TYPE",displayName: i18n._("HTTP: Content Type"), type: "text", visible: true},
+            {name:"WEB_FILTER_RESPONSE_CONTENT_TYPE",displayName: i18n._("HTTP: Content Type"), type: "text", visible: false},
+            {name:"HTTP_RESPONSE_FILE_NAME",displayName: i18n._("HTTP: Response File Name"), type: "text", visible: true},
+            {name:"WEB_FILTER_RESPONSE_FILE_NAME",displayName: i18n._("HTTP: Response File Name"), type: "text", visible: false},
+            {name:"HTTP_RESPONSE_FILE_EXTENSION",displayName: i18n._("HTTP: Response File Extension"), type: "text", visible: true},
+            {name:"WEB_FILTER_RESPONSE_FILE_EXTENSION",displayName: i18n._("HTTP: Response File Extension"), type: "text", visible: false},
             {name:"HTTP_USER_AGENT",displayName: i18n._("HTTP: Client User Agent"), type: "text", visible: true},
             {name:"HTTP_USER_AGENT_OS",displayName: i18n._("HTTP: Client User OS"), type: "text", visible: false},
             {name:"APPLICATION_CONTROL_APPLICATION",displayName: i18n._("Application Control: Application"), type: "text", visible: true},
@@ -59,13 +72,6 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
             {name:"WEB_FILTER_CATEGORY",displayName: i18n._("Web Filter: Category"), type: "text", visible: true},
             {name:"WEB_FILTER_CATEGORY_DESCRIPTION",displayName: i18n._("Web Filter: Category Description"), type: "text", visible: true},
             {name:"WEB_FILTER_FLAGGED",displayName: i18n._("Web Filter: Website is Flagged"), type: "boolean", visible: true},
-            {name:"WEB_FILTER_REQUEST_METHOD",displayName: i18n._("Web Filter: Request Method"), type: "text", visible: true},
-            {name:"WEB_FILTER_REQUEST_FILE_PATH",displayName: i18n._("Web Filter: Request File Path"), type: "text", visible: true},
-            {name:"WEB_FILTER_REQUEST_FILE_NAME",displayName: i18n._("Web Filter: Request File Name"), type: "text", visible: true},
-            {name:"WEB_FILTER_REQUEST_FILE_EXTENSION",displayName: i18n._("Web Filter: Request File Extension"), type: "text", visible: true},
-            {name:"WEB_FILTER_RESPONSE_CONTENT_TYPE",displayName: i18n._("Web Filter: Response Content Type"), type: "text", visible: true},
-            {name:"WEB_FILTER_RESPONSE_FILE_NAME",displayName: i18n._("Web Filter: Response File Name"), type: "text", visible: true},
-            {name:"WEB_FILTER_RESPONSE_FILE_EXTENSION",displayName: i18n._("Web Filter: Response File Extension"), type: "text", visible: true},
             {name:"DIRECTORY_CONNECTOR_GROUP",displayName: i18n._("Directory Connector: User in Group"), type: "editor", editor: Ext.create('Ung.GroupEditorWindow',{}), visible: true},
             {name:"CLIENT_COUNTRY",displayName: i18n._("Client Country"), type: "editor", editor: Ext.create('Ung.CountryEditorWindow',{}), visible: true},
             {name:"SERVER_COUNTRY",displayName: i18n._("Server Country"), type: "editor", editor: Ext.create('Ung.CountryEditorWindow',{}), visible: true}
@@ -117,7 +123,7 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
             hasAdd: false,
             hasDelete: false,
             dataProperty: "categories",
-            recordJavaClass: "com.untangle.uvm.node.GenericRule",
+            recordJavaClass: "com.untangle.uvm.app.GenericRule",
             sortField: 'name',
             fields: this.genericRuleFields,
             columns: [{
@@ -238,7 +244,7 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
             settingsCmp: this,
             flex: 1,
             dataProperty: "blockedUrls",
-            recordJavaClass: "com.untangle.uvm.node.GenericRule",
+            recordJavaClass: "com.untangle.uvm.app.GenericRule",
             emptyRow: {
                 "string": "",
                 "blocked": true,
@@ -343,7 +349,7 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
             flex: 1,
             title: i18n._("Sites"),
             dataProperty: "passedUrls",
-            recordJavaClass: "com.untangle.uvm.node.GenericRule",
+            recordJavaClass: "com.untangle.uvm.app.GenericRule",
             emptyRow: {
                 "string": "",
                 "enabled": true,
@@ -432,7 +438,7 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
             settingsCmp: this,
             title: i18n._("Client IP addresses"),
             dataProperty: "passedClients",
-            recordJavaClass: "com.untangle.uvm.node.GenericRule",
+            recordJavaClass: "com.untangle.uvm.app.GenericRule",
             emptyRow: {
                 "string": "1.2.3.4",
                 "enabled": true,
@@ -525,7 +531,7 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
             title: i18n._("Rules"),
             qtip: i18n._("Web Filter rules allow creating flexible block and pass conditions."),
             dataProperty: "filterRules",
-            recordJavaClass: "com.untangle.node.web_filter.WebFilterRule",
+            recordJavaClass: "com.untangle.app.web_filter.WebFilterRule",
             emptyRow: {
                 "enabled": true,
                 "ruleId": 0,
@@ -601,7 +607,7 @@ Ext.define('Webui.untangle-base-web-filter.settings', {
                 items:[{
                     xtype: 'rulebuilder',
                     settingsCmp: this,
-                    javaClass: "com.untangle.node.web_filter.WebFilterRuleCondition",
+                    javaClass: "com.untangle.app.web_filter.WebFilterRuleCondition",
                     dataIndex: "conditions",
                     conditions: this.getConditions()
                 }]

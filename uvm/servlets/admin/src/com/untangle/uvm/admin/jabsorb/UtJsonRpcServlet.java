@@ -65,7 +65,7 @@ public class UtJsonRpcServlet extends JSONRPCServlet
             bridge.registerCallableReference(uvm.metricManager().getClass());
             bridge.registerCallableReference(uvm.languageManager().getClass());
             bridge.registerCallableReference(uvm.certificateManager().getClass());
-            bridge.registerCallableReference(uvm.nodeManager().getClass());
+            bridge.registerCallableReference(uvm.appManager().getClass());
             bridge.registerCallableReference(uvm.loggingManager().getClass());
             bridge.registerCallableReference(uvm.mailSender().getClass());
             bridge.registerCallableReference(uvm.adminManager().getClass());
@@ -88,7 +88,7 @@ public class UtJsonRpcServlet extends JSONRPCServlet
             bridge.registerCallableReference(uvm.deviceTable().getClass());
             bridge.registerCallableReference(uvm.userTable().getClass());
 
-            bridge.registerCallableReference(com.untangle.uvm.node.Node.class);
+            bridge.registerCallableReference(com.untangle.uvm.app.App.class);
         }
         catch (Exception e) {
             logger.warn("Exception registering callable reference classes",e);

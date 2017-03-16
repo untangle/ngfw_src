@@ -21,7 +21,7 @@ Ext.define('Ung.cmp.AppSessions', {
     // bodyPadding: '10 10 10 0',
     items: [{
         xtype: 'component',
-        reference: 'nodechart',
+        reference: 'appchart',
         width: '100%',
         height: '100%'
         // height: 150

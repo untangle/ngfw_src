@@ -24,9 +24,9 @@ import com.untangle.uvm.HostTable;
 import com.untangle.uvm.HostTableEntry;
 import com.untangle.uvm.util.Pulse;
 import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.node.Node;
-import com.untangle.uvm.node.QuotaEvent;
-import com.untangle.uvm.node.HostnameLookup;
+import com.untangle.uvm.app.App;
+import com.untangle.uvm.app.QuotaEvent;
+import com.untangle.uvm.app.HostnameLookup;
 
 /**
  * HostTable stores a global table of all "local" IPs that have recently been seen.
@@ -488,7 +488,7 @@ public class HostTableImpl implements HostTable
 
     private static void updateHostnameDhcp( HostTableEntry entry )
     {
-        HostnameLookup router = (HostnameLookup) UvmContextFactory.context().nodeManager().node("untangle-node-router");
+        HostnameLookup router = (HostnameLookup) UvmContextFactory.context().appManager().app("router");
         String hostname = null;
         if ( router != null ) {
             hostname = router.lookupHostname( entry.getAddress() );
@@ -500,7 +500,7 @@ public class HostTableImpl implements HostTable
 
     private static void updateHostnameReports( HostTableEntry entry )
     {
-        HostnameLookup reports = (HostnameLookup) UvmContextFactory.context().nodeManager().node("untangle-node-reports");
+        HostnameLookup reports = (HostnameLookup) UvmContextFactory.context().appManager().app("reports");
         String hostname = null;
         if ( reports != null ) {
             hostname = reports.lookupHostname( entry.getAddress() );

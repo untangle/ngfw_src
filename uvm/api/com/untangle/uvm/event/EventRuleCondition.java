@@ -7,7 +7,7 @@ import org.json.JSONObject;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.node.RuleCondition;
+import com.untangle.uvm.app.RuleCondition;
 
 /**
  * This is a matching criteria for a Event Control Rule

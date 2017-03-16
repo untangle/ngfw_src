@@ -1,0 +1,5 @@
+#!/bin/dash
+
+@PREFIX@/usr/share/untangle/bin/ut-get-last-update /tmp/sa-update.ran /var/cache/untangle-spamcatd
+
+exit 0

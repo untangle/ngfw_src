@@ -12,7 +12,7 @@ import org.apache.log4j.Logger;
 import org.json.JSONObject;
 import org.json.JSONString;
 
-import com.untangle.uvm.node.IPMaskedAddress;
+import com.untangle.uvm.app.IPMaskedAddress;
 
 /**
  * This object represents the current status/config of an device.

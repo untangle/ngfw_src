@@ -7,14 +7,13 @@
         <title>Untangle - ${buildStamp}</title>
 
         <script src="/jsonrpc/jsonrpc.js"></script>
-        <script src="/highcharts/highstock.js"></script>
-        <script src="/highcharts/highcharts-extra.js"></script>
+        <script src="/highcharts-5.0.9/highstock.js"></script>
+        <script src="/highcharts-5.0.9/highcharts-3d.js"></script>
 
-        <!-- ExtJS lib & theme-->
+        <!-- ExtJS lib & theme -->
         <script src="/ext6.2/ext-all-debug.js"></script>
         <script src="/ext6.2/classic/theme-${extjsTheme}/theme-${extjsTheme}.js"></script>
         <link href="/ext6.2/classic/theme-${extjsTheme}/resources/theme-${extjsTheme}-all.css" rel="stylesheet" />
-
 
         <%-- Triton theme already contains fontawesome --%>
         <c:if test="${extjsTheme!='triton'}">
@@ -79,9 +78,22 @@
                 }
                 Ext.apply(rpc, startUpInfo);
 
+                if (!rpc.translations.decimal_sep) { rpc.translations.decimal_sep = '.'; }
+                if (!rpc.translations.thousand_sep) { rpc.translations.thousand_sep = ','; }
+                if (!rpc.translations.date_fmt) { rpc.translations.date_fmt = 'Y-m-d'; }
+                if (!rpc.translations.timestamp_fmt) { rpc.translations.timestamp_fmt = 'Y-m-d h:i:s a'; }
+
+
                 String.prototype.t = function() {
                     return rpc.translations[this.valueOf()] || '<cite>' + this.valueOf() + '</cite>';
                 };
+
+                // Ext.application({
+                //     name: 'Ung',
+                //     extend: 'Ung.Application',
+                // });
+
+                console.log(rpc.appManager);
 
                 // load the untangle app only after the rpc is in place and translations set
                 Ext.Loader.loadScript({

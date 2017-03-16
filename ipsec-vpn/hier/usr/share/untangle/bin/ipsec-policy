@@ -1,0 +1,6 @@
+#! /bin/dash
+
+# Call the ip command to get the xfrm state
+/sbin/ip xfrm policy
+
+exit 0

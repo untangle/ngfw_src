@@ -41,7 +41,7 @@
 }
 
 .icon-policy-manager {
-    background-image: url(../images/admin/apps/untangle-node-policy-manager_80x80.png);
+    background-image: url(../images/admin/apps/policy-manager_80x80.png);
 }
 /* app item install icon */
 .icon-arrow-install {
@@ -76,7 +76,7 @@ img.icon-drag {
 .x-btn .icon-clear-filter {
     background-image: url(../images/admin/icons/icon_clear_filter.png);
 }
-/* Trial node buy button icon */
+/* Trial app buy button icon */
 .x-btn .icon-buy {
     background-image: url(../images/admin/icons/icon_buy.png);
 }
@@ -92,12 +92,12 @@ img.icon-drag {
 .x-btn .icon-myaccount {
     background-image: url(../images/admin/icons/icon_myaccount.png);
 }
-/* node settings button icon */
-.x-btn .node-settings-icon {
+/* app settings button icon */
+.x-btn .app-settings-icon {
     background-image: url(../images/admin/icons/icon_settings.png);
 }
-/* node remove button icon */
-.x-btn .node-remove-icon {
+/* app remove button icon */
+.x-btn .app-remove-icon {
     background-image: url(../images/admin/icons/icon_remove.png);
 }
 /* cancel button icon */

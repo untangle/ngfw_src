@@ -59,9 +59,9 @@ import com.untangle.uvm.LanguageManager;
 import com.untangle.uvm.UvmException;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.UvmContext;
-import com.untangle.uvm.node.Node;
-import com.untangle.uvm.node.NodeProperties;
-import com.untangle.uvm.node.NodeManager;
+import com.untangle.uvm.app.App;
+import com.untangle.uvm.app.AppProperties;
+import com.untangle.uvm.app.AppManager;
 import com.untangle.uvm.SettingsManager;
 
 /**
@@ -283,8 +283,7 @@ public class LanguageManagerImpl implements LanguageManager
                     ResourceBundle.clearCache(urlLoader);
 
                     try{
-                        i18n = I18nFactory.getI18n(source.getPrefix(), source.getResourcePath(),
-                                            urlLoader, locale, I18nFactory.NO_CACHE);
+                        i18n = I18nFactory.getI18n(source.getPrefix(), source.getResourcePath(), urlLoader, locale, I18nFactory.NO_CACHE);
                     }catch(MissingResourceException e){
                         // Do nothing.  Likely problem is the rare case of localization resource bundle has been deleted.
                     }

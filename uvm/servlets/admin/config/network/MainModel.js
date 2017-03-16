@@ -40,6 +40,13 @@ Ext.define('Ung.config.network.MainModel', {
             [7, 'Limited Severely'.t()]
         ],
 
+        queueDisciplineStore: [
+            ['driver', 'Driver Defaults'.t()],
+            ['pfifo', 'First In, First Out (pfifo)'.t()],
+            ['fq_codel', 'Fair/Flow Queueing + Codel (fq_codel)'.t()],
+            ['sfq', 'Stochastic Fairness Queueing (sfq)'.t()]
+        ],
+
         upnpStatus: null
     },
     stores: {

@@ -14,14 +14,14 @@ import urllib2
 
 import uvm
 from uvm import Manager
-from uvm import NodeManager
+from uvm import AppManager
 from uvm import Uvm
 
 UNTANGLE_DIR = '%s/usr/lib/python%d.%d' % ( "@PREFIX@", sys.version_info[0], sys.version_info[1] )
 if ( "@PREFIX@" != ''):
     sys.path.insert(0, UNTANGLE_DIR)
 
-import untangle_node_intrusion_prevention
+import intrusion_prevention
 
 DEBUG = False
 CHUNK_SIZE = 1024 * 1024
@@ -43,8 +43,8 @@ class Update:
         self.rules_file_name = self.url.split( "/" )[-1].split("?")[0]
         self.url_file_name = self.working_directory + "/" + self.rules_file_name
         self.live_rules_file_name = self.base_directory + "/" + self.rules_file_name
-        self.node_ids = []
-        self.node_manager = None
+        self.app_ids = []
+        self.app_manager = None
 
     def setup(self):
         """
@@ -73,16 +73,16 @@ class Update:
             return False
 
         uvmContext = Uvm().getUvmContext( hostname="localhost", username=None, password=None, timeout=60 )
-        self.node_manager = uvmContext.nodeManager()
+        self.app_manager = uvmContext.appManager()
 
         ##
         ## Easier to parse the api for instances than reproducing what 
         ## it does with object.
         ##
-        nm = NodeManager(uvmContext)
+        nm = AppManager(uvmContext)
         for instance in nm.get_instances():
-            if instance[1] == "untangle-node-intrusion-prevention" and instance[3] == "RUNNING":
-                self.node_ids.append(instance[0])
+            if instance[1] == "intrusion-prevention" and instance[3] == "RUNNING":
+                self.app_ids.append(instance[0])
         
         return True
 
@@ -276,14 +276,14 @@ class Update:
         """
         Synchronize configuration
         """
-        for node_id in self.node_ids:
-            node = self.node_manager.node(node_id)
+        for app_id in self.app_ids:
+            app = self.app_manager.app(app_id)
 
-            temp_settings_file_name = "/tmp/" + str(node_id) + ".js"
+            temp_settings_file_name = "/tmp/" + str(app_id) + ".js"
             ## Syncronize
             args = [
                 "@PREFIX@/usr/share/untangle/bin/intrusion-prevention-sync-settings.py",
-                "--node_id", str(node_id),
+                "--app_id", str(app_id),
                 "--previous_rules", "/usr/share/untangle-snort-config/previous",
                 "--rules", "/usr/share/untangle-snort-config/current",
                 "--settings", temp_settings_file_name,
@@ -300,10 +300,10 @@ class Update:
                 return False
             
             if result == 0:
-                node.saveSettings( temp_settings_file_name )
-                node.setUpdatedSettingsFlag( True )
+                app.saveSettings( temp_settings_file_name )
+                app.setUpdatedSettingsFlag( True )
                 try:
-                    node.reconfigure()
+                    app.reconfigure()
                 except:
                     # This may time out on slow machines, continue on
                     pass
@@ -355,7 +355,7 @@ def main(argv):
     if force_sync:
         update.synchronize()
     else:
-        if len(update.node_ids) > 0 and update.download() == True and update.validate() and update.install():
+        if len(update.app_ids) > 0 and update.download() == True and update.validate() and update.install():
             update.synchronize()
 
     """
