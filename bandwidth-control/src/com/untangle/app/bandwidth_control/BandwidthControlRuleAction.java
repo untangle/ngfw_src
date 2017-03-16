@@ -27,6 +27,7 @@ public class BandwidthControlRuleAction implements JSONString, Serializable
     public static final int END_OF_HOUR = -1;
     public static final int END_OF_DAY  = -2; 
     public static final int END_OF_WEEK = -3;
+    public static final int END_OF_MONTH = -4;
     
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -372,6 +373,23 @@ public class BandwidthControlRuleAction implements JSONString, Serializable
             Date expireDate = null;
             calendar.add(Calendar.WEEK_OF_YEAR, 1);
             calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
+            calendar.set(Calendar.HOUR_OF_DAY, 0);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
+            calendar.add(Calendar.SECOND, -1);
+            /* subtract one second so as to avoid the whole AM/PM midnight confusion*/
+
+            expireDate = calendar.getTime();
+            long expireTime = (expireDate.getTime() - now.getTime()) / 1000;
+            logger.info("New Quota expires on : " + expireDate + " in " + expireTime + " seconds ");
+            return expireTime;
+        }
+        case END_OF_MONTH: {
+            GregorianCalendar calendar = new GregorianCalendar();
+            Date now = calendar.getTime();
+            Date expireDate = null;
+            calendar.add(Calendar.MONTH, 1);
+            calendar.set(Calendar.DAY_OF_MONTH, 1);
             calendar.set(Calendar.HOUR_OF_DAY, 0);
             calendar.set(Calendar.MINUTE, 0);
             calendar.set(Calendar.SECOND, 0);

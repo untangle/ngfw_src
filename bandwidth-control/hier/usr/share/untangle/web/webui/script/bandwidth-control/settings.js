@@ -5,6 +5,7 @@ Ext.define('Webui.bandwidth-control.settings', {
     },
     initComponent: function() {
         this.quotaTimeStore = [
+             [-4, i18n._("End of Month")], //END_OF_MONTH from QuotaBoxEntry
              [-3, i18n._("End of Week")], //END_OF_WEEK from QuotaBoxEntry
              [-2, i18n._("End of Day")], //END_OF_DAY from QuotaBoxEntry
              [-1, i18n._("End of Hour")]]; //END_OF_HOUR from QuotaBoxEntry
