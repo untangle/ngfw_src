@@ -12,13 +12,13 @@ import org.apache.log4j.Logger;
 
 import com.untangle.app.smtp.quarantine.Quarantine;
 import com.untangle.app.smtp.quarantine.QuarantineMaintenenceView;
-import com.untangle.app.smtp.quarantine.QuarantineNodeView;
+import com.untangle.app.smtp.quarantine.QuarantineAppView;
 import com.untangle.app.smtp.quarantine.QuarantineSettings;
 import com.untangle.app.smtp.quarantine.QuarantineUserView;
 import com.untangle.app.smtp.safelist.SafelistAdminView;
 import com.untangle.app.smtp.safelist.SafelistManager;
 import com.untangle.app.smtp.safelist.SafelistManipulation;
-import com.untangle.app.smtp.safelist.SafelistNodeView;
+import com.untangle.app.smtp.safelist.SafelistAppView;
 import com.untangle.app.smtp.safelist.SafelistSettings;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
@@ -121,7 +121,7 @@ public class SmtpImpl extends AppBase implements MailExport
         setSmtpSettings(ns);
     }
 
-    // SmtpNode methods --------------------------------------------------------
+    // SmtpApp methods --------------------------------------------------------
 
     public SmtpSettings getSmtpSettings()
     {
@@ -130,8 +130,8 @@ public class SmtpImpl extends AppBase implements MailExport
 
     public void setSmtpSettings(final SmtpSettings newSettings)
     {
-        String nodeID = this.getAppSettings().getId().toString();
-        String settingsFile = System.getProperty("uvm.settings.dir") + "/smtp/settings_" + nodeID
+        String appID = this.getAppSettings().getId().toString();
+        String settingsFile = System.getProperty("uvm.settings.dir") + "/smtp/settings_" + appID
                 + ".js";
 
         try {
@@ -215,12 +215,12 @@ public class SmtpImpl extends AppBase implements MailExport
         return getSmtpSettings();
     }
 
-    public QuarantineNodeView getQuarantineNodeView()
+    public QuarantineAppView getQuarantineAppView()
     {
         return SmtpImpl.quarantine;
     }
 
-    public SafelistNodeView getSafelistNodeView()
+    public SafelistAppView getSafelistAppView()
     {
         return SmtpImpl.safelistMangr;
     }
@@ -233,7 +233,7 @@ public class SmtpImpl extends AppBase implements MailExport
         }
     }
 
-    // Node methods -----------------------------------------------------------
+    // App methods -----------------------------------------------------------
 
     @Override
     protected void preDestroy()
@@ -249,8 +249,8 @@ public class SmtpImpl extends AppBase implements MailExport
 
     protected void postInit()
     {
-        String nodeID = this.getAppSettings().getId().toString();
-        String settingsFile = System.getProperty("uvm.settings.dir") + "/smtp/settings_" + nodeID + ".js";
+        String appID = this.getAppSettings().getId().toString();
+        String settingsFile = System.getProperty("uvm.settings.dir") + "/smtp/settings_" + appID + ".js";
 
         SmtpSettings readSettings = null;
         logger.info("Loading settings from " + settingsFile);
@@ -278,7 +278,7 @@ public class SmtpImpl extends AppBase implements MailExport
                 reconfigure();
             }
         } catch (Exception exn) {
-            logger.error("Could not apply node settings", exn);
+            logger.error("Could not apply app settings", exn);
         }
 
         // At this point the settings have either been loaded from disk

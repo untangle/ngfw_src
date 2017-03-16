@@ -32,7 +32,7 @@ public class WanFailoverTesterMonitor
 
     private final Logger logger = Logger.getLogger( this.getClass());
     
-    private WanFailoverApp node;
+    private WanFailoverApp app;
 
     private List<WanFailoverTester> testers;
     
@@ -41,9 +41,9 @@ public class WanFailoverTesterMonitor
     private Boolean wanStatusArray[] = new Boolean[IntfConstants.MAX_INTF+1];
 
     
-    public WanFailoverTesterMonitor( WanFailoverApp node )
+    public WanFailoverTesterMonitor( WanFailoverApp app )
     {
-        this.node = node;
+        this.app = app;
         this.testers = new LinkedList<WanFailoverTester>();
     }
     
@@ -54,7 +54,7 @@ public class WanFailoverTesterMonitor
     
     public synchronized void wanStateChange( Integer interfaceId, boolean active )
     {
-        if ( ! this.node.isLicenseValid()) {
+        if ( ! this.app.isLicenseValid()) {
             logger.warn("Invalid license - ignoring wanStateChange");
         }
 
@@ -72,7 +72,7 @@ public class WanFailoverTesterMonitor
         syncStateToSystem();
 
         // log the event and bling the blingers
-        this.node.incrementMetric( WanFailoverApp.STAT_CHANGE );
+        this.app.incrementMetric( WanFailoverApp.STAT_CHANGE );
         
         InterfaceSettings ic = UvmContextFactory.context().networkManager().findInterfaceId( interfaceId );
         String systemName = ic.getSystemDev();
@@ -80,11 +80,11 @@ public class WanFailoverTesterMonitor
             logger.warn("Unable to log event, cant find interface : " + interfaceId);
         } else {
             if (active) {
-                this.node.incrementMetric( WanFailoverApp.STAT_RECONNECTS );
-                this.node.logEvent( new WanFailoverEvent( WanFailoverEvent.Action.CONNECTED, interfaceId, ic.getName(), ic.getSystemDev() ));
+                this.app.incrementMetric( WanFailoverApp.STAT_RECONNECTS );
+                this.app.logEvent( new WanFailoverEvent( WanFailoverEvent.Action.CONNECTED, interfaceId, ic.getName(), ic.getSystemDev() ));
             } else {
-                this.node.incrementMetric( WanFailoverApp.STAT_DISCONNECTS );
-                this.node.logEvent( new WanFailoverEvent( WanFailoverEvent.Action.DISCONNECTED, interfaceId, ic.getName(), ic.getSystemDev() ));
+                this.app.incrementMetric( WanFailoverApp.STAT_DISCONNECTS );
+                this.app.logEvent( new WanFailoverEvent( WanFailoverEvent.Action.DISCONNECTED, interfaceId, ic.getName(), ic.getSystemDev() ));
             }
         }
     }
@@ -118,12 +118,12 @@ public class WanFailoverTesterMonitor
         // initiate new testers
         this.testers = new LinkedList<WanFailoverTester>();
         if (this.isRunning) {
-            WanFailoverSettings settings = this.node.getSettings();
+            WanFailoverSettings settings = this.app.getSettings();
             if (settings == null) {
                 logger.warn("reconfigure(): NULL settings");
             } else {
                 for ( WanTestSettings wanTest : settings.getTests() ) {
-                    WanFailoverTester tester = new WanFailoverTester( wanTest, this, this.node );
+                    WanFailoverTester tester = new WanFailoverTester( wanTest, this, this.app );
                     new Thread(tester).start();
                     logger.info("Launching new Tester: (" + wanTest.getInterfaceId() + ", " + wanTest.getType() + ")");
                     this.testers.add(tester);
@@ -191,8 +191,8 @@ public class WanFailoverTesterMonitor
                 else
                     disconnectedWans++;
         }
-        this.node.setMetric( WanFailoverApp.STAT_CONNECTED, (long) connectedWans);
-        this.node.setMetric( WanFailoverApp.STAT_DISCONNECTED, (long) disconnectedWans);
+        this.app.setMetric( WanFailoverApp.STAT_CONNECTED, (long) connectedWans);
+        this.app.setMetric( WanFailoverApp.STAT_DISCONNECTED, (long) disconnectedWans);
     }
     
     private void runWanStateChangeScript()
@@ -252,7 +252,7 @@ public class WanFailoverTesterMonitor
             logger.warn("updateWanStateScript( " + defaultWan + ", " + onlineWans + ", " + offlineWans + ") failed", e);
         }
 
-        if ( node.getSettings().getResetUdpOnWanStateChange() ) {
+        if ( app.getSettings().getResetUdpOnWanStateChange() ) {
             logger.info("Reseting UDP sessions...");
             WanFailoverApp.execManager.exec( "conntrack -D --proto udp" );
         }

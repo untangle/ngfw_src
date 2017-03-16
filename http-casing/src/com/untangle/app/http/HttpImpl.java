@@ -16,7 +16,7 @@ import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 
 /**
- * An HTTP casing node.
+ * An HTTP casing app.
  */
 public class HttpImpl extends AppBase
 {
@@ -44,8 +44,8 @@ public class HttpImpl extends AppBase
 
     public void setHttpSettings(final HttpSettings newSettings)
     {
-        String nodeID = this.getAppSettings().getId().toString();
-        String settingsFile = System.getProperty("uvm.settings.dir") + "/http/settings_" + nodeID + ".js";
+        String appID = this.getAppSettings().getId().toString();
+        String settingsFile = System.getProperty("uvm.settings.dir") + "/http/settings_" + appID + ".js";
 
         try {
             settingsManager.save( settingsFile, newSettings );
@@ -69,8 +69,8 @@ public class HttpImpl extends AppBase
 
     protected void postInit()
     {
-        String nodeID = this.getAppSettings().getId().toString();
-        String settingsFile = System.getProperty("uvm.settings.dir") + "/http/settings_" + nodeID + ".js";
+        String appID = this.getAppSettings().getId().toString();
+        String settingsFile = System.getProperty("uvm.settings.dir") + "/http/settings_" + appID + ".js";
 
         HttpSettings readSettings = null;
         logger.info("Loading settings from " + settingsFile );
@@ -98,7 +98,7 @@ public class HttpImpl extends AppBase
                 reconfigure();
             }
         } catch (Exception exn) {
-            logger.error("Could not apply node settings",exn);
+            logger.error("Could not apply app settings",exn);
         }
 
     }

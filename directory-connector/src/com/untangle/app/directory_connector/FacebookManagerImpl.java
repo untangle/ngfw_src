@@ -35,7 +35,7 @@ public class FacebookManagerImpl
     private FacebookSettings settings;
 
     /**
-     * The node that owns this manager
+     * The app that owns this manager
      */
     private DirectoryConnectorApp directoryConnector;
 

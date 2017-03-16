@@ -25,7 +25,7 @@ import com.untangle.app.smtp.quarantine.Quarantine;
 /**
  * Implementation of the safelist stuff
  */
-public class SafelistManager implements SafelistAdminView, SafelistNodeView
+public class SafelistManager implements SafelistAdminView, SafelistAppView
 {
     private final Logger m_logger = Logger.getLogger(SafelistManager.class);
     private final Quarantine quarantine;
@@ -53,9 +53,9 @@ public class SafelistManager implements SafelistAdminView, SafelistNodeView
         renew(mlSettings.getSafelistSettings());
     }
 
-    // -------------------- SafelistNodeView ------------------------
+    // -------------------- SafelistAppView ------------------------
 
-    // See doc on SafelistNodeView.java
+    // See doc on SafelistAppView.java
     @Override
     public boolean isSafelisted(InternetAddress envelopeSender, InternetAddress mimeFrom, List<InternetAddress> recipients)
     {

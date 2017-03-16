@@ -141,7 +141,7 @@ Summary
 </td>
 </tr>
 
-{% with reportsApp=appManager.node,reports %}
+{% with reportsApp=appManager.app,reports %}
 	{% for report in reportsApp.getReportsManager.getReportEntries|in=getCategory,FixedReports.getConfigCategories|in=getType,allowedReportTypes|in=getUniqueId,enabledConfigIds|order=getCategory,FixedReports.getConfigCategories|order=getType,TEXT %}
 		{% cycle rowColors %}
 		<tr style="background-color:{{ rowColors }};">
@@ -188,18 +188,18 @@ Summary
 </td>
 </tr>
 
-{% with reportsApp=appManager.node,reports %}
-	{% for node in appManager.nodeInstances|distinct=getAppProperties.getDisplayName %}
-		{% if node.getAppProperties.getDisplayName not in FixedReports.getConfigCategories %}
-			{% with reports=reportsApp.getReportsManager.getReportEntries,node.getAppProperties.getDisplayName|in=getType,allowedReportTypes|in=getUniqueId,enabledAppIds|order=getType,TEXT %}
+{% with reportsApp=appManager.app,reports %}
+	{% for app in appManager.appInstances|distinct=getAppProperties.getDisplayName %}
+		{% if app.getAppProperties.getDisplayName not in FixedReports.getConfigCategories %}
+			{% with reports=reportsApp.getReportsManager.getReportEntries,app.getAppProperties.getDisplayName|in=getType,allowedReportTypes|in=getUniqueId,enabledAppIds|order=getType,TEXT %}
 				{% if reports.size != 0 %}
 					<tr><td><table>
 					<tr style="background-color:#d0d0d0;">
 						<td style="width:48px;">
-						<img src="{{ attachment,/usr/share/untangle/web/skins/common/images/admin/apps/{{ node.getAppProperties.getName }}_42x42.png|id=icon-{{ node.getAppProperties.getName }}@untangle.com }}" />
+						<img src="{{ attachment,/usr/share/untangle/web/skins/common/images/admin/apps/{{ app.getAppProperties.getName }}_42x42.png|id=icon-{{ app.getAppProperties.getName }}@untangle.com }}" />
 						</td>
 						<td style="font-size:20px; color:#444444; font-weight:bold;">
-						{{ node.getAppProperties.getDisplayName }}
+						{{ app.getAppProperties.getDisplayName }}
 						</td>
 					</tr>
 					</table></td></tr>

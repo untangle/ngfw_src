@@ -15,17 +15,17 @@ import org.apache.log4j.Level;
 public class ApplicationControlProtoList
 {
     private final Logger logger = Logger.getLogger(getClass());
-    private ApplicationControlApp node;
+    private ApplicationControlApp app;
 
-    public ApplicationControlProtoList(ApplicationControlApp node)
+    public ApplicationControlProtoList(ApplicationControlApp app)
     {
-        this.node = node;
+        this.app = app;
     }
 
     /*
      * The following insanity was created to allow changes and additions to the
      * Vineyard protocol list to be incorporated in the list of protocols that
-     * are saved in the node settings. First we look for protocols that have
+     * are saved in the app settings. First we look for protocols that have
      * been removed from vineyard and remove them from our working list. Then we
      * look for new protocols added to Vineyard that we don't know about and add
      * them to our working list. In the middle of all of this we look for

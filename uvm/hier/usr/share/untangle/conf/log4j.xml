@@ -34,12 +34,12 @@
     </layout>
   </appender>
 
-  <appender name="NODELOG" class="org.apache.log4j.net.SyslogAppender">
+  <appender name="APPLOG" class="org.apache.log4j.net.SyslogAppender">
     <param name="SyslogHost" value="localhost"/>
     <param name="Facility" value="LOCAL1"/>
     <param name="Threshold" value="ALL"/>
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="@NodeLogFileName@: [%c{1}] &lt;%X{SessionID}&gt; %-5p %m%n"/>
+      <param name="ConversionPattern" value="@AppLogFileName@: [%c{1}] &lt;%X{SessionID}&gt; %-5p %m%n"/>
     </layout>
   </appender>
 
@@ -143,7 +143,7 @@
   </category>
 
   <!-- ============================================== -->
-  <!-- Untangle App/Node Categories                   -->
+  <!-- Untangle App/App Categories                   -->
   <!-- ============================================== -->
 
   <category name="com.untangle.uvm.app">

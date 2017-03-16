@@ -27,7 +27,7 @@ import org.apache.log4j.Logger;
 public class WebFilterHttpsSniHandler extends AbstractEventHandler
 {
     private final Logger logger = Logger.getLogger(getClass());
-    private WebFilterBase node;
+    private WebFilterBase app;
 
     // these are used while extracting the SNI from the SSL ClientHello packet
     private static int TLS_HANDSHAKE = 0x16;
@@ -35,17 +35,17 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
     private static int SERVER_NAME = 0x0000;
     private static int HOST_NAME = 0x00;
 
-    public WebFilterHttpsSniHandler(WebFilterBase node)
+    public WebFilterHttpsSniHandler(WebFilterBase app)
     {
-        super(node);
+        super(app);
 
-        this.node = node;
+        this.app = app;
         logger.debug("Created WebFilterHttpsSniHandler");
     }
 
     public void handleTCPNewSessionRequest(TCPNewSessionRequest req)
     {
-        if (!node.isHttpsEnabledSni()) {
+        if (!app.isHttpsEnabledSni()) {
             req.release();
             return;
         }
@@ -116,7 +116,7 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
         }
 
         logger.debug("HANDLE_CHUNK = " + buff.toString());
-        node.incrementScanCount();
+        app.incrementScanCount();
 
         // scan the buffer for the SNI hostname
         try {
@@ -149,7 +149,7 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
          * If SNI information is not present then we fallback to using the
          * certificate CN if the option is enabled
          */
-        if ((domain == null) && (node.isHttpsEnabledSniCertFallback())) {
+        if ((domain == null) && (app.isHttpsEnabledSniCertFallback())) {
 
             // grab the cached certificate for the server
             serverCert = UvmContextFactory.context().certCacheManager().fetchServerCertificate(sess.getServerAddr().getHostAddress().toString());
@@ -183,7 +183,7 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
          * If we didn't get a hostname from SNI or the certificate CN then we
          * revert to IP-based if its enabled
          */
-        if ((domain == null) && (node.isHttpsEnabledSniIpFallback())) {
+        if ((domain == null) && (app.isHttpsEnabledSniIpFallback())) {
             domain = sess.getServerAddr().getHostAddress();
         }
 
@@ -230,7 +230,7 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
          */
         HttpRequestEvent evt = new HttpRequestEvent(requestLine, domain, null, 0);
         requestLine.setHttpRequestEvent(evt);
-        this.node.logEvent(evt);
+        this.app.logEvent(evt);
 
         // attach the hostname we extracted to the session
         sess.globalAttach(AppSession.KEY_HTTP_HOSTNAME, domain);
@@ -239,16 +239,16 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
         h.addField("host", domain);
 
         // pass the info to the decision engine to see if we should block
-        String nonce = node.getDecisionEngine().checkRequest(sess, sess.getClientAddr(), 443, rlt, h);
+        String nonce = app.getDecisionEngine().checkRequest(sess, sess.getClientAddr(), 443, rlt, h);
 
         // we have decided to block so we create the SSL engine and start
         // by passing it all the client data received thus far
         if (nonce != null) {
-            node.incrementBlockCount();
+            app.incrementBlockCount();
             logger.debug(" ----------------BLOCKED: " + domain + " traffic----------------");
             logger.debug("TCP: " + sess.getClientAddr().getHostAddress() + ":" + sess.getClientPort() + " -> " + sess.getServerAddr().getHostAddress() + ":" + sess.getServerPort());
 
-            WebFilterSSLEngine engine = new WebFilterSSLEngine(sess, nonce, node.getAppSettings().getId().toString());
+            WebFilterSSLEngine engine = new WebFilterSSLEngine(sess, nonce, app.getAppSettings().getId().toString());
             sess.globalAttach(AppSession.KEY_WEB_FILTER_SSL_ENGINE, engine);
             engine.handleClientData(buff);
             return;

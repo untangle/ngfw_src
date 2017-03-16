@@ -29,19 +29,19 @@ import com.untangle.uvm.vnet.IPNewSessionRequest;
 public class WebFilterQuicHandler extends AbstractEventHandler
 {
     private final Logger logger = Logger.getLogger(getClass());
-    private WebFilterBase node;
+    private WebFilterBase app;
 
-    public WebFilterQuicHandler(WebFilterBase node)
+    public WebFilterQuicHandler(WebFilterBase app)
     {
-        super(node);
+        super(app);
 
-        this.node = node;
+        this.app = app;
     }
 
     @Override
     public void handleUDPNewSessionRequest( UDPNewSessionRequest request )
     {
-        Boolean blockQuic = node.getSettings().getBlockQuic();
+        Boolean blockQuic = app.getSettings().getBlockQuic();
 
         if ( blockQuic == null || !blockQuic ) {
             logger.debug("Ignore QUIC.");

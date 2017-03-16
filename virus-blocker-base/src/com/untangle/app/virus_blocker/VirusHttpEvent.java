@@ -18,17 +18,17 @@ public class VirusHttpEvent extends LogEvent
     private RequestLine requestLine;
     private boolean clean;
     private String virusName;
-    private String nodeName;
+    private String appName;
 
     public VirusHttpEvent() { }
 
-    public VirusHttpEvent(RequestLine requestLine, boolean clean, String virusName, String nodeName)
+    public VirusHttpEvent(RequestLine requestLine, boolean clean, String virusName, String appName)
     {
         this.requestId = requestLine.getRequestId();
         this.requestLine = requestLine;
         this.clean = clean;
         this.virusName = virusName;
-        this.nodeName = nodeName;
+        this.appName = appName;
     }
 
     public Long getRequestId() { return requestId; }
@@ -40,8 +40,8 @@ public class VirusHttpEvent extends LogEvent
     public String getVirusName() { return virusName; }
     public void SetVirusName(String newValue) { this.virusName = newValue; }
 
-    public String getAppName() { return nodeName; }
-    public void setNodeName( String nodeName ) { this.nodeName = nodeName; }
+    public String getAppName() { return appName; }
+    public void setAppName( String appName ) { this.appName = appName; }
 
     @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception

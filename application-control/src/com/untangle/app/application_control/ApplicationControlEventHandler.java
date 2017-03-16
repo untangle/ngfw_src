@@ -57,7 +57,7 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
     public static final int SELECT_TIMEOUT = 100;
 
     private final Logger logger = Logger.getLogger(getClass());
-    private ApplicationControlApp node;
+    private ApplicationControlApp app;
     private int networkPort = 0;
 
     public enum TrafficAction
@@ -65,10 +65,10 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
         ALLOW, BLOCK, RELEASE, TARPIT
     }
 
-    public ApplicationControlEventHandler(ApplicationControlApp node, int networkPort)
+    public ApplicationControlEventHandler(ApplicationControlApp app, int networkPort)
     {
-        super(node);
-        this.node = node;
+        super(app);
+        this.app = app;
         this.networkPort = networkPort;
     }
 
@@ -86,8 +86,8 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
             }
         }
 
-        this.node.incrementMetric(ApplicationControlApp.STAT_SCAN);
-        node.statistics.IncrementSessionCount();
+        this.app.incrementMetric(ApplicationControlApp.STAT_SCAN);
+        app.statistics.IncrementSessionCount();
         processNewSession(sessionRequest);
     }
 
@@ -171,8 +171,8 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
     @Override
     public void handleUDPNewSessionRequest(UDPNewSessionRequest sessionRequest)
     {
-        this.node.incrementMetric(ApplicationControlApp.STAT_SCAN);
-        node.statistics.IncrementSessionCount();
+        this.app.incrementMetric(ApplicationControlApp.STAT_SCAN);
+        app.statistics.IncrementSessionCount();
         processNewSession(sessionRequest);
     }
 
@@ -256,7 +256,7 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
     public void processNewSession(IPNewSessionRequest ipr)
     {
         // if the license is not valid we ignore all traffic
-        if (node.isLicenseValid() != true) {
+        if (app.isLicenseValid() != true) {
             ipr.release();
             return;
         }
@@ -318,7 +318,7 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
         // something is really screwed up so log an event and release
         if (check == ApplicationControlStatus.StatusCode.FAILURE) {
             ApplicationControlLogEvent evt = new ApplicationControlLogEvent(sess.sessionEvent(), status, null, null, false, false);
-            node.logStatusEvent(evt, "FAILURE");
+            app.logStatusEvent(evt, "FAILURE");
             logger.warn("Error processing daemon response - " + traffic);
             return (TrafficAction.RELEASE);
         }
@@ -336,7 +336,7 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
         sess.globalAttach(AppSession.KEY_APPLICATION_CONTROL_CONFIDENCE, status.confidence);
 
         // search for the application in the rules hashtable
-        ApplicationControlProtoRule protoRule = node.settings.searchProtoRules(status.application);
+        ApplicationControlProtoRule protoRule = app.settings.searchProtoRules(status.application);
 
         // match found so see if we need to block or flag
         if (protoRule != null) {
@@ -346,39 +346,39 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
 
             // first we handle protocols set for block
             if (protoRule.getBlock() == true) {
-                this.node.incrementMetric(ApplicationControlApp.STAT_BLOCK);
-                node.statistics.IncrementBlockedCount();
+                this.app.incrementMetric(ApplicationControlApp.STAT_BLOCK);
+                app.statistics.IncrementBlockedCount();
                 if (protoRule.getFlag() == true) {
-                    this.node.incrementMetric(ApplicationControlApp.STAT_FLAG);
-                    node.statistics.IncrementFlaggedCount();
+                    this.app.incrementMetric(ApplicationControlApp.STAT_FLAG);
+                    app.statistics.IncrementFlaggedCount();
                 }
                 logger.debug("BLOCK ProtoRule " + status.toString());
                 ApplicationControlLogEvent evt = new ApplicationControlLogEvent(sess.sessionEvent(), status, protoRule);
-                node.logStatusEvent(evt, "ProtoBlock");
+                app.logStatusEvent(evt, "ProtoBlock");
                 return (TrafficAction.BLOCK);
             }
 
             // next we handle protocols set for tarpit
             if (protoRule.getTarpit() == true) {
-                this.node.incrementMetric(ApplicationControlApp.STAT_BLOCK);
-                node.statistics.IncrementBlockedCount();
+                this.app.incrementMetric(ApplicationControlApp.STAT_BLOCK);
+                app.statistics.IncrementBlockedCount();
                 if (protoRule.getFlag() == true) {
-                    this.node.incrementMetric(ApplicationControlApp.STAT_FLAG);
-                    node.statistics.IncrementFlaggedCount();
+                    this.app.incrementMetric(ApplicationControlApp.STAT_FLAG);
+                    app.statistics.IncrementFlaggedCount();
                 }
                 logger.debug("TARPIT ProtoRule " + status.toString());
                 ApplicationControlLogEvent evt = new ApplicationControlLogEvent(sess.sessionEvent(), status, protoRule);
-                node.logStatusEvent(evt, "ProtoTarpit");
+                app.logStatusEvent(evt, "ProtoTarpit");
                 return (TrafficAction.TARPIT);
             }
 
             // if only flag is set we assume they want to know about the
             // traffic but not interfere so we log the event and release
             if (protoRule.getFlag() == true) {
-                this.node.incrementMetric(ApplicationControlApp.STAT_FLAG);
-                node.statistics.IncrementFlaggedCount();
+                this.app.incrementMetric(ApplicationControlApp.STAT_FLAG);
+                app.statistics.IncrementFlaggedCount();
                 ApplicationControlLogEvent evt = new ApplicationControlLogEvent(sess.sessionEvent(), status, protoRule);
-                node.logStatusEvent(evt, "ProtoFlag");
+                app.logStatusEvent(evt, "ProtoFlag");
                 return (TrafficAction.RELEASE);
             }
         }
@@ -431,36 +431,36 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
 
         // use the application to grab the category from the protocol rules
         String category = null;
-        ApplicationControlProtoRule categoryRule = node.settings.searchProtoRules(status.application);
+        ApplicationControlProtoRule categoryRule = app.settings.searchProtoRules(status.application);
         if (categoryRule != null)
             category = categoryRule.getCategory();
 
         switch (action)
         {
         case RELEASE:
-            this.node.incrementMetric(ApplicationControlApp.STAT_PASS);
-            node.statistics.IncrementAllowedCount();
+            this.app.incrementMetric(ApplicationControlApp.STAT_PASS);
+            app.statistics.IncrementAllowedCount();
             ApplicationControlLogEvent evt = new ApplicationControlLogEvent(sess.sessionEvent(), status, category, ruleid, flag, false);
-            node.logStatusEvent(evt, "RulePass");
+            app.logStatusEvent(evt, "RulePass");
             return (TrafficAction.RELEASE);
         case BLOCK:
-            this.node.incrementMetric(ApplicationControlApp.STAT_BLOCK);
-            node.statistics.IncrementBlockedCount();
+            this.app.incrementMetric(ApplicationControlApp.STAT_BLOCK);
+            app.statistics.IncrementBlockedCount();
             evt = new ApplicationControlLogEvent(sess.sessionEvent(), status, category, ruleid, flag, true);
-            node.logStatusEvent(evt, "RuleBlock");
+            app.logStatusEvent(evt, "RuleBlock");
             return (TrafficAction.BLOCK);
         case TARPIT:
-            this.node.incrementMetric(ApplicationControlApp.STAT_BLOCK);
-            node.statistics.IncrementBlockedCount();
+            this.app.incrementMetric(ApplicationControlApp.STAT_BLOCK);
+            app.statistics.IncrementBlockedCount();
             evt = new ApplicationControlLogEvent(sess.sessionEvent(), status, category, ruleid, flag, true);
-            node.logStatusEvent(evt, "RuleTarpit");
+            app.logStatusEvent(evt, "RuleTarpit");
             return (TrafficAction.TARPIT);
         default:
             logger.warn("Unknown action: " + action);
-            this.node.incrementMetric(ApplicationControlApp.STAT_PASS);
-            node.statistics.IncrementAllowedCount();
+            this.app.incrementMetric(ApplicationControlApp.STAT_PASS);
+            app.statistics.IncrementAllowedCount();
             evt = new ApplicationControlLogEvent(sess.sessionEvent(), status, category, ruleid, flag, false);
-            node.logStatusEvent(evt, "RuleUnknown");
+            app.logStatusEvent(evt, "RuleUnknown");
             return (TrafficAction.RELEASE);
         }
     }
@@ -493,10 +493,10 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
         // never release them, but they were already logged and counted so
         // we have to look at the tarpit flag also.
         if ((isFinalized == true) && (status.tarpit == false)) {
-            this.node.incrementMetric(ApplicationControlApp.STAT_PASS);
-            node.statistics.IncrementAllowedCount();
+            this.app.incrementMetric(ApplicationControlApp.STAT_PASS);
+            app.statistics.IncrementAllowedCount();
             ApplicationControlLogEvent evt = new ApplicationControlLogEvent(sess.sessionEvent(), status, null, null, false, false);
-            node.logStatusEvent(evt, "FINALIZE");
+            app.logStatusEvent(evt, "FINALIZE");
         }
     }
 
@@ -504,7 +504,7 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
     {
         String result = null;
 
-        if (node.settings.getDaemonDebug()) {
+        if (app.settings.getDaemonDebug()) {
             logger.debug("DAEMON COMMAND = " + message);
             if (buffer != null)
                 logger.debug("DAEMON BUFFER = " + buffer.toString());
@@ -517,18 +517,18 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
          * object gets destroyed and recreated during socket recycle.
          */
 
-        synchronized (node.daemonAddress) {
+        synchronized (app.daemonAddress) {
             /*
              * If the daemon socket is null we need to call the startup
              * function. This would only happen if an exception is thrown during
              * a previous call to socketStartup, and it should never happen but
              * we check and handle just in case.
              */
-            if (node.daemonSocket == null)
-                node.socketStartup();
+            if (app.daemonSocket == null)
+                app.socketStartup();
 
             // if we have a good daemon socket object we handle the command
-            if (node.daemonSocket != null)
+            if (app.daemonSocket != null)
                 result = privateCommand(message, buffer);
         }
 
@@ -553,8 +553,8 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
             // first we see if the connect request has finished but only
             // if a connection is pending since the connect could have
             // completed and returned true in the initial call
-            if (node.daemonSocket.isConnectionPending() == true) {
-                if (node.daemonSocket.finishConnect() == false) {
+            if (app.daemonSocket.isConnectionPending() == true) {
+                if (app.daemonSocket.finishConnect() == false) {
                     logger.warn("The daemon socket has not finished connecting");
                     return (null);
                 }
@@ -562,7 +562,7 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
             }
 
             // next make sure the socket is actually connected
-            if (node.daemonSocket.isConnected() == false) {
+            if (app.daemonSocket.isConnected() == false) {
                 socketRecycle("isConnected() returned false", false);
                 return (null);
             }
@@ -570,14 +570,14 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
             // loop on the select/write until all the data is transmitted
             do {
                 // wait until the socket is ready to transmit
-                node.writeSelector.select(SELECT_TIMEOUT);
-                if (node.writeKey.isWritable() == false) {
+                app.writeSelector.select(SELECT_TIMEOUT);
+                if (app.writeKey.isWritable() == false) {
                     socketRecycle("isWritable(message) returned false", false);
                     return (null);
                 }
 
                 // transmit the command to the daemon
-                node.daemonSocket.write(txbuffer);
+                app.daemonSocket.write(txbuffer);
             } while (txbuffer.hasRemaining() == true);
 
             // if the buffer argument is valid we have a chunk of raw
@@ -586,28 +586,28 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
             if (buffer != null) {
                 do {
                     // wait until the socket is ready to transmit
-                    node.writeSelector.select(SELECT_TIMEOUT);
-                    if (node.writeKey.isWritable() == false) {
+                    app.writeSelector.select(SELECT_TIMEOUT);
+                    if (app.writeKey.isWritable() == false) {
                         socketRecycle("isWritable(buffer) returned false", false);
                         return (null);
                     }
 
                     // send the buffer to the daemon
-                    node.daemonSocket.write(buffer);
+                    app.daemonSocket.write(buffer);
                 } while (buffer.hasRemaining() == true);
             }
 
             // loop on the select/read until we find <CR><LF><CR><LF>
             do {
                 // wait until the socket is ready to receive
-                node.readSelector.select(SELECT_TIMEOUT);
-                if (node.readKey.isReadable() == false) {
+                app.readSelector.select(SELECT_TIMEOUT);
+                if (app.readKey.isReadable() == false) {
                     socketRecycle("isReadable() returned false", false);
                     return (null);
                 }
 
                 // read the reply from the daemon
-                int size = node.daemonSocket.read(rxbuffer);
+                int size = app.daemonSocket.read(rxbuffer);
 
                 // negative value means the socket disconnected
                 if (size == -1) {
@@ -645,7 +645,7 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
     // find the first matching classification rule
     private ApplicationControlLogicRule findLogicRule(AppSession sess)
     {
-        List<ApplicationControlLogicRule> logicList = this.node.getSettings().getLogicRules();
+        List<ApplicationControlLogicRule> logicList = this.app.getSettings().getLogicRules();
 
         logger.debug("Checking Rules against AppSession : " + sess.getProtocol() + " " + sess.getOrigClientAddr().getHostAddress() + ":" + sess.getOrigClientPort() + " -> " + sess.getNewServerAddr().getHostAddress() + ":" + sess.getNewServerPort());
 
@@ -720,12 +720,12 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
     private void socketRecycle(String message, boolean force)
     {
         // if connection is already pending we just return
-        if ((node.daemonSocket.isConnectionPending() == true) && (force == false))
+        if ((app.daemonSocket.isConnectionPending() == true) && (force == false))
             return;
 
         // not connecting so destroy the socket and start it back up
         logger.warn("Recycling daemon socket connection: " + message);
-        node.socketDestroy();
-        node.socketStartup();
+        app.socketDestroy();
+        app.socketStartup();
     }
 }

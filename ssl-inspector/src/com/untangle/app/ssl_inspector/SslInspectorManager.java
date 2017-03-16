@@ -90,7 +90,7 @@ class SslInspectorManager
 
     private final Logger logger = Logger.getLogger(getClass());
     private final AppTCPSession session;
-    private final SslInspectorApp node;
+    private final SslInspectorApp app;
 
     private X509Certificate peerCertificate;
     private ByteBuffer casingBuffer;
@@ -113,10 +113,10 @@ class SslInspectorManager
     public boolean tlsFlagClient;
     public boolean tlsFlagServer;
 
-    public SslInspectorManager(AppTCPSession session, boolean clientSide, SslInspectorApp node)
+    public SslInspectorManager(AppTCPSession session, boolean clientSide, SslInspectorApp app)
     {
         this.session = session;
-        this.node = node;
+        this.app = app;
         this.tlsFlagClient = false;
         this.tlsFlagServer = false;
 
@@ -247,7 +247,7 @@ class SslInspectorManager
             // grab the SNI hostname so we can check against loaded cert
             String sniHostname = (String) session.globalAttachment(AppTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME);
             X509Certificate loadedCert = (X509Certificate) keyStore.getCertificate("default");
-            if ((node.getSettings().getServerFakeHostname() == true) && (validateCertificate(loadedCert, sniHostname) == false)) {
+            if ((app.getSettings().getServerFakeHostname() == true) && (validateCertificate(loadedCert, sniHostname) == false)) {
 
                 // we put special certs in files named with the SNI hostname 
                 String hackFileName = (sniHostname + ".p12");
@@ -325,19 +325,19 @@ class SslInspectorManager
         // to support client to server authentication via certificate.
 
         // if blind trust is enabled or we are doing SMTP then we simply trust everything
-        if ((node.getSettings().getServerBlindTrust() == true) || (session.getServerPort() == 25)) {
+        if ((app.getSettings().getServerBlindTrust() == true) || (session.getServerPort() == 25)) {
             sslContext.init(null, new TrustManager[] { trust_all_certificates }, null);
         }
 
         // blind trust not enabled and not SMTP so use the shared list of trusted certs
         else {
-            sslContext.init(null, node.getTrustFactory().getTrustManagers(), null);
+            sslContext.init(null, app.getTrustFactory().getTrustManagers(), null);
         }
 
         String target = (session.getServerAddr().getHostAddress().toString() + " | " + sniHostname);
 
         // if broken server don't include any args to disable SNI in the outbound ClientHello
-        if (node.checkBrokenServer(target) == true) {
+        if (app.checkBrokenServer(target) == true) {
             sslEngine = sslContext.createSSLEngine();
         }
 
@@ -664,18 +664,18 @@ for more data when a full packet has not yet been received.
         switch (listType)
         {
         case CLIENT:
-            if (node.getSettings().getClient_SSLv2Hello()) protoList.add("SSLv2Hello");
-            if (node.getSettings().getClient_SSLv3()) protoList.add("SSLv3");
-            if (node.getSettings().getClient_TLSv10()) protoList.add("TLSv1");
-            if (node.getSettings().getClient_TLSv11()) protoList.add("TLSv1.1");
-            if (node.getSettings().getClient_TLSv12()) protoList.add("TLSv1.2");
+            if (app.getSettings().getClient_SSLv2Hello()) protoList.add("SSLv2Hello");
+            if (app.getSettings().getClient_SSLv3()) protoList.add("SSLv3");
+            if (app.getSettings().getClient_TLSv10()) protoList.add("TLSv1");
+            if (app.getSettings().getClient_TLSv11()) protoList.add("TLSv1.1");
+            if (app.getSettings().getClient_TLSv12()) protoList.add("TLSv1.2");
             break;
         case SERVER:
-            if (node.getSettings().getServer_SSLv2Hello()) protoList.add("SSLv2Hello");
-            if (node.getSettings().getServer_SSLv3()) protoList.add("SSLv3");
-            if (node.getSettings().getServer_TLSv10()) protoList.add("TLSv1");
-            if (node.getSettings().getServer_TLSv11()) protoList.add("TLSv1.1");
-            if (node.getSettings().getServer_TLSv12()) protoList.add("TLSv1.2");
+            if (app.getSettings().getServer_SSLv2Hello()) protoList.add("SSLv2Hello");
+            if (app.getSettings().getServer_SSLv3()) protoList.add("SSLv3");
+            if (app.getSettings().getServer_TLSv10()) protoList.add("TLSv1");
+            if (app.getSettings().getServer_TLSv11()) protoList.add("TLSv1.1");
+            if (app.getSettings().getServer_TLSv12()) protoList.add("TLSv1.2");
             break;
         }
 

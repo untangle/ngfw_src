@@ -17,8 +17,8 @@ import test_registry
 import global_functions
 
 defaultRackId = 1
-nodeData = None
-node = None
+appData = None
+app = None
 secondRackId = None
 secondRackFirewall = None
 secondRackWebfilter = None
@@ -27,7 +27,7 @@ thirdRackFirewall = None
 defaultRackCaptivePortal = None
 
 def addRack(name="New Rack", description="", parentId=None):
-    currentSettings = node.getSettings()
+    currentSettings = app.getSettings()
     currentPolicies = currentSettings['policies'];
     maxIdFound = 0
     for policy in currentPolicies['list']:
@@ -35,11 +35,11 @@ def addRack(name="New Rack", description="", parentId=None):
             maxIdFound = policy['policyId']
     newPolicy = { "javaClass" : "com.untangle.app.policy_manager.PolicySettings", "policyId" : maxIdFound+1, "name": name, "description" : description, "parentId" : parentId }
     currentPolicies['list'].append(newPolicy)
-    node.setSettings(currentSettings)
+    app.setSettings(currentSettings)
     return newPolicy['policyId']
 
 def removeRack(id):
-    currentSettings = node.getSettings()
+    currentSettings = app.getSettings()
     currentPolicies = currentSettings['policies'];
     i = 0
     removed = False
@@ -50,7 +50,7 @@ def removeRack(id):
             break;
         i = i + 1
     if removed:
-        node.setSettings(currentSettings)
+        app.setSettings(currentSettings)
     return removed
 
 def createPolicySingleConditionRule( conditionType, value, targetPolicy, blocked=True ):
@@ -76,16 +76,16 @@ def createPolicySingleConditionRule( conditionType, value, targetPolicy, blocked
         };
 
 def appendRule(newRule):
-    global node
-    settings = node.getSettings()
+    global app
+    settings = app.getSettings()
     settings['rules']['list'].append(newRule);
-    node.setSettings(settings);
+    app.setSettings(settings);
 
 def nukeRules():
-    global node
-    settings = node.getSettings()
+    global app
+    settings = app.getSettings()
     settings['rules']['list'] = [];
-    node.setSettings(settings);
+    app.setSettings(settings);
 
 def createFirewallSingleConditionRule( conditionType, value, blocked=True ):
     conditionTypeStr = str(conditionType)
@@ -131,16 +131,16 @@ def removeLocalDirectoryUser():
 class PolicyManagerTests(unittest2.TestCase):
 
     @staticmethod
-    def nodeName():
+    def appName():
         return "policy-manager"
 
     @staticmethod
     def initialSetUp(self):
-        global nodeData, node
-        if (uvmContext.appManager().isInstantiated(self.nodeName())):
-            raise Exception('node %s already instantiated' % self.nodeName())
-        node = uvmContext.appManager().instantiate(self.nodeName(), defaultRackId)
-        nodeData = node.getSettings()
+        global appData, app
+        if (uvmContext.appManager().isInstantiated(self.appName())):
+            raise Exception('app %s already instantiated' % self.appName())
+        app = uvmContext.appManager().instantiate(self.appName(), defaultRackId)
+        appData = app.getSettings()
         remote_control.run_command("rm -f ./authpost\?*")
 
     def setUp(self):
@@ -255,7 +255,7 @@ class PolicyManagerTests(unittest2.TestCase):
         assert (result == 0)
         thirdRackFirewall.start()
 
-    # add a node that requires a casing to second rack to make sure casing is inherited
+    # add a app that requires a casing to second rack to make sure casing is inherited
     def test_030_addWebFilterToSecondRack(self):
         global secondRackWebfilter
         secondRackWebfilter = uvmContext.appManager().instantiate("web-filter", secondRackId)
@@ -332,14 +332,14 @@ class PolicyManagerTests(unittest2.TestCase):
         uvmContext.localDirectory().setUsers(removeLocalDirectoryUser())
         uvmContext.appManager().destroy( defaultRackCaptivePortal.getAppSettings()["id"] )
 
-    # remove nodes from second rack
-    def test_980_removeNodesFromSecondRack(self):
+    # remove apps from second rack
+    def test_980_removeAppsFromSecondRack(self):
         global secondRackFirewall , secondRackWebfilter
         uvmContext.appManager().destroy( secondRackFirewall.getAppSettings()["id"] )
         uvmContext.appManager().destroy( secondRackWebfilter.getAppSettings()["id"] )
 
-    # remove nodes from third rack
-    def test_981_removeNodesFromThirdRack(self):
+    # remove apps from third rack
+    def test_981_removeAppsFromThirdRack(self):
         global thirdRackFirewall 
         uvmContext.appManager().destroy( thirdRackFirewall.getAppSettings()["id"] )
 
@@ -361,10 +361,10 @@ class PolicyManagerTests(unittest2.TestCase):
 
     @staticmethod
     def finalTearDown(self):
-        global node
-        if node != None:
-            uvmContext.appManager().destroy( node.getAppSettings()["id"] )
-            node = None
+        global app
+        if app != None:
+            uvmContext.appManager().destroy( app.getAppSettings()["id"] )
+            app = None
 
 
-test_registry.registerNode("policy-manager", PolicyManagerTests)
+test_registry.registerApp("policy-manager", PolicyManagerTests)

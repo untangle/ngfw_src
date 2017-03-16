@@ -18,17 +18,17 @@ public class WebFilterHandler extends WebFilterBaseHandler
 {
     // constructors -----------------------------------------------------------
 
-    public WebFilterHandler( WebFilterBase node )
+    public WebFilterHandler( WebFilterBase app )
     {
-        super( node );
+        super( app );
     }
 
     @Override
     protected HeaderToken doRequestHeader( AppTCPSession session, HeaderToken requestHeader )
     {
-        node.incrementScanCount();
+        app.incrementScanCount();
 
-        String nonce = node.getDecisionEngine().checkRequest( session, session.getClientAddr(), 80, getRequestLine( session ), requestHeader );
+        String nonce = app.getDecisionEngine().checkRequest( session, session.getClientAddr(), 80, getRequestLine( session ), requestHeader );
         if (logger.isDebugEnabled()) {
             logger.debug("in doRequestHeader(): " + requestHeader + "check request returns: " + nonce);
         }
@@ -37,7 +37,7 @@ public class WebFilterHandler extends WebFilterBaseHandler
             String host = requestHeader.getValue("Host");
             URI uri = getRequestLine( session ).getRequestUri();
 
-            if (node.getSettings().getEnforceSafeSearch()) {
+            if (app.getSettings().getEnforceSafeSearch()) {
                 logger.debug("doRequestHeader: host = '" + host + "', uri = '" + uri + "'");
 
                 URI safeSearchUri = UrlRewriter.getSafeSearchUri(host, uri);
@@ -50,9 +50,9 @@ public class WebFilterHandler extends WebFilterBaseHandler
 
             releaseRequest( session );
         } else {
-            node.incrementBlockCount();
+            app.incrementBlockCount();
             String uri = getRequestLine( session ).getRequestUri().toString();
-            Token[] response = node.generateResponse( nonce, session, uri, requestHeader );
+            Token[] response = app.generateResponse( nonce, session, uri, requestHeader );
 
             blockRequest( session, response );
         }

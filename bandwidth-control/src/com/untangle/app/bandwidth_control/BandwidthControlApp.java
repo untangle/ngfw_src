@@ -63,10 +63,10 @@ public class BandwidthControlApp extends AppBase
     protected void postInit()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getAppSettings().getId().toString();
+        String appID = this.getAppSettings().getId().toString();
         BandwidthControlSettings readSettings = null;
         try {
-            readSettings = settingsManager.load( BandwidthControlSettings.class, System.getProperty("uvm.settings.dir") + "/bandwidth-control/" + "settings_" + nodeID + ".js" );
+            readSettings = settingsManager.load( BandwidthControlSettings.class, System.getProperty("uvm.settings.dir") + "/bandwidth-control/" + "settings_" + appID + ".js" );
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to load settings:",e);
         }
@@ -89,7 +89,7 @@ public class BandwidthControlApp extends AppBase
         I18nUtil i18nUtil = new I18nUtil(i18nMap);
 
         if ( ! isLicenseValid() ) {
-            throw new RuntimeException( i18nUtil.tr( "Unable to start an node: invalid license" ));
+            throw new RuntimeException( i18nUtil.tr( "Unable to start an app: invalid license" ));
         }
         
         if ( settings == null ) {
@@ -323,9 +323,9 @@ public class BandwidthControlApp extends AppBase
              * Save the settings
              */
             SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-            String nodeID = this.getAppSettings().getId().toString();
+            String appID = this.getAppSettings().getId().toString();
             try {
-                settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "bandwidth-control" + "/" + "settings_" + nodeID + ".js", newSettings );
+                settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "bandwidth-control" + "/" + "settings_" + appID + ".js", newSettings );
             } catch (SettingsManager.SettingsException e) {
                 logger.warn("Failed to save settings.",e);
                 return;
@@ -341,7 +341,7 @@ public class BandwidthControlApp extends AppBase
 
     /**
      * Resets IDs to unique IDs
-     * Also sets node parameter and other in-memory meta-data on Rules
+     * Also sets app parameter and other in-memory meta-data on Rules
      */
     private void _processSettings(BandwidthControlSettings settings)
     {
@@ -355,13 +355,13 @@ public class BandwidthControlApp extends AppBase
 
         /**
          * set the new ID of each rule
-         * We use 100,000 * nodeId as a starting point so rule IDs don't overlap with other firewall
+         * We use 100,000 * appId as a starting point so rule IDs don't overlap with other firewall
          */
         int idx = this.getAppSettings().getPolicyId().intValue() * 100000;
         for (BandwidthControlRule rule : rules) {
             idx++;
             rule.setRuleId(idx);
-            rule.getAction().setNode(this);
+            rule.getAction().setApp(this);
         }
     }
 

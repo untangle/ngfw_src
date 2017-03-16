@@ -29,7 +29,7 @@ public class WanFailoverTester implements Runnable
     private static final Logger logger = Logger.getLogger(WanFailoverTester.class);
 
     private WanFailoverTesterMonitor monitor;
-    private WanFailoverApp node;
+    private WanFailoverApp app;
     private WanTestSettings testSettings;
     
     private boolean exitFlag = false;
@@ -40,11 +40,11 @@ public class WanFailoverTester implements Runnable
     private int totalTestsFailed = 0;
     private int totalTestsPassed = 0;
     
-    public WanFailoverTester( WanTestSettings settings, WanFailoverTesterMonitor monitor, WanFailoverApp node )
+    public WanFailoverTester( WanTestSettings settings, WanFailoverTesterMonitor monitor, WanFailoverApp app )
     {
         this.testSettings = settings;
         this.monitor = monitor;
-        this.node = node;
+        this.app = app;
     }
     
     public void run()
@@ -125,7 +125,7 @@ public class WanFailoverTester implements Runnable
             }
             
             // log a test event
-            this.node.logEvent( new WanFailoverTestEvent( testSettings.getInterfaceId(), intfConf.getName(), intfConf.getSystemDev(), testSettings.getDescription(), results.success));
+            this.app.logEvent( new WanFailoverTestEvent( testSettings.getInterfaceId(), intfConf.getName(), intfConf.getSystemDev(), testSettings.getDescription(), results.success));
 
             lastWanStatus = wanStatus;
         }

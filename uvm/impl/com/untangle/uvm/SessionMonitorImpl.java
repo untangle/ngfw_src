@@ -52,7 +52,7 @@ public class SessionMonitorImpl implements SessionMonitor
         uvmContext = UvmContextFactory.context();
     }
 
-    public List<SessionMonitorEntry> getMergedBandwidthSessions(String interfaceIdStr, int nodeId)
+    public List<SessionMonitorEntry> getMergedBandwidthSessions(String interfaceIdStr, int appId)
     {
         /**
          * Find the the system interface name that matches this ID
@@ -102,16 +102,16 @@ public class SessionMonitorImpl implements SessionMonitor
     /**
      * documented in SessionMonitor.java
      */
-    public List<SessionMonitorEntry> getMergedSessions(long nodeId)
+    public List<SessionMonitorEntry> getMergedSessions(long appId)
     {
         List<SessionMonitorEntry> sessions = this._getConntrackSessionMonitorEntrys();
         List<AppSession> appSessions = null;;
 
-        App node = null;
-        if (nodeId > 0)
-            node = UvmContextFactory.context().appManager().app(nodeId);
-        if (node != null)
-            appSessions = node.liveAppSessions();
+        App app = null;
+        if (appId > 0)
+            app = UvmContextFactory.context().appManager().app(appId);
+        if (app != null)
+            appSessions = app.liveAppSessions();
 
         for (Iterator<SessionMonitorEntry> i = sessions.iterator(); i.hasNext(); ) {  
             SessionMonitorEntry session = i.next();
@@ -253,7 +253,7 @@ public class SessionMonitorImpl implements SessionMonitor
         }
 
         /**
-         * If a nodeId was specified remove all sessions not being touched by that nodeId
+         * If a appId was specified remove all sessions not being touched by that appId
          */
         if ( appSessions != null ) {
             for (Iterator<SessionMonitorEntry> i = sessions.iterator(); i.hasNext(); ) {  

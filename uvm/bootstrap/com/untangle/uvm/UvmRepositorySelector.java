@@ -71,11 +71,11 @@ public class UvmRepositorySelector implements RepositorySelector
     }
 
     /**
-     * Set the current thread's logging config to the "Node" settings
+     * Set the current thread's logging config to the "App" settings
      */
-    public void setLoggingApp(Long nodeId)
+    public void setLoggingApp(Long appId)
     {
-        this.setThreadLoggingInformation("app-" + nodeId.toString());
+        this.setThreadLoggingInformation("app-" + appId.toString());
     }
 
     /**
@@ -158,11 +158,11 @@ public class UvmRepositorySelector implements RepositorySelector
                 try {
                     String fileStr = convertStreamToString(is);
 
-                    fileStr = fileStr.replace("@NodeLogFileName@", this.fileName);
+                    fileStr = fileStr.replace("@AppLogFileName@", this.fileName);
 
-                    /* change the default appender for node logs */
+                    /* change the default appender for app logs */
                     if (!this.fileName.equals("uvm"))
-                        fileStr = fileStr.replace("ref=\"UVMLOG\"", "ref=\"NODELOG\"");
+                        fileStr = fileStr.replace("ref=\"UVMLOG\"", "ref=\"APPLOG\"");
                         
                     InputStream newInputStream = new ByteArrayInputStream(fileStr.getBytes("UTF-8"));
 

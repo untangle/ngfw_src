@@ -1,16 +1,16 @@
 Ext.define('Webui.intrusion-prevention.settings', {
     extend:'Ung.AppWin',
     statics: {
-        preloadSettings: function(node){
+        preloadSettings: function(app){
             Ext.Ajax.request({
                 url: "/webui/download",
                 method: 'POST',
                 params: {
                     type: "IntrusionPreventionSettings",
                     arg1: "load",
-                    arg2: node.nodeId
+                    arg2: app.appId
                 },
-                scope: node,
+                scope: app,
                 timeout: 600000,
                 success: function(response){
                     this.openSettings.call(this, Ext.decode( response.responseText ) );
@@ -368,8 +368,8 @@ Ext.define('Webui.intrusion-prevention.settings', {
         this.categoriesInfoMap = Ung.Util.createStoreMap(categoriesInfoList);
         
 
-        this.lastUpdate = this.getRpcNode().getLastUpdate();
-        this.lastUpdateCheck = this.getRpcNode().getLastUpdateCheck();
+        this.lastUpdate = this.getRpcApp().getLastUpdate();
+        this.lastUpdateCheck = this.getRpcApp().getLastUpdateCheck();
 
         this.buildRules();
         this.buildVariables();
@@ -555,7 +555,7 @@ Ext.define('Webui.intrusion-prevention.settings', {
                 var downloadForm = document.getElementById('downloadForm'); 
                 downloadForm["type"].value = "IntrusionPreventionSettings";
                 downloadForm["arg1"].value = "export";
-                downloadForm["arg2"].value = this.up("window").nodeId;
+                downloadForm["arg2"].value = this.up("window").appId;
                 downloadForm["arg3"].value = this.name;
                 downloadForm["arg4"].value = Ext.encode(changedDataSet);
                 downloadForm.submit();
@@ -1066,7 +1066,7 @@ Ext.define('Webui.intrusion-prevention.settings', {
                 var downloadForm = document.getElementById('downloadForm'); 
                 downloadForm["type"].value = "IntrusionPreventionSettings";
                 downloadForm["arg1"].value = "export";
-                downloadForm["arg2"].value = this.up("window").nodeId;
+                downloadForm["arg2"].value = this.up("window").appId;
                 downloadForm["arg3"].value = this.name;
                 downloadForm["arg4"].value = Ext.encode(changedDataSet);
                 downloadForm.submit();
@@ -1240,9 +1240,9 @@ Ext.define('Webui.intrusion-prevention.settings', {
                     // Save, enable, teardown wizard
                     this.afterSave = Ext.bind(function() {
                         this.afterSave = null;
-                        var nodeCmp = Ung.Node.getCmp(this.nodeId);
-                        if(nodeCmp) {
-                            nodeCmp.start(Ext.bind(function() {
+                        var appCmp = Ung.App.getCmp(this.appId);
+                        if(appCmp) {
+                            appCmp.start(Ext.bind(function() {
                                 this.reload();
                             }, this));
                         }
@@ -1268,7 +1268,7 @@ Ext.define('Webui.intrusion-prevention.settings', {
         this.wizardWindow.show();
     },
     beforeSave: function(isApply, handler) {
-        this.getRpcNode().getUpdatedSettingsFlag(Ext.bind(function (result, exception) {
+        this.getRpcApp().getUpdatedSettingsFlag(Ext.bind(function (result, exception) {
             if(Ung.Util.handleException(exception)) return;
             if(result) {
                 Ext.MessageBox.alert(i18n._("Intrusion Prevention Warning"), i18n._("Settings have been changed by rule updater.  Current changes must be discarded."), Ext.bind(function () {
@@ -1332,7 +1332,7 @@ Ext.define('Webui.intrusion-prevention.settings', {
             params: {
                 type: "IntrusionPreventionSettings",
                 arg1: "save",
-                arg2: this.nodeId
+                arg2: this.appId
             },
             scope: this,
             timeout: 600000,
@@ -1341,7 +1341,7 @@ Ext.define('Webui.intrusion-prevention.settings', {
                 if( !r.success) {
                     Ext.MessageBox.alert(i18n._("Error"), i18n._("Unable to save settings"));
                 } else {
-                    this.getRpcNode().reconfigure(Ext.bind(function(result, exception) {
+                    this.getRpcApp().reconfigure(Ext.bind(function(result, exception) {
                         if(Ung.Util.handleException(exception)) return;
                         if (!isApply) {
                             Ext.MessageBox.hide();
@@ -1354,7 +1354,7 @@ Ext.define('Webui.intrusion-prevention.settings', {
                                 params: {
                                     type: "IntrusionPreventionSettings",
                                     arg1: "load",
-                                    arg2: this.nodeId
+                                    arg2: this.appId
                                 },
                                 scope: this,
                                 timeout: 600000,
@@ -1434,7 +1434,7 @@ Ext.define('Webui.intrusion-prevention.Wizard.Welcome',{
             params: {
                 type: "IntrusionPreventionSettings",
                 arg1: "wizard",
-                arg2: this.gui.nodeId
+                arg2: this.gui.appId
             },
             scope: this,
             timeout: 600000,

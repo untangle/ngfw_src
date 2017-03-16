@@ -147,7 +147,7 @@ public class Main
 
         System.out.println("UVM startup complete: \"Today vegetables...tomorrow the world!\"");
         
-        restartNodes();
+        restartApps();
 
         loadExtensions();
 
@@ -244,9 +244,9 @@ public class Main
         uvmContext.init();
     }
 
-    private void restartNodes() throws Exception
+    private void restartApps() throws Exception
     {
-        logger.info("Restarting nodes...");
+        logger.info("Restarting apps...");
         uvmContext.postInit();
     }
 

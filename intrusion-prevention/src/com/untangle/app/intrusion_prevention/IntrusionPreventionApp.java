@@ -180,7 +180,7 @@ public class IntrusionPreventionApp extends AppBase
 
         String configCmd = new String(System.getProperty("uvm.bin.dir") + 
             "/intrusion-prevention-create-config.py" + 
-            " --node_id " + this.getAppSettings().getId().toString() +
+            " --app_id " + this.getAppSettings().getId().toString() +
             " --home_net " + homeNetValue + 
             " --interfaces " + interfacesValue + 
             " --iptables_script " + IPTABLES_SCRIPT
@@ -307,12 +307,12 @@ public class IntrusionPreventionApp extends AppBase
     public void initializeSettings()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeId = this.getAppSettings().getId().toString();
-        String tempFileName = "/tmp/settings_" + getAppSettings().getAppName() + "_" + nodeId + ".js";
+        String appId = this.getAppSettings().getId().toString();
+        String tempFileName = "/tmp/settings_" + getAppSettings().getAppName() + "_" + appId + ".js";
 
         String configCmd = new String(System.getProperty("uvm.bin.dir") + 
             "/intrusion-prevention-sync-settings.py" + 
-            " --node_id " + nodeId +
+            " --app_id " + appId +
             " --rules /usr/share/untangle-snort-config/current" +
             " --settings " + tempFileName
         );
@@ -331,7 +331,7 @@ public class IntrusionPreventionApp extends AppBase
         try {
             settingsManager.save( getSettingsFileName(), tempFileName, true );
         } catch (Exception exn) {
-            logger.error("Could not save node settings", exn);
+            logger.error("Could not save app settings", exn);
         }
     }
 
@@ -342,7 +342,7 @@ public class IntrusionPreventionApp extends AppBase
         try {
             settingsManager.save( getSettingsFileName(), tempFileName, true );
         } catch (Exception exn) {
-            logger.error("Could not save node settings", exn);
+            logger.error("Could not save app settings", exn);
         }
     }
 
@@ -396,14 +396,14 @@ public class IntrusionPreventionApp extends AppBase
         {
 
             String action = req.getParameter("arg1");
-            String nodeId = req.getParameter("arg2");
+            String appId = req.getParameter("arg2");
 
             UvmContext uvm = UvmContextFactory.context();
             AppManager nm = uvm.appManager();
-            IntrusionPreventionApp node = (IntrusionPreventionApp) nm.app( Long.parseLong(nodeId) );
+            IntrusionPreventionApp app = (IntrusionPreventionApp) nm.app( Long.parseLong(appId) );
 
-            if (node == null ) {
-                logger.warn("Invalid parameters: " + nodeId );
+            if (app == null ) {
+                logger.warn("Invalid parameters: " + appId );
                 return;
             }
 
@@ -411,9 +411,9 @@ public class IntrusionPreventionApp extends AppBase
                 action.equals("wizard") ){
                 String settingsName;
                 if( action.equals("wizard") ){
-                    settingsName = node.getDefaultsSettingsFileName();
+                    settingsName = app.getDefaultsSettingsFileName();
                 }else{
-                    settingsName = node.getSettingsFileName();
+                    settingsName = app.getSettingsFileName();
                 }
                 try{
                     resp.setCharacterEncoding(CHARACTER_ENCODING);
@@ -422,7 +422,7 @@ public class IntrusionPreventionApp extends AppBase
                     File f = new File( settingsName );
                     if( !f.exists() && 
                         action.equals("load") ){
-                        node.initializeSettings();
+                        app.initializeSettings();
                     }
                     byte[] buffer = new byte[1024];
                     int read;
@@ -440,7 +440,7 @@ public class IntrusionPreventionApp extends AppBase
                 } catch (Exception e) {
                     logger.warn("Failed to load IPS settings",e);
                 }
-                node.setUpdatedSettingsFlag( false );
+                app.setUpdatedSettingsFlag( false );
             }else if( action.equals("save")) {
                 /*
                  * Save/uploads are a bit of a problem due to size.  For load/downloads,
@@ -452,8 +452,8 @@ public class IntrusionPreventionApp extends AppBase
                  * which we pass to the configuration management scripts to integrate into settings.
                  */
                 SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-                String tempPatchName = "/tmp/changedDataSet_intrusion-prevention_settings_" + nodeId + ".js";
-                String tempSettingsName = "/tmp/intrusion-prevention_settings_" + nodeId + ".js";
+                String tempPatchName = "/tmp/changedDataSet_intrusion-prevention_settings_" + appId + ".js";
+                String tempSettingsName = "/tmp/intrusion-prevention_settings_" + appId + ".js";
                 int verifyResult = 1;
                 try{
                     byte[] buffer = new byte[1024];
@@ -478,7 +478,7 @@ public class IntrusionPreventionApp extends AppBase
                     String configCmd = new String(
                         System.getProperty("uvm.bin.dir") + 
                         "/intrusion-prevention-sync-settings.py" + 
-                        " --node_id " + nodeId +
+                        " --app_id " + appId +
                         " --rules /usr/share/untangle-snort-config/current" +
                         " --settings " + tempSettingsName + 
                         " --patch " + tempPatchName
@@ -504,7 +504,7 @@ public class IntrusionPreventionApp extends AppBase
 
                 String responseText = "{success:true}";
                 if( verifyResult == 0 ){
-                    node.saveSettings( tempSettingsName );
+                    app.saveSettings( tempSettingsName );
                 }else{
                      responseText = "{success:false}";
                 }
@@ -522,8 +522,8 @@ public class IntrusionPreventionApp extends AppBase
                 }
             }else if(action.equals("export")){
                 SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-                String tempPatchName = "/tmp/changedDataSet_intrusion-prevention_settings_" + nodeId + ".js";
-                String tempSettingsName = "/tmp/intrusion-prevention_settings_" + nodeId + ".js";
+                String tempPatchName = "/tmp/changedDataSet_intrusion-prevention_settings_" + appId + ".js";
+                String tempSettingsName = "/tmp/intrusion-prevention_settings_" + appId + ".js";
                 int verifyResult = 1;
 
                 String changedSet = req.getParameter("arg4");
@@ -545,7 +545,7 @@ public class IntrusionPreventionApp extends AppBase
                     String configCmd = new String(
                         System.getProperty("uvm.bin.dir") + 
                         "/intrusion-prevention-sync-settings.py" + 
-                        " --node_id " + nodeId +
+                        " --app_id " + appId +
                         " --rules /usr/share/untangle-snort-config/current" +
                         " --settings " + tempSettingsName + 
                         " --patch " + tempPatchName + 

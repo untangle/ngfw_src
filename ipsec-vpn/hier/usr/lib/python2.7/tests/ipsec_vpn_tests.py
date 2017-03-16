@@ -15,9 +15,9 @@ import base64
 import global_functions
 
 defaultRackId = 1
-node = None
-nodeAD = None
-nodeDataRD = None
+app = None
+appAD = None
+appDataRD = None
 tunnelUp = False
 orig_netsettings = None
 
@@ -63,22 +63,22 @@ def addIPSecTunnel(remoteIP="", remoteLAN="", localIP="", localLANIP="", localLA
     }    
 
 def appendTunnel(newTunnel):
-    ipsecSettings = node.getSettings()
+    ipsecSettings = app.getSettings()
     ipsecSettings["tunnels"]["list"].append(newTunnel)
-    node.setSettings(ipsecSettings)
+    app.setSettings(ipsecSettings)
 
 def nukeIPSecTunnels():
-    ipsecSettings = node.getSettings()
+    ipsecSettings = app.getSettings()
     ipsecSettings["tunnels"]["list"] = []
-    node.setSettings(ipsecSettings)
+    app.setSettings(ipsecSettings)
 
 def createL2TPconfig(authType="LOCAL_DIRECTORY"):
-    ipsecSettings = node.getSettings()
+    ipsecSettings = app.getSettings()
     ipsecSettings["authenticationType"] = authType
     ipsecSettings["virtualAddressPool"] = "198.18.0.0/16"
     ipsecSettings["virtualSecret"] = "testthis"
     ipsecSettings["vpnflag"] = True
-    node.setSettings(ipsecSettings);
+    app.setSettings(ipsecSettings);
 
 def createLocalDirectoryUser():
     return {'javaClass': 'java.util.LinkedList', 
@@ -148,11 +148,11 @@ def addDNSRule(newRule):
 class IPsecTests(unittest2.TestCase):
 
     @staticmethod
-    def nodeName():
+    def appName():
         return "ipsec-vpn"
 
     @staticmethod
-    def nodeNameAD():
+    def appNameAD():
         return "directory-connector"
 
     @staticmethod
@@ -161,17 +161,17 @@ class IPsecTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        global node, orig_netsettings, ipsecHostResult, l2tpClientHostResult, nodeAD, nodeDataRD, radiusResult
+        global app, orig_netsettings, ipsecHostResult, l2tpClientHostResult, appAD, appDataRD, radiusResult
         tunnelUp = False
-        if (uvmContext.appManager().isInstantiated(self.nodeName())):
-            raise Exception('node %s already instantiated' % self.nodeName())
-        node = uvmContext.appManager().instantiate(self.nodeName(), defaultRackId)
-        if (uvmContext.appManager().isInstantiated(self.nodeNameAD())):
-            raise unittest2.SkipTest('node %s already instantiated' % self.nodeName())
+        if (uvmContext.appManager().isInstantiated(self.appName())):
+            raise Exception('app %s already instantiated' % self.appName())
+        app = uvmContext.appManager().instantiate(self.appName(), defaultRackId)
+        if (uvmContext.appManager().isInstantiated(self.appNameAD())):
+            raise unittest2.SkipTest('app %s already instantiated' % self.appName())
         if orig_netsettings == None:
             orig_netsettings = uvmContext.networkManager().getNetworkSettings()
-        nodeAD = uvmContext.appManager().instantiate(self.nodeNameAD(), defaultRackId)
-        nodeDataRD = nodeAD.getSettings().get('radiusSettings')
+        appAD = uvmContext.appManager().instantiate(self.appNameAD(), defaultRackId)
+        appDataRD = appAD.getSettings().get('radiusSettings')
         ipsecHostResult = subprocess.call(["ping","-c","1",ipsecHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         l2tpClientHostResult = subprocess.call(["ping","-c","1",l2tpClientHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         radiusResult = subprocess.call(["ping","-c","1",radiusHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
@@ -188,7 +188,7 @@ class IPsecTests(unittest2.TestCase):
         global tunnelUp
         if (ipsecHostResult != 0):
             raise unittest2.SkipTest("No paried IPSec server available")
-        pre_events_enabled = global_functions.get_app_metric_value(node,"enabled")
+        pre_events_enabled = global_functions.get_app_metric_value(app,"enabled")
 
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
         pairMatchNotFound = True
@@ -214,7 +214,7 @@ class IPsecTests(unittest2.TestCase):
         tunnelUp = True
 
         # Check to see if the faceplate counters have incremented. 
-        post_events_enabled = global_functions.get_app_metric_value(node,"enabled")
+        post_events_enabled = global_functions.get_app_metric_value(app,"enabled")
         assert(pre_events_enabled < post_events_enabled)
                
     def test_030_restartNetworkVerifyIpsecTunnel(self):
@@ -248,7 +248,7 @@ class IPsecTests(unittest2.TestCase):
         while not found and timeout > 0:
             timeout -= 1
             time.sleep(1)
-            virtUsers = node.getVirtualUsers()
+            virtUsers = app.getVirtualUsers()
             for user in virtUsers['list']:
                 if user['clientUsername'] == l2tpLocalUser:
                     found = True
@@ -258,7 +258,7 @@ class IPsecTests(unittest2.TestCase):
         assert(found)
 
     def test_050_windowsL2TPRadiusDirectory(self):
-        global nodeAD
+        global appAD
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
         if (radiusResult != 0):
             raise unittest2.SkipTest("No RADIUS server available")
@@ -267,7 +267,7 @@ class IPsecTests(unittest2.TestCase):
         if (not wan_IP in l2tpServerHosts):
             raise unittest2.SkipTest("No paried L2TP client available")
         # Configure RADIUS settings
-        nodeAD.setSettings(createRadiusSettings())
+        appAD.setSettings(createRadiusSettings())
         createL2TPconfig("RADIUS_SERVER")
         timeout = 480
         found = False
@@ -275,7 +275,7 @@ class IPsecTests(unittest2.TestCase):
         while not found and timeout > 0:
             timeout -= 1
             time.sleep(1)
-            virtUsers = node.getVirtualUsers()
+            virtUsers = app.getVirtualUsers()
             for user in virtUsers['list']:
                 if user['clientUsername'] == l2tpRadiusUser:
                     found = True
@@ -286,16 +286,16 @@ class IPsecTests(unittest2.TestCase):
     def test_060_createIpsecTunnelHostname(self):
         if (ipsecHostResult != 0):
             raise unittest2.SkipTest("No paried IPSec server available")
-        pre_events_enabled = global_functions.get_app_metric_value(node,"enabled")
+        pre_events_enabled = global_functions.get_app_metric_value(app,"enabled")
 
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
         pairMatchNotFound = True
         listOfPairs = ""
         addDNSRule(createDNSRule(ipsecHost,ipsecHostname))
         # verify L2TP is off  NGFW-7212
-        ipsecSettings = node.getSettings()
+        ipsecSettings = app.getSettings()
         ipsecSettings["vpnflag"] = False
-        node.setSettings(ipsecSettings)
+        app.setSettings(ipsecSettings)
         for hostConfig in configuredHostIPs:
             print hostConfig[0]
             listOfPairs += str(hostConfig[0]) + ", "
@@ -311,7 +311,7 @@ class IPsecTests(unittest2.TestCase):
             time.sleep(1)
             # ping the remote LAN to see if the IPsec tunnel is connected.
             ipsecHostLANResult = remote_control.run_command("wget -q -O /dev/null --no-check-certificate -4 -t 2 --timeout=5 https://%s/" % ipsecHostLANIP)
-        post_events_enabled = global_functions.get_app_metric_value(node,"enabled")
+        post_events_enabled = global_functions.get_app_metric_value(app,"enabled")
         nukeIPSecTunnels()
         assert (ipsecHostLANResult == 0)
         # Check to see if the faceplate counters have incremented. 
@@ -319,15 +319,15 @@ class IPsecTests(unittest2.TestCase):
 
     @staticmethod
     def finalTearDown(self):
-        global node, nodeAD
+        global app, appAD
         # Restore original settings to return to initial settings
         # print "orig_netsettings <%s>" % orig_netsettings
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
-        if node != None:
-            uvmContext.appManager().destroy( node.getAppSettings()["id"] )
-            node = None
-        if nodeAD != None:
-            uvmContext.appManager().destroy( nodeAD.getAppSettings()["id"] )
-            nodeAD = None
+        if app != None:
+            uvmContext.appManager().destroy( app.getAppSettings()["id"] )
+            app = None
+        if appAD != None:
+            uvmContext.appManager().destroy( appAD.getAppSettings()["id"] )
+            appAD = None
 
-test_registry.registerNode("ipsec-vpn", IPsecTests)
+test_registry.registerApp("ipsec-vpn", IPsecTests)

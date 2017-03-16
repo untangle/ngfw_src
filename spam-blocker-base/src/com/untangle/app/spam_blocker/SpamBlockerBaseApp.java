@@ -313,7 +313,7 @@ public abstract class SpamBlockerBaseApp extends AppBase
                 public void run()
                 {
                     /**
-                     * If already loaded (by another instance of this node) just return
+                     * If already loaded (by another instance of this app) just return
                      */
                     if ( greyListLoaded )
                         return;

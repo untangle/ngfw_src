@@ -16,8 +16,8 @@ public interface PolicyManager
     PolicyManagerResult findPolicyId( short protocol, int clientIntf, int serverIntf, InetAddress clientAddr, InetAddress serverAddr, int clientPort, int serverPort );
     
     /**
-     * @param child: The node to test if this is a child.
-     * @param parent: The node to see the distance from the child to parent.
+     * @param child: The app to test if this is a child.
+     * @param parent: The app to see the distance from the child to parent.
      * @return.  The number of racks in between the child policy and parent.
      *   This is 0 if child == parent.
      *   This is -1 if child is not a child of parent.

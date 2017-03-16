@@ -66,7 +66,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
         this.connector = UvmContextFactory.context().pipelineFoundry().create("web-filter", this, null, new WebFilterBaseHandler(this), Fitting.HTTP_TOKENS, Fitting.HTTP_TOKENS, Affinity.CLIENT, 3, isPremium());
         this.connectors = new PipelineConnector[] { connector };
 
-        String nodeName = this.getName();
+        String appName = this.getName();
 
         this.unblockedSitesMonitor = new UnblockedSitesMonitor(this);
     }
@@ -274,7 +274,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
 
     public abstract DecisionEngine getDecisionEngine();
 
-    public abstract String getNodeTitle();
+    public abstract String getAppTitle();
 
     public abstract String getName();
 
@@ -330,9 +330,9 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
     protected void postInit()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getAppSettings().getId().toString();
+        String appID = this.getAppSettings().getId().toString();
         WebFilterSettings readSettings = null;
-        String settingsFileName = System.getProperty("uvm.settings.dir") + "/" + this.getAppName() + "/" + "settings_" + nodeID + ".js";
+        String settingsFileName = System.getProperty("uvm.settings.dir") + "/" + this.getAppName() + "/" + "settings_" + appID + ".js";
 
         /**
          * First we try to load the existing settings
@@ -496,9 +496,9 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
          * Save the settings
          */
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getAppSettings().getId().toString();
+        String appID = this.getAppSettings().getId().toString();
         try {
-            settingsManager.save(System.getProperty("uvm.settings.dir") + "/" + "" + this.getAppName() + "/" + "settings_" + nodeID + ".js", newSettings);
+            settingsManager.save(System.getProperty("uvm.settings.dir") + "/" + "" + this.getAppName() + "/" + "settings_" + appID + ".js", newSettings);
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.", e);
             return;

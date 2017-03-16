@@ -177,7 +177,7 @@ public class WebMonitorApp extends WebFilterBase
     }
 
     @Override
-    public String getNodeTitle()
+    public String getAppTitle()
     {
         return "Web Monitor";
     }

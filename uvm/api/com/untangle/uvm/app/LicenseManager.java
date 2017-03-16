@@ -57,5 +57,5 @@ public interface LicenseManager
      * It does not guaratee a new license will be fetched.
      * The server can deny the request in which case this will return with no exception
      */
-    public void requestTrialLicense( String nodeName ) throws Exception;
+    public void requestTrialLicense( String appName ) throws Exception;
 }

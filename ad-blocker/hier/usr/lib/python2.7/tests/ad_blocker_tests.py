@@ -13,65 +13,65 @@ import test_registry
 import global_functions
 
 defaultRackId = 1
-node = None
+app = None
 
 def addCookieEnabled(url, enabled=True, description="description"):
-    global node
+    global app
     newRule =  { "enabled": enabled, "description": description, "javaClass": "com.untangle.uvm.app.GenericRule", "string": url }
-    rules = node.getCookies()
+    rules = app.getCookies()
     rules["list"].append(newRule)
-    node.setCookies(rules)
+    app.setCookies(rules)
     
 def addCookieBlockedEnabled(url, enabled=True, description="description"):
-    global node
+    global app
     newRule =  { "enabled": enabled, "blocked": "", "description": description, "javaClass": "com.untangle.uvm.app.GenericRule", "string": url }
-    rules = node.getCookies()
+    rules = app.getCookies()
     rules["list"].append(newRule)
-    node.setCookies(rules)
+    app.setCookies(rules)
     
 def addRule(url, enabled=True, description="description", blocked=True):
-    global node
+    global app
     newRule =  { "enabled": enabled, "description": description, "javaClass": "com.untangle.uvm.app.GenericRule", "string": url, "blocked": blocked }
     
-    settings = node.getSettings()
+    settings = app.getSettings()
     userList = settings["userRules"]
     userList["list"] = [newRule]
     settings["userRules"] = userList
        
-    node.setSettings(settings) 
+    app.setSettings(settings) 
     
 def nukeRules(listName):
-    settings = node.getSettings()
+    settings = app.getSettings()
     userList = settings[listName]
     userList["list"] = []
     settings[listName] = userList
        
-    node.setSettings(settings) 
+    app.setSettings(settings) 
     
 def addPassRule(url, enabled, listName):
-    global node
+    global app
     newRule =  { "enabled": enabled, "description": "description", "javaClass": "com.untangle.uvm.app.GenericRule", "string": url }
     
-    settings = node.getSettings()
+    settings = app.getSettings()
     passList = settings[listName]
     passList["list"] = [newRule]
     settings[listName] = passList
            
-    node.setSettings(settings)
+    app.setSettings(settings)
     
 class AdBlockerTests(unittest2.TestCase):
 
     @staticmethod
-    def nodeName():
+    def appName():
         return "ad-blocker"
 
     @staticmethod
     def initialSetUp(self):
-        global node
-        if (uvmContext.appManager().isInstantiated(self.nodeName())):
-            raise Exception('node %s already instantiated' % self.nodeName())
-        node = uvmContext.appManager().instantiate(self.nodeName(), defaultRackId)
-        node.start() # must be called since ad blocker doesn't auto-start
+        global app
+        if (uvmContext.appManager().isInstantiated(self.appName())):
+            raise Exception('app %s already instantiated' % self.appName())
+        app = uvmContext.appManager().instantiate(self.appName(), defaultRackId)
+        app.start() # must be called since ad blocker doesn't auto-start
 
     def setUp(self):
         pass
@@ -169,8 +169,8 @@ class AdBlockerTests(unittest2.TestCase):
 
     # verify update mechanism
     def test_110_updateAdBlockRules(self):
-        node.updateList()
-        result = node.getListLastUpdate()
+        app.updateList()
+        result = app.getListLastUpdate()
         today_str = datetime.datetime.utcnow().strftime("%d %b %Y")
         yesterday_str = (datetime.datetime.utcnow() - datetime.timedelta(days=1)).strftime("%d %b %Y")
         print "Last Update: \"%s\"" % (result)
@@ -180,10 +180,10 @@ class AdBlockerTests(unittest2.TestCase):
 
     @staticmethod
     def finalTearDown(self):
-        global node
-        if node != None:
-            uvmContext.appManager().destroy( node.getAppSettings()["id"] )
-        node = None
+        global app
+        if app != None:
+            uvmContext.appManager().destroy( app.getAppSettings()["id"] )
+        app = None
         
 
-test_registry.registerNode("ad-blocker", AdBlockerTests)
+test_registry.registerApp("ad-blocker", AdBlockerTests)

@@ -8,9 +8,9 @@ import java.io.File;
 import javax.mail.internet.InternetAddress;
 
 /**
- * Interface for the nodes to insert messages into the quarantine. This is not intended to be "remoted".
+ * Interface for the apps to insert messages into the quarantine. This is not intended to be "remoted".
  */
-public interface QuarantineNodeView
+public interface QuarantineAppView
 {
 
     /**

@@ -12,11 +12,11 @@ import com.untangle.uvm.util.LoadAvg;
 public class CaptivePortalTimer extends TimerTask
 {
     private final Logger logger = Logger.getLogger(getClass());
-    private final CaptivePortalApp node;
+    private final CaptivePortalApp app;
 
-    public CaptivePortalTimer(CaptivePortalApp node)
+    public CaptivePortalTimer(CaptivePortalApp app)
     {
-        this.node = node;
+        this.app = app;
     }
 
     public void run()
@@ -27,11 +27,11 @@ public class CaptivePortalTimer extends TimerTask
     public void sessionCleanup()
     {
         try {
-            ArrayList<CaptivePortalUserTable.StaleUser> staleUsers = node.captureUserTable.buildStaleList(node.getCaptivePortalSettings().getIdleTimeout(), node.getCaptivePortalSettings().getUserTimeout());
+            ArrayList<CaptivePortalUserTable.StaleUser> staleUsers = app.captureUserTable.buildStaleList(app.getCaptivePortalSettings().getIdleTimeout(), app.getCaptivePortalSettings().getUserTimeout());
             int counter = 0;
 
             for (CaptivePortalUserTable.StaleUser item : staleUsers) {
-                node.userLogout(item.netaddr, item.reason);
+                app.userLogout(item.netaddr, item.reason);
                 counter++;
             }
 

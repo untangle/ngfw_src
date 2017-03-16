@@ -317,7 +317,7 @@ Ext.define('Webui.web-monitor.settings',{
                         if( url.getValue() == "" ){
                             return;
                         }
-                        var result = this.getRpcNode().lookupSite( url.getValue() );
+                        var result = this.getRpcApp().lookupSite( url.getValue() );
                         if( result.list){
                             var categoryList = [];
                             for( var i = 0; i < result.list.length; i++){
@@ -345,7 +345,7 @@ Ext.define('Webui.web-monitor.settings',{
                         if( url.getValue() == "" ) {
                             return;
                         }
-                        var result = this.getRpcNode().recategorizeSite( url.getValue(), category.getValue() );
+                        var result = this.getRpcApp().recategorizeSite( url.getValue(), category.getValue() );
                         Ext.getCmp( 'sitelookup-suggest-message')
                             .setVisible( true )
                             .setValue(
@@ -377,7 +377,7 @@ Ext.define('Webui.web-monitor.settings',{
 
     clearHostCache: function() {
         Ext.MessageBox.wait( i18n._( "Clearing Host Cache..." ), i18n._( "Please Wait" ));
-        this.getRpcNode().clearCache( Ext.bind(this.completeClearHostCache, this ), true);
+        this.getRpcApp().clearCache( Ext.bind(this.completeClearHostCache, this ), true);
     },
 
     completeClearHostCache: function( result, exception ) {

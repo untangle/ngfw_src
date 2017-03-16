@@ -47,7 +47,7 @@ public class ApplicationControlSettings implements java.io.Serializable, JSONStr
         this.daemonDebug = daemonDebug;
     }
 
-    public void applyNodeRules(ApplicationControlStatistics statistics)
+    public void applyAppRules(ApplicationControlStatistics statistics)
     {
         this.protoHash = new Hashtable<String, ApplicationControlProtoRule>();
         long liveCount = 0;

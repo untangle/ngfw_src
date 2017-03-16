@@ -64,8 +64,8 @@ public class ApplicationControlLiteApp extends AppBase
     public void setSettings(final ApplicationControlLiteSettings newSettings)
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getAppSettings().getId().toString();
-        String settingsFile = System.getProperty("uvm.settings.dir") + "/application-control-lite/settings_" + nodeID + ".js";
+        String appID = this.getAppSettings().getId().toString();
+        String settingsFile = System.getProperty("uvm.settings.dir") + "/application-control-lite/settings_" + appID + ".js";
 
         try {
             settingsManager.save( settingsFile, newSettings );
@@ -133,9 +133,9 @@ public class ApplicationControlLiteApp extends AppBase
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
 
-        String nodeID = this.getAppSettings().getId().toString();
+        String appID = this.getAppSettings().getId().toString();
 
-        String settingsFile = System.getProperty("uvm.settings.dir") + "/application-control-lite/settings_" + nodeID + ".js";
+        String settingsFile = System.getProperty("uvm.settings.dir") + "/application-control-lite/settings_" + appID + ".js";
         ApplicationControlLiteSettings readSettings = null;
         
         logger.info("Loading settings from " + settingsFile);
@@ -143,7 +143,7 @@ public class ApplicationControlLiteApp extends AppBase
         try {
             readSettings =  settingsManager.load( ApplicationControlLiteSettings.class, settingsFile);
         } catch (Exception exn) {
-            logger.error("Could not read node settings", exn);
+            logger.error("Could not read app settings", exn);
         }
 
         try {
@@ -155,7 +155,7 @@ public class ApplicationControlLiteApp extends AppBase
                 reconfigure();
             }
         } catch (Exception exn) {
-            logger.error("Could not apply node settings", exn);
+            logger.error("Could not apply app settings", exn);
         }
     }
 

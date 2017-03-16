@@ -36,7 +36,7 @@ import com.untangle.uvm.util.I18nUtil;
 /**
  *
  */
-public class Quarantine implements QuarantineNodeView, QuarantineMaintenenceView, QuarantineUserView
+public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView, QuarantineUserView
 {
     private final Logger logger = Logger.getLogger(Quarantine.class);
 

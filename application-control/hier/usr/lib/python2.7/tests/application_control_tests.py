@@ -16,18 +16,18 @@ import global_functions
 
 defaultRackId = 1
 appSettings = None
-node = None
+app = None
 
 #pdb.set_trace()
 
 def touchProtoRule( protoGusername, flag = True, block =True ):
-    global appSettings,node
+    global appSettings,app
     for rec in appSettings['protoRules']['list']:
         # print "appSettings: " + str(rec)
         if (rec['name'] == protoGusername):
             rec['flag'] = flag
             rec['block'] = block
-    node.setSettings(appSettings)
+    app.setSettings(appSettings)
 
 def create2ConditionRule( matcher1Type, matcher1Value, matcher2Type, matcher2Value, blocked=True ):
     matcher1TypeStr = str(matcher1Type)
@@ -64,19 +64,19 @@ def create2ConditionRule( matcher1Type, matcher1Value, matcher2Type, matcher2Val
         };
 
 def nukeLogicRules():
-    global node, appSettings
+    global app, appSettings
     appSettings['logicRules']['list'] = []
-    node.setSettings(appSettings)
+    app.setSettings(appSettings)
 
 def appendLogicRule(newRule):
-    global node, appSettings
+    global app, appSettings
     appSettings['logicRules']['list'].append(newRule)
-    node.setSettings(appSettings)
+    app.setSettings(appSettings)
 
 class ApplicationControlTests(unittest2.TestCase):
 
     @staticmethod
-    def nodeName():
+    def appName():
         return "application-control"
 
     @staticmethod
@@ -85,11 +85,11 @@ class ApplicationControlTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        global appSettings, node
-        if (uvmContext.appManager().isInstantiated(self.nodeName())):
-            raise Exception('node %s already instantiated' % self.nodeName())
-        node = uvmContext.appManager().instantiate(self.nodeName(), defaultRackId)
-        appSettings = node.getSettings()
+        global appSettings, app
+        if (uvmContext.appManager().isInstantiated(self.appName())):
+            raise Exception('app %s already instantiated' % self.appName())
+        app = uvmContext.appManager().instantiate(self.appName(), defaultRackId)
+        appSettings = app.getSettings()
         # run a few sessions so that the classd daemon starts classifying
         for i in range(2): remote_control.is_online()
 
@@ -149,7 +149,7 @@ class ApplicationControlTests(unittest2.TestCase):
         assert (result2 != 0)
 
     def test_026_protoRule_Pandora(self):
-        pre_count = global_functions.get_app_metric_value(node,"pass")
+        pre_count = global_functions.get_app_metric_value(app,"pass")
 
         touchProtoRule("Pandora",False,False)
         result1 = remote_control.run_command("wget --no-check-certificate -q -O /dev/null -4 -t 2 --timeout=5 https://pandora.com/")
@@ -160,7 +160,7 @@ class ApplicationControlTests(unittest2.TestCase):
         assert (result2 != 0)
 
         # Check to see if the faceplate counters have incremented. 
-        post_count = global_functions.get_app_metric_value(node,"pass")
+        post_count = global_functions.get_app_metric_value(app,"pass")
         assert(pre_count < post_count)
 
     def test_030_logicRule_Allow_Gmail(self):
@@ -234,10 +234,10 @@ class ApplicationControlTests(unittest2.TestCase):
 
     @staticmethod
     def finalTearDown(self):
-        global node
-        if node != None:
-            uvmContext.appManager().destroy( node.getAppSettings()["id"] )
-            node = None
+        global app
+        if app != None:
+            uvmContext.appManager().destroy( app.getAppSettings()["id"] )
+            app = None
 
-test_registry.registerNode("application-control", ApplicationControlTests)
+test_registry.registerApp("application-control", ApplicationControlTests)
 

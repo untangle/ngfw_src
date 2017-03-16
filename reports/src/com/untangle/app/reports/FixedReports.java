@@ -1589,7 +1589,7 @@ public class FixedReports
      * Process the list and filter out duplicates.
      *
      * Simplisitic in string comparisions are expected and no method arguments are allowed.
-     * Use case is to eliminate nodes with the same name (e.g.,multiple policies with same app)
+     * Use case is to eliminate apps with the same name (e.g.,multiple policies with same app)
      */
     Object filterProcessDistinct(Object incomings, selector filterSelector){
         List<Object> outgoings = new ArrayList<Object>();

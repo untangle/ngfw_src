@@ -158,7 +158,7 @@ public class IntrusionPreventionSnortUnified2Parser
         ipsEventMap = newIntrusionPreventionEventMap;
     }
     
-    public long parse( File file, long startPosition, IntrusionPreventionApp ipsNode, long currentTime )
+    public long parse( File file, long startPosition, IntrusionPreventionApp ipsApp, long currentTime )
     {
         fc = null;
         RandomAccessFile f = null;
@@ -206,7 +206,7 @@ public class IntrusionPreventionSnortUnified2Parser
                             // Snort log can contain older events.  Ignore these.
                             break;
                         }
-                        ipsNode.logEvent( ipsEvent );
+                        ipsApp.logEvent( ipsEvent );
                         recordCount++;
                         break;
                     case IntrusionPreventionSnortUnified2SerialHeader.TYPE_PACKET:

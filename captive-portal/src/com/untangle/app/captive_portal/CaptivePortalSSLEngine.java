@@ -32,17 +32,17 @@ public class CaptivePortalSSLEngine
 {
 
     private final Logger logger = Logger.getLogger(getClass());
-    private final CaptivePortalApp captureNode;
+    private final CaptivePortalApp captureApp;
     private AppTCPSession session;
     private SSLContext sslContext;
     private SSLEngine sslEngine;
-    private String nodeStr;
+    private String appStr;
 
-    protected CaptivePortalSSLEngine(String nodeStr, CaptivePortalApp nodePtr)
+    protected CaptivePortalSSLEngine(String appStr, CaptivePortalApp appPtr)
     {
         String webCertFile = CertificateManager.CERT_STORE_PATH + UvmContextFactory.context().systemManager().getSettings().getWebCertificate().replaceAll("\\.pem", "\\.pfx");
-        this.nodeStr = nodeStr;
-        this.captureNode = nodePtr;
+        this.appStr = appStr;
+        this.captureApp = appPtr;
 
         try {
             // use the argumented certfile and password to init our keystore
@@ -298,7 +298,7 @@ public class CaptivePortalSSLEngine
 
         // start with the plaintext prefix for the redirect and switch to secure if the option is enabled
         String prefix = "http://";
-        if (captureNode.getCaptivePortalSettings().getAlwaysUseSecureCapture() == true) prefix = "https://";
+        if (captureApp.getCaptivePortalSettings().getAlwaysUseSecureCapture() == true) prefix = "https://";
 
         // VERY IMPORTANT - the NONCE value must be a1b2c3d4e5f6 because the
         // handler.py script looks for this special value and uses it to
@@ -306,7 +306,7 @@ public class CaptivePortalSSLEngine
         // requested page after login.  Yes it's a hack but I didn't want to
         // add an additional form field and risk breaking existing custom pages
         vector += "HTTP/1.1 307 Temporary Redirect\r\n";
-        vector += "Location: " + prefix + captureHost + "/capture/handler.py/index?NONCE=a1b2c3d4e5f6&APPID=" + nodeStr + "&METHOD=" + methodStr + "&HOST=" + hostStr + "&URI=" + uriStr + "\r\n";
+        vector += "Location: " + prefix + captureHost + "/capture/handler.py/index?NONCE=a1b2c3d4e5f6&APPID=" + appStr + "&METHOD=" + methodStr + "&HOST=" + hostStr + "&URI=" + uriStr + "\r\n";
         vector += "Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0\r\n";
         vector += "Pragma: no-cache\r\n";
         vector += "Expires: Mon, 10 Jan 2000 00:00:00 GMT\r\n";

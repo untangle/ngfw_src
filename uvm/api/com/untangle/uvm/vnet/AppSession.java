@@ -64,7 +64,7 @@ public interface AppSession
     
     /**
      * Attaches the given object to this session
-     * This is visible and modifiable by all Nodes
+     * This is visible and modifiable by all Apps
      *
      * <p> An attached object may later be retrieved via the {@link
      * #attachment attachment} method.  Only one object may be
@@ -109,8 +109,8 @@ public interface AppSession
     String user();
 
     /**
-     * The following are attachment keys used by various nodes to
-     * share information with other nodes.
+     * The following are attachment keys used by various apps to
+     * share information with other apps.
      */
     public final String KEY_PLATFORM_USERNAME = "platform-username"; /* String */
     public final String KEY_PLATFORM_HOSTNAME = "platform-hostname"; /* String */

@@ -20,11 +20,11 @@ import test_registry
 import global_functions
 
 defaultRackId = 1
-nodeData = None
-node = None
-nodeDataAD = None
-nodeAD = None
-nodeWeb = None
+appData = None
+app = None
+appDataAD = None
+appAD = None
+appWeb = None
 AD_HOST = "10.112.56.47"
 AD_ADMIN = "ATSadmin"
 AD_PASSWORD = "passwd"
@@ -157,15 +157,15 @@ def timeOfClientOff (timediff=60):
 class CaptivePortalTests(unittest2.TestCase):
 
     @staticmethod
-    def nodeName():
+    def appName():
         return "captive-portal"
 
     @staticmethod
-    def nodeNameAD():
+    def appNameAD():
         return "directory-connector"
 
     @staticmethod
-    def nodeNameWeb():
+    def appNameWeb():
         return "web-filter"
 
     @staticmethod
@@ -174,22 +174,22 @@ class CaptivePortalTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        global nodeData, node, nodeDataRD, nodeDataAD, nodeAD, nodeWeb, adResult, radiusResult, test_untangle_com_ip, captureIP
-        if (uvmContext.appManager().isInstantiated(self.nodeName())):
-            print "ERROR: Node %s already installed" % self.nodeName()
-            raise unittest2.SkipTest('node %s already instantiated' % self.nodeName())
-        node = uvmContext.appManager().instantiate(self.nodeName(), defaultRackId)
-        nodeData = node.getCaptivePortalSettings()
-        if (uvmContext.appManager().isInstantiated(self.nodeNameAD())):
-            print "ERROR: Node %s already installed" % self.nodeNameAD()
-            raise unittest2.SkipTest('node %s already instantiated' % self.nodeName())
-        nodeAD = uvmContext.appManager().instantiate(self.nodeNameAD(), defaultRackId)
-        nodeDataAD = nodeAD.getSettings().get('activeDirectorySettings')
-        nodeDataRD = nodeAD.getSettings().get('radiusSettings')
-        if (uvmContext.appManager().isInstantiated(self.nodeNameWeb())):
-            print "ERROR: Node %s already installed" % self.nodeNameWeb()
-            raise unittest2.SkipTest('node %s already instantiated' % self.nodeNameWeb())
-        nodeWeb = uvmContext.appManager().instantiate(self.nodeNameWeb(), defaultRackId)
+        global appData, app, appDataRD, appDataAD, appAD, appWeb, adResult, radiusResult, test_untangle_com_ip, captureIP
+        if (uvmContext.appManager().isInstantiated(self.appName())):
+            print "ERROR: App %s already installed" % self.appName()
+            raise unittest2.SkipTest('app %s already instantiated' % self.appName())
+        app = uvmContext.appManager().instantiate(self.appName(), defaultRackId)
+        appData = app.getCaptivePortalSettings()
+        if (uvmContext.appManager().isInstantiated(self.appNameAD())):
+            print "ERROR: App %s already installed" % self.appNameAD()
+            raise unittest2.SkipTest('app %s already instantiated' % self.appName())
+        appAD = uvmContext.appManager().instantiate(self.appNameAD(), defaultRackId)
+        appDataAD = appAD.getSettings().get('activeDirectorySettings')
+        appDataRD = appAD.getSettings().get('radiusSettings')
+        if (uvmContext.appManager().isInstantiated(self.appNameWeb())):
+            print "ERROR: App %s already installed" % self.appNameWeb()
+            raise unittest2.SkipTest('app %s already instantiated' % self.appNameWeb())
+        appWeb = uvmContext.appManager().instantiate(self.appNameWeb(), defaultRackId)
         adResult = subprocess.call(["ping","-c","1",AD_HOST],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         radiusResult = subprocess.call(["ping","-c","1",radiusHost],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         # Create local directory user 'test20'
@@ -212,10 +212,10 @@ class CaptivePortalTests(unittest2.TestCase):
         assert (result == 0)
 
     def test_021_captureTrafficCheck(self):
-        global node, nodeData
-        nodeData['captureRules']['list'] = []
-        nodeData['captureRules']['list'].append(createCaptureNonWanNicRule())
-        node.setSettings(nodeData)
+        global app, appData
+        appData['captureRules']['list'] = []
+        appData['captureRules']['list'].append(createCaptureNonWanNicRule())
+        app.setSettings(appData)
         result = remote_control.run_command("wget -4 -t 2 --timeout=5 -a /tmp/capture_test_021.log http://test.untangle.com/")
         assert (result == 0)
 
@@ -234,16 +234,16 @@ class CaptivePortalTests(unittest2.TestCase):
         assert (search == 0)
 
     def test_022_webFilterAffinityCheck(self):
-        global node, nodeData, nodeWeb
-        nodeData['captureRules']['list'] = []
-        nodeData['captureRules']['list'].append(createCaptureNonWanNicRule())
-        node.setSettings(nodeData)
+        global app, appData, appWeb
+        appData['captureRules']['list'] = []
+        appData['captureRules']['list'].append(createCaptureNonWanNicRule())
+        app.setSettings(appData)
 
         newRule = { "blocked": True, "description": "test.untangle.com", "flagged": True, "javaClass": "com.untangle.uvm.app.GenericRule", "string": "test.untangle.com" }
-        rules_orig = nodeWeb.getBlockedUrls()
+        rules_orig = appWeb.getBlockedUrls()
         rules = copy.deepcopy(rules_orig)
         rules["list"].append(newRule)
-        nodeWeb.setBlockedUrls(rules)
+        appWeb.setBlockedUrls(rules)
 
         result = remote_control.run_command("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_022.out http://test.untangle.com/")
         assert (result == 0)
@@ -253,22 +253,22 @@ class CaptivePortalTests(unittest2.TestCase):
 
         # logout user to clean up test.
         # wget http://<internal IP>/capture/logout
-        nodeWeb.setBlockedUrls(rules_orig)
+        appWeb.setBlockedUrls(rules_orig)
         result = remote_control.run_command("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_022b.out http://" + global_functions.get_lan_ip() + "/capture/logout")
         assert (result == 0)
         search = remote_control.run_command("grep -q 'logged out' /tmp/capture_test_022b.out")
         assert (search == 0)
 
     def test_023_loginAnonymous(self):
-        global node, nodeData
+        global app, appData
 
         # Create Internal NIC capture rule with basic login page
-        nodeData['captureRules']['list'] = []
-        nodeData['captureRules']['list'].append(createCaptureNonWanNicRule())
-        nodeData['authenticationType']="NONE"
-        nodeData['pageType'] = "BASIC_MESSAGE"
-        nodeData['userTimeout'] = 3600  # default
-        node.setSettings(nodeData)
+        appData['captureRules']['list'] = []
+        appData['captureRules']['list'].append(createCaptureNonWanNicRule())
+        appData['authenticationType']="NONE"
+        appData['pageType'] = "BASIC_MESSAGE"
+        appData['userTimeout'] = 3600  # default
+        app.setSettings(appData)
 
         # check that basic captive page is shown
         result = remote_control.run_command("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_023.out http://test.untangle.com/")
@@ -277,7 +277,7 @@ class CaptivePortalTests(unittest2.TestCase):
         assert (search == 0)
 
         # Verify anonymous works
-        appid = str(node.getAppSettings()["id"])
+        appid = str(app.getAppSettings()["id"])
         print 'appid is %s' % appid  # debug line
         result = remote_control.run_command("wget -O /tmp/capture_test_023a.out  \'" + global_functions.get_http_url() + "capture/handler.py/infopost?method=GET&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&agree=agree&submit=Continue&host=test.untangle.com&uri=/\'")
         assert (result == 0)
@@ -292,24 +292,24 @@ class CaptivePortalTests(unittest2.TestCase):
         assert (search == 0)
 
     def test_024_loginAnonymousTimeout(self):
-        global node, nodeData
+        global app, appData
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
 
         # Create Internal NIC capture rule with basic login page
-        nodeData['captureRules']['list'] = []
-        nodeData['captureRules']['list'].append(createCaptureNonWanNicRule())
-        nodeData['authenticationType']="NONE"
-        nodeData['pageType'] = "BASIC_MESSAGE"
-        nodeData['userTimeout'] = 10
-        node.setSettings(nodeData)
+        appData['captureRules']['list'] = []
+        appData['captureRules']['list'].append(createCaptureNonWanNicRule())
+        appData['authenticationType']="NONE"
+        appData['pageType'] = "BASIC_MESSAGE"
+        appData['userTimeout'] = 10
+        app.setSettings(appData)
 
         # check that basic captive page is shown
         result = remote_control.run_command("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_024.out http://test.untangle.com/")
         assert (result == 0)
 
         # Verify anonymous works
-        appid = str(node.getAppSettings()["id"])
+        appid = str(app.getAppSettings()["id"])
         print 'appid is %s' % appid  # debug line
         result = remote_control.run_command("wget -O /tmp/capture_test_024a.out  \'" + global_functions.get_http_url() + "/capture/handler.py/infopost?method=GET&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&agree=agree&submit=Continue&host=test.untangle.com&uri=/\'")
         assert (result == 0)
@@ -318,7 +318,7 @@ class CaptivePortalTests(unittest2.TestCase):
 
         # Wait for captive timeout
         time.sleep(20)
-        node.runCleanup() # run the periodic cleanup task to remove expired users
+        app.runCleanup() # run the periodic cleanup task to remove expired users
 
         result = remote_control.run_command("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_024b.out http://test.untangle.com/")
         assert (result == 0)
@@ -326,15 +326,15 @@ class CaptivePortalTests(unittest2.TestCase):
         assert (search == 0)
 
     def test_025_loginAnonymousHttps(self):
-        global node, nodeData
+        global app, appData
 
         # Create Internal NIC capture rule with basic login page
-        nodeData['captureRules']['list'] = []
-        nodeData['captureRules']['list'].append(createCaptureNonWanNicRule())
-        nodeData['authenticationType']="NONE"
-        nodeData['pageType'] = "BASIC_MESSAGE"
-        nodeData['userTimeout'] = 3600  # default
-        node.setSettings(nodeData)
+        appData['captureRules']['list'] = []
+        appData['captureRules']['list'].append(createCaptureNonWanNicRule())
+        appData['authenticationType']="NONE"
+        appData['pageType'] = "BASIC_MESSAGE"
+        appData['userTimeout'] = 3600  # default
+        app.setSettings(appData)
 
         # check that basic captive page is shown
         result = remote_control.run_command("curl -s --connect-timeout 10 -L -o /tmp/capture_test_025.out --insecure https://test.untangle.com/")
@@ -343,7 +343,7 @@ class CaptivePortalTests(unittest2.TestCase):
         assert (search == 0)
 
         # Verify anonymous works
-        appid = str(node.getAppSettings()["id"])
+        appid = str(app.getAppSettings()["id"])
         print 'appid is %s' % appid  # debug line
         result = remote_control.run_command("curl -s --connect-timeout 10 -L -o /tmp/capture_test_025a.out --insecure  \'" + global_functions.get_http_url() + "/capture/handler.py/infopost?method=GET&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&agree=agree&submit=Continue&host=test.untangle.com&uri=/\'")
         assert (result == 0)
@@ -358,15 +358,15 @@ class CaptivePortalTests(unittest2.TestCase):
         assert (search == 0)
 
     def test_030_loginLocalDirectory(self):
-        global node, nodeData
+        global app, appData
 
         # Create Internal NIC capture rule with basic login page
-        nodeData['captureRules']['list'] = []
-        nodeData['captureRules']['list'].append(createCaptureNonWanNicRule())
-        nodeData['authenticationType']="LOCAL_DIRECTORY"
-        nodeData['pageType'] = "BASIC_LOGIN"
-        nodeData['userTimeout'] = 3600  # default
-        node.setSettings(nodeData)
+        appData['captureRules']['list'] = []
+        appData['captureRules']['list'].append(createCaptureNonWanNicRule())
+        appData['authenticationType']="LOCAL_DIRECTORY"
+        appData['pageType'] = "BASIC_LOGIN"
+        appData['userTimeout'] = 3600  # default
+        app.setSettings(appData)
 
         # check that basic captive page is shown
         result = remote_control.run_command("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_030.out http://test.untangle.com/")
@@ -375,7 +375,7 @@ class CaptivePortalTests(unittest2.TestCase):
         assert (search == 0)
 
         # check if local directory login and password
-        appid = str(node.getAppSettings()["id"])
+        appid = str(app.getAppSettings()["id"])
         # print 'appid is %s' % appid  # debug line
         result = remote_control.run_command("wget -O /tmp/capture_test_030a.out  \'" + global_functions.get_http_url() + "/capture/handler.py/authpost?username=" + localUserName + "&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
         assert (result == 0)
@@ -394,15 +394,15 @@ class CaptivePortalTests(unittest2.TestCase):
         assert(not foundUsername)
 
     def test_031_loginAny(self):
-        global node, nodeData
+        global app, appData
 
         # Create Internal NIC capture rule with basic login page
-        nodeData['captureRules']['list'] = []
-        nodeData['captureRules']['list'].append(createCaptureNonWanNicRule())
-        nodeData['authenticationType']="ANY"
-        nodeData['pageType'] = "BASIC_LOGIN"
-        nodeData['userTimeout'] = 3600  # default
-        node.setSettings(nodeData)
+        appData['captureRules']['list'] = []
+        appData['captureRules']['list'].append(createCaptureNonWanNicRule())
+        appData['authenticationType']="ANY"
+        appData['pageType'] = "BASIC_LOGIN"
+        appData['userTimeout'] = 3600  # default
+        app.setSettings(appData)
 
         # check that basic captive page is shown
         result = remote_control.run_command("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_030.out http://test.untangle.com/")
@@ -411,7 +411,7 @@ class CaptivePortalTests(unittest2.TestCase):
         assert (search == 0)
 
         # check if local directory login and password
-        appid = str(node.getAppSettings()["id"])
+        appid = str(app.getAppSettings()["id"])
         # print 'appid is %s' % appid  # debug line
         result = remote_control.run_command("wget -O /tmp/capture_test_030a.out  \'" + global_functions.get_http_url() + "/capture/handler.py/authpost?username=" + localUserName + "&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
         assert (result == 0)
@@ -433,7 +433,7 @@ class CaptivePortalTests(unittest2.TestCase):
         raise unittest2.SkipTest('Broken test - google keeps banning account')
         if platform.machine().startswith('arm'):
             raise unittest2.SkipTest('Not supported on ARM')
-        global node, nodeData
+        global app, appData
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
         device_in_office = global_functions.is_in_office_network(wan_IP)
         if (device_in_office):
@@ -447,15 +447,15 @@ class CaptivePortalTests(unittest2.TestCase):
         if googleUserName == "message":
             raise unittest2.SkipTest(googlePassword)
         # Create Internal NIC capture rule with basic login page
-        nodeData['captureRules']['list'] = []
-        nodeData['captureRules']['list'].append(createCaptureNonWanNicRule())
-        nodeData['authenticationType']="GOOGLE"
-        nodeData['pageType'] = "BASIC_LOGIN"
-        nodeData['userTimeout'] = 3600  # default
-        node.setSettings(nodeData)
+        appData['captureRules']['list'] = []
+        appData['captureRules']['list'].append(createCaptureNonWanNicRule())
+        appData['authenticationType']="GOOGLE"
+        appData['pageType'] = "BASIC_LOGIN"
+        appData['userTimeout'] = 3600  # default
+        app.setSettings(appData)
 
         # Configure Directory Connector
-        nodeAD.setSettings(createDirectoryConnectorSettings())
+        appAD.setSettings(createDirectoryConnectorSettings())
 
         # check that basic captive page is shown
         result = remote_control.run_command("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_032.out http://test.untangle.com/")
@@ -464,7 +464,7 @@ class CaptivePortalTests(unittest2.TestCase):
         assert (search == 0)
 
         # check if local directory login and password
-        appid = str(node.getAppSettings()["id"])
+        appid = str(app.getAppSettings()["id"])
         # print 'appid is %s' % appid  # debug line
         result = remote_control.run_command("wget -O /tmp/capture_test_032a.out  \'" + global_functions.get_http_url() + "/capture/handler.py/authpost?username=" + googleUserName + "&password=" + googlePassword + "&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
         assert (result == 0)
@@ -485,7 +485,7 @@ class CaptivePortalTests(unittest2.TestCase):
     def test_033_loginFacebook(self):
         if platform.machine().startswith('arm'):
             raise unittest2.SkipTest('Not supported on ARM')
-        global node, nodeData
+        global app, appData
         facebookUserName, facebookPassword = global_functions.get_live_account_info("Facebook")
         print "username: %s\n " % str(facebookUserName)
         if facebookPassword != None:
@@ -495,15 +495,15 @@ class CaptivePortalTests(unittest2.TestCase):
         if facebookUserName == "message":
             raise unittest2.SkipTest(facebookPassword)
         # Create Internal NIC capture rule with basic login page
-        nodeData['captureRules']['list'] = []
-        nodeData['captureRules']['list'].append(createCaptureNonWanNicRule())
-        nodeData['authenticationType']="FACEBOOK"
-        nodeData['pageType'] = "BASIC_LOGIN"
-        nodeData['userTimeout'] = 3600  # default
-        node.setSettings(nodeData)
+        appData['captureRules']['list'] = []
+        appData['captureRules']['list'].append(createCaptureNonWanNicRule())
+        appData['authenticationType']="FACEBOOK"
+        appData['pageType'] = "BASIC_LOGIN"
+        appData['userTimeout'] = 3600  # default
+        app.setSettings(appData)
 
         # Configure Directory Connector
-        nodeAD.setSettings(createDirectoryConnectorSettings())
+        appAD.setSettings(createDirectoryConnectorSettings())
 
         # check that basic captive page is shown
         result = remote_control.run_command("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_032.out http://test.untangle.com/")
@@ -512,7 +512,7 @@ class CaptivePortalTests(unittest2.TestCase):
         assert (search == 0)
 
         # check if local directory login and password
-        appid = str(node.getAppSettings()["id"])
+        appid = str(app.getAppSettings()["id"])
         # print 'appid is %s' % appid  # debug line
         result = remote_control.run_command("wget -O /tmp/capture_test_032a.out  \'" + global_functions.get_http_url() + "/capture/handler.py/authpost?username=" + facebookUserName + "&password=" + facebookPassword + "&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
         assert (result == 0)
@@ -531,21 +531,21 @@ class CaptivePortalTests(unittest2.TestCase):
         assert(not foundUsername)
 
     def test_035_loginActiveDirectory(self):
-        global nodeData, node, nodeDataAD, nodeAD
+        global appData, app, appDataAD, appAD
         if (adResult != 0):
             raise unittest2.SkipTest("No AD server available")
         # Configure AD settings
-        testResultString = nodeAD.getActiveDirectoryManager().getActiveDirectoryStatusForSettings(createDirectoryConnectorSettings())
+        testResultString = appAD.getActiveDirectoryManager().getActiveDirectoryStatusForSettings(createDirectoryConnectorSettings())
         # print 'testResultString %s' % testResultString  # debug line
-        nodeAD.setSettings(createDirectoryConnectorSettings())
+        appAD.setSettings(createDirectoryConnectorSettings())
         assert ("success" in testResultString)
         # Create Internal NIC capture rule with basic AD login page
-        nodeData['captureRules']['list'] = []
-        nodeData['captureRules']['list'].append(createCaptureNonWanNicRule())
-        nodeData['authenticationType']="ACTIVE_DIRECTORY"
-        nodeData['pageType'] = "BASIC_LOGIN"
-        nodeData['userTimeout'] = 3600  # default
-        node.setSettings(nodeData)
+        appData['captureRules']['list'] = []
+        appData['captureRules']['list'].append(createCaptureNonWanNicRule())
+        appData['authenticationType']="ACTIVE_DIRECTORY"
+        appData['pageType'] = "BASIC_LOGIN"
+        appData['userTimeout'] = 3600  # default
+        app.setSettings(appData)
 
         # check that basic captive page is shown
         result = remote_control.run_command("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_035.out http://test.untangle.com/")
@@ -554,7 +554,7 @@ class CaptivePortalTests(unittest2.TestCase):
         assert (search == 0)
 
         # check if AD login and password
-        appid = str(node.getAppSettings()["id"])
+        appid = str(app.getAppSettings()["id"])
         # print 'appid is %s' % appid  # debug line
         result = remote_control.run_command("wget -O /tmp/capture_test_035a.out  \'" + global_functions.get_http_url() + "/capture/handler.py/authpost?username=" + adUserName + "&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
         assert (result == 0)
@@ -597,15 +597,15 @@ class CaptivePortalTests(unittest2.TestCase):
 
 
     def test_040_loginRadius(self):
-        global nodeData, node, nodeDataRD, nodeDataAD, nodeAD
+        global appData, app, appDataRD, appDataAD, appAD
         if (radiusResult != 0):
             raise unittest2.SkipTest("No RADIUS server available")
 
         # Configure RADIUS settings
-        nodeAD.setSettings(createRadiusSettings())
+        appAD.setSettings(createRadiusSettings())
         attempts = 0
         while attempts < 3:
-            testResultString = nodeAD.getRadiusManager().getRadiusStatusForSettings(createRadiusSettings(),"normal","passwd")
+            testResultString = appAD.getRadiusManager().getRadiusStatusForSettings(createRadiusSettings(),"normal","passwd")
             if ("success" in testResultString):
                 break
             else:
@@ -613,12 +613,12 @@ class CaptivePortalTests(unittest2.TestCase):
         print 'testResultString %s attempts %s' % (testResultString, attempts) # debug line
         assert ("success" in testResultString)
         # Create Internal NIC capture rule with basic AD login page
-        nodeData['captureRules']['list'] = []
-        nodeData['captureRules']['list'].append(createCaptureNonWanNicRule())
-        nodeData['authenticationType']="RADIUS"
-        nodeData['pageType'] = "BASIC_LOGIN"
-        nodeData['userTimeout'] = 3600  # default
-        node.setSettings(nodeData)
+        appData['captureRules']['list'] = []
+        appData['captureRules']['list'].append(createCaptureNonWanNicRule())
+        appData['authenticationType']="RADIUS"
+        appData['pageType'] = "BASIC_LOGIN"
+        appData['userTimeout'] = 3600  # default
+        app.setSettings(appData)
 
         # check that basic captive page is shown
         result = remote_control.run_command("wget -q -4 -t 2 --timeout=5 -O /tmp/capture_test_040.out http://test.untangle.com/")
@@ -627,7 +627,7 @@ class CaptivePortalTests(unittest2.TestCase):
         assert (search == 0)
 
         # check if RADIUS login and password
-        appid = str(node.getAppSettings()["id"])
+        appid = str(app.getAppSettings()["id"])
         # print 'appid is %s' % appid  # debug line
         result = remote_control.run_command("wget -O /tmp/capture_test_040a.out  \'" + global_functions.get_http_url() + "/capture/handler.py/authpost?username=normal&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'",stdout=True)
         search = remote_control.run_command("grep -q 'Hi!' /tmp/capture_test_040a.out")
@@ -641,7 +641,7 @@ class CaptivePortalTests(unittest2.TestCase):
         assert (search == 0)
 
         # check if RADIUS login and password a second time.
-        appid = str(node.getAppSettings()["id"])
+        appid = str(app.getAppSettings()["id"])
         # print 'appid is %s' % appid  # debug line
         result = remote_control.run_command("wget -O /tmp/capture_test_040c.out  \'" + global_functions.get_http_url() + "/capture/handler.py/authpost?username=normal&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'",stdout=True)
         search = remote_control.run_command("grep -q 'Hi!' /tmp/capture_test_040c.out")
@@ -658,7 +658,7 @@ class CaptivePortalTests(unittest2.TestCase):
         """
         Cookie test
         """
-        global node, nodeData
+        global app, appData
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
 
@@ -667,15 +667,15 @@ class CaptivePortalTests(unittest2.TestCase):
         cookie_file_name = "/tmp/capture_test_050_cookie.txt"
 
         # Create Internal NIC capture rule with basic login page
-        nodeData['captureRules']['list'] = []
-        nodeData['captureRules']['list'].append(createCaptureNonWanNicRule())
+        appData['captureRules']['list'] = []
+        appData['captureRules']['list'].append(createCaptureNonWanNicRule())
 
-        nodeData['authenticationType']="LOCAL_DIRECTORY"
-        nodeData['pageType'] = "BASIC_LOGIN"
-        nodeData['sessionCookiesEnabled'] = True
-        nodeData['sessionCookiesTimeout'] = 86400
-        nodeData['userTimeout'] = 10
-        node.setSettings(nodeData)
+        appData['authenticationType']="LOCAL_DIRECTORY"
+        appData['pageType'] = "BASIC_LOGIN"
+        appData['sessionCookiesEnabled'] = True
+        appData['sessionCookiesTimeout'] = 86400
+        appData['userTimeout'] = 10
+        app.setSettings(appData)
 
         # check that basic captive page is shown
         result = remote_control.run_command("wget -4 -t 2 --timeout=5 -O " + capture_file_name + " http://test.untangle.com/")
@@ -684,7 +684,7 @@ class CaptivePortalTests(unittest2.TestCase):
         assert (search == 0)
 
         # check if local directory login and password
-        appid = str(node.getAppSettings()["id"])
+        appid = str(app.getAppSettings()["id"])
 
         # connect and auth to get cookie
         result = remote_control.run_command("wget -O " + capture_file_name + "  \'" + global_functions.get_http_url() + "/capture/handler.py/authpost?username=test20&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\' --save-cookies " + cookie_file_name)
@@ -694,7 +694,7 @@ class CaptivePortalTests(unittest2.TestCase):
 
         # Wait for captive timeout
         time.sleep(20)
-        node.runCleanup() # run the periodic cleanup task to remove expired users
+        app.runCleanup() # run the periodic cleanup task to remove expired users
 
         # try again without cookie (confirm session not active)
         result = remote_control.run_command("wget -O " + capture_file_name + "  \'" + global_functions.get_http_url() + "/capture/handler.py/?username=&password=&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
@@ -713,13 +713,13 @@ class CaptivePortalTests(unittest2.TestCase):
 
         # Wait for captive timeout
         time.sleep(20)
-        node.runCleanup() # run the periodic cleanup task to remove expired users
+        app.runCleanup() # run the periodic cleanup task to remove expired users
 
     def test_051_cookieTimeout(self):
         """
         Cookie expiration
         """
-        global node, nodeData
+        global app, appData
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
         if timeOfClientOff():
@@ -731,15 +731,15 @@ class CaptivePortalTests(unittest2.TestCase):
         cookie_timeout = 5
 
         # Create Internal NIC capture rule with basic login page
-        nodeData['captureRules']['list'] = []
-        nodeData['captureRules']['list'].append(createCaptureNonWanNicRule())
+        appData['captureRules']['list'] = []
+        appData['captureRules']['list'].append(createCaptureNonWanNicRule())
 
-        nodeData['authenticationType']="LOCAL_DIRECTORY"
-        nodeData['pageType'] = "BASIC_LOGIN"
-        nodeData['sessionCookiesEnabled'] = True
-        nodeData['sessionCookiesTimeout'] = cookie_timeout
-        nodeData['userTimeout'] = 10
-        node.setSettings(nodeData)
+        appData['authenticationType']="LOCAL_DIRECTORY"
+        appData['pageType'] = "BASIC_LOGIN"
+        appData['sessionCookiesEnabled'] = True
+        appData['sessionCookiesTimeout'] = cookie_timeout
+        appData['userTimeout'] = 10
+        app.setSettings(appData)
 
         # check that basic captive page is shown
         result = remote_control.run_command("wget -4 -t 2 --timeout=5 -O " + capture_file_name + " http://test.untangle.com/")
@@ -748,7 +748,7 @@ class CaptivePortalTests(unittest2.TestCase):
         assert (search == 0)
 
         # check if local directory login and password
-        appid = str(node.getAppSettings()["id"])
+        appid = str(app.getAppSettings()["id"])
 
         # connect and auth to get cookie
         result = remote_control.run_command("wget -O " + capture_file_name + "  \'" + global_functions.get_http_url() + "/capture/handler.py/authpost?username=test20&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\' --save-cookies " + cookie_file_name)
@@ -758,7 +758,7 @@ class CaptivePortalTests(unittest2.TestCase):
 
         # Wait for captive timeout
         time.sleep(20)
-        node.runCleanup() # run the periodic cleanup task to remove expired users
+        app.runCleanup() # run the periodic cleanup task to remove expired users
 
         # Cookie expiration is handled by browser so check that after the cookie timeout,
         # the client side's expiration difference from current is greater than timeout.
@@ -774,7 +774,7 @@ class CaptivePortalTests(unittest2.TestCase):
         """
         User has a cookie but cookies have been disabled
         """
-        global node, nodeData
+        global app, appData
 
         # variable for local test
         capture_file_name = "/tmp/capture_test_052.out"
@@ -783,18 +783,18 @@ class CaptivePortalTests(unittest2.TestCase):
             raise unittest2.SkipTest('Cookie file %s was was not create in test_051_captivePortalCookie_timeout' % savedCookieFileName)
 
         # Create Internal NIC capture rule with basic login page
-        nodeData['captureRules']['list'] = []
-        nodeData['captureRules']['list'].append(createCaptureNonWanNicRule())
+        appData['captureRules']['list'] = []
+        appData['captureRules']['list'].append(createCaptureNonWanNicRule())
 
-        nodeData['authenticationType']="LOCAL_DIRECTORY"
-        nodeData['pageType'] = "BASIC_LOGIN"
-        nodeData['sessionCookiesEnabled'] = False
-        nodeData['sessionCookiesTimeout'] = 10
-        nodeData['userTimeout'] = 3600
-        node.setSettings(nodeData)
+        appData['authenticationType']="LOCAL_DIRECTORY"
+        appData['pageType'] = "BASIC_LOGIN"
+        appData['sessionCookiesEnabled'] = False
+        appData['sessionCookiesTimeout'] = 10
+        appData['userTimeout'] = 3600
+        app.setSettings(appData)
 
         # # check if local directory login and password
-        appid = str(node.getAppSettings()["id"])
+        appid = str(app.getAppSettings()["id"])
 
         result = remote_control.run_command("wget -O " + capture_file_name + "  \'" + global_functions.get_http_url() + "/capture/handler.py/index?nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\' --load-cookies " + savedCookieFileName)
         assert (result == 0)
@@ -806,16 +806,16 @@ class CaptivePortalTests(unittest2.TestCase):
         assert(foundUsername == False)
 
     def test_060_loginLocalDirectoryMacMode(self):
-        global node, nodeData
+        global app, appData
 
         # Create Internal NIC capture rule with basic login page
-        nodeData['captureRules']['list'] = []
-        nodeData['captureRules']['list'].append(createCaptureNonWanNicRule())
-        nodeData['authenticationType']="LOCAL_DIRECTORY"
-        nodeData['pageType'] = "BASIC_LOGIN"
-        nodeData['userTimeout'] = 3600  # default
-        nodeData['useMacAddress'] = True
-        node.setSettings(nodeData)
+        appData['captureRules']['list'] = []
+        appData['captureRules']['list'].append(createCaptureNonWanNicRule())
+        appData['authenticationType']="LOCAL_DIRECTORY"
+        appData['pageType'] = "BASIC_LOGIN"
+        appData['userTimeout'] = 3600  # default
+        appData['useMacAddress'] = True
+        app.setSettings(appData)
 
         # check that basic captive page is shown
         result = remote_control.run_command("wget -4 -t 2 --timeout=5 -O /tmp/capture_test_060.out http://test.untangle.com/")
@@ -824,7 +824,7 @@ class CaptivePortalTests(unittest2.TestCase):
         assert (search == 0)
 
         # check if local directory login and password
-        appid = str(node.getAppSettings()["id"])
+        appid = str(app.getAppSettings()["id"])
         # print 'appid is %s' % appid  # debug line
         result = remote_control.run_command("wget -O /tmp/capture_test_060a.out  \'" + global_functions.get_http_url() + "/capture/handler.py/authpost?username=" + localUserName + "&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/\'")
         assert (result == 0)
@@ -844,16 +844,16 @@ class CaptivePortalTests(unittest2.TestCase):
 
     @staticmethod
     def finalTearDown(self):
-        global node, nodeAD, nodeWeb
+        global app, appAD, appWeb
         uvmContext.localDirectory().setUsers(removeLocalDirectoryUser())
-        if node != None:
-            uvmContext.appManager().destroy( node.getAppSettings()["id"] )
-            node = None
-        if nodeAD != None:
-            uvmContext.appManager().destroy( nodeAD.getAppSettings()["id"] )
-            nodeAD = None
-        if nodeWeb != None:
-            uvmContext.appManager().destroy( nodeWeb.getAppSettings()["id"] )
-            nodeWeb = None
+        if app != None:
+            uvmContext.appManager().destroy( app.getAppSettings()["id"] )
+            app = None
+        if appAD != None:
+            uvmContext.appManager().destroy( appAD.getAppSettings()["id"] )
+            appAD = None
+        if appWeb != None:
+            uvmContext.appManager().destroy( appWeb.getAppSettings()["id"] )
+            appWeb = None
 
-test_registry.registerNode("captive-portal", CaptivePortalTests)
+test_registry.registerApp("captive-portal", CaptivePortalTests)

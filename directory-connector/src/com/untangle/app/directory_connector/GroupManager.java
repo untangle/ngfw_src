@@ -58,11 +58,11 @@ public class GroupManager
      */
     private int cacheCount = 0;
 
-    private DirectoryConnectorApp node;
+    private DirectoryConnectorApp app;
     
-    public GroupManager(DirectoryConnectorApp node)
+    public GroupManager(DirectoryConnectorApp app)
     {
-        this.node = node;
+        this.app = app;
     }
     
     public synchronized void start()
@@ -210,7 +210,7 @@ public class GroupManager
             
             List<GroupEntry> groupList = null;
             try {
-                groupList = node.getActiveDirectoryManager().getActiveDirectoryGroupEntries(true);
+                groupList = app.getActiveDirectoryManager().getActiveDirectoryGroupEntries(true);
             } catch ( Exception ex ) {
                 logger.warn("Unable to retrieve the group entries", ex);
                 return;
@@ -234,7 +234,7 @@ public class GroupManager
 
                 /* Get all of the groups and users in this group. */
                 try {
-                    List<UserEntry> userList = node.getActiveDirectoryManager().getActiveDirectoryGroupUsers(groupName);
+                    List<UserEntry> userList = app.getActiveDirectoryManager().getActiveDirectoryGroupUsers(groupName);
 
                     for ( UserEntry user : userList ) {
                         logger.debug("Building Group Cache: Adding User " + user.getUid() + " to " + groupName);

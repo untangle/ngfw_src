@@ -319,15 +319,15 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     }
 
     @Override
-    public void requestTrialLicense( String nodeName ) throws Exception
+    public void requestTrialLicense( String appName ) throws Exception
     {
-        if ( nodeName == null ) {
-            logger.warn("Invalid name: " + nodeName);
+        if ( appName == null ) {
+            logger.warn("Invalid name: " + appName);
             return;
         }
         // if already have a valid license, just return
-        if ( UvmContextFactory.context().licenseManager().isLicenseValid( nodeName ) ) {
-            logger.warn("Already have a valid license for: " + nodeName);
+        if ( UvmContextFactory.context().licenseManager().isLicenseValid( appName ) ) {
+            logger.warn("Already have a valid license for: " + appName);
             return;
         }
         
@@ -343,15 +343,15 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
          * We do all these different calls so that the product supports any version of the license server
          */
 
-        String libitemName = "untangle-libitem-" + nodeName;
-        String urlStr  = licenseUrl + "?action=startTrial&uid=" + UvmContextFactory.context().getServerUID() + "&node=" + nodeName + "&appliance=" + UvmContextFactory.context().isAppliance();
+        String libitemName = "untangle-libitem-" + appName;
+        String urlStr  = licenseUrl + "?action=startTrial&uid=" + UvmContextFactory.context().getServerUID() + "&node=" + appName + "&appliance=" + UvmContextFactory.context().isAppliance();
         String urlStr2 = licenseUrl + "?action=startTrial&uid=" + UvmContextFactory.context().getServerUID() + "&libitem=" + libitemName + "&appliance=" + UvmContextFactory.context().isAppliance();
 
         String oldName = null;
         String urlStr3 = null;
         String urlStr4 = null;
         
-        switch ( nodeName ) {
+        switch ( appName ) {
         case License.DIRECTORY_CONNECTOR:
             oldName = License.DIRECTORY_CONNECTOR_OLDNAME; break;
         case License.BANDWIDTH_CONTROL:

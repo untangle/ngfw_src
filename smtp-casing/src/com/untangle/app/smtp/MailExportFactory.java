@@ -6,7 +6,7 @@ package com.untangle.app.smtp;
 import org.apache.log4j.Logger;
 
 /**
- * Factory for the exported MailNode interface.
+ * Factory for the exported MailApp interface.
  * 
  */
 public class MailExportFactory

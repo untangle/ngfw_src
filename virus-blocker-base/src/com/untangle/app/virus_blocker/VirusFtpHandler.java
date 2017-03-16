@@ -34,7 +34,7 @@ import com.untangle.uvm.util.GlobUtil;
  */
 class VirusFtpHandler extends FtpEventHandler
 {
-    private final VirusBlockerBaseApp node;
+    private final VirusBlockerBaseApp app;
 
     private final Logger logger = Logger.getLogger(FtpEventHandler.class);
 
@@ -55,9 +55,9 @@ class VirusFtpHandler extends FtpEventHandler
      */
     private static final Map<Long, String> fileNamesByCtlSessionId = new ConcurrentHashMap<Long, String>();
 
-    VirusFtpHandler(VirusBlockerBaseApp node)
+    VirusFtpHandler(VirusBlockerBaseApp app)
     {
-        this.node = node;
+        this.app = app;
     }
 
     @Override
@@ -71,7 +71,7 @@ class VirusFtpHandler extends FtpEventHandler
     protected void doClientData(AppTCPSession session, ChunkToken c)
     {
         VirusFtpState state = (VirusFtpState) session.attachment();
-        if (node.getSettings().getScanFtp()) {
+        if (app.getSettings().getScanFtp()) {
             logger.debug("doServerData()");
 
             if (state.fileManager == null) {
@@ -94,7 +94,7 @@ class VirusFtpHandler extends FtpEventHandler
     protected void doServerData(AppTCPSession session, ChunkToken c)
     {
         VirusFtpState state = (VirusFtpState) session.attachment();
-        if (node.getSettings().getScanFtp()) {
+        if (app.getSettings().getScanFtp()) {
             logger.debug("doServerData()");
 
             if (state.fileManager == null) {
@@ -119,7 +119,7 @@ class VirusFtpHandler extends FtpEventHandler
         VirusFtpState state = (VirusFtpState) session.attachment();
         logger.debug("doClientDataEnd()");
 
-        if (node.getSettings().getScanFtp() && state.c2s && state.fileManager != null) {
+        if (app.getSettings().getScanFtp() && state.c2s && state.fileManager != null) {
             state.fileHash = state.fileManager.getFileHash();
 
             if (logger.isDebugEnabled()) {
@@ -142,7 +142,7 @@ class VirusFtpHandler extends FtpEventHandler
         VirusFtpState state = (VirusFtpState) session.attachment();
         logger.debug("doServerDataEnd()");
 
-        if (node.getSettings().getScanFtp() && !state.c2s && state.fileManager != null) {
+        if (app.getSettings().getScanFtp() && !state.c2s && state.fileManager != null) {
             state.fileHash = state.fileManager.getFileHash();
 
             if (logger.isDebugEnabled()) {
@@ -165,7 +165,7 @@ class VirusFtpHandler extends FtpEventHandler
         // no longer have a setting for blocking partial fetches
         // it causes too many issues
         // if (FtpFunction.REST == command.getFunction() &&
-        // !node.getSettings().getAllowFtpResume()) {
+        // !app.getSettings().getAllowFtpResume()) {
         // FtpReply reply = FtpReply.makeReply(502, "Command not implemented.");
         // session.sendObjectToClient( reply );
         // return;
@@ -196,7 +196,7 @@ class VirusFtpHandler extends FtpEventHandler
     private ChunkToken trickle(AppTCPSession session, ByteBuffer b)
     {
         VirusFtpState state = (VirusFtpState) session.attachment();
-        int l = b.remaining() * node.getTricklePercent() / 100;
+        int l = b.remaining() * app.getTricklePercent() / 100;
 
         while (b.hasRemaining()) {
             state.fileManager.write(b);
@@ -219,12 +219,12 @@ class VirusFtpHandler extends FtpEventHandler
         VirusScannerResult result;
 
         try {
-            node.incrementScanCount();
+            app.incrementScanCount();
             if (ignoredHost(session.sessionEvent().getSServerAddr())) {
                 result = VirusScannerResult.CLEAN;
             } else {
                 logger.debug("Scanning the SMTP file: " + state.fileManager.getFileDisplayName());
-                result = node.getScanner().scanFile(state.fileManager.getFileObject(), session);
+                result = app.getScanner().scanFile(state.fileManager.getFileObject(), session);
             }
         } catch (Exception exn) {
             // Should never happen
@@ -232,14 +232,14 @@ class VirusFtpHandler extends FtpEventHandler
         }
 
         String fileName = (String) session.globalAttachment(AppSession.KEY_FTP_FILE_NAME);
-        node.logEvent(new VirusFtpEvent(session.sessionEvent(), result.isClean(), result.getVirusName(), node.getName(), fileName));
+        app.logEvent(new VirusFtpEvent(session.sessionEvent(), result.isClean(), result.getVirusName(), app.getName(), fileName));
 
         if (result.isClean()) {
-            node.incrementPassCount();
+            app.incrementPassCount();
             TokenStreamer tokSt = new VirusChunkStreamer(state.fileManager, null, EndMarkerToken.MARKER, true);
             return new TokenStreamerAdaptor(tokSt, session);
         } else {
-            node.incrementBlockCount();
+            app.incrementBlockCount();
             session.shutdownClient();
             session.shutdownServer();
             return null;
@@ -257,10 +257,10 @@ class VirusFtpHandler extends FtpEventHandler
         VirusFtpState state = (VirusFtpState) session.attachment();
 
         // start with the memory only flag in the settings
-        state.memoryMode = node.getSettings().getForceMemoryMode();
+        state.memoryMode = app.getSettings().getForceMemoryMode();
 
         // if the file scanner is not installed we MUST use memory mode
-        if (node.isFileScannerAvailable() == false) {
+        if (app.isFileScannerAvailable() == false) {
             state.memoryMode = true;
         }
 
@@ -313,7 +313,7 @@ class VirusFtpHandler extends FtpEventHandler
         }
         Pattern p;
 
-        for (Iterator<GenericRule> i = node.getSettings().getPassSites().iterator(); i.hasNext();) {
+        for (Iterator<GenericRule> i = app.getSettings().getPassSites().iterator(); i.hasNext();) {
             GenericRule sr = i.next();
             if (sr.getEnabled()) {
                 p = (Pattern) sr.attachment();

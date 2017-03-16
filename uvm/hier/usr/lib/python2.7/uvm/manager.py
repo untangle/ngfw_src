@@ -16,9 +16,9 @@ class Manager(object):
     def doAptTailLog(self, key ):
         print "Operation started, please apt.log for more information"
 
-    def buildNodeId(self, nodeIdStr ):
-        nodeId = int( nodeIdStr )
-        return {'javaClass': 'com.untangle.uvm.app.AppSettings', 'id': nodeId, 'name': "%d" % ( nodeId ) }
+    def buildAppId(self, appIdStr ):
+        appId = int( appIdStr )
+        return {'javaClass': 'com.untangle.uvm.app.AppSettings', 'id': appId, 'name': "%d" % ( appId ) }
 
     def buildDate(self,seconds):
         return { 'javaClass' : 'java.util.Date', 'time' : ( seconds * 1000 ) }

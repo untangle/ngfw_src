@@ -35,15 +35,15 @@ public class EventReaderImpl
 
     private static final DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
     
-    private ReportsApp node;
+    private ReportsApp app;
 
     private HashMap<String,Class<?>> columnTypeMap = new HashMap<String,Class<?>>();
 
     private Semaphore querySemaphore = new Semaphore(MAX_SIMULTANEOUS_QUERIES);
     
-    public EventReaderImpl( ReportsApp node )
+    public EventReaderImpl( ReportsApp app )
     {
-        this.node = node;
+        this.app = app;
         this.columnTypeMap.put("inet",String.class);
     }
 
@@ -134,7 +134,7 @@ public class EventReaderImpl
         Connection dbConnection = null;
 
         try {
-            dbConnection = this.node.getDbConnection();
+            dbConnection = this.app.getDbConnection();
         } catch (Exception e) {
             logger.warn("Unable to create connection to DB",e);
         }

@@ -21,19 +21,19 @@ class RouterEventHandler extends AbstractEventHandler
 {
     private final Logger logger = Logger.getLogger(RouterEventHandler.class);
 
-    /* Router Node */
-    private final RouterImpl node;
+    /* Router App */
+    private final RouterImpl app;
 
     private Random rand;
     
     public static final short PROTO_TCP = 6;
 
     /* Setup  */
-    RouterEventHandler( RouterImpl node )
+    RouterEventHandler( RouterImpl app )
     {
-        super(node);
+        super(app);
         this.rand = new Random();
-        this.node = node;
+        this.app = app;
     }
 
     public void handleTCPNewSessionRequest( TCPNewSessionRequest request )

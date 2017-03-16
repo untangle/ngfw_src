@@ -15,14 +15,14 @@ class SnortRules:
 
     rule_paths = ["rules", "preproc_rules", "emerging_rules"]
     
-    def __init__(self, node_id="0", path="", file_name=""):
-        self.node_id = node_id
+    def __init__(self, app_id="0", path="", file_name=""):
+        self.app_id = app_id
         self.path = path
         self.file_name = self.path + "/"
         if file_name != "":
             self.file_name = self.file_name + file_name
         else:
-            self.file_name = self.file_name + "node_" + self.node_id + ".rules"
+            self.file_name = self.file_name + "app_" + self.app_id + ".rules"
         
         self.rules = {}
         self.variables = []
@@ -95,7 +95,7 @@ class SnortRules:
         if os.path.isdir(path) == False:
             os.makedirs(path)
 
-        file_name = path + "/" + "node_" + self.node_id + ".rules"
+        file_name = path + "/" + "app_" + self.app_id + ".rules"
         rule_path = os.path.split( path )[1]
 
         temp_file_name = file_name + ".tmp"

@@ -53,17 +53,17 @@ public class AppManagerImpl implements AppManager
     private final Logger logger = Logger.getLogger(getClass());
 
     /**
-     * Stores a map of all currently loaded nodes from their nodeId to the App instance
+     * Stores a map of all currently loaded apps from their appId to the App instance
      */
     private final Map<Long, App> loadedAppsMap = new ConcurrentHashMap<Long, App>();
 
     /**
-     * Stores a map of all yet to be loaded nodes from their nodeId to their AppSettings
+     * Stores a map of all yet to be loaded apps from their appId to their AppSettings
      */
     private final Map<Long, AppSettings> unloadedAppsMap = new ConcurrentHashMap<Long, AppSettings>();
 
     /**
-     * This stores the count of nodes currently being loaded
+     * This stores the count of apps currently being loaded
      */
     private volatile int appsBeingLoaded = 0;
     
@@ -80,23 +80,23 @@ public class AppManagerImpl implements AppManager
         return this.settings;
     }
 
-    public void saveTargetState( App node, AppSettings.AppState nodeState )
+    public void saveTargetState( App app, AppSettings.AppState appState )
     {
-        if ( node == null ) {
-            logger.error("Invalid argument saveTargetState(): node is null");
+        if ( app == null ) {
+            logger.error("Invalid argument saveTargetState(): app is null");
             return;
         }
-        if ( nodeState == null ) {
-            logger.error("Invalid argument saveTargetState(): nodeState is null");
+        if ( appState == null ) {
+            logger.error("Invalid argument saveTargetState(): appState is null");
             return;
         }
 
         for ( AppSettings appSettings : this.settings.getApps() ) {
-            if ( appSettings.getId() == node.getAppSettings().getId() ) {
-                if ( nodeState != appSettings.getTargetState() ) {
-                    appSettings.setTargetState(nodeState);
+            if ( appSettings.getId() == app.getAppSettings().getId() ) {
+                if ( appState != appSettings.getTargetState() ) {
+                    appSettings.setTargetState(appState);
                 } else {
-                    logger.info("ignore saveTargetState(): already in state " + nodeState);
+                    logger.info("ignore saveTargetState(): already in state " + appState);
                 }
             }
         }
@@ -105,10 +105,10 @@ public class AppManagerImpl implements AppManager
 
     public List<App> appInstances()
     {
-        List<App> nodeList = new ArrayList<App>( loadedAppsMap.values() );
+        List<App> appList = new ArrayList<App>( loadedAppsMap.values() );
 
         // sort by view position, for convenience
-        Collections.sort(nodeList, new Comparator<App>() {
+        Collections.sort(appList, new Comparator<App>() {
             public int compare(App tci1, App tci2) {
                 int rpi1 = tci1.getAppProperties().getViewPosition();
                 int rpi2 = tci2.getAppProperties().getViewPosition();
@@ -122,7 +122,7 @@ public class AppManagerImpl implements AppManager
             }
         });
 
-        return nodeList;
+        return appList;
     }
 
     public List<App> nodeInstances()
@@ -148,9 +148,9 @@ public class AppManagerImpl implements AppManager
         
         List<App> list = new LinkedList<App>();
 
-        for (App node : loadedAppsMap.values()) {
-            if ( node.getAppProperties().getName().equals( appName ) ) {
-                list.add( node );
+        for (App app : loadedAppsMap.values()) {
+            if ( app.getAppProperties().getName().equals( appName ) ) {
+                list.add( app );
             }
         }
 
@@ -180,11 +180,11 @@ public class AppManagerImpl implements AppManager
 
         List<App> list = new ArrayList<App>(loadedAppsMap.size());
 
-        for ( App node : getAppsForPolicy( policyId, parents ) ) {
-            String appName = node.getAppProperties().getName();
+        for ( App app : getAppsForPolicy( policyId, parents ) ) {
+            String appName = app.getAppProperties().getName();
 
             if ( appName.equals( name ) ) {
-                list.add( node );
+                list.add( app );
             }
         }
 
@@ -221,18 +221,18 @@ public class AppManagerImpl implements AppManager
 
     protected List<App> visibleApps( Integer policyId )
     {
-        List<App> loadedNodes = appInstances();
-        List<App> list = new ArrayList<App>(loadedNodes.size());
+        List<App> loadedApps = appInstances();
+        List<App> list = new ArrayList<App>(loadedApps.size());
 
-        for (App node : getAppsForPolicy( policyId )) {
-            if ( !node.getAppProperties().getInvisible() ) {
-                list.add( node );
+        for (App app : getAppsForPolicy( policyId )) {
+            if ( !app.getAppProperties().getInvisible() ) {
+                list.add( app );
             }
         }
 
-        for (App node : getAppsForPolicy( null /* services */ )) {
-            if ( !node.getAppProperties().getInvisible() ) {
-                list.add( node );
+        for (App app : getAppsForPolicy( null /* services */ )) {
+            if ( !app.getAppProperties().getInvisible() ) {
+                list.add( app );
             }
         }
 
@@ -245,24 +245,24 @@ public class AppManagerImpl implements AppManager
         return visibleApps( policyId );
     }
 
-    public App app( Long nodeId )
+    public App app( Long appId )
     {
-        return loadedAppsMap.get( nodeId );
+        return loadedAppsMap.get( appId );
     }
 
-    public App node( Long nodeId )
+    public App node( Long appId )
     {
         logger.warn("deprecated method called.", new Exception());
-        return app( nodeId );
+        return app( appId );
     }
 
     public App app( String name )
     {
         name = fixupName( name ); // handle old names
 
-        List<App> nodes = appInstances( name );
-        if( nodes.size() > 0 ){
-            return nodes.get(0);
+        List<App> apps = appInstances( name );
+        if( apps.size() > 0 ){
+            return apps.get(0);
         }
         return null;
     }
@@ -290,7 +290,7 @@ public class AppManagerImpl implements AppManager
             UvmContextFactory.context().licenseManager().requestTrialLicense( appName );
         }
 
-        App node = null;
+        App app = null;
         AppProperties appProperties = null;
         AppSettings appSettings = null;
 
@@ -298,12 +298,12 @@ public class AppManagerImpl implements AppManager
             if (!live)
                 throw new Exception("AppManager is shut down");
 
-            logger.info("initializing node: " + appName);
+            logger.info("initializing app: " + appName);
             appProperties = getAppProperties( appName );
 
             if ( appProperties == null ) {
-                logger.error("Missing node properties for " + appName);
-                throw new Exception("Missing node properties for " + appName);
+                logger.error("Missing app properties for " + appName);
+                throw new Exception("Missing app properties for " + appName);
             }
 
             if ( ! checkArchitecture( appProperties.getSupportedArchitectures() ) ) {
@@ -332,7 +332,7 @@ public class AppManagerImpl implements AppManager
                 Integer policyId1 = policyId;
                 Integer policyId2 = n2.getPolicyId();
                 /**
-                 * If the node name and policies are equal, they are dupes
+                 * If the app name and policies are equal, they are dupes
                  */
                 if ( appName1.equals(appName2) && ( (policyId1 == policyId2) || ( policyId1 != null && policyId1.equals(policyId2) ) ) )
                      throw new Exception("Too many instances of " + appName + " in policy " + policyId + ".");
@@ -348,52 +348,52 @@ public class AppManagerImpl implements AppManager
             if (appProperties == null)
                 throw new Exception("Null appProperties: " + appName);
 
-            node = AppBase.loadClass( appProperties, appSettings, true );
+            app = AppBase.loadClass( appProperties, appSettings, true );
 
-            if (node != null) {
-                loadedAppsMap.put( appSettings.getId(), node );
+            if (app != null) {
+                loadedAppsMap.put( appSettings.getId(), app );
                 saveNewAppSettings( appSettings );
             } else {
-                logger.error( "Failed to initialize node: " + appProperties.getName() );
+                logger.error( "Failed to initialize app: " + appProperties.getName() );
             }
 
         }
 
         /**
-         * If AutoStart is true, go ahead and start node
+         * If AutoStart is true, go ahead and start app
          */
         if ( appProperties != null && appProperties.getAutoStart() ) {
-            node.start();
+            app.start();
         }
 
         // Full System GC so the JVM gives memory back
         UvmContextFactory.context().gc();
         
-        return node;
+        return app;
     }
 
-    public void destroy( Long nodeId ) throws Exception
+    public void destroy( Long appId ) throws Exception
     {
-        destroy( app( nodeId ));
+        destroy( app( appId ));
     }
 
-    public void destroy( App node ) throws Exception
+    public void destroy( App app ) throws Exception
     {
-        if ( node == null) {
-            throw new Exception("Node " + node + " not found");
+        if ( app == null) {
+            throw new Exception("App " + app + " not found");
         }
 
         synchronized (this) {
-            AppBase nodeBase = (AppBase) node;
-            nodeBase.destroyClass();
+            AppBase appBase = (AppBase) app;
+            appBase.destroyClass();
 
             /**
              * Remove from map and list and save settings
              */
-            loadedAppsMap.remove( node.getAppSettings().getId() );
+            loadedAppsMap.remove( app.getAppSettings().getId() );
             for (Iterator<AppSettings> iter = this.settings.getApps().iterator(); iter.hasNext();) {
                 AppSettings appSettings = iter.next();
-                if (appSettings.getId().equals(node.getAppSettings().getId()))
+                if (appSettings.getId().equals(app.getAppSettings().getId()))
                     iter.remove();
             }
             this._setSettings(this.settings);
@@ -411,8 +411,8 @@ public class AppManagerImpl implements AppManager
     public Map<Long, AppSettings.AppState> allAppStates()
     {
         HashMap<Long, AppSettings.AppState> result = new HashMap<Long, AppSettings.AppState>();
-        for (App node : loadedAppsMap.values()) {
-            result.put(node.getAppSettings().getId(), node.getRunState());
+        for (App app : loadedAppsMap.values()) {
+            result.put(app.getAppSettings().getId(), app.getRunState());
         }
 
         return result;
@@ -432,8 +432,8 @@ public class AppManagerImpl implements AppManager
     public Map<Long, AppSettings> getAllAppSettings()
     {
         HashMap<Long, AppSettings> result = new HashMap<Long, AppSettings>();
-        for (App node : loadedAppsMap.values()) {
-            result.put(node.getAppSettings().getId(), node.getAppSettings());
+        for (App app : loadedAppsMap.values()) {
+            result.put(app.getAppSettings().getId(), app.getAppSettings());
         }
         return result;
     }
@@ -447,8 +447,8 @@ public class AppManagerImpl implements AppManager
     public Map<Long, AppProperties> getAllAppPropertiesMap()
     {
         HashMap<Long, AppProperties> result = new HashMap<Long, AppProperties>();
-        for (App node : loadedAppsMap.values()) {
-            result.put(node.getAppSettings().getId(), node.getAppProperties());
+        for (App app : loadedAppsMap.values()) {
+            result.put(app.getAppSettings().getId(), app.getAppProperties());
         }
         return result;
     }
@@ -461,13 +461,13 @@ public class AppManagerImpl implements AppManager
     
     public List<AppProperties> getAllAppProperties()
     {
-        LinkedList<AppProperties> nodeProps = new LinkedList<AppProperties>();
+        LinkedList<AppProperties> appProps = new LinkedList<AppProperties>();
 
         File rootDir = new File( System.getProperty( "uvm.lib.dir" ) );
 
-        findAllAppProperties( nodeProps, rootDir );
+        findAllAppProperties( appProps, rootDir );
 
-        return nodeProps;
+        return appProps;
     }
 
     public List<AppProperties> getAllNodeProperties()
@@ -481,17 +481,17 @@ public class AppManagerImpl implements AppManager
         AppManagerImpl nm = (AppManagerImpl)UvmContextFactory.context().appManager();
         LicenseManager lm = UvmContextFactory.context().licenseManager();
 
-        /* This stores a list of installable nodes. (for this rack) */
-        Map<String, AppProperties> installableNodesMap =  new HashMap<String, AppProperties>();
+        /* This stores a list of installable apps. (for this rack) */
+        Map<String, AppProperties> installableAppsMap =  new HashMap<String, AppProperties>();
         /* This stores a list of all licenses */
         Map<String, License> licenseMap = new HashMap<String, License>();
 
         /**
          * Build the license map
          */
-        List<App> visibleNodes = nm.visibleApps( policyId );
-        for (App node : visibleNodes) {
-            String n = node.getAppProperties().getName();
+        List<App> visibleApps = nm.visibleApps( policyId );
+        for (App app : visibleApps) {
+            String n = app.getAppProperties().getName();
             licenseMap.put(n, lm.getLicense(n));
         }
 
@@ -501,65 +501,65 @@ public class AppManagerImpl implements AppManager
         Map<Long, AppSettings.AppState> runStates = nm.allAppStates();
 
         /**
-         * Iterate through nodes
+         * Iterate through apps
          */
-        for ( AppProperties nodeProps : nm.getAllAppProperties() ) {
-            if ( nodeProps.getInvisible() )
+        for ( AppProperties appProps : nm.getAllAppProperties() ) {
+            if ( appProps.getInvisible() )
                 continue;
 
-            if ( ! checkArchitecture( nodeProps.getSupportedArchitectures() ) ) {
-                logger.debug("Hiding " + nodeProps.getDisplayName() + ". " + System.getProperty("os.arch") + " is not a supported architecture.");
+            if ( ! checkArchitecture( appProps.getSupportedArchitectures() ) ) {
+                logger.debug("Hiding " + appProps.getDisplayName() + ". " + System.getProperty("os.arch") + " is not a supported architecture.");
                 continue;
             }
 
-            installableNodesMap.put( nodeProps.getDisplayName(), nodeProps );
+            installableAppsMap.put( appProps.getDisplayName(), appProps );
         }
 
         /**
-         * Build the nodeMetrics (stats in the UI)
-         * Remove visible installableNodes from installableNodes
+         * Build the appMetrics (stats in the UI)
+         * Remove visible installableApps from installableApps
          */
-        Map<Long, List<AppMetric>> nodeMetrics = new HashMap<Long, List<AppMetric>>(visibleNodes.size());
-        for (App visibleNode : visibleNodes) {
-            Long nodeId = visibleNode.getAppSettings().getId();
-            Integer nodePolicyId = visibleNode.getAppSettings().getPolicyId();
-            nodeMetrics.put( nodeId , visibleNode.getMetrics());
+        Map<Long, List<AppMetric>> appMetrics = new HashMap<Long, List<AppMetric>>(visibleApps.size());
+        for (App visibleApp : visibleApps) {
+            Long appId = visibleApp.getAppSettings().getId();
+            Integer appPolicyId = visibleApp.getAppSettings().getPolicyId();
+            appMetrics.put( appId , visibleApp.getMetrics());
 
-            if ( nodePolicyId == null || nodePolicyId.equals( policyId ) ) {
-                installableNodesMap.remove( visibleNode.getAppProperties().getDisplayName() );
+            if ( appPolicyId == null || appPolicyId.equals( policyId ) ) {
+                installableAppsMap.remove( visibleApp.getAppProperties().getDisplayName() );
             }
         }
 
         /**
          * SPECIAL CASE: Web Filter Lite is being deprecated - hide it
          */
-        installableNodesMap.remove("Web Filter Lite"); /* hide web filter lite from left hand nav */
+        installableAppsMap.remove("Web Filter Lite"); /* hide web filter lite from left hand nav */
 
         /**
          * SPECIAL CASE: If Web Filter is installed in this rack OR licensed for non-trial, hide Web Monitor
          */
-        List<App> webFilterNodes = UvmContextFactory.context().appManager().appInstances( "web-filter", policyId );
-        if (webFilterNodes != null && webFilterNodes.size() > 0) {
-            installableNodesMap.remove("Web Monitor"); /* hide web monitor from left hand nav */
+        List<App> webFilterApps = UvmContextFactory.context().appManager().appInstances( "web-filter", policyId );
+        if (webFilterApps != null && webFilterApps.size() > 0) {
+            installableAppsMap.remove("Web Monitor"); /* hide web monitor from left hand nav */
         }
         if ( ! UvmContextFactory.context().isDevel() ) {
             License webFilterLicense = lm.getLicense(License.WEB_FILTER);
             if ( webFilterLicense != null && webFilterLicense.getValid() && !webFilterLicense.getTrial() ) {
-                installableNodesMap.remove("Web Monitor"); /* hide web monitor from left hand nav */
+                installableAppsMap.remove("Web Monitor"); /* hide web monitor from left hand nav */
             }
         }
 
         /**
          * SPECIAL CASE: If Spam Blocker is installed in this rack OR licensed for non-trial, hide Spam Blocker Lite
          */
-        List<App> spamBlockerNodes = UvmContextFactory.context().appManager().appInstances( "spam-blocker", policyId);
-        if (spamBlockerNodes != null && spamBlockerNodes.size() > 0) {
-            installableNodesMap.remove("Spam Blocker Lite"); /* hide spam blocker lite from left hand nav */
+        List<App> spamBlockerApps = UvmContextFactory.context().appManager().appInstances( "spam-blocker", policyId);
+        if (spamBlockerApps != null && spamBlockerApps.size() > 0) {
+            installableAppsMap.remove("Spam Blocker Lite"); /* hide spam blocker lite from left hand nav */
         }
         if ( ! UvmContextFactory.context().isDevel() ) {
             License spamBlockerLicense = lm.getLicense(License.SPAM_BLOCKER);
             if ( spamBlockerLicense != null && spamBlockerLicense.getValid() && !spamBlockerLicense.getTrial() ) {
-                installableNodesMap.remove("Spam Blocker Lite"); /* hide spam blocker lite from left hand nav */
+                installableAppsMap.remove("Spam Blocker Lite"); /* hide spam blocker lite from left hand nav */
             }
         }
 
@@ -568,19 +568,19 @@ public class AppManagerImpl implements AppManager
          * Build the list of apps to show on the left hand nav
          */
         logger.debug("Building apps panel:");
-        List<AppProperties> installableNodes = new ArrayList<AppProperties>(installableNodesMap.values());
-        Collections.sort( installableNodes );
+        List<AppProperties> installableApps = new ArrayList<AppProperties>(installableAppsMap.values());
+        Collections.sort( installableApps );
 
         List<AppProperties> appProperties = new LinkedList<AppProperties>();
-        for (App node : visibleNodes) {
-            appProperties.add(node.getAppProperties());
+        for (App app : visibleApps) {
+            appProperties.add(app.getAppProperties());
         }
         List<AppSettings> appSettings  = new LinkedList<AppSettings>();
-        for (App node : visibleNodes) {
-            appSettings.add(node.getAppSettings());
+        for (App app : visibleApps) {
+            appSettings.add(app.getAppSettings());
         }
 
-        return new AppsView(policyId, installableNodes, appSettings, appProperties, nodeMetrics, licenseMap, runStates);
+        return new AppsView(policyId, installableApps, appSettings, appProperties, appMetrics, licenseMap, runStates);
     }
 
     public AppsView[] getAppsViews()
@@ -609,9 +609,9 @@ public class AppManagerImpl implements AppManager
         restartUnloaded();
 
         if ( logger.isDebugEnabled() ) {
-            logger.debug("Fininshed restarting nodes:");
-            for ( App node : loadedAppsMap.values() ) {
-                logger.info( node.getAppSettings().getId() + " " + node.getAppSettings().getAppName() );
+            logger.debug("Fininshed restarting apps:");
+            for ( App app : loadedAppsMap.values() ) {
+                logger.info( app.getAppSettings().getId() + " " + app.getAppSettings().getAppName() );
             }
         }
         
@@ -624,22 +624,22 @@ public class AppManagerImpl implements AppManager
     {
         List<Runnable> tasks = new ArrayList<Runnable>();
 
-        for ( final App node : loadedAppsMap.values() ) {
+        for ( final App app : loadedAppsMap.values() ) {
             Runnable r = new Runnable() {
                     public void run()
                     {
-                        String name = node.getAppProperties().getName();
-                        Long id = node.getAppSettings().getId();
+                        String name = app.getAppProperties().getName();
+                        Long id = app.getAppSettings().getId();
 
                         logger.info("Stopping  : " + name + " [" + id + "]");
 
                         long startTime = System.currentTimeMillis();
-                        ((AppBase)node).stopIfRunning( );
+                        ((AppBase)app).stopIfRunning( );
                         long endTime = System.currentTimeMillis();
 
                         logger.info("Stopped   : " + name + " [" + id + "] [" + ( ((float)(endTime - startTime))/1000.0f ) + " seconds]");
 
-                        loadedAppsMap.remove( node.getAppSettings().getId() );
+                        loadedAppsMap.remove( app.getAppSettings().getId() );
                     }
                 };
             tasks.add(r);
@@ -656,7 +656,7 @@ public class AppManagerImpl implements AppManager
             for (Thread t : threads)
                 t.join();
         } catch (InterruptedException exn) {
-            logger.error("Interrupted while starting nodes");
+            logger.error("Interrupted while starting apps");
         }
 
         logger.info("AppManager destroyed");
@@ -664,33 +664,33 @@ public class AppManagerImpl implements AppManager
 
     protected void startAutoLoad()
     {
-        for ( AppProperties nodeProps : getAllAppProperties() ) {
-            if (! nodeProps.getAutoLoad() )
+        for ( AppProperties appProps : getAllAppProperties() ) {
+            if (! appProps.getAutoLoad() )
                 continue;
 
-            List<App> list = appInstances( nodeProps.getName() );
+            List<App> list = appInstances( appProps.getName() );
 
             /**
-             * If a node is "autoLoad" and is not loaded, instantiate it
+             * If a app is "autoLoad" and is not loaded, instantiate it
              */
             if ( list.size() == 0 ) {
                 try {
-                    logger.info("Auto-loading new node: " + nodeProps.getName());
-                    App node = instantiate( nodeProps.getName() );
+                    logger.info("Auto-loading new app: " + appProps.getName());
+                    App app = instantiate( appProps.getName() );
 
-                    if ( nodeProps.getAutoStart() ) {
-                        node.start();
+                    if ( appProps.getAutoStart() ) {
+                        app.start();
                     }
 
                 } catch (Exception exn) {
-                    logger.warn("could not deploy: " + nodeProps.getName(), exn);
+                    logger.warn("could not deploy: " + appProps.getName(), exn);
                     continue;
                 }
             }
         }
     }
 
-    private void findAllAppProperties( List<AppProperties> nodeProps, File searchDir )
+    private void findAllAppProperties( List<AppProperties> appProps, File searchDir )
     {
         if ( ! searchDir.exists() )
             return;
@@ -701,14 +701,14 @@ public class AppManagerImpl implements AppManager
 
         for ( File f : fileList ) {
             if ( f.isDirectory() ) {
-                findAllAppProperties( nodeProps, f );
+                findAllAppProperties( appProps, f );
             } else {
                 if ( "appProperties.js".equals( f.getName() ) ) {
                     try {
                         AppProperties np = getAppPropertiesFilename( f.getAbsolutePath() );
-                        nodeProps.add( np );
+                        appProps.add( np );
                     } catch (Exception e) {
-                        logger.warn("Ignoring bad node properties: " + f.getAbsolutePath(), e);
+                        logger.warn("Ignoring bad app properties: " + f.getAbsolutePath(), e);
                     }
                 }
             }
@@ -725,7 +725,7 @@ public class AppManagerImpl implements AppManager
             throw new RuntimeException("AppManager is shut down");
         }
 
-        logger.info("Restarting unloaded nodes...");
+        logger.info("Restarting unloaded apps...");
 
         for (AppSettings appSettings : settings.getApps()) {
             unloadedAppsMap.put( appSettings.getId(), appSettings );
@@ -749,7 +749,7 @@ public class AppManagerImpl implements AppManager
         }
 
         long t1 = System.currentTimeMillis();
-        logger.info("Time to restart nodes: " + (t1 - t0) + " millis");
+        logger.info("Time to restart apps: " + (t1 - t0) + " millis");
     }
 
     private static int startThreadNum = 0;
@@ -760,27 +760,27 @@ public class AppManagerImpl implements AppManager
 
         for (final AppSettings appSettings : startQueue) {
             final String name = appSettings.getAppName();
-            final AppProperties nodeProps = getAppProperties(appSettings);
+            final AppProperties appProps = getAppProperties(appSettings);
 
             if ( name == null ) {
-                logger.error("Unable to load node \"" + name + "\": NULL name.");
-            } else if ( nodeProps == null ) {
-                logger.error("Unable to load node \"" + name + "\": NULL node properties.");
+                logger.error("Unable to load app \"" + name + "\": NULL name.");
+            } else if ( appProps == null ) {
+                logger.error("Unable to load app \"" + name + "\": NULL app properties.");
             } else {
                 Runnable r = new Runnable()
                     {
                         public void run()
                         {
-                            AppBase node = null;
+                            AppBase app = null;
                             try {
                                 logger.info("Restarting: " + name + " [" + appSettings.getId() + "]");
                                 long startTime = System.currentTimeMillis();
-                                node = (AppBase) AppBase.loadClass(nodeProps, appSettings, false);
+                                app = (AppBase) AppBase.loadClass(appProps, appSettings, false);
                                 long endTime   = System.currentTimeMillis();
                                 logger.info("Restarted : " + name + " [" + appSettings.getId() + "] [" + ( ((float)(endTime - startTime))/1000.0f ) + " seconds]");
 
-                                // add to loaded nodes
-                                loadedAppsMap.put( appSettings.getId(), node );
+                                // add to loaded apps
+                                loadedAppsMap.put( appSettings.getId(), app );
 
                             } catch (Exception exn) {
                                 logger.error("Could not restart: " + name, exn);
@@ -788,18 +788,18 @@ public class AppManagerImpl implements AppManager
                                 logger.error("Could not restart: " + name, err);
                             } finally {
 
-                                // alert the main thread that a node is done loading
+                                // alert the main thread that a app is done loading
                                 appsBeingLoaded--;
                                 startSemaphore.release();
 
                             }
-                            if ( node == null ) {
-                                logger.error("Failed to load node:" + name);
+                            if ( app == null ) {
+                                logger.error("Failed to load app:" + name);
                                 loadedAppsMap.remove(appSettings);
                             } 
                         }
                     };
-                // remove from unloaded nodes 
+                // remove from unloaded apps 
                 appsBeingLoaded++;
                 unloadedAppsMap.remove( appSettings.getId() );
 
@@ -834,14 +834,14 @@ public class AppManagerImpl implements AppManager
                 i.remove(); // remove from unloadedAppsMap because we can never load this one
                 continue;
             }
-            AppProperties nodeProps = getAppProperties( name );
-            if ( nodeProps == null ) {
+            AppProperties appProps = getAppProperties( name );
+            if ( appProps == null ) {
                 logger.error("Missing properties for: " + appSettings);
                 i.remove(); // remove from unloadedAppsMap because we can never load this one
                 continue;
             }
 
-            List<String> parents = nodeProps.getParents();
+            List<String> parents = appProps.getParents();
             boolean parentsLoaded = true;
             if ( parents != null ) {
                 for (String parent : parents) {
@@ -853,7 +853,7 @@ public class AppManagerImpl implements AppManager
             }
 
             // all parents loaded and another instance of this
-            // node not loading this pass or already loaded in
+            // app not loading this pass or already loaded in
             // previous pass (prevents classloader race).
             if (parentsLoaded && !thisPass.contains(name)) {
                 loadable.add(appSettings);
@@ -906,7 +906,7 @@ public class AppManagerImpl implements AppManager
 
             // UPDATE settings if necessary
 
-            // look for and remove old nodes that no longer exist
+            // look for and remove old apps that no longer exist
             LinkedList<AppSettings> cleanList = new LinkedList<AppSettings>();
             for (AppSettings item : readSettings.getApps()) {
                 if (item.getAppName().equals("webfilter-lite")) continue;
@@ -915,7 +915,7 @@ public class AppManagerImpl implements AppManager
                 cleanList.add(item);
             }
 
-            // if we removed anything update the node list and save
+            // if we removed anything update the app list and save
             if (cleanList.size() != readSettings.getApps().size()) {
                 readSettings.setApps(cleanList);
                 this._setSettings(readSettings);
@@ -938,7 +938,7 @@ public class AppManagerImpl implements AppManager
     }
 
     /**
-     * Get AppProperties from the node settings
+     * Get AppProperties from the app settings
      */
     private AppProperties getAppProperties( AppSettings appSettings )
     {
@@ -946,7 +946,7 @@ public class AppManagerImpl implements AppManager
     }
 
     /**
-     * Get AppProperties from the node name (ie "firewall")
+     * Get AppProperties from the app name (ie "firewall")
      */
     private AppProperties getAppProperties( String name )
     {
@@ -975,7 +975,7 @@ public class AppManagerImpl implements AppManager
         long newAppId = settings.getNextAppId();
 
         /**
-         * Increment the next node Id (not saved until later)
+         * Increment the next app Id (not saved until later)
          */
         settings.setNextAppId( newAppId + 1 );
 
@@ -1020,7 +1020,7 @@ public class AppManagerImpl implements AppManager
 
         /*
          * This is a list of loadedAppsMap.  Each index of the first list corresponds to its
-         * policy in the policies array.  Each index in the second list is a appSettings of the nodes
+         * policy in the policies array.  Each index in the second list is a appSettings of the apps
          * in the policy
          * parentAppSettingsArray[0] == list of loadedAppsMap in parentPolicies[0]
          * parentAppSettingsArray[1] == list of loadedAppsMap in parentPolicies[1]
@@ -1036,45 +1036,45 @@ public class AppManagerImpl implements AppManager
 
         /*
          * Fill in the inner list, at the end each of these is the list of
-         * nodes in the policy.
+         * apps in the policy.
          */
-        for (App node : loadedAppsMap.values()) {
-            Integer nodePolicyId = node.getAppSettings().getPolicyId();
+        for (App app : loadedAppsMap.values()) {
+            Integer appPolicyId = app.getAppSettings().getPolicyId();
 
             /**
              * If its in the parent policy list - add it
              * Otherwise it its in the policy - add it
              */
-            int i = parentPolicies.indexOf(nodePolicyId);
+            int i = parentPolicies.indexOf(appPolicyId);
             if (i >= 0) {
-                parentAppArray.get(i).add( node );
-            } else if ( nodePolicyId == null && policyId == null ) {
-                thisPolicyApps.add( node );
-            } else if ( nodePolicyId != null && policyId != null && nodePolicyId.equals(policyId) ) {
-                thisPolicyApps.add( node );
+                parentAppArray.get(i).add( app );
+            } else if ( appPolicyId == null && policyId == null ) {
+                thisPolicyApps.add( app );
+            } else if ( appPolicyId != null && policyId != null && appPolicyId.equals(policyId) ) {
+                thisPolicyApps.add( app );
             }
         }
 
         /*
          * Add all the loadedAppsMap from the current policy
-         * And all the nodes from the parent IFF they don't already exists
-         * will only add the first entry (which will be most specific node.
+         * And all the apps from the parent IFF they don't already exists
+         * will only add the first entry (which will be most specific app.
          */
         List<App> finalList = thisPolicyApps;
         Set<String> names = new HashSet<String>();
 
-        for (App node : thisPolicyApps) {
-            String n = node.getAppSettings().getAppName();
+        for (App app : thisPolicyApps) {
+            String n = app.getAppSettings().getAppName();
             if (!names.contains(n))
                 names.add(n);
         }
         for (List<App> parentPolicyList : parentAppArray) {
             if (parentPolicyList != null) {
-                for (App node : parentPolicyList) {
-                    String n = node.getAppSettings().getAppName();
+                for (App app : parentPolicyList) {
+                    String n = app.getAppSettings().getAppName();
                     if (!names.contains(n)) {
                         names.add(n);
-                        finalList.add( node );
+                        finalList.add( app );
                     }
                 }
             }

@@ -109,7 +109,7 @@ public class WebFilterApp extends WebFilterBase
     }
 
     @Override
-    public String getNodeTitle()
+    public String getAppTitle()
     {
         return "Web Filter";
     }

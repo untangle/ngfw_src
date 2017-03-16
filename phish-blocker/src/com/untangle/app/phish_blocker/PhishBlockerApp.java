@@ -31,8 +31,8 @@ public class PhishBlockerApp extends SpamBlockerBaseApp
     private void readAppSettings()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getAppSettings().getId().toString();
-        String settingsFile = System.getProperty("uvm.settings.dir") + "/phish-blocker/settings_" + nodeID + ".js";
+        String appID = this.getAppSettings().getId().toString();
+        String settingsFile = System.getProperty("uvm.settings.dir") + "/phish-blocker/settings_" + appID + ".js";
         PhishBlockerSettings readSettings = null;
         
         logger.info("Loading settings from " + settingsFile);
@@ -40,7 +40,7 @@ public class PhishBlockerApp extends SpamBlockerBaseApp
         try {
             readSettings =  settingsManager.load( PhishBlockerSettings.class, settingsFile);
         } catch (Exception exn) {
-            logger.error("Could not read node settings", exn);
+            logger.error("Could not read app settings", exn);
         }
 
         try {
@@ -52,7 +52,7 @@ public class PhishBlockerApp extends SpamBlockerBaseApp
                 this.spamSettings = readSettings;
             }
         } catch (Exception exn) {
-            logger.error("Could not apply node settings", exn);
+            logger.error("Could not apply app settings", exn);
         }
     }
     
@@ -66,8 +66,8 @@ public class PhishBlockerApp extends SpamBlockerBaseApp
         logger.info("setSettings()");
 
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getAppSettings().getId().toString();
-        String settingsFile = System.getProperty("uvm.settings.dir") + "/phish-blocker/settings_" + nodeID + ".js";
+        String appID = this.getAppSettings().getId().toString();
+        String settingsFile = System.getProperty("uvm.settings.dir") + "/phish-blocker/settings_" + appID + ".js";
 
         try {
             settingsManager.save( settingsFile, newSettings);

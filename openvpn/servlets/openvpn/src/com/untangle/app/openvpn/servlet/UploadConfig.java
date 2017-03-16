@@ -25,7 +25,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.app.openvpn.OpenVpnNodeImpl;
+import com.untangle.app.openvpn.OpenVpnAppImpl;
 
 /**
  * Servlet used to upload a client configuration file.
@@ -46,10 +46,10 @@ public class UploadConfig extends HttpServlet
     protected void doPost( HttpServletRequest request,  HttpServletResponse response )
         throws ServletException, IOException
     {
-        OpenVpnNodeImpl node = (OpenVpnNodeImpl) UvmContextFactory.context().appManager().app( "openvpn" );
+        OpenVpnAppImpl app = (OpenVpnAppImpl) UvmContextFactory.context().appManager().app( "openvpn" );
 
-        if ( node == null ) {
-            logger.warn( "Unable to retrieve the OpenVPN node." );
+        if ( app == null ) {
+            logger.warn( "Unable to retrieve the OpenVPN app." );
             response.sendError( HttpServletResponse.SC_UNAUTHORIZED, "Please access this through the admin client." );
             return;
         }
@@ -123,7 +123,7 @@ public class UploadConfig extends HttpServlet
         }
 
         try {
-            node.importClientConfig( temp.getPath() );
+            app.importClientConfig( temp.getPath() );
         } catch ( Exception e ) {
             logger.warn( "Unable to install the client configuration", e );
             writer.write( "{ \"success\" : false, \"code\" : \"" + e.toString() + "\" }" );

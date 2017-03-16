@@ -17,23 +17,23 @@ import remote_control
 import global_functions
 
 defaultRackId = 1
-node = None
-nodeSSL = None
-nodeSSLData = None
+app = None
+appSSL = None
+appSSLData = None
 canRelay = True
 testsite = global_functions.testServerHost
 testsiteIP = socket.gethostbyname(testsite)
 
 def addPassSite(site, enabled=True, description="description"):
     newRule =  { "enabled": enabled, "description": description, "javaClass": "com.untangle.uvm.app.GenericRule", "string": site }
-    rules = node.getPassSites()
+    rules = app.getPassSites()
     rules["list"].append(newRule)
-    node.setPassSites(rules)
+    app.setPassSites(rules)
 
 def nukePassSites():
-    rules = node.getPassSites()
+    rules = app.getPassSites()
     rules["list"] = []
-    node.setPassSites(rules)
+    app.setPassSites(rules)
 
 def createSSLInspectRule(port="25"):
     return {
@@ -68,7 +68,7 @@ def createSSLInspectRule(port="25"):
 class VirusBlockerBaseTests(unittest2.TestCase):
 
     @staticmethod
-    def nodeName():
+    def appName():
         return "untangle-base-virus-blocker"
 
     @staticmethod
@@ -80,12 +80,12 @@ class VirusBlockerBaseTests(unittest2.TestCase):
         return "Virus Blocker Lite"
 
     @staticmethod
-    def nodeNameSSLInspector():
+    def appNameSSLInspector():
         return "ssl-inspector"
 
     @staticmethod
     def initialSetUp(self):
-        global node,md5StdNum, nodeSSL, nodeSSLData, canRelay
+        global app,md5StdNum, appSSL, appSSLData, canRelay
         # download eicar and trojan files before installing virus blocker
         remote_control.run_command("rm -f /tmp/eicar /tmp/std_022_ftpVirusBlocked_file /tmp/temp_022_ftpVirusPassSite_file")
         result = remote_control.run_command("wget -q -O /tmp/eicar http://test.untangle.com/virus/eicar.com")
@@ -102,16 +102,16 @@ class VirusBlockerBaseTests(unittest2.TestCase):
         except Exception,e:
             canRelay = False
 
-        if (uvmContext.appManager().isInstantiated(self.nodeName())):
-            raise unittest2.SkipTest('node %s already instantiated' % self.nodeName())
-        node = uvmContext.appManager().instantiate(self.nodeName(), defaultRackId)
-        self.node = node
+        if (uvmContext.appManager().isInstantiated(self.appName())):
+            raise unittest2.SkipTest('app %s already instantiated' % self.appName())
+        app = uvmContext.appManager().instantiate(self.appName(), defaultRackId)
+        self.app = app
 
-        if uvmContext.appManager().isInstantiated(self.nodeNameSSLInspector()):
-            raise Exception('node %s already instantiated' % self.nodeNameSSLInspector())
-        nodeSSL = uvmContext.appManager().instantiate(self.nodeNameSSLInspector(), defaultRackId)
-        # nodeSSL.start() # leave node off. node doesn't auto-start
-        nodeSSLData = nodeSSL.getSettings()
+        if uvmContext.appManager().isInstantiated(self.appNameSSLInspector()):
+            raise Exception('app %s already instantiated' % self.appNameSSLInspector())
+        appSSL = uvmContext.appManager().instantiate(self.appNameSSLInspector(), defaultRackId)
+        # appSSL.start() # leave app off. app doesn't auto-start
+        appSSLData = appSSL.getSettings()
 
     def setUp(self):
         pass
@@ -135,14 +135,14 @@ class VirusBlockerBaseTests(unittest2.TestCase):
     def test_015_httpEicarBlocked(self):
         if platform.machine().startswith('arm'):
             raise unittest2.SkipTest("local scanner not available on ARM")
-        pre_events_scan = global_functions.get_app_metric_value(node,"scan")
-        pre_events_block = global_functions.get_app_metric_value(node,"block")
+        pre_events_scan = global_functions.get_app_metric_value(app,"scan")
+        pre_events_block = global_functions.get_app_metric_value(app,"block")
 
         result = remote_control.run_command("wget -q -O - http://test.untangle.com/virus/eicar.zip 2>&1 | grep -q blocked")
         assert (result == 0)
 
-        post_events_scan = global_functions.get_app_metric_value(node,"scan")
-        post_events_block = global_functions.get_app_metric_value(node,"block")
+        post_events_scan = global_functions.get_app_metric_value(app,"scan")
+        post_events_block = global_functions.get_app_metric_value(app,"block")
 
         assert(pre_events_scan < post_events_scan)
         assert(pre_events_block < post_events_block)
@@ -387,13 +387,13 @@ class VirusBlockerBaseTests(unittest2.TestCase):
         result = remote_control.run_command("chmod 775 /tmp/email_script.py")
         assert (result == 0)
         # Turn on SSL Inspector
-        nodeSSLData['processEncryptedMailTraffic'] = True
-        nodeSSLData['ignoreRules']['list'].insert(0,createSSLInspectRule("25"))
-        nodeSSL.setSettings(nodeSSLData)
-        nodeSSL.start()
+        appSSLData['processEncryptedMailTraffic'] = True
+        appSSLData['ignoreRules']['list'].insert(0,createSSLInspectRule("25"))
+        appSSL.setSettings(appSSLData)
+        appSSL.start()
         # email the file
         result = remote_control.run_command("/tmp/email_script.py --server=%s --from=junk@test.untangle.com --to=junk@test.untangle.com --subject='%s' --body='body' --file=/tmp/eicar --starttls" % (testsiteIP, fname),nowait=False)
-        nodeSSL.stop()
+        appSSL.stop()
         assert (result == 0)
 
         events = global_functions.get_events(self.displayName(),'Infected Email Events',None,1)
@@ -423,27 +423,27 @@ class VirusBlockerBaseTests(unittest2.TestCase):
         assert (md5LargePDFClean == md5TestNum)
 
     def test_300_disableAllScans(self):
-        virusSettings = self.node.getSettings()
+        virusSettings = self.app.getSettings()
 
-        self.node.clearAllEventHandlerCaches()
+        self.app.clearAllEventHandlerCaches()
 
         virusSettings['enableCloudScan'] = False
         virusSettings['enableLocalScan'] = False
-        self.node.setSettings(virusSettings)
+        self.app.setSettings(virusSettings)
 
         result = remote_control.run_command("wget -q -O - http://test.untangle.com/virus/eicar.zip 2>&1 | grep -q blocked")
 
         virusSettings['enableCloudScan'] = True
         virusSettings['enableLocalScan'] = True
-        self.node.setSettings(virusSettings)
+        self.app.setSettings(virusSettings)
         assert (result != 0)
 
     @staticmethod
     def finalTearDown(self):
-        global node, nodeSSL
-        if node != None:
-            uvmContext.appManager().destroy( node.getAppSettings()["id"] )
-            node = None
-        if nodeSSL != None:
-            uvmContext.appManager().destroy( nodeSSL.getAppSettings()["id"] )
-            nodeSSL = None
+        global app, appSSL
+        if app != None:
+            uvmContext.appManager().destroy( app.getAppSettings()["id"] )
+            app = None
+        if appSSL != None:
+            uvmContext.appManager().destroy( appSSL.getAppSettings()["id"] )
+            appSSL = None

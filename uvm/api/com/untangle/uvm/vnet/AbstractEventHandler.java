@@ -18,16 +18,16 @@ import com.untangle.uvm.vnet.SessionEventHandler;
  */
 public abstract class AbstractEventHandler implements SessionEventHandler
 {
-    protected AppBase node;
+    protected AppBase app;
 
-    protected AbstractEventHandler(App node)
+    protected AbstractEventHandler(App app)
     {
-        this.node = (AppBase)node;
+        this.app = (AppBase)app;
     }
 
     protected AbstractEventHandler()
     {
-        this.node = null;
+        this.app = null;
     }
     
     public void handleTimer( AppSession session )
@@ -134,7 +134,7 @@ public abstract class AbstractEventHandler implements SessionEventHandler
         // Current assumption: A single expire will be generated on
         // one side of the pipeline, which will travel across it.
         // Another possibility would be to hit them all at once.  Just
-        // go ahead and expire the other side.  The node will override
+        // go ahead and expire the other side.  The app will override
         // this method if it wants to keep the other side open.
         session.expireServer();
     }
@@ -144,7 +144,7 @@ public abstract class AbstractEventHandler implements SessionEventHandler
         // Current assumption: A single expire will be generated on
         // one side of the pipeline, which will travel across it.
         // Another possibility would be to hit them all at once.  Just
-        // go ahead and expire the other side.  The node will override
+        // go ahead and expire the other side.  The app will override
         // this method if it wants to keep the other side open.
         session.expireClient();
     }

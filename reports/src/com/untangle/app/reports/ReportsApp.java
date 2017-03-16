@@ -141,9 +141,9 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
          * Save the settings
          */
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getAppSettings().getId().toString();
+        String appID = this.getAppSettings().getId().toString();
         try {
-            settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "reports/" + "settings_"  + nodeID + ".js", newSettings );
+            settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "reports/" + "settings_"  + appID + ".js", newSettings );
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.",e);
             return;
@@ -346,9 +346,9 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
     protected void postInit()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getAppSettings().getId().toString();
+        String appID = this.getAppSettings().getId().toString();
         ReportsSettings readSettings = null;
-        String settingsFileName = System.getProperty("uvm.settings.dir") + "/reports/" + "settings_" + nodeID + ".js";
+        String settingsFileName = System.getProperty("uvm.settings.dir") + "/reports/" + "settings_" + appID + ".js";
 
         conversion_paths_13_0_0();
 
@@ -887,7 +887,7 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
 
                 ReportsApp reports = (ReportsApp) UvmContextFactory.context().appManager().app("reports");
                 if (reports == null) {
-                    logger.warn("reports node not found");
+                    logger.warn("reports app not found");
                     return;
                 }
                 ResultSetReader resultSetReader = ReportsManagerImpl.getInstance().getEventsForDateRangeResultSet( query, conditions, -1, startDate, endDate);

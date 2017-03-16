@@ -242,7 +242,7 @@ public class NotificationManagerImpl implements NotificationManager
         LinkedList<AppSettings> appSettingsList = UvmContextFactory.context().appManager().getSettings().getApps();
 
         /**
-         * Check each node for dupe nodes
+         * Check each app for dupe apps
          */
         for (AppSettings n1 : appSettingsList ) {
             for (AppSettings n2 : appSettingsList ) {
@@ -282,22 +282,22 @@ public class NotificationManagerImpl implements NotificationManager
         List<App> webMonitorList = UvmContextFactory.context().appManager().appInstances("web-monitor");
         List<App> webFilterList = UvmContextFactory.context().appManager().appInstances("web-filter");
 
-        for (App node1 : webMonitorList) {
-            for (App node2 : webFilterList) {
-                if (node1.getAppSettings().getId().equals(node2.getAppSettings().getId()))
+        for (App app1 : webMonitorList) {
+            for (App app2 : webFilterList) {
+                if (app1.getAppSettings().getId().equals(app2.getAppSettings().getId()))
                     continue;
 
-                if (node1.getAppSettings().getPolicyId().equals(node2.getAppSettings().getPolicyId()))
+                if (app1.getAppSettings().getPolicyId().equals(app2.getAppSettings().getPolicyId()))
                     notificationList.add(i18nUtil.tr("One or more racks contain redundant apps") + ": " + " Web Filter " + i18nUtil.tr("and") + " Web Monitor" );
             }
         }
 
-        for (App node1 : spamBlockerLiteList) {
-            for (App node2 : spamblockerList) {
-                if (node1.getAppSettings().getId().equals(node2.getAppSettings().getId()))
+        for (App app1 : spamBlockerLiteList) {
+            for (App app2 : spamblockerList) {
+                if (app1.getAppSettings().getId().equals(app2.getAppSettings().getId()))
                     continue;
 
-                if (node1.getAppSettings().getPolicyId().equals(node2.getAppSettings().getPolicyId()))
+                if (app1.getAppSettings().getPolicyId().equals(app2.getAppSettings().getPolicyId()))
                     notificationList.add(i18nUtil.tr("One or more racks contain redundant apps") + ": " + " Spam Blocker " + i18nUtil.tr("and") + " Spam Blocker Lite" );
             }
         }

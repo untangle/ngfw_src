@@ -11,7 +11,7 @@ import org.json.JSONString;
 
 /**
  * The App Manager Settings
- * This stores most of the settings related to the nodes
+ * This stores most of the settings related to the apps
  */
 @SuppressWarnings("serial")
 public class AppManagerSettings implements Serializable, JSONString

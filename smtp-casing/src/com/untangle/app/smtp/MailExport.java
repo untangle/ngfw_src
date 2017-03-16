@@ -3,8 +3,8 @@
  */
 package com.untangle.app.smtp;
 
-import com.untangle.app.smtp.quarantine.QuarantineNodeView;
-import com.untangle.app.smtp.safelist.SafelistNodeView;
+import com.untangle.app.smtp.quarantine.QuarantineAppView;
+import com.untangle.app.smtp.safelist.SafelistAppView;
 
 public interface MailExport
 {
@@ -13,14 +13,14 @@ public interface MailExport
     /**
      * Access the Object which is used to submit Mails to the quarantine.
      * 
-     * @return the QuarantineNodeView
+     * @return the QuarantineAppView
      */
-    QuarantineNodeView getQuarantineNodeView();
+    QuarantineAppView getQuarantineAppView();
 
     /**
      * Access the object used to consult the Safelist manager while processing mails
      * 
-     * @return the SafelistNodeView
+     * @return the SafelistAppView
      */
-    SafelistNodeView getSafelistNodeView();
+    SafelistAppView getSafelistAppView();
 }

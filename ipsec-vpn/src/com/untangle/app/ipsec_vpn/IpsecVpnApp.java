@@ -174,10 +174,10 @@ public class IpsecVpnApp extends AppBase
         }
 
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = getAppSettings().getId().toString();
+        String appID = getAppSettings().getId().toString();
 
         try {
-            settingsManager.save(System.getProperty("uvm.settings.dir") + "/ipsec-vpn/settings_" + nodeID + ".js", newSettings);
+            settingsManager.save(System.getProperty("uvm.settings.dir") + "/ipsec-vpn/settings_" + appID + ".js", newSettings);
         } catch (Exception exn) {
             logger.error("Failed to save settings: ", exn);
             return;
@@ -231,9 +231,9 @@ public class IpsecVpnApp extends AppBase
     {
         logger.debug("postInit()");
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = getAppSettings().getId().toString();
+        String appID = getAppSettings().getId().toString();
         IpsecVpnSettings readSettings = null;
-        String settingsFilename = System.getProperty("uvm.settings.dir") + "/ipsec-vpn/settings_" + nodeID + ".js";
+        String settingsFilename = System.getProperty("uvm.settings.dir") + "/ipsec-vpn/settings_" + appID + ".js";
 
         try {
             readSettings = settingsManager.load(IpsecVpnSettings.class, settingsFilename);
@@ -298,7 +298,7 @@ public class IpsecVpnApp extends AppBase
         }
 
         // if there were any disconnects wait a couple seconds for the
-        // ip-down script to update the node with the session statistics
+        // ip-down script to update the app with the session statistics
         if (counter > 0) {
             try {
                 Thread.sleep(2000);

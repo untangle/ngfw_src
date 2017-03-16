@@ -42,18 +42,18 @@ public class WebFilterBlockPageServlet extends com.untangle.app.web_filter.Block
         /* Retrieve the page title (in the window bar) of the page */
         public String getPageTitle( BrandingManager bm, Map<String,String> i18n_map )
         {
-            return I18nUtil.tr("{0} | {1} Warning", new String[] { bm.getCompanyName(), this.getNodeTitle(bm) }, i18n_map);
+            return I18nUtil.tr("{0} | {1} Warning", new String[] { bm.getCompanyName(), this.getAppTitle(bm) }, i18n_map);
         }
 
         /* Retrieve the title (top of the pae) of the page */
         public String getTitle( BrandingManager bm, Map<String,String> i18n_map )
         {
-            return this.getNodeTitle(bm);
+            return this.getAppTitle(bm);
         }
 
         public String getFooter( BrandingManager bm, Map<String,String> i18n_map )
         {
-            return bm.getCompanyName() + " " + this.getNodeTitle(bm);
+            return bm.getCompanyName() + " " + this.getAppTitle(bm);
         }
 
         /* Return the name of the script file to load, or null if there is not a script. */
@@ -93,9 +93,9 @@ public class WebFilterBlockPageServlet extends com.untangle.app.web_filter.Block
             return this.unblockMode;
         }
 
-        private String getNodeTitle ( BrandingManager bm )
+        private String getAppTitle ( BrandingManager bm )
         {
-            return this.blockDetails.getNodeTitle();
+            return this.blockDetails.getAppTitle();
         }
     }
 }

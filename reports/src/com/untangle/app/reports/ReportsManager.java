@@ -122,7 +122,7 @@ public interface ReportsManager
     /**
      * Tests if reports is enabled.
      * Currently this is the same thing as "is the
-     * reports node installed and turned on."
+     * reports app installed and turned on."
      *
      * @return true if reports is enabled, false otherwise.
      */

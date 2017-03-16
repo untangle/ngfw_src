@@ -17,7 +17,7 @@ from global_functions import uvmContext
 class SpamBlockerTests(SpamBlockerBaseTests):
 
     @staticmethod
-    def nodeName():
+    def appName():
         return "spam-blocker"
 
     @staticmethod
@@ -30,11 +30,11 @@ class SpamBlockerTests(SpamBlockerBaseTests):
 
     # verify daemon is running
     def test_009_IsRunningAndSSL(self):
-        nodeSSL = nodeSP = uvmContext.appManager().app(self.nodeNameSSLInspector())
-        nodeSSL.start()
+        appSSL = appSP = uvmContext.appManager().app(self.appNameSSLInspector())
+        appSSL.start()
         result = os.system("ps aux | grep spamd | grep -v grep >/dev/null 2>&1")
         assert (result == 0)
         result = os.system( "ps aux | grep spamcatd | grep -v grep >/dev/null 2>&1" )
         assert ( result == 0 )
 
-test_registry.registerNode("spam-blocker-w-ssl", SpamBlockerTests)
+test_registry.registerApp("spam-blocker-w-ssl", SpamBlockerTests)

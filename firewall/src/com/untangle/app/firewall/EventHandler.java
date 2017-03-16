@@ -27,14 +27,14 @@ public class EventHandler extends AbstractEventHandler
 
     private boolean blockSilently = true;
 
-    /* Firewall Node */
-    private final FirewallApp node;
+    /* Firewall App */
+    private final FirewallApp app;
 
-    public EventHandler( FirewallApp node )
+    public EventHandler( FirewallApp app )
     {
-        super(node);
+        super(app);
 
-        this.node = node;
+        this.app = app;
     }
 
     public void handleTCPNewSessionRequest( TCPNewSessionRequest sessionRequest )
@@ -97,12 +97,12 @@ public class EventHandler extends AbstractEventHandler
             }
 
             /* Increment the block counter and flag counter*/
-            node.incrementBlockCount(); 
-            if (flag) node.incrementFlagCount();
+            app.incrementBlockCount(); 
+            if (flag) app.incrementFlagCount();
 
             /* We just blocked, so we have to log too, regardless of what the rule actually says */
             FirewallEvent fwe = new FirewallEvent(request.sessionEvent(), block, flag, ruleIndex);
-            node.logEvent(fwe);
+            app.logEvent(fwe);
 
         } else { /* not blocked */
 
@@ -114,12 +114,12 @@ public class EventHandler extends AbstractEventHandler
             request.release();
 
             /* Increment the pass counter and flag counter */
-            node.incrementPassCount();
-            if (flag) node.incrementFlagCount();
+            app.incrementPassCount();
+            if (flag) app.incrementFlagCount();
 
             /* If necessary log the event */
             FirewallEvent fwe = new FirewallEvent(request.sessionEvent(), block, flag, ruleIndex);
-            node.logEvent(fwe);
+            app.logEvent(fwe);
         }
     }
 

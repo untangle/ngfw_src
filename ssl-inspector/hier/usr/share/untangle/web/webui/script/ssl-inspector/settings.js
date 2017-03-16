@@ -1,7 +1,7 @@
 // SSL Inspector Settings
 Ext.define('Webui.ssl-inspector.settings', {
     extend: 'Ung.AppWin',
-    panelNodeConfiguration: null,
+    panelAppConfiguration: null,
     gridTrustList: null,
     gridIgnoreRules: null,
     gridEventLog: null,
@@ -13,7 +13,7 @@ Ext.define('Webui.ssl-inspector.settings', {
         this.buildPanelConfiguration();
         this.buildGridIgnoreRules();
 
-        this.buildTabPanel([this.panelNodeConfiguration, this.gridIgnoreRules]);
+        this.buildTabPanel([this.panelAppConfiguration, this.gridIgnoreRules]);
         this.callParent(arguments);
     },
     getConditions: function () {
@@ -72,7 +72,7 @@ Ext.define('Webui.ssl-inspector.settings', {
     buildPanelConfiguration: function() {
         this.buildTrustGrid();
 
-        this.panelNodeConfiguration = Ext.create('Ext.form.Panel',{
+        this.panelAppConfiguration = Ext.create('Ext.form.Panel',{
             name: 'Configuration',
             helpSource: 'ssl_inspector_configuration',
             title: i18n._("Configuration"),
@@ -309,7 +309,7 @@ Ext.define('Webui.ssl-inspector.settings', {
             hasDelete: false,
             hasEdit: false,
             hasAdd: false,
-            dataFn: this.getRpcNode().getTrustCatalog,
+            dataFn: this.getRpcApp().getTrustCatalog,
             fields: [{
                 name: 'certAlias',
                 mapping: 'certAlias'
@@ -365,7 +365,7 @@ Ext.define('Webui.ssl-inspector.settings', {
                     iconCls: 'icon-delete-row',
                     tooltip: i18n._("Click to delete"),
                     handler: Ext.bind(function(view, rowIndex, colIndex, item, e, record) {
-                        this.getRpcNode().removeTrustedCertificate(record.get("certAlias"));
+                        this.getRpcApp().removeTrustedCertificate(record.get("certAlias"));
                         this.gridTrustList.reload();
                     }, this)
                 }]

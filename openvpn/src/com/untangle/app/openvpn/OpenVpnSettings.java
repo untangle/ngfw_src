@@ -13,7 +13,7 @@ import org.json.JSONString;
 import com.untangle.uvm.app.IPMaskedAddress;
 
 /**
- * Settings for the open vpn node.
+ * Settings for the open vpn app.
  */
 @SuppressWarnings("serial")
 public class OpenVpnSettings implements java.io.Serializable, JSONString

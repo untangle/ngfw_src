@@ -20,13 +20,13 @@ public class WebFilterBaseHandler extends HttpEventHandler
 {
     protected final Logger logger = Logger.getLogger(getClass());
 
-    protected final WebFilterBase node;
+    protected final WebFilterBase app;
 
     // constructors -----------------------------------------------------------
 
-    protected WebFilterBaseHandler( WebFilterBase node )
+    protected WebFilterBaseHandler( WebFilterBase app )
     {
-        this.node = node;
+        this.app = app;
     }
 
     // HttpEventHandler methods -----------------------------------------------
@@ -40,23 +40,23 @@ public class WebFilterBaseHandler extends HttpEventHandler
     @Override
     protected HeaderToken doRequestHeader( AppTCPSession sess, HeaderToken requestHeader )
     {
-        node.incrementScanCount();
+        app.incrementScanCount();
 
-        String nonce = node.getDecisionEngine().checkRequest(sess, sess.getClientAddr(), 80, getRequestLine( sess ),requestHeader);
+        String nonce = app.getDecisionEngine().checkRequest(sess, sess.getClientAddr(), 80, getRequestLine( sess ),requestHeader);
 
         if (logger.isDebugEnabled()) {
             logger.debug("in doRequestHeader(): " + requestHeader + "check request returns: " + nonce);
         }
 
         if ( nonce == null ) {
-            node.incrementPassCount();
+            app.incrementPassCount();
             
             releaseRequest( sess );
         } else {
-            node.incrementBlockCount();
+            app.incrementBlockCount();
 
             String uri = getRequestLine( sess ).getRequestUri().toString();
-            Token[] response = node.generateResponse( nonce, sess, uri, requestHeader );
+            Token[] response = app.generateResponse( nonce, sess, uri, requestHeader );
             blockRequest( sess, response );
         }
 
@@ -85,20 +85,20 @@ public class WebFilterBaseHandler extends HttpEventHandler
         if ( getStatusLine( sess ).getStatusCode() == 100 ) {
             releaseResponse( sess );
         } else {
-            String nonce = node.getDecisionEngine().checkResponse(sess, sess.getClientAddr(), getResponseRequest( sess ), responseHeader);
+            String nonce = app.getDecisionEngine().checkResponse(sess, sess.getClientAddr(), getResponseRequest( sess ), responseHeader);
             
             if (logger.isDebugEnabled()) {
                 logger.debug("in doResponseHeader: " + responseHeader + "checkResponse returns: " + nonce);
             }
 
             if ( nonce == null ) {
-                node.incrementPassCount();
+                app.incrementPassCount();
 
                 releaseResponse( sess );
             } else {
-                node.incrementBlockCount();
+                app.incrementBlockCount();
 
-                Token[] response = node.generateResponse( nonce, sess );
+                Token[] response = app.generateResponse( nonce, sess );
                 blockResponse( sess, response );
             }
         }

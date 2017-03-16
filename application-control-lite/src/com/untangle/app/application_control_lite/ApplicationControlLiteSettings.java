@@ -6,7 +6,7 @@ package com.untangle.app.application_control_lite;
 import java.util.LinkedList;
 
 /**
- * Settings for the ApplicationControlLite node.
+ * Settings for the ApplicationControlLite app.
  *
  */
 @SuppressWarnings("serial")

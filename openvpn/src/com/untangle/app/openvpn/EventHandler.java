@@ -20,13 +20,13 @@ class EventHandler extends AbstractEventHandler
 {
     private final Logger logger = Logger.getLogger( EventHandler.class );
 
-    private final OpenVpnNodeImpl node;
+    private final OpenVpnAppImpl app;
 
-    public EventHandler( OpenVpnNodeImpl node )
+    public EventHandler( OpenVpnAppImpl app )
     {
-        super(node);
+        super(app);
 
-        this.node = node;
+        this.app = app;
     }
 
     public void handleTCPNewSessionRequest( TCPNewSessionRequest sessionRequest )
@@ -56,12 +56,12 @@ class EventHandler extends AbstractEventHandler
         }
         else if ( request.getClientIntf() == IntfConstants.OPENVPN_INTF ) {
             /* OPENVPN client going to another interface */
-            node.incrementPassCount();
+            app.incrementPassCount();
             request.release();
         }
         else {
             /* Local user trying to reach a OPENVPN client */
-            node.incrementPassCount();
+            app.incrementPassCount();
             request.release();
         }
     }

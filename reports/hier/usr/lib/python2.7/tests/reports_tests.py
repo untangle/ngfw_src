@@ -22,7 +22,7 @@ from global_functions import uvmContext
 prefix = "@PREFIX@"
 
 defaultRackId = 1
-node = None
+app = None
 canRelay = None
 canSyslog = None
 orig_settings = None
@@ -178,15 +178,15 @@ def createEmailTemplate(mobile=False):
 class ReportsTests(unittest2.TestCase):
 
     @staticmethod
-    def nodeName():
+    def appName():
         return "reports"
 
     @staticmethod
-    def nodeFirewallName():
+    def appFirewallName():
         return "firewall"
 
     @staticmethod
-    def nodeWanFailoverName():
+    def appWanFailoverName():
         return "wan-failover"
 
     @staticmethod
@@ -195,16 +195,16 @@ class ReportsTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        global node, orig_settings, orig_netsettings, testServerHost, testEmailAddress, canRelay, canSyslog, syslogServerHost
+        global app, orig_settings, orig_netsettings, testServerHost, testEmailAddress, canRelay, canSyslog, syslogServerHost
         orig_netsettings = uvmContext.networkManager().getNetworkSettings()
-        if (uvmContext.appManager().isInstantiated(self.nodeName())):
-            # report node is normally installed.
-            # print "Node %s already installed" % self.nodeName()
-            # raise Exception('node %s already instantiated' % self.nodeName())
-            node = uvmContext.appManager().app(self.nodeName())
+        if (uvmContext.appManager().isInstantiated(self.appName())):
+            # report app is normally installed.
+            # print "App %s already installed" % self.appName()
+            # raise Exception('app %s already instantiated' % self.appName())
+            app = uvmContext.appManager().app(self.appName())
         else:
-            node = uvmContext.appManager().instantiate(self.nodeName(), defaultRackId)
-        reportSettings = node.getSettings()
+            app = uvmContext.appManager().instantiate(self.appName(), defaultRackId)
+        reportSettings = app.getSettings()
         orig_settings = copy.deepcopy(reportSettings)
 
         # Skip checking relaying is possible if we have determined it as true on previous test.
@@ -234,45 +234,45 @@ class ReportsTests(unittest2.TestCase):
         if (not canSyslog):
             raise unittest2.SkipTest('Unable to syslog through ' + syslogServerHost)
 
-        nodeFirewall = None
-        if (uvmContext.appManager().isInstantiated(self.nodeFirewallName())):
-            print "Node %s already installed" % self.nodeFirewallName()
-            nodeFirewall = uvmContext.appManager().app(self.nodeFirewallName())
+        appFirewall = None
+        if (uvmContext.appManager().isInstantiated(self.appFirewallName())):
+            print "App %s already installed" % self.appFirewallName()
+            appFirewall = uvmContext.appManager().app(self.appFirewallName())
         else:
-            nodeFirewall = uvmContext.appManager().instantiate(self.nodeFirewallName(), defaultRackId)
+            appFirewall = uvmContext.appManager().instantiate(self.appFirewallName(), defaultRackId)
 
         # Install firewall rule to generate syslog events
-        rules = nodeFirewall.getRules()
+        rules = appFirewall.getRules()
         rules["list"].append(createFirewallSingleConditionRule("SRC_ADDR",remote_control.clientIP));
-        nodeFirewall.setRules(rules);
-        rules = nodeFirewall.getRules()
+        appFirewall.setRules(rules);
+        rules = appFirewall.getRules()
         # Get rule ID
         for rule in rules['list']:
             if rule['enabled'] and rule['block']:
                 targetRuleId = rule['ruleId']
                 break
         # Setup syslog to send events to syslog host
-        newSyslogSettings = node.getSettings()
+        newSyslogSettings = app.getSettings()
         newSyslogSettings["syslogEnabled"] = True
         newSyslogSettings["syslogPort"] = 514
         newSyslogSettings["syslogProtocol"] = "UDP"
         newSyslogSettings["syslogHost"] = syslogServerHost
-        node.setSettings(newSyslogSettings)
+        app.setSettings(newSyslogSettings)
 
         # create some traffic (blocked by firewall and thus create a syslog event)
         result = remote_control.is_online(tries=1)
         # flush out events
-        node.flushEvents()
+        app.flushEvents()
 
         # remove the firewall rule aet syslog back to original settings
-        node.setSettings(orig_settings)
+        app.setSettings(orig_settings)
         rules["list"]=[];
-        nodeFirewall.setRules(rules);
+        appFirewall.setRules(rules);
 
         # remove firewall
-        if nodeFirewall != None:
-            uvmContext.appManager().destroy( nodeFirewall.getAppSettings()["id"] )
-        nodeFirewall = None
+        if appFirewall != None:
+            uvmContext.appManager().destroy( appFirewall.getAppSettings()["id"] )
+        appFirewall = None
         
         # parse the output and look for a rule that matches the expected values
         timeout = 5
@@ -316,9 +316,9 @@ class ReportsTests(unittest2.TestCase):
         uvmContext.adminManager().setSettings(adminsettings)
 
         # Clear all report users
-        settings = node.getSettings()
+        settings = app.getSettings()
         settings["reportsUsers"]["list"] = settings["reportsUsers"]["list"][:1]
-        node.setSettings(settings)
+        app.setSettings(settings)
 
         # trigger alert
         subprocess.call([prefix+"/usr/share/untangle/bin/reports-generate-fixed-reports.py"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
@@ -367,7 +367,7 @@ class ReportsTests(unittest2.TestCase):
         adminsettings['users']['list'].append(createAdminUser(useremail=testEmailAddress))
         uvmContext.adminManager().setSettings(adminsettings)
 
-        settings = node.getSettings()
+        settings = app.getSettings()
         # Add custom template with a test not in daily reports
         settings["emailTemplates"]["list"] = settings["emailTemplates"]["list"][:1]
         settings["emailTemplates"]["list"].append(createEmailTemplate())
@@ -375,7 +375,7 @@ class ReportsTests(unittest2.TestCase):
         # Add report user with testEmailAddress
         settings["reportsUsers"]["list"] = settings["reportsUsers"]["list"][:1]
         settings["reportsUsers"]["list"].append(createReportsUser(profile_email=testEmailAddress, email_template_id=2))
-        node.setSettings(settings)
+        app.setSettings(settings)
 
         # trigger alert
         subprocess.call([prefix+"/usr/share/untangle/bin/reports-generate-fixed-reports.py"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
@@ -424,7 +424,7 @@ class ReportsTests(unittest2.TestCase):
         adminsettings['users']['list'].append(createAdminUser(useremail=testEmailAddress))
         uvmContext.adminManager().setSettings(adminsettings)
 
-        settings = node.getSettings()
+        settings = app.getSettings()
         # Add custom template with a test not in daily reports
         settings["emailTemplates"]["list"] = settings["emailTemplates"]["list"][:1]
         settings["emailTemplates"]["list"].append(createEmailTemplate(mobile=True))
@@ -432,7 +432,7 @@ class ReportsTests(unittest2.TestCase):
         # Add report user with testEmailAddress
         settings["reportsUsers"]["list"] = settings["reportsUsers"]["list"][:1]
         settings["reportsUsers"]["list"].append(createReportsUser(profile_email=testEmailAddress, email_template_id=2))
-        node.setSettings(settings)
+        app.setSettings(settings)
 
         # trigger alert
         subprocess.call([prefix+"/usr/share/untangle/bin/reports-generate-fixed-reports.py"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
@@ -466,11 +466,11 @@ class ReportsTests(unittest2.TestCase):
 
     @staticmethod
     def finalTearDown(self):
-        global node
-        if node != None:
-            node.setSettings(orig_settings)
+        global app
+        if app != None:
+            app.setSettings(orig_settings)
         if orig_mailsettings != None:
             uvmContext.mailSender().setSettings(orig_mailsettings)
-        node = None
+        app = None
 
-test_registry.registerNode("reports", ReportsTests)
+test_registry.registerApp("reports", ReportsTests)

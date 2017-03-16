@@ -249,7 +249,7 @@ public class IPMaskedAddress implements Serializable
         }
     }
     
-    public boolean isNode()
+    public boolean isApp()
     {
         if ( this.address instanceof Inet4Address)
             return (this.prefixLength == V4_FULL_PREFIXLENGTH);
@@ -327,7 +327,7 @@ public class IPMaskedAddress implements Serializable
      */
     public String toString()
     {
-        if (isNode()) {
+        if (isApp()) {
             return this.address.getHostAddress();
         } else {
             return this.address.getHostAddress() + "/" + this.prefixLength;
@@ -750,11 +750,11 @@ public class IPMaskedAddress implements Serializable
                 return false;
             }
 
-            if ( ! addr1.isNode() ) {
+            if ( ! addr1.isApp() ) {
                 logger.warn("FAIL TEST", new Exception());
                 return false;
             }
-            if ( addr2.isNode() ) {
+            if ( addr2.isApp() ) {
                 logger.warn("FAIL TEST", new Exception());
                 return false;
             }

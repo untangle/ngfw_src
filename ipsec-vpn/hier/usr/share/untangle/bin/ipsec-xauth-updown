@@ -2,7 +2,7 @@
 
 # This script is called by IPsec when an Xauth user connects or disconnects
 # via the leftupdown= parameter in the ipsec.conf file.  It then calls
-# ipsec-virtual-user-event to register the event with the IPsec node.
+# ipsec-virtual-user-event to register the event with the IPsec app.
 
 # The peer address is in 1.2.3.4/32 format so we use parameter expansion
 # magic to strip off the trailing garbage.

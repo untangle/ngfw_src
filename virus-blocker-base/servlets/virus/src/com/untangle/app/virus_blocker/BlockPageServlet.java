@@ -34,22 +34,22 @@ public class BlockPageServlet extends HttpServlet
 
         Map<String,String> i18n_map = UvmContextFactory.context().languageManager().getTranslations( "untangle" );
         
-        VirusBlockerBaseApp node = (VirusBlockerBaseApp) nm.app( Long.parseLong(request.getParameter( "tid" )) );
-        if ( node == null || !(node instanceof VirusBlockerBaseApp)) {
+        VirusBlockerBaseApp app = (VirusBlockerBaseApp) nm.app( Long.parseLong(request.getParameter( "tid" )) );
+        if ( app == null || !(app instanceof VirusBlockerBaseApp)) {
             response.sendError( HttpServletResponse.SC_NOT_ACCEPTABLE, 
                                 I18nUtil.tr( "Feature is not installed.", i18n_map ));
             return;
         }
 
         String nonce = request.getParameter("nonce");
-        VirusBlockDetails blockDetails = node.getDetails(nonce);
+        VirusBlockDetails blockDetails = app.getDetails(nonce);
         if (blockDetails == null) {
             response.sendError( HttpServletResponse.SC_NOT_ACCEPTABLE, 
                                 I18nUtil.tr( "This request has expired.", i18n_map ));
             return;
         }
         request.setAttribute( "reason", blockDetails.getReason());
-        VirusBlockPageParameters params = new VirusBlockPageParameters( node.getAppProperties().getDisplayName(), blockDetails );
+        VirusBlockPageParameters params = new VirusBlockPageParameters( app.getAppProperties().getDisplayName(), blockDetails );
                                                          
         BlockPageUtil.getInstance().handle( request, response, this, params );        
     }
@@ -57,24 +57,24 @@ public class BlockPageServlet extends HttpServlet
     private static class VirusBlockPageParameters implements BlockPageUtil.BlockPageParameters
     {
         private final VirusBlockDetails blockDetails;
-        private final String nodeTitle;
+        private final String appTitle;
 
-        public VirusBlockPageParameters( String nodeTitle, VirusBlockDetails blockDetails )
+        public VirusBlockPageParameters( String appTitle, VirusBlockDetails blockDetails )
         {
-            this.nodeTitle = nodeTitle;
+            this.appTitle = appTitle;
             this.blockDetails = blockDetails;
         }
 
         /* Retrieve the page title (in the window bar) of the page */
         public String getPageTitle( BrandingManager bm, Map<String,String> i18n_map )
         {
-            return I18nUtil.tr("{0} | {1} Warning", new Object[]{bm.getCompanyName(), this.nodeTitle}, i18n_map);
+            return I18nUtil.tr("{0} | {1} Warning", new Object[]{bm.getCompanyName(), this.appTitle}, i18n_map);
         }
         
         /* Retrieve the title (top of the pae) of the page */
         public String getTitle( BrandingManager bm, Map<String,String> i18n_map )
         {
-            return this.nodeTitle;
+            return this.appTitle;
         }
         
         public String getFooter( BrandingManager bm, Map<String,String> i18n_map )

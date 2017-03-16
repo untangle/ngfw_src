@@ -16,7 +16,7 @@ import com.untangle.uvm.app.AppSettings;
 class CaptivePortalReplacementGenerator extends ReplacementGenerator<CaptivePortalBlockDetails>
 {
     private final Logger logger = Logger.getLogger(getClass());
-    private final CaptivePortalApp captureNode;
+    private final CaptivePortalApp captureApp;
 
 // THIS IS FOR ECLIPSE - @formatter:off
     
@@ -33,10 +33,10 @@ class CaptivePortalReplacementGenerator extends ReplacementGenerator<CaptivePort
 
 // THIS IS FOR ECLIPSE - @formatter:on
 
-    CaptivePortalReplacementGenerator(AppSettings nodeId,CaptivePortalApp node)
+    CaptivePortalReplacementGenerator(AppSettings appId,CaptivePortalApp app)
     {
-        super(nodeId);
-        this.captureNode = node;
+        super(appId);
+        this.captureApp = app;
     }
 
     @Override
@@ -57,7 +57,7 @@ class CaptivePortalReplacementGenerator extends ReplacementGenerator<CaptivePort
         
         // start with the plaintext prefix for the redirect and switch to secure if the option is enabled
         String prefix = "http://";
-        if (captureNode.getCaptivePortalSettings().getAlwaysUseSecureCapture() == true) prefix = "https://";
+        if (captureApp.getCaptivePortalSettings().getAlwaysUseSecureCapture() == true) prefix = "https://";
         
         String retval = (prefix + host + "/capture/handler.py/index?nonce=" + nonce);
         retval = (retval + "&method=" + details.getMethod());

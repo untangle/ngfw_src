@@ -3,8 +3,8 @@ import simplejson as json
 #-----------------------------------------------------------------------------
 
 #@deprecated
-def get_node_settings(nodename):
-    return get_app_settings(nodename)
+def get_node_settings(appname):
+    return get_app_settings(appname)
 
 def get_app_settings(appname):
 

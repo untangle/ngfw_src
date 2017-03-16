@@ -34,23 +34,23 @@ public class WebFilterUnblockerServlet extends HttpServlet
         boolean global = Boolean.parseBoolean(request.getParameter("global"));
 
         AppManager nm = UvmContextFactory.context().appManager();
-        WebFilterBase node = null;
-        if ( node == null )
-            try {node = (WebFilterBase) nm.app( Long.parseLong(request.getParameter( "tid" )) );} catch (Exception e) {}
-        if ( node == null )
-            try {node = (WebFilterBase) nm.app( Long.parseLong(request.getParameter( "appid" )) );} catch (Exception e) {}
+        WebFilterBase app = null;
+        if ( app == null )
+            try {app = (WebFilterBase) nm.app( Long.parseLong(request.getParameter( "tid" )) );} catch (Exception e) {}
+        if ( app == null )
+            try {app = (WebFilterBase) nm.app( Long.parseLong(request.getParameter( "appid" )) );} catch (Exception e) {}
 
         try {
-            if ( node == null ) { 
+            if ( app == null ) { 
                 response.sendError( HttpServletResponse.SC_NOT_ACCEPTABLE, I18nUtil.tr( "App ID not found.", i18n_map ));
                 return;
             }
-            if ( !(node instanceof WebFilter) ) {
+            if ( !(app instanceof WebFilter) ) {
                 response.sendError( HttpServletResponse.SC_NOT_ACCEPTABLE, I18nUtil.tr( "Invalid App ID.", i18n_map ));
                 return;
             }
 
-            if (node.unblockSite(nonce, global, password)) {
+            if (app.unblockSite(nonce, global, password)) {
                 response.getOutputStream().println("<success/>");
             } else {
                 response.getOutputStream().println("<failure/>");

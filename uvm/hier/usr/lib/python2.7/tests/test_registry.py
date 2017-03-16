@@ -2,37 +2,37 @@ import os
 import sys
 import subprocess
 
-__nodeDict = {}
+__appDict = {}
 
-def registerNode(nodeName, clz):
-    global __nodeDict
-    __nodeDict[nodeName] = clz
+def registerApp(appName, clz):
+    global __appDict
+    __appDict[appName] = clz
 
-def allNodes():
-    global __nodeDict
-    nodeList = sorted(__nodeDict.keys())
+def allApps():
+    global __appDict
+    appList = sorted(__appDict.keys())
 
     # move these to front
-    if 'web-filter' in nodeList:
-        nodeList.insert(0, nodeList.pop(nodeList.index('web-filter')))
-    if 'firewall' in nodeList:
-        nodeList.insert(0, nodeList.pop(nodeList.index('firewall')))
-    if 'spam-blocker' in nodeList:
-        nodeList.append(nodeList.pop(nodeList.index('spam-blocker')))
-    if 'spam-blocker-lite' in nodeList:
-        nodeList.append(nodeList.pop(nodeList.index('spam-blocker-lite')))
-    if 'intrusion-prevention' in nodeList:
-        nodeList.append(nodeList.pop(nodeList.index('intrusion-prevention')))
+    if 'web-filter' in appList:
+        appList.insert(0, appList.pop(appList.index('web-filter')))
+    if 'firewall' in appList:
+        appList.insert(0, appList.pop(appList.index('firewall')))
+    if 'spam-blocker' in appList:
+        appList.append(appList.pop(appList.index('spam-blocker')))
+    if 'spam-blocker-lite' in appList:
+        appList.append(appList.pop(appList.index('spam-blocker-lite')))
+    if 'intrusion-prevention' in appList:
+        appList.append(appList.pop(appList.index('intrusion-prevention')))
         
-    return nodeList
+    return appList
 
 def allTests():
-    global __nodeDict
-    return __nodeDict.values()
+    global __appDict
+    return __appDict.values()
 
-def getTest(nodeName):
-    global __nodeDict
+def getTest(appName):
+    global __appDict
     try:
-        return __nodeDict[nodeName]
+        return __appDict[appName]
     except Exception,e:
         return None

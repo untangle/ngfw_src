@@ -16,15 +16,15 @@ public class VirusFtpEvent extends LogEvent
     private SessionEvent sessionEvent;
     private boolean clean;
     private String virusName;
-    private String nodeName;
+    private String appName;
     private String uri;
 
     public VirusFtpEvent() { }
 
-    public VirusFtpEvent(SessionEvent pe, boolean clean, String virusName, String nodeName, String uri)
+    public VirusFtpEvent(SessionEvent pe, boolean clean, String virusName, String appName, String uri)
     {
         this.sessionEvent = pe;
-        this.nodeName = nodeName;
+        this.appName = appName;
         this.clean = clean;
         this.virusName = virusName;
         this.uri = uri;
@@ -39,8 +39,8 @@ public class VirusFtpEvent extends LogEvent
     public String getVirusName() { return virusName; }
     public void SetVirusName(String newValue) { this.virusName = newValue; }
     
-    public String getAppName() { return nodeName; }
-    public void setNodeName(String nodeName) { this.nodeName = nodeName; }
+    public String getAppName() { return appName; }
+    public void setAppName(String appName) { this.appName = appName; }
 
     public String getUri() { return uri; }
     public void setUri(String uri) { this.uri = uri; }

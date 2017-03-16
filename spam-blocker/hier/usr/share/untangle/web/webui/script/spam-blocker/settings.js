@@ -8,10 +8,10 @@ Ext.define('Webui.spam-blocker.settings', {
     },
     initComponent: function() {
         try {
-            this.lastUpdate = this.getRpcNode().getLastUpdate();
-            this.lastCheck = this.getRpcNode().getLastUpdateCheck();
-            this.signatureVer = this.getRpcNode().getSignatureVersion();
-            this.vendor = this.getRpcNode().getVendor();
+            this.lastUpdate = this.getRpcApp().getLastUpdate();
+            this.lastCheck = this.getRpcApp().getLastUpdateCheck();
+            this.signatureVer = this.getRpcApp().getSignatureVersion();
+            this.vendor = this.getRpcApp().getVendor();
         } catch (e) {
             Ung.Util.rpcExHandler(e);
         }

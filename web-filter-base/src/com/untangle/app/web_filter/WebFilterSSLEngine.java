@@ -35,14 +35,14 @@ public class WebFilterSSLEngine
     private SSLContext sslContext;
     private SSLEngine sslEngine;
     private String nonceStr;
-    private String nodeStr;
+    private String appStr;
 
-    protected WebFilterSSLEngine(AppTCPSession session, String nonceStr, String nodeStr)
+    protected WebFilterSSLEngine(AppTCPSession session, String nonceStr, String appStr)
     {
         String webCertFile = CertificateManager.CERT_STORE_PATH + UvmContextFactory.context().systemManager().getSettings().getWebCertificate().replaceAll("\\.pem", "\\.pfx");
         this.session = session;
         this.nonceStr = nonceStr;
-        this.nodeStr = nodeStr;
+        this.appStr = appStr;
 
         try {
             // use the argumented certfile and password to init our keystore
@@ -266,7 +266,7 @@ public class WebFilterSSLEngine
         InetAddress host = UvmContextFactory.context().networkManager().getInterfaceHttpAddress(session.getClientIntf());
 
         vector += "HTTP/1.1 307 Temporary Redirect\r\n";
-        vector += "Location: http://" + host.getHostAddress().toString() + "/web-filter/blockpage?nonce=" + nonceStr + "&appid=" + nodeStr + "\r\n";
+        vector += "Location: http://" + host.getHostAddress().toString() + "/web-filter/blockpage?nonce=" + nonceStr + "&appid=" + appStr + "\r\n";
         vector += "Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0\r\n";
         vector += "Pragma: no-cache\r\n";
         vector += "Expires: Mon, 10 Jan 2000 00:00:00 GMT\r\n";

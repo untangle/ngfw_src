@@ -186,7 +186,7 @@ public class CaptivePortalApp extends AppBase
     @Override
     public void initializeSettings()
     {
-        logger.info("Initializing default node settings");
+        logger.info("Initializing default app settings");
 
         // create a new settings object
         CaptivePortalSettings localSettings = new CaptivePortalSettings();
@@ -224,7 +224,7 @@ public class CaptivePortalApp extends AppBase
         // save the settings to disk
         saveAppSettings(localSettings);
 
-        // apply the new settings to the node
+        // apply the new settings to the app
         applyAppSettings(localSettings);
     }
 
@@ -242,11 +242,11 @@ public class CaptivePortalApp extends AppBase
         try {
             readSettings = settingsManager.load(CaptivePortalSettings.class, settingsFile);
         } catch (Exception e) {
-            logger.warn("Error loading node settings", e);
+            logger.warn("Error loading app settings", e);
             return (null);
         }
 
-        if (readSettings != null) logger.info("Loaded node settings from " + settingsFile);
+        if (readSettings != null) logger.info("Loaded app settings from " + settingsFile);
 
         // if the old check certificate boolean is present we use it
         // to initialize the new certificate detection option
@@ -272,14 +272,14 @@ public class CaptivePortalApp extends AppBase
             return;
         }
 
-        logger.info("Saved node settings to " + settingsFile);
+        logger.info("Saved app settings to " + settingsFile);
     }
 
     private void applyAppSettings(CaptivePortalSettings argSettings)
     {
         // this function is called when settings are loaded or initialized
         // it gives us a single place to do stuff when applying a new
-        // settings object to the node.
+        // settings object to the app.
 
         this.captureSettings = argSettings;
     }
@@ -289,7 +289,7 @@ public class CaptivePortalApp extends AppBase
         final InetAddress userAddress = argAddress;
 
         // shut down any outstanding sessions that would not
-        // be allowed based on the active node settings
+        // be allowed based on the active app settings
         this.killMatchingSessions(new SessionMatcher()
         {
             List<CaptureRule> ruleList = captureSettings.getCaptureRules();

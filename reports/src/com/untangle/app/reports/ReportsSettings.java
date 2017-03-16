@@ -15,7 +15,7 @@ import com.untangle.uvm.app.DayOfWeekMatcher;
 import com.untangle.uvm.event.AlertRule;
 
 /**
- * Settings for the Reports Node.
+ * Settings for the Reports App.
  */
 @SuppressWarnings("serial")
 public class ReportsSettings implements Serializable, JSONString

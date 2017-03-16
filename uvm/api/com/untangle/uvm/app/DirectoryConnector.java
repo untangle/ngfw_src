@@ -7,8 +7,8 @@ import java.util.List;
 
 /**
  * This interface provides the needed platform functionality of the Directory Connector.
- * This lives here so other nodes can compile against these functions.
- * This interface is implemented by the Directory Connector node itself
+ * This lives here so other apps can compile against these functions.
+ * This interface is implemented by the Directory Connector app itself
  */
 public interface DirectoryConnector 
 {

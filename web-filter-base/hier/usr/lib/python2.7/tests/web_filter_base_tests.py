@@ -15,15 +15,15 @@ import global_functions
 class WebFilterBaseTests(unittest2.TestCase):
 
     @staticmethod
-    def nodeName():
+    def appName():
         return "untangle-base-web-filter"
 
     @staticmethod
-    def shortNodeName():
+    def shortAppName():
         return "web-filter"
 
     @staticmethod
-    def eventNodeName():
+    def eventAppName():
         return "web_filter"
 
     @staticmethod
@@ -31,30 +31,30 @@ class WebFilterBaseTests(unittest2.TestCase):
         return "Web Filter"
 
     def block_url_list_add(self, url, blocked=True, flagged=True, description="description"):
-        node_name = self.node.getAppName()
-        if ("monitor" in node_name):
+        app_name = self.app.getAppName()
+        if ("monitor" in app_name):
             newRule = { "blocked": False, "description": description, "flagged": flagged, "javaClass": "com.untangle.uvm.app.GenericRule", "string": url }
         else:
             newRule = { "blocked": blocked, "description": description, "flagged": flagged, "javaClass": "com.untangle.uvm.app.GenericRule", "string": url }
-        rules = self.node.getBlockedUrls()
+        rules = self.app.getBlockedUrls()
         rules["list"].append(newRule)
-        self.node.setBlockedUrls(rules)
+        self.app.setBlockedUrls(rules)
 
     def block_url_list_clear(self):
-        rules = self.node.getBlockedUrls()
+        rules = self.app.getBlockedUrls()
         rules["list"] = []
-        self.node.setBlockedUrls(rules)
+        self.app.setBlockedUrls(rules)
 
     def pass_url_list_add(self, url, enabled=True, description="description"):
         newRule =  { "enabled": enabled, "description": description, "javaClass": "com.untangle.uvm.app.GenericRule", "string": url }
-        rules = self.node.getPassedUrls()
+        rules = self.app.getPassedUrls()
         rules["list"].append(newRule)
-        self.node.setPassedUrls(rules)
+        self.app.setPassedUrls(rules)
 
     def pass_url_list_clear(self):
-        rules = self.node.getPassedUrls()
+        rules = self.app.getPassedUrls()
         rules["list"] = []
-        self.node.setPassedUrls(rules)
+        self.app.setPassedUrls(rules)
 
     def rule_add(self, conditionType, conditionData, blocked=True, flagged=True, description="description"):
         newRule =  {
@@ -75,20 +75,20 @@ class WebFilterBaseTests(unittest2.TestCase):
                     ]
                 }
             }
-        rules = self.node.getFilterRules()
+        rules = self.app.getFilterRules()
         rules["list"].append(newRule)
-        self.node.setFilterRules(rules)
+        self.app.setFilterRules(rules)
 
     def rules_clear(self):
-        rules = self.node.getFilterRules()
+        rules = self.app.getFilterRules()
         rules["list"] = []
-        self.node.setFilterRules(rules)
+        self.app.setFilterRules(rules)
 
     def get_web_request_results(self, url="http://test.untangle.com", expected=None, extra_options=""):
-        node_name = self.node.getAppName()
+        app_name = self.app.getAppName()
         if ("https" in url):
             extra_options += "--no-check-certificate "
-        if ((expected == None) or (("monitor" in node_name) and (expected == "blockpage"))):
+        if ((expected == None) or (("monitor" in app_name) and (expected == "blockpage"))):
             result = remote_control.run_command("wget -q -O /dev/null -4 -t 2 --timeout=5 " + extra_options + " " +  url)
         else:
             print "wget -q -O - " + extra_options + url + " 2>&1 | grep -q " + expected
@@ -96,10 +96,10 @@ class WebFilterBaseTests(unittest2.TestCase):
         return result
 
     def check_events(self, host="", uri="", blocked=True, flagged=None):
-        node_display_name = self.node.getNodeTitle()
+        app_display_name = self.app.getAppTitle()
         if flagged == None:
             flagged = blocked
-        if (("Monitor" in node_display_name) and blocked):
+        if (("Monitor" in app_display_name) and blocked):
             blocked = False
         if (blocked):
             event_list = "Blocked Web Events"
@@ -107,7 +107,7 @@ class WebFilterBaseTests(unittest2.TestCase):
             event_list = "Flagged Web Events"
         else:
             event_list = "All Web Events"
-        events = global_functions.get_events(node_display_name, event_list, None, 5)
+        events = global_functions.get_events(app_display_name, event_list, None, 5)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
                                             "host", host,
@@ -118,11 +118,11 @@ class WebFilterBaseTests(unittest2.TestCase):
     
     @staticmethod
     def initialSetUp(self):
-        if (uvmContext.appManager().isInstantiated(self.nodeName())):
-            raise Exception('node %s already instantiated' % self.nodeName())
-        node = uvmContext.appManager().instantiate(self.nodeName(), defaultRackId)
-        nodemetrics = uvmContext.metricManager().getMetrics(node.getAppSettings()["id"])
-        self.node = node
+        if (uvmContext.appManager().isInstantiated(self.appName())):
+            raise Exception('app %s already instantiated' % self.appName())
+        app = uvmContext.appManager().instantiate(self.appName(), defaultRackId)
+        appmetrics = uvmContext.metricManager().getMetrics(app.getAppSettings()["id"])
+        self.app = app
 
     def setUp(self):
         pass
@@ -582,6 +582,6 @@ class WebFilterBaseTests(unittest2.TestCase):
 
     @staticmethod
     def finalTearDown(self):
-        if self.node != None:
-            uvmContext.appManager().destroy( node.getAppSettings()["id"] )
-            self.node = None
+        if self.app != None:
+            uvmContext.appManager().destroy( app.getAppSettings()["id"] )
+            self.app = None

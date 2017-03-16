@@ -23,9 +23,9 @@ public class LoggingManagerImpl implements LoggingManager
 
     public LoggingManagerImpl() { }
 
-    public void setLoggingApp(Long nodeId)
+    public void setLoggingApp(Long appId)
     {
-        UvmRepositorySelector.instance().setLoggingApp( nodeId );
+        UvmRepositorySelector.instance().setLoggingApp( appId );
     }
 
     public void setLoggingUvm()

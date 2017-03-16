@@ -57,9 +57,9 @@ public class ShieldApp extends AppBase
          * Save the settings
          */
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getAppSettings().getId().toString();
+        String appID = this.getAppSettings().getId().toString();
         try {
-            settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "shield/" + "settings_"  + nodeID + ".js", newSettings );
+            settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "shield/" + "settings_"  + appID + ".js", newSettings );
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.",e);
             return;
@@ -103,9 +103,9 @@ public class ShieldApp extends AppBase
     protected void postInit()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getAppSettings().getId().toString();
+        String appID = this.getAppSettings().getId().toString();
         ShieldSettings readSettings = null;
-        String settingsFileName = System.getProperty("uvm.settings.dir") + "/shield/" + "settings_" + nodeID + ".js";
+        String settingsFileName = System.getProperty("uvm.settings.dir") + "/shield/" + "settings_" + appID + ".js";
 
         try {
             readSettings = settingsManager.load( ShieldSettings.class, settingsFileName );
@@ -168,8 +168,8 @@ public class ShieldApp extends AppBase
         /**
          * First we write a new SHIELD_RULES_FILE iptables script with the current settings
          */
-        String nodeID = this.getAppSettings().getId().toString();
-        String settingsFilename = System.getProperty("uvm.settings.dir") + "/" + "shield/" + "settings_"  + nodeID + ".js";
+        String appID = this.getAppSettings().getId().toString();
+        String settingsFilename = System.getProperty("uvm.settings.dir") + "/" + "shield/" + "settings_"  + appID + ".js";
         String scriptFilename = System.getProperty("uvm.bin.dir") + "/shield-sync-settings.py";
         String networkSettingFilename = System.getProperty("uvm.settings.dir") + "/" + "untangle-vm/" + "network.js";
         String cmd = scriptFilename + " -f " + settingsFilename + " -v -n " + networkSettingFilename;

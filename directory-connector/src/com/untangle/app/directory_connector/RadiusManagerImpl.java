@@ -31,18 +31,18 @@ public class RadiusManagerImpl
     private RadiusSettings currentSettings;
 
     /**
-     * The node that owns this manager
+     * The app that owns this manager
      */
-    private DirectoryConnectorApp node;
+    private DirectoryConnectorApp app;
 
     /**
      * The LDAP adapter
      */
     private RadiusLdapAdapter radiusAdapter;
 
-    public RadiusManagerImpl( RadiusSettings settings, DirectoryConnectorApp node )
+    public RadiusManagerImpl( RadiusSettings settings, DirectoryConnectorApp app )
     {
-        this.node = node;
+        this.app = app;
         setSettings(settings);
     }
 

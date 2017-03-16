@@ -93,10 +93,10 @@ public class WebCacheApp extends AppBase
     {
         logger.debug("WebCache setSettings()");
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = getAppSettings().getId().toString();
+        String appID = getAppSettings().getId().toString();
 
         try {
-            settingsManager.save( System.getProperty("uvm.settings.dir") + "/web-cache/settings_" + nodeID + ".js" , newSettings );
+            settingsManager.save( System.getProperty("uvm.settings.dir") + "/web-cache/settings_" + appID + ".js" , newSettings );
         }
         catch (Throwable t) {
             WebCacheStackDump.error(logger,"WebCacheApp","setSettings()",t);
@@ -166,11 +166,11 @@ public class WebCacheApp extends AppBase
     protected void postInit()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = getAppSettings().getId().toString();
+        String appID = getAppSettings().getId().toString();
         WebCacheSettings readSettings = null;
 
         try {
-            readSettings = settingsManager.load( WebCacheSettings.class, System.getProperty("uvm.settings.dir") + "/web-cache/settings_" + nodeID + ".js" );
+            readSettings = settingsManager.load( WebCacheSettings.class, System.getProperty("uvm.settings.dir") + "/web-cache/settings_" + appID + ".js" );
 
             if (readSettings == null) {
                 settings = new WebCacheSettings();

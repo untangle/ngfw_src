@@ -25,7 +25,7 @@ public class EventHandler extends AbstractEventHandler
     private int                     _byteLimit;
     private int                     _chunkLimit;
     private boolean                 _stripZeros;
-    private ApplicationControlLiteApp node;
+    private ApplicationControlLiteApp app;
 
     private class SessionInfo
     {
@@ -41,11 +41,11 @@ public class EventHandler extends AbstractEventHandler
         public String protocol;
     }
 
-    EventHandler( ApplicationControlLiteApp node )
+    EventHandler( ApplicationControlLiteApp app )
     {
-        super(node);
+        super(app);
 
-        this.node = node;
+        this.app = app;
     }
 
     public void handleTCPNewSession ( AppTCPSession session )
@@ -183,7 +183,7 @@ public class EventHandler extends AbstractEventHandler
         }
 
         ApplicationControlLitePattern elem = _findMatch(sessInfo, sess, server);
-        node.incrementScanCount();
+        app.incrementScanCount();
         if (elem != null) {
             sessInfo.protocol = elem.getProtocol();
             String l4prot = "";
@@ -200,7 +200,7 @@ public class EventHandler extends AbstractEventHandler
             sess.globalAttach(AppSession.KEY_APPLICATION_CONTROL_LITE_SIGNATURE_DESCRIPTION,elem.getDescription());
             sess.globalAttach(AppSession.KEY_APPLICATION_CONTROL_LITE_SIGNATURE_MATCHED,Boolean.TRUE);
                               
-            node.incrementDetectCount();
+            app.incrementDetectCount();
 
             if (logger.isDebugEnabled()) {
                 logger.debug( (elem.isBlocked() ? "Blocked: " : "Logged: ") + sessInfo.protocol + ": [" + l4prot + "] " +
@@ -209,11 +209,11 @@ public class EventHandler extends AbstractEventHandler
             }
 
             ApplicationControlLiteEvent evt = new ApplicationControlLiteEvent(sess.sessionEvent(), sessInfo.protocol, elem.isBlocked());
-            node.logEvent(evt);
+            app.logEvent(evt);
             sess.attach(null);
 
             if (elem.isBlocked()) {
-                node.incrementBlockCount();
+                app.incrementBlockCount();
 
                 if (sess instanceof AppTCPSession) {
                     ((AppTCPSession)sess).resetClient();

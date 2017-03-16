@@ -1,7 +1,7 @@
 // Application Control settings
 Ext.define('Webui.application-control.settings', {
     extend: 'Ung.AppWin',
-    nodeStats: null,
+    appStats: null,
     gridProtoRules: null,
     gridLogicRules: null,
     gridEventLog: null,
@@ -10,7 +10,7 @@ Ext.define('Webui.application-control.settings', {
         return i18n._("Application Control scans sessions and identifies the associated applications allowing each to be flagged and/or blocked.");
     },
     initComponent: function() {
-        this.nodeStats = this.getRpcNode().getStatistics();
+        this.appStats = this.getRpcApp().getStatistics();
 
         this.buildGridProtoRules();
         this.buildGridLogicRules();
@@ -94,19 +94,19 @@ Ext.define('Webui.application-control.settings', {
                 items: [{
                     fieldLabel: i18n._('Sessions Scanned'),
                     name: 'packetCount',
-                    value: this.statFormat(this.nodeStats.sessionCount)
+                    value: this.statFormat(this.appStats.sessionCount)
                 },{
                     fieldLabel: i18n._('Sessions Allowed'),
                     name: 'allowedCount',
-                    value: this.statFormat(this.nodeStats.allowedCount)
+                    value: this.statFormat(this.appStats.allowedCount)
                 },{
                     fieldLabel: i18n._('Sessions Flagged'),
                     name: 'flaggedCount',
-                    value: this.statFormat(this.nodeStats.flaggedCount)
+                    value: this.statFormat(this.appStats.flaggedCount)
                 },{
                     fieldLabel: i18n._('Sessions Blocked'),
                     name: 'blockedCount',
-                    value: this.statFormat(this.nodeStats.blockedCount)
+                    value: this.statFormat(this.appStats.blockedCount)
                 }]
             },{
                 title: i18n._('Application Statistics'),
@@ -117,19 +117,19 @@ Ext.define('Webui.application-control.settings', {
                 items: [{
                     fieldLabel: i18n._('Known Applications'),
                     name: 'protoTotalCount',
-                    value: this.statFormat(this.nodeStats.protoTotalCount)
+                    value: this.statFormat(this.appStats.protoTotalCount)
                 },{
                     fieldLabel: i18n._('Flagged Applications'),
                     name: 'protoFlagCount',
-                    value: this.statFormat(this.nodeStats.protoFlagCount)
+                    value: this.statFormat(this.appStats.protoFlagCount)
                 },{
                     fieldLabel: i18n._('Blocked Applications'),
                     name: 'protoBlockCount',
-                    value: this.statFormat(this.nodeStats.protoBlockCount)
+                    value: this.statFormat(this.appStats.protoBlockCount)
                 },{
                     fieldLabel: i18n._('Tarpitted Applications'),
                     name: 'protoTarpitCount',
-                    value: this.statFormat(this.nodeStats.protoTarpitCount)
+                    value: this.statFormat(this.appStats.protoTarpitCount)
                 }]
             },{
                 title: i18n._('Rule Statistics'),
@@ -140,11 +140,11 @@ Ext.define('Webui.application-control.settings', {
                 items: [{
                     fieldLabel: i18n._('Total Rules'),
                     name: 'logicTotalCount',
-                    value: this.statFormat(this.nodeStats.logicTotalCount)
+                    value: this.statFormat(this.appStats.logicTotalCount)
                 },{
                     fieldLabel: i18n._('Active Rules'),
                     name: 'logicLiveCount',
-                    value: this.statFormat(this.nodeStats.logicLiveCount)
+                    value: this.statFormat(this.appStats.logicLiveCount)
                 }]
             }]
         });

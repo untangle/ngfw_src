@@ -10,7 +10,7 @@ public interface SpamScanner
 {
 
     /**
-     * Gets the name of the vendor of this node's spam scanner, used
+     * Gets the name of the vendor of this app's spam scanner, used
      * for logging.
      *
      * @return a <code>String</code> giving the name of the vendor of

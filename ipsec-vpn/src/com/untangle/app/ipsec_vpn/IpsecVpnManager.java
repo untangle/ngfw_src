@@ -429,7 +429,7 @@ public class IpsecVpnManager
         if (settings.getDebugflag() == true) options_xl2tpd.write("debug" + RET);
 
         // if radius auth is selected all we need to do is add the two plugin
-        // lines to the config since the dir con node takes care of the rest
+        // lines to the config since the dir con app takes care of the rest
         if (settings.getAuthenticationType() == IpsecVpnSettings.AuthenticationType.RADIUS_SERVER) {
             options_xl2tpd.write("plugin radius.so" + RET);
             options_xl2tpd.write("plugin radattr.so" + RET);

@@ -53,8 +53,8 @@ public class ConfigurationBackupApp extends AppBase
 
     public void setSettings(final ConfigurationBackupSettings newSettings)
     {
-        String nodeID = this.getAppSettings().getId().toString();
-        String settingsFile = System.getProperty("uvm.settings.dir") + "/configuration-backup/settings_" + nodeID + ".js";
+        String appID = this.getAppSettings().getId().toString();
+        String settingsFile = System.getProperty("uvm.settings.dir") + "/configuration-backup/settings_" + appID + ".js";
 
         try {
             UvmContextFactory.context().settingsManager().save( settingsFile, newSettings );
@@ -131,8 +131,8 @@ public class ConfigurationBackupApp extends AppBase
     @Override
     protected void postInit()
     {
-        String nodeID = this.getAppSettings().getId().toString();
-        String settingsFileName = System.getProperty("uvm.settings.dir") + "/configuration-backup/settings_" + nodeID + ".js";
+        String appID = this.getAppSettings().getId().toString();
+        String settingsFileName = System.getProperty("uvm.settings.dir") + "/configuration-backup/settings_" + appID + ".js";
 
         ConfigurationBackupSettings readSettings = null;
         logger.info("Loading settings from " + settingsFileName );
@@ -157,7 +157,7 @@ public class ConfigurationBackupApp extends AppBase
                 this.settings = readSettings;
             }
         } catch (Exception exn) {
-            logger.error("Could not apply node settings",exn);
+            logger.error("Could not apply app settings",exn);
         }
 
         /* if settings are newer than cron file, rewrite cron file */

@@ -6,7 +6,7 @@ package com.untangle.app.configuration_backup;
 import java.io.Serializable;
 
 /**
- * Settings for the ConfigurationBackup node.
+ * Settings for the ConfigurationBackup app.
  */
 @SuppressWarnings("serial")
 public class ConfigurationBackupSettings implements Serializable

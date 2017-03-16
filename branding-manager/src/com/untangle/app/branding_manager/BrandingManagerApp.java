@@ -70,8 +70,8 @@ public class BrandingManagerApp extends AppBase implements com.untangle.uvm.Bran
     private void readAppSettings()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getAppSettings().getId().toString();
-        String settingsFile = System.getProperty("uvm.settings.dir") + "/branding-manager/settings_" + nodeID + ".js";
+        String appID = this.getAppSettings().getId().toString();
+        String settingsFile = System.getProperty("uvm.settings.dir") + "/branding-manager/settings_" + appID + ".js";
         BrandingManagerSettings readSettings = null;
 
         logger.info("Loading settings from " + settingsFile);
@@ -79,7 +79,7 @@ public class BrandingManagerApp extends AppBase implements com.untangle.uvm.Bran
         try {
             readSettings =  settingsManager.load( BrandingManagerSettings.class, settingsFile);
         } catch (Exception exn) {
-            logger.error("Could not read node settings", exn);
+            logger.error("Could not read app settings", exn);
         }
 
         try {
@@ -93,7 +93,7 @@ public class BrandingManagerApp extends AppBase implements com.untangle.uvm.Bran
             }
         }
         catch (Exception exn) {
-            logger.error("Could not apply node settings", exn);
+            logger.error("Could not apply app settings", exn);
         }
     }
 
@@ -151,8 +151,8 @@ public class BrandingManagerApp extends AppBase implements com.untangle.uvm.Bran
         logger.debug("setSettings(): " + newSettings.getCompanyName());
 
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getAppSettings().getId().toString();
-        String settingsFile = System.getProperty("uvm.settings.dir") + "/branding-manager/settings_" + nodeID +".js";
+        String appID = this.getAppSettings().getId().toString();
+        String settingsFile = System.getProperty("uvm.settings.dir") + "/branding-manager/settings_" + appID +".js";
 
         try {
             settingsManager.save( settingsFile, newSettings );
@@ -393,11 +393,11 @@ public class BrandingManagerApp extends AppBase implements com.untangle.uvm.Bran
 
     private class LogoUploadHandler implements UploadHandler
     {
-        private BrandingManagerApp node;
+        private BrandingManagerApp app;
 
-        LogoUploadHandler( BrandingManagerApp node )
+        LogoUploadHandler( BrandingManagerApp app )
         {
-            this.node = node;
+            this.app = app;
         }
 
         @Override
@@ -416,7 +416,7 @@ public class BrandingManagerApp extends AppBase implements com.untangle.uvm.Bran
                 byte[] logo=fileItem.get();
 
                 /* Use the context in order to properly handler premium vs normal. */
-                node.setLogo(logo);
+                app.setLogo(logo);
             } else {
                 throw new Exception("Branding logo must be GIF, PNG, or JPG");
             }

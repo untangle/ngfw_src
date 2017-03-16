@@ -25,7 +25,7 @@ public interface PipelineFoundry
 
     void addConnectionFittingHint( InetSocketAddress socketAddress, Fitting fitting );
 
-    PipelineConnector create( String name, App node, Subscription subscription, SessionEventHandler listener, Fitting inputFitting, Fitting outputFitting, Affinity affinity, Integer affinityStrength, boolean premium );
+    PipelineConnector create( String name, App app, Subscription subscription, SessionEventHandler listener, Fitting inputFitting, Fitting outputFitting, Affinity affinity, Integer affinityStrength, boolean premium );
 
-    PipelineConnector create( String name, App node, Subscription subscription, SessionEventHandler listener, Fitting inputFitting, Fitting outputFitting, Affinity affinity, Integer affinityStrength, boolean premium, String buddy );
+    PipelineConnector create( String name, App app, Subscription subscription, SessionEventHandler listener, Fitting inputFitting, Fitting outputFitting, Affinity affinity, Integer affinityStrength, boolean premium, String buddy );
 }

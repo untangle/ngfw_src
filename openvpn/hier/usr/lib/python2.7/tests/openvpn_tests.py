@@ -16,9 +16,9 @@ import test_registry
 import global_functions
 
 defaultRackId = 1
-nodeData = None
-node = None
-nodeWeb = None
+appData = None
+app = None
+appWeb = None
 vpnClientName = "atsclient"
 vpnFullClientName = "atsfullclient"
 vpnHostResult = 0
@@ -43,7 +43,7 @@ def waitForServerVPNtoConnect():
     while timeout > 0:
         time.sleep(1)
         timeout -= 1
-        listOfServers = node.getRemoteServersStatus()
+        listOfServers = app.getRemoteServersStatus()
         if (len(listOfServers['list']) > 0):
             if (listOfServers['list'][0]['connected']):
                 # VPN has connected
@@ -55,7 +55,7 @@ def waitForClientVPNtoConnect():
     while timeout > 0:
         time.sleep(1)
         timeout -= 1
-        listOfServers = node.getActiveClients()
+        listOfServers = app.getActiveClients()
         if (len(listOfServers['list']) > 0):
             if (listOfServers['list'][0]['clientName']):
                 # VPN has connected
@@ -79,11 +79,11 @@ def waitForPing(target_IP="127.0.0.1",ping_result_expected=0):
 class OpenVpnTests(unittest2.TestCase):
 
     @staticmethod
-    def nodeName():
+    def appName():
         return "openvpn"
 
     @staticmethod
-    def nodeWebName():
+    def appWebName():
         return "web-filter"
 
     @staticmethod
@@ -92,15 +92,15 @@ class OpenVpnTests(unittest2.TestCase):
         
     @staticmethod
     def initialSetUp(self):
-        global node, nodeWeb, nodeData, vpnHostResult, vpnClientResult, vpnServerResult
-        if (uvmContext.appManager().isInstantiated(self.nodeName())):
-            raise Exception('node %s already instantiated' % self.nodeName())
-        node = uvmContext.appManager().instantiate(self.nodeName(), defaultRackId)
-        node.start()
-        nodeWeb = None
-        if (uvmContext.appManager().isInstantiated(self.nodeWebName())):
-            raise Exception('node %s already instantiated' % self.nodeWebName())
-        nodeWeb = uvmContext.appManager().instantiate(self.nodeWebName(), defaultRackId)
+        global app, appWeb, appData, vpnHostResult, vpnClientResult, vpnServerResult
+        if (uvmContext.appManager().isInstantiated(self.appName())):
+            raise Exception('app %s already instantiated' % self.appName())
+        app = uvmContext.appManager().instantiate(self.appName(), defaultRackId)
+        app.start()
+        appWeb = None
+        if (uvmContext.appManager().isInstantiated(self.appWebName())):
+            raise Exception('app %s already instantiated' % self.appWebName())
+        appWeb = uvmContext.appManager().instantiate(self.appWebName(), defaultRackId)
         vpnHostResult = subprocess.call(["ping","-W","5","-c","1",global_functions.vpnServerVpnIP],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         vpnClientResult = subprocess.call(["ping","-W","5","-c","1",global_functions.vpnClientVpnIP],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         wanIP = uvmContext.networkManager().getFirstWanAddress()
@@ -125,7 +125,7 @@ class OpenVpnTests(unittest2.TestCase):
         # Download remote system VPN config
         result = os.system("wget -o /dev/null -t 1 --timeout=3 " + vpnSite2SiteFile + " -O /tmp/config.zip")
         assert (result == 0) # verify the download was successful
-        node.importClientConfig("/tmp/config.zip")
+        app.importClientConfig("/tmp/config.zip")
         # wait for vpn tunnel to form
         timeout = waitForServerVPNtoConnect()
         # If VPN tunnel has failed to connect, fail the test,
@@ -133,7 +133,7 @@ class OpenVpnTests(unittest2.TestCase):
 
         remoteHostResult = waitForPing(global_functions.vpnServerVpnLanIP,0)
         assert (remoteHostResult)
-        listOfServers = node.getRemoteServersStatus()
+        listOfServers = app.getRemoteServersStatus()
         # print listOfServers
         assert(listOfServers['list'][0]['name'] == vpnSite2SiteHostname)
         tunnelUp = True
@@ -142,28 +142,28 @@ class OpenVpnTests(unittest2.TestCase):
         global tunnelUp 
         if (not tunnelUp):
             raise unittest2.SkipTest("previous test test_020_createVPNTunnel failed")
-        nodeData = node.getSettings()
-        # print nodeData
+        appData = app.getSettings()
+        # print appData
         i=0
         found = False
-        for remoteGuest in nodeData['remoteServers']['list']:
+        for remoteGuest in appData['remoteServers']['list']:
             if (remoteGuest['name'] == vpnSite2SiteHostname):
                 found = True 
             if (not found):
                 i+=1
         assert (found) # test profile not found in remoteServers list
-        nodeData['remoteServers']['list'][i]['enabled'] = False
-        node.setSettings(nodeData)
+        appData['remoteServers']['list'][i]['enabled'] = False
+        app.setSettings(appData)
         remoteHostResult = waitForPing(global_functions.vpnServerVpnLanIP,1)
         assert (remoteHostResult)
         tunnelUp = False
         
     def test_040_createClientVPNTunnel(self):
-        global nodeData, vpnServerResult, vpnClientResult
+        global appData, vpnServerResult, vpnClientResult
         if (vpnClientResult != 0 or vpnServerResult != 0):
             raise unittest2.SkipTest("No paried VPN client available")
 
-        pre_events_connect = global_functions.get_app_metric_value(node,"connect")
+        pre_events_connect = global_functions.get_app_metric_value(app,"connect")
         
         running = remote_control.run_command("pidof openvpn", host=global_functions.vpnClientVpnIP,)
         loopLimit = 5
@@ -180,13 +180,13 @@ class OpenVpnTests(unittest2.TestCase):
         if running == 0:
             raise unittest2.SkipTest("OpenVPN test machine already in use")
             
-        nodeData = node.getSettings()
-        nodeData["serverEnabled"]=True
-        siteName = nodeData['siteName']
-        nodeData['remoteClients']['list'][:] = []  
-        nodeData['remoteClients']['list'].append(setUpClient())
-        node.setSettings(nodeData)
-        clientLink = node.getClientDistributionDownloadLink(vpnClientName,"zip")
+        appData = app.getSettings()
+        appData["serverEnabled"]=True
+        siteName = appData['siteName']
+        appData['remoteClients']['list'][:] = []  
+        appData['remoteClients']['list'].append(setUpClient())
+        app.setSettings(appData)
+        clientLink = app.getClientDistributionDownloadLink(vpnClientName,"zip")
         # print clientLink
 
         # download client config file
@@ -207,7 +207,7 @@ class OpenVpnTests(unittest2.TestCase):
         # ping the test host behind the Untangle from the remote testbox
         result = remote_control.run_command("ping -c 2 " + remote_control.clientIP, host=global_functions.vpnClientVpnIP)
         
-        listOfClients = node.getActiveClients()
+        listOfClients = app.getActiveClients()
         print "address " + listOfClients['list'][0]['address']
         print "vpn address 1 " + listOfClients['list'][0]['poolAddress']
 
@@ -231,11 +231,11 @@ class OpenVpnTests(unittest2.TestCase):
         assert( found )
 
         # Check to see if the faceplate counters have incremented. 
-        post_events_connect = global_functions.get_app_metric_value(node, "connect")
+        post_events_connect = global_functions.get_app_metric_value(app, "connect")
         assert(pre_events_connect < post_events_connect)
         
     def test_050_createClientVPNFullTunnel(self):
-        global nodeData, vpnServerResult, vpnClientResult
+        global appData, vpnServerResult, vpnClientResult
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
         if (vpnClientResult != 0 or vpnServerResult != 0):
@@ -243,15 +243,15 @@ class OpenVpnTests(unittest2.TestCase):
         running = remote_control.run_command("pidof openvpn", host=global_functions.vpnClientVpnIP)
         if running == 0:
             raise unittest2.SkipTest("OpenVPN test machine already in use")
-        nodeData = node.getSettings()
-        nodeData["serverEnabled"]=True
-        siteName = nodeData['siteName']  
-        nodeData['remoteClients']['list'][:] = []  
-        nodeData['remoteClients']['list'].append(setUpClient(vpn_name=vpnFullClientName))
-        nodeData['groups']['list'][0]['fullTunnel'] = True
-        nodeData['groups']['list'][0]['fullTunnel'] = True
-        node.setSettings(nodeData)
-        clientLink = node.getClientDistributionDownloadLink(vpnFullClientName,"zip")
+        appData = app.getSettings()
+        appData["serverEnabled"]=True
+        siteName = appData['siteName']  
+        appData['remoteClients']['list'][:] = []  
+        appData['remoteClients']['list'].append(setUpClient(vpn_name=vpnFullClientName))
+        appData['groups']['list'][0]['fullTunnel'] = True
+        appData['groups']['list'][0]['fullTunnel'] = True
+        app.setSettings(appData)
+        clientLink = app.getClientDistributionDownloadLink(vpnFullClientName,"zip")
         # print clientLink
 
         # download client config file
@@ -266,7 +266,7 @@ class OpenVpnTests(unittest2.TestCase):
 
         time.sleep(10) # wait for vpn tunnel to form 
 
-        listOfClients = node.getActiveClients()
+        listOfClients = app.getActiveClients()
         vpnPoolAddressIP = listOfClients['list'][0]['poolAddress']
 
         # ping the test host behind the Untangle from the remote testbox
@@ -291,8 +291,8 @@ class OpenVpnTests(unittest2.TestCase):
         remote_control.run_command("sudo pkill openvpn", host=global_functions.vpnClientVpnIP)
         time.sleep(3) # openvpn takes time to shut down
 
-        nodeData['remoteClients']['list'][:] = []  
-        node.setSettings(nodeData)
+        appData['remoteClients']['list'][:] = []  
+        app.setSettings(appData)
         time.sleep(5) # wait for vpn tunnel to go down 
         # print ("result " + str(result) + " webresult " + str(webresult))
         assert(listOfClients['list'][0]['address'] == global_functions.vpnClientVpnIP)
@@ -302,12 +302,12 @@ class OpenVpnTests(unittest2.TestCase):
 
     @staticmethod
     def finalTearDown(self):
-        global node, nodeWeb
-        if node != None:
-            uvmContext.appManager().destroy( node.getAppSettings()["id"] )
-            node = None
-        if nodeWeb != None:
-            uvmContext.appManager().destroy( nodeWeb.getAppSettings()["id"] )
-            nodeWeb = None
+        global app, appWeb
+        if app != None:
+            uvmContext.appManager().destroy( app.getAppSettings()["id"] )
+            app = None
+        if appWeb != None:
+            uvmContext.appManager().destroy( appWeb.getAppSettings()["id"] )
+            appWeb = None
 
-test_registry.registerNode("openvpn", OpenVpnTests)
+test_registry.registerApp("openvpn", OpenVpnTests)
