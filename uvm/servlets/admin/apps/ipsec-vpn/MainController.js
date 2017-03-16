@@ -147,5 +147,6 @@ Ext.define('Ung.apps.ipsecvpn.MainController', {
         case 'RADIUS': Ung.app.redirectTo('#apps/' + policyId + '/directoryconnector/radius'); break;
         default: return;
         }
-    }
+    },
+
 });

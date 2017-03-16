@@ -9,6 +9,10 @@ Ext.define('Ung.apps.ipsecvpn.Main', {
                 data: '{settings.tunnels.list}'
             },
 
+            networkList: {
+                data: '{settings.networks.list}'
+            },
+
             P1CipherStore: {
                 fields: [ 'name', 'value' ],
                 data: [
