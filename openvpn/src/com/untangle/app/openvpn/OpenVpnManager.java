@@ -48,99 +48,7 @@ public class OpenVpnManager
     private static final String CLIENT_CONF_FILE_DIR  = "/tmp/openvpn/client-packages/"; 
     private static final String CLIENT_CONF_FILE_BASE = CLIENT_CONF_FILE_DIR + "/client-";
 
-
-    /**
-     * Ping every x seconds
-     */
-    private static final int DEFAULT_PING_TIME      = 10;
-
-    /**
-     * If a ping response isn't received in this amount time, assume the connection is dead
-     */
-    private static final int DEFAULT_PING_TIMEOUT   = 60;
-
-    /**
-     * Default verbosity in the log messages(0-9) 
-     * 0 -- No output except fatal errors.
-     * 1 to 4 -- Normal usage range.
-     * 5  --  Output  R  and W characters to the console for each packet read and write, uppercase is
-     * used for TCP/UDP packets and lowercase is used for TUN/TAP packets.
-     * 6 to 11 -- Debug info range (see errlevel.h for additional information on debug levels).
-     */
-    private static final int DEFAULT_VERBOSITY   = 1;
-
-    /**
-     * Just pick one that is unused (this is openvpn + 1)
-     */
-    static final int MANAGEMENT_PORT     = 1195;
-
-    /**
-     * Defaults for the server.conf
-     */
-    private static final String SERVER_DEFAULTS[] = new String[] {
-        "mode server",
-        "multihome",
-        "ca   data/ca.crt",
-        "cert data/server.crt",
-        "key  data/server.key",
-        "dh   data/dh.pem",
-        "client-config-dir ccd",
-        "keepalive " + DEFAULT_PING_TIME + " " + DEFAULT_PING_TIMEOUT,
-        "user nobody",
-        "group nogroup",
-        "tls-server",
-        "comp-lzo",
-        "status openvpn-status.log",
-        "verb " + DEFAULT_VERBOSITY,
-        "dev tun0",
-        "max-routes 500",
-        "max-clients 2048",
-        /* Only talk to clients with a client configuration file */
-        "ccd-exclusive", 
-        /* Do not re-read key after SIGUSR1 */
-        "persist-key",
-        /* Do not re-init tun0 after SIGUSR1 */
-        "persist-tun",
-        /* Stop logging repeated messages (after 20). */
-        "mute 20",
-        /* Allow management from localhost */
-        "management 127.0.0.1 " + MANAGEMENT_PORT,
-        /* log to /var/log/openvpn.log */
-        // let openvpn use syslog instead
-        //"log-append /var/log/openvpn.log",
-        /* persist pool address assignments */
-        "ifconfig-pool-persist /etc/openvpn/address-pool-assignments.txt",
-        /* push register-dns to reset DNS on windows machines */
-        "push \"register-dns\""
-    };
-
-    /**
-     * Defaults for the client.conf
-     */
-    private static final String CLIENT_DEFAULTS[] = new String[] {
-        "client",
-        "resolv-retry 20",
-        "keepalive " + DEFAULT_PING_TIME + " " + DEFAULT_PING_TIMEOUT,
-        "nobind",
-        "mute-replay-warnings",
-        "ns-cert-type server",
-        "comp-lzo",
-        "max-routes 500",
-        "verb " + DEFAULT_VERBOSITY,
-        /* Do not re-read key after SIGUSR1 */
-        "persist-key",
-        /* Do not re-init tun0 after SIGUSR1 */
-        "persist-tun",
-        /* notify server when exitting */
-        "explicit-exit-notify 1",
-        /* device */
-        "dev tun"
-    };
-
-    private static final String WIN_CLIENT_DEFAULTS[]  = new String[] {};
     private static final String WIN_EXTENSION          = "ovpn";
-
-    private static final String UNIX_CLIENT_DEFAULTS[] = new String[] {};
     private static final String UNIX_EXTENSION         = "conf";
 
     protected OpenVpnManager() { }
@@ -195,8 +103,8 @@ public class OpenVpnManager
 
     private void writeConfFiles( OpenVpnSettings settings, OpenVpnRemoteClient client )
     {
-        writeRemoteClientConfigurationFile( settings, client, UNIX_CLIENT_DEFAULTS, UNIX_EXTENSION );
-        writeRemoteClientConfigurationFile( settings, client, WIN_CLIENT_DEFAULTS,  WIN_EXTENSION );
+        writeRemoteClientConfigurationFile( settings, client, UNIX_EXTENSION );
+        writeRemoteClientConfigurationFile( settings, client, WIN_EXTENSION );
     }
     /**
      * Create all of the client zip configuration files
@@ -274,8 +182,8 @@ public class OpenVpnManager
 
         StringBuilder sb = new StringBuilder();
 
-        for ( String line : SERVER_DEFAULTS ) {
-            sb.append( line + "\n" );
+        for ( OpenVpnConfigItem item : settings.getServerConfiguration()) {
+            if (item.getConfigString() != null) sb.append( item.getConfigString() + "\n" );
         }
 
         sb.append( "proto" + " " + settings.getProtocol() + "\n" );
@@ -286,6 +194,9 @@ public class OpenVpnManager
             sb.append( "client-to-client" + "\n");
         
         sb.append( "server" + " " +  settings.getAddressSpace().getMaskedAddress().getHostAddress() + " " + settings.getAddressSpace().getNetmask().getHostAddress() + "\n");
+
+        /* Allow management from localhost */
+        sb.append( "management 127.0.0.1 " +  Integer.toString(OpenVpnSettings.MANAGEMENT_PORT) + "\n");
 
         writeExports( sb, settings );
 
@@ -329,17 +240,23 @@ public class OpenVpnManager
     /**
      * Write a client configuration file (unix or windows)
      */
-    private void writeRemoteClientConfigurationFile( OpenVpnSettings settings, OpenVpnRemoteClient client, String[] defaults, String extension )
+    private void writeRemoteClientConfigurationFile( OpenVpnSettings settings, OpenVpnRemoteClient client, String extension )
     {
         final String KEY_DIR = "keys";
         StringBuilder sb = new StringBuilder();
 
-        /* Insert all of the default parameters */
-        for ( String line : CLIENT_DEFAULTS ) {
-            sb.append( line + "\n" );
+        /*
+         * Insert all of the default parameters that have not been customized
+         * for the argumented client. 
+         */
+        for ( OpenVpnConfigItem item : settings.getClientConfiguration()) {
+            if (findConfigItem(client.getClientConfigItems(), item.getOptionName()) == null)
+            if (item.getConfigString() != null) sb.append( item.getConfigString() + "\n" );
         }
-        for ( String line : defaults ) {
-            sb.append( line + "\n" );
+
+        /* Add any custom config items for the argumented client */
+        for ( OpenVpnConfigItem item : client.getClientConfigItems()) {
+            if (item.getConfigString() != null) sb.append( item.getConfigString() + "\n" );
         }
 
         sb.append( "proto" + " " + settings.getProtocol() + "\n" );
@@ -742,5 +659,20 @@ public class OpenVpnManager
             logger.error("Failed to start OpenVPN daemon (return code: " + result.getResult() + ")");
             throw new RuntimeException("Failed to start OpenVPN daemon");
         }
+    }
+
+    /**
+     * Searches a linked list of configuration items for a specific item 
+     */
+    private OpenVpnConfigItem findConfigItem(LinkedList<OpenVpnConfigItem> argList, String findName)
+    {
+        if (argList == null) return(null);
+
+        for ( OpenVpnConfigItem item : argList) {
+            if (item.getOptionName().equals(findName))
+            return(item);
+        }
+
+        return(null);
     }
 }

@@ -4,6 +4,7 @@
 package com.untangle.app.openvpn;
 
 import java.net.InetAddress;
+import java.util.LinkedList;
 
 import com.untangle.uvm.app.IPMaskedAddress;
 
@@ -35,6 +36,11 @@ public class OpenVpnRemoteClient implements java.io.Serializable
      * Comma seperated list of CIDR networks
      */
     private String exportNetwork;
+
+    /**
+     * A list of config items unique to this client
+     */
+    private LinkedList<OpenVpnConfigItem> clientConfigItems = new LinkedList<OpenVpnConfigItem>();
     
     public OpenVpnRemoteClient() {}
 
@@ -52,4 +58,7 @@ public class OpenVpnRemoteClient implements java.io.Serializable
 
     public String getExportNetwork() { return exportNetwork; }
     public void setExportNetwork( String newValue ) { this.exportNetwork = newValue; }
+
+    public LinkedList<OpenVpnConfigItem> getClientConfigItems() { return clientConfigItems; }
+    public void setClientConfigItems( LinkedList<OpenVpnConfigItem> argList ) { this.clientConfigItems = argList; }
 }
