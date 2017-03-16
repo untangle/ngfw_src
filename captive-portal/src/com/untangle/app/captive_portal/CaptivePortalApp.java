@@ -620,7 +620,7 @@ public class CaptivePortalApp extends AppBase
 
         // call the session cleanup function passing the address from the MAC
         // entry of the user we just logged out to clean up any outstanding sessions
-        HostTableEntry entry = UvmContextFactory.context().hostTable().findHostTableEntry(macaddr);
+        HostTableEntry entry = UvmContextFactory.context().hostTable().findHostTableEntryByMacAddress(macaddr);
         validateAllSessions(entry.getAddress());
 
         CaptivePortalUserEvent event = new CaptivePortalUserEvent(policyId, user.getUserMacAddress(), user.getUserName(), captureSettings.getAuthenticationType(), CaptivePortalUserEvent.EventType.ADMIN_LOGOUT);
@@ -786,7 +786,7 @@ public class CaptivePortalApp extends AppBase
                     HostTableEntry entry;
 
                     if (user.getMacLogin()) {
-                        entry = UvmContextFactory.context().hostTable().findHostTableEntry(user.getUserMacAddress());
+                        entry = UvmContextFactory.context().hostTable().findHostTableEntryByMacAddress(user.getUserMacAddress());
                     } else {
                         entry = UvmContextFactory.context().hostTable().getHostTableEntry(user.getUserNetAddress());
                     }

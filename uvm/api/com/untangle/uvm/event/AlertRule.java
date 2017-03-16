@@ -19,8 +19,8 @@ import com.untangle.uvm.event.EventRule;
 /**
  * This in the implementation of a Event Rule
  * 
- * A rule is basically a collection of EventRuleConditions (matchers) and what
- * to do if the matchers match (log, email, etc)
+ * A rule is basically a collection of EventRuleConditions and what
+ * to do if the conditions match (log, email, etc)
  */
 @SuppressWarnings("serial")
 public class AlertRule extends EventRule

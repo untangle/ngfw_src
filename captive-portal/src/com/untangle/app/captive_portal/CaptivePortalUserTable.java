@@ -149,7 +149,7 @@ public class CaptivePortalUserTable
 
         // clear the capture username from the host table entry and turn
         // of the captive portal flag so it knows we are all done
-        HostTableEntry entry = UvmContextFactory.context().hostTable().findHostTableEntry(macaddr);
+        HostTableEntry entry = UvmContextFactory.context().hostTable().findHostTableEntryByMacAddress(macaddr);
         if (entry != null) {
             entry.setUsernameCapture(null);
             entry.setCaptivePortalAuthenticated(false);

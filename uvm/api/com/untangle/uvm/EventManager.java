@@ -16,7 +16,4 @@ public interface EventManager
     public void setSettings( EventSettings newSettings );
 
     public void logEvent( LogEvent evt );
-
-    public void flushEvents();
-
 }
