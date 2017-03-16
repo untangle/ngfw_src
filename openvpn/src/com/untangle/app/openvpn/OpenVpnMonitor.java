@@ -229,7 +229,7 @@ class OpenVpnMonitor implements Runnable
 
         try {
             /* Connect to the management port */
-            socket = new Socket((String)null, OpenVpnManager.MANAGEMENT_PORT );
+            socket = new Socket((String)null, OpenVpnSettings.MANAGEMENT_PORT );
 
             socket.setSoTimeout( READ_TIMEOUT );
 
