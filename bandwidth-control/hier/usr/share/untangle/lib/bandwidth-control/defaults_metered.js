@@ -1,13 +1,13 @@
 {
     "configured": true,
-    "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlSettings",
+    "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlSettings",
     "rules": {
         "javaClass": "java.util.LinkedList",
         "list": [
             {
                 "action": {
                     "actionType": "SET_PRIORITY",
-                    "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleAction",
+                    "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRuleAction",
                     "priority": 7
                 },
                 "conditions": {
@@ -15,7 +15,7 @@
                     "list": [
                         {
                             "conditionType": "HOST_IN_PENALTY_BOX",
-                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
+                            "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRuleCondition",
                             "value": "true"
                         }
                     ]
@@ -23,13 +23,13 @@
                 "description": "Apply Penalty Box Penalties",
                 "enabled": true,
                 "id": 1,
-                "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRule",
+                "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRule",
                 "ruleId": 12345
             },
             {
                 "action": {
                     "actionType": "SET_PRIORITY",
-                    "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleAction",
+                    "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRuleAction",
                     "priority": 1
                 },
                 "conditions": {
@@ -37,7 +37,7 @@
                     "list": [
                         {
                             "conditionType": "DST_PORT",
-                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
+                            "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRuleCondition",
                             "value": "53"
                         }
                     ]
@@ -45,13 +45,13 @@
                 "description": "Prioritize DNS",
                 "enabled": true,
                 "id": 2,
-                "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRule",
+                "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRule",
                 "ruleId": 12345
             },
             {
                 "action": {
                     "actionType": "SET_PRIORITY",
-                    "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleAction",
+                    "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRuleAction",
                     "priority": 2
                 },
                 "conditions": {
@@ -59,12 +59,12 @@
                     "list": [
                         {
                             "conditionType": "PROTOCOL",
-                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
+                            "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRuleCondition",
                             "value": "TCP"
                         },
                         {
                             "conditionType": "DST_PORT",
-                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
+                            "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRuleCondition",
                             "value": "22"
                         }
                     ]
@@ -72,13 +72,13 @@
                 "description": "Prioritize SSH",
                 "enabled": true,
                 "id": 3,
-                "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRule",
+                "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRule",
                 "ruleId": 12345
             },
             {
                 "action": {
                     "actionType": "SET_PRIORITY",
-                    "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleAction",
+                    "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRuleAction",
                     "priority": 1
                 },
                 "conditions": {
@@ -86,12 +86,12 @@
                     "list": [
                         {
                             "conditionType": "PROTOCOL",
-                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
+                            "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRuleCondition",
                             "value": "TCP"
                         },
                         {
                             "conditionType": "DST_PORT",
-                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
+                            "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRuleCondition",
                             "value": "3389,5300"
                         }
                     ]
@@ -99,13 +99,13 @@
                 "description": "Prioritize Remote Desktop (RDP,VNC)",
                 "enabled": true,
                 "id": 4,
-                "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRule",
+                "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRule",
                 "ruleId": 12345
             },
             {
                 "action": {
                     "actionType": "SET_PRIORITY",
-                    "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleAction",
+                    "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRuleAction",
                     "priority": 2
                 },
                 "conditions": {
@@ -113,7 +113,7 @@
                     "list": [
                         {
                             "conditionType": "DST_PORT",
-                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
+                            "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRuleCondition",
                             "value": "110,995,143,993"
                         }
                     ]
@@ -121,13 +121,13 @@
                 "description": "Prioritize eMail (POP3,POP3S,IMAP,IMAPS)",
                 "enabled": true,
                 "id": 5,
-                "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRule",
+                "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRule",
                 "ruleId": 12345
             },
             {
                 "action": {
                     "actionType": "SET_PRIORITY",
-                    "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleAction",
+                    "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRuleAction",
                     "priority": 2
                 },
                 "conditions": {
@@ -135,7 +135,7 @@
                     "list": [
                         {
                             "conditionType": "APPLICATION_CONTROL_CATEGORY",
-                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
+                            "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRuleCondition",
                             "value": "Remote Access"
                         }
                     ]
@@ -143,13 +143,13 @@
                 "description": "Prioritize \"Remote Access\" traffic (requires Application Control)",
                 "enabled": true,
                 "id": 6,
-                "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRule",
+                "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRule",
                 "ruleId": 12345
             },
             {
                 "action": {
                     "actionType": "SET_PRIORITY",
-                    "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleAction",
+                    "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRuleAction",
                     "priority": 4,
                     "quotaBytes": null,
                     "quotaTime": null,
@@ -161,7 +161,7 @@
                         {
                             "conditionType": "APPLICATION_CONTROL_PRODUCTIVITY",
                             "invert": false,
-                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
+                            "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRuleCondition",
                             "value": "<2"
                         }
                     ]
@@ -169,13 +169,13 @@
                 "description": "Deprioritize \"Unproductive\" Applications (requires Application Control)",
                 "enabled": true,
                 "id": 7,
-                "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRule",
+                "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRule",
                 "ruleId": 12345
             },
             {
                 "action": {
                     "actionType": "SET_PRIORITY",
-                    "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleAction",
+                    "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRuleAction",
                     "priority": 3
                 },
                 "conditions": {
@@ -183,7 +183,7 @@
                     "list": [
                         {
                             "conditionType": "WEB_FILTER_FLAGGED",
-                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
+                            "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRuleCondition",
                             "value": ""
                         }
                     ]
@@ -191,13 +191,13 @@
                 "description": "Deprioritize site violations (requires Web Filter)",
                 "enabled": true,
                 "id": 8,
-                "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRule",
+                "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRule",
                 "ruleId": 12345
             },
             {
                 "action": {
                     "actionType": "SET_PRIORITY",
-                    "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleAction",
+                    "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRuleAction",
                     "priority": 6
                 },
                 "conditions": {
@@ -205,7 +205,7 @@
                     "list": [
                         {
                             "conditionType": "HTTP_HOST",
-                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
+                            "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRuleCondition",
                             "value": "*windowsupdates.com"
                         }
                     ]
@@ -213,13 +213,13 @@
                 "description": "Limit Microsoft updates (windowsupdates.com)",
                 "enabled": true,
                 "id": 9,
-                "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRule",
+                "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRule",
                 "ruleId": 12345
             },
             {
                 "action": {
                     "actionType": "SET_PRIORITY",
-                    "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleAction",
+                    "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRuleAction",
                     "priority": 6
                 },
                 "conditions": {
@@ -227,7 +227,7 @@
                     "list": [
                         {
                             "conditionType": "HTTP_HOST",
-                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
+                            "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRuleCondition",
                             "value": "*update.microsoft.com"
                         }
                     ]
@@ -235,13 +235,13 @@
                 "description": "Limit Microsoft updates (update.microsoft.com)",
                 "enabled": true,
                 "id": 10,
-                "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRule",
+                "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRule",
                 "ruleId": 12345
             },
             {
                 "action": {
                     "actionType": "SET_PRIORITY",
-                    "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleAction",
+                    "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRuleAction",
                     "priority": 4
                 },
                 "conditions": {
@@ -249,7 +249,7 @@
                     "list": [
                         {
                             "conditionType": "HTTP_HOST",
-                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
+                            "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRuleCondition",
                             "value": "*dropbox.com"
                         }
                     ]
@@ -257,13 +257,13 @@
                 "description": "Deprioritize dropbox.net sync",
                 "enabled": true,
                 "id": 11,
-                "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRule",
+                "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRule",
                 "ruleId": 12345
             },
             {
                 "action": {
                     "actionType": "TAG_HOST",
-                    "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleAction",
+                    "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRuleAction",
                     "tagName": "penalty-box",
                     "tagTime": 1800
                 },
@@ -272,7 +272,7 @@
                     "list": [
                         {
                             "conditionType": "APPLICATION_CONTROL_APPLICATION",
-                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
+                            "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRuleCondition",
                             "value": "BITTORRE"
                         }
                     ]
@@ -280,13 +280,13 @@
                 "description": "Tag Bittorrent users for 30 minutes (requires Application Control)",
                 "enabled": true,
                 "id": 12,
-                "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRule",
+                "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRule",
                 "ruleId": 12345
             },
             {
                 "action": {
                     "actionType": "SET_PRIORITY",
-                    "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleAction",
+                    "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRuleAction",
                     "priority": 4
                 },
                 "conditions": {
@@ -294,7 +294,7 @@
                     "list": [
                         {
                             "conditionType": "PROTOCOL_CONTROL_CATEGORY",
-                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
+                            "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRuleCondition",
                             "value": "Peer to Peer"
                         }
                     ]
@@ -302,13 +302,13 @@
                 "description": "Deprioritize P2P traffic (requires Application Control Lite)",
                 "enabled": true,
                 "id": 13,
-                "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRule",
+                "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRule",
                 "ruleId": 12345
             },
             {
                 "action": {
                     "actionType": "SET_PRIORITY",
-                    "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleAction",
+                    "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRuleAction",
                     "priority": 4
                 },
                 "conditions": {
@@ -316,7 +316,7 @@
                     "list": [
                         {
                             "conditionType": "APPLICATION_CONTROL_CATEGORY",
-                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
+                            "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRuleCondition",
                             "value": "File Transfer"
                         }
                     ]
@@ -324,13 +324,13 @@
                 "description": "Deprioritize File Transfers (requires Application Control)",
                 "enabled": true,
                 "id": 14,
-                "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRule",
+                "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRule",
                 "ruleId": 12345
             },
             {
                 "action": {
                     "actionType": "SET_PRIORITY",
-                    "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleAction",
+                    "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRuleAction",
                     "priority": 4
                 },
                 "conditions": {
@@ -338,7 +338,7 @@
                     "list": [
                         {
                             "conditionType": "WEB_FILTER_CATEGORY",
-                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
+                            "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRuleCondition",
                             "value": "Download Sites"
                         }
                     ]
@@ -346,13 +346,13 @@
                 "description": "Deprioritize HTTP to Download Sites (requires Web Filter)",
                 "enabled": true,
                 "id": 15,
-                "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRule",
+                "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRule",
                 "ruleId": 12345
             },
             {
                 "action": {
                     "actionType": "SET_PRIORITY",
-                    "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleAction",
+                    "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRuleAction",
                     "priority": 6
                 },
                 "conditions": {
@@ -360,7 +360,7 @@
                     "list": [
                         {
                             "conditionType": "HTTP_HOST",
-                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
+                            "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRuleCondition",
                             "value": "*dropbox.com"
                         }
                     ]
@@ -368,13 +368,13 @@
                 "description": "Limit dropbox.com sync",
                 "enabled": true,
                 "id": 16,
-                "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRule",
+                "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRule",
                 "ruleId": 12345
             },
             {
                 "action": {
                     "actionType": "SET_PRIORITY",
-                    "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleAction",
+                    "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRuleAction",
                     "priority": 3
                 },
                 "conditions": {
@@ -383,7 +383,7 @@
                         {
                             "conditionType": "HTTP_CONTENT_LENGTH",
                             "invert": false,
-                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
+                            "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRuleCondition",
                             "value": ">10000000"
                         }
                     ]
@@ -391,13 +391,13 @@
                 "description": "Do not Prioritize large HTTP downloads (>10meg)",
                 "enabled": true,
                 "id": 17,
-                "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRule",
+                "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRule",
                 "ruleId": 12345
             },
             {
                 "action": {
                     "actionType": "SET_PRIORITY",
-                    "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleAction",
+                    "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRuleAction",
                     "priority": 2
                 },
                 "conditions": {
@@ -405,7 +405,7 @@
                     "list": [
                         {
                             "conditionType": "DST_PORT",
-                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
+                            "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRuleCondition",
                             "value": "80"
                         }
                     ]
@@ -413,13 +413,13 @@
                 "description": "Prioritize HTTP",
                 "enabled": true,
                 "id": 18,
-                "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRule",
+                "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRule",
                 "ruleId": 12345
             },
             {
                 "action": {
                     "actionType": "SET_PRIORITY",
-                    "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleAction",
+                    "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRuleAction",
                     "priority": 2
                 },
                 "conditions": {
@@ -427,7 +427,7 @@
                     "list": [
                         {
                             "conditionType": "DST_PORT",
-                            "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
+                            "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRuleCondition",
                             "value": "443"
                         }
                     ]
@@ -435,7 +435,7 @@
                 "description": "Prioritize HTTPS",
                 "enabled": true,
                 "id": 19,
-                "javaClass": "com.untangle.node.bandwidth_control.BandwidthControlRule",
+                "javaClass": "com.untangle.app.bandwidth_control.BandwidthControlRule",
                 "ruleId": 12345
             }
         ]

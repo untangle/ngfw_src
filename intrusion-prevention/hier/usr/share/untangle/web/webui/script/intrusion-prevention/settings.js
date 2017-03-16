@@ -1049,7 +1049,7 @@ Ext.define('Webui.intrusion-prevention.settings', {
             name: 'Variables',
             settingsCmp: this,
             dataProperty: 'variables',
-            recordJavaClass: "com.untangle.node.intrusion_prevention.IpsVariable",
+            recordJavaClass: "com.untangle.app.intrusion_prevention.IpsVariable",
             initComponent: function() {
                 Ung.grid.Panel.prototype.initComponent.apply(this, arguments);
                 this.importSettingsWindow = Ext.create('Ung.ImportSettingsWindow',{

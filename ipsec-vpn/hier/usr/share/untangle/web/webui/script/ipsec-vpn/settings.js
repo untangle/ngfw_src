@@ -55,7 +55,7 @@ Ext.define('Webui.ipsec-vpn.settings', {
             hasRefresh: true,
             title: i18n._("Enabled IPsec Tunnels"),
             dataFn: this.getRpcNode().getTunnelStatus,
-            recordJavaClass: "com.untangle.node.ipsec_vpn.ConnectionStatusRecord",
+            recordJavaClass: "com.untangle.app.ipsec_vpn.ConnectionStatusRecord",
             fields: [{
                 name: "type"
             },{
@@ -140,7 +140,7 @@ Ext.define('Webui.ipsec-vpn.settings', {
             hasRefresh: true,
             title: i18n._("Active VPN Sessions"),
             dataFn: this.getRpcNode().getVirtualUsers,
-            recordJavaClass: "com.untangle.node.ipsec_vpn.VirtualUserEntry",
+            recordJavaClass: "com.untangle.app.ipsec_vpn.VirtualUserEntry",
             fields: [{
                 name: "clientAddress",
                 sortType: 'asIp'
@@ -347,7 +347,7 @@ Ext.define('Webui.ipsec-vpn.settings', {
             helpSource: 'ipsec_vpn_ipsec_tunnels',
             title: i18n._("IPsec Tunnels"),
             dataProperty:'tunnels',
-            recordJavaClass: 'com.untangle.node.ipsec_vpn.IpsecVpnTunnel',
+            recordJavaClass: 'com.untangle.app.ipsec_vpn.IpsecVpnTunnel',
             emptyRow: {
                 'active': true,
                 'ikeVersion': 1,
@@ -1196,7 +1196,7 @@ Ext.define('Webui.ipsec-vpn.settings', {
             title: i18n._('Remote Networks'),
             height: 600,
             dataProperty:'networks',
-            recordJavaClass: 'com.untangle.node.ipsec_vpn.IpsecVpnNetwork',
+            recordJavaClass: 'com.untangle.app.ipsec_vpn.IpsecVpnNetwork',
             emptyRow: {
                 'active': true,
                 'localAddress': localDefault,
@@ -1405,7 +1405,7 @@ Ext.define('Webui.ipsec-vpn.settings', {
             hasImportExport: false,
             dataProperty: 'virtualListenList',
             addHandler: Ext.bind(this.showInterfacePicker, this),
-            recordJavaClass: 'com.untangle.node.ipsec_vpn.VirtualListen',
+            recordJavaClass: 'com.untangle.app.ipsec_vpn.VirtualListen',
             emptyRow: {
                 "address": "1.2.3.4"
             },

@@ -8,10 +8,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import com.untangle.uvm.node.AppProperties;
-import com.untangle.uvm.node.License;
-import com.untangle.uvm.node.AppSettings;
-import com.untangle.uvm.node.AppMetric;
+import com.untangle.uvm.app.AppProperties;
+import com.untangle.uvm.app.License;
+import com.untangle.uvm.app.AppSettings;
+import com.untangle.uvm.app.AppMetric;
 
 /**
  * The AppsView is an object that represents the current "view" of the apps tab

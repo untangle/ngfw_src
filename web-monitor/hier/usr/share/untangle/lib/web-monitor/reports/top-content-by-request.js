@@ -4,7 +4,7 @@
     "description": "The number of web requests grouped by category.",
     "displayOrder": 700,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",
     "orderDesc": true,
     "units": "hits",

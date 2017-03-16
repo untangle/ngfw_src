@@ -22,7 +22,7 @@ Ext.define('Ung.apps.sslinspector.view.Rules', {
     recordActions: ['edit', 'delete', 'reorder'],
 
     listProperty: 'settings.ignoreRules.list',
-    ruleJavaClass: 'com.untangle.node.ssl_inspector.SslInspectorRuleCondition',
+    ruleJavaClass: 'com.untangle.app.ssl_inspector.SslInspectorRuleCondition',
 
     emptyRow: {
         ruleId: null,
@@ -30,14 +30,14 @@ Ext.define('Ung.apps.sslinspector.view.Rules', {
         description: '',
         action: {
             actionType: 'IGNORE',
-            javaClass: 'com.untangle.node.ssl_inspector.SslInspectorRuleAction',
+            javaClass: 'com.untangle.app.ssl_inspector.SslInspectorRuleAction',
             flag: true
         },
         conditions: {
             javaClass: 'java.util.LinkedList',
             list: []
         },
-        javaClass: 'com.untangle.node.ssl_inspector.SslInspectorRule'
+        javaClass: 'com.untangle.app.ssl_inspector.SslInspectorRule'
     },
 
     bind: '{ignoreRules}',

@@ -52,8 +52,8 @@ import com.untangle.uvm.network.DhcpStaticEntry;
 import com.untangle.uvm.network.UpnpSettings;
 import com.untangle.uvm.network.UpnpRule;
 import com.untangle.uvm.network.UpnpRuleCondition;
-import com.untangle.uvm.node.IPMaskedAddress;
-import com.untangle.uvm.node.RuleCondition;
+import com.untangle.uvm.app.IPMaskedAddress;
+import com.untangle.uvm.app.RuleCondition;
 import com.untangle.uvm.servlet.DownloadHandler;
 
 /**

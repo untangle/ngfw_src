@@ -4,7 +4,7 @@
     "description": "The number of disconnect events grouped by WAN.",
     "displayOrder": 100,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "interface_id",
     "orderDesc": false,
     "units": "disconnects",
@@ -12,7 +12,7 @@
     "pieSumColumn": "count(*)",
     "conditions": [
         {
-            "javaClass": "com.untangle.node.reports.SqlCondition",
+            "javaClass": "com.untangle.app.reports.SqlCondition",
             "column": "action",
             "operator": "=",
             "value": "DISCONNECTED"

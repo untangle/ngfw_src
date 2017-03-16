@@ -27,7 +27,7 @@ Ext.define('Ung.apps.webmonitor.view.FlagSites', {
         blocked: false,
         flagged: true,
         description: '',
-        javaClass: 'com.untangle.uvm.node.GenericRule'
+        javaClass: 'com.untangle.uvm.app.GenericRule'
     },
 
     bind: '{blockedUrls}',

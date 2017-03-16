@@ -20,13 +20,13 @@ import com.untangle.uvm.UvmState;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SessionMonitorEntry;
-import com.untangle.uvm.node.App;
-import com.untangle.uvm.node.AppManager;
-import com.untangle.uvm.node.SessionTuple;
-import com.untangle.uvm.node.SessionTuple;
+import com.untangle.uvm.app.App;
+import com.untangle.uvm.app.AppManager;
+import com.untangle.uvm.app.SessionTuple;
+import com.untangle.uvm.app.SessionTuple;
 import com.untangle.uvm.vnet.AppSession;
-import com.untangle.uvm.node.AppSettings;
-import com.untangle.uvm.node.SessionEvent;
+import com.untangle.uvm.app.AppSettings;
+import com.untangle.uvm.app.SessionEvent;
 import com.untangle.uvm.network.InterfaceSettings;
 
 /**
@@ -155,8 +155,8 @@ public class SessionMonitorImpl implements SessionMonitor
             if ( sessionState != null ) {
                 try {
                     int priority = sessionState.netcapSession().clientQosMark();
-                    com.untangle.uvm.node.SessionTuple clientSide = sessionState.netcapHook().getClientSide();
-                    com.untangle.uvm.node.SessionTuple serverSide = sessionState.netcapHook().getServerSide();
+                    com.untangle.uvm.app.SessionTuple clientSide = sessionState.netcapHook().getClientSide();
+                    com.untangle.uvm.app.SessionTuple serverSide = sessionState.netcapHook().getServerSide();
 
                     NetcapHook hook = sessionState.netcapHook();
                     if (hook == null)

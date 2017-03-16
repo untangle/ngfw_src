@@ -1161,7 +1161,7 @@ Ext.define("Ung.Main", {
         } else {
             // no policy manager, just one policy (Default Policy)
             rpc.policies = [{
-                javaClass: "com.untangle.node.policy.PolicySettings",
+                javaClass: "com.untangle.app.policy.PolicySettings",
                 policyId: "1",
                 name: i18n._("Default Policy"),
                 description: i18n._("The Default Policy")

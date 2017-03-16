@@ -12,5 +12,5 @@ deps = %w(
          ).map { |f| Jars.downloadTarget(f) }
 deps +=  Jars::Jabsorb
 
-ServletBuilder.new(smtp, 'com.untangle.node.smtp.quarantine.jsp', "./smtp-casing/servlets/quarantine", deps, jt)
+ServletBuilder.new(smtp, 'com.untangle.app.smtp.quarantine.jsp', "./smtp-casing/servlets/quarantine", deps, jt)
 

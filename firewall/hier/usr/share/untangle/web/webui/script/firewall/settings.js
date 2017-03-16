@@ -63,7 +63,7 @@ Ext.define('Webui.firewall.settings', {
                 addAtTop: false,
                 title: i18n._("Rules"),
                 dataProperty:'rules',
-                recordJavaClass: "com.untangle.node.firewall.FirewallRule",
+                recordJavaClass: "com.untangle.app.firewall.FirewallRule",
                 emptyRow: {
                     "ruleId": 0,
                     "enabled": true,
@@ -137,7 +137,7 @@ Ext.define('Webui.firewall.settings', {
                     items:[{
                         xtype:'rulebuilder',
                         settingsCmp: this,
-                        javaClass: "com.untangle.node.firewall.FirewallRuleCondition",
+                        javaClass: "com.untangle.app.firewall.FirewallRuleCondition",
                         dataIndex: "conditions",
                         conditions: this.getConditions()
                     }]

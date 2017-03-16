@@ -4,7 +4,7 @@
     "description": "The number of inspected sessions grouped by site.",
     "displayOrder": 200,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",
     "orderDesc": true,
     "units": "hits",
@@ -12,7 +12,7 @@
     "pieSumColumn": "count(*)",
     "conditions": [
         {
-            "javaClass": "com.untangle.node.reports.SqlCondition",
+            "javaClass": "com.untangle.app.reports.SqlCondition",
             "column": "ssl_inspector_status",
             "operator": "=",
             "value": "INSPECTED"

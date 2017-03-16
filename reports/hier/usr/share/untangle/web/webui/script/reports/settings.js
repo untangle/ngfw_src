@@ -227,7 +227,7 @@ Ext.define('Webui.reports.settings', {
                     settingsCmp: this,
                     plugins:[changePasswordColumn],
                     dataProperty: 'reportsUsers',
-                    recordJavaClass: "com.untangle.node.reports.ReportsUser",
+                    recordJavaClass: "com.untangle.app.reports.ReportsUser",
                     emptyRow: {
                         emailAddress: "",
                         // emailAlerts: true,
@@ -637,7 +637,7 @@ Ext.define('Webui.reports.settings', {
             helpSource: 'reports_name_map',
             title: i18n._("Name Map"),
             dataProperty: 'hostnameMap',
-            recordJavaClass: "com.untangle.node.reports.ReportsHostnameMapEntry",
+            recordJavaClass: "com.untangle.app.reports.ReportsHostnameMapEntry",
             emptyRow: {
                 "address": "1.2.3.4",
                 "hostname": ""
@@ -711,7 +711,7 @@ Ext.define('Webui.reports.settings', {
                 ftype: 'grouping'
             }],
             groupField: 'category',
-            recordJavaClass: "com.untangle.node.reports.ReportEntry",
+            recordJavaClass: "com.untangle.app.reports.ReportEntry",
             emptyRow: {
                 "uniqueId": null,
                 "enabled": true,
@@ -832,8 +832,8 @@ Ext.define('Webui.reports.settings', {
                 ftype: 'grouping'
             }],
             groupField: 'category',
-            recordJavaClass: "com.untangle.node.reports.EmailReportEntry",
-            javaClass: "com.untangle.node.reports.EmailReport",
+            recordJavaClass: "com.untangle.app.reports.EmailReportEntry",
+            javaClass: "com.untangle.app.reports.EmailReport",
             dataIndex: dataIndex,
             /*
              * Build rows dynamically from existing reports using list of unique report identifers
@@ -843,7 +843,7 @@ Ext.define('Webui.reports.settings', {
                 var settings = this.settingsCmp.settings;
 
                 var results = {
-                    javaClass: "com.untangle.node.reports.ReportEntry",
+                    javaClass: "com.untangle.app.reports.ReportEntry",
                     list: []
                 };
 
@@ -967,7 +967,7 @@ Ext.define('Webui.reports.settings', {
                 title: i18n._("Email Templates"),
                 hasReadOnly: true,
                 dataProperty:'emailTemplates',
-                recordJavaClass: "com.untangle.node.reports.EmailTemplate",
+                recordJavaClass: "com.untangle.app.reports.EmailTemplate",
                 emptyRow: {
                     "templateId": -1,
                     "title": "",

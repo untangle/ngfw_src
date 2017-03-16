@@ -376,7 +376,7 @@ Ext.define('Webui.bandwidth-control.settings', {
             title: i18n._("Rules"),
             qtip: i18n._("Bandwidth Rules are used to control and enforce bandwidth usage."),
             dataFn: this.getRpcNode().getRules,
-            recordJavaClass: "com.untangle.node.bandwidth_control.BandwidthControlRule",
+            recordJavaClass: "com.untangle.app.bandwidth_control.BandwidthControlRule",
             emptyRow: {
                 "ruleId": 0,
                 "enabled": true,
@@ -485,7 +485,7 @@ Ext.define('Webui.bandwidth-control.settings', {
                 items:[{
                     xtype: 'rulebuilder',
                     settingsCmp: this,
-                    javaClass: "com.untangle.node.bandwidth_control.BandwidthControlRuleCondition",
+                    javaClass: "com.untangle.app.bandwidth_control.BandwidthControlRuleCondition",
                     dataIndex: "conditions",
                     conditions: this.getConditions()
                 }]
@@ -613,7 +613,7 @@ Ext.define('Webui.bandwidth-control.settings', {
                     var quotaUnitCmp  = this.down('combo[name="quotaUnit"]');
 
                     var jsonobj = {
-                        javaClass: "com.untangle.node.bandwidth_control.BandwidthControlRuleAction",
+                        javaClass: "com.untangle.app.bandwidth_control.BandwidthControlRuleAction",
                         actionType: actionType,
                         //must override toString in order for all objects not to appear the same
                         toString: function() {

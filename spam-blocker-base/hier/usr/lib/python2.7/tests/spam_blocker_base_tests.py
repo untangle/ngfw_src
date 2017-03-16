@@ -44,7 +44,7 @@ def createSSLInspectRule(port="25"):
         "action": {
             "actionType": "INSPECT",
             "flag": False,
-            "javaClass": "com.untangle.node.ssl_inspector.SslInspectorRuleAction"
+            "javaClass": "com.untangle.app.ssl_inspector.SslInspectorRuleAction"
         },
         "conditions": {
             "javaClass": "java.util.LinkedList",
@@ -52,19 +52,19 @@ def createSSLInspectRule(port="25"):
                 {
                     "conditionType": "PROTOCOL",
                     "invert": False,
-                    "javaClass": "com.untangle.node.ssl_inspector.SslInspectorRuleCondition",
+                    "javaClass": "com.untangle.app.ssl_inspector.SslInspectorRuleCondition",
                     "value": "TCP"
                 },
                 {
                     "conditionType": "DST_PORT",
                     "invert": False,
-                    "javaClass": "com.untangle.node.ssl_inspector.SslInspectorRuleCondition",
+                    "javaClass": "com.untangle.app.ssl_inspector.SslInspectorRuleCondition",
                     "value": port
                 }
             ]
         },
         "description": "Inspect" + port,
-        "javaClass": "com.untangle.node.ssl_inspector.SslInspectorRule",
+        "javaClass": "com.untangle.app.ssl_inspector.SslInspectorRule",
         "live": True,
         "ruleId": 1
     };

@@ -154,7 +154,7 @@ Ext.define('Webui.config.about', {
                 }]
             }),
             dataFn: Ung.Main.getLicenseManager().getLicenses,
-            recordJavaClass: "com.untangle.uvm.node.License",
+            recordJavaClass: "com.untangle.uvm.app.License",
             fields: [{
                 name: "displayName"
             },{

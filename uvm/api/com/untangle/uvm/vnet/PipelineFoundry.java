@@ -6,11 +6,11 @@ package com.untangle.uvm.vnet;
 import java.net.InetSocketAddress;
 
 import com.untangle.uvm.vnet.Fitting;
-import com.untangle.uvm.node.SessionEvent;
+import com.untangle.uvm.app.SessionEvent;
 import com.untangle.uvm.vnet.SessionEventHandler;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Subscription;
-import com.untangle.uvm.node.App;
+import com.untangle.uvm.app.App;
 
 /**
  * Compiles pipes based on subscriptions and interest sets.

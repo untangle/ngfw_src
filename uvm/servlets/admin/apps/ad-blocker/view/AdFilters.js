@@ -58,7 +58,7 @@ Ext.define('Ung.apps.ad-blocker.view.AdFilters', {
             string: '',
             enabled: true,
             blocked: true,
-            javaClass: 'com.untangle.uvm.node.GenericRule'
+            javaClass: 'com.untangle.uvm.app.GenericRule'
         },
 
         columns: [

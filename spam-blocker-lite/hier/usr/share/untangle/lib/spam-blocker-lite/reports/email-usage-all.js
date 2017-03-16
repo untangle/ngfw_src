@@ -4,7 +4,7 @@
     "description": "The amount of scanned, clean, and spam email over time.",
     "displayOrder": 101,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderDesc": false,
     "units": "msgs",
     "readOnly": true,
@@ -17,7 +17,7 @@
     "conditions": [
         {
             "column": "addr_kind",
-            "javaClass": "com.untangle.node.reports.SqlCondition",
+            "javaClass": "com.untangle.app.reports.SqlCondition",
             "operator": "=",
             "value": "B"
         }

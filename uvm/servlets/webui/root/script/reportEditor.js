@@ -127,7 +127,7 @@ Ext.define("Ung.window.ReportEditor", {
             hasImportExport: false,
             dataIndex: 'conditions',
             columnsDefaultSortable: false,
-            recordJavaClass: "com.untangle.node.reports.SqlCondition",
+            recordJavaClass: "com.untangle.app.reports.SqlCondition",
             emptyRow: {
                 "column": "",
                 "operator": "=",

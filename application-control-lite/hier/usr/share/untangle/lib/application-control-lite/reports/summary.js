@@ -4,14 +4,14 @@
     "description": "A summary of Application Control Lite actions.",
     "displayOrder": 10,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "textColumns": [
         "count(*) as scanned",
         "sum(application_control_lite_blocked::int) as blocked"
     ],
     "conditions": [
         {
-        "javaClass": "com.untangle.node.reports.SqlCondition",
+        "javaClass": "com.untangle.app.reports.SqlCondition",
         "column": "application_control_lite_protocol",
         "operator": "is",
         "value": "not null"

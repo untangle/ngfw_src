@@ -26,7 +26,7 @@ Ext.define('Ung.apps.virusblocker.view.PassSites', {
         string: '',
         enabled: true,
         description: '',
-        javaClass: 'com.untangle.uvm.node.GenericRule'
+        javaClass: 'com.untangle.uvm.app.GenericRule'
     },
 
     bind: '{passSites}',

@@ -23,12 +23,12 @@ import org.jabsorb.JSONSerializer;
 import org.json.JSONObject;
 
 import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.node.LicenseManager;
-import com.untangle.uvm.node.App;
-import com.untangle.uvm.node.AppManager;
-import com.untangle.uvm.node.AppSettings.AppState;
-import com.untangle.uvm.node.PolicyManager;
-import com.untangle.uvm.node.Reporting;
+import com.untangle.uvm.app.LicenseManager;
+import com.untangle.uvm.app.App;
+import com.untangle.uvm.app.AppManager;
+import com.untangle.uvm.app.AppSettings.AppState;
+import com.untangle.uvm.app.PolicyManager;
+import com.untangle.uvm.app.Reporting;
 import com.untangle.uvm.servlet.ServletFileManager;
 import com.untangle.uvm.servlet.ServletUtils;
 

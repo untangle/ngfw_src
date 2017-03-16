@@ -4,7 +4,7 @@
     "description": "The amount of successes, and failures of configuration backup over time.",
     "displayOrder": 101,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderDesc": false,
     "units": "attempts",
     "readOnly": true,

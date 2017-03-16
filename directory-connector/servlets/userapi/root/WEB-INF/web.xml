@@ -14,7 +14,7 @@
 
   <servlet>
     <servlet-name>Registration</servlet-name>
-    <servlet-class>com.untangle.node.directory_connector.Registration</servlet-class>
+    <servlet-class>com.untangle.app.directory_connector.Registration</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
 

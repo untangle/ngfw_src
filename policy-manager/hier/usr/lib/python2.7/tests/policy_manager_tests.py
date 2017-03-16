@@ -33,7 +33,7 @@ def addRack(name="New Rack", description="", parentId=None):
     for policy in currentPolicies['list']:
         if policy['policyId'] > maxIdFound:
             maxIdFound = policy['policyId']
-    newPolicy = { "javaClass" : "com.untangle.node.policy_manager.PolicySettings", "policyId" : maxIdFound+1, "name": name, "description" : description, "parentId" : parentId }
+    newPolicy = { "javaClass" : "com.untangle.app.policy_manager.PolicySettings", "policyId" : maxIdFound+1, "name": name, "description" : description, "parentId" : parentId }
     currentPolicies['list'].append(newPolicy)
     node.setSettings(currentSettings)
     return newPolicy['policyId']
@@ -57,7 +57,7 @@ def createPolicySingleConditionRule( conditionType, value, targetPolicy, blocked
     conditionTypeStr = str(conditionType)
     valueStr = str(value)
     return {
-        "javaClass": "com.untangle.node.policy_manager.PolicyRule", 
+        "javaClass": "com.untangle.app.policy_manager.PolicyRule", 
         "ruleId": 1, 
         "enabled": True, 
         "description": "Single Matcher: " + conditionTypeStr + " = " + valueStr, 
@@ -67,7 +67,7 @@ def createPolicySingleConditionRule( conditionType, value, targetPolicy, blocked
             "list": [
                 {
                     "invert": False, 
-                    "javaClass": "com.untangle.node.policy_manager.PolicyRuleCondition", 
+                    "javaClass": "com.untangle.app.policy_manager.PolicyRuleCondition", 
                     "conditionType": conditionTypeStr, 
                     "value": valueStr
                     }
@@ -91,7 +91,7 @@ def createFirewallSingleConditionRule( conditionType, value, blocked=True ):
     conditionTypeStr = str(conditionType)
     valueStr = str(value)
     return {
-        "javaClass": "com.untangle.node.firewall.FirewallRule", 
+        "javaClass": "com.untangle.app.firewall.FirewallRule", 
         "id": 1, 
         "enabled": True, 
         "description": "Single Matcher: " + conditionTypeStr + " = " + valueStr, 
@@ -102,7 +102,7 @@ def createFirewallSingleConditionRule( conditionType, value, blocked=True ):
             "list": [
                 {
                     "invert": False, 
-                    "javaClass": "com.untangle.node.firewall.FirewallRuleCondition", 
+                    "javaClass": "com.untangle.app.firewall.FirewallRuleCondition", 
                     "conditionType": conditionTypeStr, 
                     "value": valueStr
                     }
@@ -263,7 +263,7 @@ class PolicyManagerTests(unittest2.TestCase):
         result = remote_control.is_online()
         assert (result == 0)
         # add a block rule
-        newRule = { "blocked": True, "description": "desc", "flagged": True, "javaClass": "com.untangle.uvm.node.GenericRule", "string": "test.untangle.com/test/testPage1.html" }
+        newRule = { "blocked": True, "description": "desc", "flagged": True, "javaClass": "com.untangle.uvm.app.GenericRule", "string": "test.untangle.com/test/testPage1.html" }
         rules = secondRackWebfilter.getBlockedUrls()
         rules["list"].append(newRule)
         secondRackWebfilter.setBlockedUrls(rules)

@@ -1,6 +1,6 @@
 {
-        "javaClass": "com.untangle.uvm.node.AppProperties",
-        "className" : "com.untangle.node.ipsec_vpn.IpsecVpnApp",
+        "javaClass": "com.untangle.uvm.app.AppProperties",
+        "className" : "com.untangle.app.ipsec_vpn.IpsecVpnApp",
         "name" : "ipsec-vpn",
         "displayName" : "IPsec VPN",
         "type" : "SERVICE",

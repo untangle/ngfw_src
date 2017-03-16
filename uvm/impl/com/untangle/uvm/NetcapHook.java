@@ -26,14 +26,14 @@ import com.untangle.uvm.NetworkManager;
 import com.untangle.uvm.GeographyManager;
 import com.untangle.uvm.HostTable;
 import com.untangle.uvm.HostTableEntry;
-import com.untangle.uvm.node.SessionTuple;
-import com.untangle.uvm.node.SessionTuple;
-import com.untangle.uvm.node.SessionEvent;
-import com.untangle.uvm.node.SessionNatEvent;
-import com.untangle.uvm.node.SessionStatsEvent;
-import com.untangle.uvm.node.PolicyManager;
+import com.untangle.uvm.app.SessionTuple;
+import com.untangle.uvm.app.SessionTuple;
+import com.untangle.uvm.app.SessionEvent;
+import com.untangle.uvm.app.SessionNatEvent;
+import com.untangle.uvm.app.SessionStatsEvent;
+import com.untangle.uvm.app.PolicyManager;
 import com.untangle.uvm.vnet.AppSession;
-import com.untangle.uvm.node.HostnameLookup;
+import com.untangle.uvm.app.HostnameLookup;
 
 /**
  * Helper class for the IP session hooks.

@@ -40,7 +40,7 @@ public class Main
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    private UvmClassLoader uvmClassLoader;
+    private URLClassLoader uvmClassLoader;
     private UvmContextBase uvmContext;
 
     // constructor -------------------------------------------------------------
@@ -169,7 +169,7 @@ public class Main
         }
 
         urls.add(new URL("file://" + System.getProperty("uvm.lang.dir") + "/"));
-        uvmClassLoader = new UvmClassLoader(urls.toArray(new URL[urls.size()]), getClass().getClassLoader());
+        uvmClassLoader = new URLClassLoader(urls.toArray(new URL[urls.size()]), getClass().getClassLoader());
 
         Thread.currentThread().setContextClassLoader(uvmClassLoader);
     }

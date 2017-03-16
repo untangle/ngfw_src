@@ -15,7 +15,7 @@ import com.untangle.jvector.Sink;
 import com.untangle.jvector.Source;
 import com.untangle.jvector.TCPSink;
 import com.untangle.jvector.TCPSource;
-import com.untangle.uvm.node.SessionEvent;
+import com.untangle.uvm.app.SessionEvent;
 import com.untangle.uvm.vnet.AppTCPSession;
 
 public class NetcapTCPHook implements NetcapCallback

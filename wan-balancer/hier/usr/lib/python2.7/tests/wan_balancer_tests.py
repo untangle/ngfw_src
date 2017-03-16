@@ -89,7 +89,7 @@ def buildSingleWanRouteRule(ruleType="DST_ADDR", ruleValue="1.1.1.1", wanDestina
     ruleCounter +=1
     ruleCondition = {
         "invert": False, 
-        "javaClass": "com.untangle.node.wan_balancer.RouteRuleCondition", 
+        "javaClass": "com.untangle.app.wan_balancer.RouteRuleCondition", 
         "conditionType": ruleType, 
         "value": ruleValue
     }
@@ -97,7 +97,7 @@ def buildSingleWanRouteRule(ruleType="DST_ADDR", ruleValue="1.1.1.1", wanDestina
         "description": name, 
         "destinationWan": wanDestination, 
         "enabled": True, 
-        "javaClass": "com.untangle.node.wan_balancer.RouteRule", 
+        "javaClass": "com.untangle.app.wan_balancer.RouteRule", 
         "conditions": {
             "javaClass": "java.util.LinkedList", 
             "list": []
@@ -129,7 +129,7 @@ def buildWanTestRule(matchInterface, testType="ping", pingHost="8.8.8.8", httpUR
                 "failureThreshold": 3, 
                 "httpUrl": httpURL, 
                 "interfaceId": matchInterface, 
-                "javaClass": "com.untangle.node.wan_failover.WanTestSettings", 
+                "javaClass": "com.untangle.app.wan_failover.WanTestSettings", 
                 "pingHostname": pingHost, 
                 "testHistorySize": 4, 
                 "timeoutMilliseconds": testTimeout, 

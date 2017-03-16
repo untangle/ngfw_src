@@ -35,7 +35,7 @@ import org.jabsorb.serializer.UnmarshallException;
 import com.untangle.uvm.util.IOUtil;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.SettingsChangesEvent;
-import com.untangle.uvm.node.HostnameLookup;
+import com.untangle.uvm.app.HostnameLookup;
 
 public class SettingsManagerImpl implements SettingsManager
 {

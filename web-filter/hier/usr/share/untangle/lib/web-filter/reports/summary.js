@@ -4,7 +4,7 @@
     "description": "A summary of web filter actions.",
     "displayOrder": 1,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "textColumns": [
         "count(*) as scanned",
         "sum(web_filter_flagged::int) as flagged",

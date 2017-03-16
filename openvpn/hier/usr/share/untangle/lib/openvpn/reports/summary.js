@@ -4,7 +4,7 @@
     "description": "A summary of OpenVPN actions.",
     "displayOrder": 18,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "textColumns": [
         "round(coalesce(sum(rx_bytes + tx_bytes), 0) / (1024*1024),1) as total"
     ],

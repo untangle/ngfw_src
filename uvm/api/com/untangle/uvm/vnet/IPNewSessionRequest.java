@@ -5,8 +5,8 @@ package com.untangle.uvm.vnet;
 
 import java.net.InetAddress;
 
-import com.untangle.uvm.node.SessionEvent;
-import com.untangle.uvm.node.SessionTuple;
+import com.untangle.uvm.app.SessionEvent;
+import com.untangle.uvm.app.SessionTuple;
 
 /**
  * The new IP session request interface

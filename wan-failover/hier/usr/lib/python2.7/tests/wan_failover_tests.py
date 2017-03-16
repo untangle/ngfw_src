@@ -87,7 +87,7 @@ def buildWanTestRule(matchInterface, testType="ping", pingHost="8.8.8.8", httpUR
                 "failureThreshold": 3, 
                 "httpUrl": httpURL, 
                 "interfaceId": matchInterface, 
-                "javaClass": "com.untangle.node.wan_failover.WanTestSettings", 
+                "javaClass": "com.untangle.app.wan_failover.WanTestSettings", 
                 "pingHostname": pingHost, 
                 "testHistorySize": 4, 
                 "timeoutMilliseconds": testTimeout, 

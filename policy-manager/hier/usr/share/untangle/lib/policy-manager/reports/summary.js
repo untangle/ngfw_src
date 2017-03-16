@@ -4,7 +4,7 @@
     "description": "A summary of Policy Manager actions.",
     "displayOrder": 12,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "textColumns": [
         "count(*) as scanned"
     ],

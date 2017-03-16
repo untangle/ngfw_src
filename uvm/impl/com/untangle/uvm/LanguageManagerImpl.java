@@ -59,9 +59,9 @@ import com.untangle.uvm.LanguageManager;
 import com.untangle.uvm.UvmException;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.UvmContext;
-import com.untangle.uvm.node.App;
-import com.untangle.uvm.node.AppProperties;
-import com.untangle.uvm.node.AppManager;
+import com.untangle.uvm.app.App;
+import com.untangle.uvm.app.AppProperties;
+import com.untangle.uvm.app.AppManager;
 import com.untangle.uvm.SettingsManager;
 
 /**

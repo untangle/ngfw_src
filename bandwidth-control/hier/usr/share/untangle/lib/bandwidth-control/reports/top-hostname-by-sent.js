@@ -4,7 +4,7 @@
     "description": "The sum of the sent data grouped by hostname.",
     "displayOrder": 203,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",
     "orderDesc": true,
     "units": "MB",

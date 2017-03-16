@@ -1,6 +1,6 @@
 /**
  * To use this, rename it ExtensionImpl.java
- * put it in ~/work/src/reports/src/com/untangle/node/reports
+ * put it in ~/work/src/reports/src/com.untangle.app/reports
  * then run rake
  * then restart the UVM and tail console.log
  * It will attempt to print the event object documentation into console.log

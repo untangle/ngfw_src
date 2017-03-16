@@ -4,7 +4,7 @@
     "description": "The amount of traffic for each policy.",
     "displayOrder": 201,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "policy_id",
     "orderDesc": false,
     "units": "bytes",

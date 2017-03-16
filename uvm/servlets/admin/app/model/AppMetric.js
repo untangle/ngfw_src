@@ -4,7 +4,7 @@ Ext.define ('Ung.model.AppMetric', {
         { name: 'displayName', type: 'string' },
         { name: 'name', type: 'string' },
         { name: 'value', type: 'int' },
-        { name: 'javaClass', type: 'string', defaultValue: 'com.untangle.uvm.node.AppMetric' }
+        { name: 'javaClass', type: 'string', defaultValue: 'com.untangle.uvm.app.AppMetric' }
     ],
     proxy: {
         autoLoad: true,

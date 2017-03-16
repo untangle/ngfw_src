@@ -12,9 +12,9 @@ import org.apache.log4j.Logger;
 
 import com.untangle.jnetcap.NetcapCallback;
 import com.untangle.jnetcap.Conntrack;
-import com.untangle.uvm.node.SessionEvent;
-import com.untangle.uvm.node.SessionStatsEvent;
-import com.untangle.uvm.node.SessionTuple;
+import com.untangle.uvm.app.SessionEvent;
+import com.untangle.uvm.app.SessionStatsEvent;
+import com.untangle.uvm.app.SessionTuple;
 
 public class NetcapConntrackHook implements NetcapCallback
 {

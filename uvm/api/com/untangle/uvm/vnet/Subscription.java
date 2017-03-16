@@ -5,9 +5,9 @@ package com.untangle.uvm.vnet;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.node.IPMaskedAddress;
-import com.untangle.uvm.node.PortRange;
-import com.untangle.uvm.node.SessionTuple;
+import com.untangle.uvm.app.IPMaskedAddress;
+import com.untangle.uvm.app.PortRange;
+import com.untangle.uvm.app.SessionTuple;
 
 /**
  * A traffic subscription. Right now these are internal, the user does

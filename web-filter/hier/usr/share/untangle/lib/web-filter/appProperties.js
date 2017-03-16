@@ -1,6 +1,6 @@
 {
-        "javaClass": "com.untangle.uvm.node.AppProperties",
-        "className" : "com.untangle.node.web_filter.WebFilterApp",
+        "javaClass": "com.untangle.uvm.app.AppProperties",
+        "className" : "com.untangle.app.web_filter.WebFilterApp",
         "appBase" : "web-filter-base",
         "name" : "web-filter",
         "displayName" : "Web Filter",

@@ -4,7 +4,7 @@
     "description": "The swap utilization over time as a percent of total memory size .",
     "displayOrder": 103,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderDesc": false,
     "units": "percent",
     "readOnly": true,

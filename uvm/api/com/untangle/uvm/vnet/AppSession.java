@@ -4,7 +4,7 @@
 package com.untangle.uvm.vnet;
 
 import com.untangle.uvm.Tag;
-import com.untangle.uvm.node.SessionEvent;
+import com.untangle.uvm.app.SessionEvent;
 
 import java.nio.ByteBuffer;
 import java.util.Map;

@@ -1,6 +1,6 @@
 {
-        "javaClass": "com.untangle.uvm.node.AppProperties",
-        "className" : "com.untangle.node.openvpn.OpenVpnAppImpl",
+        "javaClass": "com.untangle.uvm.app.AppProperties",
+        "className" : "com.untangle.app.openvpn.OpenVpnAppImpl",
         "name" : "openvpn",
         "displayName" : "OpenVPN",
         "type" : "SERVICE",

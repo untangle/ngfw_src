@@ -22,7 +22,7 @@ Ext.define('Ung.apps.webfilter.view.Rules', {
     recordActions: ['edit', 'delete', 'reorder'],
 
     listProperty: 'settings.filterRules.list',
-    ruleJavaClass: 'com.untangle.node.web_filter.WebFilterRuleCondition',
+    ruleJavaClass: 'com.untangle.app.web_filter.WebFilterRuleCondition',
 
     conditions: [
         Condition.dstLocal,
@@ -43,7 +43,7 @@ Ext.define('Ung.apps.webfilter.view.Rules', {
             javaClass: 'java.util.LinkedList',
             list: []
         },
-        javaClass: 'com.untangle.node.web_filter.WebFilterRule'
+        javaClass: 'com.untangle.app.web_filter.WebFilterRule'
     },
 
     bind: '{filterRules}',

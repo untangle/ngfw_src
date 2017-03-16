@@ -4,5 +4,5 @@ NodeBuilder.makeNode(BuildEnv::SRC, 'openvpn', 'openvpn')
 
 openvpn = BuildEnv::SRC['openvpn']
 
-ServletBuilder.new(openvpn, 'com.untangle.node.openvpn.servlet','openvpn/servlets/openvpn', [], [openvpn['src']])
+ServletBuilder.new(openvpn, 'com.untangle.app.openvpn.servlet','openvpn/servlets/openvpn', [], [openvpn['src']])
 

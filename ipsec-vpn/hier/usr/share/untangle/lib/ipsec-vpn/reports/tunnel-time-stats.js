@@ -4,7 +4,7 @@
     "description": "The amount of IPsec tunnel traffic over time.",
     "displayOrder": 80,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderDesc": false,
     "units": "bytes",
     "readOnly": true,

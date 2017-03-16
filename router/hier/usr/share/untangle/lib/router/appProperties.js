@@ -1,6 +1,6 @@
 {
-        "javaClass": "com.untangle.uvm.node.AppProperties",
-        "className" : "com.untangle.node.router.RouterImpl",
+        "javaClass": "com.untangle.uvm.app.AppProperties",
+        "className" : "com.untangle.app.router.RouterImpl",
         "name" : "router",
         "displayName" : "Router",
         "type" : "SERVICE",

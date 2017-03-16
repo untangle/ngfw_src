@@ -25,7 +25,7 @@ Ext.define('Ung.apps.ad-blocker.view.PassLists', {
             string: '',
             enabled: true,
             description: '',
-            javaClass: 'com.untangle.uvm.node.GenericRule'
+            javaClass: 'com.untangle.uvm.app.GenericRule'
         },
 
         columns: [{
@@ -93,7 +93,7 @@ Ext.define('Ung.apps.ad-blocker.view.PassLists', {
             string: '1.2.3.4',
             enabled: true,
             description: '',
-            javaClass: 'com.untangle.uvm.node.GenericRule'
+            javaClass: 'com.untangle.uvm.app.GenericRule'
         },
 
         columns: [{

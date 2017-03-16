@@ -1,6 +1,6 @@
 {
-        "javaClass": "com.untangle.uvm.node.AppProperties",
-        "className" : "com.untangle.node.live_support.LiveSupportApp",
+        "javaClass": "com.untangle.uvm.app.AppProperties",
+        "className" : "com.untangle.app.live_support.LiveSupportApp",
         "name" : "live-support",
         "displayName" : "Live Support",
         "type" : "SERVICE",

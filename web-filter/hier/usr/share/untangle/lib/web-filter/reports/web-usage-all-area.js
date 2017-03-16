@@ -4,7 +4,7 @@
     "description": "The amount of total, flagged, and blocked web requests over time.",
     "displayOrder": 101,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderDesc": false,
     "units": "hits",
     "readOnly": true,

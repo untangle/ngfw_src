@@ -61,7 +61,7 @@ Ext.define('Webui.openvpn.settings', {
             title: i18n._("Connected Remote Clients"),
             qtip: i18n._("The Connected Remote Clients list shows connected clients."),
             dataFn: this.getRpcNode().getActiveClients,
-            recordJavaClass: "com.untangle.node.openvpn.OpenVpnStatusEvent",
+            recordJavaClass: "com.untangle.app.openvpn.OpenVpnStatusEvent",
             fields: [{
                 name: "address",
                 sortType: 'asIp'
@@ -197,7 +197,7 @@ Ext.define('Webui.openvpn.settings', {
             margin: '0 20 0 20',
             title: i18n._("Remote Servers"),
             dataProperty: "remoteServers",
-            recordJavaClass: "com.untangle.node.openvpn.OpenVpnRemoteServer",
+            recordJavaClass: "com.untangle.app.openvpn.OpenVpnRemoteServer",
             emptyRow: {
                 "enabled": true,
                 "name": ""
@@ -423,7 +423,7 @@ Ext.define('Webui.openvpn.settings', {
             name: 'Remote Clients',
             title: i18n._("Remote Clients"),
             dataProperty: "remoteClients",
-            recordJavaClass: "com.untangle.node.openvpn.OpenVpnRemoteClient",
+            recordJavaClass: "com.untangle.app.openvpn.OpenVpnRemoteClient",
             emptyRow: {
                 "enabled": true,
                 "name": "",
@@ -563,7 +563,7 @@ Ext.define('Webui.openvpn.settings', {
             name: 'Exports',
             title: i18n._("Exported Networks"),
             dataProperty: 'exports',
-            recordJavaClass: "com.untangle.node.openvpn.OpenVpnExport",
+            recordJavaClass: "com.untangle.app.openvpn.OpenVpnExport",
             emptyRow: {
                 "enabled": true,
                 "name": "",
@@ -634,7 +634,7 @@ Ext.define('Webui.openvpn.settings', {
             addAtTop: false,
             title: i18n._("Groups"),
             dataProperty: 'groups',
-            recordJavaClass: "com.untangle.node.openvpn.OpenVpnGroup",
+            recordJavaClass: "com.untangle.app.openvpn.OpenVpnGroup",
             emptyRow: {
                 "groupId": -1,
                 "name": "",

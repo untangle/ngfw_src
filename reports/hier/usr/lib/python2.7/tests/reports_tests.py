@@ -58,7 +58,7 @@ def createFirewallSingleConditionRule( conditionType, value, blocked=True ):
     conditionTypeStr = str(conditionType)
     valueStr = str(value)
     return {
-        "javaClass": "com.untangle.node.firewall.FirewallRule", 
+        "javaClass": "com.untangle.app.firewall.FirewallRule", 
         "id": 1, 
         "enabled": True, 
         "description": "Single Matcher: " + conditionTypeStr + " = " + valueStr, 
@@ -69,7 +69,7 @@ def createFirewallSingleConditionRule( conditionType, value, blocked=True ):
             "list": [
                 {
                     "invert": False, 
-                    "javaClass": "com.untangle.node.firewall.FirewallRuleCondition", 
+                    "javaClass": "com.untangle.app.firewall.FirewallRuleCondition", 
                     "conditionType": conditionTypeStr, 
                     "value": valueStr
                     }
@@ -88,7 +88,7 @@ def createReportsUser(profile_email=testEmailAddress, email_template_id=1):
                     email_template_id
                 ]
             },
-            "javaClass": "com.untangle.node.reports.ReportsUser",
+            "javaClass": "com.untangle.app.reports.ReportsUser",
             "onlineAccess": False,
             "passwordHashBase64": ""
     }
@@ -123,28 +123,28 @@ def createAlertRule(description, matcherField, operator, value, matcherField2, o
             "thresholdGroupingField": thresholdGroupingField,
             "description": description,
             "enabled": True,
-            "javaClass": "com.untangle.node.reports.AlertRule",
+            "javaClass": "com.untangle.app.reports.AlertRule",
             "log": True,
             "conditions": {
                 "javaClass": "java.util.LinkedList",
                 "list": [
                     {
-                        "javaClass": "com.untangle.node.reports.AlertRuleCondition",
+                        "javaClass": "com.untangle.app.reports.AlertRuleCondition",
                         "conditionType": "FIELD_CONDITION",
                         "value": {
                             "comparator": operator,
                             "field": matcherField,
-                            "javaClass": "com.untangle.node.reports.AlertRuleConditionField",
+                            "javaClass": "com.untangle.app.reports.AlertRuleConditionField",
                             "value": value
                         }
                     },
                     {
-                        "javaClass": "com.untangle.node.reports.AlertRuleCondition",
+                        "javaClass": "com.untangle.app.reports.AlertRuleCondition",
                         "conditionType": "FIELD_CONDITION",
                         "value": {
                             "comparator": operator2,
                             "field": matcherField2,
-                            "javaClass": "com.untangle.node.reports.AlertRuleConditionField",
+                            "javaClass": "com.untangle.app.reports.AlertRuleConditionField",
                             "value": value2
                         }
                     }
@@ -168,7 +168,7 @@ def createEmailTemplate(mobile=False):
         },
         "interval": 86400,
         "intervalWeekStart": 1,
-        "javaClass": "com.untangle.node.reports.EmailTemplate",
+        "javaClass": "com.untangle.app.reports.EmailTemplate",
         "mobile": mobile,
         "readOnly": False,
         "templateId": 2,

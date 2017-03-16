@@ -4,7 +4,7 @@
     "description": "The number of blocked viruses by FTP activity.",
     "displayOrder": 204,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",
     "orderDesc": true,
     "units": "hits",
@@ -13,7 +13,7 @@
     "conditions": [
         {
             "column": "virus_blocker_lite_clean",
-            "javaClass": "com.untangle.node.reports.SqlCondition",
+            "javaClass": "com.untangle.app.reports.SqlCondition",
             "operator": "=",
             "value": "false"
         }

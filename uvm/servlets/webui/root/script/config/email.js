@@ -853,7 +853,7 @@ Ext.define('Webui.config.email', {
                 settingsCmp: this,
                 height: 250,
                 dataExpression: "getMailAppSettings().quarantineSettings.allowedAddressPatterns.list",
-                recordJavaClass: "com.untangle.node.smtp.EmailAddressRule",
+                recordJavaClass: "com.untangle.app.smtp.EmailAddressRule",
                 emptyRow: {
                     "address": ""
                 },
@@ -892,7 +892,7 @@ Ext.define('Webui.config.email', {
                 settingsCmp: this,
                 height: 250,
                 dataExpression: "getMailAppSettings().quarantineSettings.addressRemaps.list",
-                recordJavaClass: "com.untangle.node.smtp.EmailAddressPairRule",
+                recordJavaClass: "com.untangle.app.smtp.EmailAddressPairRule",
                 emptyRow: {
                     "address1": "",
                     "address2": ""

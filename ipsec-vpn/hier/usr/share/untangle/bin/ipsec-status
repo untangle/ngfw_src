@@ -212,7 +212,7 @@ for entry in state_array:
     else:
         print ","
 
-    print "{ type:\"STATE\", src:\"%s\", dst:\"%s\", proto:\"%s\", mode:\"%s\", reqid:\"%s\", auth:\"%s\", spi:\"%s\", enc:\"%s\", flag:\"%s\", replayWindow:\"%s\", authKey:\"%s\", encKey:\"%s\", selSrc:\"%s\", selDst:\"%s\", javaClass:\"com.untangle.node.ipsec_vpn.ConnectionStatusRecord\" }" % (
+    print "{ type:\"STATE\", src:\"%s\", dst:\"%s\", proto:\"%s\", mode:\"%s\", reqid:\"%s\", auth:\"%s\", spi:\"%s\", enc:\"%s\", flag:\"%s\", replayWindow:\"%s\", authKey:\"%s\", encKey:\"%s\", selSrc:\"%s\", selDst:\"%s\", javaClass:\"com.untangle.app.ipsec_vpn.ConnectionStatusRecord\" }" % (
         entry['src'],
         entry['dst'],
         entry['proto'],
@@ -235,7 +235,7 @@ for entry in policy_array:
 
     print ","
 
-    print "{ type:\"POLICY\", src:\"%s\", dst:\"%s\", proto:\"%s\", mode:\"%s\", reqid:\"%s\", ptype:\"%s\", dir:\"%s\", priority:\"%s\", tmplSrc:\"%s\", tmplDst:\"%s\", javaClass:\"com.untangle.node.ipsec_vpn.ConnectionStatusRecord\" }" % (
+    print "{ type:\"POLICY\", src:\"%s\", dst:\"%s\", proto:\"%s\", mode:\"%s\", reqid:\"%s\", ptype:\"%s\", dir:\"%s\", priority:\"%s\", tmplSrc:\"%s\", tmplDst:\"%s\", javaClass:\"com.untangle.app.ipsec_vpn.ConnectionStatusRecord\" }" % (
         entry['src'],
         entry['dst'],
         entry['proto'],

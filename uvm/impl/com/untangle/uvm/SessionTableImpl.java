@@ -16,8 +16,8 @@ import com.untangle.jvector.Vector;
 import com.untangle.jnetcap.Netcap;
 import com.untangle.jnetcap.NetcapSession;
 import com.untangle.uvm.SessionMatcher;
-import com.untangle.uvm.node.SessionTuple;
-import com.untangle.uvm.node.SessionEvent;
+import com.untangle.uvm.app.SessionTuple;
+import com.untangle.uvm.app.SessionEvent;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.util.Pulse;
 
@@ -284,7 +284,7 @@ public class SessionTableImpl
                     continue;
             }
                 
-            com.untangle.uvm.node.SessionEvent sessionEvent = session.getSessionEvent();
+            com.untangle.uvm.app.SessionEvent sessionEvent = session.getSessionEvent();
             if ( sessionEvent == null )
                 continue;
                 

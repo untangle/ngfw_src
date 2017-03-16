@@ -110,7 +110,7 @@ Ext.define('Webui.web-cache.settings', {
             title: i18n._("Cache Bypass"),
             qtip: i18n._("The Web Cache Bypass List contains host or domain names that should never be cached."),
             dataProperty:'rules',
-            recordJavaClass: "com.untangle.node.web_cache.WebCacheRule",
+            recordJavaClass: "com.untangle.app.web_cache.WebCacheRule",
             emptyRow: {
                 "hostname": "",
                 "live": true

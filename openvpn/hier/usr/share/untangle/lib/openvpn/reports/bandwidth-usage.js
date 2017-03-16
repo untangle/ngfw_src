@@ -4,7 +4,7 @@
     "description": "The approximate amount of data transfered over openvpn connections.",
     "displayOrder": 100,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderDesc": false,
     "units": "KB/s",
     "readOnly": true,

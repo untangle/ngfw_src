@@ -24,9 +24,9 @@ import com.untangle.uvm.HostTable;
 import com.untangle.uvm.HostTableEntry;
 import com.untangle.uvm.util.Pulse;
 import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.node.App;
-import com.untangle.uvm.node.QuotaEvent;
-import com.untangle.uvm.node.HostnameLookup;
+import com.untangle.uvm.app.App;
+import com.untangle.uvm.app.QuotaEvent;
+import com.untangle.uvm.app.HostnameLookup;
 
 /**
  * HostTable stores a global table of all "local" IPs that have recently been seen.

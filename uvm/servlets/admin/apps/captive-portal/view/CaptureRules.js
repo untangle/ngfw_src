@@ -22,7 +22,7 @@ Ext.define('Ung.apps.captiveportal.view.CaptureRules', {
     recordActions: ['edit', 'delete', 'reorder'],
 
     listProperty: 'settings.captureRules.list',
-    ruleJavaClass: 'com.untangle.node.captive_portal.CaptureRuleCondition',
+    ruleJavaClass: 'com.untangle.app.captive_portal.CaptureRuleCondition',
 
     emptyRow: {
         ruleId: -1,
@@ -33,7 +33,7 @@ Ext.define('Ung.apps.captiveportal.view.CaptureRules', {
             javaClass: 'java.util.LinkedList',
             list: []
         },
-        javaClass: 'com.untangle.node.captive_portal.CaptureRule'
+        javaClass: 'com.untangle.app.captive_portal.CaptureRule'
     },
 
     bind: '{captureRules}',

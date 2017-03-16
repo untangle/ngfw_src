@@ -19,10 +19,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.node.SessionTuple;
-import com.untangle.uvm.node.App;
-import com.untangle.uvm.node.AppSettings;
-import com.untangle.uvm.node.PolicyManager;
+import com.untangle.uvm.app.SessionTuple;
+import com.untangle.uvm.app.App;
+import com.untangle.uvm.app.AppSettings;
+import com.untangle.uvm.app.PolicyManager;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Subscription;
 

@@ -161,7 +161,7 @@ Ext.define('Webui.application-control.settings', {
             title: i18n._("Applications"),
             qtip: i18n._("The list of known Applications."),
             dataProperty: "protoRules",
-            recordJavaClass: "com.untangle.node.application_control.ApplicationControlProtoRule",
+            recordJavaClass: "com.untangle.app.application_control.ApplicationControlProtoRule",
             sortField: "guid",
             fields: [{
                 name: 'id'
@@ -288,7 +288,7 @@ Ext.define('Webui.application-control.settings', {
             qtip: i18n._("Application Control rules are used to control traffic post-classification."),
             dataProperty: "logicRules",
             useServerIds: true,
-            recordJavaClass: "com.untangle.node.application_control.ApplicationControlLogicRule",
+            recordJavaClass: "com.untangle.app.application_control.ApplicationControlLogicRule",
             emptyRow: {
                 "description": "",
                 "action": ""
@@ -359,7 +359,7 @@ Ext.define('Webui.application-control.settings', {
                 items:[{
                     xtype: 'rulebuilder',
                     settingsCmp: this,
-                    javaClass: "com.untangle.node.application_control.ApplicationControlLogicRuleCondition",
+                    javaClass: "com.untangle.app.application_control.ApplicationControlLogicRuleCondition",
                     dataIndex: "conditions",
                     conditions: this.getConditions()
                 }]
@@ -391,7 +391,7 @@ Ext.define('Webui.application-control.settings', {
                     getValue: function() {
                         var actionType  = this.down('combo[name="actionType"]').getValue();
                         var action = {
-                            javaClass: "com.untangle.node.application_control.ApplicationControlLogicRuleAction",
+                            javaClass: "com.untangle.app.application_control.ApplicationControlLogicRuleAction",
                             actionType: actionType,
                             //must override toString in order for all objects not to appear the same
                             toString: function() {

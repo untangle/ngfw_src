@@ -41,12 +41,12 @@ def createCaptureNonWanNicRule():
         "description": "Test Rule - Capture all internal traffic",
         "enabled": True,
         "id": 1,
-        "javaClass": "com.untangle.node.captive_portal.CaptureRule",
+        "javaClass": "com.untangle.app.captive_portal.CaptureRule",
         "conditions": {
             "javaClass": "java.util.LinkedList",
             "list": [{
                 "invert": False,
-                "javaClass": "com.untangle.node.captive_portal.CaptureRuleCondition",
+                "javaClass": "com.untangle.app.captive_portal.CaptureRuleCondition",
                 "conditionType": "SRC_INTF",
                 "value": "non_wan"
                 }]
@@ -81,7 +81,7 @@ def createDirectoryConnectorSettings():
             "OUFilter": "",
             "domain": "adtest.adtesting.int",
             "enabled": True,
-            "javaClass": "com.untangle.node.directory_connector.ActiveDirectorySettings",
+            "javaClass": "com.untangle.app.directory_connector.ActiveDirectorySettings",
             "superuser": AD_ADMIN,
             "superuserPass": AD_PASSWORD
        },
@@ -89,16 +89,16 @@ def createDirectoryConnectorSettings():
             "port": 1812,
             "enabled": False,
             "authenticationMethod": "PAP",
-            "javaClass": "com.untangle.node.directory_connector.RadiusSettings",
+            "javaClass": "com.untangle.app.directory_connector.RadiusSettings",
             "server": radiusHost,
             "sharedSecret": "mysharedsecret"
         },
         "googleSettings": {
-            "javaClass": "com.untangle.node.directory_connector.GoogleSettings",
+            "javaClass": "com.untangle.app.directory_connector.GoogleSettings",
             "authenticationEnabled": True
         },
         "facebookSettings": {
-            "javaClass": "com.untangle.node.directory_connector.FacebookSettings",
+            "javaClass": "com.untangle.app.directory_connector.FacebookSettings",
             "authenticationEnabled": True
         }
     }
@@ -111,7 +111,7 @@ def createRadiusSettings():
             "LDAPPort": "389",
             "OUFilter": "",
             "domain": "adtest.metaloft.com",
-            "javaClass": "com.untangle.node.directory_connector.ActiveDirectorySettings",
+            "javaClass": "com.untangle.app.directory_connector.ActiveDirectorySettings",
             "LDAPHost": AD_HOST,
             "superuser": AD_ADMIN
         },
@@ -119,12 +119,12 @@ def createRadiusSettings():
             "port": 1812,
             "enabled": True,
             "authenticationMethod": "PAP",
-            "javaClass": "com.untangle.node.directory_connector.RadiusSettings",
+            "javaClass": "com.untangle.app.directory_connector.RadiusSettings",
             "server": radiusHost,
             "sharedSecret": "chakas"
         },
         "googleSettings": {
-            "javaClass": "com.untangle.node.directory_connector.GoogleSettings"
+            "javaClass": "com.untangle.app.directory_connector.GoogleSettings"
         }
     }
 
@@ -239,7 +239,7 @@ class CaptivePortalTests(unittest2.TestCase):
         nodeData['captureRules']['list'].append(createCaptureNonWanNicRule())
         node.setSettings(nodeData)
 
-        newRule = { "blocked": True, "description": "test.untangle.com", "flagged": True, "javaClass": "com.untangle.uvm.node.GenericRule", "string": "test.untangle.com" }
+        newRule = { "blocked": True, "description": "test.untangle.com", "flagged": True, "javaClass": "com.untangle.uvm.app.GenericRule", "string": "test.untangle.com" }
         rules_orig = nodeWeb.getBlockedUrls()
         rules = copy.deepcopy(rules_orig)
         rules["list"].append(newRule)

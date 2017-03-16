@@ -4,13 +4,13 @@
     "description": "A summary of Bandwidth Control actions.",
     "displayOrder": 9,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "textColumns": [
         "count(*) as scanned"
     ],
     "conditions": [
         {
-            "javaClass": "com.untangle.node.reports.SqlCondition",
+            "javaClass": "com.untangle.app.reports.SqlCondition",
             "column": "bandwidth_control_priority",
             "operator": "is",
             "value": "not null"

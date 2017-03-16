@@ -27,7 +27,7 @@ defaultRackId = 1
 
 def setDefaultBrandingManagerSettings():
     nodeData = {
-        "javaClass": "com.untangle.node.branding_manager.BrandingManagerSettings",
+        "javaClass": "com.untangle.app.branding_manager.BrandingManagerSettings",
         "companyName": "Untangle",
         "companyUrl": "http://untangle.com/",
         "contactName": "your network administrator",

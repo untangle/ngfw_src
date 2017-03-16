@@ -22,7 +22,7 @@ Ext.define('Ung.apps.bandwidthcontrol.view.Rules', {
     recordActions: ['edit', 'delete', 'reorder'],
 
     listProperty: 'settings.rules.list',
-    ruleJavaClass: 'com.untangle.node.bandwidth_control.BandwidthControlRuleCondition',
+    ruleJavaClass: 'com.untangle.app.bandwidth_control.BandwidthControlRuleCondition',
 
     conditions: [
         Condition.dstLocal,
@@ -90,7 +90,7 @@ Ext.define('Ung.apps.bandwidthcontrol.view.Rules', {
         description: '',
         action: {
             actionType: 'SET_PRIORITY',
-            javaClass: 'com.untangle.node.bandwidth_control.BandwidthControlRuleAction',
+            javaClass: 'com.untangle.app.bandwidth_control.BandwidthControlRuleAction',
             priority: 7,
             quotaBytes: null,
             quotaTime: null,
@@ -101,7 +101,7 @@ Ext.define('Ung.apps.bandwidthcontrol.view.Rules', {
             javaClass: 'java.util.LinkedList',
             list: []
         },
-        javaClass: 'com.untangle.node.bandwidth_control.BandwidthControlRule'
+        javaClass: 'com.untangle.app.bandwidth_control.BandwidthControlRule'
     },
 
     bind: '{rules}',

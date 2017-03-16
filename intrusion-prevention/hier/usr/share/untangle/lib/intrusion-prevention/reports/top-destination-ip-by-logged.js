@@ -4,7 +4,7 @@
     "description": "The number of intrusions detected grouped by destination IP address.",
     "displayOrder": 701,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",
     "orderDesc": true,
     "units": "hits",

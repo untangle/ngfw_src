@@ -9,9 +9,9 @@ import java.util.Map;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.log4j.Logger;
 
-import com.untangle.node.reports.ReportEntry;
-import com.untangle.node.reports.ReportsManager;
-import com.untangle.node.reports.ReportsApp;
+import com.untangle.app.reports.ReportEntry;
+import com.untangle.app.reports.ReportsManager;
+import com.untangle.app.reports.ReportsApp;
 import com.untangle.uvm.LanguageManager;
 import com.untangle.uvm.LanguageSettings;
 import com.untangle.uvm.LocaleInfo;
@@ -87,7 +87,7 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
     /**
      * This class is used extend ReportsManagerImpl and overwrite some methods that changes settings so reports servlet does not have access to them.
      */
-    public class ReportsManagerImpl extends com.untangle.node.reports.ReportsManagerImpl
+    public class ReportsManagerImpl extends com.untangle.app.reports.ReportsManagerImpl
     {
         public void setReportEntries( List<ReportEntry> newEntries ) { throw new RuntimeException("Unable to set the report entries."); }
         public void saveReportEntry( ReportEntry entry ) { throw new RuntimeException("Unable to set the event entries."); }

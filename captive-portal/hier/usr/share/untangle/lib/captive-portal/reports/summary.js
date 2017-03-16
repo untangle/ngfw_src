@@ -4,13 +4,13 @@
     "description": "A summary of Captive Portal actions.",
     "displayOrder": 11,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "textColumns": [
         "count(*) as logins"
     ],
     "conditions": [
         {
-            "javaClass": "com.untangle.node.reports.SqlCondition",
+            "javaClass": "com.untangle.app.reports.SqlCondition",
             "column": "event_info",
             "operator": "=",
             "value": "LOGIN"

@@ -23,7 +23,7 @@ class IntrusionPreventionEventMap:
         rule set and default variables from snort configuration.
         """
         self.settings = { 
-            "javaClass": "com.untangle.node.intrusion_prevention.IntrusionPreventionEventMap",
+            "javaClass": "com.untangle.app.intrusion_prevention.IntrusionPreventionEventMap",
             "rules": {
                 "javaClass": "java.util.LinkedList",
                 "list": []
@@ -37,7 +37,7 @@ class IntrusionPreventionEventMap:
             if msg.startswith('"') and msg.endswith('"'):
                 msg = msg[1:-1]
             self.settings["rules"]["list"].append( { 
-                "javaClass" : "com.untangle.node.intrusion_prevention.IntrusionPreventionEventMapRule",
+                "javaClass" : "com.untangle.app.intrusion_prevention.IntrusionPreventionEventMapRule",
                 "sid": int(rule.options["sid"]),
                 "gid": int(rule.options["gid"]),
                 "category": rule.category,

@@ -4,7 +4,7 @@
     "description": "The top IPsec VPN users by number of sessions.",
     "displayOrder": 100,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",
     "orderDesc": true,
     "units": "sessions",
@@ -14,7 +14,7 @@
     "table": "ipsec_user_events",
     "conditions": [
         {
-            "javaClass": "com.untangle.node.reports.SqlCondition",
+            "javaClass": "com.untangle.app.reports.SqlCondition",
             "column": "elapsed_time",
             "operator": "is",
             "value": "not null"

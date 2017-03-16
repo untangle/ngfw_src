@@ -13,7 +13,7 @@ import com.untangle.jvector.PacketCrumb;
 import com.untangle.jvector.ShutdownCrumb;
 import com.untangle.jvector.UDPPacketCrumb;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.node.SessionEvent;
+import com.untangle.uvm.app.SessionEvent;
 
 import com.untangle.uvm.vnet.IPPacketHeader;
 import com.untangle.uvm.vnet.AppSession;

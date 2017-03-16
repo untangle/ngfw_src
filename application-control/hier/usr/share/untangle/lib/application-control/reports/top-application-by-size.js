@@ -4,7 +4,7 @@
     "description": "The number of bytes grouped by application.",
     "displayOrder": 201,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",
     "orderDesc": true,
     "units": "bytes",
@@ -14,7 +14,7 @@
     "table": "session_minutes",
     "conditions": [
         {
-            "javaClass": "com.untangle.node.reports.SqlCondition",
+            "javaClass": "com.untangle.app.reports.SqlCondition",
             "column": "application_control_application",
             "operator": "is",
             "value": "not null"

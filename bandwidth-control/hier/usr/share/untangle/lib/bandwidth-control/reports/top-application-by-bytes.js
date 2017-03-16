@@ -4,7 +4,7 @@
     "description": "The sum of the data transferred grouped by Application Control application.",
     "displayOrder": 601,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",
     "orderDesc": true,
     "units": "MB",

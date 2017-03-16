@@ -1,6 +1,6 @@
 {
-        "javaClass": "com.untangle.uvm.node.AppProperties",
-        "className" : "com.untangle.node.virus_blocker.VirusBlockerApp",
+        "javaClass": "com.untangle.uvm.app.AppProperties",
+        "className" : "com.untangle.app.virus_blocker.VirusBlockerApp",
         "name" : "virus-blocker",
         "appBase" : "virus-blocker-base",
         "displayName" : "Virus Blocker",

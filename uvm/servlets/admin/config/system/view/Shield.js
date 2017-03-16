@@ -38,14 +38,14 @@ Ext.define('Ung.config.system.view.Shield', {
         recordActions: ['edit', 'delete', 'reorder'],
 
         listProperty: 'shieldSettings.rules.list',
-        ruleJavaClass: 'com.untangle.node.shield.ShieldRuleCondition',
+        ruleJavaClass: 'com.untangle.app.shield.ShieldRuleCondition',
 
         emptyRow: {
             ruleId: -1,
             enabled: true,
             description: '',
             action: 'SCAN',
-            javaClass: 'com.untangle.node.shield.ShieldRule',
+            javaClass: 'com.untangle.app.shield.ShieldRule',
             conditions: {
                 javaClass: 'java.util.LinkedList',
                 list: []

@@ -1,6 +1,6 @@
 {
-        "javaClass": "com.untangle.uvm.node.AppProperties",
-        "className" : "com.untangle.node.web_monitor.WebMonitorApp",
+        "javaClass": "com.untangle.uvm.app.AppProperties",
+        "className" : "com.untangle.app.web_monitor.WebMonitorApp",
         "appBase" : "web-filter-base",
         "name" : "web-monitor",
         "displayName" : "Web Monitor",

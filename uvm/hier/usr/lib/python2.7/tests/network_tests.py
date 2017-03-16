@@ -158,7 +158,7 @@ def createQoSConditionRule( conditionType, value, priority):
 
 def createSingleConditionFirewallRule( conditionType, value, blocked=True, flagged=True ):
     return {
-        "javaClass": "com.untangle.node.firewall.FirewallRule",
+        "javaClass": "com.untangle.app.firewall.FirewallRule",
         "id": 1,
         "enabled": True,
         "description": "Single Condition: " + str(conditionType) + " = " + str(value),
@@ -169,7 +169,7 @@ def createSingleConditionFirewallRule( conditionType, value, blocked=True, flagg
             "list": [
                 {
                     "invert": False,
-                    "javaClass": "com.untangle.node.firewall.FirewallRuleCondition",
+                    "javaClass": "com.untangle.app.firewall.FirewallRuleCondition",
                     "conditionType": str(conditionType),
                     "value": str(value)
                     }

@@ -9,13 +9,13 @@
 
   <servlet>
     <servlet-name>WebFilterBlockPageServlet</servlet-name>
-    <servlet-class>com.untangle.node.web_filter.WebFilterBlockPageServlet</servlet-class>
+    <servlet-class>com.untangle.app.web_filter.WebFilterBlockPageServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
  </servlet>
 
   <servlet>
     <servlet-name>WebFilterUnblockerServlet</servlet-name>
-    <servlet-class>com.untangle.node.web_filter.WebFilterUnblockerServlet</servlet-class>
+    <servlet-class>com.untangle.app.web_filter.WebFilterUnblockerServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
  </servlet>
 

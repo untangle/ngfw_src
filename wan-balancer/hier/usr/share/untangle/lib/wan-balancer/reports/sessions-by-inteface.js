@@ -4,7 +4,7 @@
     "description": "The number of sessions destined to each interface.",
     "displayOrder": 100,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "server_intf",
     "orderDesc": false,
     "units": "sessions",

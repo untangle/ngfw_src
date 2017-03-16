@@ -50,7 +50,7 @@ def addIPSecTunnel(remoteIP="", remoteLAN="", localIP="", localLANIP="", localLA
         "conntype": "tunnel", 
         "description": "ipsec test profile", 
         "id": 0, 
-        "javaClass": "com.untangle.node.ipsec_vpn.IpsecVpnTunnel", 
+        "javaClass": "com.untangle.app.ipsec_vpn.IpsecVpnTunnel", 
         "left": localIP,  # local WAN
         "leftSourceIp": localLANIP, # local LAN IP
         "leftSubnet": localLANRange,  # local LAN range
@@ -107,26 +107,26 @@ def createRadiusSettings():
             "OUFilter": "",
             "domain": "mydomain.int",
             "enabled": False,
-            "javaClass": "com.untangle.node.directory_connector.ActiveDirectorySettings",
+            "javaClass": "com.untangle.app.directory_connector.ActiveDirectorySettings",
             "superuser": "Administrator",
             "superuserPass": "mypassword"
         },
         "apiEnabled": True,
         "facebookSettings": {
             "authenticationEnabled": False,
-            "javaClass": "com.untangle.node.directory_connector.FacebookSettings"
+            "javaClass": "com.untangle.app.directory_connector.FacebookSettings"
         },
         "googleSettings": {
             "authenticationEnabled": False,
-            "javaClass": "com.untangle.node.directory_connector.GoogleSettings"
+            "javaClass": "com.untangle.app.directory_connector.GoogleSettings"
         },
-        "javaClass": "com.untangle.node.directory_connector.DirectoryConnectorSettings",
+        "javaClass": "com.untangle.app.directory_connector.DirectoryConnectorSettings",
         "radiusSettings": {
             "acctPort": 1813,
             "authPort": 1812,
             "authenticationMethod": "MSCHAPV2",
             "enabled": True,
-            "javaClass": "com.untangle.node.directory_connector.RadiusSettings",
+            "javaClass": "com.untangle.app.directory_connector.RadiusSettings",
             "server": radiusHost,
             "sharedSecret": "chakas"
         },

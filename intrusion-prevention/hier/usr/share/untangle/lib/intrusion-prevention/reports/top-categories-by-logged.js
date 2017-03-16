@@ -4,7 +4,7 @@
     "description": "The number of intrusions detected grouped by category.",
     "displayOrder": 401,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderByColumn": "value",
     "orderDesc": true,
     "units": "hits",

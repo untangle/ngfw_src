@@ -4,7 +4,7 @@
     "description": "The highest number of active hosts.",
     "displayOrder": 150,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "textColumns": [
         "max(active_hosts) as max_active_hosts"
     ],

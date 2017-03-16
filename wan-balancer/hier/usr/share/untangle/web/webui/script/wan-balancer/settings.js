@@ -129,7 +129,7 @@ Ext.define('Webui.wan-balancer.settings', {
             addAtTop: false,
             title: i18n._("Route Rules"),
             dataProperty:'routeRules',
-            recordJavaClass: "com.untangle.node.wan_balancer.RouteRule",
+            recordJavaClass: "com.untangle.app.wan_balancer.RouteRule",
             emptyRow: {
                 "ruleId": -1,
                 "enabled": true,
@@ -198,7 +198,7 @@ Ext.define('Webui.wan-balancer.settings', {
                 items:[{
                     xtype:'rulebuilder',
                     settingsCmp: this,
-                    javaClass: "com.untangle.node.wan_balancer.RouteRuleCondition",
+                    javaClass: "com.untangle.app.wan_balancer.RouteRuleCondition",
                     dataIndex: "conditions",
                     conditions: this.getRouteRuleConditions()
                 }]

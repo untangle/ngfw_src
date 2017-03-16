@@ -1,6 +1,6 @@
 {
-        "javaClass": "com.untangle.uvm.node.AppProperties",
-        "className" : "com.untangle.node.policy_manager.PolicyManagerApp",
+        "javaClass": "com.untangle.uvm.app.AppProperties",
+        "className" : "com.untangle.app.policy_manager.PolicyManagerApp",
         "name" : "policy-manager",
         "displayName" : "Policy Manager",
         "type" : "SERVICE",
