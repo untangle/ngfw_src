@@ -371,6 +371,16 @@ Ext.define('Ung.util.Util', {
         return true;
     },
 
+    // formats a timestamp - expects a timestamp integer or an onject literal with 'time' property
+    timestampFormat: function(v) {
+        if (!v || typeof v === 'string') {
+            return '';
+        }
+        var date = new Date();
+        date.setTime(v.time === null ? v : v.time);
+        return Ext.util.Format.date(date, 'timestamp_fmt'.t());
+    },
+
     getStoreUrl: function(){
         // non API store URL used for links like: My Account, Forgot Password
         return rpc.storeUrl.replace('/api/v1', '/store/open.php');

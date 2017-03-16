@@ -98,6 +98,6 @@
         "Field": true,
         "Condition": true,
         "Column": true,
-        "resourcesBaseHref": true
+        "TableConfig": true
     }
 }

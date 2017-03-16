@@ -43,6 +43,9 @@ Ext.define('Ung.view.reports.EntryController', {
             me.addChart();
 
             this.set('_defaultColors', entry.get('colors') ? false : true);
+
+            // console.log(TableConfig.getConfig(entry.get('table')));
+
         });
 
         vm.bind('{_defaultColors}', function (val) {
@@ -191,6 +194,126 @@ Ext.define('Ung.view.reports.EntryController', {
                 Util.successToast('<span style="color: yellow; font-weight: 600;">' + entry.get('title') + ' report added!');
                 Ung.app.redirectTo('#reports/' + entry.get('category').replace(/ /g, '-').toLowerCase() + '/' + entry.get('title').replace(/[^0-9a-z\s]/gi, '').replace(/\s+/g, '-').toLowerCase());
             });
+    },
+
+    setCurrentData: function (data) {
+        var entry = this.getViewModel().get('entry'),
+            dataGrid = this.getView().down('#currentData'), i, column;
+
+        if (entry.get('type') === 'TEXT') {
+            dataGrid.setColumns([{
+                dataIndex: 'data',
+                header: 'data'.t(),
+                width: 100,
+                flex: 1
+            }, {
+                dataIndex: 'value',
+                header: 'value'.t(),
+                width: 100
+            }]);
+
+            var infos = [], reportData = [], value;
+            if (data.length > 0 && entry.textColumns !== null) {
+                for (i = 0; i < entry.textColumns.length; i += 1) {
+                    column = this.entry.textColumns[i].split(' ').splice(-1)[0];
+                    value = Ext.isEmpty(data[0][column]) ? 0 : data[0][column];
+                    infos.push(value);
+                    reportData.push({data: column, value: value});
+                }
+            }
+
+            // this.reportChart.down('#textentry').update(Ext.String.format.apply(Ext.String.format, [i18n._(this.entry.textString)].concat(infos)));
+            dataGrid.getStore().loadData(reportData);
+        }
+
+        console.log(data);
+
+        if (entry.get('type') === 'PIE_GRAPH') {
+            dataGrid.setColumns([{
+                dataIndex: entry.get('pieGroupColumn'),
+                header: entry.get('pieGroupColumn'),
+                width: 100,
+                flex: 1
+            }, {
+                dataIndex: 'value',
+                header: 'value'.t(),
+                width: 100
+            }, {
+                // xtype: 'actioncolumn',
+                // menuDisabled: true,
+                // width: 20,
+                // items: [{
+                //     iconCls: 'icon-row icon-filter',
+                //     tooltip: i18n._('Add Condition'),
+                //     handler: Ext.bind(function (view, rowIndex, colIndex, item, e, record) {
+                //         this.buildWindowAddCondition();
+                //         data = {
+                //             column: this.entry.pieGroupColumn,
+                //             operator: "=",
+                //             value: record.get(this.entry.pieGroupColumn)
+                //         };
+                //         this.windowAddCondition.setCondition(data);
+                //     }, this)
+                // }]
+            }]);
+            dataGrid.getStore().loadData(data);
+        }
+
+        if (entry.get('type') === 'TIME_GRAPH' || entry.get('type') === 'TIME_GRAPH_DYNAMIC') {
+            var zeroFn = function (val) {
+                return val || 0;
+            };
+            var timeFn = function (val) {
+                return (val === null) ? 0 : Util.timestampFormat(val);
+            };
+
+            var storeFields = [{name: 'time_trunc', convert: timeFn}];
+
+            var reportDataColumns = [{
+                dataIndex: 'time_trunc',
+                header: 'Timestamp'.t(),
+                width: 130,
+                flex: 1
+                // flex: entry.get('timeDataColumns').length > 2 ? 0 : 1,
+                // renderer: function (val) {
+                //     return val.time;
+                // }
+                // sorter: function (rec1, rec2) {
+                //     var t1, t2;
+                //     console.log(rec1);
+                //     if ( rec1.getData().time !== null && rec2.getData().time !== null ) {
+                //         t1 = rec1.getData().time;
+                //         t2 = rec2.getData().time;
+                //     } else {
+                //         t1 = rec1.getData();
+                //         t2 = rec2.getData();
+                //     }
+                //     return (t1 > t2) ? 1 : (t1 === t2) ? 0 : -1;
+                // }
+            }];
+            var seriesRenderer = null, title;
+            if (!Ext.isEmpty(entry.get('seriesRenderer'))) {
+                // seriesRenderer =  Ung.panel.Reports.getColumnRenderer(this.entry.seriesRenderer);
+            }
+
+            for (i = 0; i < entry.get('timeDataColumns').length; i += 1) {
+                column = entry.get('timeDataColumns')[i].split(' ').splice(-1)[0];
+                title = seriesRenderer ? seriesRenderer(column) + ' [' + column + ']' : column;
+                storeFields.push({name: column, convert: zeroFn, type: 'integer'});
+                reportDataColumns.push({
+                    dataIndex: column,
+                    header: title,
+                    width: entry.get('timeDataColumns').length > 2 ? 60 : 90
+                });
+            }
+
+            dataGrid.setStore(Ext.create('Ext.data.Store', {
+                fields: storeFields,
+                data: []
+            }));
+            dataGrid.setColumns(reportDataColumns);
+            dataGrid.getStore().loadData(data);
+        }
     }
 
 

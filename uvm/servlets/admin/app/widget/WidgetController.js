@@ -38,11 +38,11 @@ Ext.define('Ung.widget.WidgetController', {
         if (vm.get('entry')) {
             entryType = vm.get('entry.type');
             if (entryType === 'TIME_GRAPH' || entryType === 'TIME_GRAPH_DYNAMIC') {
-                view.add({ xtype: 'timechart', reference: 'chart', height: 250 });
+                view.add({ xtype: 'timechart', itemId: 'chart',  reference: 'chart', height: 250, isWidget: true });
             }
 
             if (entryType === 'PIE_GRAPH') {
-                view.add({ xtype: 'piechart', reference: 'chart',  height: 250 });
+                view.add({ xtype: 'piechart', itemId: 'chart', reference: 'chart',  height: 250 });
             }
 
             if (entryType === 'EVENT_LIST') {
@@ -90,7 +90,6 @@ Ext.define('Ung.widget.WidgetController', {
     },
 
     addToQueue: function () {
-        console.log('fetch data');
         var widget = this.getView();
         if (widget.refreshTimeoutId) {
             clearTimeout(widget.refreshTimeoutId);

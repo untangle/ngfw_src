@@ -9,22 +9,27 @@ Ext.define('Ung.view.reports.EntryModel', {
         tillNow: true
     },
 
-    // stores: {
-    //     colors: {
-    //         data: '{_colorsData}',
-    //         proxy: {
-    //             type: 'memory',
-    //             fields: [{ name: 'color' }],
-    //             reader: { type: 'json' }
-    //         },
-    //         listeners: {
-    //             update: 'updateColors',
-    //             datachanged: 'updateColors'
-    //         }
-    //     }
-    // },
+    stores: {
+        conditions: {
+            data: '{_sqlConditions}'
+        }
+    },
 
     formulas: {
+        _approximation: {
+            get: function (get) {
+                return get('entry.approximation') || 'sum';
+            },
+            set: function (value) {
+                this.set('entry.approximation', value !== 'sum' ? value : null);
+            }
+        },
+
+
+        _sqlConditions: function (get) {
+            return get('entry.conditions') || [];
+        },
+
         _props: function (get) {
             return get('entry').getData();
         },

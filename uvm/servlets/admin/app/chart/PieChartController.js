@@ -10,6 +10,7 @@ Ext.define('Ung.chart.PieChartController', {
         vm.bind('{entry.pieNumSlices}', me.setSeries, me);
         vm.bind('{entry.pieStyle}', me.setStyles, me);
         vm.bind('{entry.colors}', me.setStyles, me);
+        vm.bind('{entry.approximation}', me.setStyles, me);
     },
 
 
@@ -28,6 +29,10 @@ Ext.define('Ung.chart.PieChartController', {
                 me.getView().setLoading(false);
                 me.data = result.list;
                 me.setSeries();
+
+                if (me.getView().up('reports-entry')) {
+                    me.getView().up('reports-entry').getController().setCurrentData(result.list);
+                }
             });
     },
 

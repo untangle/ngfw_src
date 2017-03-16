@@ -12,16 +12,21 @@ Ext.define('Ung.view.reports.Entry', {
 
     items: [{
         region: 'center',
-        // border: false,
+        border: false,
+        bodyBorder: false,
         itemId: 'chartContainer',
         layout: 'fit',
         items: [], // here the chart will be added
 
         dockedItems: [{
-            xtype: 'container',
+            xtype: 'toolbar',
+            border: false,
             dock: 'top',
             cls: 'report-header',
-            // height: 60,
+            height: 53,
+            style: {
+                background: '#FFF'
+            },
             bind: {
                 html: '{reportHeading}'
             }
@@ -102,519 +107,334 @@ Ext.define('Ung.view.reports.Entry', {
         }]
     }, {
         region: 'east',
+        xtype: 'tabpanel',
+        title: 'Data & Settings'.t(),
         width: 400,
         minWidth: 400,
         split: true,
-        title: 'Settings'.t(),
-        scrollable: 'y',
-        xtype: 'form',
-        layout: 'anchor',
+        animCollapse: false,
         // floatable: true,
         // floating: true,
         collapsible: true,
         collapsed: false,
-        bodyPadding: 10,
+        titleCollapse: true,
+        hidden: true,
+        bind: {
+            hidden: '{!entry}'
+        },
+
         items: [{
-            xtype: 'textfield',
-            fieldLabel: 'Title'.t(),
-            bind: '{entry.title}',
-            anchor: '100%'
+            xtype: 'grid',
+            itemId: 'currentData',
+            // todo: review this store
+            store: Ext.create('Ext.data.Store', {
+                fields: [],
+                data: []
+            }),
+            title: '<i class="fa fa-list"></i> ' + 'Current Data'.t()
         }, {
-            xtype: 'textarea',
-            grow: true,
-            fieldLabel: 'Description'.t(),
-            bind: '{entry.description}',
-            anchor: '100%'
-        }, {
-            xtype: 'checkbox',
-            fieldLabel: 'Enabled'.t(),
-            bind: '{entry.enabled}'
-        }, {
-            xtype: 'fieldset',
-            title: '<i class="fa fa-paint-brush"></i> ' + 'Style'.t(),
-            padding: 10,
-            defaults: {
-                labelWidth: 150,
-                labelAlign: 'right'
-            },
-            items: [{
-                xtype: 'combo',
-                fieldLabel: 'Time Chart Style'.t(),
-                anchor: '100%',
-                bind: '{entry.timeStyle}',
-                editable: false,
-                store: [
-                    ['LINE', 'Line'.t()],
-                    ['AREA', 'Area'.t()],
-                    ['AREA_STACKED', 'Stacked Area'.t()],
-                    ['BAR', 'Column'.t()],
-                    ['BAR_OVERLAPPED', 'Overlapped Columns'.t()],
-                    ['BAR_STACKED', 'Stacked Columns'.t()]
-                ],
-                queryMode: 'local'
-            }, {
-                xtype: 'combo',
-                fieldLabel: 'Time Data Interval'.t(),
-                anchor: '100%',
-                bind: '{entry.timeDataInterval}',
-                editable: false,
-                store: [
-                    ['AUTO', 'Auto'.t()],
-                    ['SECOND', 'Second'.t()],
-                    ['MINUTE', 'Minute'.t()],
-                    ['HOUR', 'Hour'.t()],
-                    ['DAY', 'Day'.t()],
-                    ['WEEK', 'Week'.t()],
-                    ['MONTH', 'Month'.t()]
-                ],
-                queryMode: 'local'
-            }, {
-                xtype: 'checkbox',
-                reference: 'defaultColors',
-                fieldLabel: 'Colors'.t(),
-                boxLabel: 'Default'.t(),
-                bind: '{_defaultColors}'
-            }, {
-                xtype: 'container',
-                margin: '0 0 0 155',
-                itemId: 'colors',
-                // layout: 'hbox',
-                bind: {
-                    hidden: '{defaultColors.checked}'
-                }
-            }]
-        }, {
-            xtype: 'fieldset',
-            title: '<i class="fa fa-sliders"></i> ' + 'Advanced'.t(),
-            padding: 10,
-            defaults: {
-                labelWidth: 150,
-                labelAlign: 'right'
-            },
+            xtype: 'form',
+            title: '<i class="fa fa-cog"></i> ' + 'Settings'.t(),
+            scrollable: 'y',
+            layout: 'anchor',
+            bodyPadding: 10,
             items: [{
                 xtype: 'textfield',
-                fieldLabel: 'Units'.t(),
-                anchor: '100%',
-                bind: '{entry.units}'
-            }, {
-                xtype: 'combo',
-                fieldLabel: 'Table'.t(),
-                anchor: '100%',
-                bind: '{entry.table}',
-                editable: false,
-                queryMode: 'local'
+                fieldLabel: 'Title'.t(),
+                bind: '{entry.title}',
+                anchor: '100%'
             }, {
                 xtype: 'textarea',
-                anchor: '100%',
-                fieldLabel: 'Time Data Columns'.t(),
                 grow: true,
-                bind: '{entry.timeDataColumns}'
+                fieldLabel: 'Description'.t(),
+                bind: '{entry.description}',
+                anchor: '100%'
             }, {
-                xtype: 'textfield',
-                anchor: '100%',
-                fieldLabel: 'Series Renderer'.t(),
-                bind: '{entry.seriesRenderer}'
+                xtype: 'checkbox',
+                fieldLabel: 'Enabled'.t(),
+                bind: '{entry.enabled}'
             }, {
-                xtype: 'textfield',
-                anchor: '100%',
-                fieldLabel: 'Order By Column'.t(),
-                bind: '{entry.orderByColumn}'
+                xtype: 'fieldset',
+                title: '<i class="fa fa-paint-brush"></i> ' + 'Style'.t(),
+                padding: 10,
+                collapsible: true,
+                defaults: {
+                    labelWidth: 150,
+                    labelAlign: 'right'
+                },
+                items: [{
+                    // TIME_GRAPH - chart style
+                    xtype: 'combo',
+                    fieldLabel: 'Time Chart Style'.t(),
+                    anchor: '100%',
+                    editable: false,
+                    store: [
+                        ['LINE', 'Line'.t()],
+                        ['AREA', 'Area'.t()],
+                        ['AREA_STACKED', 'Stacked Area'.t()],
+                        ['BAR', 'Column'.t()],
+                        ['BAR_OVERLAPPED', 'Overlapped Columns'.t()],
+                        ['BAR_STACKED', 'Stacked Columns'.t()]
+                    ],
+                    queryMode: 'local',
+                    hidden: true,
+                    bind: {
+                        value: '{entry.timeStyle}',
+                        disabled: '{!isTimeGraph}',
+                        hidden: '{!isTimeGraph}'
+                    },
+                }, {
+                    // TIME_GRAPH - data interval
+                    xtype: 'combo',
+                    fieldLabel: 'Time Data Interval'.t(),
+                    anchor: '100%',
+                    editable: false,
+                    store: [
+                        ['AUTO', 'Auto'.t()],
+                        ['SECOND', 'Second'.t()],
+                        ['MINUTE', 'Minute'.t()],
+                        ['HOUR', 'Hour'.t()],
+                        ['DAY', 'Day'.t()],
+                        ['WEEK', 'Week'.t()],
+                        ['MONTH', 'Month'.t()]
+                    ],
+                    queryMode: 'local',
+                    hidden: true,
+                    bind: {
+                        value: '{entry.timeDataInterval}',
+                        disabled: '{!isTimeGraph}',
+                        hidden: '{!isTimeGraph}'
+                    },
+                }, {
+                    // TIME_GRAPH - data grouping approximation
+                    xtype: 'combo',
+                    fieldLabel: 'Approximation'.t(),
+                    anchor: '100%',
+                    editable: false,
+                    store: [
+                        ['average', 'Average'.t()],
+                        ['high', 'High'.t()],
+                        ['low', 'Low'.t()],
+                        ['sum', 'Sum'.t()] // default
+                    ],
+                    queryMode: 'local',
+                    hidden: true,
+                    bind: {
+                        value: '{_approximation}',
+                        disabled: '{!isTimeGraph}',
+                        hidden: '{!isTimeGraph}'
+                    },
+                }, {
+                    // PIE_GRAPH - chart style
+                    xtype: 'combo',
+                    fieldLabel: 'Style'.t(),
+                    anchor: '100%',
+                    editable: false,
+                    store: [
+                        ['PIE', 'Pie'.t()],
+                        ['PIE_3D', 'Pie 3D'.t()],
+                        ['DONUT', 'Donut'.t()],
+                        ['DONUT_3D', 'Donut 3D'.t()],
+                        ['COLUMN', 'Column'.t()],
+                        ['COLUMN_3D', 'Column 3D'.t()]
+                    ],
+                    queryMode: 'local',
+                    hidden: true,
+                    bind: {
+                        value: '{entry.pieStyle}',
+                        disabled: '{!isPieGraph}',
+                        hidden: '{!isPieGraph}'
+                    },
+                }, {
+                    // PIE_GRAPH - number of pie slices
+                    xtype: 'numberfield',
+                    fieldLabel: 'Pie Slices Number'.t(),
+                    labelWidth: 150,
+                    maxWidth: 200,
+                    labelAlign: 'right',
+                    minValue: 1,
+                    maxValue: 25,
+                    allowBlank: false,
+                    hidden: true,
+                    bind: {
+                        value: '{entry.pieNumSlices}',
+                        disabled: '{!isPieGraph}',
+                        hidden: '{!isPieGraph}'
+                    }
+                }, {
+                    xtype: 'checkbox',
+                    reference: 'defaultColors',
+                    fieldLabel: 'Colors'.t(),
+                    boxLabel: 'Default'.t(),
+                    bind: '{_defaultColors}'
+                }, {
+                    xtype: 'container',
+                    margin: '0 0 0 155',
+                    itemId: 'colors',
+                    // layout: 'hbox',
+                    bind: {
+                        hidden: '{defaultColors.checked}'
+                    }
+                }]
             }, {
-                xtype: 'segmentedbutton',
-                margin: '0 0 5 155',
-                bind: '{entry.orderDesc}',
-                items: [
-                    { text: 'Ascending'.t(), iconCls: 'fa fa-sort-amount-asc', value: true },
-                    { text: 'Descending'.t(), iconCls: 'fa fa-sort-amount-desc' , value: false }
-                ]
+                xtype: 'fieldset',
+                title: '<i class="fa fa-sliders"></i> ' + 'Advanced'.t(),
+                padding: 10,
+                collapsible: true,
+                collapsed: true,
+                defaults: {
+                    labelWidth: 150,
+                    labelAlign: 'right'
+                },
+                items: [{
+                    xtype: 'textfield',
+                    fieldLabel: 'Units'.t(),
+                    anchor: '100%',
+                    bind: '{entry.units}'
+                }, {
+                    xtype: 'combo',
+                    fieldLabel: 'Table'.t(),
+                    anchor: '100%',
+                    bind: '{entry.table}',
+                    editable: false,
+                    queryMode: 'local'
+                }, {
+                    xtype: 'textarea',
+                    anchor: '100%',
+                    fieldLabel: 'Time Data Columns'.t(),
+                    grow: true,
+                    bind: '{entry.timeDataColumns}'
+                }, {
+                    xtype: 'textfield',
+                    anchor: '100%',
+                    fieldLabel: 'Series Renderer'.t(),
+                    bind: '{entry.seriesRenderer}'
+                }, {
+                    xtype: 'textfield',
+                    anchor: '100%',
+                    fieldLabel: 'Order By Column'.t(),
+                    bind: '{entry.orderByColumn}'
+                }, {
+                    xtype: 'segmentedbutton',
+                    margin: '0 0 5 155',
+                    bind: '{entry.orderDesc}',
+                    items: [
+                        { text: 'Ascending'.t(), iconCls: 'fa fa-sort-amount-asc', value: true },
+                        { text: 'Descending'.t(), iconCls: 'fa fa-sort-amount-desc' , value: false }
+                    ]
+                }, {
+                    // ALL - display order
+                    xtype: 'numberfield',
+                    fieldLabel: 'Display Order'.t(),
+                    anchor: '70%',
+                    bind: '{entry.displayOrder}'
+                }]
             }, {
-                // ALL - display order
-                xtype: 'numberfield',
-                fieldLabel: 'Display Order'.t(),
-                anchor: '70%',
-                bind: '{entry.displayOrder}'
-            }]
-        }, {
-            xtype: 'fieldset',
-            title: '<i class="fa fa-database"></i> ' + 'Sql Conditions:'.t(),
-            padding: 10,
+                xtype: 'fieldset',
+                bind: {
+                    title: '<i class="fa fa-database"></i> ' + 'Sql Conditions:'.t() + ' ({_sqlConditions.length})',
+                    collapsed: '{!entry.conditions}'
+                },
+                padding: 10,
+                collapsible: true,
+                collapsed: true,
+                items: [{
+                    xtype: 'grid',
+                    border: false,
+                    trackMouseOver: false,
+                    sortableColumns: false,
+                    enableColumnResize: false,
+                    enableColumnMove: false,
+                    enableColumnHide: false,
+                    hideHeaders: true,
+                    disableSelection: true,
+                    viewConfig: {
+                        emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-2x"></i> <br/>No Conditions!</p>',
+                        stripeRows: false,
+                    },
+                    bind: '{conditions}',
+                    columns: [{
+                        header: 'Column'.t(),
+                        dataIndex: 'column',
+                        flex: 1
+                    }, {
+                        header: 'Operator'.t(),
+                        xtype: 'widgetcolumn',
+                        width: 80,
+                        widget: {
+                            xtype: 'combo',
+                            bind: '{record.operator}',
+                            store: ['=', '!=', '>', '<', '>=', '<=', 'like', 'not like', 'is', 'is not', 'in', 'not in'],
+                            editable: false,
+                            queryMode: 'local'
+                        }
 
-            items: [{
-                xtype: 'button',
-                menu: {
-                    items: [{
-                        text: 'aaaa',
-                        menu: {
-                            items: [{
-                                text: 'cccc',
-                                menu: {
-                                    items: [{
-                                        xtype: 'textfield'
-                                    }]
-                                }
-                            }]
+                    }, {
+                        header: 'Value'.t(),
+                        xtype: 'widgetcolumn',
+                        widget: {
+                            xtype: 'textfield',
+                            bind: '{record.value}'
                         }
                     }, {
-                        text: 'bbb'
+                        xtype: 'actioncolumn',
+                        width: 20,
+                        align: 'center',
+                        iconCls: 'fa fa-minus-circle'
                     }]
+                }]
+            }],
+            bbar: [{
+                text: 'Remove'.t(),
+                iconCls: 'fa fa-minus-circle',
+                disabled: true,
+                bind: {
+                    disabled: '{entry.readOnly}'
                 }
+            }, {
+                text: 'Update'.t(),
+                iconCls: 'fa fa-save',
+                // formBind: true,
+                disabled: true,
+                bind: {
+                    disabled: '{entry.readOnly}'
+                },
+                handler: 'updateReport'
+            }, {
+                text: 'Save as New Report'.t(),
+                iconCls: 'fa fa-plus-circle',
+                itemId: 'saveNewBtn',
+                handler: 'saveNewReport'
+                // formBind: true
             }]
         }]
-
-
-
     }, {
         region: 'south',
-        xtype: 'tabpanel',
+        xtype: 'grid',
         height: 280,
-        title: 'Customize'.t(),
+        title: 'Filters'.t(),
+        itemId: 'filters',
         collapsible: true,
         collapsed: true,
         animCollapse: false,
         titleCollapse: true,
-        // layout: 'fit',
-        // minHeight: 'auto',
         split: true,
         hidden: true,
         bind: {
             hidden: '{!entry}'
         },
-        items: [{
-            title: 'Style'.t(),
-            // iconCls: 'fa fa-eyedropper fa-lg',
-            layout: {
-                type: 'vbox',
-                align: 'stretch'
-            },
-            bodyPadding: 10,
-
-            items: [{
-                // ALL - report title
-                xtype: 'textfield',
-                fieldLabel: 'Title'.t(),
-                maxWidth: 400,
-                labelWidth: 150,
-                labelAlign: 'right',
-                allowBlank: false,
-                msgTarget: 'side',
-                bind: '{entry.title}',
-                validator: function (val) {
-                    var category = this.up('reports-entry').getViewModel().get('category'),
-                        entry = this.up('reports-entry').getViewModel().get('entry'),
-                        reports = Ext.getStore('reports').queryBy(function (report) {
-                            return report.get('category') === category.get('categoryName') &&
-                                report.get('uniqueId') !== entry.get('uniqueId') &&
-                                report.get('title').replace(/[^0-9a-z\s]/gi, '').replace(/\s+/g, '-').toLowerCase() === val.replace(/[^0-9a-z\s]/gi, '').replace(/\s+/g, '-').toLowerCase();
-                        });
-                    if (reports.length > 0) {
-                        return 'This title already exists in this category!'.t();
-                    }
-                    return true;
-                }
-            }, {
-                // ALL - report description
-                xtype: 'textfield',
-                fieldLabel: 'Description'.t(),
-                labelWidth: 150,
-                labelAlign: 'right',
-                bind: '{entry.description}'
-            }, {
-                xtype: 'checkbox',
-                fieldLabel: 'Enabled'.t(),
-                labelWidth: 150,
-                labelAlign: 'right',
-                bind: '{entry.enabled}'
-            }, {
-                // TIME_GRAPH - chart style
-                xtype: 'container',
-                layout: 'hbox',
-                margin: '0 0 5 0',
-                hidden: true,
-                bind: {
-                    disabled: '{!isTimeGraph}',
-                    hidden: '{!isTimeGraph}'
-                },
-                items: [{
-                    xtype: 'label',
-                    cls: 'x-form-item-label-default',
-                    width: 155,
-                    style: {
-                        textAlign: 'right'
-                    },
-                    text: 'Time Chart Style'.t() + ':'
-                }, {
-                    xtype: 'segmentedbutton',
-                    itemId: 'chartStyleBtn',
-                    bind: {
-                        value: '{entry.timeStyle}'
-                    },
-                    items: [
-                        {text: 'Line'.t(), value: 'LINE', styleType: 'spline'},
-                        {text: 'Area'.t(), value: 'AREA', styleType: 'areaspline'},
-                        {text: 'Stacked Area'.t(), value: 'AREA_STACKED', styleType: 'areaspline', stacked: true},
-                        {text: 'Column'.t(), value: 'BAR', styleType: 'column', grouped: true},
-                        {text: 'Bar 3D'.t(), value: 'BAR_3D', styleType: 'column', grouped: true},
-                        {text: 'Bar 3D Overlapped'.t(), value: 'BAR_3D_OVERLAPPED', styleType: 'column', grouped: true},
-                        {text: 'Overlapped Columns'.t(), value: 'BAR_OVERLAPPED', styleType: 'column', overlapped: true},
-                        {text: 'Stacked Columns'.t(), value: 'BAR_STACKED', styleType: 'column', stacked : true}
-                    ]
-                }]
-            }, {
-                // PIE_GRAPH - chart style
-                xtype: 'container',
-                layout: 'hbox',
-                margin: '0 0 5 0',
-                hidden: true,
-                bind: {
-                    disabled: '{!isPieGraph}',
-                    hidden: '{!isPieGraph}'
-                },
-                items: [{
-                    xtype: 'label',
-                    cls: 'x-form-item-label-default',
-                    width: 155,
-                    style: {
-                        textAlign: 'right'
-                    },
-                    text: 'Style'.t() + ':'
-                }, {
-                    xtype: 'segmentedbutton',
-                    itemId: 'chartStyleBtn',
-                    bind: {
-                        value: '{entry.pieStyle}'
-                    },
-                    items: [
-                        {text: 'Pie'.t(), value: 'PIE', styleType: 'pie'},
-                        {text: 'Pie 3D'.t(), value: 'PIE_3D', styleType: 'pie'},
-                        {text: 'Donut'.t(), value: 'DONUT', styleType: 'pie'},
-                        {text: 'Donut 3D'.t(), value: 'DONUT_3D', styleType: 'pie'},
-                        {text: 'Column'.t(), value: 'COLUMN', styleType: 'column'},
-                        {text: 'Column 3D'.t(), value: 'COLUMN_3D', styleType: 'column'}
-                    ]
-                    // listeners: {
-                    //     toggle: 'fetchReportData'
-                    // }
-                }]
-            }, {
-                // TIME_GRAPH - data interval
-                xtype: 'container',
-                layout: 'hbox',
-                margin: '0 0 5 0',
-                hidden: true,
-                bind: {
-                    disabled: '{!isTimeGraph}',
-                    hidden: '{!isTimeGraph}'
-                },
-                items: [{
-                    xtype: 'label',
-                    cls: 'x-form-item-label-default',
-                    width: 155,
-                    style: {
-                        textAlign: 'right'
-                    },
-                    text: 'Time Data Interval'.t() + ':'
-                }, {
-                    xtype: 'segmentedbutton',
-                    itemId: 'timeIntervalBtn',
-                    bind: {
-                        value: '{entry.timeDataInterval}'
-                    },
-                    items: [
-                        {text: 'Auto'.t(), value: 'AUTO'},
-                        {text: 'Second'.t(), value: 'SECOND', defaultTimeFrame: 60 },
-                        {text: 'Minute'.t(), value: 'MINUTE', defaultTimeFrame: 60 },
-                        {text: 'Hour'.t(), value: 'HOUR', defaultTimeFrame: 24 },
-                        {text: 'Day'.t(), value: 'DAY', defaultTimeFrame: 7 },
-                        {text: 'Week'.t(), value: 'WEEK', defaultTimeFrame: 12 },
-                        {text: 'Month'.t(), value: 'MONTH', defaultTimeFrame: 6 }
-                    ]
-                }]
-            }, {
-                // PIE_GRAPH - number of pie slices
-                xtype: 'numberfield',
-                fieldLabel: 'Pie Slices Number'.t(),
-                labelWidth: 150,
-                maxWidth: 200,
-                labelAlign: 'right',
-                minValue: 1,
-                maxValue: 25,
-                allowBlank: false,
-                hidden: true,
-                bind: {
-                    disabled: '{!isPieGraph}',
-                    hidden: '{!isPieGraph}',
-                    value: '{entry.pieNumSlices}'
-                }
-            },
-            {
-                // xtype: 'container',
-                // layout: 'hbox',
-                // margin: '0 0 5 0',
-                // items: [{
-                //     xtype: 'label',
-                //     cls: 'x-form-item-label-default',
-                //     width: 155,
-                //     style: {
-                //         textAlign: 'right'
-                //     },
-                //     text: 'Colors'.t() + ':'
-                // }, {
-                //     xtype: 'checkbox',
-                //     reference: 'defaultColors',
-                //     margin: '0 10 0 0',
-                //     boxLabel: 'Default'.t(),
-                //     bind: '{_defaultColors}'
-                // }, {
-                //     itemId: 'colors',
-                //     xtype: 'container',
-                //     layout: 'hbox',
-                //     bind: {
-                //         hidden: '{defaultColors.checked}'
-                //     }
-                // }]
-            }]
-
-        }, {
-            title: 'Conditions'.t(),
-            // iconCls: 'fa fa-filter fa-lg'
-        }, {
-            title: 'Advanced'.t(),
-            // iconCls: 'fa fa-cog fa-lg',
-            scrollable: true,
-            layout: {
-                type: 'vbox',
-                align: 'stretch'
-            },
-            items: [{
-                // TIME_GRAPH - table
-                xtype: 'combobox',
-                fieldLabel: 'Table'.t(),
-                maxWidth: 400,
-                labelWidth: 150,
-                labelAlign: 'right',
-                editable: false,
-                hidden: true,
-                bind: {
-                    store: '{tableNames}',
-                    disabled: '{!isTimeGraph}',
-                    hidden: '{!isTimeGraph}',
-                    value: '{entry.table}'
-                }
-            }, {
-                // TIME_GRAPH - units
-                xtype: 'textfield',
-                fieldLabel: 'Units'.t(),
-                maxWidth: 305,
-                labelWidth: 150,
-                labelAlign: 'right',
-                hidden: true,
-                bind: {
-                    disabled: '{!isTimeGraph}',
-                    hidden: '{!isTimeGraph}',
-                    value: '{entry.units}'
-                }
-            }, {
-                // TIME_GRAPH - time data columns
-                xtype: 'textarea',
-                fieldLabel: 'Time Data Columns'.t(),
-                grow: true,
-                maxWidth: 500,
-                labelWidth: 150,
-                labelAlign: 'right',
-                hidden: true,
-                bind: {
-                    disabled: '{!isTimeGraph}',
-                    hidden: '{!isTimeGraph}',
-                    value: '{entry.timeDataColumns}'
-                }
-            }, {
-                // TIME_GRAPH - series renderer
-                xtype: 'textfield',
-                fieldLabel: 'Series Renderer'.t(),
-                maxWidth: 305,
-                labelWidth: 150,
-                labelAlign: 'right',
-                hidden: true,
-                bind: {
-                    disabled: '{!isTimeGraph}',
-                    hidden: '{!isTimeGraph}',
-                    value: '{entry.seriesRenderer}'
-                }
-            }, {
-                // ALL - column ordering
-                xtype: 'container',
-                layout: 'hbox',
-                margin: '0 0 5 0',
-                items: [{
-                    xtype: 'label',
-                    cls: 'x-form-item-label-default',
-                    width: 155,
-                    style: {
-                        textAlign: 'right'
-                    },
-                    text: 'Order By Column'.t() + ':'
-                }, {
-                    xtype: 'textfield',
-                    bind: {
-                        value: '{entry.orderByColumn}'
-                    }
-                }, {
-                    xtype: 'segmentedbutton',
-                    margin: '0 0 0 5',
-                    bind: {
-                        value: '{entry.orderDesc}'
-                    },
-                    items: [
-                        {text: 'Ascending'.t(), iconCls: 'fa fa-sort-amount-asc', value: true },
-                        {text: 'Descending'.t(), iconCls: 'fa fa-sort-amount-desc' , value: false }
-                    ]
-                }]
-            }, {
-                // ALL - display order
-                xtype: 'numberfield',
-                fieldLabel: 'Display Order'.t(),
-                maxWidth: 220,
-                labelWidth: 150,
-                labelAlign: 'right',
-                bind: {
-                    value: '{entry.displayOrder}'
-                }
-            }]
+        emptyText: 'To Do!',
+        store: { data: [] },
+        bbar: [{
+            text: 'Add Condition'.t(),
+            itemId: 'filtersBtn'
         }],
-
-        fbar: [{
-            xtype: 'component',
-            style: {
-                fontSize: '11px',
-                color: '#555'
-            },
-            html: '<i class="fa fa-info-circle"></i> ' + 'This is a default report. Any changes can be saved only by creating a new Report!',
-            hidden: true,
-            bind: {
-                hidden: '{!entry.readOnly}'
-            }
-        }, '->', {
-            text: 'Remove'.t(),
-            iconCls: 'fa fa-minus-circle',
-            hidden: true,
-            bind: {
-                hidden: '{entry.readOnly}'
-            }
+        columns: [{
+            dataIndex: 'condition'
         }, {
-            text: 'Update'.t(),
-            iconCls: 'fa fa-save',
-            formBind: true,
-            hidden: true,
-            bind: {
-                hidden: '{entry.readOnly}'
-            },
-            handler: 'updateReport'
+            dataIndex: 'operator'
         }, {
-            text: 'Save as New Report'.t(),
-            iconCls: 'fa fa-plus-circle',
-            itemId: 'saveNewBtn',
-            handler: 'saveNewReport'
-            // formBind: true
+            dataIndex: 'value'
         }]
     }]
 

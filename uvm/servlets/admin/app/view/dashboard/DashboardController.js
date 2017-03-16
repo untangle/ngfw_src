@@ -18,7 +18,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
 
     listen: {
         global: {
-            // init: 'loadWidgets',
+            init: 'loadWidgets',
             appinstall: 'onAppInstall',
             removewidget: 'onRemoveWidget',
             addwidget: 'onAddWidget',
@@ -118,7 +118,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         for (i = 0; i < widgets.length; i += 1 ) {
             widget = widgets[i];
 
-            if (widget.get('type') !== 'ReportEntry') {
+            if (widget.get('type') !== 'ReportEntry' && widget.get('type') !== 'CPULoad') {
                 dashboard.add({
                     xtype: widget.get('type').toLowerCase() + 'widget',
                     itemId: widget.get('type'),
