@@ -1,7 +1,7 @@
 /**
  * $Id$
  */
-package com.untangle.node.openvpn;
+package com.untangle.app.openvpn;
 
 public class OpenVpnConfigItem
 {
