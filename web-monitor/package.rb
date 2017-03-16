@@ -10,5 +10,5 @@ deps << web_filter_base['src']
 
 web_monitor = BuildEnv::SRC['web-monitor']
 
-NodeBuilder.makeNode(BuildEnv::SRC, 'web-monitor', 'web-monitor', deps )
+AppBuilder.makeApp(BuildEnv::SRC, 'web-monitor', 'web-monitor', deps )
 

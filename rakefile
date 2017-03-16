@@ -112,7 +112,7 @@ end
 
 task :build => [:builduvmcore, :targets] do
   Rake::Task[BuildEnv::SRC['untangle-vm']].invoke
-  Rake::Task[BuildEnv::SRC['node']].invoke
+  Rake::Task[BuildEnv::SRC['app']].invoke
 end
 
 task :hier => :targets do

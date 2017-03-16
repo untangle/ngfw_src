@@ -1,6 +1,6 @@
 # -*-ruby-*-
 
-NodeBuilder.makeCasing(BuildEnv::SRC, 'smtp', 'smtp-casing')
+AppBuilder.makeCasing(BuildEnv::SRC, 'smtp', 'smtp-casing')
 
 smtp = BuildEnv::SRC['smtp']
 

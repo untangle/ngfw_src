@@ -6,6 +6,6 @@ deps = []
   deps << BuildEnv::SRC[c]['src']
 end
 
-NodeBuilder.makeNode(BuildEnv::SRC, 'phish-blocker', 'phish-blocker', deps, { 'clam-base' => BuildEnv::SRC['clam-base'] })
+AppBuilder.makeApp(BuildEnv::SRC, 'phish-blocker', 'phish-blocker', deps, { 'clam-base' => BuildEnv::SRC['clam-base'] })
 
 

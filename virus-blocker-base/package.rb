@@ -8,7 +8,7 @@ end
 
 virus = BuildEnv::SRC['virus-blocker-base']
 
-NodeBuilder.makeBase(BuildEnv::SRC, 'virus-blocker-base', 'virus-blocker-base', deps)
+AppBuilder.makeBase(BuildEnv::SRC, 'virus-blocker-base', 'virus-blocker-base', deps)
 
 http = BuildEnv::SRC['http']
 

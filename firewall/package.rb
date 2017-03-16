@@ -1,3 +1,3 @@
 # -*-ruby-*-
 
-NodeBuilder.makeNode(BuildEnv::SRC, 'firewall', 'firewall')
+AppBuilder.makeApp(BuildEnv::SRC, 'firewall', 'firewall')

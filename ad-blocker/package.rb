@@ -2,4 +2,4 @@
 
 http = BuildEnv::SRC['http']
 
-NodeBuilder.makeNode(BuildEnv::SRC, 'ad-blocker', 'ad-blocker', [http['src']])
+AppBuilder.makeApp(BuildEnv::SRC, 'ad-blocker', 'ad-blocker', [http['src']])

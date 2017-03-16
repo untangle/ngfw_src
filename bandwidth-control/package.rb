@@ -1,3 +1,3 @@
 # -*-ruby-*-
 
-NodeBuilder.makeNode(BuildEnv::SRC, 'bandwidth-control', 'bandwidth-control', [])
+AppBuilder.makeApp(BuildEnv::SRC, 'bandwidth-control', 'bandwidth-control', [])

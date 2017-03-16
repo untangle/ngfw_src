@@ -1,6 +1,6 @@
 # -*-ruby-*-
 
-NodeBuilder.makeNode(BuildEnv::SRC, 'wan-failover', 'wan-failover', [] )
+AppBuilder.makeApp(BuildEnv::SRC, 'wan-failover', 'wan-failover', [] )
 
 
 

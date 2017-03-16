@@ -2,4 +2,4 @@
 
 deps = [BuildEnv::SRC['ftp']['src']]
 
-NodeBuilder.makeNode(BuildEnv::SRC, 'router', 'router', deps)
+AppBuilder.makeApp(BuildEnv::SRC, 'router', 'router', deps)

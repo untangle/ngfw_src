@@ -3,7 +3,7 @@
 http = BuildEnv::SRC['http']
 web_filter = BuildEnv::SRC['web-filter-base']
 
-NodeBuilder.makeBase(BuildEnv::SRC, 'web-filter-base', 'web-filter-base', [http['src']])
+AppBuilder.makeBase(BuildEnv::SRC, 'web-filter-base', 'web-filter-base', [http['src']])
 
 deps = [web_filter['src'], http['src']]
 
