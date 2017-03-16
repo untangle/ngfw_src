@@ -28,6 +28,8 @@ Ext.define('Ung.config.network.MainModel', {
         // si: null,
         siStatus: null,
         siArp: null,
+        inputFilterRulesSshEnabled: null,
+        inputFilterRulesCount: 0,
 
         qosPriorityStore: [
             [0, 'Default'.t()],

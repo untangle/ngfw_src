@@ -61,6 +61,14 @@ Ext.define('Ung.config.network.MainController', {
                 Ext.apply(intf, devStatus);
             });
             vm.set('settings', result[0]);
+
+            // check if Allow SSH input filter rule is enabled
+            var inputFilterRulesSshEnabled = me.isSshInputFilterRuleEnabled(vm.get('settings'));
+            vm.set('inputFilterRulesSshEnabled', inputFilterRulesSshEnabled);
+
+            var inputFilterRulesLength = me.getInputFilterRulesCount(vm.get('settings'));
+            vm.set('inputFilterRulesLength', inputFilterRulesLength);
+
         }, function (ex) {
             v.setLoading(false);
             console.error(ex);
@@ -76,7 +84,6 @@ Ext.define('Ung.config.network.MainController', {
         if (!Util.validateForms(view)) {
             return;
         }
-
 
         view.setLoading('Saving ...');
         // used to update all tabs data
@@ -99,12 +106,123 @@ Ext.define('Ung.config.network.MainController', {
             }
         });
 
+        // check if Block All input filter rule is enabled
+        var blockAllEnabled = me.isBlockAllInputFilterRuleEnabled(vm.get('settings'));
+        if (!blockAllEnabled) {
+            Ext.MessageBox.alert("Failed".t(), "The Block All rule in Input Filter Rules is disabled. This is dangerous and not allowed! Refer to the documentation.".t());
+            view.setLoading(false);
+            return;
+        }
+
+        // check to see if any input filter rules have been added/removed
+        var inputFilterRulesLength = me.getInputFilterRulesCount(vm.get('settings'));
+        if ( inputFilterRulesLength != vm.get('inputFilterRulesLength') ) {
+            Ext.Msg.show({
+                title: 'Input Filter Rules changed!'.t(),
+                msg: "The Input Filter Rules have been changed!".t() + "<br/><br/>" +
+                    "Improperly configuring the Input Filter Rules can be very dangerous.".t() + "<br/>" +
+                    "Read the documentation for more details.".t() + "<br/><br/>" +
+                    "Do you want to continue?".t(),
+                buttons: Ext.Msg.YESNO,
+                fn: function(btnId) {
+                    if (btnId === 'yes') {
+                        vm.set('inputFilterRulesLength', inputFilterRulesLength); // set this so it doesnt warning again
+                        me.saveSettings(); // start over
+                        return;
+                    }
+                    else {
+                        view.setLoading(false);
+                        return;
+                    }
+                },
+                animEl: 'elId',
+                icon: Ext.MessageBox.QUESTION
+            });
+            return;
+        }
+
+        // check if Allow SSH input filter rule has been enabled
+        var inputFilterRulesSshEnabled = me.isSshInputFilterRuleEnabled(vm.get('settings'));
+        if ( inputFilterRulesSshEnabled && !vm.get('inputFilterRulesSshEnabled') ) {
+            Ext.Msg.show({
+                title: 'SSH Access Enabled!'.t(),
+                msg: "The 'Allow SSH' rule in Input Filter Rules has been enabled!".t() + "<br/><br/>" +
+                    "If the admin/root password is poorly chosen, enabling SSH is very dangerous.".t() + "<br/><br/>" +
+                    "Any changes made via the command line can be dangerous and destructive.".t() + "<br/>" +
+                    "Any changes made via the command line are not supported and can limit your support options.".t() + "<br/><br/>" +
+                    "Do you want to continue?".t(),
+                buttons: Ext.Msg.YESNO,
+                fn: function(btnId) {
+                    if (btnId === 'yes') {
+                        vm.set('inputFilterRulesSshEnabled', true); // set this so it doesnt warning again
+                        me.saveSettings(); // start over
+                        return;
+                    }
+                    else {
+                        view.setLoading(false);
+                        return;
+                    }
+                },
+                animEl: 'elId',
+                icon: Ext.MessageBox.QUESTION
+            });
+            return;
+        }
+
+        me.setNetworkSettings();
+    },
+
+    setNetworkSettings: function() {
+        var view = this.getView();
+        var vm = this.getViewModel();
+        var me = this;
+
         Rpc.asyncData('rpc.networkManager.setNetworkSettings', vm.get('settings'))
         .then(function(result) {
-            view.setLoading (false);
+            view.setLoading(false);
             me.loadSettings();
             Util.successToast('Network'.t() + ' settings saved!');
         });
+    },
+
+    isSshInputFilterRuleEnabled: function(networkSettings) {
+        var inputFilterRulesSshEnabled = false;
+        if(networkSettings.inputFilterRules && networkSettings.inputFilterRules.list) {
+            var i;
+            for( i=0; i<networkSettings.inputFilterRules.list.length ; i++ ) {
+                var rule = networkSettings.inputFilterRules.list[i];
+                if ( rule.description == "Allow SSH" ) {
+                    inputFilterRulesSshEnabled = rule.enabled;
+                    break;
+                }
+            }
+        }
+        return inputFilterRulesSshEnabled;
+    },
+
+    getInputFilterRulesCount: function(networkSettings) {
+        if(networkSettings.inputFilterRules && networkSettings.inputFilterRules.list) {
+            return networkSettings.inputFilterRules.list.length;
+        }
+        return 0;
+    },
+
+    isBlockAllInputFilterRuleEnabled: function(networkSettings) {
+        var blockAllEnabled = true; //assume true because we used different names in the past
+        if(networkSettings.inputFilterRules && networkSettings.inputFilterRules.list) {
+            var i;
+            for( i=0; i<networkSettings.inputFilterRules.list.length ; i++ ) {
+                var rule = networkSettings.inputFilterRules.list[i];
+                if ( rule.description == "Block All" ) {
+                    if ( !rule.enabled || !rule.ipv6Enabled )
+                        blockAllEnabled = false;
+                    else
+                        blockAllEnabled = true;
+                    break;
+                }
+            }
+        }
+        return blockAllEnabled;
     },
 
     onInterfaces: function () {
