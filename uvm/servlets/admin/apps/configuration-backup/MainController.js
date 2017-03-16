@@ -29,7 +29,7 @@ Ext.define('Ung.apps.configurationbackup.MainController', {
             vm.set('settings', result);
             var googleDrive = new Ung.cmp.GoogleDrive();
             vm.set( 'googleDriveIsConfigured', googleDrive.isConfigured() );
-            vm.set( 'googleDriveConfigure', function(){ googleDrive.configure(); });
+            vm.set( 'googleDriveConfigure', function(){ googleDrive.configure(vm.get('policyId')); });
         });
 
     },
