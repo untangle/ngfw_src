@@ -17,15 +17,10 @@ Ext.define('Ung.cmp.GoogleDrive', {
         }
         return googleDriveConfigured;
     },
-    configure: function () {
-        var app = Rpc.directData('rpc.UvmContext.appManager').app('untangle-app-directory-connector');
+    configure: function (policyId) {
+        var app = Rpc.directData('rpc.UvmContext.appManager').app('directory-connector');
         if (app !== null) {
-            // var appCmp = Ung.App.getCmp(app.appId);
-            var appCmp = Ext.getCmp(app.appId);
-            if (appCmp !== null) {
-                Ung.Main.target = 'app.untangle-app-directory-connector.Google Connector';
-                appCmp.loadSettings();
-            }
+            Ung.app.redirectTo('#apps/' + policyId + '/directory-connector/google');
         } else {
             Ext.MessageBox.alert('Error'.t(), 'Google Drive requires Directory Connector application.'.t());
         }

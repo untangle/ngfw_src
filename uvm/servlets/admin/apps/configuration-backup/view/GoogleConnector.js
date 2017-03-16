@@ -15,10 +15,8 @@ Ext.define('Ung.apps.configurationbackup.view.GoogleConnector', {
             hidden: true,
             disabled: true,
             bind: {
-                // hidden: '{googleDriveIsConfigured == true}',
-                // disabled: '{googleDriveIsConfigured == true}'
-                hidden: '{googleDriveIsConfigured == false}',
-                disabled: '{googleDriveIsConfigured == false}'
+                hidden: '{googleDriveIsConfigured == true}',
+                disabled: '{googleDriveIsConfigured == true}'
             },
             items: [{
                 xtype: 'component',
@@ -29,7 +27,6 @@ Ext.define('Ung.apps.configurationbackup.view.GoogleConnector', {
                 xtype: "button",
                 margin: '5 0 0 0',
                 text: 'Configure Google Drive'.t(),
-                //handler: Ung.Main.configureGoogleDrive
                 bind:{
                     handler: '{googleDriveConfigure}'
                 }
