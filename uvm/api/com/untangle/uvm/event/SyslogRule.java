@@ -17,8 +17,8 @@ import com.untangle.uvm.util.Load;
 /**
  * This in the implementation of a Event Rule
  * 
- * A rule is basically a collection of EventRuleConditions (matchers) and what
- * to do if the matchers match (log, email, etc)
+ * A rule is basically a collection of EventRuleConditions and what
+ * to do if the conditions match (log, email, etc)
  */
 @SuppressWarnings("serial")
 public class SyslogRule extends EventRule
@@ -30,7 +30,7 @@ public class SyslogRule extends EventRule
     }
 
     public SyslogRule( boolean enabled, List<EventRuleCondition> conditions, boolean log, boolean syslog, String description, boolean frequencyLimit, int frequencyMinutes,
-                      Boolean thresholdEnabled, Double thresholdLimit, Integer thresholdTimeframeSec, String thresholdGroupingField )
+                       Boolean thresholdEnabled, Double thresholdLimit, Integer thresholdTimeframeSec, String thresholdGroupingField )
     {
         super(enabled, conditions, log, description, thresholdEnabled,  thresholdLimit, thresholdTimeframeSec, thresholdGroupingField);
         this.setSyslog( syslog );

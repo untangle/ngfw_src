@@ -14,6 +14,12 @@ public interface HostTable
 {
     
     /**
+     * Gets the HostTableEtry for the specified host (specified as an IP string)
+     * Returns null if no entry for the provided address is found.
+     */
+    HostTableEntry getHostTableEntry( String inetAddress );
+
+    /**
      * Gets the HostTableEtry for the specified host
      * Returns null if no entry for the provided address is found.
      */
@@ -28,7 +34,7 @@ public interface HostTable
     /**
      * Search for a HostTableEntry with specified MAC address 
      */
-    HostTableEntry findHostTableEntry( String macaddr );
+    HostTableEntry findHostTableEntryByMacAddress( String macaddr );
 
     /**
      * return the "license size" (the number of hosts applicable to licensing)

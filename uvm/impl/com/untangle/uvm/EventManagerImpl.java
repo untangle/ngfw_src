@@ -9,6 +9,7 @@ import com.untangle.uvm.event.SyslogEvent;
 import com.untangle.uvm.event.EventSettings;
 import com.untangle.uvm.event.AlertRule;
 import com.untangle.uvm.event.SyslogRule;
+import com.untangle.uvm.event.TriggerRule;
 import com.untangle.uvm.event.EventRuleCondition;
 import com.untangle.uvm.event.EventRuleConditionField;
 import com.untangle.uvm.app.App;
@@ -33,7 +34,6 @@ import org.json.JSONObject;
 
 public class EventManagerImpl implements EventManager
 {
-
     private static final Logger logger = Logger.getLogger(EventManagerImpl.class);
 
     private static EventManagerImpl instance = null;
@@ -91,10 +91,21 @@ public class EventManagerImpl implements EventManager
         for (SyslogRule rule : newSettings.getSyslogRules()) {
             rule.setRuleId(++idx);
         }
+        idx = 0;
+        for (TriggerRule rule : newSettings.getTriggerRules()) {
+            rule.setRuleId(++idx);
 
-        EventSettings convertedSettings = null;
-        if(newSettings.getVersion() < this.currentSettingsVersion){
-            convertedSettings = convertSettings(newSettings);
+            if (rule.getAction() == TriggerRule.TriggerAction.TAG_HOST ||
+                rule.getAction() == TriggerRule.TriggerAction.TAG_USER ||
+                rule.getAction() == TriggerRule.TriggerAction.TAG_DEVICE ) {
+
+                if ( rule.getTagName() == null )
+                    throw new RuntimeException("Missing tag name on trigger rule: " + idx);
+                if ( rule.getTagTarget() == null )
+                    throw new RuntimeException("Missing tag target on trigger rule: " + idx);
+                if ( rule.getTagLifetimeSec() == null )
+                    throw new RuntimeException("Missing tag lifetime on trigger rule: " + idx);
+            }
         }
 
         /**
@@ -102,11 +113,7 @@ public class EventManagerImpl implements EventManager
          */
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         try {
-            if(convertedSettings != null){
-                settingsManager.save( this.settingsFilename, convertedSettings );
-            }else{
-                settingsManager.save( this.settingsFilename, newSettings );
-            }
+            settingsManager.save( this.settingsFilename, newSettings );
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.",e);
             return;
@@ -119,26 +126,6 @@ public class EventManagerImpl implements EventManager
         try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
 
         SyslogManagerImpl.reconfigure(this.settings);
-    }
-
-    private EventSettings convertSettings(EventSettings settings)
-    {
-        /**
-         * 12.0 conversion
-         */
-        if ( settings.getVersion() == null ) {
-            logger.warn("Running v12.0 conversion...");
-            settings = conversion_12_0(settings);
-        }
-        /**
-         * 12.1.1 conversion
-         */
-        if ( settings.getVersion() == 2 ) {
-            logger.warn("Running v12.1.1 conversion...");
-            settings = conversion_12_1_1(settings);
-        }
-
-        return settings;
     }
 
     /**
@@ -155,6 +142,7 @@ public class EventManagerImpl implements EventManager
         settings.setVersion( 1 );
         settings.setAlertRules( defaultAlertRules() );
         settings.setSyslogRules( defaultSyslogRules() );
+        settings.setTriggerRules( defaultTriggerRules() );
 
         return settings;
     }
@@ -373,129 +361,194 @@ public class EventManagerImpl implements EventManager
         return rules;
     }
 
-    private EventSettings conversion_12_0(EventSettings settings)
+    private LinkedList<TriggerRule> defaultTriggerRules()
     {
-        settings.setVersion( 1 );
+        LinkedList<TriggerRule> rules = new LinkedList<TriggerRule>();
 
         LinkedList<EventRuleCondition> matchers;
         EventRuleCondition matcher1;
         EventRuleCondition matcher2;
-        AlertRule eventRule;
-
-        LinkedList<AlertRule> rules = settings.getAlertRules();
-
-        matchers = new LinkedList<EventRuleCondition>();
-        matcher1 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "class", "=", "*SessionEvent*" ) );
-        matchers.add( matcher1 );
-        matcher2 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "entitled", "=", "false" ) );
-        matchers.add( matcher2 );
-        eventRule = new AlertRule( true, matchers, true, true, "License exceeded. Session not entitled", true, 60*24 );
-        rules.add( eventRule );
+        EventRuleCondition matcher3;
+        TriggerRule eventRule;
 
         matchers = new LinkedList<EventRuleCondition>();
-        matcher1 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "class", "=", "*DeviceTableEvent*" ) );
+        matcher1 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "class", "=", "*ApplicationControlLogEvent*" ) );
         matchers.add( matcher1 );
-        matcher2 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "key", "=", "add" ) );
+        matcher2 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "category", "=", "Proxy" ) );
         matchers.add( matcher2 );
-        eventRule = new AlertRule( false, matchers, true, true, "New device discovered", false, 0 );
+        eventRule = new TriggerRule( true, matchers, true, "Tag proxy-using hosts", false, 0 );
+        eventRule.setAction( TriggerRule.TriggerAction.TAG_HOST );
+        eventRule.setTagTarget( "localAddr" );
+        eventRule.setTagName( "proxy-use" );
+        eventRule.setTagLifetimeSec( new Long(30*5) ); // 30 minutes
+
+        matchers = new LinkedList<EventRuleCondition>();
+        matcher1 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "class", "=", "*ApplicationControlLogEvent*" ) );
+        matchers.add( matcher1 );
+        matcher2 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "application", "=", "BITTORRE" ) );
+        matchers.add( matcher2 );
+        eventRule = new TriggerRule( true, matchers, true, "Tag bittorrent-using hosts", false, 0 );
+        eventRule.setAction( TriggerRule.TriggerAction.TAG_HOST );
+        eventRule.setTagTarget( "localAddr" );
+        eventRule.setTagName( "bittorrent-use" );
+        eventRule.setTagLifetimeSec( new Long(60*5) ); // 5 minutes
+
         rules.add( eventRule );
 
-        return settings;
-    }
-
-    private EventSettings conversion_12_1_1(EventSettings settings)
-    {
-        settings.setVersion( 3 );
-
-        try {
-            boolean found = false;
-
-            for (Iterator<AlertRule> it = settings.getAlertRules().iterator(); it.hasNext() ;) {
-                AlertRule rule = it.next();
-                if ("Free Memory is low".equals( rule.getDescription() ) ) {
-                    logger.info("Replacing Free Memory event rule...");
-                    it.remove();
-                    found = true;
-                    break;
-                }
-            }
-
-            if ( found ) {
-                LinkedList<EventRuleCondition> matchers;
-                EventRuleCondition matcher1;
-                EventRuleCondition matcher2;
-                AlertRule eventRule;
-
-                matchers = new LinkedList<EventRuleCondition>();
-                matcher1 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "class", "=", "*SystemStatEvent*" ) );
-                matchers.add( matcher1 );
-                matcher2 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "memFreePercent", "<", ".05" ) );
-                matchers.add( matcher2 );
-                eventRule = new AlertRule( false, matchers, true, true, "Free memory is low", true, 60 );
-
-                LinkedList<AlertRule> rules = settings.getAlertRules();
-                rules.add( 3, eventRule );
-            }
-        } catch (Exception e) {
-            logger.warn("Conversion Exception",e);
-        }
-
-        return settings;
-    }
-
-    public void flushEvents()
-    {
-        eventWriter.forceFlush();
+        return rules;
     }
 
     public void logEvent( LogEvent event )
     {
-        if ( eventWriter.overloadedFlag ) {
-            if ( System.currentTimeMillis() - eventWriter.lastLoggedWarningTime > 10000 ) {
-                logger.warn("Event Writer overloaded, discarding event");
-                eventWriter.lastLoggedWarningTime = System.currentTimeMillis();
-            }
-            return;
-        }
-
         eventWriter.inputQueue.offer(event);
-
-        UvmContextFactory.context().hookManager().callCallbacks( HookManager.REPORTS_EVENT_LOGGED, event );
     }
 
-    private static void runEventQueue( LinkedList<LogEvent> events )
+    private static void runEvent( LogEvent event )
     {
-        for ( LogEvent event : events ) {
+        try {
             runAlertRules( event );
+        } catch ( Exception e ) {
+            logger.warn("Failed to evaluate alert rules.", e);
+        }
+
+        try {
+            runTriggerRules( event );
+        } catch ( Exception e ) {
+            logger.warn("Failed to evaluate trigger rules.", e);
+        }
+
+        try {
             runSyslogRules( event );
+        } catch ( Exception e ) {
+            logger.warn("Failed to evaluate syslog rules.", e);
         }
     }
 
     private static void runAlertRules( LogEvent event )
     {
-        try {
-            JSONObject jsonObject = event.toJSONObject();
-            for ( AlertRule rule : UvmContextFactory.context().eventManager().getSettings().getAlertRules() ) {
-                if ( ! rule.getEnabled() )
+        JSONObject jsonObject = event.toJSONObject();
+        for ( AlertRule rule : UvmContextFactory.context().eventManager().getSettings().getAlertRules() ) {
+            if ( ! rule.getEnabled() )
                 {
                     continue;
                 }
 
-                if ( rule.isMatch( jsonObject ) ) {
-                    logger.debug( "alert match: " + rule.getDescription() + " matches " + jsonObject.toString() );
+            if ( rule.isMatch( jsonObject ) ) {
+                logger.debug( "alert match: " + rule.getDescription() + " matches " + jsonObject.toString() );
 
-                    if(rule.getEmail()){
-                        sendEmailForEvent( rule, event );
-                    }
-                    if(rule.getLog()){
-                        AlertEvent eventEvent = new AlertEvent( rule.getDescription(), event.toSummaryString(), jsonObject, event, rule, false );
-                        UvmContextFactory.context().logEvent( eventEvent );
-                    }
+                if(rule.getEmail()){
+                    sendEmailForEvent( rule, event );
+                }
+                if(rule.getLog()){
+                    AlertEvent eventEvent = new AlertEvent( rule.getDescription(), event.toSummaryString(), jsonObject, event, rule, false );
+                    UvmContextFactory.context().logEvent( eventEvent );
                 }
             }
-        } catch ( Exception e ) {
-            logger.warn("Failed to evaluate alert rules.", e);
         }
+    }
+
+    private static void runTriggerRules( LogEvent event )
+    {
+        JSONObject jsonObject = event.toJSONObject();
+        for ( TriggerRule rule : UvmContextFactory.context().eventManager().getSettings().getTriggerRules() ) {
+            if ( ! rule.getEnabled() )
+                continue;
+
+            if ( rule.isMatch( jsonObject ) ) {
+                logger.info( "trigger \"" + rule.getDescription() + "\" matches: " + event );
+
+                String target = findAttribute( jsonObject, rule.getTagTarget() );
+                target = target.replaceAll("/",""); // remove annoying / from InetAddress toString()
+
+                HostTableEntry host = UvmContextFactory.context().hostTable().getHostTableEntry( target );
+                UserTableEntry user = UvmContextFactory.context().userTable().getUserTableEntry( target );
+                DeviceTableEntry device = UvmContextFactory.context().deviceTable().getDevice( target );
+                switch( rule.getAction() ) {
+                case TAG_HOST:
+                    if ( host != null ) {
+                        logger.info("Tagging host " + target + " with tag " + rule.getTagName() );
+                        host.addTag( new Tag( rule.getTagName(), rule.getTagLifetimeSec()*1000 ) );
+                        break;
+                    }
+                    break;
+                case TAG_USER:
+                    if ( user != null ) {
+                        logger.info("Tagging user " + target + " with tag " + rule.getTagName() );
+                        user.addTag( new Tag( rule.getTagName(), rule.getTagLifetimeSec()*1000 ) );
+                        break;
+                    } else if ( host != null ) {
+                        String hostUsername = host.getUsername();
+                        user = UvmContextFactory.context().userTable().getUserTableEntry( hostUsername );
+                        if ( user != null ) {
+                            logger.info("Tagging user " + hostUsername + " with tag " + rule.getTagName() );
+                            user.addTag( new Tag( rule.getTagName(), rule.getTagLifetimeSec()*1000 ) );
+                            break;
+                        }
+                    }
+                    break;
+                case TAG_DEVICE:
+                    if ( device != null ) {
+                        logger.info("Tagging device " + target + " with tag " + rule.getTagName() );
+                        device.addTag( new Tag( rule.getTagName(), rule.getTagLifetimeSec()*1000 ) );
+                        break;
+                    } else if ( host != null ) {
+                        String macAddr = host.getMacAddress();
+                        device = UvmContextFactory.context().deviceTable().getDevice( macAddr );
+                        if ( device != null ) {
+                            logger.info("Tagging device " + macAddr + " with tag " + rule.getTagName() );
+                            device.addTag( new Tag( rule.getTagName(), rule.getTagLifetimeSec()*1000 ) );
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
+    private static String findAttribute( JSONObject json, String name )
+    {
+        if ( json == null || name == null ) return null;
+
+        //logger.info("findAttribute( " + name + " , " + json + ")");
+        try {
+            String[] keys = JSONObject.getNames(json);
+            if ( keys == null ) return null;
+
+            for( String key : keys ) {
+                if ("class".equals(key))
+                    continue;
+                if (name.equals(key)) {
+                    Object o = json.get(key);
+                    return (o == null ? null : o.toString());
+                }
+            }
+
+            for( String key : keys ) {
+                try {
+                    if ("class".equals(key))
+                        continue;
+                    Object o = json.get(key);
+                    if ( o == null )
+                        continue;
+                    if ( ! (o instanceof java.io.Serializable) )
+                        continue;
+                    JSONObject obj = new JSONObject(o);
+                    if ( obj.length() < 2 )
+                        continue;
+
+                    if ( o != null ) {
+                        String s = findAttribute(obj,name);
+                        if ( s != null )
+                            return s;
+                    }
+                } catch (Exception e) {}
+            }
+        } catch (Exception e) {
+            logger.warn("Exception",e);
+        }
+
+        return null;
     }
 
     private static boolean sendEmailForEvent( AlertRule rule, LogEvent event )
@@ -561,170 +614,68 @@ public class EventManagerImpl implements EventManager
 
     private static void runSyslogRules( LogEvent event )
     {
-        try {
-            JSONObject jsonObject = event.toJSONObject();
-            for ( SyslogRule rule : UvmContextFactory.context().eventManager().getSettings().getSyslogRules() ) {
-                if ( ! rule.getEnabled() )
+        JSONObject jsonObject = event.toJSONObject();
+        for ( SyslogRule rule : UvmContextFactory.context().eventManager().getSettings().getSyslogRules() ) {
+            if ( ! rule.getEnabled() )
                 {
                     continue;
                 }
 
-                if ( rule.isMatch( jsonObject ) ) {
-                    logger.debug( "syslog match: " + rule.getDescription() + " matches " + jsonObject.toString() );
+            if ( rule.isMatch( jsonObject ) ) {
+                logger.debug( "syslog match: " + rule.getDescription() + " matches " + jsonObject.toString() );
 
-                    event.setTag(SyslogManagerImpl.LOG_TAG_PREFIX);
-                    if(rule.getLog()){
-                        SyslogEvent eventEvent = new SyslogEvent( rule.getDescription(), event.toSummaryString(), jsonObject, event, rule, false );
-                        UvmContextFactory.context().logEvent( eventEvent );
-                    }
-                    if ( rule.getSyslog() ){
-                        try {
-                            SyslogManagerImpl.sendSyslog( event );
-                        } catch (Exception exn) {
-                            logger.warn("failed to send syslog", exn);
-                        }
+                event.setTag(SyslogManagerImpl.LOG_TAG_PREFIX);
+                if(rule.getLog()){
+                    SyslogEvent eventEvent = new SyslogEvent( rule.getDescription(), event.toSummaryString(), jsonObject, event, rule, false );
+                    UvmContextFactory.context().logEvent( eventEvent );
+                }
+                if ( rule.getSyslog() ){
+                    try {
+                        SyslogManagerImpl.sendSyslog( event );
+                    } catch (Exception exn) {
+                        logger.warn("failed to send syslog", exn);
                     }
                 }
             }
-        } catch ( Exception e ) {
-            logger.warn("Failed to evaluate log rules.", e);
         }
     }
 
 
     /**
-     * This thread periodically walks through the entries and removes expired entries
+     * This thread waits on the l
      * It also explicitly releases hosts from the penalty box and quotas after expiration
      */
-
-    /**
-      * The amount of time for the event write to sleep
-       * if there is not a lot of work to be done
-    */
-    private static int SYNC_TIME = 30*1000; /* 30 seconds */
-
-    /**
-     * If the event queue length reaches the high water mark
-     * Then the eventWriter is not able to keep up with demand
-     * In this case the overloadedFlag is set to true
-     */
-    private static int HIGH_WATER_MARK = 1000000;
-
-    /**
-     * If overloadedFlag is set to true and the queue shrinks to this size
-     * then overloadedFlag will be set to false
-     */
-    private static int LOW_WATER_MARK = 100000;
-
-    private static boolean forceFlush = false;
-
     private class EventWriter implements Runnable
     {
 
         private volatile Thread thread;
-
-        /**
-         * Maximum number of events to write per work cycle
-         */
-        private int maxEventsPerCycle = 20000; 
-
-        /**
-         * If true then the eventWriter is considered "overloaded" and can not keep up with demand
-         * This is set if the event queue length reaches the high water mark
-         * In this case we stop logging events entirely until we are no longer overloaded
-         */
-        private boolean overloadedFlag = false;
-    
-        /**
-         * This stores the maximum queue delay for the last batch
-         * That is difference between now() and the oldest event in the batch
-         * This approximates the delay its taking for events to be written to the database
-         * If the event writer falls behind this value can get large.
-         * Typical values less than a minute. A value of one hour would mean its behind and writing events slower than they are being created
-         * and that it is currently taking one hour before new events are written to the database
-         */
-        private long writeDelaySec = 0;
-
-        /**
-         * This is a queue of incoming events
-         */
         private final BlockingQueue<LogEvent> inputQueue = new LinkedBlockingQueue<LogEvent>();
-
-        private long lastLoggedWarningTime = System.currentTimeMillis();
 
         public void run()
         {
             thread = Thread.currentThread();
-
-            LinkedList<LogEvent> logQueue = new LinkedList<LogEvent>();
             LogEvent event = null;
 
             /**
-             * Loop indefinitely and continue logging events
+             * Loop indefinitely and continue running event rules
              */
             while (thread != null) {
-                /**
-                 * Sleep until next log time
-                 * If force flush was called, don't sleep
-                 * If there is already a full runs worth of events, don't sleep
-                 * If events are significantly delayed (more than 2x SYNC_TIME), don't sleep
-                 */
-                if ( forceFlush ||
-                     (inputQueue.size() > maxEventsPerCycle) ||
-                    (writeDelaySec*1000 >  SYNC_TIME*2) ) {
-                    logger.debug("persist(): skipping sleep");
-                    // minor sleep to let other threads that my want to synchronize on this run
-                    try {Thread.sleep(100);} catch (Exception e) {}
-                } else {
-                    try {Thread.sleep(SYNC_TIME);} catch (Exception e) {}
-                }
-
                 synchronized( this ) {
                     try {
-                        /**
-                         * Copy all events out of the queue
-                        */
-                        while ((event = inputQueue.poll()) != null && logQueue.size() < maxEventsPerCycle) {
-                            if ( ( event instanceof AlertEvent ) || ( event instanceof SyslogEvent) )
-                            {
-                                /* Ignore our own events (they're destined for logging) */
-                                continue;
-                            }
-                            logQueue.add(event);
-                        }
+                        event = inputQueue.take();
 
-                        /**
-                         * Check queue lengths
-                         */
-                        if (!this.overloadedFlag && inputQueue.size() > HIGH_WATER_MARK)  {
-                            logger.warn("OVERLOAD: High Water Mark reached.");
-                            this.overloadedFlag = true;
-                        }
-                        if (this.overloadedFlag && inputQueue.size() < LOW_WATER_MARK) {
-                            logger.warn("OVERLOAD: Low Water Mark reached. Continuing normal operation.");
-                            this.overloadedFlag = false;
-                        }
+                        if ( ( event instanceof AlertEvent ) ||
+                             ( event instanceof SyslogEvent) )
+                            continue;
 
-                        /**
-                         * Run event rules
-                         */
-                        runEventQueue( logQueue );
+                        runEvent( event );
 
-                        logQueue.clear();
-                    
-                        try {Thread.sleep(1000);} catch (Exception e) {}
+                        UvmContextFactory.context().hookManager().callCallbacks( HookManager.REPORTS_EVENT_LOGGED, event );
 
                     } catch (Exception e) {
-                        logger.warn("Failed to write event events.", e);
-                    } finally {
-                        /**
-                         * If the forceFlush flag was set, reset it and wake any interested parties
-                         */
-                        if (forceFlush) {
-                            forceFlush = false; //reset global flag
-                            notifyAll();  /* notify any waiting threads that the flush is done */ 
-                        }
-                    }
+                        logger.warn("Failed to run event rules.", e);
+                        try {Thread.sleep(1000);} catch (Exception exc) {}
+                    } 
                 }
             }
         }
@@ -736,42 +687,10 @@ public class EventManagerImpl implements EventManager
 
         protected void stop()
         {
-            // this is disabled because it causes boxes to hang on stopping the uvm
-            // forceFlush(); /* flush last few events */
-
             Thread tmp = thread;
             thread = null; /* thread will exit if thread is null */
             if (tmp != null) {
                 tmp.interrupt();
-            }
-        }
-
-        /**
-         * Force currently queued events to propogate
-         */
-        public void forceFlush()
-        {
-            if ( thread == null ) {
-                logger.warn("forceFlush() called, but reports not running.");
-                return;
-            }
-
-            /**
-             * Wait on the flush to finish - we will get notified)
-             */
-            synchronized( this ) {
-                forceFlush = true;
-                logger.info("forceFlush() ...");
-                thread.interrupt();
-
-                while (true) {
-                    try {wait();} catch (java.lang.InterruptedException e) {}
-
-                    if (!forceFlush) {
-                        logger.info("forceFlush() complete.");
-                        return;
-                    }
-                }
             }
         }
     }

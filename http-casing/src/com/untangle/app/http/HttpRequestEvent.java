@@ -141,7 +141,7 @@ public class HttpRequestEvent extends LogEvent
 
     public String toString()
     {
-        return "HttpRequestEvent length: " + requestUri.toString().length() + " (" + super.toString() + ")";
+        return "HttpRequestEvent: " + toSummaryString();
     }
 
     @Override

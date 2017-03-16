@@ -125,7 +125,19 @@ public class HostTableImpl implements HostTable
         return entry;
     }
 
-    public HostTableEntry findHostTableEntry( String macaddr )
+    public HostTableEntry getHostTableEntry( String inetAddress )
+    {
+        InetAddress addr;
+        try {
+            addr = InetAddress.getByName( inetAddress );
+        } catch ( java.net.UnknownHostException e ) {
+            return null;
+        }
+
+        return getHostTableEntry( addr, false );
+    }
+
+    public HostTableEntry findHostTableEntryByMacAddress( String macaddr )
     {
         LinkedList<HostTableEntry> list = new LinkedList<HostTableEntry>(UvmContextFactory.context().hostTable().getHosts());
 

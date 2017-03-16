@@ -31,6 +31,8 @@ public class EventSettings implements Serializable, JSONString
     private String syslogProtocol = "UDP";
     private LinkedList<SyslogRule> syslogRules = null;
 
+    private LinkedList<TriggerRule> triggerRules = null;
+
     public EventSettings() { }
 
     public Integer getVersion() { return version; }
@@ -57,6 +59,8 @@ public class EventSettings implements Serializable, JSONString
     public LinkedList<SyslogRule> getSyslogRules() { return this.syslogRules; }
     public void setSyslogRules( LinkedList<SyslogRule> newValue ) { this.syslogRules = newValue; }
 
+    public LinkedList<TriggerRule> getTriggerRules() { return this.triggerRules; }
+    public void setTriggerRules( LinkedList<TriggerRule> newValue ) { this.triggerRules = newValue; }
 
     public String toJSONString()
     {
