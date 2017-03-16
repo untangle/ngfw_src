@@ -211,9 +211,10 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizard', {
                 editable: false,
                 forceSelection: false,
                 store: [
-                    [-3, 'End of Week'.t()], //END_OF_WEEK from QuotaBoxEntry
-                    [-2, 'End of Day'.t()], //END_OF_DAY from QuotaBoxEntry
-                    [-1, 'End of Hour'.t()] //END_OF_HOUR from QuotaBoxEntry
+                    [-4, 'End of Month'.t()], //END_OF_MONTH
+                    [-3, 'End of Week'.t()], //END_OF_WEEK
+                    [-2, 'End of Day'.t()], //END_OF_DAY
+                    [-1, 'End of Hour'.t()] //END_OF_HOUR
                 ],
                 queryMode: 'local',
                 bind: '{quota.expiration}'
