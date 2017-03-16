@@ -79,15 +79,15 @@ public class MetricManagerImpl implements MetricManager
 
     public org.json.JSONObject getMetricsAndStats()
     {
-        List<Long> nodeIds = new LinkedList<Long>();
+        List<Long> appIds = new LinkedList<Long>();
 
-        for ( App node : UvmContextImpl.getInstance().appManager().appInstances() ) {
-            nodeIds.add( node.getAppSettings().getId() );
+        for ( App app : UvmContextImpl.getInstance().appManager().appInstances() ) {
+            appIds.add( app.getAppSettings().getId() );
         }
 
         org.json.JSONObject json = new org.json.JSONObject();
         try {
-            json.put("metrics", getMetrics( nodeIds ));
+            json.put("metrics", getMetrics( appIds ));
             json.put("systemStats", this.systemStats);
         } catch (Exception e) {
             logger.error( "Error generating metrics object", e );
@@ -108,13 +108,13 @@ public class MetricManagerImpl implements MetricManager
         return json;
     }
 
-    public List<AppMetric> getMetrics( Long nodeId )
+    public List<AppMetric> getMetrics( Long appId )
     {
-        App node = UvmContextFactory.context().appManager().app( nodeId );
-        if (node != null)
-            return node.getMetrics();
+        App app = UvmContextFactory.context().appManager().app( appId );
+        if (app != null)
+            return app.getMetrics();
         else {
-            logger.warn("Node not found: " + nodeId, new Exception());
+            logger.warn("App not found: " + appId, new Exception());
             return null;
         }
     }
@@ -134,12 +134,12 @@ public class MetricManagerImpl implements MetricManager
 
     // private methods --------------------------------------------------------
 
-    private Map<String, List<AppMetric>> getMetrics( List<Long> nodeIds )
+    private Map<String, List<AppMetric>> getMetrics( List<Long> appIds )
     {
-        Map<String, List<AppMetric>> stats = new HashMap<String, List<AppMetric>>(nodeIds.size());
+        Map<String, List<AppMetric>> stats = new HashMap<String, List<AppMetric>>(appIds.size());
 
-        for (Long nodeId : nodeIds) {
-            stats.put( Long.toString(nodeId), getMetrics( nodeId ) );
+        for (Long appId : appIds) {
+            stats.put( Long.toString(appId), getMetrics( appId ) );
         }
 
         return stats;

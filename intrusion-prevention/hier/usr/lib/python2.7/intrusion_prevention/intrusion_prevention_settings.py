@@ -39,11 +39,11 @@ class IntrusionPreventionSettings:
         "max_scan_size": 1024
     }
     
-    def __init__(self, node_id):
-        self.node_id = node_id
-        self.file_name = "@PREFIX@/usr/share/untangle/settings/intrusion-prevention/settings_" + self.node_id + ".js"
+    def __init__(self, app_id):
+        self.app_id = app_id
+        self.file_name = "@PREFIX@/usr/share/untangle/settings/intrusion-prevention/settings_" + self.app_id + ".js"
             
-        self.rules = SnortRules(node_id)
+        self.rules = SnortRules(app_id)
         self.settings = {}
 
     def json_load_decoder(self,obj):

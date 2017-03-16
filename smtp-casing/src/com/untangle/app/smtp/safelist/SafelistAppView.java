@@ -8,9 +8,9 @@ import java.util.List;
 import javax.mail.internet.InternetAddress;
 
 /**
- * Interface for the nodes to query the safelist. This is not intended to be "remoted" to any UI.
+ * Interface for the apps to query the safelist. This is not intended to be "remoted" to any UI.
  */
-public interface SafelistNodeView
+public interface SafelistAppView
 {
     /**
      * Test if the given sender is safelisted for the given recipients. Implementations of Safelist are permitted to

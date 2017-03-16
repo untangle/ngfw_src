@@ -32,5 +32,5 @@ fi
 iptables -t mangle -D mark-src-intf -i ${PPP_IFACE} -j MARK --set-mark 0xfb/0xff -m comment --comment "Set src interface mark for l2tp"
 iptables -t mangle -D mark-dst-intf -o ${PPP_IFACE} -j MARK --set-mark 0xfb00/0xff00 -m comment --comment "Set dst interface mark for l2tp"
 
-# call the goodbye function in the node
+# call the goodbye function in the app
 /usr/share/untangle/bin/ipsec-virtual-user-event GOODBYE L2TP $IPREMOTE $PEERNAME $BYTES_SENT $BYTES_RCVD

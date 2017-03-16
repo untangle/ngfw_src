@@ -9,8 +9,8 @@ Ext.define('Webui.virus-blocker-base.settings', {
     gridFtpEventLog: null,
     // called when the component is rendered
     initComponent: function() {
-        this.lastUpdate = this.getRpcNode().getLastSignatureUpdate();
-        this.nodeName=this.getRpcNode().getName();
+        this.lastUpdate = this.getRpcApp().getLastSignatureUpdate();
+        this.appName=this.getRpcApp().getName();
         this.buildWeb();
         this.buildEmail();
         this.buildFtp();
@@ -244,7 +244,7 @@ Ext.define('Webui.virus-blocker-base.settings', {
                 }]
             }, {
                 html: i18n._("Virus Blocker signatures were last updated") + ":&nbsp;&nbsp;&nbsp;&nbsp;" +
-                    ((this.getRpcNode().getLastSignatureUpdate() != null) ? i18n.timestampFormat(this.getRpcNode().getLastSignatureUpdate()): i18n._("Unknown"))
+                    ((this.getRpcApp().getLastSignatureUpdate() != null) ? i18n.timestampFormat(this.getRpcApp().getLastSignatureUpdate()): i18n._("Unknown"))
             }]
 
         });
@@ -305,7 +305,7 @@ Ext.define('Webui.virus-blocker-base.settings', {
                 }]
             }, {
                 html: i18n._("Virus Blocker signatures were last updated") + ":&nbsp;&nbsp;&nbsp;&nbsp;" +
-                    ((this.getRpcNode().getLastSignatureUpdate() != null) ? i18n.timestampFormat(this.getRpcNode().getLastSignatureUpdate()): i18n._("Unknown"))
+                    ((this.getRpcApp().getLastSignatureUpdate() != null) ? i18n.timestampFormat(this.getRpcApp().getLastSignatureUpdate()): i18n._("Unknown"))
             }]
         });
     },

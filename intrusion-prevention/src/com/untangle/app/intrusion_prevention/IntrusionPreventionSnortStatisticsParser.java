@@ -124,7 +124,7 @@ public class IntrusionPreventionSnortStatisticsParser
         }
     }
 
-	public void parse( IntrusionPreventionApp ipsNode )
+	public void parse( IntrusionPreventionApp ipsApp )
     {
         File f = new File( SNORT_PID );
         if( !f.exists() ){
@@ -275,9 +275,9 @@ public class IntrusionPreventionSnortStatisticsParser
                 logger.debug("blockCount: " + blocked);
             }
             
-            ipsNode.setScanCount( sessions );
-            ipsNode.setDetectCount( logged );
-            ipsNode.setBlockCount( blocked );
+            ipsApp.setScanCount( sessions );
+            ipsApp.setDetectCount( logged );
+            ipsApp.setBlockCount( blocked );
             
         } catch( Exception e){
             logger.warn("parse: problem in loop:", e );

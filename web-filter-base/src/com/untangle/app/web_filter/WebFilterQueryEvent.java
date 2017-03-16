@@ -23,7 +23,7 @@ public class WebFilterQueryEvent extends LogEvent
     private Long requestId;
     private HttpMethod method;
     private String  term;
-    private String  nodeName;
+    private String  appName;
     private SessionEvent sessionEvent;
     private URI requestUri;
     private String host;
@@ -31,13 +31,13 @@ public class WebFilterQueryEvent extends LogEvent
 
     public WebFilterQueryEvent() { }
 
-    public WebFilterQueryEvent(RequestLine requestLine, String host, String term, String nodeName)
+    public WebFilterQueryEvent(RequestLine requestLine, String host, String term, String appName)
     {
         this.host = host;
         this.requestId = requestLine.getRequestId();
         this.method = requestLine.getMethod();
         this.term = term;
-        this.nodeName = nodeName;
+        this.appName = appName;
         this.sessionEvent = requestLine.getSessionEvent();
         this.requestUri = requestLine.getRequestUri();
     }
@@ -54,8 +54,8 @@ public class WebFilterQueryEvent extends LogEvent
     public String getTerm() { return term; }
     public void setTerm( String term ) { this.term = term; }
 
-    public String getAppName() { return nodeName; }
-    public void setNodeName(String nodeName) { this.nodeName = nodeName; }
+    public String getAppName() { return appName; }
+    public void setAppName(String appName) { this.appName = appName; }
 
     public SessionEvent getSessionEvent() { return sessionEvent; }
     public void setSessionEvent( SessionEvent sessionEvent ) { this.sessionEvent = sessionEvent; }

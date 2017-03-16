@@ -25,14 +25,14 @@ import com.untangle.uvm.vnet.AppTCPSession;
 public class CaptivePortalHttpHandler extends HttpEventHandler
 {
     private final Logger logger = Logger.getLogger(getClass());
-    private final CaptivePortalApp node;
+    private final CaptivePortalApp app;
 
     // constructors -----------------------------------------------------------
 
-    CaptivePortalHttpHandler( CaptivePortalApp node )
+    CaptivePortalHttpHandler( CaptivePortalApp app )
     {
         super();
-        this.node = node;
+        this.app = app;
     }
 
     // HttpEventHandler methods -----------------------------------------------
@@ -43,32 +43,32 @@ public class CaptivePortalHttpHandler extends HttpEventHandler
         Token[] response = null;
 
         // first check to see if the user is already authenticated
-        if (node.isClientAuthenticated(session.getClientAddr()) == true) {
-            node.incrementBlinger(CaptivePortalApp.BlingerType.SESSALLOW, 1);
+        if (app.isClientAuthenticated(session.getClientAddr()) == true) {
+            app.incrementBlinger(CaptivePortalApp.BlingerType.SESSALLOW, 1);
             releaseRequest( session );
             return (requestHeader);
         }
 
         // not authenticated so check both of the pass lists
-        PassedAddress passed = node.isSessionAllowed(session.getClientAddr(), session.getServerAddr());
+        PassedAddress passed = app.isSessionAllowed(session.getClientAddr(), session.getServerAddr());
 
         if (passed != null) {
             if (passed.getLog() == true) {
                 CaptureRuleEvent logevt = new CaptureRuleEvent(session.sessionEvent(), false);
-                node.logEvent(logevt);
+                app.logEvent(logevt);
             }
 
-            node.incrementBlinger(CaptivePortalApp.BlingerType.SESSALLOW, 1);
+            app.incrementBlinger(CaptivePortalApp.BlingerType.SESSALLOW, 1);
             releaseRequest( session );
             return (requestHeader);
         }
 
         // not authenticated and no pass list match so check the rules
-        CaptureRule rule = node.checkCaptureRules(session);
+        CaptureRule rule = app.checkCaptureRules(session);
 
         // by default we allow traffic so if there is no rule pass the traffic
         if (rule == null) {
-            node.incrementBlinger(CaptivePortalApp.BlingerType.SESSALLOW, 1);
+            app.incrementBlinger(CaptivePortalApp.BlingerType.SESSALLOW, 1);
             releaseRequest( session );
             return (requestHeader);
         }
@@ -76,9 +76,9 @@ public class CaptivePortalHttpHandler extends HttpEventHandler
         // if we found a pass rule then log and let the traffic pass
         if (rule.getCapture() == false) {
             CaptureRuleEvent logevt = new CaptureRuleEvent(session.sessionEvent(), rule);
-            node.logEvent(logevt);
+            app.logEvent(logevt);
 
-            node.incrementBlinger(CaptivePortalApp.BlingerType.SESSALLOW, 1);
+            app.incrementBlinger(CaptivePortalApp.BlingerType.SESSALLOW, 1);
             releaseRequest( session );
             return (requestHeader);
         }
@@ -110,12 +110,12 @@ public class CaptivePortalHttpHandler extends HttpEventHandler
         // not a prefetch so generate the captive portal redirect
         else {
             CaptivePortalBlockDetails details = new CaptivePortalBlockDetails(host, uri, method);
-            response = node.generateResponse(details, session);
+            response = app.generateResponse(details, session);
         }
 
         CaptureRuleEvent logevt = new CaptureRuleEvent(session.sessionEvent(), rule);
-        node.logEvent(logevt);
-        node.incrementBlinger(CaptivePortalApp.BlingerType.SESSBLOCK, 1);
+        app.logEvent(logevt);
+        app.incrementBlinger(CaptivePortalApp.BlingerType.SESSBLOCK, 1);
         blockRequest( session, response );
         return requestHeader;
     }

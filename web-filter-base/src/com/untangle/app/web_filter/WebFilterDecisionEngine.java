@@ -57,17 +57,17 @@ public class WebFilterDecisionEngine extends DecisionEngine
     private static String serialNum;
 
     private final Logger logger = Logger.getLogger(getClass());
-    private WebFilterBase ourNode = null;
+    private WebFilterBase ourApp = null;
 
     private static String diaKey = null;
     private int failures = 0;
     private long lastDiaUpdate = 0;
     private long lastDiaTry = 0;
 
-    public WebFilterDecisionEngine(WebFilterBase node)
+    public WebFilterDecisionEngine(WebFilterBase app)
     {
-        super(node);
-        ourNode = node;
+        super(app);
+        ourApp = app;
         
         synchronized (WebFilterDecisionEngine.class) {
             if (null == serialNum) {
@@ -98,9 +98,9 @@ public class WebFilterDecisionEngine extends DecisionEngine
             if( result == null ){
                 String term  = SearchEngine.getQueryTerm( clientIp, requestLine, header );
                 if( term != null ){
-                    WebFilterQueryEvent hbe = new WebFilterQueryEvent(requestLine.getRequestLine(), header.getValue("host"), term, getNode().getName());
+                    WebFilterQueryEvent hbe = new WebFilterQueryEvent(requestLine.getRequestLine(), header.getValue("host"), term, getApp().getName());
                     logger.warn("WebFilterDecisionEngine: query terms found: " + term );
-                    getNode().logEvent(hbe);
+                    getApp().logEvent(hbe);
                 }
             }
             return result;
@@ -578,7 +578,7 @@ public class WebFilterDecisionEngine extends DecisionEngine
 
     private boolean isLicenseValid()
     {
-        if (ourNode.getAppName().equals("web-monitor")) return true;
+        if (ourApp.getAppName().equals("web-monitor")) return true;
 
         if (UvmContextFactory.context().licenseManager().isLicenseValid(License.WEB_FILTER))
             return true;

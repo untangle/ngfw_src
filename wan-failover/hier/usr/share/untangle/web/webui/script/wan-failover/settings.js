@@ -48,7 +48,7 @@ Ext.define('Webui.wan-failover.settings', {
             title: i18n._("WAN Status"),
             qtip: i18n._("This shows the current status of each WAN Interface."),
             recordJavaClass: "com.untangle.app.wan_failover.WanStatus",
-            dataFn: this.getRpcNode().getWanStatus,
+            dataFn: this.getRpcApp().getWanStatus,
             fields: [{
                 name: "interfaceId"
             },{
@@ -447,7 +447,7 @@ Ext.define('Webui.wan-failover.settings', {
         var interfaceId = this.gridTests.rowEditor.down('combo[name="interfaceId"]').getValue();
         var pingHostnameCombo = this.gridTests.rowEditor.down('combo[dataIndex="pingHostname"]');
         Ext.MessageBox.wait(i18n._("Querying Pingable Hosts..."), i18n._("Please wait"));
-        this.getRpcNode().getPingableHosts( Ext.bind(function( result, exception ) {
+        this.getRpcApp().getPingableHosts( Ext.bind(function( result, exception ) {
             if ( exception ) {
                 Ext.MessageBox.show({
                     title: i18n._( "Unable to find a pingable host."),
@@ -476,7 +476,7 @@ Ext.define('Webui.wan-failover.settings', {
             return;
         }
         Ext.MessageBox.wait(i18n._("Running Test..."), i18n._("Please wait"));
-        this.getRpcNode().runTest( Ext.bind(function( result, exception ) {
+        this.getRpcApp().runTest( Ext.bind(function( result, exception ) {
             if ( exception ) {
                 Ext.MessageBox.show({
                     title: i18n._( "Unable to complete test."),

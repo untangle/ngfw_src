@@ -9,7 +9,7 @@ import org.json.JSONObject;
 import org.json.JSONString;
 
 /**
- * Settings for the Shield Node.
+ * Settings for the Shield App.
  */
 @SuppressWarnings("serial")
 public class ShieldSettings implements java.io.Serializable

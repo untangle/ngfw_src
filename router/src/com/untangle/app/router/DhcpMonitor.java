@@ -63,11 +63,11 @@ class DhcpMonitor implements Runnable
     private final Map<InetAddress,DhcpLease> currentLeaseMap = new ConcurrentHashMap<InetAddress,DhcpLease>();
 
     private final Logger logger = Logger.getLogger( this.getClass());
-    private final RouterImpl node;
+    private final RouterImpl app;
 
-    public DhcpMonitor( RouterImpl node )
+    public DhcpMonitor( RouterImpl app )
     {
-        this.node = node;
+        this.app = app;
     }
 
     public void run()
@@ -79,7 +79,7 @@ class DhcpMonitor implements Runnable
                 Thread.sleep( SLEEP_TIME );
             } catch ( InterruptedException e ) {}
 
-            /* Check if the node is still running */
+            /* Check if the app is still running */
             if ( !isAlive ) {
                 break;
             }

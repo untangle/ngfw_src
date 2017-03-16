@@ -53,28 +53,28 @@ public class BandwidthControlRuleAction implements JSONString, Serializable
     /**
      * This reference is held to that advanced actions can be applied
      */
-    private BandwidthControlApp node;
+    private BandwidthControlApp app;
     
     public BandwidthControlRuleAction()
     {
     }
 
-    public BandwidthControlRuleAction(ActionType action, BandwidthControlApp node, Integer priority)
+    public BandwidthControlRuleAction(ActionType action, BandwidthControlApp app, Integer priority)
     {
-        this(action,node,priority,0);
+        this(action,app,priority,0);
     }
 
-    public BandwidthControlRuleAction(ActionType action, BandwidthControlApp node, Integer priority, Integer penaltyTimeSec)
+    public BandwidthControlRuleAction(ActionType action, BandwidthControlApp app, Integer priority, Integer penaltyTimeSec)
     {
-        this.setNode(node);
+        this.setApp(app);
         this.setActionType(action);
         this.setPriority(priority);
         this.setPenaltyTime(penaltyTimeSec);
     }
 
-    public BandwidthControlRuleAction(ActionType action, BandwidthControlApp node, Integer priority, Integer quotaTimeSec, Long quotaBytes)
+    public BandwidthControlRuleAction(ActionType action, BandwidthControlApp app, Integer priority, Integer quotaTimeSec, Long quotaBytes)
     {
-        this.setNode(node);
+        this.setApp(app);
         this.setActionType(action);
         this.setQuotaTime(quotaTimeSec);
         this.setQuotaBytes(quotaBytes);
@@ -207,12 +207,12 @@ public class BandwidthControlRuleAction implements JSONString, Serializable
     }
     
     /**
-     * Sets the node that owns this rule and rule action
+     * Sets the app that owns this rule and rule action
      * This reference is necessary to effect some actions (like adding to penalty box)
      */
-    public void setNode( BandwidthControlApp node )
+    public void setApp( BandwidthControlApp app )
     {
-        this.node = node;
+        this.app = app;
     }
 
     public void setRule( BandwidthControlRule rule )
@@ -260,15 +260,15 @@ public class BandwidthControlRuleAction implements JSONString, Serializable
                 sess.setServerQosMark(pri);
                 ((BandwidthControlSessionState)sess.attachment()).lastPriority = pri;
                 
-                this.node.incrementCount( BandwidthControlApp.STAT_PRIORITIZE, 1 );
-                this.node.logEvent( new PrioritizeEvent( sess.sessionEvent(), pri, this.rule.getRuleId() ) );
+                this.app.incrementCount( BandwidthControlApp.STAT_PRIORITIZE, 1 );
+                this.app.logEvent( new PrioritizeEvent( sess.sessionEvent(), pri, this.rule.getRuleId() ) );
             }
             
             break;
 
         case TAG_HOST:
             address = sess.sessionEvent().getLocalAddr();
-            reason = "Bandwidth Control" + " ( " + I18nUtil.marktr("policy") + ": " + this.node.getAppSettings().getPolicyId() + " " + I18nUtil.marktr("rule") + ": " + this.rule.getRuleId() + ")";
+            reason = "Bandwidth Control" + " ( " + I18nUtil.marktr("policy") + ": " + this.app.getAppSettings().getPolicyId() + " " + I18nUtil.marktr("rule") + ": " + this.rule.getRuleId() + ")";
             logger.debug( "Applying Action    : " + "Tagging " + address + " with " + this.tagName + " for " + this.tagTimeSec + " seconds");
             HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry( address, true );
 
@@ -278,7 +278,7 @@ public class BandwidthControlRuleAction implements JSONString, Serializable
                 boolean wasAlreadyTagged = entry.hasTag( this.tagName );
                 entry.addTag(new Tag(this.tagName,this.tagTimeSec*1000L));
 
-                this.node.incrementCount( BandwidthControlApp.STAT_TAGGED, 1 );
+                this.app.incrementCount( BandwidthControlApp.STAT_TAGGED, 1 );
                 if (!wasAlreadyTagged)
                     UvmContextFactory.context().hookManager().callCallbacks( HookManager.HOST_TABLE_TAGGED, address );
             }
@@ -306,7 +306,7 @@ public class BandwidthControlRuleAction implements JSONString, Serializable
             logger.debug( "Applying Action    : " + "Give Host Quota: " + address);
 
             expireTime = calculateQuotaExpireTime( this.quotaTimeSec );
-            reason = "Bandwidth Control" + " ( " + I18nUtil.marktr("policy") + ": " + this.node.getAppSettings().getPolicyId() + " " + I18nUtil.marktr("rule") + ": " + this.rule.getRuleId() + ")";
+            reason = "Bandwidth Control" + " ( " + I18nUtil.marktr("policy") + ": " + this.app.getAppSettings().getPolicyId() + " " + I18nUtil.marktr("rule") + ": " + this.rule.getRuleId() + ")";
             logger.debug("Giving " + address.getHostAddress() + " a Quota of " + this.quotaBytes + " bytes (expires in " + expireTime + " seconds)");
             UvmContextFactory.context().hostTable().giveHostQuota( address, this.quotaBytes, (int)expireTime, reason );
 
@@ -319,7 +319,7 @@ public class BandwidthControlRuleAction implements JSONString, Serializable
             }
 
             expireTime = calculateQuotaExpireTime( this.quotaTimeSec );
-            reason = "Bandwidth Control" + " ( " + I18nUtil.marktr("policy") + ": " + this.node.getAppSettings().getPolicyId() + " " + I18nUtil.marktr("rule") + ": " + this.rule.getRuleId() + ")";
+            reason = "Bandwidth Control" + " ( " + I18nUtil.marktr("policy") + ": " + this.app.getAppSettings().getPolicyId() + " " + I18nUtil.marktr("rule") + ": " + this.rule.getRuleId() + ")";
             logger.debug("Giving " + sess.user() + " a Quota of " + this.quotaBytes + " bytes (expires in " + expireTime + " seconds)");
             UvmContextFactory.context().userTable().giveUserQuota( sess.user(), this.quotaBytes, (int)expireTime, reason );
 

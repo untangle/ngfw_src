@@ -64,7 +64,7 @@ class VirusHttpHandler extends HttpEventHandler
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    private final VirusBlockerBaseApp node;
+    private final VirusBlockerBaseApp app;
 
     private VirusUrlCache<VirusUrlCacheKey, VirusUrlCacheEntry> urlCache = new VirusUrlCache<VirusUrlCacheKey, VirusUrlCacheEntry>();
 
@@ -78,9 +78,9 @@ class VirusHttpHandler extends HttpEventHandler
         private int totalSize;
     }
 
-    protected VirusHttpHandler(VirusBlockerBaseApp node)
+    protected VirusHttpHandler(VirusBlockerBaseApp app)
     {
-        this.node = node;
+        this.app = app;
     }
 
     @Override
@@ -120,16 +120,16 @@ class VirusHttpHandler extends HttpEventHandler
             String virusName = lookupCache(state.host, state.uri);
             if (virusName != null) {
                 // increment both scan and block count
-                node.incrementScanCount();
-                node.incrementBlockCount();
+                app.incrementScanCount();
+                app.incrementBlockCount();
 
-                VirusBlockDetails bd = new VirusBlockDetails(state.host, state.uri, null, node.getName());
-                String nonce = node.generateNonce(bd);
-                Token[] response = node.generateResponse(nonce, session, state.uri, requestHeader);
+                VirusBlockDetails bd = new VirusBlockDetails(state.host, state.uri, null, app.getName());
+                String nonce = app.generateNonce(bd);
+                Token[] response = app.generateResponse(nonce, session, state.uri, requestHeader);
                 blockRequest(session, response);
 
                 RequestLine requestLine = getRequestLine(session).getRequestLine();
-                node.logEvent(new VirusHttpEvent(requestLine, false, virusName, node.getName()));
+                app.logEvent(new VirusHttpEvent(requestLine, false, virusName, app.getName()));
 
                 return requestHeader;
             }
@@ -234,9 +234,9 @@ class VirusHttpHandler extends HttpEventHandler
         VirusScannerResult result;
         try {
             logger.debug("Scanning the HTTP file: " + state.fileManager.getFileDisplayName());
-            node.incrementScanCount();
+            app.incrementScanCount();
             state.fileHash = state.fileManager.getFileHash();
-            result = node.getScanner().scanFile(state.fileManager.getFileObject(), session);
+            result = app.getScanner().scanFile(state.fileManager.getFileObject(), session);
         } catch (Exception e) {
             // Should never happen
             logger.error("Virus scan failed: ", e);
@@ -250,10 +250,10 @@ class VirusHttpHandler extends HttpEventHandler
         }
 
         RequestLine requestLine = getResponseRequest(session).getRequestLine();
-        node.logEvent(new VirusHttpEvent(requestLine, result.isClean(), result.getVirusName(), node.getName()));
+        app.logEvent(new VirusHttpEvent(requestLine, result.isClean(), result.getVirusName(), app.getName()));
 
         if (result.isClean()) {
-            node.incrementPassCount();
+            app.incrementPassCount();
 
             if (getResponseMode(session) == Mode.QUEUEING) {
                 releaseResponse(session);
@@ -263,7 +263,7 @@ class VirusHttpHandler extends HttpEventHandler
             }
 
         } else {
-            node.incrementBlockCount();
+            app.incrementBlockCount();
 
             addCache(state.host, state.uri, result.getVirusName());
 
@@ -272,10 +272,10 @@ class VirusHttpHandler extends HttpEventHandler
                 String uri = null != rl ? rl.getRequestUri().toString() : "";
                 String host = getResponseHost(session);
                 logger.info("Virus found: " + host + uri + " = " + result.getVirusName());
-                VirusBlockDetails bd = new VirusBlockDetails(host, uri, null, node.getName());
+                VirusBlockDetails bd = new VirusBlockDetails(host, uri, null, app.getName());
 
-                String nonce = node.generateNonce(bd);
-                Token[] response = node.generateResponse(nonce, session, uri);
+                String nonce = app.generateNonce(bd);
+                Token[] response = app.generateResponse(nonce, session, uri);
 
                 blockResponse(session, response);
             } else {
@@ -291,7 +291,7 @@ class VirusHttpHandler extends HttpEventHandler
     {
         if (filename == null) return false;
 
-        for (Iterator<GenericRule> i = node.getSettings().getHttpFileExtensions().iterator(); i.hasNext();) {
+        for (Iterator<GenericRule> i = app.getSettings().getHttpFileExtensions().iterator(); i.hasNext();) {
             GenericRule sr = i.next();
             if (sr.getEnabled() && filename.toLowerCase().endsWith(sr.getString().toLowerCase())) {
                 return true;
@@ -311,7 +311,7 @@ class VirusHttpHandler extends HttpEventHandler
             return false;
         }
 
-        for (Iterator<GenericRule> i = node.getSettings().getHttpMimeTypes().iterator(); i.hasNext();) {
+        for (Iterator<GenericRule> i = app.getSettings().getHttpMimeTypes().iterator(); i.hasNext();) {
             GenericRule rule = i.next();
             Object regexO = rule.attachment();
             Pattern regex = null;
@@ -351,10 +351,10 @@ class VirusHttpHandler extends HttpEventHandler
         VirusHttpState state = (VirusHttpState) session.attachment();
 
         // start with the memory only flag in the settings
-        state.memoryMode = node.getSettings().getForceMemoryMode();
+        state.memoryMode = app.getSettings().getForceMemoryMode();
 
         // if the file scanner is not installed we MUST use memory mode
-        if (node.isFileScannerAvailable() == false) {
+        if (app.isFileScannerAvailable() == false) {
             state.memoryMode = true;
         }
 
@@ -447,7 +447,7 @@ class VirusHttpHandler extends HttpEventHandler
             /**
              * when buffering to a disk file use configured percentage
              */
-            int tricklePercent = node.getTricklePercent();
+            int tricklePercent = app.getTricklePercent();
             trickleLen = (state.outstanding * tricklePercent) / 100;
         }
 
@@ -478,7 +478,7 @@ class VirusHttpHandler extends HttpEventHandler
         host = host.toLowerCase();
         Pattern p;
 
-        for (Iterator<GenericRule> i = node.getSettings().getPassSites().iterator(); i.hasNext();) {
+        for (Iterator<GenericRule> i = app.getSettings().getPassSites().iterator(); i.hasNext();) {
             GenericRule sr = i.next();
             if (sr.getEnabled()) {
                 p = (Pattern) sr.attachment();

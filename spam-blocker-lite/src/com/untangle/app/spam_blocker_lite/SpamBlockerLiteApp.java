@@ -24,13 +24,13 @@ public class SpamBlockerLiteApp extends SpamBlockerBaseApp
     public void setSettings(SpamSettings newSettings)
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getAppSettings().getId().toString();
-        String settingsFile = System.getProperty("uvm.settings.dir") + "/spam-blocker-lite/settings_" + nodeID + ".js";
+        String appID = this.getAppSettings().getId().toString();
+        String settingsFile = System.getProperty("uvm.settings.dir") + "/spam-blocker-lite/settings_" + appID + ".js";
 
         try {
             settingsManager.save( settingsFile, newSettings);
         } catch (Exception exn) {
-            logger.error("Could not save node settings", exn);
+            logger.error("Could not save app settings", exn);
             return;
         }
 
@@ -41,8 +41,8 @@ public class SpamBlockerLiteApp extends SpamBlockerBaseApp
     protected void preInit()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getAppSettings().getId().toString();
-        String settingsFile = System.getProperty("uvm.settings.dir") + "/spam-blocker-lite/settings_" + nodeID + ".js";
+        String appID = this.getAppSettings().getId().toString();
+        String settingsFile = System.getProperty("uvm.settings.dir") + "/spam-blocker-lite/settings_" + appID + ".js";
         SpamSettings readSettings = null;
         
         logger.info("Loading settings from " + settingsFile);
@@ -50,7 +50,7 @@ public class SpamBlockerLiteApp extends SpamBlockerBaseApp
         try {
             readSettings =  settingsManager.load( SpamSettings.class, settingsFile);
         } catch (Exception exn) {
-            logger.error("Could not read node settings", exn);
+            logger.error("Could not read app settings", exn);
         }
 
         try {
@@ -66,7 +66,7 @@ public class SpamBlockerLiteApp extends SpamBlockerBaseApp
                 initSpamDnsblList(this.spamSettings);
             }
         } catch (Exception exn) {
-            logger.error("Could not apply node settings", exn);
+            logger.error("Could not apply app settings", exn);
         }
 
         // 12.1 special - try to download spamassassin sigs if they do not exist

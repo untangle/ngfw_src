@@ -8,19 +8,19 @@ public class WebCacheStreamer implements TCPStreamer
 {
     private final Logger logger = Logger.getLogger(getClass());
     private final WebCacheSessionInfo sessInfo;
-    private final WebCacheApp node;
+    private final WebCacheApp app;
     private int total = 0;
 
-    public WebCacheStreamer(WebCacheApp node,WebCacheSessionInfo sessInfo)
+    public WebCacheStreamer(WebCacheApp app,WebCacheSessionInfo sessInfo)
     {
         logger.debug("WEBCACHE WebCacheStreamer()");
         this.sessInfo = sessInfo;
-        this.node = node;
+        this.app = app;
     }
 
     public ByteBuffer nextChunk()
     {
-        ByteBuffer rxbuff = ByteBuffer.allocate(node.STREAM_BUFFSIZE);
+        ByteBuffer rxbuff = ByteBuffer.allocate(app.STREAM_BUFFSIZE);
         int retval = 0;
 
             try
@@ -41,11 +41,11 @@ public class WebCacheStreamer implements TCPStreamer
         // mode but we anticipate and handle it anyhow
         if (retval == 0) return(null);
 
-        if (node.SOCKET_DEBUG == true) logger.debug("WEBCACHE nextChunk received " + retval + " bytes");
+        if (app.SOCKET_DEBUG == true) logger.debug("WEBCACHE nextChunk received " + retval + " bytes");
 
         // increment our counters
         total = (total + retval);
-        node.statistics.AddHitBytes(retval);
+        app.statistics.AddHitBytes(retval);
 
         // flip the buffer and return to client
         rxbuff.flip();

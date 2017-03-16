@@ -12,14 +12,14 @@ import com.untangle.uvm.vnet.UDPNewSessionRequest;
 
 class EventHandler extends AbstractEventHandler
 {
-    private final WanBalancerApp node;
+    private final WanBalancerApp app;
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    EventHandler(WanBalancerApp node)
+    EventHandler(WanBalancerApp app)
     {
-        super(node);
-        this.node = node;
+        super(app);
+        this.app = app;
     }
 
     public void handleTCPNewSessionRequest( TCPNewSessionRequest sessionRequest )
@@ -37,7 +37,7 @@ class EventHandler extends AbstractEventHandler
         int serverIntf = request.getServerIntf();
 
         /* If the server interface is not on an uplink this will do nothing */
-        this.node.incrementDstInterfaceMetric( serverIntf );
+        this.app.incrementDstInterfaceMetric( serverIntf );
 
         /* We don't care about this session anymore */
         request.release();

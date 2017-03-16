@@ -7,7 +7,7 @@ import com.untangle.uvm.util.LoadAvg;
 public class WebCacheTimer extends TimerTask
 {
     private final Logger logger = Logger.getLogger(getClass());
-    private final WebCacheApp node;
+    private final WebCacheApp app;
 
     private long lastHitCount = 0;
     private long lastMissCount = 0;
@@ -16,9 +16,9 @@ public class WebCacheTimer extends TimerTask
     private long lastHitBytes = 0;
     private long lastMissBytes = 0;
 
-    public WebCacheTimer(WebCacheApp node)
+    public WebCacheTimer(WebCacheApp app)
     {
-        this.node = node;
+        this.app = app;
     }
 
     public void run()
@@ -30,12 +30,12 @@ public class WebCacheTimer extends TimerTask
     private void CaptureStatistics()
     {
         // get the current values from the statistics object
-        long currHitCount = node.statistics.getHitCount();
-        long currMissCount = node.statistics.getMissCount();
-        long currBypassCount = node.statistics.getBypassCount();
-        long currSystemCount = node.statistics.getSystemCount();
-        long currHitBytes = node.statistics.getHitBytes();
-        long currMissBytes = node.statistics.getMissBytes();
+        long currHitCount = app.statistics.getHitCount();
+        long currMissCount = app.statistics.getMissCount();
+        long currBypassCount = app.statistics.getBypassCount();
+        long currSystemCount = app.statistics.getSystemCount();
+        long currHitBytes = app.statistics.getHitBytes();
+        long currMissBytes = app.statistics.getMissBytes();
 
         // calculate the change for each value
         long diffHitCount = (currHitCount - lastHitCount);
@@ -49,8 +49,8 @@ public class WebCacheTimer extends TimerTask
         if ((diffHitCount | diffMissCount | diffBypassCount | diffSystemCount | diffHitBytes | diffMissBytes) == 0) return;
 
         // counters have increased so write the log event
-        WebCacheEvent event = new WebCacheEvent(node.getAppSettings().getPolicyId(),diffHitCount,diffMissCount,diffBypassCount,diffSystemCount,diffHitBytes,diffMissBytes);
-        node.logEvent(event);
+        WebCacheEvent event = new WebCacheEvent(app.getAppSettings().getPolicyId(),diffHitCount,diffMissCount,diffBypassCount,diffSystemCount,diffHitBytes,diffMissBytes);
+        app.logEvent(event);
         logger.debug("WebCacheTimer.CaptureStatistics() =" + event.toString());
 
         // update our last value with the current values
@@ -66,24 +66,24 @@ public class WebCacheTimer extends TimerTask
     {
         LoadAvg la = LoadAvg.get();
         float nowval = la.getOneMin();
-        float maxval = node.getSettings().getLoadLimit().floatValue();
+        float maxval = app.getSettings().getLoadLimit().floatValue();
 
             // see if we should activate bypass on high load
-            if ((nowval > maxval) && (node.highLoadBypass == false))
+            if ((nowval > maxval) && (app.highLoadBypass == false))
             {
             logger.info("High load bypass flag activated on load(" + nowval + ") limit(" + maxval + ")");
-            node.highLoadBypass = true;
+            app.highLoadBypass = true;
             return;
             }
 
             // see if we should clear bypass on reduced load
-            if ((nowval < maxval) && (node.highLoadBypass == true))
+            if ((nowval < maxval) && (app.highLoadBypass == true))
             {
             logger.info("High load bypass flag cleared on load(" + nowval + ") limit(" + maxval + ")");
-            node.highLoadBypass = false;
+            app.highLoadBypass = false;
             return;
             }
 
-        logger.debug("WebCacheTimer.CheckSystemLoad() NOW(" + nowval + ") LIMIT(" + maxval + ") BYPASS(" + node.highLoadBypass + ")");
+        logger.debug("WebCacheTimer.CheckSystemLoad() NOW(" + nowval + ") LIMIT(" + maxval + ") BYPASS(" + app.highLoadBypass + ")");
     }
 }

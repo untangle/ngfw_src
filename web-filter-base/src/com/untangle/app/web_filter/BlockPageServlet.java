@@ -33,17 +33,17 @@ public class BlockPageServlet extends HttpServlet
 
         Map<String,String> i18n_map = UvmContextFactory.context().languageManager().getTranslations( "untangle" );
 
-        WebFilter node = null;
-        if ( node == null )
-            try {node = (WebFilter) nm.app( Long.parseLong(request.getParameter( "tid" )) );} catch (Exception e) {}
-        if ( node == null )
-            try {node = (WebFilter) nm.app( Long.parseLong(request.getParameter( "appid" )) );} catch (Exception e) {}
+        WebFilter app = null;
+        if ( app == null )
+            try {app = (WebFilter) nm.app( Long.parseLong(request.getParameter( "tid" )) );} catch (Exception e) {}
+        if ( app == null )
+            try {app = (WebFilter) nm.app( Long.parseLong(request.getParameter( "appid" )) );} catch (Exception e) {}
             
-        if ( node == null ) { 
+        if ( app == null ) { 
             response.sendError( HttpServletResponse.SC_NOT_ACCEPTABLE, I18nUtil.tr( "App ID not found.", i18n_map ));
             return;
         }
-        if ( !(node instanceof WebFilter) ) {
+        if ( !(app instanceof WebFilter) ) {
             response.sendError( HttpServletResponse.SC_NOT_ACCEPTABLE, I18nUtil.tr( "Invalid App ID.", i18n_map ));
             return;
         }
@@ -51,13 +51,13 @@ public class BlockPageServlet extends HttpServlet
         WebFilterBlockDetails blockDetails = null;
         String nonce = request.getParameter("nonce");
 
-        blockDetails = node.getDetails(nonce);
+        blockDetails = app.getDetails(nonce);
         if (blockDetails == null) {
             response.sendError( HttpServletResponse.SC_NOT_ACCEPTABLE, I18nUtil.tr( "Invalid nonce.", i18n_map ));
             return;
         }
 
-        String unblockMode = node.getSettings().getUnblockMode();
+        String unblockMode = app.getSettings().getUnblockMode();
 
         request.setAttribute( "reason", blockDetails.getReason());
         BlockPageUtil.BlockPageParameters params = this.buildBlockPageParameters(blockDetails, unblockMode);
@@ -84,18 +84,18 @@ public class BlockPageServlet extends HttpServlet
         /* Retrieve the page title (in the window bar) of the page */
         public String getPageTitle( BrandingManager bm, Map<String,String> i18n_map )
         {
-            return bm.getCompanyName() + " | " + this.blockDetails.getNodeTitle() + " " + I18nUtil.tr("Warning", i18n_map);
+            return bm.getCompanyName() + " | " + this.blockDetails.getAppTitle() + " " + I18nUtil.tr("Warning", i18n_map);
         }
 
         /* Retrieve the title (top of the pae) of the page */
         public String getTitle( BrandingManager bm, Map<String,String> i18n_map )
         {
-            return this.blockDetails.getNodeTitle();
+            return this.blockDetails.getAppTitle();
         }
 
         public String getFooter( BrandingManager bm, Map<String,String> i18n_map )
         {
-            return bm.getCompanyName() + " " + this.blockDetails.getNodeTitle();
+            return bm.getCompanyName() + " " + this.blockDetails.getAppTitle();
         }
 
         /* Return the name of the script file to load, or null if there is not a script. */

@@ -18,7 +18,7 @@ import com.untangle.uvm.app.AppSettings;
 import com.untangle.uvm.vnet.AppTCPSession;
 
 /**
- * Generates a replacement page for Nodes that block traffic.
+ * Generates a replacement page for Apps that block traffic.
  */
 public abstract class ReplacementGenerator<T extends BlockDetails>
 {
@@ -38,13 +38,13 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
     private static final Pattern IMAGE_PATTERN = Pattern.compile(".*((jpg)|(jpeg)|(gif)|(png)|(ico))", Pattern.CASE_INSENSITIVE);
 
     private final NonceFactory<T> nonceFactory = new NonceFactory<T>();
-    private final AppSettings nodeId;
+    private final AppSettings appId;
 
     // constructors -----------------------------------------------------------
 
-    public ReplacementGenerator( AppSettings nodeId )
+    public ReplacementGenerator( AppSettings appId )
     {
-        this.nodeId = nodeId;
+        this.appId = appId;
     }
 
     // public methods ---------------------------------------------------------
@@ -109,11 +109,11 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
     // protected methods ------------------------------------------------------
 
     protected abstract String getReplacement( T data );
-    protected abstract String getRedirectUrl( String nonce, String host, AppSettings nodeId );
+    protected abstract String getRedirectUrl( String nonce, String host, AppSettings appId );
 
     protected AppSettings getAppSettings()
     {
-        return this.nodeId;
+        return this.appId;
     }
 
     // private methods --------------------------------------------------------
@@ -159,7 +159,7 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
         response[0] = sl;
 
         HeaderToken h = new HeaderToken();
-        h.addField("Location", getRedirectUrl(nonce, host, nodeId));
+        h.addField("Location", getRedirectUrl(nonce, host, appId));
         h.addField("Cache-Control", "no-store, no-cache, must-revalidate, post-check=0, pre-check=0");
         h.addField("Pragma", "no-cache");
         h.addField("Expires", "Mon, 10 Jan 2000 00:00:00 GMT");

@@ -11,7 +11,7 @@ import org.json.JSONObject;
 import org.json.JSONString;
 
 /**
- * Settings for the Firewall node.
+ * Settings for the Firewall app.
  */
 @SuppressWarnings("serial")
 public class FirewallSettings implements Serializable, JSONString

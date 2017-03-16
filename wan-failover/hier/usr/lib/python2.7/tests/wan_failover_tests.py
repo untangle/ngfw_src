@@ -17,14 +17,14 @@ import remote_control
 import pdb
 import global_functions
 
-node = None
+app = None
 orig_netsettings = None
 indexOfWans = []
 defaultRackId = 1
 
 def allWansOnline():
     onlineCount = 0
-    wanStatus = node.getWanStatus()
+    wanStatus = app.getWanStatus()
     wanCount = len(wanStatus['list'])
     for statusInterface in wanStatus['list']:
         if statusInterface['online']:
@@ -33,7 +33,7 @@ def allWansOnline():
 
 def allWansOffline():
     offlineCount = 0
-    wanStatus = node.getWanStatus()
+    wanStatus = app.getWanStatus()
     wanCount = len(wanStatus['list'])
     for statusInterface in wanStatus['list']:
         if not statusInterface['online']:
@@ -42,7 +42,7 @@ def allWansOffline():
 
 def onlineWanCount():
     onlineCount = 0
-    wanStatus = node.getWanStatus()
+    wanStatus = app.getWanStatus()
     for statusInterface in wanStatus['list']:
         if statusInterface['online']:
             onlineCount = onlineCount + 1
@@ -50,7 +50,7 @@ def onlineWanCount():
 
 def offlineWanCount():
     offlineCount = 0
-    wanStatus = node.getWanStatus()
+    wanStatus = app.getWanStatus()
     for statusInterface in wanStatus['list']:
         if not statusInterface['online']:
             offlineCount = offlineCount + 1
@@ -93,19 +93,19 @@ def buildWanTestRule(matchInterface, testType="ping", pingHost="8.8.8.8", httpUR
                 "timeoutMilliseconds": testTimeout, 
                 "type": testType
     }
-    nodeData = node.getSettings()
-    nodeData["tests"]["list"].append(rule)
-    node.setSettings(nodeData)
+    appData = app.getSettings()
+    appData["tests"]["list"].append(rule)
+    app.setSettings(appData)
 
 def nukeRules():
-    nodeData = node.getSettings()
-    nodeData["tests"]["list"] = []
-    node.setSettings(nodeData)
+    appData = app.getSettings()
+    appData["tests"]["list"] = []
+    app.setSettings(appData)
 
 class WanFailoverTests(unittest2.TestCase):
     
     @staticmethod
-    def nodeName():
+    def appName():
         return "wan-failover"
 
     @staticmethod
@@ -114,13 +114,13 @@ class WanFailoverTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        global indexOfWans, nodeData, node, orig_netsettings
+        global indexOfWans, appData, app, orig_netsettings
         orig_netsettings = uvmContext.networkManager().getNetworkSettings()
-        if (uvmContext.appManager().isInstantiated(self.nodeName())):
-            raise Exception('node %s already instantiated' % self.nodeName())
-        node = uvmContext.appManager().instantiate(self.nodeName(), defaultRackId)
-        node.start()
-        nodeData = node.getSettings()
+        if (uvmContext.appManager().isInstantiated(self.appName())):
+            raise Exception('app %s already instantiated' % self.appName())
+        app = uvmContext.appManager().instantiate(self.appName(), defaultRackId)
+        app.start()
+        appData = app.getSettings()
         indexOfWans = global_functions.get_wan_tuples()
 
     def setUp(self):
@@ -313,7 +313,7 @@ class WanFailoverTests(unittest2.TestCase):
             raise unittest2.SkipTest('Skipping a time consuming test')
         if (len(indexOfWans) < 2):
             raise unittest2.SkipTest("Need at least two WANS for test_065_downAllButOneWan")
-        pre_count = global_functions.get_app_metric_value(node,"changed")
+        pre_count = global_functions.get_app_metric_value(app,"changed")
 
         validWanIP = None
         # loop through the WANs keeping one up and the rest down.
@@ -344,15 +344,15 @@ class WanFailoverTests(unittest2.TestCase):
                 assert (result == validWanIP)    
 
         # Check to see if the faceplate counters have incremented. 
-        post_count = global_functions.get_app_metric_value(node,"changed")
+        post_count = global_functions.get_app_metric_value(app,"changed")
         assert(pre_count < post_count)
 
     @staticmethod
     def finalTearDown(self):
-        global node
-        if node != None:
-            uvmContext.appManager().destroy( node.getAppSettings()["id"] )
-            node = None
+        global app
+        if app != None:
+            uvmContext.appManager().destroy( app.getAppSettings()["id"] )
+            app = None
 
 
-test_registry.registerNode("wan-failover", WanFailoverTests)
+test_registry.registerApp("wan-failover", WanFailoverTests)

@@ -52,7 +52,7 @@ public abstract class NetcapHook implements Runnable
     private static final SessionTableImpl sessionTable = SessionTableImpl.getInstance();
 
     /**
-     * List of all of the nodes( PipelineConnectorImpls )
+     * List of all of the apps( PipelineConnectorImpls )
      */
     protected List<PipelineConnectorImpl> pipelineConnectors;
     protected Integer policyId = null;
@@ -324,7 +324,7 @@ public abstract class NetcapHook implements Runnable
             /* log the session event */
             UvmContextFactory.context().logEvent( sessionEvent );
 
-            /* Initialize all of the nodes, sending the request events to each in turn */
+            /* Initialize all of the apps, sending the request events to each in turn */
             initializeAppSessions( sessionEvent );
 
             int tupleHashCodeNew =
@@ -347,7 +347,7 @@ public abstract class NetcapHook implements Runnable
             /* Connect to the server */
             serverActionCompleted = connectServerIfNecessary( sessionEvent );
 
-            /* Now generate the server side since the nodes may have
+            /* Now generate the server side since the apps may have
              * modified the sessionEvent (we can't do it until we connect
              * to the server since that is what actually modifies the
              * session global state. */
@@ -596,7 +596,7 @@ public abstract class NetcapHook implements Runnable
 
         if ( sessionList.isEmpty() ) {
             if ( state == IPNewSessionRequestImpl.ENDPOINTED ) {
-                throw new IllegalStateException( "Endpointed session without any nodes" );
+                throw new IllegalStateException( "Endpointed session without any apps" );
             }
 
             clientSource = makeClientSource();
@@ -630,7 +630,7 @@ public abstract class NetcapHook implements Runnable
                     sink   = makeServerSink();
                 }
                 if ( first ) {
-                    // If this is the first node, start things with the actual client source/sink
+                    // If this is the first app, start things with the actual client source/sink
                     prevSource = makeClientSource();
                     prevSink = makeClientSink();
                     first = false;
@@ -724,7 +724,7 @@ public abstract class NetcapHook implements Runnable
     }
 
     /**
-     * Call finalize on each node session that participates in this
+     * Call finalize on each app session that participates in this
      * session, also raze all of the sinks associated with the
      * sessionEvent.  This is just an extra precaution just in case they
      * were not razed by the pipeline.
@@ -751,7 +751,7 @@ public abstract class NetcapHook implements Runnable
     /**
      * Call this to fake vector a reset before starting vectoring</p>
      * @return True if the reset made it all the way through, false if
-     *   a node endpointed.
+     *   a app endpointed.
      */
     private boolean vectorReset()
     {

@@ -28,7 +28,7 @@ def main(argv):
     """
     global _debug
     _debug = False
-    node_id = "0"
+    app_id = "0"
     classtypes = []
     categories = []
     msgs = []
@@ -37,7 +37,7 @@ def main(argv):
     default_interfaces = ""
 
     try:
-        opts, args = getopt.getopt(argv, "hsincaqvx:d", ["help", "node_id=", "classtypes=", "categories=", "msgs=", "iptables_script=", "home_net=", "interfaces=", "debug"] )
+        opts, args = getopt.getopt(argv, "hsincaqvx:d", ["help", "app_id=", "classtypes=", "categories=", "msgs=", "iptables_script=", "home_net=", "interfaces=", "debug"] )
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -47,8 +47,8 @@ def main(argv):
             sys.exit()
         elif opt in ( "-d", "--debug"):
             _debug = True
-        elif opt in ( "-n", "--node_id"):
-            node_id = arg
+        elif opt in ( "-n", "--app_id"):
+            app_id = arg
         elif opt in ( "-c", "--classtypes"):
             classtypes = arg.split(",")
         elif opt in ( "-a", "--categories"):
@@ -65,10 +65,10 @@ def main(argv):
             default_interfaces = arg.split(",")
 
     if _debug == True:
-        print "node_id = " + node_id
+        print "app_id = " + app_id
         print "_debug = ",  _debug
 
-    settings = intrusion_prevention.IntrusionPreventionSettings( node_id )
+    settings = intrusion_prevention.IntrusionPreventionSettings( app_id )
     if settings.exists() == False:
         print "cannot find settings file"
         sys.exit()

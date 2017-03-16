@@ -18,10 +18,10 @@ import test_registry
 import remote_control
 import global_functions
 
-node = None
-nodeData = None
-nodeWanFailover = None
-nodeDataWanFailover = None
+app = None
+appData = None
+appWanFailover = None
+appDataWanFailover = None
 orig_netsettings = None
 ip_address_testdestination = None
 indexOfWans = []
@@ -32,15 +32,15 @@ def setWeightOfWan(interfaceId, weight):
     if interfaceId == None or interfaceId == 0:
         print "Invalid interface: " + str(interfaceId)
         return
-    nodeData = node.getSettings()
+    appData = app.getSettings()
     if (interfaceId == "all"):
         i = 0
-        for intefaceIndex in nodeData["weights"]:
-            nodeData["weights"][i] = weight
+        for intefaceIndex in appData["weights"]:
+            appData["weights"][i] = weight
             i += 1
     else:
-        nodeData["weights"][interfaceId-1] = weight
-    node.setSettings(nodeData)
+        appData["weights"][interfaceId-1] = weight
+    app.setSettings(appData)
 
 def createRouteRule( networkAddr, netmask, gateway):
     return {
@@ -84,7 +84,7 @@ def buildNatRule(ruleType="DST_ADDR", ruleValue="1.1.1.1", newSource="1.1.1.1"):
 def buildSingleWanRouteRule(ruleType="DST_ADDR", ruleValue="1.1.1.1", wanDestination=1):
     print "wanDestination: %s" % wanDestination
     global ruleCounter
-    nodeData = node.getSettings()
+    appData = app.getSettings()
     name = "test route " + str(ruleValue) + " Wan " + str(wanDestination)
     ruleCounter +=1
     ruleCondition = {
@@ -105,13 +105,13 @@ def buildSingleWanRouteRule(ruleType="DST_ADDR", ruleValue="1.1.1.1", wanDestina
         "ruleId": ruleCounter
     }
     rule["conditions"]["list"].append(ruleCondition)
-    nodeData["routeRules"]["list"].append(rule)
-    node.setSettings(nodeData)
+    appData["routeRules"]["list"].append(rule)
+    app.setSettings(appData)
 
 def nukeWanBalancerRouteRules():
-    nodeData = node.getSettings()
-    nodeData["routeRules"]["list"] = []
-    node.setSettings(nodeData)
+    appData = app.getSettings()
+    appData["routeRules"]["list"] = []
+    app.setSettings(appData)
 
 def appendRouteRule(newRule):
     netsettings = uvmContext.networkManager().getNetworkSettings()
@@ -136,29 +136,29 @@ def buildWanTestRule(matchInterface, testType="ping", pingHost="8.8.8.8", httpUR
                 "type": testType
     }
     
-    nodeDataWanFailover = nodeWanFailover.getSettings()
+    appDataWanFailover = appWanFailover.getSettings()
     wanRuleIndex = None
     # check to see if rule for the same wan exist, if so overwrite rule
-    for i in range(len(nodeDataWanFailover['tests']['list'])):
-        if nodeDataWanFailover['tests']['list'][i]["interfaceId"] == matchInterface:
+    for i in range(len(appDataWanFailover['tests']['list'])):
+        if appDataWanFailover['tests']['list'][i]["interfaceId"] == matchInterface:
             wanRuleIndex=i
             break
     if wanRuleIndex == None:
-        nodeDataWanFailover["tests"]["list"].append(rule)
+        appDataWanFailover["tests"]["list"].append(rule)
     else:
-        nodeDataWanFailover["tests"]["list"][wanRuleIndex] = rule
-    nodeWanFailover.setSettings(nodeDataWanFailover)
+        appDataWanFailover["tests"]["list"][wanRuleIndex] = rule
+    appWanFailover.setSettings(appDataWanFailover)
     
 def nukeWanBalancerRules():
     setWeightOfWan("all",50)
-    nodeData = node.getSettings()
-    nodeData["routeRules"]["list"] = []
-    node.setSettings(nodeData)
+    appData = app.getSettings()
+    appData["routeRules"]["list"] = []
+    app.setSettings(appData)
 
 def nukeFailoverRules():
-    nodeDataWanFailover = nodeWanFailover.getSettings()
-    nodeDataWanFailover["tests"]["list"] = []
-    nodeWanFailover.setSettings(nodeDataWanFailover)
+    appDataWanFailover = appWanFailover.getSettings()
+    appDataWanFailover["tests"]["list"] = []
+    appWanFailover.setSettings(appDataWanFailover)
     
 def sameWanNetwork(indexWANs):
     previousExtIP = None
@@ -175,11 +175,11 @@ def sameWanNetwork(indexWANs):
 class WanBalancerTests(unittest2.TestCase):
     
     @staticmethod
-    def nodeName():
+    def appName():
         return "wan-balancer"
 
     @staticmethod
-    def nodeNameWanFailover():
+    def appNameWanFailover():
         return "wan-failover"
 
     @staticmethod
@@ -188,18 +188,18 @@ class WanBalancerTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        global indexOfWans, node, nodeData, nodeWanFailover, nodeDataWanFailover, orig_netsettings, ip_address_testdestination
-        if (uvmContext.appManager().isInstantiated(self.nodeName())):
-            raise Exception('node %s already instantiated' % self.nodeName())
-        node = uvmContext.appManager().instantiate(self.nodeName(), defaultRackId)
-        node.start()
-        nodeData = node.getSettings()
+        global indexOfWans, app, appData, appWanFailover, appDataWanFailover, orig_netsettings, ip_address_testdestination
+        if (uvmContext.appManager().isInstantiated(self.appName())):
+            raise Exception('app %s already instantiated' % self.appName())
+        app = uvmContext.appManager().instantiate(self.appName(), defaultRackId)
+        app.start()
+        appData = app.getSettings()
 
-        if (uvmContext.appManager().isInstantiated(self.nodeNameWanFailover())):
-            raise Exception('node %s already instantiated' % self.nodeNameWanFailover())
-        nodeWanFailover = uvmContext.appManager().instantiate(self.nodeNameWanFailover(), defaultRackId)
-        nodeWanFailover.start()
-        nodeWanFailoverData = nodeWanFailover.getSettings()
+        if (uvmContext.appManager().isInstantiated(self.appNameWanFailover())):
+            raise Exception('app %s already instantiated' % self.appNameWanFailover())
+        appWanFailover = uvmContext.appManager().instantiate(self.appNameWanFailover(), defaultRackId)
+        appWanFailover.start()
+        appWanFailoverData = appWanFailover.getSettings()
 
         indexOfWans = global_functions.get_wan_tuples()
         orig_netsettings = uvmContext.networkManager().getNetworkSettings()
@@ -383,7 +383,7 @@ class WanBalancerTests(unittest2.TestCase):
             offlineWanIndex = wanIndex
             while online and timeout > 0:
                 timeout -= 1
-                wanStatus = nodeWanFailover.getWanStatus()
+                wanStatus = appWanFailover.getWanStatus()
                 for statusInterface in wanStatus['list']:
                     if statusInterface['interfaceId'] == offlineWanIndex:
                         online =  statusInterface['online']
@@ -433,7 +433,7 @@ class WanBalancerTests(unittest2.TestCase):
             offlineWanIndex = wanIndex
             while online and timeout > 0:
                 timeout -= 1
-                wanStatus = nodeWanFailover.getWanStatus()
+                wanStatus = appWanFailover.getWanStatus()
                 for statusInterface in wanStatus['list']:
                     if statusInterface['interfaceId'] == offlineWanIndex:
                         online =  statusInterface['online']
@@ -481,7 +481,7 @@ class WanBalancerTests(unittest2.TestCase):
             offlineWanIndex = wanIndex
             while online and timeout > 0:
                 timeout -= 1
-                wanStatus = nodeWanFailover.getWanStatus()
+                wanStatus = appWanFailover.getWanStatus()
                 for statusInterface in wanStatus['list']:
                     if statusInterface['interfaceId'] == offlineWanIndex:
                         online =  statusInterface['online']
@@ -503,7 +503,7 @@ class WanBalancerTests(unittest2.TestCase):
         if (len(indexOfWans) < 2):
             raise unittest2.SkipTest("Need at least two WANS for combination of wan-balancer and wan failover tests")
 
-        pre_count = global_functions.get_app_metric_value(nodeWanFailover,"changed")
+        pre_count = global_functions.get_app_metric_value(appWanFailover,"changed")
         
         # raise unittest2.SkipTest('Skipping test_120_natOneToOneWanDown as not possible with current network layout ')
         netsettings = uvmContext.networkManager().getNetworkSettings()
@@ -539,7 +539,7 @@ class WanBalancerTests(unittest2.TestCase):
             offlineWanIndex = wanIndex
             while online and timeout > 0:
                 timeout -= 1
-                wanStatus = nodeWanFailover.getWanStatus()
+                wanStatus = appWanFailover.getWanStatus()
                 for statusInterface in wanStatus['list']:
                     if statusInterface['interfaceId'] == offlineWanIndex:
                         online =  statusInterface['online']
@@ -553,21 +553,21 @@ class WanBalancerTests(unittest2.TestCase):
 
         nukeFailoverRules()
         # Check to see if the faceplate counters have incremented. 
-        post_count = global_functions.get_app_metric_value(nodeWanFailover,"changed")
+        post_count = global_functions.get_app_metric_value(appWanFailover,"changed")
         assert(pre_count < post_count)
                
     @staticmethod
     def finalTearDown(self):
-        global node, nodeWanFailover
+        global app, appWanFailover
         # Restore original settings to return to initial settings
-        if node != None:
-            uvmContext.appManager().destroy( node.getAppSettings()["id"] )
-            node = None
-        if nodeWanFailover != None:
-            uvmContext.appManager().destroy( nodeWanFailover.getAppSettings()["id"] )
-            nodeWanFailover = None
+        if app != None:
+            uvmContext.appManager().destroy( app.getAppSettings()["id"] )
+            app = None
+        if appWanFailover != None:
+            uvmContext.appManager().destroy( appWanFailover.getAppSettings()["id"] )
+            appWanFailover = None
         if orig_netsettings != None:
             uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
 
-test_registry.registerNode("wan-balancer", WanBalancerTests)
+test_registry.registerApp("wan-balancer", WanBalancerTests)

@@ -45,7 +45,7 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
 
     private final Logger logger = Logger.getLogger(VirusSmtpHandler.class);
 
-    private final VirusBlockerBaseApp node;
+    private final VirusBlockerBaseApp app;
 
     private final long timeout;
 
@@ -57,11 +57,11 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
         private boolean memoryMode = false;
     }
 
-    public VirusSmtpHandler(VirusBlockerBaseApp node)
+    public VirusSmtpHandler(VirusBlockerBaseApp app)
     {
         super();
 
-        this.node = node;
+        this.app = app;
 
         MailExport mailExport = MailExportFactory.factory().getExport();
         this.timeout = mailExport.getExportSettings().getSmtpTimeout();
@@ -72,7 +72,7 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
     @Override
     public boolean getScanningEnabled(AppTCPSession session)
     {
-        return node.getSettings().getScanSmtp();
+        return app.getSettings().getScanSmtp();
     }
 
     @Override
@@ -112,7 +112,7 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
     public ScannedMessageResult blockPassOrModify(AppTCPSession session, MimeMessage msg, SmtpTransaction tx, SmtpMessageEvent msgInfo)
     {
         logger.debug("Message[" + msgInfo.getMessageId() + "] blockPassOrModify()");
-        this.node.incrementScanCount();
+        this.app.incrementScanCount();
 
         List<Part> candidateParts = MIMEUtil.getParts(msg);
         if (logger.isDebugEnabled()) {
@@ -126,7 +126,7 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
         VirusScannerResult scanResultForWrap = null;
 
         String actionTaken = "pass";
-        String configuredAction = node.getSettings().getSmtpAction();
+        String configuredAction = app.getSettings().getSmtpAction();
         String virusName = null;
 
         for (Part part : candidateParts) {
@@ -194,25 +194,25 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
             }
         }
 
-        VirusSmtpEvent event = new VirusSmtpEvent(msgInfo, !foundVirus, virusName, actionTaken, this.node.getName());
-        this.node.logEvent(event);
+        VirusSmtpEvent event = new VirusSmtpEvent(msgInfo, !foundVirus, virusName, actionTaken, this.app.getName());
+        this.app.logEvent(event);
 
         if (foundVirus) {
             if ("block".equals(configuredAction)) {
                 logger.debug("Message[" + msgInfo.getMessageId() + "] Returning BLOCK as-per policy");
-                this.node.incrementBlockCount();
+                this.app.incrementBlockCount();
                 return new ScannedMessageResult(BlockOrPassResult.DROP);
             } else if ("remove".equals(configuredAction)) {
                 logger.debug("Message[" + msgInfo.getMessageId() + "] REMOVE (wrap) message");
                 MimeMessage wrappedMsg = this.generator.wrap(msg, tx, scanResultForWrap);
-                this.node.incrementRemoveCount();
+                this.app.incrementRemoveCount();
                 return new ScannedMessageResult(wrappedMsg);
             } else {
                 logger.debug("Message[" + msgInfo.getMessageId() + "] Passing infected message (as-per policy)");
-                this.node.incrementPassedInfectedMessageCount();
+                this.app.incrementPassedInfectedMessageCount();
             }
         }
-        this.node.incrementPassCount();
+        this.app.incrementPassCount();
         return new ScannedMessageResult(BlockOrPassResult.PASS);
     }
 
@@ -220,13 +220,13 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
     public BlockOrPassResult blockOrPass(AppTCPSession session, MimeMessage msg, SmtpTransaction tx, SmtpMessageEvent msgInfo)
     {
         logger.debug("Message[" + msgInfo.getMessageId() + "] blockOrPass()");
-        this.node.incrementScanCount();
+        this.app.incrementScanCount();
 
         List<Part> candidateParts = MIMEUtil.getParts(msg);
         if (logger.isDebugEnabled()) {
             logger.debug("Message[" + msgInfo.getMessageId() + "] has " + candidateParts.size() + " scannable parts");
         }
-        String action = this.node.getSettings().getSmtpAction();
+        String action = this.app.getSettings().getSmtpAction();
 
         // Check for the impossible-to-satisfy action of "REMOVE"
         if ("remove".equals(action)) {
@@ -286,8 +286,8 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
                 virusName = scanResult.getVirusName();
 
                 // Make log report
-                VirusSmtpEvent event = new VirusSmtpEvent(msgInfo, scanResult.isClean(), scanResult.getVirusName(), scanResult.isClean() ? "pass" : action, this.node.getName());
-                this.node.logEvent(event);
+                VirusSmtpEvent event = new VirusSmtpEvent(msgInfo, scanResult.isClean(), scanResult.getVirusName(), scanResult.isClean() ? "pass" : action, this.app.getName());
+                this.app.logEvent(event);
 
                 if ("pass".equals(action)) {
                     logger.debug("Message[" + msgInfo.getMessageId() + "] Passing infected part as-per policy");
@@ -298,17 +298,17 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
             }
         }
 
-        VirusSmtpEvent event = new VirusSmtpEvent(msgInfo, !foundVirus, virusName, (foundVirus ? action : "pass"), this.node.getName());
-        this.node.logEvent(event);
+        VirusSmtpEvent event = new VirusSmtpEvent(msgInfo, !foundVirus, virusName, (foundVirus ? action : "pass"), this.app.getName());
+        this.app.logEvent(event);
 
         if (foundVirus) {
             if ("block".equals(action)) {
                 logger.debug("Message[" + msgInfo.getMessageId() + "] Blocking mail as-per policy");
-                this.node.incrementBlockCount();
+                this.app.incrementBlockCount();
                 return BlockOrPassResult.DROP;
             }
         }
-        this.node.incrementPassCount();
+        this.app.incrementPassCount();
         return BlockOrPassResult.PASS;
     }
 
@@ -320,7 +320,7 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
         if ("STARTTLS".equals(str)) {
             // if the SSL inspector is active we always allow STARTTLS
             if (session.globalAttachment(AppSession.KEY_SSL_INSPECTOR_SERVER_MANAGER) != null) return (true);
-            return node.getSettings().getSmtpAllowTls();
+            return app.getSettings().getSmtpAllowTls();
         } else {
             return super.isAllowedExtension(extension, session);
         }
@@ -333,7 +333,7 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
         if ("STARTTLS".equals(str)) {
             // if the SSL inspector is active we always allow STARTTLS
             if (session.globalAttachment(AppSession.KEY_SSL_INSPECTOR_SERVER_MANAGER) != null) return (true);
-            return node.getSettings().getSmtpAllowTls();
+            return app.getSettings().getSmtpAllowTls();
         } else {
             return super.isAllowedCommand(command, session);
         }
@@ -356,7 +356,7 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
         // Call VirusScanner
         try {
             logger.debug("Scanning the SMTP file: " + state.fileManager.getFileDisplayName());
-            VirusScannerResult result = this.node.getScanner().scanFile(state.fileManager.getFileObject(), session);
+            VirusScannerResult result = this.app.getScanner().scanFile(state.fileManager.getFileObject(), session);
             if (result == null || result == VirusScannerResult.ERROR) {
                 logger.warn("Received an error scan report.  Assume local error" + " and report file clean");
                 return null;
@@ -376,7 +376,7 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
     private VirusSmtpState partToFile(AppTCPSession session, Part part)
     {
         VirusSmtpState state = new VirusSmtpState();
-        state.memoryMode = node.getSettings().getForceMemoryMode();
+        state.memoryMode = app.getSettings().getForceMemoryMode();
 
         try {
             state.fileManager = new VirusFileManager(state.memoryMode, "VirusMimePart-");
@@ -415,7 +415,7 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
 
         Pattern p;
 
-        for (Iterator<GenericRule> i = node.getSettings().getPassSites().iterator(); i.hasNext();) {
+        for (Iterator<GenericRule> i = app.getSettings().getPassSites().iterator(); i.hasNext();) {
             GenericRule sr = i.next();
             if (sr.getEnabled()) {
                 p = (Pattern) sr.attachment();

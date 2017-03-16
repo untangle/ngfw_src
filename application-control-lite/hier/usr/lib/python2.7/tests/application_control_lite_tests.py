@@ -15,14 +15,14 @@ import test_registry
 import global_functions
 
 defaultRackId = 1
-node = None
+app = None
 
 def nukepatterns():
-    settings = node.getSettings()
+    settings = app.getSettings()
     patterns = settings["patterns"]
     patterns["list"] = [];
     settings["patterns"] = patterns
-    node.setSettings(settings)
+    app.setSettings(settings)
 
 def addPatterns(definition, blocked=False, log=True, protocol="protocol", description="description", category="category"):
     newPatterns = { 
@@ -37,25 +37,25 @@ def addPatterns(definition, blocked=False, log=True, protocol="protocol", descri
                 "quality": ""
     }
 
-    settings = node.getSettings()
+    settings = app.getSettings()
     patterns = settings["patterns"]
     patterns["list"].append(newPatterns)
     settings["patterns"] = patterns
-    node.setSettings(settings)
+    app.setSettings(settings)
 
 class ApplicationControlLiteTests(unittest2.TestCase):
 
     @staticmethod
-    def nodeName():
+    def appName():
         return "application-control-lite"
 
     @staticmethod
     def initialSetUp(self):
-        global node
-        if (uvmContext.appManager().isInstantiated(self.nodeName())):
-            raise Exception('node %s already instantiated' % self.nodeName())
-        node = uvmContext.appManager().instantiate(self.nodeName(), defaultRackId)
-        node.start() # must be called since ad blocker doesn't auto-start
+        global app
+        if (uvmContext.appManager().isInstantiated(self.appName())):
+            raise Exception('app %s already instantiated' % self.appName())
+        app = uvmContext.appManager().instantiate(self.appName(), defaultRackId)
+        app.start() # must be called since ad blocker doesn't auto-start
 
     def setUp(self):
         pass
@@ -167,10 +167,10 @@ class ApplicationControlLiteTests(unittest2.TestCase):
 
     @staticmethod
     def finalTearDown(self):
-        global node
-        if node != None:
-            uvmContext.appManager().destroy( node.getAppSettings()["id"] )
-            node = None
+        global app
+        if app != None:
+            uvmContext.appManager().destroy( app.getAppSettings()["id"] )
+            app = None
         
 
-test_registry.registerNode("application-control-lite", ApplicationControlLiteTests)
+test_registry.registerApp("application-control-lite", ApplicationControlLiteTests)

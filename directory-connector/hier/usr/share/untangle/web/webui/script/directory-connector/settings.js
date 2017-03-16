@@ -93,7 +93,7 @@ Ext.define('Webui.directory-connector.settings', {
     getActiveDirectoryManager: function(forceReload) {
         if (forceReload || this.rpc.activeDirectoryManager === undefined) {
             try {
-                this.rpc.activeDirectoryManager = this.getRpcNode().getActiveDirectoryManager();
+                this.rpc.activeDirectoryManager = this.getRpcApp().getActiveDirectoryManager();
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
@@ -103,7 +103,7 @@ Ext.define('Webui.directory-connector.settings', {
     getGoogleManager: function(forceReload) {
         if (forceReload || this.rpc.googleManager === undefined) {
             try {
-                this.rpc.googleManager = this.getRpcNode().getGoogleManager();
+                this.rpc.googleManager = this.getRpcApp().getGoogleManager();
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
@@ -113,7 +113,7 @@ Ext.define('Webui.directory-connector.settings', {
     getFacebookManager: function(forceReload) {
         if (forceReload || this.rpc.facebookManager === undefined) {
             try {
-                this.rpc.facebookManager = this.getRpcNode().getFacebookManager();
+                this.rpc.facebookManager = this.getRpcApp().getFacebookManager();
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
@@ -123,7 +123,7 @@ Ext.define('Webui.directory-connector.settings', {
     getRadiusManager: function(forceReload) {
         if (forceReload || this.rpc.radiusManager === undefined) {
             try {
-                this.rpc.radiusManager = this.getRpcNode().getRadiusManager();
+                this.rpc.radiusManager = this.getRpcApp().getRadiusManager();
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
@@ -525,7 +525,7 @@ Ext.define('Webui.directory-connector.settings', {
                             iconCls: 'test-icon',
                             disabled: (!this.getActiveDirectorySettings().enabled),
                             handler: Ext.bind(function() {
-                                this.getRpcNode().refreshGroupCache(Ext.bind(function(result, exception) {
+                                this.getRpcApp().refreshGroupCache(Ext.bind(function(result, exception) {
                                     if(Ung.Util.handleException(exception)) return;
                                 }, this));
                             }, this)

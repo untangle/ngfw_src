@@ -102,9 +102,9 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
     protected void postInit()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getAppSettings().getId().toString();
+        String appID = this.getAppSettings().getId().toString();
         DirectoryConnectorSettings readSettings = null;
-        String settingsFileName = System.getProperty("uvm.settings.dir") + "/directory-connector/" + "settings_" + nodeID + ".js";
+        String settingsFileName = System.getProperty("uvm.settings.dir") + "/directory-connector/" + "settings_" + appID + ".js";
 
         try {
             readSettings = settingsManager.load(DirectoryConnectorSettings.class, settingsFileName);
@@ -162,9 +162,9 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
          * Save the settings
          */
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getAppSettings().getId().toString();
+        String appID = this.getAppSettings().getId().toString();
         try {
-            settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "directory-connector/" + "settings_" + nodeID + ".js", newSettings );
+            settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "directory-connector/" + "settings_" + appID + ".js", newSettings );
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.", e);
             return;
@@ -436,7 +436,7 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
     private void updateRadiusClient(RadiusSettings radiusSettings)
     {
         /**
-         * The IPsec node uses the radiusclient1 package for L2TP RADIUS support so
+         * The IPsec app uses the radiusclient1 package for L2TP RADIUS support so
          * we update those files and we create strongswan.radius for Xauth support.
          * We also create /etc/ppp/peers/radius-auth-proto which tells xl2tpd/pppd
          * which authentication method (PAP, CHAP, MS-CHAP v1, MS-CHAP v2) to require.

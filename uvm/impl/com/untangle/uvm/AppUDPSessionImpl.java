@@ -286,7 +286,7 @@ public class AppUDPSessionImpl extends AppSessionImpl implements AppUDPSession
         // Wrap a byte buffer around the data.
         // XXX This may or may not be a UDP crumb depending on what gets passed.
         // Right now just always do DataCrumbs, since a UDPPacketCrumb coming in just gets
-        // converted to a DataCrumb on the other side (hence, the next node will fail)
+        // converted to a DataCrumb on the other side (hence, the next app will fail)
 
         if (logger.isDebugEnabled())
             logger.debug("read " + numRead + " size " + crumb.type() + " packet from " + side);
@@ -294,7 +294,7 @@ public class AppUDPSessionImpl extends AppSessionImpl implements AppUDPSession
         // We have received bytes.  Give them to the user.
 
         // We no longer duplicate the buffer so that the event handler can mess up
-        // the position/mark/limit as desired.  This is since the node now sends
+        // the position/mark/limit as desired.  This is since the app now sends
         // a buffer manually -- the position and limit must already be correct when sent, so
         // there's no need for us to duplicate here.
 
@@ -304,7 +304,7 @@ public class AppUDPSessionImpl extends AppSessionImpl implements AppUDPSession
             dispatcher.dispatchUDPServerPacket( this, pbuf, pheader );
 
         // Nothing more to do, any packets to be sent were queued by called to sendClientPacket(), etc,
-        // from node's packet handler.
+        // from app's packet handler.
         return;
     }
 

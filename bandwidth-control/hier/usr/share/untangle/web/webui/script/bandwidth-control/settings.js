@@ -157,9 +157,9 @@ Ext.define('Webui.bandwidth-control.settings', {
                     this.markDirty();
                     this.afterSave = Ext.bind(function() {
                         this.afterSave = null;
-                        var nodeCmp = Ung.Node.getCmp(this.nodeId);
-                        if(nodeCmp) {
-                            nodeCmp.start(Ext.bind(function() {
+                        var appCmp = Ung.App.getCmp(this.appId);
+                        if(appCmp) {
+                            appCmp.start(Ext.bind(function() {
                                 this.reload();
                             }, this));
                         }
@@ -195,8 +195,8 @@ Ext.define('Webui.bandwidth-control.settings', {
                 cls: 'warning'
             };
         }
-        var node = Ung.Node.getCmp(this.nodeId);
-        if (node.isRunning()) {
+        var app = Ung.App.getCmp(this.appId);
+        if (app.isRunning()) {
             var qosEnabled = Ung.Main.getNetworkSettings().qosSettings.qosEnabled;
             if(!qosEnabled) {
                 return {
@@ -375,7 +375,7 @@ Ext.define('Webui.bandwidth-control.settings', {
             hasReorder: true,
             title: i18n._("Rules"),
             qtip: i18n._("Bandwidth Rules are used to control and enforce bandwidth usage."),
-            dataFn: this.getRpcNode().getRules,
+            dataFn: this.getRpcApp().getRules,
             recordJavaClass: "com.untangle.app.bandwidth_control.BandwidthControlRule",
             emptyRow: {
                 "ruleId": 0,
@@ -699,7 +699,7 @@ Ext.define('Webui.bandwidth-control.Monitor', {
         }];
         this.callParent(arguments);
     },
-    getSessions: function(handler, nodeId) {
+    getSessions: function(handler, appId) {
         if (!this.isVisible()) {
             handler({javaClass:"java.util.LinkedList", list:[]});
             return;
@@ -720,7 +720,7 @@ Ext.define('Webui.bandwidth-control.Monitor', {
                 }
             }
             handler({javaClass:"java.util.LinkedList", list:sessions});
-        }, this), this.intf, nodeId);
+        }, this), this.intf, appId);
     },
     setInterface: function(intf) {
         this.intf = intf;
@@ -1233,7 +1233,7 @@ Ext.define('Webui.bandwidth-control.Wizard.Defaults', {
         this.onNext = Ext.bind(function(handler) {
             Ext.MessageBox.wait(i18n._("Configuring Settings..."), i18n._("Please wait"));
             var startingConfiguration = this.panel.down('combo[name="starting_configuration"]').getValue();
-            this.gui.getRpcNode().wizardLoadDefaults(startingConfiguration.replace(/_.*/,""));
+            this.gui.getRpcApp().wizardLoadDefaults(startingConfiguration.replace(/_.*/,""));
             this.gui.refreshSettings();
             Ext.MessageBox.hide();
             handler();
@@ -1383,9 +1383,9 @@ Ext.define('Webui.bandwidth-control.Wizard.Quotas', {
                 var quotaUsers   = this.panel.down('checkbox[name="quotaUserEnabled"]').getValue();
                 
                 if (quotaHosts)
-                    this.gui.getRpcNode().wizardAddHostQuotaRules(quotaTime, quotaBytes, quotaPrio);
+                    this.gui.getRpcApp().wizardAddHostQuotaRules(quotaTime, quotaBytes, quotaPrio);
                 if (quotaUsers)
-                    this.gui.getRpcNode().wizardAddUserQuotaRules(quotaTime, quotaBytes, quotaPrio);
+                    this.gui.getRpcApp().wizardAddUserQuotaRules(quotaTime, quotaBytes, quotaPrio);
                 
                 this.gui.refreshSettings();
             }

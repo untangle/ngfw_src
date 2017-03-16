@@ -13,21 +13,21 @@ import test_registry
 import global_functions
 
 defaultRackId = 1
-node = None
+app = None
 
 class WebCacheTests(unittest2.TestCase):
 
     @staticmethod
-    def nodeName():
+    def appName():
         return "web-cache"
 
     @staticmethod
     def initialSetUp(self):
-        global node
-        if (uvmContext.appManager().isInstantiated(self.nodeName())):
-            raise Exception('node %s already instantiated' % self.nodeName())
-        node = uvmContext.appManager().instantiate(self.nodeName(), defaultRackId)
-        node.start() # must be called since web cache doesn't auto-start
+        global app
+        if (uvmContext.appManager().isInstantiated(self.appName())):
+            raise Exception('app %s already instantiated' % self.appName())
+        app = uvmContext.appManager().instantiate(self.appName(), defaultRackId)
+        app.start() # must be called since web cache doesn't auto-start
 
     def setUp(self):
         pass
@@ -40,9 +40,9 @@ class WebCacheTests(unittest2.TestCase):
     def test_020_testBasicWebCache(self):
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
-        pre_events_hit = global_functions.get_app_metric_value(node,"hit")
+        pre_events_hit = global_functions.get_app_metric_value(app,"hit")
 
-        node.clearSquidCache()
+        app.clearSquidCache()
         for x in range(0, 10):
             result = remote_control.run_command("wget -q -O /dev/null -4 -t 2 --timeout=5 http://test.untangle.com/")
             time.sleep(1)
@@ -56,15 +56,15 @@ class WebCacheTests(unittest2.TestCase):
         assert(events['list'][0]['hits'])
 
         # Check to see if the faceplate counters have incremented. 
-        post_events_hit = global_functions.get_app_metric_value(node,"hit")
+        post_events_hit = global_functions.get_app_metric_value(app,"hit")
 
         assert(pre_events_hit < post_events_hit)
 
     @staticmethod
     def finalTearDown(self):
-        global node
-        if node != None:
-            uvmContext.appManager().destroy( node.getAppSettings()["id"] )
-            node = None
+        global app
+        if app != None:
+            uvmContext.appManager().destroy( app.getAppSettings()["id"] )
+            app = None
         
-test_registry.registerNode("web-cache", WebCacheTests)
+test_registry.registerApp("web-cache", WebCacheTests)

@@ -10,7 +10,7 @@ import com.untangle.uvm.app.App;
 
 /**
  * The <code>PipelineConnector</code> interface represents an active PipelineConnector.
- * Most nodes only have one active <code>PipelineConnector</code> at a time, the
+ * Most apps only have one active <code>PipelineConnector</code> at a time, the
  * rest have exactly 2 (casings).
  *
  * This class's instances represent and contain the subscription

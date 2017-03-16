@@ -30,7 +30,7 @@ import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.PipelineConnector;
 
-public class OpenVpnNodeImpl extends AppBase
+public class OpenVpnAppImpl extends AppBase
 {
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -55,7 +55,7 @@ public class OpenVpnNodeImpl extends AppBase
 
     private boolean isWebAppDeployed = false;
     
-    public OpenVpnNodeImpl( com.untangle.uvm.app.AppSettings appSettings, com.untangle.uvm.app.AppProperties appProperties )
+    public OpenVpnAppImpl( com.untangle.uvm.app.AppSettings appSettings, com.untangle.uvm.app.AppProperties appProperties )
     {
         super( appSettings, appProperties );
 
@@ -80,9 +80,9 @@ public class OpenVpnNodeImpl extends AppBase
     protected void postInit()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getAppSettings().getId().toString();
+        String appID = this.getAppSettings().getId().toString();
         OpenVpnSettings readSettings = null;
-        String settingsFileName = System.getProperty("uvm.settings.dir") + "/openvpn/" + "settings_" + nodeID + ".js";
+        String settingsFileName = System.getProperty("uvm.settings.dir") + "/openvpn/" + "settings_" + appID + ".js";
 
         try {
             readSettings = settingsManager.load( OpenVpnSettings.class, settingsFileName );
@@ -215,9 +215,9 @@ public class OpenVpnNodeImpl extends AppBase
          * Save the settings
          */
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getAppSettings().getId().toString();
+        String appID = this.getAppSettings().getId().toString();
         try {
-            settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "openvpn/" + "settings_"  + nodeID + ".js", newSettings );
+            settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "openvpn/" + "settings_"  + appID + ".js", newSettings );
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.",e);
             return;
@@ -248,12 +248,12 @@ public class OpenVpnNodeImpl extends AppBase
     
     public void incrementPassCount()
     {
-        this.incrementMetric(OpenVpnNodeImpl.STAT_PASS);
+        this.incrementMetric(OpenVpnAppImpl.STAT_PASS);
     }
 
     public void incrementConnectCount()
     {
-        this.incrementMetric(OpenVpnNodeImpl.STAT_CONNECT);
+        this.incrementMetric(OpenVpnAppImpl.STAT_CONNECT);
     }
 
     public List<OpenVpnStatusEvent> getActiveClients()
@@ -662,7 +662,7 @@ public class OpenVpnNodeImpl extends AppBase
             try {
                 networkSettingsEvent( settings );
             } catch( Exception e ) {
-                logger.error( "Unable to reconfigure the NAT node" );
+                logger.error( "Unable to reconfigure the NAT app" );
             }
         }
     }

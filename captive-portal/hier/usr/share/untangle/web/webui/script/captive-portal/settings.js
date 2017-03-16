@@ -80,7 +80,7 @@ Ext.define('Webui.captive-portal.settings', {
             hasRefresh: true,
             title: i18n._("Active Sessions"),
             qtip: i18n._("The Active Sessions list shows authenticated users."),
-            dataFn: this.getRpcNode().getActiveUsers,
+            dataFn: this.getRpcApp().getActiveUsers,
             recordJavaClass: "com.untangle.app.captive_portal.CaptureUserEntry",
             fields: [{
                 name: "userNetAddress",
@@ -146,12 +146,12 @@ Ext.define('Webui.captive-portal.settings', {
                     var macaddr = record.get("userMacAddress");
 
                     if ( (this.settings.useMacAddress == true) && (macaddr != null) && (macaddr.length > 12) ) {
-                        this.getRpcNode().userAdminMacLogout(Ext.bind(function(result, exception) {
+                        this.getRpcApp().userAdminMacLogout(Ext.bind(function(result, exception) {
                             if(Ung.Util.handleException(exception)) return;
                             this.gridCaptiveStatus.reload();
                         },this), macaddr);
                     } else {
-                        this.getRpcNode().userAdminNetLogout(Ext.bind(function(result, exception) {
+                        this.getRpcApp().userAdminNetLogout(Ext.bind(function(result, exception) {
                             if(Ung.Util.handleException(exception)) return;
                             this.gridCaptiveStatus.reload();
                         },this), netaddr);
@@ -984,8 +984,8 @@ Ext.define('Webui.captive-portal.settings', {
                     name: "viewPage",
                     text: i18n._("Preview Captive Portal Page"),
                     handler: Ext.bind(function() {
-                        var nodeCmp = Ung.Node.getCmp(this.nodeId);
-                        if ( !nodeCmp.isRunning() ) {
+                        var appCmp = Ung.App.getCmp(this.appId);
+                        if ( !appCmp.isRunning() ) {
                             Ext.MessageBox.alert(i18n._("Captive Portal is Disabled"),
                                     i18n._("You must turn on the Captive Portal to preview the Captive Page." ));
                             return;
@@ -996,7 +996,7 @@ Ext.define('Webui.captive-portal.settings', {
                                     i18n._("You must save your settings before previewing the page." ));
                             return;
                         }
-                        window.open("/capture/handler.py/index?appid=" + this.nodeId , "_blank");
+                        window.open("/capture/handler.py/index?appid=" + this.appId , "_blank");
                     }, this)
                 }]
             },{
@@ -1165,42 +1165,42 @@ Ext.define('Webui.captive-portal.settings', {
         Ung.Main.openConfig(Ung.Main.configMap["localDirectory"]);
     },
     configureGoogle: function() {
-        var node = Ung.Main.getNode("directory-connector");
-        if (node != null) {
-            var nodeCmp = Ung.Node.getCmp(node.nodeId);
-            if (nodeCmp != null) {
-                Ung.Main.target="node.directory-connector.Google Connector";
-                nodeCmp.loadSettings();
+        var app = Ung.Main.getApp("directory-connector");
+        if (app != null) {
+            var appCmp = Ung.App.getCmp(app.appId);
+            if (appCmp != null) {
+                Ung.Main.target="app.directory-connector.Google Connector";
+                appCmp.loadSettings();
             }
         }
     },
     configureFacebook: function() {
-        var node = Ung.Main.getNode("directory-connector");
-        if (node != null) {
-            var nodeCmp = Ung.Node.getCmp(node.nodeId);
-            if (nodeCmp != null) {
-                Ung.Main.target="node.directory-connector.Facebook Connector";
-                nodeCmp.loadSettings();
+        var app = Ung.Main.getApp("directory-connector");
+        if (app != null) {
+            var appCmp = Ung.App.getCmp(app.appId);
+            if (appCmp != null) {
+                Ung.Main.target="app.directory-connector.Facebook Connector";
+                appCmp.loadSettings();
             }
         }
     },
     configureRadius: function() {
-        var node = Ung.Main.getNode("directory-connector");
-        if (node != null) {
-            var nodeCmp = Ung.Node.getCmp(node.nodeId);
-            if (nodeCmp != null) {
-                Ung.Main.target="node.directory-connector.RADIUS Connector";
-                nodeCmp.loadSettings();
+        var app = Ung.Main.getApp("directory-connector");
+        if (app != null) {
+            var appCmp = Ung.App.getCmp(app.appId);
+            if (appCmp != null) {
+                Ung.Main.target="app.directory-connector.RADIUS Connector";
+                appCmp.loadSettings();
             }
         }
     },
     configureActiveDirectory: function() {
-        var node = Ung.Main.getNode("directory-connector");
-        if (node != null) {
-            var nodeCmp = Ung.Node.getCmp(node.nodeId);
-            if (nodeCmp != null) {
-                Ung.Main.target="node.directory-connector.Active Directory Connector";
-                nodeCmp.loadSettings();
+        var app = Ung.Main.getApp("directory-connector");
+        if (app != null) {
+            var appCmp = Ung.App.getCmp(app.appId);
+            if (appCmp != null) {
+                Ung.Main.target="app.directory-connector.Active Directory Connector";
+                appCmp.loadSettings();
             }
         }
     }

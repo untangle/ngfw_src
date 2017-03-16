@@ -16,7 +16,7 @@ import test_registry
 class SpamBlockerTests(SpamBlockerBaseTests):
 
     @staticmethod
-    def nodeName():
+    def appName():
         return "spam-blocker"
 
     @staticmethod
@@ -34,4 +34,4 @@ class SpamBlockerTests(SpamBlockerBaseTests):
         result = os.system( "ps aux | grep spamcatd | grep -v grep >/dev/null 2>&1" )
         assert ( result == 0 )
 
-test_registry.registerNode("spam-blocker", SpamBlockerTests)
+test_registry.registerApp("spam-blocker", SpamBlockerTests)

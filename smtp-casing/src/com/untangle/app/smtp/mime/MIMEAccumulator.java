@@ -30,7 +30,7 @@ import com.untangle.uvm.vnet.TCPStreamer;
  * transfered, using the {@link #dispose dispose} method could hose callers. Instead, use {@link #closeInput closeInput}
  * which will only close open streams.</li>
  * <li>
- * If multiple nodes are in "buffer-and-trickle" where they are accumulating MIME yet also passing it along, there is
+ * If multiple apps are in "buffer-and-trickle" where they are accumulating MIME yet also passing it along, there is
  * confusion as-to if a given MIMEChunkToken should (a) be written to disk and (b) should be unparsed. To avoid this
  * confusion, all MIMEChunkTokens are members of a given MIMEAccumulator, and have methods to determine if they should be
  * unparsed. Appending a chunk to the file is simplified via the {@link #appendChunkTokenToFile appendChunkTokenToFile} which
@@ -221,7 +221,7 @@ public class MIMEAccumulator
      * this accumulator}. <br>
      * <br>
      * The boolean is used to convey outcome (success/failure). Failures have already been logged. If error, chunk was
-     * not written. If the chunk has already been written (for example, two Nodes in "buffer-and-passthru" mode), then
+     * not written. If the chunk has already been written (for example, two Apps in "buffer-and-passthru" mode), then
      * the second write is silently ignored. <br>
      * <br>
      * If an error does occur, no streams are closed.

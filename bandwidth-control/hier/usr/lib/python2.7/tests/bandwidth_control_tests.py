@@ -19,8 +19,8 @@ import test_registry
 import global_functions
 
 defaultRackId = 1
-node = None
-nodeWF = None
+app = None
+appWF = None
 limitedAcceptanceRatio = .3 # 30% - limited severly is 10% by default, anything under 30% will be accepted as successfull
 origNetworkSettings = None
 origNetworkSettingsWithQoS = None
@@ -165,14 +165,14 @@ def createBypassConditionRule( conditionType, value):
     } 
 
 def appendRule(newRule):
-    rules = node.getRules()
+    rules = app.getRules()
     rules["list"].append(newRule)
-    node.setRules(rules)
+    app.setRules(rules)
 
 def nukeRules():
-    rules = node.getRules()
+    rules = app.getRules()
     rules["list"] = []
-    node.setRules(rules)
+    app.setRules(rules)
 
 def printResults( wget_speed_pre, wget_speed_post, expected_speed, allowed_speed ):
         print "Pre Results   : %s KB/s" % str(wget_speed_pre)
@@ -184,11 +184,11 @@ def printResults( wget_speed_pre, wget_speed_post, expected_speed, allowed_speed
 class BandwidthControlTests(unittest2.TestCase):
 
     @staticmethod
-    def nodeName():
+    def appName():
         return "bandwidth-control"
 
     @staticmethod
-    def nodeNameWF():
+    def appNameWF():
         return "web-filter"
 
     @staticmethod
@@ -201,17 +201,17 @@ class BandwidthControlTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        global node, nodeWF, origNetworkSettings, origNetworkSettingsWithQoS, origNetworkSettingsWithoutQoS, preDownSpeedKbsec, wanLimitKbit, wanLimitMbit
-        if (uvmContext.appManager().isInstantiated(self.nodeName())):
-            raise Exception('node %s already instantiated' % self.nodeName())
-        node = uvmContext.appManager().instantiate(self.nodeName(), defaultRackId)
-        settings = node.getSettings()
+        global app, appWF, origNetworkSettings, origNetworkSettingsWithQoS, origNetworkSettingsWithoutQoS, preDownSpeedKbsec, wanLimitKbit, wanLimitMbit
+        if (uvmContext.appManager().isInstantiated(self.appName())):
+            raise Exception('app %s already instantiated' % self.appName())
+        app = uvmContext.appManager().instantiate(self.appName(), defaultRackId)
+        settings = app.getSettings()
         settings["configured"] = True
-        node.setSettings(settings)        
-        node.start()
-        if (uvmContext.appManager().isInstantiated(self.nodeNameWF())):
-            raise Exception('node %s already instantiated' % self.nodeNameWF())
-        nodeWF = uvmContext.appManager().instantiate(self.nodeNameWF(), defaultRackId)
+        app.setSettings(settings)        
+        app.start()
+        if (uvmContext.appManager().isInstantiated(self.appNameWF())):
+            raise Exception('app %s already instantiated' % self.appNameWF())
+        appWF = uvmContext.appManager().instantiate(self.appNameWF(), defaultRackId)
         if origNetworkSettings == None:
             origNetworkSettings = uvmContext.networkManager().getNetworkSettings()
 
@@ -267,7 +267,7 @@ class BandwidthControlTests(unittest2.TestCase):
         assert (preDownSpeedKbsec >  postDownSpeedKbsec)
 
     def test_013_qosBypassCustomRules(self):
-        global node
+        global app
         nukeRules()
         priority_level = 7
         # Record average speed without bandwidth control configured
@@ -322,7 +322,7 @@ class BandwidthControlTests(unittest2.TestCase):
         assert (post_UDP_speed < pre_UDP_speed*.9)
 
     def test_015_qosNoBypassCustomRules(self):
-        global node
+        global app
         nukeRules()
         priority_level = 7
 
@@ -347,7 +347,7 @@ class BandwidthControlTests(unittest2.TestCase):
         assert (not (wget_speed_pre * limitedAcceptanceRatio >  wget_speed_post))
 
     def test_024_srcAddrRule(self):
-        global node
+        global app
         nukeRules()
         priority_level = 7
         # Record average speed without bandwidth control configured
@@ -372,7 +372,7 @@ class BandwidthControlTests(unittest2.TestCase):
         assert( found )
 
     def test_035_dstAddrRule(self):
-        global node
+        global app
         nukeRules()
         priority_level = 7
 
@@ -401,7 +401,7 @@ class BandwidthControlTests(unittest2.TestCase):
         assert( found )
 
     def test_045_dstPortRule(self):
-        global node
+        global app
         nukeRules()
         priority_level = 7
 
@@ -427,7 +427,7 @@ class BandwidthControlTests(unittest2.TestCase):
         assert( found )
 
     def test_046_dstPortRuleUDP(self):
-        global node, nodeWF, wanLimitMbit
+        global app, appWF, wanLimitMbit
         # only use 30% because QoS will limit to 10% and we want to make sure it takes effect
         # really high levels will actually be limited by the untangle-vm throughput instead of QoS
         # which can interfere with the test
@@ -457,7 +457,7 @@ class BandwidthControlTests(unittest2.TestCase):
         assert (post_UDP_speed < pre_UDP_speed*.9)
 
     def test_047_hostnameRule(self):
-        global node
+        global app
         nukeRules()
         priority_level = 7
         # This test might need web filter for http to start
@@ -483,7 +483,7 @@ class BandwidthControlTests(unittest2.TestCase):
         assert( found )
 
     def test_048_contentLengthAddrRule(self):
-        global node
+        global app
         nukeRules()
         priority_level = 7
 
@@ -509,9 +509,9 @@ class BandwidthControlTests(unittest2.TestCase):
         assert( found )
 
     def test_050_webFilterFlaggedRule(self):
-        global node, nodeWF
+        global app, appWF
         nukeRules()
-        pre_count = global_functions.get_app_metric_value(node,"prioritize")
+        pre_count = global_functions.get_app_metric_value(app,"prioritize")
 
         priority_level = 7
         # This test might need web filter for http to start
@@ -522,14 +522,14 @@ class BandwidthControlTests(unittest2.TestCase):
         appendRule(createBandwidthSingleConditionRule("WEB_FILTER_FLAGGED","true","SET_PRIORITY",priority_level))
 
         # Test.untangle.com is listed as Software, Hardware in web filter. As of 1/2014 its in Technology 
-        settingsWF = nodeWF.getSettings()
+        settingsWF = appWF.getSettings()
         i = 0
         untangleCats = ["Software,", "Technology"]
         for webCategories in settingsWF['categories']['list']:
             if any(x in webCategories['name'] for x in untangleCats):
                 settingsWF['categories']['list'][i]['flagged'] = "true"
             i += 1
-        nodeWF.setSettings(settingsWF)
+        appWF.setSettings(settingsWF)
 
         # Download file and record the average speed in which the file was download
         wget_speed_post = global_functions.get_download_speed()
@@ -547,13 +547,13 @@ class BandwidthControlTests(unittest2.TestCase):
         assert( found )
 
         # Check to see if the faceplate counters have incremented. 
-        post_count = global_functions.get_app_metric_value(node,"prioritize")
+        post_count = global_functions.get_app_metric_value(app,"prioritize")
         assert(pre_count < post_count)
  
     def test_060_hostquota(self):
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
-        global node
+        global app
         nukeRules()
         priority_level = 7 # Severely Limited 
         given_quota = 10000 # 10k 
@@ -608,7 +608,7 @@ class BandwidthControlTests(unittest2.TestCase):
     def test_061_userquota(self):
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
-        global node
+        global app
         nukeRules()
         priority_level = 7 # Severely Limited 
         given_quota = 10000 # 10k 
@@ -672,7 +672,7 @@ class BandwidthControlTests(unittest2.TestCase):
         assert( found )
         
     def test_070_penaltyRule(self):
-        global node
+        global app
         nukeRules()
         tag_time = 2000000
 
@@ -713,17 +713,17 @@ class BandwidthControlTests(unittest2.TestCase):
 
     @staticmethod
     def finalTearDown(self):
-        global node, nodeWF, origNetworkSettings
+        global app, appWF, origNetworkSettings
         # Restore original settings to return to initial settings
         if origNetworkSettings != None:
             uvmContext.networkManager().setNetworkSettings( origNetworkSettings )
-        if node != None:
-            uvmContext.appManager().destroy( node.getAppSettings()["id"] )
-            node = None
-        if nodeWF != None:
-            uvmContext.appManager().destroy( nodeWF.getAppSettings()["id"] )
-            nodeWF = None
+        if app != None:
+            uvmContext.appManager().destroy( app.getAppSettings()["id"] )
+            app = None
+        if appWF != None:
+            uvmContext.appManager().destroy( appWF.getAppSettings()["id"] )
+            appWF = None
 
 
-test_registry.registerNode("bandwidth-control", BandwidthControlTests)
+test_registry.registerApp("bandwidth-control", BandwidthControlTests)
 

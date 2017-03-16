@@ -16,7 +16,7 @@ import java.io.OutputStream;
 
 /**
  * Output stream which performs "byte stuffing", the process whereby RFC822 messages with body lines starting with "."
- * are nodeed to ".."
+ * are apped to ".."
  */
 public class ByteStuffingOutputStream extends FilterOutputStream
 {

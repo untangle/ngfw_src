@@ -39,7 +39,7 @@ public class FirewallApp extends AppBase
 
     private FirewallSettings settings = null;
 
-    /* This can't be static because it uses policy which is per node */
+    /* This can't be static because it uses policy which is per app */
     private final SessionMatcher FIREWALL_SESSION_MATCHER = new SessionMatcher() {
             
             /* Kill all sessions that should be blocked */
@@ -176,9 +176,9 @@ public class FirewallApp extends AppBase
     protected void postInit()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getAppSettings().getId().toString();
+        String appID = this.getAppSettings().getId().toString();
         FirewallSettings readSettings = null;
-        String settingsFileName = System.getProperty("uvm.settings.dir") + "/firewall/" + "settings_" + nodeID + ".js";
+        String settingsFileName = System.getProperty("uvm.settings.dir") + "/firewall/" + "settings_" + appID + ".js";
 
         try {
             readSettings = settingsManager.load( FirewallSettings.class, settingsFileName );
@@ -268,7 +268,7 @@ public class FirewallApp extends AppBase
     {
         /**
          * set the new ID of each rule
-         * We use 100,000 * nodeId as a starting point so rule IDs don't overlap with other firewall
+         * We use 100,000 * appId as a starting point so rule IDs don't overlap with other firewall
          *
          * Also set flag to true if rule is blocked
          */
@@ -284,9 +284,9 @@ public class FirewallApp extends AppBase
          * Save the settings
          */
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getAppSettings().getId().toString();
+        String appID = this.getAppSettings().getId().toString();
         try {
-            settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "firewall/" + "settings_"  + nodeID + ".js", newSettings );
+            settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "firewall/" + "settings_"  + appID + ".js", newSettings );
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.",e);
             return;

@@ -100,8 +100,8 @@ public class SslInspectorApp extends AppBase
     @Override
     protected void preInit()
     {
-        String nodeID = this.getAppSettings().getId().toString();
-        String settingsFile = System.getProperty("uvm.settings.dir") + "/ssl-inspector/settings_" + nodeID + ".js";
+        String appID = this.getAppSettings().getId().toString();
+        String settingsFile = System.getProperty("uvm.settings.dir") + "/ssl-inspector/settings_" + appID + ".js";
 
         SslInspectorSettings readSettings = null;
         logger.info("Loading settings from " + settingsFile);
@@ -143,13 +143,13 @@ public class SslInspectorApp extends AppBase
 
                 this.settings = readSettings;
 
-                // appy the settings to the node
+                // appy the settings to the app
                 reconfigure();
             }
         }
 
         catch (Exception exn) {
-            logger.error("Could not apply node settings", exn);
+            logger.error("Could not apply app settings", exn);
         }
     }
 
@@ -168,8 +168,8 @@ public class SslInspectorApp extends AppBase
 
     public void setSettings(final SslInspectorSettings newSettings)
     {
-        String nodeID = this.getAppSettings().getId().toString();
-        String settingsFile = System.getProperty("uvm.settings.dir") + "/ssl-inspector/settings_" + nodeID + ".js";
+        String appID = this.getAppSettings().getId().toString();
+        String settingsFile = System.getProperty("uvm.settings.dir") + "/ssl-inspector/settings_" + appID + ".js";
 
         try {
             newSettings.setVersion(new Integer(2));
@@ -225,11 +225,11 @@ public class SslInspectorApp extends AppBase
 
         if (settings == null) return;
 
-        // enable the SMTPS connectors using the node enabled flag and SMTPS enabled flag
+        // enable the SMTPS connectors using the app enabled flag and SMTPS enabled flag
         clientMailConnector.setEnabled(settings.isEnabled() && settings.getProcessEncryptedMailTraffic());
         serverMailConnector.setEnabled(settings.isEnabled() && settings.getProcessEncryptedMailTraffic());
 
-        // enable th HTTPS connectors using the node enabled flag and HTTPS enabled flag 
+        // enable th HTTPS connectors using the app enabled flag and HTTPS enabled flag 
         clientWebConnector.setEnabled(settings.isEnabled() && settings.getProcessEncryptedWebTraffic());
         serverWebConnector.setEnabled(settings.isEnabled() && settings.getProcessEncryptedWebTraffic());
 

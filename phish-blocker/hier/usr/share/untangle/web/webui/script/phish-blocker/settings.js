@@ -12,9 +12,9 @@ Ext.define('Webui.phish-blocker.settings', {
         return i18n._("Phish Blocker detects and blocks phishing emails using signatures.");
     },
     initComponent: function() {
-        this.lastUpdate = this.getRpcNode().getLastUpdate();
-        this.lastCheck = this.getRpcNode().getLastUpdateCheck();
-        this.signatureVer = this.getRpcNode().getSignatureVersion();
+        this.lastUpdate = this.getRpcApp().getLastUpdate();
+        this.lastCheck = this.getRpcApp().getLastUpdateCheck();
+        this.signatureVer = this.getRpcApp().getSignatureVersion();
 
         this.buildEmail();
         this.buildTabPanel([this.emailPanel]);
@@ -86,9 +86,9 @@ Ext.define('Webui.phish-blocker.settings', {
         });
     },
     afterSave: function()  {
-        this.lastUpdate = this.getRpcNode().getLastUpdate();
-        this.lastCheck = this.getRpcNode().getLastUpdateCheck();
-        this.signatureVer = this.getRpcNode().getSignatureVersion();
+        this.lastUpdate = this.getRpcApp().getLastUpdate();
+        this.lastCheck = this.getRpcApp().getLastUpdateCheck();
+        this.signatureVer = this.getRpcApp().getSignatureVersion();
     }
 });
 //# sourceURL=phish-blocker-settings.js

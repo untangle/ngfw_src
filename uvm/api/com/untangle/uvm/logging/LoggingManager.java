@@ -12,7 +12,7 @@ public interface LoggingManager
 {
     /**
      * resetAllLogs re-reads all log configuration files (jboss,
-     * uvm, and all node instances). This allows changing logging levels,
+     * uvm, and all app instances). This allows changing logging levels,
      * etc. The old output files will be erased and new files begun.
      */
     void resetAllLogs();
@@ -25,7 +25,7 @@ public interface LoggingManager
 
     /**
      * Set the logging context of this thread to the "app" configuration
-     * log4j log calls after this will go to the associated node-nodeId.log file
+     * log4j log calls after this will go to the associated app-appId.log file
      */
     void setLoggingApp(Long appId);
 }

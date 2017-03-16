@@ -15,7 +15,7 @@ import test_registry
 import global_functions
 
 defaultRackId = 1
-node = None
+app = None
 testsite = "test.untangle.com"
 testsiteIP = socket.gethostbyname("test.untangle.com")
 dnsServer = "74.123.28.4"
@@ -76,19 +76,19 @@ def create_rule_dual_condition( conditionType, value, conditionType2, value2, bl
         };
 
 def rules_clear():
-    rules = node.getRules()
+    rules = app.getRules()
     rules["list"] = []
-    node.setRules(rules)
+    app.setRules(rules)
 
 def rule_append(newRule):
-    rules = node.getRules()
+    rules = app.getRules()
     rules["list"].append(newRule)
-    node.setRules(rules)
+    app.setRules(rules)
 
 class FirewallTests(unittest2.TestCase):
 
     @staticmethod
-    def nodeName():
+    def appName():
         return "firewall"
 
     @staticmethod
@@ -97,10 +97,10 @@ class FirewallTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        global node
-        if (uvmContext.appManager().isInstantiated(self.nodeName())):
-            raise Exception('node %s already instantiated' % self.nodeName())
-        node = uvmContext.appManager().instantiate(self.nodeName(), defaultRackId)
+        global app
+        if (uvmContext.appManager().isInstantiated(self.appName())):
+            raise Exception('app %s already instantiated' % self.appName())
+        app = uvmContext.appManager().instantiate(self.appName(), defaultRackId)
 
     def setUp(self):
         pass
@@ -802,7 +802,7 @@ class FirewallTests(unittest2.TestCase):
     def test_901_blockEventLog(self):
         rules_clear()
         rule_append(create_rule_single_condition("DST_PORT","80"))
-        pre_events_block = global_functions.get_app_metric_value(node,"block")
+        pre_events_block = global_functions.get_app_metric_value(app,"block")
 
         result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
@@ -817,7 +817,7 @@ class FirewallTests(unittest2.TestCase):
         assert( found )
 
         # Check to see if the faceplate counters have incremented.
-        post_events_block = global_functions.get_app_metric_value(node,"block")
+        post_events_block = global_functions.get_app_metric_value(app,"block")
         assert(pre_events_block < post_events_block)
 
     # verify a flagged sesion event
@@ -840,7 +840,7 @@ class FirewallTests(unittest2.TestCase):
     def test_903_blockLocalEventLog(self):
         rules_clear()
         rule_append(create_rule_single_condition("CLIENT_COUNTRY","XL"))
-        pre_events_block = global_functions.get_app_metric_value(node,"block")
+        pre_events_block = global_functions.get_app_metric_value(app,"block")
 
         result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         assert (result != 0)
@@ -855,7 +855,7 @@ class FirewallTests(unittest2.TestCase):
         assert( found )
 
         # Check to see if the faceplate counters have incremented.
-        post_events_block = global_functions.get_app_metric_value(node,"block")
+        post_events_block = global_functions.get_app_metric_value(app,"block")
         assert(pre_events_block < post_events_block)
 
     # verify a flagged local sesion event
@@ -876,10 +876,10 @@ class FirewallTests(unittest2.TestCase):
 
     @staticmethod
     def finalTearDown(self):
-        global node
-        if node != None:
-            uvmContext.appManager().destroy( node.getAppSettings()["id"] )
-        node = None
+        global app
+        if app != None:
+            uvmContext.appManager().destroy( app.getAppSettings()["id"] )
+        app = None
 
-test_registry.registerNode("firewall", FirewallTests)
+test_registry.registerApp("firewall", FirewallTests)
 

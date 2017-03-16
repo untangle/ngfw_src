@@ -17,7 +17,7 @@ import test_registry
 import global_functions
 
 defaultRackId = 1
-node = None
+app = None
 
 #
 # Just extends the web filter base tests
@@ -25,15 +25,15 @@ node = None
 class WebFilterTests(WebFilterBaseTests):
 
     @staticmethod
-    def nodeName():
+    def appName():
         return "web-filter"
 
     @staticmethod
-    def shortNodeName():
+    def shortAppName():
         return "web-filter"
 
     @staticmethod
-    def eventNodeName():
+    def eventAppName():
         return "web_filter"
 
     @staticmethod
@@ -42,24 +42,24 @@ class WebFilterTests(WebFilterBaseTests):
 
     @staticmethod
     def initialSetUp(self):
-        global node
-        if (uvmContext.appManager().isInstantiated(self.nodeName())):
-            raise Exception('node %s already instantiated' % self.nodeName())
-        node = uvmContext.appManager().instantiate(self.nodeName(), defaultRackId)
-        nodemetrics = uvmContext.metricManager().getMetrics(node.getAppSettings()["id"])
-        self.node = node
+        global app
+        if (uvmContext.appManager().isInstantiated(self.appName())):
+            raise Exception('app %s already instantiated' % self.appName())
+        app = uvmContext.appManager().instantiate(self.appName(), defaultRackId)
+        appmetrics = uvmContext.metricManager().getMetrics(app.getAppSettings()["id"])
+        self.app = app
 
     def test_016_block_url(self):
         """verify basic URL blocking the the url block list"""
-        pre_events_scan = global_functions.get_app_metric_value(self.node, "scan")
-        pre_events_block = global_functions.get_app_metric_value(self.node, "block")
+        pre_events_scan = global_functions.get_app_metric_value(self.app, "scan")
+        pre_events_block = global_functions.get_app_metric_value(self.app, "block")
         self.block_url_list_add("test.untangle.com/test/testPage1.html")
         result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
         self.block_url_list_clear()
         assert ( result == 0 )
         # verify the faceplate counters have incremented.
-        post_events_scan = global_functions.get_app_metric_value(self.node, "scan")
-        post_events_block = global_functions.get_app_metric_value(self.node, "block")
+        post_events_scan = global_functions.get_app_metric_value(self.app, "scan")
+        post_events_block = global_functions.get_app_metric_value(self.app, "block")
         assert(pre_events_scan < post_events_scan)
         assert(pre_events_block < post_events_block)
 
@@ -76,17 +76,17 @@ class WebFilterTests(WebFilterBaseTests):
         found = global_functions.check_events( events.get('list'), 5,
                                             "host","test.untangle.com",
                                             "uri", ("/test/testPage1.html?arg=%s" % fname),
-                                            self.eventNodeName() + '_blocked', True,
-                                            self.eventNodeName() + '_flagged', True )
+                                            self.eventAppName() + '_blocked', True,
+                                            self.eventAppName() + '_flagged', True )
         assert( found )
 
     def test_200_pass_referer_disabled(self):
         """disable pass referer and verify that a page with content that would be blocked is blocked."""
         self.block_url_list_add("test.untangle.com/test/refererPage.html")
         self.pass_url_list_add("test.untangle.com/test/testPage1.html")
-        settings = self.node.getSettings()
+        settings = self.app.getSettings()
         settings["passReferers"] = False
-        self.node.setSettings(settings)
+        self.app.setSettings(settings)
         resultReferer = remote_control.run_command("wget -q --header 'Referer: http://test.untangle.com/test/testPage1.html' -O - http://test.untangle.com/test/refererPage.html 2>&1 | grep -q 'Welcome to the referer page.'");
         print "result %s passReferers %s" % (resultReferer,settings["passReferers"])
 
@@ -98,9 +98,9 @@ class WebFilterTests(WebFilterBaseTests):
         """disable pass referer and verify that a page with content that would be blocked is allowed."""
         self.block_url_list_add("test.untangle.com/test/refererPage.html")
         self.pass_url_list_add("test.untangle.com/test/testPage1.html")
-        settings = self.node.getSettings()
+        settings = self.app.getSettings()
         settings["passReferers"] = True
-        self.node.setSettings(settings)
+        self.app.setSettings(settings)
         resultReferer = remote_control.run_command("wget -q --header 'Referer: http://test.untangle.com/test/testPage1.html' -O - http://test.untangle.com/test/refererPage.html 2>&1 | grep -q 'Welcome to the referer page.'");
         print "result %s passReferers %s" % (resultReferer,settings["passReferers"])
 
@@ -110,13 +110,13 @@ class WebFilterTests(WebFilterBaseTests):
 
     def test_700_safe_search_enabled(self):
         """Check google safe search"""
-        settings = self.node.getSettings()
+        settings = self.app.getSettings()
         settings["enforceSafeSearch"] = False
-        self.node.setSettings(settings)
+        self.app.setSettings(settings)
         result_without_safe = remote_control.run_command("wget -q -O - '$@' -U 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7) Gecko/20040613 Firefox/0.8.0+)' 'http://www.google.com/search?hl=en&q=boobs&safe=off' | grep -q 'safe=off'");
 
         settings["enforceSafeSearch"] = True
-        self.node.setSettings(settings)
+        self.app.setSettings(settings)
         result_with_safe = remote_control.run_command("wget -q -O - '$@' -U 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7) Gecko/20040613 Firefox/0.8.0+)' 'http://www.google.com/search?hl=en&q=boobs&safe=off' | grep -q 'safe=active'");
 
         assert( result_without_safe == 0 )
@@ -125,9 +125,9 @@ class WebFilterTests(WebFilterBaseTests):
     def test_701_unblock_option(self):
         """verify that a block page is shown but unblock button option is available."""
         self.block_url_list_add("test.untangle.com/test/testPage1.html")
-        settings = self.node.getSettings()
+        settings = self.app.getSettings()
         settings["unblockMode"] = "Host"
-        self.node.setSettings(settings)
+        self.app.setSettings(settings)
         # this test URL should be blocked but allow
         remote_control.run_command("rm -f /tmp/web_filter_base_test_120.log")
         result = remote_control.run_command("wget -4 -t 2 --timeout=5 -a /tmp/web_filter_base_test_120.log -O /tmp/web_filter_base_test_120.out http://test.untangle.com/test/testPage1.html")
@@ -145,12 +145,12 @@ class WebFilterTests(WebFilterBaseTests):
         # Use unblock button.
         unBlockParameters = "global=false&"+ paramaters + "&password="
         # print "unBlockParameters %s" % unBlockParameters
-        print "wget -q -O /dev/null --post-data=\'" + unBlockParameters + "\' http://" + blockPageIP + "/" + self.shortNodeName() + "/unblock"
-        remote_control.run_command("wget -q -O /dev/null --post-data=\'" + unBlockParameters + "\' http://" + blockPageIP + "/" + self.shortNodeName() + "/unblock")
+        print "wget -q -O /dev/null --post-data=\'" + unBlockParameters + "\' http://" + blockPageIP + "/" + self.shortAppName() + "/unblock"
+        remote_control.run_command("wget -q -O /dev/null --post-data=\'" + unBlockParameters + "\' http://" + blockPageIP + "/" + self.shortAppName() + "/unblock")
         resultUnBlock = remote_control.run_command("wget -q -O - http://test.untangle.com/test/testPage1.html 2>&1 | grep -q text123")
 
         self.block_url_list_clear()
-        self.node.flushAllUnblockedSites()
+        self.app.flushAllUnblockedSites()
 
         print "block %s button %s unblock %s" % (resultBlock,resultButton,resultUnBlock)
         assert (resultBlock == 0)
@@ -161,11 +161,11 @@ class WebFilterTests(WebFilterBaseTests):
         """verify that a block page is shown but unblock if correct password."""
         fname = sys._getframe().f_code.co_name
         self.block_url_list_add("test.untangle.com/test/testPage2.html")
-        settings = self.node.getSettings()
+        settings = self.app.getSettings()
         settings["unblockMode"] = "Host"
         settings["unblockPassword"] = "atstest"
         settings["unblockPasswordEnabled"] = True
-        self.node.setSettings(settings)
+        self.app.setSettings(settings)
 
         # this test URL should be blocked but allow
         remote_control.run_command("rm -f /tmp/%s.log"%fname)
@@ -184,15 +184,15 @@ class WebFilterTests(WebFilterBaseTests):
         # Use unblock button.
         unBlockParameters = "global=false&"+ paramaters + "&password=atstest"
         # print "unBlockParameters %s" % unBlockParameters
-        remote_control.run_command("wget -q -O /dev/null --post-data=\'" + unBlockParameters + "\' http://" + blockPageIP + "/" + self.shortNodeName() + "/unblock")
+        remote_control.run_command("wget -q -O /dev/null --post-data=\'" + unBlockParameters + "\' http://" + blockPageIP + "/" + self.shortAppName() + "/unblock")
         resultUnBlock = remote_control.run_command("wget -O - http://test.untangle.com/test/testPage2.html 2>&1 | grep -q text123")
 
-        settings = self.node.getSettings()
+        settings = self.app.getSettings()
         settings["unblockMode"] = "None"
         settings["unblockPassword"] = ""
         settings["unblockPasswordEnabled"] = False
 
-        self.node.setSettings(settings)
+        self.app.setSettings(settings)
         self.block_url_list_clear()
         print "block %s button %s unblock %s" % (resultBlock,resultButton,resultUnBlock)
         assert (resultBlock == 0 and resultButton == 0 and resultUnBlock == 0 )
@@ -1229,9 +1229,9 @@ class WebFilterTests(WebFilterBaseTests):
         
     @staticmethod
     def finalTearDown(self):
-        global node
-        if node != None:
-            uvmContext.appManager().destroy( node.getAppSettings()["id"] )
-            node = None
+        global app
+        if app != None:
+            uvmContext.appManager().destroy( app.getAppSettings()["id"] )
+            app = None
 
-test_registry.registerNode("web-filter", WebFilterTests)
+test_registry.registerApp("web-filter", WebFilterTests)

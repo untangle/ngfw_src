@@ -66,7 +66,7 @@ class OpenVpnMonitor implements Runnable
     /* Maps the active client names to their current state and stats */
     private Map<String,ClientState> activeMap = null;
 
-    private final OpenVpnNodeImpl node;
+    private final OpenVpnAppImpl app;
 
     /* The thread the monitor is running on */
     private Thread thread = null;
@@ -77,9 +77,9 @@ class OpenVpnMonitor implements Runnable
     /* Whether or not openvpn is started */
     private volatile boolean isEnabled = false;
 
-    protected OpenVpnMonitor( OpenVpnNodeImpl node )
+    protected OpenVpnMonitor( OpenVpnAppImpl app )
     {
-        this.node = node;
+        this.app = app;
     }
 
     public void run()
@@ -293,7 +293,7 @@ class OpenVpnMonitor implements Runnable
             statusEvent.setEnd( now );
 
             if ( logger.isDebugEnabled()) logger.debug( "Logging stats for " + stats.name );
-            node.logEvent( statusEvent );
+            app.logEvent( statusEvent );
         }
     }
 
@@ -304,7 +304,7 @@ class OpenVpnMonitor implements Runnable
 
             if ( stats.isActive && stats.updated ) continue;
 
-            /* Remove any nodes that are not active */
+            /* Remove any apps that are not active */
             iter.remove();
 
             /* If this client was in the current list of clients, then kill it */
@@ -316,7 +316,7 @@ class OpenVpnMonitor implements Runnable
             /* log event */
             logger.info( "OpenVPN client disconnected: " + stats.name );
             OpenVpnEvent connectEvent = new OpenVpnEvent( stats.address, stats.poolAddress, stats.name, OpenVpnEvent.EventType.DISCONNECT );
-            node.logEvent( connectEvent );
+            app.logEvent( connectEvent );
 
             /* set the openvpn username of the host back to null */
             if ( stats.name != null ) {
@@ -396,10 +396,10 @@ class OpenVpnMonitor implements Runnable
         }
 
         if ( stats == null ) {
-            node.incrementConnectCount();
+            app.incrementConnectCount();
 
             OpenVpnEvent connectEvent = new OpenVpnEvent( address, poolAddress, name, OpenVpnEvent.EventType.CONNECT );
-            node.logEvent( connectEvent );
+            app.logEvent( connectEvent );
             
             stats = new ClientState( name, address, port, poolAddress, start, bytesRx, bytesTx );
             stats.isActive = true;
@@ -432,7 +432,7 @@ class OpenVpnMonitor implements Runnable
      */
     private void checkRemoteServerProcesses()
     {
-        for ( OpenVpnRemoteServer server : node.getSettings().getRemoteServers() ) {
+        for ( OpenVpnRemoteServer server : app.getSettings().getRemoteServers() ) {
             if ( ! server.getEnabled() )
                 continue;
 
@@ -474,7 +474,7 @@ class OpenVpnMonitor implements Runnable
      */
     private void checkServerProcess()
     {
-        if ( ! this.node.getSettings().getServerEnabled() )
+        if ( ! this.app.getSettings().getServerEnabled() )
             return;
 
         try {

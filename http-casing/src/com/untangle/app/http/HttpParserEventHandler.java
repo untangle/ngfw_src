@@ -65,7 +65,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
             END_MARKER_STATE,
             };
     
-    private final HttpImpl node;
+    private final HttpImpl app;
     
     private int maxHeader;
     private boolean blockLongHeaders;
@@ -90,10 +90,10 @@ public class HttpParserEventHandler extends AbstractEventHandler
 
     // constructors -----------------------------------------------------------
 
-    protected HttpParserEventHandler( boolean clientSide, HttpImpl node )
+    protected HttpParserEventHandler( boolean clientSide, HttpImpl app )
     {
         this.clientSide = clientSide;
-        this.node = node;
+        this.app = app;
     }
 
     // Parser methods ------------------------------------------------------
@@ -105,7 +105,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
          * FIXME move this somewhere else
          * cant put it in initializer because settings aren't read yet
          */
-        HttpSettings settings = node.getHttpSettings();
+        HttpSettings settings = app.getHttpSettings();
         this.maxHeader = settings.getMaxHeaderLength();
         this.blockLongHeaders = settings.getBlockLongHeaders();
         this.maxUri = settings.getMaxUriLength();
@@ -447,7 +447,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
                     }
                 } else {
                     /* the request event is saved internally and used later with getRequestEvent */
-                    String referer = ( node.getHttpSettings().getLogReferer() ? state.header.getValue("referer") : null);
+                    String referer = ( app.getHttpSettings().getLogReferer() ? state.header.getValue("referer") : null);
                     HttpRequestEvent evt = new HttpRequestEvent( state.requestLineToken.getRequestLine(), state.header.getValue("host"), referer, state.lengthCounter );
                     state.requestLineToken.getRequestLine().setHttpRequestEvent(evt);
                 }
@@ -599,7 +599,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
                     if (null != rl) {
                         HttpResponseEvent evt = new HttpResponseEvent(rl, mimeType, state.lengthCounter);
 
-                        node.logEvent(evt);
+                        app.logEvent(evt);
                     }
                 } else {
                     HttpRequestEvent evt = state.requestLineToken.getRequestLine().getHttpRequestEvent();
@@ -609,7 +609,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
                         logger.warn("null request for: " + session.sessionEvent());
                     }
 
-                    node.logEvent(evt);
+                    app.logEvent(evt);
 
                     /**
                      * Update host table with header info

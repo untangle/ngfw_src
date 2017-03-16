@@ -122,9 +122,9 @@ public class WanFailoverApp extends AppBase
     protected void postInit()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getAppSettings().getId().toString();
+        String appID = this.getAppSettings().getId().toString();
         WanFailoverSettings readSettings = null;
-        String settingsFileName = System.getProperty("uvm.settings.dir") + "/wan-failover/" + "settings_" + nodeID + ".js";
+        String settingsFileName = System.getProperty("uvm.settings.dir") + "/wan-failover/" + "settings_" + appID + ".js";
 
         try {
             readSettings = settingsManager.load( WanFailoverSettings.class, settingsFileName );
@@ -201,9 +201,9 @@ public class WanFailoverApp extends AppBase
          * Save the settings
          */
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getAppSettings().getId().toString();
+        String appID = this.getAppSettings().getId().toString();
         try {
-            settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "wan-failover/" + "settings_"  + nodeID + ".js", newSettings );
+            settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "wan-failover/" + "settings_"  + appID + ".js", newSettings );
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.",e);
             return;
@@ -244,7 +244,7 @@ public class WanFailoverApp extends AppBase
             try {
                 networkSettingsEvent( settings );
             } catch( Exception e ) {
-                logger.error( "Unable to reconfigure the NAT node" );
+                logger.error( "Unable to reconfigure the NAT app" );
             }
         }
     }

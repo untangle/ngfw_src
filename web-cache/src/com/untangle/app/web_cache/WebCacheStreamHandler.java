@@ -18,12 +18,12 @@ import org.apache.log4j.Level;
 public class WebCacheStreamHandler extends AbstractEventHandler
 {
     private final Logger logger = Logger.getLogger(getClass());
-    private WebCacheApp node;
+    private WebCacheApp app;
 
-    public WebCacheStreamHandler(WebCacheApp node)
+    public WebCacheStreamHandler(WebCacheApp app)
     {
-        super(node);
-        this.node = node;
+        super(app);
+        this.app = app;
         logger.debug("WEBCACHE WebCacheStreamHandler()");
     }
 
@@ -32,25 +32,25 @@ public class WebCacheStreamHandler extends AbstractEventHandler
     {
         logger.debug("WEBCACHE handleTCPNewSession()");
 
-        if (node.isLicenseValid() != true) {
-            this.node.incrementMetric( WebCacheApp.STAT_SYSTEM_BYPASS );
-            node.statistics.IncSystemCount();
+        if (app.isLicenseValid() != true) {
+            this.app.incrementMetric( WebCacheApp.STAT_SYSTEM_BYPASS );
+            app.statistics.IncSystemCount();
             session.release();
             return;
         }
 
         // if high load bypass flag is true release immediately
-        if (node.highLoadBypass == true) {
+        if (app.highLoadBypass == true) {
             logger.debug("----- RELEASING SESSION DUE TO HIGH LOAD -----\n");
-            this.node.incrementMetric( WebCacheApp.STAT_SYSTEM_BYPASS );
-            node.statistics.IncSystemCount();
+            this.app.incrementMetric( WebCacheApp.STAT_SYSTEM_BYPASS );
+            app.statistics.IncSystemCount();
             session.release();
             return;
         }
 
         // allocate a new object for session info and init key members
         WebCacheSessionInfo sessInfo = new WebCacheSessionInfo();
-        sessInfo.clientBuffer = ByteBuffer.allocate(node.CLIENT_BUFFSIZE);
+        sessInfo.clientBuffer = ByteBuffer.allocate(app.CLIENT_BUFFSIZE);
         sessInfo.myIndex = WebCacheParent.INSTANCE.GetCacheIndex();
         session.attach(sessInfo);
         super.handleTCPNewSession( session );
@@ -94,7 +94,7 @@ public class WebCacheStreamHandler extends AbstractEventHandler
     @Override
     public void handleTCPServerChunk ( AppTCPSession session, ByteBuffer data )
     {
-        if (node.SOCKET_DEBUG == true) logger.debug("WEBCACHE handleTCPServerChunk received " + data.limit() + " bytes");
+        if (app.SOCKET_DEBUG == true) logger.debug("WEBCACHE handleTCPServerChunk received " + data.limit() + " bytes");
 
         // pass the event to our server response function
         processServerResponse( session, data );
@@ -135,8 +135,8 @@ public class WebCacheStreamHandler extends AbstractEventHandler
             SquidCleanup(sessInfo);
             sess.attach(null);
             sess.release();
-            this.node.incrementMetric( WebCacheApp.STAT_SYSTEM_BYPASS );
-            node.statistics.IncSystemCount();
+            this.app.incrementMetric( WebCacheApp.STAT_SYSTEM_BYPASS );
+            app.statistics.IncSystemCount();
 
             sessInfo.clientBuffer.flip();
             buff[0] = ByteBuffer.allocate(sessInfo.clientBuffer.limit() + chunk.limit());
@@ -166,8 +166,8 @@ public class WebCacheStreamHandler extends AbstractEventHandler
             SquidCleanup(sessInfo);
             sess.attach(null);
             sess.release();
-            this.node.incrementMetric( WebCacheApp.STAT_SYSTEM_BYPASS );
-            node.statistics.IncSystemCount();
+            this.app.incrementMetric( WebCacheApp.STAT_SYSTEM_BYPASS );
+            app.statistics.IncSystemCount();
             sess.sendDataToServer( data );
             return;
         }
@@ -194,7 +194,7 @@ public class WebCacheStreamHandler extends AbstractEventHandler
                 logger.debug("----- CLIENT MISSING CONTENT LENGTH -----");
                 sessInfo.clientBuffer.flip();
                 buff[0] = sessInfo.clientBuffer;
-                sessInfo.clientBuffer = ByteBuffer.allocate(node.CLIENT_BUFFSIZE);
+                sessInfo.clientBuffer = ByteBuffer.allocate(app.CLIENT_BUFFSIZE);
                 sess.sendDataToServer( buff );
                 return;
             }
@@ -217,8 +217,8 @@ public class WebCacheStreamHandler extends AbstractEventHandler
                 SquidCleanup(sessInfo);
                 sess.attach(null);
                 sess.release();
-                this.node.incrementMetric( WebCacheApp.STAT_SYSTEM_BYPASS );
-                node.statistics.IncSystemCount();
+                this.app.incrementMetric( WebCacheApp.STAT_SYSTEM_BYPASS );
+                app.statistics.IncSystemCount();
                 sessInfo.clientBuffer.flip();
                 buff[0] = sessInfo.clientBuffer;
                 sess.sendDataToServer( buff );
@@ -233,7 +233,7 @@ public class WebCacheStreamHandler extends AbstractEventHandler
 
             sessInfo.clientBuffer.flip();
             buff[0] = sessInfo.clientBuffer;
-            sessInfo.clientBuffer = ByteBuffer.allocate(node.CLIENT_BUFFSIZE);
+            sessInfo.clientBuffer = ByteBuffer.allocate(app.CLIENT_BUFFSIZE);
             sess.sendDataToServer( buff );
             return;
         }
@@ -246,8 +246,8 @@ public class WebCacheStreamHandler extends AbstractEventHandler
             SquidCleanup(sessInfo);
             sess.attach(null);
             sess.release();
-            this.node.incrementMetric( WebCacheApp.STAT_SYSTEM_BYPASS );
-            node.statistics.IncSystemCount();
+            this.app.incrementMetric( WebCacheApp.STAT_SYSTEM_BYPASS );
+            app.statistics.IncSystemCount();
             sessInfo.clientBuffer.flip();
             buff[0] = sessInfo.clientBuffer;
             sess.sendDataToServer( buff );
@@ -271,7 +271,7 @@ public class WebCacheStreamHandler extends AbstractEventHandler
             for(;;) {
                 logger.debug("CHECKING HOSTNAME: " + hostname.substring(next));
 
-                if (node.settings.checkRules(hostname.substring(next)) == true)
+                if (app.settings.checkRules(hostname.substring(next)) == true)
                     {
                         skip = true;
                         break;
@@ -285,12 +285,12 @@ public class WebCacheStreamHandler extends AbstractEventHandler
 
             if (skip == true) {
                 logger.debug("----- CLIENT IGNORING USER BYPASS TARGET (" + hostname + ") -----");
-                this.node.incrementMetric( WebCacheApp.STAT_USER_BYPASS );
-                node.statistics.IncBypassCount();
+                this.app.incrementMetric( WebCacheApp.STAT_USER_BYPASS );
+                app.statistics.IncBypassCount();
                 ParentCleanup(sessInfo);
                 sessInfo.clientBuffer.flip();
                 buff[0] = sessInfo.clientBuffer;
-                sessInfo.clientBuffer = ByteBuffer.allocate(node.CLIENT_BUFFSIZE);
+                sessInfo.clientBuffer = ByteBuffer.allocate(app.CLIENT_BUFFSIZE);
                 sess.sendDataToServer( buff );
                 return;
             }
@@ -308,7 +308,7 @@ public class WebCacheStreamHandler extends AbstractEventHandler
         logger.debug("----- CLIENT REQUEST (" + modstr.length() + " bytes) -----\n" + modstr);
 
         try {
-            // add our session object to the node hashtable
+            // add our session object to the app hashtable
             WebCacheParent.INSTANCE.InsertSockObject(sessInfo);
 
             // clean up any previous connection to squid
@@ -328,8 +328,8 @@ public class WebCacheStreamHandler extends AbstractEventHandler
                 SquidCleanup(sessInfo);
                 sess.attach(null);
                 sess.release();
-                this.node.incrementMetric( WebCacheApp.STAT_SYSTEM_BYPASS );
-                node.statistics.IncSystemCount();
+                this.app.incrementMetric( WebCacheApp.STAT_SYSTEM_BYPASS );
+                app.statistics.IncSystemCount();
                 sessInfo.clientBuffer.flip();
                 buff[0] = sessInfo.clientBuffer;
                 sess.sendDataToServer( buff );
@@ -346,7 +346,7 @@ public class WebCacheStreamHandler extends AbstractEventHandler
             sessInfo.squidChannel.write(modbb);
 
             // wait for squid response or a wakeup from the cache parent thread
-            retval = sessInfo.squidSelector.select(node.SELECT_TIMEOUT);
+            retval = sessInfo.squidSelector.select(app.SELECT_TIMEOUT);
 
             // cleanup the socket selector but stay in non-blocking mode to make sure
             // we don't ever hang reading the client side data back from squid
@@ -355,18 +355,18 @@ public class WebCacheStreamHandler extends AbstractEventHandler
             sessInfo.squidSelector.close();
             sessInfo.squidSelector = null;
 
-            // remove our session object from the node hashtable
+            // remove our session object from the app hashtable
             WebCacheParent.INSTANCE.RemoveSockObject(sessInfo);
 
             // select returned zero which means squid did NOT give us a response and we were
             // awakend from the cache parent thread so send the full request to the server
             if (retval == 0) {
                 logger.debug("===== CACHE MISS DETECTED =====");
-                this.node.incrementMetric( WebCacheApp.STAT_MISS );
-                node.statistics.IncMissCount();
+                this.app.incrementMetric( WebCacheApp.STAT_MISS );
+                app.statistics.IncMissCount();
                 sessInfo.clientBuffer.flip();
                 buff[0] = sessInfo.clientBuffer;
-                sessInfo.clientBuffer = ByteBuffer.allocate(node.CLIENT_BUFFSIZE);
+                sessInfo.clientBuffer = ByteBuffer.allocate(app.CLIENT_BUFFSIZE);
                 sess.sendDataToServer( buff );
                 return;
             }
@@ -374,8 +374,8 @@ public class WebCacheStreamHandler extends AbstractEventHandler
             // squid has the object in cache so nothing will be sent to the
             // server and we will return the response from cache
             logger.debug("===== CACHE HIT DETECTED =====");
-            this.node.incrementMetric( WebCacheApp.STAT_HIT );
-            node.statistics.IncHitCount();
+            this.app.incrementMetric( WebCacheApp.STAT_HIT );
+            app.statistics.IncHitCount();
 
             // clear the client buffer for the next request
             sessInfo.clientBuffer.clear();
@@ -384,7 +384,7 @@ public class WebCacheStreamHandler extends AbstractEventHandler
             sessInfo.squidChannel.configureBlocking(true);
 
             // stream the cached squid content back to the client
-            sess.sendStreamerToClient(new WebCacheStreamer(node,sessInfo));
+            sess.sendStreamerToClient(new WebCacheStreamer(app,sessInfo));
         }
 
         catch (Throwable t) {
@@ -430,7 +430,7 @@ public class WebCacheStreamHandler extends AbstractEventHandler
             ParentCleanup(sessInfo);
         }
 
-        node.statistics.AddMissBytes(chunk.remaining());
+        app.statistics.AddMissBytes(chunk.remaining());
         sess.sendDataToClient( data );
         return;
     }

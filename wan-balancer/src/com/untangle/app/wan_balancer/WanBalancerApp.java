@@ -85,8 +85,8 @@ public class WanBalancerApp extends AppBase
          * Save the settings
          */
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getAppSettings().getId().toString();
-        String settingsFilename = System.getProperty("uvm.settings.dir") + "/" + "wan-balancer/" + "settings_"  + nodeID + ".js";
+        String appID = this.getAppSettings().getId().toString();
+        String settingsFilename = System.getProperty("uvm.settings.dir") + "/" + "wan-balancer/" + "settings_"  + appID + ".js";
         try {
             settingsManager.save( settingsFilename, newSettings );
         } catch (SettingsManager.SettingsException e) {
@@ -141,9 +141,9 @@ public class WanBalancerApp extends AppBase
     protected void postInit() 
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getAppSettings().getId().toString();
+        String appID = this.getAppSettings().getId().toString();
         WanBalancerSettings readSettings = null;
-        String settingsFileName = System.getProperty("uvm.settings.dir") + "/wan-balancer/" + "settings_" + nodeID + ".js";
+        String settingsFileName = System.getProperty("uvm.settings.dir") + "/wan-balancer/" + "settings_" + appID + ".js";
         
         try {
             readSettings = settingsManager.load( WanBalancerSettings.class, settingsFileName );
@@ -262,8 +262,8 @@ public class WanBalancerApp extends AppBase
         /**
          * First we write a new 330-wan-balancer iptables script with the current settings
          */
-        String nodeID = this.getAppSettings().getId().toString();
-        String settingsFilename = System.getProperty("uvm.settings.dir") + "/" + "wan-balancer/" + "settings_"  + nodeID + ".js";
+        String appID = this.getAppSettings().getId().toString();
+        String settingsFilename = System.getProperty("uvm.settings.dir") + "/" + "wan-balancer/" + "settings_"  + appID + ".js";
         String scriptFilename = System.getProperty("uvm.bin.dir") + "/wan-balancer-sync-settings.py";
         String networkSettingFilename = System.getProperty("uvm.settings.dir") + "/" + "untangle-vm/" + "network.js";
         String output = UvmContextFactory.context().execManager().execOutput(scriptFilename + " -f " + settingsFilename + " -v -n " + networkSettingFilename);
@@ -313,7 +313,7 @@ public class WanBalancerApp extends AppBase
             try {
                 networkSettingsEvent( settings );
             } catch( Exception e ) {
-                logger.error( "Unable to reconfigure the NAT node" );
+                logger.error( "Unable to reconfigure the NAT app" );
             }
         }
     }

@@ -33,12 +33,12 @@ import com.untangle.uvm.vnet.AppTCPSession;
 public class AdBlockerHandler extends HttpEventHandler
 {
     private final Logger logger = Logger.getLogger(getClass());
-    private final AdBlockerApp node;
+    private final AdBlockerApp app;
 
-    public AdBlockerHandler( AdBlockerApp node )
+    public AdBlockerHandler( AdBlockerApp app )
     {
         super();
-        this.node = node;
+        this.app = app;
     }
 
     @Override
@@ -64,7 +64,7 @@ public class AdBlockerHandler extends HttpEventHandler
     protected HeaderToken doRequestHeader( AppTCPSession sess, HeaderToken requestHeader )
     {
 
-        node.incrementScanCount();
+        app.incrementScanCount();
 
         String nonce = checkRequest( sess, sess.getClientAddr(), 80, getRequestLine( sess ), requestHeader );
         if (logger.isDebugEnabled()) {
@@ -74,9 +74,9 @@ public class AdBlockerHandler extends HttpEventHandler
         if ( nonce == null ) {
             releaseRequest( sess );
         } else {
-            node.incrementBlockCount();
+            app.incrementBlockCount();
             String uri = getRequestLine( sess ).getRequestUri().toString();
-            Token[] response = node.generateResponse( nonce, sess, uri, requestHeader );
+            Token[] response = app.generateResponse( nonce, sess, uri, requestHeader );
 
             blockRequest( sess, response );
         }
@@ -134,15 +134,15 @@ public class AdBlockerHandler extends HttpEventHandler
      */
     private String checkRequest( AppTCPSession session, InetAddress clientIp, int port, RequestLineToken requestLine, HeaderToken header )
     {
-        if (!node.getSettings().getScanAds()){
+        if (!app.getSettings().getScanAds()){
             clientCookie( session, requestLine, header );
             return null;
         }
         
-        if (UrlMatchingUtil.checkClientList( clientIp, node.getSettings().getPassedClients()) != null) {
-            node.incrementPassCount();
+        if (UrlMatchingUtil.checkClientList( clientIp, app.getSettings().getPassedClients()) != null) {
+            app.incrementPassCount();
             AdBlockerEvent e = new AdBlockerEvent(Action. PASS, I18nUtil.marktr("client in pass list"), requestLine.getRequestLine() );
-            node.logEvent(e);
+            app.logEvent(e);
             return null;
         }
 
@@ -171,16 +171,16 @@ public class AdBlockerHandler extends HttpEventHandler
         if (rule != null) {
             if (rule.getBlocked() != null && !rule.getBlocked()) {
                 // pass
-                node.incrementPassCount();
+                app.incrementPassCount();
                 AdBlockerEvent e = new AdBlockerEvent(Action.PASS, "", requestLine.getRequestLine());
-                node.logEvent(e);
+                app.logEvent(e);
                 clientCookie( session, requestLine, header );
                 return null;
             } else {
                 // block
                 AdBlockerEvent event = new AdBlockerEvent(Action.BLOCK, rule.getString(), requestLine.getRequestLine());
-                node.logEvent(event);
-                return node.generateNonce(new BlockDetails(host, uri.toString()));
+                app.logEvent(event);
+                return app.generateNonce(new BlockDetails(host, uri.toString()));
             }
         }
 
@@ -192,19 +192,19 @@ public class AdBlockerHandler extends HttpEventHandler
     @SuppressWarnings("unused")
     private GenericRule findMatch(String uri)
     {
-        if (AdBlockerApp.USE_CACHE && node.getCache().containsKey(uri))
-            return node.getCache().get(uri);
+        if (AdBlockerApp.USE_CACHE && app.getCache().containsKey(uri))
+            return app.getCache().get(uri);
 
-        GenericRule result = node.getPassingUrlMatcher().findMatch(uri);
+        GenericRule result = app.getPassingUrlMatcher().findMatch(uri);
         if (result == null)
-            result = node.getBlockingUrlMatcher().findMatch(uri);
+            result = app.getBlockingUrlMatcher().findMatch(uri);
 
         if (AdBlockerApp.USE_CACHE && result != null) {
-            if (node.getCache().size() >= AdBlockerApp.MAX_CACHED_ENTRIES) {
-                node.getCache().clear();
+            if (app.getCache().size() >= AdBlockerApp.MAX_CACHED_ENTRIES) {
+                app.getCache().clear();
             }
 
-            node.getCache().put(uri, result);
+            app.getCache().put(uri, result);
         }
         return result;
     }
@@ -212,18 +212,18 @@ public class AdBlockerHandler extends HttpEventHandler
     private boolean checkPassRules(String host, RequestLineToken requestLine, String uri)
     {
         if (host.contains("untangle")) {
-            node.incrementPassCount();
+            app.incrementPassCount();
             AdBlockerEvent e = new AdBlockerEvent(Action.PASS, null, requestLine.getRequestLine());
-            node.logEvent(e);
+            app.logEvent(e);
             return true;
         }
 
-        GenericRule rule = UrlMatchingUtil.checkSiteList(host, uri, node.getSettings().getPassedUrls());
+        GenericRule rule = UrlMatchingUtil.checkSiteList(host, uri, app.getSettings().getPassedUrls());
         String category = (rule != null) ? rule.getDescription() : null;
         if (rule != null) {
-            node.incrementPassCount();
+            app.incrementPassCount();
             AdBlockerEvent e = new AdBlockerEvent(Action.PASS, category, requestLine.getRequestLine());
-            node.logEvent(e);
+            app.logEvent(e);
             return true;
         }
         return false;
@@ -234,7 +234,7 @@ public class AdBlockerHandler extends HttpEventHandler
     @SuppressWarnings("unchecked")    
     private void clientCookie( AppTCPSession session, RequestLineToken requestLine, HeaderToken h )
     {
-        if (!node.getSettings().getScanCookies())
+        if (!app.getSettings().getScanCookies())
             return;
         logger.debug("checking client cookie");
 
@@ -251,7 +251,7 @@ public class AdBlockerHandler extends HttpEventHandler
         }
 
         for (Iterator<String> i = cookies.iterator(); i.hasNext();) {
-            node.incrementScanCount();
+            app.incrementScanCount();
             String cookie = i.next();
             Map<String, String> cookieMap = CookieParser.parseCookie(cookie);
             String domain = cookieMap.get("domain");
@@ -259,21 +259,21 @@ public class AdBlockerHandler extends HttpEventHandler
                 domain = host;
             }
 
-            boolean badDomain = node.isCookieBlocked(domain);
+            boolean badDomain = app.isCookieBlocked(domain);
 
             if (badDomain) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("blocking cookie: " + domain);
                 }
-                node.incrementBlockCount();
-                node.logEvent(new CookieEvent(requestLine.getRequestLine(), domain));
+                app.incrementBlockCount();
+                app.logEvent(new CookieEvent(requestLine.getRequestLine(), domain));
                 i.remove();
                 if (logger.isDebugEnabled()) {
                     logger.debug("making cookieKiller: " + domain);
                 }
                 cookieKillers.addAll(makeCookieKillers(cookie, host));
             } else {
-                node.incrementPassCount();
+                app.incrementPassCount();
             }
         }
     }
@@ -355,7 +355,7 @@ public class AdBlockerHandler extends HttpEventHandler
 
     private HeaderToken serverCookie( AppTCPSession session, RequestLineToken rl, HeaderToken h )
     {
-        if (!node.getSettings().getScanCookies())
+        if (!app.getSettings().getScanCookies())
             return h;
         logger.debug("checking server cookie");
         // XXX if deferred 0ttl cookie, send it and nullify
@@ -373,7 +373,7 @@ public class AdBlockerHandler extends HttpEventHandler
         }
 
         for (Iterator<String> i = setCookies.iterator(); i.hasNext();) {
-            node.incrementScanCount();
+            app.incrementScanCount();
             String v = i.next();
 
             if (logger.isDebugEnabled()) {
@@ -400,20 +400,20 @@ public class AdBlockerHandler extends HttpEventHandler
                 }
             }
 
-            boolean badDomain = node.isCookieBlocked(domain);
+            boolean badDomain = app.isCookieBlocked(domain);
 
             if (badDomain) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("cookie deleted: " + domain);
                 }
-                node.incrementBlockCount();
-                node.logEvent(new CookieEvent(rl.getRequestLine(), domain));
+                app.incrementBlockCount();
+                app.logEvent(new CookieEvent(rl.getRequestLine(), domain));
                 i.remove();
             } else {
                 if (logger.isDebugEnabled()) {
                     logger.debug("cookie not deleted: " + domain);
                 }
-                node.incrementPassCount();
+                app.incrementPassCount();
             }
         }
 

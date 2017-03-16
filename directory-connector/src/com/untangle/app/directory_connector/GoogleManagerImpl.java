@@ -38,7 +38,7 @@ public class GoogleManagerImpl
     private GoogleSettings settings;
 
     /**
-     * The node that owns this manager
+     * The app that owns this manager
      */
     private DirectoryConnectorApp directoryConnector;
 

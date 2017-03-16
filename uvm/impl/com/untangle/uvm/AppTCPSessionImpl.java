@@ -363,7 +363,7 @@ public class AppTCPSessionImpl extends AppSessionImpl implements AppTCPSession
 
     protected void sendFINEvent( int side, ByteBuffer existingReadBuf )
     {
-        // First give the node a chance to do something...
+        // First give the app a chance to do something...
         ByteBuffer dataBuf = existingReadBuf != null ? existingReadBuf : EMPTY_BUF;
         if (side == CLIENT)
             dispatcher.dispatchTCPClientDataEnd( this, dataBuf );

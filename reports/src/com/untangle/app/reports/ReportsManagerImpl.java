@@ -35,7 +35,7 @@ public class ReportsManagerImpl implements ReportsManager
 
     private static ReportsManagerImpl instance = null;
 
-    private static ReportsApp node = null;
+    private static ReportsApp app = null;
     
     /**
      * This stores the table column metadata lookup results so we don't have to frequently lookup metadata
@@ -50,7 +50,7 @@ public class ReportsManagerImpl implements ReportsManager
     private static ResultSet cacheTablesResults = null;
     
     /**
-     * This stores all the node properties. It is used to reference information about the different nodes/categories
+     * This stores all the app properties. It is used to reference information about the different apps/categories
      */
     private List<AppProperties> appPropertiesList = null;
 
@@ -86,23 +86,23 @@ public class ReportsManagerImpl implements ReportsManager
         return instance;
     }
 
-    public void setReportsApp( ReportsApp node )
+    public void setReportsApp( ReportsApp app )
     {
-        ReportsManagerImpl.node = node;
+        ReportsManagerImpl.app = app;
     }
     
     public boolean isReportsEnabled()
     {
-        return node != null && AppSettings.AppState.RUNNING.equals(node.getRunState());
+        return app != null && AppSettings.AppState.RUNNING.equals(app.getRunState());
     }
 
     public List<ReportEntry> getReportEntries()
     {
-        if ( node == null ) {
-            throw new RuntimeException("Reports node not found");
+        if ( app == null ) {
+            throw new RuntimeException("Reports app not found");
         }
         
-        LinkedList<ReportEntry> allReportEntries = new LinkedList<ReportEntry>( node.getSettings().getReportEntries() );
+        LinkedList<ReportEntry> allReportEntries = new LinkedList<ReportEntry>( app.getSettings().getReportEntries() );
 
         Collections.sort( allReportEntries, new ReportEntryDisplayOrderComparator() );
 
@@ -189,21 +189,21 @@ public class ReportsManagerImpl implements ReportsManager
 
     public void setReportEntries( List<ReportEntry> newEntries )
     {
-        if ( node == null ) {
-            throw new RuntimeException("Reports node not found");
+        if ( app == null ) {
+            throw new RuntimeException("Reports app not found");
         }
 
         LinkedList<ReportEntry> newReportEntries = new LinkedList<ReportEntry>(newEntries);
         updateSystemReportEntries( newReportEntries, false );
 
-        ReportsSettings settings = node.getSettings();
+        ReportsSettings settings = app.getSettings();
         settings.setReportEntries( newReportEntries );
-        node.setSettings( settings );
+        app.setSettings( settings );
     }
 
     public ReportEntry getReportEntry( String category, String title )
     {
-        LinkedList<ReportEntry> entries = node.getSettings().getReportEntries();
+        LinkedList<ReportEntry> entries = app.getSettings().getReportEntries();
 
         if ( category == null || title == null )
             return null;
@@ -218,7 +218,7 @@ public class ReportsManagerImpl implements ReportsManager
 
     public ReportEntry getReportEntry( String uniqueId )
     {
-        LinkedList<ReportEntry> entries = node.getSettings().getReportEntries();
+        LinkedList<ReportEntry> entries = app.getSettings().getReportEntries();
 
         if ( uniqueId == null)
             return null;
@@ -297,15 +297,15 @@ public class ReportsManagerImpl implements ReportsManager
 
     public List<JSONObject> getDataForReportEntry( ReportEntry entry, final Date startDate, final Date endDate, SqlCondition[] extraConditions, final int limit )
     {
-        Connection conn = node.getDbConnection();
+        Connection conn = app.getDbConnection();
         PreparedStatement statement = entry.toSql( conn, startDate, endDate, extraConditions );
 
-        if ( node != null ) {
+        if ( app != null ) {
             // only flush if there are less than 10k events pending
             // if there are more than 10k then events are currently being flushed and the queue can be quite long
             // as such, just return the results for the events already in the DB instead of waiting up to several minutes
-            if (node.getEventsPendingCount() < 10000)
-                node.flushEvents();
+            if (app.getEventsPendingCount() < 10000)
+                app.flushEvents();
         }
 
         logger.info("Getting Data for : (" + entry.getCategory() + ") " + entry.getTitle());
@@ -365,7 +365,7 @@ public class ReportsManagerImpl implements ReportsManager
     public String[] getTables()
     {
         ArrayList<String> tableNames = new ArrayList<String>();        
-        Connection conn = node.getDbConnection();
+        Connection conn = app.getDbConnection();
         try {
             ResultSet rs = cacheTablesResults;
             if ( rs == null ) {
@@ -414,15 +414,15 @@ public class ReportsManagerImpl implements ReportsManager
         }
         if ( entry.getType() != ReportEntry.ReportEntryType.EVENT_LIST )
             throw new RuntimeException("Can only retrieve events for an EVENT_LIST type report entry");
-        if ( node != null ) {
+        if ( app != null ) {
             // only flush if there are less than 10k events pending
             // if there are more than 10k then events are currently being flushed and the queue can be quite long
             // as such, just return the results for the events already in the DB instead of waiting up to several minutes
-            if (node.getEventsPendingCount() < 10000)
-                node.flushEvents();
+            if (app.getEventsPendingCount() < 10000)
+                app.flushEvents();
         }
 
-        Connection conn = node.getDbConnection();
+        Connection conn = app.getDbConnection();
         PreparedStatement statement = entry.toSql( conn, null, null, extraConditions, limit );
 
         logger.info("Getting Events for : (" + entry.getCategory() + ") " + entry.getTitle());
@@ -469,12 +469,12 @@ public class ReportsManagerImpl implements ReportsManager
         }
         if ( entry.getType() != ReportEntry.ReportEntryType.EVENT_LIST )
             throw new RuntimeException("Can only retrieve events for an EVENT_LIST type report entry");
-        if ( node != null ) {
+        if ( app != null ) {
             // only flush if there are less than 10k events pending
             // if there are more than 10k then events are currently being flushed and the queue can be quite long
             // as such, just return the results for the events already in the DB instead of waiting up to several minutes
-            if (node.getEventsPendingCount() < 10000)
-                node.flushEvents();
+            if (app.getEventsPendingCount() < 10000)
+                app.flushEvents();
         }
 
         Date startDate = start;
@@ -483,7 +483,7 @@ public class ReportsManagerImpl implements ReportsManager
             logger.info("startDate not specified, using 1 day ago: " + startDate);
         }
         
-        Connection conn = node.getDbConnection();
+        Connection conn = app.getDbConnection();
         PreparedStatement statement = entry.toSql( conn, startDate, endDate, extraConditions, limit );
 
         logger.info("Getting Events for : (" + entry.getCategory() + ") " + entry.getTitle());
@@ -543,7 +543,7 @@ public class ReportsManagerImpl implements ReportsManager
     {
         LinkedList<String> adminEmailAddresses = new LinkedList<String>();
 
-        LinkedList<ReportsUser> reportsUsers = node.getSettings().getReportsUsers();
+        LinkedList<ReportsUser> reportsUsers = app.getSettings().getReportsUsers();
         Boolean reportsUserFound;
         LinkedList<AdminUserSettings> adminUsers = UvmContextFactory.context().adminManager().getSettings().getUsers();
         if((reportsUsers != null) && (adminUsers != null)){
@@ -672,7 +672,7 @@ public class ReportsManagerImpl implements ReportsManager
 
     private HashMap<String,String> getColumnMetaData( String tableName )
     {
-        Connection conn = node.getDbConnection();
+        Connection conn = app.getDbConnection();
         if ( conn == null ) {
             logger.warn("Failed to get DB Connection");
             return null;

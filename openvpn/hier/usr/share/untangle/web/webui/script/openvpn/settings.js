@@ -60,7 +60,7 @@ Ext.define('Webui.openvpn.settings', {
             hasRefresh: true,
             title: i18n._("Connected Remote Clients"),
             qtip: i18n._("The Connected Remote Clients list shows connected clients."),
-            dataFn: this.getRpcNode().getActiveClients,
+            dataFn: this.getRpcApp().getActiveClients,
             recordJavaClass: "com.untangle.app.openvpn.OpenVpnStatusEvent",
             fields: [{
                 name: "address",
@@ -124,7 +124,7 @@ Ext.define('Webui.openvpn.settings', {
             hasRefresh: true,
             title: i18n._("Remote Server Status"),
             qtip: i18n._("The Remote Server Status list shows the current status of the configured remote servers."),
-            dataFn: this.getRpcNode().getRemoteServersStatus,
+            dataFn: this.getRpcApp().getRemoteServersStatus,
             fields: [{
                 name: "name"
             }, {
@@ -393,19 +393,19 @@ Ext.define('Webui.openvpn.settings', {
                     // populate download links
                     var loadSemaphore = 3;
 
-                    this.settingsCmp.getRpcNode().getClientDistributionDownloadLink( Ext.bind(function(result, exception) {
+                    this.settingsCmp.getRpcApp().getClientDistributionDownloadLink( Ext.bind(function(result, exception) {
                         if(Ung.Util.handleException(exception)) return;
                         windowsLink.update('<a href="'+result+'" target="_blank">'+i18n._('Click here to download this client\'s Windows setup.exe file.') + '</a>');
                         if(--loadSemaphore == 0) { Ext.MessageBox.hide();}
                     }, this), this.record.data.name, "exe" );
 
-                    this.settingsCmp.getRpcNode().getClientDistributionDownloadLink( Ext.bind(function(result, exception) {
+                    this.settingsCmp.getRpcApp().getClientDistributionDownloadLink( Ext.bind(function(result, exception) {
                         if(Ung.Util.handleException(exception)) return;
                         chromebookLink.update('<a href="'+result+'" target="_blank">'+i18n._('Click here to download this client\'s configuration onc file for Chromebook.') + '</a>');
                         if(--loadSemaphore == 0) { Ext.MessageBox.hide();}
                     }, this), this.record.data.name, "onc" );
 
-                    this.settingsCmp.getRpcNode().getClientDistributionDownloadLink( Ext.bind(function(result, exception) {
+                    this.settingsCmp.getRpcApp().getClientDistributionDownloadLink( Ext.bind(function(result, exception) {
                         if(Ung.Util.handleException(exception)) return;
                         genericLink.update('<a href="'+result+'" target="_blank">'+i18n._('Click here to download this client\'s configuration zip file for other OSs (apple/linux/etc).') + '</a>');
                         untangleLink.update('<a href="'+result+'" target="_blank">'+i18n._('Click here to download this client\'s configuration file for remote Untangle OpenVPN clients.') + '</a>');
@@ -475,7 +475,7 @@ Ext.define('Webui.openvpn.settings', {
                     handler: Ext.bind(function(view, rowIndex, colIndex, item, e, record) {
                         if(record.data.internalId<0) {
                             Ext.MessageBox.alert(i18n._("Failed"), i18n._("New clients must be saved before downloading the client."));
-                        } else if(!Ung.Node.getCmp(this.nodeId).isRunning()) {
+                        } else if(!Ung.App.getCmp(this.appId).isRunning()) {
                             Ext.MessageBox.alert(i18n._("Failed"), i18n._("OpenVPN must be turned ON in order to download the client."));
                         } else {
                             this.getDistributeWindow().populate(record);

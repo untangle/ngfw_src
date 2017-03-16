@@ -44,15 +44,15 @@ public class SslInspectorUnparserEventHandler extends AbstractEventHandler
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private final SslInspectorApp node;
+    private final SslInspectorApp app;
     private final boolean clientSide;
 
     // ------------------------------------------------------------------------
 
-    protected SslInspectorUnparserEventHandler(boolean clientSide, SslInspectorApp node)
+    protected SslInspectorUnparserEventHandler(boolean clientSide, SslInspectorApp app)
     {
         this.clientSide = clientSide;
-        this.node = node;
+        this.app = app;
     }
 
     // ------------------------------------------------------------------------
@@ -196,8 +196,8 @@ public class SslInspectorUnparserEventHandler extends AbstractEventHandler
             if (logDetail == null) logDetail = (String) session.globalAttachment(AppTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME);
             if (logDetail == null) logDetail = session.getServerAddr().getHostAddress();
             SslInspectorLogEvent logevt = new SslInspectorLogEvent(session.sessionEvent(), 0, SslInspectorApp.STAT_ABANDONED, logDetail);
-            node.logEvent(logevt);
-            node.incrementMetric(SslInspectorApp.STAT_ABANDONED);
+            app.logEvent(logevt);
+            app.incrementMetric(SslInspectorApp.STAT_ABANDONED);
 
             // only log a warning if we didn't get an exception message for the event log            
             if (sslProblem == null) logger.warn("Session abandon on unparseWorker false return for " + logDetail);

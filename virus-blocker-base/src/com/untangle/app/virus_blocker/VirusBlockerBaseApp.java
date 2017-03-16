@@ -32,7 +32,7 @@ import com.untangle.uvm.vnet.Token;
 import com.untangle.app.http.HeaderToken;
 
 /**
- * Virus Node.
+ * Virus App.
  */
 public abstract class VirusBlockerBaseApp extends AppBase
 {
@@ -77,7 +77,7 @@ public abstract class VirusBlockerBaseApp extends AppBase
      * far off.
      */
     /*
-     * Cached in the node in case the base settings lose the values during a
+     * Cached in the app in case the base settings lose the values during a
      * save.
      */
     private Date lastSignatureUpdate = new Date();
@@ -86,7 +86,7 @@ public abstract class VirusBlockerBaseApp extends AppBase
     private boolean fileScannerAvailable = true;
     private VirusSettings settings;
 
-    /* This can't be static because it uses policy which is per node */
+    /* This can't be static because it uses policy which is per app */
     private final SessionMatcher VIRUS_SESSION_MATCHER = new SessionMatcher()
     {
         /* Kill all FTP, HTTP, SMTP, sessions */
@@ -146,10 +146,10 @@ public abstract class VirusBlockerBaseApp extends AppBase
 
         this.replacementGenerator = new VirusReplacementGenerator(getAppSettings());
 
-        String nodeName = getName();
+        String appName = getName();
     }
 
-    // VirusNode methods -------------------------------------------------
+    // VirusApp methods -------------------------------------------------
     public VirusSettings getSettings()
     {
         return this.settings;
@@ -338,9 +338,9 @@ public abstract class VirusBlockerBaseApp extends AppBase
     protected void postInit()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getAppSettings().getId().toString();
+        String appID = this.getAppSettings().getId().toString();
         VirusSettings readSettings = null;
-        String settingsFileName = System.getProperty("uvm.settings.dir") + "/" + this.getAppName() + "/" + "settings_" + nodeID + ".js";
+        String settingsFileName = System.getProperty("uvm.settings.dir") + "/" + this.getAppName() + "/" + "settings_" + appID + ".js";
 
         try {
             readSettings = settingsManager.load(VirusSettings.class, settingsFileName);
@@ -483,8 +483,8 @@ public abstract class VirusBlockerBaseApp extends AppBase
          * Save the settings
          */
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getAppSettings().getId().toString();
-        String settingsFileName = System.getProperty("uvm.settings.dir") + "/" + this.getAppName() + "/" + "settings_" + nodeID + ".js";
+        String appID = this.getAppSettings().getId().toString();
+        String settingsFileName = System.getProperty("uvm.settings.dir") + "/" + this.getAppName() + "/" + "settings_" + appID + ".js";
         try {
             settingsManager.save(settingsFileName, newSettings);
         } catch (SettingsManager.SettingsException e) {
@@ -504,7 +504,7 @@ public abstract class VirusBlockerBaseApp extends AppBase
         reconfigure();
 
         /**
-         * Reset existing sessions for this node only
+         * Reset existing sessions for this app only
          */
         killMatchingSessions(VIRUS_SESSION_MATCHER);
     }

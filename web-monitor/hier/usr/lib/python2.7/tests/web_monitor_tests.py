@@ -15,20 +15,20 @@ import global_functions
 import pprint
 
 defaultRackId = 1
-node = None
+app = None
 
 class WebMonitorTests(WebFilterBaseTests):
 
     @staticmethod
-    def nodeName():
+    def appName():
         return "web-monitor"
 
     @staticmethod
-    def shortNodeName():
+    def shortAppName():
         return "web-monitor"
 
     @staticmethod
-    def eventNodeName():
+    def eventAppName():
         return "web_monitor"
 
     @staticmethod
@@ -37,35 +37,35 @@ class WebMonitorTests(WebFilterBaseTests):
 
     @staticmethod
     def initialSetUp(self):
-        global node
-        if (uvmContext.appManager().isInstantiated(self.nodeName())):
-            raise Exception('node %s already instantiated' % self.nodeName())
-        node = uvmContext.appManager().instantiate(self.nodeName(), defaultRackId)
-        nodemetrics = uvmContext.metricManager().getMetrics(node.getAppSettings()["id"])
-        self.node = node
+        global app
+        if (uvmContext.appManager().isInstantiated(self.appName())):
+            raise Exception('app %s already instantiated' % self.appName())
+        app = uvmContext.appManager().instantiate(self.appName(), defaultRackId)
+        appmetrics = uvmContext.metricManager().getMetrics(app.getAppSettings()["id"])
+        self.app = app
 
     def test_016_flag_url(self):
         """verify basic URL blocking the the url block list"""
-        pre_events_scan = global_functions.get_app_metric_value(self.node, "scan")
-        pre_events_pass = global_functions.get_app_metric_value(self.node, "pass")
-        pre_events_block = global_functions.get_app_metric_value(self.node, "block")
+        pre_events_scan = global_functions.get_app_metric_value(self.app, "scan")
+        pre_events_pass = global_functions.get_app_metric_value(self.app, "pass")
+        pre_events_block = global_functions.get_app_metric_value(self.app, "block")
         self.block_url_list_add("test.untangle.com/test/testPage1.html")
         result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
         self.block_url_list_clear()
         assert ( result == 0 )
         # verify the faceplate counters have incremented.
-        post_events_scan = global_functions.get_app_metric_value(self.node, "scan")
-        post_events_pass = global_functions.get_app_metric_value(self.node, "pass")
-        post_events_block = global_functions.get_app_metric_value(self.node, "block")
+        post_events_scan = global_functions.get_app_metric_value(self.app, "scan")
+        post_events_pass = global_functions.get_app_metric_value(self.app, "pass")
+        post_events_block = global_functions.get_app_metric_value(self.app, "block")
         assert(pre_events_scan < post_events_scan)
         assert(pre_events_pass < post_events_pass)
         assert(pre_events_block == post_events_block)
 
     @staticmethod
     def finalTearDown(self):
-        global node
-        if node != None:
-            uvmContext.appManager().destroy( node.getAppSettings()["id"] )
-            node = None
+        global app
+        if app != None:
+            uvmContext.appManager().destroy( app.getAppSettings()["id"] )
+            app = None
 
-test_registry.registerNode("web-monitor", WebMonitorTests)
+test_registry.registerApp("web-monitor", WebMonitorTests)

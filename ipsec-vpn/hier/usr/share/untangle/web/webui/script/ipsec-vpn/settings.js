@@ -54,7 +54,7 @@ Ext.define('Webui.ipsec-vpn.settings', {
             hasDelete: false,
             hasRefresh: true,
             title: i18n._("Enabled IPsec Tunnels"),
-            dataFn: this.getRpcNode().getTunnelStatus,
+            dataFn: this.getRpcApp().getTunnelStatus,
             recordJavaClass: "com.untangle.app.ipsec_vpn.ConnectionStatusRecord",
             fields: [{
                 name: "type"
@@ -139,7 +139,7 @@ Ext.define('Webui.ipsec-vpn.settings', {
             hasDelete: false,
             hasRefresh: true,
             title: i18n._("Active VPN Sessions"),
-            dataFn: this.getRpcNode().getVirtualUsers,
+            dataFn: this.getRpcApp().getVirtualUsers,
             recordJavaClass: "com.untangle.app.ipsec_vpn.VirtualUserEntry",
             fields: [{
                 name: "clientAddress",
@@ -193,11 +193,11 @@ Ext.define('Webui.ipsec-vpn.settings', {
                     tooltip: i18n._("Click to disconnect client"),
                     handler: Ext.bind(function(view, rowIndex, colIndex, item, e, record) {
                         this.gridVirtualUsers.setLoading(i18n._("Disconnecting..."));
-                        this.getRpcNode().virtualUserDisconnect(Ext.bind(function(result, exception) {
+                        this.getRpcApp().virtualUserDisconnect(Ext.bind(function(result, exception) {
                             this.gridVirtualUsers.setLoading(false);
                             if(Ung.Util.handleException(exception)) return;
-                            // it takes a second or two for the node to HUP the pppd daemon and the ip-down script
-                            // to call the node to remove the client from the active user list so instead of
+                            // it takes a second or two for the app to HUP the pppd daemon and the ip-down script
+                            // to call the app to remove the client from the active user list so instead of
                             // calling reload here we just remove the disconnected row from the grid
                             this.gridVirtualUsers.getStore().remove(record);
                         }, this), record.get("clientAddress"), record.get("clientUsername"));
@@ -1481,12 +1481,12 @@ Ext.define('Webui.ipsec-vpn.settings', {
         Ung.Main.openConfig(Ung.Main.configMap["localDirectory"]);
     },
     configureRadius: function() {
-        var node = Ung.Main.getNode("directory-connector");
-        if (node != null) {
-            var nodeCmp = Ung.Node.getCmp(node.nodeId);
-            if (nodeCmp != null) {
-                Ung.Main.target="node.directory-connector.RADIUS Connector";
-                nodeCmp.loadSettings();
+        var app = Ung.Main.getApp("directory-connector");
+        if (app != null) {
+            var appCmp = Ung.App.getCmp(app.appId);
+            if (appCmp != null) {
+                Ung.Main.target="app.directory-connector.RADIUS Connector";
+                appCmp.loadSettings();
             }
         }
     },
@@ -1532,7 +1532,7 @@ Ext.define('Webui.ipsec-vpn.settings', {
             helpSource: 'ipsec_vpn_ipsec_state',
             title: i18n._("IPsec State"),
             text: i18n._("Refresh"),
-            dataFn: this.getRpcNode().getStateInfo
+            dataFn: this.getRpcApp().getStateInfo
         });
     },
     buildPagePolicyInfo: function() {
@@ -1540,7 +1540,7 @@ Ext.define('Webui.ipsec-vpn.settings', {
             helpSource: 'ipsec_vpn_ipsec_policy',
             title: i18n._("IPsec Policy"),
             text: i18n._("Refresh"),
-            dataFn: this.getRpcNode().getPolicyInfo
+            dataFn: this.getRpcApp().getPolicyInfo
         });
     },
     buildPageLogFile: function() {
@@ -1548,7 +1548,7 @@ Ext.define('Webui.ipsec-vpn.settings', {
             helpSource: 'ipsec_vpn_ipsec_log',
             title: i18n._("IPsec Log"),
             text: i18n._("Refresh"),
-            dataFn: this.getRpcNode().getLogFile
+            dataFn: this.getRpcApp().getLogFile
         });
     },
     buildPageVirtualLog: function() {
@@ -1556,7 +1556,7 @@ Ext.define('Webui.ipsec-vpn.settings', {
             helpSource: 'ipsec_vpn_l2tp_log',
             title: i18n._("L2TP Log"),
             text: i18n._("Refresh"),
-            dataFn: this.getRpcNode().getVirtualLogFile
+            dataFn: this.getRpcApp().getVirtualLogFile
         });
     },
     beforeSave: function(isApply, handler) {

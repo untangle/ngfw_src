@@ -55,7 +55,7 @@ public interface NewSessionRequest
 
     /**
      * Attaches the given object to this session
-     * This is visible and modifiable by all Nodes
+     * This is visible and modifiable by all Apps
      *
      * <p> An attached object may later be retrieved via the {@link
      * #attachment attachment} method.  Only one object may be

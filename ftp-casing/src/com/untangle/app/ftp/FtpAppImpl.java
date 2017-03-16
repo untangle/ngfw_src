@@ -17,7 +17,7 @@ import com.untangle.uvm.vnet.SessionEventHandler;
 import com.untangle.uvm.vnet.PipelineConnector;
 
 /**
- * FTP node implementation.
+ * FTP app implementation.
  */
 public class FtpAppImpl extends AppBase
 {
@@ -53,8 +53,8 @@ public class FtpAppImpl extends AppBase
 
     public void setFtpSettings(final FtpSettings newSettings)
     {
-        String nodeID = this.getAppSettings().getId().toString();
-        String settingsFile = System.getProperty("uvm.settings.dir") + "/ftp/settings_" + nodeID + ".js";
+        String appID = this.getAppSettings().getId().toString();
+        String settingsFile = System.getProperty("uvm.settings.dir") + "/ftp/settings_" + appID + ".js";
 
         try {
             UvmContextFactory.context().settingsManager().save( settingsFile, newSettings );
@@ -90,8 +90,8 @@ public class FtpAppImpl extends AppBase
     
     protected void postInit()
     {
-        String nodeID = this.getAppSettings().getId().toString();
-        String settingsFile = System.getProperty("uvm.settings.dir") + "/ftp/settings_" + nodeID + ".js";
+        String appID = this.getAppSettings().getId().toString();
+        String settingsFile = System.getProperty("uvm.settings.dir") + "/ftp/settings_" + appID + ".js";
 
         FtpSettings readSettings = null;
         logger.info("Loading settings from " + settingsFile );
@@ -119,7 +119,7 @@ public class FtpAppImpl extends AppBase
                 reconfigure();
             }
         } catch (Exception exn) {
-            logger.error("Could not apply node settings",exn);
+            logger.error("Could not apply app settings",exn);
         }
     }
 

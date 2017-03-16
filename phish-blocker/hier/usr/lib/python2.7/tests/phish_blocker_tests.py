@@ -18,9 +18,9 @@ import test_registry
 import global_functions
 
 defaultRackId = 1
-node = None
-nodeData = None
-nodeSSL = None
+app = None
+appData = None
+appSSL = None
 canRelay = True
 smtpServerHost = global_functions.testServerHost
 
@@ -42,7 +42,7 @@ def sendPhishMail(mailfrom="test", host=smtpServerHost, useTLS=False):
 class PhishBlockerTests(unittest2.TestCase):
 
     @staticmethod
-    def nodeName():
+    def appName():
         return "phish-blocker"
 
     @staticmethod
@@ -50,26 +50,26 @@ class PhishBlockerTests(unittest2.TestCase):
         return "untangle"
 
     @staticmethod
-    def nodeNameSpamCase():
+    def appNameSpamCase():
         return "smtp"
 
     @staticmethod
-    def nodeNameSSLInspector():
+    def appNameSSLInspector():
         return "ssl-inspector"
 
     @staticmethod
     def initialSetUp(self):
-        global node, nodeData, nodeSP, nodeDataSP, nodeSSL, canRelay
-        if (uvmContext.appManager().isInstantiated(self.nodeName())):
-            raise unittest2.SkipTest('node %s already instantiated' % self.nodeName())
-        node = uvmContext.appManager().instantiate(self.nodeName(), defaultRackId)
-        nodeData = node.getSettings()
-        nodeSP = uvmContext.appManager().app(self.nodeNameSpamCase())
-        nodeDataSP = nodeSP.getSmtpSettings()
-        if uvmContext.appManager().isInstantiated(self.nodeNameSSLInspector()):
-            raise Exception('node %s already instantiated' % self.nodeNameSSLInspector())
-        nodeSSL = uvmContext.appManager().instantiate(self.nodeNameSSLInspector(), defaultRackId)
-        # nodeSSL.start() # leave node off. node doesn't auto-start
+        global app, appData, appSP, appDataSP, appSSL, canRelay
+        if (uvmContext.appManager().isInstantiated(self.appName())):
+            raise unittest2.SkipTest('app %s already instantiated' % self.appName())
+        app = uvmContext.appManager().instantiate(self.appName(), defaultRackId)
+        appData = app.getSettings()
+        appSP = uvmContext.appManager().app(self.appNameSpamCase())
+        appDataSP = appSP.getSmtpSettings()
+        if uvmContext.appManager().isInstantiated(self.appNameSSLInspector()):
+            raise Exception('app %s already instantiated' % self.appNameSSLInspector())
+        appSSL = uvmContext.appManager().instantiate(self.appNameSSLInspector(), defaultRackId)
+        # appSSL.start() # leave app off. app doesn't auto-start
         try:
             canRelay = global_functions.send_test_email(mailhost=smtpServerHost)
         except Exception,e:
@@ -78,7 +78,7 @@ class PhishBlockerTests(unittest2.TestCase):
         
     def setUp(self):
         # flush quarantine.
-        curQuarantine = nodeSP.getQuarantineMaintenenceView()
+        curQuarantine = appSP.getQuarantineMaintenenceView()
         curQuarantineList = curQuarantine.listInboxes()
         for checkAddress in curQuarantineList['list']:
             if checkAddress['address']:
@@ -105,11 +105,11 @@ class PhishBlockerTests(unittest2.TestCase):
     def test_020_smtpQuarantinedPhishBlockerTest(self):
         if (not canRelay):
             raise unittest2.SkipTest('Unable to relay through' + smtpServerHost)
-        pre_events_quarantine = global_functions.get_app_metric_value(node,"quarantine")
+        pre_events_quarantine = global_functions.get_app_metric_value(app,"quarantine")
 
-        nodeData['smtpConfig']['scanWanMail'] = True
-        nodeData['smtpConfig']['strength'] = 5
-        node.setSettings(nodeData)
+        appData['smtpConfig']['scanWanMail'] = True
+        appData['smtpConfig']['strength'] = 5
+        app.setSettings(appData)
         # Get the IP address of test.untangle.com
         result = remote_control.run_command("host "+smtpServerHost, stdout=True)
         match = re.search(r'\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
@@ -146,16 +146,16 @@ class PhishBlockerTests(unittest2.TestCase):
         assert( found )
             
         # Check to see if the faceplate counters have incremented. 
-        post_events_quarantine = global_functions.get_app_metric_value(node,"quarantine")
+        post_events_quarantine = global_functions.get_app_metric_value(app,"quarantine")
         assert(pre_events_quarantine < post_events_quarantine)
         
     def test_030_smtpMarkPhishBlockerTest(self):
         if (not canRelay):
             raise unittest2.SkipTest('Unable to relay through' + smtpServerHost)
-        nodeData['smtpConfig']['scanWanMail'] = True
-        nodeData['smtpConfig']['strength'] = 5
-        nodeData['smtpConfig']['msgAction'] = "MARK"
-        node.setSettings(nodeData)
+        appData['smtpConfig']['scanWanMail'] = True
+        appData['smtpConfig']['strength'] = 5
+        appData['smtpConfig']['msgAction'] = "MARK"
+        app.setSettings(appData)
         # Get the IP address of test.untangle.com
         ip_address_testuntangle = socket.gethostbyname(smtpServerHost)
 
@@ -183,10 +183,10 @@ class PhishBlockerTests(unittest2.TestCase):
     def test_040_smtpDropPhishBlockerTest(self):
         if (not canRelay):
             raise unittest2.SkipTest('Unable to relay through' + smtpServerHost)
-        nodeData['smtpConfig']['scanWanMail'] = True
-        nodeData['smtpConfig']['strength'] = 5
-        nodeData['smtpConfig']['msgAction'] = "DROP"
-        node.setSettings(nodeData)
+        appData['smtpConfig']['scanWanMail'] = True
+        appData['smtpConfig']['strength'] = 5
+        appData['smtpConfig']['msgAction'] = "DROP"
+        app.setSettings(appData)
         # Get the IP address of test.untangle.com
         ip_address_testuntangle = socket.gethostbyname(smtpServerHost)
         sendPhishMail(mailfrom="test040")
@@ -209,14 +209,14 @@ class PhishBlockerTests(unittest2.TestCase):
         assert(tlsSMTPResult == 0)
        
     def test_060_checkTLSwSSLInspector(self):
-        global nodeSSL
+        global appSSL
         if (not canRelay):
             raise unittest2.SkipTest('Unable to relay through' + smtpServerHost)
         ip_address_testuntangle = socket.gethostbyname(smtpServerHost)
-        nodeSSL.start()
+        appSSL.start()
         tlsSMTPResult = sendPhishMail(mailfrom="test060", host=smtpServerHost, useTLS=True)
         # print "TLS  : " + str(tlsSMTPResult)
-        nodeSSL.stop()
+        appSSL.stop()
         assert(tlsSMTPResult == 0)
 
         events = global_functions.get_events('Phish Blocker','All Phish Events',None,1)
@@ -230,12 +230,12 @@ class PhishBlockerTests(unittest2.TestCase):
     
     @staticmethod
     def finalTearDown(self):
-        global node, nodeSSL
-        if node != None:
-            uvmContext.appManager().destroy( node.getAppSettings()["id"] )
-            node = None
-        if nodeSSL != None:
-            uvmContext.appManager().destroy( nodeSSL.getAppSettings()["id"] )
-            nodeSSL = None
+        global app, appSSL
+        if app != None:
+            uvmContext.appManager().destroy( app.getAppSettings()["id"] )
+            app = None
+        if appSSL != None:
+            uvmContext.appManager().destroy( appSSL.getAppSettings()["id"] )
+            appSSL = None
 
-test_registry.registerNode("phish-blocker", PhishBlockerTests)
+test_registry.registerApp("phish-blocker", PhishBlockerTests)

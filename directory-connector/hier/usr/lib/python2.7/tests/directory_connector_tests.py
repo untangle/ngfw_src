@@ -14,7 +14,7 @@ import platform
 from global_functions import uvmContext
 
 defaultRackId = 1
-node = None
+app = None
 AD_HOST = "10.112.56.47"
 AD_ADMIN = "ATSadmin"
 AD_PASSWORD = "passwd"
@@ -118,11 +118,11 @@ def add_ad_settings(ldap_secure=False):
     Add Active Directory Settings, with or without secure enabled
     """
     # test the settings before saving them.
-    test_result_string = node.getActiveDirectoryManager().getActiveDirectoryStatusForSettings(create_ad_settings(ldap_secure))
+    test_result_string = app.getActiveDirectoryManager().getActiveDirectoryStatusForSettings(create_ad_settings(ldap_secure))
     print 'AD test_result_string %s' % test_result_string
     if ("success" in test_result_string):
         # settings are good so save them
-        node.setSettings(create_ad_settings())
+        app.setSettings(create_ad_settings())
         return 0
     else:
         # settings failed 
@@ -133,11 +133,11 @@ def add_radius_settings():
     Add RADIUS settings
     """
     # test the settings before saving them.
-    test_result_string = node.getRadiusManager().getRadiusStatusForSettings(create_radius_settings(), "normal", "passwd")
+    test_result_string = app.getRadiusManager().getRadiusStatusForSettings(create_radius_settings(), "normal", "passwd")
     print 'RADIUS test_result_string %s' % test_result_string
     if ("success" in test_result_string):
         # settings are good so save them
-        node.setSettings(create_radius_settings())
+        app.setSettings(create_radius_settings())
         return 0
     else:
         # settings failed 
@@ -184,9 +184,9 @@ class DirectoryConnectorTests(unittest2.TestCase):
     Directory connector tests
     """
     @staticmethod
-    def nodeName():
+    def appName():
         """
-        Node name
+        App name
         """
         return "directory-connector"
 
@@ -199,18 +199,18 @@ class DirectoryConnectorTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        global node, AD_RESULT, AD_RESULT, RADIUS_RESULT
-        if (uvmContext.appManager().isInstantiated(self.nodeName())):
-            raise Exception('node %s already instantiated' % self.nodeName())
-        node = uvmContext.appManager().instantiate(self.nodeName(), defaultRackId)
+        global app, AD_RESULT, AD_RESULT, RADIUS_RESULT
+        if (uvmContext.appManager().isInstantiated(self.appName())):
+            raise Exception('app %s already instantiated' % self.appName())
+        app = uvmContext.appManager().instantiate(self.appName(), defaultRackId)
         AD_RESULT = subprocess.call(["ping", "-c", "1", AD_HOST], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         RADIUS_RESULT = subprocess.call(["ping", "-c", "1", RADIUS_HOST], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         # enable google & facebook
-        appSettings = node.getSettings()
+        appSettings = app.getSettings()
         appSettings.get('googleSettings')['authenticationEnabled'] = True
         appSettings.get('facebookSettings')['authenticationEnabled'] = True
-        node.setSettings(appSettings)
+        app.setSettings(appSettings)
 
         
     def setUp(self):
@@ -330,10 +330,10 @@ class DirectoryConnectorTests(unittest2.TestCase):
         assert (result == 0)
 
         string_to_find = "authentication success"
-        nodeData = node.getSettings()
-        nodeAD = node.getActiveDirectoryManager()
-        nodeADData = nodeAD.getActiveDirectoryStatusForSettings(nodeData)  # if settings are successful
-        found = nodeADData.count(string_to_find)
+        appData = app.getSettings()
+        appAD = app.getActiveDirectoryManager()
+        appADData = appAD.getActiveDirectoryStatusForSettings(appData)  # if settings are successful
+        found = appADData.count(string_to_find)
         
         assert (found)
 
@@ -348,10 +348,10 @@ class DirectoryConnectorTests(unittest2.TestCase):
         assert (result == 0)
 
         string_to_find = "authentication success"
-        nodeData = node.getSettings()
-        nodeAD = node.getActiveDirectoryManager()
-        nodeADData = nodeAD.getActiveDirectoryStatusForSettings(nodeData)  # if settings are successful
-        found = nodeADData.count(string_to_find)
+        appData = app.getSettings()
+        appAD = app.getActiveDirectoryManager()
+        appADData = appAD.getActiveDirectoryStatusForSettings(appData)  # if settings are successful
+        found = appADData.count(string_to_find)
         
         assert (found)
 
@@ -359,7 +359,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
         """
         Get list of AD users, non-secure
         """
-        global nodeData
+        global appData
         if (AD_RESULT != 0):
             raise unittest2.SkipTest("No AD server available")
         # Check for a list of Active Directory Users 
@@ -367,13 +367,13 @@ class DirectoryConnectorTests(unittest2.TestCase):
         print 'result %s' % result
         assert (result == 0)
 
-        nodeData = node.getSettings()
-        nodeAD = node.getActiveDirectoryManager()
-        nodeADData = nodeAD.getActiveDirectoryUserEntries()['list']  # list of users in AD
+        appData = app.getSettings()
+        appAD = app.getActiveDirectoryManager()
+        appADData = appAD.getActiveDirectoryUserEntries()['list']  # list of users in AD
         result = 1
         # check for known user "tempuser" in AD user list
-        for i in range(len(nodeADData)):
-            userName = nodeADData[i]['uid'] 
+        for i in range(len(appADData)):
+            userName = appADData[i]['uid'] 
             if (AD_USER in userName):
                 result = 0
             # print 'userName %s' % userName
@@ -383,7 +383,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
         """
         Get list of AD users, secure
         """
-        global nodeData
+        global appData
         if (AD_RESULT != 0):
             raise unittest2.SkipTest("No AD server available")
         # Check for a list of Active Directory Users 
@@ -391,13 +391,13 @@ class DirectoryConnectorTests(unittest2.TestCase):
         print 'result %s' % result
         assert (result == 0)
 
-        nodeData = node.getSettings()
-        nodeAD = node.getActiveDirectoryManager()
-        nodeADData = nodeAD.getActiveDirectoryUserEntries()['list']  # list of users in AD
+        appData = app.getSettings()
+        appAD = app.getActiveDirectoryManager()
+        appADData = appAD.getActiveDirectoryUserEntries()['list']  # list of users in AD
         result = 1
         # check for known user "tempuser" in AD user list
-        for i in range(len(nodeADData)):
-            userName = nodeADData[i]['uid'] 
+        for i in range(len(appADData)):
+            userName = appADData[i]['uid'] 
             if (AD_USER in userName):
                 result = 0
             # print 'userName %s' % userName
@@ -409,11 +409,11 @@ class DirectoryConnectorTests(unittest2.TestCase):
         """
         if (RADIUS_RESULT != 0):
             raise unittest2.SkipTest("No RADIUS server available")
-        node.setSettings(create_radius_settings())
+        app.setSettings(create_radius_settings())
 
         attempts = 0
         while attempts < 3:
-            test_result_string = node.getRadiusManager().getRadiusStatusForSettings(create_radius_settings(), "normal", "passwd")
+            test_result_string = app.getRadiusManager().getRadiusStatusForSettings(create_radius_settings(), "normal", "passwd")
             if ("success" in test_result_string):
                 break
             else:
@@ -437,7 +437,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
         if googlePassword != None:
             print "password: %s\n" % (len(googlePassword)*"*")
 
-        result = node.getGoogleManager().authenticate( googleUserName, googlePassword )
+        result = app.getGoogleManager().authenticate( googleUserName, googlePassword )
         print result
         assert ( result == True )
 
@@ -449,7 +449,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
             raise unittest2.SkipTest('Not supported on ARM')
         googleUserName, googlePassword = ("badusername@untangle.com","xxxxxxxxx")
 
-        result = node.getGoogleManager().authenticate( googleUserName, googlePassword )
+        result = app.getGoogleManager().authenticate( googleUserName, googlePassword )
         print result
         assert ( result == False )
 
@@ -464,7 +464,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
         if facebookPassword != None:
             print "password: %s\n" % (len(facebookPassword)*"*")
 
-        result = node.getFacebookManager().authenticate( facebookUserName, facebookPassword )
+        result = app.getFacebookManager().authenticate( facebookUserName, facebookPassword )
         print result
         assert ( result == True )
 
@@ -476,7 +476,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
             raise unittest2.SkipTest('Not supported on ARM')
         facebookUserName, facebookPassword = ("badusername@untangle.com","xxxxxxxxx")
 
-        result = node.getFacebookManager().authenticate( facebookUserName, facebookPassword )
+        result = app.getFacebookManager().authenticate( facebookUserName, facebookPassword )
         print result
         assert ( result == False )
         
@@ -485,9 +485,9 @@ class DirectoryConnectorTests(unittest2.TestCase):
         """
         Tear down
         """
-        global node
-        if node != None:
-            uvmContext.appManager().destroy( node.getAppSettings()["id"] )
-            node = None
+        global app
+        if app != None:
+            uvmContext.appManager().destroy( app.getAppSettings()["id"] )
+            app = None
 
-test_registry.registerNode("directory-connector", DirectoryConnectorTests)
+test_registry.registerApp("directory-connector", DirectoryConnectorTests)

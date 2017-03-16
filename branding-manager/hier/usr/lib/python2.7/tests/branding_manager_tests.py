@@ -16,8 +16,8 @@ import global_functions
 from global_functions import uvmContextLongTimeout
 import pdb
 
-node = None
-nodeWeb = None
+app = None
+appWeb = None
 newCompanyName = "Some new long name"
 newURL = "https://test.untangle.com/cgi-bin/myipaddress.py"
 newContactName = "Skynet"
@@ -26,7 +26,7 @@ newContactEmail = "skynet@untangle.com"
 defaultRackId = 1
 
 def setDefaultBrandingManagerSettings():
-    nodeData = {
+    appData = {
         "javaClass": "com.untangle.app.branding_manager.BrandingManagerSettings",
         "companyName": "Untangle",
         "companyUrl": "http://untangle.com/",
@@ -35,16 +35,16 @@ def setDefaultBrandingManagerSettings():
         "bannerMessage": None,
         "defaultLogo": True
     }
-    node.setSettings(nodeData)
+    app.setSettings(appData)
     
 class BrandingManagerTests(unittest2.TestCase):
     
     @staticmethod
-    def nodeName():
+    def appName():
         return "branding-manager"
 
     @staticmethod
-    def nodeNameWeb():
+    def appNameWeb():
         return "web-filter"
 
     @staticmethod
@@ -53,16 +53,16 @@ class BrandingManagerTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        global nodeData, node, nodeWeb
-        if (uvmContextLongTimeout.appManager().isInstantiated(self.nodeName())):
-            print "ERROR: Node %s already installed" % self.nodeName()
-            raise Exception('node %s already instantiated' % self.nodeName())
-        node = uvmContextLongTimeout.appManager().instantiate(self.nodeName(), defaultRackId)
-        nodeData = node.getSettings()
-        if (uvmContextLongTimeout.appManager().isInstantiated(self.nodeNameWeb())):
-            print "ERROR: Node %s already installed" % self.nodeNameWeb()
-            raise Exception('node %s already instantiated' % self.nodeNameWeb())
-        nodeWeb = uvmContextLongTimeout.appManager().instantiate(self.nodeNameWeb(), defaultRackId)
+        global appData, app, appWeb
+        if (uvmContextLongTimeout.appManager().isInstantiated(self.appName())):
+            print "ERROR: App %s already installed" % self.appName()
+            raise Exception('app %s already instantiated' % self.appName())
+        app = uvmContextLongTimeout.appManager().instantiate(self.appName(), defaultRackId)
+        appData = app.getSettings()
+        if (uvmContextLongTimeout.appManager().isInstantiated(self.appNameWeb())):
+            print "ERROR: App %s already installed" % self.appNameWeb()
+            raise Exception('app %s already instantiated' % self.appNameWeb())
+        appWeb = uvmContextLongTimeout.appManager().instantiate(self.appNameWeb(), defaultRackId)
 
     def setUp(self):
         pass
@@ -73,12 +73,12 @@ class BrandingManagerTests(unittest2.TestCase):
         assert (result == 0)
 
     def test_020_changeBranding(self):
-        global node, nodeWeb, nodeData
-        nodeData['companyName'] = newCompanyName;
-        nodeData['companyUrl'] = newURL;
-        nodeData['contactName'] = newContactName;
-        nodeData['contactEmail'] = newContactEmail;
-        node.setSettings(nodeData)
+        global app, appWeb, appData
+        appData['companyName'] = newCompanyName;
+        appData['companyUrl'] = newURL;
+        appData['contactName'] = newContactName;
+        appData['contactEmail'] = newContactEmail;
+        app.setSettings(appData)
         # test blockpage has all the changes
         result = remote_control.run_command("wget -q -O - \"$@\" www.playboy.com",stdout=True)
 
@@ -129,13 +129,13 @@ class BrandingManagerTests(unittest2.TestCase):
         assert(newCompanyName in matchText)
 
     def test_021_changeBranding_bannerMessage_added(self):
-        global node, nodeWeb, nodeData
-        nodeData['companyName'] = newCompanyName;
-        nodeData['companyUrl'] = newURL;
-        nodeData['contactName'] = newContactName;
-        nodeData['contactEmail'] = newContactEmail;
-        nodeData['bannerMessage'] = "A regulation banner requirement containing a mix of text including <b>html</b> and\nmultiple\nlines"
-        node.setSettings(nodeData)
+        global app, appWeb, appData
+        appData['companyName'] = newCompanyName;
+        appData['companyUrl'] = newURL;
+        appData['contactName'] = newContactName;
+        appData['contactEmail'] = newContactEmail;
+        appData['bannerMessage'] = "A regulation banner requirement containing a mix of text including <b>html</b> and\nmultiple\nlines"
+        app.setSettings(appData)
 
         internalAdmin = None
         result = remote_control.run_command("wget -q -O - \"$@\" " + global_functions.get_http_url() ,stdout=True)
@@ -146,13 +146,13 @@ class BrandingManagerTests(unittest2.TestCase):
             assert(False)
         
     def test_022_changeBranding_bannerMessage_removed(self):
-        global node, nodeWeb, nodeData
-        nodeData['companyName'] = newCompanyName;
-        nodeData['companyUrl'] = newURL;
-        nodeData['contactName'] = newContactName;
-        nodeData['contactEmail'] = newContactEmail;
-        nodeData['bannerMessage'] = ""
-        node.setSettings(nodeData)
+        global app, appWeb, appData
+        appData['companyName'] = newCompanyName;
+        appData['companyUrl'] = newURL;
+        appData['contactName'] = newContactName;
+        appData['contactEmail'] = newContactEmail;
+        appData['bannerMessage'] = ""
+        app.setSettings(appData)
 
         internalAdmin = None
         result = remote_control.run_command("wget -q -O - \"$@\" " + global_functions.get_http_url() ,stdout=True)
@@ -164,14 +164,14 @@ class BrandingManagerTests(unittest2.TestCase):
         
     @staticmethod
     def finalTearDown(self):
-        global node, nodeWeb
-        if node != None:
+        global app, appWeb
+        if app != None:
             # Restore original settings to return to initial settings
             setDefaultBrandingManagerSettings()
-            uvmContextLongTimeout.appManager().destroy( node.getAppSettings()["id"] )
-            node = None
-        if nodeWeb != None:
-            uvmContextLongTimeout.appManager().destroy( nodeWeb.getAppSettings()["id"] )
-            nodeWeb = None
+            uvmContextLongTimeout.appManager().destroy( app.getAppSettings()["id"] )
+            app = None
+        if appWeb != None:
+            uvmContextLongTimeout.appManager().destroy( appWeb.getAppSettings()["id"] )
+            appWeb = None
 
-test_registry.registerNode("branding-manager", BrandingManagerTests)
+test_registry.registerApp("branding-manager", BrandingManagerTests)

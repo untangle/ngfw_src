@@ -36,7 +36,7 @@ public class HttpUnparserEventHandler extends AbstractEventHandler
     private static final int CONTENT_LENGTH_ENCODING = 1;
     private static final int CHUNKED_ENCODING = 2;
 
-    private final HttpImpl node;
+    private final HttpImpl app;
     private final boolean clientSide;
     
     // used to keep request with header
@@ -47,10 +47,10 @@ public class HttpUnparserEventHandler extends AbstractEventHandler
         protected int transferEncoding;
     }
 
-    public HttpUnparserEventHandler( boolean clientSide, HttpImpl node )
+    public HttpUnparserEventHandler( boolean clientSide, HttpImpl app )
     {
         this.clientSide = clientSide;
-        this.node = node;
+        this.app = app;
     }
 
     @Override
@@ -172,7 +172,7 @@ public class HttpUnparserEventHandler extends AbstractEventHandler
         HttpUnparserSessionState state = (HttpUnparserSessionState) session.attachment( STATE_KEY );
         
         if (logger.isDebugEnabled()) {
-            logger.debug(" got unparse event node: " + token);
+            logger.debug(" got unparse event app: " + token);
         }
 
         if (token instanceof StatusLine) {

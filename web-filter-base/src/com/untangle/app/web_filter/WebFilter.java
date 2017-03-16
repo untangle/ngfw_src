@@ -9,7 +9,7 @@ import com.untangle.uvm.app.GenericRule;
 import com.untangle.uvm.app.App;
 
 /**
- * Interface the the WebFilter Node.
+ * Interface the the WebFilter App.
  *
  */
 public interface WebFilter extends App

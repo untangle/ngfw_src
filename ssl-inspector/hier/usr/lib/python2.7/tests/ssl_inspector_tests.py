@@ -15,8 +15,8 @@ import test_registry
 import global_functions
 
 defaultRackId = 1
-node = None
-nodeWeb = None
+app = None
+appWeb = None
 pornServerName="www.pornhub.com"
 testedServerName="news.ycombinator.com"
 testedServerURLParts = testedServerName.split(".")
@@ -49,7 +49,7 @@ def createSSLInspectRule(url=testedServerDomainWildcard):
 
 def findRule(target_description):
     found = False
-    for rule in nodeData['ignoreRules']['list']:
+    for rule in appData['ignoreRules']['list']:
         if rule['description'] == target_description:
             found = True
             break
@@ -57,40 +57,40 @@ def findRule(target_description):
     
 def addBlockedUrl(url, blocked=True, flagged=True, description="description"):
     newRule = { "blocked": blocked, "description": description, "flagged": flagged, "javaClass": "com.untangle.uvm.app.GenericRule", "string": url }
-    rules = nodeWeb.getBlockedUrls()
+    rules = appWeb.getBlockedUrls()
     rules["list"].append(newRule)
-    nodeWeb.setBlockedUrls(rules)
+    appWeb.setBlockedUrls(rules)
 
 def nukeBlockedUrls():
-    rules = nodeWeb.getBlockedUrls()
+    rules = appWeb.getBlockedUrls()
     rules["list"] = []
-    nodeWeb.setBlockedUrls(rules)
+    appWeb.setBlockedUrls(rules)
 
 class SslInspectorTests(unittest2.TestCase):
 
     @staticmethod
-    def nodeName():
+    def appName():
         return "ssl-inspector"
 
     @staticmethod
-    def nodeWeb():
+    def appWeb():
         return "web-filter"
 
     @staticmethod
     def initialSetUp(self):
-        global node, nodeData, nodeWeb, nodeWebData
-        if uvmContext.appManager().isInstantiated(self.nodeName()):
-            raise Exception('node %s already instantiated' % self.nodeName())
-        node = uvmContext.appManager().instantiate(self.nodeName(), defaultRackId)
-        node.start() # must be called since the node doesn't auto-start
-        nodeData = node.getSettings()
-        if (uvmContext.appManager().isInstantiated(self.nodeWeb())):
-            raise Exception('node %s already instantiated' % self.nodeWeb())
-        nodeWeb = uvmContext.appManager().instantiate(self.nodeWeb(), defaultRackId)
-        nodeWebData = nodeWeb.getSettings()
+        global app, appData, appWeb, appWebData
+        if uvmContext.appManager().isInstantiated(self.appName()):
+            raise Exception('app %s already instantiated' % self.appName())
+        app = uvmContext.appManager().instantiate(self.appName(), defaultRackId)
+        app.start() # must be called since the app doesn't auto-start
+        appData = app.getSettings()
+        if (uvmContext.appManager().isInstantiated(self.appWeb())):
+            raise Exception('app %s already instantiated' % self.appWeb())
+        appWeb = uvmContext.appManager().instantiate(self.appWeb(), defaultRackId)
+        appWebData = appWeb.getSettings()
 
-        nodeData['ignoreRules']['list'].insert(0,createSSLInspectRule(testedServerDomainWildcard))
-        node.setSettings(nodeData)
+        appData['ignoreRules']['list'].insert(0,createSSLInspectRule(testedServerDomainWildcard))
+        app.setSettings(appData)
         
     def setUp(self):
         pass
@@ -183,12 +183,12 @@ class SslInspectorTests(unittest2.TestCase):
 
     @staticmethod
     def finalTearDown(self):
-        global node, nodeWeb
-        if node != None:
-            uvmContext.appManager().destroy( node.getAppSettings()["id"] )
-            node = None
-        if nodeWeb != None:
-            uvmContext.appManager().destroy( nodeWeb.getAppSettings()["id"])
-            nodeWeb = None
+        global app, appWeb
+        if app != None:
+            uvmContext.appManager().destroy( app.getAppSettings()["id"] )
+            app = None
+        if appWeb != None:
+            uvmContext.appManager().destroy( appWeb.getAppSettings()["id"])
+            appWeb = None
 
-test_registry.registerNode("ssl-inspector", SslInspectorTests)
+test_registry.registerApp("ssl-inspector", SslInspectorTests)

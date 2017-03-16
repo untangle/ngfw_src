@@ -15,7 +15,7 @@ import time
 
 LICENSES_JSON_OBJ = json.loads(open('/usr/share/untangle/conf/licenses/licenses.js', 'r').read())
 
-def checkLicense(node):
+def checkLicense(app):
     wans = []
 
     try:
@@ -29,7 +29,7 @@ def checkLicense(node):
         for license in LICENSES_JSON_OBJ['licenses']['list']:
             if license['name'] == None:
                 continue;
-            if license['name'] != node:
+            if license['name'] != app:
                 continue;
 
             validity = license['valid']
@@ -53,12 +53,12 @@ def checkLicense(node):
         print "Exception:", e
         return False;
 
-    print "License not found for: " + node ;
+    print "License not found for: " + app ;
     return False;
 
 
 if len(sys.argv) < 2:
-    print "usage: %s node" % sys.argv[0]
+    print "usage: %s app" % sys.argv[0]
     sys.exit(1)
 
 isValid = checkLicense(sys.argv[1]);

@@ -11,7 +11,7 @@ import com.untangle.uvm.app.RuleCondition;
 @SuppressWarnings("serial")
 public class BandwidthControlRuleCondition extends RuleCondition 
 {
-    private BandwidthControlApp node;
+    private BandwidthControlApp app;
     
     public BandwidthControlRuleCondition( )
     {

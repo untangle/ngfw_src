@@ -244,7 +244,7 @@ public interface UvmContext
 
     /**
      * Create a new singleton exec manager
-     * This is usual for nodes that need their own exec managers
+     * This is usual for apps that need their own exec managers
      * You must call close on the execmanager!
      */
     ExecManager createExecManager();

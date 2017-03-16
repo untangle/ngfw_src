@@ -9,7 +9,7 @@ Ext.define('Webui.ad-blocker.settings', {
         return i18n._("Ad Blocker blocks advertising content and tracking cookies for scanned web traffic.");
     },
     initComponent: function() {
-        this.lastUpdate = this.getRpcNode().getListLastUpdate();
+        this.lastUpdate = this.getRpcApp().getListLastUpdate();
         this.genericRuleFields = Ung.Util.getGenericRuleFields(this);
         this.buildOptions();
         this.buildAdFilters();
@@ -124,12 +124,12 @@ Ext.define('Webui.ad-blocker.settings', {
                     text: i18n._("Update"),
                     handler: Ext.bind(function() {
                         Ext.MessageBox.wait(i18n._("Updating filters..."), i18n._("Please wait"));
-                        this.getRpcNode().updateList(Ext.bind(function(result, exception) {
+                        this.getRpcApp().updateList(Ext.bind(function(result, exception) {
                             if(Ung.Util.handleException(exception)){
                                 Ext.MessageBox.hide();
                                 return;
                             }
-                            this.getRpcNode().getSettings(Ext.bind(function(result,exception) {
+                            this.getRpcApp().getSettings(Ext.bind(function(result,exception) {
                                 if(Ung.Util.handleException(exception)){
                                     Ext.MessageBox.hide();
                                     return;

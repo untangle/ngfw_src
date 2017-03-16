@@ -5,12 +5,12 @@
 # about the IP address we dummy up the other values
 
 from netaddr import IPNetwork
-from uvm.settings_reader import get_node_settings_item
+from uvm.settings_reader import get_app_settings_item
 import os
 import sys
 
-# Read the L2TP virtual address pool from the IPsec node settings file
-addressPool = get_node_settings_item("ipsec-vpn", "virtualAddressPool")
+# Read the L2TP virtual address pool from the IPsec app settings file
+addressPool = get_app_settings_item("ipsec-vpn", "virtualAddressPool")
 
 # If not found we remove any existing interface status file and exit
 if addressPool == None:
@@ -34,8 +34,8 @@ file.write("\"interfaceId\": 251");
 file.write("}");
 file.close()
 
-# Read the GRE network address pool from the IPsec node settings file
-networkPool = get_node_settings_item("ipsec-vpn", "virtualNetworkPool")
+# Read the GRE network address pool from the IPsec app settings file
+networkPool = get_app_settings_item("ipsec-vpn", "virtualNetworkPool")
 
 # If not found we remove any existing interface status file and exit
 if networkPool == None:

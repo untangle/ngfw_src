@@ -23,12 +23,12 @@ import org.apache.log4j.Level;
 public class CaptivePortalTrafficHandler extends AbstractEventHandler
 {
     private final Logger logger = Logger.getLogger(getClass());
-    private CaptivePortalApp node = null;
+    private CaptivePortalApp app = null;
 
-    public CaptivePortalTrafficHandler( CaptivePortalApp node )
+    public CaptivePortalTrafficHandler( CaptivePortalApp app )
     {
-        super(node);
-        this.node = node;
+        super(app);
+        this.app = app;
     }
 
     // TCP stuff --------------------------------------------------
@@ -51,32 +51,32 @@ public class CaptivePortalTrafficHandler extends AbstractEventHandler
         }
 
         // next check is to see if the user is already authenticated
-        if (node.isClientAuthenticated(sessreq.getOrigClientAddr()) == true) {
-            node.incrementBlinger(CaptivePortalApp.BlingerType.SESSALLOW, 1);
+        if (app.isClientAuthenticated(sessreq.getOrigClientAddr()) == true) {
+            app.incrementBlinger(CaptivePortalApp.BlingerType.SESSALLOW, 1);
             sessreq.release();
             return;
         }
 
         // not authenticated so check both of the pass lists
-        PassedAddress passed = node.isSessionAllowed(sessreq.getOrigClientAddr(), sessreq.getNewServerAddr());
+        PassedAddress passed = app.isSessionAllowed(sessreq.getOrigClientAddr(), sessreq.getNewServerAddr());
 
         if (passed != null) {
             if (passed.getLog() == true) {
                 CaptureRuleEvent logevt = new CaptureRuleEvent(sessreq.sessionEvent(), false);
-                node.logEvent(logevt);
+                app.logEvent(logevt);
             }
 
-            node.incrementBlinger(CaptivePortalApp.BlingerType.SESSALLOW, 1);
+            app.incrementBlinger(CaptivePortalApp.BlingerType.SESSALLOW, 1);
             sessreq.release();
             return;
         }
 
         // not authenticated and no pass list match so check the rules
-        CaptureRule rule = node.checkCaptureRules(sessreq);
+        CaptureRule rule = app.checkCaptureRules(sessreq);
 
         // by default we allow traffic so if there is no rule pass the traffic
         if (rule == null) {
-            node.incrementBlinger(CaptivePortalApp.BlingerType.SESSALLOW, 1);
+            app.incrementBlinger(CaptivePortalApp.BlingerType.SESSALLOW, 1);
             sessreq.release();
             return;
         }
@@ -84,9 +84,9 @@ public class CaptivePortalTrafficHandler extends AbstractEventHandler
         // if we found a pass rule then log and let the traffic pass
         if (rule.getCapture() == false) {
             CaptureRuleEvent logevt = new CaptureRuleEvent(sessreq.sessionEvent(), rule);
-            node.logEvent(logevt);
+            app.logEvent(logevt);
 
-            node.incrementBlinger(CaptivePortalApp.BlingerType.SESSALLOW, 1);
+            app.incrementBlinger(CaptivePortalApp.BlingerType.SESSALLOW, 1);
             sessreq.release();
             return;
         }
@@ -102,8 +102,8 @@ public class CaptivePortalTrafficHandler extends AbstractEventHandler
 
         // not yet allowed and we found a block rule so shut it down
         CaptureRuleEvent logevt = new CaptureRuleEvent(sessreq.sessionEvent(), rule);
-        node.logEvent(logevt);
-        node.incrementBlinger(CaptivePortalApp.BlingerType.SESSBLOCK, 1);
+        app.logEvent(logevt);
+        app.incrementBlinger(CaptivePortalApp.BlingerType.SESSBLOCK, 1);
         sessreq.rejectReturnRst();
     }
 
@@ -113,32 +113,32 @@ public class CaptivePortalTrafficHandler extends AbstractEventHandler
     public void handleUDPNewSessionRequest( UDPNewSessionRequest sessreq )
     {
         // first check is to see if the user is already authenticated
-        if (node.isClientAuthenticated(sessreq.getOrigClientAddr()) == true) {
-            node.incrementBlinger(CaptivePortalApp.BlingerType.SESSALLOW, 1);
+        if (app.isClientAuthenticated(sessreq.getOrigClientAddr()) == true) {
+            app.incrementBlinger(CaptivePortalApp.BlingerType.SESSALLOW, 1);
             sessreq.release();
             return;
         }
 
         // not authenticated so check both of the pass lists
-        PassedAddress passed = node.isSessionAllowed(sessreq.getOrigClientAddr(), sessreq.getNewServerAddr());
+        PassedAddress passed = app.isSessionAllowed(sessreq.getOrigClientAddr(), sessreq.getNewServerAddr());
 
         if (passed != null) {
             if (passed.getLog() == true) {
                 CaptureRuleEvent logevt = new CaptureRuleEvent(sessreq.sessionEvent(), false);
-                node.logEvent(logevt);
+                app.logEvent(logevt);
             }
 
-            node.incrementBlinger(CaptivePortalApp.BlingerType.SESSALLOW, 1);
+            app.incrementBlinger(CaptivePortalApp.BlingerType.SESSALLOW, 1);
             sessreq.release();
             return;
         }
 
         // not authenticated and no pass list match so check the rules
-        CaptureRule rule = node.checkCaptureRules(sessreq);
+        CaptureRule rule = app.checkCaptureRules(sessreq);
 
         // by default we allow traffic so if there is no rule pass the traffic
         if (rule == null) {
-            node.incrementBlinger(CaptivePortalApp.BlingerType.SESSALLOW, 1);
+            app.incrementBlinger(CaptivePortalApp.BlingerType.SESSALLOW, 1);
             sessreq.release();
             return;
         }
@@ -146,9 +146,9 @@ public class CaptivePortalTrafficHandler extends AbstractEventHandler
         // if we found a pass rule then log and let the traffic pass
         if (rule.getCapture() == false) {
             CaptureRuleEvent logevt = new CaptureRuleEvent(sessreq.sessionEvent(), rule);
-            node.logEvent(logevt);
+            app.logEvent(logevt);
 
-            node.incrementBlinger(CaptivePortalApp.BlingerType.SESSALLOW, 1);
+            app.incrementBlinger(CaptivePortalApp.BlingerType.SESSALLOW, 1);
             sessreq.release();
             return;
         }
@@ -167,8 +167,8 @@ public class CaptivePortalTrafficHandler extends AbstractEventHandler
         // not yet allowed and we found a block rule and the traffic
         // isn't DNS so shut it down
         CaptureRuleEvent logevt = new CaptureRuleEvent(sessreq.sessionEvent(), rule);
-        node.logEvent(logevt);
-        node.incrementBlinger(CaptivePortalApp.BlingerType.SESSBLOCK, 1);
+        app.logEvent(logevt);
+        app.incrementBlinger(CaptivePortalApp.BlingerType.SESSBLOCK, 1);
         sessreq.rejectSilently();
     }
 
@@ -188,7 +188,7 @@ public class CaptivePortalTrafficHandler extends AbstractEventHandler
         // like a valid DNS A query we build a refused message by
         // passing null to the packet response generator
         if (packet.isValidDNSQuery() != true) {
-            node.incrementBlinger(CaptivePortalApp.BlingerType.SESSBLOCK, 1);
+            app.incrementBlinger(CaptivePortalApp.BlingerType.SESSBLOCK, 1);
             response = packet.GenerateResponse(null);
         }
 
@@ -204,7 +204,7 @@ public class CaptivePortalTrafficHandler extends AbstractEventHandler
                 logger.info("Exception attempting to resolve " + packet.getQname() + " = " + e);
             }
 
-            node.incrementBlinger(CaptivePortalApp.BlingerType.SESSQUERY, 1);
+            app.incrementBlinger(CaptivePortalApp.BlingerType.SESSQUERY, 1);
             response = packet.GenerateResponse(addr);
         }
 

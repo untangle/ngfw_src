@@ -8,7 +8,7 @@ import java.nio.ByteBuffer;
 import com.untangle.uvm.vnet.Token;
 
 /**
- * Opaque chunk of data, used to pass SASL information between casings, being ignored by Nodes.
+ * Opaque chunk of data, used to pass SASL information between casings, being ignored by Apps.
  */
 public class SASLExchangeToken implements Token
 {

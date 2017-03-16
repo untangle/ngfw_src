@@ -54,7 +54,7 @@ public class ApplicationControlApp extends AppBase
     private final PipelineConnector[] connectors;
 
     private final SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-    private final String nodeID = getAppSettings().getId().toString();
+    private final String appID = getAppSettings().getId().toString();
     private final int policyId = getAppSettings().getPolicyId().intValue();
 
     protected final InetSocketAddress daemonAddress = new InetSocketAddress("127.0.0.1", 8123);
@@ -66,12 +66,12 @@ public class ApplicationControlApp extends AppBase
     protected ApplicationControlSettings settings;
 
     /*
-     * nodeInstanceCount stores the number of this node type initialized thus
-     * far nodeInstanceNum stores the number of this given node type This is
-     * done so each node of this type has a unique sequential identifier
+     * appInstanceCount stores the number of this app type initialized thus
+     * far appInstanceNum stores the number of this given app type This is
+     * done so each app of this type has a unique sequential identifier
      */
-    private static int nodeInstanceCount = 0;
-    private final int nodeInstanceNum;
+    private static int appInstanceCount = 0;
+    private final int appInstanceNum;
 
     public ApplicationControlApp(com.untangle.uvm.app.AppSettings appSettings, com.untangle.uvm.app.AppProperties appProperties)
     {
@@ -87,7 +87,7 @@ public class ApplicationControlApp extends AppBase
         this.connectors = new PipelineConnector[] { rawConnector, webConnector };
 
         synchronized (getClass()) {
-            this.nodeInstanceNum = nodeInstanceCount++;
+            this.appInstanceNum = appInstanceCount++;
         }
         ;
 
@@ -121,10 +121,10 @@ public class ApplicationControlApp extends AppBase
             if (rule.getBlock()) rule.setFlag(Boolean.TRUE);
         }
 
-        newSettings.applyNodeRules(statistics);
+        newSettings.applyAppRules(statistics);
 
         try {
-            settingsManager.save(System.getProperty("uvm.settings.dir") + "/application-control/settings_" + nodeID + ".js", newSettings);
+            settingsManager.save(System.getProperty("uvm.settings.dir") + "/application-control/settings_" + appID + ".js", newSettings);
         } catch (Exception e) {
             logger.error("setSettings()", e);
             return;
@@ -144,12 +144,12 @@ public class ApplicationControlApp extends AppBase
     @Override
     public void initializeSettings()
     {
-        logger.info("Initializing default node settings...");
+        logger.info("Initializing default app settings...");
 
         this.settings = new ApplicationControlSettings();
         this.settings.setLogicRules(buildDefaultRules());
         this.settings.setProtoRules(vineyard.buildProtoList());
-        this.settings.applyNodeRules(statistics);
+        this.settings.applyAppRules(statistics);
 
         this.setSettings(this.settings);
     }
@@ -167,7 +167,7 @@ public class ApplicationControlApp extends AppBase
         UvmContextFactory.context().daemonManager().incrementUsageCount("untangle-classd");
 
         for (int counter = 0; daemonCheck() == false; counter++) {
-            if (counter > 60) throw (new RuntimeException("Unable to start application-control node: missing daemon"));
+            if (counter > 60) throw (new RuntimeException("Unable to start application-control app: missing daemon"));
 
             logger.info("Waiting for daemon connection... " + counter);
             try {
@@ -195,10 +195,10 @@ public class ApplicationControlApp extends AppBase
     {
         ApplicationControlSettings readSettings = null;
         LinkedList<ApplicationControlProtoRule> workingList = null;
-        String settingsFile = (System.getProperty("uvm.settings.dir") + "/application-control/settings_" + nodeID + ".js");
+        String settingsFile = (System.getProperty("uvm.settings.dir") + "/application-control/settings_" + appID + ".js");
 
         try {
-            // read our node settings from the file
+            // read our app settings from the file
             readSettings = settingsManager.load(ApplicationControlSettings.class, settingsFile);
 
             // if not found initialize with the defaults
@@ -216,7 +216,7 @@ public class ApplicationControlApp extends AppBase
                     settingsManager.save(settingsFile, readSettings);
                 }
                 this.settings = readSettings;
-                settings.applyNodeRules(statistics);
+                settings.applyAppRules(statistics);
             }
         }
 

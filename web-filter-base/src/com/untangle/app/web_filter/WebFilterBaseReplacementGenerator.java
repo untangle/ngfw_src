@@ -24,9 +24,9 @@ public class WebFilterBaseReplacementGenerator extends ReplacementGenerator<WebF
         + "<p>Please contact %s</p>"
         + "</BODY></HTML>";
 
-    public WebFilterBaseReplacementGenerator(AppSettings nodeId)
+    public WebFilterBaseReplacementGenerator(AppSettings appId)
     {
-        super(nodeId);
+        super(appId);
     }
 
     @Override

@@ -22,18 +22,18 @@ public class VirusSmtpEvent extends LogEvent
     private boolean clean;
     private String virusName;
     private String action;
-    private String nodeName;
+    private String appName;
 
     public VirusSmtpEvent() { }
 
-    public VirusSmtpEvent(SmtpMessageEvent messageInfo, boolean clean, String virusName, String action, String nodeName)
+    public VirusSmtpEvent(SmtpMessageEvent messageInfo, boolean clean, String virusName, String action, String appName)
     {
         this.messageId = messageInfo.getMessageId();
         this.messageInfo = messageInfo;
         this.clean = clean;
         this.virusName = virusName;
         this.action = action;
-        this.nodeName = nodeName;
+        this.appName = appName;
     }
 
     public Long getMessageId() { return messageId; }
@@ -48,8 +48,8 @@ public class VirusSmtpEvent extends LogEvent
     public String getAction() { return action; }
     public void setAction(String action) { this.action = action; }
 
-    public String getAppName() { return nodeName; }
-    public void setNodeName(String nodeName) { this.nodeName = nodeName; }
+    public String getAppName() { return appName; }
+    public void setAppName(String appName) { this.appName = appName; }
 
     @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception

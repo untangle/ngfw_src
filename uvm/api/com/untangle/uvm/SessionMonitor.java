@@ -21,10 +21,10 @@ public interface SessionMonitor
     /**
      * This returns a list of descriptors for all sessions in the conntrack table
      * It also pulls the list of current "pipelines" from the foundry and adds the UVM informations
-     * such as policy. This only lists sessions being processed by the given nodeId
-     * If nodeId == 0, then getMergedSessions() is returned
+     * such as policy. This only lists sessions being processed by the given appId
+     * If appId == 0, then getMergedSessions() is returned
      */
-    public List<SessionMonitorEntry> getMergedSessions(long nodeId);
+    public List<SessionMonitorEntry> getMergedSessions(long appId);
     
     /**
      * This returns a list of sessions and the bandwidth usage over the last 5 seconds
@@ -45,10 +45,10 @@ public interface SessionMonitor
      * This returns a list of sessions and the bandwidth usage over the last 5 seconds
      * It calls the Jnettop list and merges it with the conntrack and netcap lists
      * It calls jnettop on the specified interface Id (example: "0")
-     * if nodeId != 0, only include sessions being processed by the specified nodeId.
+     * if appId != 0, only include sessions being processed by the specified appId.
      * This takes 5 seconds to return
      */
-    public List<SessionMonitorEntry> getMergedBandwidthSessions(String interfaceIdStr, int nodeId);
+    public List<SessionMonitorEntry> getMergedBandwidthSessions(String interfaceIdStr, int appId);
 
     /**
      * Retrieve the session stats (but not the sessions themselves)

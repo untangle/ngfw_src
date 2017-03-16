@@ -36,7 +36,7 @@ public interface AppTCPSession extends AppSession
 
     /**
      * <code>clientReadBufferSize</code> gives the size that a newly allocated read buffer for
-     * reading from the client will be, in bytes.  This defaults from the node desc to
+     * reading from the client will be, in bytes.  This defaults from the app desc to
      * something like 8K.  Note that read buffers are only allocated when absolutely necessary.
      *
      * @return an <code>int</code> giving the capacity in bytes
@@ -53,7 +53,7 @@ public interface AppTCPSession extends AppSession
 
     /**
      * <code>serverReadBufferSize</code> gives the size that a newly allocated read buffer for
-     * reading from the server will be, in bytes.  This defaults from the node desc to
+     * reading from the server will be, in bytes.  This defaults from the app desc to
      * something like 8K.  Note that read buffers are only allocated when absolutely necessary.
      *
      * @return an <code>int</code> giving the capacity in bytes

@@ -86,13 +86,13 @@ def printUsage():
     -v (increase verbosity)
     -q (quiet, fails silently)
   COMMANDS:
-    ucli instances - list all nodes 
+    ucli instances - list all apps 
     ucli upgrade - initiates an upgrade (if available)
-    ucli instantiate <node-name> [ args ] - instantiates a node in the rack
-    ucli start <node_id> - starts a node
-    ucli stop <node_id> - stops a node
-    ucli destroy <node_id> - destroys a node
-    ucli sessions <node_id> - list all sessions for a given node
+    ucli instantiate <app-name> [ args ] - instantiates a app in the rack
+    ucli start <app_id> - starts a app
+    ucli stop <app_id> - stops a app
+    ucli destroy <app_id> - destroys a app
+    ucli sessions <app_id> - list all sessions for a given app
     ucli resetLogs - refresh & reconfigure log4j config 
     ucli reloadLicenses - reload licenses
     ucli version - show the untangle-vm version

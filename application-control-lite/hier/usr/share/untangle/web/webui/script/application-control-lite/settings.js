@@ -25,15 +25,15 @@ Ext.define('Webui.application-control-lite.settings', {
                 items: [{
                     fieldLabel: i18n._('Total Signatures Available'),
                     name: 'Total Signatures Available',
-                    value: this.getRpcNode().getPatternsTotal()
+                    value: this.getRpcApp().getPatternsTotal()
                 }, {
                     fieldLabel: i18n._('Total Signatures Logging'),
                     name: 'Total Signatures Logging',
-                    value: this.getRpcNode().getPatternsLogged()
+                    value: this.getRpcApp().getPatternsLogged()
                 }, {
                     fieldLabel: i18n._('Total Signatures Blocking'),
                     name: 'Total Signatures Blocking',
-                    value: this.getRpcNode().getPatternsBlocked()
+                    value: this.getRpcApp().getPatternsBlocked()
                 }]
             }, {
                 title: i18n._('Note'),

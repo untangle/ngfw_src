@@ -18,13 +18,13 @@ import time
 import urllib2
 import global_functions
 
-node = None
+app = None
 defaultRackId = 1
 
 class ConfigurationBackupTests(unittest2.TestCase):
     
     @staticmethod
-    def nodeName():
+    def appName():
         return "configuration-backup"
 
     @staticmethod
@@ -33,10 +33,10 @@ class ConfigurationBackupTests(unittest2.TestCase):
 
     @staticmethod
     def initialSetUp(self):
-        global node
-        if (uvmContext.appManager().isInstantiated(self.nodeName())):
-            raise Exception('node %s already instantiated' % self.nodeName())
-        node = uvmContext.appManager().instantiate(self.nodeName(), defaultRackId)
+        global app
+        if (uvmContext.appManager().isInstantiated(self.appName())):
+            raise Exception('app %s already instantiated' % self.appName())
+        app = uvmContext.appManager().instantiate(self.appName(), defaultRackId)
 
     def setUp(self):
         pass
@@ -47,9 +47,9 @@ class ConfigurationBackupTests(unittest2.TestCase):
         assert (result == 0)
 
     def test_020_backupNow(self):
-        global node
+        global app
         boxUID = uvmContext.getServerUID()
-        node.sendBackup()
+        app.sendBackup()
 
         events = global_functions.get_events('Configuration Backup','Backup Events',None,1)
         assert(events != None)
@@ -62,10 +62,10 @@ class ConfigurationBackupTests(unittest2.TestCase):
         
     @staticmethod
     def finalTearDown(self):
-        global node
-        if node != None:
-            uvmContext.appManager().destroy( node.getAppSettings()["id"] )
-            node = None
+        global app
+        if app != None:
+            uvmContext.appManager().destroy( app.getAppSettings()["id"] )
+            app = None
 
 
-test_registry.registerNode("configuration-backup", ConfigurationBackupTests)
+test_registry.registerApp("configuration-backup", ConfigurationBackupTests)

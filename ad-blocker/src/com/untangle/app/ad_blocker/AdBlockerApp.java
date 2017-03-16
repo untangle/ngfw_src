@@ -182,9 +182,9 @@ public class AdBlockerApp extends AppBase
     protected void postInit()
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getAppSettings().getId().toString();
+        String appID = this.getAppSettings().getId().toString();
         AdBlockerSettings readSettings = null;
-        String settingsFileName = System.getProperty("uvm.settings.dir") + "/ad-blocker/" + "settings_" + nodeID + ".js";
+        String settingsFileName = System.getProperty("uvm.settings.dir") + "/ad-blocker/" + "settings_" + appID + ".js";
 
         try {
             readSettings = settingsManager.load(AdBlockerSettings.class, settingsFileName);
@@ -263,9 +263,9 @@ public class AdBlockerApp extends AppBase
          * Save the settings
          */
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String nodeID = this.getAppSettings().getId().toString();
+        String appID = this.getAppSettings().getId().toString();
         try {
-            settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "ad-blocker/" + "settings_" + nodeID + ".js", newSettings );
+            settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "ad-blocker/" + "settings_" + appID + ".js", newSettings );
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.", e);
             return;

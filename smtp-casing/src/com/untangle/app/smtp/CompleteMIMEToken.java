@@ -15,7 +15,7 @@ import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.vnet.TCPStreamer;
 
 /**
- * Class representing a Complete MIME message. This will be issued if an upstream Node has buffered a complete message.
+ * Class representing a Complete MIME message. This will be issued if an upstream App has buffered a complete message.
  */
 public class CompleteMIMEToken extends MetadataToken
 {

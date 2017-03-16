@@ -16,7 +16,7 @@ import com.untangle.uvm.event.AlertRule;
 import com.untangle.uvm.event.SyslogRule;
 
 /**
- * Settings for the Reports Node.
+ * Settings for the Reports App.
  */
 @SuppressWarnings("serial")
 public class EventSettings implements Serializable, JSONString

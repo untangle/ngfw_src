@@ -18,7 +18,7 @@ public class PasswordUtil
 
     /**
      * Use <code>encrypt</code> to encrypt a password (using a one-way hash
-     * function) before storing into the User prefs node. We automatically
+     * function) before storing into the User prefs app. We automatically
      * randomly salt the password before hashing.
      *
      * @param passwd a <code>String</code> giving the password to be encrypted

@@ -31,13 +31,13 @@ public class BandwidthControlEventHandler extends AbstractEventHandler
     
     private final int MAX_CHUNK_COUNT = 10;
     
-    private BandwidthControlApp node;
+    private BandwidthControlApp app;
 
-    public BandwidthControlEventHandler(BandwidthControlApp node)
+    public BandwidthControlEventHandler(BandwidthControlApp app)
     {
-        super(node);
+        super(app);
 
-        this.node = node;
+        this.app = app;
     }
 
     public void handleTCPNewSessionRequest( TCPNewSessionRequest sessionRequest )
@@ -103,7 +103,7 @@ public class BandwidthControlEventHandler extends AbstractEventHandler
         
         logger.info("Reprioritizing Sessions for " + addr.getHostAddress() + " because \"" + reason + "\"");
 
-        for (AppSession sess : this.node.liveAppSessions()) {
+        for (AppSession sess : this.app.liveAppSessions()) {
             if (addr.equals(sess.getClientAddr()) || addr.equals(sess.getServerAddr())) {
                 logger.debug( "Reevaluating AppSession : " + sess.getProtocol() + " " +
                               sess.getClientAddr().getHostAddress() + ":" + sess.getClientPort() + " -> " +
@@ -132,7 +132,7 @@ public class BandwidthControlEventHandler extends AbstractEventHandler
         
         logger.info("Reprioritizing Sessions for " + username + " because \"" + reason + "\"");
 
-        for (AppSession sess : this.node.liveAppSessions()) {
+        for (AppSession sess : this.app.liveAppSessions()) {
             if ( username.equals(sess.user())) {
                 logger.debug( "Reevaluating AppSession : " + sess.getProtocol() + " " +
                               sess.getClientAddr().getHostAddress() + ":" + sess.getClientPort() + " -> " +
@@ -174,7 +174,7 @@ public class BandwidthControlEventHandler extends AbstractEventHandler
             sess.attach(sessInfo);
         }
 
-        if (! this.node.isLicenseValid()) 
+        if (! this.app.isLicenseValid()) 
             return;
         
         /**
@@ -209,7 +209,7 @@ public class BandwidthControlEventHandler extends AbstractEventHandler
     
     private BandwidthControlRule _findFirstMatch(AppSession sess, boolean onlyPrioritizeRules)
     {
-        List<BandwidthControlRule> rules = this.node.getRules();
+        List<BandwidthControlRule> rules = this.app.getRules();
 
         if ( logger.isDebugEnabled() ) {
             logger.debug( "Checking Rules against AppSession : " + sess.getProtocol() + " " +

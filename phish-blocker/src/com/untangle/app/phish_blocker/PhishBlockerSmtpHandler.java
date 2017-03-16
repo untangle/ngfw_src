@@ -6,8 +6,8 @@ package com.untangle.app.phish_blocker;
 import java.util.Map;
 
 import com.untangle.app.smtp.WrappedMessageGenerator;
-import com.untangle.app.smtp.quarantine.QuarantineNodeView;
-import com.untangle.app.smtp.safelist.SafelistNodeView;
+import com.untangle.app.smtp.quarantine.QuarantineAppView;
+import com.untangle.app.smtp.safelist.SafelistAppView;
 import com.untangle.app.spam_blocker.SpamReport;
 import com.untangle.app.spam_blocker.SpamSmtpConfig;
 import com.untangle.uvm.UvmContextFactory;
@@ -24,9 +24,9 @@ public class PhishBlockerSmtpHandler extends com.untangle.app.spam_blocker.SpamS
    
     private WrappedMessageGenerator msgGenerator;
     
-    protected PhishBlockerSmtpHandler( PhishBlockerApp node )
+    protected PhishBlockerSmtpHandler( PhishBlockerApp app )
     {
-        super( node );
+        super( app );
 
         msgGenerator = new WrappedMessageGenerator(MOD_SUB_TEMPLATE,getTranslatedBodyTemplate(), this);
     }

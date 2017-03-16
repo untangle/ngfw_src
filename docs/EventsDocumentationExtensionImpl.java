@@ -181,7 +181,7 @@ public class ExtensionImpl implements Runnable
         attributeDescriptions.put("blocked","True if blocked, false otherwise");
         attributeDescriptions.put("flagged","True if flagged, false otherwise");
         attributeDescriptions.put("category","The category");
-        attributeDescriptions.put("nodeName","The name of the application");
+        attributeDescriptions.put("appName","The name of the application");
         attributeDescriptions.put("application","The application");
         attributeDescriptions.put("protochain","The protochain");
         attributeDescriptions.put("state","The state");

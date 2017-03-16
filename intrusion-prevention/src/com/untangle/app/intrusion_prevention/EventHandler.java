@@ -18,9 +18,9 @@ import com.untangle.uvm.vnet.UDPNewSessionRequest;
 public class EventHandler extends AbstractEventHandler
 {
 
-    public EventHandler( IntrusionPreventionApp node )
+    public EventHandler( IntrusionPreventionApp app )
     {
-        super(node);
+        super(app);
     }
 
     public void handleTCPNewSessionRequest( TCPNewSessionRequest sessionRequest )

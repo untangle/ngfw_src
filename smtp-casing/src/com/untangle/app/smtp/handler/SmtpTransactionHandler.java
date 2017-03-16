@@ -53,7 +53,7 @@ public class SmtpTransactionHandler
     private SmtpMessageEvent messageInfo;
     private MimeMessage msg;
     private boolean isMessageMaster;// Flag indicating if this handler is the "master" of the message (accumulator or
-                                    // MIMEMessage). The master is defined as the last node to receive the object in
+                                    // MIMEMessage). The master is defined as the last app to receive the object in
                                     // question. The master designation is set once a Begin/complete token is received,
                                     // and relinquished once any BEGIN/Complete token is passed
     private final SmtpTransaction tx;

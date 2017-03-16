@@ -97,9 +97,9 @@ public class BrandingManagerImpl implements BrandingManager
         AppManager nm = UvmContextFactory.context().appManager();
         if (nm == null) /* happens on shutdown */
             return null;
-        BrandingManager bnode = (BrandingManager)nm.app("branding-manager");
-        if (bnode != null && (((AppBase)bnode).getRunState() == AppSettings.AppState.RUNNING)) {
-            return bnode;
+        BrandingManager bapp = (BrandingManager)nm.app("branding-manager");
+        if (bapp != null && (((AppBase)bapp).getRunState() == AppSettings.AppState.RUNNING)) {
+            return bapp;
         }
 
         return this.defaultBranding;

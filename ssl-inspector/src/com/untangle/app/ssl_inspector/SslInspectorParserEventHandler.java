@@ -50,14 +50,14 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private final SslInspectorApp node;
+    private final SslInspectorApp app;
     private final boolean clientSide;
 
-    protected SslInspectorParserEventHandler(boolean clientSide, SslInspectorApp node)
+    protected SslInspectorParserEventHandler(boolean clientSide, SslInspectorApp app)
     {
         super();
         this.clientSide = clientSide;
-        this.node = node;
+        this.app = app;
     }
 
     // ------------------------------------------------------------------------
@@ -66,7 +66,7 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
     public void handleTCPNewSessionRequest(TCPNewSessionRequest sessionRequest)
     {
         // if the license is not valid we ignore all traffic
-        if (node.isLicenseValid() != true) {
+        if (app.isLicenseValid() != true) {
             sessionRequest.release();
             return;
         }
@@ -76,7 +76,7 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
     public void handleTCPNewSession(AppTCPSession session)
     {
 
-        SslInspectorManager manager = new SslInspectorManager(session, clientSide, node);
+        SslInspectorManager manager = new SslInspectorManager(session, clientSide, app);
 
         if (clientSide)
             session.globalAttach(AppTCPSession.KEY_SSL_INSPECTOR_CLIENT_MANAGER, manager);
@@ -222,7 +222,7 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
                 if ((targetName != null) && (targetHost != null)) {
                     String brokenServer = (targetHost + " | " + targetName);
                     logger.warn("Adding broken SNI server: " + brokenServer);
-                    node.addBrokenServer(brokenServer);
+                    app.addBrokenServer(brokenServer);
                 }
             }
 
@@ -245,8 +245,8 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
             if (logDetail == null) logDetail = (String) session.globalAttachment(AppTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME);
             if (logDetail == null) logDetail = session.getServerAddr().getHostAddress();
             SslInspectorLogEvent logevt = new SslInspectorLogEvent(session.sessionEvent(), 0, SslInspectorApp.STAT_ABANDONED, logDetail);
-            node.logEvent(logevt);
-            node.incrementMetric(SslInspectorApp.STAT_ABANDONED);
+            app.logEvent(logevt);
+            app.incrementMetric(SslInspectorApp.STAT_ABANDONED);
 
             // only log a warning if we didn't get an exception message for the event log 
             if (sslProblem == null) logger.warn("Session abandon on parseWorker false return for " + logDetail);
@@ -321,12 +321,12 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
             ruleMatch.setDescription("Missing ClientHello packet");
 
             // if invalid traffic is blocked we log and block the traffic
-            if (node.getSettings().getBlockInvalidTraffic() == true) {
+            if (app.getSettings().getBlockInvalidTraffic() == true) {
                 ruleMatch.setAction(new SslInspectorRuleAction(SslInspectorRuleAction.ActionType.BLOCK, true));
                 SslInspectorLogEvent logevt = new SslInspectorLogEvent(session.sessionEvent(), ruleMatch.getRuleId(), SslInspectorApp.STAT_BLOCKED, ruleMatch.getDescription());
-                node.logEvent(logevt);
+                app.logEvent(logevt);
                 logger.debug("RULE MATCH EVENT = " + logevt.toString());
-                node.incrementMetric(SslInspectorApp.STAT_BLOCKED);
+                app.incrementMetric(SslInspectorApp.STAT_BLOCKED);
 
                 // kill the session on both sides
                 shutdownOtherSide(session, true);
@@ -337,9 +337,9 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
             // invalid traffic not blocked so we ignore the session
             ruleMatch.setAction(new SslInspectorRuleAction(SslInspectorRuleAction.ActionType.IGNORE, true));
             SslInspectorLogEvent logevt = new SslInspectorLogEvent(session.sessionEvent(), ruleMatch.getRuleId(), SslInspectorApp.STAT_IGNORED, ruleMatch.getDescription());
-            node.logEvent(logevt);
+            app.logEvent(logevt);
             logger.debug("RULE MATCH EVENT = " + logevt.toString());
-            node.incrementMetric(SslInspectorApp.STAT_IGNORED);
+            app.incrementMetric(SslInspectorApp.STAT_IGNORED);
 
             // let everyone else know that we are ignoring the session
             session.globalAttach(AppTCPSession.KEY_SSL_INSPECTOR_SESSION_INSPECT, Boolean.FALSE);
@@ -367,8 +367,8 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
                 if (logDetail == null) logDetail = session.getServerAddr().getHostAddress();
 
                 SslInspectorLogEvent logevt = new SslInspectorLogEvent(session.sessionEvent(), 0, SslInspectorApp.STAT_UNTRUSTED, logDetail);
-                node.logEvent(logevt);
-                node.incrementMetric(SslInspectorApp.STAT_UNTRUSTED);
+                app.logEvent(logevt);
+                app.incrementMetric(SslInspectorApp.STAT_UNTRUSTED);
 
                 logger.debug("UNTRUSTED SERVER = " + logDetail);
 
@@ -489,7 +489,7 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
             ruleMatch.setRuleId(0);
             ruleMatch.setDescription(exn.getMessage());
 
-            if (node.getSettings().getBlockInvalidTraffic() == true)
+            if (app.getSettings().getBlockInvalidTraffic() == true)
                 ruleMatch.setAction(new SslInspectorRuleAction(SslInspectorRuleAction.ActionType.BLOCK, true));
             else
                 ruleMatch.setAction(new SslInspectorRuleAction(SslInspectorRuleAction.ActionType.IGNORE, true));
@@ -500,7 +500,7 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
 
         // wait until after the exception handlers to increment the counter
         // so we don't increment on a buffer underflow exception
-        node.incrementMetric(SslInspectorApp.STAT_COUNTER);
+        app.incrementMetric(SslInspectorApp.STAT_COUNTER);
 
         // if we found the SNI hostname attach it for the rule matcher
         if (sniHostname != null) {
@@ -524,7 +524,7 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         // if we didn't create an invalid packet rule matcher above then
         // we walk through the list of rules and find the first match
         if (ruleMatch == null) {
-            List<SslInspectorRule> ruleList = node.getSettings().getIgnoreRules();
+            List<SslInspectorRule> ruleList = app.getSettings().getIgnoreRules();
 
             logger.debug("Checking Rules against AppTCPSession : " + session.getProtocol() + " " + session.getClientAddr().getHostAddress() + ":" + session.getClientPort() + " -> " + session.getServerAddr().getHostAddress() + ":" + session.getServerPort());
 
@@ -545,8 +545,8 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
                 // falling back to the rule description if detail is empty
                 if (logDetail == null) logDetail = ruleMatch.getDescription();
                 logevt = new SslInspectorLogEvent(session.sessionEvent(), ruleMatch.getRuleId(), SslInspectorApp.STAT_BLOCKED, logDetail);
-                node.logEvent(logevt);
-                node.incrementMetric(SslInspectorApp.STAT_BLOCKED);
+                app.logEvent(logevt);
+                app.incrementMetric(SslInspectorApp.STAT_BLOCKED);
                 logger.debug("RULE MATCH EVENT = " + logevt.toString());
 
                 // kill the session on both sides
@@ -562,8 +562,8 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
                 // falling back to the rule description if detail is empty
                 if (logDetail == null) logDetail = ruleMatch.getDescription();
                 logevt = new SslInspectorLogEvent(session.sessionEvent(), ruleMatch.getRuleId(), SslInspectorApp.STAT_IGNORED, logDetail);
-                node.logEvent(logevt);
-                node.incrementMetric(SslInspectorApp.STAT_IGNORED);
+                app.logEvent(logevt);
+                app.incrementMetric(SslInspectorApp.STAT_IGNORED);
                 logger.debug("RULE MATCH EVENT = " + logevt.toString());
 
                 // let everyone else know that we are ignoring the session
@@ -595,8 +595,8 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         }
 
         // either no rule match or we matched an inspect rule so log an event
-        node.logEvent(logevt);
-        node.incrementMetric(SslInspectorApp.STAT_INSPECTED);
+        app.logEvent(logevt);
+        app.incrementMetric(SslInspectorApp.STAT_INSPECTED);
 
         // craft a wakeup message and send it directly to the server side
         // casing using simulateClientData inside the server side casing

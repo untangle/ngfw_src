@@ -34,7 +34,7 @@ public interface SessionEventHandler extends java.util.EventListener
 
     /**
      * Called before the session is established (when we get the initial SYN).
-     * The node can deny the connection by using TCPNewSessionRequestEvent.reject(), or
+     * The app can deny the connection by using TCPNewSessionRequestEvent.reject(), or
      * modifying the client/server addr/port, etc.
      *
      * @param event a <code>TCPNewSessionRequestEvent</code> value
@@ -73,7 +73,7 @@ public interface SessionEventHandler extends java.util.EventListener
     
     /**
      * <code>handleTCPServerWritable</code> is called when the write queue to the server has
-     * first gone empty.  This is an edge-triggered event that gives the node a chance
+     * first gone empty.  This is an edge-triggered event that gives the app a chance
      * to write some more bytes.
      *
      * @param event a <code>AppTCPSession</code> value
@@ -84,7 +84,7 @@ public interface SessionEventHandler extends java.util.EventListener
 
     /**
      * <code>handleTCPClientWritable</code> is called when the write queue to the client has
-     * first gone empty.  This is an edge-triggered event that gives the node a chance
+     * first gone empty.  This is an edge-triggered event that gives the app a chance
      * to write some more bytes.
      *
      * @param event a <code>AppTCPSession</code> value
@@ -95,7 +95,7 @@ public interface SessionEventHandler extends java.util.EventListener
 
     /**
      * <code>handleTCPClientDataEnd</code> is called just as the first EOF (Shutdown) is read from
-     * the client.  This gives the node a chance to send out any buffered data/etc.
+     * the client.  This gives the app a chance to send out any buffered data/etc.
      * 
      * The function may return null, which means to do nothing.
      * 
@@ -123,7 +123,7 @@ public interface SessionEventHandler extends java.util.EventListener
 
     /**
      * <code>handleTCPServerDataEnd</code> is called just as the first EOF (Shutdown) is read from
-     * the server.  This gives the node a chance to send out any buffered data/etc.
+     * the server.  This gives the app a chance to send out any buffered data/etc.
      * 
      * The function may return null, which means to do nothing.
      * 
@@ -233,7 +233,7 @@ public interface SessionEventHandler extends java.util.EventListener
 
     /**
      * Called before the session is established (when we get the initial packet).
-     * The node can deny the session by using UDPNewSessionRequestEvent.reject(), or
+     * The app can deny the session by using UDPNewSessionRequestEvent.reject(), or
      * modifying the client/server addr/port, etc.
      *
      * @param event a <code>TCPNewSessionRequestEvent</code> value
@@ -254,7 +254,7 @@ public interface SessionEventHandler extends java.util.EventListener
 
     /**
      * <code>handleUDPServerWritable</code> is called when the write queue to the server has
-     * first gone empty.  This is an edge-triggered event that gives the node a chance
+     * first gone empty.  This is an edge-triggered event that gives the app a chance
      * to write some more packets.
      *
      * @param event a <code>AppUDPSession</code> value
@@ -264,7 +264,7 @@ public interface SessionEventHandler extends java.util.EventListener
 
     /**
      * <code>handleUDPClientWritable</code> is called when the write queue to the client has
-     * first gone empty.  This is an edge-triggered event that gives the node a chance
+     * first gone empty.  This is an edge-triggered event that gives the app a chance
      * to write some more packets.
      *
      * @param event a <code>AppUDPSession</code> value

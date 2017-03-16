@@ -355,7 +355,7 @@ class FtpNatHandler extends FtpEventHandler
         SessionState sessionState = (SessionState) session.attachment();
         
         if ( sessionState == null ) {
-            /* Get the information the router node is tracking about the session */
+            /* Get the information the router app is tracking about the session */
             sessionState = new SessionState();
             session.attach( sessionState );
         }

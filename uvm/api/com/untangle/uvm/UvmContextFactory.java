@@ -30,7 +30,7 @@ public class UvmContextFactory
 
     /**
      * Get the <code>UvmContext</code> from this classloader.
-     * used by Nodes to get the context internally.
+     * used by Apps to get the context internally.
      *
      * @return the <code>UvmContext</code>.
      */

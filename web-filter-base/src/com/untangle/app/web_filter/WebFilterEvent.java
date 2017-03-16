@@ -20,11 +20,11 @@ public class WebFilterEvent extends LogEvent
     private Boolean flagged;
     private Reason  reason;
     private String  category;
-    private String  nodeName;
+    private String  appName;
     
     public WebFilterEvent() { }
 
-    public WebFilterEvent(RequestLine requestLine, SessionEvent sessionEvent, Boolean blocked, Boolean flagged, Reason reason, String category, String nodeName)
+    public WebFilterEvent(RequestLine requestLine, SessionEvent sessionEvent, Boolean blocked, Boolean flagged, Reason reason, String category, String appName)
     {
         this.requestLine = requestLine;
         this.sessionEvent = sessionEvent;
@@ -32,7 +32,7 @@ public class WebFilterEvent extends LogEvent
         this.flagged = flagged;
         this.reason = reason;
         this.category = category;
-        this.nodeName = nodeName;
+        this.appName = appName;
     }
 
     public Boolean getBlocked() { return blocked; }
@@ -47,8 +47,8 @@ public class WebFilterEvent extends LogEvent
     public String getCategory() { return category; }
     public void setCategory( String newValue ) { this.category = newValue; }
 
-    public String getAppName() { return nodeName; }
-    public void setNodeName(String newValue) { this.nodeName = newValue; }
+    public String getAppName() { return appName; }
+    public void setAppName(String newValue) { this.appName = newValue; }
 
     public RequestLine getRequestLine() { return requestLine; }
     public void setRequestLine(RequestLine newValue) { this.requestLine = newValue; }
@@ -106,15 +106,15 @@ public class WebFilterEvent extends LogEvent
 
     private String _getDatabaseColumnNamePrefix()
     {
-        String node = getAppName().toLowerCase();
+        String app = getAppName().toLowerCase();
 
-        if ("web-filter".equals(node))
+        if ("web-filter".equals(app))
             return "web_filter";
-        if ("web-monitor".equals(node))
+        if ("web-monitor".equals(app))
             return "web_filter"; // use the same DB columns as web filter
-        if ("web_monitor".equals(node))
+        if ("web_monitor".equals(app))
             return "web_filter"; // use the same DB columns as web filter
 
-        return node;
+        return app;
     }
 }

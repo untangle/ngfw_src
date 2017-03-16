@@ -6,7 +6,7 @@ Ext.define('Webui.web-cache.settings', {
         return i18n._("Web Cache stores and serves web content from local cache for increased speed and reduced bandwidth usage.");
     },
     initComponent: function() {
-        this.statistics = this.getRpcNode().getStatistics();
+        this.statistics = this.getRpcApp().getStatistics();
         this.buildGridRules();
 
         // builds the tab panel with the tabs
@@ -91,7 +91,7 @@ Ext.define('Webui.web-cache.settings', {
                             }
                             else {
                                 Ext.MessageBox.wait(i18n._("Clearing Cache..."), i18n._("Please wait"));
-                                this.getRpcNode().clearSquidCache(Ext.bind(function(result, exception) {
+                                this.getRpcApp().clearSquidCache(Ext.bind(function(result, exception) {
                                     understandRisks.setValue(false);
                                     Ext.MessageBox.hide();
                                 }, this));
@@ -159,7 +159,7 @@ Ext.define('Webui.web-cache.settings', {
         handler.call(this, isApply);
     },
     afterSave:function() {
-        this.statistics = this.getRpcNode().getStatistics();
+        this.statistics = this.getRpcApp().getStatistics();
     }
 });
 //# sourceURL=web-cache-settings.js

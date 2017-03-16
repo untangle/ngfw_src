@@ -48,7 +48,7 @@ class IntrusionPreventionEventMonitor implements Runnable
 
     protected static final Logger logger = Logger.getLogger( IntrusionPreventionEventMonitor.class );
 
-    private final IntrusionPreventionApp node;
+    private final IntrusionPreventionApp app;
 
     /* The thread the monitor is running on */
     private Thread thread = null;
@@ -56,9 +56,9 @@ class IntrusionPreventionEventMonitor implements Runnable
     /* Status of the monitor */
     private volatile boolean isAlive = true;
 
-    protected IntrusionPreventionEventMonitor( IntrusionPreventionApp node )
+    protected IntrusionPreventionEventMonitor( IntrusionPreventionApp app )
     {
-        this.node = node;
+        this.app = app;
     }
 
     public void run()
@@ -73,7 +73,7 @@ class IntrusionPreventionEventMonitor implements Runnable
         Date now = new Date();
 
         while ( true ) {
-            /* Check if the node is still running */
+            /* Check if the app is still running */
             if ( !isAlive )
                 break;
 
@@ -89,7 +89,7 @@ class IntrusionPreventionEventMonitor implements Runnable
                 logger.info( "ips event monitor was interrupted" );
             }
 
-            /* Check if the node is still running */
+            /* Check if the app is still running */
             if ( !isAlive )
                 break;
         }
@@ -152,7 +152,7 @@ class IntrusionPreventionEventMonitor implements Runnable
                     ? fileLastPositions.get(f.getCanonicalFile())
                     : 0;
                 logger.debug("processSnortLogFiles: parse file=" + f.getCanonicalFile() +", startPosition="+startPosition);
-                lastPosition = unified2Parser.parse( f, startPosition, node, currentTime );
+                lastPosition = unified2Parser.parse( f, startPosition, app, currentTime );
                     
                 fileLastPositions.put( f.getCanonicalFile(), lastPosition );
             }catch( Exception e) {
@@ -182,7 +182,7 @@ class IntrusionPreventionEventMonitor implements Runnable
             }
         }
         
-        statisticsParser.parse( node );
+        statisticsParser.parse( app );
 	}
     
     public File[] getFiles( final long currentTime ){

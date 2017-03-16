@@ -26,18 +26,18 @@ public class ActiveDirectoryManagerImpl
     private ActiveDirectorySettings currentSettings;
 
     /**
-     * The node that owns this manager
+     * The app that owns this manager
      */
-    private DirectoryConnectorApp node;
+    private DirectoryConnectorApp app;
     
     /**
      * The LDAP adapter
      */
     private ActiveDirectoryLdapAdapter adAdapter;
     
-    public ActiveDirectoryManagerImpl( ActiveDirectorySettings settings, DirectoryConnectorApp node )
+    public ActiveDirectoryManagerImpl( ActiveDirectorySettings settings, DirectoryConnectorApp app )
     {
-        this.node = node;
+        this.app = app;
         
         setSettings( settings );
     }
@@ -51,7 +51,7 @@ public class ActiveDirectoryManagerImpl
     public List<UserEntry> getActiveDirectoryUserEntries()
         throws ServiceUnavailableException
     {
-        if (!node.isLicenseValid())
+        if (!app.isLicenseValid())
             return new LinkedList<UserEntry>();
         if (!currentSettings.getEnabled())
             return new LinkedList<UserEntry>();
@@ -79,7 +79,7 @@ public class ActiveDirectoryManagerImpl
     {
         ActiveDirectoryLdapAdapter adAdapter = this.adAdapter;
 
-        if (!node.isLicenseValid())
+        if (!app.isLicenseValid())
             return new LinkedList<UserEntry>();
         if (!currentSettings.getEnabled())
             return new LinkedList<UserEntry>();
@@ -101,7 +101,7 @@ public class ActiveDirectoryManagerImpl
         ActiveDirectoryLdapAdapter adAdapter = this.adAdapter;
         List<GroupEntry> groupList = new LinkedList<GroupEntry>();
 
-        if (!node.isLicenseValid())
+        if (!app.isLicenseValid())
             return new LinkedList<GroupEntry>();
         if (!currentSettings.getEnabled())
             return new LinkedList<GroupEntry>();
@@ -186,7 +186,7 @@ public class ActiveDirectoryManagerImpl
         try{
             List<UserEntry> users = getActiveDirectoryUserEntries();
             for (UserEntry u: users) {
-                result.put(u.getUid(), listToString(node.memberOf(u.getUid())));
+                result.put(u.getUid(), listToString(app.memberOf(u.getUid())));
             }
         }catch( ServiceUnavailableException e ){
             logger.warn(e.getMessage());

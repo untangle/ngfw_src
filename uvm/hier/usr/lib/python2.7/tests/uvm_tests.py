@@ -24,8 +24,8 @@ import test_registry
 import remote_control
 import global_functions
 
-node = None
-nodeFW = None
+app = None
+appFW = None
 
 defaultRackId = 1
 origMailsettings = None
@@ -41,7 +41,7 @@ def getLatestMailPkg():
 class UvmTests(unittest2.TestCase):
 
     @staticmethod
-    def nodeName():
+    def appName():
         return "uvm"
 
     @staticmethod
@@ -49,7 +49,7 @@ class UvmTests(unittest2.TestCase):
         return "Untangle"
 
     @staticmethod
-    def nodeNameSpamCase():
+    def appNameSpamCase():
         return "smtp"
 
     @staticmethod
@@ -139,15 +139,15 @@ class UvmTests(unittest2.TestCase):
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
         # Test mail setting in config -> email -> outgoing server
-        if (uvmContext.appManager().isInstantiated(self.nodeNameSpamCase())):
+        if (uvmContext.appManager().isInstantiated(self.appNameSpamCase())):
             print "smtp case present"
         else:
             print "smtp not present"
-            uvmContext.appManager().instantiate(self.nodeNameSpamCase(), 1)
-        nodeSP = uvmContext.appManager().app(self.nodeNameSpamCase())
-        origNodeDataSP = nodeSP.getSmtpSettings()
+            uvmContext.appManager().instantiate(self.appNameSpamCase(), 1)
+        appSP = uvmContext.appManager().app(self.appNameSpamCase())
+        origAppDataSP = appSP.getSmtpSettings()
         origMailsettings = uvmContext.mailSender().getSettings()
-        # print nodeDataSP
+        # print appDataSP
         getLatestMailPkg();
         # remove previous smtp log file
         remote_control.run_command("rm -f /tmp/test_030_testSMTPSettings.log /tmp/test@example.com.1")
@@ -161,8 +161,8 @@ class UvmTests(unittest2.TestCase):
         uvmContext.mailSender().setSettings(newMailsettings)
         time.sleep(10) # give it time for exim to restart
 
-        nodeDataSP = nodeSP.getSmtpSettings()
-        nodeSP.setSmtpSettingsWithoutSafelists(nodeDataSP)
+        appDataSP = appSP.getSmtpSettings()
+        appSP.setSmtpSettingsWithoutSafelists(appDataSP)
         uvmContext.mailSender().sendTestMessage("test@example.com")
         time.sleep(2)
         # force exim to flush queue
@@ -172,7 +172,7 @@ class UvmTests(unittest2.TestCase):
         # Kill mail sink
         remote_control.run_command("pkill -INT python")
         uvmContext.mailSender().setSettings(origMailsettings)
-        nodeSP.setSmtpSettingsWithoutSafelists(origNodeDataSP)
+        appSP.setSmtpSettingsWithoutSafelists(origAppDataSP)
         result = remote_control.run_command("grep -q 'Untangle Server Test Message' /tmp/test@example.com.1")
         assert(result==0)
 
@@ -188,4 +188,4 @@ class UvmTests(unittest2.TestCase):
         result = uvmContext.cloudManager().accountLogin( "foobar@untangle.com", "badpassword" )
         assert not result.get('success')
 
-test_registry.registerNode("uvm", UvmTests)
+test_registry.registerApp("uvm", UvmTests)

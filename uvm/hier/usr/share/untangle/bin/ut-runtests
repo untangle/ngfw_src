@@ -162,7 +162,7 @@ def runTestSuite(suite):
     if exit_flag:
         return
     
-    print "== testing %s ==" % suite.nodeName()
+    print "== testing %s ==" % suite.appName()
     tests = unittest2.TestLoader().loadTestsFromTestCase(suite)
     failCount = 0
     skipCount = 0  # number of skipped tests.
@@ -241,9 +241,9 @@ def runTestSuite(suite):
 
     if (parser.timedTests):
         suiteElapsedTime = time.time() - suiteStartTime
-        print "== testing %s [%.1fs] ==" % (suite.nodeName(),suiteElapsedTime)
+        print "== testing %s [%.1fs] ==" % (suite.appName(),suiteElapsedTime)
     else:
-        print "== testing %s ==" % suite.nodeName()
+        print "== testing %s ==" % suite.appName()
     return failCount, skipCount, totalCount
 
 # Verify the test enviroment is setup correctly
@@ -284,10 +284,10 @@ remote_control.interfaceExternal = int(parser.externalIntfId)
 remote_control.quickTestsOnly = parser.quickTestsOnly
 
 # if reports isn't installed, install and start it - it is required
-reportsNode = None;
+reportsApp = None;
 if (not uvmContext.appManager().isInstantiated('reports')):
     print "== Installing reports =="
-    reportsNode = uvmContext.appManager().instantiate('reports', None)
+    reportsApp = uvmContext.appManager().instantiate('reports', None)
 
 if ("environment" in parser.suitesToRun or "all" in parser.suitesToRun) and "environment" not in parser.suitesToExclude:
     runTestEnvironmentTests()
@@ -296,7 +296,7 @@ if exit_flag:
     sys.exit(0)
 
 if "all" in parser.suitesToRun:
-    parser.suitesToRun = test_registry.allNodes()
+    parser.suitesToRun = test_registry.allApps()
 
 # remove excluded tests
 for testName in parser.suitesToExclude:
@@ -309,14 +309,14 @@ failCount = 0
 skipCount = 0
 
 while True:
-    for node in parser.suitesToRun:
+    for app in parser.suitesToRun:
         if exit_flag == True:
             break
-        if node == "environment":
+        if app == "environment":
             continue
-        testClz = test_registry.getTest(node)
+        testClz = test_registry.getTest(app)
         if testClz == None:
-           print "Unable to find tests for \"%s\"" % node
+           print "Unable to find tests for \"%s\"" % app
            exit(1)
         subFailCount, subSkipCount, subTotalCount = runTestSuite(testClz)
         failCount  += subFailCount
@@ -331,9 +331,9 @@ while True:
 elapsedTime = time.time() - startTime
     
 # if reports was added earlier, revert to original settings
-# if reportsNode != None:
+# if reportsApp != None:
 #     print "== UnInstalling reports =="
-#     uvmContext.appManager().destroy( reportsNode.getAppSettings()['id'] );
+#     uvmContext.appManager().destroy( reportsApp.getAppSettings()['id'] );
 
 print ""
 print "Tests complete. [%.1f seconds]" % elapsedTime

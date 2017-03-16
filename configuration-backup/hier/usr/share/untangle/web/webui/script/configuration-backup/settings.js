@@ -36,7 +36,7 @@ Ext.define('Webui.configuration-backup.settings', {
                     iconCls: 'action-icon',
                     handler: Ext.bind(function(callback) {
                         Ext.MessageBox.wait(i18n._("Backing up... This may take a few minutes."), i18n._("Please wait"));
-                        this.getRpcNode().sendBackup(Ext.bind(function(result, exception) {
+                        this.getRpcApp().sendBackup(Ext.bind(function(result, exception) {
                             Ext.MessageBox.hide();
                             if(Ung.Util.handleException(exception)) return;
                         }, this));

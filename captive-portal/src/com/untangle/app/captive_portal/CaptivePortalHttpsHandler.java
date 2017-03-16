@@ -18,12 +18,12 @@ import org.apache.log4j.Logger;
 public class CaptivePortalHttpsHandler extends AbstractEventHandler
 {
     private final Logger logger = Logger.getLogger(getClass());
-    private final CaptivePortalApp captureNode;
+    private final CaptivePortalApp captureApp;
 
-    public CaptivePortalHttpsHandler(CaptivePortalApp node)
+    public CaptivePortalHttpsHandler(CaptivePortalApp app)
     {
-        super(node);
-        this.captureNode = node;
+        super(app);
+        this.captureApp = app;
     }
 
     @Override
@@ -43,7 +43,7 @@ public class CaptivePortalHttpsHandler extends AbstractEventHandler
         // first we remove the attachment
         sessreq.globalAttach(AppSession.KEY_CAPTIVE_PORTAL_REDIRECT, null);
 
-        CaptivePortalSSLEngine engine = new CaptivePortalSSLEngine(node.getAppSettings().getId().toString(),captureNode);
+        CaptivePortalSSLEngine engine = new CaptivePortalSSLEngine(app.getAppSettings().getId().toString(),captureApp);
         sessreq.globalAttach(AppSession.KEY_CAPTIVE_PORTAL_SSL_ENGINE, engine);
     }
 

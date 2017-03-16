@@ -285,8 +285,8 @@ def send_test_email(mailhost=testServerHost):
        print "Error: unable to send email through " + mailhost + " " + str(e)
        return 0
 
-def get_app_metric_value(node, label):
-    metric = node.getMetric(label)
+def get_app_metric_value(app, label):
+    metric = app.getMetric(label)
     if metric == None:
         print "Missing metric: %s"%str(label) 
         return 0

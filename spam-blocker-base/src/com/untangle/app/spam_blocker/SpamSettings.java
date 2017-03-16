@@ -8,7 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Settings for the SpamNode.
+ * Settings for the SpamApp.
  */
 @SuppressWarnings("serial")
 public class SpamSettings implements Serializable

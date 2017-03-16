@@ -15,25 +15,25 @@ import test_registry
 import global_functions
 
 defaultRackId = 1
-node = None
+app = None
 default_enabled = None
 orig_netsettings = None
 
 class ShieldTests(unittest2.TestCase):
 
     @staticmethod
-    def nodeName():
+    def appName():
         return "shield"
 
     @staticmethod
     def initialSetUp(self):
-        global node,default_enabled, orig_netsettings
+        global app,default_enabled, orig_netsettings
         if orig_netsettings == None:
             orig_netsettings = uvmContext.networkManager().getNetworkSettings()
-        if (not uvmContext.appManager().isInstantiated(self.nodeName())):
-            raise Exception('node %s already instantiated' % self.nodeName())
-        node = uvmContext.appManager().app(self.nodeName())
-        default_enabled = node.getSettings()['shieldEnabled']
+        if (not uvmContext.appManager().isInstantiated(self.appName())):
+            raise Exception('app %s already instantiated' % self.appName())
+        app = uvmContext.appManager().app(self.appName())
+        default_enabled = app.getSettings()['shieldEnabled']
 
     def setUp(self):
         pass
@@ -49,9 +49,9 @@ class ShieldTests(unittest2.TestCase):
         netsettings['logBypassedSessions'] = True
         uvmContext.networkManager().setNetworkSettings(netsettings)
 
-        settings = node.getSettings()
+        settings = app.getSettings()
         settings['shieldEnabled'] = True
-        node.setSettings(settings)
+        app.setSettings(settings)
 
         start_time = datetime.now()
         result = remote_control.run_command("nmap -PN -sT -T5 --min-parallelism 15 -p10000-11000 1.2.3.4 2>&1 >/dev/null")
@@ -71,9 +71,9 @@ class ShieldTests(unittest2.TestCase):
         netsettings['logBypassedSessions'] = True
         uvmContext.networkManager().setNetworkSettings(netsettings)
 
-        settings = node.getSettings()
+        settings = app.getSettings()
         settings['shieldEnabled'] = False
-        node.setSettings(settings)
+        app.setSettings(settings)
 
         start_time = datetime.now()
         result = remote_control.run_command("nmap -PN -sT -T5 --min-parallelism 15 -p10000-10100 1.2.3.5 2>&1 >/dev/null")
@@ -94,13 +94,13 @@ class ShieldTests(unittest2.TestCase):
         # print "orig_netsettings <%s>" % orig_netsettings
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
-        settings = node.getSettings()
+        settings = app.getSettings()
         settings['shieldEnabled'] = default_enabled
-        node.setSettings(settings)
+        app.setSettings(settings)
 
         # sleep so the reputation goes down so it will not interfere with any future tests
         time.sleep(3)
         # shield is always installed, do not remove it
         
 
-test_registry.registerNode("shield", ShieldTests)
+test_registry.registerApp("shield", ShieldTests)

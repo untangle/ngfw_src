@@ -9,30 +9,30 @@ import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.logging.LogEvent;
 
 /**
- * Interface for a node instance, provides public runtime control
+ * Interface for a app instance, provides public runtime control
  * methods for manipulating the instance's state.
  */
 public interface App
 {
     /**
-     * Get the node Settings
-     * This returns the generic settings that all nodes share
-     * getSettings returns the node-specific settings
+     * Get the app Settings
+     * This returns the generic settings that all apps share
+     * getSettings returns the app-specific settings
      */
     AppSettings getAppSettings();
 
     /**
-     * Get the node immutable Properties 
+     * Get the app immutable Properties 
      */
     AppProperties getAppProperties();
 
     /**
-     * Get the current run state of this node
+     * Get the current run state of this app
      */
     AppSettings.AppState getRunState();
 
     /**
-     * Connects to PipelineConnector and starts. The node instance reads its
+     * Connects to PipelineConnector and starts. The app instance reads its
      * configuration each time this method is called. A call to this method
      * is only valid when the instance is in the
      * {@link AppState#INITIALIZED} state. After successful return,
@@ -44,7 +44,7 @@ public interface App
     void start() throws Exception;
 
     /**
-     * Stops node and disconnects from the PipelineConnector. A call to
+     * Stops app and disconnects from the PipelineConnector. A call to
      * this method is only valid when the instance is in the {@link
      * AppState#RUNNING} state. After successful return, the
      * instance will be in the {@link AppState#INITIALIZED}
@@ -56,23 +56,23 @@ public interface App
     void stop() throws Exception;
 
     /**
-     * Retrieve a list of sessions currently being processed by this node
+     * Retrieve a list of sessions currently being processed by this app
      */
     List<SessionTuple> liveSessions();
 
     /**
-     * Retrieve a list of node sessions currently being processed by this node
+     * Retrieve a list of app sessions currently being processed by this app
      */
     List<AppSession> liveAppSessions();
     
     /**
      * Log an event
-     * This is just a convenience method for different parts of the node to log events
+     * This is just a convenience method for different parts of the app to log events
      */
     void logEvent(LogEvent evt);
 
     /**
-     * Return statistics tracked for this node (if any)
+     * Return statistics tracked for this app (if any)
      */
     List<AppMetric> getMetrics();
 }
