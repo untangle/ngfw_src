@@ -64,9 +64,6 @@ Ext.define('Ung.config.network.view.Advanced', {
             }, {
                 boxLabel: 'Log blocked sessions'.t(),
                 bind: '{settings.logBlockedSessions}'
-            }, {
-                boxLabel: 'Log intermediate session updates'.t(),
-                bind: '{settings.logSessionUpdates}'
             }]
         }, {
             title: 'QoS'.t(),
