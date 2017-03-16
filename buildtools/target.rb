@@ -465,7 +465,7 @@ class ServletBuilder < Target
 end
 
 class JsLintTarget < Target
-  JS_LINT_COMMAND = "/usr/bin/rhino /usr/share/javascript/jshint.js"
+  JS_LINT_COMMAND = ENV['JS_LINT_OVERRIDE'] || "/usr/bin/rhino /usr/share/javascript/jshint.js"
   JS_LINT_CONFIG = "-W041=false,-W069=false,-W083=false,-W061=false,-W044=false"
 
   attr_reader :filename
