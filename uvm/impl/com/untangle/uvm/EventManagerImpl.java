@@ -415,7 +415,7 @@ public class EventManagerImpl implements EventManager
         eventWriter.inputQueue.offer(event);
     }
 
-    private static void runEvent( LogEvent event )
+    private void runEvent( LogEvent event )
     {
         try {
             runAlertRules( event );
@@ -436,7 +436,7 @@ public class EventManagerImpl implements EventManager
         }
     }
 
-    private static void runAlertRules( LogEvent event )
+    private void runAlertRules( LogEvent event )
     {
         if ( event instanceof AlertEvent )
             return;
@@ -460,7 +460,7 @@ public class EventManagerImpl implements EventManager
         }
     }
 
-    private static void runTriggerRules( LogEvent event )
+    private void runTriggerRules( LogEvent event )
     {
         //if ( event instanceof TriggerEvent )
         //    return;
@@ -469,8 +469,7 @@ public class EventManagerImpl implements EventManager
         for ( TriggerRule rule : UvmContextFactory.context().eventManager().getSettings().getTriggerRules() ) {
             if ( ! rule.getEnabled() )
                 continue;
-
-            if ( !rule.isMatch( jsonObject ) )
+            if ( ! rule.isMatch( jsonObject ) )
                 continue;
 
             logger.info( "trigger \"" + rule.getDescription() + "\" matches: " + event );
@@ -532,9 +531,11 @@ public class EventManagerImpl implements EventManager
         }
     }
 
-    private static void runSyslogRules( LogEvent event )
+    private void runSyslogRules( LogEvent event )
     {
         if ( event instanceof SyslogEvent )
+            return;
+        if ( ! settings.getSyslogEnabled() )
             return;
 
         JSONObject jsonObject = event.toJSONObject();
@@ -619,15 +620,15 @@ public class EventManagerImpl implements EventManager
         String fullName = hostName + (  domainName == null ? "" : ("."+domainName));
         String serverName = companyName + " " + I18nUtil.marktr("Server");
         JSONObject jsonObject = event.toJSONObject();
-        String jsonEvent;
+        String jsonString;
 
         cleanupJsonObject( jsonObject );
 
         try {
-            jsonEvent = jsonObject.toString(4);
+            jsonString = jsonObject.toString(4);
         } catch (org.json.JSONException e) {
             logger.warn("Failed to pretty print.",e);
-            jsonEvent = jsonObject.toString();
+            jsonString = jsonObject.toString();
         }
 
         LinkedList<AdminUserSettings> adminManagerUsers = UvmContextFactory.context().adminManager().getSettings().getUsers();
@@ -643,7 +644,7 @@ public class EventManagerImpl implements EventManager
             "\r\n\r\n" +
             I18nUtil.marktr("Causal Event:") + " " + event.getClass().getSimpleName() + 
             "\r\n" +
-            jsonEvent + 
+            jsonString +
             "\r\n\r\n" +
             I18nUtil.marktr("This is an automated message sent because the event matched the configured Event Rules.");
 

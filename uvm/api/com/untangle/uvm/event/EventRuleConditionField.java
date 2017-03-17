@@ -51,14 +51,18 @@ public class EventRuleConditionField
         if ( field == null || comparator == null || value == null )
             return false;
 
-        Object actualValueObj;
-        try {
-            actualValueObj = obj.get( field );
-            if ( actualValueObj == null ) {
-                //logger.warn("DEBUG missing field: " + field + " value: " + actualValueObj );
-                return false;
-            }
-        } catch (Exception e) {
+
+        Object actualValueObj = null;
+        try { actualValueObj = obj.get( field ); } catch (Exception e) {}
+
+        if ( actualValueObj == null && "class".equals(field) ) {
+            try { actualValueObj = obj.get( "javaClass" ); } catch (Exception e) {}
+        }
+        if ( actualValueObj == null && "javaClass".equals(field) ) {
+            try { actualValueObj = obj.get( "class" ); } catch (Exception e) {}
+        }
+        if ( actualValueObj == null ) {
+            //logger.warn("DEBUG missing field: " + field + " value: " + actualValueObj );
             return false;
         }
 

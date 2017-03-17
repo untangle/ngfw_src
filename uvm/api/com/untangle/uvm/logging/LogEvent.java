@@ -122,14 +122,24 @@ public abstract class LogEvent implements Serializable, JSONString
 
     public String toJSONString()
     {
-        JSONObject jO = new JSONObject(this);
+        JSONObject jO = toJSONObject();
+        if ( jO == null)
+            return null;
         return jO.toString();
     }
 
     public JSONObject toJSONObject()
     {
-        JSONObject jO = new JSONObject(this);
-        return jO;
+        JSONObject jsonObject = null;
+
+        try {
+            String json = UvmContextFactory.context().getSerializer().toJSON(this);
+            jsonObject = new JSONObject(json);
+            return jsonObject;
+        } catch (Exception e) {
+            logger.warn("Failed to serialize JSON: " + this, e);
+            return null;
+        }
     }
 
     public static void setSchemaPrefix( String newValue )

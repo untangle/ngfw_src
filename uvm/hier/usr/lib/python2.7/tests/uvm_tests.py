@@ -251,7 +251,7 @@ class UvmTests(unittest2.TestCase):
     def test_040_trigger_rule_tag_host(self):
         settings = uvmContext.eventManager().getSettings()
         orig_settings = copy.deepcopy(settings)
-        new_rule = create_trigger_rule("TAG_HOST", "localAddr", "test-tag", 30, "test tag rule", "class", "=", "*SessionEvent*", "localAddr", "=", "*"+remote_control.clientIP+"*")
+        new_rule = create_trigger_rule("TAG_HOST", "localAddr", "test-tag", 30, "test tag rule", "class", "=", "*SessionEvent*", "localAddr", "=", remote_control.clientIP)
         settings['triggerRules']['list'].append( new_rule )
         uvmContext.eventManager().setSettings( settings )
 
@@ -267,7 +267,7 @@ class UvmTests(unittest2.TestCase):
     def test_041_alert_rule(self):
         settings = uvmContext.eventManager().getSettings()
         orig_settings = copy.deepcopy(settings)
-        new_rule = create_alert_rule("test alert rule", "class", "=", "*SessionEvent*", "localAddr", "=", "*"+remote_control.clientIP+"*")
+        new_rule = create_alert_rule("test alert rule", "class", "=", "*SessionEvent*", "localAddr", "=", remote_control.clientIP)
         settings['alertRules']['list'].append( new_rule )
         uvmContext.eventManager().setSettings( settings )
 

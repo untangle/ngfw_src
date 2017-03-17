@@ -41,9 +41,6 @@ public class AlertEvent extends LogEvent
     public String getSummaryText() { return summaryText; }
     public void setSummaryText( String newValue ) { this.summaryText = newValue; }
 
-    public JSONObject getJson() { return json; }
-    public void setJson( JSONObject newValue ) { this.json = newValue; }
-
     public LogEvent getCause() { return cause; }
     public void setCause( LogEvent newValue ) { this.cause = newValue; }
 
@@ -52,6 +49,24 @@ public class AlertEvent extends LogEvent
 
     public EventRule getCausalRule() { return causalRule; }
     public void setCausalRule( EventRule newValue ) { this.causalRule = newValue; }
+
+    public void setJson( JSONObject newValue )
+    {
+        this.json = newValue;
+    }
+
+    public String getJson()
+    {
+        String jsonString;
+        try {
+            jsonString = json.toString(4);
+        } catch (org.json.JSONException e) {
+            logger.warn("Failed to pretty print.",e);
+            jsonString = json.toString();
+        }
+
+        return jsonString;
+    }
 
     @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
