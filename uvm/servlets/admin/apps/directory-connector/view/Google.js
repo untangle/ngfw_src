@@ -81,33 +81,33 @@ Ext.define('Ung.apps.directoryconnector.view.Google', {
                     ck.setValue(false);
                 }
             }
-        }]
-    },{
-        xtype: 'fieldset',
-        title: 'Google Authentication Test'.t(),
-        name: 'fieldsetAuthTest',
-        collapsible: false,
-        hidden: true,
-        bind: {
-            hidden: '{settings.googleSettings.authenticationEnabled == false}',
-        },
-        items: [{
-            xtype: 'component',
-            html: Ext.String.format( 'The {0}Google Authentication Test{1} verifies that the server can authenticate the provided username/password.'.t(),'<b>','</b>')
-        },{
-            xtype:'textfield',
-            name: 'google_test_username',
-            fieldLabel: 'Username'.t(),
-        },{
-            xtype:'textfield',
-            name: 'google_test_password',
-            inputType: 'password',
-            fieldLabel: 'Password'.t(),
-        },{
-            xtype: 'button',
-            text: 'Google Authentication Test'.t(),
-            iconCls: 'test-icon',
-            handler: 'googleAuthenticationTest'
+        }, {
+            xtype: 'fieldset',
+            title: 'Google Authentication Test'.t(),
+            name: 'fieldsetAuthTest',
+            collapsible: false,
+            hidden: true,
+            bind: {
+                hidden: '{settings.googleSettings.authenticationEnabled == false}',
+            },
+            items: [{
+                xtype: 'component',
+                html: Ext.String.format( 'The {0}Google Authentication Test{1} verifies that the server can authenticate the provided username/password.'.t(),'<b>','</b>')
+            },{
+                xtype:'textfield',
+                name: 'google_test_username',
+                fieldLabel: 'Username'.t(),
+            },{
+                xtype:'textfield',
+                name: 'google_test_password',
+                inputType: 'password',
+                fieldLabel: 'Password'.t(),
+            },{
+                xtype: 'button',
+                text: 'Google Authentication Test'.t(),
+                iconCls: 'test-icon',
+                handler: 'googleAuthenticationTest'
+            }]
         }]
     }]
 });
