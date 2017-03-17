@@ -46,6 +46,10 @@ Ext.define('Ung.apps.ipsecvpn.Main', {
                 data: '{settings.networks.list}'
             },
 
+            listenList: {
+                data: '{settings.virtualListenList.list}'
+            },
+
             P1CipherStore: {
                 fields: [ 'name', 'value' ],
                 data: [
