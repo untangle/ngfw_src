@@ -6,6 +6,7 @@ import sys
 import re
 import pycurl
 import json
+import hashlib
 from StringIO import StringIO
 
 from mod_python import apache, Session, util
@@ -13,6 +14,21 @@ from psycopg2 import connect
 
 sys.path.insert(0,'@PREFIX@/usr/lib/python%d.%d/' % sys.version_info[:2])
 import uvm_login
+
+def _get_cookie_name():
+    try:
+        uid=None
+        with open('@PREFIX@/usr/share/untangle/conf/uid', 'r') as uidfile:
+            uid=uidfile.read().replace('\n', '')
+            md5 = hashlib.md5()
+            md5.update(uid)
+            cookie_name = md5.hexdigest()
+            cookie_name = "auth-" + cookie_name[:8]
+            return cookie_name
+    except Exception,e:
+        raise e
+
+Session.COOKIE_NAME=_get_cookie_name()
 
 def get_app_settings_item(a,b):
     return None
@@ -38,7 +54,7 @@ def login(req, url=None, realm='Administrator', token=None):
     if req.form.has_key('username') or req.form.has_key('password'):
         error_msg = '%s' % cgi.escape(_('Error: Username and Password do not match'))
 
-    if token != None:
+    if token != None and get_uvm_settings_item('system','cloudEnabled'):
         if _valid_token(req, token):
             sess = Session.Session(req)
             sess.set_timeout(uvm_login.SESSION_TIMEOUT)
