@@ -126,21 +126,6 @@ Ext.define('Ung.cmp.GridController', {
         }
     },
 
-    actionRenderer: function (value, metaData, record) {
-        if (typeof value === 'undefined') {
-            return 'Unknown action'.t();
-        }
-        switch(value.actionType) {
-        case 'SET_PRIORITY': return 'Set Priority' + ' [' + this.priorityRenderer(value.priority) + ']';
-        case 'TAG_HOST': return 'Tag Host'.t();
-        case 'APPLY_PENALTY_PRIORITY': return 'Apply Penalty Priority'.t(); // DEPRECATED
-        case 'GIVE_CLIENT_HOST_QUOTA': return 'Give Client a Quota'.t();
-        case 'GIVE_HOST_QUOTA': return 'Give Host a Quota'.t();
-        case 'GIVE_USER_QUOTA': return 'Give User a Quota'.t();
-        default: return 'Unknown Action: ' + value;
-        }
-    },
-
     conditionRenderer: function (val) {
         return this.getView().conditionsMap[val].displayName;
     },
