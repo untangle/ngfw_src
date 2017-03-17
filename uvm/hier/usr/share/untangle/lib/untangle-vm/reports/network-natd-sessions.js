@@ -4,7 +4,7 @@
     "type": "EVENT_LIST",
     "conditions": [
         {
-            "javaClass": "com.untangle.node.reports.SqlCondition",
+            "javaClass": "com.untangle.app.reports.SqlCondition",
             "autoFormatValue": "false",
             "column": "c_client_addr",
             "operator": "!=",
@@ -14,7 +14,7 @@
     "defaultColumns": ["time_stamp","username","hostname","c_client_addr","s_client_addr","protocol","c_client_port","s_client_port","s_server_addr","s_server_port"],
     "description": "All sessions that have been NATd by Untangle.",
     "displayOrder": 1060,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "table": "sessions",
     "title": "NATd Sessions",
     "uniqueId": "network-hNUcmhuNsV"

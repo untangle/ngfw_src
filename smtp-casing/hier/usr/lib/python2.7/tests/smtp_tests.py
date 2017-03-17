@@ -11,31 +11,31 @@ import remote_control
 import test_registry
 
 defaultRackId = 1
-node = None
+app = None
 
 class SmtpTests(unittest2.TestCase):
 
     @staticmethod
-    def nodeName():
-        return "untangle-casing-smtp"
+    def appName():
+        return "smtp"
 
     @staticmethod
     def initialSetUp(self):
-        global node
-        if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
-            node = uvmContext.nodeManager().node(self.nodeName())
+        global app
+        if (uvmContext.appManager().isInstantiated(self.appName())):
+            app = uvmContext.appManager().app(self.appName())
         else:
-            node = uvmContext.nodeManager().instantiate(self.nodeName(), defaultRackId)
+            app = uvmContext.appManager().instantiate(self.appName(), defaultRackId)
 
     def setUp(self):
         pass
 
     # verify client is online
     def test_010_runTests(self):
-        l = node.getTests();
+        l = app.getTests();
         for name in l['list']:
-            print node.runTests(name);
+            print app.runTests(name);
             
         
 
-test_registry.registerNode("smtp-casing", SmtpTests)
+test_registry.registerApp("smtp-casing", SmtpTests)

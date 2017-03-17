@@ -4,7 +4,7 @@
     "description": "The amount of total, scanned, and bypassed sessions created per minute.",
     "displayOrder": 101,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderDesc": false,
     "units": "sessions",
     "readOnly": true,

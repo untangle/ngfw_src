@@ -17,6 +17,7 @@ public class DeviceTableEvent extends LogEvent
     private String macAddress;
     private String key;
     private String value;
+    private String oldValue;
 
     /**
      * this is stored only so it will appear in the JSON serialiazed string in this event
@@ -25,12 +26,13 @@ public class DeviceTableEvent extends LogEvent
     
     public DeviceTableEvent() { }
 
-    public DeviceTableEvent( DeviceTableEntry device, String macAddress, String key, String value )
+    public DeviceTableEvent( DeviceTableEntry device, String macAddress, String key, String value, String oldValue )
     {
         this.device = device;
         this.macAddress = macAddress;
         this.key = key;
         this.value = value;
+        this.oldValue = oldValue;
     }
 
     public String getMacAddress() { return macAddress; }
@@ -44,14 +46,17 @@ public class DeviceTableEvent extends LogEvent
 
     public DeviceTableEntry getDevice() { return device; }
     public void setDevice( DeviceTableEntry newValue ) { this.device = newValue; }
+
+    public String getOldValue() { return oldValue; }
+    public void setOldValue( String newValue ) { this.oldValue = newValue; }
     
     @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
         String sql = "INSERT INTO " + schemaPrefix() + "device_table_updates" + getPartitionTablePostfix() + " " +
-            "(time_stamp, mac_address, key, value) " +
+            "(time_stamp, mac_address, key, value, old_value) " +
             "values " +
-            "(?, ?, ?, ?); ";
+            "(?, ?, ?, ?, ?); ";
 
         java.sql.PreparedStatement pstmt = getStatementFromCache( sql, statementCache, conn );        
 
@@ -60,6 +65,7 @@ public class DeviceTableEvent extends LogEvent
         pstmt.setString(++i, getMacAddress());
         pstmt.setString(++i, getKey());
         pstmt.setString(++i, getValue());
+        pstmt.setString(++i, getOldValue());
 
         pstmt.addBatch();
         return;

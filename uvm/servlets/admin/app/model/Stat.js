@@ -25,12 +25,12 @@ Ext.define ('Ung.model.Stat', {
         }, {
             name: 'totalMemory',
             calculate: function (data) {
-                return Ung.Util.formatBytes(data.MemTotal, 2);
+                return Util.formatBytes(data.MemTotal, 2);
             }
         }, {
             name: 'freeMemory',
             calculate: function (data) {
-                return Ung.Util.formatBytes(data.MemFree, 2);
+                return Util.formatBytes(data.MemFree, 2);
             }
         }, {
             name: 'freeMemoryPercent',
@@ -41,7 +41,7 @@ Ext.define ('Ung.model.Stat', {
         }, {
             name: 'usedMemory',
             calculate: function (data) {
-                return Ung.Util.formatBytes(data.MemTotal - data.MemFree, 2);
+                return Util.formatBytes(data.MemTotal - data.MemFree, 2);
             }
         }, {
             name: 'usedMemoryPercent',
@@ -51,12 +51,12 @@ Ext.define ('Ung.model.Stat', {
         }, {
             name: 'totalSwap',
             calculate: function (data) {
-                return Ung.Util.formatBytes(data.SwapTotal, 2);
+                return Util.formatBytes(data.SwapTotal, 2);
             }
         }, {
             name: 'freeSwap',
             calculate: function (data) {
-                return Ung.Util.formatBytes(data.SwapFree, 2);
+                return Util.formatBytes(data.SwapFree, 2);
             }
         }, {
             name: 'freeSwapPercent',
@@ -67,7 +67,7 @@ Ext.define ('Ung.model.Stat', {
         }, {
             name: 'usedSwap',
             calculate: function (data) {
-                return Ung.Util.formatBytes(data.SwapTotal - data.SwapFree, 2);
+                return Util.formatBytes(data.SwapTotal - data.SwapFree, 2);
             }
         }, {
             name: 'usedSwapPercent',
@@ -77,12 +77,12 @@ Ext.define ('Ung.model.Stat', {
         }, {
             name: 'totalDisk',
             calculate: function (data) {
-                return Ung.Util.formatBytes(data.totalDiskSpace, 2);
+                return Util.formatBytes(data.totalDiskSpace, 2);
             }
         }, {
             name: 'freeDisk',
             calculate: function (data) {
-                return Ung.Util.formatBytes(data.freeDiskSpace, 2);
+                return Util.formatBytes(data.freeDiskSpace, 2);
             }
         }, {
             name: 'freeDiskPercent',
@@ -93,7 +93,7 @@ Ext.define ('Ung.model.Stat', {
         }, {
             name: 'usedDisk',
             calculate: function (data) {
-                return Ung.Util.formatBytes(data.totalDiskSpace - data.freeDiskSpace, 2);
+                return Util.formatBytes(data.totalDiskSpace - data.freeDiskSpace, 2);
             }
         }, {
             name: 'usedDiskPercent',

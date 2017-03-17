@@ -4,10 +4,11 @@ Ext.define('Ung.view.reports.ReportsModel', {
     alias: 'viewmodel.reports',
 
     data: {
-        isNodeReporting: false,
+        isAppReporting: false,
         activeCard: 'allCategoriesCard', // allCategoriesCard, categoryCard, reportCard
         category: null,
         report: null,
+        entry: null,
         categoriesData: null,
         startDateTime: null,
         endDateTime: null
@@ -19,7 +20,7 @@ Ext.define('Ung.view.reports.ReportsModel', {
         },
 
         areCategoriesHidden: function (get) {
-            return !get('isCategorySelected') || get('isNodeReporting');
+            return !get('isCategorySelected') || get('isAppReporting');
         },
 
         reportHeading: function (get) {
@@ -71,13 +72,6 @@ Ext.define('Ung.view.reports.ReportsModel', {
 
         isWidget: function (get) {
             return Ext.getStore('widgets').findRecord('entryId', get('report.uniqueId')) ? true : false;
-        },
-
-        dashboardBtnLabel: function (get) {
-            if (get('isWidget')) {
-                return Ung.Util.iconTitle('Remove from Dashboard'.t(), 'home-16');
-            }
-            return Ung.Util.iconTitle('Add to Dashboard'.t(), 'home-16');
         }
     },
 

@@ -65,10 +65,11 @@ public class UtJsonRpcServlet extends JSONRPCServlet
             bridge.registerCallableReference(uvm.metricManager().getClass());
             bridge.registerCallableReference(uvm.languageManager().getClass());
             bridge.registerCallableReference(uvm.certificateManager().getClass());
-            bridge.registerCallableReference(uvm.nodeManager().getClass());
+            bridge.registerCallableReference(uvm.appManager().getClass());
             bridge.registerCallableReference(uvm.loggingManager().getClass());
             bridge.registerCallableReference(uvm.mailSender().getClass());
             bridge.registerCallableReference(uvm.adminManager().getClass());
+            bridge.registerCallableReference(uvm.eventManager().getClass());
             bridge.registerCallableReference(uvm.systemManager().getClass());
             bridge.registerCallableReference(uvm.networkManager().getClass());
             bridge.registerCallableReference(uvm.getConnectivityTester().getClass());
@@ -77,7 +78,7 @@ public class UtJsonRpcServlet extends JSONRPCServlet
             bridge.registerCallableReference(uvm.servletFileManager().getClass());
             bridge.registerCallableReference(uvm.settingsManager().getClass());
             bridge.registerCallableReference(uvm.oemManager().getClass());
-            bridge.registerCallableReference(uvm.alertManager().getClass());
+            bridge.registerCallableReference(uvm.notificationManager().getClass());
             bridge.registerCallableReference(uvm.pipelineFoundry().getClass());
             bridge.registerCallableReference(uvm.sessionMonitor().getClass());
             bridge.registerCallableReference(uvm.execManager().getClass());
@@ -85,8 +86,9 @@ public class UtJsonRpcServlet extends JSONRPCServlet
             bridge.registerCallableReference(uvm.dashboardManager().getClass());
             bridge.registerCallableReference(uvm.hostTable().getClass());
             bridge.registerCallableReference(uvm.deviceTable().getClass());
+            bridge.registerCallableReference(uvm.userTable().getClass());
 
-            bridge.registerCallableReference(com.untangle.uvm.node.Node.class);
+            bridge.registerCallableReference(com.untangle.uvm.app.App.class);
         }
         catch (Exception e) {
             logger.warn("Exception registering callable reference classes",e);

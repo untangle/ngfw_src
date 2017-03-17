@@ -68,19 +68,22 @@ Ext.define('Webui.config.deviceMonitor', {
                 name: "hostname",
                 type: 'string'
             },{
-                name: "lastSeenInterfaceId",
+                name: "tagsString",
+                type: 'string'
+            },{
+                name: "interfaceId",
                 convert: this.fieldConvertInterface
             },{
-                name: "deviceUsername",
+                name: "username",
                 type: 'string'
             },{
                 name: "httpUserAgent",
                 type: 'string'
             }, {
-                name: "lastSeenTime"
+                name: "lastSessionTime"
             }, {
-                name: "lastSeenTimeDate",
-                mapping: "lastSeenTime",
+                name: "lastSessionTimeDate",
+                mapping: "lastSessionTime",
                 convert: dateConvertFn
             }],
             columns: [{
@@ -103,7 +106,7 @@ Ext.define('Webui.config.deviceMonitor', {
                 }
             }, {
                 header: i18n._("Interface"),
-                dataIndex: "lastSeenInterfaceId",
+                dataIndex: "interfaceId",
                 width: 100,
                 filter: {
                     type: 'number'
@@ -118,7 +121,7 @@ Ext.define('Webui.config.deviceMonitor', {
                 }
             }, {
                 header: i18n._("Device Username"),
-                dataIndex: "deviceUsername",
+                dataIndex: "username",
                 width: 150,
                 editor: {
                     xtype:'textfield',
@@ -135,14 +138,21 @@ Ext.define('Webui.config.deviceMonitor', {
                 }
             }, {
                 header: i18n._("Last Seen Time"),
-                dataIndex: "lastSeenTimeDate",
+                dataIndex: "lastSessionTimeDate",
                 width: 150,
                 renderer: function(value, metaData, record) {
-                    var val=record.get("lastSeenTime");
+                    var val=record.get("lastSessionTime");
                     return val == 0 || val == "" ? "" : i18n.timestampFormat(val);
                 },
                 filter: {
                     type: 'date'
+                }
+            },{
+                header: i18n._("Tags"),
+                dataIndex: "tagsString",
+                width: 100,
+                filter: {
+                    type: 'string'
                 }
             }],
             reload: function() {
@@ -184,9 +194,9 @@ Ext.define('Webui.config.deviceMonitor', {
                 width: 500
             }, {
                 xtype:'textfield',
-                dataIndex: "deviceUsername",
-                fieldLabel: i18n._("Device Username"),
-                emptyText: i18n._("[no device username]"),
+                dataIndex: "username",
+                fieldLabel: i18n._("Username"),
+                emptyText: i18n._("[no username]"),
                 width: 500
             }, {
                 xtype:'textfield',

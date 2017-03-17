@@ -9,7 +9,7 @@
 
   <servlet>
     <servlet-name>BlockPageServlet</servlet-name>
-    <servlet-class>com.untangle.node.virus_blocker.BlockPageServlet</servlet-class>
+    <servlet-class>com.untangle.app.virus_blocker.BlockPageServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
  </servlet>
 

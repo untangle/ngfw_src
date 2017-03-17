@@ -332,15 +332,15 @@ Ext.define('Ung.UserEditorWindow', {
     },
     populate: function(button) {
         var data = [];
-        var node;
+        var app;
         try {
-            node = rpc.nodeManager.node("untangle-node-directory-connector");
+            app = rpc.appManager.app("directory-connector");
         } catch (e) {
             Ung.Util.rpcExHandler(e);
         }
-        if (node != null) {
+        if (app != null) {
             Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
-            data = node.getUserEntries().list;
+            data = app.getUserEntries().list;
             Ext.MessageBox.hide();
         } else {
             data.push({ firstName: "", lastName: null, uid: "[any]", displayName: "Any User"});
@@ -476,15 +476,15 @@ Ext.define('Ung.GroupEditorWindow', {
     },
     populate: function(button) {
         var data = [];
-        var node;
+        var app;
         try {
-            node = rpc.nodeManager.node("untangle-node-directory-connector");
+            app = rpc.appManager.app("directory-connector");
         } catch (e) {
             Ung.Util.rpcExHandler(e);
         }
-        if (node != null) {
+        if (app != null) {
             Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
-            data = node.getGroupEntries().list;
+            data = app.getGroupEntries().list;
             Ext.MessageBox.hide();
         } else {
             data.push({ SAMAccountName: "*", displayName: "Any Group"});
@@ -585,7 +585,7 @@ Ext.define('Ung.FieldConditionWindow', {
             field: this.down('textfield[name="field"]').getValue(),
             comparator: this.down('combo[name="comparator"]').getValue(),
             value: this.down('textfield[name="value"]').getValue(),
-            javaClass: "com.untangle.node.reports.AlertRuleConditionField"
+            javaClass: "com.untangle.app.reports.AlertRuleConditionField"
         };
         return jsonobj;
     }

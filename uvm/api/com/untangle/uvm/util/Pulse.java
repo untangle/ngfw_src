@@ -118,7 +118,7 @@ public class Pulse implements Runnable
     {
         /* Can't start unless it is in the unborn state */
         if ( PulseState.UNBORN != this.state ) {
-            throw new IllegalStateException( "Unable to start a pulse twice" );
+            throw new IllegalStateException( "Unable to start a pulse. Unexpected state: " + this.state );
         }
 
         this.delay = delay;

@@ -15,15 +15,15 @@ import com.untangle.uvm.webui.jabsorb.serializer.TimeSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.TimeZoneSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.URLSerializer;
 import com.untangle.uvm.webui.jabsorb.serializer.GenericStringSerializer;
-import com.untangle.uvm.node.ProtocolMatcher;
-import com.untangle.uvm.node.IPMatcher;
-import com.untangle.uvm.node.IntMatcher;
-import com.untangle.uvm.node.IntfMatcher;
-import com.untangle.uvm.node.DayOfWeekMatcher;
-import com.untangle.uvm.node.TimeOfDayMatcher;
-import com.untangle.uvm.node.UserMatcher;
-import com.untangle.uvm.node.GlobMatcher;
-import com.untangle.uvm.node.UrlMatcher;
+import com.untangle.uvm.app.ProtocolMatcher;
+import com.untangle.uvm.app.IPMatcher;
+import com.untangle.uvm.app.IntMatcher;
+import com.untangle.uvm.app.IntfMatcher;
+import com.untangle.uvm.app.DayOfWeekMatcher;
+import com.untangle.uvm.app.TimeOfDayMatcher;
+import com.untangle.uvm.app.UserMatcher;
+import com.untangle.uvm.app.GlobMatcher;
+import com.untangle.uvm.app.UrlMatcher;
 
 @SuppressWarnings("unchecked")
 public class ServletUtils 

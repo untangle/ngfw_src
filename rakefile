@@ -20,10 +20,10 @@ end
 task :uvm_clean do
   # if running, kill it
   Kernel.system("if [ -f /var/run/uvm.pid ] && [ -f /proc/`cat /var/run/uvm.pid`/cmdline ] && grep -q #{SRC_HOME} /proc/`cat /var/run/uvm.pid`/cmdline ; then #{SRC_HOME}/dist/etc/init.d/untangle-vm stop ; fi")
-  Kernel.system("if [ -f /var/run/uvm.pid ] && [ -f /proc/`cat /var/run/uvm.pid`/cmdline ] && grep -q #{SRC_HOME} /proc/`cat /var/run/uvm.pid`/cmdline ; then echo 'Killing UVM...' ; killall uvm ; fi")
   # change symlinks back to original
-  Kernel.system('if [ -L /usr/share/untangle/settings ] && [ -d /usr/share/untangle/settings.backup ] ; then sudo rm -f /usr/share/untangle/settings && sudo mv /usr/share/untangle/settings.backup /usr/share/untangle/settings ; fi')
   Kernel.system('if [ -L /usr/share/untangle/bin ] && [ -d /usr/share/untangle/bin.backup ] ; then sudo rm -f /usr/share/untangle/bin && sudo mv /usr/share/untangle/bin.backup /usr/share/untangle/bin ; fi')
+  # we no longer relink settings, but lets keep this here until 13.0 so developers don't have issues
+  Kernel.system('if [ -L /usr/share/untangle/settings ] && [ -d /usr/share/untangle/settings.backup ] ; then sudo rm -f /usr/share/untangle/settings && sudo mv /usr/share/untangle/settings.backup /usr/share/untangle/settings ; fi')
   # remove apache file
   if File.exist?("/etc/apache2/uvm-dev.conf")
     info "[rm -rf  ] /etc/apache2/uvm-dev.conf"
@@ -86,17 +86,33 @@ task :targets => :download do
   require "#{SRC_HOME}/virus-blocker-base/package.rb"
   require "#{SRC_HOME}/clam-base/package.rb"
   require "#{SRC_HOME}/web-filter-base/package.rb"
+  require "#{SRC_HOME}/web-filter/package.rb"
   require "#{SRC_HOME}/phish-blocker/package.rb"
   require "#{SRC_HOME}/spam-blocker-lite/package.rb"
   require "#{SRC_HOME}/web-monitor/package.rb"
   require "#{SRC_HOME}/ad-blocker/package.rb"
   require "#{SRC_HOME}/virus-blocker-lite/package.rb"
   require "#{SRC_HOME}/captive-portal/package.rb"
+  require "#{SRC_HOME}/application-control/package.rb"
+  require "#{SRC_HOME}/bandwidth-control/package.rb"
+  require "#{SRC_HOME}/branding-manager/package.rb"
+  require "#{SRC_HOME}/configuration-backup/package.rb"
+  require "#{SRC_HOME}/directory-connector/package.rb"
+  require "#{SRC_HOME}/ipsec-vpn/package.rb"
+  require "#{SRC_HOME}/live-support/package.rb"
+  require "#{SRC_HOME}/policy-manager/package.rb"
+  require "#{SRC_HOME}/spam-blocker/package.rb"
+  require "#{SRC_HOME}/ssl-inspector/package.rb"
+  require "#{SRC_HOME}/virus-blocker/package.rb"
+  require "#{SRC_HOME}/wan-balancer/package.rb"
+  require "#{SRC_HOME}/wan-failover/package.rb"
+  require "#{SRC_HOME}/web-cache/package.rb"
+  require "#{SRC_HOME}/license/package.rb"
 end
 
 task :build => [:builduvmcore, :targets] do
   Rake::Task[BuildEnv::SRC['untangle-vm']].invoke
-  Rake::Task[BuildEnv::SRC['node']].invoke
+  Rake::Task[BuildEnv::SRC['app']].invoke
 end
 
 task :hier => :targets do

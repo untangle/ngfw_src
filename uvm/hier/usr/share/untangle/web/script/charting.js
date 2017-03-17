@@ -252,9 +252,9 @@ Ext.define('Ung.charts', {
             chartType = 'areaspline';
             break;
         case 'BAR':
-        case 'BAR_3D':
+        case 'BAR':
         case 'BAR_OVERLAPPED':
-        case 'BAR_3D_OVERLAPPED':
+        case 'BAR_OVERLAPPED':
         case 'BAR_STACKED':
             chartType = 'column';
             break;
@@ -801,12 +801,12 @@ Ext.define('Ung.charts', {
             chartType = 'areaspline';
             break;
         case 'BAR':
-        case 'BAR_3D':
+        case 'BAR':
         case 'BAR_STACKED':
             chartType = 'column';
             break;
         case 'BAR_OVERLAPPED':
-        case 'BAR_3D_OVERLAPPED':
+        case 'BAR_OVERLAPPED':
             columnOverlapped = true;
             chartType = 'column';
             break;
@@ -906,12 +906,12 @@ Ext.define('Ung.charts', {
     },
 
     /**
-     * Set the chart display for the node in AppsView
+     * Set the chart display for the app in AppsView
      * @param {Object} container - the DOM element where the chart is rendered
      * @param {Object} data      - the series data
      * @returns {Object}         - the HighCharts chart object
      */
-    nodeChart: function (container, data) {
+    appChart: function (container, data) {
         var i, _data = [];
         for (i = 0; i < data.length; i += 1) {
             _data.push({
@@ -1020,11 +1020,11 @@ Ext.define('Ung.charts', {
     },
 
     /**
-     * Updates the Rack node chart
+     * Updates the Rack app chart
      * @param {Object} chart - the chart object
      * @param {Object} data  - new data to update
      */
-    nodeChartUpdate: function (chart, data) {
+    appChartUpdate: function (chart, data) {
         var i, _data = [];
         for (i = 0; i < data.length; i += 1) {
             _data.push({

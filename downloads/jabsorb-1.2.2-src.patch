@@ -1,6 +1,6 @@
-diff -urN jabsorb-1.2.2/build.xml jabsorb-1.2.2.modified//build.xml
---- jabsorb-1.2.2/build.xml	2008-01-16 17:47:54.000000000 -0800
-+++ jabsorb-1.2.2.modified//build.xml	2014-05-08 10:56:44.000000000 -0700
+diff -urN jabsorb-1.2.2.orig/build.xml jabsorb-1.2.2/build.xml
+--- jabsorb-1.2.2.orig/build.xml	2017-03-15 15:15:58.287643239 -0700
++++ jabsorb-1.2.2/build.xml	2017-03-15 15:16:18.826619969 -0700
 @@ -53,13 +53,14 @@
    </target>
  
@@ -35,9 +35,9 @@ diff -urN jabsorb-1.2.2/build.xml jabsorb-1.2.2.modified//build.xml
      <delete file="${webapp}/WEB-INF/web.xml.out" />
      <delete file="${webapp}/WEB-INF/web.xml.generated" />
      <delete file="${webapp}/Test.java.txt" />
-diff -urN jabsorb-1.2.2/src/org/jabsorb/JSONRPCBridge.java jabsorb-1.2.2.modified//src/org/jabsorb/JSONRPCBridge.java
---- jabsorb-1.2.2/src/org/jabsorb/JSONRPCBridge.java	2008-01-16 17:47:54.000000000 -0800
-+++ jabsorb-1.2.2.modified//src/org/jabsorb/JSONRPCBridge.java	2014-05-08 11:39:33.000000000 -0700
+diff -urN jabsorb-1.2.2.orig/src/org/jabsorb/JSONRPCBridge.java jabsorb-1.2.2/src/org/jabsorb/JSONRPCBridge.java
+--- jabsorb-1.2.2.orig/src/org/jabsorb/JSONRPCBridge.java	2017-03-15 15:15:58.284643097 -0700
++++ jabsorb-1.2.2/src/org/jabsorb/JSONRPCBridge.java	2017-03-15 15:16:18.827620045 -0700
 @@ -108,8 +108,20 @@
   * <code>JSONRPCBridge.getGlobalBridge().registerClass("MyClass",
   * com.example.MyClass.class);</code>
@@ -211,19 +211,24 @@ diff -urN jabsorb-1.2.2/src/org/jabsorb/JSONRPCBridge.java jabsorb-1.2.2.modifie
        result = new JSONRPCResult(JSONRPCResult.CODE_REMOTE_EXCEPTION,
            requestId, exceptionTransformer.transform(e));
      }
-diff -urN jabsorb-1.2.2/src/org/jabsorb/JSONSerializer.java jabsorb-1.2.2.modified//src/org/jabsorb/JSONSerializer.java
---- jabsorb-1.2.2/src/org/jabsorb/JSONSerializer.java	2008-01-16 17:47:54.000000000 -0800
-+++ jabsorb-1.2.2.modified//src/org/jabsorb/JSONSerializer.java	2014-05-08 10:56:44.000000000 -0700
-@@ -718,7 +718,7 @@
+diff -urN jabsorb-1.2.2.orig/src/org/jabsorb/JSONSerializer.java jabsorb-1.2.2/src/org/jabsorb/JSONSerializer.java
+--- jabsorb-1.2.2.orig/src/org/jabsorb/JSONSerializer.java	2017-03-15 15:15:58.284643097 -0700
++++ jabsorb-1.2.2/src/org/jabsorb/JSONSerializer.java	2017-03-15 15:17:07.683943845 -0700
+@@ -718,7 +718,12 @@
        try
        {
          className = ((JSONObject) o).getString("javaClass");
 -        return Class.forName(className);
++        // conversion of old class paths to new class paths //v13
++        if ( className.startsWith("com.untangle.node") )
++            className = className.replaceFirst("com.untangle.node","com.untangle.app");
++        if ( className.startsWith("com.untangle.uvm.node") )
++            className = className.replaceFirst("com.untangle.uvm.node","com.untangle.uvm.app");
 +        return Class.forName(className,true,Thread.currentThread().getContextClassLoader());
        }
        catch (Exception e)
        {
-@@ -746,9 +746,9 @@
+@@ -746,9 +750,9 @@
        {
          if (compClazz.isArray())
          {
@@ -235,9 +240,9 @@ diff -urN jabsorb-1.2.2/src/org/jabsorb/JSONSerializer.java jabsorb-1.2.2.modifi
        }
        catch (ClassNotFoundException e)
        {
-diff -urN jabsorb-1.2.2/src/org/jabsorb/reflect/ClassAnalyzer.java jabsorb-1.2.2.modified//src/org/jabsorb/reflect/ClassAnalyzer.java
---- jabsorb-1.2.2/src/org/jabsorb/reflect/ClassAnalyzer.java	2008-01-16 17:47:52.000000000 -0800
-+++ jabsorb-1.2.2.modified//src/org/jabsorb/reflect/ClassAnalyzer.java	2014-05-08 10:56:44.000000000 -0700
+diff -urN jabsorb-1.2.2.orig/src/org/jabsorb/reflect/ClassAnalyzer.java jabsorb-1.2.2/src/org/jabsorb/reflect/ClassAnalyzer.java
+--- jabsorb-1.2.2.orig/src/org/jabsorb/reflect/ClassAnalyzer.java	2017-03-15 15:15:58.282643002 -0700
++++ jabsorb-1.2.2/src/org/jabsorb/reflect/ClassAnalyzer.java	2017-03-15 15:16:18.828620114 -0700
 @@ -107,6 +107,15 @@
    {
      log.info("analyzing " + clazz.getName());
@@ -254,9 +259,9 @@ diff -urN jabsorb-1.2.2/src/org/jabsorb/reflect/ClassAnalyzer.java jabsorb-1.2.2
      ClassData cd = new ClassData();
      cd.clazz = clazz;
  
-diff -urN jabsorb-1.2.2/src/org/jabsorb/serializer/impl/BooleanSerializer.java jabsorb-1.2.2.modified//src/org/jabsorb/serializer/impl/BooleanSerializer.java
---- jabsorb-1.2.2/src/org/jabsorb/serializer/impl/BooleanSerializer.java	2008-01-16 17:47:54.000000000 -0800
-+++ jabsorb-1.2.2.modified//src/org/jabsorb/serializer/impl/BooleanSerializer.java	2014-05-08 10:56:44.000000000 -0700
+diff -urN jabsorb-1.2.2.orig/src/org/jabsorb/serializer/impl/BooleanSerializer.java jabsorb-1.2.2/src/org/jabsorb/serializer/impl/BooleanSerializer.java
+--- jabsorb-1.2.2.orig/src/org/jabsorb/serializer/impl/BooleanSerializer.java	2017-03-15 15:15:58.283643050 -0700
++++ jabsorb-1.2.2/src/org/jabsorb/serializer/impl/BooleanSerializer.java	2017-03-15 15:16:18.828620114 -0700
 @@ -97,6 +97,11 @@
      {
        returnValue = (Boolean) jso;
@@ -269,9 +274,9 @@ diff -urN jabsorb-1.2.2/src/org/jabsorb/serializer/impl/BooleanSerializer.java j
  
      state.setSerialized(jso, returnValue);
      return returnValue;
-diff -urN jabsorb-1.2.2/src/org/jabsorb/serializer/ObjectMatch.java jabsorb-1.2.2.modified//src/org/jabsorb/serializer/ObjectMatch.java
---- jabsorb-1.2.2/src/org/jabsorb/serializer/ObjectMatch.java	2008-01-16 17:47:54.000000000 -0800
-+++ jabsorb-1.2.2.modified//src/org/jabsorb/serializer/ObjectMatch.java	2014-05-08 10:56:44.000000000 -0700
+diff -urN jabsorb-1.2.2.orig/src/org/jabsorb/serializer/ObjectMatch.java jabsorb-1.2.2/src/org/jabsorb/serializer/ObjectMatch.java
+--- jabsorb-1.2.2.orig/src/org/jabsorb/serializer/ObjectMatch.java	2017-03-15 15:15:58.283643050 -0700
++++ jabsorb-1.2.2/src/org/jabsorb/serializer/ObjectMatch.java	2017-03-15 15:16:18.828620114 -0700
 @@ -102,6 +102,10 @@
     */
    public ObjectMatch max(ObjectMatch m)
@@ -283,9 +288,9 @@ diff -urN jabsorb-1.2.2/src/org/jabsorb/serializer/ObjectMatch.java jabsorb-1.2.
      if (this.mismatch > m.mismatch)
      {
        return this;
-diff -urN jabsorb-1.2.2/webapps/jsonrpc/jsonrpc.js jabsorb-1.2.2.modified//webapps/jsonrpc/jsonrpc.js
---- jabsorb-1.2.2/webapps/jsonrpc/jsonrpc.js	2008-01-16 17:47:36.000000000 -0800
-+++ jabsorb-1.2.2.modified//webapps/jsonrpc/jsonrpc.js	2014-05-08 10:56:44.000000000 -0700
+diff -urN jabsorb-1.2.2.orig/webapps/jsonrpc/jsonrpc.js jabsorb-1.2.2/webapps/jsonrpc/jsonrpc.js
+--- jabsorb-1.2.2.orig/webapps/jsonrpc/jsonrpc.js	2017-03-15 15:15:58.287643239 -0700
++++ jabsorb-1.2.2/webapps/jsonrpc/jsonrpc.js	2017-03-15 15:16:18.829620181 -0700
 @@ -24,6 +24,8 @@
   *
   */

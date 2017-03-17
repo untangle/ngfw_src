@@ -313,15 +313,89 @@ class CopyFiles < Target
   end
 end
 
+class JsBuilder < Target
+  include Rake::DSL if defined?(Rake::DSL)
+
+  @@WEB_DEST = "usr/share/untangle/web"
+
+  def initialize(package, name, sourcePaths, webDestDir)
+    @name = name
+    @path = sourcePaths.kind_of?(Array) ? sourcePaths : [sourcePaths]
+    @webDestDir = webDestDir
+    @targetName = "js-builder:#{package.name}-#{@name}"
+
+    @relativeDestPath = "#{@@WEB_DEST}/#{@webDestDir}/#{@name}.js"
+
+    @deps = @path.map do |p|
+      File::directory?(p) ? FileList["#{p}/**/*.js"] : p
+    end
+    @deps.flatten!
+
+    @destPath = "#{package.distDirectory}/#{@relativeDestPath}"
+
+    super(package, @deps, @targetName)
+  end
+
+  def all
+    info "[jsbuild ] #{@name}: #{@path} -> #{@destPath}"
+    # read all deps into memory, as an array of content
+    data = @deps.map { |d| File.open(d).read() }
+
+    # start pipe'ing operations on that array
+    data = remove_comment(data)
+    data = jshint(data)
+    data = minimize(data)
+
+    write(data) # write to destination file
+  end
+
+  def remove_comment(data)
+    data.map do |d|
+      d.sub(/^\s*\/\*\s*requires-start\s*\*\/.+?^.*?\/\*\srequires-end\s*\*\/\s*$/m, "")
+    end
+  end
+
+  def jshint(data)
+    # FIXME: 2 options
+    #   1. change no-op to actual jshint call
+    #   2. remove this function and pass admin/**/*.js files to global
+    #      rake jslint target
+    return data
+  end
+
+  def minimize(data)
+    # FIXME: change no-op to actually minimizing passed-in content
+    return data
+  end
+
+  def write(data)
+    FileUtils.mkdir_p(File.dirname(@destPath))
+    File.open(@destPath, 'w') do |f|
+      data.each { |d| f.write(d) }
+    end
+  end
+
+  def make_dependencies
+    file @destPath => @deps do 
+      all
+    end
+    stamptask self => @destPath
+  end
+
+  def to_s
+    @targetName
+  end
+end
+
 class ServletBuilder < Target
   JspcClassPath = ['apache-ant-1.6.5/lib/ant.jar'].map { |n|
     "#{BuildEnv::downloads}/#{n}"
   } + ["#{ENV['JAVA_HOME']}/lib/tools.jar"];
 
-  def initialize(package, pkgname, path, libdeps = [], nodedeps = [], ms = [], common = [BuildEnv::SERVLET_COMMON], jsp_list = nil)
+  def initialize(package, pkgname, path, libdeps = [], appdeps = [], ms = [], common = [BuildEnv::SERVLET_COMMON], jsp_list = nil)
     @pkgname = pkgname
     @path = path
-    @nodedeps = nodedeps
+    @appdeps = appdeps
     @jsp_list = Set.new(jsp_list)
     if path.kind_of?(Array) then
       path = path[0]
@@ -362,7 +436,7 @@ class ServletBuilder < Target
     end
     uvm_lib = BuildEnv::SRC['untangle-libuvm']
 
-    jardeps = libdeps + @nodedeps + Jars::Base
+    jardeps = libdeps + @appdeps + Jars::Base
     jardeps << uvm_lib["api"] 
 
     @srcJar = JarTarget.build_target(package, jardeps, suffix, "#{path}/src", false)
@@ -391,15 +465,19 @@ class ServletBuilder < Target
 end
 
 class JsLintTarget < Target
-  JS_LINT_COMMAND = "/usr/bin/rhino /usr/share/javascript/jshint.js"
+  JS_LINT_COMMAND = ENV['JS_LINT_OVERRIDE'] || "/usr/bin/rhino /usr/share/javascript/jshint.js"
   JS_LINT_CONFIG = "-W041=false,-W069=false,-W083=false,-W061=false,-W044=false"
 
   attr_reader :filename
 
-  def initialize(package, deps, taskName, filename)
-    @targetName = "jslint:#{package.name}-#{taskName}-#{filename}"
-    super(package, deps, @targetName)
-    @filename = filename
+  def initialize(package, sourcePaths, taskName)
+    @path = sourcePaths.kind_of?(Array) ? sourcePaths : [sourcePaths]
+    @deps = @path.map do |p|
+      File::directory?(p) ? FileList["#{p}/**/*.js"] : p
+    end
+    @deps.flatten!
+    @targetName = "jslint:#{package.name}-#{taskName}"
+    super(package, @deps, @targetName)
   end
 
   def to_s
@@ -409,8 +487,8 @@ class JsLintTarget < Target
   protected
 
   def build()
-    info "[jslint  ] #{@filename}"
-    command = "#{JS_LINT_COMMAND} #{@filename} #{JS_LINT_CONFIG}"
+    info "[jslint  ] #{@path}"
+    command = "#{JS_LINT_COMMAND} #{@deps.join(' ')} #{JS_LINT_CONFIG}"
     raise "jslint failed" unless Kernel.system command
   end
 end

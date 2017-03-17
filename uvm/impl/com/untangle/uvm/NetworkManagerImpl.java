@@ -52,8 +52,8 @@ import com.untangle.uvm.network.DhcpStaticEntry;
 import com.untangle.uvm.network.UpnpSettings;
 import com.untangle.uvm.network.UpnpRule;
 import com.untangle.uvm.network.UpnpRuleCondition;
-import com.untangle.uvm.node.IPMaskedAddress;
-import com.untangle.uvm.node.RuleCondition;
+import com.untangle.uvm.app.IPMaskedAddress;
+import com.untangle.uvm.app.RuleCondition;
 import com.untangle.uvm.servlet.DownloadHandler;
 
 /**
@@ -149,6 +149,7 @@ public class NetworkManagerImpl implements NetworkManager
             if ( this.networkSettings.getVersion() < 5 ) {
                 convertSettingsV5();
             }
+
             logger.debug( "Loading Settings: " + this.networkSettings.toJSONString() );
         }
 
@@ -350,6 +351,24 @@ public class NetworkManagerImpl implements NetworkManager
         
         for ( InterfaceSettings intfSettings : this.networkSettings.getInterfaces() ) {
             if ( !intfSettings.getDisabled() && intfSettings.getIsWan() ) {
+                return getInterfaceStatus( intfSettings.getInterfaceId() ).getV4Address();
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Get the IP address of the first non-WAN (LAN) interface
+     */
+    public InetAddress getFirstNonWanAddress()
+    {
+        if ( this.networkSettings == null || this.networkSettings.getInterfaces() == null ) {
+            return null;
+        }
+
+        for ( InterfaceSettings intfSettings : this.networkSettings.getInterfaces() ) {
+            if ( !intfSettings.getDisabled() && !intfSettings.getIsWan() ) {
                 return getInterfaceStatus( intfSettings.getInterfaceId() ).getV4Address();
             }
         }
@@ -945,6 +964,10 @@ public class NetworkManagerImpl implements NetworkManager
                 throw new RuntimeException("Missing V4 Config Type");
         }
 
+        if ( networkSettings.getHttpsPort() == networkSettings.getHttpPort() ) {
+            throw new RuntimeException("HTTP and HTTPS services can not use the same port.");
+        }
+
         /**
          * Check that no two statically configured interfaces have the same masked address.
          * For example, don't let people put 192.168.1.100/24 on external and 192.168.1.101/24 on internal
@@ -1456,6 +1479,7 @@ public class NetworkManagerImpl implements NetworkManager
         qosSettings.setDnsPriority( 1 );
         qosSettings.setSshPriority( 0 );
         qosSettings.setOpenvpnPriority( 0 );
+        qosSettings.setQueueDiscipline( "fq_codel" );
 
         List<QosRule> qosRules = new LinkedList<QosRule>();
 
@@ -2141,12 +2165,19 @@ public class NetworkManagerImpl implements NetworkManager
             }
 
             /*
-             * If only /etc/miniupnpd/miniupnpd.conf has  been written, just restart miniupnpd
+             * If only miniupnp config has been written, just restart miniupnpd
              */
-            if ( changedFiles.contains("/etc/miniupnpd/miniupnpd.conf") && changedFiles.size() == 2 ) {
+            if ( changedFiles.contains("/etc/miniupnpd/miniupnpd.conf") && changedFiles.contains("/etc/untangle-netd/post-network-hook.d/990-restart-upnp") && changedFiles.size() == 2 ) {
                 return new String[] {"/bin/true", "/etc/untangle-netd/post-network-hook.d/990-restart-upnp"};
             }
-            
+
+            /*
+             * If only miniupnp config has been written, just restart miniupnpd
+             */
+            if ( changedFiles.contains("/etc/miniupnpd/miniupnpd.conf") && changedFiles.size() == 1 ) {
+                return new String[] {"/bin/true", "/etc/untangle-netd/post-network-hook.d/990-restart-upnp"};
+            }
+
             /**
              * If only /etc/dnsmasq.conf has been written, just restart dnsmasq
              * This is commented out because if you just change DNS settings, it will only change dnsmasq.conf

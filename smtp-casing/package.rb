@@ -1,8 +1,8 @@
 # -*-ruby-*-
 
-NodeBuilder.makeCasing(BuildEnv::SRC, 'untangle-casing-smtp', 'smtp-casing')
+AppBuilder.makeCasing(BuildEnv::SRC, 'smtp', 'smtp-casing')
 
-smtp = BuildEnv::SRC['untangle-casing-smtp']
+smtp = BuildEnv::SRC['smtp']
 
 jt = [smtp['src']]
 
@@ -12,5 +12,5 @@ deps = %w(
          ).map { |f| Jars.downloadTarget(f) }
 deps +=  Jars::Jabsorb
 
-ServletBuilder.new(smtp, 'com.untangle.node.smtp.quarantine.jsp', "./smtp-casing/servlets/quarantine", deps, jt)
+ServletBuilder.new(smtp, 'com.untangle.app.smtp.quarantine.jsp', "./smtp-casing/servlets/quarantine", deps, jt)
 

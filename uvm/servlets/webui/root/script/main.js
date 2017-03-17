@@ -21,10 +21,10 @@ Ext.define("Ung.Main", {
     disableThreads: false, // in development environment is useful to disable threads.
     apps: [],
     countryList: [],
-    nodePreviews: {},
+    appPreviews: {},
     config: null,
     totalMemoryMb: 2000,
-    nodes: null,
+    apps: null,
     // the Ext.Viewport object for the application
     viewport: null,
     menuWidth: null,
@@ -52,7 +52,7 @@ Ext.define("Ung.Main", {
         Ext.applyIf(rpc, startupInfo);
         //Had to get policyManager this way because startupInfo.policyManager contains sometimes an object instead of a callableReference
         try {
-            rpc.policyManager = rpc.nodeManager.node("untangle-node-policy-manager");
+            rpc.policyManager = rpc.appManager.app("policy-manager");
         } catch (e) {
             Ung.Util.rpcExHandler(e);
         }
@@ -175,14 +175,14 @@ Ext.define("Ung.Main", {
                     flex: 1
                 }, {
                     xtype: "container",
-                    cls: 'alert-container',
+                    cls: 'notification-container',
                     items: [{
                         xtype: "button",
-                        cls: 'main-menu-btn alert-button',
+                        cls: 'main-menu-btn notification-button',
                         scale: 'large',
                         arrowVisible: false,
                         html: '<i class="material-icons" style="color: #FFB300; vertical-align: middle; font-size: 20px;">warning</i>',
-                        itemId: "alertButton",
+                        itemId: "notificationButton",
                         hidden: true,
                         menuAlign: 'tr-br'
                     }]
@@ -464,6 +464,13 @@ Ext.define("Ung.Main", {
                                 height: 30,
                                 margin: '0 10 0 0',
                                 handler: Ung.Main.showDevices
+                            }, {
+                                xtype: 'button',
+                                cls: 'action-button material-button',
+                                text: '<span>' + i18n._("Users") + '</span>',
+                                height: 30,
+                                margin: '0 10 0 0',
+                                handler: Ung.Main.showUsers
                             }]
                         }, {
                             xtype: 'container',
@@ -630,6 +637,22 @@ Ext.define("Ung.Main", {
                                     hidden: false
                                 }
                             }
+                        }, {
+                            xtype: 'button',
+                            cls: 'action-button material-button',
+                            text: '<span>' + i18n._("Users") + '</span>',
+                            height: 30,
+                            margin: '0 10 0 0',
+                            handler: Ung.Main.showUsers,
+                            plugins: 'responsive',
+                            responsiveConfig: {
+                                'width <= 550': {
+                                    hidden: true
+                                },
+                                'width > 550': {
+                                    hidden: false
+                                }
+                            }
                         }]
                     }, {
                         xtype: 'container',
@@ -655,8 +678,8 @@ Ext.define("Ung.Main", {
                             items: [this.systemStats = Ext.create('Ung.SystemStats', {})]
                         }, {
                             xtype: 'container',
-                            itemId: 'filterNodes',
-                            cls: 'apps-nodes'
+                            itemId: 'filterApps',
+                            cls: 'apps-apps'
                         }, {
                             xtype: 'component',
                             cls: 'apps-separator top-title',
@@ -664,8 +687,8 @@ Ext.define("Ung.Main", {
                             html: i18n._("Service Apps")
                         }, {
                             xtype: 'container',
-                            itemId: 'serviceNodes',
-                            cls: 'apps-nodes'
+                            itemId: 'serviceApps',
+                            cls: 'apps-apps'
                         }]
                     }]
                 }, {
@@ -826,8 +849,8 @@ Ext.define("Ung.Main", {
         this.menuWidth = this.mainMenu.getWidth();
         this.panelCenter = this.viewport.down("#panelCenter");
         this.policySelector =  this.viewport.down("button[name=policySelector]");
-        this.filterNodes = this.viewport.down("#filterNodes");
-        this.serviceNodes = this.viewport.down("#serviceNodes");
+        this.filterApps = this.viewport.down("#filterApps");
+        this.serviceApps = this.viewport.down("#serviceApps");
         this.parentPolicy = this.viewport.down("#parentPolicy");
         this.servicesSeparator = this.viewport.down("#servicesSeparator");
         this.appsPanel = this.viewport.down("#apps");
@@ -1092,7 +1115,7 @@ Ext.define("Ung.Main", {
     getReportsManager: function (forceReload) {
         if (forceReload || rpc.reportsManager === undefined) {
             try {
-                rpc.reportsManager = this.getNodeReports().getReportsManager();
+                rpc.reportsManager = this.getAppReports().getReportsManager();
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
@@ -1109,16 +1132,16 @@ Ext.define("Ung.Main", {
         }
         return rpc.geographyManager;
     },
-    // get node reports
-    getNodeReports: function (forceReload) {
-        if (forceReload || rpc.nodeReports === undefined) {
+    // get app reports
+    getAppReports: function (forceReload) {
+        if (forceReload || rpc.appReports === undefined) {
             try {
-                rpc.nodeReports = rpc.nodeManager.node("untangle-node-reports");
+                rpc.appReports = rpc.appManager.app("reports");
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
         }
-        return rpc.nodeReports;
+        return rpc.appReports;
     },
     updateReportsDependencies: function () {
         Ext.getCmp('reportsMenuItem').setVisible(rpc.reportsEnabled);
@@ -1138,7 +1161,7 @@ Ext.define("Ung.Main", {
         } else {
             // no policy manager, just one policy (Default Policy)
             rpc.policies = [{
-                javaClass: "com.untangle.node.policy.PolicySettings",
+                javaClass: "com.untangle.app.policy.PolicySettings",
                 policyId: "1",
                 name: i18n._("Default Policy"),
                 description: i18n._("The Default Policy")
@@ -1146,32 +1169,32 @@ Ext.define("Ung.Main", {
             this.buildPolicies();
         }
     },
-    getNodePackageDesc: function (nodeSettings) {
+    getAppPackageDesc: function (appSettings) {
         var i;
         if (this.myApps !== null) {
             for (i = 0; i < this.myApps.length; i += 1) {
-                if (this.myApps[i].name == nodeSettings.nodeName) {
+                if (this.myApps[i].name == appSettings.appName) {
                     return this.myApps[i];
                 }
             }
         }
         return null;
     },
-    createNode: function (nodeProperties, nodeSettings, nodeMetrics, license, runState) {
-        var node = {
-            nodeId: nodeSettings.id,
-            nodeSettings: nodeSettings,
-            type: nodeProperties.type,
-            hasPowerButton: nodeProperties.hasPowerButton,
-            name: nodeProperties.name,
-            displayName: nodeProperties.displayName,
+    createApp: function (appProperties, appSettings, appMetrics, license, runState) {
+        var app = {
+            appId: appSettings.id,
+            appSettings: appSettings,
+            type: appProperties.type,
+            hasPowerButton: appProperties.hasPowerButton,
+            name: appProperties.name,
+            displayName: appProperties.displayName,
             license: license,
-            image: "/skins/" + rpc.skinSettings.skinName + "/images/admin/apps/" + nodeProperties.name + "_80x80.png",
-            metrics: nodeMetrics,
+            image: "/skins/" + rpc.skinSettings.skinName + "/images/admin/apps/" + appProperties.name + "_80x80.png",
+            metrics: appMetrics,
             runState: runState,
-            viewPosition: nodeProperties.viewPosition
+            viewPosition: appProperties.viewPosition
         };
-        return node;
+        return app;
     },
     buildApps: function () {
         var i, instance;
@@ -1182,36 +1205,36 @@ Ext.define("Ung.Main", {
         for (i = 0; i < rpc.rackView.installable.list.length; i += 1) {
             instance = rpc.rackView.installable.list[i];
             if (instance.type === 'FILTER') {
-                Ung.Main.appsContainer.add(Ext.create("Ung.AppItem", {nodeProperties: instance}));
+                Ung.Main.appsContainer.add(Ext.create("Ung.AppItem", {appProperties: instance}));
             } else {
-                Ung.Main.servicesContainer.add(Ext.create("Ung.AppItem", {nodeProperties: instance}));
+                Ung.Main.servicesContainer.add(Ext.create("Ung.AppItem", {appProperties: instance}));
             }
         }
     },
-    buildNodes: function () {
-        //build nodes
+    buildApps2: function () {
+        //build apps
         Ung.MetricManager.stop();
         this.policySelector.hide();
         Ext.getCmp('policyManagerToolItem').hide();
 
-        var nodePreviews = Ext.clone(this.nodePreviews);
-        this.filterNodes.removeAll();
-        this.serviceNodes.removeAll();
+        var appPreviews = Ext.clone(this.appPreviews);
+        this.filterApps.removeAll();
+        this.serviceApps.removeAll();
 
-        this.nodes = [];
-        var i, node, nodeName,
-            hasService = false, nodeSettings, nodeProperties;
+        this.apps = [];
+        var i, app, appName,
+            hasService = false, appSettings, appProperties;
         for (i = 0; i < rpc.rackView.instances.list.length; i += 1) {
-            nodeSettings = rpc.rackView.instances.list[i];
-            nodeProperties = rpc.rackView.nodeProperties.list[i];
+            appSettings = rpc.rackView.instances.list[i];
+            appProperties = rpc.rackView.appProperties.list[i];
 
-            node = this.createNode(nodeProperties,
-                     nodeSettings,
-                     rpc.rackView.nodeMetrics.map[nodeSettings.id],
-                     rpc.rackView.licenseMap.map[nodeProperties.name],
-                     rpc.rackView.runStates.map[nodeSettings.id]);
-            this.nodes.push(node);
-            if (!hasService && node.type != "FILTER") {
+            app = this.createApp(appProperties,
+                     appSettings,
+                     rpc.rackView.appMetrics.map[appSettings.id],
+                     rpc.rackView.licenseMap.map[appProperties.name],
+                     rpc.rackView.runStates.map[appSettings.id]);
+            this.apps.push(app);
+            if (!hasService && app.type != "FILTER") {
                 hasService = true;
             }
         }
@@ -1231,18 +1254,18 @@ Ext.define("Ung.Main", {
             this.appsPanel.removeCls("apps-have-services");
         }
 
-        this.nodes.sort(function (a, b) {
+        this.apps.sort(function (a, b) {
             return a.viewPosition - b.viewPosition;
         });
-        for (i = 0; i < this.nodes.length; i += 1) {
-            node = this.nodes[i];
-            this.addNode(node, nodePreviews[node.name]);
-            if (nodePreviews[node.name]) {
-                delete nodePreviews[node.name];
+        for (i = 0; i < this.apps.length; i += 1) {
+            app = this.apps[i];
+            this.addApp(app, appPreviews[app.name]);
+            if (appPreviews[app.name]) {
+                delete appPreviews[app.name];
             }
         }
-        for (nodeName in nodePreviews) {
-            this.addNodePreview(nodePreviews[nodeName]);
+        for (appName in appPreviews) {
+            this.addAppPreview(appPreviews[appName]);
         }
         if (!this.disableThreads) {
             Ung.MetricManager.start(true);
@@ -1258,10 +1281,10 @@ Ext.define("Ung.Main", {
             //Open target if specified
             //target usage in the query string:
             //config.<configItemName>(.<tabName>(.subtabNane or .buttonName))
-            //node.<nodeName>(.<tabName>(.subtabNane or .buttonName))
+            //app.<appName>(.<tabName>(.subtabNane or .buttonName))
             //monitor.[sessions|hosts](.<tabName>)
             //reports.<category>.[report|event].<entryId>
-            var targetTokens = this.target.split("."), i, nodeCmp;
+            var targetTokens = this.target.split("."), i, appCmp;
             if (targetTokens.length >= 2) {
                 var firstToken = targetTokens[0].toLowerCase();
                 if (firstToken == "config") {
@@ -1269,13 +1292,13 @@ Ext.define("Ung.Main", {
                     if (configItem) {
                         Ung.Main.openConfig(configItem);
                     }
-                } else if (firstToken == "node") {
-                    var nodeName = targetTokens[1].toLowerCase();
-                    for (i = 0; i < Ung.Main.nodes.length; i += 1) {
-                        if (Ung.Main.nodes[i].name == nodeName) {
-                            nodeCmp = Ung.Node.getCmp(Ung.Main.nodes[i].nodeId);
-                            if (nodeCmp != null) {
-                                nodeCmp.loadSettings();
+                } else if (firstToken == "app") {
+                    var appName = targetTokens[1].toLowerCase();
+                    for (i = 0; i < Ung.Main.apps.length; i += 1) {
+                        if (Ung.Main.apps[i].name == appName) {
+                            appCmp = Ung.App.getCmp(Ung.Main.apps[i].appId);
+                            if (appCmp != null) {
+                                appCmp.loadSettings();
                             }
                             break;
                         }
@@ -1312,11 +1335,11 @@ Ext.define("Ung.Main", {
             var parentRackName = this.getParentName(rpc.currentPolicy.parentId);
             this.parentPolicy.update((parentRackName == null) ? "" : i18n._("Inherits") + ' <strong>' + parentRackName + '</strong>');
             this.parentPolicy.setVisible(parentRackName != null);
-            this.nodePreviews = {};
+            this.appPreviews = {};
             Ung.Main.buildApps();
-            Ung.Main.buildNodes();
+            Ung.Main.buildApps2();
         }, this);
-        Ung.Util.RetryHandler.retry(rpc.nodeManager.getAppsView, rpc.nodeManager, [ rpc.currentPolicy.policyId ], callback, 1500, 10);
+        Ung.Util.RetryHandler.retry(rpc.appManager.getAppsView, rpc.appManager, [ rpc.currentPolicy.policyId ], callback, 1500, 10);
     },
     updateAppsView: function () {
         var callback = Ext.bind(function (result, exception) {
@@ -1325,9 +1348,9 @@ Ext.define("Ung.Main", {
             }
             rpc.rackView = result;
             //Ung.Main.buildApps(); - disable app removal from 'Install' view, when install finishes
-            Ung.Main.buildNodes();
+            Ung.Main.buildApps2();
         }, this);
-        Ung.Util.RetryHandler.retry(rpc.nodeManager.getAppsView, rpc.nodeManager, [ rpc.currentPolicy.policyId ], callback, 1500, 10);
+        Ung.Util.RetryHandler.retry(rpc.appManager.getAppsView, rpc.appManager, [ rpc.currentPolicy.policyId ], callback, 1500, 10);
     },
     reloadLicenses: function () {
         Ung.Main.getLicenseManager().reloadLicenses(Ext.bind(function (result, exception) {
@@ -1342,44 +1365,44 @@ Ext.define("Ung.Main", {
                     return;
                 }
                 rpc.rackView = result;
-                var i, nodeCmp;
-                for (i = 0; i < Ung.Main.nodes.length; i += 1) {
-                    nodeCmp = Ung.Node.getCmp(Ung.Main.nodes[i].nodeId);
-                    if (nodeCmp && nodeCmp.license) {
-                        nodeCmp.updateLicense(rpc.rackView.licenseMap.map[nodeCmp.name]);
+                var i, appCmp;
+                for (i = 0; i < Ung.Main.apps.length; i += 1) {
+                    appCmp = Ung.App.getCmp(Ung.Main.apps[i].appId);
+                    if (appCmp && appCmp.license) {
+                        appCmp.updateLicense(rpc.rackView.licenseMap.map[appCmp.name]);
                     }
                 }
             }, this);
 
-            Ung.Util.RetryHandler.retry(rpc.nodeManager.getAppsView, rpc.nodeManager, [ rpc.currentPolicy.policyId ], callback, 1500, 10);
+            Ung.Util.RetryHandler.retry(rpc.appManager.getAppsView, rpc.appManager, [ rpc.currentPolicy.policyId ], callback, 1500, 10);
         }, this), true);
     },
 
-    installNode: function (nodeProperties, appItem, completeFn) {
+    installApp: function (appProperties, appItem, completeFn) {
         if (!rpc.isRegistered) {
             Ung.Main.openRegistrationScreen();
             return;
         }
-        if (nodeProperties === null) {
+        if (appProperties === null) {
             return;
         }
-        // Sanity check to see if the node is already installed.
-        var node = Ung.Main.getNode(nodeProperties.name);
-        if ((node !== null) && (node.nodeSettings.policyId == rpc.currentPolicy.policyId)) {
+        // Sanity check to see if the app is already installed.
+        var app = Ung.Main.getApp(appProperties.name);
+        if ((app !== null) && (app.appSettings.policyId == rpc.currentPolicy.policyId)) {
             appItem.hide();
             return;
         }
-        Ung.AppItem.setLoading(nodeProperties.name, true);
-        Ung.Main.addNodePreview(nodeProperties);
+        Ung.AppItem.setLoading(appProperties.name, true);
+        Ung.Main.addAppPreview(appProperties);
 
-        rpc.nodeManager.instantiate(Ext.bind(function (result, exception) {
+        rpc.appManager.instantiate(Ext.bind(function (result, exception) {
             if (exception) {
-                Ung.AppItem.setLoading(nodeProperties.name, false);
+                Ung.AppItem.setLoading(appProperties.name, false);
                 Ung.Main.updateAppsView();
                 Ung.Util.handleException(exception);
                 return;
             }
-            var app = Ung.AppItem.getApp(nodeProperties.name);
+            var app = Ung.AppItem.getApp(appProperties.name);
             if (app) {
                 // apply disabled state for the installed app
                 app.setDisabled(true);
@@ -1388,13 +1411,13 @@ Ext.define("Ung.Main", {
             if (completeFn) {
                 completeFn();
             }
-            if (nodeProperties.name == "untangle-node-reports") {
+            if (appProperties.name == "reports") {
                 rpc.reportsEnabled = true;
                 Ung.Main.updateReportsDependencies();
             } else {
                 Ung.dashboard.loadDashboard();
             }
-        }, this), nodeProperties.name, rpc.currentPolicy.policyId);
+        }, this), appProperties.name, rpc.currentPolicy.policyId);
     },
     openInstallApps: function () {
         Ung.Main.panelCenter.setActiveItem("installApps");
@@ -1413,6 +1436,12 @@ Ext.define("Ung.Main", {
             iconClass: 'icon-config-admin',
             helpSource: 'administration',
             className: 'Webui.config.administration'
+        }, {
+            name: 'event',
+            displayName: i18n._('Events'),
+            iconClass: 'icon-config-events',
+            helpSource: 'events',
+            className: 'Webui.config.events'
         }, {
             name: 'email',
             displayName: i18n._('Email'),
@@ -1505,25 +1534,25 @@ Ext.define("Ung.Main", {
                                  i18n._("Please upgrade to a newer browser."));
         }
     },
-    checkForAlerts: function (handler) {
+    checkForNotifications: function (handler) {
         //check for upgrades
-        rpc.alertManager.getAlerts(Ext.bind(function (result, exception, opt, handler) {
-            var alertButton = this.viewport.down("#alertButton");
-            var alertArr = '', i;
+        rpc.notificationManager.getNotifications(Ext.bind(function (result, exception, opt, handler) {
+            var notificationButton = this.viewport.down("#notificationButton");
+            var notificationArr = '', i;
 
             if (result != null && result.list.length > 0) {
-                alertButton.show();
-                alertArr += '<h3>' + i18n._('Alerts:') + '</h3><ul>';
+                notificationButton.show();
+                notificationArr += '<h3>' + i18n._('Notifications:') + '</h3><ul>';
                 for (i = 0; i < result.list.length; i += 1) {
-                    alertArr += '<li>' + i18n._(result.list[i]) + '</li>';
+                    notificationArr += '<li>' + i18n._(result.list[i]) + '</li>';
                 }
-                alertArr += '</ul>';
+                notificationArr += '</ul>';
             } else {
-                alertButton.hide();
+                notificationButton.hide();
             }
 
-            alertButton.setMenu(Ext.create('Ext.menu.Menu', {
-                cls: 'alert-dd',
+            notificationButton.setMenu(Ext.create('Ext.menu.Menu', {
+                cls: 'notification-dd',
                 plain: true,
                 shadow: false,
                 width: 250,
@@ -1534,15 +1563,15 @@ Ext.define("Ung.Main", {
                         color: '#CCC'
                     },
                     autoEl: {
-                        html: alertArr
+                        html: notificationArr
                     }
                 }, {
                     xtype: 'button',
-                    text: '<i class="material-icons" style="font-size: 16px;">help</i> ' + i18n._('Help with Administration Alerts'),
+                    text: '<i class="material-icons" style="font-size: 16px;">help</i> ' + i18n._('Help with Administration Notifications'),
                     margin: '0 10 10 10',
                     textAlign: 'left',
                     handler: function () {
-                        Ung.Main.openHelp('admin_alerts');
+                        Ung.Main.openHelp('admin_notifications');
                     }
                 }]
             }));
@@ -1566,7 +1595,7 @@ Ext.define("Ung.Main", {
             }, this);
         }, 10, configItem);
     },
-    getNodePosition: function (place, viewPosition) {
+    getAppPosition: function (place, viewPosition) {
         var position = 0;
         if (place.items) {
             place.items.each(function (item, index) {
@@ -1579,37 +1608,37 @@ Ext.define("Ung.Main", {
         }
         return position;
     },
-    addNode: function (node, fadeIn) {
-        var nodeCmp = Ext.create('Ung.Node', node);
-        nodeCmp.fadeIn = fadeIn;
-        var place = (node.type == "FILTER") ? this.filterNodes : this.serviceNodes;
-        place.add(nodeCmp);
-        Ung.AppItem.setLoading(node.name, false);
-        if (node.name == 'untangle-node-policy-manager') {
+    addApp: function (app, fadeIn) {
+        var appCmp = Ext.create('Ung.App', app);
+        appCmp.fadeIn = fadeIn;
+        var place = (app.type == "FILTER") ? this.filterApps : this.serviceApps;
+        place.add(appCmp);
+        Ung.AppItem.setLoading(app.name, false);
+        if (app.name == 'policy-manager') {
             // refresh rpc.policyManager to properly handle the case when the policy manager is removed and then re-added to the application list
-            rpc.nodeManager.node(Ext.bind(function (result, exception) {
+            rpc.appManager.app(Ext.bind(function (result, exception) {
                 if (Ung.Util.handleException(exception)) {
                     return;
                 }
                 this.policySelector.show();
                 Ext.getCmp('policyManagerToolItem').show();
                 rpc.policyManager = result;
-            }, this), "untangle-node-policy-manager");
+            }, this), "policy-manager");
         }
     },
-    addNodePreview: function (nodeProperties) {
-        var nodeCmp = Ext.create('Ung.NodePreview', nodeProperties);
-        var place = (nodeProperties.type == "FILTER") ? this.filterNodes : this.serviceNodes;
-        var position = this.getNodePosition(place, nodeProperties.viewPosition);
-        place.insert(position, nodeCmp);
+    addAppPreview: function (appProperties) {
+        var appCmp = Ext.create('Ung.AppPreview', appProperties);
+        var place = (appProperties.type == "FILTER") ? this.filterApps : this.serviceApps;
+        var position = this.getAppPosition(place, appProperties.viewPosition);
+        place.insert(position, appCmp);
     },
-    getNode: function (nodeName) {
-        if (Ung.Main.nodes) {
-            var nodePolicyId, i;
-            for (i = 0; i < Ung.Main.nodes.length; i += 1) {
-                nodePolicyId = Ung.Main.nodes[i].nodeSettings.policyId;
-                if (nodeName == Ung.Main.nodes[i].name && (nodePolicyId == null || nodePolicyId == rpc.currentPolicy.policyId)) {
-                    return Ung.Main.nodes[i];
+    getApp: function (appName) {
+        if (Ung.Main.apps) {
+            var appPolicyId, i;
+            for (i = 0; i < Ung.Main.apps.length; i += 1) {
+                appPolicyId = Ung.Main.apps[i].appSettings.policyId;
+                if (appName == Ung.Main.apps[i].name && (appPolicyId == null || appPolicyId == rpc.currentPolicy.policyId)) {
+                    return Ung.Main.apps[i];
                 }
             }
         }
@@ -1649,7 +1678,7 @@ Ext.define("Ung.Main", {
     // build policies select box
     buildPolicies: function () {
         this.updatePolicySelector();
-        this.checkForAlerts();
+        this.checkForNotifications();
         this.checkForIE();
 
         Ung.Main.loadAppsView();
@@ -1945,10 +1974,21 @@ Ext.define("Ung.Main", {
             Ung.Main.deviceMonitorWin.show();
         }, this);
     },
-    showSessions: function () {
-        Ung.Main.showNodeSessions(0);
+    showUsers: function () {
+        Ext.require(['Webui.config.userMonitor'], function () {
+            Ung.Main.userMonitorWin = Ext.create('Webui.config.userMonitor', {});
+            Ung.Main.userMonitorWin.show();
+            Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
+            Ext.Function.defer(function () {
+                Ung.Main.userMonitorWin.gridCurrentUsers.reload();
+                Ext.MessageBox.hide();
+            }, 10, this);
+        }, this);
     },
-    showNodeSessions: function (nodeIdArg) {
+    showSessions: function () {
+        Ung.Main.showAppSessions(0);
+    },
+    showAppSessions: function (appIdArg) {
         Ext.require(['Webui.config.sessionMonitor'], function () {
             if (Ung.Main.sessionMonitorWin == null) {
                 Ung.Main.sessionMonitorWin = Ext.create('Webui.config.sessionMonitor', {});
@@ -1956,17 +1996,17 @@ Ext.define("Ung.Main", {
             Ung.Main.sessionMonitorWin.show();
             Ext.MessageBox.wait(i18n._("Loading..."), i18n._("Please wait"));
             Ext.Function.defer(function () {
-                Ung.Main.sessionMonitorWin.gridCurrentSessions.setSelectedApp(nodeIdArg);
+                Ung.Main.sessionMonitorWin.gridCurrentSessions.setSelectedApp(appIdArg);
                 Ext.MessageBox.hide();
             }, 10, this);
         }, this);
     },
     showPolicyManager: function () {
-        var node = Ung.Main.getNode("untangle-node-policy-manager");
-        if (node != null) {
-            var nodeCmp = Ung.Node.getCmp(node.nodeId);
-            if (nodeCmp != null) {
-                nodeCmp.loadSettings();
+        var app = Ung.Main.getApp("policy-manager");
+        if (app != null) {
+            var appCmp = Ung.App.getCmp(app.appId);
+            if (appCmp != null) {
+                appCmp.loadSettings();
             }
         }
     },
@@ -2014,12 +2054,12 @@ Ext.define("Ung.Main", {
         }, this));
     },
     isGoogleDriveConfigured: function () {
-        var googleDriveConfigured = false, directoryConnectorLicense, directoryConnectorNode, googleManager;
+        var googleDriveConfigured = false, directoryConnectorLicense, directoryConnectorApp, googleManager;
         try {
-            directoryConnectorLicense = Ung.Main.getLicenseManager().isLicenseValid("untangle-node-directory-connector");
-            directoryConnectorNode = rpc.nodeManager.node("untangle-node-directory-connector");
-            if (directoryConnectorLicense && directoryConnectorNode) {
-                googleManager = directoryConnectorNode.getGoogleManager();
+            directoryConnectorLicense = Ung.Main.getLicenseManager().isLicenseValid("directory-connector");
+            directoryConnectorApp = rpc.appManager.app("directory-connector");
+            if (directoryConnectorLicense && directoryConnectorApp) {
+                googleManager = directoryConnectorApp.getGoogleManager();
                 if (googleManager && googleManager.isGoogleDriveConnected()) {
                     googleDriveConfigured = true;
                 }
@@ -2030,12 +2070,12 @@ Ext.define("Ung.Main", {
         return googleDriveConfigured;
     },
     configureGoogleDrive: function () {
-        var node = Ung.Main.getNode("untangle-node-directory-connector");
-        if (node != null) {
-            var nodeCmp = Ung.Node.getCmp(node.nodeId);
-            if (nodeCmp != null) {
-                Ung.Main.target = "node.untangle-node-directory-connector.Google Connector";
-                nodeCmp.loadSettings();
+        var app = Ung.Main.getApp("directory-connector");
+        if (app != null) {
+            var appCmp = Ung.App.getCmp(app.appId);
+            if (appCmp != null) {
+                Ung.Main.target = "app.directory-connector.Google Connector";
+                appCmp.loadSettings();
             }
         } else {
             Ext.MessageBox.alert(i18n._("Error"), i18n._("Google Drive requires Directory Connector application."));
@@ -2049,22 +2089,22 @@ Ext.define("Ung.Main", {
         }
         var currentApps = Ung.Main.appsContainer.items.getRange();
         for(var i=0;i<currentApps.length;i++) {
-            var app = Ung.AppItem.getApp(currentApps[i].nodeProperties.name);
+            var app = Ung.AppItem.getApp(currentApps[i].appProperties.name);
             if ( app ) {
                 if(Math.random()*100 < probability)
-                app.installNode();
+                app.installApp();
             }
         }
     },
     testUninstallAll: function() {
-        for(var i=0;i<Ung.Main.nodes.length;i++) {
-            var node = Ung.Node.getCmp(Ung.Main.nodes[i].nodeId);
-            node.removeAction();
+        for(var i=0;i<Ung.Main.apps.length;i++) {
+            var app = Ung.App.getCmp(Ung.Main.apps[i].appId);
+            app.removeAction();
         }
     },
 */
     showPostRegistrationPopup: function () {
-        if (this.nodes.length != 0) {
+        if (this.apps.length != 0) {
             // do not show anything if apps already installed
             return;
         }
@@ -2075,47 +2115,47 @@ Ext.define("Ung.Main", {
                 text: i18n._("Yes, install the recommended apps."),
                 handler: Ext.bind(function () {
                     var apps = [
-                        { displayName: "Web Filter", name: 'untangle-node-web-filter'},
-                        //{ displayName: "Virus Blocker", name: 'untangle-node-virus-blocker'},
-                        //{ displayName: "Virus Blocker Lite", name: 'untangle-node-virus-blocker-lite'},
-                        //{ displayName: "Spam Blocker", name: 'untangle-node-spam-blocker'},
-                        //{ displayName: "Spam Blocker Lite", name: 'untangle-node-spam-blocker-lite'},
-                        //{ displayName: "Phish Blocker", name: 'untangle-node-phish-blocker'},
-                        //{ displayName: "Web Cache", name: 'untangle-node-web-cache'},
-                        { displayName: "Bandwidth Control", name: 'untangle-node-bandwidth-control'},
-                        { displayName: "SSL Inspector", name: 'untangle-casing-ssl'},
-                        { displayName: "Application Control", name: 'untangle-node-application-control'},
-                        //{ displayName: "Application Control Lite", name: 'untangle-node-application-control-lite'},
-                        { displayName: "Captive Portal", name: 'untangle-node-captive-portal'},
-                        { displayName: "Firewall", name: 'untangle-node-firewall'},
-                        //{ displayName: "Intrusion Prevention", name: 'untangle-node-intrusion-prevention'},
-                        //{ displayName: "Ad Blocker", name: 'untangle-node-ad-blocker'},
-                        { displayName: "Reports", name: 'untangle-node-reports'},
-                        { displayName: "Policy Manager", name: 'untangle-node-policy-manager'},
-                        { displayName: "Directory Connector", name: 'untangle-node-directory-connector'},
-                        //{ displayName: "WAN Failover", name: 'untangle-node-wan-failover'},
-                        //{ displayName: "WAN Balancer", name: 'untangle-node-wan-balancer'},
-                        { displayName: "IPsec VPN", name: 'untangle-node-ipsec-vpn'},
-                        { displayName: "OpenVPN", name: 'untangle-node-openvpn'},
-                        { displayName: "Configuration Backup", name: 'untangle-node-configuration-backup'},
-                        { displayName: "Branding Manager", name: 'untangle-node-branding-manager'},
-                        { displayName: "Live Support", name: 'untangle-node-live-support'}];
+                        { displayName: "Web Filter", name: 'web-filter'},
+                        //{ displayName: "Virus Blocker", name: 'virus-blocker'},
+                        //{ displayName: "Virus Blocker Lite", name: 'virus-blocker-lite'},
+                        //{ displayName: "Spam Blocker", name: 'spam-blocker'},
+                        //{ displayName: "Spam Blocker Lite", name: 'spam-blocker-lite'},
+                        //{ displayName: "Phish Blocker", name: 'phish-blocker'},
+                        //{ displayName: "Web Cache", name: 'web-cache'},
+                        { displayName: "Bandwidth Control", name: 'bandwidth-control'},
+                        { displayName: "SSL Inspector", name: 'ssl'},
+                        { displayName: "Application Control", name: 'application-control'},
+                        //{ displayName: "Application Control Lite", name: 'application-control-lite'},
+                        { displayName: "Captive Portal", name: 'captive-portal'},
+                        { displayName: "Firewall", name: 'firewall'},
+                        //{ displayName: "Intrusion Prevention", name: 'intrusion-prevention'},
+                        //{ displayName: "Ad Blocker", name: 'ad-blocker'},
+                        { displayName: "Reports", name: 'reports'},
+                        { displayName: "Policy Manager", name: 'policy-manager'},
+                        { displayName: "Directory Connector", name: 'directory-connector'},
+                        //{ displayName: "WAN Failover", name: 'wan-failover'},
+                        //{ displayName: "WAN Balancer", name: 'wan-balancer'},
+                        { displayName: "IPsec VPN", name: 'ipsec-vpn'},
+                        { displayName: "OpenVPN", name: 'openvpn'},
+                        { displayName: "Configuration Backup", name: 'configuration-backup'},
+                        { displayName: "Branding Manager", name: 'branding-manager'},
+                        { displayName: "Live Support", name: 'live-support'}];
 
                     // only install WAN failover/balancer apps if more than 2 interfaces
                     try {
                         var networkSettings = Ung.Main.getNetworkSettings();
                         if (networkSettings.interfaces.list.length > 2) {
-                            apps.push({ displayName: "WAN Failover", name: 'untangle-node-wan-failover'});
-                            apps.push({ displayName: "WAN Balancer", name: 'untangle-node-wan-balancer'});
+                            apps.push({ displayName: "WAN Failover", name: 'wan-failover'});
+                            apps.push({ displayName: "WAN Balancer", name: 'wan-balancer'});
                         }
                     } catch (e) {}
 
                     // only install this on 1gig+ machines
                     if (Ung.Main.totalMemoryMb > 900) {
-                        apps.splice(2, 0, { displayName: "Phish Blocker", name: 'untangle-node-phish-blocker'});
-                        apps.splice(2, 0, { displayName: "Spam Blocker", name: 'untangle-node-spam-blocker'});
-                        apps.splice(2, 0, { displayName: "Virus Blocker Lite", name: 'untangle-node-virus-blocker-lite'});
-                        apps.splice(2, 0, { displayName: "Virus Blocker", name: 'untangle-node-virus-blocker'});
+                        apps.splice(2, 0, { displayName: "Phish Blocker", name: 'phish-blocker'});
+                        apps.splice(2, 0, { displayName: "Spam Blocker", name: 'spam-blocker'});
+                        apps.splice(2, 0, { displayName: "Virus Blocker Lite", name: 'virus-blocker-lite'});
+                        apps.splice(2, 0, { displayName: "Virus Blocker", name: 'virus-blocker'});
                     }
 
                     var fn = function (appsToInstall) {
@@ -2134,7 +2174,7 @@ Ext.define("Ung.Main", {
                         var completeFn = Ext.bind(fn, this, [appsToInstall]); // function to install remaining apps
                         var app = Ung.AppItem.getApp(name);
                         if (app) {
-                            app.installNode(completeFn);
+                            app.installApp(completeFn);
                         } else {
                             completeFn();
                         }

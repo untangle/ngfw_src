@@ -313,7 +313,7 @@ div.app-item div.app-progress {
 
 
 
-.node-image img {
+.app-image img {
     width: 100%;
     height: 100%;
 }
@@ -565,12 +565,12 @@ a.link,a.link:visited {
     /*color: #FFF;*/
 }
 
-.user-menu, .hamburger-menu, .alert-container {
+.user-menu, .hamburger-menu, .notification-container {
     text-align: right;
 }
 
 
-.alert-dd {
+.notification-dd {
     background: #1b1e26;
     color: #CCC;
     border: 0;
@@ -579,12 +579,12 @@ a.link,a.link:visited {
     border-radius: 0 0 5px 5px;
 }
 
-.alert-dd ul {
+.notification-dd ul {
     margin: 0 5px 0 20px;
     padding: 0;
 }
 
-.alert-dd h3 {
+.notification-dd h3 {
     margin: 10px 0;
     font-weight: normal;
 }
@@ -626,7 +626,7 @@ a.link,a.link:visited {
 }
 
 .user-menu-dd .x-menu-body-default,
-.alert-dd .x-menu-body-default,
+.notification-dd .x-menu-body-default,
 .tooltip-dd .x-menu-body-default {
     background: none;
     padding: 0;

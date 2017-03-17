@@ -1,11 +1,66 @@
+@import 'vars';
+
+
+.widget {
+    font-family: $custom-font;
+    margin: 10px;
+    border: 3px transparent solid;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+    border-radius: 3px;
+    box-sizing: border-box;
+
+    /*background: rgb(249,249,249);*/
+    background: #FFF;
+
+    /*
+    background: rgb(249,249,249);
+    background: -moz-linear-gradient(top,  rgba(249,249,249,1) 0%, rgba(255,255,255,1) 50%, rgba(249,249,249,1) 100%);
+    background: -webkit-linear-gradient(top,  rgba(249,249,249,1) 0%,rgba(255,255,255,1) 50%,rgba(249,249,249,1) 100%);
+    background: linear-gradient(to bottom,  rgba(249,249,249,1) 0%,rgba(255,255,255,1) 50%,rgba(249,249,249,1) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f9f9f9', endColorstr='#f0f0f0',GradientType=0 );
+    */
+    width: 450px;
+    height: 300px;
+    flex-grow: 1;
+    //overflow: hidden;
+    position: relative;
+    transition: transform .3s cubic-bezier(0.23, 1, 0.32, 1), opacity 1s cubic-bezier(0.23, 1, 0.32, 1);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    &.highlight-item {
+        opacity: 1 !important;
+        box-shadow: 0 0 15px 0 #FFF;
+        /*transform: scale(0.98);*/
+    }
+
+}
+
+.widget.small {
+    width: 250px;
+}
+
+.widget.medium {
+    width: 350px;
+}
+
+.widget.large {
+    width: 450px;
+}
+
+.widget.x-large {
+    width: 550px;
+}
+
+
+
 .widget {
     .header {
-        font-family: 'Source Sans Pro', sans-serif;
+        // font-family: $custom-font-condensed;
         height: 40px;
         position: relative;
         h1 {
-            font-size: 20px;
-            font-weight: 300;
+            font-size: 18px;
+            font-weight: 400;
             //line-height: 40px;
             padding: 5px 10px 0 10px;
             margin: 0;
@@ -29,7 +84,7 @@
             transition: all .3s cubic-bezier(0.23, 1, 0.32, 1);
             i {
                 color: #999;
-                font-size: 16px;
+                // font-size: 16px;
                 width: 20px;
                 height: 20px;
                 line-height: 20px;
@@ -300,6 +355,7 @@
             //width: 12px;
             height: 10px;
             font-size: 20px;
+            vertical-align: middle;
         }
         span {
             font-size: 10px;
@@ -366,47 +422,30 @@
 
 
 .widget-manager {
-    box-shadow: 1px 0 5px rgba(0, 0, 0, 0.3);
-    z-index: 10;
-    .x-grid-row.disabled {
-        color: #555;
-        i {
-            //color: #999;
-        }
-    }
+    // box-shadow: 1px 0 5px rgba(0, 0, 0, 0.3);
+    // z-index: 10;
+    // .x-grid-row.disabled {
+    //     color: #555;
+    //     i {
+    //         //color: #999;
+    //     }
+    // }
     .x-grid-cell-inner {
-        font-family: 'Source Sans Pro', sans-serif;
+        font-family: $custom-font;
         font-size: 13px;
-        padding: 5px 6px 3px;
-        i {
-            font-size: 20px;
-            height: auto;
-            cursor: pointer;
-            padding-top: 3px;
-        }
+        // padding: 5px 6px 3px;
+        // i {
+        //     font-size: 20px;
+        //     // height: auto;
+        //     cursor: pointer;
+        //     padding-top: 3px;
+        // }
     }
 
-    .x-grid-cell-inner-action-col {
-        padding-top: 5px;
-        height: 35px;
-    }
-
-    .heading {
-        font-size: 18px;
-        font-family: 'Source Sans Pro', sans-serif;
-        color: #FFF;
-        background: rgb(85, 85, 85);
-        .manager-close-btn {
-            cursor: pointer;
-            i {
-                color: #CCC;
-                font-size: 20px;
-            }
-            &:hover i {
-                color: #FFF;
-            }
-        }
-    }
+    // .x-grid-cell-inner-action-col {
+    //     padding-top: 5px;
+    //     height: 35px;
+    // }
 
     .x-grid-cell-last {
         i {
@@ -426,7 +465,7 @@
     .drag-handle {
         background: url(/root/drag-handle.png) no-repeat center right;
         cursor: move;
-        opacity: .2;
+        opacity: 0;
         transition: opacity .3s cubic-bezier(0.23, 1, 0.32, 1);
         .x-grid-cell-inner {
             padding: 0;

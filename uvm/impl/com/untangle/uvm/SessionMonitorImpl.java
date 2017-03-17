@@ -20,13 +20,13 @@ import com.untangle.uvm.UvmState;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SessionMonitorEntry;
-import com.untangle.uvm.node.Node;
-import com.untangle.uvm.node.NodeManager;
-import com.untangle.uvm.node.SessionTuple;
-import com.untangle.uvm.node.SessionTuple;
-import com.untangle.uvm.vnet.NodeSession;
-import com.untangle.uvm.node.NodeSettings;
-import com.untangle.uvm.node.SessionEvent;
+import com.untangle.uvm.app.App;
+import com.untangle.uvm.app.AppManager;
+import com.untangle.uvm.app.SessionTuple;
+import com.untangle.uvm.app.SessionTuple;
+import com.untangle.uvm.vnet.AppSession;
+import com.untangle.uvm.app.AppSettings;
+import com.untangle.uvm.app.SessionEvent;
 import com.untangle.uvm.network.InterfaceSettings;
 
 /**
@@ -52,7 +52,7 @@ public class SessionMonitorImpl implements SessionMonitor
         uvmContext = UvmContextFactory.context();
     }
 
-    public List<SessionMonitorEntry> getMergedBandwidthSessions(String interfaceIdStr, int nodeId)
+    public List<SessionMonitorEntry> getMergedBandwidthSessions(String interfaceIdStr, int appId)
     {
         /**
          * Find the the system interface name that matches this ID
@@ -102,16 +102,16 @@ public class SessionMonitorImpl implements SessionMonitor
     /**
      * documented in SessionMonitor.java
      */
-    public List<SessionMonitorEntry> getMergedSessions(long nodeId)
+    public List<SessionMonitorEntry> getMergedSessions(long appId)
     {
         List<SessionMonitorEntry> sessions = this._getConntrackSessionMonitorEntrys();
-        List<NodeSession> nodeSessions = null;;
+        List<AppSession> appSessions = null;;
 
-        Node node = null;
-        if (nodeId > 0)
-            node = UvmContextFactory.context().nodeManager().node(nodeId);
-        if (node != null)
-            nodeSessions = node.liveNodeSessions();
+        App app = null;
+        if (appId > 0)
+            app = UvmContextFactory.context().appManager().app(appId);
+        if (app != null)
+            appSessions = app.liveAppSessions();
 
         for (Iterator<SessionMonitorEntry> i = sessions.iterator(); i.hasNext(); ) {  
             SessionMonitorEntry session = i.next();
@@ -155,8 +155,8 @@ public class SessionMonitorImpl implements SessionMonitor
             if ( sessionState != null ) {
                 try {
                     int priority = sessionState.netcapSession().clientQosMark();
-                    com.untangle.uvm.node.SessionTuple clientSide = sessionState.netcapHook().getClientSide();
-                    com.untangle.uvm.node.SessionTuple serverSide = sessionState.netcapHook().getServerSide();
+                    com.untangle.uvm.app.SessionTuple clientSide = sessionState.netcapHook().getClientSide();
+                    com.untangle.uvm.app.SessionTuple serverSide = sessionState.netcapHook().getServerSide();
 
                     NetcapHook hook = sessionState.netcapHook();
                     if (hook == null)
@@ -184,6 +184,9 @@ public class SessionMonitorImpl implements SessionMonitor
                     session.setServerLatitude(sessionState.getSessionEvent().getServerLatitude());                    
                     session.setServerLongitude(sessionState.getSessionEvent().getServerLongitude());                    
 
+                    session.setTags(sessionState.getTags());
+                    session.setTagsString(sessionState.getTagsString());
+                    
                     /**
                      * The conntrack entry shows that this session has been redirect to the local host
                      * We need to overwrite that with the correct info
@@ -225,10 +228,10 @@ public class SessionMonitorImpl implements SessionMonitor
             }
 
             /**
-             * Ignore sessions to 192.0.2.42
+             * Ignore sessions to 192.0.2.200
              */
-            if ( "192.0.2.42".equals( session.getPostNatServer().getHostAddress() ) ) {
-                logger.debug("Removing session from view (internal session to 192.0.2.42): " + session);
+            if ( "192.0.2.200".equals( session.getPostNatServer().getHostAddress() ) ) {
+                logger.debug("Removing session from view (internal session to 192.0.2.200): " + session);
                 i.remove();
                 continue;
             }
@@ -250,14 +253,14 @@ public class SessionMonitorImpl implements SessionMonitor
         }
 
         /**
-         * If a nodeId was specified remove all sessions not being touched by that nodeId
+         * If a appId was specified remove all sessions not being touched by that appId
          */
-        if ( nodeSessions != null ) {
+        if ( appSessions != null ) {
             for (Iterator<SessionMonitorEntry> i = sessions.iterator(); i.hasNext(); ) {  
                 SessionMonitorEntry entry = i.next();
                 Long sessionId = entry.getSessionId();
                 boolean found = false;
-                for (NodeSession ns : nodeSessions) {
+                for (AppSession ns : appSessions) {
                     if ( sessionId != null && sessionId == ns.getSessionId() ) {
                         found = true;
                         break;

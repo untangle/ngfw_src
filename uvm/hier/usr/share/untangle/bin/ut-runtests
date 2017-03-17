@@ -26,7 +26,7 @@ uvmContext = uvm.Uvm().getUvmContext()
 
 class ArgumentParser(object):
     def __init__(self):
-        self.clientIP = None
+        self.clientIP = "192.0.2.2"
         self.hostUsername = None
         self.hostKeyFile = None
         self.verbosity = 2 # changed to default 2 because jcoffin
@@ -39,7 +39,7 @@ class ArgumentParser(object):
         self.suitesToExclude = []
         self.testsToRun = ['all']
         self.testsToExclude = []
-        self.timedTests = False
+        self.timedTests = True
         self.quickTestsOnly = False
 
     def set_clientIP( self, arg ):
@@ -162,7 +162,7 @@ def runTestSuite(suite):
     if exit_flag:
         return
     
-    print "== Testing %s ==" % suite.nodeName()
+    print "== testing %s ==" % suite.appName()
     tests = unittest2.TestLoader().loadTestsFromTestCase(suite)
     failCount = 0
     skipCount = 0  # number of skipped tests.
@@ -200,10 +200,13 @@ def runTestSuite(suite):
         print "\n\n"
         print "="*70
         print test_name + " start [" + time.strftime("%Y-%m-%dT%H:%m:%S") + "]"
+        global_functions.set_test_start_time()
         results = unittest2.TextTestRunner( stream=logfile, verbosity=parser.verbosity ).run( test )
         print test_name + " end   [" + time.strftime("%Y-%m-%dT%H:%m:%S") + "]"
         print "="*70
-
+        sys.stdout.flush
+        global_functions.set_previous_test_name( test_name )
+        
         if (parser.timedTests):
             testElapsedTime = time.time() - testStartTime
             timeString = "[%.1fs]" % testElapsedTime
@@ -224,7 +227,7 @@ def runTestSuite(suite):
                 # want to run finalTearDown
                 return failCount, skipCount, totalCount
         elif (len(results.skipped) > 0):
-            print "Test skipped  : %s %s" % (test_name, timeString)
+            print "Test skipped : %s %s" % (test_name, timeString)
             skipCount += 1
         else:
             print "Test success : %s %s " % (test_name, timeString)
@@ -238,9 +241,9 @@ def runTestSuite(suite):
 
     if (parser.timedTests):
         suiteElapsedTime = time.time() - suiteStartTime
-        print "== Testing %s [%.1fs] ==" % (suite.nodeName(),suiteElapsedTime)
+        print "== testing %s [%.1fs] ==" % (suite.appName(),suiteElapsedTime)
     else:
-        print "== Testing %s ==" % suite.nodeName()
+        print "== testing %s ==" % suite.appName()
     return failCount, skipCount, totalCount
 
 # Verify the test enviroment is setup correctly
@@ -249,7 +252,7 @@ def runTestEnvironmentTests():
     global logfile
     suite = unittest2.TestLoader().loadTestsFromTestCase(TestEnvironmentTests)
     # results = unittest2.TextTestRunner( stream=logfile, verbosity=parser.verbosity ).run( suite )
-    print "== Testing Test Environment =="
+    print "== testing environment =="
     for test in suite:
         results = unittest2.TextTestRunner( stream=logfile, verbosity=parser.verbosity ).run( test )
         if exit_flag:
@@ -260,7 +263,7 @@ def runTestEnvironmentTests():
             exit(1) # always fast fail on basic test environment tests
         else:
             print "Test success : %s " % test._testMethodName
-    print "== Testing Test Environment =="
+    print "== testing environment =="
 
 signal.signal(signal.SIGINT, signal_handler)
 
@@ -281,10 +284,10 @@ remote_control.interfaceExternal = int(parser.externalIntfId)
 remote_control.quickTestsOnly = parser.quickTestsOnly
 
 # if reports isn't installed, install and start it - it is required
-reportsNode = None;
-if (not uvmContext.nodeManager().isInstantiated('untangle-node-reports')):
-    print "== Installing untangle-node-reports =="
-    reportsNode = uvmContext.nodeManager().instantiate('untangle-node-reports', None)
+reportsApp = None;
+if (not uvmContext.appManager().isInstantiated('reports')):
+    print "== Installing reports =="
+    reportsApp = uvmContext.appManager().instantiate('reports', None)
 
 if ("environment" in parser.suitesToRun or "all" in parser.suitesToRun) and "environment" not in parser.suitesToExclude:
     runTestEnvironmentTests()
@@ -293,7 +296,7 @@ if exit_flag:
     sys.exit(0)
 
 if "all" in parser.suitesToRun:
-    parser.suitesToRun = test_registry.allNodes()
+    parser.suitesToRun = test_registry.allApps()
 
 # remove excluded tests
 for testName in parser.suitesToExclude:
@@ -306,14 +309,14 @@ failCount = 0
 skipCount = 0
 
 while True:
-    for node in parser.suitesToRun:
+    for app in parser.suitesToRun:
         if exit_flag == True:
             break
-        if node == "environment":
+        if app == "environment":
             continue
-        testClz = test_registry.getTest(node)
+        testClz = test_registry.getTest(app)
         if testClz == None:
-           print "Unable to find tests for \"%s\"" % node
+           print "Unable to find tests for \"%s\"" % app
            exit(1)
         subFailCount, subSkipCount, subTotalCount = runTestSuite(testClz)
         failCount  += subFailCount
@@ -328,9 +331,9 @@ while True:
 elapsedTime = time.time() - startTime
     
 # if reports was added earlier, revert to original settings
-if reportsNode != None:
-    print "== UnInstalling untangle-node-reports =="
-    uvmContext.nodeManager().destroy( reportsNode.getNodeSettings()['id'] );
+# if reportsApp != None:
+#     print "== UnInstalling reports =="
+#     uvmContext.appManager().destroy( reportsApp.getAppSettings()['id'] );
 
 print ""
 print "Tests complete. [%.1f seconds]" % elapsedTime

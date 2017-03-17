@@ -63,11 +63,12 @@ Ext.define('Ung.widget.NetworkInformation', {
             vm = this.getViewModel();
 
         if (vm) {
-            rpc.sessionMonitor.getSessionStats(function (result, exception) {
-                vm.set('sessions', result);
-                //console.log(result);
-                me.fireEvent('afterdata');
-            });
+            Rpc.asyncData('rpc.sessionMonitor.getSessionStats')
+                .then(function(result) {
+                    vm.set('sessions', result);
+                    //console.log(result);
+                    me.fireEvent('afterdata');
+                });
         }
     }
 });

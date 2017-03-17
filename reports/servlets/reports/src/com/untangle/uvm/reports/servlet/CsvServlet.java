@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.node.reports.ReportsApp;
+import com.untangle.app.reports.ReportsApp;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.servlet.DownloadHandler;
 
