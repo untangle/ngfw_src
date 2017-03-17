@@ -34,169 +34,124 @@ Ext.define('Ung.view.reports.EntryController', {
     ],
 
     onAfterRender: function () {
-        var me = this, vm = this.getViewModel();
+        var me = this, vm = this.getViewModel(),
+            entryContainer = me.getView().down('#entryContainer');
         // watch when the selected report is changed
-
+        me.getView().enableBubble('customevt');
         vm.bind('{entry}', function (entry) {
             if (!entry) { return; }
-            console.log(entry);
-            me.addChart();
+            console.log('here');
+            entryContainer.remove('entry'); // remove any existing entry
 
-            this.set('_defaultColors', entry.get('colors') ? false : true);
-
-            // console.log(TableConfig.getConfig(entry.get('table')));
-
-        });
-
-        vm.bind('{_defaultColors}', function (val) {
-            var colors, colorBtns = [];
-
-            if (val) {
-                vm.set('entry.colors', null);
-            } else {
-                colors = vm.get('entry.colors') || Util.defaultColors;
-                me.getView().down('#colors').removeAll();
-                colors.forEach(function (color, i) {
-                    colorBtns.push({
-                        xtype: 'button',
-                        margin: '0 1',
-                        idx: i,
-                        arrowVisible: false,
-                        menu: {
-                            plain: true,
-                            xtype: 'colormenu',
-                            colors: me.colorPalette,
-                            height: 200,
-                            listeners: {
-                                select: 'updateColor'
-                            },
-                            dockedItems: [{
-                                xtype: 'toolbar',
-                                dock: 'bottom',
-                                // ui: 'footer',
-                                items: [{
-                                    // text: 'Remove'.t(),
-                                    iconCls: 'fa fa-ban',
-                                    tooltip: 'Remove'.t()
-                                }, {
-                                    text: 'OK'.t(),
-                                    iconCls: 'fa fa-check',
-                                    listeners: {
-                                        click: function (btn) {
-                                            btn.up('button').hideMenu();
-                                        }
-                                    }
-                                }]
-
-                            }]
-                        },
-                        text: '<i class="fa fa-square" style="color: ' + color + '"></i>',
-                    });
-                });
-                me.getView().down('#colors').add(colorBtns);
-
+            switch(entry.get('type')) {
+                case 'TEXT':
+                    me.addTextEntry();
+                    // add text view
+                    break;
+                case 'EVENT':
+                    // add text view
+                    break;
+                case 'TIME_GRAPH':
+                case 'TIME_GRAPH_DYNAMIC':
+                    if (!me.getView().down('timechart')) {
+                        me.addGraphEntry();
+                    }
+                    break;
+                case 'PIE_GRAPH':
+                    if (!me.getView().down('piechart')) {
+                        me.addGraphEntry();
+                    }
+                    break;
+                // default:
+                    // this.set('_defaultColors', entry.get('colors') ? false : true);
             }
+            // me.fetchData();
+            // console.log(TableConfig.getConfig(entry.get('table')));
         });
 
+        // vm.bind('{entry.timeDataInterval}', me.fetchData, me);
+
+        vm.bind('{_data}', me.formatData, me);
+
+
+        // vm.bind('{_defaultColors}', function (val) {
+        //     var colors, colorBtns = [];
+
+        //     if (val) {
+        //         vm.set('entry.colors', null);
+        //     } else {
+        //         colors = vm.get('entry.colors') || Util.defaultColors;
+        //         me.getView().down('#colors').removeAll();
+        //         colors.forEach(function (color, i) {
+        //             colorBtns.push({
+        //                 xtype: 'button',
+        //                 margin: '0 1',
+        //                 idx: i,
+        //                 arrowVisible: false,
+        //                 menu: {
+        //                     plain: true,
+        //                     xtype: 'colormenu',
+        //                     colors: me.colorPalette,
+        //                     height: 200,
+        //                     listeners: {
+        //                         select: 'updateColor'
+        //                     },
+        //                     dockedItems: [{
+        //                         xtype: 'toolbar',
+        //                         dock: 'bottom',
+        //                         // ui: 'footer',
+        //                         items: [{
+        //                             // text: 'Remove'.t(),
+        //                             iconCls: 'fa fa-ban',
+        //                             tooltip: 'Remove'.t()
+        //                         }, {
+        //                             text: 'OK'.t(),
+        //                             iconCls: 'fa fa-check',
+        //                             listeners: {
+        //                                 click: function (btn) {
+        //                                     btn.up('button').hideMenu();
+        //                                 }
+        //                             }
+        //                         }]
+
+        //                     }]
+        //                 },
+        //                 text: '<i class="fa fa-square" style="color: ' + color + '"></i>',
+        //             });
+        //         });
+        //         me.getView().down('#colors').add(colorBtns);
+
+        //     }
+        // });
+
     },
 
-    addChart: function () {
-        var me = this,
-            vm = this.getViewModel(),
-            chartContainer = me.getView().down('#chartContainer'),
-            entry = vm.get('entry');
+    // fetchData: function () {
+    //     var me = this, vm = this.getViewModel();
+    //     if (!vm.get('entry')) { return; }
+    //     // console.log(vm.get('entry'));
+    //     // me.getView().setLoading(true);
 
-        chartContainer.remove('chart'); // remove any existing chart
+    //     me.fireEvent('customevt');
 
-        if (entry.get('type') === 'TIME_GRAPH' || entry.get('type') === 'TIME_GRAPH_DYNAMIC') {
-            chartContainer.add({
-                xtype: 'timechart',
-                itemId: 'chart',
-            });
-        }
-
-        if (entry.get('type') === 'PIE_GRAPH') {
-            chartContainer.add({
-                xtype: 'piechart',
-                itemId: 'chart'
-            });
-        }
-
-        if (entry.get('type') === 'EVENT_LIST') {
-            // chartContainer.add({
-            //     xtype: 'eventchart',
-            //     itemId: 'chart',
-            //     entry: this.entry
-            // });
-        }
-
-        if (entry.get('type') === 'TEXT') {
-            // chartContainer.add({
-            //     xtype: 'component',
-            //     itemId: 'chart',
-            //     html: 'Not Implemented'
-            // });
-        }
-    },
-
-    updateColor: function (menu, color) {
-        var vm = this.getViewModel(),
-            newColors = vm.get('entry.colors') ? Ext.clone(vm.get('entry.colors')) : Ext.clone(Util.defaultColors);
-
-        menu.up('button').setText('<i class="fa fa-square" style="color: #' + color + ';"></i>');
-        newColors[menu.up('button').idx] = '#' + color;
-        vm.set('entry.colors', newColors);
-        return false;
-    },
-
-    // addColor: function (btn) {
-    //     btn.up('grid').getStore().add({color: 'FF0000'});
-    //     // var vm = this.getViewModel();
-    //     // var colors = vm.get('report.colors');
-    //     // colors.push('#FF0000');
-    //     // vm.set('report.colors', colors);
+    //     Rpc.asyncData('rpc.reportsManager.getDataForReportEntry',
+    //                     vm.get('entry').getData(),
+    //                     vm.get('startDate'),
+    //                     vm.get('tillNow') ? null : vm.get('endDate'), -1)
+    //         .then(function(result) {
+    //             console.log(result);
+    //             // Ext.fireEvent('beginFetchData');
+    //             // me.getView().setLoading(false);
+    //             vm.set('_data', result.list);
+    //             // me.data = result.list;
+    //             // me.setSeries();
+    //             // if (me.getView().up('reports-entry')) {
+    //             //     me.getView().up('reports-entry').getController().setCurrentData(result.list);
+    //             // }
+    //         });
     // },
 
-    refreshData: function () {
-        this.getView().down('#chart').getController().fetchData();
-    },
-
-    updateReport: function () {
-        var v = this.getView(),
-            vm = this.getViewModel(),
-            entry = vm.get('entry');
-
-        v.setLoading(true);
-        Rpc.asyncData('rpc.reportsManager.saveReportEntry', entry.getData())
-            .then(function(result) {
-                v.setLoading(false);
-                vm.get('report').copyFrom(entry);
-                vm.get('report').commit();
-                Util.successToast('<span style="color: yellow; font-weight: 600;">' + vm.get('entry.title') + '</span> report updated!');
-                Ung.app.redirectTo('#reports/' + entry.get('category').replace(/ /g, '-').toLowerCase() + '/' + entry.get('title').replace(/[^0-9a-z\s]/gi, '').replace(/\s+/g, '-').toLowerCase());
-            });
-    },
-
-    saveNewReport: function () {
-        var v = this.getView(),
-            vm = this.getViewModel(),
-            entry = vm.get('entry');
-
-        entry.set('uniqueId', 'report-' + Math.random().toString(36).substr(2));
-        entry.set('readOnly', false);
-
-        v.setLoading(true);
-        Rpc.asyncData('rpc.reportsManager.saveReportEntry', entry.getData())
-            .then(function(result) {
-                v.setLoading(false);
-                Ext.getStore('reports').add(entry);
-                entry.commit();
-                Util.successToast('<span style="color: yellow; font-weight: 600;">' + entry.get('title') + ' report added!');
-                Ung.app.redirectTo('#reports/' + entry.get('category').replace(/ /g, '-').toLowerCase() + '/' + entry.get('title').replace(/[^0-9a-z\s]/gi, '').replace(/\s+/g, '-').toLowerCase());
-            });
-    },
-
-    setCurrentData: function (data) {
+    formatData: function (data) {
         var entry = this.getViewModel().get('entry'),
             dataGrid = this.getView().down('#currentData'), i, column;
 
@@ -213,20 +168,17 @@ Ext.define('Ung.view.reports.EntryController', {
             }]);
 
             var infos = [], reportData = [], value;
-            if (data.length > 0 && entry.textColumns !== null) {
-                for (i = 0; i < entry.textColumns.length; i += 1) {
-                    column = this.entry.textColumns[i].split(' ').splice(-1)[0];
+            if (data.length > 0 && entry.get('textColumns') !== null) {
+                for (i = 0; i < entry.get('textColumns').length; i += 1) {
+                    column = entry.get('textColumns')[i].split(' ').splice(-1)[0];
                     value = Ext.isEmpty(data[0][column]) ? 0 : data[0][column];
                     infos.push(value);
                     reportData.push({data: column, value: value});
                 }
             }
-
-            // this.reportChart.down('#textentry').update(Ext.String.format.apply(Ext.String.format, [i18n._(this.entry.textString)].concat(infos)));
+            this.getView().down('#entry').setHtml(Ext.String.format.apply(Ext.String.format, [entry.get('textString').t()].concat(infos)));
             dataGrid.getStore().loadData(reportData);
         }
-
-        console.log(data);
 
         if (entry.get('type') === 'PIE_GRAPH') {
             dataGrid.setColumns([{
@@ -264,16 +216,22 @@ Ext.define('Ung.view.reports.EntryController', {
                 return val || 0;
             };
             var timeFn = function (val) {
-                return (val === null) ? 0 : Util.timestampFormat(val);
+                return val;
+                // return (val === null) ? 0 : Util.timestampFormat(val);
             };
 
-            var storeFields = [{name: 'time_trunc', convert: timeFn}];
+            var storeFields = [{
+                name: 'time_trunc'
+            }];
 
             var reportDataColumns = [{
                 dataIndex: 'time_trunc',
                 header: 'Timestamp'.t(),
                 width: 130,
-                flex: 1
+                flex: 1,
+                renderer: function (val) {
+                    return (!val) ? 0 : Util.timestampFormat(val);
+                }
                 // flex: entry.get('timeDataColumns').length > 2 ? 0 : 1,
                 // renderer: function (val) {
                 //     return val.time;
@@ -299,7 +257,7 @@ Ext.define('Ung.view.reports.EntryController', {
             for (i = 0; i < entry.get('timeDataColumns').length; i += 1) {
                 column = entry.get('timeDataColumns')[i].split(' ').splice(-1)[0];
                 title = seriesRenderer ? seriesRenderer(column) + ' [' + column + ']' : column;
-                storeFields.push({name: column, convert: zeroFn, type: 'integer'});
+                // storeFields.push({name: column, convert: zeroFn, type: 'integer'});
                 reportDataColumns.push({
                     dataIndex: column,
                     header: title,
@@ -308,14 +266,117 @@ Ext.define('Ung.view.reports.EntryController', {
             }
 
             dataGrid.setStore(Ext.create('Ext.data.Store', {
-                fields: storeFields,
+                // fields: storeFields,
                 data: []
             }));
             dataGrid.setColumns(reportDataColumns);
             dataGrid.getStore().loadData(data);
         }
+    },
+
+
+    addGraphEntry: function () {
+        var me = this,
+            vm = this.getViewModel(),
+            entryContainer = me.getView().down('#entryContainer'),
+            entry = vm.get('entry');
+
+        if (entry.get('type') === 'TIME_GRAPH' || entry.get('type') === 'TIME_GRAPH_DYNAMIC') {
+            entryContainer.add({
+                xtype: 'timechart',
+                itemId: 'entry',
+                autoDestory: false
+            });
+        }
+
+        if (entry.get('type') === 'PIE_GRAPH') {
+            entryContainer.add({
+                xtype: 'piechart',
+                itemId: 'entry'
+            });
+        }
+
+        if (entry.get('type') === 'EVENT_LIST') {
+            // chartContainer.add({
+            //     xtype: 'eventchart',
+            //     itemId: 'chart',
+            //     entry: this.entry
+            // });
+        }
+
+        if (entry.get('type') === 'TEXT') {
+            // chartContainer.add({
+            //     xtype: 'component',
+            //     itemId: 'chart',
+            //     html: 'Not Implemented'
+            // });
+        }
+    },
+
+    addTextEntry: function () {
+        this.getView().down('#entryContainer').add({
+            xtype: 'textreport',
+            itemId: 'entry',
+            padding: 10
+        });
+    },
+
+    updateColor: function (menu, color) {
+        var vm = this.getViewModel(),
+            newColors = vm.get('entry.colors') ? Ext.clone(vm.get('entry.colors')) : Ext.clone(Util.defaultColors);
+
+        menu.up('button').setText('<i class="fa fa-square" style="color: #' + color + ';"></i>');
+        newColors[menu.up('button').idx] = '#' + color;
+        vm.set('entry.colors', newColors);
+        return false;
+    },
+
+    // addColor: function (btn) {
+    //     btn.up('grid').getStore().add({color: 'FF0000'});
+    //     // var vm = this.getViewModel();
+    //     // var colors = vm.get('report.colors');
+    //     // colors.push('#FF0000');
+    //     // vm.set('report.colors', colors);
+    // },
+
+    refreshData: function () {
+        // this.getView().down('#chart').getController().fetchData();
+        this.fetchData();
+    },
+
+    updateReport: function () {
+        var v = this.getView(),
+            vm = this.getViewModel(),
+            entry = vm.get('entry');
+
+        v.setLoading(true);
+        Rpc.asyncData('rpc.reportsManager.saveReportEntry', entry.getData())
+            .then(function(result) {
+                v.setLoading(false);
+                vm.get('report').copyFrom(entry);
+                vm.get('report').commit();
+                Util.successToast('<span style="color: yellow; font-weight: 600;">' + vm.get('entry.title') + '</span> report updated!');
+                Ung.app.redirectTo('#reports/' + entry.get('category').replace(/ /g, '-').toLowerCase() + '/' + entry.get('title').replace(/[^0-9a-z\s]/gi, '').replace(/\s+/g, '-').toLowerCase());
+            });
+    },
+
+    saveNewReport: function () {
+        var v = this.getView(),
+            vm = this.getViewModel(),
+            entry = vm.get('entry');
+
+        entry.set('uniqueId', 'report-' + Math.random().toString(36).substr(2));
+        entry.set('readOnly', false);
+
+        v.setLoading(true);
+        Rpc.asyncData('rpc.reportsManager.saveReportEntry', entry.getData())
+            .then(function(result) {
+                v.setLoading(false);
+                Ext.getStore('reports').add(entry);
+                entry.commit();
+                Util.successToast('<span style="color: yellow; font-weight: 600;">' + entry.get('title') + ' report added!');
+                Ung.app.redirectTo('#reports/' + entry.get('category').replace(/ /g, '-').toLowerCase() + '/' + entry.get('title').replace(/[^0-9a-z\s]/gi, '').replace(/\s+/g, '-').toLowerCase());
+            });
     }
-
-
 
 });

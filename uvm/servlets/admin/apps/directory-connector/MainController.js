@@ -45,7 +45,7 @@ Ext.define('Ung.apps.directory-connector.MainController', {
 
         var secureValue = elem.getValue();
         var currentPortValue = vm.get("settings.activeDirectorySettings.LDAPPort");
-        if( secureValue == true ){
+        if( secureValue ){
             if( currentPortValue == "389"){
                 vm.set("settings.activeDirectorySettings.LDAPPort", "636");
             }

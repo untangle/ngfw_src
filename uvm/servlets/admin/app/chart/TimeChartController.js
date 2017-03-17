@@ -2,14 +2,14 @@ Ext.define('Ung.chart.TimeChartController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.timechart',
 
+
     onAfterRender: function (view) {
+        // console.log('after render');
         var me = this, vm = this.getViewModel();
 
-        // fetch data first
-        // vm.bind('{entry}', me.fetchData, me);
         vm.bind('{entry.timeStyle}', me.setStyles, me);
-        vm.bind('{entry.colors}', me.setStyles, me);
         vm.bind('{entry.timeDataInterval}', me.fetchData, me);
+        vm.bind('{entry.approximation}', me.setStyles, me);
     },
 
     setChartType: function (timeStyle) {
@@ -46,6 +46,9 @@ Ext.define('Ung.chart.TimeChartController', {
         } else {
             me.getView().setLoading(true);
         }
+        if (me.getView().up('reports-entry')) {
+            me.getView().up('reports-entry').getController().formatData([]);
+        }
         Rpc.asyncData('rpc.reportsManager.getDataForReportEntry',
                         vm.get('entry').getData(),
                         vm.get('startDate'),
@@ -56,31 +59,35 @@ Ext.define('Ung.chart.TimeChartController', {
                 } else {
                     me.getView().setLoading(false);
                 }
-
+                // vm.set('_data', result.list);
                 me.data = result.list;
                 me.setSeries();
 
                 if (me.getView().up('reports-entry')) {
-                    me.getView().up('reports-entry').getController().setCurrentData(result.list);
+                    me.getView().up('reports-entry').getController().formatData(result.list);
                 }
             });
     },
+
 
     /**
      * creates (normalize) series definition based on entry and data
      */
     setSeries: function () {
-        if (!this.data) { return; }
+        var data = this.data;
+        if (!data) { return; }
 
         var me = this, vm = this.getViewModel(),
             timeDataColumns = Ext.clone(vm.get('entry.timeDataColumns')),
             i, j, newData, series = [];
 
+        if (me.chart) { me.chart.hideLoading(); }
+
         if (!timeDataColumns) {
             timeDataColumns = [];
-            for (j = 0; j < me.data.length; j += 1) {
-                for (var _column in me.data[j]) {
-                    if (me.data[j].hasOwnProperty(_column) && _column !== 'time_trunc' && _column !== 'time' && timeDataColumns.indexOf(_column) < 0) {
+            for (j = 0; j < data.length; j += 1) {
+                for (var _column in data[j]) {
+                    if (data[j].hasOwnProperty(_column) && _column !== 'time_trunc' && _column !== 'time' && timeDataColumns.indexOf(_column) < 0) {
                         timeDataColumns.push(_column);
                     }
                 }
@@ -93,10 +100,10 @@ Ext.define('Ung.chart.TimeChartController', {
 
         for (i = 0; i < timeDataColumns.length; i += 1) {
             newData = [];
-            for (j = 0; j < me.data.length; j += 1) {
+            for (j = 0; j < data.length; j += 1) {
                 newData.push([
-                    me.data[j].time_trunc.time,
-                    me.data[j][timeDataColumns[i]] || 0
+                    data[j].time_trunc.time,
+                    data[j][timeDataColumns[i]] || 0
                 ]);
             }
             series.push({
@@ -125,7 +132,6 @@ Ext.define('Ung.chart.TimeChartController', {
      */
     setStyles: function () {
         if (!this.chart) { return ;}
-
         var me = this, entry = this.getViewModel().get('entry'),
             isStacked = entry.get('timeStyle').indexOf('STACKED') >= 0,
             isOverlapped = entry.get('timeStyle').indexOf('OVERLAPPED') >= 0,
