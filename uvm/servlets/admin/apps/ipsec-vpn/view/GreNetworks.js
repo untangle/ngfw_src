@@ -84,6 +84,5 @@ Ext.define('Ung.apps.ipsecvpn.view.GreNetworks', {
                 xtype: 'textfield',
             }
         }],
-
     }]
 });

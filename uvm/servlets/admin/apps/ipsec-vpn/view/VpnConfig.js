@@ -30,9 +30,6 @@ Ext.define('Ung.apps.ipsecvpn.view.VpnConfig', {
     },
 
     items: [{
-        xtype: 'displayfield',
-        value: '<H3><U>' + 'Server Configuration'.t() + '</U></H3>'
-    },{
         xtype: 'checkbox',
         bind: '{settings.vpnflag}',
         fieldLabel: 'Enable L2TP/Xauth/IKEv2 Server'.t()
@@ -70,9 +67,6 @@ Ext.define('Ung.apps.ipsecvpn.view.VpnConfig', {
         width: 600,
         fieldLabel: 'IPsec Secret'.t()
     },{
-        xtype: 'displayfield',
-        value: '<H3><U>' + 'User Authentication'.t() + '</U></H3>'
-    },{
         xtype: 'radiogroup',
         bind: '{settings.authenticationType}',
         simpleValue: 'true',
@@ -83,7 +77,6 @@ Ext.define('Ung.apps.ipsecvpn.view.VpnConfig', {
             { boxLabel: '<strong>' + 'RADIUS'.t() + '</strong> (' + 'requires'.t() + ' Directory Connector)', inputValue: 'RADIUS' }
         ]
     },{
-        // todo: update this button later
         xtype: 'button',
         iconCls: 'fa fa-cog',
         width: 200,
@@ -92,7 +85,32 @@ Ext.define('Ung.apps.ipsecvpn.view.VpnConfig', {
         },
             handler: 'configureAuthTarget'
     },{
-        xtype: 'displayfield',
-        value: '<H3><U>' + 'Server Listen Addresses'.t() + '</U></H3>'
+        xtype: 'ungrid',
+        title: 'Server Listen Addresses'.t(),
+        width: 300,
+        height: 300,
+        padding: '20 0 0 0',
+        tbar: ['@addInline'],
+        recordActions: ['delete'],
+        listProperty: 'settings.virtualListenList.list',
+
+        emptyRow: {
+            javaClass: 'com.untangle.app.ipsec_vpn.VirtualListen',
+            'address': ''
+            },
+
+        bind: '{listenList}',
+
+    columns: [{
+        header: 'Address'.t(),
+        dataIndex: 'address',
+        width: 150,
+        flex: 1,
+        editor: {
+            bind: '{record.address}',
+            xtype: 'textfield',
+            vtype: 'ipAddress'
+            }
+        }]
     }]
 });
