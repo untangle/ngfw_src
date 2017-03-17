@@ -132,14 +132,18 @@ public abstract class LogEvent implements Serializable, JSONString
     {
         JSONObject jsonObject = null;
 
-        try {
-            String json = UvmContextFactory.context().getSerializer().toJSON(this);
-            jsonObject = new JSONObject(json);
-            return jsonObject;
-        } catch (Exception e) {
-            logger.warn("Failed to serialize JSON: " + this, e);
-            return null;
-        }
+        // we should use a better serializer
+        return new JSONObject(this);
+
+        // the jabsorb serializer is also bad for serializing dates and things
+        // try {
+        //     String json = UvmContextFactory.context().getSerializer().toJSON(this);
+        //     jsonObject = new JSONObject(json);
+        //     return jsonObject;
+        // } catch (Exception e) {
+        //     logger.warn("Failed to serialize JSON: " + this, e);
+        //     return null;
+        // }
     }
 
     public static void setSchemaPrefix( String newValue )

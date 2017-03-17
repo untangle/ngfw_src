@@ -830,12 +830,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         this.serializer = new JSONSerializer();
         serializer.setFixupDuplicates(false);
         serializer.setMarshallNullAttributes(false);
-        try {
-            serializer.registerSerializer(new com.untangle.uvm.webui.jabsorb.serializer.InetAddressSerializer());
-            serializer.registerSerializer(new com.untangle.uvm.webui.jabsorb.serializer.IPMaskedAddressSerializer());
-        } catch (Exception e) {
-            logger.warn("Failed to register serializers", e);
-        }
 
         this.execManager = new ExecManagerImpl();
 
