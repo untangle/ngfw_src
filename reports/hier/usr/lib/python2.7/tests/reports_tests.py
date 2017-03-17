@@ -112,47 +112,6 @@ def createAdminUser(useremail=testEmailAddress):
             "username": username
         }
 
-def createAlertRule(description, matcherField, operator, value, matcherField2, operator2, value2, thresholdEnabled=False, thresholdLimit=None, thresholdTimeframeSec=None, thresholdGroupingField=None):
-    return {
-            "alert": True,
-            "alertLimitFrequency": False,
-            "alertLimitFrequencyMinutes": 60,
-            "thresholdEnabled": thresholdEnabled,
-            "thresholdLimit": thresholdLimit,
-            "thresholdTimeframeSec": thresholdTimeframeSec,
-            "thresholdGroupingField": thresholdGroupingField,
-            "description": description,
-            "enabled": True,
-            "javaClass": "com.untangle.app.reports.AlertRule",
-            "log": True,
-            "conditions": {
-                "javaClass": "java.util.LinkedList",
-                "list": [
-                    {
-                        "javaClass": "com.untangle.app.reports.AlertRuleCondition",
-                        "conditionType": "FIELD_CONDITION",
-                        "value": {
-                            "comparator": operator,
-                            "field": matcherField,
-                            "javaClass": "com.untangle.app.reports.AlertRuleConditionField",
-                            "value": value
-                        }
-                    },
-                    {
-                        "javaClass": "com.untangle.app.reports.AlertRuleCondition",
-                        "conditionType": "FIELD_CONDITION",
-                        "value": {
-                            "comparator": operator2,
-                            "field": matcherField2,
-                            "javaClass": "com.untangle.app.reports.AlertRuleConditionField",
-                            "value": value2
-                        }
-                    }
-                ]
-            },
-            "ruleId": 1
-        }
-
 def createEmailTemplate(mobile=False):
     return {
         "description": "Custom description",

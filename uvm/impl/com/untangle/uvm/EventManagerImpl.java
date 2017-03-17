@@ -469,6 +469,7 @@ public class EventManagerImpl implements EventManager
         for ( TriggerRule rule : UvmContextFactory.context().eventManager().getSettings().getTriggerRules() ) {
             if ( ! rule.getEnabled() )
                 continue;
+
             if ( !rule.isMatch( jsonObject ) )
                 continue;
 
