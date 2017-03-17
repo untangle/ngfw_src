@@ -31,13 +31,85 @@ defaultRackId = 1
 origMailsettings = None
 test_untangle_com_ip = socket.gethostbyname("test.untangle.com")
 
-def getLatestMailPkg():
+def get_latest_mail_pkg():
     remote_control.run_command("rm -f mailpkg.tar*") # remove all previous mail packages
     results = remote_control.run_command("wget -q -t 1 --timeout=3 http://test.untangle.com/test/mailpkg.tar")
     # print "Results from getting mailpkg.tar <%s>" % results
     results = remote_control.run_command("tar -xvf mailpkg.tar")
     # print "Results from untaring mailpkg.tar <%s>" % results
 
+def create_alert_rule(description, field, operator, value, field2, operator2, value2, thresholdEnabled=False, thresholdLimit=None, thresholdTimeframeSec=None, thresholdGroupingField=None):
+    return {
+            "alert": True,
+            "alertLimitFrequency": False,
+            "alertLimitFrequencyMinutes": 60,
+            "thresholdEnabled": thresholdEnabled,
+            "thresholdLimit": thresholdLimit,
+            "thresholdTimeframeSec": thresholdTimeframeSec,
+            "thresholdGroupingField": thresholdGroupingField,
+            "description": description,
+            "enabled": True,
+            "javaClass": "com.untangle.uvm.event.AlertRule",
+            "log": True,
+            "conditions": {
+                "javaClass": "java.util.LinkedList",
+                "list": [{
+                    "javaClass": "com.untangle.uvm.event.EventRuleCondition",
+                    "conditionType": "FIELD_CONDITION",
+                    "value": {
+                        "comparator": operator,
+                        "field": field,
+                        "javaClass": "com.untangle.uvm.event.EventRuleConditionField",
+                        "value": value
+                    }
+                }, {
+                    "javaClass": "com.untangle.uvm.event.EventRuleCondition",
+                    "conditionType": "FIELD_CONDITION",
+                    "value": {
+                        "comparator": operator2,
+                        "field": field2,
+                        "javaClass": "com.untangle.uvm.event.EventRuleConditionField",
+                        "value": value2
+                    }
+                }]
+            },
+            "ruleId": 1
+        }
+
+def create_trigger_rule(action, tag_target, tag_name, tag_lifetime_sec, description, field, operator, value, field2, operator2, value2):
+    return {
+        "description": description,
+        "action": action,
+        "tagTarget": tag_target,
+        "tagName": tag_name,
+        "tagLifetimeSec": tag_lifetime_sec,
+        "enabled": True,
+        "javaClass": "com.untangle.uvm.event.TriggerRule",
+        "conditions": {
+            "javaClass": "java.util.LinkedList",
+            "list": [{
+                "javaClass": "com.untangle.uvm.event.EventRuleCondition",
+                "conditionType": "FIELD_CONDITION",
+                "value": {
+                    "comparator": operator,
+                    "field": field,
+                    "javaClass": "com.untangle.uvm.event.EventRuleConditionField",
+                    "value": value
+                }
+            }, {
+                "javaClass": "com.untangle.uvm.event.EventRuleCondition",
+                "conditionType": "FIELD_CONDITION",
+                "value": {
+                    "comparator": operator2,
+                    "field": field2,
+                    "javaClass": "com.untangle.uvm.event.EventRuleConditionField",
+                    "value": value2
+                }
+            }]
+        },
+        "ruleId": 1
+    }
+    
 class UvmTests(unittest2.TestCase):
 
     @staticmethod
@@ -59,11 +131,11 @@ class UvmTests(unittest2.TestCase):
     def setUp(self):
         pass
 
-    def test_010_clientIsOnline(self):
+    def test_010_client_is_online(self):
         result = remote_control.is_online()
         assert (result == 0)
 
-    def test_011_helpLinks(self):
+    def test_011_help_links(self):
         output, error = subprocess.Popen(['find',
                                           '%s/usr/share/untangle/web/webui/script/' % global_functions.get_prefix(),
                                           '-name',
@@ -114,7 +186,7 @@ class UvmTests(unittest2.TestCase):
 
         assert(True)
 
-    def test_020_aboutInfo(self):
+    def test_020_about_info(self):
         uid =  uvmContext.getServerUID()
         match = re.search(r'\w{4}-\w{4}-\w{4}.\w{4}', uid)
         assert( match )
@@ -135,7 +207,7 @@ class UvmTests(unittest2.TestCase):
         match = re.search(r'\d{1,2}', max_num_hosts)
         assert(match)
 
-    def test_030_testSMTPSettings(self):
+    def test_030_test_smtp_settings(self):
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
         # Test mail setting in config -> email -> outgoing server
@@ -148,7 +220,7 @@ class UvmTests(unittest2.TestCase):
         origAppDataSP = appSP.getSmtpSettings()
         origMailsettings = uvmContext.mailSender().getSettings()
         # print appDataSP
-        getLatestMailPkg();
+        get_latest_mail_pkg();
         # remove previous smtp log file
         remote_control.run_command("rm -f /tmp/test_030_testSMTPSettings.log /tmp/test@example.com.1")
         # Start mail sink
@@ -176,7 +248,39 @@ class UvmTests(unittest2.TestCase):
         result = remote_control.run_command("grep -q 'Untangle Server Test Message' /tmp/test@example.com.1")
         assert(result==0)
 
-    def test_040_account_login(self):
+    def test_040_trigger_rule_tag_host(self):
+        settings = uvmContext.eventManager().getSettings()
+        orig_settings = copy.deepcopy(settings)
+        new_rule = create_trigger_rule("TAG_HOST", "localAddr", "test-tag", 30, "test tag rule", "class", "=", "*SessionEvent*", "localAddr", "=", "*"+remote_control.clientIP+"*")
+        settings['triggerRules']['list'].append( new_rule )
+        uvmContext.eventManager().setSettings( settings )
+
+        result = remote_control.is_online()
+        time.sleep(1)
+
+        entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
+        assert( entry.get('tagsString') != None )
+        assert( "test-tag" in entry.get('tagsString') )
+        
+        uvmContext.eventManager().setSettings( orig_settings )
+
+    def test_041_alert_rule(self):
+        settings = uvmContext.eventManager().getSettings()
+        orig_settings = copy.deepcopy(settings)
+        new_rule = create_alert_rule("test alert rule", "class", "=", "*SessionEvent*", "localAddr", "=", "*"+remote_control.clientIP+"*")
+        settings['alertRules']['list'].append( new_rule )
+        uvmContext.eventManager().setSettings( settings )
+
+        result = remote_control.is_online()
+        time.sleep(1)
+
+        events = global_functions.get_events('Events','Alert Events',None,10)
+        assert(events != None)
+        found = global_functions.check_events( events.get('list'), 5,
+                                            'description', 'test alert rule' )
+        assert ( found )
+        
+    def test_100_account_login(self):
         untangleEmail, untanglePassword = global_functions.get_live_account_info("Untangle")
         if untangleEmail == "message":
             raise unittest2.SkipTest('Skipping no accound found:' + str(untanglePassword))
@@ -184,7 +288,7 @@ class UvmTests(unittest2.TestCase):
         result = uvmContext.cloudManager().accountLogin( untangleEmail, untanglePassword )
         assert result.get('success')
 
-    def test_041_account_login_invalid(self):
+    def test_101_account_login_invalid(self):
         result = uvmContext.cloudManager().accountLogin( "foobar@untangle.com", "badpassword" )
         assert not result.get('success')
 

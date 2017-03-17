@@ -36,8 +36,7 @@ public class TriggerRule extends EventRule
     {
     }
 
-    public TriggerRule( boolean enabled, List<EventRuleCondition> conditions, boolean log, String description, 
-                        Boolean thresholdEnabled, Double thresholdLimit, Integer thresholdTimeframeSec, String thresholdGroupingField )
+    public TriggerRule( boolean enabled, List<EventRuleCondition> conditions, boolean log, String description, Boolean thresholdEnabled, Double thresholdLimit, Integer thresholdTimeframeSec, String thresholdGroupingField )
     {
         super(enabled, conditions, log, description, thresholdEnabled,  thresholdLimit, thresholdTimeframeSec, thresholdGroupingField);
     }
