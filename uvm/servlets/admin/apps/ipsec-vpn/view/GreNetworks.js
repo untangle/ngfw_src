@@ -27,6 +27,7 @@ Ext.define('Ung.apps.ipsecvpn.view.GreNetworks', {
     }, {
         xtype: 'ungrid',
         region: 'center',
+        padding: '10 20 10 20',
         tbar: ['@addInline'],
         recordActions: ['delete'],
         listProperty: 'settings.networks.list',
