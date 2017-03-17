@@ -11,6 +11,15 @@ Ext.define('Ung.apps.openvpn.Main', {
             remoteServers: {
                 data: '{settings.remoteServers.list}'
             }
+        },
+
+        formulas: {
+            getSiteUrl: {
+                get: function(get) {
+                    var publicUrl = rpc.networkManager.getPublicUrl();
+                    return(publicUrl.split(":")[0] + ":" + get('settings.port'));
+                }
+            }
         }
     },
 
