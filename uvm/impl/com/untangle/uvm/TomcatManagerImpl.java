@@ -66,7 +66,7 @@ public class TomcatManagerImpl implements TomcatManager
     private static final String WELCOME_URI = "/setup/welcome.do";
     private static final String WELCOME_FILE = System.getProperty("uvm.conf.dir") + "/apache2/conf.d/homepage.conf";
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private static final Logger logger = Logger.getLogger(TomcatManagerImpl.class);
 
     private final Tomcat tomcat;
     private final StandardHost baseHost;
@@ -279,6 +279,7 @@ public class TomcatManagerImpl implements TomcatManager
 
             ctx.setCrossContext(true);
             ctx.setSessionTimeout(30); // 30 minutes
+            ctx.setSessionCookieName(getCookieName());
             if ( realm != null ) {
                 ctx.setRealm(realm);
             }
@@ -348,6 +349,45 @@ public class TomcatManagerImpl implements TomcatManager
         }
 
         return p.getProperty("worker.uvmWorker.secret");
+    }
+
+    /**
+     * In an effort to keep cookie names unique we speficy our own cookie name
+     * Tomcat uses "JSESSIONID" by default to store the session state.
+     *
+     * Since cookies are stored per domain name, if you proxy several Untangle
+     * admin connections through a centrail domain, they conflict because they
+     * all use the "JSESSIONID" state to store session.
+     *
+     * This takes a unique identifier (the UID) and md5s it and takes the first
+     * 8 characters of that md5 and returns "session-"+md5
+     * So the cookie for this machine will be stored in "session-3e9f381d", for
+     * example.
+     */
+    private static String getCookieName()
+    {
+        java.security.MessageDigest md;
+        try {
+            md = java.security.MessageDigest.getInstance("MD5");
+        } catch (java.security.NoSuchAlgorithmException e) {
+            logger.warn( "Unknown Algorith MD5", e);
+            return "session";
+        }
+        String uid = UvmContextImpl.context().getServerUID().trim();
+        if ( uid == null ) {
+            logger.warn( "Missing UID!");
+            return "session";
+        }
+        byte[] digest = md.digest(uid.getBytes());
+        String cookieName = "";
+        for (byte b : digest) {
+            int c = b;
+            if (c < 0) c = c + 0x100;
+            cookieName += String.format("%02x", c);
+        }
+
+        cookieName = "session-" + cookieName.substring(0,8);
+        return cookieName;
     }
 
     private class AdministrationValve extends ValveBase
