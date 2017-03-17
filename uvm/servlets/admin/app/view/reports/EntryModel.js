@@ -145,6 +145,14 @@ Ext.define('Ung.view.reports.EntryModel', {
             }
             return get('entry.type').indexOf('PIE_GRAPH') >= 0;
         },
+
+        isGraphEntry: function (get) {
+            return get('isTimeGraph') || get('isPieGraph');
+        },
+
+        isTextEntry: function (get)  {
+            return get('entry.type') === 'TEXT';
+        }
     }
 
 });

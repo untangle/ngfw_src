@@ -214,11 +214,13 @@ Ext.define('Ung.config.network.MainController', {
             for( i=0; i<networkSettings.inputFilterRules.list.length ; i++ ) {
                 var rule = networkSettings.inputFilterRules.list[i];
                 if ( rule.description == "Block All" ) {
-                    if ( !rule.enabled || !rule.ipv6Enabled )
+                    if ( !rule.enabled || !rule.ipv6Enabled ) {
                         blockAllEnabled = false;
-                    else
+                    }
+                    else {
                         blockAllEnabled = true;
-                    break;
+                        break;
+                    }
                 }
             }
         }

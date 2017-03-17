@@ -14,9 +14,9 @@ Ext.define('Ung.view.reports.Entry', {
         region: 'center',
         border: false,
         bodyBorder: false,
-        itemId: 'chartContainer',
+        itemId: 'entryContainer',
         layout: 'fit',
-        items: [], // here the chart will be added
+        items: [], // here the chart/text/grid will be added
 
         dockedItems: [{
             xtype: 'toolbar',
@@ -119,6 +119,7 @@ Ext.define('Ung.view.reports.Entry', {
         collapsed: false,
         titleCollapse: true,
         hidden: true,
+        border: false,
         bind: {
             hidden: '{!entry}'
         },
@@ -139,6 +140,16 @@ Ext.define('Ung.view.reports.Entry', {
             layout: 'anchor',
             bodyPadding: 10,
             items: [{
+                xtype: 'component',
+                padding: 10,
+                margin: '0 0 10 0',
+                style: { background: '#EEE' },
+                html: '<i class="fa fa-info-circle fa-lg"></i> This is a default report. Any changes can be saved only by creating a new Report.',
+                hidden: true,
+                bind: {
+                    hidden: '{!entry.readOnly}'
+                }
+            }, {
                 xtype: 'textfield',
                 fieldLabel: 'Title'.t(),
                 bind: '{entry.title}',
@@ -161,6 +172,10 @@ Ext.define('Ung.view.reports.Entry', {
                 defaults: {
                     labelWidth: 150,
                     labelAlign: 'right'
+                },
+                hidden: true,
+                bind: {
+                    hidden: '{!isGraphEntry}'
                 },
                 items: [{
                     // TIME_GRAPH - chart style
@@ -271,7 +286,7 @@ Ext.define('Ung.view.reports.Entry', {
                     xtype: 'container',
                     margin: '0 0 0 155',
                     itemId: 'colors',
-                    // layout: 'hbox',
+                    hidden: true,
                     bind: {
                         hidden: '{defaultColors.checked}'
                     }
@@ -287,11 +302,17 @@ Ext.define('Ung.view.reports.Entry', {
                     labelAlign: 'right'
                 },
                 items: [{
+                    // ALL graphs
                     xtype: 'textfield',
                     fieldLabel: 'Units'.t(),
                     anchor: '100%',
-                    bind: '{entry.units}'
+                    hidden: true,
+                    bind: {
+                        value: '{entry.units}',
+                        hidden: '{!isGraphEntry}'
+                    }
                 }, {
+                    // ALL entries
                     xtype: 'combo',
                     fieldLabel: 'Table'.t(),
                     anchor: '100%',
@@ -299,31 +320,92 @@ Ext.define('Ung.view.reports.Entry', {
                     editable: false,
                     queryMode: 'local'
                 }, {
+                    // TIME_GRAPH only
                     xtype: 'textarea',
                     anchor: '100%',
                     fieldLabel: 'Time Data Columns'.t(),
                     grow: true,
-                    bind: '{entry.timeDataColumns}'
+                    hidden: true,
+                    bind: {
+                        value: '{entry.timeDataColumns}',
+                        hidden: '{!isTimeGraph}'
+                    }
                 }, {
+                    // TIME_GRAPH only
                     xtype: 'textfield',
                     anchor: '100%',
                     fieldLabel: 'Series Renderer'.t(),
-                    bind: '{entry.seriesRenderer}'
+                    hidden: true,
+                    bind: {
+                        value: '{entry.seriesRenderer}',
+                        hidden: '{!isTimeGraph}'
+                    }
                 }, {
+                    // PIE_GRAPH only
+                    xtype: 'textfield',
+                    anchor: '100%',
+                    fieldLabel: 'Pie Group Column'.t(),
+                    hidden: true,
+                    bind: {
+                        value: '{entry.pieGroupColumn}',
+                        hidden: '{!isPieGraph}'
+                    }
+                }, {
+                    // PIE_GRAPH only
+                    xtype: 'textfield',
+                    anchor: '100%',
+                    fieldLabel: 'Pie Sum Column'.t(),
+                    hidden: true,
+                    bind: {
+                        value: '{entry.pieSumColumn}',
+                        hidden: '{!isPieGraph}'
+                    }
+                }, {
+                    // ALL graphs
                     xtype: 'textfield',
                     anchor: '100%',
                     fieldLabel: 'Order By Column'.t(),
-                    bind: '{entry.orderByColumn}'
+                    hidden: true,
+                    bind: {
+                        value: '{entry.orderByColumn}',
+                        hidden: '{!isGraphEntry}'
+                    }
                 }, {
+                    // ALL graphs
                     xtype: 'segmentedbutton',
                     margin: '0 0 5 155',
-                    bind: '{entry.orderDesc}',
                     items: [
                         { text: 'Ascending'.t(), iconCls: 'fa fa-sort-amount-asc', value: true },
                         { text: 'Descending'.t(), iconCls: 'fa fa-sort-amount-desc' , value: false }
-                    ]
+                    ],
+                    hidden: true,
+                    bind: {
+                        value: '{entry.orderDesc}',
+                        hidden: '{!isGraphEntry}'
+                    }
                 }, {
-                    // ALL - display order
+                    // TEXT entries
+                    xtype: 'textarea',
+                    anchor: '100%',
+                    fieldLabel: 'Text Columns'.t(),
+                    grow: true,
+                    hidden: true,
+                    bind: {
+                        value: '{entry.textColumns}',
+                        hidden: '{!isTextEntry}'
+                    }
+                }, {
+                    // TEXT entries
+                    xtype: 'textfield',
+                    anchor: '100%',
+                    fieldLabel: 'Text String'.t(),
+                    hidden: true,
+                    bind: {
+                        value: '{entry.textString}',
+                        hidden: '{!isTextEntry}'
+                    }
+                }, {
+                    // ALL entries - display order
                     xtype: 'numberfield',
                     fieldLabel: 'Display Order'.t(),
                     anchor: '70%',
@@ -384,7 +466,7 @@ Ext.define('Ung.view.reports.Entry', {
                     }]
                 }]
             }],
-            bbar: [{
+            bbar: ['->', {
                 text: 'Remove'.t(),
                 iconCls: 'fa fa-minus-circle',
                 disabled: true,
