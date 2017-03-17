@@ -320,10 +320,10 @@ class ReportsTests(unittest2.TestCase):
         settings["reportsUsers"]["list"] = settings["reportsUsers"]["list"][:1]
         app.setSettings(settings)
 
-        # trigger alert
+        # send emails
         subprocess.call([prefix+"/usr/share/untangle/bin/reports-generate-fixed-reports.py"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
 
-        # look for alert email
+        # look for email
         remote_control.run_command("rm -f /tmp/test_100_email_report_admin_file")
         emailFound = False
         emailContextFound1 = ""
@@ -377,10 +377,10 @@ class ReportsTests(unittest2.TestCase):
         settings["reportsUsers"]["list"].append(createReportsUser(profile_email=testEmailAddress, email_template_id=2))
         app.setSettings(settings)
 
-        # trigger alert
+        # send email
         subprocess.call([prefix+"/usr/share/untangle/bin/reports-generate-fixed-reports.py"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
 
-        # look for alert email
+        # look for email
         ## look for new template name, custom
         remote_control.run_command("rm -f /tmp/test_101_email_admin_override_custom_report_file")
         emailFound = False
@@ -434,10 +434,10 @@ class ReportsTests(unittest2.TestCase):
         settings["reportsUsers"]["list"].append(createReportsUser(profile_email=testEmailAddress, email_template_id=2))
         app.setSettings(settings)
 
-        # trigger alert
+        # send email
         subprocess.call([prefix+"/usr/share/untangle/bin/reports-generate-fixed-reports.py"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
 
-        # look for alert email
+        # look for email
         ## look for new template name, custom
         # emailFound, emailContext, emailContext2, measureLength = findEmailContent('Custom Report','Administration-VWuRol5uWw', 'Content-Type: image/png; name="Administration-VWuRol5uWw@untangle.com.png"', '---')
         remote_control.run_command("rm -f /tmp/test_102_email_admin_override_custom_report_mobile_file")
