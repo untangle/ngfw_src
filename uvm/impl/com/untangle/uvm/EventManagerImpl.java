@@ -381,6 +381,7 @@ public class EventManagerImpl implements EventManager
         eventRule.setTagTarget( "localAddr" );
         eventRule.setTagName( "proxy-use" );
         eventRule.setTagLifetimeSec( new Long(30*5) ); // 30 minutes
+        rules.add( eventRule );
 
         matchers = new LinkedList<EventRuleCondition>();
         matcher1 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "class", "=", "*ApplicationControlLogEvent*" ) );
@@ -392,7 +393,18 @@ public class EventManagerImpl implements EventManager
         eventRule.setTagTarget( "localAddr" );
         eventRule.setTagName( "bittorrent-use" );
         eventRule.setTagLifetimeSec( new Long(60*5) ); // 5 minutes
+        rules.add( eventRule );
 
+        matchers = new LinkedList<EventRuleCondition>();
+        matcher1 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "class", "=", "*AlertEvent*" ) );
+        matchers.add( matcher1 );
+        matcher2 = new EventRuleCondition( EventRuleCondition.ConditionType.FIELD_CONDITION, new EventRuleConditionField( "description", "=", "*Suspicious Activity*" ) );
+        matchers.add( matcher2 );
+        eventRule = new TriggerRule( true, matchers, true, "Tag suspicious activity", false, 0 );
+        eventRule.setAction( TriggerRule.TriggerAction.TAG_HOST );
+        eventRule.setTagTarget( "cClientAddr" );
+        eventRule.setTagName( "suspicious" );
+        eventRule.setTagLifetimeSec( new Long(30*5) ); // 30 minutes
         rules.add( eventRule );
 
         return rules;
@@ -426,89 +438,132 @@ public class EventManagerImpl implements EventManager
 
     private static void runAlertRules( LogEvent event )
     {
+        if ( event instanceof AlertEvent )
+            return;
+
         JSONObject jsonObject = event.toJSONObject();
         for ( AlertRule rule : UvmContextFactory.context().eventManager().getSettings().getAlertRules() ) {
             if ( ! rule.getEnabled() )
-                {
-                    continue;
-                }
+                continue;
+            if ( ! rule.isMatch( jsonObject ) )
+                continue;
 
-            if ( rule.isMatch( jsonObject ) ) {
-                logger.debug( "alert match: " + rule.getDescription() + " matches " + jsonObject.toString() );
+            logger.debug( "alert match: " + rule.getDescription() + " matches " + jsonObject.toString() );
 
-                if(rule.getEmail()){
-                    sendEmailForEvent( rule, event );
-                }
-                if(rule.getLog()){
-                    AlertEvent eventEvent = new AlertEvent( rule.getDescription(), event.toSummaryString(), jsonObject, event, rule, false );
-                    UvmContextFactory.context().logEvent( eventEvent );
-                }
+            if(rule.getEmail()){
+                sendEmailForEvent( rule, event );
+            }
+            if(rule.getLog()){
+                AlertEvent eventEvent = new AlertEvent( rule.getDescription(), event.toSummaryString(), jsonObject, event, rule, false );
+                UvmContextFactory.context().logEvent( eventEvent );
             }
         }
     }
 
     private static void runTriggerRules( LogEvent event )
     {
+        //if ( event instanceof TriggerEvent )
+        //    return;
+
         JSONObject jsonObject = event.toJSONObject();
         for ( TriggerRule rule : UvmContextFactory.context().eventManager().getSettings().getTriggerRules() ) {
             if ( ! rule.getEnabled() )
                 continue;
+            if ( !rule.isMatch( jsonObject ) )
+                continue;
 
-            if ( rule.isMatch( jsonObject ) ) {
-                logger.info( "trigger \"" + rule.getDescription() + "\" matches: " + event );
+            logger.info( "trigger \"" + rule.getDescription() + "\" matches: " + event );
 
-                String target = findAttribute( jsonObject, rule.getTagTarget() );
-                target = target.replaceAll("/",""); // remove annoying / from InetAddress toString()
+            String target = findAttribute( jsonObject, rule.getTagTarget(), 3 );
+            if ( target == null ) {
+                logger.info( "trigger: failed to find target \"" + rule.getTagTarget() + "\"");
+                continue;
+            }
 
-                HostTableEntry host = UvmContextFactory.context().hostTable().getHostTableEntry( target );
-                UserTableEntry user = UvmContextFactory.context().userTable().getUserTableEntry( target );
-                DeviceTableEntry device = UvmContextFactory.context().deviceTable().getDevice( target );
-                switch( rule.getAction() ) {
-                case TAG_HOST:
-                    if ( host != null ) {
-                        logger.info("Tagging host " + target + " with tag " + rule.getTagName() );
-                        host.addTag( new Tag( rule.getTagName(), rule.getTagLifetimeSec()*1000 ) );
-                        break;
-                    }
+            target = target.replaceAll("/",""); // remove annoying / from InetAddress toString()
+
+            HostTableEntry host = UvmContextFactory.context().hostTable().getHostTableEntry( target );
+            UserTableEntry user = UvmContextFactory.context().userTable().getUserTableEntry( target );
+            DeviceTableEntry device = UvmContextFactory.context().deviceTable().getDevice( target );
+
+            switch( rule.getAction() ) {
+            case TAG_HOST:
+                if ( host != null ) {
+                    logger.info("Tagging host " + target + " with tag \"" + rule.getTagName() + "\"");
+                    host.addTag( new Tag( rule.getTagName(), rule.getTagLifetimeSec()*1000 ) );
                     break;
-                case TAG_USER:
+                }
+                logger.info( "trigger: failed to find host \"" + target + "\"");
+                continue;
+            case TAG_USER:
+                if ( user != null ) {
+                    logger.info("Tagging user " + target + " with tag \"" + rule.getTagName() + "\"" );
+                    user.addTag( new Tag( rule.getTagName(), rule.getTagLifetimeSec()*1000 ) );
+                    break;
+                } else if ( host != null ) {
+                    String hostUsername = host.getUsername();
+                    user = UvmContextFactory.context().userTable().getUserTableEntry( hostUsername );
                     if ( user != null ) {
-                        logger.info("Tagging user " + target + " with tag " + rule.getTagName() );
+                        logger.info("Tagging user " + hostUsername + " with tag \"" + rule.getTagName() + "\"" );
                         user.addTag( new Tag( rule.getTagName(), rule.getTagLifetimeSec()*1000 ) );
                         break;
-                    } else if ( host != null ) {
-                        String hostUsername = host.getUsername();
-                        user = UvmContextFactory.context().userTable().getUserTableEntry( hostUsername );
-                        if ( user != null ) {
-                            logger.info("Tagging user " + hostUsername + " with tag " + rule.getTagName() );
-                            user.addTag( new Tag( rule.getTagName(), rule.getTagLifetimeSec()*1000 ) );
-                            break;
-                        }
                     }
+                }
+                logger.info( "trigger: failed to find user \"" + target + "\"");
+                continue;
+            case TAG_DEVICE:
+                if ( device != null ) {
+                    logger.info("Tagging device " + target + " with tag \"" + rule.getTagName() + "\"" );
+                    device.addTag( new Tag( rule.getTagName(), rule.getTagLifetimeSec()*1000 ) );
                     break;
-                case TAG_DEVICE:
+                } else if ( host != null ) {
+                    String macAddr = host.getMacAddress();
+                    device = UvmContextFactory.context().deviceTable().getDevice( macAddr );
                     if ( device != null ) {
-                        logger.info("Tagging device " + target + " with tag " + rule.getTagName() );
+                        logger.info("Tagging device " + macAddr + " with tag \"" + rule.getTagName() + "\"" );
                         device.addTag( new Tag( rule.getTagName(), rule.getTagLifetimeSec()*1000 ) );
                         break;
-                    } else if ( host != null ) {
-                        String macAddr = host.getMacAddress();
-                        device = UvmContextFactory.context().deviceTable().getDevice( macAddr );
-                        if ( device != null ) {
-                            logger.info("Tagging device " + macAddr + " with tag " + rule.getTagName() );
-                            device.addTag( new Tag( rule.getTagName(), rule.getTagLifetimeSec()*1000 ) );
-                            break;
-                        }
                     }
-                    break;
+                }
+                logger.info( "trigger: failed to find device \"" + target + "\"");
+                continue;
+            }
+        }
+    }
+
+    private static void runSyslogRules( LogEvent event )
+    {
+        if ( event instanceof SyslogEvent )
+            return;
+
+        JSONObject jsonObject = event.toJSONObject();
+        for ( SyslogRule rule : UvmContextFactory.context().eventManager().getSettings().getSyslogRules() ) {
+            if ( ! rule.getEnabled() )
+                continue;
+            if ( ! rule.isMatch( jsonObject ) ) 
+                continue;
+
+            logger.debug( "syslog match: " + rule.getDescription() + " matches " + jsonObject.toString() );
+
+            event.setTag(SyslogManagerImpl.LOG_TAG_PREFIX);
+            if(rule.getLog()){
+                SyslogEvent eventEvent = new SyslogEvent( rule.getDescription(), event.toSummaryString(), jsonObject, event, rule, false );
+                UvmContextFactory.context().logEvent( eventEvent );
+            }
+            if ( rule.getSyslog() ){
+                try {
+                    SyslogManagerImpl.sendSyslog( event );
+                } catch (Exception exn) {
+                    logger.warn("failed to send syslog", exn);
                 }
             }
         }
     }
 
-    private static String findAttribute( JSONObject json, String name )
+    private static String findAttribute( JSONObject json, String name, int maxDepth )
     {
         if ( json == null || name == null ) return null;
+        if ( maxDepth < 1 ) return null;
 
         //logger.info("findAttribute( " + name + " , " + json + ")");
         try {
@@ -518,7 +573,7 @@ public class EventManagerImpl implements EventManager
             for( String key : keys ) {
                 if ("class".equals(key))
                     continue;
-                if (name.equals(key)) {
+                if (name.equalsIgnoreCase(key)) {
                     Object o = json.get(key);
                     return (o == null ? null : o.toString());
                 }
@@ -538,7 +593,7 @@ public class EventManagerImpl implements EventManager
                         continue;
 
                     if ( o != null ) {
-                        String s = findAttribute(obj,name);
+                        String s = findAttribute(obj,name,maxDepth-1);
                         if ( s != null )
                             return s;
                     }
@@ -612,95 +667,12 @@ public class EventManagerImpl implements EventManager
         return true;
     }
 
-    private static void runSyslogRules( LogEvent event )
-    {
-        JSONObject jsonObject = event.toJSONObject();
-        for ( SyslogRule rule : UvmContextFactory.context().eventManager().getSettings().getSyslogRules() ) {
-            if ( ! rule.getEnabled() )
-                {
-                    continue;
-                }
-
-            if ( rule.isMatch( jsonObject ) ) {
-                logger.debug( "syslog match: " + rule.getDescription() + " matches " + jsonObject.toString() );
-
-                event.setTag(SyslogManagerImpl.LOG_TAG_PREFIX);
-                if(rule.getLog()){
-                    SyslogEvent eventEvent = new SyslogEvent( rule.getDescription(), event.toSummaryString(), jsonObject, event, rule, false );
-                    UvmContextFactory.context().logEvent( eventEvent );
-                }
-                if ( rule.getSyslog() ){
-                    try {
-                        SyslogManagerImpl.sendSyslog( event );
-                    } catch (Exception exn) {
-                        logger.warn("failed to send syslog", exn);
-                    }
-                }
-            }
-        }
-    }
-
-
-    /**
-     * This thread waits on the l
-     * It also explicitly releases hosts from the penalty box and quotas after expiration
-     */
-    private class EventWriter implements Runnable
-    {
-
-        private volatile Thread thread;
-        private final BlockingQueue<LogEvent> inputQueue = new LinkedBlockingQueue<LogEvent>();
-
-        public void run()
-        {
-            thread = Thread.currentThread();
-            LogEvent event = null;
-
-            /**
-             * Loop indefinitely and continue running event rules
-             */
-            while (thread != null) {
-                synchronized( this ) {
-                    try {
-                        event = inputQueue.take();
-
-                        if ( ( event instanceof AlertEvent ) ||
-                             ( event instanceof SyslogEvent) )
-                            continue;
-
-                        runEvent( event );
-
-                        UvmContextFactory.context().hookManager().callCallbacks( HookManager.REPORTS_EVENT_LOGGED, event );
-
-                    } catch (Exception e) {
-                        logger.warn("Failed to run event rules.", e);
-                        try {Thread.sleep(1000);} catch (Exception exc) {}
-                    } 
-                }
-            }
-        }
-
-        protected void start()
-        {
-            UvmContextFactory.context().newThread(this).start();
-        }
-
-        protected void stop()
-        {
-            Thread tmp = thread;
-            thread = null; /* thread will exit if thread is null */
-            if (tmp != null) {
-                tmp.interrupt();
-            }
-        }
-    }
-
-    @SuppressWarnings("unchecked")
     private static void cleanupJsonObject( JSONObject jsonObject )
     {
         if ( jsonObject == null )
             return;
 
+        @SuppressWarnings("unchecked")
         java.util.Iterator<String> keys = (java.util.Iterator<String>)jsonObject.keys();
         while ( keys.hasNext() ) {
             String key = keys.next();
@@ -748,4 +720,56 @@ public class EventManagerImpl implements EventManager
             }
         }
     }
+
+
+    /**
+     * This thread waits on the l
+     * It also explicitly releases hosts from the penalty box and quotas after expiration
+     */
+    private class EventWriter implements Runnable
+    {
+
+        private volatile Thread thread;
+        private final BlockingQueue<LogEvent> inputQueue = new LinkedBlockingQueue<LogEvent>();
+
+        public void run()
+        {
+            thread = Thread.currentThread();
+            LogEvent event = null;
+
+            /**
+             * Loop indefinitely and continue running event rules
+             */
+            while (thread != null) {
+                synchronized( this ) {
+                    try {
+                        event = inputQueue.take();
+
+                        runEvent( event );
+
+                        UvmContextFactory.context().hookManager().callCallbacks( HookManager.REPORTS_EVENT_LOGGED, event );
+
+                    } catch (Exception e) {
+                        logger.warn("Failed to run event rules.", e);
+                        try {Thread.sleep(1000);} catch (Exception exc) {}
+                    } 
+                }
+            }
+        }
+
+        protected void start()
+        {
+            UvmContextFactory.context().newThread(this).start();
+        }
+
+        protected void stop()
+        {
+            Thread tmp = thread;
+            thread = null; /* thread will exit if thread is null */
+            if (tmp != null) {
+                tmp.interrupt();
+            }
+        }
+    }
+
 }
