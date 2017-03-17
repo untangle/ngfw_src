@@ -42,11 +42,6 @@ Ext.define('Ung.config.events.view.Alerts', {
             header: 'Log'.t(),
             dataIndex: 'log',
             width:55
-        }, {
-            xtype:'checkcolumn',
-            header: 'Send Email'.t(),
-            dataIndex: 'email',
-            width:55
         }],
 
         editorFields: [

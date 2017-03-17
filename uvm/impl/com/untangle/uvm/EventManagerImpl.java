@@ -380,7 +380,7 @@ public class EventManagerImpl implements EventManager
         eventRule.setAction( TriggerRule.TriggerAction.TAG_HOST );
         eventRule.setTagTarget( "localAddr" );
         eventRule.setTagName( "proxy-use" );
-        eventRule.setTagLifetimeSec( new Long(30*5) ); // 30 minutes
+        eventRule.setTagLifetimeSec( new Long(60*30) ); // 30 minutes
         rules.add( eventRule );
 
         matchers = new LinkedList<EventRuleCondition>();
@@ -404,7 +404,7 @@ public class EventManagerImpl implements EventManager
         eventRule.setAction( TriggerRule.TriggerAction.TAG_HOST );
         eventRule.setTagTarget( "cClientAddr" );
         eventRule.setTagName( "suspicious" );
-        eventRule.setTagLifetimeSec( new Long(30*5) ); // 30 minutes
+        eventRule.setTagLifetimeSec( new Long(60*30) ); // 30 minutes
         rules.add( eventRule );
 
         return rules;
@@ -743,6 +743,10 @@ public class EventManagerImpl implements EventManager
             while (thread != null) {
                 synchronized( this ) {
                     try {
+                        if (inputQueue.size() > 10000) {
+                            logger.warn("Large input queue size: " + inputQueue.size());
+                        }
+
                         event = inputQueue.take();
 
                         runEvent( event );
