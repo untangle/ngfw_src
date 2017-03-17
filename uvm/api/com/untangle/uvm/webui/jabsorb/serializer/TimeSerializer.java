@@ -23,7 +23,7 @@ public class TimeSerializer extends AbstractSerializer
     /**
      * Classes that this can serialise.
      */
-    private static Class[] _serializableClasses = new Class[] {java.sql.Time.class };
+    private static Class[] _serializableClasses = new Class[] {java.sql.Time.class};
 
     /**
      * Classes that this can serialise to.
