@@ -268,6 +268,24 @@ Ext.define('Ung.apps.directory-connector.MainController', {
             }
             Ext.MessageBox.alert( 'Google Authentication Test'.t(), message);
         }, this), username, password);
+    },
+
+    facebookAuthenticationTest: function(){
+        var me = this, v = this.getView(), vm = this.getViewModel();
+        Ext.MessageBox.wait( 'Testing...'.t(), 'Facebook Authentication Test'.t());
+        var username = v.down('textfield[name=facebook_test_username]').getValue();
+        var password = v.down('textfield[name=facebook_test_password]').getValue();
+
+        var message = v.appManager.getFacebookManager().authenticate( Ext.bind(function(result, exception) {
+            if (exception) { Util.exceptionToast(ex); return; }
+            var message;
+            if ( result == true ) {
+                message = 'Login successful.'.t();
+            }else{
+                message = 'Login failed.'.t();
+            }
+            Ext.MessageBox.alert( 'Google Authentication Test'.t(), message);
+        }, this), username, password);
     }
 
 });
