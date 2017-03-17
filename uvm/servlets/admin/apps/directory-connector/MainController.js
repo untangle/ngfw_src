@@ -70,6 +70,17 @@ Ext.define('Ung.apps.directory-connector.MainController', {
         return this.rpc.activeDirectoryManager;
     },
 
+    getRadiusManager: function(forceReload) {
+        var me = this, v = this.getView(), vm = this.getViewModel();
+        if (forceReload || this.rpc.radiusManager === undefined) {
+            try {
+                this.rpc.radiusManager = v.appManager.getRadiusManager();
+            } catch (e) {
+                Ung.Util.rpcExHandler(e);
+            }
+        }
+        return this.rpc.radiusManager;
+    },
 
     activeDirectoryTest: function(){
         var me = this, v = this.getView(), vm = this.getViewModel();
@@ -146,6 +157,21 @@ Ext.define('Ung.apps.directory-connector.MainController', {
         v.appManager.refreshGroupCache(Ext.bind(function(result, exception) {
             if (exception) { Util.exceptionToast(ex); return; }
         }, this));
+    },
+
+    radiusTest: function(){
+        var me = this, v = this.getView(), vm = this.getViewModel();
+
+        Ext.MessageBox.wait( "Testing RADIUS...".t(), "RADIUS Test".t());
+        var username = v.down('textfield[name=radiusTestUsername]').getValue();
+        var password = v.down('textfield[name=radiusTestPassword]').getValue();
+
+        var message = this.getRadiusManager().getRadiusStatusForSettings( Ext.bind(function(result, exception) {
+            if (exception) { Util.exceptionToast(ex); return; }
+            var message = result.t();
+            console.log(result);
+            Ext.MessageBox.alert("RADIUS Test".t(), message);
+        }, this), vm.get('settings'), username, password);
     }
 
 });
