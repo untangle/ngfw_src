@@ -26,7 +26,7 @@ Ext.define('Ung.apps.openvpn.view.Server', {
     },{
         fieldLabel: 'Site URL'.t(),
         xtype: 'displayfield',
-        value: 'I have NO IDEA how to display this'
+        bind: '{getSiteUrl}'
     },{
         fieldLabel: 'Server Enabled'.t(),
         xtype: 'checkbox',
