@@ -8,6 +8,8 @@ Ext.define('Ung.apps.directory-connector.MainController', {
         }
     },
 
+    refreshGoogleTask: null,
+
     getSettings: function () {
         var me = this, v = this.getView(), vm = this.getViewModel();
         v.setLoading(true);
@@ -15,8 +17,14 @@ Ext.define('Ung.apps.directory-connector.MainController', {
             v.setLoading(false);
             if (ex) { Util.exceptionToast(ex); return; }
             vm.set('settings', result);
+
          });
 
+        var googleDrive = new Ung.cmp.GoogleDrive();
+        vm.set( 'googleDriveIsConfigured', googleDrive.isConfigured() );
+        vm.set( 'googleDriveConfigure', function(){ googleDrive.configure(vm.get('policyId')); });
+
+        me.googleRefreshTaskBuild();
     },
 
     setSettings: function () {
@@ -45,7 +53,7 @@ Ext.define('Ung.apps.directory-connector.MainController', {
 
         var secureValue = elem.getValue();
         var currentPortValue = vm.get("settings.activeDirectorySettings.LDAPPort");
-        if( secureValue ){
+        if( secureValue == true ){
             if( currentPortValue == "389"){
                 vm.set("settings.activeDirectorySettings.LDAPPort", "636");
             }
@@ -169,9 +177,97 @@ Ext.define('Ung.apps.directory-connector.MainController', {
         var message = this.getRadiusManager().getRadiusStatusForSettings( Ext.bind(function(result, exception) {
             if (exception) { Util.exceptionToast(ex); return; }
             var message = result.t();
-            console.log(result);
             Ext.MessageBox.alert("RADIUS Test".t(), message);
         }, this), vm.get('settings'), username, password);
+    },
+
+    googleRefreshTaskBuild: function() {
+        var me = this;
+
+        if(me.refreshGoogleTask != null){
+            return;
+        }
+
+        me.refreshGoogleTask = {
+            // update interval in millisecond
+            updateFrequency: 3000,
+            count:0,
+            maxTries: 40,
+            started: false,
+            intervalId: null,
+            app: me,
+            start: function() {
+                this.stop();
+                this.count=0;
+                this.intervalId = window.setInterval(this.run, this.updateFrequency);
+                this.started = true;
+            },
+            stop: function() {
+                if (this.intervalId !== null) {
+                    window.clearInterval(this.intervalId);
+                    this.intervalId = null;
+                }
+                this.started = false;
+            },
+            run: Ext.bind(function () {
+                var me = this, v = this.getView(), vm = this.getViewModel();
+                if(!me || !v.rendered) {
+                    return;
+                }
+                me.refreshGoogleTask.count++;
+
+                if ( me.refreshGoogleTask.count > me.refreshGoogleTask.maxTries ) {
+                    me.refreshGoogleTask.stop();
+                    return;
+                }
+
+                v.appManager.getGoogleManager().isGoogleDriveConnected(Ext.bind(function(result, exception) {
+                    if (exception) { Util.exceptionToast(ex); return; }
+                    var isConnected = result;
+
+                    v.down('[name=fieldsetDriveEnabled]').setVisible(isConnected);
+                    v.down('[name=fieldsetEnabledAuth]').setVisible(isConnected);
+                    v.down('[name=fieldsetDriveDisabled]').setVisible(!isConnected);
+
+                    if ( isConnected ){
+                        this.refreshGoogleTask.stop();
+                        return;
+                    }
+                }, me));
+
+            },this)
+        };
+    },
+
+    googleDriveConfigure: function(){
+        var me = this, v = this.getView(), vm = this.getViewModel();
+        me.refreshGoogleTask.start();
+        window.open(v.appManager.getGoogleManager().getAuthorizationUrl(window.location.protocol, window.location.host));
+    },
+
+    googleDriveDisconnect: function(){
+        var me = this, v = this.getView(), vm = this.getViewModel();
+        v.appManager.getGoogleManager().disconnectGoogleDrive();
+        me.refreshGoogleTask.run();
+        vm.set('settings.googleSettings.authenticationEnabled', false);
+    },
+
+    googleAuthenticationTest: function(){
+        var me = this, v = this.getView(), vm = this.getViewModel();
+        Ext.MessageBox.wait( 'Testing...'.t(), 'Google Authentication Test'.t());
+        var username = v.down('textfield[name=google_test_username]').getValue();
+        var password = v.down('textfield[name=google_test_password]').getValue();
+
+        var message = v.appManager.getGoogleManager().authenticate( Ext.bind(function(result, exception) {
+            if (exception) { Util.exceptionToast(ex); return; }
+            var message;
+            if ( result == true ) {
+                message = 'Login successful.'.t();
+            }else{
+                message = 'Login failed.'.t();
+            }
+            Ext.MessageBox.alert( 'Google Authentication Test'.t(), message);
+        }, this), username, password);
     }
 
 });
