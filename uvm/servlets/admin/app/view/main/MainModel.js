@@ -8,6 +8,9 @@ Ext.define('Ung.view.main.MainModel', {
         reportsRunning: false
     },
     formulas: {
+        // selected: function () {
+        //     return 'dashboard';
+        // },
         // reports are enabled only if are installed and has running state
         reportsEnabled: function (get) {
             return (get('reportsInstalled') && get('reportsRunning'));
@@ -23,6 +26,15 @@ Ext.define('Ung.view.main.MainModel', {
         },
         isReports: function(get) {
             return get('activeItem') === 'reports';
+        },
+        isSessions: function(get) {
+            return get('shdActiveItem') === 'sessions';
+        },
+        isHosts: function(get) {
+            return get('shdActiveItem') === 'hosts';
+        },
+        isDevices: function(get) {
+            return get('shdActiveItem') === 'devices';
         }
     }
 });

@@ -9,18 +9,18 @@ import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.node.Node;
-import com.untangle.uvm.node.NodeProperties;
+import com.untangle.uvm.app.App;
+import com.untangle.uvm.app.AppProperties;
 import com.untangle.uvm.vnet.PipelineConnector;
-import com.untangle.uvm.vnet.NodeSession;
-import com.untangle.uvm.vnet.NodeTCPSession;
-import com.untangle.uvm.vnet.NodeUDPSession;
+import com.untangle.uvm.vnet.AppSession;
+import com.untangle.uvm.vnet.AppTCPSession;
+import com.untangle.uvm.vnet.AppUDPSession;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.Subscription;
 import com.untangle.uvm.vnet.Affinity;
-import com.untangle.uvm.vnet.NodeSession;
+import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.vnet.SessionEventHandler;
-import com.untangle.uvm.node.Node;
+import com.untangle.uvm.app.App;
 
 /**
  * PipelineConnectorImpl is the implementation of a single PipelineConnector.
@@ -32,13 +32,13 @@ public class PipelineConnectorImpl implements PipelineConnector
     /**
      * Active Sessions for this agent
      */
-    private Set<NodeSession> activeSessions = java.util.Collections.newSetFromMap(new ConcurrentHashMap<NodeSession,Boolean>());
+    private Set<AppSession> activeSessions = java.util.Collections.newSetFromMap(new ConcurrentHashMap<AppSession,Boolean>());
 
     private boolean enabled = true;
 
     private final Dispatcher dispatcher;
     private final String name;
-    private final Node node;
+    private final App app;
     private final Subscription subscription;
     private final SessionEventHandler listener;
     private final Fitting inputFitting;
@@ -63,15 +63,15 @@ public class PipelineConnectorImpl implements PipelineConnector
     
     protected static final Logger logger = Logger.getLogger( PipelineConnectorImpl.class );
     
-    public PipelineConnectorImpl( String name, Node node, Subscription subscription, SessionEventHandler listener, Fitting inputFitting, Fitting outputFitting, Affinity affinity, Integer affinityStrength, boolean premium )
+    public PipelineConnectorImpl( String name, App app, Subscription subscription, SessionEventHandler listener, Fitting inputFitting, Fitting outputFitting, Affinity affinity, Integer affinityStrength, boolean premium )
     {
-        this( name, node, subscription, listener, inputFitting, outputFitting, affinity, affinityStrength, premium, null );
+        this( name, app, subscription, listener, inputFitting, outputFitting, affinity, affinityStrength, premium, null );
     }
 
-    public PipelineConnectorImpl( String name, Node node, Subscription subscription, SessionEventHandler listener, Fitting inputFitting, Fitting outputFitting, Affinity affinity, Integer affinityStrength, boolean premium, String buddy )
+    public PipelineConnectorImpl( String name, App app, Subscription subscription, SessionEventHandler listener, Fitting inputFitting, Fitting outputFitting, Affinity affinity, Integer affinityStrength, boolean premium, String buddy )
     {
         this.name = name;
-        this.node = node;
+        this.app = app;
         this.subscription = subscription;
         this.listener = listener;
         this.inputFitting = inputFitting;
@@ -98,8 +98,8 @@ public class PipelineConnectorImpl implements PipelineConnector
 
     public String getName() { return this.name; }
     public String getBuddy() { return this.buddy; }
-    public Node getNode() { return this.node; }
-    public Node node() { return this.node; }
+    public App getApp() { return this.app; }
+    public App app() { return this.app; }
     public Affinity getAffinity() { return this.affinity; }
     public Integer getAffinityStrength() { return this.affinityStrength; }
     public Dispatcher getDispatcher() { return dispatcher; }
@@ -115,9 +115,9 @@ public class PipelineConnectorImpl implements PipelineConnector
         return outputFitting;
     }
 
-    public NodeProperties nodeProperties()
+    public AppProperties appProperties()
     {
-        return node().getNodeProperties();
+        return app().getAppProperties();
     }
 
     public long[] liveSessionIds()
@@ -127,7 +127,7 @@ public class PipelineConnectorImpl implements PipelineConnector
         return dispatcher.liveSessionIds();
     }
 
-    public List<NodeSession> liveSessions()
+    public List<AppSession> liveSessions()
     {
         if (dispatcher != null)
             return dispatcher.liveSessions();
@@ -136,7 +136,7 @@ public class PipelineConnectorImpl implements PipelineConnector
     }
     
     /**
-     * This is called by the Node (or NodeManager?) to disconnect
+     * This is called by the App (or AppManager?) to disconnect
      * from a live PipelineConnector. Since it is live we must be sure to shut down the
      * Dispatcher nicely (in comparison to shutdown, below).
      *
@@ -159,7 +159,7 @@ public class PipelineConnectorImpl implements PipelineConnector
      * @return True if the session was added, false if the agent is dead, or the session
      *   has already been added.
      */
-    public boolean addSession( NodeSession session )
+    public boolean addSession( AppSession session )
     {
         return activeSessions.add( session );
     }
@@ -169,12 +169,12 @@ public class PipelineConnectorImpl implements PipelineConnector
      * @return True if the session was removed, false if the session was not in the list 
      *   of active session.
      */
-    public boolean removeSession( NodeSession session )
+    public boolean removeSession( AppSession session )
     {
         return activeSessions.remove( session );
     }
 
-    public boolean matches( com.untangle.uvm.node.SessionTuple tuple )
+    public boolean matches( com.untangle.uvm.app.SessionTuple tuple )
     {
         if ( !enabled ) {
             return false;

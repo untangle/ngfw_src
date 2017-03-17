@@ -1,14 +1,14 @@
 #!@PREFIX@/usr/share/untangle/bin/ut-pycli -f 
 import sys
 
-nodeManager = uvm.nodeManager()
+appManager = uvm.appManager()
 
-node = nodeManager.node( "untangle-casing-smtp" )
+app = appManager.app( "smtp" )
 
-if node == None:
+if app == None:
     print "SMTP Casing not installed."
     sys.exit(0)
 
-node.sendQuarantineDigests()
+app.sendQuarantineDigests()
 sys.exit(0)
 

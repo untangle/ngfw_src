@@ -147,7 +147,7 @@ public class Main
 
         System.out.println("UVM startup complete: \"Today vegetables...tomorrow the world!\"");
         
-        restartNodes();
+        restartApps();
 
         loadExtensions();
 
@@ -162,7 +162,7 @@ public class Main
         File uvmLibDir = new File(System.getProperty("uvm.lib.dir"));
         for (File f : uvmLibDir.listFiles()) {
             // exclude plugins directory - the PluginManager only loads classes from there
-            if (f.toString().contains("/plugins/"))
+            if (f.toString().contains("/plugins"))
                 continue;
             URL url = f.toURI().toURL();
             urls.add(url);
@@ -244,9 +244,9 @@ public class Main
         uvmContext.init();
     }
 
-    private void restartNodes() throws Exception
+    private void restartApps() throws Exception
     {
-        logger.info("Restarting nodes...");
+        logger.info("Restarting apps...");
         uvmContext.postInit();
     }
 

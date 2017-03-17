@@ -158,8 +158,10 @@ public class HookManagerImpl implements HookManager
                         try {
                             logger.debug( "Calling hook[" + hookName + "] callback " + cb.getName() );
                             cb.callback( o );
-                        } catch (Exception e) {
-                            logger.warn( "Exception calling HookCallback[" + cb.getName() + "]:", e );
+                        } catch (Throwable t) {
+                            logger.warn( "Exception calling HookCallback[" + cb.getName() + "]:", t );
+                            logger.warn( "Unregistering callback [" + cb.getName() + "]");
+                            unregisterCallback(hookName, cb);
                         }
                     }
                 }

@@ -16,8 +16,8 @@ import org.apache.log4j.Logger;
 
 import com.untangle.jnetcap.Netcap;
 import com.untangle.jnetcap.Conntrack;
-import com.untangle.uvm.node.SessionTuple;
-import com.untangle.uvm.node.SessionMinuteEvent;
+import com.untangle.uvm.app.SessionTuple;
+import com.untangle.uvm.app.SessionMinuteEvent;
 import com.untangle.uvm.util.Pulse;
 
 public class ConntrackMonitorImpl
@@ -178,6 +178,11 @@ public class ConntrackMonitorImpl
                 return; /* no data with this event. return */
 
             UvmContextFactory.context().hostTable().decrementQuota( address, bytes );
+
+            com.untangle.uvm.HostTableEntry hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( address );
+            if ( hostEntry != null && hostEntry.getUsername() != null && !"".equals(hostEntry.getUsername())) {
+                UvmContextFactory.context().userTable().decrementQuota( hostEntry.getUsername(), bytes );
+            }
         }
         
         public void run()

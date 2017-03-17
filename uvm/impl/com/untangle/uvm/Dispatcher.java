@@ -17,15 +17,15 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.MDC;
 
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.node.Node;
-import com.untangle.uvm.node.NodeProperties;
-import com.untangle.uvm.node.NodeManager;
-import com.untangle.uvm.node.NodeMetric;
+import com.untangle.uvm.app.App;
+import com.untangle.uvm.app.AppProperties;
+import com.untangle.uvm.app.AppManager;
+import com.untangle.uvm.app.AppMetric;
 import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.vnet.NodeBase;
-import com.untangle.uvm.vnet.NodeSession;
-import com.untangle.uvm.vnet.NodeTCPSession;
-import com.untangle.uvm.vnet.NodeUDPSession;
+import com.untangle.uvm.app.AppBase;
+import com.untangle.uvm.vnet.AppSession;
+import com.untangle.uvm.vnet.AppTCPSession;
+import com.untangle.uvm.vnet.AppUDPSession;
 import com.untangle.uvm.vnet.IPPacketHeader;
 import com.untangle.uvm.vnet.SessionEventHandler;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
@@ -45,7 +45,7 @@ public class Dispatcher
     protected static final Logger logger = Logger.getLogger( Dispatcher.class );
 
     private final PipelineConnectorImpl pipelineConnector;
-    private final NodeBase node;
+    private final AppBase app;
 
     private static final String STAT_LIVE_SESSIONS = "live-sessions";
     private static final String STAT_TCP_LIVE_SESSIONS = "tcp-live-sessions";
@@ -71,7 +71,7 @@ public class Dispatcher
      * The set of active sessions (both TCP and UDP), kept as weak
      * references to SessionState object (both TCP/UDP)
      */
-    private ConcurrentHashMap<NodeSessionImpl,NodeSession> liveSessions;
+    private ConcurrentHashMap<AppSessionImpl,AppSession> liveSessions;
 
     /**
      * dispatcher is created PipelineConnector.start() when user decides this
@@ -83,20 +83,20 @@ public class Dispatcher
     public Dispatcher(PipelineConnectorImpl pipelineConnector) 
     {
         this.pipelineConnector = pipelineConnector;
-        this.node = (NodeBase)pipelineConnector.node();
+        this.app = (AppBase)pipelineConnector.app();
         this.sessionEventListener = null;
-        this.releasedHandler = new ReleasedEventHandler(node);
-        this.liveSessions = new ConcurrentHashMap<NodeSessionImpl,NodeSession>();
+        this.releasedHandler = new ReleasedEventHandler(app);
+        this.liveSessions = new ConcurrentHashMap<AppSessionImpl,AppSession>();
 
-        this.node.addMetric(new NodeMetric(STAT_LIVE_SESSIONS, I18nUtil.marktr("Current Sessions")));
-        this.node.addMetric(new NodeMetric(STAT_TCP_LIVE_SESSIONS, I18nUtil.marktr("Current TCP Sessions")));
-        this.node.addMetric(new NodeMetric(STAT_UDP_LIVE_SESSIONS, I18nUtil.marktr("Current UDP Sessions")));
-        this.node.addMetric(new NodeMetric(STAT_SESSIONS, I18nUtil.marktr("Sessions")));
-        this.node.addMetric(new NodeMetric(STAT_TCP_SESSIONS, I18nUtil.marktr("TCP Sessions")));
-        this.node.addMetric(new NodeMetric(STAT_UDP_SESSIONS, I18nUtil.marktr("UDP Sessions")));
-        this.node.addMetric(new NodeMetric(STAT_SESSION_REQUESTS, I18nUtil.marktr("Session Requests")));
-        this.node.addMetric(new NodeMetric(STAT_TCP_SESSION_REQUESTS, I18nUtil.marktr("TCP NodeSession Requests")));
-        this.node.addMetric(new NodeMetric(STAT_UDP_SESSION_REQUESTS, I18nUtil.marktr("UDP NodeSession Requests")));
+        this.app.addMetric(new AppMetric(STAT_LIVE_SESSIONS, I18nUtil.marktr("Current Sessions")));
+        this.app.addMetric(new AppMetric(STAT_TCP_LIVE_SESSIONS, I18nUtil.marktr("Current TCP Sessions")));
+        this.app.addMetric(new AppMetric(STAT_UDP_LIVE_SESSIONS, I18nUtil.marktr("Current UDP Sessions")));
+        this.app.addMetric(new AppMetric(STAT_SESSIONS, I18nUtil.marktr("Sessions")));
+        this.app.addMetric(new AppMetric(STAT_TCP_SESSIONS, I18nUtil.marktr("TCP Sessions")));
+        this.app.addMetric(new AppMetric(STAT_UDP_SESSIONS, I18nUtil.marktr("UDP Sessions")));
+        this.app.addMetric(new AppMetric(STAT_SESSION_REQUESTS, I18nUtil.marktr("Session Requests")));
+        this.app.addMetric(new AppMetric(STAT_TCP_SESSION_REQUESTS, I18nUtil.marktr("TCP AppSession Requests")));
+        this.app.addMetric(new AppMetric(STAT_UDP_SESSION_REQUESTS, I18nUtil.marktr("UDP AppSession Requests")));
     }
 
     public void killAllSessions()
@@ -115,33 +115,33 @@ public class Dispatcher
     }
     
     // Called by the new session handler thread.
-    protected void addSession( NodeTCPSessionImpl sess ) 
+    protected void addSession( AppTCPSessionImpl sess ) 
     {
-        this.node.incrementMetric(STAT_LIVE_SESSIONS);
-        this.node.incrementMetric(STAT_TCP_LIVE_SESSIONS);
+        this.app.incrementMetric(STAT_LIVE_SESSIONS);
+        this.app.incrementMetric(STAT_TCP_LIVE_SESSIONS);
 
-        this.node.incrementMetric(STAT_SESSIONS);
-        this.node.incrementMetric(STAT_TCP_SESSIONS);
+        this.app.incrementMetric(STAT_SESSIONS);
+        this.app.incrementMetric(STAT_TCP_SESSIONS);
         
         liveSessions.put(sess, sess);
     }
 
     // Called by the new session handler thread.
-    protected void addSession( NodeUDPSessionImpl sess ) 
+    protected void addSession( AppUDPSessionImpl sess ) 
     {
-        this.node.incrementMetric(STAT_LIVE_SESSIONS);
-        this.node.incrementMetric(STAT_UDP_LIVE_SESSIONS);
+        this.app.incrementMetric(STAT_LIVE_SESSIONS);
+        this.app.incrementMetric(STAT_UDP_LIVE_SESSIONS);
 
-        this.node.incrementMetric(STAT_SESSIONS);
-        this.node.incrementMetric(STAT_UDP_SESSIONS);
+        this.app.incrementMetric(STAT_SESSIONS);
+        this.app.incrementMetric(STAT_UDP_SESSIONS);
 
         liveSessions.put(sess, sess);
     }
 
-    public NodeTCPSession newSession( TCPNewSessionRequestImpl request )
+    public AppTCPSession newSession( TCPNewSessionRequestImpl request )
     {
         try {
-            UvmContextImpl.getInstance().loggingManager().setLoggingNode(node.getNodeSettings().getId());
+            UvmContextImpl.getInstance().loggingManager().setLoggingApp(app.getAppSettings().getId());
             MDC.put(SESSION_ID_MDC_KEY, "TCP_" + request.id());
             return newSessionInternal(request);
         } finally {
@@ -150,10 +150,10 @@ public class Dispatcher
         }
     }
 
-    public NodeUDPSession newSession( UDPNewSessionRequestImpl request )
+    public AppUDPSession newSession( UDPNewSessionRequestImpl request )
     {
         try {
-            UvmContextImpl.getInstance().loggingManager().setLoggingNode(node.getNodeSettings().getId());
+            UvmContextImpl.getInstance().loggingManager().setLoggingApp(app.getAppSettings().getId());
             MDC.put(SESSION_ID_MDC_KEY, "UDP_" + request.id());
             return newSessionInternal(request);
         } finally {
@@ -162,14 +162,14 @@ public class Dispatcher
         }
     }
     
-    // Called by NodeSessionImpl at closeFinal (raze) time.
-    protected void removeSession( NodeSessionImpl sess )
+    // Called by AppSessionImpl at closeFinal (raze) time.
+    protected void removeSession( AppSessionImpl sess )
     {
-        this.node.decrementMetric(STAT_LIVE_SESSIONS);
-        if (sess instanceof NodeUDPSession) {
-            this.node.decrementMetric(STAT_UDP_LIVE_SESSIONS);
-        } else if (sess instanceof NodeTCPSession) {
-            this.node.decrementMetric(STAT_TCP_LIVE_SESSIONS);
+        this.app.decrementMetric(STAT_LIVE_SESSIONS);
+        if (sess instanceof AppUDPSession) {
+            this.app.decrementMetric(STAT_UDP_LIVE_SESSIONS);
+        } else if (sess instanceof AppTCPSession) {
+            this.app.decrementMetric(STAT_TCP_LIVE_SESSIONS);
         }
 
         liveSessions.remove(sess);
@@ -197,10 +197,10 @@ public class Dispatcher
         int size = liveSessions.size();
         long[] idlist = new long[size];
         
-        for (Iterator<NodeSessionImpl> i = liveSessions.keySet().iterator(); i.hasNext(); ) {
+        for (Iterator<AppSessionImpl> i = liveSessions.keySet().iterator(); i.hasNext(); ) {
             if (count == size) /* just in case */
                 break;
-            NodeSession sess = i.next();
+            AppSession sess = i.next();
             idlist[count] = sess.id();
             count++;
         }
@@ -208,11 +208,11 @@ public class Dispatcher
         return idlist;
     }
 
-    protected List<NodeSession> liveSessions()
+    protected List<AppSession> liveSessions()
     {
-        LinkedList<NodeSession> sessions = new LinkedList<NodeSession>();
+        LinkedList<AppSession> sessions = new LinkedList<AppSession>();
         
-        for (Iterator<NodeSessionImpl> i = liveSessions.keySet().iterator(); i.hasNext(); ) {
+        for (Iterator<AppSessionImpl> i = liveSessions.keySet().iterator(); i.hasNext(); ) {
             sessions.add(i.next());
         }
 
@@ -241,7 +241,7 @@ public class Dispatcher
         }
     }
 
-    void dispatchTCPNewSession( NodeTCPSessionImpl session )
+    void dispatchTCPNewSession( AppTCPSessionImpl session )
     {
         elog(Level.DEBUG, "TCPNewSession", session.id());
         if ( sessionEventListener == null || session.released() )
@@ -250,7 +250,7 @@ public class Dispatcher
             sessionEventListener.handleTCPNewSession( session );
     }
 
-    void dispatchUDPNewSession( NodeUDPSessionImpl session )
+    void dispatchUDPNewSession( AppUDPSessionImpl session )
     {
         elog(Level.DEBUG, "UDPNewSession", session.id());
         if ( sessionEventListener == null || session.released() )
@@ -259,7 +259,7 @@ public class Dispatcher
             sessionEventListener.handleUDPNewSession( session );
     }
 
-    void dispatchTCPClientChunk( NodeTCPSessionImpl session, ByteBuffer data )
+    void dispatchTCPClientChunk( AppTCPSessionImpl session, ByteBuffer data )
     {
         elog(Level.DEBUG, "TCPClientChunk", session.id(), data.remaining());
         if ( sessionEventListener == null || session.released() ) {
@@ -269,7 +269,7 @@ public class Dispatcher
         }
     }
 
-    void dispatchTCPServerChunk( NodeTCPSessionImpl session, ByteBuffer data )
+    void dispatchTCPServerChunk( AppTCPSessionImpl session, ByteBuffer data )
     {
         elog(Level.DEBUG, "TCPServerChunk", session.id(), data.remaining());
         if ( sessionEventListener == null || session.released() ) {
@@ -279,7 +279,7 @@ public class Dispatcher
         }
     }
     
-    void dispatchTCPClientObject( NodeTCPSessionImpl session, Object obj )
+    void dispatchTCPClientObject( AppTCPSessionImpl session, Object obj )
     {
         elog(Level.DEBUG, "TCPClientObject", session.id());
         if ( sessionEventListener == null || session.released() ) {
@@ -289,7 +289,7 @@ public class Dispatcher
         }
     }
     
-    void dispatchTCPServerObject( NodeTCPSessionImpl session, Object obj )
+    void dispatchTCPServerObject( AppTCPSessionImpl session, Object obj )
     {
         elog(Level.DEBUG, "TCPServerObject", session.id());
         if ( sessionEventListener == null || session.released() ) {
@@ -299,7 +299,7 @@ public class Dispatcher
         }
     }
 
-    void dispatchTCPClientWritable( NodeTCPSessionImpl session )
+    void dispatchTCPClientWritable( AppTCPSessionImpl session )
     {
         elog(Level.DEBUG, "TCPClientWritable", session.id());
         if ( sessionEventListener == null || session.released() ) {
@@ -309,7 +309,7 @@ public class Dispatcher
         }
     }
 
-    void dispatchTCPServerWritable( NodeTCPSessionImpl session )
+    void dispatchTCPServerWritable( AppTCPSessionImpl session )
     {
         elog(Level.DEBUG, "TCPServerWritable", session.id());
         if ( sessionEventListener == null || session.released() ) {
@@ -319,7 +319,7 @@ public class Dispatcher
         }
     }
 
-    void dispatchUDPClientPacket( NodeUDPSessionImpl session, ByteBuffer data, IPPacketHeader header  )
+    void dispatchUDPClientPacket( AppUDPSessionImpl session, ByteBuffer data, IPPacketHeader header  )
     {
         elog(Level.DEBUG, "UDPClientPacket", session.id(), data.remaining());
         if ( sessionEventListener == null || session.released() ) {
@@ -329,7 +329,7 @@ public class Dispatcher
         }
     }
 
-    void dispatchUDPServerPacket( NodeUDPSessionImpl session, ByteBuffer data, IPPacketHeader header  )
+    void dispatchUDPServerPacket( AppUDPSessionImpl session, ByteBuffer data, IPPacketHeader header  )
     {
         elog(Level.DEBUG, "UDPServerPacket", session.id(), data.remaining());
         if ( sessionEventListener == null || session.released() ) {
@@ -339,7 +339,7 @@ public class Dispatcher
         }
     }
 
-    void dispatchTCPClientDataEnd( NodeTCPSessionImpl session, ByteBuffer data )
+    void dispatchTCPClientDataEnd( AppTCPSessionImpl session, ByteBuffer data )
     {
         elog(Level.DEBUG, "TCPClientDataEnd", session.id());
         if ( sessionEventListener == null || session.released() )
@@ -348,7 +348,7 @@ public class Dispatcher
             sessionEventListener.handleTCPClientDataEnd( session, data );
     }
 
-    void dispatchTCPClientFIN( NodeTCPSessionImpl session )
+    void dispatchTCPClientFIN( AppTCPSessionImpl session )
     {
         elog(Level.DEBUG, "TCPClientFIN", session.id());
         if ( sessionEventListener == null || session.released() )
@@ -357,7 +357,7 @@ public class Dispatcher
             sessionEventListener.handleTCPClientFIN( session );
     }
 
-    void dispatchTCPServerDataEnd( NodeTCPSessionImpl session, ByteBuffer data )
+    void dispatchTCPServerDataEnd( AppTCPSessionImpl session, ByteBuffer data )
     {
         elog(Level.DEBUG, "TCPServerDataEnd", session.id());
         if ( sessionEventListener == null || session.released() )
@@ -366,7 +366,7 @@ public class Dispatcher
             sessionEventListener.handleTCPServerDataEnd( session, data );
     }
 
-    void dispatchTCPServerFIN( NodeTCPSessionImpl session )
+    void dispatchTCPServerFIN( AppTCPSessionImpl session )
     {
         elog(Level.DEBUG, "TCPServerFIN", session.id());
         if ( sessionEventListener == null || session.released() )
@@ -375,7 +375,7 @@ public class Dispatcher
             sessionEventListener.handleTCPServerFIN( session );
     }
 
-    void dispatchTCPClientRST( NodeTCPSessionImpl session )
+    void dispatchTCPClientRST( AppTCPSessionImpl session )
     {
         elog(Level.DEBUG, "TCPClientRST", session.id());
         if ( sessionEventListener == null || session.released() )
@@ -384,7 +384,7 @@ public class Dispatcher
             sessionEventListener.handleTCPClientRST( session );
     }
 
-    void dispatchTCPServerRST( NodeTCPSessionImpl session )
+    void dispatchTCPServerRST( AppTCPSessionImpl session )
     {
         elog(Level.DEBUG, "TCPServerRST", session.id());
         if ( sessionEventListener == null || session.released() )
@@ -393,7 +393,7 @@ public class Dispatcher
             sessionEventListener.handleTCPServerRST( session );
     }
 
-    void dispatchTCPFinalized( NodeTCPSessionImpl session )
+    void dispatchTCPFinalized( AppTCPSessionImpl session )
     {
         elog(Level.DEBUG, "TCPFinalized", session.id());
         if ( sessionEventListener == null || session.released() )
@@ -402,7 +402,7 @@ public class Dispatcher
             sessionEventListener.handleTCPFinalized( session );
     }
 
-    void dispatchTCPComplete( NodeTCPSessionImpl session )
+    void dispatchTCPComplete( AppTCPSessionImpl session )
     {
         elog(Level.DEBUG, "TCPComplete", session.id());
         if ( sessionEventListener == null || session.released() )
@@ -411,7 +411,7 @@ public class Dispatcher
             sessionEventListener.handleTCPComplete( session );
     }
 
-    void dispatchUDPClientExpired( NodeUDPSessionImpl session )
+    void dispatchUDPClientExpired( AppUDPSessionImpl session )
     {
         elog(Level.DEBUG, "UDPClientExpired", session.id());
         if ( sessionEventListener == null || session.released() )
@@ -420,7 +420,7 @@ public class Dispatcher
             sessionEventListener.handleUDPClientExpired( session );
     }
 
-    void dispatchUDPServerExpired( NodeUDPSessionImpl session )
+    void dispatchUDPServerExpired( AppUDPSessionImpl session )
     {
         elog(Level.DEBUG, "UDPServerExpired", session.id());
         if ( sessionEventListener == null || session.released() )
@@ -429,7 +429,7 @@ public class Dispatcher
             sessionEventListener.handleUDPServerExpired( session );
     }
 
-    void dispatchUDPClientWritable( NodeUDPSessionImpl session )
+    void dispatchUDPClientWritable( AppUDPSessionImpl session )
     {
         elog(Level.DEBUG, "UDPClientWritable", session.id());
         if ( sessionEventListener == null || session.released() )
@@ -438,7 +438,7 @@ public class Dispatcher
             sessionEventListener.handleUDPClientWritable( session );
     }
 
-    void dispatchUDPServerWritable( NodeUDPSessionImpl session )
+    void dispatchUDPServerWritable( AppUDPSessionImpl session )
     {
         elog(Level.DEBUG, "UDPServerWritable", session.id());
         if ( sessionEventListener == null || session.released() )
@@ -447,7 +447,7 @@ public class Dispatcher
             sessionEventListener.handleUDPServerWritable( session );
     }
 
-    void dispatchUDPFinalized( NodeUDPSessionImpl session )
+    void dispatchUDPFinalized( AppUDPSessionImpl session )
     {
         elog(Level.DEBUG, "UDPFinalized", session.id());
         if ( sessionEventListener == null || session.released() )
@@ -456,7 +456,7 @@ public class Dispatcher
             sessionEventListener.handleUDPFinalized( session );
     }
 
-    void dispatchUDPComplete( NodeUDPSessionImpl session )
+    void dispatchUDPComplete( AppUDPSessionImpl session )
     {
         elog(Level.DEBUG, "UDPComplete", session.id());
         if ( sessionEventListener == null || session.released() )
@@ -465,7 +465,7 @@ public class Dispatcher
             sessionEventListener.handleUDPComplete( session );
     }
 
-    void dispatchTimer( NodeSessionImpl session )
+    void dispatchTimer( AppSessionImpl session )
     {
         elog(Level.DEBUG, "Timer", session.id());
         if ( sessionEventListener == null || session.released() )
@@ -474,15 +474,15 @@ public class Dispatcher
             sessionEventListener.handleTimer( session );
     }
 
-    private NodeTCPSession newSessionInternal( TCPNewSessionRequestImpl request )
+    private AppTCPSession newSessionInternal( TCPNewSessionRequestImpl request )
     {
         long sessionId = -1L;
 
         try {
             sessionId = request.id();
 
-            this.node.incrementMetric(STAT_SESSION_REQUESTS);
-            this.node.incrementMetric(STAT_TCP_SESSION_REQUESTS);
+            this.app.incrementMetric(STAT_SESSION_REQUESTS);
+            this.app.incrementMetric(STAT_TCP_SESSION_REQUESTS);
 
             // Give the request event to the user, to give them a chance to reject the session.
             logger.debug("sending TCP new session request event");
@@ -506,7 +506,7 @@ public class Dispatcher
             }
 
             // Create the session, client and server channels
-            NodeTCPSessionImpl session = new NodeTCPSessionImpl(this, request.sessionEvent(), TCP_READ_BUFFER_SIZE, TCP_READ_BUFFER_SIZE, request);
+            AppTCPSessionImpl session = new AppTCPSessionImpl(this, request.sessionEvent(), TCP_READ_BUFFER_SIZE, TCP_READ_BUFFER_SIZE, request);
 
             request.copyAttachments( session );
             //session.attach(request.attachment());
@@ -534,15 +534,15 @@ public class Dispatcher
         }
     }
 
-    private NodeUDPSession newSessionInternal( UDPNewSessionRequestImpl request )
+    private AppUDPSession newSessionInternal( UDPNewSessionRequestImpl request )
     {
         long sessionId = -1;
 
         try {
             sessionId = request.id();
 
-            this.node.incrementMetric(STAT_SESSION_REQUESTS);
-            this.node.incrementMetric(STAT_UDP_SESSION_REQUESTS);
+            this.app.incrementMetric(STAT_SESSION_REQUESTS);
+            this.app.incrementMetric(STAT_UDP_SESSION_REQUESTS);
 
             // Give the request event to the user, to give them a chance to reject the session.
             logger.debug("sending UDP new session request event");
@@ -566,7 +566,7 @@ public class Dispatcher
             }
 
             // Create the session, client and server channels
-            NodeUDPSessionImpl session = new NodeUDPSessionImpl(this, request.sessionEvent(), UDP_MAX_PACKET_SIZE, UDP_MAX_PACKET_SIZE, request);
+            AppUDPSessionImpl session = new AppUDPSessionImpl(this, request.sessionEvent(), UDP_MAX_PACKET_SIZE, UDP_MAX_PACKET_SIZE, request);
 
             session.attach(request.attachment());
 

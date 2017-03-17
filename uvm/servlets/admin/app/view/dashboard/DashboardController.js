@@ -9,16 +9,17 @@
 Ext.define('Ung.view.dashboard.DashboardController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.dashboard',
-
+    viewModel: true,
     control: {
         '#': {
-            afterrender: 'loadWidgets'
+            // afterrender: 'loadWidgets'
         }
     },
 
     listen: {
         global: {
-            nodeinstall: 'onNodeInstall',
+            init: 'loadWidgets',
+            appinstall: 'onAppInstall',
             removewidget: 'onRemoveWidget',
             addwidget: 'onAddWidget',
             reportsInstall: 'loadWidgets'
@@ -26,12 +27,18 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         store: {
             '#stats': {
                 datachanged: 'onStatsUpdate'
+            },
+            '#widgets': {
+                // datachanged: 'loadWidgets'
+            },
+            '#reports': {
+                // datachanged: 'loadWidgets'
             }
         }
     },
 
     init: function (view) {
-        var me = this, vm = view.getViewModel();
+        var vm = view.getViewModel();
 
         // update dashboard when Reports app is installed/removed or enabled/disabled
         // vm.bind('{reportsEnabled}', function() {
@@ -40,12 +47,16 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         vm.set('managerOpen', false);
     },
 
+    onInit: function () {
+        console.log('oninit');
+    },
+
     /**
      * before rendering the Dashboard the settings are fetched form the server
      */
     initDashboard: function () {
-        var me = this,
-            vm = me.getViewModel();
+        // var me = this,
+        //     vm = me.getViewModel();
         //me.populateMenus();
         // load the dashboard settings
 
@@ -55,7 +66,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         //         // load unavailable apps needed for showing the widgets
         //         console.time('unavailApps');
         //         rpc.reportsManager.getUnavailableApplicationsMap(function (result, ex) {
-        //             if (ex) { Ung.Util.exceptionToast(ex); return false; }
+        //             if (ex) { Util.exceptionToast(ex); return false; }
 
         //             Ext.getStore('unavailableApps').loadRawData(result.map);
         //             Ext.getStore('widgets').loadData(settings.widgets.list);
@@ -73,7 +84,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
             // load unavailable apps needed for showing the widgets
             console.time('unavailApps');
             rpc.reportsManager.getUnavailableApplicationsMap(function (result, ex) {
-                if (ex) { Ung.Util.exceptionToast(ex); return false; }
+                if (ex) { Util.exceptionToast(ex); return false; }
 
                 Ext.getStore('unavailableApps').loadRawData(result.map);
                 //Ext.getStore('widgets').loadData(settings.widgets.list);
@@ -93,10 +104,11 @@ Ext.define('Ung.view.dashboard.DashboardController', {
      * Load initial dashboard widgets
      */
     loadWidgets: function() {
+        // console.log('loadWidgets');
         var vm = this.getViewModel(),
             dashboard = this.getView().lookupReference('dashboard'),
             widgets = Ext.getStore('widgets').getRange(),
-            i, widget, widgetComponents = [], entry;
+            i, widget, entry;
 
         // refresh the dashboard manager grid if the widgets were affected
         this.getView().lookupReference('dashboardNav').getView().refresh();
@@ -106,7 +118,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         for (i = 0; i < widgets.length; i += 1 ) {
             widget = widgets[i];
 
-            if (widget.get('type') !== 'ReportEntry') {
+            if (widget.get('type') !== 'ReportEntry' && widget.get('type') !== 'CPULoad') {
                 dashboard.add({
                     xtype: widget.get('type').toLowerCase() + 'widget',
                     itemId: widget.get('type'),
@@ -149,25 +161,24 @@ Ext.define('Ung.view.dashboard.DashboardController', {
             }
         }
         // dashboard.add(widgetComponents);
-        console.timeEnd('all');
-        this.populateMenus();
+        // this.populateMenus();
     },
 
     /**
-     * when a node is installed or removed apply changes to dashboard
+     * when a app is installed or removed apply changes to dashboard
      */
-    onNodeInstall: function (action, node) {
+    onAppInstall: function (action, app) {
         // refresh dashboard manager grid
         this.getView().lookupReference('dashboardNav').getView().refresh();
 
         var dashboard = this.getView().lookupReference('dashboard'),
             widgets = Ext.getStore('widgets').getRange(), widget, entry, i;
 
-        // traverse all widgets and add/remove those with report category as the passed node
+        // traverse all widgets and add/remove those with report category as the passed app
         for (i = 0; i < widgets.length; i += 1 ) {
             widget = widgets[i];
             entry = Ext.getStore('reports').findRecord('uniqueId', widget.get('entryId'));
-            if (entry && entry.get('category') === node.displayName) {
+            if (entry && entry.get('category') === app.displayName) {
                 // remove widget placeholder
                 dashboard.remove(widget.get('entryId'));
                 if (action === 'install') {
@@ -198,14 +209,14 @@ Ext.define('Ung.view.dashboard.DashboardController', {
     enableRenderer: function (value, meta, record) {
         var vm = this.getViewModel();
         if (record.get('type') !== 'ReportEntry') {
-            return '<i class="material-icons">' + (value ? 'check_box' : 'check_box_outline_blank') + '</i>';
+            return '<i class="fa ' + (value ? 'fa-check-circle-o' : 'fa-circle-o') + ' fa-lg"></i>';
         }
         var entry = Ext.getStore('reports').findRecord('uniqueId', record.get('entryId'));
 
         if (!entry || Ext.getStore('unavailableApps').first().get(entry.get('category')) || !vm.get('reportsRunning')) {
-            return '<i class="material-icons" style="color: #F00;">info_outline</i>';
+            return '<i class="fa fa-info-circle fa-lg" style="color: #a91f1f;"></i>';
         }
-        return '<i class="material-icons">' + (value ? 'check_box' : 'check_box_outline_blank') + '</i>';
+        return '<i class="fa ' + (value ? 'fa-check-circle-o' : 'fa-circle-o') + ' fa-lg"></i>';
     },
 
     settingsRenderer: function () {
@@ -220,22 +231,22 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         enabled = record.get('enabled');
 
         if (!value) {
-            return '<span style="font-weight: 600; ' + (!enabled ? 'color: #999;' : '') + '">' + record.get('type') + '</span><br/><span style="font-size: 10px; color: #AAA;">Common</span>';
+            return '<span style="font-weight: 700; ' + (!enabled ? 'color: #999;' : '') + '">' + record.get('type') + '</span>'; // <br/><span style="font-size: 10px; color: #777;">Common</span>';
         }
         if (vm.get('reportsInstalled')) {
             entry = Ext.getStore('reports').findRecord('uniqueId', value);
             if (entry) {
                 unavailApp = Ext.getStore('unavailableApps').first().get(entry.get('category'));
-                title = '<span style="font-weight: 600; ' + ((unavailApp || !enabled) ? 'color: #999;' : '') + '">' + (entry.get('readOnly') ? entry.get('title').t() : entry.get('title')) + '</span>';
+                title = '<span style="font-weight: 700; ' + ((unavailApp || !enabled) ? 'color: #999;' : '') + '">' + (entry.get('readOnly') ? entry.get('title').t() : entry.get('title')) + '</span>';
 
                 if (entry.get('timeDataInterval') && entry.get('timeDataInterval') !== 'AUTO') {
-                    title += '<span style="text-transform: lowercase; color: #333; font-weight: 300;"> per ' + entry.get('timeDataInterval') + '</span>';
+                    title += '<span style="text-transform: lowercase; color: #999; font-weight: 300;"> per ' + entry.get('timeDataInterval') + '</span>';
                 }
-                if (unavailApp) {
-                    title += '<br/><span style="font-size: 10px; color: #AAA;">' + entry.get('category') + '</span>';
-                } else {
-                    title += '<br/><span style="font-size: 10px; color: #AAA;">' + entry.get('category') + '</span>';
-                }
+                // if (unavailApp) {
+                //     title += '<br/><span style="font-size: 10px; color: #777;">' + entry.get('category') + '</span>';
+                // } else {
+                //     title += '<br/><span style="font-size: 10px; color: #777;">' + entry.get('category') + '</span>';
+                // }
                 /*
                 if (entry.get('readOnly')) {
                     title += ' <i class="material-icons" style="font-size: 14px; color: #999; vertical-align: top;">lock</i>';
@@ -258,11 +269,12 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         console.log('apply');
         // because of the drag/drop reorder the settins widgets are updated to respect new ordering
         Ung.dashboardSettings.widgets.list = Ext.Array.pluck(Ext.getStore('widgets').getRange(), 'data');
-        rpc.dashboardManager.setSettings(function (result, ex) {
-            if (ex) { Ung.Util.exceptionToast(ex); return; }
-            Ung.Util.successToast('<span style="color: yellow; font-weight: 600;">Dashboard Saved!</span>');
+
+        Rpc.asyncData('rpc.dashboardManager.setSettings', Ung.dashboardSettings)
+        .then(function(result) {
+            Util.successToast('<span style="color: yellow; font-weight: 600;">Dashboard Saved!</span>');
             Ext.getStore('widgets').sync();
-        }, Ung.dashboardSettings);
+        });
 
     },
 
@@ -325,7 +337,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                         Ext.Msg.alert('Install required'.t(), Ext.String.format('To enable this Widget please install <strong>{0}</strong> app first!'.t(), entry.get('category')));
                     }
                 } else {
-                    Ung.Util.exceptionToast('This entry is not available and it should be removed!');
+                    Util.exceptionToast('This entry is not available and it should be removed!');
                 }
 
             }
@@ -375,7 +387,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
     /**
      * todo: after drag sort event
      */
-    onDrop: function (node, data, overModel, dropPosition) {
+    onDrop: function (app, data, overModel, dropPosition) {
         var dashboard = this.getView().lookupReference('dashboard');
         //console.log(data.view.getStore().findExact('entryId', data.records[0].get('entryId')));
         //console.log(data.records);
@@ -401,34 +413,33 @@ Ext.define('Ung.view.dashboard.DashboardController', {
     },
 
     resetDashboard: function () {
-        var me = this,
-            vm = this.getViewModel();
+        // var me = this,
+        //     vm = this.getViewModel();
         Ext.MessageBox.confirm('Warning'.t(),
             'This will overwrite the current dashboard settings with the defaults.'.t() + '<br/><br/>' +
             'Do you want to continue?'.t(),
             function (btn) {
                 if (btn === 'yes') {
-                    rpc.dashboardManager.resetSettingsToDefault(function (result, ex) {
-                        if (ex) { Ung.Util.exceptionToast(ex); return; }
-                        Ung.Util.successToast('Dashboard reset done!');
-                        Rpc.getDashboardSettings().then(function(settings) {
-                            Ung.dashboardSettings = settings;
-                            if (vm.get('reportsInstalled')) {
-                                // load unavailable apps needed for showing the widgets
-                                rpc.reportsManager.getUnavailableApplicationsMap(function (result, ex) {
-                                    if (ex) { Ung.Util.exceptionToast(ex); return false; }
-
-                                    Ext.getStore('unavailableApps').loadRawData(result.map);
-                                    Ext.getStore('widgets').loadData(settings.widgets.list);
-                                    me.loadWidgets();
-                                });
-                            } else {
-                                Ext.getStore('widgets').loadData(settings.widgets.list);
-                                me.loadWidgets();
-                            }
-                            me.populateMenus();
-                        });
+                    Rpc.asyncData('rpc.dashboardManager.resetSettingsToDefault').then(function (result) {
+                        Util.successToast('Dashboard reset done!');
                     });
+                        // Rpc.getDashboardSettings().then(function(settings) {
+                        //     Ung.dashboardSettings = settings;
+                        //     if (vm.get('reportsInstalled')) {
+                        //         // load unavailable apps needed for showing the widgets
+                        //         rpc.reportsManager.getUnavailableApplicationsMap(function (result, ex) {
+                        //             if (ex) { Util.exceptionToast(ex); return false; }
+
+                        //             Ext.getStore('unavailableApps').loadRawData(result.map);
+                        //             Ext.getStore('widgets').loadData(settings.widgets.list);
+                        //             me.loadWidgets();
+                        //         });
+                        //     } else {
+                        //         Ext.getStore('widgets').loadData(settings.widgets.list);
+                        //         me.loadWidgets();
+                        //     }
+                        //     me.populateMenus();
+                        // });
                 }
             });
     },
@@ -476,7 +487,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         // get devices
         // @todo: review this based on oler implementation
         rpc.deviceTable.getDevices(function (result, ex) {
-            if (ex) { Ung.Util.exceptionToast(ex); return false; }
+            if (ex) { Util.exceptionToast(ex); return false; }
             vm.set('deviceCount', result.list.length);
         });
     },
@@ -490,7 +501,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
 
         categoriesMenu.push({
             text: 'Common',
-            icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_hosts.png',
+            icon: '/skins/modern-rack/images/admin/config/icon_config_hosts.png',
             iconCls: 'menu-icon',
             menu: {
                 plain: true,
@@ -516,7 +527,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                 listeners: {
                     click: function (menu, item) {
                         if (Ext.getStore('widgets').findRecord('type', item.type)) {
-                            Ung.Util.successToast('<span style="color: yellow; font-weight: 600;">' + item.text + '</span>' + ' is already in Dashboard!');
+                            Util.successToast('<span style="color: yellow; font-weight: 600;">' + item.text + '</span>' + ' is already in Dashboard!');
                             return;
                         }
                         var newWidget = Ext.create('Ung.model.Widget', {
@@ -536,19 +547,19 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         });
 
         if (rpc.reportsManager) {
-            rpc.reportsManager.getCurrentApplications(function (result, ex) {
+            Rpc.asyncData('rpc.reportsManager.getCurrentApplications').then(function(result, ex) {
                 categories = [
-                    { displayName: 'Hosts', icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_hosts.png' },
-                    { displayName: 'Devices', icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_devices.png' },
-                    { displayName: 'Network', icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_network.png' },
-                    { displayName: 'Administration', icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_admin.png' },
-                    { displayName: 'System', icon: resourcesBaseHref + '/skins/modern-rack/images/admin/config/icon_config_system.png' },
-                    { displayName: 'Shield', icon: resourcesBaseHref + '/skins/modern-rack/images/admin/apps/untangle-node-shield_17x17.png' }
+                    { displayName: 'Hosts', icon: '/skins/modern-rack/images/admin/config/icon_config_hosts.png' },
+                    { displayName: 'Devices', icon: '/skins/modern-rack/images/admin/config/icon_config_devices.png' },
+                    { displayName: 'Network', icon: '/skins/modern-rack/images/admin/config/icon_config_network.png' },
+                    { displayName: 'Administration', icon: '/skins/modern-rack/images/admin/config/icon_config_admin.png' },
+                    { displayName: 'System', icon: '/skins/modern-rack/images/admin/config/icon_config_system.png' },
+                    { displayName: 'Shield', icon: '/skins/modern-rack/images/admin/apps/untangle-app-shield_17x17.png' }
                 ];
                 result.list.forEach(function (app) {
                     categories.push({
                         displayName: app.displayName,
-                        icon: resourcesBaseHref + '/skins/modern-rack/images/admin/apps/' + app.name + '_17x17.png'
+                        icon: '/skins/modern-rack/images/admin/apps/' + app.name + '_17x17.png'
                     });
                 });
 
@@ -561,7 +572,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                     });
                     Ext.getStore('reports').getRange().forEach(function(report) {
                         reportsMenu.push({
-                            text: Ung.Util.iconReportTitle(report) + ' ' + report.get('title'),
+                            text: Util.iconReportTitle(report) + ' ' + report.get('title'),
                             report: report
                         });
                     });
@@ -577,7 +588,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                             listeners: {
                                 click: function (menu, item) {
                                     if (Ext.getStore('widgets').findRecord('entryId', item.report.get('uniqueId'))) {
-                                        Ung.Util.successToast('<span style="color: yellow; font-weight: 600;">' + item.report.get('title') + '</span>' + ' is already in Dashboard!');
+                                        Util.successToast('<span style="color: yellow; font-weight: 600;">' + item.report.get('title') + '</span>' + ' is already in Dashboard!');
                                         return;
                                     }
                                     var newWidget = Ext.create('Ung.model.Widget', {

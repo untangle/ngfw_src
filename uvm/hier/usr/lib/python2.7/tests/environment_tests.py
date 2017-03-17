@@ -9,7 +9,7 @@ from global_functions import uvmContext
 class TestEnvironmentTests(unittest2.TestCase):
 
     # verify connectivity to untangle-vm
-    def test_01_uvmConnectivity(self):
+    def test_01_uvm_connectivity(self):
         global uvmContext
         try:
             version = uvmContext.version()
@@ -17,59 +17,60 @@ class TestEnvironmentTests(unittest2.TestCase):
             raise AssertionError("Failed to connect to untangle-vm")
 
     # verify reports is installed (needed for event log tests)
-    def test_02_reportsIsInstalled(self):
+    def test_02_reports_is_installed(self):
         global uvmContext
-        assert (uvmContext.nodeManager().isInstantiated('untangle-node-reports'))
+        assert (uvmContext.appManager().isInstantiated('reports'))
 
     # verify reports flush events works
-    def test_03_reportsFlushEvents(self):
-        reports = uvmContext.nodeManager().node("untangle-node-reports")
+    def test_03_reports_flush_events(self):
+        reports = uvmContext.appManager().app("reports")
         assert (reports != None)
         reports.flushEvents()
 
     # verify connectivity to client
-    def test_10_clientConnectivity(self):
-        assert ( remote_control.runCommand("/bin/true") == 0 )
+    def test_10_client_connectivity(self):
+        assert ( remote_control.run_command("/bin/true") == 0 )
 
     # verify client can exec commands and return code
-    def test_11_clientShellReturnCode(self):
-        assert ( remote_control.runCommand("/bin/false") == 1 )
+    def test_11_client_shell_return_code(self):
+        assert ( remote_control.run_command("/bin/false") == 1 )
 
     # verify client can exec commands and return code
-    def test_12_clientShellOutput(self):
-        result = remote_control.runCommand("echo yay", stdout=True)
+    def test_12_client_shell_output(self):
+        result = remote_control.run_command("echo yay", stdout=True)
         assert (result == "yay")
 
     # verify client has necessary tools
-    def test_13_clientHasNecessaryTools(self):
-        # on jessie:
-        #   apt-get install host netcat-openbsd python curl wget nmap mime-construct sysvinit-utils
-        assert ( remote_control.runCommand("which wget") == 0 )
-        assert ( remote_control.runCommand("which curl") == 0 )
-        assert ( remote_control.runCommand("which netcat") == 0 )
-        assert ( remote_control.runCommand("which nmap") == 0 )
-        assert ( remote_control.runCommand("which python") == 0 )
-        assert ( remote_control.runCommand("which mime-construct") == 0 )
-        assert ( remote_control.runCommand("which pidof") == 0 )
-        assert ( remote_control.runCommand("which host") == 0 )
+    def test_13_client_has_necessary_tools(self):
+        # to configure client:
+        # https://test.untangle.com/test/setup_testshell.sh
+        assert ( remote_control.run_command("which wget") == 0 )
+        assert ( remote_control.run_command("which curl") == 0 )
+        assert ( remote_control.run_command("which netcat") == 0 )
+        assert ( remote_control.run_command("which nmap") == 0 )
+        assert ( remote_control.run_command("which python") == 0 )
+        assert ( remote_control.run_command("which mime-construct") == 0 )
+        assert ( remote_control.run_command("which pidof") == 0 )
+        assert ( remote_control.run_command("which host") == 0 )
+        assert ( remote_control.run_command("which upnpc") == 0 )
+        assert ( remote_control.run_command("which traceroute") == 0 )
         # check for netcat options
-        assert ( remote_control.runCommand("netcat -h 2>&1 | grep -q '\-d\s'") == 0 )
-        assert ( remote_control.runCommand("netcat -h 2>&1 | grep -q '\-z\s'") == 0 )
-        assert ( remote_control.runCommand("netcat -h 2>&1 | grep -q '\-w\s'") == 0 )
-        assert ( remote_control.runCommand("netcat -h 2>&1 | grep -q '\-l\s'") == 0 )
-        assert ( remote_control.runCommand("netcat -h 2>&1 | grep -q '\-4\s'") == 0 )
-        assert ( remote_control.runCommand("netcat -h 2>&1 | grep -q '\-p\s'") == 0 )
+        assert ( remote_control.run_command("netcat -h 2>&1 | grep -q '\-d\s'") == 0 )
+        assert ( remote_control.run_command("netcat -h 2>&1 | grep -q '\-z\s'") == 0 )
+        assert ( remote_control.run_command("netcat -h 2>&1 | grep -q '\-w\s'") == 0 )
+        assert ( remote_control.run_command("netcat -h 2>&1 | grep -q '\-l\s'") == 0 )
+        assert ( remote_control.run_command("netcat -h 2>&1 | grep -q '\-4\s'") == 0 )
+        assert ( remote_control.run_command("netcat -h 2>&1 | grep -q '\-p\s'") == 0 )
 
     # verify client is online
-    def test_14_clientIsOnline(self):
-        assert ( remote_control.isOnline() == 0 )
-        assert ( remote_control.runCommand("wget -q -O /dev/null -4 -t 2 --timeout=5 http://google.com/") == 0 )
+    def test_14_client_is_online(self):
+        assert ( remote_control.is_online() == 0 )
 
     # verify client can pass UDP
-    def test_20_clientCanPassUDP(self):
-        assert ( remote_control.runCommand("host cnn.com 8.8.8.8") == 0 )
-        assert ( remote_control.runCommand("host google.com 8.8.8.8") == 0 )
+    def test_15_client_is_online_udp(self):
+        assert ( remote_control.run_command("host cnn.com 8.8.8.8") == 0 )
+        assert ( remote_control.run_command("host google.com 8.8.8.8") == 0 )
 
     # verify client is online
-    def test_30_clientNotRunningOpenvpn(self):
-        assert ( remote_control.runCommand("pidof openvpn") != 0 )
+    def test_16_client_not_running_openvpn(self):
+        assert ( remote_control.run_command("pidof openvpn") != 0 )

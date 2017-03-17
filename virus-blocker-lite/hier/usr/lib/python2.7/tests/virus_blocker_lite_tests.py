@@ -16,8 +16,8 @@ import test_registry
 class VirusBlockerLiteTests(VirusBlockerBaseTests):
 
     @staticmethod
-    def nodeName():
-        return "untangle-node-virus-blocker-lite"
+    def appName():
+        return "virus-blocker-lite"
 
     @staticmethod
     def shortName():
@@ -34,4 +34,4 @@ class VirusBlockerLiteTests(VirusBlockerBaseTests):
         result = os.system("pidof clamd >/dev/null 2>&1")
         assert (result == 0)
 
-test_registry.registerNode("virus-blocker-lite", VirusBlockerLiteTests)
+test_registry.registerApp("virus-blocker-lite", VirusBlockerLiteTests)

@@ -42,7 +42,7 @@ def printUsage():
     sys.exit(1)
 
 
-apt_log = open("/var/log/uvm/apt.log", "a")
+apt_log = open("/var/log/uvm/upgrade.log", "a")
 
 try:
      opts, args = getopt.getopt(sys.argv[1:], "q", ['quiet'])

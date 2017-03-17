@@ -21,12 +21,12 @@
 }
 
 
-div.apps-nodes {
+div.apps-apps {
     padding: 10px;
 }
 
-/* node background */
-div.node {
+/* app background */
+div.app {
     cursor: pointer;
     position: relative;
     float: left;
@@ -40,11 +40,11 @@ div.node {
     transition: background .3s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-div.node:hover {
+div.app:hover {
     background: #EEE;
 }
 
-div.node-cap {
+div.app-cap {
     cursor: default;
     background-color: #666666;
     height: 100%;
@@ -53,16 +53,16 @@ div.node-cap {
     position: absolute;
     z-index: 1000;
 }
-/* Node image container */
-.node-image {
+/* App image container */
+.app-image {
     display: block;
     position: relative;
     margin: 20px auto 8px auto;
     width: 80px;
     height: 80px;
 }
-/* node display name text*/
-div.node div.node-label {
+/* app display name text*/
+div.app div.app-label {
     display: block;
     padding: 0 3px;
     text-align: center;
@@ -70,8 +70,8 @@ div.node div.node-label {
     font-weight: bold;
     font-family: 'PT Sans', Tahoma, Geneva, sans-serif;
 }
-/* node trial info text */
-div.node div.node-faceplate-info {
+/* app trial info text */
+div.app div.app-faceplate-info {
     position: absolute;
     top: 5px;
     left: 0px;
@@ -83,24 +83,24 @@ div.node div.node-faceplate-info {
     text-shadow: 1px 1px #FFFFFF;
     color: #DE2020;
 }
-/* node state container */
-div.node div.node-state {
+/* app state container */
+div.app div.app-state {
     position: absolute;
     right: 24px;
     top: 15px;
     width: 16px;
     height: 16px;
 }
-/* node power button icon */
-div.node .node-power {
+/* app power button icon */
+div.app .app-power {
     display: none;
 }
-/* node buttons panel container */
-div.node div.node-buttons {
+/* app buttons panel container */
+div.app div.app-buttons {
     display: none;
 }
-/* node metrics */
-div.node div.node-metrics {
+/* app metrics */
+div.app div.app-metrics {
     display: none;
 }
 
@@ -110,10 +110,10 @@ div.system-stats {
 }
 
 @media ( max-width: 550px ) {
-    div.apps-nodes {
+    div.apps-apps {
         padding: 0;
     }
-    div.node {
+    div.app {
         height: 60px;
         width: 100%;
         float: none;
@@ -121,7 +121,7 @@ div.system-stats {
         box-shadow: none;
         margin: 0 0 1px 0;
     }
-    div.node-image {
+    div.app-image {
         width: 50px;
         height: 50px;
         background-size: contain;
@@ -130,7 +130,7 @@ div.system-stats {
         float: left;
         margin: 1px;
     }
-    div.node-label {
+    div.app-label {
         line-height: 60px;
         margin-left: 10px;
         font-size: 16px;
@@ -138,7 +138,7 @@ div.system-stats {
         float: left;
     }
 
-    div.node div.node-state {
+    div.app div.app-state {
         top: 50%;
         margin-top: -8px;
         right: 16px;

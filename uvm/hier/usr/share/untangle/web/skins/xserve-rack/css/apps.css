@@ -31,16 +31,16 @@
     color: white;
 }
 
-/* node background */
-div.node {
+/* app background */
+div.app {
     margin: 0 auto;
     position: relative;
-    background: transparent url(../images/admin/background_node.png) no-repeat;
+    background: transparent url(../images/admin/background_app.png) no-repeat;
     width: 785px;
     height: 72px;
 }
 
-div.node-cap {
+div.app-cap {
     background-color: #666666;
     height: 98%;
     left: 0px;
@@ -49,8 +49,8 @@ div.node-cap {
     width: 100%;
     z-index: 1000;
 }
-/* Node image container */
-.node-image {
+/* App image container */
+.app-image {
     position: absolute;
     top: 14px;
     left: 380px;
@@ -62,8 +62,8 @@ div.node-cap {
     left: 305px;
     left: 380px;
 }
-/* node display name text*/
-div.node div.node-label {
+/* app display name text*/
+div.app div.app-label {
     position: absolute;
     top: 7px;
     left: 2px;
@@ -75,8 +75,8 @@ div.node div.node-label {
     text-align: center;
     text-shadow: 1px 1px 2px #000;
 }
-/* node trial info text */
-div.node div.node-faceplate-info {
+/* app trial info text */
+div.app div.app-faceplate-info {
     position: absolute;
     top: 55px;
     left: 50px;
@@ -85,12 +85,12 @@ div.node div.node-faceplate-info {
     font-weight: bold;
     color: #DE2020;
 }
-/* Node buy button text */
+/* App buy button text */
 .buy-button .x-btn-inner-default-small {
     color: green;
 }
-/* node state container */
-div.node div.node-state {
+/* app state container */
+div.app div.app-state {
     z-index: 200;
     position: absolute;
     top: 35px;
@@ -101,8 +101,8 @@ div.node div.node-state {
     background-repeat: no-repeat;
     background-position: center center;
 }
-/* node power button icon */
-div.node .node-power {
+/* app power button icon */
+div.app .app-power {
     z-index: 300;
     position: absolute;
     top: 33px;
@@ -114,21 +114,21 @@ div.node .node-power {
     background-position: center center;
     background-image: url(../images/admin/button_power.png);
 }
-/* node power expired button icon */
-div.node .node-power.node-power-expired {
+/* app power expired button icon */
+div.app .app-power.app-power-expired {
     background-image: url(../images/admin/button_power_expired.png);
 }
 
-/* node buttons panel container */
-div.node div.node-buttons {
+/* app buttons panel container */
+div.app div.app-buttons {
     position: absolute;
     top: 30px;
     left: 45px;
     width: 1px;
     z-index: 100;
 }
-/* node metrics */
-div.node div.node-metrics {
+/* app metrics */
+div.app div.app-metrics {
     position: absolute;
     bottom: 1px;
     right: 126px;
@@ -136,7 +136,7 @@ div.node div.node-metrics {
     height: 72px;
 }
 /* chart container */
-div.node-metrics div.chart {
+div.app-metrics div.chart {
     position: absolute;
     top: 7px;
     left: 6px;
@@ -144,7 +144,7 @@ div.node-metrics div.chart {
     height: 60px;
 }
 /* system metrics container */
-div.node-metrics div.system {
+div.app-metrics div.system {
     position: absolute;
     top: 0px;
     right: 0px;
@@ -152,7 +152,7 @@ div.node-metrics div.system {
     height: 72px;
 }
 /* system metrics box container */
-div.node-metrics div.system-box {
+div.app-metrics div.system-box {
     position: relative;
     top: 7px;
     left: 5px;
@@ -160,12 +160,12 @@ div.node-metrics div.system-box {
     height: 60px;
 }
 
-div.node-metrics div.system-box div {
+div.app-metrics div.system-box div {
     font-family: Arial, Helvetica, sans-serif;
     font-size: 9px;
 }
 /* system metrics label */
-div.node-metrics div.system-label {
+div.app-metrics div.system-label {
     position: absolute;
     left: 0px;
     text-align: left;
@@ -176,7 +176,7 @@ div.node-metrics div.system-label {
     white-space: nowrap;
 }
 /* system metrics value */
-div.node-metrics div.system-value {
+div.app-metrics div.system-value {
     position: absolute;
     right: 0px;
     text-align: right;

@@ -5,9 +5,9 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.node.GenericRule;
-import com.untangle.uvm.node.IPMatcher;
-import com.untangle.uvm.node.UrlMatcher;
+import com.untangle.uvm.app.GenericRule;
+import com.untangle.uvm.app.IPMatcher;
+import com.untangle.uvm.app.UrlMatcher;
 
 public class UrlMatchingUtil
 {

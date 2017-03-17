@@ -1,35 +1,26 @@
 Ext.define('Ung.chart.PieChart', {
     extend: 'Ext.container.Container',
     alias: 'widget.piechart',
+    /* requires-start */
     requires: [
         'Ung.chart.PieChartController'
     ],
-
+    /* requires-end */
     controller: 'piechart',
     viewModel: true,
 
     config: {
         widget: null,
-        entry: null
     },
 
     listeners: {
         afterrender: 'onAfterRender',
-        resize: 'onResize',
-        setseries: 'onSetSeries',
-        //setstyle: 'onSetStyle',
-        beginfetchdata: 'onBeginFetchData'
+        resize: 'onResize'
     },
 
     items: [{
         xtype: 'component',
         reference: 'piechart',
         cls: 'chart'
-    }, {
-        xtype: 'component',
-        reference: 'loader',
-        cls: 'loader',
-        hideMode: 'visibility',
-        html: '<div class="spinner"><div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div></div>'
     }]
 });

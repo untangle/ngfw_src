@@ -184,7 +184,7 @@ Ext.define("Ung.Inbox", {
         rpc.getInboxRecords(Ext.bind(function(result, exception) {
             if (exception) {
                 var message = exception.message;
-                if (exception.name == "com.untangle.node.smtp.quarantine.NoSuchInboxException") {
+                if (exception.name == "com.untangle.app.smtp.quarantine.NoSuchInboxException") {
                     message = Ext.String.format(i18n._("The account {0} doesn't have any quarantined messages."), this.address);
                 }
                 if (message == null || message == "Unknown") {

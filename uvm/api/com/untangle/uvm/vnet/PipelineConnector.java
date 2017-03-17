@@ -6,11 +6,11 @@ package com.untangle.uvm.vnet;
 import java.util.List;
 
 import com.untangle.uvm.vnet.Fitting;
-import com.untangle.uvm.node.Node;
+import com.untangle.uvm.app.App;
 
 /**
  * The <code>PipelineConnector</code> interface represents an active PipelineConnector.
- * Most nodes only have one active <code>PipelineConnector</code> at a time, the
+ * Most apps only have one active <code>PipelineConnector</code> at a time, the
  * rest have exactly 2 (casings).
  *
  * This class's instances represent and contain the subscription
@@ -30,9 +30,9 @@ public interface PipelineConnector
 
     boolean isPremium();
     
-    List<NodeSession> liveSessions();
+    List<AppSession> liveSessions();
     
-    Node node();
+    App app();
 
     String getName();
 

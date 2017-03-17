@@ -35,7 +35,7 @@ import org.jabsorb.serializer.UnmarshallException;
 import com.untangle.uvm.util.IOUtil;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.SettingsChangesEvent;
-import com.untangle.uvm.node.HostnameLookup;
+import com.untangle.uvm.app.HostnameLookup;
 
 public class SettingsManagerImpl implements SettingsManager
 {
@@ -72,7 +72,67 @@ public class SettingsManagerImpl implements SettingsManager
      * This is the locks for the various files to guarantee synchronous file access
      */
     private final Map<String, Object> pathLocks = new HashMap<String, Object>();
-     
+
+    protected SettingsManagerImpl()
+    {
+    }
+
+    public void run13Conversion()
+    {
+        // 13.0 conversion
+        if ( java.nio.file.Files.isDirectory(java.nio.file.Paths.get(System.getProperty("uvm.settings.dir") + "/untangle-node-shield")) ||
+             java.nio.file.Files.isDirectory(java.nio.file.Paths.get(System.getProperty("uvm.settings.dir") + "/untangle-casing-http")) ||
+             java.nio.file.Files.isDirectory(java.nio.file.Paths.get(System.getProperty("uvm.settings.dir") + "/untangle-node-reports")) ||
+             java.nio.file.Files.isDirectory(java.nio.file.Paths.get(System.getProperty("uvm.settings.dir") + "/untangle-node-firewall")) ) {
+
+        logger.warn("==================================");
+        logger.warn("==================================");
+        logger.warn("Converting old directory names ...");
+        logger.warn("==================================");
+        logger.warn("==================================");
+            
+            logger.warn("Converting old directory names ...");
+            
+            String[] cmds  = { "/usr/bin/rename 's/untangle-node-//' " + System.getProperty("uvm.settings.dir") + "/*",
+                               "/usr/bin/rename 's/untangle-casing-//' " + System.getProperty("uvm.settings.dir") + "/*",
+                               "service apache2 restart",
+
+                               "/bin/sed " +
+                               "-e 's/NodeManager/AppManager/g' " +
+                               "-e 's/\"nodes\"/\"apps\"/g' " +
+                               "-e 's/\"nextNodeId\"/\"nextNodeId\"/g' " +
+                               "-e 's/NodeSettings/AppSettings/g' " +
+                               "-e 's/nodeName/appName/g' " +
+                               "-i " + System.getProperty("uvm.settings.dir") + "/untangle-vm/nodes*",
+
+                               "/bin/sed " +
+                               "-e 's/SmtpNodeSettings/SmtpSettings/g' " +
+                               "-i " + System.getProperty("uvm.settings.dir") + "/smtp/settings*",
+
+                               // just rename the symlink - not the destination
+                               "/usr/bin/rename 's/nodes.js/apps.js/' " + System.getProperty("uvm.settings.dir") + "/untangle-vm/nodes.js",
+            };
+
+            for ( String command : cmds ) {
+                logger.warn("Converting old directory names: " + command);
+                
+                ExecManagerResult result = UvmContextFactory.context().execManager().exec( command );
+                try {
+                    String lines[] = result.getOutput().split("\\r?\\n");
+                    for ( String line : lines )
+                        logger.info( "conversion: " + line );
+                } catch (Exception e) {}
+            }
+
+            logger.warn("==================================");
+            logger.warn("==================================");
+            logger.warn("Converted old directory names .   ");
+            logger.warn("==================================");
+            logger.warn("==================================");
+            
+        }
+    }
+    
     /**
      * Documented in SettingsManager.java
      */
@@ -437,7 +497,7 @@ public class SettingsManagerImpl implements SettingsManager
                 if((UvmContextImpl.getInstance().threadRequest() != null) &&
                    (UvmContextImpl.getInstance().threadRequest().get() != null)){
                     username = UvmContextImpl.getInstance().threadRequest().get().getRemoteUser();
-                    HostnameLookup reports = (HostnameLookup) UvmContextFactory.context().nodeManager().node("untangle-node-reports");
+                    HostnameLookup reports = (HostnameLookup) UvmContextFactory.context().appManager().app("reports");
                     hostname = UvmContextImpl.getInstance().threadRequest().get().getRemoteAddr();
                     if( reports != null && hostname != null){
                         hostname = reports.lookupHostname(InetAddress.getByName(UvmContextImpl.getInstance().threadRequest().get().getRemoteAddr()));

@@ -5,9 +5,9 @@ package com.untangle.uvm;
 
 import com.untangle.uvm.BrandingManager;
 import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.node.NodeSettings;
-import com.untangle.uvm.node.NodeManager;
-import com.untangle.uvm.vnet.NodeBase;
+import com.untangle.uvm.app.AppSettings;
+import com.untangle.uvm.app.AppManager;
+import com.untangle.uvm.app.AppBase;
 
 public class BrandingManagerImpl implements BrandingManager
 {
@@ -94,12 +94,12 @@ public class BrandingManagerImpl implements BrandingManager
     
     private BrandingManager getBrandingManager()
     {
-        NodeManager nm = UvmContextFactory.context().nodeManager();
+        AppManager nm = UvmContextFactory.context().appManager();
         if (nm == null) /* happens on shutdown */
             return null;
-        BrandingManager bnode = (BrandingManager)nm.node("untangle-node-branding-manager");
-        if (bnode != null && (((NodeBase)bnode).getRunState() == NodeSettings.NodeState.RUNNING)) {
-            return bnode;
+        BrandingManager bapp = (BrandingManager)nm.app("branding-manager");
+        if (bapp != null && (((AppBase)bapp).getRunState() == AppSettings.AppState.RUNNING)) {
+            return bapp;
         }
 
         return this.defaultBranding;

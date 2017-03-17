@@ -7,8 +7,8 @@ Ext.define ('Ung.model.Policy', {
         }}
     ],
     hasMany: {
-        model: 'Ung.model.NodeProperty',
-        name: 'nodeProperties'
+        model: 'Ung.model.AppProperty',
+        name: 'appProperties'
     },
     proxy: {
         type: 'memory',

@@ -67,24 +67,24 @@ Ext.define('Webui.config.system', {
         }
         return this.rpc.accessSettings;
     },
-    getHttpNode: function(forceReload) {
-        if (forceReload || this.rpc.httpNode === undefined) {
+    getHttpApp: function(forceReload) {
+        if (forceReload || this.rpc.httpApp === undefined) {
             try {
-                this.rpc.httpNode = rpc.nodeManager.node("untangle-casing-http");
+                this.rpc.httpApp = rpc.appManager.app("http");
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
 
         }
-        return this.rpc.httpNode;
+        return this.rpc.httpApp;
     },
     isHttpLoaded: function(forceReload) {
-        return this.getHttpNode(forceReload) !== null;
+        return this.getHttpApp(forceReload) !== null;
     },
     getHttpSettings: function(forceReload) {
         if (forceReload || this.rpc.httpSettings === undefined) {
             try {
-                this.rpc.httpSettings = this.getHttpNode(forceReload).getHttpSettings();
+                this.rpc.httpSettings = this.getHttpApp(forceReload).getHttpSettings();
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
@@ -92,70 +92,70 @@ Ext.define('Webui.config.system', {
         }
         return this.rpc.httpSettings;
     },
-    getFtpNode: function(forceReload) {
-        if (forceReload || this.rpc.ftpNode === undefined) {
+    getFtpApp: function(forceReload) {
+        if (forceReload || this.rpc.ftpApp === undefined) {
             try {
-                this.rpc.ftpNode = rpc.nodeManager.node("untangle-casing-ftp");
+                this.rpc.ftpApp = rpc.appManager.app("ftp");
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
 
         }
-        return this.rpc.ftpNode;
+        return this.rpc.ftpApp;
     },
     isFtpLoaded: function(forceReload) {
-        return this.getFtpNode(forceReload) !== null;
+        return this.getFtpApp(forceReload) !== null;
     },
     getFtpSettings: function(forceReload) {
         if (forceReload || this.rpc.ftpSettings === undefined) {
             try {
-                this.rpc.ftpSettings = this.getFtpNode(forceReload).getFtpSettings();
+                this.rpc.ftpSettings = this.getFtpApp(forceReload).getFtpSettings();
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
         }
         return this.rpc.ftpSettings;
     },
-    getSmtpNode: function(forceReload) {
-        if (forceReload || this.rpc.smtpNode === undefined) {
+    getSmtpApp: function(forceReload) {
+        if (forceReload || this.rpc.smtpApp === undefined) {
             try {
-                this.rpc.smtpNode = rpc.nodeManager.node("untangle-casing-smtp");
+                this.rpc.smtpApp = rpc.appManager.app("smtp");
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
         }
-        return this.rpc.smtpNode;
+        return this.rpc.smtpApp;
     },
     isMailLoaded: function(forceReload) {
-        return this.getSmtpNode(forceReload) !== null;
+        return this.getSmtpApp(forceReload) !== null;
     },
-    getSmtpNodeSettings: function(forceReload) {
+    getSmtpSettings: function(forceReload) {
         if (forceReload || this.rpc.mailSettings === undefined) {
             try {
-                this.rpc.mailSettings = this.getSmtpNode(forceReload).getSmtpNodeSettings();
+                this.rpc.mailSettings = this.getSmtpApp(forceReload).getSmtpSettings();
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
         }
         return this.rpc.mailSettings;
     },
-    getShieldNode: function(forceReload) {
-        if (forceReload || this.rpc.shieldNode === undefined) {
+    getShieldApp: function(forceReload) {
+        if (forceReload || this.rpc.shieldApp === undefined) {
             try {
-                this.rpc.shieldNode = rpc.nodeManager.node("untangle-node-shield");
+                this.rpc.shieldApp = rpc.appManager.app("shield");
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
         }
-        return this.rpc.shieldNode;
+        return this.rpc.shieldApp;
     },
     isShieldLoaded: function(forceReload) {
-        return this.getShieldNode(forceReload) !== null;
+        return this.getShieldApp(forceReload) !== null;
     },
     getShieldSettings: function(forceReload) {
         if (forceReload || this.rpc.shieldSettings === undefined) {
             try {
-                this.rpc.shieldSettings = this.getShieldNode().getSettings();
+                this.rpc.shieldSettings = this.getShieldApp().getSettings();
             } catch (e) {
                 Ung.Util.rpcExHandler(e);
             }
@@ -570,11 +570,11 @@ Ext.define('Webui.config.system', {
                     boxLabel: i18n._("Enable processing of SMTP traffic.  (This is the default setting)"),
                     hideLabel: true,
                     name: "SMTP",
-                    checked: this.getSmtpNodeSettings().smtpEnabled,
+                    checked: this.getSmtpSettings().smtpEnabled,
                     listeners: {
                         "change": {
                             fn: Ext.bind(function(elem, checked) {
-                                this.getSmtpNodeSettings().smtpEnabled = checked;
+                                this.getSmtpSettings().smtpEnabled = checked;
                             }, this)
                         }
                     }
@@ -583,11 +583,11 @@ Ext.define('Webui.config.system', {
                     boxLabel: i18n._("Disable processing of SMTP traffic."),
                     hideLabel: true,
                     name: "SMTP",
-                    checked: !this.getSmtpNodeSettings().smtpEnabled,
+                    checked: !this.getSmtpSettings().smtpEnabled,
                     listeners: {
                         "change": {
                             fn: Ext.bind(function(elem, checked) {
-                                this.getSmtpNodeSettings().smtpEnabled = !checked;
+                                this.getSmtpSettings().smtpEnabled = !checked;
                             }, this)
                         }
                     }
@@ -597,7 +597,7 @@ Ext.define('Webui.config.system', {
                     fieldLabel : i18n._("SMTP timeout (seconds)"),
                     name : "SMTP timeout",
                     id: "system_protocolSettings_smtpTimeout",
-                    value : this.getSmtpNodeSettings().smtpTimeout/1000,
+                    value : this.getSmtpSettings().smtpTimeout/1000,
                     width: 250,
                     allowDecimals: false,
                     allowNegative: false,
@@ -606,7 +606,7 @@ Ext.define('Webui.config.system', {
                     listeners : {
                         "change" : {
                             fn : Ext.bind(function(elem, newValue) {
-                                this.getSmtpNodeSettings().smtpTimeout = newValue*1000;
+                                this.getSmtpSettings().smtpTimeout = newValue*1000;
                             }, this)
                         }
                     }
@@ -616,11 +616,11 @@ Ext.define('Webui.config.system', {
                     boxLabel : i18n._("Allow TLS encryption over SMTP."),
                     hideLabel : true,
                     name : "AllowTLS",
-                    checked : this.getSmtpNodeSettings().smtpAllowTLS,
+                    checked : this.getSmtpSettings().smtpAllowTLS,
                     listeners : {
                         "check" : {
                             fn : Ext.bind(function(elem, checked) {
-                                this.getSmtpNodeSettings().smtpAllowTLS = checked;
+                                this.getSmtpSettings().smtpAllowTLS = checked;
                             }, this)
                         }
                     }
@@ -630,11 +630,11 @@ Ext.define('Webui.config.system', {
                     boxLabel : i18n._("Stop TLS encryption over SMTP."),
                     hideLabel : true,
                     name : "AllowTLS",
-                    checked : !this.getSmtpNodeSettings().smtpAllowTLS,
+                    checked : !this.getSmtpSettings().smtpAllowTLS,
                     listeners : {
                         "check" : {
                             fn : Ext.bind(function(elem, checked) {
-                                this.getSmtpNodeSettings().smtpAllowTLS = !checked;
+                                this.getSmtpSettings().smtpAllowTLS = !checked;
                             }, this)
                         }
                     }
@@ -1210,7 +1210,7 @@ Ext.define('Webui.config.system', {
             addAtTop: false,
             title: i18n._("Shield Rules"),
             dataExpression:'getShieldSettings().rules.list',
-            recordJavaClass: "com.untangle.node.shield.ShieldRule",
+            recordJavaClass: "com.untangle.app.shield.ShieldRule",
             emptyRow: {
                 "ruleId": -1,
                 "enabled": true,
@@ -1278,7 +1278,7 @@ Ext.define('Webui.config.system', {
                 items:[{
                     xtype:'rulebuilder',
                     settingsCmp: this,
-                    javaClass: "com.untangle.node.shield.ShieldRuleCondition",
+                    javaClass: "com.untangle.app.shield.ShieldRuleCondition",
                     dataIndex: "conditions",
                     conditions: this.getShieldConditions()
                 }]
@@ -1379,7 +1379,7 @@ Ext.define('Webui.config.system', {
 
         // save http settings
         if (this.isHttpLoaded()) {
-            this.getHttpNode().setHttpSettings(Ext.bind(function(result, exception) {
+            this.getHttpApp().setHttpSettings(Ext.bind(function(result, exception) {
                 this.afterSave(exception, isApply);
             }, this), this.getHttpSettings());
         } else {
@@ -1388,7 +1388,7 @@ Ext.define('Webui.config.system', {
 
         // save ftp settings
         if (this.isFtpLoaded()) {
-            this.getFtpNode().setFtpSettings(Ext.bind(function(result, exception) {
+            this.getFtpApp().setFtpSettings(Ext.bind(function(result, exception) {
                 this.afterSave(exception, isApply);
             }, this), this.getFtpSettings());
         } else {
@@ -1397,9 +1397,9 @@ Ext.define('Webui.config.system', {
 
         // save mail settings
         if (this.isMailLoaded()) {
-            this.getSmtpNode().setSmtpNodeSettings(Ext.bind(function(result, exception) {
+            this.getSmtpApp().setSmtpSettings(Ext.bind(function(result, exception) {
                 this.afterSave(exception, isApply);
-            }, this), this.getSmtpNodeSettings());
+            }, this), this.getSmtpSettings());
         } else {
             this.saveSemaphore--;
         }
@@ -1407,7 +1407,7 @@ Ext.define('Webui.config.system', {
         // save shield settings
         if (this.isShieldLoaded()) {
             this.getShieldSettings().rules.list = this.gridShieldRules.getList();
-            this.getShieldNode().setSettings(Ext.bind(function(result, exception) {
+            this.getShieldApp().setSettings(Ext.bind(function(result, exception) {
                 this.afterSave(exception, isApply);
             }, this), this.getShieldSettings());
         } else {

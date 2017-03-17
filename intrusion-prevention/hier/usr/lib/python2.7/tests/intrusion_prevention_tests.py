@@ -27,7 +27,7 @@ if ( "" != ''):
     sys.path.insert(0, UNTANGLE_DIR)
 
 default_rack_id = 1
-node = None
+app = None
 
 class IntrusionPreventionInterface:
     """
@@ -56,8 +56,8 @@ class IntrusionPreventionInterface:
         }
     }
 
-    def __init__(self, node_id, timeout=120 ):
-        self.node_id = node_id
+    def __init__(self, app_id, timeout=120 ):
+        self.app_id = app_id
 
     def config_request(self, action, patch = ""):
         """
@@ -67,7 +67,7 @@ class IntrusionPreventionInterface:
 
         request_arguments = IntrusionPreventionInterface.config_request_arguments_template
         request_arguments["arg1"] = action
-        request_arguments["arg2"] = self.node_id
+        request_arguments["arg2"] = self.app_id
 
         patch = json.dumps(patch)
 
@@ -189,7 +189,7 @@ def flush_events():
     """
     Clear Intrusion Prevention events
     """
-    reports = uvmContext.nodeManager().node("untangle-node-reports")
+    reports = uvmContext.appManager().app("reports")
     if (reports != None):
         reports.flushEvents()
 
@@ -224,20 +224,20 @@ class IntrusionPreventionTests(unittest2.TestCase):
     Tests
     """
     @staticmethod
-    def nodeName():
+    def appName():
         """
-        Get Node name
+        Get App name
         """
-        return "untangle-node-intrusion-prevention"
+        return "intrusion-prevention"
 
     @staticmethod
     def initialSetUp(self):
-        global node
-        if (uvmContext.nodeManager().isInstantiated(self.nodeName())):
-            raise Exception('node %s already instantiated' % self.nodeName())
-        node = uvmContext.nodeManager().instantiate(self.nodeName(), default_rack_id)
+        global app
+        if (uvmContext.appManager().isInstantiated(self.appName())):
+            raise Exception('app %s already instantiated' % self.appName())
+        app = uvmContext.appManager().instantiate(self.appName(), default_rack_id)
 
-        self.intrusion_prevention_interface = IntrusionPreventionInterface(node.getNodeSettings()["id"])
+        self.intrusion_prevention_interface = IntrusionPreventionInterface(app.getAppSettings()["id"])
         self.intrusion_prevention_interface.setup()
 
         # create blank ruleset to start
@@ -249,11 +249,11 @@ class IntrusionPreventionTests(unittest2.TestCase):
             "categoriesSelected": []
         }
         self.intrusion_prevention_interface.config_request( "save", patch )
-        node.reconfigure()
-        node.start() # must be called since intrusion-prevention doesn't auto-start
+        app.reconfigure()
+        app.start() # must be called since intrusion-prevention doesn't auto-start
 
     def setUp(self):
-        self.intrusion_prevention_interface = IntrusionPreventionInterface(node.getNodeSettings()["id"])
+        self.intrusion_prevention_interface = IntrusionPreventionInterface(app.getAppSettings()["id"])
         self.intrusion_prevention_interface.setup()
         flush_events()
 
@@ -261,7 +261,7 @@ class IntrusionPreventionTests(unittest2.TestCase):
         """
         Verify client is online
         """
-        result = remote_control.isOnline()
+        result = remote_control.is_online()
 
         assert (result == 0)
 
@@ -558,23 +558,23 @@ class IntrusionPreventionTests(unittest2.TestCase):
         """
         Functional, TCP log
         """
-        global node
+        global app
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
 
         startTime = datetime.now()
         rule = self.intrusion_prevention_interface.create_rule(msg="TCP Log", type="tcp", block=False, directive="content:\"CompanySecret\"; nocase;")
         self.intrusion_prevention_interface.config_request( "save", self.intrusion_prevention_interface.create_patch( "rule", "add", rule ) )
-        node.reconfigure()
+        app.reconfigure()
 
         loopLimit = 10
         result = 4 # Network failure
         # If there is a network error with wget, retry up to ten times.
         while (result == 4 and loopLimit > 0):
             time.sleep(1)
-            result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/CompanySecret")
+            result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/CompanySecret")
 
-        node.forceUpdateStats()
+        app.forceUpdateStats()
         events = global_functions.get_events('Intrusion Prevention','All Events',None,1)
         found = global_functions.check_events( events.get('list'), 5,
                                                'msg', rule['msg'],
@@ -586,18 +586,18 @@ class IntrusionPreventionTests(unittest2.TestCase):
         """
         Functional, UDP log
         """
-        global node
+        global app
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
 
         startTime = datetime.now()
         rule = self.intrusion_prevention_interface.create_rule(msg="UDP Log", type="udp", block=False, directive="content:\"CompanySecret\"; nocase;")
         self.intrusion_prevention_interface.config_request( "save", self.intrusion_prevention_interface.create_patch( "rule", "add", rule ) )
-        node.reconfigure()
+        app.reconfigure()
 
-        result = remote_control.runCommand("host www.companysecret.com 4.2.2.1 > /dev/null")
+        result = remote_control.run_command("host www.companysecret.com 4.2.2.1 > /dev/null")
 
-        node.forceUpdateStats()
+        app.forceUpdateStats()
         events = global_functions.get_events('Intrusion Prevention','All Events',None,1)
         found = global_functions.check_events( events.get('list'), 5,
                                                'msg', rule['msg'],
@@ -609,20 +609,20 @@ class IntrusionPreventionTests(unittest2.TestCase):
         """
         Functional, ICMP log
         """
-        global node
+        global app
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
 
-        dest_ip_address = remote_control.runCommand("host test.untangle.com | grep 'has address' | cut -d' ' -f4", None, True )
+        dest_ip_address = remote_control.run_command("host test.untangle.com | grep 'has address' | cut -d' ' -f4", None, True )
         rule = self.intrusion_prevention_interface.create_rule(msg="ICMP Log", type="icmp", dest_ip=dest_ip_address, block=False)
 
         startTime = datetime.now()
         self.intrusion_prevention_interface.config_request( "save", self.intrusion_prevention_interface.create_patch( "rule", "add", rule ) )
-        node.reconfigure()
+        app.reconfigure()
 
-        result = remote_control.runCommand("ping -c 5 " + dest_ip_address + " > /dev/null")
+        result = remote_control.run_command("ping -c 5 " + dest_ip_address + " > /dev/null")
 
-        node.forceUpdateStats()
+        app.forceUpdateStats()
         events = global_functions.get_events('Intrusion Prevention','All Events',None,1)
         found = global_functions.check_events( events.get('list'), 5,
                                                'msg', rule['msg'],
@@ -634,7 +634,7 @@ class IntrusionPreventionTests(unittest2.TestCase):
         """
         Functional, TCP block
         """
-        global node
+        global app
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
 
@@ -642,11 +642,11 @@ class IntrusionPreventionTests(unittest2.TestCase):
 
         startTime = datetime.now()
         self.intrusion_prevention_interface.config_request( "save", self.intrusion_prevention_interface.create_patch( "rule", "add", rule ) )
-        node.reconfigure()
+        app.reconfigure()
 
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/CompanySecret")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/CompanySecret")
 
-        node.forceUpdateStats()
+        app.forceUpdateStats()
         events = global_functions.get_events('Intrusion Prevention','All Events',None,1)
         found = global_functions.check_events( events.get('list'), 5,
                                                'msg', rule['msg'],
@@ -658,18 +658,18 @@ class IntrusionPreventionTests(unittest2.TestCase):
         """
         Functional, UDP block
         """
-        global node
+        global app
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
 
         startTime = datetime.now()
         rule = self.intrusion_prevention_interface.create_rule(msg="UDP Block", type="udp", block=True, directive="content:\"CompanySecret\"; nocase;")
         self.intrusion_prevention_interface.config_request( "save", self.intrusion_prevention_interface.create_patch( "rule", "add", rule ) )
-        node.reconfigure()
+        app.reconfigure()
 
-        result = remote_control.runCommand("host www.companysecret.com 4.2.2.1 > /dev/null")
+        result = remote_control.run_command("host www.companysecret.com 4.2.2.1 > /dev/null")
 
-        node.forceUpdateStats()
+        app.forceUpdateStats()
         events = global_functions.get_events('Intrusion Prevention','All Events',None,1)
         found = global_functions.check_events( events.get('list'), 5,
                                                'msg', rule['msg'],
@@ -681,19 +681,19 @@ class IntrusionPreventionTests(unittest2.TestCase):
         """
         Functional, ICMP block
         """
-        global node
+        global app
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
 
         startTime = datetime.now()
-        dest_ip_address = remote_control.runCommand("host test.untangle.com | grep 'has address' | cut -d' ' -f4", None, True )
+        dest_ip_address = remote_control.run_command("host test.untangle.com | grep 'has address' | cut -d' ' -f4", None, True )
         rule = self.intrusion_prevention_interface.create_rule(msg="ICMP Block", type="icmp", dest_ip=dest_ip_address, block=True)
         self.intrusion_prevention_interface.config_request( "save", self.intrusion_prevention_interface.create_patch( "rule", "add", rule ) )
-        node.reconfigure()
+        app.reconfigure()
 
-        result = remote_control.runCommand("ping -c 5 " + dest_ip_address + " > /dev/null")
+        result = remote_control.run_command("ping -c 5 " + dest_ip_address + " > /dev/null")
 
-        node.forceUpdateStats()
+        app.forceUpdateStats()
         events = global_functions.get_events('Intrusion Prevention','All Events',None,1)
         found = global_functions.check_events( events.get('list'), 5,
                                                'msg', rule['msg'],
@@ -705,30 +705,30 @@ class IntrusionPreventionTests(unittest2.TestCase):
         """
         Checks that the scan, detect, and block stats are properly incremented
         """
-        global node
+        global app
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
 
         rule = self.intrusion_prevention_interface.create_rule(msg="TCP Block", type="tcp", block=True, directive="content:\"CompanySecret\"; nocase;")
 
         self.intrusion_prevention_interface.config_request( "save", self.intrusion_prevention_interface.create_patch( "rule", "add", rule ) )
-        node.reconfigure()
-        node.forceUpdateStats()
+        app.reconfigure()
+        app.forceUpdateStats()
 
-        pre_events_scan = global_functions.getStatusValue(node,"scan")
-        pre_events_detect = global_functions.getStatusValue(node,"detect")
-        pre_events_block = global_functions.getStatusValue(node,"block")
+        pre_events_scan = global_functions.get_app_metric_value(app,"scan")
+        pre_events_detect = global_functions.get_app_metric_value(app,"detect")
+        pre_events_block = global_functions.get_app_metric_value(app,"block")
         
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/CompanySecret")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/CompanySecret")
 
-        node.forceUpdateStats()
+        app.forceUpdateStats()
         events = global_functions.get_events('Intrusion Prevention','All Events',None,1)
         found = global_functions.check_events( events.get('list'), 5, 'msg', rule['msg'], 'blocked', True)
         assert( found )
 
-        post_events_scan = global_functions.getStatusValue(node,"scan")
-        post_events_detect = global_functions.getStatusValue(node,"detect")
-        post_events_block = global_functions.getStatusValue(node,"block")
+        post_events_scan = global_functions.get_app_metric_value(app,"scan")
+        post_events_detect = global_functions.get_app_metric_value(app,"detect")
+        post_events_block = global_functions.get_app_metric_value(app,"block")
 
         print "pre_events_scan: %s post_events_scan: %s"%(str(pre_events_scan),str(post_events_scan))
         print "pre_events_detect: %s post_events_detect: %s"%(str(pre_events_detect),str(post_events_detect))
@@ -741,10 +741,10 @@ class IntrusionPreventionTests(unittest2.TestCase):
         """
         UDP blocked but bypassed so UDP should work
         """
-        global node
+        global app
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
-        tracerouteExists = remote_control.runCommand("test -x /usr/sbin/traceroute")
+        tracerouteExists = remote_control.run_command("test -x /usr/sbin/traceroute")
         if tracerouteExists != 0:
             raise unittest2.SkipTest("Traceroute app needs to be installed on client")
 
@@ -759,12 +759,12 @@ class IntrusionPreventionTests(unittest2.TestCase):
         startTime = datetime.now()
         rule = self.intrusion_prevention_interface.create_rule(msg="UDP Block", type="udp", block=True, directive="")
         self.intrusion_prevention_interface.config_request( "save", self.intrusion_prevention_interface.create_patch( "rule", "add", rule ) )
-        node.reconfigure()
+        app.reconfigure()
 
-        result = remote_control.runCommand("/usr/sbin/traceroute -U -m 3 -p 1234 " + test_untangle_com_ip)
+        result = remote_control.run_command("/usr/sbin/traceroute -U -m 3 -p 1234 " + test_untangle_com_ip)
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
-        node.forceUpdateStats()
+        app.forceUpdateStats()
         events = global_functions.get_events('Intrusion Prevention','All Events',None,500)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 500,
@@ -782,7 +782,7 @@ class IntrusionPreventionTests(unittest2.TestCase):
         """
         TCP blocked but bypassed so TCP should work
         """
-        global node
+        global app
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
 
@@ -796,12 +796,12 @@ class IntrusionPreventionTests(unittest2.TestCase):
         startTime = datetime.now()
         rule = self.intrusion_prevention_interface.create_rule(msg="TCP Block", type="tcp", block=True, directive="")
         self.intrusion_prevention_interface.config_request( "save", self.intrusion_prevention_interface.create_patch( "rule", "add", rule ) )
-        node.reconfigure()
+        app.reconfigure()
 
-        result = remote_control.runCommand("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
+        result = remote_control.run_command("wget -q -O /dev/null -t 1 --timeout=3 http://test.untangle.com/")
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
-        node.forceUpdateStats()
+        app.forceUpdateStats()
         events = global_functions.get_events('Intrusion Prevention','All Events',None,500)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 500,
@@ -820,11 +820,11 @@ class IntrusionPreventionTests(unittest2.TestCase):
         """
         Shut down
         """
-        global node
-        if node == None:
+        global app
+        if app == None:
             return
-        uvmContext.nodeManager().destroy( node.getNodeSettings()["id"] )
-        node = None
+        uvmContext.appManager().destroy( app.getAppSettings()["id"] )
+        app = None
         
 
-test_registry.registerNode("intrusion-prevention", IntrusionPreventionTests)
+test_registry.registerApp("intrusion-prevention", IntrusionPreventionTests)

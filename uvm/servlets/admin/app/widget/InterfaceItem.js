@@ -5,11 +5,11 @@ Ext.define('Ung.widget.InterfaceItem', {
     bind: {
         html: '<p class="name" style="display: {displayWan};">{iface.name}</p>' +
             '<div class="speeds">' +
-            '<div class="speed_up"><i class="material-icons">arrow_drop_up</i><span>{tx} kB/s</span></div>' +
-            '<div class="speed_down"><i class="material-icons">arrow_drop_down</i><span>{rx} kB/s</span></div>' +
+            '<div class="speed_up"><i class="fa fa-caret-down fa-lg"></i> <span>{tx} kB/s</span></div>' +
+            '<div class="speed_down"><i class="fa fa-caret-up fa-lg"></i> <span>{rx} kB/s</span></div>' +
             '</div>' +
             '<p class="name" style="display: {displayNotWan};">{iface.name}</p>' +
-            '<i class="material-icons pointer">arrow_drop_down</i>'
+            '<i class="fa fa-caret-down fa-lg pointer"></i>'
     },
 
     viewModel: {

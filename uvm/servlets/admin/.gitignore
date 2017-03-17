@@ -1,4 +1,5 @@
-.vscode/
 node_modules/
+gulpfile.js
+package.json
 .jshintrc
-.eslintrc.js
+.eslintrc.json

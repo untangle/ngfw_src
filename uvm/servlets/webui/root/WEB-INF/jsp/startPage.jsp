@@ -53,6 +53,7 @@
     <!-- static resource loading during development. -->
     <script type="text/javascript" src="script/config/about.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/config/administration.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/config/events.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/config/email.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/config/hostMonitor.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/config/deviceMonitor.js?s=${buildStamp}"></script>
@@ -68,32 +69,32 @@
     <script type="text/javascript" src="script/untangle-base-web-filter/settings.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/untangle-base-virus-blocker/settings.js?s=${buildStamp}"></script>
 
-    <script type="text/javascript" src="script/untangle-node-directory-connector/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-bandwidth-control/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-configuration-backup/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-branding-manager/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-application-control/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-wan-failover/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-casing-ssl-inspector/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-ipsec-vpn/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-policy-manager/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-web-filter/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-spam-blocker/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-wan-balancer/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-live-support/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-virus-blocker/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-web-cache/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/directory-connector/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/bandwidth-control/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/configuration-backup/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/branding-manager/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/application-control/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/wan-failover/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/ssl-inspector/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/ipsec-vpn/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/policy-manager/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/web-filter/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/spam-blocker/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/wan-balancer/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/live-support/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/virus-blocker/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/web-cache/settings.js?s=${buildStamp}"></script>
 
-    <script type="text/javascript" src="script/untangle-node-ad-blocker/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-captive-portal/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-virus-blocker-lite/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-firewall/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-intrusion-prevention/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-openvpn/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-phish-blocker/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-application-control-lite/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-reports/settings.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/untangle-node-spam-blocker-lite/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/ad-blocker/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/captive-portal/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/virus-blocker-lite/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/firewall/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/intrusion-prevention/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/openvpn/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/phish-blocker/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/application-control-lite/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/reports/settings.js?s=${buildStamp}"></script>
+    <script type="text/javascript" src="script/spam-blocker-lite/settings.js?s=${buildStamp}"></script>
 </c:if>
 
 <%--

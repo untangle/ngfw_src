@@ -1,0 +1,20 @@
+{
+    "uniqueId": "bandwidth-control-llhXPfl20s",
+    "category": "Bandwidth Control",
+    "description": "The bandwidth usage of the top clients.",
+    "displayOrder": 300,
+    "enabled": true,
+    "javaClass": "com.untangle.app.reports.ReportEntry",
+    "orderDesc": false,
+    "units": "bytes/s",
+    "readOnly": true,
+    "table": "session_minutes",
+    "timeDataInterval": "AUTO",
+    "timeDataDynamicValue": "(s2c_bytes+c2s_bytes)/60",
+    "timeDataDynamicColumn": "c_client_addr",
+    "timeDataDynamicLimit": "10",
+    "timeDataDynamicAggregationFunction": "sum",
+    "timeStyle": "AREA_STACKED",
+    "title": "Top Clients Usage",
+    "type": "TIME_GRAPH_DYNAMIC"
+}

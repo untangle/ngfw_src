@@ -4,7 +4,7 @@
     "description": "The amount of devices add and removed from the device table over time.",
     "displayOrder": 101,
     "enabled": true,
-    "javaClass": "com.untangle.node.reports.ReportEntry",
+    "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderDesc": false,
     "units": "devices",
     "readOnly": true,

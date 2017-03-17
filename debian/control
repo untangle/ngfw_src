@@ -8,7 +8,7 @@ Standards-Version: 3.8.0
 
 Package: untangle-libuvmcore
 Architecture: any
-Depends: ${misc:Depends}, libc6 (>= 2.3.2), libnetfilter-queue1 (>= 1.0.2+20141023+git329468), libnetfilter-conntrack3 (>= 1.0.4), gawk
+Depends: ${misc:Depends}
 Description: Untangle Core Library
  Untangle Core Library files.
 
@@ -35,6 +35,163 @@ Architecture: all
 Depends: untangle-vm
 Description: Shield
  The Shield application.
+
+Package: untangle-node-license
+Architecture: all
+Section: non-free/net
+Depends: untangle-vm
+Description: The Untangle License Manager
+ Untangle License Manager.
+
+Package: untangle-node-web-cache
+Architecture: all
+Section: non-free/net
+Depends: untangle-vm, untangle-node-license, untangle-squid-config
+Conflicts: untangle-node-webcache
+Replaces: untangle-node-webcache
+Provides: untangle-node-webcache
+Description: Web Cache
+ The Web Cache application.
+
+Package: untangle-node-wan-failover
+Architecture: all
+Section: non-free/net
+Depends: untangle-vm, untangle-node-license, traceroute
+Conflicts: untangle-node-faild
+Replaces: untangle-node-faild
+Provides: untangle-node-faild
+Description: WAN Failover
+ The WAN Failover application.
+
+Package: untangle-node-wan-balancer
+Architecture: all
+Section: non-free/net
+Depends: untangle-vm, untangle-node-license
+Conflicts: untangle-node-splitd
+Replaces: untangle-node-splitd
+Provides: untangle-node-splitd
+Description: WAN Balancer
+ The WAN Balancer application.
+
+Package: untangle-node-virus-blocker
+Architecture: all
+Section: non-free/net
+Depends: untangle-vm, untangle-base-virus-blocker, untangle-bdamserver | untangle-kernel-modules-jessie-armel | untangle-kernel-modules-jessie-armhf, untangle-casing-http, untangle-casing-ftp, untangle-casing-smtp, untangle-node-license
+Conflicts: untangle-node-virusblocker
+Replaces: untangle-node-virusblocker
+Provides: untangle-node-virusblocker
+Description: Virus Blocker
+ The Virus Blocker application.
+
+Package: untangle-casing-ssl-inspector
+Architecture: all
+Section: non-free/net
+Depends: untangle-vm, untangle-node-license
+Conflicts: untangle-casing-https
+Replaces: untangle-casing-https
+Provides: untangle-casing-https
+Description: SSL Casing
+ The SSL Casing Application
+
+Package: untangle-node-spam-blocker
+Architecture: all
+Section: non-free/net
+Depends: untangle-vm, untangle-spamcatd, untangle-node-license, untangle-base-spam-blocker, untangle-casing-smtp, untangle-spamassassin-update
+Conflicts: untangle-node-spamblocker
+Replaces: untangle-node-spamblocker
+Provides: untangle-node-spamblocker
+Description: Spam Blocker
+ The Spam Blocker application.
+
+Package: untangle-node-policy-manager
+Architecture: all
+Section: non-free/net
+Depends: untangle-vm, untangle-node-license
+Conflicts: untangle-node-policy
+Replaces: untangle-node-policy
+Provides: untangle-node-policy
+Description: The Untangle Policy Manager
+ Untangle Policy Manager.
+
+Package: untangle-node-live-support
+Architecture: all
+Section: non-free/net
+Depends: untangle-vm, untangle-node-license
+Conflicts: untangle-node-support
+Replaces: untangle-node-support
+Provides: untangle-node-support
+Description: Live Support
+ The Live Support application.
+
+Package: untangle-node-ipsec-vpn
+Architecture: all
+Section: non-free/net
+Depends: untangle-vm, untangle-node-license, xl2tpd, python-netaddr, libstrongswan, libstrongswan-standard-plugins, libstrongswan-extra-plugins, strongswan, strongswan-charon, strongswan-ike, strongswan-ikev1, strongswan-ikev2, strongswan-libcharon, strongswan-starter, libcharon-extra-plugins
+Conflicts: untangle-node-ipsec
+Replaces: untangle-node-ipsec
+Provides: untangle-node-ipsec
+Description: IPsec VPN
+ The IPsec VPN application
+
+Package: untangle-node-directory-connector
+Architecture: all
+Section: non-free/net
+Depends: untangle-vm, untangle-node-license, libfreeradius-client-dev, freeradius-common, untangle-google-connector, xvfb
+Conflicts: libradius1, radiusclient1, untangle-node-adconnector
+Replaces: untangle-node-adconnector
+Provides: untangle-node-adconnector
+Description: The Untangle Directory Connector
+ The Untangle Directory Connector.
+
+Package: untangle-node-configuration-backup
+Architecture: all
+Section: non-free
+Depends: untangle-vm, curl, untangle-node-license
+Conflicts: untangle-node-boxbackup
+Replaces: untangle-node-boxbackup
+Provides: untangle-node-boxbackup
+Description: Configuration Backup
+ The Configuration Backup application.
+
+Package: untangle-node-branding-manager
+Architecture: all
+Section: non-free
+Depends: untangle-vm, untangle-node-license, netpbm
+Conflicts: untangle-node-branding
+Replaces: untangle-node-branding
+Provides: untangle-node-branding
+Description: The Untangle Branding Manager
+ The Untangle Branding Manager application.
+
+Package: untangle-node-bandwidth-control
+Architecture: all
+Section: non-free
+Depends: untangle-vm, untangle-node-license
+Conflicts: untangle-node-bandwidth
+Replaces: untangle-node-bandwidth
+Provides: untangle-node-banwidth
+Description: Bandwidth Control
+ The Bandwidth Control application.
+
+Package: untangle-node-application-control
+Architecture: all
+Section: non-free
+Depends: untangle-vm, untangle-node-license, untangle-classd
+Conflicts: untangle-node-classd
+Replaces: untangle-node-classd
+Provides: untangle-node-classd
+Description: Application Control
+ The Application Control application
+
+Package: untangle-node-web-filter
+Architecture: all
+Section: non-free
+Depends: untangle-vm, untangle-casing-http, untangle-base-web-filter, untangle-node-license
+Conflicts: untangle-node-sitefilter
+Replaces: untangle-node-sitefilter
+Provides: untangle-node-sitefilter
+Description: Web Filter
+ The Web Filter application.
 
 Package: untangle-node-web-monitor
 Architecture: all
@@ -101,7 +258,7 @@ Architecture: all
 Conflicts: untangle-node-idps, untangle-node-ips
 Replaces: untangle-node-idps, untangle-node-ips
 Provides: untangle-node-idps, untangle-node-ips
-Depends: untangle-vm, untangle-snort-config, snort (>= 2.9.8.2), libdaq0 (>= 2.0.6)
+Depends: untangle-vm, untangle-snort-config
 Description: Intrusion Prevention
  The Intrusion Prevention application.
 
@@ -167,7 +324,10 @@ Description: Platform Thirdparty Libraries
 Package: untangle-vm
 Architecture: all
 Conflicts: untangle-libnetfilter-queue-dev, untangle-libnetfilter-queue0
-Depends: untangle-libuvm, conntrack, untangle-keyring, oracle-java8-jdk | openjdk-8-jre, oracle-java8-jdk | ca-certificates-java, untangle-libuvm, untangle-libuvmcore (>= 11.1), untangle-libuvmthirdparty, sudo, psmisc, iptables (> 1.4.2-6), at, ebtables, mime-support, untangle-nsis-addons, dnsmasq, pppoe, bridge-utils, iputils-ping, curl, wget, untangle-system-config, untangle-linux-config, untangle-hardware-config, exim4-daemon-light | mail-transport-agent, gettext, ethtool, net-tools, dnsutils, rsyslog, untangle-netd (>= 11.1), untangle-node-router, untangle-node-shield, dash, untangle-apache2-config, perl, zip, unzip, tofrodos, tidy, dpkg-dev, python-pycurl, python-unittest2, python-psycopg2, python-egenix-mxdatetime, python-simplejson, python-py | python-codespeak-lib, untangle-nflogd, untangle-stunnel-config, libsnmp-dev, untangle-geoip-database, miniupnpd
+Depends: untangle-libuvm,
+         untangle-libuvmcore (>= 11.1),
+         untangle-libuvmthirdparty,
+         untangle-development-runtime (> 13.0.0)
 Description: Platform
  The Platform.
 

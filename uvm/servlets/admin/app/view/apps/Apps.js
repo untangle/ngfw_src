@@ -1,15 +1,29 @@
 Ext.define('Ung.view.apps.Apps', {
-    extend: 'Ext.container.Container',
+    extend: 'Ext.panel.Panel',
     xtype: 'ung.apps',
-    layout: 'border',
+    itemId: 'apps',
+    layout: 'card',
+    /* requires-start */
     requires: [
-        'Ung.view.apps.AppsController',
-        'Ung.view.apps.AppsModel',
-        'Ung.view.apps.AppItem'
+        'Ung.view.apps.AppsController'
     ],
-
+    /* requires-end */
     controller: 'apps',
-    viewModel: 'apps',
+    viewModel: {
+        data: {
+            onInstalledApps: false
+        },
+        stores: {
+            apps: {
+                // data: '{appsData}',
+                fields: ['name', 'displayName', 'url', 'type', 'status'],
+                sorters: [{
+                    property: 'viewPosition',
+                    direction: 'ASC'
+                }]
+            }
+        }
+    },
 
     config: {
         policy: undefined
@@ -19,106 +33,105 @@ Ext.define('Ung.view.apps.Apps', {
         border: false
     },
 
-    items: [{
-        region: 'north',
+    dockedItems: [{
+        xtype: 'toolbar',
+        dock: 'top',
         border: false,
-        height: 44,
-        itemId: 'apps-topnav',
-        bodyStyle: {
-            background: '#555',
-            padding: '0 5px'
-        },
-        layout: {
-            type: 'hbox',
-            align: 'middle'
-        },
         items: [{
-            xtype: 'button',
-            baseCls: 'heading-btn',
-            html: Ung.Util.iconTitle('Install Apps'.t(), 'file_download-16'),
-            hrefTarget: '_self',
-            bind: {
-                href: '#apps/{policyId}/install'
-            }
-        }, {
-            xtype: 'component',
-            flex: 1
-        }, {
             xtype: 'combobox',
             editable: false,
             multiSelect: false,
             queryMode: 'local',
+            hidden: true,
             bind: {
                 value: '{policyId}',
-                store: '{policies}'
+                store: '{policies}',
+                hidden: '{!onInstalledApps}'
             },
             valueField: 'policyId',
             displayField: 'displayName',
             listeners: {
                 change: 'setPolicy'
             }
-        }]
-    }, {
-        region: 'center',
-        itemId: 'apps-list',
-        border: false,
-        scrollable: true,
-        bodyStyle: {
-            background: 'transparent'
-        },
-        items: [{
-            xtype: 'dataview',
-            itemId: 'filters',
-            margin: 10,
-            // tpl: '<tpl for="."><div>{displayName}</div></tpl>',
-
-            tpl: '<tpl for=".">' +
-                    '<tpl if="type == \'FILTER\'">' +
-                        '<a class="app-item" href="#apps/{policyId}/{name}">' +
-                            '<span class="app-icon"><img src="' + resourcesBaseHref + '/skins/modern-rack/images/admin/apps/{name}_80x80.png" width=80 height=80/>' +
-                            '<span class="app-name">{displayName}</span>' +
-                            '</span>' +
-                            '<span class="app-state {state}"><i class="material-icons">power_settings_new</i></span>' +
-                        '</a>' +
-                    '</tpl>' +
-                '</tpl>',
-            itemSelector: 'a',
+        }, {
+            xtype: 'button',
+            html: 'Install Apps'.t(),
+            iconCls: 'fa fa-download',
+            hrefTarget: '_self',
+            hidden: true,
             bind: {
-                store: '{nodesStore}'
-            },
-            style: {
-                display: 'inline-block'
+                href: '#apps/{policyId}/install',
+                hidden: '{!onInstalledApps}'
             }
         }, {
-            xtype: 'component',
-            cls: 'apps-separator',
-            html: 'Service Apps'.t()
-        }, {
-            xtype: 'dataview',
-            margin: 10,
-            // tpl: '<tpl for="."><div>{displayName}</div></tpl>',
-
-            tpl: '<tpl for=".">' +
-                    '<tpl if="type == \'SERVICE\'">' +
-                        '<a class="app-item" href="#apps/{policyId}/{name}">' +
-                            '<span class="app-icon"><img src="' + resourcesBaseHref + '/skins/modern-rack/images/admin/apps/{name}_80x80.png" width=80 height=80/>' +
-                            '<span class="app-name">{displayName}</span>' +
-                            '</span>' +
-                            '<tpl if="hasPowerButton"><span class="app-state {state}"><i class="material-icons">power_settings_new</i></span></tpl>' +
-                        '</a>' +
-                    '</tpl>' +
-                '</tpl>',
-            itemSelector: 'a',
+            xtype: 'button',
+            html: 'Back to Apps'.t(),
+            iconCls: 'fa fa-arrow-circle-left',
+            hrefTarget: '_self',
+            hidden: true,
             bind: {
-                store: '{nodesStore}'
-            },
-            style: {
-                display: 'inline-block'
+                href: '#apps/{policyId}',
+                hidden: '{onInstalledApps}'
             }
         }]
     }],
-    listeners: {
-        //beforeRender: 'onBeforeRender'
-        //onPolicyChange: 'onPolicyChange'
-    }
+
+    items: [{
+        xtype: 'dataview',
+        scrollable: true,
+        itemId: 'installedApps',
+        bind: '{apps}',
+        tpl: '<p class="apps-title">' + 'Apps'.t() + '</p>' +
+            '<tpl for=".">' +
+                '<tpl if="type === \'FILTER\'">' +
+                '<a href="{url}" class="app-item">' +
+                '<span class="state {targetState}"><i class="fa fa-power-off"></i></span>' +
+                '<img src="' + '/skins/modern-rack/images/admin/apps/{name}_80x80.png" width=80 height=80/>' +
+                '<span class="app-name">{displayName}</span>' +
+                '</a>' +
+                '</tpl>' +
+            '</tpl>' +
+            '<p class="apps-title">' + 'Service Apps'.t() + '</p>' +
+            '<tpl for=".">' +
+                '<tpl if="type === \'SERVICE\'">' +
+                '<a href="{url}" class="app-item">' +
+                '<span class="state {targetState}"><i class="fa fa-power-off"></i></span>' +
+                '<img src="' + '/skins/modern-rack/images/admin/apps/{name}_80x80.png" width=80 height=80/>' +
+                '<span class="app-name">{displayName}</span>' +
+                '</a>' +
+                '</tpl>' +
+            '</tpl>',
+        itemSelector: 'a'
+    }, {
+        xtype: 'dataview',
+        scrollable: true,
+        itemId: 'installableApps',
+        bind: {
+            store: '{apps}'
+        },
+        tpl: '<p class="apps-title">' + 'Apps'.t() + '</p>' +'<tpl for=".">' +
+            '<tpl if="type === \'FILTER\'">' +
+                '<div class="app-install-item {status}">' +
+                '<img src="' + '/skins/modern-rack/images/admin/apps/{name}_80x80.png" width=80 height=80/>' +
+                '<i class="fa fa-download fa-3x"></i>' +
+                '<i class="fa fa-check fa-3x"></i>' +
+                '<span class="loader">Loading...</span>' +
+                '<h3>{displayName}</h3>' + '<p>{desc}</p>' +
+                '</div>' +
+                '</tpl>' +
+            '</tpl>' +
+            '<p class="apps-title">' + 'Service Apps'.t() + '</p>' +
+            '<tpl for=".">' +
+                '<tpl if="type === \'SERVICE\'">' +
+                '<div class="app-install-item {status}">' +
+                '<img src="' + '/skins/modern-rack/images/admin/apps/{name}_80x80.png" width=80 height=80/>' +
+                '<i class="fa fa-download fa-3x"></i>' +
+                '<i class="fa fa-check fa-3x"></i>' +
+                '<span class="loader">Loading...</span>' +
+                '<h3>{displayName}</h3>' + '<p>{desc}</p>' +
+                '</div>' +
+                '</tpl>' +
+            '</tpl>',
+        itemSelector: 'div'
+    }]
 });

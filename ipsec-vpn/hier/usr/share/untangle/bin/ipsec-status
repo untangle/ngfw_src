@@ -1,0 +1,250 @@
+#!/usr/bin/env python
+
+# This is pretty awful.  We run the 'ip xfrm state' and 'ip xfrm policy'
+# commands and capture the output as an array of bytes.  We then parse
+# the output into a list of dictionaries that we dump in JSON format
+# that can be read by the Java stuff.  Since the state and policy output
+# is very similar, there is a single ConnectionStatusRecord that has all
+# of the fields across both record types.  We add the type field to each
+# record and only dump the fields that are relevant to each type.
+# The state output is different for established vs. broken tunnels.
+# For broken tunnels there is no auth or enc info but there is a multi-part
+# sel line so the parsing logic looks for both.
+
+# SAMPLE OUTPUT FROM ip xfrm state
+# ----------------------------------------------------------------------------
+# src 192.168.222.41 dst 192.168.222.35
+#         proto esp spi 0xc469c772 reqid 16385 mode tunnel
+#         replay-window 32 flag af-unspec
+#         auth hmac(sha1) 0xc3071826afd075fdcac9b1a924ff56310315c42a
+#         enc cbc(aes) 0x7f999124d2ff04f2885ad8f2a64e02cd
+# src 192.168.222.35 dst 192.168.222.41
+#         proto esp spi 0x0bc56084 reqid 16385 mode tunnel
+#         replay-window 32 flag af-unspec
+#         auth hmac(sha1) 0x92da257ff1b0cb51e79e34cacb456f028f6a185f
+#         enc cbc(aes) 0xbb714d6ae1601b7acd852c3124ef8594
+# src 192.168.222.42 dst 192.168.222.35
+#         proto esp spi 0x33fd1df5 reqid 16389 mode tunnel
+#         replay-window 0
+#         sel src 192.168.222.42/32 dst 192.168.222.35/32
+
+# SAMPLE OUTPUT FROM ip xfrm policy
+# ----------------------------------------------------------------------------
+# src 192.168.35.0/24 dst 192.168.10.0/24
+#         dir out priority 2344 ptype main
+#         tmpl src 192.168.222.35 dst 192.168.222.41
+#                 proto esp reqid 16385 mode tunnel
+# src 192.168.10.0/24 dst 192.168.35.0/24
+#         dir fwd priority 2344 ptype main
+#         tmpl src 192.168.222.41 dst 192.168.222.35
+#                 proto esp reqid 16385 mode tunnel
+# src 192.168.10.0/24 dst 192.168.35.0/24
+#         dir in priority 2344 ptype main
+#         tmpl src 192.168.222.41 dst 192.168.222.35
+#                 proto esp reqid 16385 mode tunnel
+
+import subprocess
+
+# List of dictionary tags we include in the output for both record types.
+state_tags = [ 'src', 'dst', 'proto', 'spi', 'reqid', 'mode', 'replay-window', 'flag', 'auth', 'auth_key', 'enc', 'enc_key', 'sel_src', 'sel_dst' ]
+policy_tags = [ 'src', 'dst', 'dir', 'priority', 'ptype', 'tmpl_src', 'tmpl_dst', 'proto', 'reqid', 'mode' ]
+
+# These are the grids that define how we parse each of the record types
+state_grid = []
+state_grid.append([ 'src', 2, None ])
+state_grid.append([ 'dst', 2, None ])
+state_grid.append([ 'proto', 2, None ])
+state_grid.append([ 'spi', 2, None ])
+state_grid.append([ 'reqid', 2, None ])
+state_grid.append([ 'mode', 2, None ])
+state_grid.append([ 'replay-window', 2, None ])
+state_grid.append([ 'flag', 2, None ])
+state_grid.append([ 'auth', 3, '_key' ])
+state_grid.append([ 'enc', 3, '_key' ])
+state_grid.append([ 'sel', 5, '_' ])
+
+policy_grid = []
+policy_grid.append([ 'src', 2, None ])
+policy_grid.append([ 'dst', 2, None ])
+policy_grid.append([ 'dir', 2, None ])
+policy_grid.append([ 'priority', 2, None ])
+policy_grid.append([ 'ptype', 2, None ])
+policy_grid.append([ 'tmpl', 5, '_' ])
+policy_grid.append([ 'proto', 2, None ])
+policy_grid.append([ 'reqid', 2, None ])
+policy_grid.append([ 'mode', 2, None ])
+
+# -----------------------------------------------------------------------------
+
+def parse_output(parse_data, parse_array, grid_list):
+    parse_lines = parse_data.split('\n')
+    parse_words = None
+    parse_info = {}
+    item_grid = None
+    hold_word = None
+    word_count = 0
+    first_line = True
+
+    # look at every line
+    for line in parse_lines:
+
+        # ignore lines that don't have at least two words
+        if (len(line) < 3):
+            continue
+
+        # each new record starts with a line that has no leading spaces
+        if (line[0:1].isspace() == False):
+            # if this is the first line of the output just twiddle the flag
+            if (first_line == True):
+                first_line = False
+            # if not the first line we append the pased info to the array
+            # and prepare to begin parsing the next record
+            else:
+                parse_array.append(parse_info)
+                parse_info = {}
+                word_count = 0
+
+        # strip the line and parse the words
+        line = line.strip()
+        parse_words = line.split(' ')
+
+        # process each word in the line
+        for word in parse_words:
+            word_count += 1
+
+            # no active record so see if we have a grid entry matching the word
+            if (word_count == 1):
+                item_grid = search_gridlist(word,grid_list)
+                if (item_grid == None):
+                    word_count = 0
+                    continue
+
+            # found the word in the grid so setup some local variables
+            tag = item_grid[0]
+            val = item_grid[1]
+            sep = item_grid[2]
+
+            if (word_count == 2):
+                # for two word records we store the 2nd word as the value
+                if (val == 2):
+                    parse_info[tag] = word
+                    word_count = 0
+                    continue
+                # for three word records we store the 2nd word as the tag value
+                if (val == 3):
+                    parse_info[tag] = word
+                    continue
+                # for five word records we store nothing at the base tag but
+                # save the 2nd word for use when storing the 3rd word
+                if (val == 5):
+                    hold_word = word
+                    continue
+
+            if (word_count == 3):
+                # for three word records store the 3rd word as the tag value
+                # using tag + separator
+                if (val == 3):
+                    temp = (tag + sep)
+                    parse_info[temp] = word
+                    word_count = 0
+                    continue
+                # word count must be five so we store the 3rd word as the
+                # value using tag + separator + 2nd word saved above
+                temp = (tag + sep + hold_word)
+                parse_info[temp] = word
+
+            if (word_count == 4):
+                # must have a five word record so save this for storing the 5th
+                hold_word = word
+
+            if (word_count == 5):
+                # for five word records we store the 5th word as the value
+                # using tag + sep + 4th word saved above
+                temp = (tag + sep + hold_word)
+                parse_info[temp] = word
+                word_count = 0
+
+    # append record we were working on when we finished parsing if not empty
+    if (len(parse_info) > 0):
+        parse_array.append(parse_info)
+
+    return(parse_array)
+
+# -----------------------------------------------------------------------------
+
+def search_gridlist(name,grid_list):
+    for item in grid_list:
+        if (item[0] == name):
+            return(item)
+    return(None)
+
+# -----------------------------------------------------------------------------
+
+state_array = []
+policy_array = []
+
+state_proc = subprocess.Popen("/sbin/ip xfrm state list", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+(state_out,state_err) = state_proc.communicate()
+state_array = parse_output(state_out, state_array, state_grid)
+
+policy_in = subprocess.Popen("/sbin/ip xfrm policy list dir in", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+(policy_out,policy_err) = policy_in.communicate()
+policy_array = parse_output(policy_out, policy_array, policy_grid)
+
+policy_out = subprocess.Popen("/sbin/ip xfrm policy list dir out", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+(policy_out,policy_err) = policy_out.communicate()
+policy_array = parse_output(policy_out, policy_array, policy_grid)
+
+policy_fwd = subprocess.Popen("/sbin/ip xfrm policy list dir fwd", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+(policy_out,policy_err) = policy_fwd.communicate()
+policy_array = parse_output(policy_out, policy_array, policy_grid)
+
+print "{ javaClass: java.util.LinkedList, list: ["
+
+first = True
+for entry in state_array:
+    # add any missing tags to prevent dictionary exceptions
+    for tag in state_tags:
+        if (not tag in entry.keys()): entry[tag] = "unknown"
+
+    if first:
+        first = False
+    else:
+        print ","
+
+    print "{ type:\"STATE\", src:\"%s\", dst:\"%s\", proto:\"%s\", mode:\"%s\", reqid:\"%s\", auth:\"%s\", spi:\"%s\", enc:\"%s\", flag:\"%s\", replayWindow:\"%s\", authKey:\"%s\", encKey:\"%s\", selSrc:\"%s\", selDst:\"%s\", javaClass:\"com.untangle.app.ipsec_vpn.ConnectionStatusRecord\" }" % (
+        entry['src'],
+        entry['dst'],
+        entry['proto'],
+        entry['mode'],
+        entry['reqid'],
+        entry['auth'],
+        entry['spi'],
+        entry['enc'],
+        entry['flag'],
+        entry['replay-window'],
+        entry['auth_key'],
+        entry['enc_key'],
+        entry['sel_src'],
+        entry['sel_dst'])
+
+for entry in policy_array:
+    # add any missing tags to prevent dictionary exceptions
+    for tag in policy_tags:
+        if (not tag in entry.keys()): entry[tag] = "unknown"
+
+    print ","
+
+    print "{ type:\"POLICY\", src:\"%s\", dst:\"%s\", proto:\"%s\", mode:\"%s\", reqid:\"%s\", ptype:\"%s\", dir:\"%s\", priority:\"%s\", tmplSrc:\"%s\", tmplDst:\"%s\", javaClass:\"com.untangle.app.ipsec_vpn.ConnectionStatusRecord\" }" % (
+        entry['src'],
+        entry['dst'],
+        entry['proto'],
+        entry['mode'],
+        entry['reqid'],
+        entry['ptype'],
+        entry['dir'],
+        entry['priority'],
+        entry['tmpl_src'],
+        entry['tmpl_dst'])
+
+print "] }"
