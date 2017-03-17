@@ -2,7 +2,7 @@ Ext.define('Webui.configuration-backup.settings', {
     extend:'Ung.AppWin',
     gridEventLog: null,
     getAppSummary: function() {
-        return i18n._('Configuration Backup automatically creates backups of settings uploads them to <i>My Account</i> and <i>Google Drive</i>.');
+        return i18n._('Configuration Backup automatically creates backups of settings and uploads them to <i>My Account</i> and <i>Google Drive</i>.');
     },
     initComponent: function(container, position) {
         // builds the 2 tabs

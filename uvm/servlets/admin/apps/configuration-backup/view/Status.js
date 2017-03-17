@@ -15,7 +15,7 @@ Ext.define('Ung.apps.configurationbackup.view.Status', {
             cls: 'app-desc',
             html: '<img src="/skins/modern-rack/images/admin/apps/configuration-backup_80x80.png" width="80" height="80"/>' +
                 '<h3>Configuration Backup</h3>' +
-                '<p>' + 'Configuration Backup automatically creates backups of settings uploads them to <i>My Account</i> and <i>Google Drive</i>.'.t() + '</p>'
+                '<p>' + 'Configuration Backup automatically creates backups of settings and uploads them to <i>My Account</i> and <i>Google Drive</i>.'.t() + '</p>'
         }, {
             xtype: 'appstate'
         }, {
