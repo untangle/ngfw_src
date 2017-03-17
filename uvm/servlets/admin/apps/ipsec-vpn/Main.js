@@ -4,7 +4,40 @@ Ext.define('Ung.apps.ipsecvpn.Main', {
     controller: 'app-ipsec-vpn',
 
     viewModel: {
+
+        formulas: {
+
+            ipsecStateInfo: {
+                get: function(get) {
+                    var ipsecApp = rpc.appManager.app('ipsec-vpn');
+                    return(ipsecApp.getStateInfo());
+                }
+            },
+
+            ipsecPolicyInfo: {
+                get: function(get) {
+                    var ipsecApp = rpc.appManager.app('ipsec-vpn');
+                    return(ipsecApp.getPolicyInfo());
+                }
+            },
+
+            ipsecSystemLog: {
+                get: function(get) {
+                    var ipsecApp = rpc.appManager.app('ipsec-vpn');
+                    return(ipsecApp.getLogFile());
+                }
+            },
+
+            ipsecVirtualLog: {
+                get: function(get) {
+                    var ipsecApp = rpc.appManager.app('ipsec-vpn');
+                    return(ipsecApp.getVirtualLogFile());
+                }
+            }
+        },
+
         stores: {
+
             tunnelList: {
                 data: '{settings.tunnels.list}'
             },

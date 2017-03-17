@@ -3,12 +3,26 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecLog', {
     alias: 'widget.app-ipsec-vpn-ipseclog',
     itemId: 'ipseclog',
     title: 'IPsec Log'.t(),
+    layout: 'fit',
+
+    tbar: [{
+        xtype: 'button',
+        iconCls: 'fa fa-refresh',
+        text: 'Refresh',
+        target: 'ipsecSystemLog',
+        handler: 'refreshTextArea'
+    }],
 
     items: [{
-        xtype: 'component',
+        xtype: 'textarea',
+        itemId: 'ipsecSystemLog',
+        spellcheck: false,
         padding: 0,
         border: false,
-        tpl: '<textarea style="width: 100%; height: 100%; border: 0; resize: none;" readonly>{log}</textarea>',
-        data: 'This needs to call and display the data from the app function getLogFile'
+        bind: '{ipsecSystemLog}',
+        fieldStyle: {
+            'fontFamily'   : 'courier new',
+            'fontSize'     : '12px'
+        }
     }]
 });

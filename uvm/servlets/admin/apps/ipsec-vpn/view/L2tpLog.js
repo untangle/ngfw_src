@@ -3,12 +3,26 @@ Ext.define('Ung.apps.ipsecvpn.view.L2tpLog', {
     alias: 'widget.app-ipsec-vpn-l2tplog',
     itemId: 'l2tplog',
     title: 'L2TP Log'.t(),
+    layout: 'fit',
+
+    tbar: [{
+        xtype: 'button',
+        iconCls: 'fa fa-refresh',
+        text: 'Refresh',
+        target: 'ipsecVirtualLog',
+        handler: 'refreshTextArea'
+    }],
 
     items: [{
-        xtype: 'component',
+        xtype: 'textarea',
+        itemId: 'ipsecVirtualLog',
+        spellcheck: false,
         padding: 0,
         border: false,
-        tpl: '<textarea style="width: 100%; height: 100%; border: 0; resize: none;" readonly>{log}</textarea>',
-        data: 'This needs to call and display the data from the app function getVirtualLogFile'
+        bind: '{ipsecVirtualLog}',
+        fieldStyle: {
+            'fontFamily'   : 'courier new',
+            'fontSize'     : '12px'
+        }
     }]
 });
