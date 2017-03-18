@@ -25,6 +25,45 @@ Ext.define('Ung.apps.intrusionprevention.view.Status', {
         }, {
             xtype: 'appstate',
         }, {
+            xtype: 'fieldset',
+            title: "Setup Wizard".t(),
+            items: [{
+                xtype: 'component',
+                html: "Intrusion Prevention is unconfigured. Use the Wizard to configure Intrusion Prevention.".t(),
+                cls: 'warning',
+                hidden: true,
+                bind: {
+                    hidden: '{settings.configured == true}'
+                }
+            }, {
+                xtype: "button",
+                // name: 'setup_wizard_button',
+                // margin: '10 0 0 0',
+                text: "Run Intrusion Detection/Prevention Setup Wizard".t(),
+                iconCls: "action-icon",
+                // handler: Ext.bind(function() {
+                //     this.setupWizard();
+                // }, this)
+            }]
+        },{
+            xtype: 'fieldset',
+            title: "Updates".t(),
+            defaults: {
+                labelWidth: 200
+            },
+            items: [{
+                xtype: 'displayfield',
+                fieldLabel: "Last check for updates".t(),
+                bind: '{lastUpdateCheck}'
+            }, {
+                xtype: 'displayfield',
+                fieldLabel: "Last update".t(),
+                bind: '{lastUpdate}'
+            }, {
+                xtype: 'component',
+                html: Ext.String.format("{0}Note:{1} {2} continues to maintain the default signature settings through automatic updates. You are free to modify and add signatures, however it is not required.".t(), '<b>', '</b>', rpc.companyName)
+            }]
+        }, {
             xtype: 'appreports'
         }]
     }, {
