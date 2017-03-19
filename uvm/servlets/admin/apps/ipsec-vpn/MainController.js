@@ -152,23 +152,24 @@ Ext.define('Ung.apps.ipsecvpn.MainController', {
     refreshTextArea: function(cmp)
     {
         var ipsecApp = rpc.appManager.app('ipsec-vpn');
+	var target;
 
         switch(cmp.target) {
             case "ipsecStateInfo":
-                var target = this.getView().down('#ipsecStateInfo');
+                target = this.getView().down('#ipsecStateInfo');
                 target.setValue(ipsecApp.getStateInfo());
                 break;
             case "ipsecPolicyInfo":
-                var target = this.getView().down('#ipsecPolicyInfo');
+                target = this.getView().down('#ipsecPolicyInfo');
                 target.setValue(ipsecApp.getPolicyInfo());
                 break;
             case "ipsecSystemLog":
-                var target = this.getView().down('#ipsecSystemLog');
+                target = this.getView().down('#ipsecSystemLog');
                 target.setValue(ipsecApp.getLogFile());
                 break;
             case "ipsecVirtualLog":
-                var target = this.getView().down('#ipsecVirtualLog');
-                target.getValue(ipsecApp.getVirtualLogFile()); break;
+                target = this.getView().down('#ipsecVirtualLog');
+                target.getValue(ipsecApp.getVirtualLogFile());
                 break;
         }
     }
