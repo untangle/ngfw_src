@@ -35,94 +35,103 @@ Ext.define('Ung.view.reports.EntryController', {
 
     onAfterRender: function () {
         var me = this, vm = this.getViewModel(),
-            entryContainer = me.getView().down('#entryContainer');
-        // watch when the selected report is changed
-        me.getView().enableBubble('customevt');
-        vm.bind('{entry}', function (entry) {
-            if (!entry) { return; }
-            console.log('here');
-            entryContainer.remove('entry'); // remove any existing entry
+            entryContainer = me.getView().down('#entryContainer'),
+            dataGrid = this.getView().down('#currentData');
 
-            switch(entry.get('type')) {
-                case 'TEXT':
-                    me.addTextEntry();
-                    // add text view
-                    break;
-                case 'EVENT':
-                    // add text view
-                    break;
-                case 'TIME_GRAPH':
-                case 'TIME_GRAPH_DYNAMIC':
-                    if (!me.getView().down('timechart')) {
-                        me.addGraphEntry();
-                    }
-                    break;
-                case 'PIE_GRAPH':
-                    if (!me.getView().down('piechart')) {
-                        me.addGraphEntry();
-                    }
-                    break;
-                // default:
-                    // this.set('_defaultColors', entry.get('colors') ? false : true);
-            }
-            // me.fetchData();
-            // console.log(TableConfig.getConfig(entry.get('table')));
+        vm.bind('{entry}', function (entry) {
+            console.log(entry.get('type'));
+            vm.set('_currentData', []);
+            dataGrid.setColumns([]);
+            dataGrid.setLoading(true);
         });
 
-        // vm.bind('{entry.timeDataInterval}', me.fetchData, me);
+        // // watch when the selected report is changed
+        // me.getView().enableBubble('customevt');
+        // vm.bind('{entry}', function (entry) {
+        //     if (!entry) { return; }
+        //     console.log('here');
+        //     entryContainer.remove('entry'); // remove any existing entry
 
-        vm.bind('{_data}', me.formatData, me);
-
-
-        // vm.bind('{_defaultColors}', function (val) {
-        //     var colors, colorBtns = [];
-
-        //     if (val) {
-        //         vm.set('entry.colors', null);
-        //     } else {
-        //         colors = vm.get('entry.colors') || Util.defaultColors;
-        //         me.getView().down('#colors').removeAll();
-        //         colors.forEach(function (color, i) {
-        //             colorBtns.push({
-        //                 xtype: 'button',
-        //                 margin: '0 1',
-        //                 idx: i,
-        //                 arrowVisible: false,
-        //                 menu: {
-        //                     plain: true,
-        //                     xtype: 'colormenu',
-        //                     colors: me.colorPalette,
-        //                     height: 200,
-        //                     listeners: {
-        //                         select: 'updateColor'
-        //                     },
-        //                     dockedItems: [{
-        //                         xtype: 'toolbar',
-        //                         dock: 'bottom',
-        //                         // ui: 'footer',
-        //                         items: [{
-        //                             // text: 'Remove'.t(),
-        //                             iconCls: 'fa fa-ban',
-        //                             tooltip: 'Remove'.t()
-        //                         }, {
-        //                             text: 'OK'.t(),
-        //                             iconCls: 'fa fa-check',
-        //                             listeners: {
-        //                                 click: function (btn) {
-        //                                     btn.up('button').hideMenu();
-        //                                 }
-        //                             }
-        //                         }]
-
-        //                     }]
-        //                 },
-        //                 text: '<i class="fa fa-square" style="color: ' + color + '"></i>',
-        //             });
-        //         });
-        //         me.getView().down('#colors').add(colorBtns);
-
+        //     switch(entry.get('type')) {
+        //         case 'TEXT':
+        //             me.addTextEntry();
+        //             // add text view
+        //             break;
+        //         case 'EVENT':
+        //             // add text view
+        //             break;
+        //         case 'TIME_GRAPH':
+        //         case 'TIME_GRAPH_DYNAMIC':
+        //             if (!me.getView().down('timechart')) {
+        //                 me.addGraphEntry();
+        //             }
+        //             break;
+        //         case 'PIE_GRAPH':
+        //             if (!me.getView().down('piechart')) {
+        //                 me.addGraphEntry();
+        //             }
+        //             break;
+        //         // default:
+        //             // this.set('_defaultColors', entry.get('colors') ? false : true);
         //     }
+        //     // me.fetchData();
+        //     // console.log(TableConfig.getConfig(entry.get('table')));
         // });
+
+        // // vm.bind('{entry.timeDataInterval}', me.fetchData, me);
+
+        // vm.bind('{_data}', me.formatData, me);
+
+
+        vm.bind('{_defaultColors}', function (val) {
+            console.log('colors');
+            var colors, colorBtns = [];
+
+            if (val) {
+                vm.set('entry.colors', null);
+            } else {
+                colors = vm.get('entry.colors') || Util.defaultColors;
+                me.getView().down('#colors').removeAll();
+                colors.forEach(function (color, i) {
+                    colorBtns.push({
+                        xtype: 'button',
+                        margin: '0 1',
+                        idx: i,
+                        arrowVisible: false,
+                        menu: {
+                            plain: true,
+                            xtype: 'colormenu',
+                            colors: me.colorPalette,
+                            height: 200,
+                            listeners: {
+                                select: 'updateColor'
+                            },
+                            dockedItems: [{
+                                xtype: 'toolbar',
+                                dock: 'bottom',
+                                // ui: 'footer',
+                                items: [{
+                                    // text: 'Remove'.t(),
+                                    iconCls: 'fa fa-ban',
+                                    tooltip: 'Remove'.t()
+                                }, {
+                                    text: 'OK'.t(),
+                                    iconCls: 'fa fa-check',
+                                    listeners: {
+                                        click: function (btn) {
+                                            btn.up('button').hideMenu();
+                                        }
+                                    }
+                                }]
+
+                            }]
+                        },
+                        text: '<i class="fa fa-square" style="color: ' + color + '"></i>',
+                    });
+                });
+                me.getView().down('#colors').add(colorBtns);
+            }
+        });
 
     },
 
@@ -151,8 +160,71 @@ Ext.define('Ung.view.reports.EntryController', {
     //         });
     // },
 
+    formatTimeData: function (data) {
+        var entry = this.getViewModel().get('entry'),
+            vm = this.getViewModel(),
+            dataGrid = this.getView().down('#currentData'), i, column;
+
+        dataGrid.setLoading(false);
+
+        var storeFields = [{
+            name: 'time_trunc'
+        }];
+
+        var reportDataColumns = [{
+            dataIndex: 'time_trunc',
+            header: 'Timestamp'.t(),
+            width: 130,
+            flex: 1,
+            renderer: function (val) {
+                return (!val) ? 0 : Util.timestampFormat(val);
+            }
+        }];
+        var seriesRenderer = null, title;
+
+        if (!Ext.isEmpty(entry.get('seriesRenderer'))) {
+            // seriesRenderer =  Ung.panel.Reports.getColumnRenderer(this.entry.seriesRenderer);
+        }
+
+        for (i = 0; i < entry.get('timeDataColumns').length; i += 1) {
+            column = entry.get('timeDataColumns')[i].split(' ').splice(-1)[0];
+            // todo: deal with series renderer
+            title = column;
+            // title = seriesRenderer ? seriesRenderer(column) + ' [' + column + ']' : column;
+            // storeFields.push({name: column, convert: zeroFn, type: 'integer'});
+            reportDataColumns.push({
+                dataIndex: column,
+                header: title,
+                width: entry.get('timeDataColumns').length > 2 ? 60 : 90,
+                renderer: function (val) {
+                    return val !== undefined ? val : '-';
+                }
+            });
+        }
+
+        dataGrid.setColumns(reportDataColumns);
+        vm.set('_currentData', data);
+    },
+
+    formatTimeDynamicData: function (data) {
+        // console.log('format dynamic');
+        var dataGrid = this.getView().down('#currentData');
+        dataGrid.setLoading(false);
+    },
+
+    formatPieData: function () {
+        var dataGrid = this.getView().down('#currentData');
+        dataGrid.setLoading(false);
+    },
+
+    formatTextData: function () {
+        var dataGrid = this.getView().down('#currentData');
+        dataGrid.setLoading(false);
+    },
+
     formatData: function (data) {
         var entry = this.getViewModel().get('entry'),
+            vm = this.getViewModel(),
             dataGrid = this.getView().down('#currentData'), i, column;
 
         if (entry.get('type') === 'TEXT') {
@@ -230,6 +302,7 @@ Ext.define('Ung.view.reports.EntryController', {
                 width: 130,
                 flex: 1,
                 renderer: function (val) {
+                    // return val.time;
                     return (!val) ? 0 : Util.timestampFormat(val);
                 }
                 // flex: entry.get('timeDataColumns').length > 2 ? 0 : 1,
@@ -256,24 +329,38 @@ Ext.define('Ung.view.reports.EntryController', {
 
             for (i = 0; i < entry.get('timeDataColumns').length; i += 1) {
                 column = entry.get('timeDataColumns')[i].split(' ').splice(-1)[0];
-                title = seriesRenderer ? seriesRenderer(column) + ' [' + column + ']' : column;
+                // todo: deal with series renderer
+                title = column;
+                // title = seriesRenderer ? seriesRenderer(column) + ' [' + column + ']' : column;
                 // storeFields.push({name: column, convert: zeroFn, type: 'integer'});
                 reportDataColumns.push({
                     dataIndex: column,
                     header: title,
-                    width: entry.get('timeDataColumns').length > 2 ? 60 : 90
+                    width: entry.get('timeDataColumns').length > 2 ? 60 : 90,
+                    renderer: function (val) {
+                        return val !== undefined ? val : '-';
+                    }
                 });
             }
 
-            dataGrid.setStore(Ext.create('Ext.data.Store', {
-                // fields: storeFields,
-                data: []
-            }));
+            // dataGrid.setStore(Ext.create('Ext.data.Store', {
+            //     // fields: storeFields,
+            //     data: []
+            // }));
             dataGrid.setColumns(reportDataColumns);
-            dataGrid.getStore().loadData(data);
+            vm.set('_currentData', data);
+            // dataGrid.getStore().loadData(data);
         }
     },
 
+
+    filterData: function (min, max) {
+        this.getView().down('#currentData').getStore().clearFilter();
+        this.getView().down('#currentData').getStore().filterBy(function (point) {
+            var t = point.get('time_trunc').time;
+            return t >= min && t <= max ;
+        });
+    },
 
     addGraphEntry: function () {
         var me = this,
@@ -340,8 +427,12 @@ Ext.define('Ung.view.reports.EntryController', {
     // },
 
     refreshData: function () {
-        // this.getView().down('#chart').getController().fetchData();
-        this.fetchData();
+        var vm = this.getViewModel();
+        if (vm.get('entry.type') === 'TEXT') {
+            this.getView().down('textreport').getController().fetchData();
+            return;
+        }
+        this.getView().down('graphreport').getController().fetchData();
     },
 
     updateReport: function () {
@@ -357,6 +448,9 @@ Ext.define('Ung.view.reports.EntryController', {
                 vm.get('report').commit();
                 Util.successToast('<span style="color: yellow; font-weight: 600;">' + vm.get('entry.title') + '</span> report updated!');
                 Ung.app.redirectTo('#reports/' + entry.get('category').replace(/ /g, '-').toLowerCase() + '/' + entry.get('title').replace(/[^0-9a-z\s]/gi, '').replace(/\s+/g, '-').toLowerCase());
+
+                // todo: review for other report types (TEXT, EVENT_LIST)
+                v.down('graphreport').getController().fetchData();
             });
     },
 

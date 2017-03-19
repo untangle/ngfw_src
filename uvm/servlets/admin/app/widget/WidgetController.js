@@ -29,6 +29,17 @@ Ext.define('Ung.widget.WidgetController', {
                 if (e.target.dataset.action === 'refresh') {
                     me.addToQueue();
                 }
+                // if (e.target.dataset.action === 'style') {
+                //     var vm = me.getViewModel();
+                //     var styles = ['LINE', 'AREA', 'BAR', 'BAR_OVERLAPPED', 'BAR_STACKED'];
+                //     var style = vm.get('entry.timeStyle');
+                //     var idx = Ext.Array.indexOf(styles, style);
+                //     if (idx < styles.length - 1) {
+                //         vm.set('entry.timeStyle', styles[idx + 1]);
+                //     } else {
+                //         vm.set('entry.timeStyle', styles[0]);
+                //     }
+                // }
             }
         });
     },
@@ -38,15 +49,20 @@ Ext.define('Ung.widget.WidgetController', {
         if (vm.get('entry')) {
             entryType = vm.get('entry.type');
             if (entryType === 'TIME_GRAPH' || entryType === 'TIME_GRAPH_DYNAMIC') {
-                view.add({ xtype: 'timechart', itemId: 'chart',  reference: 'chart', height: 250, isWidget: true });
+                view.add({ xtype: 'graphreport', itemId: 'report-widget',  reference: 'chart', height: 260, widgetDisplay: true });
             }
 
             if (entryType === 'PIE_GRAPH') {
-                view.add({ xtype: 'piechart', itemId: 'chart', reference: 'chart',  height: 250 });
+                view.add({ xtype: 'graphreport', itemId: 'report-widget', reference: 'chart',  height: 260, widgetDisplay: true });
             }
 
+            if (entryType === 'TEXT') {
+                view.add({ xtype: 'textreport', itemId: 'report-widget', height: 260 });
+            }
+
+
             if (entryType === 'EVENT_LIST') {
-                view.add({ xtype: 'component', html: 'Not Implemented',  height: 250 });
+                view.add({ xtype: 'component', html: 'Not Implemented',  height: 260 });
             }
         }
     },
