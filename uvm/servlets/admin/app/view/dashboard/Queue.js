@@ -49,9 +49,8 @@ Ext.define('Ung.view.dashboard.Queue', {
 
             //if (this.inView(widget)) {
             if (!widget.isHidden()) {
-                if (widget.down('#chart')) {
-                    console.log('here');
-                    widget.down('#chart').getController().fetchData();
+                if (widget.down('#report-widget')) {
+                    widget.down('#report-widget').getController().fetchData();
                 }
             } else {
                 widget.toQueue = true;

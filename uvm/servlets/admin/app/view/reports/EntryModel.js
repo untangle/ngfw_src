@@ -6,7 +6,8 @@ Ext.define('Ung.view.reports.EntryModel', {
     data: {
         startDate: new Date(Math.floor(rpc.systemManager.getMilliseconds()/1800000) * 1800000  - 3600 * 24 * 1000),
         endDate: new Date(Math.floor(rpc.systemManager.getMilliseconds()/1800000) * 1800000),
-        tillNow: true
+        tillNow: true,
+        _currentData: []
     },
 
     stores: {
@@ -16,6 +17,14 @@ Ext.define('Ung.view.reports.EntryModel', {
     },
 
     formulas: {
+        _reportCard: function (get) {
+            console.log(get('entry.type'));
+            if (get('entry.type') === 'TEXT') { return 'textreport'; }
+            if (get('entry.type') === 'EVENT_LIST') { return 'eventreport'; }
+            return 'graphreport';
+        },
+
+
         _approximation: {
             get: function (get) {
                 return get('entry.approximation') || 'sum';
@@ -137,17 +146,23 @@ Ext.define('Ung.view.reports.EntryModel', {
             if (!get('entry.type')) {
                 return false;
             }
-            return get('entry.type').indexOf('TIME_GRAPH') >= 0;
+            return get('entry.type') === 'TIME_GRAPH';
+        },
+        isTimeGraphDynamic: function (get) {
+            if (!get('entry.type')) {
+                return false;
+            }
+            return get('entry.type') === 'TIME_GRAPH_DYNAMIC';
         },
         isPieGraph: function (get) {
             if (!get('entry.type')) {
                 return false;
             }
-            return get('entry.type').indexOf('PIE_GRAPH') >= 0;
+            return get('entry.type') === 'PIE_GRAPH';
         },
 
         isGraphEntry: function (get) {
-            return get('isTimeGraph') || get('isPieGraph');
+            return get('isTimeGraph') || get('isTimeGraphDynamic') || get('isPieGraph');
         },
 
         isTextEntry: function (get)  {

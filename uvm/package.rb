@@ -106,7 +106,7 @@ end
 # end
 
 ungAllDirs = [ 'util', 'overrides', 'model', 'store', 'controller',
-               'chart', 'cmp', 'widget', 'view', 'Application.js' ]
+               'cmp', 'widget', 'view', 'Application.js' ]
 ungAllDirs.map! { |e| "uvm/servlets/admin/app/#{e}" }
 JsBuilder.new(uvm_lib, "ung-all", ungAllDirs, "admin/script")
 

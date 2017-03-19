@@ -93,8 +93,6 @@
                 //     extend: 'Ung.Application',
                 // });
 
-                console.log(rpc.appManager);
-
                 // load the untangle app only after the rpc is in place and translations set
                 Ext.Loader.loadScript({
                     url: 'script/ung-all.js',

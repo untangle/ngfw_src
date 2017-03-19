@@ -38,6 +38,7 @@ Ext.define('Ung.widget.Report', {
         bind: {
             html: '{title}' +
                 '<button class="action-btn"><i class="fa fa-rotate-left" data-action="refresh"></i></button>'
+                // '<button class="action-btn"><i class="fa fa-rotate-left" data-action="refresh"></i></button>'
         }
     }]
 });

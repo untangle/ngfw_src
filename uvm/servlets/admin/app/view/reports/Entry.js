@@ -15,8 +15,20 @@ Ext.define('Ung.view.reports.Entry', {
         border: false,
         bodyBorder: false,
         itemId: 'entryContainer',
-        layout: 'fit',
-        items: [], // here the chart/text/grid will be added
+        layout: 'card',
+        bind: {
+            activeItem: '{_reportCard}'
+        },
+        items: [{
+            xtype: 'graphreport',
+            itemId: 'graphreport'
+        }, {
+            xtype: 'eventreport',
+            itemId: 'eventreport'
+        }, {
+            xtype: 'textreport',
+            itemId: 'textreport'
+        }],
 
         dockedItems: [{
             xtype: 'toolbar',
@@ -116,7 +128,7 @@ Ext.define('Ung.view.reports.Entry', {
         // floatable: true,
         // floating: true,
         collapsible: true,
-        collapsed: false,
+        collapsed: true,
         titleCollapse: true,
         hidden: true,
         border: false,
@@ -127,11 +139,14 @@ Ext.define('Ung.view.reports.Entry', {
         items: [{
             xtype: 'grid',
             itemId: 'currentData',
-            // todo: review this store
-            store: Ext.create('Ext.data.Store', {
-                fields: [],
-                data: []
-            }),
+            // hidden: true,
+            // emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-2x"></i> <br/>No Data!</p>',
+            bind: {
+                store: {
+                    data: '{_currentData}'
+                },
+                // hidden: '{entry && entry.type === "EVENT_LIST"}'
+            },
             title: '<i class="fa fa-list"></i> ' + 'Current Data'.t()
         }, {
             xtype: 'form',
@@ -195,8 +210,7 @@ Ext.define('Ung.view.reports.Entry', {
                     hidden: true,
                     bind: {
                         value: '{entry.timeStyle}',
-                        disabled: '{!isTimeGraph}',
-                        hidden: '{!isTimeGraph}'
+                        hidden: '{!(isTimeGraph || isTimeGraphDynamic)}'
                     },
                 }, {
                     // TIME_GRAPH - data interval
@@ -217,8 +231,7 @@ Ext.define('Ung.view.reports.Entry', {
                     hidden: true,
                     bind: {
                         value: '{entry.timeDataInterval}',
-                        disabled: '{!isTimeGraph}',
-                        hidden: '{!isTimeGraph}'
+                        hidden: '{!(isTimeGraph || isTimeGraphDynamic)}'
                     },
                 }, {
                     // TIME_GRAPH - data grouping approximation
@@ -230,14 +243,13 @@ Ext.define('Ung.view.reports.Entry', {
                         ['average', 'Average'.t()],
                         ['high', 'High'.t()],
                         ['low', 'Low'.t()],
-                        ['sum', 'Sum'.t()] // default
+                        ['sum', 'Sum'.t() + ' (' + 'default'.t() + ')'] // default
                     ],
                     queryMode: 'local',
                     hidden: true,
                     bind: {
                         value: '{_approximation}',
-                        disabled: '{!isTimeGraph}',
-                        hidden: '{!isTimeGraph}'
+                        hidden: '{!(isTimeGraph || isTimeGraphDynamic)}'
                     },
                 }, {
                     // PIE_GRAPH - chart style
@@ -331,14 +343,94 @@ Ext.define('Ung.view.reports.Entry', {
                         hidden: '{!isTimeGraph}'
                     }
                 }, {
-                    // TIME_GRAPH only
+                    xtype: 'component',
+                    style: {
+                        borderTop: '1px #CCC solid',
+                        margin: '15px 0'
+                    },
+                    autoEl: { tag: 'hr' },
+                    hidden: true,
+                    bind: { hidden: '{!isTimeGraphDynamic}' }
+                }, {
+                    // TIME_GRAPH_DYNAMIC only
+                    xtype: 'textfield',
+                    anchor: '100%',
+                    fieldLabel: 'Time Data Dynamic Value'.t(),
+                    labelWidth: 200,
+                    hidden: true,
+                    bind: {
+                        value: '{entry.timeDataDynamicValue}',
+                        hidden: '{!isTimeGraphDynamic}'
+                    }
+                }, {
+                    // TIME_GRAPH_DYNAMIC only
+                    xtype: 'textfield',
+                    anchor: '100%',
+                    fieldLabel: 'Time Data Dynamic Column'.t(),
+                    labelWidth: 200,
+                    hidden: true,
+                    bind: {
+                        value: '{entry.timeDataDynamicColumn}',
+                        hidden: '{!isTimeGraphDynamic}'
+                    }
+                }, {
+                    // TIME_GRAPH_DYNAMIC only
+                    xtype: 'numberfield',
+                    anchor: '100%',
+                    fieldLabel: 'Time Data Dynamic Limit'.t(),
+                    labelWidth: 200,
+                    hidden: true,
+                    bind: {
+                        value: '{entry.timeDataDynamicLimit}',
+                        hidden: '{!isTimeGraphDynamic}'
+                    }
+                }, {
+                    // TIME_GRAPH_DYNAMIC only
+                    xtype: 'combo',
+                    anchor: '100%',
+                    fieldLabel: 'Time Data Aggregation Function'.t(),
+                    labelWidth: 200,
+                    store: [
+                        ['avg', 'Average'.t()],
+                        ['sum', 'Sum'.t()],
+                        ['min', 'Min'.t()],
+                        ['max', 'Max'.t()]
+                    ],
+                    editable: false,
+                    queryMode: 'local',
+                    hidden: true,
+                    bind: {
+                        value: '{entry.timeDataDynamicAggregationFunction}',
+                        hidden: '{!isTimeGraphDynamic}'
+                    }
+                }, {
+                    // TIME_GRAPH_DYNAMIC only
+                    xtype: 'checkbox',
+                    fieldLabel: 'Time Data Dynamic Allow Null'.t(),
+                    labelWidth: 200,
+                    hidden: true,
+                    bind: {
+                        value: '{entry.timeDataDynamicAllowNull}',
+                        hidden: '{!isTimeGraphDynamic}'
+                    }
+                }, {
+                    xtype: 'component',
+                    style: {
+                        borderTop: '1px #CCC solid',
+                        margin: '15px 0'
+                    },
+                    autoEl: { tag: 'hr' },
+                    hidden: true,
+                    bind: { hidden: '{!isTimeGraphDynamic}' }
+                }, {
+                    // TIME_GRAPH, TIME_GRAPH_DYNAMIC
                     xtype: 'textfield',
                     anchor: '100%',
                     fieldLabel: 'Series Renderer'.t(),
                     hidden: true,
                     bind: {
                         value: '{entry.seriesRenderer}',
-                        hidden: '{!isTimeGraph}'
+                        hidden: '{!(isTimeGraph || isTimeGraphDynamic)}'
                     }
                 }, {
                     // PIE_GRAPH only
