@@ -53,7 +53,7 @@ Ext.define('Ung.apps.directory-connector.MainController', {
 
         var secureValue = elem.getValue();
         var currentPortValue = vm.get("settings.activeDirectorySettings.LDAPPort");
-        if( secureValue == true ){
+        if( secureValue ){
             if( currentPortValue == "389"){
                 vm.set("settings.activeDirectorySettings.LDAPPort", "636");
             }
@@ -261,7 +261,7 @@ Ext.define('Ung.apps.directory-connector.MainController', {
         var message = v.appManager.getGoogleManager().authenticate( Ext.bind(function(result, exception) {
             if (exception) { Util.exceptionToast(ex); return; }
             var message;
-            if ( result == true ) {
+            if ( result ) {
                 message = 'Login successful.'.t();
             }else{
                 message = 'Login failed.'.t();
@@ -279,7 +279,7 @@ Ext.define('Ung.apps.directory-connector.MainController', {
         var message = v.appManager.getFacebookManager().authenticate( Ext.bind(function(result, exception) {
             if (exception) { Util.exceptionToast(ex); return; }
             var message;
-            if ( result == true ) {
+            if ( result ) {
                 message = 'Login successful.'.t();
             }else{
                 message = 'Login failed.'.t();

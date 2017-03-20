@@ -11,7 +11,7 @@ Ext.define('Ung.view.reports.TextReportController', {
 
     onBeforeRender: function () {
         var me = this, vm = this.getViewModel();
-        console.log('here');
+
         vm.bind('{entry}', function (entry) {
             if (entry.get('type') !== 'TEXT') {
                 return;
@@ -28,6 +28,13 @@ Ext.define('Ung.view.reports.TextReportController', {
         var me = this, vm = this.getViewModel();
         me.entry = vm.get('entry');
         me.getView().setLoading(true);
+
+        // if it's rendered inside widget, set the widget timeframe for the report time interval
+        if (vm.get('widget.timeframe')) {
+            vm.set('startDate', new Date(rpc.systemManager.getMilliseconds() - vm.get('widget.timeframe') * 1000));
+            vm.set('endDate', new Date(rpc.systemManager.getMilliseconds()));
+        }
+
         Rpc.asyncData('rpc.reportsManager.getDataForReportEntry',
                         vm.get('entry').getData(),
                         vm.get('startDate'),

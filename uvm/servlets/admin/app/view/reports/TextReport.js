@@ -6,9 +6,8 @@ Ext.define('Ung.view.reports.TextReport', {
     controller: 'textreport',
 
     padding: 10,
-    style: {
-        fontSize: '20px',
-        margin: '20px 0',
-    }
 
+    style: {
+        fontSize: '14px'
+    }
 });

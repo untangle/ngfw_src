@@ -350,7 +350,7 @@ Ext.define('Ung.util.TableConfig', {
                     width: Ung.util.TableConfig.portFieldWidth,
                     sortable: true,
                     dataIndex: 'protocol',
-                    renderer: Ung.panel.Reports.getColumnRenderer('protocol')
+                    // renderer: Ung.panel.Reports.getColumnRenderer('protocol')
                 }, {
                     header: 'ICMP Type'.t(),
                     width: Ung.util.TableConfig.portFieldWidth,
@@ -361,7 +361,7 @@ Ext.define('Ung.util.TableConfig', {
                     width: 60,
                     sortable: true,
                     dataIndex: 'policy_id',
-                    renderer: Ung.panel.Reports.getColumnRenderer('policy_id')
+                    // renderer: Ung.panel.Reports.getColumnRenderer('policy_id')
                 }, {
                     header: 'Policy Rule Id'.t(),
                     width: 60,
@@ -382,7 +382,7 @@ Ext.define('Ung.util.TableConfig', {
                     width: 80,
                     sortable: true,
                     dataIndex: 'client_country',
-                    renderer: function(value) { return Ung.Main.getCountryName(value); }
+                    // renderer: function(value) { return Ung.Main.getCountryName(value); }
                 }, {
                     header: 'Client Latitude'.t() ,
                     width: 80,
@@ -398,7 +398,7 @@ Ext.define('Ung.util.TableConfig', {
                     width: 80,
                     sortable: true,
                     dataIndex: 'server_country',
-                    renderer: function(value) { return Ung.Main.getCountryName(value); }
+                    // renderer: function(value) { return Ung.Main.getCountryName(value); }
                 }, {
                     header: 'Server Latitude'.t() ,
                     width: 80,
@@ -856,7 +856,7 @@ Ext.define('Ung.util.TableConfig', {
                     width: Ung.util.TableConfig.portFieldWidth,
                     sortable: true,
                     dataIndex: 'protocol',
-                    renderer: Ung.panel.Reports.getColumnRenderer('protocol')
+                    // renderer: Ung.panel.Reports.getColumnRenderer('protocol')
                 }, {
                     header: 'ICMP Type'.t(),
                     width: Ung.util.TableConfig.portFieldWidth,
@@ -867,7 +867,7 @@ Ext.define('Ung.util.TableConfig', {
                     width: 60,
                     sortable: true,
                     dataIndex: 'policy_id',
-                    renderer: Ung.panel.Reports.getColumnRenderer('policy_id')
+                    // renderer: Ung.panel.Reports.getColumnRenderer('policy_id')
                 }, {
                     header: 'Policy Rule Id'.t(),
                     width: 60,
@@ -888,7 +888,7 @@ Ext.define('Ung.util.TableConfig', {
                     width: 80,
                     sortable: true,
                     dataIndex: 'client_country',
-                    renderer: function(value) { return Ung.Main.getCountryName(value); }
+                    // renderer: function(value) { return Ung.Main.getCountryName(value); }
                 }, {
                     header: 'Client Latitude'.t() ,
                     width: 80,
@@ -904,7 +904,7 @@ Ext.define('Ung.util.TableConfig', {
                     width: 80,
                     sortable: true,
                     dataIndex: 'server_country',
-                    renderer: function(value) { return Ung.Main.getCountryName(value); }
+                    // renderer: function(value) { return Ung.Main.getCountryName(value); }
                 }, {
                     header: 'Server Latitude'.t() ,
                     width: 80,
@@ -1288,7 +1288,7 @@ Ext.define('Ung.util.TableConfig', {
                     width: 60,
                     sortable: true,
                     dataIndex: 'policy_id',
-                    renderer: Ung.panel.Reports.getColumnRenderer('policy_id')
+                    // renderer: Ung.panel.Reports.getColumnRenderer('policy_id')
                 }, {
                     header: 'Session Id'.t(),
                     width: Ung.util.TableConfig.portFieldWidth,
@@ -1585,7 +1585,7 @@ Ext.define('Ung.util.TableConfig', {
                     width: 60,
                     sortable: true,
                     dataIndex: 'policy_id',
-                    renderer: Ung.panel.Reports.getColumnRenderer('policy_id')
+                    // renderer: Ung.panel.Reports.getColumnRenderer('policy_id')
                 }, {
                     header: 'Request Id'.t(),
                     width: 60,
@@ -1843,7 +1843,7 @@ Ext.define('Ung.util.TableConfig', {
                     width: 60,
                     sortable: true,
                     dataIndex: 'policy_id',
-                    renderer: Ung.panel.Reports.getColumnRenderer('policy_id')
+                    // renderer: Ung.panel.Reports.getColumnRenderer('policy_id')
                 }, {
                     header: 'Message Id'.t(),
                     width: 60,
@@ -2872,7 +2872,7 @@ Ext.define('Ung.util.TableConfig', {
                     width: 60,
                     sortable: true,
                     dataIndex: 'policy_id',
-                    renderer: Ung.panel.Reports.getColumnRenderer('policy_id')
+                    // renderer: Ung.panel.Reports.getColumnRenderer('policy_id')
                 }, {
                     header: 'Event Id'.t(),
                     width: 60,
@@ -3008,7 +3008,7 @@ Ext.define('Ung.util.TableConfig', {
                     width: 60,
                     sortable: true,
                     dataIndex: 'policy_id',
-                    renderer: Ung.panel.Reports.getColumnRenderer('policy_id')
+                    // renderer: Ung.panel.Reports.getColumnRenderer('policy_id')
                 }, {
                     header: 'Event Id'.t(),
                     width: 60,
@@ -3511,7 +3511,7 @@ Ext.define('Ung.util.TableConfig', {
                     width: 60,
                     sortable: true,
                     dataIndex: 'policy_id',
-                    renderer: Ung.panel.Reports.getColumnRenderer('policy_id')
+                    // renderer: Ung.panel.Reports.getColumnRenderer('policy_id')
                 }, {
                     header: 'Session Id'.t(),
                     width: Ung.util.TableConfig.portFieldWidth,
@@ -3696,149 +3696,149 @@ Ext.define('Ung.util.TableConfig', {
                 }]
             }
         };
-        if(Ung.Main.webuiMode) {
-            this.tableConfig.settings_changes.columns.push({
-                header: 'Differences'.t(),
-                xtype: 'actioncolumn',
-                align: 'center',
-                dataIndex: 'settings_file',
-                width: 100,
-                items: [{
-                    icon: '/skins/default/images/admin/icons/icon_detail.png',
-                    tooltip: 'Show difference between previous version'.t(),
-                    handler: function(view, rowIndex, colIndex, item, e, record) {
-                        if( !this.diffWindow ) {
-                            var columnRenderer = function(value, meta, record) {
-                                var action = record.get('action');
-                                if( action === 3){
-                                    meta.style = 'background-color:#ffff99';
-                                }else if(action === 2) {
-                                    meta.style = 'background-color:#ffdfd9';
-                                }else if(action === 1) {
-                                    meta.style = 'background-color:#d9f5cb';
-                                }
-                                return value;
-                            };
-                            this.diffWindow = Ext.create('Ung.Window',{
-                                name: 'diffWindow',
-                                title: 'Settings Difference'.t(),
-                                closeAction: 'hide',
-                                items: [Ext.create('Ung.grid.Panel', {
-                                    name: 'gridDiffs',
-                                    width: 200,
-                                    height: 200,
-                                    hasAdd: false,
-                                    hasEdit: false,
-                                    hasDelete: false,
-                                    initialLoad: function() {},
-                                    cls: 'diff-grid',
-                                    dataFn: function(handler) {
-                                        this.getStore().getProxy().setData([]);
-                                        this.getStore().load();
-                                        rpc.settingsManager.getDiff(Ext.bind(function(result,exception) {
-                                            var diffWindow = this.up('window[name=diffWindow]');
-                                            if (diffWindow === null || !diffWindow.isVisible()) {
-                                                return;
-                                            }
-                                            if(exception) {
-                                                this.getView().setLoading(false);
-                                                handler(result, exception);
-                                                return;
-                                            }
-                                            var diffData = [];
-                                            var diffLines = result.split('\n');
-                                            var action;
-                                            var previousAction, previousLine, currentAction, currentLine;
-                                            for( var i = 0; i < diffLines.length; i++) {
-                                                previousAction = diffLines[i].substr(0,1);
-                                                previousLine = diffLines[i].substr(1,510);
-                                                currentAction = diffLines[i].substr(511,1);
-                                                currentLine = diffLines[i].substr(512);
+        // if(Ung.Main.webuiMode) {
+        //     this.tableConfig.settings_changes.columns.push({
+        //         header: 'Differences'.t(),
+        //         xtype: 'actioncolumn',
+        //         align: 'center',
+        //         dataIndex: 'settings_file',
+        //         width: 100,
+        //         items: [{
+        //             icon: '/skins/default/images/admin/icons/icon_detail.png',
+        //             tooltip: 'Show difference between previous version'.t(),
+        //             handler: function(view, rowIndex, colIndex, item, e, record) {
+        //                 if( !this.diffWindow ) {
+        //                     var columnRenderer = function(value, meta, record) {
+        //                         var action = record.get('action');
+        //                         if( action === 3){
+        //                             meta.style = 'background-color:#ffff99';
+        //                         }else if(action === 2) {
+        //                             meta.style = 'background-color:#ffdfd9';
+        //                         }else if(action === 1) {
+        //                             meta.style = 'background-color:#d9f5cb';
+        //                         }
+        //                         return value;
+        //                     };
+        //                     this.diffWindow = Ext.create('Ung.Window',{
+        //                         name: 'diffWindow',
+        //                         title: 'Settings Difference'.t(),
+        //                         closeAction: 'hide',
+        //                         items: [Ext.create('Ung.grid.Panel', {
+        //                             name: 'gridDiffs',
+        //                             width: 200,
+        //                             height: 200,
+        //                             hasAdd: false,
+        //                             hasEdit: false,
+        //                             hasDelete: false,
+        //                             initialLoad: function() {},
+        //                             cls: 'diff-grid',
+        //                             dataFn: function(handler) {
+        //                                 this.getStore().getProxy().setData([]);
+        //                                 this.getStore().load();
+        //                                 rpc.settingsManager.getDiff(Ext.bind(function(result,exception) {
+        //                                     var diffWindow = this.up('window[name=diffWindow]');
+        //                                     if (diffWindow === null || !diffWindow.isVisible()) {
+        //                                         return;
+        //                                     }
+        //                                     if(exception) {
+        //                                         this.getView().setLoading(false);
+        //                                         handler(result, exception);
+        //                                         return;
+        //                                     }
+        //                                     var diffData = [];
+        //                                     var diffLines = result.split('\n');
+        //                                     var action;
+        //                                     var previousAction, previousLine, currentAction, currentLine;
+        //                                     for( var i = 0; i < diffLines.length; i++) {
+        //                                         previousAction = diffLines[i].substr(0,1);
+        //                                         previousLine = diffLines[i].substr(1,510);
+        //                                         currentAction = diffLines[i].substr(511,1);
+        //                                         currentLine = diffLines[i].substr(512);
 
-                                                if( previousAction !== '<' && previousAction !== '>') {
-                                                    previousLine = previousAction + previousLine;
-                                                    previousAction = -1;
-                                                }
-                                                if( currentAction !== '<' && currentAction !== '>' && currentAction !== '|'){
-                                                    currentLine = currentAction + currentLine;
-                                                    currentAction = -1;
-                                                }
+        //                                         if( previousAction !== '<' && previousAction !== '>') {
+        //                                             previousLine = previousAction + previousLine;
+        //                                             previousAction = -1;
+        //                                         }
+        //                                         if( currentAction !== '<' && currentAction !== '>' && currentAction !== '|'){
+        //                                             currentLine = currentAction + currentLine;
+        //                                             currentAction = -1;
+        //                                         }
 
-                                                if( currentAction === '|' ) {
-                                                    action = 3;
-                                                } else if(currentAction === '<') {
-                                                    action = 2;
-                                                } else if(currentAction === '>') {
-                                                    action = 1;
-                                                } else {
-                                                    action = 0;
-                                                }
+        //                                         if( currentAction === '|' ) {
+        //                                             action = 3;
+        //                                         } else if(currentAction === '<') {
+        //                                             action = 2;
+        //                                         } else if(currentAction === '>') {
+        //                                             action = 1;
+        //                                         } else {
+        //                                             action = 0;
+        //                                         }
 
-                                                diffData.push({
-                                                    line: (i + 1),
-                                                    previous: previousLine.replace(/\s+$/,'').replace(/\s/g, '&nbsp;'),
-                                                    current: currentLine.replace(/\s+$/,'').replace(/\s/g, '&nbsp;'),
-                                                    action: action
-                                                });
-                                            }
-                                            handler({javaClass:'java.util.LinkedList', list: diffData});
-                                        },this), this.fileName);
-                                    },
-                                    fields: [{
-                                        name: 'line'
-                                    }, {
-                                        name: 'previous'
-                                    }, {
-                                        name: 'current'
-                                    }, {
-                                        name: 'action'
-                                    }],
-                                    columnsDefaultSortable: false,
-                                    columns:[{
-                                        text: 'Line'.t(),
-                                        dataIndex: 'line',
-                                        renderer: columnRenderer
-                                    },{
-                                        text: 'Previous'.t(),
-                                        flex: 1,
-                                        dataIndex: 'previous',
-                                        renderer: columnRenderer
-                                    },{
-                                        text: 'Current'.t(),
-                                        flex: 1,
-                                        dataIndex: 'current',
-                                        renderer: columnRenderer
-                                    }]
-                                })],
-                                buttons: [{
-                                    text: 'Close'.t(),
-                                    handler: Ext.bind(function() {
-                                        this.diffWindow.hide();
-                                    }, this)
-                                }],
-                                update: function(fileName) {
-                                    var grid = this.down('grid[name=gridDiffs]');
-                                    grid.fileName = fileName;
-                                    grid.reload();
+        //                                         diffData.push({
+        //                                             line: (i + 1),
+        //                                             previous: previousLine.replace(/\s+$/,'').replace(/\s/g, '&nbsp;'),
+        //                                             current: currentLine.replace(/\s+$/,'').replace(/\s/g, '&nbsp;'),
+        //                                             action: action
+        //                                         });
+        //                                     }
+        //                                     handler({javaClass:'java.util.LinkedList', list: diffData});
+        //                                 },this), this.fileName);
+        //                             },
+        //                             fields: [{
+        //                                 name: 'line'
+        //                             }, {
+        //                                 name: 'previous'
+        //                             }, {
+        //                                 name: 'current'
+        //                             }, {
+        //                                 name: 'action'
+        //                             }],
+        //                             columnsDefaultSortable: false,
+        //                             columns:[{
+        //                                 text: 'Line'.t(),
+        //                                 dataIndex: 'line',
+        //                                 renderer: columnRenderer
+        //                             },{
+        //                                 text: 'Previous'.t(),
+        //                                 flex: 1,
+        //                                 dataIndex: 'previous',
+        //                                 renderer: columnRenderer
+        //                             },{
+        //                                 text: 'Current'.t(),
+        //                                 flex: 1,
+        //                                 dataIndex: 'current',
+        //                                 renderer: columnRenderer
+        //                             }]
+        //                         })],
+        //                         buttons: [{
+        //                             text: 'Close'.t(),
+        //                             handler: Ext.bind(function() {
+        //                                 this.diffWindow.hide();
+        //                             }, this)
+        //                         }],
+        //                         update: function(fileName) {
+        //                             var grid = this.down('grid[name=gridDiffs]');
+        //                             grid.fileName = fileName;
+        //                             grid.reload();
 
-                                },
-                                doSize : function() {
-                                    this.maximize();
-                                }
-                            });
-                            this.on('beforedestroy', Ext.bind(function() {
-                                if(this.diffWindow) {
-                                    Ext.destroy(this.diffWindow);
-                                    this.diffWindow = null;
-                                }
-                            }, this));
-                        }
-                        this.diffWindow.show();
-                        this.diffWindow.update(record.get('settings_file'));
-                    }
-                }]
-            });
-        }
+        //                         },
+        //                         doSize : function() {
+        //                             this.maximize();
+        //                         }
+        //                     });
+        //                     this.on('beforedestroy', Ext.bind(function() {
+        //                         if(this.diffWindow) {
+        //                             Ext.destroy(this.diffWindow);
+        //                             this.diffWindow = null;
+        //                         }
+        //                     }, this));
+        //                 }
+        //                 this.diffWindow.show();
+        //                 this.diffWindow.update(record.get('settings_file'));
+        //             }
+        //         }]
+        //     });
+        // }
         var key, columns, i;
         for(key in this.tableConfig) {
             columns = this.tableConfig[key].columns;

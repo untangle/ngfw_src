@@ -56,7 +56,7 @@
 .widget {
     .header {
         // font-family: $custom-font-condensed;
-        height: 40px;
+        height: 50px;
         position: relative;
         h1 {
             font-size: 18px;
@@ -68,19 +68,25 @@
             white-space: nowrap;
             text-overflow: ellipsis;
         }
-        button {
+
+        .actions {
             position: absolute;
             padding: 0;
             top: 10px;
             right: 8px;
+        }
+        .action-btn {
             border: 0;
             width: 20px;
             height: 20px;
+            display: inline-block;
             border-radius: 50%;
             overflow: hidden;
             cursor: pointer;
             background: none;
             opacity: 0;
+            text-align: center;
+            margin: 0 5px;
             transition: all .3s cubic-bezier(0.23, 1, 0.32, 1);
             i {
                 color: #999;
@@ -92,7 +98,7 @@
             }
             &:hover {
                 i {
-                    color: #000;
+                    color: #61af48;
                 }
             }
         }

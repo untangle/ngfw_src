@@ -36,12 +36,33 @@ Ext.define('Ung.view.reports.Entry', {
             dock: 'top',
             cls: 'report-header',
             height: 53,
-            style: {
-                background: '#FFF'
-            },
-            bind: {
-                html: '{reportHeading}'
-            }
+            padding: '0 10',
+            items: [{
+                xtype: 'component',
+                bind: {
+                    html: '{reportHeading}'
+                }
+            }, '->', {
+                text: 'Current Data'.t(),
+                reference: 'dataBtn',
+                enableToggle: true,
+                toggleGroup: 'side',
+                iconCls: 'fa fa-list',
+                hidden: true,
+                bind: {
+                    hidden: '{!entry || entry.type === "EVENT_LIST"}'
+                }
+            }, {
+                text: 'Settings'.t(),
+                reference: 'settingsBtn',
+                enableToggle: true,
+                toggleGroup: 'side',
+                iconCls: 'fa fa-cog',
+                hidden: true,
+                bind: {
+                    hidden: '{!entry}'
+                }
+            }]
         }],
 
         bbar: [{
@@ -119,26 +140,34 @@ Ext.define('Ung.view.reports.Entry', {
         }]
     }, {
         region: 'east',
-        xtype: 'tabpanel',
-        title: 'Data & Settings'.t(),
+        // xtype: 'tabpanel',
+        // title: 'Data & Settings'.t(),
         width: 400,
         minWidth: 400,
         split: true,
-        animCollapse: false,
+        // animCollapse: false,
         // floatable: true,
         // floating: true,
-        collapsible: true,
-        collapsed: true,
-        titleCollapse: true,
-        hidden: true,
+        // collapsible: true,
+        // collapsed: false,
+        // titleCollapse: true,
+        // hidden: true,
         border: false,
         bind: {
-            hidden: '{!entry}'
+            hidden: '{!(dataBtn.pressed || settingsBtn.pressed)}',
+            activeItem: '{dataBtn.pressed ? 0 : 1}'
+        },
+
+        layout: 'card',
+
+        defaults: {
+            border: false
         },
 
         items: [{
             xtype: 'grid',
             itemId: 'currentData',
+            // title: '<i class="fa fa-list"></i> ' + 'Current Data'.t(),
             // hidden: true,
             // emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-2x"></i> <br/>No Data!</p>',
             bind: {
@@ -147,13 +176,45 @@ Ext.define('Ung.view.reports.Entry', {
                 },
                 // hidden: '{entry && entry.type === "EVENT_LIST"}'
             },
-            title: '<i class="fa fa-list"></i> ' + 'Current Data'.t()
+            dockedItems: [{
+                xtype: 'toolbar',
+                border: false,
+                dock: 'top',
+                cls: 'report-header',
+                height: 53,
+                padding: '0 10',
+                items: [{
+                    xtype: 'component',
+                    html: '<h2>' + 'Current Data'.t() + '</h2>'
+                }, '->', {
+                    iconCls: 'fa fa-close',
+                    handler: 'closeSide'
+                }]
+            }],
         }, {
             xtype: 'form',
-            title: '<i class="fa fa-cog"></i> ' + 'Settings'.t(),
+            // title: '<i class="fa fa-cog"></i> ' + 'Settings'.t(),
             scrollable: 'y',
             layout: 'anchor',
+            bodyBorder: false,
             bodyPadding: 10,
+
+            dockedItems: [{
+                xtype: 'toolbar',
+                border: false,
+                dock: 'top',
+                cls: 'report-header',
+                height: 53,
+                padding: '0 10',
+                items: [{
+                    xtype: 'component',
+                    html: '<h2>' + 'Settings'.t() + '</h2>'
+                }, '->', {
+                    iconCls: 'fa fa-close',
+                    handler: 'closeSide'
+                }]
+            }],
+
             items: [{
                 xtype: 'component',
                 padding: 10,
@@ -166,18 +227,22 @@ Ext.define('Ung.view.reports.Entry', {
                 }
             }, {
                 xtype: 'textfield',
-                fieldLabel: 'Title'.t(),
+                fieldLabel: '<strong>' + 'Title'.t() + '</strong>',
+                labelAlign: 'right',
                 bind: '{entry.title}',
                 anchor: '100%'
             }, {
                 xtype: 'textarea',
                 grow: true,
-                fieldLabel: 'Description'.t(),
+                fieldLabel: '<strong>' + 'Description'.t() + '</strong>',
+                labelAlign: 'right',
                 bind: '{entry.description}',
                 anchor: '100%'
             }, {
                 xtype: 'checkbox',
-                fieldLabel: 'Enabled'.t(),
+                fieldLabel: '<strong>' + 'Enabled'.t() + '</strong>',
+                margin: '0 0 20 0',
+                labelAlign: 'right',
                 bind: '{entry.enabled}'
             }, {
                 xtype: 'fieldset',
@@ -504,9 +569,30 @@ Ext.define('Ung.view.reports.Entry', {
                     bind: '{entry.displayOrder}'
                 }]
             }, {
+                // columns for EVENT_LIST
+                xtype: 'fieldset',
+                title: '<i class="fa fa-columns"></i> ' + 'Columns'.t(),
+                maxHeight: 300,
+                scrollable: 'y',
+                collapsible: true,
+                items: [{
+                    xtype: 'checkboxgroup',
+                    itemId: 'tableColumns',
+                    columns: 1,
+                    vertical: true,
+                    items: [],
+                    listeners: {
+                        change: 'updateDefaultColumns'
+                    }
+                }],
+                hidden: true,
+                bind: {
+                    hidden: '{entry.type !== "EVENT_LIST"}'
+                }
+            }, {
                 xtype: 'fieldset',
                 bind: {
-                    title: '<i class="fa fa-database"></i> ' + 'Sql Conditions:'.t() + ' ({_sqlConditions.length})',
+                    title: '<i class="fa fa-filter"></i> ' + 'Sql Conditions:'.t() + ' ({_sqlConditions.length})',
                     collapsed: '{!entry.conditions}'
                 },
                 padding: 10,

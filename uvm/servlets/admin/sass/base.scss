@@ -491,7 +491,9 @@ cite {
 
 .report-header {
     font-family: $custom-font-condensed;
-    padding: 5px 10px;
+    // box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+    background: #F5F5F5;
+    // padding: 5px 10px;
     h2 {
         margin: 0;
         font-family: $custom-font-condensed;
