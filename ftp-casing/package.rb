@@ -1,3 +1,3 @@
 # -*-ruby-*-
 
-AppBuilder.makeCasing(BuildEnv::SRC, 'untangle-casing-ftp', 'ftp-casing')
+AppBuilder.makeCasing(BuildEnv::SRC, 'untangle-app-ftp', 'ftp-casing')
