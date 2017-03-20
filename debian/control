@@ -163,7 +163,7 @@ Architecture: all
 Conflicts: untangle-node-configuration-backup
 Replaces: untangle-node-configuration-backup
 Provides: untangle-node-configuration-backup
-Section: non-free
+Section: non-free/net
 Depends: untangle-vm, curl, untangle-app-license
 Description: Configuration Backup
  The Configuration Backup application.
@@ -173,7 +173,7 @@ Architecture: all
 Conflicts: untangle-node-branding-manager
 Replaces: untangle-node-branding-manager
 Provides: untangle-node-branding-manager
-Section: non-free
+Section: non-free/net
 Depends: untangle-vm, untangle-app-license, netpbm
 Description: The Untangle Branding Manager
  The Untangle Branding Manager application.
@@ -183,7 +183,7 @@ Architecture: all
 Conflicts: untangle-node-bandwidth-control
 Replaces: untangle-node-bandwidth-control
 Provides: untangle-node-banwidth-control
-Section: non-free
+Section: non-free/net
 Depends: untangle-vm, untangle-app-license
 Description: Bandwidth Control
  The Bandwidth Control application.
@@ -193,7 +193,7 @@ Architecture: all
 Conflicts: untangle-node-application-control
 Replaces: untangle-node-application-control
 Provides: untangle-node-application-control
-Section: non-free
+Section: non-free/net
 Depends: untangle-vm, untangle-app-license, untangle-classd
 Description: Application Control
  The Application Control application
@@ -203,7 +203,7 @@ Architecture: all
 Conflicts: untangle-node-web-filter
 Replaces: untangle-node-web-filter
 Provides: untangle-node-web-filter
-Section: non-free
+Section: non-free/net
 Depends: untangle-vm, untangle-app-http, untangle-base-web-filter, untangle-app-license
 Description: Web Filter
  The Web Filter application.
