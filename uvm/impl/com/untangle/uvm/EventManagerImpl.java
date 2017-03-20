@@ -438,11 +438,17 @@ public class EventManagerImpl implements EventManager
 
     private void runAlertRules( LogEvent event )
     {
+        if ( event == null )
+            return;
         if ( event instanceof AlertEvent )
             return;
 
+        List<AlertRule> rules = UvmContextFactory.context().eventManager().getSettings().getAlertRules();
+        if ( rules == null )
+            return;
+
         JSONObject jsonObject = event.toJSONObject();
-        for ( AlertRule rule : UvmContextFactory.context().eventManager().getSettings().getAlertRules() ) {
+        for ( AlertRule rule : rules ) {
             if ( ! rule.getEnabled() )
                 continue;
             if ( ! rule.isMatch( jsonObject ) )
@@ -462,11 +468,18 @@ public class EventManagerImpl implements EventManager
 
     private void runTriggerRules( LogEvent event )
     {
+        if ( event == null )
+            return;
         //if ( event instanceof TriggerEvent )
         //    return;
 
+        List<TriggerRule> rules = UvmContextFactory.context().eventManager().getSettings().getTriggerRules();
+        if ( rules == null )
+            return;
+
         JSONObject jsonObject = event.toJSONObject();
-        for ( TriggerRule rule : UvmContextFactory.context().eventManager().getSettings().getTriggerRules() ) {
+
+        for ( TriggerRule rule : rules ) {
             if ( ! rule.getEnabled() )
                 continue;
             if ( ! rule.isMatch( jsonObject ) )
@@ -533,13 +546,19 @@ public class EventManagerImpl implements EventManager
 
     private void runSyslogRules( LogEvent event )
     {
+        if ( event == null )
+            return;
         if ( event instanceof SyslogEvent )
             return;
         if ( ! settings.getSyslogEnabled() )
             return;
 
+        List<SyslogRule> rules = UvmContextFactory.context().eventManager().getSettings().getSyslogRules();
+        if ( rules == null )
+            return;
+
         JSONObject jsonObject = event.toJSONObject();
-        for ( SyslogRule rule : UvmContextFactory.context().eventManager().getSettings().getSyslogRules() ) {
+        for ( SyslogRule rule : rules ) {
             if ( ! rule.getEnabled() )
                 continue;
             if ( ! rule.isMatch( jsonObject ) ) 
