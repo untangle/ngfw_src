@@ -51,7 +51,7 @@ public class ActiveDirectoryManagerImpl
     public List<UserEntry> getActiveDirectoryUserEntries()
         throws ServiceUnavailableException
     {
-        if (!app.isLicenseValid())
+        if (!DirectoryConnectorApp.isLicenseValid())
             return new LinkedList<UserEntry>();
         if (!currentSettings.getEnabled())
             return new LinkedList<UserEntry>();
@@ -79,7 +79,7 @@ public class ActiveDirectoryManagerImpl
     {
         ActiveDirectoryLdapAdapter adAdapter = this.adAdapter;
 
-        if (!app.isLicenseValid())
+        if (!DirectoryConnectorApp.isLicenseValid())
             return new LinkedList<UserEntry>();
         if (!currentSettings.getEnabled())
             return new LinkedList<UserEntry>();
@@ -101,7 +101,7 @@ public class ActiveDirectoryManagerImpl
         ActiveDirectoryLdapAdapter adAdapter = this.adAdapter;
         List<GroupEntry> groupList = new LinkedList<GroupEntry>();
 
-        if (!app.isLicenseValid())
+        if (!DirectoryConnectorApp.isLicenseValid())
             return new LinkedList<GroupEntry>();
         if (!currentSettings.getEnabled())
             return new LinkedList<GroupEntry>();

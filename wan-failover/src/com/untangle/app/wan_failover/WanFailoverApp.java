@@ -188,8 +188,6 @@ public class WanFailoverApp extends AppBase
     {
         if (UvmContextFactory.context().licenseManager().isLicenseValid(License.WAN_FAILOVER))
             return true;
-        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.WAN_FAILOVER_OLDNAME))
-            return true;
         return false;
     }
 

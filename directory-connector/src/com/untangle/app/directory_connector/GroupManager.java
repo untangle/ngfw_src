@@ -187,8 +187,6 @@ public class GroupManager
     {
         if (UvmContextFactory.context().licenseManager().isLicenseValid(License.DIRECTORY_CONNECTOR))
             return true;
-        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.DIRECTORY_CONNECTOR_OLDNAME))
-            return true;
         return false;
     }
 
@@ -354,7 +352,7 @@ public class GroupManager
 
         private boolean isRenewEnabled()
         {
-            if ( !GroupManager.this.isLicenseValid()) {
+            if ( !DirectoryConnectorApp.isLicenseValid()) {
                 logger.warn( "Invalid license, not renewing group cache.");
                 return false;
             }

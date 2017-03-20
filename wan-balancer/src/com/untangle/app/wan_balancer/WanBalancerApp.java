@@ -252,8 +252,6 @@ public class WanBalancerApp extends AppBase
     {
         if (UvmContextFactory.context().licenseManager().isLicenseValid(License.WAN_BALANCER))
             return true;
-        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.WAN_BALANCER_OLDNAME))
-            return true;
         return false;
     }
 
