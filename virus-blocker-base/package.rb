@@ -6,9 +6,9 @@ deps = []
   deps << BuildEnv::SRC[c]['src']
 end
 
-virus = BuildEnv::SRC['virus-blocker-base']
+virus = BuildEnv::SRC['untangle-base-virus-blocker']
 
-AppBuilder.makeBase(BuildEnv::SRC, 'virus-blocker-base', 'virus-blocker-base', deps)
+AppBuilder.makeBase(BuildEnv::SRC, 'untangle-base-virus-blocker', 'virus-blocker-base', deps)
 
 http = BuildEnv::SRC['untangle-casing-http']
 

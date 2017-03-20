@@ -1,7 +1,7 @@
 # -*-ruby-*-
 
 smtp = BuildEnv::SRC['untangle-casing-smtp']
-spam = BuildEnv::SRC['spam-blocker-base']
+spam = BuildEnv::SRC['untangle-base-spam-blocker']
 
 deps = [smtp['src'], spam['src']]
 
