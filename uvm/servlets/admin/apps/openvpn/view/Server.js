@@ -40,5 +40,9 @@ Ext.define('Ung.apps.openvpn.view.Server', {
         fieldLabel: 'NAT OpenVPN Traffic'.t(),
         xtype: 'checkbox',
         bind: '{settings.natOpenVpnTraffic}'
+    },{
+        xtype: 'app-openvpn-server-tab-panel',
+        padding: '20 20 20 20',
+        border: true,
     }]
 });
