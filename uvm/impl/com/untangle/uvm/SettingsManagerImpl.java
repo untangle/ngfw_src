@@ -103,6 +103,8 @@ public class SettingsManagerImpl implements SettingsManager
                                "-e 's/\"nextNodeId\"/\"nextNodeId\"/g' " +
                                "-e 's/NodeSettings/AppSettings/g' " +
                                "-e 's/nodeName/appName/g' " +
+                               "-e 's/untangle-node-//g' " +
+                               "-e 's/untangle-casing-//g' " +
                                "-i " + System.getProperty("uvm.settings.dir") + "/untangle-vm/nodes*",
 
                                "/bin/sed " +
