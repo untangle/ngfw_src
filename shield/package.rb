@@ -1,3 +1,3 @@
 # -*-ruby-*-
 
-AppBuilder.makeApp(BuildEnv::SRC, 'untangle-node-shield', 'shield' )
+AppBuilder.makeApp(BuildEnv::SRC, 'untangle-app-shield', 'shield' )

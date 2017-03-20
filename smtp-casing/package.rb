@@ -1,8 +1,8 @@
 # -*-ruby-*-
 
-AppBuilder.makeCasing(BuildEnv::SRC, 'untangle-casing-smtp', 'smtp-casing')
+AppBuilder.makeCasing(BuildEnv::SRC, 'untangle-app-smtp', 'smtp-casing')
 
-smtp = BuildEnv::SRC['untangle-casing-smtp']
+smtp = BuildEnv::SRC['untangle-app-smtp']
 
 jt = [smtp['src']]
 

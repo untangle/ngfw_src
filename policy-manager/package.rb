@@ -1,2 +1,2 @@
 # -*-ruby-*-
-AppBuilder.makeApp(BuildEnv::SRC, 'untangle-node-policy-manager', 'policy-manager', [] )
+AppBuilder.makeApp(BuildEnv::SRC, 'untangle-app-policy-manager', 'policy-manager', [] )

@@ -1,5 +1,5 @@
 # -*-ruby-*-
 
-AppBuilder.makeApp(BuildEnv::SRC, 'untangle-node-branding-manager', 'branding-manager', [])
+AppBuilder.makeApp(BuildEnv::SRC, 'untangle-app-branding-manager', 'branding-manager', [])
 
 

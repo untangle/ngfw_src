@@ -1,4 +1,4 @@
 # -*-ruby-*-
 
-AppBuilder.makeApp(BuildEnv::SRC, 'untangle-node-live-support', 'live-support', [] )
+AppBuilder.makeApp(BuildEnv::SRC, 'untangle-app-live-support', 'live-support', [] )
 

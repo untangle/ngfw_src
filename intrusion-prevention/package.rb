@@ -1,6 +1,6 @@
 # -*-ruby-*-
 
-AppBuilder.makeApp(BuildEnv::SRC, 'untangle-node-intrusion-prevention', 'intrusion-prevention' )
+AppBuilder.makeApp(BuildEnv::SRC, 'untangle-app-intrusion-prevention', 'intrusion-prevention' )
 
 ips = BuildEnv::SRC['intrusion-prevention']
 
