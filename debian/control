@@ -182,7 +182,7 @@ Package: untangle-app-bandwidth-control
 Architecture: all
 Conflicts: untangle-node-bandwidth-control
 Replaces: untangle-node-bandwidth-control
-Provides: untangle-node-banwidth-control
+Provides: untangle-node-bandwidth-control
 Section: non-free/net
 Depends: untangle-vm, untangle-app-license
 Description: Bandwidth Control
