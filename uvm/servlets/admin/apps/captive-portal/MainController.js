@@ -77,10 +77,10 @@ Ext.define('Ung.apps.captiveportal.MainController', {
 
         switch (this.getViewModel().get('settings.authenticationType')) {
         case 'LOCAL_DIRECTORY': Ung.app.redirectTo('#config/localdirectory'); break;
-        case 'GOOGLE': Ung.app.redirectTo('#apps/' + policyId + '/directoryconnector/google'); break;
-        case 'FACEBOOK': Ung.app.redirectTo('#apps/' + policyId + '/directoryconnector/facebook'); break;
-        case 'RADIUS': Ung.app.redirectTo('#apps/' + policyId + '/directoryconnector/radius'); break;
-        case 'ACTIVE_DIRECTORY': Ung.app.redirectTo('#apps/' + policyId + '/directoryconnector/activedirectory'); break;
+        case 'GOOGLE': Ung.app.redirectTo('#apps/' + policyId + '/directory-connector/google'); break;
+        case 'FACEBOOK': Ung.app.redirectTo('#apps/' + policyId + '/directory-connector/facebook'); break;
+        case 'RADIUS': Ung.app.redirectTo('#apps/' + policyId + '/directory-connector/radius'); break;
+        case 'ACTIVE_DIRECTORY': Ung.app.redirectTo('#apps/' + policyId + '/directory-connector/activedirectory'); break;
         default: return;
         }
     }
