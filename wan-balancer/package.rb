@@ -1,4 +1,4 @@
 # -*-ruby-*-
 
-AppBuilder.makeApp(BuildEnv::SRC, 'wan-balancer', 'wan-balancer', [] )
+AppBuilder.makeApp(BuildEnv::SRC, 'untangle-node-wan-balancer', 'wan-balancer', [] )
 

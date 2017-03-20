@@ -1,3 +1,3 @@
 # -*-ruby-*-
 
-AppBuilder.makeCasing(BuildEnv::SRC, 'http', 'http-casing')
+AppBuilder.makeCasing(BuildEnv::SRC, 'untangle-casing-http', 'http-casing')
