@@ -282,8 +282,6 @@ public class BrandingManagerApp extends AppBase implements com.untangle.uvm.Bran
     {
         if (UvmContextFactory.context().licenseManager().isLicenseValid(License.BRANDING_MANAGER))
             return true;
-        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.BRANDING_MANAGER_OLDNAME))
-            return true;
         return false;
     }
 

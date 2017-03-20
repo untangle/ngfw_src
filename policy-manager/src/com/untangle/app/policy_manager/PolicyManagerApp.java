@@ -270,8 +270,6 @@ public class PolicyManagerApp extends AppBase implements com.untangle.uvm.app.Po
     {
         if (UvmContextFactory.context().licenseManager().isLicenseValid(License.POLICY_MANAGER))
             return true;
-        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.POLICY_MANAGER_OLDNAME))
-            return true;
         return false;
     }
     

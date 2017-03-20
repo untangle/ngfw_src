@@ -62,6 +62,22 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     private static final String LIENENCY_GIFT_FILE = System.getProperty("uvm.conf.dir") + "/gift"; /* the file that defines the gift value */
     private static final int    LIENENCY_GIFT = getLienencyGift(); /* and extra lienency constant */
     
+    public static final String DIRECTORY_CONNECTOR_OLDNAME = "adconnector";
+    public static final String BANDWIDTH_CONTROL_OLDNAME = "bandwidth";
+    public static final String CONFIGURATION_BACKUP_OLDNAME = "boxbackup";
+    public static final String BRANDING_MANAGER_OLDNAME = "branding";
+    public static final String VIRUS_BLOCKER_OLDNAME = "virusblocker";
+    public static final String SPAM_BLOCKER_OLDNAME = "spamblocker";
+    public static final String WAN_FAILOVER_OLDNAME = "faild";
+    public static final String IPSEC_VPN_OLDNAME = "ipsec";
+    public static final String POLICY_MANAGER_OLDNAME = "policy";
+    public static final String WEB_FILTER_OLDNAME = "sitefilter";
+    public static final String WAN_BALANCER_OLDNAME = "splitd";
+    public static final String WEB_CACHE_OLDNAME = "webcache";
+    public static final String APPLICATION_CONTROL_OLDNAME = "classd";
+    public static final String SSL_INSPECTOR_OLDNAME = "https";
+    public static final String LIVE_SUPPORT_OLDNAME = "support";
+
     private static final String EXPIRED = "expired";
 
     /**
@@ -312,35 +328,35 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         
         switch ( appName ) {
         case License.DIRECTORY_CONNECTOR:
-            oldName = License.DIRECTORY_CONNECTOR_OLDNAME; break;
+            oldName = DIRECTORY_CONNECTOR_OLDNAME; break;
         case License.BANDWIDTH_CONTROL:
-            oldName = License.BANDWIDTH_CONTROL_OLDNAME; break;
+            oldName = BANDWIDTH_CONTROL_OLDNAME; break;
         case License.CONFIGURATION_BACKUP:
-            oldName = License.CONFIGURATION_BACKUP_OLDNAME; break;
+            oldName = CONFIGURATION_BACKUP_OLDNAME; break;
         case License.BRANDING_MANAGER:
-            oldName = License.BRANDING_MANAGER_OLDNAME; break;
+            oldName = BRANDING_MANAGER_OLDNAME; break;
         case License.VIRUS_BLOCKER:
-            oldName = License.VIRUS_BLOCKER_OLDNAME; break;
+            oldName = VIRUS_BLOCKER_OLDNAME; break;
         case License.SPAM_BLOCKER:
-            oldName = License.SPAM_BLOCKER_OLDNAME; break;
+            oldName = SPAM_BLOCKER_OLDNAME; break;
         case License.WAN_FAILOVER:
-            oldName = License.WAN_FAILOVER_OLDNAME; break;
+            oldName = WAN_FAILOVER_OLDNAME; break;
         case License.IPSEC_VPN:
-            oldName = License.IPSEC_VPN_OLDNAME; break;
+            oldName = IPSEC_VPN_OLDNAME; break;
         case License.POLICY_MANAGER:
-            oldName = License.POLICY_MANAGER_OLDNAME; break;
+            oldName = POLICY_MANAGER_OLDNAME; break;
         case License.WEB_FILTER:
-            oldName = License.WEB_FILTER_OLDNAME; break;
+            oldName = WEB_FILTER_OLDNAME; break;
         case License.WAN_BALANCER:
-            oldName = License.WAN_BALANCER_OLDNAME; break;
+            oldName = WAN_BALANCER_OLDNAME; break;
         case License.WEB_CACHE:
-            oldName = License.WEB_CACHE_OLDNAME; break;
+            oldName = WEB_CACHE_OLDNAME; break;
         case License.APPLICATION_CONTROL:
-            oldName = License.APPLICATION_CONTROL_OLDNAME; break;
+            oldName = APPLICATION_CONTROL_OLDNAME; break;
         case License.SSL_INSPECTOR:
-            oldName = License.SSL_INSPECTOR_OLDNAME; break;
+            oldName = SSL_INSPECTOR_OLDNAME; break;
         case License.LIVE_SUPPORT:
-            oldName = License.LIVE_SUPPORT_OLDNAME; break;
+            oldName = LIVE_SUPPORT_OLDNAME; break;
         }
         if ( oldName != null ) {
             String oldLibitemName = "untangle-libitem-" + oldName;

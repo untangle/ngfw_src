@@ -582,8 +582,6 @@ public class WebFilterDecisionEngine extends DecisionEngine
 
         if (UvmContextFactory.context().licenseManager().isLicenseValid(License.WEB_FILTER))
             return true;
-        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.WEB_FILTER_OLDNAME))
-            return true;
         return false;
     }
 

@@ -192,8 +192,6 @@ public class WebCacheApp extends AppBase
     {
         if (UvmContextFactory.context().licenseManager().isLicenseValid(License.WEB_CACHE))
             return true;
-        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.WEB_CACHE_OLDNAME))
-            return true;
         return false;
     }
 }

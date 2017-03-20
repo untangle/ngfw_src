@@ -273,8 +273,6 @@ public class BandwidthControlApp extends AppBase
     {
         if (UvmContextFactory.context().licenseManager().isLicenseValid(License.BANDWIDTH_CONTROL))
             return true;
-        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.BANDWIDTH_CONTROL_OLDNAME))
-            return true;
         return false;
     }
 

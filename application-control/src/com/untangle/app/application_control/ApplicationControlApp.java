@@ -304,8 +304,6 @@ public class ApplicationControlApp extends AppBase
     {
         if (UvmContextFactory.context().licenseManager().isLicenseValid(License.APPLICATION_CONTROL))
             return true;
-        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.APPLICATION_CONTROL_OLDNAME))
-            return true;
         return false;
     }
 

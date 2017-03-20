@@ -20,36 +20,21 @@ public class License implements Serializable
      * Various Names
      */
     public static final String DIRECTORY_CONNECTOR = "directory-connector";
-    public static final String DIRECTORY_CONNECTOR_OLDNAME = "adconnector";
     public static final String BANDWIDTH_CONTROL = "bandwidth-control";
-    public static final String BANDWIDTH_CONTROL_OLDNAME = "bandwidth";
     public static final String CONFIGURATION_BACKUP = "configuration-backup";
-    public static final String CONFIGURATION_BACKUP_OLDNAME = "boxbackup";
     public static final String BRANDING_MANAGER = "branding-manager";
-    public static final String BRANDING_MANAGER_OLDNAME = "branding";
     public static final String VIRUS_BLOCKER = "virus-blocker";
-    public static final String VIRUS_BLOCKER_OLDNAME = "virusblocker";
     public static final String SPAM_BLOCKER = "spam-blocker";
-    public static final String SPAM_BLOCKER_OLDNAME = "spamblocker";
     public static final String WAN_FAILOVER = "wan-failover";
-    public static final String WAN_FAILOVER_OLDNAME = "faild";
     public static final String IPSEC_VPN = "ipsec-vpn";
-    public static final String IPSEC_VPN_OLDNAME = "ipsec";
     public static final String POLICY_MANAGER = "policy-manager";
-    public static final String POLICY_MANAGER_OLDNAME = "policy";
     public static final String WEB_FILTER = "web-filter";
-    public static final String WEB_FILTER_OLDNAME = "sitefilter";
     public static final String WAN_BALANCER = "wan-balancer";
-    public static final String WAN_BALANCER_OLDNAME = "splitd";
     public static final String WEB_CACHE = "web-cache";
-    public static final String WEB_CACHE_OLDNAME = "webcache";
     public static final String APPLICATION_CONTROL = "application-control";
-    public static final String APPLICATION_CONTROL_OLDNAME = "classd";
     public static final String SSL_INSPECTOR = "ssl-inspector";
-    public static final String SSL_INSPECTOR_OLDNAME = "https";
     public static final String LIVE_SUPPORT = "live-support";
-    public static final String LIVE_SUPPORT_OLDNAME = "support";
-    
+
     /** Identifier for the product this license is for */
     private String name;
 
@@ -139,9 +124,15 @@ public class License implements Serializable
         case "untangle-node-branding-manager": newValue = "branding-manager"; break;
         case "virusblocker": newValue = "virus-blocker"; break;
         case "untangle-node-virusblocker": newValue = "virus-blocker"; break;
+        case "commtouchav": newValue = "virus-blocker"; break;
+        case "untangle-node-commtouchav": newValue = "virus-blocker"; break;
+        case "kav": newValue = "virus-blocker"; break;
+        case "untangle-node-kav": newValue = "virus-blocker"; break;
         case "untangle-node-virus-blocker": newValue = "virus-blocker"; break;
         case "spamblocker": newValue = "spam-blocker"; break;
         case "untangle-node-spamblocker": newValue = "spam-blocker"; break;
+        case "commtouchas": newValue = "spam-blocker"; break;
+        case "untangle-node-commtouchas": newValue = "spam-blocker"; break;
         case "untangle-node-spam-blocker": newValue = "spam-blocker"; break;
         case "faild": newValue = "wan-failover"; break;
         case "untangle-node-faild": newValue = "wan-failover"; break;

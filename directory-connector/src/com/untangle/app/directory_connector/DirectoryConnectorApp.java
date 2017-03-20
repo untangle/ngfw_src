@@ -367,11 +367,9 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
         xvfbLaunched = false;        
     }
     
-    protected boolean isLicenseValid()
+    protected static boolean isLicenseValid()
     {
         if (UvmContextFactory.context().licenseManager().isLicenseValid(License.DIRECTORY_CONNECTOR))
-            return true;
-        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.DIRECTORY_CONNECTOR_OLDNAME))
             return true;
         return false;
     }

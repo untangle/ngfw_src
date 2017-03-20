@@ -389,7 +389,6 @@ public class IpsecVpnApp extends AppBase
     {
         logger.debug("isLicenseValid()");
         if (UvmContextFactory.context().licenseManager().isLicenseValid(License.IPSEC_VPN)) return true;
-        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.IPSEC_VPN_OLDNAME)) return true;
         return false;
     }
 

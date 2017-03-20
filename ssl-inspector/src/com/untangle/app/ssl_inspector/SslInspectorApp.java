@@ -213,7 +213,6 @@ public class SslInspectorApp extends AppBase
     public boolean isLicenseValid()
     {
         if (UvmContextFactory.context().licenseManager().isLicenseValid(License.SSL_INSPECTOR)) return true;
-        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.SSL_INSPECTOR_OLDNAME)) return true;
         return false;
     }
 

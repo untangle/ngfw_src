@@ -119,11 +119,9 @@ public class SpamBlockerApp extends SpamBlockerBaseApp
         super.postStop( isPermanentTransition );
     }
 
-    protected boolean isLicenseValid()
+    protected static boolean isLicenseValid()
     {
         if (UvmContextFactory.context().licenseManager().isLicenseValid(License.SPAM_BLOCKER))
-            return true;
-        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.SPAM_BLOCKER_OLDNAME))
             return true;
         return false;
     }
