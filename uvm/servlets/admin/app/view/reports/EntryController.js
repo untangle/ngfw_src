@@ -39,49 +39,30 @@ Ext.define('Ung.view.reports.EntryController', {
             dataGrid = this.getView().down('#currentData');
 
         vm.bind('{entry}', function (entry) {
-            console.log(entry.get('type'));
             vm.set('_currentData', []);
             dataGrid.setColumns([]);
             dataGrid.setLoading(true);
+
+            // hide current data side panel if event entry
+            if (entry.get('type') === 'EVENT_LIST') {
+                me.lookupReference('dataBtn').setPressed(false);
+
+                // set defaultColumns for EVENT_LIST
+                if (entry.get('table')) {
+                    var tableConfig = TableConfig.getConfig(entry.get('table')),
+                        checkboxes = [];
+                    // console.log(me.getView().down('#tableColumns'));
+                    Ext.Array.each(tableConfig.columns, function (column) {
+                        checkboxes.push({ boxLabel: column.header, inputValue: column.dataIndex, name: 'cbGroup' });
+                    });
+                    me.getView().down('#tableColumns').add(checkboxes);
+                    me.getView().down('#tableColumns').setValue(entry.get('defaultColumns').join());
+                }
+            } else {
+                me.getView().down('#tableColumns').removeAll();
+                me.getView().down('#tableColumns').setValue({});
+            }
         });
-
-        // // watch when the selected report is changed
-        // me.getView().enableBubble('customevt');
-        // vm.bind('{entry}', function (entry) {
-        //     if (!entry) { return; }
-        //     console.log('here');
-        //     entryContainer.remove('entry'); // remove any existing entry
-
-        //     switch(entry.get('type')) {
-        //         case 'TEXT':
-        //             me.addTextEntry();
-        //             // add text view
-        //             break;
-        //         case 'EVENT':
-        //             // add text view
-        //             break;
-        //         case 'TIME_GRAPH':
-        //         case 'TIME_GRAPH_DYNAMIC':
-        //             if (!me.getView().down('timechart')) {
-        //                 me.addGraphEntry();
-        //             }
-        //             break;
-        //         case 'PIE_GRAPH':
-        //             if (!me.getView().down('piechart')) {
-        //                 me.addGraphEntry();
-        //             }
-        //             break;
-        //         // default:
-        //             // this.set('_defaultColors', entry.get('colors') ? false : true);
-        //     }
-        //     // me.fetchData();
-        //     // console.log(TableConfig.getConfig(entry.get('table')));
-        // });
-
-        // // vm.bind('{entry.timeDataInterval}', me.fetchData, me);
-
-        // vm.bind('{_data}', me.formatData, me);
-
 
         vm.bind('{_defaultColors}', function (val) {
             console.log('colors');
@@ -135,30 +116,10 @@ Ext.define('Ung.view.reports.EntryController', {
 
     },
 
-    // fetchData: function () {
-    //     var me = this, vm = this.getViewModel();
-    //     if (!vm.get('entry')) { return; }
-    //     // console.log(vm.get('entry'));
-    //     // me.getView().setLoading(true);
-
-    //     me.fireEvent('customevt');
-
-    //     Rpc.asyncData('rpc.reportsManager.getDataForReportEntry',
-    //                     vm.get('entry').getData(),
-    //                     vm.get('startDate'),
-    //                     vm.get('tillNow') ? null : vm.get('endDate'), -1)
-    //         .then(function(result) {
-    //             console.log(result);
-    //             // Ext.fireEvent('beginFetchData');
-    //             // me.getView().setLoading(false);
-    //             vm.set('_data', result.list);
-    //             // me.data = result.list;
-    //             // me.setSeries();
-    //             // if (me.getView().up('reports-entry')) {
-    //             //     me.getView().up('reports-entry').getController().setCurrentData(result.list);
-    //             // }
-    //         });
-    // },
+    closeSide: function () {
+        this.lookupReference('dataBtn').setPressed(false);
+        this.lookupReference('settingsBtn').setPressed(false);
+    },
 
     formatTimeData: function (data) {
         var entry = this.getViewModel().get('entry'),
@@ -428,15 +389,20 @@ Ext.define('Ung.view.reports.EntryController', {
 
     refreshData: function () {
         var vm = this.getViewModel();
-        if (vm.get('entry.type') === 'TEXT') {
-            this.getView().down('textreport').getController().fetchData();
-            return;
+        switch(vm.get('entry.type')) {
+            case 'TEXT': this.getView().down('textreport').getController().fetchData(); break;
+            case 'EVENT_LIST': this.getView().down('eventreport').getController().fetchData(); break;
+            default: this.getView().down('graphreport').getController().fetchData();
         }
-        this.getView().down('graphreport').getController().fetchData();
+    },
+
+    updateDefaultColumns: function (el, value) {
+        this.getViewModel().set('entry.defaultColumns', value.split(','));
     },
 
     updateReport: function () {
-        var v = this.getView(),
+        var me = this,
+            v = this.getView(),
             vm = this.getViewModel(),
             entry = vm.get('entry');
 
@@ -449,8 +415,7 @@ Ext.define('Ung.view.reports.EntryController', {
                 Util.successToast('<span style="color: yellow; font-weight: 600;">' + vm.get('entry.title') + '</span> report updated!');
                 Ung.app.redirectTo('#reports/' + entry.get('category').replace(/ /g, '-').toLowerCase() + '/' + entry.get('title').replace(/[^0-9a-z\s]/gi, '').replace(/\s+/g, '-').toLowerCase());
 
-                // todo: review for other report types (TEXT, EVENT_LIST)
-                v.down('graphreport').getController().fetchData();
+                me.refreshData();
             });
     },
 

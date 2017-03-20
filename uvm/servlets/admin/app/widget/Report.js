@@ -37,8 +37,12 @@ Ext.define('Ung.widget.Report', {
         itemId: 'header',
         bind: {
             html: '{title}' +
-                '<button class="action-btn"><i class="fa fa-rotate-left" data-action="refresh"></i></button>'
-                // '<button class="action-btn"><i class="fa fa-rotate-left" data-action="refresh"></i></button>'
+                '<div class="actions">' +
+                    '<a class="action-btn"><i class="fa fa-download fa-lg" data-action="download"></i></a>' +
+                    '<a class="action-btn"><i class="fa fa-area-chart fa-lg" data-action="style"></i></a>' +
+                    '<a class="action-btn"><i class="fa fa-external-link-square fa-lg" data-action="redirect"></i></a>' +
+                    '<a class="action-btn"><i class="fa fa-rotate-left fa-lg" data-action="refresh"></i></a>' +
+                '</div>'
         }
     }]
 });

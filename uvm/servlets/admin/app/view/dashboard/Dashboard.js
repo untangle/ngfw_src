@@ -66,11 +66,11 @@ Ext.define('Ung.view.dashboard.Dashboard', {
             plugins: {
                 ptype: 'gridviewdragdrop',
                 dragText: 'Drag and drop to reorganize'.t(),
-                dragZone: {
-                    onBeforeDrag: function (data, e) {
-                        return Ext.get(e.target).hasCls('drag-handle');
-                    }
-                }
+                // dragZone: {
+                //     onBeforeDrag: function (data, e) {
+                //         return Ext.get(e.target).hasCls('drag-handle');
+                //     }
+                // }
             },
             stripeRows: false,
             getRowClass: function (record) {
@@ -80,15 +80,18 @@ Ext.define('Ung.view.dashboard.Dashboard', {
                 drop: 'onDrop'
             }
         },
-        columns: [{
-            width: 14,
-            align: 'center',
-            sortable: false,
-            hideable: false,
-            resizable: false,
-            menuDisabled: true,
-            tdCls: 'drag-handle'
-        }, {
+        columns: [
+        //     {
+        //     xtype: 'actioncolumn',
+        //     width: 14,
+        //     align: 'center',
+        //     sortable: false,
+        //     hideable: false,
+        //     resizable: false,
+        //     menuDisabled: true,
+        //     tdCls: 'drag-handle'
+        // },
+        {
             width: 30,
             align: 'center',
             sortable: false,
@@ -104,6 +107,7 @@ Ext.define('Ung.view.dashboard.Dashboard', {
             flex: 1
         }, {
             xtype: 'actioncolumn',
+            iconCls: 'fa fa-times',
             width: 30,
             align: 'center',
             sortable: false,
@@ -111,9 +115,9 @@ Ext.define('Ung.view.dashboard.Dashboard', {
             resizable: false,
             menuDisabled: true,
             handler: 'removeWidget',
-            renderer: function (value, meta, record) {
-                return '<i class="fa fa-times" style="color: #999; font-size: 20px;"></i>';
-            }
+            // renderer: function (value, meta, record) {
+            //     return '<i class="fa fa-times" style="color: #999;"></i>';
+            // }
         }/*, {
             xtype: 'actioncolumn',
             align: 'center',

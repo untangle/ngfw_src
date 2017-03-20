@@ -7,7 +7,7 @@ Ext.define('Ung.view.reports.EntryModel', {
         startDate: new Date(Math.floor(rpc.systemManager.getMilliseconds()/1800000) * 1800000  - 3600 * 24 * 1000),
         endDate: new Date(Math.floor(rpc.systemManager.getMilliseconds()/1800000) * 1800000),
         tillNow: true,
-        _currentData: []
+        _currentData: [],
     },
 
     stores: {
@@ -18,7 +18,6 @@ Ext.define('Ung.view.reports.EntryModel', {
 
     formulas: {
         _reportCard: function (get) {
-            console.log(get('entry.type'));
             if (get('entry.type') === 'TEXT') { return 'textreport'; }
             if (get('entry.type') === 'EVENT_LIST') { return 'eventreport'; }
             return 'graphreport';
@@ -33,7 +32,6 @@ Ext.define('Ung.view.reports.EntryModel', {
                 this.set('entry.approximation', value !== 'sum' ? value : null);
             }
         },
-
 
         _sqlConditions: function (get) {
             return get('entry.conditions') || [];

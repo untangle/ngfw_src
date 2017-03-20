@@ -83,13 +83,19 @@ Ext.define('Ung.view.reports.GraphReportController', {
             credits: { enabled: false },
             title: null,
 
-            lang: { noData: 'some text' },
+            lang: { noData: '<i class="fa fa-info-circle fa-lg"></i><br/>No data!' },
             noData: {
+                position: {
+                    verticalAlign: 'top',
+                    y: 20
+                },
                 style: {
+                    fontFamily: 'Source Sans Pro',
                     padding: 0,
-                    fontSize: '12px',
+                    fontSize: '14px',
                     fontWeight: 'normal',
-                    color: '#999'
+                    color: '#999',
+                    textAlign: 'center'
                 },
                 useHTML: true
             },
@@ -372,7 +378,7 @@ Ext.define('Ung.view.reports.GraphReportController', {
                     linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
                     stops: [
                         [0, Highcharts.Color(colors[i]).setOpacity(0.5).get('rgba')],
-                        [1, Highcharts.Color(colors[i]).setOpacity(0.1).get('rgba')]
+                        [1, Highcharts.Color(colors[i]).setOpacity(0).get('rgba')]
                     ]
                 }
             });
@@ -382,12 +388,12 @@ Ext.define('Ung.view.reports.GraphReportController', {
         while (this.chart.series.length > 0) {
             this.chart.series[0].remove(false);
         }
-        // set new styles
-        me.setStyles();
+
         // add series
         series.forEach(function (serie) {
             me.chart.addSeries(serie, false, false);
         });
+        me.setStyles();
         me.chart.redraw();
     },
 
@@ -399,6 +405,10 @@ Ext.define('Ung.view.reports.GraphReportController', {
             slicesData = [], restValue = 0, i;
 
         if (!me.data) { return; }
+
+        if (me.data.length === 0) {
+
+        }
 
         for (i = 0; i < me.data.length; i += 1) {
             if (i < vm.get('entry.pieNumSlices')) {
@@ -529,12 +539,14 @@ Ext.define('Ung.view.reports.GraphReportController', {
                 },
                 // time graphs
                 spline: {
+                    shadow: true,
                     dataGrouping: {
                         groupPixelWidth: 16
                     },
                 },
                 // time graphs
                 areaspline: {
+                    // shadow: true,
                     // fillOpacity: 0.3,
                     dataGrouping: {
                         groupPixelWidth: 16
@@ -545,7 +557,7 @@ Ext.define('Ung.view.reports.GraphReportController', {
                     colorByPoint: isPieColumn, // pie
                     grouping: !isColumnOverlapped,
                     groupPadding: 0.20,
-                    // shadow: !isColumnOverlapped,
+                    shadow: !isColumnOverlapped,
                     dataGrouping: isTimeGraph ? { groupPixelWidth: isColumnStacked ? 50 : 64 } : undefined
                 }
             },
@@ -565,7 +577,7 @@ Ext.define('Ung.view.reports.GraphReportController', {
             },
             yAxis: {
                 visible: !isPie,
-                minRange: entry.get('units') === 'percent' ? 100 : undefined,
+                minRange: entry.get('units') === 'percent' ? 100 : 1,
                 maxRange: entry.get('units') === 'percent' ? 100 : undefined,
                 labels: {
                     formatter: function() {

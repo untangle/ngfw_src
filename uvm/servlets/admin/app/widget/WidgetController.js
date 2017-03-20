@@ -29,17 +29,37 @@ Ext.define('Ung.widget.WidgetController', {
                 if (e.target.dataset.action === 'refresh') {
                     me.addToQueue();
                 }
-                // if (e.target.dataset.action === 'style') {
-                //     var vm = me.getViewModel();
-                //     var styles = ['LINE', 'AREA', 'BAR', 'BAR_OVERLAPPED', 'BAR_STACKED'];
-                //     var style = vm.get('entry.timeStyle');
-                //     var idx = Ext.Array.indexOf(styles, style);
-                //     if (idx < styles.length - 1) {
-                //         vm.set('entry.timeStyle', styles[idx + 1]);
-                //     } else {
-                //         vm.set('entry.timeStyle', styles[0]);
-                //     }
-                // }
+
+                if (e.target.dataset.action === 'redirect') {
+                    Ung.app.redirectTo('#reports/' + me.getViewModel().get('entry.url'));
+                }
+
+                if (e.target.dataset.action === 'style') {
+                    var vm = me.getViewModel(), idx;
+
+                    if (vm.get('entry.type').indexOf('TIME_GRAPH') >= 0) {
+                        var timeStyles = ['LINE', 'AREA', 'BAR', 'BAR_OVERLAPPED', 'BAR_STACKED'];
+                        var timeStyle = vm.get('entry.timeStyle');
+                        idx = Ext.Array.indexOf(timeStyles, timeStyle);
+                        if (idx < timeStyles.length - 1) {
+                            vm.set('entry.timeStyle', timeStyles[idx + 1]);
+                        } else {
+                            vm.set('entry.timeStyle', timeStyles[0]);
+                        }
+                    }
+
+                    if (vm.get('entry.type').indexOf('PIE_GRAPH') >= 0) {
+                        var pieStyles = ['PIE', 'PIE_3D', 'DONUT', 'DONUT_3D', 'COLUMN', 'COLUMN_3D'];
+                        var pieStyle = vm.get('entry.pieStyle');
+                        idx = Ext.Array.indexOf(pieStyles, pieStyle);
+                        if (idx < pieStyles.length - 1) {
+                            vm.set('entry.pieStyle', pieStyles[idx + 1]);
+                        } else {
+                            vm.set('entry.pieStyle', pieStyles[0]);
+                        }
+                    }
+
+                }
             }
         });
     },
@@ -49,20 +69,20 @@ Ext.define('Ung.widget.WidgetController', {
         if (vm.get('entry')) {
             entryType = vm.get('entry.type');
             if (entryType === 'TIME_GRAPH' || entryType === 'TIME_GRAPH_DYNAMIC') {
-                view.add({ xtype: 'graphreport', itemId: 'report-widget',  reference: 'chart', height: 260, widgetDisplay: true });
+                view.add({ xtype: 'graphreport', itemId: 'report-widget',  reference: 'chart', height: 250, widgetDisplay: true });
             }
 
             if (entryType === 'PIE_GRAPH') {
-                view.add({ xtype: 'graphreport', itemId: 'report-widget', reference: 'chart',  height: 260, widgetDisplay: true });
+                view.add({ xtype: 'graphreport', itemId: 'report-widget', reference: 'chart',  height: 250, widgetDisplay: true });
             }
 
             if (entryType === 'TEXT') {
-                view.add({ xtype: 'textreport', itemId: 'report-widget', height: 260 });
+                view.add({ xtype: 'textreport', itemId: 'report-widget', height: 250 });
             }
 
 
             if (entryType === 'EVENT_LIST') {
-                view.add({ xtype: 'component', html: 'Not Implemented',  height: 260 });
+                view.add({ xtype: 'eventreport', itemId: 'report-widget', height: 250 });
             }
         }
     },
