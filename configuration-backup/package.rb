@@ -1,4 +1,4 @@
 # -*-ruby-*-
 
-AppBuilder.makeApp(BuildEnv::SRC, 'configuration-backup', 'configuration-backup', [] )
+AppBuilder.makeApp(BuildEnv::SRC, 'untangle-node-configuration-backup', 'configuration-backup', [] )
 

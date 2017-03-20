@@ -1,12 +1,12 @@
 # -*-ruby-*-
 
-smtp = BuildEnv::SRC['smtp']
-http = BuildEnv::SRC['http']
-ftp = BuildEnv::SRC['ftp']
+smtp = BuildEnv::SRC['untangle-casing-smtp']
+http = BuildEnv::SRC['untangle-casing-http']
+ftp = BuildEnv::SRC['untangle-casing-ftp']
 virus = BuildEnv::SRC['virus-blocker-base']
 
 deps = [smtp['src'], http['src'], ftp['src'], virus['src']]
 
-AppBuilder.makeApp(BuildEnv::SRC, 'virus-blocker', 'virus-blocker', deps )
+AppBuilder.makeApp(BuildEnv::SRC, 'untangle-node-virus-blocker', 'virus-blocker', deps )
 
 
