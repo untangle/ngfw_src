@@ -1043,7 +1043,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         if ( identifier.contains("untangle-node-"))
             return identifier;
         else
-            return identifier.replaceAll("untangle-node-","");
+            return "untangle-node-" + identifier;
     }
     
     private void _setValidAndStatus(License license)
