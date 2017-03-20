@@ -1042,8 +1042,12 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     {
         if ( identifier.contains("untangle-node-"))
             return identifier;
-        else
-            return "untangle-node-" + identifier;
+
+        if ("ssl-inspector".equals(identifier))
+            return "untangle-casing-ssl-inspector";
+        if ("https".equals(identifier))
+            return "untangle-casing-https";
+        return "untangle-node-" + identifier;
     }
     
     private void _setValidAndStatus(License license)
