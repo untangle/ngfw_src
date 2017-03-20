@@ -1,7 +1,7 @@
 #! /bin/bash
 
 # set most recent settings file to current time, forcing snort config rebuild when uvm is restarted
-SETTINGS_DIRECTORY=/usr/share/untangle/settings/untangle-node-intrusion-prevention/
+SETTINGS_DIRECTORY=/usr/share/untangle/settings/intrusion-prevention/
 
 if [ -d $SETTINGS_DIRECTORY ] ; then
     FILE=$(ls -ABrt1 --group-directories-first ${SETTINGS_DIRECTORY} | tail -n1)
