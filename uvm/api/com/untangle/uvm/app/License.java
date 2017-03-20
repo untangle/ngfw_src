@@ -121,7 +121,61 @@ public class License implements Serializable
      * Returns the unique identifier of the product of this license
      */
     public String getName() { return this.name; }
-    public void setName( String newValue ) { this.name = newValue; }
+    public void setName( String newValue )
+    {
+        //update all old names to the new names
+        switch(newValue) {
+        case "adconnector": newValue = "directory-connector"; break;
+        case "untangle-node-adconnector": newValue = "directory-connector"; break;
+        case "untangle-node-directory-connector": newValue = "directory-connector"; break;
+        case "bandwidth": newValue = "bandwidth-control"; break;
+        case "untangle-node-bandwidth": newValue = "bandwidth-control"; break;
+        case "untangle-node-bandwidth-control": newValue = "bandwidth-control"; break;
+        case "boxbackup": newValue = "configuration-backup"; break;
+        case "untangle-node-boxbackup": newValue = "configuration-backup"; break;
+        case "untangle-node-configuration-backup": newValue = "configuration-backup"; break;
+        case "branding": newValue = "branding-manager"; break;
+        case "untangle-node-branding": newValue = "branding-manager"; break;
+        case "untangle-node-branding-manager": newValue = "branding-manager"; break;
+        case "virusblocker": newValue = "virus-blocker"; break;
+        case "untangle-node-virusblocker": newValue = "virus-blocker"; break;
+        case "untangle-node-virus-blocker": newValue = "virus-blocker"; break;
+        case "spamblocker": newValue = "spam-blocker"; break;
+        case "untangle-node-spamblocker": newValue = "spam-blocker"; break;
+        case "untangle-node-spam-blocker": newValue = "spam-blocker"; break;
+        case "faild": newValue = "wan-failover"; break;
+        case "untangle-node-faild": newValue = "wan-failover"; break;
+        case "untangle-node-wan-failover": newValue = "wan-failover"; break;
+        case "ipsec": newValue = "ipsec-vpn"; break;
+        case "untangle-node-ipsec": newValue = "ipsec-vpn"; break;
+        case "untangle-node-ipsec-vpn": newValue = "ipsec-vpn"; break;
+        case "policy": newValue = "policy-manager"; break;
+        case "untangle-node-policy": newValue = "policy-manager"; break;
+        case "untangle-node-policy-manager": newValue = "policy-manager"; break;
+        case "sitefilter": newValue = "web-filter"; break;
+        case "untangle-node-sitefilter": newValue = "web-filter"; break;
+        case "untangle-node-web-filter": newValue = "web-filter"; break;
+        case "splitd": newValue = "wan-balancer"; break;
+        case "untangle-node-splitd": newValue = "wan-balancer"; break;
+        case "untangle-node-wan-balancer": newValue = "wan-balancer"; break;
+        case "webcache": newValue = "web-cache"; break;
+        case "untangle-node-webcache": newValue = "web-cache"; break;
+        case "untangle-node-web-cache": newValue = "web-cache"; break;
+        case "classd": newValue = "application-control"; break;
+        case "untangle-node-classd": newValue = "application-control"; break;
+        case "untangle-node-application-control": newValue = "application-control"; break;
+        case "https": newValue = "ssl-inspector"; break;
+        case "untangle-node-https": newValue = "ssl-inspector"; break;
+        case "untangle-node-ssl-inspector": newValue = "ssl-inspector"; break;
+        case "untangle-casing-https": newValue = "ssl-inspector"; break;
+        case "untangle-casing-ssl-inspector": newValue = "ssl-inspector"; break;
+        case "support": newValue = "live-support"; break;
+        case "untangle-node-support": newValue = "live-support"; break;
+        case "untangle-node-live-support": newValue = "live-support"; break;
+        default: break;
+        }
+        this.name = newValue;
+    }
 
     /**
      * Returns the unique identifier of the product of this license

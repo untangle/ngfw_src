@@ -173,52 +173,11 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
          * If the license exists and is valid use that one
          */
         License license = null;
-        License oldLicense = null;
-        License longLicense = null;
-        License oldLongLicense = null;
 
         license = this.licenseMap.get(identifier);
         logger.debug("getLicense(" + identifier + ") = " + license );
-
-        String oldIdentifier = getOldIdentifier(identifier);
-        if ( oldIdentifier != null ) {
-            oldLicense = this.licenseMap.get(oldIdentifier);
-            logger.debug("getLicense(" + oldIdentifier + ") = " + oldLicense );
-
-            String oldLongIdentifier = getLongIdentifier(identifier);
-            if ( oldLongIdentifier != null ) {
-                oldLongLicense = this.licenseMap.get(oldLongIdentifier);
-                logger.debug("getLicense(" + oldLongIdentifier + ") = " + oldLongLicense );
-            }
-
-        }
-        String longIdentifier = getLongIdentifier(identifier);
-        if ( longIdentifier != null ) {
-            longLicense = this.licenseMap.get(longIdentifier);
-            logger.debug("getLicense(" + longIdentifier + ") = " + longLicense );
-        }
-
-        /**
-         * Ranked in order of preference
-         */
-        if (license != null && license.getValid())
-            return license;
-        if (longLicense != null && longLicense.getValid())
-            return longLicense;
-        if (oldLicense != null && oldLicense.getValid())
-            return oldLicense;
-        if (oldLongLicense != null && oldLongLicense.getValid())
-            return oldLongLicense;
-
         if (license != null)
             return license;
-        if (longLicense != null)
-            return longLicense;
-        if (oldLicense != null)
-            return oldLicense;
-        if (oldLongLicense != null)
-            return oldLongLicense;
-
 
         /**
          * Special for development environment
@@ -998,56 +957,6 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         if ("untangle-node-commtouchas".equals(identifier)) return true;
         if ("commtouchas".equals(identifier)) return true;
         return false;
-    }
-    
-    private String getOldIdentifier(String identifier)
-    {
-        switch (identifier) {
-        case License.DIRECTORY_CONNECTOR:
-            return License.DIRECTORY_CONNECTOR_OLDNAME;
-        case License.BANDWIDTH_CONTROL:
-            return License.BANDWIDTH_CONTROL_OLDNAME;
-        case License.CONFIGURATION_BACKUP:
-            return License.CONFIGURATION_BACKUP_OLDNAME;
-        case License.BRANDING_MANAGER:
-            return License.BRANDING_MANAGER_OLDNAME;
-        case License.VIRUS_BLOCKER:
-            return License.VIRUS_BLOCKER_OLDNAME;
-        case License.SPAM_BLOCKER:
-            return License.SPAM_BLOCKER_OLDNAME;
-        case License.WAN_FAILOVER:
-            return License.WAN_FAILOVER_OLDNAME;
-        case License.IPSEC_VPN:
-            return License.IPSEC_VPN_OLDNAME;
-        case License.POLICY_MANAGER:
-            return License.POLICY_MANAGER_OLDNAME;
-        case License.WEB_FILTER:
-            return License.WEB_FILTER_OLDNAME;
-        case License.WAN_BALANCER:
-            return License.WAN_BALANCER_OLDNAME;
-        case License.WEB_CACHE:
-            return License.WEB_CACHE_OLDNAME;
-        case License.APPLICATION_CONTROL:
-            return License.APPLICATION_CONTROL_OLDNAME;
-        case License.SSL_INSPECTOR:
-            return License.SSL_INSPECTOR_OLDNAME;
-        case License.LIVE_SUPPORT:
-            return License.LIVE_SUPPORT_OLDNAME;
-        }            
-
-        return null;
-    }
-
-    private String getLongIdentifier(String identifier)
-    {
-        if ( identifier.contains("untangle-node-"))
-            return identifier;
-
-        if ("ssl-inspector".equals(identifier))
-            return "untangle-casing-ssl-inspector";
-        if ("https".equals(identifier))
-            return "untangle-casing-https";
-        return "untangle-node-" + identifier;
     }
     
     private void _setValidAndStatus(License license)
