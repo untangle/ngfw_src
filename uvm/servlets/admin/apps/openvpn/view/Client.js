@@ -23,17 +23,19 @@ Ext.define('Ung.apps.openvpn.view.Client', {
         height: 400
     },{
         xtype: 'displayfield',
-        padding: '20 0 0 10',
         value: '<STRONG>' + 'Configure a new Remote Server connection'.t() + '</STRONG>'
     },{
+        xtype: 'fileuploadfield',
         fieldLabel: 'Configuration File'.t(),
         labelWidth: 160,
-        width: 400,
-        xtype: 'textfield'
+        width: 600,
     },{
         xtype: 'button',
         align: 'center',
-        width: 100,
+        width: 120,
+        height: 30,
+        padding: '0 0 0 0',
+        margin: '0 10 0 10',
         text: 'Submit'.t()
     }]
 });
@@ -59,12 +61,6 @@ Ext.define('Ung.apps.openvpn.view.RemoteServersGrid', {
     extend: 'Ung.cmp.Grid',
     alias: 'widget.app-openvpn-remote-servers-grid',
     itemId: 'remote-servers-grid',
-
-    dockedItems: [{
-        xtype: 'toolbar',
-        dock: 'top',
-        html: 'Remote Servers'.t(),
-    }],
 
     recordActions: ['edit', 'delete'],
     listProperty: 'settings.remoteServers.list',

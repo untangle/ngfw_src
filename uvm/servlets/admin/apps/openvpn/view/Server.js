@@ -132,7 +132,7 @@ Ext.define('Ung.apps.openvpn.view.RemoteClientsGrid', {
         xtype:'combo',
         fieldLabel: 'Group'.t(),
         editable: false,
-        bind: '{record.conntype}',
+        bind: '{record.groupId}',
         store: [['1','Default Group']]
     }, {
         xtype:'combo',
@@ -188,30 +188,50 @@ Ext.define('Ung.apps.openvpn.view.GroupsGrid', {
         bind: '{record.name}'
     }, {
         xtype: 'checkbox',
-        fieldLabel: 'Enabled'.t(),
+        fieldLabel: 'Full Tunnel'.t(),
         bind: '{record.fullTunnel}'
     }, {
         xtype: 'checkbox',
         fieldLabel: 'Push DNS'.t(),
         bind: '{record.pushDns}'
     }, {
+        xtype: 'displayfield',
+        value: '<STRONG>' + 'Push DNS Configuration'.t() + '</STRONG>',
+        bind: {
+            hidden: '{!record.pushDns}'
+        }
+    }, {
         xtype:'combo',
-        fieldLabel: 'Group'.t(),
+        fieldLabel: 'Push DNS Server'.t(),
         editable: false,
-        bind: '{record.pushDnsSelf}',
-        store: [[true,'OpenVPN Server'.t()],[false,'Custom'.t()]]
+        store: [[true,'OpenVPN Server'.t()],[false,'Custom'.t()]],
+        bind: {
+            value: '{record.pushDnsSelf}',
+            hidden:'{!record.pushDns}'
+        }
     }, {
         xtype: 'textfield',
         fieldLabel: 'Push DNS Custom 1'.t(),
-        bind: '{record.pushDns1}'
+        bind: {
+            value: '{record.pushDns1}',
+            disabled: '{record.pushDnsSelf}',
+            hidden:'{!record.pushDns}'
+        }
     }, {
         xtype: 'textfield',
         fieldLabel: 'Push DNS Custom 2'.t(),
-        bind: '{record.pushDns2}'
+        bind: {
+            value: '{record.pushDns2}',
+            disabled: '{record.pushDnsSelf}',
+            hidden:'{!record.pushDns}'
+        }
     }, {
         xtype:'textfield',
         fieldLabel: 'Push DNS Domain'.t(),
-        bind: '{record.pushDnsDomain}'
+        bind: {
+            value: '{record.pushDnsDomain}',
+            hidden:'{!record.pushDns}'
+        }
     }]
 
 });
@@ -251,7 +271,7 @@ Ext.define('Ung.apps.openvpn.view.ExportedNetworksGrid', {
         dataIndex: 'name',
     }, {
         header: 'Network'.t(),
-        width: 120,
+        width: 150,
         dataIndex: 'network',
     }],
 
