@@ -83,13 +83,14 @@ Ext.define('Ung.view.dashboard.Dashboard', {
         columns: [
         //     {
         //     xtype: 'actioncolumn',
+        //     iconCls: 'fa fa-arrows',
         //     width: 14,
         //     align: 'center',
         //     sortable: false,
         //     hideable: false,
         //     resizable: false,
         //     menuDisabled: true,
-        //     tdCls: 'drag-handle'
+        //     // tdCls: 'drag-handle'
         // },
         {
             width: 30,
@@ -153,7 +154,7 @@ Ext.define('Ung.view.dashboard.Dashboard', {
             iconCls: 'fa fa-upload'
             //handler: 'applyChanges'
         }],
-        bbar: [{
+        fbar: [{
             text: 'Reset'.t(),
             iconCls: 'fa fa-rotate-left',
             handler: 'resetDashboard'

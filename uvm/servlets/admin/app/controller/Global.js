@@ -191,6 +191,7 @@ Ext.define('Ung.controller.Global', {
         var reportsVm = this.getReportsView().getViewModel();
         if (categoryName) {
             reportsVm.set('categoryName', categoryName.replace(/-/g, ' '));
+            reportsVm.notify(); // !important to notify this before report is tried to be set
             if (!reportName) {
                 reportsVm.set('activeCard', 'category');
                 reportsVm.set('reportName', null);

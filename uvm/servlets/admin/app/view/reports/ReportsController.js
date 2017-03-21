@@ -60,7 +60,7 @@ Ext.define('Ung.view.reports.ReportsController', {
         vm.bind('{categoryName}', function (categoryName) {
             var categStore = me.lookupReference('categories').getStore();
             if (categStore) {
-                this.set('category', categStore.findRecord('categoryName', vm.get('categoryName')));
+                vm.set('category', categStore.findRecord('categoryName', vm.get('categoryName')));
             }
         });
 
@@ -80,6 +80,7 @@ Ext.define('Ung.view.reports.ReportsController', {
                         entry.get('title').replace(/[^0-9a-z\s]/gi, '').replace(/\s+/g, '-').toLowerCase() === reportName;
                 });
                 if (report && report.length > 0) {
+                    // console.log(report);
                     // main reference from the store
                     vm.set('report', report.getAt(0));
                     // report reference copy on which modifications are made
@@ -90,12 +91,14 @@ Ext.define('Ung.view.reports.ReportsController', {
     },
 
     onDeactivate: function () {
-        var entryView = this.getView().down('reports-entry');
-        if (entryView) {
-            if (entryView.down('#chart')) {
-                entryView.remove('chart');
-            }
-        }
+        var vm = this.getViewModel();
+        vm.set({
+            categoryName: null,
+            category: null,
+            reportName: null,
+            report: null,
+            activeCard: 'category'
+        });
     },
 
     /**

@@ -10,11 +10,17 @@ Ext.define('Ung.view.reports.EntryModel', {
         _currentData: [],
     },
 
-    stores: {
-        conditions: {
-            data: '{_sqlConditions}'
-        }
-    },
+    // stores: {
+    //     _sqlConditionsStore: {
+    //         data: '{_sqlConditions}',
+    //         proxy: {
+    //             type: 'memory',
+    //             reader: {
+    //                 type: 'json'
+    //             }
+    //         }
+    //     }
+    // },
 
     formulas: {
         _reportCard: function (get) {
@@ -33,8 +39,15 @@ Ext.define('Ung.view.reports.EntryModel', {
             }
         },
 
-        _sqlConditions: function (get) {
-            return get('entry.conditions') || [];
+        _sqlConditions: {
+            get: function (get) {
+               return get('entry.conditions') || [];
+            },
+            set: function (value) {
+                this.set('entry.conditions', value);
+                this.set('_sqlTitle', '<i class="fa fa-filter"></i> ' + 'Sql Conditions:'.t() + ' (' + value.length + ')');
+               // return get('entry.conditions') || [];
+            },
         },
 
         _props: function (get) {

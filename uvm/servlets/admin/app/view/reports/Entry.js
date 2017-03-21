@@ -572,7 +572,7 @@ Ext.define('Ung.view.reports.Entry', {
                 // columns for EVENT_LIST
                 xtype: 'fieldset',
                 title: '<i class="fa fa-columns"></i> ' + 'Columns'.t(),
-                maxHeight: 300,
+                maxHeight: 200,
                 scrollable: 'y',
                 collapsible: true,
                 items: [{
@@ -590,9 +590,10 @@ Ext.define('Ung.view.reports.Entry', {
                     hidden: '{entry.type !== "EVENT_LIST"}'
                 }
             }, {
+                // SQL CONDITIONS
                 xtype: 'fieldset',
                 bind: {
-                    title: '<i class="fa fa-filter"></i> ' + 'Sql Conditions:'.t() + ' ({_sqlConditions.length})',
+                    title: '{_sqlTitle}',
                     collapsed: '{!entry.conditions}'
                 },
                 padding: 10,
@@ -600,29 +601,66 @@ Ext.define('Ung.view.reports.Entry', {
                 collapsed: true,
                 items: [{
                     xtype: 'grid',
-                    border: false,
+                    itemId: 'sqlConditions',
                     trackMouseOver: false,
                     sortableColumns: false,
                     enableColumnResize: false,
                     enableColumnMove: false,
                     enableColumnHide: false,
-                    hideHeaders: true,
+                    // hideHeaders: true,
                     disableSelection: true,
                     viewConfig: {
-                        emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-2x"></i> <br/>No Conditions!</p>',
+                        emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-lg"></i> No Conditions!</p>',
                         stripeRows: false,
                     },
-                    bind: '{conditions}',
+                    fields: ['column', 'operator', 'value'],
+                    bind: {
+                        store: {
+                            data: '{_sqlConditions}'
+                        }
+                    },
+                    dockedItems: [{
+                        xtype: 'toolbar',
+                        dock: 'top',
+                        layout: {
+                            type: 'hbox',
+                            align: 'stretch'
+                        },
+                        items: [{
+                            xtype: 'combo',
+                            flex: 1,
+                            itemId: 'sqlConditionsCombo',
+                            reference: 'sqlConditionsCombo',
+                            publishes: 'value',
+                            value: '',
+                            editable: false,
+                            queryMode: 'local',
+                            displayField: 'text',
+                            valueField: 'value',
+                            store: { data: [] }
+                        }, {
+                            xtype: 'button',
+                            text: 'Add',
+                            iconCls: 'fa fa-plus-circle',
+                            disabled: true,
+                            bind: {
+                                disabled: '{sqlConditionsCombo.value === ""}'
+                            },
+                            handler: 'addSqlCondition'
+                        }]
+                    }],
                     columns: [{
                         header: 'Column'.t(),
                         dataIndex: 'column',
-                        flex: 1
+                        renderer: 'sqlColumnRenderer'
                     }, {
                         header: 'Operator'.t(),
                         xtype: 'widgetcolumn',
-                        width: 80,
+                        width: 82,
+                        align: 'center',
                         widget: {
                             xtype: 'combo',
+                            width: 80,
                             bind: '{record.operator}',
                             store: ['=', '!=', '>', '<', '>=', '<=', 'like', 'not like', 'is', 'is not', 'in', 'not in'],
                             editable: false,
@@ -632,15 +670,26 @@ Ext.define('Ung.view.reports.Entry', {
                     }, {
                         header: 'Value'.t(),
                         xtype: 'widgetcolumn',
+                        flex: 1,
                         widget: {
                             xtype: 'textfield',
                             bind: '{record.value}'
                         }
                     }, {
                         xtype: 'actioncolumn',
-                        width: 20,
+                        width: 22,
                         align: 'center',
-                        iconCls: 'fa fa-minus-circle'
+                        iconCls: 'fa fa-minus-circle',
+                        handler: 'removeSqlCondition'
+                        // xtype: 'widgetcolumn',
+                        // width: 22,
+                        // align: 'center',
+                        // widget: {
+                        //     xtype: 'button',
+                        //     width: 20,
+                        //     iconCls: 'fa fa-minus-circle',
+                        //     handler: 'removeSqlCondition'
+                        // }
                     }]
                 }]
             }],

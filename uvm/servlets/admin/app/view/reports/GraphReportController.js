@@ -173,7 +173,8 @@ Ext.define('Ung.view.reports.GraphReportController', {
             },
             tooltip: {
                 enabled: true,
-                distance: 30,
+                animation: false,
+                // distance: 30,
                 padding: 5,
                 hideDelay: 0,
                 // pointFormat: '<span style="color: {point.color}">\u25CF</span> <strong>{series.name}</strong>: {point.y}<br/>',
@@ -202,7 +203,7 @@ Ext.define('Ung.view.reports.GraphReportController', {
                 areaspline: {
                     lineWidth: 1,
                     tooltip: {
-                        split: true
+                        // split: true
                     }
                 },
                 spline: {
@@ -225,7 +226,7 @@ Ext.define('Ung.view.reports.GraphReportController', {
                         padding: 0,
                         reserveSpace: false,
                         style: {
-                            fontSize: '11px',
+                            fontSize: '12px',
                             color: '#333',
                             // fontFamily: 'Source Sans Pro',
                             fontWeight: 600
@@ -237,7 +238,7 @@ Ext.define('Ung.view.reports.GraphReportController', {
                             if (this.point.name.length > 25) {
                                 return this.point.name.substring(0, 25) + '...';
                             }
-                            return this.point.y + ' (' + this.point.percentage.toFixed(2) + '%)';
+                            return this.point.name + ' (' + this.point.percentage.toFixed(2) + '%)';
                         }
                     }
                 },
@@ -609,10 +610,10 @@ Ext.define('Ung.view.reports.GraphReportController', {
                 layout: isPie ? 'vertical' : 'horizontal',
                 align: isPie ? 'left' : 'center',
                 verticalAlign: isPie ? 'top' : 'bottom'
-            },
-            tooltip: {
-                split: isTimeGraph && !isTimeColumn
             }
+            // tooltip: {
+            //     split: isTimeGraph && !isTimeColumn
+            // }
         });
 
         if (entry.get('timeStyle') === 'BAR_OVERLAPPED' || entry.get('timeStyle') === 'BAR_3D_OVERLAPPED') {
