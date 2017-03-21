@@ -43,25 +43,23 @@ Ext.define('Ung.view.reports.EntryController', {
             dataGrid.setColumns([]);
             dataGrid.setLoading(true);
 
-            // hide current data side panel if event entry
+            me.tableConfig = TableConfig.generate(entry.get('table'));
+
             if (entry.get('type') === 'EVENT_LIST') {
                 me.lookupReference('dataBtn').setPressed(false);
-
-                // set defaultColumns for EVENT_LIST
-                if (entry.get('table')) {
-                    var tableConfig = TableConfig.getConfig(entry.get('table')),
-                        checkboxes = [];
-                    // console.log(me.getView().down('#tableColumns'));
-                    Ext.Array.each(tableConfig.columns, function (column) {
-                        checkboxes.push({ boxLabel: column.header, inputValue: column.dataIndex, name: 'cbGroup' });
-                    });
-                    me.getView().down('#tableColumns').add(checkboxes);
-                    me.getView().down('#tableColumns').setValue(entry.get('defaultColumns').join());
-                }
+                me.getView().down('#tableColumns').removeAll();
+                me.getView().down('#tableColumns').add(me.tableConfig.checkboxes);
+                me.getView().down('#tableColumns').setValue(entry.get('defaultColumns') ? entry.get('defaultColumns').join() : '');
             } else {
                 me.getView().down('#tableColumns').removeAll();
                 me.getView().down('#tableColumns').setValue({});
             }
+
+            // set the _sqlConditions data as for the sql conditions grid store
+            vm.set('_sqlConditions', entry.get('conditions') || []);
+            // set combo store conditions
+            me.getView().down('#sqlConditionsCombo').getStore().setData(me.tableConfig.comboItems);
+            me.getView().down('#sqlConditionsCombo').setValue('');
         });
 
         vm.bind('{_defaultColors}', function (val) {
@@ -396,9 +394,43 @@ Ext.define('Ung.view.reports.EntryController', {
         }
     },
 
+
+    // TABLE COLUMNS / CONDITIONS
     updateDefaultColumns: function (el, value) {
         this.getViewModel().set('entry.defaultColumns', value.split(','));
     },
+
+    addSqlCondition: function (btn) {
+        var me = this, vm = me.getViewModel(),
+            conds = vm.get('_sqlConditions') || [];
+
+        conds.push({
+            autoFormatValue: false,
+            column: me.getView().down('#sqlConditionsCombo').getValue(),
+            javaClass: 'com.untangle.app.reports.SqlCondition',
+            operator: '=',
+            value: ''
+        });
+
+        vm.set('_sqlConditions', conds);
+        me.getView().down('#sqlConditions').getStore().reload();
+    },
+
+    removeSqlCondition: function (table, rowIndex) {
+        var me = this, vm = me.getViewModel(),
+            conds = vm.get('_sqlConditions');
+        Ext.Array.removeAt(conds, rowIndex);
+        vm.set('_sqlConditions', conds);
+        me.getView().down('#sqlConditions').getStore().reload();
+    },
+
+    sqlColumnRenderer: function (val) {
+        return Ext.Array.findBy(this.tableConfig.columns, function (col) {
+            return col.dataIndex === val;
+        }).header;
+    },
+    // TABLE COLUMNS / CONDITIONS END
+
 
     updateReport: function () {
         var me = this,
