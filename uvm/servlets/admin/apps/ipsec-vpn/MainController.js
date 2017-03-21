@@ -152,7 +152,7 @@ Ext.define('Ung.apps.ipsecvpn.MainController', {
     refreshTextArea: function(cmp)
     {
         var ipsecApp = rpc.appManager.app('ipsec-vpn');
-	var target;
+        var target;
 
         switch(cmp.target) {
             case "ipsecStateInfo":
