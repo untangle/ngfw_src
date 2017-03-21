@@ -104,69 +104,79 @@ public class License implements Serializable
         
     /**
      * Returns the unique identifier of the product of this license
+     * This is the current "updated" version of the "name"
+     * We have changed names several times, but the licenses server
+     * still provides licenses for the old names
+     * This provides the newest current name for any name
      */
-    public String getName() { return this.name; }
-    public void setName( String newValue )
+    public String getCurrentName()
     {
         //update all old names to the new names
-        switch(newValue) {
-        case "adconnector": newValue = "directory-connector"; break;
-        case "untangle-node-adconnector": newValue = "directory-connector"; break;
-        case "untangle-node-directory-connector": newValue = "directory-connector"; break;
-        case "bandwidth": newValue = "bandwidth-control"; break;
-        case "untangle-node-bandwidth": newValue = "bandwidth-control"; break;
-        case "untangle-node-bandwidth-control": newValue = "bandwidth-control"; break;
-        case "boxbackup": newValue = "configuration-backup"; break;
-        case "untangle-node-boxbackup": newValue = "configuration-backup"; break;
-        case "untangle-node-configuration-backup": newValue = "configuration-backup"; break;
-        case "branding": newValue = "branding-manager"; break;
-        case "untangle-node-branding": newValue = "branding-manager"; break;
-        case "untangle-node-branding-manager": newValue = "branding-manager"; break;
-        case "virusblocker": newValue = "virus-blocker"; break;
-        case "untangle-node-virusblocker": newValue = "virus-blocker"; break;
-        case "commtouchav": newValue = "virus-blocker"; break;
-        case "untangle-node-commtouchav": newValue = "virus-blocker"; break;
-        case "kav": newValue = "virus-blocker"; break;
-        case "untangle-node-kav": newValue = "virus-blocker"; break;
-        case "untangle-node-virus-blocker": newValue = "virus-blocker"; break;
-        case "spamblocker": newValue = "spam-blocker"; break;
-        case "untangle-node-spamblocker": newValue = "spam-blocker"; break;
-        case "commtouchas": newValue = "spam-blocker"; break;
-        case "untangle-node-commtouchas": newValue = "spam-blocker"; break;
-        case "untangle-node-spam-blocker": newValue = "spam-blocker"; break;
-        case "faild": newValue = "wan-failover"; break;
-        case "untangle-node-faild": newValue = "wan-failover"; break;
-        case "untangle-node-wan-failover": newValue = "wan-failover"; break;
-        case "ipsec": newValue = "ipsec-vpn"; break;
-        case "untangle-node-ipsec": newValue = "ipsec-vpn"; break;
-        case "untangle-node-ipsec-vpn": newValue = "ipsec-vpn"; break;
-        case "policy": newValue = "policy-manager"; break;
-        case "untangle-node-policy": newValue = "policy-manager"; break;
-        case "untangle-node-policy-manager": newValue = "policy-manager"; break;
-        case "sitefilter": newValue = "web-filter"; break;
-        case "untangle-node-sitefilter": newValue = "web-filter"; break;
-        case "untangle-node-web-filter": newValue = "web-filter"; break;
-        case "splitd": newValue = "wan-balancer"; break;
-        case "untangle-node-splitd": newValue = "wan-balancer"; break;
-        case "untangle-node-wan-balancer": newValue = "wan-balancer"; break;
-        case "webcache": newValue = "web-cache"; break;
-        case "untangle-node-webcache": newValue = "web-cache"; break;
-        case "untangle-node-web-cache": newValue = "web-cache"; break;
-        case "classd": newValue = "application-control"; break;
-        case "untangle-node-classd": newValue = "application-control"; break;
-        case "untangle-node-application-control": newValue = "application-control"; break;
-        case "https": newValue = "ssl-inspector"; break;
-        case "untangle-node-https": newValue = "ssl-inspector"; break;
-        case "untangle-node-ssl-inspector": newValue = "ssl-inspector"; break;
-        case "untangle-casing-https": newValue = "ssl-inspector"; break;
-        case "untangle-casing-ssl-inspector": newValue = "ssl-inspector"; break;
-        case "support": newValue = "live-support"; break;
-        case "untangle-node-support": newValue = "live-support"; break;
-        case "untangle-node-live-support": newValue = "live-support"; break;
+        switch(this.name) {
+        case "adconnector": return "directory-connector";
+        case "untangle-node-adconnector": return "directory-connector";
+        case "untangle-node-directory-connector": return "directory-connector";
+        case "bandwidth": return "bandwidth-control";
+        case "untangle-node-bandwidth": return "bandwidth-control";
+        case "untangle-node-bandwidth-control": return "bandwidth-control";
+        case "boxbackup": return "configuration-backup";
+        case "untangle-node-boxbackup": return "configuration-backup";
+        case "untangle-node-configuration-backup": return "configuration-backup";
+        case "branding": return "branding-manager";
+        case "untangle-node-branding": return "branding-manager";
+        case "untangle-node-branding-manager": return "branding-manager";
+        case "virusblocker": return "virus-blocker";
+        case "untangle-node-virusblocker": return "virus-blocker";
+        case "commtouchav": return "virus-blocker";
+        case "untangle-node-commtouchav": return "virus-blocker";
+        case "kav": return "virus-blocker";
+        case "untangle-node-kav": return "virus-blocker";
+        case "untangle-node-virus-blocker": return "virus-blocker";
+        case "spamblocker": return "spam-blocker";
+        case "untangle-node-spamblocker": return "spam-blocker";
+        case "commtouchas": return "spam-blocker";
+        case "untangle-node-commtouchas": return "spam-blocker";
+        case "untangle-node-spam-blocker": return "spam-blocker";
+        case "faild": return "wan-failover";
+        case "untangle-node-faild": return "wan-failover";
+        case "untangle-node-wan-failover": return "wan-failover";
+        case "ipsec": return "ipsec-vpn";
+        case "untangle-node-ipsec": return "ipsec-vpn";
+        case "untangle-node-ipsec-vpn": return "ipsec-vpn";
+        case "policy": return "policy-manager";
+        case "untangle-node-policy": return "policy-manager";
+        case "untangle-node-policy-manager": return "policy-manager";
+        case "sitefilter": return "web-filter";
+        case "untangle-node-sitefilter": return "web-filter";
+        case "untangle-node-web-filter": return "web-filter";
+        case "splitd": return "wan-balancer";
+        case "untangle-node-splitd": return "wan-balancer";
+        case "untangle-node-wan-balancer": return "wan-balancer";
+        case "webcache": return "web-cache";
+        case "untangle-node-webcache": return "web-cache";
+        case "untangle-node-web-cache": return "web-cache";
+        case "classd": return "application-control";
+        case "untangle-node-classd": return "application-control";
+        case "untangle-node-application-control": return "application-control";
+        case "https": return "ssl-inspector";
+        case "untangle-node-https": return "ssl-inspector";
+        case "untangle-node-ssl-inspector": return "ssl-inspector";
+        case "untangle-casing-https": return "ssl-inspector";
+        case "untangle-casing-ssl-inspector": return "ssl-inspector";
+        case "support": return "live-support";
+        case "untangle-node-support": return "live-support";
+        case "untangle-node-live-support": return "live-support";
         default: break;
         }
-        this.name = newValue;
+
+        return this.name;
     }
+
+    /**
+     * Returns the unique identifier of the product of this license
+     */
+    public String getName() { return this.name; }
+    public void setName( String newValue ) { this.name = newValue; }
 
     /**
      * Returns the unique identifier of the product of this license

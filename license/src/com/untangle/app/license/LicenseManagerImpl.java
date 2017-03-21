@@ -721,7 +721,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
                      */
                     _setValidAndStatus(license);
             
-                    String identifier = license.getName();
+                    String identifier = license.getCurrentName();
                     if ( identifier == null ) {
                         logger.warn("Ignoring license with no name: " + license );
                         continue;
@@ -733,7 +733,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
                     if ((current != null) && (current.getEnd() > license.getEnd()))
                         continue;
 
-                    logger.info("Adding License: " + license.getName() + " to Map. (valid: " + license.getValid() + ")");
+                    logger.info("Adding License: " + license.getCurrentName() + " to Map. (valid: " + license.getValid() + ")");
             
                     newMap.put(identifier, license);
                     newList.add(license);

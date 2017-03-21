@@ -20,7 +20,7 @@ Ext.define('Ung.config.about.view.Licenses', {
             width: 150
         }, {
             header: 'App'.t(),
-            dataIndex: 'name',
+            dataIndex: 'currentName',
             flex: 1
         }, {
             header: 'UID'.t(),
