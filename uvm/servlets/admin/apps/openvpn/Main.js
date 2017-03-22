@@ -16,6 +16,12 @@ Ext.define('Ung.apps.openvpn.Main', {
             },
             exportedNetworks: {
                 data:'{settings.exports.list}'
+            },
+            serverConfiguration: {
+                data: '{settings.serverConfiguration.list}'
+            },
+            clientConfiguration: {
+                data: '{settings.clientConfiguration.list}'
             }
         },
 
