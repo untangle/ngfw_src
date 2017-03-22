@@ -1,6 +1,6 @@
 {
     "uniqueId": "shield-81IWC45RM4",
-    "category": "System",
+    "category": "Shield",
     "description": "The number of blocked sessions grouped by hostname.",
     "displayOrder": 200,
     "enabled": true,

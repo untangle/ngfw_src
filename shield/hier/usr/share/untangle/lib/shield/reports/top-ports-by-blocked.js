@@ -1,6 +1,6 @@
 {
     "uniqueId": "shield-KOQ0fVCEx0",
-    "category": "System",
+    "category": "Shield",
     "description": "The number of blocked sessions grouped by server port.",
     "displayOrder": 200,
     "enabled": true,
