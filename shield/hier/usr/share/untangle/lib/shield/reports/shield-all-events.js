@@ -1,6 +1,6 @@
 {
     "uniqueId": "shield-OgvQLeSbGN",
-    "category": "System",
+    "category": "Shield",
     "readOnly": true,
     "type": "EVENT_LIST",
     "conditions": [],

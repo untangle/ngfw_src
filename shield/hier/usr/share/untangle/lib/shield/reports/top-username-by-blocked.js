@@ -1,6 +1,6 @@
 {
     "uniqueId": "shield-k2W4GfY07m",
-    "category": "System",
+    "category": "Shield",
     "description": "The number of blocked sessions grouped by username.",
     "displayOrder": 200,
     "enabled": true,
