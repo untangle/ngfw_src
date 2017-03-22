@@ -60,6 +60,10 @@ Ext.define('Ung.view.reports.EntryController', {
             // set combo store conditions
             me.getView().down('#sqlConditionsCombo').getStore().setData(me.tableConfig.comboItems);
             me.getView().down('#sqlConditionsCombo').setValue('');
+
+            me.getView().down('#sqlFilterCombo').getStore().setData(me.tableConfig.comboItems);
+            me.getView().down('#sqlFilterCombo').setValue('');
+
         });
 
         vm.bind('{_defaultColors}', function (val) {
@@ -388,6 +392,46 @@ Ext.define('Ung.view.reports.EntryController', {
         }).header;
     },
     // TABLE COLUMNS / CONDITIONS END
+
+
+    // FILTERS
+    addSqlFilter: function () {
+        var me = this, vm = me.getViewModel(),
+            _filterComboCmp = me.getView().down('#sqlFilterCombo'),
+            _operatorCmp = me.getView().down('#sqlFilterOperator'),
+            _filterValueCmp = me.getView().down('#sqlFilterValue');
+
+        vm.get('sqlFilterData').push({
+            column: _filterComboCmp.getValue(),
+            operator: _operatorCmp.getValue(),
+            value: _filterValueCmp.getValue(),
+            javaClass: 'com.untangle.app.reports.SqlCondition'
+        });
+
+        _filterComboCmp.setValue('');
+        _operatorCmp.setValue('=');
+        _filterValueCmp.setValue('');
+
+        me.getView().down('#sqlFilters').setTitle('Sql Filters'.t() + ' (' + vm.get('sqlFilterData').length + ')');
+        me.getView().down('#sqlFilters').getStore().reload();
+        me.refreshData();
+    },
+
+    removeSqlFilter: function (table, rowIndex) {
+        var me = this, vm = me.getViewModel();
+        Ext.Array.removeAt(vm.get('sqlFilterData'), rowIndex);
+        me.getView().down('#sqlFilters').setTitle('Sql Filters'.t() + ' (' + vm.get('sqlFilterData').length + ')');
+        me.getView().down('#sqlFilters').getStore().reload();
+        me.refreshData();
+    },
+
+    onFilterKeyup: function (cmp, e) {
+        if (e.keyCode === 13) {
+            this.addSqlFilter();
+        }
+    },
+
+    // END FILTERS
 
 
     updateReport: function () {

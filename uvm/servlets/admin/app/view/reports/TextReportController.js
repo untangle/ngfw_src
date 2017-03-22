@@ -36,9 +36,10 @@ Ext.define('Ung.view.reports.TextReportController', {
         }
 
         Rpc.asyncData('rpc.reportsManager.getDataForReportEntry',
-                        vm.get('entry').getData(),
-                        vm.get('startDate'),
-                        vm.get('tillNow') ? null : vm.get('endDate'), -1)
+            vm.get('entry').getData(), // entry
+            vm.get('startDate'), // start date
+            vm.get('tillNow') ? null : vm.get('endDate'), // end date
+            vm.get('sqlFilterData'), -1) // sql filters
             .then(function(result) {
                 me.getView().setLoading(false);
                 me.processData(result.list);
