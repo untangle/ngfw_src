@@ -1,6 +1,6 @@
 {
     "uniqueId": "shield-pvWK1UFSwD",
-    "category": "Shield",
+    "category": "System",
     "description": "The number of blocked sessions grouped by client.",
     "displayOrder": 200,
     "enabled": true,

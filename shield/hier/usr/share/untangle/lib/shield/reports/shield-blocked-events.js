@@ -1,5 +1,6 @@
 {
-    "category": "Shield",
+    "uniqueId": "shield-1N0Xpss80O",
+    "category": "System",
     "readOnly": true,
     "type": "EVENT_LIST",
     "conditions": [
@@ -15,6 +16,5 @@
     "displayOrder": 1011,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "table": "sessions",
-    "title": "Blocked Session Events",
-    "uniqueId": "shield-1N0Xpss80O"
+    "title": "Blocked Session Events"
 }

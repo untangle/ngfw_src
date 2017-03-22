@@ -1,5 +1,6 @@
 {
-    "category": "Shield",
+    "uniqueId": "shield-OgvQLeSbGN",
+    "category": "System",
     "readOnly": true,
     "type": "EVENT_LIST",
     "conditions": [],
@@ -8,6 +9,5 @@
     "displayOrder": 1010,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "table": "sessions",
-    "title": "Scanned Session Events",
-    "uniqueId": "shield-OgvQLeSbGN"
+    "title": "Scanned Session Events"
 }
