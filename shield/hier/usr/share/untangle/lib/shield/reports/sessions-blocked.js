@@ -1,6 +1,6 @@
 {
     "uniqueId": "shield-tVO1Cx3HjO",
-    "category": "Shield",
+    "category": "System",
     "description": "The amount of blocked sessions over time.",
     "displayOrder": 101,
     "enabled": true,

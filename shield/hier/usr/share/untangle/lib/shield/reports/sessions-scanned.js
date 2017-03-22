@@ -1,6 +1,6 @@
 {
     "uniqueId": "shield-2ObNkapIEq",
-    "category": "Shield",
+    "category": "System",
     "description": "The amount of scanned and blocked sessions over time.",
     "displayOrder": 100,
     "enabled": true,

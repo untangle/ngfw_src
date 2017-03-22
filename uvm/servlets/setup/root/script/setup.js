@@ -1768,7 +1768,7 @@ Ext.define('Ung.setupWizard.Complete', {
         rpc.jsonrpc.UvmContext.wizardComplete(Ext.bind(function (result, exception) {
             if (Ung.Util.handleException(exception)) { return; }
             //now open the UI
-            window.location.href = "/webui/startPage.do";
+            window.location.href = "/admin/index.do";
         }, this));
     }
 });
