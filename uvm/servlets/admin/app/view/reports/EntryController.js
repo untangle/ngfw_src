@@ -126,9 +126,9 @@ Ext.define('Ung.view.reports.EntryController', {
 
         dataGrid.setLoading(false);
 
-        var storeFields = [{
-            name: 'time_trunc'
-        }];
+        // var storeFields = [{
+        //     name: 'time_trunc'
+        // }];
 
         var reportDataColumns = [{
             dataIndex: 'time_trunc',
@@ -141,16 +141,9 @@ Ext.define('Ung.view.reports.EntryController', {
         }];
         var seriesRenderer = null, title;
 
-        if (!Ext.isEmpty(entry.get('seriesRenderer'))) {
-            // seriesRenderer =  Ung.panel.Reports.getColumnRenderer(this.entry.seriesRenderer);
-        }
-
         for (i = 0; i < entry.get('timeDataColumns').length; i += 1) {
             column = entry.get('timeDataColumns')[i].split(' ').splice(-1)[0];
-            // todo: deal with series renderer
             title = column;
-            // title = seriesRenderer ? seriesRenderer(column) + ' [' + column + ']' : column;
-            // storeFields.push({name: column, convert: zeroFn, type: 'integer'});
             reportDataColumns.push({
                 dataIndex: column,
                 header: title,
@@ -166,159 +159,124 @@ Ext.define('Ung.view.reports.EntryController', {
     },
 
     formatTimeDynamicData: function (data) {
-        // console.log('format dynamic');
-        var dataGrid = this.getView().down('#currentData');
-        dataGrid.setLoading(false);
-    },
-
-    formatPieData: function () {
-        var dataGrid = this.getView().down('#currentData');
-        dataGrid.setLoading(false);
-    },
-
-    formatTextData: function () {
-        var dataGrid = this.getView().down('#currentData');
-        dataGrid.setLoading(false);
-    },
-
-    formatData: function (data) {
-        var entry = this.getViewModel().get('entry'),
-            vm = this.getViewModel(),
+        var vm = this.getViewModel(),
+            entry = vm.get('entry'),
+            timeDataColumns = [],
             dataGrid = this.getView().down('#currentData'), i, column;
 
-        if (entry.get('type') === 'TEXT') {
-            dataGrid.setColumns([{
-                dataIndex: 'data',
-                header: 'data'.t(),
-                width: 100,
-                flex: 1
-            }, {
-                dataIndex: 'value',
-                header: 'value'.t(),
-                width: 100
-            }]);
+        dataGrid.setLoading(false);
 
-            var infos = [], reportData = [], value;
-            if (data.length > 0 && entry.get('textColumns') !== null) {
-                for (i = 0; i < entry.get('textColumns').length; i += 1) {
-                    column = entry.get('textColumns')[i].split(' ').splice(-1)[0];
-                    value = Ext.isEmpty(data[0][column]) ? 0 : data[0][column];
-                    infos.push(value);
-                    reportData.push({data: column, value: value});
+        for (i = 0; i < data.length; i += 1) {
+            for (var _column in data[i]) {
+                if (data[i].hasOwnProperty(_column) && _column !== 'time_trunc' && _column !== 'time' && timeDataColumns.indexOf(_column) < 0) {
+                    timeDataColumns.push(_column);
                 }
             }
-            this.getView().down('#entry').setHtml(Ext.String.format.apply(Ext.String.format, [entry.get('textString').t()].concat(infos)));
-            dataGrid.getStore().loadData(reportData);
         }
 
-        if (entry.get('type') === 'PIE_GRAPH') {
-            dataGrid.setColumns([{
-                dataIndex: entry.get('pieGroupColumn'),
-                header: entry.get('pieGroupColumn'),
-                width: 100,
-                flex: 1
-            }, {
-                dataIndex: 'value',
-                header: 'value'.t(),
-                width: 100
-            }, {
-                // xtype: 'actioncolumn',
-                // menuDisabled: true,
-                // width: 20,
-                // items: [{
-                //     iconCls: 'icon-row icon-filter',
-                //     tooltip: i18n._('Add Condition'),
-                //     handler: Ext.bind(function (view, rowIndex, colIndex, item, e, record) {
-                //         this.buildWindowAddCondition();
-                //         data = {
-                //             column: this.entry.pieGroupColumn,
-                //             operator: "=",
-                //             value: record.get(this.entry.pieGroupColumn)
-                //         };
-                //         this.windowAddCondition.setCondition(data);
-                //     }, this)
-                // }]
-            }]);
-            dataGrid.getStore().loadData(data);
-        }
-
-        if (entry.get('type') === 'TIME_GRAPH' || entry.get('type') === 'TIME_GRAPH_DYNAMIC') {
-            var zeroFn = function (val) {
-                return val || 0;
-            };
-            var timeFn = function (val) {
-                return val;
-                // return (val === null) ? 0 : Util.timestampFormat(val);
-            };
-
-            var storeFields = [{
-                name: 'time_trunc'
-            }];
-
-            var reportDataColumns = [{
-                dataIndex: 'time_trunc',
-                header: 'Timestamp'.t(),
-                width: 130,
-                flex: 1,
-                renderer: function (val) {
-                    // return val.time;
-                    return (!val) ? 0 : Util.timestampFormat(val);
-                }
-                // flex: entry.get('timeDataColumns').length > 2 ? 0 : 1,
-                // renderer: function (val) {
-                //     return val.time;
-                // }
-                // sorter: function (rec1, rec2) {
-                //     var t1, t2;
-                //     console.log(rec1);
-                //     if ( rec1.getData().time !== null && rec2.getData().time !== null ) {
-                //         t1 = rec1.getData().time;
-                //         t2 = rec2.getData().time;
-                //     } else {
-                //         t1 = rec1.getData();
-                //         t2 = rec2.getData();
-                //     }
-                //     return (t1 > t2) ? 1 : (t1 === t2) ? 0 : -1;
-                // }
-            }];
-            var seriesRenderer = null, title;
-            if (!Ext.isEmpty(entry.get('seriesRenderer'))) {
-                // seriesRenderer =  Ung.panel.Reports.getColumnRenderer(this.entry.seriesRenderer);
+        var reportDataColumns = [{
+            dataIndex: 'time_trunc',
+            header: 'Timestamp'.t(),
+            width: 130,
+            flex: 1,
+            renderer: function (val) {
+                return (!val) ? 0 : Util.timestampFormat(val);
             }
-
-            for (i = 0; i < entry.get('timeDataColumns').length; i += 1) {
-                column = entry.get('timeDataColumns')[i].split(' ').splice(-1)[0];
-                // todo: deal with series renderer
-                title = column;
-                // title = seriesRenderer ? seriesRenderer(column) + ' [' + column + ']' : column;
-                // storeFields.push({name: column, convert: zeroFn, type: 'integer'});
-                reportDataColumns.push({
-                    dataIndex: column,
-                    header: title,
-                    width: entry.get('timeDataColumns').length > 2 ? 60 : 90,
-                    renderer: function (val) {
-                        return val !== undefined ? val : '-';
-                    }
-                });
-            }
-
-            // dataGrid.setStore(Ext.create('Ext.data.Store', {
-            //     // fields: storeFields,
-            //     data: []
-            // }));
-            dataGrid.setColumns(reportDataColumns);
-            vm.set('_currentData', data);
-            // dataGrid.getStore().loadData(data);
+        }];
+        var seriesRenderer = null, title;
+        if (!Ext.isEmpty(entry.get('seriesRenderer'))) {
+            seriesRenderer = ColumnRenderer[entry.get('seriesRenderer')];
         }
+
+        for (i = 0; i < timeDataColumns.length; i += 1) {
+            column = timeDataColumns[i];
+            title = seriesRenderer ? seriesRenderer(column) + ' [' + column + ']' : column;
+            // storeFields.push({name: timeDataColumns[i], type: 'integer'});
+            reportDataColumns.push({
+                dataIndex: column,
+                header: title,
+                width: timeDataColumns.length > 2 ? 60 : 90
+            });
+        }
+
+        dataGrid.setColumns(reportDataColumns);
+        vm.set('_currentData', data);
     },
 
+    formatPieData: function (data) {
+        var me = this, entry = me.getViewModel().get('entry'),
+            vm = me.getViewModel(),
+            dataGrid = me.getView().down('#currentData');
+
+        dataGrid.setLoading(false);
+
+        dataGrid.setColumns([{
+            dataIndex: entry.get('pieGroupColumn'),
+            header: me.sqlColumnRenderer(entry.get('pieGroupColumn')),
+            flex: 1
+        }, {
+            dataIndex: 'value',
+            header: 'value'.t(),
+            width: 200
+        }, {
+            xtype: 'actioncolumn',
+            menuDisabled: true,
+            width: 30,
+            align: 'center',
+            items: [{
+                iconCls: 'fa fa-filter',
+                tooltip: 'Add Condition'.t()
+                // handler: Ext.bind(function (view, rowIndex, colIndex, item, e, record) {
+                //     this.buildWindowAddCondition();
+                //     data = {
+                //         column: this.entry.pieGroupColumn,
+                //         operator: "=",
+                //         value: record.get(this.entry.pieGroupColumn)
+                //     };
+                //     this.windowAddCondition.setCondition(data);
+                // }, this)
+            }]
+        }]);
+        vm.set('_currentData', data);
+
+    },
+
+    formatTextData: function (data) {
+        var entry = this.getViewModel().get('entry'),
+            vm = this.getViewModel(),
+            dataGrid = this.getView().down('#currentData');
+        dataGrid.setLoading(false);
+
+        dataGrid.setColumns([{
+            dataIndex: 'data',
+            header: 'data'.t(),
+            flex: 1
+        }, {
+            dataIndex: 'value',
+            header: 'value'.t(),
+            width: 200
+        }]);
+
+        var reportData = [], value;
+        if (data.length > 0 && entry.get('textColumns') !== null) {
+            for (i = 0; i < entry.get('textColumns').length; i += 1) {
+                column = entry.get('textColumns')[i].split(' ').splice(-1)[0];
+                value = Ext.isEmpty(data[0][column]) ? 0 : data[0][column];
+                reportData.push({data: column, value: value});
+            }
+        }
+        vm.set('_currentData', reportData);
+    },
 
     filterData: function (min, max) {
-        this.getView().down('#currentData').getStore().clearFilter();
-        this.getView().down('#currentData').getStore().filterBy(function (point) {
-            var t = point.get('time_trunc').time;
-            return t >= min && t <= max ;
-        });
+        // aply filtering only on timeseries
+        if (this.getViewModel().get('entry.type').indexOf('TIME_GRAPH') >= 0) {
+            this.getView().down('#currentData').getStore().clearFilter();
+            this.getView().down('#currentData').getStore().filterBy(function (point) {
+                var t = point.get('time_trunc').time;
+                return t >= min && t <= max ;
+            });
+        }
     },
 
     addGraphEntry: function () {
@@ -469,5 +427,4 @@ Ext.define('Ung.view.reports.EntryController', {
                 Ung.app.redirectTo('#reports/' + entry.get('category').replace(/ /g, '-').toLowerCase() + '/' + entry.get('title').replace(/[^0-9a-z\s]/gi, '').replace(/\s+/g, '-').toLowerCase());
             });
     }
-
 });
