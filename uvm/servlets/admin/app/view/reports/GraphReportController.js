@@ -342,7 +342,7 @@ Ext.define('Ung.view.reports.GraphReportController', {
         var me = this, vm = this.getViewModel(),
             timeDataColumns = Ext.clone(vm.get('entry.timeDataColumns')),
             colors = vm.get('entry.colors') || Util.defaultColors,
-            i, j, seriesData, series = [];
+            i, j, seriesData, series = [], seriesRenderer = null, column;
 
         if (!me.data) { return; }
 
@@ -356,6 +356,11 @@ Ext.define('Ung.view.reports.GraphReportController', {
                     }
                 }
             }
+
+            if (!Ext.isEmpty(vm.get('entry.seriesRenderer'))) {
+                seriesRenderer = ColumnRenderer[vm.get('entry.seriesRenderer')];
+            }
+
         } else {
             for (i = 0; i < timeDataColumns.length; i += 1) {
                 timeDataColumns[i] = timeDataColumns[i].split(' ').splice(-1)[0];
@@ -364,22 +369,23 @@ Ext.define('Ung.view.reports.GraphReportController', {
 
         // create series
         for (i = 0; i < timeDataColumns.length; i += 1) {
+            column = timeDataColumns[i];
             seriesData = [];
             for (j = 0; j < me.data.length; j += 1) {
                 seriesData.push([
                     me.data[j].time_trunc.time,
-                    me.data[j][timeDataColumns[i]] || 0
+                    me.data[j][column] || 0
                 ]);
             }
 
             series.push({
-                name: timeDataColumns[i],
+                name: seriesRenderer ? seriesRenderer(column) + ' [' + column + ']' : column,
                 data: seriesData,
                 fillColor: {
                     linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
                     stops: [
-                        [0, Highcharts.Color(colors[i]).setOpacity(0.5).get('rgba')],
-                        [1, Highcharts.Color(colors[i]).setOpacity(0).get('rgba')]
+                        [0, Highcharts.Color(colors[i]).setOpacity(0.7).get('rgba')],
+                        [1, Highcharts.Color(colors[i]).setOpacity(0.1).get('rgba')]
                     ]
                 }
             });

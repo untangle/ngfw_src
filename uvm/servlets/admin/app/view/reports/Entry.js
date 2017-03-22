@@ -701,7 +701,7 @@ Ext.define('Ung.view.reports.Entry', {
                     disabled: '{entry.readOnly}'
                 }
             }, {
-                text: 'Update'.t(),
+                text: 'Save'.t(),
                 iconCls: 'fa fa-save',
                 // formBind: true,
                 disabled: true,
