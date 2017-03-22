@@ -721,29 +721,125 @@ Ext.define('Ung.view.reports.Entry', {
         region: 'south',
         xtype: 'grid',
         height: 280,
-        title: 'Filters'.t(),
-        itemId: 'filters',
+        title: 'Sql Filters'.t() + ' (0)',
+        itemId: 'sqlFilters',
         collapsible: true,
         collapsed: true,
         animCollapse: false,
         titleCollapse: true,
         split: true,
         hidden: true,
+
+        trackMouseOver: false,
+        sortableColumns: false,
+        enableColumnResize: false,
+        enableColumnMove: false,
+        enableColumnHide: false,
+        disableSelection: true,
+        // hideHeaders: true,
         bind: {
-            hidden: '{!entry}'
+            hidden: '{!entry}',
+            store: { data: '{sqlFilterData}' }
         },
-        emptyText: 'To Do!',
-        store: { data: [] },
-        bbar: [{
-            text: 'Add Condition'.t(),
-            itemId: 'filtersBtn'
+
+        viewConfig: {
+            emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-lg"></i> No Filters!</p>',
+            stripeRows: false,
+        },
+
+        dockedItems: [{
+            xtype: 'toolbar',
+            dock: 'top',
+            layout: {
+                type: 'hbox',
+                align: 'stretch',
+                pack: 'start'
+            },
+            items: [{
+                xtype: 'combo',
+                // fieldLabel: 'Sessions',
+                labelWidth: 100,
+                labelAlign: 'right',
+                width: 250,
+                itemId: 'sqlFilterCombo',
+                reference: 'sqlFilterCombo',
+                publishes: 'value',
+                value: '',
+                editable: false,
+                queryMode: 'local',
+                displayField: 'text',
+                valueField: 'value',
+                store: { data: [] }
+            }, {
+                xtype: 'combo',
+                width: 80,
+                publishes: 'value',
+                value: '=',
+                itemId: 'sqlFilterOperator',
+                store: ['=', '!=', '>', '<', '>=', '<=', 'like', 'not like', 'is', 'is not', 'in', 'not in'],
+                editable: false,
+                queryMode: 'local',
+                disabled: true,
+                bind: {
+                    disabled: '{sqlFilterCombo.value === ""}'
+                }
+            }, {
+                xtype: 'textfield',
+                itemId: 'sqlFilterValue',
+                value: '',
+                disabled: true,
+                enableKeyEvents: true,
+                bind: {
+                    disabled: '{sqlFilterCombo.value === ""}'
+                },
+                listeners: {
+                    keyup: 'onFilterKeyup'
+                }
+            }, {
+                xtype: 'button',
+                text: 'Add',
+                iconCls: 'fa fa-plus-circle',
+                disabled: true,
+                bind: {
+                    disabled: '{sqlFilterCombo.value === ""}'
+                },
+                handler: 'addSqlFilter'
+            }]
         }],
+
         columns: [{
-            dataIndex: 'condition'
+            header: 'Column'.t(),
+            width: 255,
+            dataIndex: 'column',
+            renderer: 'sqlColumnRenderer'
         }, {
-            dataIndex: 'operator'
+            header: 'Operator'.t(),
+            xtype: 'widgetcolumn',
+            width: 82,
+            align: 'center',
+            widget: {
+                xtype: 'combo',
+                width: 80,
+                bind: '{record.operator}',
+                store: ['=', '!=', '>', '<', '>=', '<=', 'like', 'not like', 'is', 'is not', 'in', 'not in'],
+                editable: false,
+                queryMode: 'local'
+            }
+
         }, {
-            dataIndex: 'value'
+            header: 'Value'.t(),
+            xtype: 'widgetcolumn',
+            flex: 1,
+            widget: {
+                xtype: 'textfield',
+                bind: '{record.value}'
+            }
+        }, {
+            xtype: 'actioncolumn',
+            width: 30,
+            align: 'center',
+            iconCls: 'fa fa-minus-circle',
+            handler: 'removeSqlFilter'
         }]
     }]
 

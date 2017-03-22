@@ -66,14 +66,16 @@ Ext.define('Ung.view.reports.EventReportController', {
         var me = this, vm = this.getViewModel();
         me.entry = vm.get('entry');
 
+        console.log(vm.get('sqlFilterData'));
+
         me.getViewModel().set('eventsData', []);
         me.getView().setLoading(true);
         Rpc.asyncData('rpc.reportsManager.getEventsForDateRangeResultSet',
                         vm.get('entry').getData(), // entry
-                        null, // etra conditions
+                        vm.get('sqlFilterData'), // etra conditions
                         1000, // limit
-                        vm.get('startDate'),
-                        vm.get('tillNow') ? null : vm.get('endDate'))
+                        vm.get('startDate'), // start date
+                        vm.get('tillNow') ? null : vm.get('endDate')) // end date
             .then(function(result) {
                 if (me.getView().up('reports-entry')) {
                     me.getView().up('reports-entry').down('#currentData').setLoading(false);

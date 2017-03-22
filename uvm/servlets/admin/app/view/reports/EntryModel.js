@@ -8,6 +8,7 @@ Ext.define('Ung.view.reports.EntryModel', {
         endDate: new Date(Math.floor(rpc.systemManager.getMilliseconds()/1800000) * 1800000),
         tillNow: true,
         _currentData: [],
+        sqlFilterData: []
     },
 
     // stores: {
