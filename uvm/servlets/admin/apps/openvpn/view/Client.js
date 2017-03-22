@@ -62,7 +62,7 @@ Ext.define('Ung.apps.openvpn.view.RemoteServersGrid', {
     alias: 'widget.app-openvpn-remote-servers-grid',
     itemId: 'remote-servers-grid',
 
-    recordActions: ['edit', 'delete'],
+    recordActions: ['delete'],
     listProperty: 'settings.remoteServers.list',
     emptyRow: {
         javaClass: 'com.untangle.app.openvpn.OpenVpnRemoteServer',
@@ -83,16 +83,9 @@ Ext.define('Ung.apps.openvpn.view.RemoteServersGrid', {
         width: 150,
         flex: 1,
         dataIndex: 'name',
+        editor: {
+            xtype: 'textfield',
+            bind: '{record.name}'
+        }
     }],
-
-    editorFields: [{
-        xtype: 'checkbox',
-        bind: '{record.enabled}',
-        fieldLabel: 'Enabled'.t()
-    }, {
-        xtype: 'textfield',
-        bind: '{record.name}',
-        fieldLabel: 'Server Name'.t()
-    }]
-
 });

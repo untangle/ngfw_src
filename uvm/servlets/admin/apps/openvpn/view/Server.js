@@ -14,23 +14,18 @@ Ext.define('Ung.apps.openvpn.view.Server', {
 
     defaults: {
         labelWidth: 180,
-        padding: '0 0 0 10'
+        padding: '10 0 0 10'
     },
 
     items: [{
-        fieldLabel: 'Site Name'.t(),
-        xtype: 'textfield',
-        bind: '{settings.siteName}',
-        allowBlank: false,
-        padding: '10 0 0 10'
-    },{
-        fieldLabel: 'Site URL'.t(),
-        xtype: 'displayfield',
-        bind: '{getSiteUrl}'
-    },{
         fieldLabel: 'Server Enabled'.t(),
         xtype: 'checkbox',
         bind: '{settings.serverEnabled}'
+    },{
+        fieldLabel: 'Site Name'.t(),
+        xtype: 'textfield',
+        bind: '{settings.siteName}',
+        allowBlank: false
     },{
         fieldLabel: 'Address Space'.t(),
         xtype: 'textfield',
@@ -40,6 +35,10 @@ Ext.define('Ung.apps.openvpn.view.Server', {
         fieldLabel: 'NAT OpenVPN Traffic'.t(),
         xtype: 'checkbox',
         bind: '{settings.natOpenVpnTraffic}'
+    },{
+        fieldLabel: 'Site URL'.t(),
+        xtype: 'displayfield',
+        bind: '{getSiteUrl}'
     },{
         xtype: 'app-openvpn-server-tab-panel',
         padding: '20 20 20 20',
@@ -140,6 +139,20 @@ Ext.define('Ung.apps.openvpn.view.RemoteClientsGrid', {
         editable: false,
         bind: '{record.export}',
         store: [[false,'Individual Client'.t()],[true,'Network'.t()]],
+
+/* this doesn't work
+
+    }, {
+        title: 'Client Configuration'.t(),
+        xtype: 'app-openvpn-config-editor-grid',
+        padding: '20 20 20 20',
+        width: 800,
+        height: 300,
+        listProperty: 'record.clientConfigItems.list',
+        itemId: 'client-config-item-grid',
+        bind: 'record.clientConfigItems.list'
+*/
+
     }]
 
 });
