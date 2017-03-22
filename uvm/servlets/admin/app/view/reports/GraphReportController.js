@@ -174,6 +174,7 @@ Ext.define('Ung.view.reports.GraphReportController', {
             tooltip: {
                 enabled: true,
                 animation: false,
+                shared: false,
                 // distance: 30,
                 padding: 5,
                 hideDelay: 0,
@@ -195,7 +196,6 @@ Ext.define('Ung.view.reports.GraphReportController', {
             },
             plotOptions: {
                 column: {
-                    borderWidth: 1,
                     depth: 25,
                     edgeWidth: 1,
                     edgeColor: '#FFF'
@@ -378,7 +378,6 @@ Ext.define('Ung.view.reports.GraphReportController', {
                     me.data[j][column] || 0
                 ]);
             }
-
             series.push({
                 name: seriesRenderer ? seriesRenderer(column) + ' [' + column + ']' : column,
                 data: seriesData,
@@ -561,12 +560,14 @@ Ext.define('Ung.view.reports.GraphReportController', {
                     },
                 },
                 column: {
+                    borderWidth: isColumnOverlapped ? 1 : 0,
                     pointPlacement: isTimeGraph ? 'on' : undefined, // time
                     colorByPoint: isPieColumn, // pie
                     grouping: !isColumnOverlapped,
                     groupPadding: 0.20,
-                    shadow: !isColumnOverlapped,
-                    dataGrouping: isTimeGraph ? { groupPixelWidth: isColumnStacked ? 50 : 64 } : undefined
+                    // shadow: !isColumnOverlapped,
+                    shadow: false,
+                    dataGrouping: isTimeGraph ? { groupPixelWidth: isColumnStacked ? 50 : 80 } : undefined
                 }
             },
             xAxis: {

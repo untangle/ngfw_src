@@ -63,81 +63,92 @@ Ext.define('Ung.view.reports.Entry', {
                     hidden: '{!entry}'
                 }
             }]
+        }, {
+            xtype: 'toolbar',
+            ui: 'footer',
+            dock: 'bottom',
+            // border: true,
+            style: {
+                background: '#F5F5F5'
+            },
+            hidden: true,
+            bind: {
+                hidden: '{!entry}'
+            },
+            items: [{
+                xtype: 'label',
+                margin: '0 5',
+                text: 'From'.t() + ':'
+            }, {
+                xtype: 'datefield',
+                format: 'date_fmt'.t(),
+                editable: false,
+                width: 100,
+                bind: {
+                    value: '{_sd}',
+                    maxValue: '{_ed}'
+                }
+            }, {
+                xtype: 'timefield',
+                increment: 10,
+                // format: 'date_fmt'.t(),
+                editable: false,
+                width: 80,
+                bind: {
+                    value: '{_st}',
+                    maxValue: '{_ed}'
+                }
+            }, {
+                xtype: 'label',
+                margin: '0 5',
+                text: 'till'
+            }, {
+                xtype: 'checkbox',
+                boxLabel: 'Present'.t(),
+                bind: '{tillNow}'
+            }, {
+                xtype: 'datefield',
+                format: 'date_fmt'.t(),
+                editable: false,
+                width: 100,
+                hidden: true,
+                bind: {
+                    value: '{_ed}',
+                    hidden: '{tillNow}',
+                    minValue: '{_sd}'
+                },
+                maxValue: new Date(Math.floor(rpc.systemManager.getMilliseconds()))
+            }, {
+                xtype: 'timefield',
+                increment: 10,
+                // format: 'date_fmt'.t(),
+                editable: false,
+                width: 80,
+                hidden: true,
+                bind: {
+                    value: '{_et}',
+                    hidden: '{tillNow}',
+                    minValue: '{_sd}'
+                },
+                maxValue: new Date(Math.floor(rpc.systemManager.getMilliseconds()))
+            }, '->', {
+                text: 'Refresh'.t(),
+                iconCls: 'fa fa-refresh',
+                itemId: 'refreshBtn',
+                handler: 'refreshData'
+            }, '-', {
+                itemId: 'downloadBtn',
+                text: 'Download'.t(),
+                iconCls: 'fa fa-download',
+            }, '-', {
+                itemId: 'dashboardBtn',
+                bind: {
+                    iconCls: 'fa {isWidget ? "fa-minus-circle" : "fa-plus-circle" }',
+                    text: '{isWidget ? "Remove from " : "Add to "}' + ' Dashboard'
+                },
+                handler: 'dashboardAddRemove'
+            }]
         }],
-
-        bbar: [{
-            xtype: 'label',
-            margin: '0 5',
-            text: 'From'.t() + ':'
-        }, {
-            xtype: 'datefield',
-            format: 'date_fmt'.t(),
-            editable: false,
-            width: 100,
-            bind: {
-                value: '{_sd}',
-                maxValue: '{_ed}'
-            }
-        }, {
-            xtype: 'timefield',
-            increment: 10,
-            // format: 'date_fmt'.t(),
-            editable: false,
-            width: 80,
-            bind: {
-                value: '{_st}',
-                maxValue: '{_ed}'
-            }
-        }, {
-            xtype: 'label',
-            margin: '0 5',
-            text: 'till'
-        }, {
-            xtype: 'checkbox',
-            boxLabel: 'Present'.t(),
-            bind: '{tillNow}'
-        }, {
-            xtype: 'datefield',
-            format: 'date_fmt'.t(),
-            editable: false,
-            width: 100,
-            hidden: true,
-            bind: {
-                value: '{_ed}',
-                hidden: '{tillNow}',
-                minValue: '{_sd}'
-            },
-            maxValue: new Date(Math.floor(rpc.systemManager.getMilliseconds()))
-        }, {
-            xtype: 'timefield',
-            increment: 10,
-            // format: 'date_fmt'.t(),
-            editable: false,
-            width: 80,
-            hidden: true,
-            bind: {
-                value: '{_et}',
-                hidden: '{tillNow}',
-                minValue: '{_sd}'
-            },
-            maxValue: new Date(Math.floor(rpc.systemManager.getMilliseconds()))
-        }, '-' , {
-            text: 'Refresh'.t(),
-            iconCls: 'fa fa-refresh fa-lg',
-            itemId: 'refreshBtn',
-            handler: 'refreshData'
-        }, '->', {
-            itemId: 'downloadBtn',
-            text: 'Download'.t(),
-            iconCls: 'fa fa-download fa-lg',
-        }, '-', {
-            itemId: 'dashboardBtn',
-            iconCls: 'fa fa-home fa-lg',
-            bind: {
-                // text: '{isWidget ? "Remove from Dashboard" : "Add to Dashboard"}'
-            }
-
-        }]
     }, {
         region: 'east',
         // xtype: 'tabpanel',
@@ -749,6 +760,7 @@ Ext.define('Ung.view.reports.Entry', {
 
         dockedItems: [{
             xtype: 'toolbar',
+            itemId: 'filtersToolbar',
             dock: 'top',
             layout: {
                 type: 'hbox',
@@ -769,7 +781,10 @@ Ext.define('Ung.view.reports.Entry', {
                 queryMode: 'local',
                 displayField: 'text',
                 valueField: 'value',
-                store: { data: [] }
+                store: { data: [] },
+                listeners: {
+                    change: 'onColumnChange'
+                }
             }, {
                 xtype: 'combo',
                 width: 80,
@@ -779,23 +794,25 @@ Ext.define('Ung.view.reports.Entry', {
                 store: ['=', '!=', '>', '<', '>=', '<=', 'like', 'not like', 'is', 'is not', 'in', 'not in'],
                 editable: false,
                 queryMode: 'local',
-                disabled: true,
+                hidden: true,
                 bind: {
-                    disabled: '{sqlFilterCombo.value === ""}'
+                    hidden: '{sqlFilterCombo.value === ""}'
                 }
-            }, {
-                xtype: 'textfield',
-                itemId: 'sqlFilterValue',
-                value: '',
-                disabled: true,
-                enableKeyEvents: true,
-                bind: {
-                    disabled: '{sqlFilterCombo.value === ""}'
-                },
-                listeners: {
-                    keyup: 'onFilterKeyup'
-                }
-            }, {
+            },
+            // {
+            //     xtype: 'textfield',
+            //     itemId: 'sqlFilterValue',
+            //     value: '',
+            //     disabled: true,
+            //     enableKeyEvents: true,
+            //     bind: {
+            //         disabled: '{sqlFilterCombo.value === ""}'
+            //     },
+            //     listeners: {
+            //         keyup: 'onFilterKeyup'
+            //     }
+            // },
+            {
                 xtype: 'button',
                 text: 'Add',
                 iconCls: 'fa fa-plus-circle',

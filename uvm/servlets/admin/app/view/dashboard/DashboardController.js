@@ -21,7 +21,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
             init: 'loadWidgets',
             appinstall: 'onAppInstall',
             removewidget: 'onRemoveWidget',
-            addwidget: 'onAddWidget',
+            addReportwidget: 'onAddReportWidget',
             reportsInstall: 'loadWidgets'
         },
         store: {
@@ -29,7 +29,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                 datachanged: 'onStatsUpdate'
             },
             '#widgets': {
-                // datachanged: 'loadWidgets'
+                add: 'onWidgetAdd'
             },
             '#reports': {
                 // datachanged: 'loadWidgets'
@@ -452,33 +452,97 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         }
     },
 
-    onAddWidget: function (widget, entry) {
-        var dashboard = this.getView().lookupReference('dashboard');
-        if (entry) {
-            dashboard.add({
-                xtype: 'reportwidget',
-                itemId: widget.get('entryId'),
-                refreshIntervalSec: widget.get('refreshIntervalSec'),
-                viewModel: {
-                    data: {
-                        widget: widget,
-                        entry: entry
-                    }
-                }
-            });
-        } else {
-            console.log(widget);
-            dashboard.add({
-                xtype: widget.get('type').toLowerCase() + 'widget',
-                itemId: widget.get('type'),
-                viewModel: {
-                    data: {
-                        widget: widget
-                    }
-                }
-            });
-        }
+    onAddReportWidget: function (entry) {
+        var me = this;
+        var widget = {
+            displayColumns: entry.get('displayColumns'),
+            enabled: true,
+            entryId: entry.get('uniqueId'),
+            javaClass: 'com.untangle.uvm.DashboardWidgetSettings',
+            refreshIntervalSec: 60,
+            timeframe: 3600,
+            type: 'ReportEntry'
+        };
+        Ung.dashboardSettings.widgets.list.push(widget);
+        Rpc.asyncData('rpc.dashboardManager.setSettings', Ung.dashboardSettings).then(function () {
+            // console.log('success');
+            Ext.getStore('widgets').add(widget);
+
+            // me.lookupReference('dashboard').add({
+            //     xtype: 'reportwidget',
+            //     itemId: widget.get('entryId'),
+            //     refreshIntervalSec: widget.get('refreshIntervalSec'),
+            //     viewModel: {
+            //         data: {
+            //             widget: widget,
+            //             entry: entry
+            //         }
+            //     }
+            // });
+        });
     },
+
+    onWidgetAdd: function (store, widget) {
+        // var dashboard = this.lookupReference('dashboard');
+        // var entry = Ext.getStore('reports').findRecord('uniqueId', widget.get('entryId'));
+        // if (widget.get('type') === 'ReportEntry') {
+        //     dashboard.add({
+        //         xtype: 'reportwidget',
+        //         itemId: widget.get('entryId'),
+        //         refreshIntervalSec: widget.get('refreshIntervalSec'),
+        //         viewModel: {
+        //             data: {
+        //                 widget: widget,
+        //                 entry: entry
+        //             }
+        //         }
+        //     });
+        // } else {
+        //     // console.log(widget);
+        //     // dashboard.add({
+        //     //     xtype: widget.get('type').toLowerCase() + 'widget',
+        //     //     itemId: widget.get('type'),
+        //     //     viewModel: {
+        //     //         data: {
+        //     //             widget: widget
+        //     //         }
+        //     //     }
+        //     // });
+        // }
+    },
+
+    // onAddWidget: function (widget, entry) {
+    //     var dashboard = this.getView().lookupReference('dashboard');
+    //     if (entry) {
+    //         dashboard.add({
+    //             xtype: 'reportwidget',
+    //             itemId: widget.get('entryId'),
+    //             refreshIntervalSec: widget.get('refreshIntervalSec'),
+    //             viewModel: {
+    //                 data: {
+    //                     widget: widget,
+    //                     entry: entry
+    //                 }
+    //             }
+    //         });
+    //     } else {
+    //         console.log(widget);
+    //         dashboard.add({
+    //             xtype: widget.get('type').toLowerCase() + 'widget',
+    //             itemId: widget.get('type'),
+    //             viewModel: {
+    //                 data: {
+    //                     widget: widget
+    //                 }
+    //             }
+    //         });
+    //     }
+    // },
+
+    addReportWidget: function (entry) {
+        console.log(entry);
+    },
+
 
     onStatsUpdate: function() {
         var vm = this.getViewModel();
