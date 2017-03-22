@@ -214,8 +214,6 @@ Ext.define('this', {
         // console.log(this[table]);
     },
 
-
-
     // end new methods
 
 
@@ -374,6 +372,13 @@ Ext.define('this', {
                         type: 'boolean',
                         yesText: 'true'.t(),
                         noText: 'false'.t()
+                    },
+                    widgetField: {
+                        xtype: 'combo',
+                        store: [['true', 'True'.t()], ['false', 'False'.t()]],
+                        value: 'true',
+                        editable: false,
+                        queryMode: 'local'
                     }
                 }, {
                     header: 'Entitled'.t(),
@@ -384,12 +389,25 @@ Ext.define('this', {
                         type: 'boolean',
                         yesText: 'true'.t(),
                         noText: 'false'.t()
+                    },
+                    widgetField: {
+                        xtype: 'combo',
+                        store: [['true', 'True'.t()], ['false', 'False'.t()]],
+                        value: 'true',
+                        editable: false,
+                        queryMode: 'local'
                     }
                 }, {
                     header: 'Protocol'.t(),
                     width: this.portFieldWidth,
                     sortable: true,
                     dataIndex: 'protocol',
+                    widgetField: {
+                        xtype: 'combo',
+                        store: ColumnRenderer.protocolStore(),
+                        editable: false,
+                        queryMode: 'local'
+                    }
                     // renderer: Ung.panel.Reports.getColumnRenderer('protocol')
                 }, {
                     header: 'ICMP Type'.t(),
@@ -412,6 +430,12 @@ Ext.define('this', {
                     width: this.portFieldWidth,
                     sortable: true,
                     dataIndex: 'client_intf'
+                    // widgetField: {
+                    //     xtype: 'combo',
+                    //     // store: Util.getInterfaceListSystemDev(),
+                    //     editable: false,
+                    //     queryMode: 'local'
+                    // }
                 }, {
                     header: 'Server Interface'.t() ,
                     width: this.portFieldWidth,
@@ -422,12 +446,25 @@ Ext.define('this', {
                     width: 80,
                     sortable: true,
                     dataIndex: 'client_country',
+                    widgetField: {
+                        xtype: 'combo',
+                        width: 300,
+                        store: 'countries',
+                        valueField: 'code',
+                        displayField: 'name',
+                        editable: false,
+                        queryMode: 'local'
+                    }
                     // renderer: function(value) { return Ung.Main.getCountryName(value); }
                 }, {
                     header: 'Client Latitude'.t() ,
                     width: 80,
                     sortable: true,
                     dataIndex: 'client_latitude'
+                    // widgetField: {
+                    //     xtype: 'numberfield',
+
+                    // }
                 }, {
                     header: 'Client Longitude'.t() ,
                     width: 80,
@@ -438,7 +475,15 @@ Ext.define('this', {
                     width: 80,
                     sortable: true,
                     dataIndex: 'server_country',
-                    // renderer: function(value) { return Ung.Main.getCountryName(value); }
+                    widgetField: {
+                        xtype: 'combo',
+                        width: 300,
+                        store: 'countries',
+                        valueField: 'code',
+                        displayField: 'name',
+                        editable: false,
+                        queryMode: 'local'
+                    }
                 }, {
                     header: 'Server Latitude'.t() ,
                     width: 80,
@@ -471,6 +516,10 @@ Ext.define('this', {
                     dataIndex: 'c_client_port',
                     filter: {
                         type: 'numeric'
+                    },
+                    widgetField: {
+                        xtype: 'numberfield',
+                        value: 0
                     }
                 }, {
                     header: 'New Client'.t(),

@@ -3,6 +3,7 @@
  */
 Ext.define('Ung.view.dashboard.Dashboard', {
     extend: 'Ext.container.Container',
+    alternateClassName: 'Dashboard',
     xtype: 'ung.dashboard',
     itemId: 'dashboard',
 

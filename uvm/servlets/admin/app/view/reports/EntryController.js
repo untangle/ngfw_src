@@ -55,6 +55,11 @@ Ext.define('Ung.view.reports.EntryController', {
                 me.getView().down('#tableColumns').setValue({});
             }
 
+            // check if widget
+            vm.set('isWidget', Ext.getStore('widgets').findRecord('entryId', entry.get('uniqueId')) ? true : false);
+
+
+
             // set the _sqlConditions data as for the sql conditions grid store
             vm.set('_sqlConditions', entry.get('conditions') || []);
             // set combo store conditions
@@ -408,9 +413,13 @@ Ext.define('Ung.view.reports.EntryController', {
             javaClass: 'com.untangle.app.reports.SqlCondition'
         });
 
+        console.log(vm.get('sqlFilterData'));
+
         _filterComboCmp.setValue('');
         _operatorCmp.setValue('=');
         _filterValueCmp.setValue('');
+
+        me.getView().down('#filtersToolbar').remove('sqlFilterValue');
 
         me.getView().down('#sqlFilters').setTitle('Sql Filters'.t() + ' (' + vm.get('sqlFilterData').length + ')');
         me.getView().down('#sqlFilters').getStore().reload();
@@ -420,9 +429,33 @@ Ext.define('Ung.view.reports.EntryController', {
     removeSqlFilter: function (table, rowIndex) {
         var me = this, vm = me.getViewModel();
         Ext.Array.removeAt(vm.get('sqlFilterData'), rowIndex);
+
+        me.getView().down('#filtersToolbar').remove('sqlFilterValue');
+
         me.getView().down('#sqlFilters').setTitle('Sql Filters'.t() + ' (' + vm.get('sqlFilterData').length + ')');
         me.getView().down('#sqlFilters').getStore().reload();
         me.refreshData();
+    },
+
+    onColumnChange: function (cmp, newValue) {
+        var me = this;
+        if (newValue === '') { return; }
+        var column = Ext.Array.findBy(me.tableConfig.columns, function (column) {
+            return column.dataIndex === newValue;
+        });
+
+        cmp.up('toolbar').remove('sqlFilterValue');
+
+        if (column.widgetField) {
+            column.widgetField.itemId = 'sqlFilterValue';
+            cmp.up('toolbar').insert(2, column.widgetField);
+        } else {
+            cmp.up('toolbar').insert(2, {
+                xtype: 'textfield',
+                itemId: 'sqlFilterValue',
+                value: ''
+            });
+        }
     },
 
     onFilterKeyup: function (cmp, e) {
@@ -430,8 +463,51 @@ Ext.define('Ung.view.reports.EntryController', {
             this.addSqlFilter();
         }
     },
-
     // END FILTERS
+
+
+    // DASHBOARD ACTION
+    dashboardAddRemove: function (btn) {
+        Ext.fireEvent('addReportWidget', this.getViewModel().get('entry'));
+        // Dashboard.getController().addReportWidget(this.getViewModel().get('entry'));
+        // if (btn.addAction) {
+        //     this.dashboardWidgets.push({
+        //         displayColumns: this.entry.displayColumns,
+        //         enabled: true,
+        //         entryId: this.entry.uniqueId,
+        //         javaClass: 'com.untangle.uvm.DashboardWidgetSettings',
+        //         refreshIntervalSec: 60,
+        //         timeframe: 3600,
+        //         type: 'ReportEntry'
+        //     });
+        // } else {
+        //     for (i = 0; i < this.dashboardWidgets.length; i += 1) {
+        //         if (this.dashboardWidgets[i].entryId === this.entry.uniqueId) {
+        //             this.dashboardWidgets.splice(i, 1);
+        //         }
+        //     }
+        // }
+        // this.dashboardSettings.widgets = {
+        //     javaClass: 'java.util.LinkedList',
+        //     list: this.dashboardWidgets
+        // };
+        // rpc.dashboardManager.setSettings(Ext.bind(function (result, exception) {
+        //     if (Ung.Util.handleException(exception)) {
+        //         return;
+        //     }
+        //     btn.setText(btn.addAction ? i18n._("Remove from Dashboard") : i18n._("Add to Dashboard"));
+        //     //btn.setIconCls(btn.addAction ? 'icon-delete-row' : 'icon-add-row');
+
+        //     var rec = this.entryList.getSelectionModel().getSelected();
+        //     rec.items[0].set('inDashboard', btn.addAction, {commit: true});
+
+        //     Ung.Util.userActionToast('<span style="color: #FFF;">' + this.entry.title + '</span> ' + (btn.addAction ? i18n._('was added to Dashboard') : i18n._('was removed from Dashboard')));
+
+        //     btn.addAction = !btn.addAction;
+        //     this.entry.inDashboard = btn.addAction;
+        // }, this), this.dashboardSettings);
+    },
+
 
 
     updateReport: function () {
