@@ -3,8 +3,7 @@
  */
 Ext.define('Ung.view.dashboard.Dashboard', {
     extend: 'Ext.container.Container',
-    alternateClassName: 'Dashboard',
-    xtype: 'ung.dashboard',
+    alias: 'widget.ung-dashboard',
     itemId: 'dashboard',
 
     /* requires-start */
@@ -168,6 +167,7 @@ Ext.define('Ung.view.dashboard.Dashboard', {
         xtype: 'container',
         region: 'center',
         reference: 'dashboard',
+        itemId: 'widgetsCmp',
         cls: 'dashboard',
         padding: 8,
         scrollable: true

@@ -9,13 +9,16 @@ Ext.define('Ung.widget.ReportModel', {
                     //(get('entry.readOnly') ? ' <i class="material-icons" style="color: #ec3610; font-size: 16px;">lock</i>' : '') +
                     get('entry.title') +
                     (get('entry.timeDataInterval') ? ' <span style="text-transform: lowercase; color: #777; font-weight: 100;">per ' + get('entry.timeDataInterval') + '</span>' : '') +
-                    '</h1><p>since ' + get('timeframe') + ' ago</p></h1>';
+                    '</h1><p>since ' + get('_timeframe') + ' ago</p></h1>';
             }
         },
-        timeframe: {
+        _timeframe: {
             get: function(get) {
-                return get('widget.timeframe');
+                return get('widget.timeframe') / 3600;
                 //return Util.Services.secondsToString(get('widget.timeframe'));
+            },
+            set: function (value) {
+                this.set('widget.timeframe', value * 3600);
             }
         }
     }

@@ -26,6 +26,7 @@ Ext.define('Ung.widget.WidgetController', {
         var me = this;
         cmp.getEl().on({
             click: function (e) {
+                var vm = me.getViewModel();
                 if (e.target.dataset.action === 'refresh') {
                     me.addToQueue();
                 }
@@ -35,7 +36,7 @@ Ext.define('Ung.widget.WidgetController', {
                 }
 
                 if (e.target.dataset.action === 'style') {
-                    var vm = me.getViewModel(), idx;
+                    var idx;
 
                     if (vm.get('entry.type').indexOf('TIME_GRAPH') >= 0) {
                         var timeStyles = ['LINE', 'AREA', 'BAR', 'BAR_OVERLAPPED', 'BAR_STACKED'];
@@ -59,6 +60,103 @@ Ext.define('Ung.widget.WidgetController', {
                         }
                     }
 
+                }
+
+                if (e.target.dataset.action === 'settings') {
+                    if (me.getView().up('#dashboard').down('window')) {
+                        me.getView().up('#dashboard').down('window').close();
+                    }
+
+                    me.settingsWin = me.getView().add({
+                        xtype: 'window',
+                        width: me.getView().getWidth() - 40,
+                        height: me.getView().getHeight() - 100,
+                        // height: '90%',
+                        modal: true,
+                        header: false,
+                        title: 'Widget Settings',
+                        constrain: true,
+                        layout: 'fit',
+                        items: [{
+                            xtype: 'form',
+                            border: false,
+                            bodyPadding: 10,
+                            layout: {
+                                type: 'vbox',
+                                align: 'stretch'
+                            },
+                            // defaults: {
+                            //     labelWidth: 150,
+                            //     // labelAlign: 'top',
+                            //     width: 250,
+                            // },
+                            items: [{
+                                xtype: 'component',
+                                html: '<strong>' + 'Refresh Interval'.t() + '</strong>:<br/> <span style="font-size: 11px; color: #777;">' + 'Leave blank for no Auto Refresh'.t() + '</span>'
+                            }, {
+                                xtype: 'container',
+                                layout: { type: 'hbox', align: 'middle' },
+                                margin: '2 0 10 0',
+                                items: [{
+                                    xtype: 'numberfield',
+                                    width: 50,
+                                    maxValue: 600,
+                                    minValue: 10,
+                                    allowBlank: true,
+                                    margin: '0 5 0 0',
+                                    bind: '{widget.refreshIntervalSec}'
+                                }, {
+                                    xtype: 'component',
+                                    style: {
+                                        fontSize: '11px',
+                                        color: '#777'
+                                    },
+                                    html: '(seconds)'.t()
+                                }]
+                            }, {
+                                xtype: 'component',
+                                html: '<strong>' + 'Timeframe'.t() + '</strong>:<br/> <span style="font-size: 11px; color: #777;">' + 'The number of hours to query the latest data. Leave blank for last day.'.t() + '</span>'
+                            }, {
+                                xtype: 'container',
+                                layout: { type: 'hbox', align: 'middle' },
+                                margin: '2 0',
+                                items: [{
+                                    xtype: 'numberfield',
+                                    width: 50,
+                                    maxValue: 72,
+                                    minValue: 1,
+                                    allowBlank: true,
+                                    margin: '0 5 0 0',
+                                    bind: '{_timeframe}'
+                                }, {
+                                    xtype: 'component',
+                                    style: {
+                                        fontSize: '11px',
+                                        color: '#777'
+                                    },
+                                    html: '(hours)'.t()
+                                }]
+                            }]
+                        }],
+                        buttons: [{
+                            text: 'Remove'.t(),
+                            iconCls: 'fa fa-trash'
+                        }, '->', {
+                            text: 'Cancel'.t(),
+                            iconCls: 'fa fa-ban',
+                            handler: function (btn) {
+                                btn.up('window').close();
+                            }
+                        }, {
+                            text: 'Save'.t(),
+                            iconCls: 'fa fa-save',
+                            handler: 'onSave'
+                        }],
+                        listeners: {
+                            beforeclose: 'onSettingsBeforeClose'
+                        }
+                    });
+                    me.settingsWin.show();
                 }
             }
         });
@@ -98,6 +196,11 @@ Ext.define('Ung.widget.WidgetController', {
                 Ung.view.dashboard.Queue.add(widget);
             }
         });
+        // widget.getViewModel().bind('{widget.timeframe}', function (tf) {
+        //     if (enabled && Ext.isFunction(widget.fetchData)) {
+        //         Ung.view.dashboard.Queue.add(widget);
+        //     }
+        // });
         widget.getViewModel().notify();
     },
 
@@ -131,6 +234,31 @@ Ext.define('Ung.widget.WidgetController', {
             clearTimeout(widget.refreshTimeoutId);
         }
         Ung.view.dashboard.Queue.addFirst(widget);
+    },
+
+    // cancelEdit: function (btn) {
+    //     var me = this, vm = this.getViewModel();
+    //     if (me.settingsWin) {
+    //         me.settingsWin.close();
+    //     }
+    //     // btn.up('window').close();
+    // },
+
+    onSave: function () {
+        var me = this, vm = this.getViewModel();
+        // save is done in Dashboard Controller
+        Ext.fireEvent('saveWidget', function () {
+            vm.get('widget').commit();
+            me.settingsWin.close();
+            me.addToQueue();
+        });
+    },
+
+    onSettingsBeforeClose: function () {
+        var vm = this.getViewModel();
+        if (vm.get('widget').dirty) {
+            vm.get('widget').reject();
+        }
     },
 
 

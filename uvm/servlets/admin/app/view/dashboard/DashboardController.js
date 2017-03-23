@@ -13,6 +13,9 @@ Ext.define('Ung.view.dashboard.DashboardController', {
     control: {
         '#': {
             // afterrender: 'loadWidgets'
+        },
+        '#widgetsCmp': {
+            resize: 'onResize'
         }
     },
 
@@ -21,7 +24,8 @@ Ext.define('Ung.view.dashboard.DashboardController', {
             init: 'loadWidgets',
             appinstall: 'onAppInstall',
             addRemoveReportwidget: 'onAddRemoveReportWidget', // fired from Reports view
-            reportsInstall: 'loadWidgets'
+            reportsInstall: 'loadWidgets',
+            saveWidget: 'onSaveWidget'
         },
         store: {
             '#stats': {
@@ -42,12 +46,12 @@ Ext.define('Ung.view.dashboard.DashboardController', {
     loadWidgets: function() {
         // console.log('loadWidgets');
         var vm = this.getViewModel(),
-            dashboard = this.getView().lookupReference('dashboard'),
+            dashboard = this.lookupReference('dashboard'),
             widgets = Ext.getStore('widgets').getRange(),
             i, widget, entry;
 
         // refresh the dashboard manager grid if the widgets were affected
-        this.getView().lookupReference('dashboardNav').getView().refresh();
+        this.lookupReference('dashboardNav').getView().refresh();
 
         dashboard.removeAll(true);
 
@@ -98,6 +102,12 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         }
         // dashboard.add(widgetComponents);
         // this.populateMenus();
+    },
+
+    onResize: function (view) {
+        if (view.down('window')) {
+            view.down('window').close();
+        }
     },
 
     /**
@@ -213,6 +223,19 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         });
 
     },
+
+    onSaveWidget: function (cb) {
+        Ung.dashboardSettings.widgets.list = Ext.Array.pluck(Ext.getStore('widgets').getRange(), 'data');
+
+        Rpc.asyncData('rpc.dashboardManager.setSettings', Ung.dashboardSettings)
+        .then(function(result) {
+            // Util.successToast('<span style="color: yellow; font-weight: 600;">Dashboard Saved!</span>');
+            // Ext.getStore('widgets').sync();
+            cb();
+        });
+
+    },
+
 
     managerHandler: function () {
         var state = this.getViewModel().get('managerOpen');
