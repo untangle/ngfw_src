@@ -181,12 +181,13 @@ Ext.define('Ung.view.reports.Entry', {
             // title: '<i class="fa fa-list"></i> ' + 'Current Data'.t(),
             // hidden: true,
             // emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-2x"></i> <br/>No Data!</p>',
-            bind: {
-                store: {
-                    data: '{_currentData}'
-                },
-                // hidden: '{entry && entry.type === "EVENT_LIST"}'
-            },
+            store: { data: [] },
+            // bind: {
+            //     store: {
+            //         data: '{_currentData}'
+            //     },
+            //     // hidden: '{entry && entry.type === "EVENT_LIST"}'
+            // },
             dockedItems: [{
                 xtype: 'toolbar',
                 border: false,

@@ -121,12 +121,12 @@ Ext.define('Ung.view.reports.GraphReportController', {
                 maxPadding: 0,
                 minPadding: 0,
                 events: {
-                    afterSetExtremes: function () {
-                        // filters the current data grid based on the zoom range
-                        if (me.getView().up('reports-entry')) {
-                            me.getView().up('reports-entry').getController().filterData(this.getExtremes().min, this.getExtremes().max);
-                        }
-                    }
+                    // afterSetExtremes: function () {
+                    //     // filters the current data grid based on the zoom range
+                    //     if (me.getView().up('reports-entry')) {
+                    //         me.getView().up('reports-entry').getController().filterData(this.getExtremes().min, this.getExtremes().max);
+                    //     }
+                    // }
                 }
             },
             yAxis: {

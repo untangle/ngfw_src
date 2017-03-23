@@ -80,9 +80,9 @@ Ext.define('Ung.apps.openvpn.view.ConfigEditorGrid', {
     listeners: {
         cellclick: function(grid,td,cellIndex,record,tr,rowIndex,e,eOpts)  {
             // not allowed to edit default options
-            if (record.data.readOnly) return(false);
-            }
-        },
+            if (record.data.readOnly) { return(false); }
+        }
+    },
 
     columns: [{
         header: 'Option Name'.t(),

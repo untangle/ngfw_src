@@ -164,7 +164,8 @@ Ext.define('Ung.view.reports.EntryController', {
         }
 
         dataGrid.setColumns(reportDataColumns);
-        vm.set('_currentData', data);
+        dataGrid.getStore().loadData(data);
+        // vm.set('_currentData', data);
     },
 
     formatTimeDynamicData: function (data) {
@@ -209,7 +210,8 @@ Ext.define('Ung.view.reports.EntryController', {
         }
 
         dataGrid.setColumns(reportDataColumns);
-        vm.set('_currentData', data);
+        dataGrid.getStore().loadData(data);
+        // vm.set('_currentData', data);
     },
 
     formatPieData: function (data) {
@@ -246,7 +248,8 @@ Ext.define('Ung.view.reports.EntryController', {
                 // }, this)
             }]
         }]);
-        vm.set('_currentData', data);
+        dataGrid.getStore().loadData(data);
+        // vm.set('_currentData', data);
 
     },
 
@@ -274,7 +277,8 @@ Ext.define('Ung.view.reports.EntryController', {
                 reportData.push({data: column, value: value});
             }
         }
-        vm.set('_currentData', reportData);
+        // vm.set('_currentData', reportData);
+        dataGrid.getStore().loadData(reportData);
     },
 
     filterData: function (min, max) {
@@ -468,44 +472,11 @@ Ext.define('Ung.view.reports.EntryController', {
 
     // DASHBOARD ACTION
     dashboardAddRemove: function (btn) {
-        Ext.fireEvent('addReportWidget', this.getViewModel().get('entry'));
-        // Dashboard.getController().addReportWidget(this.getViewModel().get('entry'));
-        // if (btn.addAction) {
-        //     this.dashboardWidgets.push({
-        //         displayColumns: this.entry.displayColumns,
-        //         enabled: true,
-        //         entryId: this.entry.uniqueId,
-        //         javaClass: 'com.untangle.uvm.DashboardWidgetSettings',
-        //         refreshIntervalSec: 60,
-        //         timeframe: 3600,
-        //         type: 'ReportEntry'
-        //     });
-        // } else {
-        //     for (i = 0; i < this.dashboardWidgets.length; i += 1) {
-        //         if (this.dashboardWidgets[i].entryId === this.entry.uniqueId) {
-        //             this.dashboardWidgets.splice(i, 1);
-        //         }
-        //     }
-        // }
-        // this.dashboardSettings.widgets = {
-        //     javaClass: 'java.util.LinkedList',
-        //     list: this.dashboardWidgets
-        // };
-        // rpc.dashboardManager.setSettings(Ext.bind(function (result, exception) {
-        //     if (Ung.Util.handleException(exception)) {
-        //         return;
-        //     }
-        //     btn.setText(btn.addAction ? i18n._("Remove from Dashboard") : i18n._("Add to Dashboard"));
-        //     //btn.setIconCls(btn.addAction ? 'icon-delete-row' : 'icon-add-row');
-
-        //     var rec = this.entryList.getSelectionModel().getSelected();
-        //     rec.items[0].set('inDashboard', btn.addAction, {commit: true});
-
-        //     Ung.Util.userActionToast('<span style="color: #FFF;">' + this.entry.title + '</span> ' + (btn.addAction ? i18n._('was added to Dashboard') : i18n._('was removed from Dashboard')));
-
-        //     btn.addAction = !btn.addAction;
-        //     this.entry.inDashboard = btn.addAction;
-        // }, this), this.dashboardSettings);
+        var vm = this.getViewModel();
+        Ext.fireEvent('addRemoveReportwidget', vm.get('entry'), vm.get('isWidget'),  function () {
+            vm.set('isWidget', !vm.get('isWidget'));
+            Util.successToast('<span style="color: yellow; font-weight: 600;">' + vm.get('entry.title') + '</span> ' + (vm.get('isWidget') ? 'added to' : 'removed from') + ' Dashboard!');
+        });
     },
 
 
