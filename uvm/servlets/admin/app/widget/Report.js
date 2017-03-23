@@ -38,6 +38,7 @@ Ext.define('Ung.widget.Report', {
         bind: {
             html: '{title}' +
                 '<div class="actions">' +
+                    '<a class="action-btn"><i class="fa fa-cog fa-lg" data-action="settings"></i></a>' +
                     '<a class="action-btn"><i class="fa fa-download fa-lg" data-action="download"></i></a>' +
                     '<a class="action-btn"><i class="fa fa-area-chart fa-lg" data-action="style"></i></a>' +
                     '<a class="action-btn"><i class="fa fa-external-link-square fa-lg" data-action="redirect"></i></a>' +
