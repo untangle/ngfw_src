@@ -10,59 +10,9 @@ Ext.define('Ung.apps.directoryconnector.view.Google', {
 
     items:[{
         xtype: 'fieldset',
-        title: 'Google Drive Connector'.t(),
-        items: [{
-            xtype: 'fieldset',
-            name: 'fieldsetDriveDisabled',
-            collapsible: false,
-            border: 0,
-            hidden: true,
-            bind: {
-                hidden: '{googleDriveIsConfigured == true}',
-            },
-            items: [{
-                xtype: 'component',
-                html: 'The Google Drive is unconfigured.'.t(),
-                style: {color:'red'},
-                cls: 'warning'
-            }, {
-                xtype: "button",
-                text: 'Configure Google Drive'.t(),
-                handler: 'googleDriveConfigure'
-            }]
-        },{
-            xtype: 'fieldset',
-            name: 'fieldsetDriveEnabled',
-            border: 0,
-            collapsible: false,
-            hidden: true,
-            bind: {
-                hidden: '{googleDriveIsConfigured == false}',
-            },
-            items: [{
-                xtype: 'component',
-                html: 'The Google Drive is configured.'.t(),
-                style: {color:'green'}
-            }, {
-                xtype: "button",
-                text: 'Reconfigure Google Drive'.t(),
-                handler: 'googleDriveConfigure'
-            }, {
-                xtype: "button",
-                text: "Disconnect Google Drive".t(),
-                iconCls: "action-icon",
-                handler: 'googleDriveDisconnect'
-            }]
-        }]
-    },{
-        xtype: 'fieldset',
-        title: 'Google Authentication'.t(),
+        title: 'Google Authentication Connector'.t(),
         name: 'fieldsetEnabledAuth',
         collapsible: false,
-        hidden: true,
-        bind: {
-            hidden: '{googleDriveIsConfigured == false}',
-        },
         items: [{
             xtype: 'container',
             html: Ext.String.format( 'This allows your server to connect to {0}Google{1} in order to identify users for use by Captive Portal.'.t(),'<b>','</b>')
@@ -107,6 +57,52 @@ Ext.define('Ung.apps.directoryconnector.view.Google', {
                 text: 'Google Authentication Test'.t(),
                 iconCls: 'test-icon',
                 handler: 'googleAuthenticationTest'
+            }]
+        }]
+    },{
+        xtype: 'fieldset',
+        title: 'Google Drive Connector'.t(),
+        items: [{
+            xtype: 'fieldset',
+            name: 'fieldsetDriveDisabled',
+            collapsible: false,
+            border: 0,
+            hidden: true,
+            bind: {
+                hidden: '{googleDriveIsConfigured == true}',
+            },
+            items: [{
+                xtype: 'component',
+                html: 'The Google Drive is unconfigured.'.t(),
+                style: {color:'red'},
+                cls: 'warning'
+            }, {
+                xtype: "button",
+                text: 'Configure Google Drive'.t(),
+                handler: 'googleDriveConfigure'
+            }]
+        },{
+            xtype: 'fieldset',
+            name: 'fieldsetDriveEnabled',
+            border: 0,
+            collapsible: false,
+            hidden: true,
+            bind: {
+                hidden: '{googleDriveIsConfigured == false}',
+            },
+            items: [{
+                xtype: 'component',
+                html: 'The Google Drive is configured.'.t(),
+                style: {color:'green'}
+            }, {
+                xtype: "button",
+                text: 'Reconfigure Google Drive'.t(),
+                handler: 'googleDriveConfigure'
+            }, {
+                xtype: "button",
+                text: "Disconnect Google Drive".t(),
+                iconCls: "action-icon",
+                handler: 'googleDriveDisconnect'
             }]
         }]
     }]
