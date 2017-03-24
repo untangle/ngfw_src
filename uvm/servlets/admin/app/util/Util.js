@@ -4,6 +4,14 @@ Ext.define('Ung.util.Util', {
 
     defaultColors: ['#7cb5ec', '#434348', '#90ed7d', '#f7a35c', '#8085e9', '#f15c80', '#e4d354', '#2b908f', '#f45b5b', '#91e8e1'],
 
+    subNav: [
+        '->',
+        { text: 'Sessions'.t(), iconCls: 'fa fa-list', href: '#sessions', bind: { userCls: '{activeItem === "sessions" ? "pressed" : ""}' } },
+        { text: 'Hosts'.t(), iconCls: 'fa fa-th-list', href: '#hosts', bind: { userCls: '{activeItem === "hosts" ? "pressed" : ""}' } },
+        { text: 'Devices'.t(), iconCls: 'fa fa-desktop', href: '#devices', bind: { userCls: '{activeItem === "devices" ? "pressed" : ""}' } },
+        { text: 'Users'.t(), iconCls: 'fa fa-users', href: '#', bind: { userCls: '{activeItem === "sessions" ? "users" : ""}' } }
+    ],
+
 
     iconReportTitle: function (report) {
         var icon;

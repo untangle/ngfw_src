@@ -34,7 +34,10 @@ Ext.define ('Ung.model.Report', {
         {
             name: 'localizedTitle',
             calculate: function (entry) {
-                return entry.title.t();
+                if (entry.readOnly) {
+                    return entry.title.t();
+                }
+                return entry.title;
             }
         },
         {

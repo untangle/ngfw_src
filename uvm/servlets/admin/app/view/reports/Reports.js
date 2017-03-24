@@ -21,6 +21,33 @@ Ext.define('Ung.view.reports.Reports', {
     //     }
     // }],
 
+    dockedItems: [{
+        xtype: 'toolbar',
+        ui: 'navigation',
+        dock: 'top',
+        border: false,
+        style: {
+            background: '#333435',
+            zIndex: 9997
+        },
+        defaults: {
+            xtype: 'button',
+            border: false,
+            hrefTarget: '_self'
+        },
+        items: Ext.Array.insert(Ext.clone(Util.subNav), 0, [{
+            xtype: 'component',
+            margin: '0 0 0 10',
+            style: {
+                // fontSize: '11px',
+                color: '#CCC'
+            },
+            bind: {
+                html: '<img src="{category.icon}" width="17" height="17" style="vertical-align: middle;"/> {category.displayName} <i class="fa fa-angle-right"></i> <i class="fa {entry.icon}"></i> {entry.localizedTitle}'
+            }
+        }])
+    }],
+
     viewModel: {
         data: {
             categoryName: null, // as set in route

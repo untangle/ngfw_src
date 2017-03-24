@@ -35,23 +35,47 @@ Ext.define('Ung.view.apps.Apps', {
 
     dockedItems: [{
         xtype: 'toolbar',
+        ui: 'navigation',
         dock: 'top',
         border: false,
-        items: [{
-            xtype: 'combobox',
-            editable: false,
-            multiSelect: false,
-            queryMode: 'local',
-            hidden: true,
-            bind: {
-                value: '{policyId}',
-                store: '{policies}',
-                hidden: '{!onInstalledApps}'
+        style: {
+            background: '#333435',
+            // zIndex: 9997
+        },
+        defaults: {
+            border: false
+        },
+        items: Ext.Array.insert(Ext.clone(Util.subNav), 0, [
+        //     {
+        //     xtype: 'combobox',
+        //     editable: false,
+        //     multiSelect: false,
+        //     queryMode: 'local',
+        //     hidden: true,
+        //     bind: {
+        //         value: '{policyId}',
+        //         store: '{policies}',
+        //         hidden: '{!onInstalledApps}'
+        //     },
+        //     valueField: 'policyId',
+        //     displayField: 'displayName',
+        //     // listeners: {
+        //     //     change: 'setPolicy'
+        //     // }
+        // },
+        {
+            xtype: 'button',
+            text: 'Policy 1' + ' &nbsp;<i class="fa fa-angle-down fa-lg"></i>',
+            iconCls: 'fa fa-file-text-o',
+            arrowVisible: false,
+            menu: {
+                plain: true,
+                items: [{
+                    text: 'Policy 1'
+                }]
             },
-            valueField: 'policyId',
-            displayField: 'displayName',
-            listeners: {
-                change: 'setPolicy'
+            bind: {
+                hidden: '{!onInstalledApps}'
             }
         }, {
             xtype: 'button',
@@ -65,7 +89,7 @@ Ext.define('Ung.view.apps.Apps', {
             }
         }, {
             xtype: 'button',
-            html: 'Back to Apps'.t(),
+            html: 'Back to Apps',
             iconCls: 'fa fa-arrow-circle-left',
             hrefTarget: '_self',
             hidden: true,
@@ -73,8 +97,9 @@ Ext.define('Ung.view.apps.Apps', {
                 href: '#apps/{policyId}',
                 hidden: '{onInstalledApps}'
             }
-        }]
+        }])
     }],
+
 
     items: [{
         xtype: 'dataview',

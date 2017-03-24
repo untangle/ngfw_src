@@ -1,5 +1,5 @@
 Ext.define('Ung.view.config.Config', {
-    extend: 'Ext.container.Container',
+    extend: 'Ext.panel.Panel',
     xtype: 'ung.config',
     itemId: 'config',
 
@@ -14,6 +14,23 @@ Ext.define('Ung.view.config.Config', {
     ],
     /* requires-end */
     controller: 'config',
+
+    dockedItems: [{
+        xtype: 'toolbar',
+        ui: 'navigation',
+        dock: 'top',
+        border: false,
+        style: {
+            background: '#333435',
+            zIndex: 9997
+        },
+        defaults: {
+            xtype: 'button',
+            border: false,
+            hrefTarget: '_self'
+        },
+        items: Ext.clone(Util.subNav)
+    }],
 
     items: [{
         xtype: 'dataview',

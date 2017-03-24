@@ -51,7 +51,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
             i, widget, entry;
 
         // refresh the dashboard manager grid if the widgets were affected
-        this.lookupReference('dashboardNav').getView().refresh();
+        this.lookupReference('dashboardManager').getView().refresh();
 
         dashboard.removeAll(true);
 
@@ -110,12 +110,18 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         }
     },
 
+    toggleManager: function (btn) {
+        var vm = this.getViewModel();
+        console.log('here');
+        vm.set('managerVisible', !vm.get('managerVisible'));
+    },
+
     /**
      * when a app is installed or removed apply changes to dashboard
      */
     onAppInstall: function (action, app) {
         // refresh dashboard manager grid
-        this.getView().lookupReference('dashboardNav').getView().refresh();
+        this.getView().lookupReference('dashboardManager').getView().refresh();
 
         var dashboard = this.getView().lookupReference('dashboard'),
             widgets = Ext.getStore('widgets').getRange(), widget, entry, i;
