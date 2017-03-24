@@ -91,30 +91,27 @@ Ext.define('Ung.controller.Global', {
 
 
     onDashboard: function () {
-        this.getMainView().setActiveItem('dashboard');
-        this.getMainView().getViewModel().set('selectedNavItem', 'dashboard');
-        // this.getMainView().setActiveItem('#dashboard');
-        // this.getViewModel().set('activeItem', 'dashboard');
+        this.getMainView().getViewModel().set('activeItem', 'dashboard');
     },
 
     onApps: function (policyId, app, view) {
         var me = this;
 
-        this.getMainView().getViewModel().set('selectedNavItem', 'apps');
-
+        this.getMainView().getViewModel().set('activeItem', 'apps');
+        console.log(this.getMainView().getViewModel().get('activeItem'));
         if (app) {
             if (app === 'install') {
-                this.getMainView().setActiveItem('apps');
+                this.getMainView().getViewModel().set('activeItem', 'apps');
                 this.getAppsView().setActiveItem('installableApps');
             } else {
                 if (me.getMainView().down('app-' + app)) {
-                    // if app card already exists activate it abd select given view
-                    me.getMainView().setActiveItem('configCard');
+                    // if app card already exists activate it and select given view
+                    me.getMainView().getViewModel().set('activeItem', 'appCard');
                     me.getMainView().down('app-' + app).setActiveItem(view || 0);
                     return;
                 } else {
                     // eventually do not remove the old card
-                    me.getMainView().remove('configCard');
+                    me.getMainView().remove('appCard');
                 }
 
                 var policy = Ext.getStore('policies').findRecord('policyId', policyId);
@@ -125,7 +122,6 @@ Ext.define('Ung.controller.Global', {
                     return prop.name.replace('', '').replace('', '') === app;
                 });
 
-                console.log(appProps);
                 // var appClass = Ext.ClassManager.getByAlias('widget.app-' + app);
                 me.getMainView().setLoading(true);
                 Ext.Loader.loadScript({
@@ -137,11 +133,10 @@ Ext.define('Ung.controller.Global', {
                             // Rpc.asyncPromise('rpc.networkManager.getDeviceStatus'),
                         ], this).then(function (result) {
                             // console.log(result[0]);
-                            me.getMainView().setLoading(false);
                             me.getMainView().add({
                                 xtype: 'app-' + app,
-                                region: 'center',
-                                itemId: 'configCard',
+                                // region: 'center',
+                                itemId: 'appCard',
                                 appManager: result[0],
                                 activeTab: view || 0,
                                 viewModel: {
@@ -152,7 +147,10 @@ Ext.define('Ung.controller.Global', {
                                     }
                                 }
                             });
-                            me.getMainView().setActiveItem('configCard');
+                            // me.getMainView().setActiveItem('configCard');
+                            me.getMainView().getViewModel().set('activeItem', 'appCard');
+                            me.getMainView().getViewModel().notify();
+                            me.getMainView().setLoading(false);
                         }, function (ex) {
                             Util.exceptionToast(ex);
                         });
@@ -160,16 +158,16 @@ Ext.define('Ung.controller.Global', {
                 });
             }
         } else {
-            this.getMainView().setActiveItem('apps');
+            console.log('here');
             this.getAppsView().setActiveItem('installedApps');
         }
     },
 
     onConfig: function (configName, configView) {
         var me = this;
+
         if (!configName) {
-            this.getMainView().getViewModel().set('selectedNavItem', 'config');
-            this.getMainView().setActiveItem('config');
+            this.getMainView().getViewModel().set('activeItem', 'config');
         } else {
             me.getMainView().setLoading(true);
             Ext.Loader.loadScript({
@@ -178,10 +176,9 @@ Ext.define('Ung.controller.Global', {
                     me.getMainView().setLoading(false);
                     me.getMainView().add({
                         xtype: 'config.' + configName,
-                        region: 'center',
                         itemId: 'configCard'
                     });
-                    me.getMainView().setActiveItem('configCard');
+                    me.getMainView().getViewModel().set('activeItem', 'configCard');
                 }
             });
         }
@@ -206,7 +203,7 @@ Ext.define('Ung.controller.Global', {
             reportsVm.set('report', null);
             reportsVm.set('activeCard', 'allCategories');
         }
-        this.getMainView().setActiveItem('reports');
+        this.getMainView().getViewModel().set('activeItem', 'reports');
     },
 
     onSessions: function () {
@@ -219,8 +216,7 @@ Ext.define('Ung.controller.Global', {
             xtype: 'ung.sessions',
             itemId: 'sessions'
         });
-        this.getMainView().getViewModel().set('selectedNavItem', 'sessions');
-        this.getMainView().setActiveItem('sessions');
+        this.getMainView().getViewModel().set('activeItem', 'sessions');
     },
 
     onHosts: function () {
@@ -233,8 +229,7 @@ Ext.define('Ung.controller.Global', {
             xtype: 'ung.hosts',
             itemId: 'hosts'
         });
-        this.getMainView().getViewModel().set('selectedNavItem', 'hosts');
-        this.getMainView().setActiveItem('hosts');
+        this.getMainView().getViewModel().set('activeItem', 'hosts');
     },
 
     onDevices: function () {
@@ -247,8 +242,7 @@ Ext.define('Ung.controller.Global', {
             xtype: 'ung.devices',
             itemId: 'devices'
         });
-        this.getMainView().getViewModel().set('selectedNavItem', 'devices');
-        this.getMainView().setActiveItem('devices');
+        this.getMainView().getViewModel().set('activeItem', 'devices');
     }
 
 });

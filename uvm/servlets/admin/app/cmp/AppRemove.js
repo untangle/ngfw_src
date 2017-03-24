@@ -18,7 +18,7 @@ Ext.define('Ung.cmp.AppRemove', {
     iconCls: 'fa fa-minus-circle fa-red',
     handler: function (btn) {
         var vm = this.getViewModel(),
-            mainView = btn.up('#configCard'),
+            mainView = btn.up('#appCard'),
             // settingsView = this.getView();
             message = Ext.String.format('{0} will be uninstalled from this policy.'.t(), vm.get('appName')) + '<br/>' +
             'All of its settings will be lost.'.t() + '\n' + '<br/>' + '<br/>' +
@@ -48,8 +48,8 @@ Ext.define('Ung.cmp.AppRemove', {
                         vm.set('instance.targetState', null);
 
                         // remove card
-                        if (Ung.app.getMainView().down('#configCard')) {
-                            Ung.app.getMainView().remove('configCard');
+                        if (Ung.app.getMainView().down('#appCard')) {
+                            Ung.app.getMainView().remove('appCard');
                         }
 
                         Ung.app.redirectTo('#apps/1');

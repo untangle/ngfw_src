@@ -22,7 +22,11 @@ Ext.define('Ung.view.dashboard.Dashboard', {
     ],
     /* requires-end */
     controller: 'dashboard',
-    viewModel: true,
+    viewModel: {
+        data: {
+            managerVisible: false
+        }
+    },
     //viewModel: 'dashboard',
 
     config: {
@@ -38,25 +42,35 @@ Ext.define('Ung.view.dashboard.Dashboard', {
     items: [{
         region: 'west',
         title: 'Manage Widgets'.t(),
+
+        tools: [{
+            type: 'close',
+            callback: 'toggleManager'
+        }],
+
+        itemId: 'dashboardManager',
+        reference: 'dashboardManager',
         // weight: 30,
         width: 300,
-        collapsible: true,
+        // collapsible: true,
         bodyBorder: true,
         // shadow: false,
         animCollapse: false,
-        collapsed: true,
+        // collapsed: true,
         // collapseMode: 'mini',
-        titleCollapse: true,
+        // titleCollapse: true,
         floatable: false,
         cls: 'widget-manager',
         split: true,
         xtype: 'grid',
-        reference: 'dashboardNav',
         // forceFit: true,
         hideHeaders: true,
         // disableSelection: true,
         // trackMouseOver: false,
-
+        hidden: true,
+        bind: {
+            hidden: '{!managerVisible}'
+        },
         store: 'widgets',
 
         bodyStyle: {
@@ -164,22 +178,40 @@ Ext.define('Ung.view.dashboard.Dashboard', {
             handler: 'applyChanges'
         }]
     }, {
-        xtype: 'container',
+        // xtype: 'container',
         region: 'center',
         reference: 'dashboard',
         itemId: 'widgetsCmp',
-        cls: 'dashboard',
-        padding: 8,
-        scrollable: true
-        // dockedItems: [{
-        //     xtype: 'toolbar',
-        //     dock: 'top',
-        //     border: false,
-        //     items: [{
-        //         xtype: 'button',
-        //         text: 'Manage Widgets'.t()
-        //     }]
-        // }]
+        bodyCls: 'dashboard',
+        bodyPadding: 8,
+        border: false,
+        bodyBorder: false,
+        scrollable: true,
+
+        dockedItems: [{
+            xtype: 'toolbar',
+            ui: 'navigation',
+            dock: 'top',
+            border: false,
+            style: {
+                background: '#333435',
+                zIndex: 9997
+            },
+            defaults: {
+                xtype: 'button',
+                border: false,
+                hrefTarget: '_self'
+            },
+            items: Ext.Array.insert(Ext.clone(Util.subNav), 0, [{
+                text: 'Manage Widgets'.t(),
+                iconCls: 'fa fa-cog',
+                hidden: true,
+                bind: {
+                    hidden: '{managerVisible}'
+                },
+                handler: 'toggleManager'
+            }])
+        }]
     }],
     listeners: {
         //afterrender: 'onAfterRender',

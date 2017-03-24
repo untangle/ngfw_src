@@ -5,7 +5,8 @@ Ext.define('Ung.view.main.MainModel', {
 
     data: {
         reportsInstalled: false,
-        reportsRunning: false
+        reportsRunning: false,
+        dashboardManagerOpen: false
     },
     formulas: {
         // selected: function () {
