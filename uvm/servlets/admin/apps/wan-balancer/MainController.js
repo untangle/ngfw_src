@@ -1,13 +1,10 @@
-Ext.define('Ung.apps.wanfailover.MainController', {
+Ext.define('Ung.apps.wanbalancer.MainController', {
     extend: 'Ext.app.ViewController',
-    alias: 'controller.app-wan-failover',
+    alias: 'controller.app-wan-balancer',
 
     control: {
         '#': {
             beforerender: 'getSettings'
-        },
-        '#wanStatus': {
-            afterrender: 'getWanStatus'
         }
     },
 
@@ -17,7 +14,6 @@ Ext.define('Ung.apps.wanfailover.MainController', {
             if (ex) { Util.exceptionToast(ex); return; }
             console.log(result);
             vm.set('settings', result);
-            // me.getWanStatus();
         });
     },
 
@@ -47,28 +43,6 @@ Ext.define('Ung.apps.wanfailover.MainController', {
             Util.successToast('Settings saved');
             me.getSettings();
         }, vm.get('settings'));
-    },
-
-    getWanStatus: function (cmp) {
-        var vm = this.getViewModel(),
-            grid = (cmp.getXType() === 'gridpanel') ? cmp : cmp.up('grid');
-        grid.setLoading(true);
-        this.getView().appManager.getWanStatus(function (result, ex) {
-            grid.setLoading(false);
-            if (ex) { Util.exceptionToast(ex); return; }
-            vm.set('wans', result.list);
-
-            var wanWarnings = [],
-                tests = vm.get('settings.tests.list');
-
-            Ext.Array.each(result.list, function (wan) {
-                if (tests.length === 0 || Ext.Array.findBy(tests, function (test) {
-                    return test.enabled && (wan.interfaceId === test.interfaceId);
-                })) {
-                    wanWarnings.push('<li>'  + Ext.String.format('Warning: The <i>{0}</i> needs a test configured!'.t(), wan.interfaceName) + '</li>');
-                }
-            });
-            vm.set('wanWarnings', wanWarnings.join('<br/>'));
-        });
     }
+
 });
