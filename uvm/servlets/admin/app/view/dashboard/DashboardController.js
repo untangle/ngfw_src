@@ -519,7 +519,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                     { displayName: 'Network', icon: '/skins/modern-rack/images/admin/config/icon_config_network.png' },
                     { displayName: 'Administration', icon: '/skins/modern-rack/images/admin/config/icon_config_admin.png' },
                     { displayName: 'System', icon: '/skins/modern-rack/images/admin/config/icon_config_system.png' },
-                    { displayName: 'Shield', icon: '/skins/modern-rack/images/admin/apps/untangle-app-shield_17x17.png' }
+                    { displayName: 'Shield', icon: '/skins/modern-rack/images/admin/config/icon_config_shield.png' }
                 ];
                 result.list.forEach(function (app) {
                     categories.push({

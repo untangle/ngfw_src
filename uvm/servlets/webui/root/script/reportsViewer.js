@@ -56,7 +56,7 @@ Ext.define('Ung.reportsViewer', {
                 text : i18n._("Shield"),
                 category : "Shield",
                 leaf : true,
-                icon :'/skins/'+rpc.skinSettings.skinName+'/images/admin/apps/shield_17x17.png' 
+                icon :'/skins/'+rpc.skinSettings.skinName+'/images/admin/config/icon_config_shield_16x16.png' 
             } ]
         }];
 
