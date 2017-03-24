@@ -24,6 +24,7 @@ Ext.define('Ung.apps.wanfailover.view.Tests', {
                'Press Help to see a further discussion about Failure Detection Tests.'.t()
     },{
         xtype: 'app-wan-failover-test-grid',
+        title: 'Failure Detection Tests'.t(),
         width: 800,
         height: 400,
         padding: '20 20 20 20',
