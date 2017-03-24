@@ -810,7 +810,7 @@ Ext.define('Ung.panel.Reports', {
                 { text : i18n._('Administration'), category : 'Administration', icon : _skinPath + 'config/icon_config_admin.png' },
                 { text : i18n._('Events'), category : 'Events', icon : _skinPath + 'config/icon_config_events.png' },
                 { text : i18n._('System'), category : 'System', icon : _skinPath + 'config/icon_config_system.png' },
-                { text : i18n._('Shield'), category : 'Shield', icon : _skinPath + 'apps/shield_17x17.png' }
+                { text : i18n._('Shield'), category : 'Shield', icon : _skinPath + 'config/icon_config_shield.png' }
             ];
 
         for (i = 0; i < staticItems.length; i += 1) {
