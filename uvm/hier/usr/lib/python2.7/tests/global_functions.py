@@ -23,10 +23,6 @@ iperfServers = [('10.111.0.0/16','10.111.5.20'), # Office network
                 ('10.112.0.0/16','10.112.56.44')] # ATS VM
 iperfServer = ""
 
-# special box with testshell in the sudoer group  - used to connect to vpn as client
-# and ftp server.
-ftpServer = vpnClientVpnIP = "10.111.5.20"  
-
 # special Untangle box configured as a OpenVPN server and special DNS config
 specialDnsServer= vpnServerVpnIP = "10.111.56.96"
 
@@ -37,6 +33,8 @@ vpnServerVpnLanIP = "192.168.235.96"
 vpnClientVpnIP = "10.111.5.20"  
 
 testServerHost = 'test.untangle.com'
+ftpServer = socket.gethostbyname(testServerHost)
+
 # DNS MX record on 10.111.56.57 for domains untangletestvm.com and untangletest.com
 listSyslogServerHosts = [('10.111.5.20','16'),# Office network
                             ('10.112.56.30','16')]# ATS VM
