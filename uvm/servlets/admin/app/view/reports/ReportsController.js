@@ -26,7 +26,7 @@ Ext.define('Ung.view.reports.ReportsController', {
             { categoryName: 'Network', type: 'system', url: 'network', displayName: 'Network'.t(), icon: '/skins/modern-rack/images/admin/config/icon_config_network.png' },
             { categoryName: 'Administration', type: 'system', url: 'administration', displayName: 'Administration'.t(), icon: '/skins/modern-rack/images/admin/config/icon_config_admin.png' },
             { categoryName: 'System', type: 'system', url: 'system', displayName: 'System'.t(), icon: '/skins/modern-rack/images/admin/config/icon_config_system.png' },
-            { categoryName: 'Shield', type: 'shield', url: 'shield', displayName: 'Shield'.t(), icon: '/skins/modern-rack/images/admin/config/icon_config_shield.png' }
+            { categoryName: 'Shield', type: 'system', url: 'shield', displayName: 'Shield'.t(), icon: '/skins/modern-rack/images/admin/config/icon_config_shield.png' }
         ];
 
         try {
