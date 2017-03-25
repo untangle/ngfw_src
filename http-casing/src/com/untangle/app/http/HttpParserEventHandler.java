@@ -8,6 +8,8 @@ import java.nio.ByteBuffer;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import org.apache.log4j.Logger;
 
@@ -17,7 +19,6 @@ import com.untangle.uvm.HostTableEntry;
 import com.untangle.uvm.DeviceTable;
 import com.untangle.uvm.DeviceTableEntry;
 import com.untangle.uvm.util.AsciiCharBuffer;
-import com.untangle.uvm.util.UserAgentString;
 import com.untangle.uvm.vnet.ChunkToken;
 import com.untangle.uvm.vnet.EndMarkerToken;
 import com.untangle.uvm.vnet.Token;
@@ -617,21 +618,49 @@ public class HttpParserEventHandler extends AbstractEventHandler
                      */
                     InetAddress clientAddr = session.sessionEvent().getCClientAddr();
                     String agentString = state.header.getValue("user-agent");
-                    HostTableEntry hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( clientAddr );
-                    if (clientAddr != null && agentString != null && hostEntry != null ) {
-                        UserAgentString uas = new UserAgentString(agentString);
+                    String host = state.header.getValue("host");
+                    String referer = state.header.getValue("referer");
+                    String userAgent = state.header.getValue("user-agent");
+                    String uri = state.requestLineToken.getRequestLine().getRequestUri().normalize().getPath();
+                    HostTableEntry hostEntry = null;
+                    DeviceTableEntry deviceEntry = null;
+                    if ( clientAddr != null )
+                        hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( clientAddr );
+                    if ( hostEntry != null )
+                        deviceEntry = UvmContextFactory.context().deviceTable().getDevice( hostEntry.getMacAddress() );
 
-                        /**
-                         * If the current agent string is null
-                         * set the agent string and agent string information
-                         * also set in device table if its non-null
-                         */
-                        if ( hostEntry.getHttpUserAgent() == null  ) {
+                    session.globalAttach( AppSession.KEY_HTTP_HOSTNAME, host );
+                    session.globalAttach( AppSession.KEY_HTTP_REFERER, referer );
+                    session.globalAttach( AppSession.KEY_HTTP_URI, uri );
+                    session.globalAttach( AppSession.KEY_HTTP_URL, host + uri );
+                    session.globalAttach( AppSession.KEY_HTTP_USER_AGENT, userAgent );
+
+                    String fpath = null;
+                    String fname = null;
+                    String fext = null;
+                    int loc;
+                    try {
+                        // extract the full file path ignoring all params
+                        fpath = (new URI(uri)).toString();
+
+                        // find the last slash to extract the file name
+                        loc = fpath.lastIndexOf("/");
+                        if (loc != -1) fname = fpath.substring(loc + 1);
+
+                        // find the last dot to extract the file extension
+                        loc = fname.lastIndexOf(".");
+                        if (loc != -1) fext = fname.substring(loc + 1);
+
+                        if (fpath != null) session.globalAttach(AppSession.KEY_HTTP_REQUEST_FILE_PATH, fpath);
+                        if (fname != null) session.globalAttach(AppSession.KEY_HTTP_REQUEST_FILE_NAME, fname);
+                        if (fext != null) session.globalAttach(AppSession.KEY_HTTP_REQUEST_FILE_EXTENSION, fext);
+                    } catch (URISyntaxException e) {}
+
+                    if ( agentString != null ) {
+                        if ( hostEntry != null )
                             hostEntry.setHttpUserAgent( agentString );
-                            DeviceTableEntry deviceEntry = UvmContextFactory.context().deviceTable().getDevice( hostEntry.getMacAddress() );
-                            if ( deviceEntry != null )
-                                deviceEntry.setHttpUserAgent( agentString );
-                        }
+                        if ( deviceEntry != null )
+                            deviceEntry.setHttpUserAgent( agentString );
                     }
                 }
 

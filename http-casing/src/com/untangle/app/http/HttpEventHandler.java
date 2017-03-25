@@ -390,43 +390,9 @@ public abstract class HttpEventHandler extends AbstractEventHandler
                 state.requestPersistent = isPersistent(h);
                 Mode preMode = state.requestMode;
 
-                /**
-                 * Attach metadata
-                 */
-                String host = h.getValue("host");
-                String referer = h.getValue("referer");
-                String uri = getRequestLine( session ).getRequestUri().normalize().getPath();
-                session.globalAttach( AppSession.KEY_HTTP_HOSTNAME, host );
-                session.globalAttach( AppSession.KEY_HTTP_REFERER, referer );
-                session.globalAttach( AppSession.KEY_HTTP_URI, uri );
-                session.globalAttach( AppSession.KEY_HTTP_URL, host + uri );
-
-                String fpath = null;
-                String fname = null;
-                String fext = null;
-                int loc;
-                try {
-                    // extract the full file path ignoring all params
-                    fpath = (new URI(uri)).toString();
-
-                    // find the last slash to extract the file name
-                    loc = fpath.lastIndexOf("/");
-                    if (loc != -1) fname = fpath.substring(loc + 1);
-
-                    // find the last dot to extract the file extension
-                    loc = fname.lastIndexOf(".");
-                    if (loc != -1) fext = fname.substring(loc + 1);
-
-                    if (fpath != null) session.globalAttach(AppSession.KEY_HTTP_REQUEST_FILE_PATH, fpath);
-                    if (fname != null) session.globalAttach(AppSession.KEY_HTTP_REQUEST_FILE_NAME, fname);
-                    if (fext != null) session.globalAttach(AppSession.KEY_HTTP_REQUEST_FILE_EXTENSION, fext);
-                } catch (URISyntaxException e) {
-                }
-
-                
                 h = doRequestHeader( session, h );
 
-                host = h.getValue("host");
+                String host = h.getValue("host");
                 state.hosts.put( state.requestLineToken, host );
                 
                 switch ( state.requestMode ) {
