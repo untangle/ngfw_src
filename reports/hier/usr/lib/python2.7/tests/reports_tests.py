@@ -48,12 +48,6 @@ def createFakeEmailEnvironment(emailLogFile="report_test.log"):
     new_mailsettings['fromAddress'] = testEmailAddress
     uvmContext.mailSender().setSettings(new_mailsettings)
 
-    # set untangletest email to get to testServerHost where fake SMTP sink is running using special DNS server
-    netsettings = uvmContext.networkManager().getNetworkSettings()
-    # Add Domain DNS Server for special test domains of untangletestvm.com and untangletest.com
-    netsettings['dnsSettings']['localServers']['list'].append(createDomainDNSentries(global_functions.testServerHost,global_functions.specialDnsServer))
-    uvmContext.networkManager().setNetworkSettings(netsettings)
-
 def createFirewallSingleConditionRule( conditionType, value, blocked=True ):
     conditionTypeStr = str(conditionType)
     valueStr = str(value)
