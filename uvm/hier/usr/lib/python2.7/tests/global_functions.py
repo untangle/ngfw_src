@@ -35,7 +35,7 @@ vpnClientVpnIP = "10.111.5.20"
 testServerHost = 'test.untangle.com'
 ftpServer = socket.gethostbyname(testServerHost)
 
-# DNS MX record on 10.111.56.57 for domains untangletestvm.com and untangletest.com
+# Servers running remote syslog
 listSyslogServerHosts = [('10.111.5.20','16'),# Office network
                             ('10.112.56.30','16')]# ATS VM
 
