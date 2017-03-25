@@ -84,7 +84,7 @@ public class IntrusionPreventionApp extends AppBase
         super( appSettings, appProperties );
 
         handler = new EventHandler(this);
-        this.homeNetworks = this.calculateHomeNetworks( UvmContextFactory.context().networkManager().getNetworkSettings(), false );
+        this.homeNetworks = this.calculateHomeNetworks( UvmContextFactory.context().networkManager().getNetworkSettings(), true );
         this.interfaceIds = calculateInterfaces( UvmContextFactory.context().networkManager().getNetworkSettings() );
         this.networkSettingsChangeHook = new IntrusionPreventionNetworkSettingsHook();
 
@@ -690,7 +690,7 @@ public class IntrusionPreventionApp extends AppBase
                 }
             }
         }
-        if( addresses.size() == 0 ){
+        if( addresses.size() == 0 && !getWan ) {
             /*
              * No LAN interfaces were found.  This means the system
              * is in bridged-to-WAN networking mode and we should
