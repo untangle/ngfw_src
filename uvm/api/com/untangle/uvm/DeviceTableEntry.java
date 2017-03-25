@@ -125,6 +125,9 @@ public class DeviceTableEntry implements Serializable, JSONString
     public String getHttpUserAgent() { return this.httpUserAgent; }
     public void setHttpUserAgent( String newValue )
     {
+        // check hashcodes are equal which may be a bit quicker
+        if ( newValue != null && this.httpUserAgent != null && newValue.hashCode() == this.httpUserAgent.hashCode() )
+            return;
         if ( Objects.equals( newValue, this.httpUserAgent ) )
             return;
         updateEvent( "httpUserAgent", String.valueOf(this.httpUserAgent), String.valueOf(newValue) );

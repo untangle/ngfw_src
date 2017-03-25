@@ -729,6 +729,12 @@ public class RuleCondition implements JSONString, Serializable
 
         case HTTP_USER_AGENT_OS:
         case HTTP_USER_AGENT:
+            // first check the session
+            tmpStr = (String) sess.globalAttachment(AppSession.KEY_HTTP_USER_AGENT);
+            if ( tmpStr != null ) {
+                return globMatcher.isMatch( tmpStr );
+            }
+            // if no session attachment, check the host
             hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( sess.getClientAddr() );
             if (hostEntry == null)
                 return false;

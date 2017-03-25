@@ -124,6 +124,7 @@ public interface AppSession
     public final String KEY_HTTP_REFERER = "http-referer";  /* String */
     public final String KEY_HTTP_URI = "http-uri";  /* String */
     public final String KEY_HTTP_URL = "http-url";  /* String */
+    public final String KEY_HTTP_USER_AGENT = "http-user-agent";  /* String */
     public final String KEY_HTTP_CONTENT_TYPE = "http-content-type"; /* String */
     public final String KEY_HTTP_CONTENT_LENGTH = "http-content-length"; /* Long */
     public final String KEY_HTTP_REQUEST_METHOD = "http-request-method"; /* String */
