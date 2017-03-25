@@ -220,13 +220,8 @@ class UvmTests(unittest2.TestCase):
         origAppDataSP = appSP.getSmtpSettings()
         origMailsettings = uvmContext.mailSender().getSettings()
         # print appDataSP
-        get_latest_mail_pkg();
-        # remove previous smtp log file
-        remote_control.run_command("rm -f /tmp/test_030_testSMTPSettings.log /tmp/test@example.com.1")
-        # Start mail sink
-        remote_control.run_command("python fakemail.py --host=" + remote_control.clientIP +" --log=/tmp/test_030_testSMTPSettings.log --port 6800 --background --path=/tmp/", stdout=False, nowait=True)
         newMailsettings = copy.deepcopy(origMailsettings)
-        newMailsettings['smtpHost'] = remote_control.clientIP
+        newMailsettings['smtpHost'] = global_functions.testServerHost
         newMailsettings['smtpPort'] = "6800"
         newMailsettings['sendMethod'] = 'CUSTOM'
 
@@ -235,18 +230,17 @@ class UvmTests(unittest2.TestCase):
 
         appDataSP = appSP.getSmtpSettings()
         appSP.setSmtpSettingsWithoutSafelists(appDataSP)
-        uvmContext.mailSender().sendTestMessage("test@example.com")
+        recipient = global_functions.random_email()
+        uvmContext.mailSender().sendTestMessage(recipient)
         time.sleep(2)
         # force exim to flush queue
         subprocess.call(["exim -qff >/dev/null 2>&1"],shell=True,stdout=None,stderr=None)
         time.sleep(10)
 
-        # Kill mail sink
-        remote_control.run_command("pkill -INT python")
         uvmContext.mailSender().setSettings(origMailsettings)
         appSP.setSmtpSettingsWithoutSafelists(origAppDataSP)
-        result = remote_control.run_command("grep -q 'Untangle Server Test Message' /tmp/test@example.com.1")
-        assert(result==0)
+        emailContext = remote_control.run_command("wget -q --timeout=5 -O - http://test.untangle.com/cgi-bin/getEmail.py?toaddress=" + recipient + " 2>&1" ,stdout=True)
+        assert('Untangle Server Test Message' in emailContext)
 
     def test_040_trigger_rule_tag_host(self):
         settings = uvmContext.eventManager().getSettings()
