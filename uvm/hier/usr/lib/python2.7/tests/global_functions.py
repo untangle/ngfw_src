@@ -23,8 +23,8 @@ iperfServers = [('10.111.0.0/16','10.111.5.20'), # Office network
                 ('10.112.0.0/16','10.112.56.44')] # ATS VM
 iperfServer = ""
 
-# special Untangle box configured as a OpenVPN server and special DNS config
-specialDnsServer= vpnServerVpnIP = "10.111.56.96"
+# special Untangle box configured as a OpenVPN server
+vpnServerVpnIP = "10.111.56.96"
 
 # special box within vpnServerVpnIP's network
 vpnServerVpnLanIP = "192.168.235.96"
