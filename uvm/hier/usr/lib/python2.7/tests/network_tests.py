@@ -31,6 +31,7 @@ run_ftp_inbound_tests = None
 wan_IP = None
 device_in_office = False
 dyndns_resolver = "216.146.35.35"
+office_ftp_client = "10.111.5.20"
 #dyndns_resolver = "resolver1.dyndnsinternetguide.com"
 
 def getUsableName(dyn_checkip):
@@ -776,10 +777,10 @@ class NetworkTests(unittest2.TestCase):
 
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
 
-        pasvResult = remote_control.run_command("wget -t2 --timeout=10 -q -O /dev/null ftp://" +  wan_IP + "/" + ftp_file_name,host=global_functions.ftpServer)
-        portResult = remote_control.run_command("wget -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + wan_IP + "/" + ftp_file_name,host=global_functions.ftpServer)
-        epsvResult = remote_control.run_command("curl --epsv -s -o /dev/null ftp://" + wan_IP + "/" + ftp_file_name,host=global_functions.ftpServer)
-        eprtResult = remote_control.run_command("curl --eprt -P - -s -o /dev/null ftp://" + wan_IP + "/" + ftp_file_name,host=global_functions.ftpServer)
+        pasvResult = remote_control.run_command("wget -t2 --timeout=10 -q -O /dev/null ftp://" +  wan_IP + "/" + ftp_file_name,host=office_ftp_client)
+        portResult = remote_control.run_command("wget -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + wan_IP + "/" + ftp_file_name,host=office_ftp_client)
+        epsvResult = remote_control.run_command("curl --epsv -s -o /dev/null ftp://" + wan_IP + "/" + ftp_file_name,host=office_ftp_clientr)
+        eprtResult = remote_control.run_command("curl --eprt -P - -s -o /dev/null ftp://" + wan_IP + "/" + ftp_file_name,host=office_ftp_client)
 
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
@@ -802,10 +803,10 @@ class NetworkTests(unittest2.TestCase):
 
         wan_IP = uvmContext.networkManager().getFirstWanAddress()
 
-        pasvResult = remote_control.run_command("wget -t2 --timeout=10 -q -O /dev/null ftp://" +  wan_IP + "/" + ftp_file_name,host=global_functions.ftpServer)
-        portResult = remote_control.run_command("wget -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + wan_IP + "/" + ftp_file_name,host=global_functions.ftpServer)
-        epsvResult = remote_control.run_command("curl --epsv -s -o /dev/null ftp://" + wan_IP + "/" + ftp_file_name,host=global_functions.ftpServer)
-        eprtResult = remote_control.run_command("curl --eprt -P - -s -o /dev/null ftp://" + wan_IP + "/" + ftp_file_name,host=global_functions.ftpServer)
+        pasvResult = remote_control.run_command("wget -t2 --timeout=10 -q -O /dev/null ftp://" +  wan_IP + "/" + ftp_file_name,host=office_ftp_client)
+        portResult = remote_control.run_command("wget -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + wan_IP + "/" + ftp_file_name,host=office_ftp_client)
+        epsvResult = remote_control.run_command("curl --epsv -s -o /dev/null ftp://" + wan_IP + "/" + ftp_file_name,host=office_ftp_client)
+        eprtResult = remote_control.run_command("curl --eprt -P - -s -o /dev/null ftp://" + wan_IP + "/" + ftp_file_name,host=office_ftp_client)
 
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
