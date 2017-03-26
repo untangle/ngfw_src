@@ -41,10 +41,16 @@ Ext.define ('Ung.model.Report', {
             }
         },
         {
+            name: 'slug',
+            calculate: function (entry) {
+                return entry.title.replace(/[^0-9a-z\s]/gi, '').replace(/\s+/g, '-').toLowerCase();
+            }
+        },
+        {
             name: 'url',
             calculate: function (entry) {
                 // return entry.category.replace(/ /g, '').toLowerCase() + '/' + entry.uniqueId;
-                return entry.category.replace(/ /g, '-').toLowerCase() + '/' + entry.title.replace(/[^0-9a-z\s]/gi, '').replace(/\s+/g, '-').toLowerCase();
+                return entry.category.replace(/ /g, '-').toLowerCase() + '/' + entry.slug;
             }
         },
         {

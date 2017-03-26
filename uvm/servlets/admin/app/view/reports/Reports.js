@@ -14,6 +14,8 @@ Ext.define('Ung.view.reports.Reports', {
     /* requires-end */
     controller: 'reports',
 
+    viewModel: true,
+
     // tbar: [{
     //     xtype: 'component',
     //     bind: {
@@ -35,185 +37,169 @@ Ext.define('Ung.view.reports.Reports', {
             border: false,
             hrefTarget: '_self'
         },
-        items: Ext.Array.insert(Ext.clone(Util.subNav), 0, [{
-            xtype: 'component',
-            margin: '0 0 0 10',
-            style: {
-                // fontSize: '11px',
-                color: '#CCC'
-            },
-            bind: {
-                html: '<img src="{category.icon}" width="17" height="17" style="vertical-align: middle;"/> {category.displayName} <i class="fa fa-angle-right"></i> <i class="fa {entry.icon}"></i> {entry.localizedTitle}'
-            }
-        }])
+        items: Ext.clone(Util.subNav)
+
+        // to do investigate breadcrumbs
+        // items: Ext.Array.insert(Ext.clone(Util.subNav), 0, [{
+        //     xtype: 'breadcrumb',
+        //     reference: 'breadcrumb',
+        //     defaults: {
+        //         border: false
+        //     },
+        //     listeners: {
+        //         selectionchange: function (el, node) {
+        //             if (node) {
+        //                 if (node.get('url')) {
+        //                     Ung.app.redirectTo('#reports/' + node.get('url'));
+        //                 } else {
+        //                     Ung.app.redirectTo('#reports');
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }])
     }],
 
-    viewModel: {
-        data: {
-            categoryName: null, // as set in route
-            category: null, // the category object from grid
-            reportName: null, // as coming from route
-            report: null, // as coming from route
-            activeCard: 'allCategories', // category, report
-        },
-
-        stores: {
-            categoryReports: {
-                source: 'reports',
-                filters: [{
-                    property: 'category',
-                    value: '{categoryName}',
-                    exactMatch: true
-                }]
-            }
-        }
-    },
-
     items: [{
-        xtype: 'grid',
+        xtype: 'treepanel',
+        reference: 'tree',
+        width: 250,
+        minWidth: 200,
         region: 'west',
-        reference: 'categories',
-        width: 200,
         split: true,
         border: false,
-        collapsible: true,
-        animCollapse: false,
-        titleCollapse: true,
-        title: 'Select Category'.t(),
-        layout: 'fit',
-        hidden: true,
-        bind: {
-            selection: '{category}',
-            hidden: '{!categories.selection}',
-            collapsed: '{reports.selection}'
-        },
-        store: 'categories', // this is a global store
-        columns: [{
-            dataIndex: 'icon',
-            width: 20,
-            renderer: function (value, meta) {
-                meta.tdCls = 'app-icon';
-                return '<img src="' + value + '"/>';
+        // singleExpand: true,
+        useArrows: true,
+        rootVisible: false,
+
+        viewConfig: {
+            selectionModel: {
+                type: 'treemodel',
+                pruneRemoved: false
             }
+        },
+
+        dockedItems: [{
+            xtype: 'toolbar',
+            border: false,
+            dock: 'top',
+            cls: 'report-header',
+            height: 53,
+            padding: '0 10',
+            items: [{
+                xtype: 'component',
+                html: '<h2>Select Report</h2><p>Find or select a report</p>'
+            }]
         }, {
-            dataIndex: 'displayName',
-            flex: 1
+            xtype: 'textfield',
+            margin: '1',
+            emptyText: 'Filter reports ...',
+            enableKeyEvents: true,
+            flex: 1,
+            triggers: {
+                clear: {
+                    cls: 'x-form-clear-trigger',
+                    hidden: true,
+                    handler: 'onTreeFilterClear'
+                }
+            },
+            listeners: {
+                change: 'filterTree',
+                buffer: 100
+            }
         }],
+
+        columns: [{
+            xtype: 'treecolumn',
+            flex: 1,
+            dataIndex: 'text',
+            // scope: 'controller',
+            renderer: 'treeNavNodeRenderer'
+        }],
+
+        store: {
+            filterer: 'bottomup'
+        },
+
         listeners: {
-            rowclick: function (el, category) { // better than select
-                Ung.app.redirectTo('#reports/' + category.get('url'));
-                return false;
+            select: function (el, node) {
+                Ung.app.redirectTo('#reports/' + node.get('url'));
             }
         }
     }, {
         region: 'center',
-        layout: 'border',
-
+        itemId: 'cards',
+        reference: 'cards',
         border: false,
-
+        layout: 'card',
+        cls: 'reports-all',
+        defaults: {
+            border: false,
+            bodyBorder: false
+        },
         items: [{
-            xtype: 'grid',
-            reference: 'reports',
-            region: 'west',
-            width: 200,
-            border: false,
-            split: true,
-            collapsible: true,
-            animCollapse: false,
-            titleCollapse: true,
-            title: 'Select Report'.t(),
-            layout: 'fit',
-            hidden: true,
-            bind: {
-                selection: '{report}',
-                store: '{categoryReports}',
-                hidden: '{!reports.selection}'
-            },
-            columns: [{
-                dataIndex: 'title',
-                width: 25,
-                renderer: function (value, meta, record) {
-                    // meta.tdCls = 'app-icon';
-                    // return Util.iconReportTitle(record);
-                    return '<i class="fa ' + record.get('icon') + ' fa-lg"></i>';
-                }
-            }, {
-                dataIndex: 'title',
-                flex: 1,
-                renderer: function (value, meta, record) {
-                    if (record.get('readOnly')) {
-                        return value.t();
-                    }
-                    return '<strong>' + value + '</strong>';
-                }
-            }],
-            listeners: {
-                rowclick: function (el, report) {
-                    Ung.app.redirectTo('#reports/' + report.get('category').replace(/ /g, '-').toLowerCase() + '/' + report.get('title').replace(/[^0-9a-z\s]/gi, '').replace(/\s+/g, '-').toLowerCase());
-                    return false;
-                }
-            }
-        }, {
-            region: 'center',
-            border: false,
-            layout: 'card',
-            bind: {
-                activeItem: '{activeCard}',
-            },
+            itemId: 'category',
+            layout: { type: 'vbox', align: 'stretch' },
             defaults: {
-                border: false,
-                bodyBorder: false
+                hidden: true,
+                bind: {
+                    hidden: '{!viewReady}'
+                }
             },
             items: [{
-                xtype: 'dataview',
-                itemId: 'allCategories',
-                store: 'categories',
-                tpl: '<p class="apps-title">' + 'System'.t() + '</p>' +
-                    '<tpl for=".">' +
-                        '<tpl if="type === \'system\'">' +
-                        '<a href="#reports/{url}" class="app-item">' +
-                        '<img src="{icon}" width=80 height=80/>' +
-                        '<span class="app-name">{displayName}</span>' +
-                        '</a>' +
-                        '</tpl>' +
-                    '</tpl>' +
-                    '<p class="apps-title">' + 'Apps'.t() + '</p>' +
-                    '<tpl for=".">' +
-                        '<tpl if="type === \'app\'">' +
-                        '<a href="#reports/{url}" class="app-item">' +
-                        '<img src="{icon}" width=80 height=80/>' +
-                        '<span class="app-name">{displayName}</span>' +
-                        '</a>' +
-                        '</tpl>' +
-                    '</tpl>',
-                itemSelector: 'a'
+                xtype: 'component',
+                padding: '20px 0',
+                cls: 'charts-bar',
+                html: '<i class="fa fa-area-chart fa-2x"></i>' +
+                    '<i class="fa fa-line-chart fa-2x"></i>' +
+                    '<i class="fa fa-pie-chart fa-2x"></i>' +
+                    '<i class="fa fa-bar-chart fa-2x"></i>' +
+                    '<i class="fa fa-list-ul fa-2x"></i>' +
+                    '<i class="fa fa-align-left fa-2x"></i>'
             }, {
-                itemId: 'category',
-                scrollable: true,
-                items: [{
+                xtype: 'container',
+                cls: 'stats',
+                layout: { type: 'hbox', pack: 'center' },
+                defaults: {
                     xtype: 'component',
-                    cls: 'headline',
-                    margin: '50 0',
+                    cls: 'stat'
+                },
+                items: [{
+                    hidden: true,
                     bind: {
-                        html: '<img src="{category.icon}" style="width: 80px; height: 80px;"/><br/>{category.displayName}'
+                        hidden: '{tree.selection}',
+                        html: '<h1>{stats.categories.total}</h1>categories <p><span>{stats.categories.app} apps</span></p>'
                     }
                 }, {
-                    xtype: 'dataview',
-                    bind: '{categoryReports}',
+                    hidden: true,
+                    bind: {
+                        hidden: '{!tree.selection}',
+                        html: '<img src="{tree.selection.icon}"><br/> {tree.selection.text}'
+                    }
+                }, {
+                    bind: {
+                        html: '<h1>{stats.reports.total}</h1>reports' +
+                            '<p><span>{stats.reports.chart} charts</span><br/>' +
+                            '<span>{stats.reports.event} event lists</span><br/>' +
+                            '<span>{stats.reports.info} summaries</span><br/>' +
+                            '<span>{stats.reports.custom} custom reports</span></p>'
 
-                    cls: 'cat-reports',
-                    tpl: '<tpl for=".">' +
-                            '<a href="#reports/{url}"><i class="fa {icon} fa-3x"></i><span>{title}</span><br/>{description}</a>' +
-                        '</tpl>',
-                    itemSelector: 'a'
+                    }
                 }]
             }, {
-                xtype: 'reports-entry',
-                itemId: 'report',
+                xtype: 'component',
+                cls: 'pls',
+                html: 'select a report from a category',
                 bind: {
-                    html: '<h3>{selectedReport.localizedTitle}</h3>',
+                    html: 'select a report from {tree.selection.text || "a category"}'
                 }
             }]
+        }, {
+            xtype: 'reports-entry',
+            itemId: 'report',
+            bind: {
+                html: '<h3>{selectedReport.localizedTitle}</h3>',
+            }
         }]
     }]
 });

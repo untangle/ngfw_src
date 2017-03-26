@@ -413,3 +413,97 @@
         }
     }
 }
+
+.category-icon-tree img {
+    background-size: contain;
+}
+
+// breadcrumbs
+.x-breadcrumb-btn {
+    background: none !important;
+}
+.x-toolbar-navigation .x-btn-icon-el {
+    background-size: cover;
+}
+.x-menu-item-icon-default {
+    background-size: contain;
+}
+
+
+
+.reports-all {
+    .charts-bar {
+        text-align: center;
+        color: rgba(0, 0, 0, 0.1);
+        i {
+            margin: 0 10px;
+        }
+    }
+    .pls {
+        font-family: $custom-font-condensed;
+        font-size: 24px;
+        font-weight: 100;
+        text-align: center;
+        color: #777;
+        margin-top: 20px;
+    }
+    .stats {
+        text-align: center;
+        font-family: $custom-font-condensed;
+        font-size: 24px;
+        color: #777;
+        .stat {
+            display: inline-block;
+            width: 200px;
+            vertical-align: top;
+            padding: 20px 20px;
+            text-align: right;
+
+            img {
+                margin: 6px 0 3px 0;
+            }
+
+            &:last-child {
+                text-align: left;
+                border-left: 1px #EEE solid;
+            }
+            h1 {
+                font-size: 4.4em;
+                font-weight: 100;
+                margin: 0;
+                line-height: 0.9;
+                text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+            }
+            p {
+                margin: 10px 0;
+                line-height: 0.9;
+            }
+            span {
+                font-size: 16px;
+                color: #999;
+            }
+            &.reports {
+                text-align: left;
+                padding: 0;
+                position: relative;
+                top: 30px;
+                left: -30px;
+                font-size: 16px;
+                color: #999;
+            }
+        }
+    }
+
+}
+
+.x-tree-icon {
+    padding-top: 4px;
+    font-size: 12px;
+    color: #999;
+}
+
+.x-tree-custom-report {
+    .x-tree-icon {
+        color: #38b711;
+    }
+}

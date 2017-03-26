@@ -197,7 +197,7 @@ Ext.define('Ung.view.reports.Entry', {
                 padding: '0 10',
                 items: [{
                     xtype: 'component',
-                    html: '<h2>' + 'Current Data'.t() + '</h2>'
+                    html: '<h2>' + 'Current Data'.t() + '</h2><p>&nbsp;</p>'
                 }, '->', {
                     iconCls: 'fa fa-close',
                     handler: 'closeSide'
@@ -220,7 +220,7 @@ Ext.define('Ung.view.reports.Entry', {
                 padding: '0 10',
                 items: [{
                     xtype: 'component',
-                    html: '<h2>' + 'Settings'.t() + '</h2>'
+                    html: '<h2>' + 'Settings'.t() + '</h2><p>&nbsp;</p>'
                 }, '->', {
                     iconCls: 'fa fa-close',
                     handler: 'closeSide'

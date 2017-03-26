@@ -111,7 +111,7 @@ Ext.define('Ung.apps.openvpn.view.ClientSubmitForm', {
             handler: function(btn) {
                 var form = Ext.ComponentQuery.query('#openvpn-client-submit-form')[0];
                 var filename = Ext.ComponentQuery.query('textfield[name=uploadConfigFileName]')[0].value;
-                if ( filename == null || filename.length == 0 ) {
+                if ( filename == null || filename.length === 0 ) {
                     Ext.MessageBox.alert('Select File'.t(), 'Please choose a file to upload.'.t());
                     return;
                 }

@@ -417,8 +417,6 @@ Ext.define('Ung.view.reports.EntryController', {
             javaClass: 'com.untangle.app.reports.SqlCondition'
         });
 
-        console.log(vm.get('sqlFilterData'));
-
         _filterComboCmp.setValue('');
         _operatorCmp.setValue('=');
         _filterValueCmp.setValue('');
@@ -496,6 +494,8 @@ Ext.define('Ung.view.reports.EntryController', {
                 Util.successToast('<span style="color: yellow; font-weight: 600;">' + vm.get('entry.title') + '</span> report updated!');
                 Ung.app.redirectTo('#reports/' + entry.get('category').replace(/ /g, '-').toLowerCase() + '/' + entry.get('title').replace(/[^0-9a-z\s]/gi, '').replace(/\s+/g, '-').toLowerCase());
 
+                v.up('#reports').getController().buildTree(); // rebuild tree after update
+
                 me.refreshData();
             });
     },
@@ -516,6 +516,8 @@ Ext.define('Ung.view.reports.EntryController', {
                 entry.commit();
                 Util.successToast('<span style="color: yellow; font-weight: 600;">' + entry.get('title') + ' report added!');
                 Ung.app.redirectTo('#reports/' + entry.get('category').replace(/ /g, '-').toLowerCase() + '/' + entry.get('title').replace(/[^0-9a-z\s]/gi, '').replace(/\s+/g, '-').toLowerCase());
+
+                v.up('#reports').getController().buildTree(); // rebuild tree after save new
             });
     }
 });

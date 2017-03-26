@@ -3,6 +3,7 @@ Ext.define('Ung.store.Reports', {
     alias: 'store.reports',
     storeId: 'reports',
     model: 'Ung.model.Report',
+    groupField: 'category',
     sorters: [{
         property: 'displayOrder',
         direction: 'ASC'
