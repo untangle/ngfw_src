@@ -779,7 +779,7 @@ class NetworkTests(unittest2.TestCase):
 
         pasvResult = remote_control.run_command("wget -t2 --timeout=10 -q -O /dev/null ftp://" +  wan_IP + "/" + ftp_file_name,host=office_ftp_client)
         portResult = remote_control.run_command("wget -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + wan_IP + "/" + ftp_file_name,host=office_ftp_client)
-        epsvResult = remote_control.run_command("curl --epsv -s -o /dev/null ftp://" + wan_IP + "/" + ftp_file_name,host=office_ftp_clientr)
+        epsvResult = remote_control.run_command("curl --epsv -s -o /dev/null ftp://" + wan_IP + "/" + ftp_file_name,host=office_ftp_client)
         eprtResult = remote_control.run_command("curl --eprt -P - -s -o /dev/null ftp://" + wan_IP + "/" + ftp_file_name,host=office_ftp_client)
 
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
