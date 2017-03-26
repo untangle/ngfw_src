@@ -186,23 +186,32 @@ Ext.define('Ung.controller.Global', {
 
     onReports: function (categoryName, reportName) {
         var reportsVm = this.getReportsView().getViewModel();
+        var hash = '';
         if (categoryName) {
-            reportsVm.set('categoryName', categoryName.replace(/-/g, ' '));
-            reportsVm.notify(); // !important to notify this before report is tried to be set
-            if (!reportName) {
-                reportsVm.set('activeCard', 'category');
-                reportsVm.set('reportName', null);
-            } else {
-                reportsVm.set('reportName', reportName);
-                reportsVm.set('activeCard', 'report');
-            }
-        } else {
-            reportsVm.set('categoryName', null);
-            reportsVm.set('category', null);
-            reportsVm.set('reportName', null);
-            reportsVm.set('report', null);
-            reportsVm.set('activeCard', 'allCategories');
+            hash += categoryName;
         }
+        if (reportName) {
+            hash += '/' + reportName;
+            // reportsVm.set('activeCard', 'report');
+        }
+        reportsVm.set('hash', hash);
+        // if (categoryName) {
+        //     reportsVm.set('categoryName', categoryName.replace(/-/g, ' '));
+        //     reportsVm.notify(); // !important to notify this before report is tried to be set
+        //     if (!reportName) {
+        //         reportsVm.set('activeCard', 'category');
+        //         reportsVm.set('reportName', null);
+        //     } else {
+        //         reportsVm.set('reportName', reportName);
+        //         reportsVm.set('activeCard', 'report');
+        //     }
+        // } else {
+        //     reportsVm.set('categoryName', null);
+        //     reportsVm.set('category', null);
+        //     reportsVm.set('reportName', null);
+        //     reportsVm.set('report', null);
+        //     reportsVm.set('activeCard', 'allCategories');
+        // }
         this.getMainView().getViewModel().set('activeItem', 'reports');
     },
 
