@@ -4,6 +4,7 @@
 package com.untangle.app.openvpn;
 
 import java.net.InetAddress;
+import java.util.LinkedList;
 
 import com.untangle.uvm.app.IPMaskedAddress;
 
@@ -14,16 +15,14 @@ import com.untangle.uvm.app.IPMaskedAddress;
 public class OpenVpnGroup implements java.io.Serializable
 {
     private int groupId;
-    
     private String name;
-
     private boolean fullTunnel = false;
-
     private boolean pushDns = true;
     private boolean pushDnsSelf = true;
     private InetAddress pushDns1;
     private InetAddress pushDns2;
     private String pushDnsDomain;
+    private LinkedList<OpenVpnConfigItem> groupConfigItems = new LinkedList<OpenVpnConfigItem>();
     
     public OpenVpnGroup() { }
 
@@ -65,6 +64,7 @@ public class OpenVpnGroup implements java.io.Serializable
 
     public String getPushDnsDomain() { return this.pushDnsDomain; }
     public void setPushDnsDomain( String newValue ) { this.pushDnsDomain = newValue; }
-    
 
+    public LinkedList<OpenVpnConfigItem> getGroupConfigItems() { return groupConfigItems; }
+    public void setClientConfigItems( LinkedList<OpenVpnConfigItem> argList ) { this.groupConfigItems = argList; }
 }
