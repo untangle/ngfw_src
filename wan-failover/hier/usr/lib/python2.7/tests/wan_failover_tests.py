@@ -66,8 +66,10 @@ def waitForChangeInStatus(maxWait=120):
         time.sleep(increment)
         maxWait = maxWait - increment
         if (originalOfflineCount != offlineWanCount()):
+            print "change: originalOfflineCount: %s offlineWanCount: %s\n"%(str(originalOfflineCount), str(offlineWanCount()))
             break
         if (originalOnlineCount != onlineWanCount()):
+            print "change: originalOnlineCount: %s onlineWanCount: %s\n"%(str(originalOnlineCount), str(onlineWanCount()))
             break
     time.sleep( 10 ) # sleep 10 more seconds
 
@@ -124,7 +126,7 @@ class WanFailoverTests(unittest2.TestCase):
         indexOfWans = global_functions.get_wan_tuples()
 
     def setUp(self):
-        pass
+        print "\n"
 
     # verify client is online
     def test_010_clientIsOnline(self):
