@@ -775,8 +775,6 @@ class NetworkTests(unittest2.TestCase):
 
         setFirstLevelRule(createPortForwardTripleCondition("DST_PORT","21","DST_LOCAL","true","PROTOCOL","TCP",remote_control.clientIP,""),'portForwardRules')
 
-        wan_IP = uvmContext.networkManager().getFirstWanAddress()
-
         pasvResult = remote_control.run_command("wget -t2 --timeout=10 -q -O /dev/null ftp://" +  wan_IP + "/" + ftp_file_name,host=office_ftp_client)
         portResult = remote_control.run_command("wget -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + wan_IP + "/" + ftp_file_name,host=office_ftp_client)
         epsvResult = remote_control.run_command("curl --epsv -s -o /dev/null ftp://" + wan_IP + "/" + ftp_file_name,host=office_ftp_client)
@@ -800,8 +798,6 @@ class NetworkTests(unittest2.TestCase):
         netsettings['bypassRules']['list'] = [ createBypassConditionRule("DST_PORT","21") ]
         netsettings['portForwardRules']['list'] = [ createPortForwardTripleCondition("DST_PORT","21","DST_LOCAL","true","PROTOCOL","TCP",remote_control.clientIP,"") ]
         uvmContext.networkManager().setNetworkSettings(netsettings)
-
-        wan_IP = uvmContext.networkManager().getFirstWanAddress()
 
         pasvResult = remote_control.run_command("wget -t2 --timeout=10 -q -O /dev/null ftp://" +  wan_IP + "/" + ftp_file_name,host=office_ftp_client)
         portResult = remote_control.run_command("wget -t2 --timeout=10 --no-passive-ftp -q -O /dev/null ftp://" + wan_IP + "/" + ftp_file_name,host=office_ftp_client)
@@ -834,26 +830,17 @@ class NetworkTests(unittest2.TestCase):
     # Test static DNS entry
     def test_090_DNS(self):
         # Test static entries in Config -> Networking -> Advanced -> DNS
-        global wan_IP
         nukeDNSRules()
-        result = remote_control.run_command("host -R3 -4 test.untangle.com " + wan_IP, stdout=True)
-        # print "result <%s>" % result
-        match = re.search(r'address \d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
-        ip_address_testuntangle = (match.group()).replace('address ','')
-        # print "IP address of test.untangle.com <%s>" % ip_address_testuntangle
-        addDNSRule(createDNSRule(ip_address_testuntangle,"www.foobar.com"))
-        wan_IP = uvmContext.networkManager().getFirstWanAddress()
-        print "wan_IP <%s>" % wan_IP
-
-        result = remote_control.run_command("host -R3 -4 www.foobar.com " + wan_IP, stdout=True)
+        addDNSRule(createDNSRule(global_functions.ftpServer,"www.foobar.com"))
+        result_mod = remote_control.run_command("host -R3 -4 www.foobar.com " + wan_IP, stdout=True)
         # print "Results of www.foobar.com <%s>" % result
-        match = re.search(r'address \d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
+        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+
+        match = re.search(r'address \d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result_mod)
         ip_address_foobar = (match.group()).replace('address ','')
         # print "IP address of www.foobar.com <%s>" % ip_address_foobar
-        # print "IP address of test.untangle.com <%s>" % ip_address_testuntangle
-        print "Result expected:\"%s\" actual:\"%s\"" % (str(ip_address_testuntangle),str(ip_address_foobar))
-        assert(ip_address_testuntangle == ip_address_foobar)
-        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+        print "Result expected:\"%s\" actual:\"%s\"" % (str(global_functions.ftpServer),str(ip_address_foobar))
+        assert(global_functions.ftpServer == ip_address_foobar)
 
     # Test dynamic hostname
     def test_100_DynamicDns(self):
@@ -1290,7 +1277,6 @@ class NetworkTests(unittest2.TestCase):
         upnpcExists = remote_control.run_command("test -x /usr/bin/upnpc")
         if upnpcExists != 0:
             raise unittest2.SkipTest("Upnpc app needs to be installed on client")
-        wan_IP = uvmContext.networkManager().getFirstWanAddress()
         if global_functions.is_bridged(wan_IP):
             raise unittest2.SkipTest("Unable to disable upnp on bridged configurations")
         netsettings = uvmContext.networkManager().getNetworkSettings()
