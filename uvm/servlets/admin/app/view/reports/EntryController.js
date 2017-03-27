@@ -423,7 +423,7 @@ Ext.define('Ung.view.reports.EntryController', {
 
         me.getView().down('#filtersToolbar').remove('sqlFilterValue');
 
-        me.getView().down('#sqlFilters').setTitle('Sql Filters'.t() + ' (' + vm.get('sqlFilterData').length + ')');
+        me.getView().down('#sqlFilters').setTitle('Filters'.t() + ' (' + vm.get('sqlFilterData').length + ')');
         me.getView().down('#sqlFilters').getStore().reload();
         me.refreshData();
     },
@@ -434,7 +434,7 @@ Ext.define('Ung.view.reports.EntryController', {
 
         me.getView().down('#filtersToolbar').remove('sqlFilterValue');
 
-        me.getView().down('#sqlFilters').setTitle('Sql Filters'.t() + ' (' + vm.get('sqlFilterData').length + ')');
+        me.getView().down('#sqlFilters').setTitle('Filters'.t() + ' (' + vm.get('sqlFilterData').length + ')');
         me.getView().down('#sqlFilters').getStore().reload();
         me.refreshData();
     },

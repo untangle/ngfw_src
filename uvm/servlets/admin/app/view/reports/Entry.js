@@ -733,7 +733,7 @@ Ext.define('Ung.view.reports.Entry', {
         region: 'south',
         xtype: 'grid',
         height: 280,
-        title: 'Sql Filters'.t() + ' (0)',
+        title: 'Filters'.t() + ' (0)',
         itemId: 'sqlFilters',
         collapsible: true,
         collapsed: true,
