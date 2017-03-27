@@ -304,7 +304,14 @@ class WebFilterTests(WebFilterBaseTests):
 
     def test_010_0000_rule_condition_dst_intf(self):
         "test DST_INTF"
-        self.rule_add("DST_INTF",remote_control.interfaceExternal)
+        # check if a multi-wan box.
+        indexOfWans = global_functions.get_wan_tuples()
+        if (len(indexOfWans) < 2):
+            self.rule_add("DST_INTF",remote_control.interfaceExternal)
+        else:
+            for wanIndexTup in indexOfWans:
+                wanIndex = wanIndexTup[0]
+                self.rule_add("DST_INTF",wanIndex)
         result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
         self.rules_clear()
         assert (result == 0)
@@ -313,6 +320,20 @@ class WebFilterTests(WebFilterBaseTests):
         "test DST_INTF any"
         self.rule_add("DST_INTF","any")
         result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_dst_intf_wan(self):
+        "test DST_INTF wan"
+        self.rule_add("DST_INTF","wan")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
+        self.rules_clear()
+        assert (result == 0)
+
+    def test_010_0000_rule_condition_dst_intf_non_wan(self):
+        "test DST_INTF non-wan"
+        self.rule_add("DST_INTF","non_wan")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
         self.rules_clear()
         assert (result == 0)
 
