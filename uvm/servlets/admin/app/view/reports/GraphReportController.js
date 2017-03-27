@@ -300,8 +300,8 @@ Ext.define('Ung.view.reports.GraphReportController', {
         me.chart.showLoading('<i class="fa fa-spinner fa-spin fa-2x fa-fw"></i>');
 
         // if it's rendered inside widget, set the widget timeframe for the report time interval
-        if (vm.get('widget.timeframe')) {
-            vm.set('startDate', new Date(rpc.systemManager.getMilliseconds() - vm.get('widget.timeframe') * 1000));
+        if (vm.get('widget')) {
+            vm.set('startDate', new Date(rpc.systemManager.getMilliseconds() - (vm.get('widget.timeframe') || 3600 * 24) * 1000));
             vm.set('endDate', new Date(rpc.systemManager.getMilliseconds()));
         }
 

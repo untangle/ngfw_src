@@ -12,6 +12,15 @@ Ext.define('Ung.util.Util', {
         { text: 'Users'.t(), iconCls: 'fa fa-users', href: '#', bind: { userCls: '{activeItem === "sessions" ? "users" : ""}' } }
     ],
 
+    baseCategories: [
+        { name: 'hosts', type: 'system', displayName: 'Hosts' },
+        { name: 'devices', type: 'system', displayName: 'Devices' },
+        { name: 'network', type: 'system', displayName: 'Network' },
+        { name: 'administration', type: 'system', displayName: 'Administration' },
+        { name: 'system', type: 'system', displayName: 'System' },
+        { name: 'shield', type: 'system', displayName: 'Shield' }
+    ],
+
 
     iconReportTitle: function (report) {
         var icon;

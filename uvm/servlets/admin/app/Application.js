@@ -48,7 +48,8 @@ Ext.define('Ung.Application', {
         Ext.Deferred.parallel([
             Rpc.asyncPromise('rpc.dashboardManager.getSettings'),
             Rpc.asyncPromise('rpc.reportsManager.getReportEntries'),
-            Rpc.asyncPromise('rpc.reportsManager.getUnavailableApplicationsMap')
+            Rpc.asyncPromise('rpc.reportsManager.getUnavailableApplicationsMap'),
+            Rpc.asyncPromise('rpc.reportsManager.getCurrentApplications')
         ]).then(function (result) {
             // Ext.get('app-loader').destroy();
             Ung.dashboardSettings = result[0];
@@ -59,7 +60,17 @@ Ext.define('Ung.Application', {
             if (result[2]) {
                 Ext.getStore('unavailableApps').loadRawData(result[2].map);
             }
+            if (result[3]) {
+                // Ext.getStore('reportstree').buildTree();
+                // console.log(result[3]);
+                Ext.getStore('categories').loadData(Ext.Array.merge(Util.baseCategories, result[3].list));
+            }
 
+            Ext.getStore('reportstree').build();
+
+            // console.log(Ext.getStore('reportstree').getRoot());
+
+            // console.log(Ext.getStore('categories').getRange());
             Ext.fireEvent('init');
             // me.loadMainView();
             //console.log(reports);

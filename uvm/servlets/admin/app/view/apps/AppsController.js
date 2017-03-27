@@ -193,6 +193,7 @@ Ext.define('Ung.view.apps.AppsController', {
         Rpc.asyncData('rpc.appManager.instantiate', record.get('name'), 1)
         .then(function (result) {
             // record.set('status', 'installed');
+            Ext.fireEvent('appinstall');
             me.getPolicies();
         });
     }
