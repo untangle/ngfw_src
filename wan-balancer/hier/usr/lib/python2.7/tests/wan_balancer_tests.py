@@ -206,7 +206,7 @@ class WanBalancerTests(unittest2.TestCase):
         ip_address_testdestination =  socket.gethostbyname("test.untangle.com")
 
     def setUp(self):
-        pass
+        print "\n"
 
     # verify client is online
     def test_010_clientIsOnline(self):
