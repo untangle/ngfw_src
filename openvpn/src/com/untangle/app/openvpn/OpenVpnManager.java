@@ -245,12 +245,27 @@ public class OpenVpnManager
         final String KEY_DIR = "keys";
         StringBuilder sb = new StringBuilder();
 
+        OpenVpnGroup group = getGroup( settings, client.getGroupId() );
+
         /*
          * Insert all of the default parameters that have not been customized
-         * for the argumented client. 
+         * for the argumented client or the assigned group. 
          */
         for ( OpenVpnConfigItem item : settings.getClientConfiguration()) {
-            if (findConfigItem(client.getClientConfigItems(), item.getOptionName()) == null)
+            // ignore global config items that exist in the client group config
+            if (findConfigItem(group.getGroupConfigItems(), item.getOptionName()) != null) continue;
+            
+            // ignore global config items that exist in the client config
+            if (findConfigItem(client.getClientConfigItems(), item.getOptionName()) != null) continue;
+            
+            if (item.getConfigString() != null) sb.append( item.getConfigString() + "\n" );
+        }
+
+        /* Add any custom config items for the argumented client group */
+        for ( OpenVpnConfigItem item : group.getGroupConfigItems()) {
+            // ignore group config items that exist in the client config
+            if (findConfigItem(client.getClientConfigItems(), item.getOptionName()) != null) continue;
+
             if (item.getConfigString() != null) sb.append( item.getConfigString() + "\n" );
         }
 
