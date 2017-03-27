@@ -11,9 +11,9 @@
             "conditions":{
                 "javaClass":"java.util.LinkedList",
                 "list":[{
-                    "value":"true",
+                    "value":"penalty-box",
                     "javaClass":"com.untangle.app.bandwidth_control.BandwidthControlRuleCondition",
-                    "conditionType":"HOST_IN_PENALTY_BOX"
+                    "conditionType":"TAGGED"
                 }]
             },
             "action": {

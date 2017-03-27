@@ -107,21 +107,18 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizardController', {
                 return;
             }
 
-            if (Ext.isEmpty(vm.get('quota.clients'))) {
-                Ext.MessageBox.alert('Error', 'You must provide an IP/netmask or range.'.t());
-                return;
-            }
-
             Ext.MessageBox.wait('Configuring Quotas...'.t(), 'Please wait'.t());
-            this.getView().appManager.wizardAddQuotaRules(function (result) {
-                Ext.MessageBox.hide();
-                v.getLayout().next();
-            },
-            vm.get('quota.clients'),
-            vm.get('quota.expiration'),
-            Math.round(vm.get('quota.size') * vm.get('quota.unit')),
-            vm.get('quota.priority')
-            );
+            if (vm.get('quota.hostEnabled'))
+                this.getView().appManager.wizardAddHostQuotaRules(vm.get('quota.expiration'),
+                                                                  Math.round(vm.get('quota.size') * vm.get('quota.unit')),
+                                                                  vm.get('quota.priority'));
+            if (vm.get('quota.userEnabled'))
+                this.getView().appManager.wizardAddUserQuotaRules(vm.get('quota.expiration'),
+                                                                  Math.round(vm.get('quota.size') * vm.get('quota.unit')),
+                                                                  vm.get('quota.priority'));
+
+            Ext.MessageBox.hide();
+            v.getLayout().next();
         }
 
     },

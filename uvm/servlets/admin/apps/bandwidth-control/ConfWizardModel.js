@@ -39,7 +39,8 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizardModel', {
 
         quota: {
             enabled: false,
-            clients: '',
+            hostEnabled: true,
+            userEnabled: true,
             expiration: -2,
             size: 1,
             unit: 1000000000,

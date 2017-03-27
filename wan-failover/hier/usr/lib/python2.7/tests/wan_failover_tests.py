@@ -62,6 +62,7 @@ def waitForChangeInStatus(maxWait=120):
     maxWait = maxWait - increment
     originalOnlineCount = onlineWanCount()
     originalOfflineCount = offlineWanCount()
+    print "original: originalOnlineCount: %s originalOfflineCount: %s\n"%(str(originalOnlineCount), str(originalOfflineCount))
     while maxWait > 0:
         time.sleep(increment)
         maxWait = maxWait - increment
@@ -72,6 +73,7 @@ def waitForChangeInStatus(maxWait=120):
             print "change: originalOnlineCount: %s onlineWanCount: %s\n"%(str(originalOnlineCount), str(onlineWanCount()))
             break
     time.sleep( 10 ) # sleep 10 more seconds
+    print "final: originalOnlineCount: %s originalOfflineCount: %s\n"%(str(onlineWanCount()), str(offlineWanCount()))
 
 def setInterfaceField( interfaceId, netsettings, fieldName, value ):
     for interface in netsettings['interfaces']['list']:
