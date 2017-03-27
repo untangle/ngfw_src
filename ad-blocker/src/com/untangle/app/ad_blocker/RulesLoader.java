@@ -55,7 +55,7 @@ public class RulesLoader
                     continue;
                 }
                 // ignore comments and type options
-                if (line.startsWith("!") || line.indexOf("$") >= 0 || line.indexOf("##") >= 0 || line.indexOf("#@#") >= 0) {
+                if (line.startsWith("!") || line.indexOf("$") >= 0 || line.indexOf("##") >= 0 || line.indexOf("#@#") >= 0 || line.startsWith("[")) {
                     continue;
                 }
                 String sig = null;
