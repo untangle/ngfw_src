@@ -159,17 +159,6 @@ public class SqlCondition implements Serializable, JSONString
                 case "smallint":
                 case "mediumint":
                 case "bigint":
-                    if ("null".equalsIgnoreCase(value))
-                        statement.setNull(i, java.sql.Types.INTEGER);
-                    else {
-                        try {
-                            statement.setLong(i, Long.valueOf( value ));
-                        } catch (Exception e) {
-                            throw new RuntimeException( "Invalid number: " + value );
-                        }
-                    }
-                break;
-
                 case "real":
                 case "float":
                 case "float4":
@@ -178,9 +167,15 @@ public class SqlCondition implements Serializable, JSONString
                         statement.setNull(i, java.sql.Types.INTEGER);
                     else {
                         try {
-                            statement.setFloat(i, Float.valueOf( value ));
+                            statement.setLong(i, Long.valueOf( value ));
                         } catch (Exception e) {
-                            throw new RuntimeException( "Invalid number: " + value );
+                            try {
+                                statement.setFloat(i, Float.valueOf( value ));
+                            } catch (Exception exc) {
+                                logger.warn("Failed to parse long",e);
+                                logger.warn("Failed to parse float",exc);
+                                throw new RuntimeException( "Invalid number: " + value );
+                            }
                         }
                     }
                 break;
