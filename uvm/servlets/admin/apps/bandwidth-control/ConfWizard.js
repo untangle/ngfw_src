@@ -176,7 +176,7 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizard', {
             html: '<h2>' + 'Configure Quotas'.t() + '</h2>'
         }, {
             xtype: 'component',
-            html: '<p>' + 'Quotas for bandwidth can be set for certain hosts. This allows some hosts to be allocated high bandwidth, as long as it is remains within a certain usage quota; however, their bandwidth will be slowed if their usage is excessive.'.t() + '</p>'
+            html: '<p>' + 'Quotas for bandwidth can be set for hosts and users. This allows some hosts/users to be allocated high bandwidth, as long as it is remains within a certain usage quota; however, their bandwidth will be slowed if their quota is exceeded.'.t() + '</p>'
         }, {
             xtype: 'fieldset',
             checkboxToggle: true,
@@ -190,16 +190,17 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizard', {
             margin: 10,
             padding: 10,
             items: [{
-                xtype: 'component',
-                margin: '0 0 5 0',
-                html: '<strong>' + 'Quota Clients'.t() + '</strong><br/>' +
-                    '<span style="font-size: 11px; color: #555;">' + 'controls which hosts will be given quotas.'.t() + '<br/>' + '(Example: 192.168.1.1/24 or 192.168.1.100-192.168.1.200)'.t() + '</span>'
+                xtype: "checkbox",
+                bind: "{quota.hostEnabled}",
+                fieldLabel: "Enable Quotas for Hosts (IP addresses)".t(),
+                labelWidth: 250,
+                checked: true
             }, {
-                xtype: 'textfield',
-                width: 300,
-                bind: '{quota.clients}',
-                allowBlank: false,
-                vtype: 'ip4Address'
+                xtype: "checkbox",
+                bind: "{quota.userEnabled}",
+                fieldLabel: "Enable Quotas for Users (usernames)".t(),
+                labelWidth: 250,
+                checked: true
             }, {
                 xtype: 'component',
                 margin: '10 0 5 0',
