@@ -2,7 +2,7 @@
  * Dashboard view which holds the widgets and manager
  */
 Ext.define('Ung.view.dashboard.Dashboard', {
-    extend: 'Ext.container.Container',
+    extend: 'Ext.panel.Panel',
     alias: 'widget.ung-dashboard',
     itemId: 'dashboard',
 
@@ -27,7 +27,33 @@ Ext.define('Ung.view.dashboard.Dashboard', {
             managerVisible: false
         }
     },
-    //viewModel: 'dashboard',
+
+    dockedItems: [{
+        xtype: 'toolbar',
+        ui: 'navigation',
+        dock: 'top',
+        border: false,
+        style: {
+            background: '#333435',
+            zIndex: 9997
+        },
+        defaults: {
+            xtype: 'button',
+            border: false,
+            hrefTarget: '_self'
+        },
+        items: Ext.Array.insert(Ext.clone(Util.subNav), 0, [{
+            text: 'Manage Widgets'.t(),
+            iconCls: 'fa fa-cog',
+            hidden: true,
+            bind: {
+                userCls: '{managerVisible ? "pressed" : ""}',
+                // iconCls: 'fa {!managerVisible ? "fa-arrow-left" : "fa-arrow-down" }',
+                hidden: '{managerVisible}'
+            },
+            handler: 'toggleManager'
+        }])
+    }],
 
     config: {
         settings: null // the dashboard settings object
@@ -41,19 +67,61 @@ Ext.define('Ung.view.dashboard.Dashboard', {
 
     items: [{
         region: 'west',
-        title: 'Manage Widgets'.t(),
+        // title: 'Manage Widgets'.t(),
 
-        tools: [{
-            type: 'close',
-            callback: 'toggleManager'
+        dockedItems: [{
+            xtype: 'toolbar',
+            border: false,
+            dock: 'top',
+            cls: 'report-header',
+            // height: 53,
+            padding: '10 5',
+            items: [{
+                xtype: 'component',
+                html: '<h2>' + 'Manage Widgets'.t() + '</h2>'
+            }, '->', {
+                xtype: 'tool',
+                type: 'close',
+                callback: 'toggleManager'
+            }]
+        }, {
+            xtype: 'toolbar',
+            dock: 'top',
+            ui: 'footer',
+            items: [{
+                itemId: 'addWidgetBtn',
+                text: 'Add'.t(),
+                iconCls: 'fa fa-plus-circle',
+                handler: 'addWidget'
+                // menu: Ext.create('Ext.menu.Menu', {
+                //     mouseLeaveDelay: 0
+                // })
+            }, '->', {
+                // text: 'Import'.t(),
+                iconCls: 'fa fa-download',
+                tooltip: 'Import'.t()
+                // handler: 'applyChanges'
+            }, {
+                // text: 'Export'.t(),
+                iconCls: 'fa fa-upload',
+                tooltip: 'Export'.t()
+                //handler: 'applyChanges'
+            }]
         }],
+
+        // tools: [{
+        //     type: 'close',
+        //     callback: 'toggleManager'
+        // }],
 
         itemId: 'dashboardManager',
         reference: 'dashboardManager',
         // weight: 30,
-        width: 300,
+        width: 250,
+        minWidth: 250,
+        maxWidth: 350,
         // collapsible: true,
-        bodyBorder: true,
+        bodyBorder: false,
         // shadow: false,
         animCollapse: false,
         // collapsed: true,
@@ -73,9 +141,9 @@ Ext.define('Ung.view.dashboard.Dashboard', {
         },
         store: 'widgets',
 
-        bodyStyle: {
-            border: 0
-        },
+        // bodyStyle: {
+        //     border: 0
+        // },
         viewConfig: {
             plugins: {
                 ptype: 'gridviewdragdrop',
@@ -107,7 +175,7 @@ Ext.define('Ung.view.dashboard.Dashboard', {
         //     // tdCls: 'drag-handle'
         // },
         {
-            width: 30,
+            width: 25,
             align: 'center',
             sortable: false,
             hideable: false,
@@ -152,22 +220,6 @@ Ext.define('Ung.view.dashboard.Dashboard', {
             itemmouseleave : 'onItemLeave',
             cellclick: 'onItemClick'
         },
-        tbar: [{
-            itemId: 'addWidgetBtn',
-            text: 'Add'.t(),
-            iconCls: 'fa fa-plus-circle'
-            // menu: Ext.create('Ext.menu.Menu', {
-            //     mouseLeaveDelay: 0
-            // })
-        }, '->', {
-            text: 'Import'.t(),
-            iconCls: 'fa fa-download'
-            // handler: 'applyChanges'
-        }, {
-            text: 'Export'.t(),
-            iconCls: 'fa fa-upload'
-            //handler: 'applyChanges'
-        }],
         fbar: [{
             text: 'Reset'.t(),
             iconCls: 'fa fa-rotate-left',
@@ -187,31 +239,6 @@ Ext.define('Ung.view.dashboard.Dashboard', {
         border: false,
         bodyBorder: false,
         scrollable: true,
-
-        dockedItems: [{
-            xtype: 'toolbar',
-            ui: 'navigation',
-            dock: 'top',
-            border: false,
-            style: {
-                background: '#333435',
-                zIndex: 9997
-            },
-            defaults: {
-                xtype: 'button',
-                border: false,
-                hrefTarget: '_self'
-            },
-            items: Ext.Array.insert(Ext.clone(Util.subNav), 0, [{
-                text: 'Manage Widgets'.t(),
-                iconCls: 'fa fa-cog',
-                hidden: true,
-                bind: {
-                    hidden: '{managerVisible}'
-                },
-                handler: 'toggleManager'
-            }])
-        }]
     }],
     listeners: {
         //afterrender: 'onAfterRender',

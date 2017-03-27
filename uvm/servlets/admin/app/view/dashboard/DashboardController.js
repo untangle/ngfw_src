@@ -12,7 +12,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
     viewModel: true,
     control: {
         '#': {
-            // afterrender: 'loadWidgets'
+            deactivate: 'onDeactivate'
         },
         '#widgetsCmp': {
             resize: 'onResize'
@@ -22,7 +22,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
     listen: {
         global: {
             init: 'loadWidgets',
-            appinstall: 'onAppInstall',
+            // appinstall: 'onAppInstall',
             addRemoveReportwidget: 'onAddRemoveReportWidget', // fired from Reports view
             reportsInstall: 'loadWidgets',
             saveWidget: 'onSaveWidget'
@@ -112,7 +112,6 @@ Ext.define('Ung.view.dashboard.DashboardController', {
 
     toggleManager: function (btn) {
         var vm = this.getViewModel();
-        console.log('here');
         vm.set('managerVisible', !vm.get('managerVisible'));
     },
 
@@ -183,13 +182,13 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         enabled = record.get('enabled');
 
         if (!value) {
-            return '<span style="font-weight: 400; ' + (!enabled ? 'color: #999;' : '') + '">' + record.get('type') + '</span>'; // <br/><span style="font-size: 10px; color: #777;">Common</span>';
+            return '<span style="font-weight: 400; ' + (!enabled ? 'color: #777;' : 'color: #000;') + '">' + record.get('type') + '</span>'; // <br/><span style="font-size: 10px; color: #777;">Common</span>';
         }
         if (vm.get('reportsInstalled')) {
             entry = Ext.getStore('reports').findRecord('uniqueId', value);
             if (entry) {
                 unavailApp = Ext.getStore('unavailableApps').first().get(entry.get('category'));
-                title = '<span style="font-weight: 400; ' + ((unavailApp || !enabled) ? 'color: #999;' : '') + '">' + (entry.get('readOnly') ? entry.get('title').t() : entry.get('title')) + '</span>';
+                title = '<span style="font-weight: 400; ' + ((unavailApp || !enabled) ? 'color: #777;' : 'color: #000;') + '">' + (entry.get('readOnly') ? entry.get('title').t() : entry.get('title')) + '</span>';
 
                 if (entry.get('timeDataInterval') && entry.get('timeDataInterval') !== 'AUTO') {
                     title += '<span style="text-transform: lowercase; color: #999; font-weight: 300;"> per ' + entry.get('timeDataInterval') + '</span>';
@@ -240,12 +239,6 @@ Ext.define('Ung.view.dashboard.DashboardController', {
             cb();
         });
 
-    },
-
-
-    managerHandler: function () {
-        var state = this.getViewModel().get('managerOpen');
-        this.getViewModel().set('managerOpen', !state);
     },
 
     onItemClick: function (cell, td, cellIndex, record, tr, rowIndex) {
@@ -457,131 +450,19 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         });
     },
 
-    populateMenus: function () {
-        var addWidgetBtn = this.getView().down('#addWidgetBtn'), categories, categoriesMenu = [], reportsMenu = [];
-
-        if (addWidgetBtn.getMenu()) {
-            addWidgetBtn.getMenu().remove();
+    onDeactivate: function () {
+        var vm = this.getViewModel();
+        if (vm.get('managerVisible')) {
+            this.toggleManager();
         }
+    },
 
-        categoriesMenu.push({
-            text: 'Common',
-            icon: '/skins/modern-rack/images/admin/config/icon_config_hosts.png',
-            iconCls: 'menu-icon',
-            menu: {
-                plain: true,
-                items: [{
-                    text: 'Information',
-                    type: 'Information'
-                }, {
-                    text: 'Resources',
-                    type: 'Resources'
-                }, {
-                    text: 'CPU Load',
-                    type: 'CPULoad'
-                }, {
-                    text: 'Network Information',
-                    type: 'NetworkInformation'
-                }, {
-                    text: 'Network Layout',
-                    type: 'NetworkLayout'
-                }, {
-                    text: 'Map Distribution',
-                    type: 'MapDistribution'
-                }],
-                listeners: {
-                    click: function (menu, item) {
-                        if (Ext.getStore('widgets').findRecord('type', item.type)) {
-                            Util.successToast('<span style="color: yellow; font-weight: 600;">' + item.text + '</span>' + ' is already in Dashboard!');
-                            return;
-                        }
-                        var newWidget = Ext.create('Ung.model.Widget', {
-                            displayColumns: null,
-                            enabled: true,
-                            entryId: null,
-                            javaClass: 'com.untangle.uvm.DashboardWidgetSettings',
-                            refreshIntervalSec: 0,
-                            timeframe: null,
-                            type: item.type
-                        });
-                        Ext.getStore('widgets').add(newWidget);
-                        Ext.GlobalEvents.fireEvent('addwidget', newWidget, null);
-                    }
-                }
-            }
+    addWidget: function () {
+        var me = this;
+        me.addWin = me.getView().add({
+            xtype: 'new-widget'
         });
+        me.addWin.show();
 
-        if (rpc.reportsManager) {
-            Rpc.asyncData('rpc.reportsManager.getCurrentApplications').then(function(result, ex) {
-                categories = [
-                    { displayName: 'Hosts', icon: '/skins/modern-rack/images/admin/config/icon_config_hosts.png' },
-                    { displayName: 'Devices', icon: '/skins/modern-rack/images/admin/config/icon_config_devices.png' },
-                    { displayName: 'Network', icon: '/skins/modern-rack/images/admin/config/icon_config_network.png' },
-                    { displayName: 'Administration', icon: '/skins/modern-rack/images/admin/config/icon_config_admin.png' },
-                    { displayName: 'System', icon: '/skins/modern-rack/images/admin/config/icon_config_system.png' },
-                    { displayName: 'Shield', icon: '/skins/modern-rack/images/admin/config/icon_config_shield.png' }
-                ];
-                result.list.forEach(function (app) {
-                    categories.push({
-                        displayName: app.displayName,
-                        icon: '/skins/modern-rack/images/admin/apps/' + app.name + '_17x17.png'
-                    });
-                });
-
-                categories.forEach(function (category) {
-                    reportsMenu = [];
-                    Ext.getStore('reports').filter({
-                        property: 'category',
-                        value: category.displayName,
-                        exactMatch: true
-                    });
-                    Ext.getStore('reports').getRange().forEach(function(report) {
-                        reportsMenu.push({
-                            text: Util.iconReportTitle(report) + ' ' + report.get('title'),
-                            report: report
-                        });
-                    });
-
-                    Ext.getStore('reports').clearFilter();
-                    categoriesMenu.push({
-                        text: category.displayName,
-                        icon: category.icon,
-                        iconCls: 'menu-icon',
-                        menu: {
-                            plain: true,
-                            items: reportsMenu,
-                            listeners: {
-                                click: function (menu, item) {
-                                    if (Ext.getStore('widgets').findRecord('entryId', item.report.get('uniqueId'))) {
-                                        Util.successToast('<span style="color: yellow; font-weight: 600;">' + item.report.get('title') + '</span>' + ' is already in Dashboard!');
-                                        return;
-                                    }
-                                    var newWidget = Ext.create('Ung.model.Widget', {
-                                        displayColumns: item.report.get('displayColumns'),
-                                        enabled: true,
-                                        entryId: item.report.get('uniqueId'),
-                                        javaClass: 'com.untangle.uvm.DashboardWidgetSettings',
-                                        refreshIntervalSec: 60,
-                                        timeframe: 3600,
-                                        type: 'ReportEntry'
-                                    });
-                                    Ext.getStore('widgets').add(newWidget);
-                                    Ext.GlobalEvents.fireEvent('addwidget', newWidget, item.report);
-                                }
-                            }
-                        }
-                    });
-                });
-                addWidgetBtn.setMenu({
-                    items: categoriesMenu,
-                    mouseLeaveDelay: 0
-                });
-            });
-        } else {
-            addWidgetBtn.setMenu({
-                items: categoriesMenu,
-                mouseLeaveDelay: 0
-            });
-        }
     }
 });

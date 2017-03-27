@@ -414,9 +414,9 @@
     }
 }
 
-.category-icon-tree img {
-    background-size: contain;
-}
+// .category-icon-tree img {
+//     background-size: contain;
+// }
 
 // breadcrumbs
 .x-breadcrumb-btn {
@@ -506,4 +506,18 @@
     .x-tree-icon {
         color: #38b711;
     }
+}
+
+.x-tree-category {
+    font-family: $custom-font-condensed;
+    font-size: 13px;
+    font-weight: 600;
+    img {
+        background-size: contain;
+    }
+}
+.x-tree-report {
+    font-family: $custom-font-condensed;
+    font-size: 13px;
+    font-weight: 400;
 }

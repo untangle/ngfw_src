@@ -72,6 +72,8 @@ Ext.define('Ung.view.reports.Reports', {
         useArrows: true,
         rootVisible: false,
 
+        store: 'reportstree',
+
         viewConfig: {
             selectionModel: {
                 type: 'treemodel',
@@ -117,10 +119,6 @@ Ext.define('Ung.view.reports.Reports', {
             renderer: 'treeNavNodeRenderer'
         }],
 
-        store: {
-            filterer: 'bottomup'
-        },
-
         listeners: {
             select: function (el, node) {
                 Ung.app.redirectTo('#reports/' + node.get('url'));
@@ -140,12 +138,6 @@ Ext.define('Ung.view.reports.Reports', {
         items: [{
             itemId: 'category',
             layout: { type: 'vbox', align: 'stretch' },
-            defaults: {
-                hidden: true,
-                bind: {
-                    hidden: '{!viewReady}'
-                }
-            },
             items: [{
                 xtype: 'component',
                 padding: '20px 0',
