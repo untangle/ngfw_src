@@ -75,8 +75,7 @@ public class WanFailoverApp extends AppBase
     @Override
     public void initializeSettings()
     {
-        WanFailoverSettings settings = new WanFailoverSettings();
-        _setSettings(settings);
+        setSettings(new WanFailoverSettings());
     }
     
     public String runTest( WanTestSettings test )
@@ -113,9 +112,27 @@ public class WanFailoverApp extends AppBase
         return this.settings;
     }
 
-    public void setSettings( final WanFailoverSettings settings )
+    public synchronized void setSettings( final WanFailoverSettings newSettings )
     {
-        _setSettings(settings);
+        /**
+         * Save the settings
+         */
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+        String appID = this.getAppSettings().getId().toString();
+        try {
+            settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "wan-failover/" + "settings_"  + appID + ".js", newSettings );
+        } catch (SettingsManager.SettingsException e) {
+            logger.warn("Failed to save settings.",e);
+            return;
+        }
+
+        /**
+         * Change current settings
+         */
+        this.settings = newSettings;
+
+        if ( this.wanFailoverTesterMonitor != null) 
+            this.wanFailoverTesterMonitor.reconfigure();
     }
     
     @Override
@@ -193,29 +210,6 @@ public class WanFailoverApp extends AppBase
 
     // private methods --------------------------------------------------------
     
-    private void _setSettings(final WanFailoverSettings newSettings )
-    {
-        /**
-         * Save the settings
-         */
-        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String appID = this.getAppSettings().getId().toString();
-        try {
-            settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "wan-failover/" + "settings_"  + appID + ".js", newSettings );
-        } catch (SettingsManager.SettingsException e) {
-            logger.warn("Failed to save settings.",e);
-            return;
-        }
-
-        /**
-         * Change current settings
-         */
-        this.settings = newSettings;
-        
-        if ( this.wanFailoverTesterMonitor != null) 
-            this.wanFailoverTesterMonitor.reconfigure();
-    }
-
     public void networkSettingsEvent( NetworkSettings settings ) throws Exception
     {
         if ( this.wanFailoverTesterMonitor != null) 
