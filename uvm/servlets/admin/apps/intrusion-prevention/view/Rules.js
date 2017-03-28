@@ -10,7 +10,6 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
 
     region: 'center',
     // helpSource: 'intrusion_prevention_rules',
-    title: "Rules".t(),
     sortableColumns: true,
     plugins: [
         'gridfilters'
