@@ -72,16 +72,37 @@ Ext.define('Ung.apps.captiveportal.MainController', {
     },
 
     configureLocalDirectory: function (btn) {
-        var vm = this.getViewModel(),
-            policyId = vm.get('policyId');
+        var vm = this.getViewModel();
+        var policyId = vm.get('policyId');
+        var authType = this.getViewModel().get('settings.authenticationType');
+        var dircon = rpc.appManager.app('directory-connector');
 
-        switch (this.getViewModel().get('settings.authenticationType')) {
-        case 'LOCAL_DIRECTORY': Ung.app.redirectTo('#config/localdirectory'); break;
-        case 'GOOGLE': Ung.app.redirectTo('#apps/' + policyId + '/directory-connector/google'); break;
-        case 'FACEBOOK': Ung.app.redirectTo('#apps/' + policyId + '/directory-connector/facebook'); break;
-        case 'RADIUS': Ung.app.redirectTo('#apps/' + policyId + '/directory-connector/radius'); break;
-        case 'ACTIVE_DIRECTORY': Ung.app.redirectTo('#apps/' + policyId + '/directory-connector/activedirectory'); break;
-        default: return;
+        switch (authType) {
+            case 'LOCAL_DIRECTORY':
+                Ung.app.redirectTo('#config/localdirectory');
+                break;
+            case 'GOOGLE':
+                if (dircon == null) this.showMissingServiceWarning();
+                else Ung.app.redirectTo('#apps/' + policyId + '/directory-connector/google');
+                break;
+            case 'FACEBOOK':
+                if (dircon == null) this.showMissingServiceWarning();
+                else Ung.app.redirectTo('#apps/' + policyId + '/directory-connector/facebook');
+                break;
+            case 'RADIUS':
+                if (dircon == null) this.showMissingServiceWarning();
+                else Ung.app.redirectTo('#apps/' + policyId + '/directory-connector/radius');
+                break;
+            case 'ACTIVE_DIRECTORY':
+                if (dircon == null) this.showMissingServiceWarning();
+                else Ung.app.redirectTo('#apps/' + policyId + '/directory-connector/activedirectory');
+                break;
+            default: return;
         }
+    },
+
+    showMissingServiceWarning: function() {
+        Ext.MessageBox.alert('Service Not Installed'.t(), 'The Directory Connector application must be installed to use this feature.'.t());
     }
+
 });
