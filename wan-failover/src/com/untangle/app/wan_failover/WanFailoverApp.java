@@ -112,7 +112,7 @@ public class WanFailoverApp extends AppBase
         return this.settings;
     }
 
-    public synchronized void setSettings( final WanFailoverSettings newSettings )
+    public void setSettings( final WanFailoverSettings newSettings )
     {
         /**
          * Save the settings
