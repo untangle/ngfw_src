@@ -111,10 +111,11 @@ class VirusHttpHandler extends HttpEventHandler
             RequestLineToken requestLine = getRequestLine(session);
             if (requestLine != null) state.host = requestLine.getRequestUri().normalize().getHost();
         }
-        if (state.uri == null) {
-            RequestLineToken requestLine = getRequestLine(session);
-            if (requestLine != null) state.uri = requestLine.getRequestUri().normalize().getPath();
-        }
+        RequestLineToken requestLineToken = getRequestLine(session);
+        if (requestLineToken != null)
+            state.uri = requestLineToken.getRequestUri().normalize().getPath();
+        else
+            state.uri = "";
 
         if (!ignoredHost(state.host)) {
             String virusName = lookupCache(state.host, state.uri);
