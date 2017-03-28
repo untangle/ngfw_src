@@ -3,7 +3,17 @@ Ext.define('Ung.view.dashboard.NewWidgetController', {
     alias: 'controller.new-widget',
 
     control: {
-        '#': { close: 'onClose' }
+        '#': { afterrender: 'onAfterRender', beforeclose: 'onClose' }
+    },
+
+    onAfterRender: function () {
+        var me = this, vm = this.getViewModel();
+        if (vm.get('entry')) {
+            me.lookup('tree').selectPath('/reports/' + vm.get('entry.url'), 'slug', '/', me.selectNode, me);
+            // me.lookup('tree').hide();
+        } else {
+            // me.lookup('tree').show();
+        }
     },
 
     /**
@@ -57,12 +67,12 @@ Ext.define('Ung.view.dashboard.NewWidgetController', {
             me.lookup('report').remove('entry');
         } else {
             // console.log(node.get('type'));
-            var xtype, onDashboard = true;
+            var xtype, onDashboard = true, newWidget;
             var entry = Ext.getStore('reports').findRecord('uniqueId', node.get('uniqueId'));
-            var widget = Ext.getStore('widgets').findRecord('entryId', node.get('uniqueId'));
+            me.widget = Ext.getStore('widgets').findRecord('entryId', node.get('uniqueId'));
 
-            if (!widget) {
-                widget = Ext.create('Ung.model.Widget', {
+            if (!me.widget) {
+                newWidget = Ext.create('Ung.model.Widget', {
                     displayColumns: entry.get('displayColumns'),
                     enabled: true,
                     entryId: entry.get('uniqueId'),
@@ -75,7 +85,7 @@ Ext.define('Ung.view.dashboard.NewWidgetController', {
             }
             vm.set({
                 entry: entry,
-                widget: widget.copy(null),
+                widget: me.widget ? me.widget.copy(null) : newWidget.copy(null),
                 onDashboard: onDashboard
             });
 
@@ -104,7 +114,36 @@ Ext.define('Ung.view.dashboard.NewWidgetController', {
     },
 
     onClose: function () {
-        this.lookup('tree').collapseAll();
+        var me = this, vm = this.getViewModel();
+        me.lookup('tree').collapseAll();
+        vm.set({
+            entry: null,
+            widget: null,
+            onDashboard: false
+        });
+        me.lookup('report').remove('entry');
+    },
+
+    onAdd: function () {
+        var me = this, vm = this.getViewModel();
+        Ext.fireEvent('widgetaction', 'add', vm.get('widget'), vm.get('entry'), function () {
+            me.getView().close();
+        });
+    },
+
+    onSave: function () {
+        var me = this, vm = this.getViewModel();
+        Ext.fireEvent('widgetaction', 'save', vm.get('widget'), vm.get('entry'), function () {
+            me.getView().close();
+        });
+    },
+
+    onRemoveWidget: function () {
+        var me = this, vm = this.getViewModel();
+        Ext.fireEvent('widgetaction', 'remove', vm.get('widget'), null, function () {
+            me.getView().close();
+        });
+
     }
 
 });
