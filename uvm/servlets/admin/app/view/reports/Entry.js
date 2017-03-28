@@ -140,14 +140,17 @@ Ext.define('Ung.view.reports.Entry', {
                 itemId: 'downloadBtn',
                 text: 'Download'.t(),
                 iconCls: 'fa fa-download',
-            }, '-', {
-                itemId: 'dashboardBtn',
-                bind: {
-                    iconCls: 'fa {isWidget ? "fa-minus-circle" : "fa-plus-circle" }',
-                    text: '{isWidget ? "Remove from " : "Add to "}' + ' Dashboard'
-                },
-                handler: 'dashboardAddRemove'
-            }]
+            }
+            // , '-',
+            // {
+            //     itemId: 'dashboardBtn',
+            //     bind: {
+            //         iconCls: 'fa {isWidget ? "fa-minus-circle" : "fa-plus-circle" }',
+            //         text: '{isWidget ? "Remove from " : "Add to "}' + ' Dashboard'
+            //     },
+            //     handler: 'dashboardAddRemove'
+            // }
+            ]
         }],
     }, {
         region: 'east',

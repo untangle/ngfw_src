@@ -34,7 +34,7 @@ Ext.define('Ung.view.reports.EntryController', {
     ],
 
     onAfterRender: function () {
-        var me = this, vm = this.getViewModel(),
+        var me = this, vm = this.getViewModel(), widget,
             entryContainer = me.getView().down('#entryContainer'),
             dataGrid = this.getView().down('#currentData');
 
@@ -56,7 +56,8 @@ Ext.define('Ung.view.reports.EntryController', {
             }
 
             // check if widget
-            vm.set('isWidget', Ext.getStore('widgets').findRecord('entryId', entry.get('uniqueId')) ? true : false);
+            // widget = Ext.getStore('widgets').findRecord('entryId', entry.get('uniqueId')) || null;
+            // vm.set('isWidget', Ext.getStore('widgets').findRecord('entryId', entry.get('uniqueId')) ? true : false);
 
 
 
@@ -468,14 +469,16 @@ Ext.define('Ung.view.reports.EntryController', {
     // END FILTERS
 
 
-    // DASHBOARD ACTION
-    dashboardAddRemove: function (btn) {
-        var vm = this.getViewModel();
-        Ext.fireEvent('addRemoveReportwidget', vm.get('entry'), vm.get('isWidget'),  function () {
-            vm.set('isWidget', !vm.get('isWidget'));
-            Util.successToast('<span style="color: yellow; font-weight: 600;">' + vm.get('entry.title') + '</span> ' + (vm.get('isWidget') ? 'added to' : 'removed from') + ' Dashboard!');
-        });
-    },
+    // // DASHBOARD ACTION
+    // dashboardAddRemove: function (btn) {
+    //     var vm = this.getViewModel();
+    //     if (vm.get('isWidget')) {
+    //         Ext.fireEvent('widgetaction', vm.get('Widget') ? 'remove' : 'add', vm.get('widget'), vm.get('entry'), function () {
+    //             vm.set('isWidget', !vm.get('isWidget'));
+    //             Util.successToast('<span style="color: yellow; font-weight: 600;">' + vm.get('entry.title') + '</span> ' + (vm.get('isWidget') ? 'added to' : 'removed from') + ' Dashboard!');
+    //         });
+    //     }
+    // },
 
 
 

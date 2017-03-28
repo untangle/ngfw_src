@@ -190,7 +190,7 @@ Ext.define('Ung.view.dashboard.Dashboard', {
             flex: 1
         }, {
             xtype: 'actioncolumn',
-            iconCls: 'fa fa-times',
+            iconCls: 'fa fa-minus-circle',
             width: 30,
             align: 'center',
             sortable: false,
@@ -198,6 +198,9 @@ Ext.define('Ung.view.dashboard.Dashboard', {
             resizable: false,
             menuDisabled: true,
             handler: 'removeWidget',
+            isDisabled: function (view, rowIndex, colIndex, item, record) {
+                return record.get('type') !== 'ReportEntry';
+            }
             // renderer: function (value, meta, record) {
             //     return '<i class="fa fa-times" style="color: #999;"></i>';
             // }

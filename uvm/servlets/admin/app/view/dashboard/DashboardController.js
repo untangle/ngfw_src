@@ -23,19 +23,13 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         global: {
             init: 'loadWidgets',
             // appinstall: 'onAppInstall',
-            addRemoveReportwidget: 'onAddRemoveReportWidget', // fired from Reports view
+            // addRemoveReportwidget: 'onAddRemoveReportWidget', // fired from Reports view
             reportsInstall: 'loadWidgets',
-            saveWidget: 'onSaveWidget'
+            widgetaction: 'onWidgetAction'
         },
         store: {
             '#stats': {
                 datachanged: 'onStatsUpdate'
-            },
-            // '#widgets': {
-            //     add: 'onWidgetAdd'
-            // },
-            '#reports': {
-                // datachanged: 'loadWidgets'
             }
         }
     },
@@ -229,21 +223,9 @@ Ext.define('Ung.view.dashboard.DashboardController', {
 
     },
 
-    onSaveWidget: function (cb) {
-        Ung.dashboardSettings.widgets.list = Ext.Array.pluck(Ext.getStore('widgets').getRange(), 'data');
-
-        Rpc.asyncData('rpc.dashboardManager.setSettings', Ung.dashboardSettings)
-        .then(function(result) {
-            // Util.successToast('<span style="color: yellow; font-weight: 600;">Dashboard Saved!</span>');
-            // Ext.getStore('widgets').sync();
-            cb();
-        });
-
-    },
-
     onItemClick: function (cell, td, cellIndex, record, tr, rowIndex) {
         var me = this,
-            dashboard = me.getView().lookupReference('dashboard'),
+            dashboard = me.lookup('dashboard'),
             vm = this.getViewModel(),
             entry, widgetCmp;
 
@@ -305,7 +287,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
             // highlights in the dashboard the widget which receives click event in the manager grid
             widgetCmp = dashboard.down('#' + record.get('entryId')) || dashboard.down('#' + record.get('type'));
             if (widgetCmp && !widgetCmp.isHidden()) {
-                dashboard.addCls('highlight');
+                dashboard.addBodyCls('highlight');
                 widgetCmp.addCls('highlight-item');
                 dashboard.scrollTo(0, dashboard.getEl().getScrollTop() + widgetCmp.getEl().getY() - 121, {duration: 100});
             }
@@ -317,9 +299,9 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         // }
     },
 
+
     removeWidget: function (table, rowIndex, colIndex, item, e, record) {
         record.drop();
-        // console.log(record);
     },
 
     /**
@@ -336,9 +318,106 @@ Ext.define('Ung.view.dashboard.DashboardController', {
             widgetCmp = dashboard.down('#' + record.get('entryId'));
         }
         if (widgetCmp) {
-            dashboard.removeCls('highlight');
+            dashboard.removeBodyCls('highlight');
             widgetCmp.removeCls('highlight-item');
         }
+    },
+
+    /**
+     * widget actions on add/remove/save
+     */
+    onWidgetAction: function (action, widget, entry, cb) {
+        var me = this, wg;
+        // var widgetsList = Ext.Array.pluck(Ext.getStore('widgets').getRange(), 'data');
+        if (action === 'add') {
+            Ung.dashboardSettings.widgets.list.push(widget.getData());
+        }
+        if (action === 'remove') {
+            wg = Ext.Array.findBy(Ung.dashboardSettings.widgets.list, function (wg, idx) {
+                return wg.entryId === widget.get('entryId');
+            });
+            if (wg) {
+                Ext.Array.remove(Ung.dashboardSettings.widgets.list, wg);
+            }
+        }
+        if (action === 'save') {
+            wg = Ext.Array.findBy(Ung.dashboardSettings.widgets.list, function (wg, idx) {
+                return wg.entryId === widget.get('entryId');
+            });
+            if (wg) {
+                Ext.apply(wg, widget.getData());
+            }
+        }
+
+        // try to save it
+        Rpc.asyncData('rpc.dashboardManager.setSettings', Ung.dashboardSettings).then(function (result) {
+            var wg2 = Ext.getStore('widgets').findRecord('entryId', widget.get('entryId')) || widget;
+            if (action === 'remove') {
+                me.lookup('dashboard').remove(wg2.get('entryId'));
+                wg2.drop();
+                cb();
+                return;
+            }
+
+            if (action === 'add') {
+                Ext.getStore('widgets').add(wg2);
+                wg2.commit();
+                if (wg2.get('enabled')) {
+                    me.lookup('dashboard').add({
+                        xtype: 'reportwidget',
+                        itemId: wg2.get('entryId'),
+                        viewModel: {
+                            data: {
+                                widget: wg2,
+                                entry: entry
+                            }
+                        }
+                    });
+                } else {
+                    me.lookup('dashboard').add({
+                        xtype: 'component',
+                        itemId: wg2.get('entryId'),
+                        hidden: true
+                    });
+                }
+            }
+
+            if (action === 'save') {
+                wg2.copyFrom(widget);
+                wg2.commit();
+
+                var wgCmp = me.lookup('dashboard').down('#' + wg2.get('entryId'));
+                var idx = Ext.getStore('widgets').indexOf(wg2);
+
+                if (wgCmp.getXType() === 'component') {
+                    if (wg2.get('enabled')) {
+                        wgCmp.destroy();
+                        me.lookup('dashboard').insert(idx, {
+                            xtype: 'reportwidget',
+                            itemId: wg2.get('entryId'),
+                            viewModel: {
+                                data: {
+                                    widget: wg2,
+                                    entry: entry
+                                }
+                            }
+                        });
+                    }
+                } else {
+                    if (wg2.get('enabled')) {
+                        DashboardQueue.add(wgCmp);
+                    } else {
+                        wgCmp.destroy();
+                        me.lookup('dashboard').insert(idx, {
+                            xtype: 'component',
+                            itemId: wg2.get('entryId'),
+                            hidden: true
+                        });
+                    }
+                }
+            }
+            cb();
+        });
     },
 
 
@@ -458,11 +537,20 @@ Ext.define('Ung.view.dashboard.DashboardController', {
     },
 
     addWidget: function () {
-        var me = this;
+        this.showWidgetEditor(null, null);
+    },
+
+    showWidgetEditor: function (widget, entry) {
+        me = this;
         me.addWin = me.getView().add({
-            xtype: 'new-widget'
+            xtype: 'new-widget',
+            viewModel: {
+                data: {
+                    widget: widget,
+                    entry: entry
+                }
+            }
         });
         me.addWin.show();
-
     }
 });

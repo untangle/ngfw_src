@@ -2,7 +2,7 @@ Ext.define('Ung.view.dashboard.NewWidget', {
     extend: 'Ext.window.Window',
     alias: 'widget.new-widget',
 
-    title: 'Add Widget'.t(),
+    title: 'Add/Edit Widgets',
     controller: 'new-widget',
 
     modal: true,
@@ -16,17 +16,30 @@ Ext.define('Ung.view.dashboard.NewWidget', {
             onDashboard: false,
         },
         formulas: {
+            _autorefresh: {
+                get: function(get) {
+                    var interval = get('widget.refreshIntervalSec');
+                    return interval ? true : false;
+                },
+                set: function (value) {
+                    this.set('widget.refreshIntervalSec', value ? 60 : '');
+                }
+            },
             _timeframe: {
                 get: function(get) {
                     return get('widget.timeframe') ? get('widget.timeframe') / 3600 : '';
                 },
                 set: function (value) {
-                    console.log(value);
                     this.set('widget.timeframe', value ? value * 3600 : null);
                 }
             },
-            _activeCenterCard: function (get) {
-                return get('entry') ? 1 : 0;
+            _timeframeck: {
+                get: function(get) {
+                    return get('_timeframe') === '';
+                },
+                set: function (value) {
+                    this.set('_timeframe', value ? '' : 24);
+                }
             }
         }
     },
@@ -34,6 +47,9 @@ Ext.define('Ung.view.dashboard.NewWidget', {
     items: [{
         xtype: 'treepanel',
         reference: 'tree',
+        // title: 'Reports'.t(),
+        // collapsible: true,
+        // titleCollapse: true,
         region: 'west',
         weight: 20,
         width: 250,
@@ -102,11 +118,30 @@ Ext.define('Ung.view.dashboard.NewWidget', {
     }, {
         region: 'south',
         // title: 'Settings'.t(),
-        height: 200,
-        split: true,
-        maxHeight: 200,
-        minHeight: 200,
+        height: 'auto',
+
+        // split: true,
+        // maxHeight: 140,
+        // minHeight: 140,
         layout: 'fit',
+
+        dockedItems: [{
+            xtype: 'component',
+            dock: 'top',
+            ui: 'footer',
+            margin: '10 0',
+            style: {
+                textAlign: 'center',
+                fontSize: '11px',
+                color: '#333'
+            },
+            hidden: true,
+            bind: {
+                hidden: '{!(entry && onDashboard)}',
+                html: '<i class="fa fa-info-circle fa-lg"></i> ' + 'This report widget exists in Dashboard and is <strong>{widget.enabled ? "enabled" : "disabled"}</strong>!',
+            }
+        }],
+
         items: [{
             // xtype: 'form',
             border: false,
@@ -115,64 +150,84 @@ Ext.define('Ung.view.dashboard.NewWidget', {
                 type: 'vbox',
                 align: 'stretch'
             },
-            disabled: true,
+            hidden: true,
             bind: {
-                disabled: '{!entry}'
+                hidden: '{!entry}'
             },
+
             items: [{
                 xtype: 'checkbox',
                 boxLabel: '<strong>' + 'Enabled'.t() + '</strong>',
                 bind: '{widget.enabled}'
             }, {
-                xtype: 'component',
-                html: '<strong>' + 'Refresh Interval'.t() + '</strong>:<br/> <span style="font-size: 11px; color: #777;">' + 'Leave blank for no Auto Refresh'.t() + '</span>'
-            }, {
                 xtype: 'container',
                 layout: { type: 'hbox', align: 'middle' },
-                margin: '2 0 10 0',
                 items: [{
+                    xtype: 'checkbox',
+                    boxLabel: '<strong>' + 'Auto Refresh'.t() + '</strong>: ',
+                    bind: '{_autorefresh}'
+                }, {
                     xtype: 'numberfield',
                     width: 50,
                     maxValue: 600,
                     minValue: 10,
                     allowBlank: true,
-                    margin: '0 5 0 0',
-                    bind: '{widget.refreshIntervalSec}'
+                    margin: '0 5',
+                    hidden: true,
+                    bind: {
+                        value: '{widget.refreshIntervalSec}',
+                        hidden: '{!_autorefresh}'
+                    }
                 }, {
                     xtype: 'component',
                     style: {
                         fontSize: '11px',
                         color: '#777'
                     },
-                    html: '(seconds)'.t()
+                    html: '(seconds)'.t(),
+                    hidden: true,
+                    bind: {
+                         hidden: '{!_autorefresh}'
+                    }
                 }]
             }, {
-                xtype: 'component',
-                html: '<strong>' + 'Timeframe'.t() + '</strong>:<br/> <span style="font-size: 11px; color: #777;">' + 'The number of hours to query the latest data. Leave blank for last day.'.t() + '</span>'
-            }, {
                 xtype: 'container',
+                margin: '5 0',
                 layout: { type: 'hbox', align: 'middle' },
-                margin: '2 0',
                 items: [{
+                    xtype: 'checkbox',
+                    fieldLabel: '<strong>' + 'Timeframe'.t() + '</strong>',
+                    labelWidth: 'auto',
+                    boxLabel: '<strong>' + '1 day</strong> (default)',
+                    bind: '{_timeframeck}'
+                }, {
                     xtype: 'numberfield',
                     width: 50,
                     maxValue: 72,
                     minValue: 1,
                     allowBlank: true,
-                    margin: '0 5 0 0',
-                    bind: '{_timeframe}'
+                    margin: '0 5 0 10',
+                    hidden: true,
+                    bind: {
+                        value: '{_timeframe}',
+                        hidden: '{_timeframeck}'
+                    }
                 }, {
                     xtype: 'component',
                     style: {
                         fontSize: '11px',
                         color: '#777'
                     },
-                    html: '(hours)'.t()
+                    html: '(hours)'.t(),
+                    hidden: true,
+                    bind: {
+                         hidden: '{_timeframeck}'
+                    }
                 }, {
                     xtype: 'button',
                     iconCls: 'fa fa-refresh',
                     tooltip: 'Refresh'.t(),
-                    margin: '0 0 0 5',
+                    margin: '0 0 0 10',
                     handler: 'refreshEntry'
                 }]
             }]
@@ -183,9 +238,7 @@ Ext.define('Ung.view.dashboard.NewWidget', {
             iconCls: 'fa fa-trash-o fa-red',
             hidden: true,
             bind: { hidden: '{!(entry && onDashboard)}' },
-            handler: function (btn) {
-                alert('To Do!');
-            }
+            handler: 'onRemoveWidget'
         }, '->', {
             text: 'Cancel'.t(),
             iconCls: 'fa fa-ban',
@@ -197,17 +250,13 @@ Ext.define('Ung.view.dashboard.NewWidget', {
             iconCls: 'fa fa-plus-circle',
             hidden: true,
             bind: { hidden: '{!(entry && !onDashboard)}' },
-            handler: function (btn) {
-                alert('To Do!');
-            }
+            handler: 'onAdd'
         }, {
             text: 'Save'.t(),
             iconCls: 'fa fa-floppy-o',
             hidden: true,
             bind: { hidden: '{!(entry && onDashboard)}' },
-            handler: function (btn) {
-                alert('To Do!');
-            }
+            handler: 'onSave'
         }]
     }],
 

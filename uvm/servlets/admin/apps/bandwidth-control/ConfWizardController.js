@@ -108,14 +108,16 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizardController', {
             }
 
             Ext.MessageBox.wait('Configuring Quotas...'.t(), 'Please wait'.t());
-            if (vm.get('quota.hostEnabled'))
+            if (vm.get('quota.hostEnabled')) {
                 this.getView().appManager.wizardAddHostQuotaRules(vm.get('quota.expiration'),
                                                                   Math.round(vm.get('quota.size') * vm.get('quota.unit')),
                                                                   vm.get('quota.priority'));
-            if (vm.get('quota.userEnabled'))
+            }
+            if (vm.get('quota.userEnabled')) {
                 this.getView().appManager.wizardAddUserQuotaRules(vm.get('quota.expiration'),
                                                                   Math.round(vm.get('quota.size') * vm.get('quota.unit')),
                                                                   vm.get('quota.priority'));
+            }
 
             Ext.MessageBox.hide();
             v.getLayout().next();
