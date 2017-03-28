@@ -131,7 +131,7 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizardController', {
     },
 
     onFinish: function () {
-        this.getView().up('#configCard').getViewModel().set('isConfigured', this.getView().appManager.getSettings().configured);
+        this.getView().getViewModel().set('isConfigured', this.getView().appManager.getSettings().configured);
         this.getView().close();
     }
 });
