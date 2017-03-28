@@ -4,7 +4,7 @@
 package com.untangle.uvm.app;
 
 import java.util.HashSet;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.Map;
 import java.util.LinkedList;
 import java.util.ArrayList;
@@ -62,7 +62,7 @@ public abstract class AppBase implements App
      * The hash map is for fast lookups
      * The list is to maintain order for the UI
      */
-    private Map<String, AppMetric> metrics = new HashMap<String, AppMetric>();
+    private Map<String, AppMetric> metrics = new ConcurrentHashMap<String, AppMetric>();
     private List<AppMetric> metricList = new ArrayList<AppMetric>();
         
     private AppSettings.AppState currentState;
@@ -356,7 +356,7 @@ public abstract class AppBase implements App
         adjustMetric( name, 1L );
     }
 
-    public synchronized void setMetric( String name, Long newValue )
+    public void setMetric( String name, Long newValue )
     {
         if ( name == null ) {
             logger.warn( "Invalid stat: " + name );
@@ -371,7 +371,7 @@ public abstract class AppBase implements App
         metric.setValue( newValue );
     }
 
-    public synchronized void adjustMetric( String name, Long adjustmentValue )
+    public void adjustMetric( String name, Long adjustmentValue )
     {
         if ( name == null ) {
             logger.warn( "Invalid stat: " + name );
@@ -391,7 +391,7 @@ public abstract class AppBase implements App
         metric.setValue( value );
     }
 
-    public synchronized void addMetric( AppMetric metric )
+    public void addMetric( AppMetric metric )
     {
         if (metrics.get(metric.getName()) != null) {
             //logger.warn("addMetric(): Metric already exists: \"" + metric.getName() + "\" - ignoring");
@@ -401,7 +401,7 @@ public abstract class AppBase implements App
         this.metricList.add( metric );
     }
 
-    public synchronized void removeMetric( AppMetric metric )
+    public void removeMetric( AppMetric metric )
     {
         if ( metric == null ) {
             logger.warn("Invalid argument: null");
