@@ -22,65 +22,50 @@ orig_netsettings = None
 indexOfWans = []
 defaultRackId = 1
 
-def allWansOnline():
-    onlineCount = 0
+def all_wans_online():
+    online_count = 0
     wanStatus = app.getWanStatus()
     wanCount = len(wanStatus['list'])
     for statusInterface in wanStatus['list']:
         if statusInterface['online']:
-            onlineCount = onlineCount + 1
-    return ( onlineCount == wanCount )
+            online_count = online_count + 1
+    return ( online_count == wanCount )
 
-def allWansOffline():
-    offlineCount = 0
-    wanStatus = app.getWanStatus()
-    wanCount = len(wanStatus['list'])
-    for statusInterface in wanStatus['list']:
-        if not statusInterface['online']:
-            offlineCount = offlineCount + 1
-    return ( offlineCount == wanCount )
-
-def onlineWanCount():
-    onlineCount = 0
+def online_wan_count():
+    online_count = 0
     wanStatus = app.getWanStatus()
     for statusInterface in wanStatus['list']:
         if statusInterface['online']:
-            onlineCount = onlineCount + 1
-    return onlineCount
+            online_count = online_count + 1
+    return online_count
 
-def offlineWanCount():
-    offlineCount = 0
+def offline_wan_count():
+    offline_count = 0
     wanStatus = app.getWanStatus()
     for statusInterface in wanStatus['list']:
         if not statusInterface['online']:
-            offlineCount = offlineCount + 1
-    return offlineCount
+            offline_count = offline_count + 1
+    return offline_count
 
-def waitForChangeInStatus(maxWait=120):
-    increment = 1
-    time.sleep(increment)
-    maxWait = maxWait - increment
-    originalOnlineCount = onlineWanCount()
-    originalOfflineCount = offlineWanCount()
-    print "original: originalOnlineCount: %s originalOfflineCount: %s\n"%(str(originalOnlineCount), str(originalOfflineCount))
+def wait_for_wan_offline(maxWait=120,increment=1):
+    offline_count = offline_wan_count()
+    original_offline_count = offline_count
+    print "original : offline_count: %s"%(str(original_offline_count))
     while maxWait > 0:
         time.sleep(increment)
+        offline_count = offline_wan_count()
         maxWait = maxWait - increment
-        if (originalOfflineCount != offlineWanCount()):
-            print "change: originalOfflineCount: %s offlineWanCount: %s\n"%(str(originalOfflineCount), str(offlineWanCount()))
+        print "current  : offline_count: %s"%(str(offline_count))
+        if (offline_count > original_offline_count):
             break
-        if (originalOnlineCount != onlineWanCount()):
-            print "change: originalOnlineCount: %s onlineWanCount: %s\n"%(str(originalOnlineCount), str(onlineWanCount()))
-            break
-    time.sleep( 10 ) # sleep 10 more seconds
-    print "final: originalOnlineCount: %s originalOfflineCount: %s\n"%(str(onlineWanCount()), str(offlineWanCount()))
+    print "final    : offline_count: %s"%(str(offline_count))
 
-def setInterfaceField( interfaceId, netsettings, fieldName, value ):
+def set_interface_field( interfaceId, netsettings, fieldName, value ):
     for interface in netsettings['interfaces']['list']:
         if interface.get('interfaceId') == interfaceId:
             interface[fieldName] = value
 
-def buildWanTestRule(matchInterface, testType="ping", pingHost="8.8.8.8", httpURL="http://192.168.244.1/", testInterval=5, testTimeout=2):
+def build_wan_test(matchInterface, testType="ping", pingHost="8.8.8.8", httpURL="http://192.168.244.1/", testInterval=5, testTimeout=2):
     name = "test " + str(testType) + " " + str(matchInterface)
     testInterval *= 1000  # convert from secs to millisecs
     testTimeout *= 1000  # convert from secs to millisecs
@@ -101,7 +86,7 @@ def buildWanTestRule(matchInterface, testType="ping", pingHost="8.8.8.8", httpUR
     appData["tests"]["list"].append(rule)
     app.setSettings(appData)
 
-def nukeRules():
+def nuke_rules():
     appData = app.getSettings()
     appData["tests"]["list"] = []
     app.setSettings(appData)
@@ -128,36 +113,41 @@ class WanFailoverTests(unittest2.TestCase):
         indexOfWans = global_functions.get_wan_tuples()
 
     def setUp(self):
-        print "\n"
+        print
 
     # verify client is online
-    def test_010_clientIsOnline(self):
+    def test_010_client_is_online(self):
         result = remote_control.is_online()
         assert (result == 0)
     
-    def test_020_addPingTestForWans(self):
-        nukeRules()
+    def test_020_ping_test_wan_online(self):
+        nuke_rules()
         for wanIndexTup in indexOfWans:
             wanIndex = wanIndexTup[0]
-            buildWanTestRule(wanIndex)
+            build_wan_test(wanIndex)
+
+        time.sleep(30)
+
+        assert ( all_wans_online() )
         result = remote_control.is_online()
         assert (result == 0)
         
-    def test_025_addPingFailTestForWans(self):
+    def test_025_ping_test_wan_offline(self):
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
         if (len(indexOfWans) < 2):
             raise unittest2.SkipTest("Need at least two WANS for test_025_addPingFailTestForWans")
-        nukeRules()
+        nuke_rules()
+        orig_offline_count = offline_wan_count()
         for wanIndexTup in indexOfWans:
             wanIndex = wanIndexTup[0]
-            buildWanTestRule(wanIndex, "ping", pingHost="192.168.244.1")
+            build_wan_test(wanIndex, "ping", pingHost="192.168.244.1")
 
-        waitForChangeInStatus()
+        wait_for_wan_offline()
 
-        offlineCount = offlineWanCount()
-        assert (offlineCount > 0)                        
-
+        offline_count = offline_wan_count()
+        assert (offline_count > orig_offline_count)
+        
         result = remote_control.is_online()
         assert (result == 0)
 
@@ -166,144 +156,150 @@ class WanFailoverTests(unittest2.TestCase):
         found = global_functions.check_events( events.get('list'), 2, "action", "DISCONNECTED" )
         assert( found )
         
-    def test_030_addArpTestForWans(self):
+    def test_030_arp_test_wan_online(self):
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
-        nukeRules()
+        nuke_rules()
         for wanIndexTup in indexOfWans:
             wanIndex = wanIndexTup[0]
             print "Testing interface : " + str(wanIndex)
-            buildWanTestRule(wanIndex, "arp")
+            build_wan_test(wanIndex, "arp")
 
-        waitForChangeInStatus()
+        time.sleep(30)
 
-        assert ( allWansOnline() )
+        assert ( all_wans_online() )
         result = remote_control.is_online()
         assert (result == 0)
 
-    def test_035_addArpFailTestForWans(self):
+    def test_035_arp_test_wan_offline(self):
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
         if (len(indexOfWans) < 2):
             raise unittest2.SkipTest("Need at least two WANS for test_035_addArpFailTestForWans")
-        nukeRules()
+        nuke_rules()
+        orig_offline_count = offline_wan_count()
         netsettings = uvmContext.networkManager().getNetworkSettings()
         # Add a fake gateway for each of the interfaces
         for wanIndexTup in indexOfWans:
             wanIndex = wanIndexTup[0]
             # set gateway to fake gateway
-            setInterfaceField( wanIndex, netsettings, 'v4StaticGateway', '192.168.244.' + str(wanIndex))
-            setInterfaceField( wanIndex, netsettings, 'v4AutoGatewayOverride', '192.168.244.' + str(wanIndex))
-            buildWanTestRule(wanIndex, "arp")
+            set_interface_field( wanIndex, netsettings, 'v4StaticGateway', '192.168.244.' + str(wanIndex))
+            set_interface_field( wanIndex, netsettings, 'v4AutoGatewayOverride', '192.168.244.' + str(wanIndex))
+            build_wan_test(wanIndex, "arp")
 
         uvmContext.networkManager().setNetworkSettings(netsettings)
             
-        waitForChangeInStatus()
-        wansOffline = allWansOffline()
+        wait_for_wan_offline()
+
+        offline_count = offline_wan_count()
 
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
-        assert (wansOffline)                        
+        assert (offline_count > orig_offline_count)
         result = remote_control.is_online()
         assert (result == 0)
 
-    def test_040_addDNSTestForWans(self):
+    def test_040_dns_test_wan_online(self):
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
-        nukeRules()
+        nuke_rules()
         for wanIndexTup in indexOfWans:
             wanIndex = wanIndexTup[0]
-            buildWanTestRule(wanIndex, "dns")
+            build_wan_test(wanIndex, "dns")
 
-        waitForChangeInStatus()
+        time.sleep(30)
 
-        assert( allWansOnline() )
+        assert( all_wans_online() )
         result = remote_control.is_online()
         assert (result == 0)        
 
-    def test_045_addDNSFailTestForWans(self):
+    def test_045_dns_test_wan_offline(self):
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
         if (len(indexOfWans) < 2):
             raise unittest2.SkipTest("Need at least two WANS for test_045_addDNSFailTestForWans")
 
-        nukeRules()
+        nuke_rules()
+        orig_offline_count = offline_wan_count()
         netsettings = uvmContext.networkManager().getNetworkSettings()
         # Add a fake DNS for each of the interfaces
         for wanIndexTup in indexOfWans:
             wanIndex = wanIndexTup[0]
             # set DNS values to fake DNS 
-            setInterfaceField( wanIndex, netsettings, 'v4StaticDns1', '192.168.244.' + str(wanIndex))
-            setInterfaceField( wanIndex, netsettings, 'v4StaticDns2', '192.168.244.' + str(wanIndex))
-            setInterfaceField( wanIndex, netsettings, 'v4AutoDns1Override', '192.168.244.' + str(wanIndex))
-            setInterfaceField( wanIndex, netsettings, 'v4AutoDns2Override', '192.168.244.' + str(wanIndex))
-            buildWanTestRule(wanIndex, "dns")
+            set_interface_field( wanIndex, netsettings, 'v4StaticDns1', '192.168.244.' + str(wanIndex))
+            set_interface_field( wanIndex, netsettings, 'v4StaticDns2', '192.168.244.' + str(wanIndex))
+            set_interface_field( wanIndex, netsettings, 'v4AutoDns1Override', '192.168.244.' + str(wanIndex))
+            set_interface_field( wanIndex, netsettings, 'v4AutoDns2Override', '192.168.244.' + str(wanIndex))
 
         uvmContext.networkManager().setNetworkSettings(netsettings)
 
-        waitForChangeInStatus()
-        wansOffline = allWansOffline()
+        for wanIndexTup in indexOfWans:
+            build_wan_test(wanIndex, "dns")
+
+        wait_for_wan_offline()
+        offline_count = offline_wan_count()
 
         uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
-        assert (wansOffline)
+        assert (offline_count > orig_offline_count)
 
-    def test_050_addHTTPTestForWans(self):
+    def test_050_http_test_wan_online(self):
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
-        nukeRules()
+        nuke_rules()
         for wanIndexTup in indexOfWans:
             wanIndex = wanIndexTup[0]
-            buildWanTestRule(wanIndex, "http", httpURL="http://test.untangle.com/")
+            build_wan_test(wanIndex, "http", httpURL="http://test.untangle.com/")
 
-        waitForChangeInStatus()
+        time.sleep(30)
 
-        wansOnline = allWansOnline()
+        wansOnline = all_wans_online()
 
         assert (wansOnline)                        
         result = remote_control.is_online()
         assert (result == 0)        
 
-    def test_055_addHTTPFailTestForWans(self):
+    def test_055_http_test_wan_offline(self):
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
         if (len(indexOfWans) < 2):
             raise unittest2.SkipTest("Need at least two WANS for test_055_addHTTPFailTestForWans")
-        nukeRules()
+        nuke_rules()
+        orig_offline_count = offline_wan_count()
         for wanIndexTup in indexOfWans:
             wanIndex = wanIndexTup[0]
-            buildWanTestRule(wanIndex, "http", httpURL="http://192.168.244.1/")
+            build_wan_test(wanIndex, "http", httpURL="http://192.168.244.1/")
 
-        waitForChangeInStatus()
+        wait_for_wan_offline()
+        offline_count = offline_wan_count()
 
-        wansOffline = allWansOffline()
-        assert (wansOffline)                        
+        assert (offline_count > orig_offline_count)                        
         result = remote_control.is_online()
         assert (result == 0)        
 
-    def test_060_downJustOneWan(self):
+    def test_060_one_wan_offline(self):
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
         invalidWanIP = None
         offlineWanIndex = None
         for upWanIndexTup in indexOfWans:
             upWanIndex = upWanIndexTup[0]
-            nukeRules()
+            nuke_rules()
             for wanIndexTup in indexOfWans:
                 wanIndex = wanIndexTup[0]
                 if upWanIndex == wanIndex:
                     # make this interface test disconnected
                     offlineWanIndex = wanIndex
-                    buildWanTestRule(offlineWanIndex, "ping", pingHost="192.168.244.1")
+                    build_wan_test(offlineWanIndex, "ping", pingHost="192.168.244.1")
                     invalidWanIP = wanIndexTup[2]
                     print "InvalidIP is %s" % invalidWanIP
                 else:
-                    buildWanTestRule(wanIndex, "ping")
+                    build_wan_test(wanIndex, "ping")
 
-            waitForChangeInStatus()
+            wait_for_wan_offline()
 
-            offlineWans = offlineWanCount()
-            assert( offlineWans > 0 )
+            offline_count = offline_wan_count()
+            assert( offline_count > 0 )
 
             if (len(indexOfWans) > 1):
                 # Skip the WAN IP address check part of the test if test box only has one WAN
@@ -312,7 +308,7 @@ class WanFailoverTests(unittest2.TestCase):
                     print "IP address %s and invalidWanIP %s" % (result,invalidWanIP)
                     assert (result != invalidWanIP)    
 
-    def test_065_downAllButOneWan(self):
+    def test_065_all_wan_offline_but_one(self):
         if remote_control.quickTestsOnly:
             raise unittest2.SkipTest('Skipping a time consuming test')
         if (len(indexOfWans) < 2):
@@ -323,24 +319,24 @@ class WanFailoverTests(unittest2.TestCase):
         # loop through the WANs keeping one up and the rest down.
         for upWanIndexTup in indexOfWans:
             upWanIndex = upWanIndexTup[0]
-            nukeRules()
+            nuke_rules()
             for wanIndexTup in indexOfWans:
                 wanIndex = wanIndexTup[0]
                 if upWanIndex != wanIndex:
                     # make this interface test disconnected
-                    buildWanTestRule(wanIndex, "ping", pingHost="192.168.244.1")
+                    build_wan_test(wanIndex, "ping", pingHost="192.168.244.1")
                 else:
                     validWanIP = wanIndexTup[2]
-                    buildWanTestRule(upWanIndex, "ping", pingHost="8.8.8.8")
+                    build_wan_test(upWanIndex, "ping", pingHost="8.8.8.8")
                     print "validIP is %s" % validWanIP
 
-            waitForChangeInStatus()
+            wait_for_wan_offline()
 
-            onlineWans = onlineWanCount()
-            offlineWans = offlineWanCount()
+            online_count = online_wan_count()
+            offline_count = offline_wan_count()
 
-            assert( onlineWans == 1 )
-            assert( offlineWans > 0 )
+            assert( online_count == 1 )
+            assert( offline_count > 0 )
 
             for x in range(0, 8):
                 result = global_functions.get_public_ip_address()
