@@ -233,8 +233,11 @@ Ext.define('Ung.cmp.GridController', {
             Ext.Array.insert(existingData, 0, newData);
             newData = existingData;
         }
-        vm.set(grid.listProperty, newData);
-        // grid.getView().refresh();
+
+        grid.getStore().loadData(newData);
+        grid.getStore().each(function(record){
+            record.set('markedForNew', true);
+        });
     },
 
     getExportData: function (useId) {
