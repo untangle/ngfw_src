@@ -264,28 +264,29 @@ class OpenVpnTests(unittest2.TestCase):
         remote_control.run_command("sudo mv -f /tmp/untangle-vpn/* /etc/openvpn/", host=global_functions.vpnClientVpnIP)
         remote_control.run_command("cd /etc/openvpn; sudo nohup openvpn "+siteName+".conf >/dev/null 2>&1 &", host=global_functions.vpnClientVpnIP)
 
-        time.sleep(10) # wait for vpn tunnel to form 
-
-        listOfClients = app.getActiveClients()
-        vpnPoolAddressIP = listOfClients['list'][0]['poolAddress']
-
-        # ping the test host behind the Untangle from the remote testbox
-        print "vpn pool address: " + vpnPoolAddressIP
-
         result1 = 1
-        tries = 10
+        tries = 40
         while result1 and tries > 0:
             time.sleep(1)
             tries -= 1
-            result1 = os.system("ping -c1 " + vpnPoolAddressIP + " >/dev/null 2>&1")
-        result2 = remote_control.run_command("ping -c 2 " + remote_control.clientIP, host=global_functions.vpnClientVpnIP)
 
-        # run a web request to internet and make sure it goes through web filter
-        # webresult = remote_control.run_command("wget -q -O - http://www.playboy.com | grep -q blockpage", host=vpnPoolAddressIP)
-        webresult = remote_control.run_command("wget -q -O - http://www.playboy.com | grep -q blockpage", host=global_functions.vpnClientVpnIP)
+            listOfClients = app.getActiveClients()
+            if len(listOfClients['list']):
+                vpnPoolAddressIP = listOfClients['list'][0]['poolAddress']
 
-        print "result1 <%d> result2 <%d> webresult <%d>" % (result1,result2,webresult)
+                # ping the test host behind the Untangle from the remote testbox
+                print "vpn pool address: " + vpnPoolAddressIP
+                result1 = os.system("ping -c1 " + vpnPoolAddressIP + " >/dev/null 2>&1")
+        if result1 == 0:        
+            result2 = remote_control.run_command("ping -c 2 " + remote_control.clientIP, host=global_functions.vpnClientVpnIP)
 
+            # run a web request to internet and make sure it goes through web filter
+            # webresult = remote_control.run_command("wget -q -O - http://www.playboy.com | grep -q blockpage", host=vpnPoolAddressIP)
+            webresult = remote_control.run_command("wget -q -O - http://www.playboy.com | grep -q blockpage", host=global_functions.vpnClientVpnIP)
+
+            print "result1 <%d> result2 <%d> webresult <%d>" % (result1,result2,webresult)
+        else:
+            print "No VPN IP address found"
         # Shutdown VPN on both sides.
         # remote_control.run_command("sudo pkill openvpn < /dev/null > /dev/null 2>&1 &", host=vpnPoolAddressIP)
         remote_control.run_command("sudo pkill openvpn", host=global_functions.vpnClientVpnIP)
@@ -295,9 +296,9 @@ class OpenVpnTests(unittest2.TestCase):
         app.setSettings(appData)
         time.sleep(5) # wait for vpn tunnel to go down 
         # print ("result " + str(result) + " webresult " + str(webresult))
-        assert(listOfClients['list'][0]['address'] == global_functions.vpnClientVpnIP)
         assert(result1==0)
         assert(result2==0)
+        assert(listOfClients['list'][0]['address'] == global_functions.vpnClientVpnIP)
         assert(webresult==0)
 
     @staticmethod
