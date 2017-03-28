@@ -133,5 +133,7 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizardController', {
     onFinish: function () {
         this.getView().getViewModel().set('isConfigured', this.getView().appManager.getSettings().configured);
         this.getView().close();
-    }
-});
+
+        //FIXME need to start app and reload settings
+        //NGFW-10434
+    }});
