@@ -117,6 +117,7 @@ Ext.define('Ung.apps.captiveportal.MainController', {
             success: Ext.bind(function( form, action ) {
                 Ext.MessageBox.alert('Custom Page Upload Success'.t(), action.result.msg);
                 this.getViewModel().set('settings.customFilename', action.result.msg);
+                this.setSettings();
             }, this),
             failure: Ext.bind(function( form, action ) {
                 Ext.MessageBox.alert('Custom Page Upload Failure'.t(), action.result.msg);
@@ -135,6 +136,7 @@ Ext.define('Ung.apps.captiveportal.MainController', {
             success: Ext.bind(function( form, action ) {
                 Ext.MessageBox.alert('Custom Page Remove Success'.t(), action.result.msg);
                 this.getViewModel().set('settings.customFilename', null);
+                this.setSettings();
             }, this),
             failure: Ext.bind(function( form, action ) {
                 Ext.MessageBox.alert('Custom Page Remove Failure'.t(), action.result.msg);

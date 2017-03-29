@@ -134,12 +134,13 @@ Ext.define('Ung.apps.captiveportal.view.CaptivePage', {
             xtype: 'form',
             name: 'upload_form',
             border: false,
-            margin: '10 0 0 0',
+            margin: '0 0 0 0',
             items: [{
                 xtype: 'fileuploadfield',
                 name: 'upload_file',
-                allowBlank: false,
-                width: 500
+                buttonText: 'Upload Custom Captive Page ZIP File'.t(),
+                buttonOnly: true,
+                listeners: { 'change': 'uploadCustomFile' }
             },{
                 xtype: 'hidden',
                 name: 'type',
@@ -148,12 +149,6 @@ Ext.define('Ung.apps.captiveportal.view.CaptivePage', {
                 xtype: 'hidden',
                 name: 'argument',
                 value: 'UPLOAD'
-            },{
-                xtype: 'button',
-                formBind: true,
-                name: 'upload',
-                text: 'Upload Custom File'.t(),
-                handler: 'uploadCustomFile'
             }]
         }, {
             xtype: 'form',
@@ -183,6 +178,7 @@ Ext.define('Ung.apps.captiveportal.view.CaptivePage', {
                 value: 'REMOVE'
             }, {
                 xtype: 'button',
+                formBind: true,
                 name: 'remove',
                 text: 'Remove Custom File'.t(),
                 handler: 'removeCustomFile'
