@@ -210,12 +210,14 @@ class IntrusionPreventionSettings:
         } 
 
         operation = variable["op"] 
-        if operation == "added":
-            self.settings["variables"]["list"].append( snort_variable )
-        elif operation == "modified":
+        if operation == "added" or operation == "modified":
+            modified = False;
             for index, settings_variable in enumerate(self.settings["variables"]["list"]):
-                if operation == "modified" and settings_variable["variable"] == variable["recData"]["originalId"]:
+                if settings_variable["variable"] == variable["recData"]["variable"]:
                     self.settings["variables"]["list"][index] = snort_variable
+                    modified = True
+            if modified is False:
+                self.settings["variables"]["list"].append( snort_variable )
         elif operation == "deleted":
             self.settings["variables"]["list"].remove(snort_variable)
 
