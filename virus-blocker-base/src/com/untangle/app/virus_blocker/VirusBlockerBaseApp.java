@@ -306,6 +306,7 @@ public abstract class VirusBlockerBaseApp extends AppBase
         s.add(new GenericRule("vbe", "script", "download", null, true));
         s.add(new GenericRule("vbs", "script", "download", null, true));
         s.add(new GenericRule("zip", "archive", "download", null, true));
+        s.add(new GenericRule("7z", "archive", "download", null, true));
         s.add(new GenericRule("eml", "archive", "download", null, true));
         s.add(new GenericRule("hqx", "archive", "download", null, true));
         s.add(new GenericRule("rar", "archive", "download", null, true));
