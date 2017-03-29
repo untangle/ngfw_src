@@ -31,7 +31,7 @@ Ext.define('Ung.apps.webfilter.view.Categories', {
         header: 'Flag'.t(),
         dataIndex: 'flagged',
         resizable: false,
-        tooltip: 'Flag as Violation'.t()
+        //tooltip: 'Flag as Violation'.t()
         // checkAll: {}
     }, {
         header: 'Description'.t(),
