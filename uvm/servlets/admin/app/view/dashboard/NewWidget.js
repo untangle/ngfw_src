@@ -13,6 +13,7 @@ Ext.define('Ung.view.dashboard.NewWidget', {
     viewModel: {
         data: {
             widget: null,
+            entry: null,
             onDashboard: false,
         },
         formulas: {
@@ -38,9 +39,30 @@ Ext.define('Ung.view.dashboard.NewWidget', {
                     return get('_timeframe') === '';
                 },
                 set: function (value) {
-                    this.set('_timeframe', value ? '' : 24);
+                    this.set('_timeframe', value ? '' : 1);
                 }
-            }
+            },
+            _columnsck: {
+                get: function(get) {
+                    return get('widget.displayColumns') ? false : true;
+                },
+                set: function (value) {
+                    if (value) {
+                        this.set('widget.displayColumns', null);
+                    } else {
+                        this.set('widget.displayColumns', this.get('entry.defaultColumns'));
+                    }
+                }
+            },
+            // _columns: {
+            //     get: function (get) {
+            //         console.log(get('entry.displayColumns'));
+            //         return get('widget.displayColumns') || get('entry.displayColumns');
+            //     },
+            //     set: function (val) {
+            //         console.log(val);
+            //     }
+            // }
         }
     },
 
@@ -123,7 +145,7 @@ Ext.define('Ung.view.dashboard.NewWidget', {
         // split: true,
         // maxHeight: 140,
         // minHeight: 140,
-        layout: 'fit',
+        // layout: 'fit',
 
         dockedItems: [{
             xtype: 'component',
@@ -147,8 +169,8 @@ Ext.define('Ung.view.dashboard.NewWidget', {
             border: false,
             bodyPadding: 10,
             layout: {
-                type: 'vbox',
-                align: 'stretch'
+                type: 'vbox'
+                // align: 'stretch'
             },
             hidden: true,
             bind: {
@@ -198,7 +220,7 @@ Ext.define('Ung.view.dashboard.NewWidget', {
                     xtype: 'checkbox',
                     fieldLabel: '<strong>' + 'Timeframe'.t() + '</strong>',
                     labelWidth: 'auto',
-                    boxLabel: '<strong>' + '1 day</strong> (default)',
+                    boxLabel: '<strong>' + '1 hour</strong> (default)',
                     bind: '{_timeframeck}'
                 }, {
                     xtype: 'numberfield',
@@ -230,6 +252,35 @@ Ext.define('Ung.view.dashboard.NewWidget', {
                     margin: '0 0 0 10',
                     handler: 'refreshEntry'
                 }]
+            }, {
+                xtype: 'checkbox',
+                reference: 'columnsck',
+                fieldLabel: '<strong>' + 'Columns'.t() + '</strong>',
+                labelWidth: 'auto',
+                boxLabel: 'report defaults',
+                hidden: true,
+                // publishes: 'value',
+                bind: {
+                    value: '{_columnsck}',
+                    hidden: '{entry.type !== "EVENT_LIST"}'
+                }
+            }, {
+                xtype: 'tagfield',
+                hidden: true,
+                width: '100%',
+                store: {
+                    fields: ['name', 'text']
+                },
+                displayField: 'text',
+                valueField: 'name',
+                bind: {
+                    value: '{widget.displayColumns}',
+                    hidden: '{_columnsck}'
+                },
+                queryMode: 'local',
+                // listeners: {
+                //     change: 'updateColumns'
+                // }
             }]
         }],
 

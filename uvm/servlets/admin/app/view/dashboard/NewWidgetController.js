@@ -14,6 +14,18 @@ Ext.define('Ung.view.dashboard.NewWidgetController', {
         } else {
             // me.lookup('tree').show();
         }
+        vm.bind('{widget.displayColumns}', function (val) {
+            var columns = this.getView().down('grid').getColumns();
+            if (val) {
+                Ext.Array.each(columns, function (col) {
+                    col.setHidden(Ext.Array.indexOf(val, col.dataIndex) < 0);
+                });
+            } else {
+                Ext.Array.each(columns, function (col) {
+                    col.setHidden(Ext.Array.indexOf(vm.get('entry.defaultColumns'), col.dataIndex) < 0);
+                });
+            }
+        });
     },
 
     /**
@@ -71,7 +83,18 @@ Ext.define('Ung.view.dashboard.NewWidgetController', {
             var entry = Ext.getStore('reports').findRecord('uniqueId', node.get('uniqueId'));
             me.widget = Ext.getStore('widgets').findRecord('entryId', node.get('uniqueId'));
 
-            if (!me.widget) {
+            vm.set('entry', entry);
+
+            if (me.widget) {
+                if (entry.get('type') === 'EVENT_LIST') {
+                    var tblCfg = TableConfig.getConfig(entry.get('table'));
+                    var str = [];
+                    Ext.Array.each(tblCfg.columns, function (col) {
+                        str.push({name: col.dataIndex, text: col.header});
+                    });
+                    me.getView().down('tagfield').getStore().setData(str);
+                }
+            } else {
                 newWidget = Ext.create('Ung.model.Widget', {
                     displayColumns: entry.get('displayColumns'),
                     enabled: true,
@@ -82,9 +105,10 @@ Ext.define('Ung.view.dashboard.NewWidgetController', {
                     type: 'ReportEntry'
                 });
                 onDashboard = false;
+
             }
+
             vm.set({
-                entry: entry,
                 widget: me.widget ? me.widget.copy(null) : newWidget.copy(null),
                 onDashboard: onDashboard
             });
@@ -144,6 +168,14 @@ Ext.define('Ung.view.dashboard.NewWidgetController', {
             me.getView().close();
         });
 
+    },
+
+    updateColumns: function(cmp, val) {
+        var vm = this.getViewModel(), columns = this.getView().down('grid').getColumns();
+        console.log(vm.get('widget.displayColumns'));
+        Ext.Array.each(columns, function (col) {
+            col.setHidden(Ext.Array.indexOf(vm.get('widget.displayColumns'), col.dataIndex) < 0);
+        });
     }
 
 });

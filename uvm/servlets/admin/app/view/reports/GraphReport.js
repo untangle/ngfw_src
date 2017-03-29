@@ -1,10 +1,11 @@
 Ext.define('Ung.view.reports.GraphReport', {
-    extend: 'Ext.container.Container',
+    extend: 'Ext.panel.Panel',
     alias: 'widget.graphreport',
 
     controller: 'graphreport',
     viewModel: true,
 
+    border: false,
     bodyBorder: false,
 
     items: [{

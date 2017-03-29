@@ -14,6 +14,11 @@ Ext.define('Ung.view.reports.EventReportController', {
 
         me.modFields = { uniqueId: null };
 
+        // remove property grid if in dashboard
+        if (me.getView().up('#dashboard')) {
+            me.getView().remove('properties');
+        }
+
         vm.bind('{entry}', function (entry) {
 
             if (entry.get('type') !== 'EVENT_LIST') { return; }
@@ -25,12 +30,10 @@ Ext.define('Ung.view.reports.EventReportController', {
                 };
 
                 me.tableConfig = Ext.clone(TableConfig.getConfig(entry.get('table')));
-                me.defaultColumns = entry.get('defaultColumns');
+                me.defaultColumns = vm.get('widget.displayColumns') || entry.get('defaultColumns'); // widget or report columns
 
                 Ext.Array.each(me.tableConfig.columns, function (col) {
-                    if (Ext.Array.indexOf(me.defaultColumns, col.dataIndex) < 0) {
-                        col.hidden = true;
-                    }
+                    col.hidden = Ext.Array.indexOf(me.defaultColumns, col.dataIndex) < 0;
                 });
 
                 me.getView().down('grid').setColumns(me.tableConfig.columns);
@@ -79,6 +82,13 @@ Ext.define('Ung.view.reports.EventReportController', {
                     me.getView().up('reports-entry').down('#currentData').setLoading(false);
                 }
                 me.getView().setLoading(false);
+
+                // update columns
+                me.defaultColumns = vm.get('widget.displayColumns') || me.entry.get('defaultColumns'); // widget or report columns
+                Ext.Array.each(me.getView().down('grid').getColumns(), function (col) {
+                    col.setHidden(Ext.Array.indexOf(me.defaultColumns, col.dataIndex) < 0);
+                });
+
                 me.loadResultSet(result);
             });
     },
@@ -97,7 +107,7 @@ Ext.define('Ung.view.reports.EventReportController', {
     onEventSelect: function (el, record) {
         var me = this, vm = this.getViewModel(), propsData = [];
 
-
+        if (me.getView().up('#dashboard')) { return; }
 
         Ext.Array.each(me.tableConfig.columns, function (column) {
             propsData.push({
@@ -107,7 +117,6 @@ Ext.define('Ung.view.reports.EventReportController', {
         });
 
         vm.set('propsData', propsData);
-
         // when selecting an event hide Settings if open
         me.getView().up('reports-entry').lookupReference('settingsBtn').setPressed(false);
 

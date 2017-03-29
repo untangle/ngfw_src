@@ -211,9 +211,9 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
                     op: 'modified',
                     recData: record.data
                 };
-                if(record.get('markedForDelete') == true){
+                if(record.get('markedForDelete')){
                     data.op = 'deleted';
-                }else if(record.get('markedForNew') == true){
+                }else if(record.get('markedForNew')){
                     data.op = 'added';
                 }
                 changed[record.get('_id')] = data;
@@ -230,7 +230,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         var changedDataSet = {};
         var keys = Object.keys(settings);
         for( var i = 0; i < keys.length; i++){
-            if( ( keys[i] == "rules" ) || 
+            if( ( keys[i] == "rules" ) ||
                 ( keys[i] == "variables" ) ||
                 ( keys[i] == "activeGroups" && !this.wizardCompleted ) ){
                 continue;
@@ -296,13 +296,13 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RulesRecordEditorController', {
     extend: 'Ung.cmp.RecordEditorController',
     alias: 'controller.unintrusionrecordeditorcontroller',
 
-    updateRuleKeys: [{ 
+    updateRuleKeys: [{
         key: 'classtype',
-        regex: /\s+classtype:([^;]+);/, 
+        regex: /\s+classtype:([^;]+);/,
         quoted: false
     },{
         key: 'msg',
-        regex: /\s+msg:([^;]+);/, 
+        regex: /\s+msg:([^;]+);/,
         quoted: true
     },{
         key: 'sid',
@@ -378,7 +378,7 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RulesRecordEditorController', {
     },
 
     editorClasstypeChange: function( me, newValue, oldValue, eOpts ){
-        var vm = this.getViewModel(); 
+        var vm = this.getViewModel();
         if( newValue == null || vm.get('classtypes').findExact('name', newValue) == null ){
             me.setValidation("Unknown classtype".t());
             return false;
@@ -400,8 +400,8 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RulesRecordEditorController', {
     sidRegex: /\s+sid:([^;]+);/,
     gidRegex: /\s+gid:\s*([^;]+);/,
     editorSidChange: function( me, newValue, oldValue, eOpts ){
-        var v = this.getView(); 
-        var vm = this.getViewModel(); 
+        var v = this.getView();
+        var vm = this.getViewModel();
 
         // Perform validation
         if( ! /^[0-9]+$/.test( newValue )){
@@ -581,7 +581,7 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
             var prefix = this.referencesMap[referenceFields[0]];
             if( prefix != null ){
                 referenceFields[1] = referenceFields[1].trim();
-                if((referenceFields[1].charAt(0) == '"') && 
+                if((referenceFields[1].charAt(0) == '"') &&
                     (referenceFields[1].charAt(referenceFields[1].length - 1) == '"')){
                     referenceFields[1] = referenceFields[1].substr(1,referenceFields[1].length - 2);
                 }
@@ -610,12 +610,12 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
         }else{
             record.set('block', false);
         }
-    }, 
+    },
 
     updateSearchStatusBar: function(){
         var v = this.getView();
         var searchStatus = v.down("[name=searchStatus]");
-        var hasLogOrBlockFilter = ( v.down("[name=searchLog]").getValue() == true ) || ( v.down("[name=searchBlock]").getValue() == true );
+        var hasLogOrBlockFilter = ( v.down("[name=searchLog]").getValue() ) || ( v.down("[name=searchBlock]").getValue() );
         var hasFilter = hasLogOrBlockFilter || ( v.down("[name=searchFilter]").getValue().length >= 2 );
         var statusText = "", logOrBlockText = "", totalEnabled = 0;
         if(!hasLogOrBlockFilter) {
@@ -641,7 +641,7 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
         filterFn: function(){}
     }),
     filterSearch: function(elem, newValue, oldValue, eOpts){
-        var store = this.getView().getStore(); 
+        var store = this.getView().getStore();
         if( newValue ){
             if( newValue.length > 1 ){
                 var re = new RegExp(newValue, 'gi');
@@ -653,7 +653,7 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
             }
         }else{
             store.removeFilter( this.searchFilter );
-            if(store.filters.length == 0){
+            if(store.filters.length === 0){
                 this.getView().reconfigure();
             }
         }
@@ -666,12 +666,12 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
     }),
 
     filterLog: function(elem, newValue, oldValue, eOpts){
-        var store = this.getView().getStore(); 
+        var store = this.getView().getStore();
         if( newValue ){
             store.addFilter( this.logFilter );
         }else{
             store.removeFilter( this.logFilter );
-            if(store.filters.length == 0){
+            if(store.filters.length === 0){
                 this.getView().reconfigure();
             }
         }
@@ -684,12 +684,12 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
     }),
 
     filterBlock: function(elem, newValue, oldValue, eOpts){
-        var store = this.getView().getStore(); 
+        var store = this.getView().getStore();
         if( newValue ){
             store.addFilter( this.blockFilter );
         }else{
             store.removeFilter( this.blockFilter );
-            if(store.filters.length == 0){
+            if(store.filters.length === 0){
                 this.getView().reconfigure();
             }
         }
@@ -702,7 +702,7 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
 
         Ext.MessageBox.wait('Exporting Settings...'.t(), 'Please wait'.t());
 
-        var downloadForm = document.getElementById('downloadForm'); 
+        var downloadForm = document.getElementById('downloadForm');
         downloadForm["type"].value = "IntrusionPreventionSettings";
         downloadForm["arg1"].value = "export";
         downloadForm["arg2"].value = grid.up('app-intrusion-prevention').getController().getView().appManager.getAppSettings().id;

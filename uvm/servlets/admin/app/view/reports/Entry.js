@@ -254,12 +254,6 @@ Ext.define('Ung.view.reports.Entry', {
                 bind: '{entry.description}',
                 anchor: '100%'
             }, {
-                xtype: 'checkbox',
-                fieldLabel: '<strong>' + 'Enabled'.t() + '</strong>',
-                margin: '0 0 20 0',
-                labelAlign: 'right',
-                bind: '{entry.enabled}'
-            }, {
                 xtype: 'fieldset',
                 title: '<i class="fa fa-paint-brush"></i> ' + 'Style'.t(),
                 padding: 10,
