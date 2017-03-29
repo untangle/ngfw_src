@@ -204,16 +204,16 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
     getChangedDataRecords: function(target){
         var me = this, v = this.getView(), vm = this.getViewModel();
         var changed = {};
-        v.query('unintrusion' + target + 'grid').forEach(function(grid){
+        v.query('app-intrusion-prevention-' + target).forEach(function(grid){
             var store = grid.getStore();
             store.getModifiedRecords().forEach( function(record){
                 var data = {
                     op: 'modified',
                     recData: record.data
                 };
-                if(record.get('markedForDelete')){
+                if(record.get('markedForDelete') == true){
                     data.op = 'deleted';
-                }else if(record.get('markedForNew')){
+                }else if(record.get('markedForNew') == true){
                     data.op = 'added';
                 }
                 changed[record.get('_id')] = data;
@@ -230,7 +230,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         var changedDataSet = {};
         var keys = Object.keys(settings);
         for( var i = 0; i < keys.length; i++){
-            if( ( keys[i] == "rules" ) ||
+            if( ( keys[i] == "rules" ) || 
                 ( keys[i] == "variables" ) ||
                 ( keys[i] == "activeGroups" && !this.wizardCompleted ) ){
                 continue;
@@ -238,8 +238,8 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             changedDataSet[keys[i]] = settings[keys[i]];
         }
 
-        changedDataSet.rules = me.getChangedDataRecords("rules");
-        // changedDataSet.variables = this.gridVariables.changedData;
+        changedDataSet.rules = me.getChangedDataRecords('rules');
+        changedDataSet.variables = me.getChangedDataRecords('variables');
 
         return changedDataSet;
     },
@@ -255,7 +255,6 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
 
         Ext.Ajax.request({
             url: "/webui/download",
-            // jsonData: changedDataSet,
             jsonData: me.getChangedData(),
             method: 'POST',
             params: {
@@ -281,28 +280,54 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
                 Util.successToast('Unable to save settings...');
             }
         });
+    },
 
+    regexRuleVariable :  /^\$([A-Za-z0-9\_]+)/,
+    regexRule: /^([#]+|)(alert|log|pass|activate|dynamic|drop|sdrop|reject)\s+(tcp|udp|icmp|ip)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+\((.+)\)$/,
+    isVariableUsed: function(variable) {
+        var me = this, v = this.getView(), vm = this.getViewModel();
+
+        if(Ext.isEmpty(variable)) {
+            return false;
+        }
+
+        var rule, originalId, ruleMatches, variableMatches, j, internalId, d;
+        var isUsed = false;
+        vm.get('rules').each(function(record){
+            var ruleMatches = me.regexRule.exec( record.get('rule') );
+            if( ruleMatches ) {
+                for( j = 1; j < ruleMatches.length; j++ ) {
+                    variableMatches = me.regexRuleVariable.exec( ruleMatches[j] );
+                    if( variableMatches && variableMatches.shift().indexOf(variable)!= -1) {
+                        isUsed = true;
+                        return false;
+                    }
+                }
+            }
+
+        });
+        return isUsed;
     }
 });
 
 Ext.define('Ung.apps.intrusionprevention.cmp.RulesRecordEditor', {
     extend: 'Ung.cmp.RecordEditor',
-    xtype: 'ung.cmp.unintrusionrecordeditor',
+    xtype: 'ung.cmp.unintrusionrulesrecordeditor',
 
-    controller: 'unintrusionrecordeditorcontroller',
+    controller: 'unintrusionrulesrecordeditorcontroller',
 });
 
 Ext.define('Ung.apps.intrusionprevention.cmp.RulesRecordEditorController', {
     extend: 'Ung.cmp.RecordEditorController',
-    alias: 'controller.unintrusionrecordeditorcontroller',
+    alias: 'controller.unintrusionrulesrecordeditorcontroller',
 
-    updateRuleKeys: [{
+    updateRuleKeys: [{ 
         key: 'classtype',
-        regex: /\s+classtype:([^;]+);/,
+        regex: /\s+classtype:([^;]+);/, 
         quoted: false
     },{
         key: 'msg',
-        regex: /\s+msg:([^;]+);/,
+        regex: /\s+msg:([^;]+);/, 
         quoted: true
     },{
         key: 'sid',
@@ -378,7 +403,7 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RulesRecordEditorController', {
     },
 
     editorClasstypeChange: function( me, newValue, oldValue, eOpts ){
-        var vm = this.getViewModel();
+        var vm = this.getViewModel(); 
         if( newValue == null || vm.get('classtypes').findExact('name', newValue) == null ){
             me.setValidation("Unknown classtype".t());
             return false;
@@ -400,8 +425,8 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RulesRecordEditorController', {
     sidRegex: /\s+sid:([^;]+);/,
     gidRegex: /\s+gid:\s*([^;]+);/,
     editorSidChange: function( me, newValue, oldValue, eOpts ){
-        var v = this.getView();
-        var vm = this.getViewModel();
+        var v = this.getView(); 
+        var vm = this.getViewModel(); 
 
         // Perform validation
         if( ! /^[0-9]+$/.test( newValue )){
@@ -516,7 +541,7 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
 
     editorWin: function (record) {
         this.dialog = this.getView().add({
-            xtype: 'ung.cmp.unintrusionrecordeditor',
+            xtype: 'ung.cmp.unintrusionrulesrecordeditor',
             record: record
         });
         this.dialog.show();
@@ -581,7 +606,7 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
             var prefix = this.referencesMap[referenceFields[0]];
             if( prefix != null ){
                 referenceFields[1] = referenceFields[1].trim();
-                if((referenceFields[1].charAt(0) == '"') &&
+                if((referenceFields[1].charAt(0) == '"') && 
                     (referenceFields[1].charAt(referenceFields[1].length - 1) == '"')){
                     referenceFields[1] = referenceFields[1].substr(1,referenceFields[1].length - 2);
                 }
@@ -610,12 +635,12 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
         }else{
             record.set('block', false);
         }
-    },
+    }, 
 
     updateSearchStatusBar: function(){
         var v = this.getView();
         var searchStatus = v.down("[name=searchStatus]");
-        var hasLogOrBlockFilter = ( v.down("[name=searchLog]").getValue() ) || ( v.down("[name=searchBlock]").getValue() );
+        var hasLogOrBlockFilter = ( v.down("[name=searchLog]").getValue() == true ) || ( v.down("[name=searchBlock]").getValue() == true );
         var hasFilter = hasLogOrBlockFilter || ( v.down("[name=searchFilter]").getValue().length >= 2 );
         var statusText = "", logOrBlockText = "", totalEnabled = 0;
         if(!hasLogOrBlockFilter) {
@@ -641,7 +666,7 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
         filterFn: function(){}
     }),
     filterSearch: function(elem, newValue, oldValue, eOpts){
-        var store = this.getView().getStore();
+        var store = this.getView().getStore(); 
         if( newValue ){
             if( newValue.length > 1 ){
                 var re = new RegExp(newValue, 'gi');
@@ -653,7 +678,7 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
             }
         }else{
             store.removeFilter( this.searchFilter );
-            if(store.filters.length === 0){
+            if(store.filters.length == 0){
                 this.getView().reconfigure();
             }
         }
@@ -666,12 +691,12 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
     }),
 
     filterLog: function(elem, newValue, oldValue, eOpts){
-        var store = this.getView().getStore();
+        var store = this.getView().getStore(); 
         if( newValue ){
             store.addFilter( this.logFilter );
         }else{
             store.removeFilter( this.logFilter );
-            if(store.filters.length === 0){
+            if(store.filters.length == 0){
                 this.getView().reconfigure();
             }
         }
@@ -684,12 +709,12 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
     }),
 
     filterBlock: function(elem, newValue, oldValue, eOpts){
-        var store = this.getView().getStore();
+        var store = this.getView().getStore(); 
         if( newValue ){
             store.addFilter( this.blockFilter );
         }else{
             store.removeFilter( this.blockFilter );
-            if(store.filters.length === 0){
+            if(store.filters.length == 0){
                 this.getView().reconfigure();
             }
         }
@@ -702,7 +727,7 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
 
         Ext.MessageBox.wait('Exporting Settings...'.t(), 'Please wait'.t());
 
-        var downloadForm = document.getElementById('downloadForm');
+        var downloadForm = document.getElementById('downloadForm'); 
         downloadForm["type"].value = "IntrusionPreventionSettings";
         downloadForm["arg1"].value = "export";
         downloadForm["arg2"].value = grid.up('app-intrusion-prevention').getController().getView().appManager.getAppSettings().id;
@@ -719,3 +744,83 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
 
 });
 
+Ext.define('Ung.apps.intrusionprevention.cmp.VariablesRecordEditor', {
+    extend: 'Ung.cmp.RecordEditor',
+    xtype: 'ung.cmp.unintrusionvariablesrecordeditor',
+
+    controller: 'unintrusionvariablesrecordeditorcontroller',
+});
+
+Ext.define('Ung.apps.intrusionprevention.cmp.VariablesRecordEditorController', {
+    extend: 'Ung.cmp.RecordEditorController',
+    alias: 'controller.unintrusionvariablesrecordeditorcontroller',
+
+    editorVariableChange: function( me, newValue, oldValue, eOpts ){
+        var v = this.getView(); 
+        var vm = this.getViewModel(); 
+
+        var record = vm.get('record');
+        var originalRecord = v.record;
+
+        var match = false;
+        vm.get('variables').each( function( storeRecord ) {
+            if( ( storeRecord != v.record ) && ( newValue == storeRecord.get('variable') ) ){
+                match = true;
+            }
+        });
+        if(match){
+            me.setValidation("Variable name already in use.".t());
+            return false;
+
+        }
+        me.setValidation(true);
+
+        var activeVariable = v.up('app-intrusion-prevention').getController().isVariableUsed(newValue);
+        me.setReadOnly(activeVariable);
+        me.up("").down("[name=activeVariable]").setVisible(activeVariable);
+    }
+
+});
+
+Ext.define('Ung.apps.intrusionprevention.cmp.VariablesGridController', {
+    extend: 'Ung.cmp.GridController',
+
+    alias: 'controller.unintrusionvariablesgrid',
+
+    editorWin: function (record) {
+        this.dialog = this.getView().add({
+            xtype: 'ung.cmp.unintrusionvariablesrecordeditor',
+            record: record
+        });
+        this.dialog.show();
+    },
+
+    exportData: function(){
+        var grid = this.getView(),
+            gridName = (grid.name !== null) ? grid.name : grid.recordJavaClass;
+
+        Ext.MessageBox.wait('Exporting Settings...'.t(), 'Please wait'.t());
+
+        var downloadForm = document.getElementById('downloadForm'); 
+        downloadForm["type"].value = "IntrusionPreventionSettings";
+        downloadForm["arg1"].value = "export";
+        downloadForm["arg2"].value = grid.up('app-intrusion-prevention').getController().getView().appManager.getAppSettings().id;
+        downloadForm["arg3"].value = gridName.trim().replace(/ /g, '_');
+        downloadForm["arg4"].value = Ext.encode({variables: grid.up('app-intrusion-prevention').getController().getChangedDataRecords('variables')});
+        downloadForm.submit();
+
+        Ext.MessageBox.hide();
+    },
+
+    deleteRecord: function (view, rowIndex, colIndex, item, e, record) {
+        if( this.getView().up('app-intrusion-prevention').getController().isVariableUsed( record.get('variable') ) ){
+            Ext.MessageBox.alert( "Cannot Delete Variable".t(), "Variable is used by one or more rules.".t() );
+        }else{
+            if (record.get('markedForNew')) {
+                record.drop();
+            } else {
+                record.set('markedForDelete', true);
+            }
+        }
+    }
+});
