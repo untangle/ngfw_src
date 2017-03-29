@@ -32,6 +32,20 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
                     property: 'sid',
                     direction: 'ASC'
                 }],
+            },
+            variables: { 
+                fields: [{
+                    name: 'variable',
+                },{
+                    name: 'definition'
+                },{
+                    name: 'description'
+                }],
+                data: '{settings.variables.list}',
+                sorters: [{
+                    property: 'variable',
+                    direction: 'ASC'
+                }],
             }
         }
     },
