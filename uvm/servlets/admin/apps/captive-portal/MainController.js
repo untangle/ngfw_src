@@ -103,6 +103,43 @@ Ext.define('Ung.apps.captiveportal.MainController', {
 
     showMissingServiceWarning: function() {
         Ext.MessageBox.alert('Service Not Installed'.t(), 'The Directory Connector application must be installed to use this feature.'.t());
+    },
+
+    uploadCustomFile: function(cmp) {
+        var form = Ext.ComponentQuery.query('form[name=upload_form]')[0];
+        var file = Ext.ComponentQuery.query('textfield[name=upload_file]')[0].value;
+        if ( file == null || file.length === 0 ) {
+            Ext.MessageBox.alert('Select File'.t(), 'Please choose a file to upload.'.t());
+            return;
+            }
+        form.submit({
+            url: "upload",
+            success: Ext.bind(function( form, action ) {
+                Ext.MessageBox.alert('Custom Page Upload Success'.t(), action.result.msg);
+                this.getViewModel().set('settings.customFilename', action.result.msg);
+            }, this),
+            failure: Ext.bind(function( form, action ) {
+                Ext.MessageBox.alert('Custom Page Upload Failure'.t(), action.result.msg);
+            }, this)
+        });
+    },
+
+    removeCustomFile: function(cmp) {
+        var form = Ext.ComponentQuery.query('form[name=remove_form]')[0];
+        var file = Ext.ComponentQuery.query('textfield[name=custom_file]')[0].value;
+        if ( file == null || file.length === 0 ) {
+            return;
+            }
+        form.submit({
+            url: "upload",
+            success: Ext.bind(function( form, action ) {
+                Ext.MessageBox.alert('Custom Page Remove Success'.t(), action.result.msg);
+                this.getViewModel().set('settings.customFilename', null);
+            }, this),
+            failure: Ext.bind(function( form, action ) {
+                Ext.MessageBox.alert('Custom Page Remove Failure'.t(), action.result.msg);
+            }, this)
+        });
     }
 
 });
