@@ -66,10 +66,10 @@ Ext.define('Ung.view.reports.EntryController', {
             vm.set('_sqlConditions', entry.get('conditions') || []);
             // set combo store conditions
             me.getView().down('#sqlConditionsCombo').getStore().setData(me.tableConfig.comboItems);
-            me.getView().down('#sqlConditionsCombo').setValue('');
+            me.getView().down('#sqlConditionsCombo').setValue(null);
 
             me.getView().down('#sqlFilterCombo').getStore().setData(me.tableConfig.comboItems);
-            me.getView().down('#sqlFilterCombo').setValue('');
+            me.getView().down('#sqlFilterCombo').setValue(null);
 
         });
 
@@ -385,6 +385,8 @@ Ext.define('Ung.view.reports.EntryController', {
             value: ''
         });
 
+        me.getView().down('#sqlConditionsCombo').setValue(null);
+
         vm.set('_sqlConditions', conds);
         me.getView().down('#sqlConditions').getStore().reload();
     },
@@ -398,9 +400,10 @@ Ext.define('Ung.view.reports.EntryController', {
     },
 
     sqlColumnRenderer: function (val) {
-        return Ext.Array.findBy(this.tableConfig.columns, function (col) {
+        var col =  Ext.Array.findBy(this.tableConfig.columns, function (col) {
             return col.dataIndex === val;
-        }).header;
+        });
+        return '<strong>' + col.header + '</strong> <span style="float: right;">[' + col.dataIndex + ']</span>';
     },
     // TABLE COLUMNS / CONDITIONS END
 
@@ -419,9 +422,8 @@ Ext.define('Ung.view.reports.EntryController', {
             javaClass: 'com.untangle.app.reports.SqlCondition'
         });
 
-        _filterComboCmp.setValue('');
+        _filterComboCmp.setValue(null);
         _operatorCmp.setValue('=');
-        _filterValueCmp.setValue('');
 
         me.getView().down('#filtersToolbar').remove('sqlFilterValue');
 
@@ -443,12 +445,13 @@ Ext.define('Ung.view.reports.EntryController', {
 
     onColumnChange: function (cmp, newValue) {
         var me = this;
-        if (newValue === '') { return; }
+
+        cmp.up('toolbar').remove('sqlFilterValue');
+
+        if (!newValue) { return; }
         var column = Ext.Array.findBy(me.tableConfig.columns, function (column) {
             return column.dataIndex === newValue;
         });
-
-        cmp.up('toolbar').remove('sqlFilterValue');
 
         if (column.widgetField) {
             column.widgetField.itemId = 'sqlFilterValue';

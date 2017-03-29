@@ -15,15 +15,17 @@ Ext.define('Ung.view.dashboard.NewWidgetController', {
             // me.lookup('tree').show();
         }
         vm.bind('{widget.displayColumns}', function (val) {
-            var columns = this.getView().down('grid').getColumns();
-            if (val) {
-                Ext.Array.each(columns, function (col) {
-                    col.setHidden(Ext.Array.indexOf(val, col.dataIndex) < 0);
-                });
-            } else {
-                Ext.Array.each(columns, function (col) {
-                    col.setHidden(Ext.Array.indexOf(vm.get('entry.defaultColumns'), col.dataIndex) < 0);
-                });
+            if (me.getView().down('grid')) {
+                var columns = me.getView().down('grid').getColumns();
+                if (val) {
+                    Ext.Array.each(columns, function (col) {
+                        col.setHidden(Ext.Array.indexOf(val, col.dataIndex) < 0);
+                    });
+                } else {
+                    Ext.Array.each(columns, function (col) {
+                        col.setHidden(Ext.Array.indexOf(vm.get('entry.defaultColumns'), col.dataIndex) < 0);
+                    });
+                }
             }
         });
     },
