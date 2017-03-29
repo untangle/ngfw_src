@@ -186,7 +186,7 @@ Ext.define('this', {
 
     // new methods .........
     generate: function (table) {
-        var checkboxes = [], comboItems = [{ text: 'Select Column ...', value: '' }];
+        var checkboxes = [], comboItems = [];
         var tableConfig = this.tableConfig[table];
 
         if (!tableConfig) {

@@ -637,6 +637,7 @@ Ext.define('Ung.view.reports.Entry', {
                         },
                         items: [{
                             xtype: 'combo',
+                            emptyText: 'Select Column ...',
                             flex: 1,
                             itemId: 'sqlConditionsCombo',
                             reference: 'sqlConditionsCombo',
@@ -646,14 +647,17 @@ Ext.define('Ung.view.reports.Entry', {
                             queryMode: 'local',
                             displayField: 'text',
                             valueField: 'value',
-                            store: { data: [] }
+                            store: { data: [] },
+                            listConfig: {
+                                itemTpl: ['<div data-qtip="{value}"><strong>{text}</strong></div>']
+                            },
                         }, {
                             xtype: 'button',
                             text: 'Add',
                             iconCls: 'fa fa-plus-circle',
                             disabled: true,
                             bind: {
-                                disabled: '{sqlConditionsCombo.value === ""}'
+                                disabled: '{!sqlConditionsCombo.value}'
                             },
                             handler: 'addSqlCondition'
                         }]
@@ -768,9 +772,10 @@ Ext.define('Ung.view.reports.Entry', {
             items: [{
                 xtype: 'combo',
                 // fieldLabel: 'Sessions',
+                emptyText: 'Select Column ...',
                 labelWidth: 100,
                 labelAlign: 'right',
-                width: 250,
+                width: 450,
                 itemId: 'sqlFilterCombo',
                 reference: 'sqlFilterCombo',
                 publishes: 'value',
@@ -780,6 +785,9 @@ Ext.define('Ung.view.reports.Entry', {
                 displayField: 'text',
                 valueField: 'value',
                 store: { data: [] },
+                listConfig: {
+                    itemTpl: ['<div data-qtip="{value}"><strong>{text}</strong> <span style="float: right;">[{value}]</span></div>']
+                },
                 listeners: {
                     change: 'onColumnChange'
                 }
@@ -794,7 +802,7 @@ Ext.define('Ung.view.reports.Entry', {
                 queryMode: 'local',
                 hidden: true,
                 bind: {
-                    hidden: '{sqlFilterCombo.value === ""}'
+                    hidden: '{!sqlFilterCombo.value}'
                 }
             },
             // {
@@ -816,7 +824,7 @@ Ext.define('Ung.view.reports.Entry', {
                 iconCls: 'fa fa-plus-circle',
                 disabled: true,
                 bind: {
-                    disabled: '{sqlFilterCombo.value === ""}'
+                    disabled: '{!sqlFilterCombo.value}'
                 },
                 handler: 'addSqlFilter'
             }]
@@ -824,7 +832,7 @@ Ext.define('Ung.view.reports.Entry', {
 
         columns: [{
             header: 'Column'.t(),
-            width: 255,
+            width: 435,
             dataIndex: 'column',
             renderer: 'sqlColumnRenderer'
         }, {
@@ -844,7 +852,7 @@ Ext.define('Ung.view.reports.Entry', {
         }, {
             header: 'Value'.t(),
             xtype: 'widgetcolumn',
-            flex: 1,
+            width: 300,
             widget: {
                 xtype: 'textfield',
                 bind: '{record.value}'
@@ -852,7 +860,8 @@ Ext.define('Ung.view.reports.Entry', {
         }, {
             xtype: 'actioncolumn',
             width: 30,
-            align: 'center',
+            flex: 1,
+            // align: 'center',
             iconCls: 'fa fa-minus-circle',
             handler: 'removeSqlFilter'
         }]
