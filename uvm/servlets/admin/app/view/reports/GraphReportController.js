@@ -174,7 +174,7 @@ Ext.define('Ung.view.reports.GraphReportController', {
             tooltip: {
                 enabled: true,
                 animation: false,
-                shared: false,
+                shared: true,
                 // distance: 30,
                 padding: 5,
                 hideDelay: 0,
@@ -548,7 +548,7 @@ Ext.define('Ung.view.reports.GraphReportController', {
                 spline: {
                     shadow: true,
                     dataGrouping: {
-                        groupPixelWidth: 16
+                        groupPixelWidth: 8
                     },
                 },
                 // time graphs
@@ -556,7 +556,7 @@ Ext.define('Ung.view.reports.GraphReportController', {
                     // shadow: true,
                     // fillOpacity: 0.3,
                     dataGrouping: {
-                        groupPixelWidth: 16
+                        groupPixelWidth: 8
                     },
                 },
                 column: {

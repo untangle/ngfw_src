@@ -25,7 +25,7 @@ Ext.define('Ung.store.ReportsTree', {
             // add reports to each category
             Ext.Array.each(group.items, function (entry) {
                 category.children.push({
-                    text: entry.get('title'),
+                    text: entry.get('localizedTitle'),
                     slug: entry.get('slug'),
                     url: entry.get('url'),
                     uniqueId: entry.get('uniqueId'),

@@ -1,9 +1,12 @@
 Ext.define('Ung.view.reports.TextReport', {
-    extend: 'Ext.container.Container',
+    extend: 'Ext.panel.Panel',
     alias: 'widget.textreport',
 
     viewModel: true,
     controller: 'textreport',
+
+    border: false,
+    bodyBorder: false,
 
     padding: 10,
 

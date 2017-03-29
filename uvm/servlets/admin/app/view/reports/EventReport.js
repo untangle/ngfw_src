@@ -16,6 +16,9 @@ Ext.define('Ung.view.reports.EventReport', {
 
     layout: 'border',
 
+    // border: false,
+    bodyBorder: false,
+
     defaults: {
         border: false
     },
@@ -31,6 +34,7 @@ Ext.define('Ung.view.reports.EventReport', {
         }
     }, {
         xtype: 'propertygrid',
+        itemId: 'properties',
         region: 'east',
         width: 400,
         minWidth: 200,

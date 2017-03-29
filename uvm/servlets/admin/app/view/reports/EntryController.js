@@ -44,6 +44,7 @@ Ext.define('Ung.view.reports.EntryController', {
             dataGrid.setLoading(true);
 
             me.tableConfig = TableConfig.generate(entry.get('table'));
+            // widget = Ext.getStore('widgets').findRecord('entryId', entry.get('uniqueId')) || null;
 
             if (entry.get('type') === 'EVENT_LIST') {
                 me.lookupReference('dataBtn').setPressed(false);
