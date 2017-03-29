@@ -271,6 +271,15 @@ public abstract class VirusBlockerBaseApp extends AppBase
     {
         List<GenericRule> s = new LinkedList<GenericRule>();
         s.add(new GenericRule("message/*", "messages", "misc", null, true));
+        s.add(new GenericRule("application/zip", "application", "zip", null, true));
+        s.add(new GenericRule("application/x-tar", "application", "compressed", null, true));
+        s.add(new GenericRule("application/x-gz", "application", "compressed", null, true));
+        s.add(new GenericRule("application/x-gzip", "application", "compressed", null, true));
+        s.add(new GenericRule("application/x-compressed", "application", "compressed", null, true));
+        s.add(new GenericRule("application/x-zip-compressed", "application", "compressed", null, true));
+        s.add(new GenericRule("application/x-rar-compressed", "application", "compressed", null, true));
+        s.add(new GenericRule("application/x-7z-compressed", "application", "compressed", null, true));
+        s.add(new GenericRule("application/octet-stream", "application", "octet", null, false));
 
         vs.setHttpMimeTypes(s);
     }
@@ -293,7 +302,7 @@ public abstract class VirusBlockerBaseApp extends AppBase
         s.add(new GenericRule("exe", "executable", "download", null, true));
         s.add(new GenericRule("com", "executable", "download", null, true));
         s.add(new GenericRule("ocx", "executable", "ActiveX", null, true));
-        s.add(new GenericRule("dll", "executable", "ActiveX", null, false));
+        s.add(new GenericRule("dll", "executable", "ActiveX", null, true));
         s.add(new GenericRule("cab", "executable", "ActiveX", null, true));
         s.add(new GenericRule("bin", "executable", "download", null, true));
         s.add(new GenericRule("bat", "executable", "download", null, true));
