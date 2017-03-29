@@ -28,12 +28,6 @@ Ext.define('Ung.apps.captiveportal.view.CaptivePage', {
         type: 'vbox'
     },
 
-    tbar: [{
-        text: 'Preview Captive Portal Page'.t(),
-        iconCls: 'fa fa-eye',
-        handler: 'previewCaptivePage'
-    }],
-
     items: [{
         xtype: 'radiogroup',
         margin: '0 0 20 0',
@@ -43,7 +37,8 @@ Ext.define('Ung.apps.captiveportal.view.CaptivePage', {
         items: [
             { boxLabel: '<strong>' + 'Basic Message'.t() + '</strong>', inputValue: 'BASIC_MESSAGE', width: 150 },
             { boxLabel: '<strong>' + 'Basic Login'.t() + '</strong>', inputValue: 'BASIC_LOGIN', width: 150 },
-            { boxLabel: '<strong>' + 'Custom'.t() + '</strong>', inputValue: 'CUSTOM', width: 150 }
+            { boxLabel: '<strong>' + 'Custom'.t() + '</strong>', inputValue: 'CUSTOM', width: 150 },
+            { xtype: 'button', iconCls: 'fa fa-eye', text: 'Preview Captive Portal Page'.t(), margin: '10 0 0 0', handler: 'previewCaptivePage' }
         ]
     }, {
         xtype: 'fieldset',
@@ -135,12 +130,11 @@ Ext.define('Ung.apps.captiveportal.view.CaptivePage', {
         bind: {
             hidden: '{settings.pageType !== "CUSTOM"}'
         },
-        defaults: {
-            xtype: 'form',
-            url: 'upload',
-            border: false
-        },
         items: [{
+            xtype: 'form',
+            name: 'upload_form',
+            border: false,
+            margin: '10 0 0 0',
             items: [{
                 xtype: 'fileuploadfield',
                 name: 'upload_file',
@@ -159,9 +153,12 @@ Ext.define('Ung.apps.captiveportal.view.CaptivePage', {
                 formBind: true,
                 name: 'upload',
                 text: 'Upload Custom File'.t(),
-                // handler: Ext.bind(this.onUploadCustomFile, this)
+                handler: 'uploadCustomFile'
             }]
         }, {
+            xtype: 'form',
+            name: 'remove_form',
+            border: false,
             margin: '10 0 0 0',
             items: [{
                 xtype: 'textfield',
@@ -188,7 +185,7 @@ Ext.define('Ung.apps.captiveportal.view.CaptivePage', {
                 xtype: 'button',
                 name: 'remove',
                 text: 'Remove Custom File'.t(),
-                // handler: Ext.bind(this.onRemoveCustomFile, this)
+                handler: 'removeCustomFile'
             }]
         }]
     }, {
