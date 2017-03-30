@@ -45,7 +45,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
             i, widget, entry;
 
         // refresh the dashboard manager grid if the widgets were affected
-        this.lookupReference('dashboardManager').getView().refresh();
+        this.lookup('dashboardManager').getView().refresh();
 
         dashboard.removeAll(true);
 
@@ -67,10 +67,11 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                 if (vm.get('reportsEnabled')) {
                     entry = Ext.getStore('reports').findRecord('uniqueId', widget.get('entryId'));
                     if (entry && !Ext.getStore('unavailableApps').first().get(entry.get('category')) && widget.get('enabled')) {
-                        dashboard.add({
+                        var wg = dashboard.add({
                             xtype: 'reportwidget',
                             itemId: widget.get('entryId'),
-                            refreshIntervalSec: widget.get('refreshIntervalSec'),
+                            // refreshIntervalSec: widget.get('refreshIntervalSec'),
+                            // refreshIntervalSec: 10,
                             viewModel: {
                                 data: {
                                     widget: widget,
@@ -78,6 +79,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                                 }
                             }
                         });
+                        DashboardQueue.add(wg);
                     } else {
                         dashboard.add({
                             xtype: 'component',
@@ -116,7 +118,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         // refresh dashboard manager grid
         this.getView().lookupReference('dashboardManager').getView().refresh();
 
-        var dashboard = this.getView().lookupReference('dashboard'),
+        var dashboard = this.getView().lookupReference('dashboard'), wg,
             widgets = Ext.getStore('widgets').getRange(), widget, entry, i;
 
         // traverse all widgets and add/remove those with report category as the passed app
@@ -128,10 +130,10 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                 dashboard.remove(widget.get('entryId'));
                 if (action === 'install') {
                     // add real widget
-                    dashboard.insert(i, {
+                    wg = dashboard.insert(i, {
                         xtype: 'reportwidget',
                         itemId: widget.get('entryId'),
-                        refreshIntervalSec: widget.get('refreshIntervalSec'),
+                        // refreshIntervalSec: widget.get('refreshIntervalSec'),
                         viewModel: {
                             data: {
                                 widget: widget,
@@ -139,6 +141,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                             }
                         }
                     });
+                    DashboardQueue.addFirst(wg);
                 } else {
                     // add widget placeholder
                     dashboard.insert(i, {
@@ -250,10 +253,10 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                     if (!Ext.getStore('unavailableApps').first().get(entry.get('category'))) {
                         widgetCmp.destroy();
                         if (!record.get('enabled')) {
-                            dashboard.insert(rowIndex, {
+                            widgetCmp = dashboard.insert(rowIndex, {
                                 xtype: 'reportwidget',
                                 itemId: record.get('entryId'),
-                                refreshIntervalSec: record.get('refreshIntervalSec'),
+                                // refreshIntervalSec: record.get('refreshIntervalSec'),
                                 viewModel: {
                                     data: {
                                         widget: record,
@@ -261,10 +264,11 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                                     }
                                 }
                             });
-                            widgetCmp = dashboard.down('#' + record.get('entryId'));
+                            // widgetCmp = dashboard.down('#' + record.get('entryId'));
                             setTimeout(function () {
                                 dashboard.scrollTo(0, dashboard.getEl().getScrollTop() + widgetCmp.getEl().getY() - 121, {duration: 300 });
                             }, 100);
+                            DashboardQueue.addFirst(widgetCmp);
                         } else {
                             dashboard.insert(rowIndex, {
                                 xtype: 'component',

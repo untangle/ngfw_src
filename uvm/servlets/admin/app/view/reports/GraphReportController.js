@@ -19,39 +19,46 @@ Ext.define('Ung.view.reports.GraphReportController', {
         // build the empty chart
         me.buildChart();
 
-        // whatch when report entry is changed or modified
-        vm.bind('{entry}', function (entry) {
-            // if it's not a graph report, do nothing
-            if (entry.get('type').indexOf('GRAPH') < 0) { return; }
 
-            if (modFields.uniqueId !== entry.get('uniqueId')) {
-                modFields = {
-                    uniqueId: entry.get('uniqueId'),
-                    timeDataInterval: entry.get('timeDataInterval'),
-                    pieNumSlices: entry.get('pieNumSlices'),
-                    timeStyle: entry.get('timeStyle'),
-                    pieStyle: entry.get('pieStyle'),
-                    approximation: entry.get('approximation'),
-                    colors: entry.get('colors')
-                };
-                // fetch report data first time
-                me.fetchData(true);
-                return;
-            }
+        if (!me.getView().up('reportwidget')) {
+            // whatch when report entry is changed or modified
 
-            // based on which fields are modified do some specific actions
-            Ext.Object.each(modFields, function (key, value) {
-                if (key === 'uniqueId') { return; }
-                if (value !== entry.get(key)) {
-                    modFields[key] = entry.get(key);
-                    if (key === 'timeDataInterval') { me.fetchData(false); }
-                    if (key === 'pieNumSlices') { me.setPieSeries(); }
-                    if (Ext.Array.indexOf(['timeStyle', 'pieStyle', 'approximation'], key) >= 0) { me.setStyles(); }
+            vm.bind('{entry}', function (entry) {
+                // if it's not a graph report, do nothing
+                if (entry.get('type').indexOf('GRAPH') < 0) { return; }
+
+                if (modFields.uniqueId !== entry.get('uniqueId')) {
+                    modFields = {
+                        uniqueId: entry.get('uniqueId'),
+                        timeDataInterval: entry.get('timeDataInterval'),
+                        pieNumSlices: entry.get('pieNumSlices'),
+                        timeStyle: entry.get('timeStyle'),
+                        pieStyle: entry.get('pieStyle'),
+                        approximation: entry.get('approximation'),
+                        colors: entry.get('colors')
+                    };
+                    // fetch report data first time
+                    me.fetchData(true);
+                    return;
                 }
+
+                // based on which fields are modified do some specific actions
+                Ext.Object.each(modFields, function (key, value) {
+                    if (key === 'uniqueId') { return; }
+                    if (value !== entry.get(key)) {
+                        modFields[key] = entry.get(key);
+                        if (key === 'timeDataInterval') { me.fetchData(false); }
+                        if (key === 'pieNumSlices') { me.setPieSeries(); }
+                        if (Ext.Array.indexOf(['timeStyle', 'pieStyle', 'approximation'], key) >= 0) { me.setStyles(); }
+                    }
+                });
+            }, me, {
+                deep: true
             });
-        }, me, {
-            deep: true
-        });
+        } else {
+            me.isWidget = true;
+            // DashboardQueue.add(me.getView());
+        }
     },
 
     /**
@@ -279,7 +286,7 @@ Ext.define('Ung.view.reports.GraphReportController', {
     /**
      * fetches the report data
      */
-    fetchData: function (reset) {
+    fetchData: function (reset, cb) {
         var me = this,
             vm = this.getViewModel(),
             entryType = vm.get('entry.type');
@@ -322,8 +329,9 @@ Ext.define('Ung.view.reports.GraphReportController', {
                     me.setPieSeries();
                 }
 
+                if (cb) { cb(); }
                 // if graph rendered inside reports, format and add data in current data grid
-                if (me.getView().up('reports-entry')) {
+                if (!me.isWidget) {
                     // vm.set('_currentData', []);
                     var ctrl = me.getView().up('reports-entry').getController();
                     switch (entryType) {
@@ -331,6 +339,13 @@ Ext.define('Ung.view.reports.GraphReportController', {
                         case 'TIME_GRAPH_DYNAMIC': ctrl.formatTimeDynamicData(me.data); break;
                         case 'PIE_GRAPH':          ctrl.formatPieData(me.data); break;
                     }
+                } else {
+                    // is widget
+                    // DashboardQueue.next();
+                    // console.log(me);
+                    // Ext.defer(function () {
+                    //     DashboardQueue.add(me);
+                    // }, me.refreshIntervalSec * 1000);
 
                 }
             });

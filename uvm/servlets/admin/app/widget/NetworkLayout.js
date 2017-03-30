@@ -30,11 +30,11 @@ Ext.define('Ung.widget.NetworkLayout', {
         cls: 'header',
         itemId: 'header',
         html: '<h1>' + 'Network Layout'.t() + '</h1>' +
-            '<button class="action-btn"><i class="fa fa-refresh" data-action="refresh"></i></button>'
+            '<div class="actions"><a class="action-btn"><i class="fa fa-rotate-left fa-lg" data-action="refresh"></i></a></div>'
     }, {
         //xtype: 'container',
         cls: 'net-layout',
-        margin: 10,
+        margin: '0 10 10 10',
         layout: {
             type: 'vbox',
             align: 'stretch'
@@ -70,11 +70,12 @@ Ext.define('Ung.widget.NetworkLayout', {
         }]
     }],
 
-    fetchData: function () {
+    fetchData: function (cb) {
         var me = this;
+
         Rpc.asyncData('rpc.networkManager.getNetworkSettings')
             .then(function(result) {
-                me.fireEvent('afterdata');
+                cb();
                 me.down('#externalInterface').removeAll();
                 me.down('#internalInterface').removeAll();
                 Ext.each(result.interfaces.list, function (iface) {

@@ -19,14 +19,14 @@ Ext.define('Ung.widget.NetworkInformation', {
 
     viewModel: true,
 
-    refreshIntervalSec: 3,
+    refreshIntervalSec: 10,
 
     items: [{
         xtype: 'component',
         cls: 'header',
         itemId: 'header',
         html: '<h1>' + 'Network Information'.t() + '</h1>' +
-            '<button class="action-btn"><i class="material-icons" data-action="refresh">refresh</i></button>'
+            '<div class="actions"><a class="action-btn"><i class="fa fa-rotate-left fa-lg" data-action="refresh"></i></a></div>'
     }, {
         xtype: 'container',
         //cls: 'wg-wrapper flex',
@@ -58,7 +58,7 @@ Ext.define('Ung.widget.NetworkInformation', {
         }]
     }],
 
-    fetchData: function () {
+    fetchData: function (cb) {
         var me = this,
             vm = this.getViewModel();
 
@@ -66,8 +66,9 @@ Ext.define('Ung.widget.NetworkInformation', {
             Rpc.asyncData('rpc.sessionMonitor.getSessionStats')
                 .then(function(result) {
                     vm.set('sessions', result);
+                    cb();
                     //console.log(result);
-                    me.fireEvent('afterdata');
+                    // me.fireEvent('afterdata');
                 });
         }
     }

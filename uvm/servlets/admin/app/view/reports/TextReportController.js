@@ -16,7 +16,11 @@ Ext.define('Ung.view.reports.TextReportController', {
             if (entry.get('type') !== 'TEXT') {
                 return;
             }
-            me.fetchData();
+            if (!me.getView().up('reportwidget')) {
+                me.fetchData();
+            } else {
+                me.isWidget = true;
+            }
         });
     },
 
@@ -24,7 +28,7 @@ Ext.define('Ung.view.reports.TextReportController', {
         this.getView().setHtml('');
     },
 
-    fetchData: function () {
+    fetchData: function (reset, cb) {
         var me = this, vm = this.getViewModel();
         me.entry = vm.get('entry');
         me.getView().setLoading(true);
@@ -46,6 +50,9 @@ Ext.define('Ung.view.reports.TextReportController', {
                 if (me.getView().up('reports-entry')) {
                     me.getView().up('reports-entry').getController().formatTextData(result.list);
                 }
+
+                if (cb) { cb(); }
+
             });
     },
 

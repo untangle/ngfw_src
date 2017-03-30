@@ -16,7 +16,7 @@ Ext.define('Ung.view.reports.EventReport', {
 
     layout: 'border',
 
-    // border: false,
+    border: false,
     bodyBorder: false,
 
     defaults: {
