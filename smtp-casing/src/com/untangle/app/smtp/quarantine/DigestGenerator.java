@@ -24,7 +24,7 @@ import com.untangle.uvm.util.I18nUtil;
 class DigestGenerator
 {
     // Template name stuff
-    private static final String RESOURCE_ROOT = "com.untangle.app/smtp/quarantine/";
+    private static final String RESOURCE_ROOT = "com/untangle/app/smtp/quarantine/";
     private static final String HTML_TEMPLATE_NAME = "DigestSimpleEmail_HTML.vm";
 
     // Variables within the Velocity templates. Note that these must align
