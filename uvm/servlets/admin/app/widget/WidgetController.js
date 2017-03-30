@@ -169,20 +169,20 @@ Ext.define('Ung.widget.WidgetController', {
         if (vm.get('entry')) {
             entryType = vm.get('entry.type');
             if (entryType === 'TIME_GRAPH' || entryType === 'TIME_GRAPH_DYNAMIC') {
-                view.add({ xtype: 'graphreport', itemId: 'report-widget',  reference: 'chart', height: 250, widgetDisplay: true });
+                view.add({ xtype: 'graphreport', itemId: 'report-widget',  reference: 'chart', height: 248, widgetDisplay: true });
             }
 
             if (entryType === 'PIE_GRAPH') {
-                view.add({ xtype: 'graphreport', itemId: 'report-widget', reference: 'chart',  height: 250, widgetDisplay: true });
+                view.add({ xtype: 'graphreport', itemId: 'report-widget', reference: 'chart',  height: 248, widgetDisplay: true });
             }
 
             if (entryType === 'TEXT') {
-                view.add({ xtype: 'textreport', itemId: 'report-widget', height: 250 });
+                view.add({ xtype: 'textreport', itemId: 'report-widget', height: 248 });
             }
 
 
             if (entryType === 'EVENT_LIST') {
-                view.add({ xtype: 'eventreport', itemId: 'report-widget', height: 250 });
+                view.add({ xtype: 'eventreport', itemId: 'report-widget', height: 248 });
             }
         }
     },
@@ -195,7 +195,7 @@ Ext.define('Ung.widget.WidgetController', {
 
         widget.getViewModel().bind('{widget.enabled}', function (enabled) {
             if (enabled && Ext.isFunction(widget.fetchData)) {
-                Ung.view.dashboard.Queue.add(widget);
+                DashboardQueue.add(widget);
             }
         });
         // widget.getViewModel().bind('{widget.timeframe}', function (tf) {
@@ -218,7 +218,11 @@ Ext.define('Ung.widget.WidgetController', {
 
     onBeforeRemove: function (widget) {
         // remove widget from queue if; important if removal is happening while fetching data
-        Ung.view.dashboard.Queue.remove(widget);
+        // Ung.view.dashboard.Queue.remove(widget);
+        if (widget.tout) {
+            clearTimeout(widget.tout);
+            widget.tout = null;
+        }
     },
 
     onShow: function (widget) {
@@ -231,11 +235,11 @@ Ext.define('Ung.widget.WidgetController', {
     },
 
     addToQueue: function () {
-        var widget = this.getView();
-        if (widget.refreshTimeoutId) {
-            clearTimeout(widget.refreshTimeoutId);
-        }
-        Ung.view.dashboard.Queue.addFirst(widget);
+        // var widget = this.getView();
+        // if (widget.refreshTimeoutId) {
+        //     clearTimeout(widget.refreshTimeoutId);
+        // }
+        DashboardQueue.addFirst(this.getView());
     },
 
     // cancelEdit: function (btn) {

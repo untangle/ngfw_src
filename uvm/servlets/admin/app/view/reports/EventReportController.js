@@ -19,6 +19,7 @@ Ext.define('Ung.view.reports.EventReportController', {
             me.getView().remove('properties');
         }
 
+
         vm.bind('{entry}', function (entry) {
 
             if (entry.get('type') !== 'EVENT_LIST') { return; }
@@ -37,8 +38,12 @@ Ext.define('Ung.view.reports.EventReportController', {
                 });
 
                 me.getView().down('grid').setColumns(me.tableConfig.columns);
-                me.fetchData();
 
+                if (!me.getView().up('reportwidget')) {
+                    me.fetchData();
+                } else {
+                    me.isWidget = true;
+                }
                 return;
             }
 
@@ -65,7 +70,7 @@ Ext.define('Ung.view.reports.EventReportController', {
         this.getView().down('grid').getSelectionModel().deselectAll();
     },
 
-    fetchData: function () {
+    fetchData: function (reset, cb) {
         var me = this, vm = this.getViewModel();
         me.entry = vm.get('entry');
 
@@ -90,6 +95,7 @@ Ext.define('Ung.view.reports.EventReportController', {
                 });
 
                 me.loadResultSet(result);
+                if (cb) { cb(); }
             });
     },
 
@@ -107,7 +113,7 @@ Ext.define('Ung.view.reports.EventReportController', {
     onEventSelect: function (el, record) {
         var me = this, vm = this.getViewModel(), propsData = [];
 
-        if (me.getView().up('#dashboard')) { return; }
+        if (me.isWidget) { return; }
 
         Ext.Array.each(me.tableConfig.columns, function (column) {
             propsData.push({
