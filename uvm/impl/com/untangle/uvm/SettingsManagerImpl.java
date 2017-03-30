@@ -105,7 +105,8 @@ public class SettingsManagerImpl implements SettingsManager
                                "-e 's/nodeName/appName/g' " +
                                "-e 's/untangle-node-//g' " +
                                "-e 's/untangle-casing-//g' " +
-                               "-i " + System.getProperty("uvm.settings.dir") + "/untangle-vm/nodes*",
+                               "-i " + System.getProperty("uvm.settings.dir") + "/untangle-vm/nodes*" + " " +
+                               "-i " + System.getProperty("uvm.settings.dir") + "/untangle-vm/apps*",
 
                                "/bin/sed " +
                                "-e 's/SmtpNodeSettings/SmtpSettings/g' " +
