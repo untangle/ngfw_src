@@ -859,7 +859,14 @@ class NetworkTests(unittest2.TestCase):
             
         # if dynamic name is already in the ddclient cache with the same IP, dyndns is never updates
         # we need a name never used or name with cache IP different than in the cache
-        result = subprocess.check_output("wget --timeout=4 -q -O - \"$@\" checkip.dyndns.com", shell=True)
+        for i in range(0,10):
+            try:
+                result = subprocess.check_output("wget --timeout=4 -q -O - \"$@\" checkip.dyndns.com", shell=True)
+            except subprocess.CalledProcessError, e:
+                print e.output
+                time.sleep(1)
+                continue
+            break
         match = re.search(r'\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result)
         outsideIP = match.group()
         dyn_hostname = getUsableName(outsideIP)
