@@ -64,8 +64,15 @@ Ext.define('Ung.apps.captiveportal.MainController', {
     previewCaptivePage: function () {
         var vm = this.getViewModel();
         if (vm.get('instance.targetState') !== 'RUNNING') {
-            Ext.MessageBox.alert('Captive Portal is Disabled',
-                    'You must turn on the Captive Portal to preview the Captive Page.'.t());
+            Ext.MessageBox.alert('Captive Portal is Disabled'.t(),
+                'You must turn on the Captive Portal to preview the Captive Page.'.t());
+            return;
+        }
+
+        var custfile = this.getViewModel().get('settings.customFilename');
+        if ( custfile == null || custfile.length === 0 ) {
+            Ext.MessageBox.alert('Missing Custom Captive Page'.t(),
+                'You must upload a custom captive page to use this feature.'.t());
             return;
         }
         window.open('/capture/handler.py/index?appid=' + vm.get('instance.id') , '_blank');
