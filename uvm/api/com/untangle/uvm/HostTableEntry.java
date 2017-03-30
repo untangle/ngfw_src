@@ -443,6 +443,8 @@ public class HostTableEntry implements Serializable, JSONString
      */
     public String getHostname()
     {
+        if (getHostnameReports() != null)
+            return getHostnameReports();
         if (getHostnameDhcp() != null)
             return getHostnameDhcp();
         if (getHostnameDirectoryConnector() != null)
@@ -451,8 +453,6 @@ public class HostTableEntry implements Serializable, JSONString
             return getHostnameDns();
         if (getHostnameOpenvpn() != null)
             return getHostnameOpenvpn();
-        if (getHostnameReports() != null)
-            return getHostnameReports();
         if (getHostnameDevice() != null)
             return getHostnameDevice();
         return null;
@@ -463,6 +463,8 @@ public class HostTableEntry implements Serializable, JSONString
      */
     public String getHostnameSource()
     {
+        if (getHostnameReports() != null)
+            return "Reports";
         if (getHostnameDhcp() != null)
             return "DHCP";
         if (getHostnameDirectoryConnector() != null)
@@ -471,8 +473,6 @@ public class HostTableEntry implements Serializable, JSONString
             return "DHCP";
         if (getHostnameOpenvpn() != null)
             return "OpenVPN";
-        if (getHostnameReports() != null)
-            return "Reports";
         if (getHostnameDevice() != null)
             return "Device";
         return null;
