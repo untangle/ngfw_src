@@ -38,15 +38,16 @@ public class HostTableEntry implements Serializable, JSONString
     private String hostnameDhcp = null;
     private String hostnameDns = null;
     private String hostnameDevice = null;
-    private String hostnameOpenvpn = null;
+    private String hostnameDeviceLastKnown = null;
+    private String hostnameOpenVpn = null;
     private String hostnameReports = null;
     private String hostnameDirectoryConnector = null;
 
     private boolean captivePortalAuthenticated = false; /* marks if this user is authenticated with captive portal */
 
-    private String usernameCapture = null;
-    private String usernameTunnel = null;
-    private String usernameOpenvpn = null;
+    private String usernameCaptivePortal = null;
+    private String usernameIpsecVpn = null;
+    private String usernameOpenVpn = null;
     private String usernameDirectoryConnector = null;
     private String usernameDevice = null;
     
@@ -78,14 +79,14 @@ public class HostTableEntry implements Serializable, JSONString
         this.setHostnameDhcp( other.getHostnameDhcp() );
         this.setHostnameDns( other.getHostnameDns() );
         this.setHostnameDevice( other.getHostnameDevice() );
-        this.setHostnameOpenvpn( other.getHostnameOpenvpn() );
+        this.setHostnameOpenVpn( other.getHostnameOpenVpn() );
         this.setHostnameReports( other.getHostnameReports() );
         this.setHostnameDirectoryConnector( other.getHostnameDirectoryConnector() );
         this.setUsernameDirectoryConnector( other.getUsernameDirectoryConnector() );
-        this.setUsernameCapture( other.getUsernameCapture() );
+        this.setUsernameCaptivePortal( other.getUsernameCaptivePortal() );
         this.setCaptivePortalAuthenticated( other.getCaptivePortalAuthenticated() );
-        this.setUsernameTunnel( other.getUsernameTunnel() );
-        this.setUsernameOpenvpn( other.getUsernameOpenvpn() );
+        this.setUsernameIpsecVpn( other.getUsernameIpsecVpn() );
+        this.setUsernameOpenVpn( other.getUsernameOpenVpn() );
         this.setQuotaSize( other.getQuotaSize() );
         this.setQuotaRemaining( other.getQuotaRemaining() );
         this.setQuotaIssueTime( other.getQuotaIssueTime() );
@@ -214,13 +215,23 @@ public class HostTableEntry implements Serializable, JSONString
         updateAccessTime();
     }
 
-    public String getHostnameOpenvpn() { return this.hostnameOpenvpn; }
-    public void setHostnameOpenvpn( String newValue )
+    public String getHostnameDeviceLastKnown() { return this.hostnameDeviceLastKnown; }
+    public void setHostnameDeviceLastKnown( String newValue )
     {
-        if ( Objects.equals( newValue, this.hostnameOpenvpn ) )
+        if ( Objects.equals( newValue, this.hostnameDeviceLastKnown ) )
             return;
-        updateEvent( "hostnameOpenvpn", this.hostnameOpenvpn, newValue );
-        this.hostnameOpenvpn = newValue;
+        updateEvent( "hostnameDeviceLastKnown", this.hostnameDeviceLastKnown, newValue );
+        this.hostnameDeviceLastKnown = newValue;
+        updateAccessTime();
+    }
+    
+    public String getHostnameOpenVpn() { return this.hostnameOpenVpn; }
+    public void setHostnameOpenVpn( String newValue )
+    {
+        if ( Objects.equals( newValue, this.hostnameOpenVpn ) )
+            return;
+        updateEvent( "hostnameOpenVpn", this.hostnameOpenVpn, newValue );
+        this.hostnameOpenVpn = newValue;
         updateAccessTime();
     }
 
@@ -256,15 +267,15 @@ public class HostTableEntry implements Serializable, JSONString
         updateAccessTime();
     }
     
-    public String getUsernameCapture() { return this.usernameCapture; }
-    public void setUsernameCapture( String newValue )
+    public String getUsernameCaptivePortal() { return this.usernameCaptivePortal; }
+    public void setUsernameCaptivePortal( String newValue )
     {
         newValue = (newValue == null ? null : newValue.toLowerCase());
 
-        if ( Objects.equals( newValue, this.usernameCapture ) )
+        if ( Objects.equals( newValue, this.usernameCaptivePortal ) )
             return;
-        updateEvent( "usernameCapture", this.usernameCapture, newValue );
-        this.usernameCapture = newValue;
+        updateEvent( "usernameCaptivePortal", this.usernameCaptivePortal, newValue );
+        this.usernameCaptivePortal = newValue;
         updateAccessTime();
     }
 
@@ -290,27 +301,27 @@ public class HostTableEntry implements Serializable, JSONString
         updateAccessTime();
     }
 
-    public String getUsernameTunnel() { return this.usernameTunnel; }
-    public void setUsernameTunnel( String newValue )
+    public String getUsernameIpsecVpn() { return this.usernameIpsecVpn; }
+    public void setUsernameIpsecVpn( String newValue )
     {
         newValue = (newValue == null ? null : newValue.toLowerCase());
 
-        if ( Objects.equals( newValue, this.usernameTunnel ) )
+        if ( Objects.equals( newValue, this.usernameIpsecVpn ) )
             return;
-        updateEvent( "usernameTunnel", this.usernameTunnel, newValue );
-        this.usernameTunnel = newValue;
+        updateEvent( "usernameIpsecVpn", this.usernameIpsecVpn, newValue );
+        this.usernameIpsecVpn = newValue;
         updateAccessTime();
     }
 
-    public String getUsernameOpenvpn() { return this.usernameOpenvpn; }
-    public void setUsernameOpenvpn( String newValue )
+    public String getUsernameOpenVpn() { return this.usernameOpenVpn; }
+    public void setUsernameOpenVpn( String newValue )
     {
         newValue = (newValue == null ? null : newValue.toLowerCase());
 
-        if ( Objects.equals( newValue, this.usernameOpenvpn ) )
+        if ( Objects.equals( newValue, this.usernameOpenVpn ) )
             return;
-        updateEvent( "usernameOpenvpn", this.usernameOpenvpn, newValue );
-        this.usernameOpenvpn = newValue;
+        updateEvent( "usernameOpenVpn", this.usernameOpenVpn, newValue );
+        this.usernameOpenVpn = newValue;
         updateAccessTime();
     }
 
@@ -443,6 +454,8 @@ public class HostTableEntry implements Serializable, JSONString
      */
     public String getHostname()
     {
+        if (getHostnameDevice() != null)
+            return getHostnameDevice();
         if (getHostnameReports() != null)
             return getHostnameReports();
         if (getHostnameDhcp() != null)
@@ -451,10 +464,10 @@ public class HostTableEntry implements Serializable, JSONString
             return getHostnameDirectoryConnector();
         if (getHostnameDns() != null)
             return getHostnameDns();
-        if (getHostnameOpenvpn() != null)
-            return getHostnameOpenvpn();
-        if (getHostnameDevice() != null)
-            return getHostnameDevice();
+        if (getHostnameOpenVpn() != null)
+            return getHostnameOpenVpn();
+        if (getHostnameDeviceLastKnown() != null)
+            return getHostnameDeviceLastKnown();
         return null;
     }
 
@@ -463,6 +476,8 @@ public class HostTableEntry implements Serializable, JSONString
      */
     public String getHostnameSource()
     {
+        if (getHostnameDevice() != null)
+            return "Device";
         if (getHostnameReports() != null)
             return "Reports";
         if (getHostnameDhcp() != null)
@@ -471,10 +486,10 @@ public class HostTableEntry implements Serializable, JSONString
             return "Directory Connector";
         if (getHostnameDns() != null)
             return "DHCP";
-        if (getHostnameOpenvpn() != null)
+        if (getHostnameOpenVpn() != null)
             return "OpenVPN";
         if (getHostnameDevice() != null)
-            return "Device";
+            return "Device Last Known";
         return null;
     }
 
@@ -484,12 +499,12 @@ public class HostTableEntry implements Serializable, JSONString
      */
     public String getUsername()
     {
-        if (getUsernameCapture() != null)
-            return getUsernameCapture();
-        if (getUsernameTunnel() != null)
-            return getUsernameTunnel();
-        if (getUsernameOpenvpn() != null)
-            return getUsernameOpenvpn();
+        if (getUsernameCaptivePortal() != null)
+            return getUsernameCaptivePortal();
+        if (getUsernameIpsecVpn() != null)
+            return getUsernameIpsecVpn();
+        if (getUsernameOpenVpn() != null)
+            return getUsernameOpenVpn();
         if (getUsernameDirectoryConnector() != null)
             return getUsernameDirectoryConnector();
         if (getUsernameDevice() != null)
@@ -502,11 +517,11 @@ public class HostTableEntry implements Serializable, JSONString
      */
     public String getUsernameSource()
     {
-        if (getUsernameCapture() != null)
+        if (getUsernameCaptivePortal() != null)
             return "Captive Portal";
-        if (getUsernameTunnel() != null)
-            return "L2TP/IPsec";
-        if (getUsernameOpenvpn() != null)
+        if (getUsernameIpsecVpn() != null)
+            return "IPsec VPN (L2TP)";
+        if (getUsernameOpenVpn() != null)
             return "OpenVPN";
         if (getUsernameDirectoryConnector() != null)
             return "Directory Connector";
@@ -532,7 +547,7 @@ public class HostTableEntry implements Serializable, JSONString
     /**
      * Utility method to check that hostname is known
      */
-    public boolean isHostnameKnown()
+    public boolean hostnameKnown()
     {
         String hostname = getHostname();
         if (hostname == null)

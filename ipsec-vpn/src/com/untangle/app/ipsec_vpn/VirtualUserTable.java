@@ -33,7 +33,7 @@ public class VirtualUserTable
     {
         // set the global tunnel username and also the tunnel marker so we don't get timed-out of the table
         HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry(clientAddress, true);
-        entry.setUsernameTunnel(clientUsername);
+        entry.setUsernameIpsecVpn(clientUsername);
 
         // store the user details in our local table
         VirtualUserEntry local = new VirtualUserEntry(clientProtocol, clientAddress, clientUsername, netInterface, netProcess);
@@ -47,7 +47,7 @@ public class VirtualUserTable
         // clear the global tunnel username and turn off the tunnel marker so host table knows we are done
         HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry(clientAddress, false);
         if (entry != null) {
-            entry.setUsernameTunnel(null);
+            entry.setUsernameIpsecVpn(null);
         }
 
         // clear the user detail sfrom our local table

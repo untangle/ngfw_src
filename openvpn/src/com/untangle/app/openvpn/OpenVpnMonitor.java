@@ -322,7 +322,7 @@ class OpenVpnMonitor implements Runnable
             if ( stats.name != null ) {
                 HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry( stats.poolAddress, false );
                 if ( entry != null ) {
-                    entry.setUsernameOpenvpn( null );
+                    entry.setUsernameOpenVpn( null );
                 }
             }
         }
@@ -382,8 +382,8 @@ class OpenVpnMonitor implements Runnable
         // set the global openvpn username in the host table
         if ( poolAddress != null ) {
             HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry( poolAddress, true );
-            entry.setHostnameOpenvpn( name );
-            entry.setUsernameOpenvpn( name );
+            entry.setHostnameOpenVpn( name );
+            entry.setUsernameOpenVpn( name );
         }
         
         ClientState stats = activeMap.get( name );

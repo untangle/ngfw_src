@@ -126,7 +126,7 @@ public class Registration extends HttpServlet
             UvmContextFactory.context().logEvent( evt );
 
             /* If the hostname was specified and is not already known - set it */
-            if ( hostname != null && !entry.isHostnameKnown() )
+            if ( hostname != null )
                 entry.setHostnameDirectoryConnector( hostname );
         }
         
