@@ -67,6 +67,7 @@ Ext.define('Ung.view.shd.Devices', {
             { header: 'MAC Vendor'.t(), dataIndex: 'macVendor' },
             { header: 'Interface'.t(), dataIndex: 'lastSeenInterfaceId' },
             { header: 'Hostname'.t(), dataIndex: 'hostname' },
+            { header: 'Hostname Last Known'.t(), dataIndex: 'hostnameLastKnown' },
             { header: 'Username'.t(), dataIndex: 'username' },
             { header: 'HTTP'.t() + ' - ' + 'User Agent'.t(), dataIndex: 'httpUserAgent' },
             { header: 'Last Seen Time'.t(), dataIndex: 'lastSessionTimeDate' },
@@ -104,7 +105,7 @@ Ext.define('Ung.view.shd.Devices', {
         sourceConfig: {
             username:            { displayName: 'Username'.t() },
             hostname:            { displayName: 'Hostname'.t() },
-            hostnameKnown:       { displayName: 'Hostname Known'.t(), renderer: 'boolRenderer' },
+            hostnameLastKnown:   { displayName: 'HostnameLastKnown'.t() },
             httpUserAgent:       { displayName: 'HTTP'.t() + ' - ' + 'User Agent'.t() },
             lastSeenInterfaceId: { displayName: 'Interface'.t() },
             lastSessionTime:     { displayName: 'Last Seen Time'.t(), renderer: 'timestampRenderer' },

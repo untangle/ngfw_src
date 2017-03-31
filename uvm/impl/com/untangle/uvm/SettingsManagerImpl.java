@@ -112,6 +112,11 @@ public class SettingsManagerImpl implements SettingsManager
                                "-e 's/SmtpNodeSettings/SmtpSettings/g' " +
                                "-i " + System.getProperty("uvm.settings.dir") + "/smtp/settings*",
 
+                               // nuke hostnames from devices
+                               "/bin/sed " +
+                               "-e '/\\s\\+\"hostname\":/d' " +
+                               "-i " + System.getProperty("uvm.settings.dir") + "/untangle-vm/devices*",
+
                                // just rename the symlink - not the destination
                                "/usr/bin/rename 's/nodes.js/apps.js/' " + System.getProperty("uvm.settings.dir") + "/untangle-vm/nodes.js",
             };

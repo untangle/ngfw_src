@@ -431,6 +431,8 @@ public class HostTableImpl implements HostTable
          */
         if ( deviceEntry.getHostname() != null )
             entry.setHostnameDevice( deviceEntry.getHostname() );
+        if ( deviceEntry.getHostnameLastKnown() != null )
+            entry.setHostnameDeviceLastKnown( deviceEntry.getHostnameLastKnown() );
         if ( deviceEntry.getUsername() != null )
             entry.setUsernameDevice( deviceEntry.getUsername() );
         if ( deviceEntry.getHttpUserAgent() != null )
@@ -443,11 +445,11 @@ public class HostTableImpl implements HostTable
          * Update Device Entry
          */
         if ( entry.getHostnameDhcp() != null ) {
-            deviceEntry.setHostname( entry.getHostnameDhcp() );
+            deviceEntry.setHostnameLastKnown( entry.getHostnameDhcp() );
         } else if ( entry.getHostnameDirectoryConnector() != null ) {
-            deviceEntry.setHostname( entry.getHostnameDirectoryConnector() );
+            deviceEntry.setHostnameLastKnown( entry.getHostnameDirectoryConnector() );
         }else if ( entry.getHostnameDns() != null ) {
-            deviceEntry.setHostname( entry.getHostnameDns() );
+            deviceEntry.setHostnameLastKnown( entry.getHostnameDns() );
         }
     }
 
@@ -741,7 +743,7 @@ public class HostTableImpl implements HostTable
                                 logger.debug("HostTableReverseHostnameLookup: Skipping " + address + " - null");
                             continue;
                         }
-                        if ( entry.isHostnameKnown() ) {
+                        if ( entry.hostnameKnown() ) {
                             if ( logger.isDebugEnabled() )
                                 logger.debug("HostTableReverseHostnameLookup: Skipping " + address.getHostAddress() + " - already known hostname: " + currentHostname);
                             continue;

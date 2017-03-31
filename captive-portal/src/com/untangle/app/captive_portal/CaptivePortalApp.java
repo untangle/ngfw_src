@@ -792,7 +792,7 @@ public class CaptivePortalApp extends AppBase
                     }
 
                     if (entry != null) {
-                        entry.setUsernameCapture(null);
+                        entry.setUsernameCaptivePortal(null);
                         entry.setCaptivePortalAuthenticated(false);
                     }
                     continue;

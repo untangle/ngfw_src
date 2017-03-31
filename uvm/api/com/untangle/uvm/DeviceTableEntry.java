@@ -34,6 +34,7 @@ public class DeviceTableEntry implements Serializable, JSONString
     private String      macVendor = null;
     private String      username = null;
     private String      hostname = null;
+    private String      hostnameLastKnown = null;
     private String      httpUserAgent = null;
     private int         interfaceId = 0;
     private long        lastSessionTime = 0; /* time of the last new session */
@@ -64,6 +65,7 @@ public class DeviceTableEntry implements Serializable, JSONString
         this.setMacVendor( other.getMacVendor() );
         this.setUsername( other.getUsername() );
         this.setHostname( other.getHostname() );
+        this.setHostnameLastKnown( other.getHostnameLastKnown() );
         this.setHttpUserAgent( other.getHttpUserAgent() );
         this.setLastSessionTime( other.getLastSessionTime() );
         this.setInterfaceId( other.getInterfaceId() );
@@ -120,6 +122,22 @@ public class DeviceTableEntry implements Serializable, JSONString
             return;
         updateEvent( "hostname", this.hostname, newValue );
         this.hostname = newValue;
+    }
+
+    public String getHostnameLastKnown() { return this.hostnameLastKnown; }
+    public void setHostnameLastKnown( String newValue )
+    {
+        if ( newValue != null ) {
+            Matcher matcher = ipv4Pattern.matcher( newValue );
+            if (matcher.matches()) {
+                return; // if its an IP, ignore it
+            }
+        }
+
+        if ( Objects.equals( newValue, this.hostnameLastKnown ) )
+            return;
+        updateEvent( "hostnameLastKnown", this.hostnameLastKnown, newValue );
+        this.hostnameLastKnown = newValue;
     }
 
     public String getHttpUserAgent() { return this.httpUserAgent; }
@@ -216,7 +234,7 @@ public class DeviceTableEntry implements Serializable, JSONString
     /**
      * Utility method to check that hostname is known
      */
-    public boolean isHostnameKnown()
+    public boolean hostnameKnown()
     {
         String hostname = getHostname();
         if (hostname == null)
