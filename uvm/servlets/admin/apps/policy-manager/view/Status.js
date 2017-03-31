@@ -6,6 +6,11 @@ Ext.define('Ung.apps.policymanager.view.Status', {
 
     viewModel: true,
 
+    layout: {
+        type: 'vbox',
+        align: 'stretch'
+    },
+
     items: [{
         border: false,
         bodyPadding: 10,
