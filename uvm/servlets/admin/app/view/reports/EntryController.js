@@ -400,10 +400,7 @@ Ext.define('Ung.view.reports.EntryController', {
     },
 
     sqlColumnRenderer: function (val) {
-        var col =  Ext.Array.findBy(this.tableConfig.columns, function (col) {
-            return col.dataIndex === val;
-        });
-        return '<strong>' + col.header + '</strong> <span style="float: right;">[' + col.dataIndex + ']</span>';
+        return '<strong>' + TableConfig.getColumnHumanReadableName(val) + '</strong> <span style="float: right;">[' + val + ']</span>';
     },
     // TABLE COLUMNS / CONDITIONS END
 
@@ -455,9 +452,9 @@ Ext.define('Ung.view.reports.EntryController', {
 
         if (column.widgetField) {
             column.widgetField.itemId = 'sqlFilterValue';
-            cmp.up('toolbar').insert(2, column.widgetField);
+            cmp.up('toolbar').insert(4, column.widgetField);
         } else {
-            cmp.up('toolbar').insert(2, {
+            cmp.up('toolbar').insert(4, {
                 xtype: 'textfield',
                 itemId: 'sqlFilterValue',
                 value: ''
@@ -470,6 +467,61 @@ Ext.define('Ung.view.reports.EntryController', {
             this.addSqlFilter();
         }
     },
+
+    sqlFilterQuickItems: function (btn) {
+        var me = this, menuItem, menuItems = [], col;
+        Rpc.asyncData('rpc.reportsManager.getConditionQuickAddHints').then(function (result) {
+            Ext.Object.each(result, function (key, vals) {
+                menuItem = {
+                    text: TableConfig.getColumnHumanReadableName(key),
+                    disabled: vals.length === 0
+                };
+                if (vals.length > 0) {
+                    menuItem.menu = {
+                        plain: true,
+                        items: Ext.Array.map(vals, function (val) {
+                            return {
+                                text: val,
+                                column: key
+                            };
+                        }),
+                        listeners: {
+                            click: 'selectQuickFilter'
+                        }
+                    };
+                }
+                menuItems.push(menuItem);
+
+
+            });
+            btn.getMenu().removeAll();
+            btn.getMenu().add(menuItems);
+        });
+    },
+
+    selectQuickFilter: function (menu, item) {
+        var me = this, vm = this.getViewModel(),
+            _filterComboCmp = me.getView().down('#sqlFilterCombo'),
+            _operatorCmp = me.getView().down('#sqlFilterOperator');
+
+        vm.get('sqlFilterData').push({
+            column: item.column,
+            operator: '=',
+            value: item.text,
+            javaClass: 'com.untangle.app.reports.SqlCondition'
+        });
+
+        _filterComboCmp.setValue(null);
+        _operatorCmp.setValue('=');
+
+        me.getView().down('#filtersToolbar').remove('sqlFilterValue');
+
+        me.getView().down('#sqlFilters').setTitle('Filters'.t() + ' (' + vm.get('sqlFilterData').length + ')');
+        me.getView().down('#sqlFilters').getStore().reload();
+        me.refreshData();
+
+    },
+
     // END FILTERS
 
 

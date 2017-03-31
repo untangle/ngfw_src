@@ -734,7 +734,7 @@ Ext.define('Ung.view.reports.Entry', {
         region: 'south',
         xtype: 'grid',
         height: 280,
-        title: 'Filters'.t() + ' (0)',
+        title: '<i class="fa fa-filter"></i> ' + 'Filters' + ' (0)',
         itemId: 'sqlFilters',
         collapsible: true,
         collapsed: true,
@@ -770,6 +770,20 @@ Ext.define('Ung.view.reports.Entry', {
                 pack: 'start'
             },
             items: [{
+                xtype: 'button',
+                text: 'Quick Add'.t(),
+                iconCls: 'fa fa-plus-circle',
+                menu: {
+                    plain: true,
+                    // mouseLeaveDelay: 0,
+                    items: [{
+                        text: 'Loading ...'
+                    }],
+                },
+                listeners: {
+                    menushow: 'sqlFilterQuickItems'
+                }
+            }, '-',  {
                 xtype: 'combo',
                 // fieldLabel: 'Sessions',
                 emptyText: 'Select Column ...',
