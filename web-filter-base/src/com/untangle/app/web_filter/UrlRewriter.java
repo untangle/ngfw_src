@@ -26,7 +26,8 @@ public class UrlRewriter
     private static final Map<Pattern, String> safeSearchRewrites;
     static {
         safeSearchRewrites = new HashMap<Pattern, String>();
-        safeSearchRewrites.put(Pattern.compile(".*google\\.[a-z]+(\\.[a-z]+)?/.+q=.*"), "safe=active");
+        //safeSearchRewrites.put(Pattern.compile(".*google\\.[a-z]+(\\.[a-z]+)?/.+q=.*"), "safe=active"); // active (moderate)
+        safeSearchRewrites.put(Pattern.compile(".*google\\.[a-z]+(\\.[a-z]+)?/.+q=.*"), "safe=strict"); // strict
         safeSearchRewrites.put(Pattern.compile(".*ask\\.[a-z]+(\\.[a-z]+)?/.+q=.*"), "adt=0");
         safeSearchRewrites.put(Pattern.compile(".*bing\\.[a-z]+(\\.[a-z]+)?/.+q=.*"), "adlt=strict");
         safeSearchRewrites.put(Pattern.compile(".*yahoo\\.[a-z]+(\\.[a-z]+)?/.+p=.*"), "vm=r");
