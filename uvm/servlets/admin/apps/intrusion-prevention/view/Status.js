@@ -5,6 +5,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Status', {
     title: 'Status'.t(),
 
     layout: 'border',
+
     items: [{
         region: 'center',
         border: false,
@@ -24,6 +25,10 @@ Ext.define('Ung.apps.intrusionprevention.view.Status', {
                 '<p>' + 'Intrusion Prevention blocks scans, detects, and blocks attacks and suspicious traffic using signatures.'.t() + '</p>'
         }, {
             xtype: 'appstate',
+            hidden: true,
+            bind: {
+                hidden: '{settings.configured == false}'
+            }
         }, {
             xtype: 'fieldset',
             title: "Setup Wizard".t(),
@@ -36,20 +41,21 @@ Ext.define('Ung.apps.intrusionprevention.view.Status', {
                     hidden: '{settings.configured == true}'
                 }
             }, {
-                xtype: "button",
-                // name: 'setup_wizard_button',
-                // margin: '10 0 0 0',
-                text: "Run Intrusion Detection/Prevention Setup Wizard".t(),
-                iconCls: "action-icon",
-                // handler: Ext.bind(function() {
-                //     this.setupWizard();
-                // }, this)
+                xtype: 'button',
+                margin: '10 0 10 0',
+                text: "Run Intrusion Prevention Setup Wizard".t(),
+                iconCls: 'fa fa-magic',
+                handler: 'runWizard'
             }]
         },{
             xtype: 'fieldset',
             title: "Updates".t(),
             defaults: {
                 labelWidth: 200
+            },
+            hidden: true,
+            bind: {
+                hidden: '{settings.configured == false}'
             },
             items: [{
                 xtype: 'displayfield',
@@ -64,7 +70,11 @@ Ext.define('Ung.apps.intrusionprevention.view.Status', {
                 html: Ext.String.format("{0}Note:{1} {2} continues to maintain the default signature settings through automatic updates. You are free to modify and add signatures, however it is not required.".t(), '<b>', '</b>', rpc.companyName)
             }]
         }, {
-            xtype: 'appreports'
+            xtype: 'appreports',
+            hidden: true,
+            bind: {
+                hidden: '{settings.configured == false}'
+            }
         }]
     }, {
         region: 'west',

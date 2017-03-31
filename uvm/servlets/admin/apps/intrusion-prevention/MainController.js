@@ -307,7 +307,15 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
 
         });
         return isUsed;
+    },
+    runWizard: function (btn) {
+        this.wizard = this.getView().add({
+            xtype: 'app-intrusion-prevention-wizard',
+            appManager: this.getView().appManager
+        });
+        this.wizard.show();
     }
+
 });
 
 Ext.define('Ung.apps.intrusionprevention.cmp.RulesRecordEditor', {
