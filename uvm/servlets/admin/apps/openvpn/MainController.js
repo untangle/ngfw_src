@@ -81,6 +81,25 @@ Ext.define('Ung.apps.openvpn.MainController', {
             Util.successToast('Settings saved');
             me.getSettings();
         }, vm.get('settings'));
-    }
+    },
+
+    uploadFile: function(cmp) {
+        var form = Ext.ComponentQuery.query('form[name=upload_form]')[0];
+        var file = Ext.ComponentQuery.query('textfield[name=uploadConfigFileName]')[0].value;
+        if ( file == null || file.length === 0 ) {
+            Ext.MessageBox.alert('Select File'.t(), 'Please choose a file to upload.'.t());
+            return;
+            }
+        form.submit({
+            url: "/openvpn/uploadConfig",
+            success: Ext.bind(function( form, action ) {
+                Ext.MessageBox.alert('Success'.t(), 'The configuration has been imported.'.t());
+                this.getSettings();
+            }, this),
+            failure: Ext.bind(function( form, action ) {
+                Ext.MessageBox.alert('Failure'.t(), 'Import failure'.t() + ": " + action.result.code);
+            }, this)
+        });
+    },
 
 });
