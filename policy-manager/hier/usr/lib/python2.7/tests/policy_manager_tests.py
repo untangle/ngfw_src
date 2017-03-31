@@ -289,7 +289,7 @@ class PolicyManagerTests(unittest2.TestCase):
         # check host table and remove username for host IP
         userHost = uvmContext.hostTable().getHostTableEntry(remote_control.clientIP)
         userHost['username'] = ""
-        userHost['usernameCapture'] = ""
+        userHost['usernameCaptivePortal'] = ""
         uvmContext.hostTable().setHostTableEntry(remote_control.clientIP,userHost)
         # userHost = uvmContext.hostTable().getHostTableEntry(remote_control.clientIP)
         # print userHost
