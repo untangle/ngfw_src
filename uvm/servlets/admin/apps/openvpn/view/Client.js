@@ -22,9 +22,17 @@ Ext.define('Ung.apps.openvpn.view.Client', {
         width: 800,
         height: 400
     },{
-        xtype: 'app-openvpn-client-submit-form',
-        padding: '20 20 0 20',
-        border: false
+        xtype: 'form',
+        name: 'upload_form',
+        border: false,
+        margin: '10 10 10 10',
+        items: [{
+            xtype: 'fileuploadfield',
+            name: 'uploadConfigFileName',
+            buttonText: 'Upload Remote Server Configuration File'.t(),
+            buttonOnly: true,
+            listeners: { 'change': 'uploadFile' }
+        }]
     }]
 });
 
@@ -76,58 +84,4 @@ Ext.define('Ung.apps.openvpn.view.RemoteServersGrid', {
             bind: '{record.name}'
         }
     }],
-});
-
-Ext.define('Ung.apps.openvpn.view.ClientSubmitForm', {
-    extend: 'Ext.form.Panel',
-    alias: 'widget.app-openvpn-client-submit-form',
-    itemId: 'openvpn-client-submit-form',
-    flex: 0,
-    margin: '5 0 0 0',
-    border: false,
-    viewModel: true,
-
-    defaults: {
-        padding: '10 0 0 10'
-    },
-
-    items: [{
-        xtype: 'fieldset',
-        title: 'Configure a new Remote Server connection'.t(),
-        border: false,
-        items: [{
-            xtype: 'filefield',
-            name: 'uploadConfigFileName',
-            fieldLabel: 'Configuration File'.t(),
-            allowBlank: false,
-            validateOnBlur: false,
-            labelWidth: 150,
-            width: 600
-        }, {
-            xtype: 'button',
-            id: 'submitUpload',
-            text: 'Submit'.t(),
-            name: "Submit",
-            handler: function(btn) {
-                var form = Ext.ComponentQuery.query('#openvpn-client-submit-form')[0];
-                var filename = Ext.ComponentQuery.query('textfield[name=uploadConfigFileName]')[0].value;
-                if ( filename == null || filename.length === 0 ) {
-                    Ext.MessageBox.alert('Select File'.t(), 'Please choose a file to upload.'.t());
-                    return;
-                }
-                form.submit({
-                    url: "/openvpn/uploadConfig",
-                    success: Ext.bind(function( form, action, handler ) {
-                        Ext.MessageBox.alert('Success'.t(), 'The configuration has been imported.'.t());
-                        var grid = Ext.ComponentQuery.query('#openvpn-remote-servers-grid')[0];
-                        grid.store.reload();
-                        }, this),
-                    failure: Ext.bind(function( form, action ) {
-                        Ext.MessageBox.alert('Failure'.t(), 'Import failure'.t() + ": " + action.result.code);
-                    }, this)
-                });
-            }
-        }]
-    }]
-
 });
