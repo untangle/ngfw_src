@@ -117,7 +117,7 @@ class WebFilterTests(WebFilterBaseTests):
 
         settings["enforceSafeSearch"] = True
         self.app.setSettings(settings)
-        result_with_safe = remote_control.run_command("wget -q -O - '$@' -U 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7) Gecko/20040613 Firefox/0.8.0+)' 'http://www.google.com/search?hl=en&q=boobs&safe=off' | grep -q 'safe=active'");
+        result_with_safe = remote_control.run_command("wget -q -O - '$@' -U 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7) Gecko/20040613 Firefox/0.8.0+)' 'http://www.google.com/search?hl=en&q=boobs&safe=off' | grep -q 'safe=strict'");
 
         assert( result_without_safe == 0 )
         assert( result_with_safe == 0 )
