@@ -114,7 +114,7 @@ public class Pulse implements Runnable
      * Start the thread, you can only start a pulse once and once it
      * is stopped, you can never restart it.
      */
-    public void start()
+    public synchronized void start()
     {
         /* Can't start unless it is in the unborn state */
         if ( PulseState.UNBORN != this.state ) {
