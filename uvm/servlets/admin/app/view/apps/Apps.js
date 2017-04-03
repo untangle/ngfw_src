@@ -59,7 +59,7 @@ Ext.define('Ung.view.apps.Apps', {
             iconCls: 'fa fa-file-text-o',
             arrowVisible: false,
             bind: {
-                hidden: '{!onInstalledApps}'
+                hidden: '{!onInstalledApps || !policyMenu}'
             }
         }, {
             xtype: 'button',

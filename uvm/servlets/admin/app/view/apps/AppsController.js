@@ -19,15 +19,10 @@ Ext.define('Ung.view.apps.AppsController', {
     },
 
     onActivate: function () {
-        // var vm = this.getViewModel();
-        // vm.bind('{policyId}', function (id) {
-        //     console.log(id);
-        // });
-        // this.getPolicies();
     },
 
     onRootChange: function () {
-        var me = this, menuItems = [];
+        var me = this, menuItems = [], vm = me.getViewModel();
 
         if (Ext.getStore('policiestree').getCount() > 0) {
             Ext.getStore('policiestree').each(function (node) {
@@ -54,11 +49,11 @@ Ext.define('Ung.view.apps.AppsController', {
                 mouseLeaveDelay: 0,
                 items: menuItems
             });
-            me.lookup('policyBtn').setHidden(false);
+            vm.set('policyMenu', true);
         } else {
-            me.lookup('policyBtn').setHidden(true);
+            vm.set('policyMenu', false);
         }
-        me.getPolicies(); // set when route changed
+        me.getApps(); // set when route changed
     },
 
     appDesc: {
@@ -106,7 +101,7 @@ Ext.define('Ung.view.apps.AppsController', {
     //     }
     // },
 
-    getPolicies: function () {
+    getApps: function () {
         var me = this, vm = this.getViewModel(), instance;
 
         if (Ext.getStore('policiestree').getCount() > 0) {
@@ -253,8 +248,13 @@ Ext.define('Ung.view.apps.AppsController', {
                 Ext.getStore('policiestree').build();
             }
 
+            Rpc.asyncData('rpc.appManager.getAppsViews')
+                .then(function (policies) {
+                    Ext.getStore('policies').loadData(policies);
+                });
+
             Ext.fireEvent('appinstall');
-            me.getPolicies();
+            me.getApps();
         });
     }
 

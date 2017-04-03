@@ -48,12 +48,14 @@
     &.disabled {
         cursor: default;
         img { opacity: 0.2; }
+        i {
+            opacity: 0.5;
+        }
         &:hover {
             box-shadow: none;
             background: none;
             .state {
                 background: #FFF;
-                // opacity: 0.2;
             }
         }
     }
@@ -270,9 +272,9 @@
     }
     p {
         margin: 3px 0;
-        // line-height: 1.1;
-        font-weight: 400;
-        font-size: 12px;
+        line-height: 1;
+        font-weight: 600;
+        font-size: 11px;
         color: #555;
         font-family: $custom-font;
     }
