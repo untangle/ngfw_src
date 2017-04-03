@@ -65,15 +65,34 @@ Ext.define('Ung.view.apps.Apps', {
         // },
         {
             xtype: 'button',
-            text: 'Policy 1' + ' &nbsp;<i class="fa fa-angle-down fa-lg"></i>',
+            reference: 'policyBtn',
+            // text: 'Policy 1' + ' &nbsp;<i class="fa fa-angle-down fa-lg"></i>',
             iconCls: 'fa fa-file-text-o',
             arrowVisible: false,
-            menu: {
-                plain: true,
-                items: [{
-                    text: 'Policy 1'
-                }]
-            },
+            // menu: {
+            //     // items: [{
+
+            //     // }];
+            //     // items: [{
+            //     //     xtype: 'treepanel',
+            //     //     border: false,
+            //     //     bodyBorder: false,
+            //     //     width: 250,
+            //     //     height: 200,
+            //     //     rootVisible: false,
+            //     //     displayField: 'name',
+            //     //     store: 'policiestree',
+            //     //     useArrows: true,
+            //     //     columns: [{
+            //     //         xtype: 'treecolumn',
+            //     //         flex: 1,
+            //     //         dataIndex: 'name',
+            //     //         renderer: function (val, meta, rec) {
+            //     //             return '<strong>' + rec.get('name') + '</strong>';
+            //     //         }
+            //     //     }]
+            //     // }]
+            // },
             bind: {
                 hidden: '{!onInstalledApps}'
             }
@@ -109,17 +128,18 @@ Ext.define('Ung.view.apps.Apps', {
         tpl: '<p class="apps-title">' + 'Apps'.t() + '</p>' +
             '<tpl for=".">' +
                 '<tpl if="type === \'FILTER\'">' +
-                '<a href="{url}" class="app-item">' +
+                '<tpl if="parentPolicy"><a class="app-item disabled"><tpl else><a href="{route}" class="app-item"></tpl>' +
                 '<span class="state {targetState}"><i class="fa fa-power-off"></i></span>' +
                 '<img src="' + '/skins/modern-rack/images/admin/apps/{name}_80x80.png" width=80 height=80/>' +
                 '<span class="app-name">{displayName}</span>' +
+                '<tpl if="parentPolicy"><span class="parent-policy">[{parentPolicy}]</span></tpl>' +
                 '</a>' +
                 '</tpl>' +
             '</tpl>' +
             '<p class="apps-title">' + 'Service Apps'.t() + '</p>' +
             '<tpl for=".">' +
                 '<tpl if="type === \'SERVICE\'">' +
-                '<a href="{url}" class="app-item">' +
+                '<a href="{route}" class="app-item">' +
                 '<span class="state {targetState}"><i class="fa fa-power-off"></i></span>' +
                 '<img src="' + '/skins/modern-rack/images/admin/apps/{name}_80x80.png" width=80 height=80/>' +
                 '<span class="app-name">{displayName}</span>' +
