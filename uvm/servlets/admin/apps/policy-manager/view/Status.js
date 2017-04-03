@@ -23,6 +23,8 @@ Ext.define('Ung.apps.policymanager.view.Status', {
                 '<p>' + 'Policy Manager enables administrators to create different policies and handle different sessions with different policies based on rules.'.t() + '</p>'
         }, {
             xtype: 'appreports',
+        }, {
+            xtype: 'appremove'
         }]
     }]
 });

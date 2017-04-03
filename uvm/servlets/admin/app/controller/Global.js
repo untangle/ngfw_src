@@ -63,9 +63,13 @@ Ext.define('Ung.controller.Global', {
             '': 'onDashboard',
             'expert': 'setExpertMode',
             'noexpert': 'setNoExpertMode',
+            'apps': 'onApps',
             'apps/:policyId': 'onApps',
             'apps/:policyId/:app': 'onApps',
             'apps/:policyId/:app/:view': 'onApps',
+            'service/:app': 'onService',
+            'service/:app/:view': 'onService',
+
             'config': 'onConfig',
             'config/:configName': 'onConfig',
             'config/:configName/:configView': 'onConfig',
@@ -115,71 +119,97 @@ Ext.define('Ung.controller.Global', {
     onApps: function (policyId, app, view) {
         var me = this;
 
+        if (!policyId) {
+            Ung.app.redirectTo('#apps/1');
+            return;
+        }
+
         this.getMainView().getViewModel().set('activeItem', 'apps');
+        this.getAppsView().getViewModel().set('policyId', policyId);
+
 
         if (app) {
             if (app === 'install') {
                 this.getMainView().getViewModel().set('activeItem', 'apps');
                 this.getAppsView().setActiveItem('installableApps');
             } else {
-                if (me.getMainView().down('app-' + app)) {
-                    // if app card already exists activate it and select given view
-                    me.getMainView().getViewModel().set('activeItem', 'appCard');
-                    me.getMainView().down('app-' + app).setActiveItem(view || 0);
-                    return;
-                } else {
-                    // eventually do not remove the old card
-                    me.getMainView().remove('appCard');
-                }
-
-                var policy = Ext.getStore('policies').findRecord('policyId', policyId);
-                var appInstance = Ext.Array.findBy(policy.get('instances').list, function (inst) {
-                    return inst.appName.replace('', '').replace('', '') === app;
-                });
-                var appProps = Ext.Array.findBy(policy.get('appProperties').list, function (prop) {
-                    return prop.name.replace('', '').replace('', '') === app;
-                });
-
-                // var appClass = Ext.ClassManager.getByAlias('widget.app-' + app);
-                me.getMainView().setLoading(true);
-                Ext.Loader.loadScript({
-                    url: 'script/apps/' + app + '.js',
-                    onLoad: function () {
-                        Ext.Deferred.sequence([
-                            Rpc.asyncPromise('rpc.appManager.app', appInstance.id),
-                            // Rpc.asyncPromise('rpc.networkManager.getInterfaceStatus'),
-                            // Rpc.asyncPromise('rpc.networkManager.getDeviceStatus'),
-                        ], this).then(function (result) {
-                            // console.log(result[0]);
-                            me.getMainView().add({
-                                xtype: 'app-' + app,
-                                // region: 'center',
-                                itemId: 'appCard',
-                                appManager: result[0],
-                                activeTab: view || 0,
-                                viewModel: {
-                                    data: {
-                                        instance: appInstance,
-                                        props: appProps,
-                                        urlName: app
-                                    }
-                                }
-                            });
-                            // me.getMainView().setActiveItem('configCard');
-                            me.getMainView().getViewModel().set('activeItem', 'appCard');
-                            me.getMainView().getViewModel().notify();
-                            me.getMainView().setLoading(false);
-                        }, function (ex) {
-                            Util.exceptionToast(ex);
-                        });
-                    }
-                });
+                me.loadApp(policyId, app, view);
             }
         } else {
             this.getAppsView().setActiveItem('installedApps');
-            this.getAppsView().getController().getPolicies(policyId);
+            this.getAppsView().getController().getPolicies();
         }
     },
+
+    onService: function (app, view) {
+        var me = this;
+        this.getMainView().getViewModel().set('activeItem', 'apps');
+        if (app) {
+            me.loadApp(null, app, view);
+        }
+
+
+    },
+
+
+    loadApp: function (policyId, app, view) {
+        var me = this;
+        if (me.getMainView().down('app-' + app)) {
+            // if app card already exists activate it and select given view
+            me.getMainView().getViewModel().set('activeItem', 'appCard');
+            me.getMainView().down('app-' + app).setActiveItem(view || 0);
+            return;
+        } else {
+            // eventually do not remove the old card
+            me.getMainView().remove('appCard');
+        }
+
+        if (!policyId) { policyId = 1;}
+
+        var policy = Ext.getStore('policies').findRecord('policyId', policyId);
+        var appInstance = Ext.Array.findBy(policy.get('instances').list, function (inst) {
+            return inst.appName.replace('', '').replace('', '') === app;
+        });
+        var appProps = Ext.Array.findBy(policy.get('appProperties').list, function (prop) {
+            return prop.name.replace('', '').replace('', '') === app;
+        });
+
+        // var appClass = Ext.ClassManager.getByAlias('widget.app-' + app);
+        me.getMainView().setLoading(true);
+        Ext.Loader.loadScript({
+            url: 'script/apps/' + app + '.js',
+            onLoad: function () {
+                Ext.Deferred.sequence([
+                    Rpc.asyncPromise('rpc.appManager.app', appInstance.id),
+                    // Rpc.asyncPromise('rpc.networkManager.getInterfaceStatus'),
+                    // Rpc.asyncPromise('rpc.networkManager.getDeviceStatus'),
+                ], this).then(function (result) {
+                    // console.log(result[0]);
+                    me.getMainView().add({
+                        xtype: 'app-' + app,
+                        // region: 'center',
+                        itemId: 'appCard',
+                        appManager: result[0],
+                        activeTab: view || 0,
+                        viewModel: {
+                            data: {
+                                instance: appInstance,
+                                props: appProps,
+                                urlName: app
+                            }
+                        }
+                    });
+                    // me.getMainView().setActiveItem('configCard');
+                    me.getMainView().getViewModel().set('activeItem', 'appCard');
+                    me.getMainView().getViewModel().notify();
+                    me.getMainView().setLoading(false);
+                }, function (ex) {
+                    Util.exceptionToast(ex);
+                });
+            }
+        });
+    },
+
 
     onConfig: function (configName, configView) {
         var me = this;

@@ -25,10 +25,6 @@ Ext.define('Ung.view.apps.Apps', {
         }
     },
 
-    config: {
-        policy: undefined
-    },
-
     defaults: {
         border: false
     },
@@ -45,54 +41,23 @@ Ext.define('Ung.view.apps.Apps', {
         defaults: {
             border: false
         },
-        items: Ext.Array.insert(Ext.clone(Util.subNav), 0, [
-        //     {
-        //     xtype: 'combobox',
-        //     editable: false,
-        //     multiSelect: false,
-        //     queryMode: 'local',
-        //     hidden: true,
-        //     bind: {
-        //         value: '{policyId}',
-        //         store: '{policies}',
-        //         hidden: '{!onInstalledApps}'
-        //     },
-        //     valueField: 'policyId',
-        //     displayField: 'displayName',
-        //     // listeners: {
-        //     //     change: 'setPolicy'
-        //     // }
-        // },
-        {
+        items: Ext.Array.insert(Ext.clone(Util.subNav), 0, [{
+            xtype: 'button',
+            html: 'Back to Apps',
+            iconCls: 'fa fa-arrow-circle-left',
+            hrefTarget: '_self',
+            hidden: true,
+            bind: {
+                href: '#apps/{policyId}',
+                hidden: '{onInstalledApps}'
+            }
+        }, {
             xtype: 'button',
             reference: 'policyBtn',
-            // text: 'Policy 1' + ' &nbsp;<i class="fa fa-angle-down fa-lg"></i>',
+            hidden: true,
+            cls: 'policy-menu',
             iconCls: 'fa fa-file-text-o',
             arrowVisible: false,
-            // menu: {
-            //     // items: [{
-
-            //     // }];
-            //     // items: [{
-            //     //     xtype: 'treepanel',
-            //     //     border: false,
-            //     //     bodyBorder: false,
-            //     //     width: 250,
-            //     //     height: 200,
-            //     //     rootVisible: false,
-            //     //     displayField: 'name',
-            //     //     store: 'policiestree',
-            //     //     useArrows: true,
-            //     //     columns: [{
-            //     //         xtype: 'treecolumn',
-            //     //         flex: 1,
-            //     //         dataIndex: 'name',
-            //     //         renderer: function (val, meta, rec) {
-            //     //             return '<strong>' + rec.get('name') + '</strong>';
-            //     //         }
-            //     //     }]
-            //     // }]
-            // },
             bind: {
                 hidden: '{!onInstalledApps}'
             }
@@ -105,16 +70,6 @@ Ext.define('Ung.view.apps.Apps', {
             bind: {
                 href: '#apps/{policyId}/install',
                 hidden: '{!onInstalledApps}'
-            }
-        }, {
-            xtype: 'button',
-            html: 'Back to Apps',
-            iconCls: 'fa fa-arrow-circle-left',
-            hrefTarget: '_self',
-            hidden: true,
-            bind: {
-                href: '#apps/{policyId}',
-                hidden: '{onInstalledApps}'
             }
         }])
     }],

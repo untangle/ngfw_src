@@ -44,17 +44,6 @@
     text-align: center;
     padding: 20px 10px 0;
     transition: all .3s cubic-bezier(0.23, 1, 0.32, 1);
-    // i {
-    //     // font-size: 70px;
-    //     display: block;
-    //     position: relative;
-    //     margin: 20px auto 0 auto;
-    //     text-align: center;
-    //     z-index: 10;
-    //     color: #999;
-    //     -webkit-font-smoothing: antialiased;
-    //     -webkit-backface-visibility: hidden;
-    // }
 
     &.disabled {
         cursor: default;
@@ -64,7 +53,7 @@
             background: none;
             .state {
                 background: #FFF;
-                opacity: 0.2;
+                // opacity: 0.2;
             }
         }
     }

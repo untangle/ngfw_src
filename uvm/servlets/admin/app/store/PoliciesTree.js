@@ -10,7 +10,10 @@ Ext.define('Ung.store.PoliciesTree', {
 
         var policyManager = rpc.appManager.app('policy-manager');
 
-        if (!policyManager) { return; }
+        if (!policyManager) {
+            me.setRoot({});
+            return;
+        }
 
         policyManager.getSettings(function (result, ex) {
             if (ex) { Util.exceptionToast(ex); return; }
@@ -18,7 +21,7 @@ Ext.define('Ung.store.PoliciesTree', {
 
             Ext.Array.each(policies, function (policy) {
                 policy.parentPolicyId = policy.parentId || 0;
-                // policy.text = policy.name;
+                policy.slug = policy.name.replace(/ /g, '-').toLowerCase();
             });
 
             var tree = me.recursiveTree(Ext.clone(policies));

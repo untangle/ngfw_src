@@ -5,6 +5,10 @@ Ext.define('Ung.apps.policymanager.MainController', {
     control: {
         '#': {
             afterrender: 'getSettings',
+            deactivate: 'onDeactivate'
+        },
+        '#policies': {
+            activate: 'onActivate'
         }
     },
 
@@ -21,6 +25,14 @@ Ext.define('Ung.apps.policymanager.MainController', {
     policiesMap: {},
     selectedPolicyId: null,
 
+
+    onActivate: function () {
+        this.setPoliciesCombo();
+    },
+
+    onDeactivate: function () {
+        this.lookup('tree').getSelectionModel().deselectAll();
+    },
 
     getSettings: function () {
         var me = this, v = this.getView(), vm = this.getViewModel(), policies, selNode;
@@ -48,8 +60,6 @@ Ext.define('Ung.apps.policymanager.MainController', {
             });
         });
 
-        // console.log(policies);
-
         me.settings.policies.list = policies;
 
         v.appManager.setSettings(function (result, ex) {
@@ -72,6 +82,7 @@ Ext.define('Ung.apps.policymanager.MainController', {
                 }, 100);
             }
         }
+        me.setPoliciesCombo();
     },
 
     onPolicySelect: function (rowModel, selectedNode) {
@@ -87,20 +98,19 @@ Ext.define('Ung.apps.policymanager.MainController', {
     },
 
     setPoliciesCombo: function (selectedNode) {
-        var me = this, policiesStore = [[0, 'None'.t()]];
-
+        var me = this, policiesStore = [{ value: 0, text: 'None'.t() }];
+        if (!me.lookup('tree')) { return; }
         me.lookup('tree').getRootNode().cascadeBy(function (node) {
             if (node.isRoot()) { return; }
             if (selectedNode) {
                 if (node.get('policyId') !== selectedNode.get('policyId') && !node.isAncestor(selectedNode)) {
-                    policiesStore.push([node.get('policyId'), node.get('name')]);
+                    policiesStore.push({ value: node.get('policyId'), text: node.get('name') });
                 }
             } else {
-                policiesStore.push([node.get('policyId'), node.get('name')]);
+                policiesStore.push({ value: node.get('policyId'), text: node.get('name') });
             }
-
         });
-        me.lookup('policiesCombo').setStore(policiesStore);
+        me.lookup('policiesCombo').getStore().loadData(policiesStore);
     },
 
     buildApps: function (policy) {
@@ -228,6 +238,31 @@ Ext.define('Ung.apps.policymanager.MainController', {
                     });
             });
         }
+    },
+
+    onRemovePolicy: function (btn) {
+        var me = this, v = me.getView(), vm = this.getViewModel(), idx;
+
+        Ext.Array.each(me.settings.policies.list, function (p, index) {
+            if (p.policyId === me.selectedPolicyId) {
+                idx = index;
+            }
+        });
+
+        Ext.Array.removeAt(me.settings.policies.list, idx);
+
+        v.setLoading(true);
+        v.appManager.setSettings(function (result, ex) {
+            v.setLoading(false);
+            if (ex) { Util.exceptionToast(ex); me.getSettings(); return; }
+            // Util.successToast('Settings saved');
+            // me.getSettings();
+            vm.set('appsData', []);
+            me.setPoliciesCombo();
+
+            me.getSettings();
+            Ext.getStore('policiestree').build();
+        }, me.settings);
     }
 
 });

@@ -77,7 +77,7 @@ Ext.define('Ung.view.main.Main', {
         items: [
             { html: '<img src="' + '/images/BrandingLogo.png" style="height: 40px;"/>', cls: 'logo', href: '#' },
             { text: 'Dashboard'.t(), iconCls: 'fa fa-home', cls: 'upper', href: '#', bind: { userCls: '{activeItem === "dashboard" ? "pressed" : ""}' } },
-            { text: 'Apps'.t(), iconCls: 'fa fa-th', cls: 'upper', bind: { href: '#apps/{policyId}', userCls: '{(activeItem === "apps" || activeItem === "appCard") ? "pressed" : ""}' } },
+            { text: 'Apps'.t(), iconCls: 'fa fa-th', cls: 'upper', bind: { href: '#apps', userCls: '{(activeItem === "apps" || activeItem === "appCard") ? "pressed" : ""}' } },
             { text: 'Config'.t(), iconCls: 'fa fa-sliders', cls: 'upper', href: '#config', bind: { userCls: '{activeItem === "config" ? "pressed" : ""}' } },
             { text: 'Reports'.t(), iconCls: 'fa fa-line-chart', cls: 'upper', href: '#reports', bind: { userCls: '{activeItem === "reports" ? "pressed" : ""}' } },
             '->',

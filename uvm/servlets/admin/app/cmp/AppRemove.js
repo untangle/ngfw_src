@@ -24,19 +24,28 @@ Ext.define('Ung.cmp.AppRemove', {
             'All of its settings will be lost.'.t() + '\n' + '<br/>' + '<br/>' +
             'Would you like to continue?'.t();
 
+        if (vm.get('instance.appName') === 'policy-manager') { // rebuild policies tree
+            if (Ext.getStore('policiestree').getCount() > 1) {
+                Ext.Msg.alert('Warning!', 'Policy Manager cannot be removed if there are more than one default policy!');
+                return;
+            }
+        }
+
         Ext.Msg.confirm('Warning:'.t(), message, function(btn) {
             if (btn === 'yes') {
                 // var appItem = settingsView.up('#main').down('#apps').down('#' + vm.get('appInstance.appName'));
-                //appItem.setDisabled(true);
-                // appItem.addCls('remove');
-                // Ung.app.redirectTo('#apps/' + vm.get('policyId'));
                 mainView.setLoading(true);
+
                 Rpc.asyncData('rpc.appManager.destroy', vm.get('instance.id'))
                     .then(function (result) {
-                        Rpc.asyncData('rpc.appManager.getAppsViews')
-                            .then(function (policies) {
-                                Ext.getStore('policies').loadData(policies);
-                            });
+                        // Rpc.asyncData('rpc.appManager.getAppsViews')
+                        //     .then(function (policies) {
+                        //         Ext.getStore('policies').loadData(policies);
+                        //     });
+
+                        if (vm.get('instance.appName') === 'policy-manager') { // rebuild policies tree
+                            Ext.getStore('policiestree').build();
+                        }
 
                         if (rpc.reportsManager) {
                             Rpc.asyncData('rpc.reportsManager.getUnavailableApplicationsMap')
