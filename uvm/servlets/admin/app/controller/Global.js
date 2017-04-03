@@ -113,10 +113,12 @@ Ext.define('Ung.controller.Global', {
 
 
     onDashboard: function () {
+        window.document.title = 'Untangle - Home';
         this.getMainView().getViewModel().set('activeItem', 'dashboard');
     },
 
     onApps: function (policyId, app, view) {
+        window.document.title = 'Untangle - Apps';
         var me = this;
 
         if (!policyId) {
@@ -212,6 +214,7 @@ Ext.define('Ung.controller.Global', {
 
 
     onConfig: function (configName, configView) {
+        window.document.title = 'Untangle - Config';
         var me = this;
 
         if (!configName) {
@@ -233,6 +236,7 @@ Ext.define('Ung.controller.Global', {
     },
 
     onReports: function (categoryName, reportName) {
+        window.document.title = 'Untangle - Reports';
         var reportsVm = this.getReportsView().getViewModel();
         var hash = '';
         if (categoryName) {
@@ -243,32 +247,11 @@ Ext.define('Ung.controller.Global', {
             // reportsVm.set('activeCard', 'report');
         }
         reportsVm.set('hash', hash);
-        // if (categoryName) {
-        //     reportsVm.set('categoryName', categoryName.replace(/-/g, ' '));
-        //     reportsVm.notify(); // !important to notify this before report is tried to be set
-        //     if (!reportName) {
-        //         reportsVm.set('activeCard', 'category');
-        //         reportsVm.set('reportName', null);
-        //     } else {
-        //         reportsVm.set('reportName', reportName);
-        //         reportsVm.set('activeCard', 'report');
-        //     }
-        // } else {
-        //     reportsVm.set('categoryName', null);
-        //     reportsVm.set('category', null);
-        //     reportsVm.set('reportName', null);
-        //     reportsVm.set('report', null);
-        //     reportsVm.set('activeCard', 'allCategories');
-        // }
         this.getMainView().getViewModel().set('activeItem', 'reports');
     },
 
     onSessions: function () {
-        // var shd = this.getMainView().down('#shd');
-        // if (shd) {
-        //     // this.getMainView().remove('#shd', true);
-        //     shd.destroy();
-        // }
+        window.document.title = 'Untangle - Sessions';
         this.getMainView().add({
             xtype: 'ung.sessions',
             itemId: 'sessions'
@@ -277,11 +260,7 @@ Ext.define('Ung.controller.Global', {
     },
 
     onHosts: function () {
-        // var shd = this.getMainView().down('#shd');
-        // if (shd) {
-        //     // this.getMainView().remove('#shd', true);
-        //     shd.destroy();
-        // }
+        window.document.title = 'Untangle - Hosts';
         this.getMainView().add({
             xtype: 'ung.hosts',
             itemId: 'hosts'
@@ -290,11 +269,7 @@ Ext.define('Ung.controller.Global', {
     },
 
     onDevices: function () {
-        // var shd = this.getMainView().down('#shd');
-        // if (shd) {
-        //     // this.getMainView().remove('#shd', true);
-        //     shd.destroy();
-        // }
+        window.document.title = 'Untangle - Devices';
         this.getMainView().add({
             xtype: 'ung.devices',
             itemId: 'devices'
