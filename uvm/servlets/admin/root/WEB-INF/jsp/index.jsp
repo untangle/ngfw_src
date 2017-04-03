@@ -4,7 +4,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-        <title>Untangle - ${buildStamp}</title>
+        <title>Untangle</title>
 
         <script src="/jsonrpc/jsonrpc.js"></script>
         <script src="/highcharts-5.0.9/highstock.js"></script>
