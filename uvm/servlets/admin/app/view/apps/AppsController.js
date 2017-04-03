@@ -3,12 +3,48 @@ Ext.define('Ung.view.apps.AppsController', {
     alias: 'controller.apps',
 
     control: {
-        '#': { activate: 'getPolicies' },
+        '#': { activate: 'onActivate' },
         '#installedApps': { activate: 'filterInstalled' },
         '#installableApps': {
             activate: 'filterInstallable',
             select: 'onInstallApp'
         }
+    },
+    listen: {
+        store: {
+            '#policiestree': {
+                rootchange: 'onRootChange'
+            }
+        }
+    },
+
+    onActivate: function () {
+        // var vm = this.getViewModel();
+        // vm.bind('{policyId}', function (id) {
+        //     console.log(id);
+        // });
+        // this.getPolicies();
+    },
+
+    onRootChange: function () {
+        var menuItems = [];
+        Ext.getStore('policiestree').each(function (node) {
+            menuItems.push({
+                margin: '0 0 0 ' + (node.get('depth') - 1) * 20,
+                text: '<strong>' + node.get('name') + '</strong>',
+                iconCls: node.get('iconCls'),
+                href: '#apps/' + node.get('policyId'),
+                hrefTarget: '_self'
+            });
+            // console.log(node.get('depth'));
+        });
+
+        this.lookup('policyBtn').setMenu({
+            plain: true,
+            mouseLeaveDelay: 0,
+            items: menuItems
+        });
+        this.getPolicies();
     },
 
     appDesc: {
@@ -56,48 +92,99 @@ Ext.define('Ung.view.apps.AppsController', {
     //     }
     // },
 
-    getPolicies: function () {
-        var me = this;
-        var vm = this.getViewModel();
+    getPolicies: function (policyId) {
+        var me = this, vm = this.getViewModel(), instance;
 
-        Rpc.asyncData('rpc.appManager.getAppsViews').then(function(result) {
+        if (Ext.getStore('policiestree').getCount() === 0) { return; }
+
+        policyId = policyId || 1;
+
+        this.lookup('policyBtn').setText(Ext.getStore('policiestree').findNode('policyId', policyId).get('name') + ' &nbsp;<i class="fa fa-angle-down fa-lg"></i>');
+
+        Rpc.asyncData('rpc.appManager.getAppsView', policyId)
+            .then(function (policy) {
+
             var apps = [];
             vm.getStore('apps').removeAll();
-            Ext.getStore('policies').loadData(result);
+            // Ext.getStore('policies').loadData(result);
 
-            Ext.Array.each(result[0].appProperties.list, function (app) {
-                apps.push({
+            console.log(policy);
+
+            Ext.Array.each(policy.appProperties.list, function (app) {
+
+                var _app = {
                     name: app.name,
                     displayName: app.displayName,
-                    url: '#apps/' + vm.get('policyId') + '/' + app.displayName.replace(/ /g, '-').toLowerCase(),
+                    route: '#apps/' + policyId + '/' + app.name,
                     type: app.type,
                     viewPosition: app.viewPosition,
                     status: null,
-                    targetState: result[0].instances.list.filter(function (instance) {
-                        return app.name === instance.appName;
-                    })[0].targetState
-                });
-
-                // var tState = result[0].instances.list.filter(function (instance) {
-                //     return app.name === instance.appName;
-                // });
-                // console.log(tState[0]);
+                };
+                instance = Ext.Array.findBy(policy.instances.list, function(instance) { return instance.appName === app.name; });
+                if (instance) {
+                    _app.targetState = instance.targetState;
+                    if (instance.policyId && policy.policyId !== instance.policyId) {
+                        _app.parentPolicy = Ext.getStore('policiestree').findNode('policyId', instance.policyId).get('name');
+                    }
+                }
+                apps.push(_app);
             });
 
-            Ext.Array.each(result[0].installable.list, function (app) {
+            Ext.Array.each(policy.installable.list, function (app) {
                 apps.push({
                     name: app.name,
                     displayName: app.displayName,
-                    url: '#apps/' + vm.get('policyId') + '/' + app.displayName.replace(/ /g, '-').toLowerCase(),
+                    route: '#apps/' + policyId + '/' + app.name,
                     type: app.type,
                     viewPosition: app.viewPosition,
                     desc: me.appDesc[app.name],
                     status: 'available'
                 });
             });
-            // Ext.toast('Data loaded');
             vm.getStore('apps').loadData(apps);
+            // console.log(apps);
         });
+
+
+
+        // Rpc.asyncData('rpc.appManager.getAppsViews').then(function(result) {
+        //     var apps = [];
+        //     vm.getStore('apps').removeAll();
+        //     Ext.getStore('policies').loadData(result);
+
+        //     Ext.Array.each(result[0].appProperties.list, function (app) {
+        //         apps.push({
+        //             name: app.name,
+        //             displayName: app.displayName,
+        //             url: '#apps/' + vm.get('policyId') + '/' + app.displayName.replace(/ /g, '-').toLowerCase(),
+        //             type: app.type,
+        //             viewPosition: app.viewPosition,
+        //             status: null,
+        //             targetState: result[0].instances.list.filter(function (instance) {
+        //                 return app.name === instance.appName;
+        //             })[0].targetState
+        //         });
+
+        //         // var tState = result[0].instances.list.filter(function (instance) {
+        //         //     return app.name === instance.appName;
+        //         // });
+        //         // console.log(tState[0]);
+        //     });
+
+        //     Ext.Array.each(result[0].installable.list, function (app) {
+        //         apps.push({
+        //             name: app.name,
+        //             displayName: app.displayName,
+        //             url: '#apps/' + vm.get('policyId') + '/' + app.displayName.replace(/ /g, '-').toLowerCase(),
+        //             type: app.type,
+        //             viewPosition: app.viewPosition,
+        //             desc: me.appDesc[app.name],
+        //             status: 'available'
+        //         });
+        //     });
+        //     // Ext.toast('Data loaded');
+        //     vm.getStore('apps').loadData(apps);
+        // });
     },
 
     /**

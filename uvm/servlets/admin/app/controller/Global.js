@@ -32,7 +32,8 @@ Ext.define('Ung.controller.Global', {
         'UnavailableApps',
         'Rule',
 
-        'ReportsTree'
+        'ReportsTree',
+        'PoliciesTree'
     ],
 
     listen: {
@@ -115,7 +116,7 @@ Ext.define('Ung.controller.Global', {
         var me = this;
 
         this.getMainView().getViewModel().set('activeItem', 'apps');
-        console.log(this.getMainView().getViewModel().get('activeItem'));
+
         if (app) {
             if (app === 'install') {
                 this.getMainView().getViewModel().set('activeItem', 'apps');
@@ -175,8 +176,8 @@ Ext.define('Ung.controller.Global', {
                 });
             }
         } else {
-            console.log('here');
             this.getAppsView().setActiveItem('installedApps');
+            this.getAppsView().getController().getPolicies(policyId);
         }
     },
 

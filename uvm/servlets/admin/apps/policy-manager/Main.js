@@ -6,15 +6,17 @@ Ext.define('Ung.apps.policymanager.Main', {
 
     viewModel: {
         data: {
-            appsData: []
+            appsData: [],
+            newPolicy: null
         },
         stores: {
             appsStore: {
                 data: '{appsData}',
-                filters: [{
-                    property: 'type',
-                    value: 'FILTER'
-                }]
+                // filters: [{
+                //     property: 'type',
+                //     value: 'FILTER'
+                // }],
+                sorters: 'viewPosition'
             }
         }
     },
