@@ -41,13 +41,15 @@ Ext.define('Ung.cmp.AppPanel', {
         defaults: {
             border: false,
         },
-        items: Ext.Array.insert(Ext.clone(Util.subNav), 0, [{
-            xtype: 'button',
-            text: 'Back'.t(),
-            iconCls: 'fa fa-arrow-circle-left fa-lg',
-            hrefTarget: '_self',
-            bind: { href: '#apps/{policyId}' }
-        }, '-', {
+        items: Ext.Array.insert(Ext.clone(Util.subNav), 0, [
+        //     {
+        //     xtype: 'button',
+        //     text: 'Back'.t(),
+        //     iconCls: 'fa fa-arrow-circle-left fa-lg',
+        //     hrefTarget: '_self',
+        //     bind: { href: '#apps/{policyId}' }
+        // }, '-',
+        {
             xtype: 'component',
             padding: '0 5',
             style: {
@@ -76,7 +78,11 @@ Ext.define('Ung.cmp.AppPanel', {
         // generic listener for all tabs in Apps, redirection
         beforetabchange: function (tab, newCard, oldCard) {
             var vm = this.getViewModel();
-            Ung.app.redirectTo('#apps/' + vm.get('policyId') + '/' + vm.get('urlName') + '/' + newCard.getItemId());
+            if (vm.get('props.type') === 'FILTER') {
+                Ung.app.redirectTo('#apps/' + vm.get('policyId') + '/' + vm.get('urlName') + '/' + newCard.getItemId());
+            } else {
+                Ung.app.redirectTo('#service/' + vm.get('props.name') + '/' + newCard.getItemId());
+            }
         }
     }
 });

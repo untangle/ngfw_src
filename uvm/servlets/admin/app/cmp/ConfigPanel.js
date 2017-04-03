@@ -15,12 +15,14 @@ Ext.define('Ung.cmp.ConfigPanel', {
         defaults: {
             border: false,
         },
-        items: Ext.Array.insert(Ext.clone(Util.subNav), 0, [{
-            text: 'Back'.t(),
-            iconCls: 'fa fa-arrow-circle-left fa-lg',
-            hrefTarget: '_self',
-            href: '#config'
-        }, '-', {
+        items: Ext.Array.insert(Ext.clone(Util.subNav), 0, [
+        //     {
+        //     text: 'Back'.t(),
+        //     iconCls: 'fa fa-arrow-circle-left fa-lg',
+        //     hrefTarget: '_self',
+        //     href: '#config'
+        // }, '-',
+        {
             xtype: 'component',
             padding: '0 5',
             style: {

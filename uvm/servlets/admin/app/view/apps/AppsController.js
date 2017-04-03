@@ -27,24 +27,38 @@ Ext.define('Ung.view.apps.AppsController', {
     },
 
     onRootChange: function () {
-        var menuItems = [];
-        Ext.getStore('policiestree').each(function (node) {
+        var me = this, menuItems = [];
+
+        if (Ext.getStore('policiestree').getCount() > 0) {
+            Ext.getStore('policiestree').each(function (node) {
+                menuItems.push({
+                    margin: '0 0 0 ' + (node.get('depth') - 1) * 20,
+                    text: '<strong>' + node.get('name') + '</strong>',
+                    iconCls: node.get('iconCls') + ' fa-lg',
+                    href: '#apps/' + node.get('policyId'),
+                    // href: '#apps/' + node.get('slug'),
+                    hrefTarget: '_self'
+                });
+            });
+
+            menuItems.push('-');
             menuItems.push({
-                margin: '0 0 0 ' + (node.get('depth') - 1) * 20,
-                text: '<strong>' + node.get('name') + '</strong>',
-                iconCls: node.get('iconCls'),
-                href: '#apps/' + node.get('policyId'),
+                text: 'Manage Policies',
+                iconCls: 'fa fa-cog fa-lg',
+                href: '#service/policy-manager/policies',
                 hrefTarget: '_self'
             });
-            // console.log(node.get('depth'));
-        });
 
-        this.lookup('policyBtn').setMenu({
-            plain: true,
-            mouseLeaveDelay: 0,
-            items: menuItems
-        });
-        this.getPolicies();
+            me.lookup('policyBtn').setMenu({
+                plain: true,
+                mouseLeaveDelay: 0,
+                items: menuItems
+            });
+            me.lookup('policyBtn').setHidden(false);
+        } else {
+            me.lookup('policyBtn').setHidden(true);
+        }
+        me.getPolicies(); // set when route changed
     },
 
     appDesc: {
@@ -92,30 +106,25 @@ Ext.define('Ung.view.apps.AppsController', {
     //     }
     // },
 
-    getPolicies: function (policyId) {
+    getPolicies: function () {
         var me = this, vm = this.getViewModel(), instance;
 
-        if (Ext.getStore('policiestree').getCount() === 0) { return; }
+        if (Ext.getStore('policiestree').getCount() > 0) {
+            var policyNode = Ext.getStore('policiestree').findNode('policyId', vm.get('policyId'));
+            this.lookup('policyBtn').setText(policyNode.get('name') + ' &nbsp;<i class="fa fa-angle-down fa-lg"></i>');
+        }
 
-        policyId = policyId || 1;
-
-        this.lookup('policyBtn').setText(Ext.getStore('policiestree').findNode('policyId', policyId).get('name') + ' &nbsp;<i class="fa fa-angle-down fa-lg"></i>');
-
-        Rpc.asyncData('rpc.appManager.getAppsView', policyId)
+        Rpc.asyncData('rpc.appManager.getAppsView', vm.get('policyId'))
             .then(function (policy) {
 
             var apps = [];
             vm.getStore('apps').removeAll();
-            // Ext.getStore('policies').loadData(result);
-
-            console.log(policy);
 
             Ext.Array.each(policy.appProperties.list, function (app) {
-
                 var _app = {
                     name: app.name,
                     displayName: app.displayName,
-                    route: '#apps/' + policyId + '/' + app.name,
+                    route: app.type === 'FILTER' ? '#apps/' + policy.policyId + '/' + app.name : '#service/' + app.name,
                     type: app.type,
                     viewPosition: app.viewPosition,
                     status: null,
@@ -134,57 +143,16 @@ Ext.define('Ung.view.apps.AppsController', {
                 apps.push({
                     name: app.name,
                     displayName: app.displayName,
-                    route: '#apps/' + policyId + '/' + app.name,
+                    // route: '#apps/' + policy.policyId + '/' + app.name,
                     type: app.type,
                     viewPosition: app.viewPosition,
                     desc: me.appDesc[app.name],
                     status: 'available'
                 });
             });
+
             vm.getStore('apps').loadData(apps);
-            // console.log(apps);
         });
-
-
-
-        // Rpc.asyncData('rpc.appManager.getAppsViews').then(function(result) {
-        //     var apps = [];
-        //     vm.getStore('apps').removeAll();
-        //     Ext.getStore('policies').loadData(result);
-
-        //     Ext.Array.each(result[0].appProperties.list, function (app) {
-        //         apps.push({
-        //             name: app.name,
-        //             displayName: app.displayName,
-        //             url: '#apps/' + vm.get('policyId') + '/' + app.displayName.replace(/ /g, '-').toLowerCase(),
-        //             type: app.type,
-        //             viewPosition: app.viewPosition,
-        //             status: null,
-        //             targetState: result[0].instances.list.filter(function (instance) {
-        //                 return app.name === instance.appName;
-        //             })[0].targetState
-        //         });
-
-        //         // var tState = result[0].instances.list.filter(function (instance) {
-        //         //     return app.name === instance.appName;
-        //         // });
-        //         // console.log(tState[0]);
-        //     });
-
-        //     Ext.Array.each(result[0].installable.list, function (app) {
-        //         apps.push({
-        //             name: app.name,
-        //             displayName: app.displayName,
-        //             url: '#apps/' + vm.get('policyId') + '/' + app.displayName.replace(/ /g, '-').toLowerCase(),
-        //             type: app.type,
-        //             viewPosition: app.viewPosition,
-        //             desc: me.appDesc[app.name],
-        //             status: 'available'
-        //         });
-        //     });
-        //     // Ext.toast('Data loaded');
-        //     vm.getStore('apps').loadData(apps);
-        // });
     },
 
     /**
@@ -275,11 +243,16 @@ Ext.define('Ung.view.apps.AppsController', {
      * method which initialize the app installation
      */
     onInstallApp: function (view, record) {
-        var me = this;
+        var me = this, vm = me.getViewModel();
         record.set('status', 'installing');
-        Rpc.asyncData('rpc.appManager.instantiate', record.get('name'), 1)
+        Rpc.asyncData('rpc.appManager.instantiate', record.get('name'), vm.get('policyId'))
         .then(function (result) {
             // record.set('status', 'installed');
+
+            if (record.get('name') === 'policy-manager') { // build the policies tree
+                Ext.getStore('policiestree').build();
+            }
+
             Ext.fireEvent('appinstall');
             me.getPolicies();
         });

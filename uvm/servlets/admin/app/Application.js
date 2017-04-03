@@ -67,8 +67,6 @@ Ext.define('Ung.Application', {
             }
 
             Ext.getStore('reportstree').build();
-
-            console.log('build tree');
             Ext.getStore('policiestree').build();
 
             // console.log(Ext.getStore('reportstree').getRoot());

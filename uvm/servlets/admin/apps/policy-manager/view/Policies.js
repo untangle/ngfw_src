@@ -83,6 +83,11 @@ Ext.define('Ung.apps.policymanager.view.Policies', {
                 fieldLabel: '<strong>' + 'Parent'.t() + '</strong>',
                 reference: 'policiesCombo',
                 labelAlign: 'top',
+                displayField: 'text',
+                valueField: 'value',
+                store: {
+                    data: []
+                },
                 // disabled: true,
                 emptyText: 'Select parent',
                 allowBlank: false,
@@ -96,6 +101,14 @@ Ext.define('Ung.apps.policymanager.view.Policies', {
                 editable: false
             }],
             buttons: [{
+                text: 'Remove',
+                iconCls: 'fa fa-ban',
+                handler: 'onRemovePolicy',
+                disabled: true,
+                bind: {
+                    disabled: '{!tree.selection || tree.selection.policyId === 1}'
+                }
+            }, '->', {
                 bind: {
                     text: '{tree.selection ? "Save" : "Add"}',
                     handler: '{tree.selection ? "setSettings" : "addPolicy"}'
@@ -110,25 +123,6 @@ Ext.define('Ung.apps.policymanager.view.Policies', {
         reference: 'apps',
         title: 'Apps'.t(),
         bind: '{appsStore}',
-
-        // dockedItems: [{
-        //     xtype: 'toolbar',
-        //     border: false,
-        //     dock: 'top',
-        //     cls: 'report-header',
-        //     // height: 53,
-        //     padding: '10 5',
-        //     items: [{
-        //         xtype: 'component',
-        //         bind: {
-        //             html: '<h2>{tree.selection.name}</h2><p>{tree.selection.description}</p>'
-        //         }
-        //     }],
-        //     hidden: true,
-        //     bind: {
-        //         hidden: '{!tree.selection}'
-        //     }
-        // }],
 
         viewConfig: {
             emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-2x"></i> <br/>Select a Policy ...</p>',

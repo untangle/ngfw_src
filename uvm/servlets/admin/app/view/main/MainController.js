@@ -54,8 +54,8 @@ Ext.define('Ung.view.main.MainController', {
         }, 5000);
         */
 
-        view.getViewModel().set('policies', Ext.getStore('policies'));
-        view.getViewModel().set('policy', Ext.getStore('policies').findRecord('policyId', 1));
+        // view.getViewModel().set('policies', Ext.getStore('policies'));
+        // view.getViewModel().set('policy', Ext.getStore('policies').findRecord('policyId', 1));
         //this.getViewModel().set('activeItem', Ext.util.History.getHash());
     },
 
