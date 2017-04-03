@@ -137,7 +137,7 @@ Ext.define('Ung.controller.Global', {
             }
         } else {
             this.getAppsView().setActiveItem('installedApps');
-            this.getAppsView().getController().getPolicies();
+            this.getAppsView().getController().getApps();
         }
     },
 
