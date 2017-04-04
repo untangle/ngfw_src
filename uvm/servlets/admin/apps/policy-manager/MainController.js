@@ -6,9 +6,6 @@ Ext.define('Ung.apps.policymanager.MainController', {
         '#': {
             afterrender: 'getSettings',
             deactivate: 'onDeactivate'
-        },
-        '#policies': {
-            activate: 'onActivate'
         }
     },
 
@@ -24,11 +21,6 @@ Ext.define('Ung.apps.policymanager.MainController', {
     tree: [],
     policiesMap: {},
     selectedPolicyId: null,
-
-
-    onActivate: function () {
-        this.setPoliciesCombo();
-    },
 
     onDeactivate: function () {
         this.lookup('tree').getSelectionModel().deselectAll();
@@ -82,14 +74,14 @@ Ext.define('Ung.apps.policymanager.MainController', {
                 }, 100);
             }
         }
-        me.setPoliciesCombo();
+        // me.setPoliciesCombo();
     },
 
     onPolicySelect: function (rowModel, selectedNode) {
         var me = this, policiesStore = [[0, 'None'.t()]];
         me.selectedPolicyId = selectedNode.get('policyId');
         me.selectedPolicyName = selectedNode.get('name');
-        me.setPoliciesCombo(selectedNode);
+        // me.setPoliciesCombo(selectedNode);
         Rpc.asyncData('rpc.appManager.getAppsView', selectedNode.get('policyId'))
             .then(function (result) {
                 me.buildApps(result);
@@ -144,36 +136,6 @@ Ext.define('Ung.apps.policymanager.MainController', {
         });
 
         this.getViewModel().set('appsData', appsList);
-    },
-
-    newPolicy: function () {
-        var me = this, vm = this.getViewModel();
-        me.lookup('tree').getSelectionModel().deselectAll();
-        vm.set('appsData', []);
-        me.setPoliciesCombo();
-    },
-
-    addPolicy: function () {
-        var me = this, v = me.getView(),
-            values = me.getView().down('form').getValues();
-
-        me.settings.policies.list.push({
-            name: values.name,
-            description: values.description,
-            policyId: null,
-            parentId: values.parentPolicyId || null,
-            javaClass: 'com.untangle.app.policy_manager.PolicySettings'
-        });
-
-        me.selectedPolicyId = me.settings.nextPolicyId;
-        v.setLoading(true);
-        v.appManager.setSettings(function (result, ex) {
-            v.setLoading(false);
-            if (ex) { Util.exceptionToast(ex); return; }
-            // Util.successToast('Settings saved');
-            // me.getSettings();
-            Ext.getStore('policiestree').build();
-        }, me.settings);
     },
 
     onInstall: function (btn) {
@@ -240,29 +202,150 @@ Ext.define('Ung.apps.policymanager.MainController', {
         }
     },
 
-    onRemovePolicy: function (btn) {
-        var me = this, v = me.getView(), vm = this.getViewModel(), idx;
+    removePolicy: function (view, rowIndex, colIndex, item, e, record) {
+        var me = this, vm = me.getViewModel(), idx;
 
         Ext.Array.each(me.settings.policies.list, function (p, index) {
-            if (p.policyId === me.selectedPolicyId) {
+            if (p.policyId === record.get('policyId')) {
                 idx = index;
             }
         });
 
         Ext.Array.removeAt(me.settings.policies.list, idx);
 
-        v.setLoading(true);
-        v.appManager.setSettings(function (result, ex) {
-            v.setLoading(false);
-            if (ex) { Util.exceptionToast(ex); me.getSettings(); return; }
-            // Util.successToast('Settings saved');
-            // me.getSettings();
-            vm.set('appsData', []);
-            me.setPoliciesCombo();
-
-            me.getSettings();
+        // view.setLoading(true);
+        me.getView().appManager.setSettings(function (result, ex) {
+            // view.setLoading(false);
+            if (ex) { Util.exceptionToast(ex); return; }
+            if (me.selectedPolicyId === record.get('policyId')) {
+                me.selectedPolicyId = null;
+                vm.set('appsData', []);
+            }
             Ext.getStore('policiestree').build();
+            me.getSettings();
         }, me.settings);
+    },
+
+    editPolicy: function (view, rowIndex, colIndex, item, e, record) {
+        this.showEditor(record);
+    },
+
+    addPolicy: function () {
+        this.showEditor();
+    },
+
+    showEditor: function (rec) {
+        var me = this, policiesStore = [{ value: 0, text: 'None'.t() }];
+        if (!me.lookup('tree')) { return; }
+        me.lookup('tree').getRootNode().cascadeBy(function (node) {
+            if (node.isRoot()) { return; }
+            if (rec) {
+                if (node.get('policyId') !== rec.get('policyId') && !node.isAncestor(rec)) {
+                    policiesStore.push({ value: node.get('policyId'), text: node.get('name') });
+                }
+            } else {
+                policiesStore.push({ value: node.get('policyId'), text: node.get('name') });
+            }
+        });
+
+        me.editWin = me.getView().add({
+            xtype: 'window',
+            width: 300,
+            modal: true,
+            title: rec ? 'Edit Policy' : 'New Policy',
+            items: [{
+                xtype: 'form',
+                layout: 'anchor',
+                bodyPadding: 10,
+                border: false,
+                defaults: {
+                    anchor: '100%'
+                },
+                items: [{
+                    xtype: 'hidden',
+                    name: 'policyId',
+                    value: rec ? rec.get('policyId') : me.settings.nextPolicyId
+                }, {
+                    xtype: 'hidden',
+                    name: 'javaClass',
+                    value: 'com.untangle.app.policy_manager.PolicySettings'
+                }, {
+                    xtype:  'textfield',
+                    name: 'name',
+                    fieldLabel: '<strong>' + 'Name'.t() + '</strong>',
+                    emptyText: 'enter policy name',
+                    allowBlank: false,
+                    labelAlign: 'top',
+                    value: rec ? rec.get('name') : ''
+                }, {
+                    xtype:  'textarea',
+                    name: 'description',
+                    fieldLabel: '<strong>' + 'Description'.t() + '</strong>',
+                    emptyText: 'enter policy description',
+                    labelAlign: 'top',
+                    value: rec ? rec.get('description') : ''
+                }, {
+                    xtype: 'combo',
+                    name: 'parentId',
+                    fieldLabel: '<strong>' + 'Parent'.t() + '</strong>',
+                    reference: 'policiesCombo',
+                    labelAlign: 'top',
+                    displayField: 'text',
+                    valueField: 'value',
+                    value: rec ? rec.get('parentPolicyId') : 0,
+                    store: { data: policiesStore },
+                    emptyText: 'Select parent',
+                    allowBlank: false,
+                    disabled: rec && rec.get('policyId') === 1,
+                    queryMode: 'local',
+                    editable: false
+                }],
+                buttons: [{
+                    text: 'Cancel'.t(),
+                    iconCls: 'fa fa-ban',
+                    handler: function (btn) {
+                        btn.up('window').close();
+                    }
+                }, {
+                    text: rec ? 'Save'.t() : 'Add'.t(),
+                    action: rec ? 'save' : 'add',
+                    formBind: true,
+                    iconCls: 'fa fa-floppy-o',
+                    handler: 'savePolicy'
+                }]
+            }]
+        });
+        me.editWin.show();
+    },
+
+    savePolicy: function (btn) {
+        var me = this, win = btn.up('window'), values = btn.up('form').getValues();
+
+        values.policyId = parseInt(values.policyId);
+        if (values.parentId === 0) {
+            values.parentId = null;
+        }
+
+        if (btn.action === 'save') {
+            var editPolicy = Ext.Array.findBy(me.settings.policies.list, function (policy) {
+                return policy.policyId === values.policyId;
+            });
+            Ext.apply(editPolicy, values);
+        } else {
+            me.settings.policies.list.push(values);
+        }
+
+        win.setLoading(true);
+        me.getView().appManager.setSettings(function (result, ex) {
+            win.setLoading(false);
+            if (ex) { Util.exceptionToast(ex); return; }
+            if (btn.action === 'add') {
+                me.selectedPolicyId = values.policyId;
+            }
+            Ext.getStore('policiestree').build();
+            me.getSettings();
+        }, me.settings);
+        win.close();
     }
 
 });
