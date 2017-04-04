@@ -375,7 +375,7 @@ public class ExtensionImpl implements Runnable
                 System.out.println("        {");
                 System.out.println("        name: \"" + methodName + "\",");
                 System.out.println("        type: \"" + returnType + "\",");
-                System.out.println("        description \"" + description + "\",");
+                System.out.println("        description: \"" + description + "\",");
                 System.out.println("        },");
                 
             }
