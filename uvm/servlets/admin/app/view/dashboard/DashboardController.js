@@ -211,7 +211,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
      * Method which sends modified dashboard settings to backend to be saved
      */
     applyChanges: function () {
-        console.log('apply');
+        var vm = this.getViewModel();
         // because of the drag/drop reorder the settins widgets are updated to respect new ordering
         Ung.dashboardSettings.widgets.list = Ext.Array.pluck(Ext.getStore('widgets').getRange(), 'data');
 
@@ -219,6 +219,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         .then(function(result) {
             Util.successToast('<span style="color: yellow; font-weight: 600;">Dashboard Saved!</span>');
             Ext.getStore('widgets').sync();
+            vm.set('managerVisible', false);
         });
 
     },

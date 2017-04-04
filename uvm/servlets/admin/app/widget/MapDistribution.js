@@ -9,54 +9,120 @@ Ext.define('Ung.widget.MapDistribution', {
     baseCls: 'widget',
     cls: 'adding',
 
-    layout: {
-        type: 'vbox',
-        align: 'stretch'
-    },
+    layout: 'fit',
 
     bind: {
         hidden: '{!widget.enabled}'
     },
 
-    refreshIntervalSec: 5,
+    refreshIntervalSec: 10,
+    geographyManager: rpc.UvmContext.geographyManager(),
 
     items: [{
-        xtype: 'container',
-        layout: {
-            type: 'hbox',
-            align: 'top'
-        },
+        xtype: 'component',
         cls: 'header',
-        style: {
-            height: '50px'
-        },
-        items: [{
-            xtype: 'component',
-            flex: 1,
-            html: '<h1>' + 'Map Distribution'.t() + '</h1>'
-        }, {
-            xtype: 'container',
-            margin: '10 5 0 0',
-            layout: {
-                type: 'hbox',
-                align: 'middle'
-            },
-            items: [{
-                xtype: 'button',
-                baseCls: 'action',
-                text: '<i class="material-icons">refresh</i>',
-                listeners: {
-                    click: 'fetchData'
-                }
-            }]
-        }]
+        itemId: 'header',
+        style: { height: '40px' },
+        html: '<h1>' + 'Map Distribution'.t() + '</h1>' +
+            '<div class="actions"><a class="action-btn"><i class="fa fa-rotate-left fa-lg" data-action="refresh"></i></a></div>'
     }, {
-        xtype: 'container',
-        html: 'Under construction'
+        xtype: 'component',
+        height: 260,
+        // style: {
+        //     right: 0,
+        //     bottom: 0
+        // },
+        reference: 'mapCmp'
     }],
 
-    fetchData: function () {
-        var me = this;
-        me.fireEvent('afterdata');
+    fetchData: function (cb) {
+        var me = this, data = [];
+
+        if (me.chart && me.geographyManager) {
+            me.geographyManager.getGeoSessionStats(function (result, ex) {
+                cb();
+                if (ex) { Util.exceptionToast(ex); return; }
+                for (i = 0; i < result.length; i += 1) {
+                    data.push({
+                        lat: result[i].latitude,
+                        lon: result[i].longitude,
+                        z: Math.round(result[i].kbps * 100) / 100,
+                        country: result[i].country,
+                        sessionCount: result[i].sessionCount
+                    });
+                }
+                me.chart.series[1].setData(data, true, false);
+            });
+        } else {
+            cb();
+        }
+    },
+
+    listeners: {
+        afterrender: function (view) {
+            view.setLoading(true);
+            if (!Highcharts.map['custom/world']) {
+                Ext.Loader.loadScript({
+                    url: '/highcharts-5.0.9/world.js',
+                    onLoad: function () {
+                        view.setLoading(false);
+                        view.renderMap(view);
+                    }
+                });
+            } else {
+                view.renderMap(view);
+            }
+        },
+        resize: function (view) {
+            if (view.chart) {
+                view.chart.reflow();
+            }
+        }
+    },
+
+    renderMap: function (me) {
+        me.chart = new Highcharts.Map({
+            chart : {
+                type: 'map',
+                renderTo: me.lookup('mapCmp').getEl().dom,
+                margin: [5, 5, 5, 5],
+                spacing: [5, 5, 5, 5],
+                // backgroundColor: 'transparent',
+                map: 'custom/world'
+            },
+            title: null,
+            legend: {
+                enabled: false
+            },
+            credits: {
+                enabled: false
+            },
+            exporting: {
+                enabled: false
+            },
+            mapNavigation: {
+                enabled: true,
+                enableMouseWheelZoom: false,
+                enableTouchZoom: false,
+                buttonOptions: {
+                    verticalAlign: 'bottom',
+                    x: 5
+                }
+            },
+            series : [{
+                name: 'Countries',
+                color: '#E0E0E0',
+                enableMouseTracking: false
+            }, {
+                type: 'mapbubble',
+                minSize: 10,
+                maxSize: 50
+            }],
+            tooltip: {
+                headerFormat: '',
+                pointFormat: '<strong>{point.country}</strong><br/><strong>{point.sessionCount}</strong> ' + 'sessions'.t() + '<br/><strong>{point.z}</strong> kB/s',
+                hideDelay: 0
+            }
+        });
     }
 });
