@@ -24,6 +24,7 @@ Ext.define('Ung.apps.policymanager.MainController', {
 
     onDeactivate: function () {
         this.lookup('tree').getSelectionModel().deselectAll();
+        this.getViewModel().set('appsData', []);
     },
 
     getSettings: function () {
@@ -33,34 +34,36 @@ Ext.define('Ung.apps.policymanager.MainController', {
             v.setLoading(false);
             if (ex) { Util.exceptionToast(ex); return; }
             me.settings = result;
+            vm.set('settings', result);
         });
     },
 
+    // this saves only the rules as the policies are saved on the fly
     setSettings: function () {
-        var me = this, v = this.getView(), vm = this.getViewModel(), policies = [];
-        // v.setLoading(true);
-        vm.set('appsData', []);
-
-        me.lookup('tree').getRootNode().cascadeBy(function (node) {
-            if (node.isRoot()) { return; }
-            policies.push({
-                name: node.get('name'),
-                description: node.get('description'),
-                policyId: node.get('policyId'),
-                parentId: node.get('parentPolicyId') || null,
-                javaClass: 'com.untangle.app.policy_manager.PolicySettings'
-            });
+        var me = this, v = this.getView(), vm = this.getViewModel();
+        v.query('ungrid').forEach(function (grid) {
+            var store = grid.getStore();
+            if (store.getModifiedRecords().length > 0 ||
+                store.getNewRecords().length > 0 ||
+                store.getRemovedRecords().length > 0 ||
+                store.isReordered) {
+                store.each(function (record) {
+                    if (record.get('markedForDelete')) {
+                        record.drop();
+                    }
+                });
+                store.isReordered = undefined;
+                vm.set(grid.listProperty, Ext.Array.pluck(store.getRange(), 'data'));
+            }
         });
 
-        me.settings.policies.list = policies;
-
+        v.setLoading(true);
         v.appManager.setSettings(function (result, ex) {
             v.setLoading(false);
             if (ex) { Util.exceptionToast(ex); return; }
-            // Util.successToast('Settings saved');
-            // me.getSettings();
-            Ext.getStore('policiestree').build();
-        }, me.settings);
+            Util.successToast('Settings saved');
+            me.getSettings();
+        }, vm.get('settings'));
     },
 
     onRootChange: function (newRoot) {

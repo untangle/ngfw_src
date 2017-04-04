@@ -47,7 +47,11 @@
 
     &.disabled {
         cursor: default;
-        img { opacity: 0.2; }
+        img {
+            -webkit-filter: grayscale(1);
+            filter: grayscale(1);
+            opacity: 0.5;
+        }
         i {
             opacity: 0.5;
         }
