@@ -26,6 +26,7 @@ Ext.define('Ung.widget.CpuLoad', {
 
     items: [{
         xtype: 'component',
+        height: 40,
         cls: 'header',
         html: '<h1>' + 'CPU Load'.t() + '</h1>'
     }, {

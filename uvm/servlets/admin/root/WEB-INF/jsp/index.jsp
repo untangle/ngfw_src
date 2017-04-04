@@ -9,6 +9,7 @@
         <script src="/jsonrpc/jsonrpc.js"></script>
         <script src="/highcharts-5.0.9/highstock.js"></script>
         <script src="/highcharts-5.0.9/highcharts-3d.js"></script>
+        <script src="/highcharts-5.0.9/highcharts-more.js"></script>
         <script src="/highcharts-5.0.9/no-data-to-display.js"></script>
 
         <!-- ExtJS lib & theme -->
