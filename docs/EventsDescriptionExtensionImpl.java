@@ -27,7 +27,7 @@ public class ExtensionImpl implements Runnable
 
     private ExtensionImpl()
     {
-        classDescriptions.put("UserTableEvent","These events are created by the base system and inserted to the [[Database_Schema#user_table_updates|user_table_updates]] table when the user table is modified.");
+        classDescriptions.put("UserTableEvent","These events are created by the base system and inserted to the [[Database_Schema#host_table_updates|host_table_updates]] table when the host table is modified.");
         classDescriptions.put("HostTableEvent","These events are created by the base system and inserted to the [[Database_Schema#host_table_updates|host_table_updates]] table when the host table is modified.");
         classDescriptions.put("DeviceTableEvent","These events are created by the base system and inserted to the [[Database_Schema#device_table_updates|device_table_updates]] table when the device list is modified.");
         classDescriptions.put("SessionStatsEvent","These events are created by the base system and update the [[Database_Schema#sessions|sessions]] table when a session ends with the updated stats.");
@@ -310,9 +310,11 @@ public class ExtensionImpl implements Runnable
 
         try {
             String lines[] = result.split("\\n");
+            System.out.println("this.eventsConfig = {");
             for ( String line : lines ) {
                 printClassDescription( line );
             }
+            System.out.println("}");
         } catch (Exception e) {
             System.out.println(e + " " + e.getMessage());
         }
@@ -330,16 +332,8 @@ public class ExtensionImpl implements Runnable
         }
 
         //System.out.println(fullName);
-        System.out.println("== " + shortName + " ==");
-        System.out.println("<section begin='" + shortName + "' />");
-        System.out.println("");
-        System.out.println(classDescription);
-        System.out.println("");
-        System.out.println("{| border=\"1\" cellpadding=\"2\" width=\"90%\" align=\"center\"");
-        System.out.println("! Attribute Name");
-        System.out.println("! Type");
-        System.out.println("! Description");
-        
+        System.out.println("    " + shortName + ": {");
+        System.out.println("    description: \"" + classDescription + "\",");
         
         Class clazz;
         try {
@@ -353,6 +347,7 @@ public class ExtensionImpl implements Runnable
             throw new RuntimeException("Class not found: " + fullName);
         }
 
+        System.out.println("    fields: [");
         try {
             for(PropertyDescriptor propertyDescriptor : Introspector.getBeanInfo(clazz).getPropertyDescriptors()){
                 Method method = propertyDescriptor.getReadMethod();
@@ -377,19 +372,23 @@ public class ExtensionImpl implements Runnable
                 }
                 if ("".equals(description))
                     continue;
+                System.out.println("        {");
+                System.out.println("        name: \"" + methodName + "\",");
+                System.out.println("        type: \"" + returnType + "\",");
+                System.out.println("        description \"" + description + "\",");
+                System.out.println("        },");
                 
-                System.out.println("|-");
-                System.out.println("|" + methodName);
-                System.out.println("|" + returnType);
-                System.out.println("|" + description);
             }
         } catch (java.beans.IntrospectionException e) {
             System.out.println(e);
         }
-        System.out.println("|}");
-        System.out.println("<section end='" + shortName + "' />");
-        System.out.println("");
-        System.out.println("");
+        System.out.println("    ]");
+        System.out.println("    },");
+
+        // System.out.println("|}");
+        // System.out.println("<section end='" + shortName + "' />");
+        // System.out.println("");
+        // System.out.println("");
     }
 }
 
