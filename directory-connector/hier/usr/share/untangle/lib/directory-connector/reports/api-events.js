@@ -8,6 +8,6 @@
     "displayOrder": 1010,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "table": "directory_connector_login_events",
-    "title": "AD Events",
+    "title": "API Events",
     "uniqueId": "directory-connector-RKL4XIEPFQ"
 }

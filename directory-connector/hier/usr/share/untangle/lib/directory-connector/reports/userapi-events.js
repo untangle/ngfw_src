@@ -21,6 +21,6 @@
     ],
     "timeDataInterval": "AUTO",
     "timeStyle": "BAR",
-    "title": "User Notification API Events",
+    "title": "API Usage",
     "type": "TIME_GRAPH"
 }
