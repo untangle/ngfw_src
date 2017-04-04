@@ -55,22 +55,14 @@ def create_alert_rule(description, field, operator, value, field2, operator2, va
                 "javaClass": "java.util.LinkedList",
                 "list": [{
                     "javaClass": "com.untangle.uvm.event.EventRuleCondition",
-                    "conditionType": "FIELD_CONDITION",
-                    "value": {
-                        "comparator": operator,
-                        "field": field,
-                        "javaClass": "com.untangle.uvm.event.EventRuleConditionField",
-                        "value": value
-                    }
+                    "comparator": operator,
+                    "field": field,
+                    "fieldValue": value
                 }, {
                     "javaClass": "com.untangle.uvm.event.EventRuleCondition",
-                    "conditionType": "FIELD_CONDITION",
-                    "value": {
-                        "comparator": operator2,
-                        "field": field2,
-                        "javaClass": "com.untangle.uvm.event.EventRuleConditionField",
-                        "value": value2
-                    }
+                    "comparator": operator2,
+                    "field": field2,
+                    "fieldValue": value2
                 }]
             },
             "ruleId": 1
@@ -89,22 +81,14 @@ def create_trigger_rule(action, tag_target, tag_name, tag_lifetime_sec, descript
             "javaClass": "java.util.LinkedList",
             "list": [{
                 "javaClass": "com.untangle.uvm.event.EventRuleCondition",
-                "conditionType": "FIELD_CONDITION",
-                "value": {
-                    "comparator": operator,
-                    "field": field,
-                    "javaClass": "com.untangle.uvm.event.EventRuleConditionField",
-                    "value": value
-                }
+                "comparator": operator,
+                "field": field,
+                "fieldValue": value
             }, {
                 "javaClass": "com.untangle.uvm.event.EventRuleCondition",
-                "conditionType": "FIELD_CONDITION",
-                "value": {
-                    "comparator": operator2,
-                    "field": field2,
-                    "javaClass": "com.untangle.uvm.event.EventRuleConditionField",
-                    "value": value2
-                }
+                "comparator": operator2,
+                "field": field2,
+                "fieldValue": value2
             }]
         },
         "ruleId": 1
