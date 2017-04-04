@@ -7,116 +7,50 @@ Ext.define('Ung.apps.policymanager.view.Policies', {
     layout: 'border',
     items: [{
         region: 'west',
-        border: false,
         split: true,
         collapsible: false,
         width: 300,
         minWidth: 300,
 
-        layout: 'border',
+        xtype: 'treepanel',
+        reference: 'tree',
+        title: 'Manage Policies',
+        rootVisible: false,
+        displayField: 'name',
+        store: 'policiestree',
+        useArrows: true,
 
-        items: [{
-            xtype: 'treepanel',
-            reference: 'tree',
-            title: 'Manage Policies',
-            region: 'center',
-            rootVisible: false,
-            displayField: 'name',
-            store: 'policiestree',
-            useArrows: true,
-            // viewConfig: {
-            //     plugins: {
-            //         ptype: 'treeviewdragdrop'
-            //     }
-            // },
-            columns: [{
-                xtype: 'treecolumn',
-                flex: 1,
-                dataIndex: 'name',
-                renderer: function (val, meta, rec) {
-                    return '<strong>' + rec.get('name') + '</strong> [' + rec.get('policyId') + ']';
-                }
-            }],
-            listeners: {
-                select: 'onPolicySelect',
-                // drop: 'onDrop'
-            },
-            bbar: [{
-                text: 'New Policy',
-                iconCls: 'fa fa-plus-circle',
-                handler: 'newPolicy'
-            }]
+        tbar: [{
+            text: 'Add Policy',
+            iconCls: 'fa fa-plus-circle',
+            handler: 'addPolicy'
+        }],
+        columns: [{
+            xtype: 'treecolumn',
+            flex: 1,
+            dataIndex: 'name',
+            renderer: function (val, meta, rec) {
+                return '<strong>' + rec.get('name') + '</strong> [' + rec.get('policyId') + ']';
+            }
         }, {
-            region: 'south',
-            split: true,
-            collapsible: false,
-            // title: 'Edit Policy',
-            height: 'auto',
-            xtype: 'form',
-            layout: 'anchor',
-            bodyPadding: 10,
-            // hidden: true,
-            bind: {
-                title: '{!tree.selection ? "New Policy" : "Edit Policy"}'
+            xtype: 'actioncolumn',
+            width: 20,
+            align: 'center',
+            iconCls: 'fa fa-pencil',
+            handler: 'editPolicy'
+        }, {
+            xtype: 'actioncolumn',
+            width: 20,
+            align: 'center',
+            iconCls: 'fa fa-times',
+            isDisabled: function (view, rowIndex, colIndex, item , record) {
+                return record.get('policyId') === 1 || !record.isLeaf();
             },
-            defaults: {
-                anchor: '100%'
-            },
-            items: [{
-                xtype:  'textfield',
-                name: 'name',
-                fieldLabel: '<strong>' + 'Name'.t() + '</strong>',
-                emptyText: 'enter policy name',
-                allowBlank: false,
-                labelAlign: 'top',
-                bind: '{tree.selection.name}'
-            }, {
-                xtype:  'textarea',
-                name: 'description',
-                fieldLabel: '<strong>' + 'Description'.t() + '</strong>',
-                emptyText: 'enter policy description',
-                labelAlign: 'top',
-                bind: '{tree.selection.description}'
-            }, {
-                xtype: 'combo',
-                name: 'parentPolicyId',
-                fieldLabel: '<strong>' + 'Parent'.t() + '</strong>',
-                reference: 'policiesCombo',
-                labelAlign: 'top',
-                displayField: 'text',
-                valueField: 'value',
-                store: {
-                    data: []
-                },
-                // disabled: true,
-                emptyText: 'Select parent',
-                allowBlank: false,
-                bind: {
-                    value: '{tree.selection.parentPolicyId}',
-                    disabled: '{tree.selection.policyId === 1}'
-                },
-                // displayField: 'name',
-                // valueField: 'parentPolicyId',
-                queryMode: 'local',
-                editable: false
-            }],
-            buttons: [{
-                text: 'Remove',
-                iconCls: 'fa fa-ban',
-                handler: 'onRemovePolicy',
-                disabled: true,
-                bind: {
-                    disabled: '{!tree.selection || tree.selection.policyId === 1}'
-                }
-            }, '->', {
-                bind: {
-                    text: '{tree.selection ? "Save" : "Add"}',
-                    handler: '{tree.selection ? "setSettings" : "addPolicy"}'
-                },
-                formBind: true,
-                iconCls: 'fa fa-floppy-o'
-            }]
-        }]
+            handler: 'removePolicy'
+        }],
+        listeners: {
+            select: 'onPolicySelect'
+        }
     }, {
         region: 'center',
         xtype: 'grid',
