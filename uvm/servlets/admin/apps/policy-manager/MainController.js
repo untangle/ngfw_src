@@ -306,7 +306,7 @@ Ext.define('Ung.apps.policymanager.MainController', {
     savePolicy: function (btn) {
         var me = this, win = btn.up('window'), values = btn.up('form').getValues();
 
-        values.policyId = parseInt(values.policyId);
+        values.policyId = parseInt(values.policyId, 10);
         if (values.parentId === 0) {
             values.parentId = null;
         }
