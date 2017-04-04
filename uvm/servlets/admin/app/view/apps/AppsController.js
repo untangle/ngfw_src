@@ -244,6 +244,11 @@ Ext.define('Ung.view.apps.AppsController', {
         .then(function (result) {
             // record.set('status', 'installed');
 
+            if (record.get('name') === 'reports') { // just reload the page for now
+                window.location.href = '/admin/index.do';
+                return;
+            }
+
             if (record.get('name') === 'policy-manager') { // build the policies tree
                 Ext.getStore('policiestree').build();
             }

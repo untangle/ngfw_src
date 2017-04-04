@@ -66,6 +66,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
             else {
                 if (vm.get('reportsEnabled')) {
                     entry = Ext.getStore('reports').findRecord('uniqueId', widget.get('entryId'));
+
                     if (entry && !Ext.getStore('unavailableApps').first().get(entry.get('category')) && widget.get('enabled')) {
                         var wg = dashboard.add({
                             xtype: 'reportwidget',
@@ -162,13 +163,9 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         var entry = Ext.getStore('reports').findRecord('uniqueId', record.get('entryId'));
 
         if (!entry || Ext.getStore('unavailableApps').first().get(entry.get('category')) || !vm.get('reportsRunning')) {
-            return '<i class="fa fa-info-circle fa-lg" style="color: #a91f1f;"></i>';
+            return '<i class="fa fa-info-circle fa-lg"></i>';
         }
         return '<i class="fa ' + (value ? 'fa-check-circle-o' : 'fa-circle-o') + ' fa-lg"></i>';
-    },
-
-    settingsRenderer: function () {
-
     },
 
     /**
@@ -205,7 +202,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                 return 'Some ' + 'Widget'.t();
             }
         } else {
-            return '<span style="color: #999; line-height: 26px;">' + 'App Widget'.t() + '</span>';
+            return '<span style="color: #999;">' + 'App Widget'.t() + '</span>';
         }
     },
 

@@ -22,22 +22,10 @@ Ext.define('Ung.Application', {
     },
 
     launch: function () {
-        // var me = this;
-        // Rpc.rpc = me.rpc;
-        // rpc.isExpertMode = true;
+        Ext.get('app-loader').destroy();
 
         Ext.getStore('policies').loadData(rpc.appsViews);
-
-
         Metrics.start();
-        // setTimeout(function () {
-        //     Metrics.start();
-        // }, (10 - (new Date()).getSeconds() % 10) * 1000);
-
-
-
-
-        Ext.get('app-loader').destroy();
 
         try {
             rpc.reportsManager = rpc.appManager.app('reports').getReportsManager();
@@ -45,81 +33,43 @@ Ext.define('Ung.Application', {
             // console.log(ex);
         }
 
-        Ext.Deferred.parallel([
-            Rpc.asyncPromise('rpc.dashboardManager.getSettings'),
-            Rpc.asyncPromise('rpc.reportsManager.getReportEntries'),
-            Rpc.asyncPromise('rpc.reportsManager.getUnavailableApplicationsMap'),
-            Rpc.asyncPromise('rpc.reportsManager.getCurrentApplications')
-        ]).then(function (result) {
-            // Ext.get('app-loader').destroy();
-            Ung.dashboardSettings = result[0];
-            Ext.getStore('widgets').loadData(result[0].widgets.list);
-            if (result[1]) {
-                Ext.getStore('reports').loadData(result[1].list);
-            }
-            if (result[2]) {
-                Ext.getStore('unavailableApps').loadRawData(result[2].map);
-            }
-            if (result[3]) {
-                // Ext.getStore('reportstree').buildTree();
-                // console.log(result[3]);
-                Ext.getStore('categories').loadData(Ext.Array.merge(Util.baseCategories, result[3].list));
-            }
+        if (rpc.reportsManager) {
+            // reports installed
+            Ext.Deferred.parallel([
+                Rpc.asyncPromise('rpc.dashboardManager.getSettings'),
+                Rpc.asyncPromise('rpc.reportsManager.getReportEntries'),
+                Rpc.asyncPromise('rpc.reportsManager.getUnavailableApplicationsMap'),
+                Rpc.asyncPromise('rpc.reportsManager.getCurrentApplications')
+            ]).then(function (result) {
+                Ung.dashboardSettings = result[0];
 
-            Ext.getStore('reportstree').build();
-            Ext.getStore('policiestree').build();
+                Ext.getStore('widgets').loadData(result[0].widgets.list);
+                if (result[1]) {
+                    Ext.getStore('reports').loadData(result[1].list);
+                }
+                if (result[2]) {
+                    Ext.getStore('unavailableApps').loadRawData(result[2].map);
+                }
+                if (result[3]) {
+                    Ext.getStore('categories').loadData(Ext.Array.merge(Util.baseCategories, result[3].list));
+                }
 
-            // console.log(Ext.getStore('reportstree').getRoot());
+                Ext.getStore('reportstree').build();
+                Ext.getStore('policiestree').build();
+                Ext.fireEvent('init');
+            }, function (ex) {
+                console.log(ex);
+            });
+        } else {
+            Rpc.asyncData('rpc.dashboardManager.getSettings')
+                .then(function (result) {
+                    Ung.dashboardSettings = result;
+                    Ext.getStore('widgets').loadData(result.widgets.list);
 
-            // console.log(Ext.getStore('categories').getRange());
-            Ext.fireEvent('init');
-            // me.loadMainView();
-            //console.log(reports);
-            //this.setWidgets();
-        }, function (exception) {
-            console.log(exception);
-        });
-
-
-
-        // Ext.get('app-message').setHtml('Reports ...');
-
-        // need to check if reports enabled an load it if so
-        // console.time('dash');
-        // Rpc.loadDashboardSettings().then(function(settings) {
-        //     console.timeEnd('dash');
-        //     Ext.getStore('widgets').loadData(settings.widgets.list);
-
-        //     if (me.rpc.appManager.app('reports')) {
-        //         Rpc.loadReports().then(function (reports) {
-        //             Ext.getStore('reports').loadData(reports.list);
-        //             me.loadMainView();
-        //         });
-        //     } else {
-        //         me.loadMainView();
-        //     }
-        //     // me.loadMainView();
-        //     // me.getView().setSettings(settings);
-        //     // if (vm.get('reportsInstalled')) {
-        //     //     // load unavailable apps needed for showing the widgets
-        //     //     console.time('unavailApps');
-        //     //     rpc.reportsManager.getUnavailableApplicationsMap(function (result, ex) {
-        //     //         if (ex) { Util.exceptionToast(ex); return false; }
-
-        //     //         Ext.getStore('unavailableApps').loadRawData(result.map);
-        //     //         Ext.getStore('widgets').loadData(settings.widgets.list);
-        //     //         console.timeEnd('unavailApps');
-        //     //         me.loadWidgets();
-        //     //     });
-        //     // } else {
-        //     //     Ext.getStore('widgets').loadData(settings.widgets.list);
-        //     //     me.loadWidgets();
-        //     // }
-        //     // me.populateMenus();
-        // });
-
-        // uncomment this to retreive the class load order inside browser
-        // Util.getClassOrder();
+                    Ext.getStore('policiestree').build();
+                    Ext.fireEvent('init');
+                });
+        }
     },
 
     loadMainView: function () {
@@ -131,14 +81,5 @@ Ext.define('Ung.Application', {
             Util.exceptionToast(ex);
             return;
         }
-
-        // start metrics
-        // Ext.get('app-loader').destroy();
-
-        // destroy app loader
-        // Ext.get('app-loader').addCls('removing');
-        // Ext.Function.defer(function () {
-        //     Ext.get('app-loader').destroy();
-        // }, 500);
     }
 });

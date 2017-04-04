@@ -92,10 +92,11 @@ Ext.define('Ung.view.dashboard.Dashboard', {
                 itemId: 'addWidgetBtn',
                 text: 'Add'.t(),
                 iconCls: 'fa fa-plus-circle',
-                handler: 'addWidget'
-                // menu: Ext.create('Ext.menu.Menu', {
-                //     mouseLeaveDelay: 0
-                // })
+                handler: 'addWidget',
+                hidden: true,
+                bind: {
+                    hidden: '{!reportsInstalled}'
+                }
             }, '->', {
                 // text: 'Import'.t(),
                 iconCls: 'fa fa-download',
