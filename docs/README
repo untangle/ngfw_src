@@ -19,3 +19,11 @@ cp docs/EventsDocumentationExtensionImpl.java reports/src/com/untangle/app/repor
 rake
 dist/etc/init.d/untangle-vm restart
 copy output from /var/log/uvm/console.log and upload to https://wiki.untangle.com/index.php/Events
+
+EventsDescriptionExtension:
+This generates a javascript definite of all events
+instructions:
+cp docs/EventsDescriptionExtensionImpl.java reports/src/com/untangle/app/reports/ExtensionImpl.java
+rake
+dist/etc/init.d/untangle-vm restart
+copy output from /var/log/uvm/console.log and upload to https://wiki.untangle.com/index.php/Events
