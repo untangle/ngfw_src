@@ -17,7 +17,8 @@ Ext.define('Ung.apps.policymanager.Main', {
                 //     value: 'FILTER'
                 // }],
                 sorters: 'viewPosition'
-            }
+            },
+            rules: { data: '{settings.rules.list}' }
         }
     },
 
