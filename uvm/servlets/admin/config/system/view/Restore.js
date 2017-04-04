@@ -39,19 +39,13 @@ Ext.define('Ung.config.system.view.Restore', {
                 allowBlank: false,
                 editable: false
             }, {
-                xtype: 'filefield',
+                xtype: 'fileuploadfield',
                 itemId: 'restoreFile',
                 margin: '10 0 0 0',
-                fieldLabel: 'File'.t(),
                 name: 'file',
-                width: 500,
-                allowBlank: false,
-                validateOnBlur: false
-            }, {
-                xtype: 'button',
-                margin: '10 0 0 155',
-                text: 'Restore from File'.t(),
-                handler: 'restoreFromFile',
+                buttonText: 'Restore from File'.t(),
+                buttonOnly: true,
+                listeners: { 'change': 'restoreFromFile' }
             }, {
                 xtype: 'hidden',
                 name: 'type',
