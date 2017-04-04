@@ -52,7 +52,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         for (i = 0; i < widgets.length; i += 1 ) {
             widget = widgets[i];
 
-            if (widget.get('type') !== 'ReportEntry' && widget.get('type') !== 'CPULoad') {
+            if (widget.get('type') !== 'ReportEntry') {
                 dashboard.add({
                     xtype: widget.get('type').toLowerCase() + 'widget',
                     itemId: widget.get('type'),

@@ -77,35 +77,17 @@ Ext.define('Ung.apps.policymanager.MainController', {
                 }, 100);
             }
         }
-        // me.setPoliciesCombo();
     },
 
     onPolicySelect: function (rowModel, selectedNode) {
         var me = this, policiesStore = [[0, 'None'.t()]];
         me.selectedPolicyId = selectedNode.get('policyId');
         me.selectedPolicyName = selectedNode.get('name');
-        // me.setPoliciesCombo(selectedNode);
         Rpc.asyncData('rpc.appManager.getAppsView', selectedNode.get('policyId'))
             .then(function (result) {
                 me.buildApps(result);
                 // console.log(result);
             });
-    },
-
-    setPoliciesCombo: function (selectedNode) {
-        var me = this, policiesStore = [{ value: 0, text: 'None'.t() }];
-        if (!me.lookup('tree')) { return; }
-        me.lookup('tree').getRootNode().cascadeBy(function (node) {
-            if (node.isRoot()) { return; }
-            if (selectedNode) {
-                if (node.get('policyId') !== selectedNode.get('policyId') && !node.isAncestor(selectedNode)) {
-                    policiesStore.push({ value: node.get('policyId'), text: node.get('name') });
-                }
-            } else {
-                policiesStore.push({ value: node.get('policyId'), text: node.get('name') });
-            }
-        });
-        me.lookup('policiesCombo').getStore().loadData(policiesStore);
     },
 
     buildApps: function (policy) {
