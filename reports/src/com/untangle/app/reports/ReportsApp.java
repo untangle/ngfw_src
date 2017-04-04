@@ -663,15 +663,15 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
 
     private void conversion_paths_13_0_0()
     {
-        int result = UvmContextFactory.context().execManager().execResult("/bin/grep -q com.untangle.app.reports.AlertRule " + System.getProperty("uvm.settings.dir") + "/" + "/reports/" + "/settings*.js");
+        int result = UvmContextFactory.context().execManager().execResult("/bin/grep -q com.untangle.node.reports.AlertRule " + System.getProperty("uvm.settings.dir") + "/" + "/reports/" + "/settings*.js");
         if ( result != 0 )
             return;
 
         // Convert event rule paths to new locations for 12.2 to 13.0
         String[] oldNames = new String[] {
-                                "com.untangle.app.reports.AlertRuleCondition",
-                                "com.untangle.app.reports.AlertRuleConditionField",
-                                "com.untangle.app.reports.AlertRule"
+                                "com.untangle.node.reports.AlertRuleCondition",
+                                "com.untangle.node.reports.AlertRuleConditionField",
+                                "com.untangle.node.reports.AlertRule"
                              };
         String[] newNames = new String[] {
                                 "com.untangle.uvm.event.EventRuleCondition",
