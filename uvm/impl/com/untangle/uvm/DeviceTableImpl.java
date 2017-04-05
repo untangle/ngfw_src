@@ -95,7 +95,7 @@ public class DeviceTableImpl implements DeviceTable
             }
         }
 
-        saveDevices();
+        saverPulse.forceRun(0);
     }
 
     public DeviceTableEntry getDevice( String macAddress )
@@ -128,7 +128,7 @@ public class DeviceTableImpl implements DeviceTable
             DeviceTableEvent event = new DeviceTableEvent( newEntry, macAddress, "add", null, null );
             UvmContextFactory.context().logEvent(event);
 
-            saveDevices();
+            saverPulse.forceRun(0);
 
             return newEntry;
         }
@@ -197,6 +197,15 @@ public class DeviceTableImpl implements DeviceTable
     public void saveDevices()
     {
         /**
+         * If we just recently saved, within 60 seconds do not save again
+         */
+        if ( System.currentTimeMillis() - lastSaveTime < (60*1000) ) {
+            logger.info("Saved recently, skipping...");
+            return;
+        }
+        lastSaveTime = System.currentTimeMillis();
+
+        /**
          * If this is the first time we're saving. Lookup any unknown MAC vendors
          * We only do this once so we don't flood the cloud server
          */
@@ -213,8 +222,6 @@ public class DeviceTableImpl implements DeviceTable
             }
         }
 
-        lastSaveTime = System.currentTimeMillis();
-
         try {
             Collection<DeviceTableEntry> entries = deviceTable.values();
             logger.info("Saving devices to file... (" + entries.size() + " entries)");
@@ -229,10 +236,12 @@ public class DeviceTableImpl implements DeviceTable
                     if ( o1.getLastSessionTime() == o2.getLastSessionTime() ) return 0;
                     return -1;
                 } });
+                logger.info("Device table  too large. Removing " + (list.size()-LOW_WATER_SIZE) + " eldest entries.");
                 while ( list.size() > LOW_WATER_SIZE ) {
-                    logger.info("Device list too large. Removing oldest entry: " + list.get(list.size()-1));
-                    list.removeLast();
+                    DeviceTableEntry entry = list.removeLast();
+                    this.deviceTable.remove( entry.getMacAddress() );
                 }
+                logger.info("Device table new size: " + this.deviceTable.size());
             }
 
             UvmContextFactory.context().settingsManager().save( DEVICES_SAVE_FILENAME, list, false, true );
