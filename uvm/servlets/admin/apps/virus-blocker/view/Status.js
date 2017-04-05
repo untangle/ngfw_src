@@ -21,6 +21,14 @@ Ext.define('Ung.apps.virusblocker.view.Status', {
         }, {
             xtype: 'appstate',
         }, {
+            xtype: 'displayfield',
+            fieldLabel: '<STRONG>' + 'Signatures were last updated'.t() + '</STRONG>',
+            labelWidth: 250,
+            bind: '{getSignatureTimestamp}'
+        }, {
+            xtype: 'displayfield',
+            value: 'Scanning Engine &copy; BitDefender 1997-2017'
+        }, {
             xtype: 'appreports'
         }]
     }, {

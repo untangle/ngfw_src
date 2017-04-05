@@ -4,11 +4,23 @@ Ext.define('Ung.apps.virusblocker.Main', {
     controller: 'app-virus-blocker',
 
     viewModel: {
+
         stores: {
             passSites: { data: '{settings.passSites.list}' },
             fileExtensions: { data: '{settings.httpFileExtensions.list}' },
             mimeTypes: { data: '{settings.httpMimeTypes.list}' }
+        },
+
+        formulas: {
+            getSignatureTimestamp: {
+                get: function(get) {
+                    var stamp = this.getView().appManager.getLastSignatureUpdate();
+                    if ((stamp == null) || (stamp == 0)) return('unknown');
+                    return(Util.timestampFormat(stamp));
+                }
+            }
         }
+
     },
 
     items: [
