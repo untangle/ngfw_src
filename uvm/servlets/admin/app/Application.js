@@ -22,6 +22,7 @@ Ext.define('Ung.Application', {
     },
 
     launch: function () {
+        window.document.title = rpc.companyName + (rpc.hostname ? ' - ' + rpc.hostname : '');
         Ext.get('app-loader').destroy();
 
         Ext.getStore('policies').loadData(rpc.appsViews);
