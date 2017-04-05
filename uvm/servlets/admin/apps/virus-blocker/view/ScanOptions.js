@@ -11,7 +11,7 @@ Ext.define('Ung.apps.virusblocker.view.ScanOptions', {
 
     items: [{
         xtype: 'checkbox',
-        boxLabel: '<strong>' + 'Scan HTTP'.t() + '</strong> (&copy; BitDefender 1997-2017)',
+        boxLabel: '<strong>' + 'Scan HTTP'.t() + '</strong>',
         bind: '{settings.scanHttp}'
     }, {
         xtype: 'checkbox',
