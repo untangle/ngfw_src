@@ -18,6 +18,7 @@ Ext.define('Ung.util.Util', {
         { name: 'network', type: 'system', displayName: 'Network' },
         { name: 'administration', type: 'system', displayName: 'Administration' },
         { name: 'system', type: 'system', displayName: 'System' },
+        { name: 'events', type: 'system', displayName: 'Events' },
         { name: 'shield', type: 'system', displayName: 'Shield' }
     ],
 
