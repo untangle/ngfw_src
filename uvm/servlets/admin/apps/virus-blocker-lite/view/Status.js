@@ -21,6 +21,11 @@ Ext.define('Ung.apps.virusblockerlite.view.Status', {
         }, {
             xtype: 'appstate',
         }, {
+            xtype: 'displayfield',
+            fieldLabel: '<STRONG>' + 'Signatures were last updated'.t() + '</STRONG>',
+            labelWidth: 250,
+            bind: '{getSignatureTimestamp}'
+        }, {
             xtype: 'appreports'
         }]
     }, {
