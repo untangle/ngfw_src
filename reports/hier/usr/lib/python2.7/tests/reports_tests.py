@@ -19,7 +19,7 @@ import test_registry
 import global_functions
 from global_functions import uvmContext
 
-prefix = ""
+prefix = "@PREFIX@"
 
 defaultRackId = 1
 app = None
