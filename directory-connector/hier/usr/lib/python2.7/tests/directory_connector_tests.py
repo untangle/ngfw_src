@@ -267,7 +267,7 @@ class DirectoryConnectorTests(unittest2.TestCase):
         assert (result == 0)
         assert (test_name_lower in user_list)
 
-        events = global_functions.get_events('Directory Connector','AD Events',None,1)
+        events = global_functions.get_events('Directory Connector','API Events',None,1)
         assert(events != None)
         found_in_reports = global_functions.check_events( events.get('list'), 5, 
                                             "login_name",test_name_lower,
