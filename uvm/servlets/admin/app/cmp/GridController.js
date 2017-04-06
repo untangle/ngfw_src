@@ -252,15 +252,12 @@ Ext.define('Ung.cmp.GridController', {
     },
 
     exportData: function () {
-        var grid = this.getView(),
-            gridName = (grid.name !== null) ? grid.name : grid.recordJavaClass;
+        var grid = this.getView();
 
         Ext.MessageBox.wait('Exporting Settings...'.t(), 'Please wait'.t());
 
-        gridName = gridName.trim().replace(/ /g, '_');
-
         var exportForm = document.getElementById('exportGridSettings');
-        exportForm.gridName.value = gridName;
+        exportForm.gridName.value = grid.getXType();
         exportForm.gridData.value = this.getExportData(false);
         exportForm.submit();
         Ext.MessageBox.hide();
