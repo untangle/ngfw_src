@@ -51,6 +51,8 @@ Ext.define('Ung.view.reports.EntryController', {
                 me.getView().down('#tableColumns').removeAll();
                 me.getView().down('#tableColumns').add(me.tableConfig.checkboxes);
                 me.getView().down('#tableColumns').setValue(entry.get('defaultColumns') ? entry.get('defaultColumns').join() : '');
+                // me.lookup('filterfield').fireEvent('change');
+                me.lookup('filterfield').setValue('');
             } else {
                 me.getView().down('#tableColumns').removeAll();
                 me.getView().down('#tableColumns').setValue({});
@@ -578,5 +580,33 @@ Ext.define('Ung.view.reports.EntryController', {
 
                 v.up('#reports').getController().buildTree(); // rebuild tree after save new
             });
+    },
+
+    // filters EVENT_LIST
+    filterEventList: function (field, value) {
+        var me = this, grid = me.getView().down('grid'),
+            cols = grid.getVisibleColumns();
+
+        grid.getStore().clearFilter();
+        if (!value) { field.getTrigger('clear').hide(); return; }
+
+        var regex = Ext.String.createRegex(value, false, false, true);
+
+        grid.getStore().getFilters().add(function (item) {
+            var str = [];
+            Ext.Array.each(cols, function (col) {
+                var val = item.get(col.dataIndex);
+                if (!val) { return; }
+                str.push(typeof val === 'object' ? Util.timestampFormat(val) : val.toString());
+            });
+            if (regex.test(str.join('|'))) { return true; }
+            return false;
+        });
+        field.getTrigger('clear').show();
+    },
+
+    onFilterEventClear: function (field) {
+        field.setValue('');
     }
+
 });
