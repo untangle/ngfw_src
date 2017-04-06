@@ -25,7 +25,6 @@ Ext.define('Ung.apps.virusblocker.view.Advanced', {
 
     defaults: {
         xtype: 'ungrid',
-        sortableColumns: true,
         tbar: ['@add', '->', '@import', '@export'],
         recordActions: ['edit', 'delete'],
     },

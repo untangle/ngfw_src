@@ -7,15 +7,15 @@ Ext.define('Ung.apps.virusblocker.Main', {
 
         stores: {
             passSites: { data: '{settings.passSites.list}' },
-            fileExtensions: { data: '{settings.httpFileExtensions.list}' },
-            mimeTypes: { data: '{settings.httpMimeTypes.list}' }
+            fileExtensions: { data: '{settings.httpFileExtensions.list}', sorters: 'string' },
+            mimeTypes: { data: '{settings.httpMimeTypes.list}', sorters: 'string' }
         },
 
         formulas: {
             getSignatureTimestamp: {
                 get: function(get) {
                     var stamp = this.getView().appManager.getLastSignatureUpdate();
-                    if ((stamp == null) || (stamp == 0)) return('unknown');
+                    if ((stamp == null) || (stamp === 0)) return('unknown');
                     return(Util.timestampFormat(stamp));
                 }
             }
