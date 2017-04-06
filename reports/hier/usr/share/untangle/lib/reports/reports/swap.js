@@ -2,7 +2,7 @@
     "uniqueId": "system-xejkMsUFk0",
     "category": "System",
     "description": "The swap utilization over time.",
-    "displayOrder": 103,
+    "displayOrder": 104,
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderDesc": false,
@@ -17,7 +17,7 @@
     ],
     "timeDataInterval": "HOUR",
     "timeStyle": "AREA",
-    "title": "Swap Usage",
+    "title": "Swap Usage Bytes",
     "type": "TIME_GRAPH",
     "approximation": "high"
 }

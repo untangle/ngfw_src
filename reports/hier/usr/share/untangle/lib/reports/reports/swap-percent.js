@@ -1,7 +1,7 @@
 {
     "uniqueId": "system-N63OfrLqbS",
     "category": "System",
-    "description": "The swap utilization over time as a percent of total memory size .",
+    "description": "The swap utilization over time as a percent of total swap size .",
     "displayOrder": 103,
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
@@ -10,13 +10,13 @@
     "readOnly": true,
     "table": "server_events",
     "timeDataColumns": [
-        "round( CAST( (CAST((max(swap_total)-max(swap_free)) as float) / CAST(max(swap_total) as float)) as numeric),4)*100 as swap_usage"
+        "round( CAST( (CAST((max(swap_total)-max(swap_free)) as float) / CAST((max(swap_total)+1) as float)) as numeric),4)*100 as swap_usage"
     ],
     "colors": [
         "#396c2b"
     ],
     "timeDataInterval": "HOUR",
     "timeStyle": "AREA",
-    "title": "Swap Usage Ratio",
+    "title": "Swap Usage",
     "type": "TIME_GRAPH"
 }
