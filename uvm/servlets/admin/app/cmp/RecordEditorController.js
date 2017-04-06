@@ -46,24 +46,13 @@ Ext.define('Ung.cmp.RecordEditorController', {
         }, {
             xtype: 'widgetcolumn',
             menuDisabled: true,
-            width: 120,
+            width: 80,
             resizable: false,
-            // widget: {
-            //     xtype: 'combo',
-            //     editable: false,
-            //     bind: '{record.invert}',
-            //     store: [[true, 'is NOT'.t()], [false, 'is'.t()]]
-            // }
             widget: {
-                xtype: 'segmentedbutton',
+                xtype: 'combo',
+                editable: false,
                 bind: '{record.invert}',
-                items: [{
-                    text: 'is'.t(),
-                    value: false
-                }, {
-                    text: 'is NOT'.t(),
-                    value: true
-                }]
+                store: [[true, 'is NOT'.t()], [false, 'is'.t()]]
             }
         }, {
             header: 'Value'.t(),
