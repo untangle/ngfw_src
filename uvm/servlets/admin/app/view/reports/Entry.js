@@ -65,6 +65,33 @@ Ext.define('Ung.view.reports.Entry', {
             }]
         }, {
             xtype: 'toolbar',
+            dock: 'top',
+            border: false,
+            hidden: true,
+            bind: {
+                hidden: '{!entry || entry.type !== "EVENT_LIST"}'
+            },
+            items: [{
+                xtype: 'textfield',
+                reference: 'filterfield',
+                fieldLabel: 'Filter'.t(),
+                emptyText: 'Filter data ...',
+                labelWidth: 'auto',
+                enableKeyEvents: true,
+                triggers: {
+                    clear: {
+                        cls: 'x-form-clear-trigger',
+                        hidden: true,
+                        handler: 'onFilterEventClear'
+                    }
+                },
+                listeners: {
+                    change: 'filterEventList',
+                    buffer: 100
+                }
+            }]
+        }, {
+            xtype: 'toolbar',
             ui: 'footer',
             dock: 'bottom',
             // border: true,
