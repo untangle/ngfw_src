@@ -28,6 +28,7 @@ Ext.define('Ung.view.reports.EventReport', {
         reference: 'eventsGrid',
         region: 'center',
         bind: '{events}',
+        plugins: ['gridfilters'],
         emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-2x"></i> <br/>No Records!</p>',
         listeners: {
             select: 'onEventSelect'

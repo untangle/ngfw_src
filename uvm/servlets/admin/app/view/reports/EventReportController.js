@@ -35,6 +35,9 @@ Ext.define('Ung.view.reports.EventReportController', {
 
                 Ext.Array.each(me.tableConfig.columns, function (col) {
                     col.hidden = Ext.Array.indexOf(me.defaultColumns, col.dataIndex) < 0;
+                    if (!col.filter && col.dataIndex !== 'time_stamp' && col.dataIndex !== 'end_time') {
+                        col.filter = 'string';
+                    }
                 });
 
                 me.getView().down('grid').setColumns(me.tableConfig.columns);
