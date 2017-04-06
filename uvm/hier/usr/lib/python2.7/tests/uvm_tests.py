@@ -224,7 +224,7 @@ class UvmTests(unittest2.TestCase):
         uvmContext.mailSender().setSettings(origMailsettings)
         appSP.setSmtpSettingsWithoutSafelists(origAppDataSP)
         emailContext = remote_control.run_command("wget -q --timeout=5 -O - http://test.untangle.com/cgi-bin/getEmail.py?toaddress=" + recipient + " 2>&1" ,stdout=True)
-        assert('Untangle Server Test Message' in emailContext)
+        assert('Test Message' in emailContext)
 
     def test_040_trigger_rule_tag_host(self):
         settings = uvmContext.eventManager().getSettings()
