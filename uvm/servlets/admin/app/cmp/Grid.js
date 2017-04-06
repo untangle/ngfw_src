@@ -104,7 +104,6 @@ Ext.define('Ung.cmp.Grid', {
 
     layout: 'fit',
     trackMouseOver: false,
-    sortableColumns: false,
     enableColumnHide: false,
     forceFit: true,
     // columnLines: true,
@@ -184,6 +183,7 @@ Ext.define('Ung.cmp.Grid', {
                 }
 
                 if (action === 'reorder') {
+                    this.sortableColumns = false;
                     Ext.apply(this.viewConfig, {
                         plugins: {
                             ptype: 'gridviewdragdrop',
