@@ -1,7 +1,7 @@
 Ext.define('Ung.apps.ipsecvpn.view.IpsecLog', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.app-ipsec-vpn-ipseclog',
-    itemId: 'ipseclog',
+    itemId: 'ipsec_log',
     title: 'IPsec Log'.t(),
     layout: 'fit',
 

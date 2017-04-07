@@ -1,7 +1,7 @@
 Ext.define('Ung.apps.configurationbackup.view.GoogleConnector', {
     extend: 'Ext.form.Panel',
     alias: 'widget.app-configuration-backup-googleconnector',
-    itemId: 'googleconnector',
+    itemId: 'google_connector',
     title: 'Google Connector'.t(),
 
     viewModel: true,

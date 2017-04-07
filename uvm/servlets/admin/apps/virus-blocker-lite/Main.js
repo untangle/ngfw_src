@@ -15,7 +15,7 @@ Ext.define('Ung.apps.virusblockerlite.Main', {
             getSignatureTimestamp: {
                 get: function(get) {
                     var stamp = this.getView().appManager.getLastSignatureUpdate();
-                    if ((stamp == null) || (stamp == 0)) return('unknown');
+                    if ((stamp == null) || (stamp === 0)) return('unknown');
                     return(Util.timestampFormat(stamp));
                 }
             }

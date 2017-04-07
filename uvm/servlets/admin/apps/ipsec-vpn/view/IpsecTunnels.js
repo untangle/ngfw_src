@@ -1,7 +1,7 @@
 Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
     extend: 'Ung.cmp.Grid',
     alias: 'widget.app-ipsec-vpn-ipsectunnels',
-    itemId: 'ipsectunnels',
+    itemId: 'ipsec_tunnels',
     title: 'IPsec Tunnels'.t(),
 
     dockedItems: [{
