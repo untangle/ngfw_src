@@ -2520,7 +2520,7 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
                 form.add([{
                     xtype: 'component',
                     padding: '10 0 0 0',
-                    html: '<strong>' + 'If all of the following conditions are met:'.t() + '</strong>'
+                    html: '<strong>' + 'If all of the following field conditions are met:'.t() + '</strong>'
                 },{
                     xtype: 'combo',
                     fieldLabel: 'Class'.t(),
@@ -2540,12 +2540,8 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
                         change: 'classChange'
                     }
                 },
-                this.conditionsGrid,
-                {
-                    xtype: 'component',
-                    padding: '0 0 10 0',
-                    html: '<strong>' + this.mainGrid.actionText + '</strong>'
-                }]);
+                this.conditionsGrid
+                ]);
             }
         }
         form.isValid();

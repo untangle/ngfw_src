@@ -60,7 +60,7 @@ Ext.define('Ung.config.events.view.Alerts', {
             Field.conditions,
         {
             xtype: 'fieldset',
-            title: 'And the following conditions:'.t(),
+            title: 'As well as the following conditions:'.t(),
             items:[{
                 xtype:'checkbox',
                 labelWidth: 160,

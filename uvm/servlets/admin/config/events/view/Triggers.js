@@ -68,41 +68,57 @@ Ext.define('Ung.config.events.view.Triggers', {
         editorFields: [
             Field.enableRule(),
             Field.description,
-            Field.conditions, {
-                xtype: 'combo',
-                reference: 'actionType',
-                publishes: 'value',
-                fieldLabel: 'Action Type'.t(),
-                bind: '{record.action}',
-                allowBlank: false,
-                editable: false,
-                store: [
-                    ['TAG_HOST', 'Tag Host'.t()],
-                    ['TAG_USER', 'Tag User'.t()],
-                    ['TAG_DEVICE', 'Tag Device'.t()]
-                ],
-                queryMode: 'local'
-            }, {
-                xtype: 'textfield',
-                bind: {
-                    value: '{record.tagTarget}'
-                },
-                fieldLabel: 'Tag Target'.t(),
-                allowBlank: false
-            }, {
-                xtype: 'textfield',
-                bind: {
-                    value: '{record.tagName}'
-                },
-                fieldLabel: 'Tag Name'.t(),
-                allowBlank: false
-            }, {
-                xtype: 'numberfield',
-                bind: {
-                    value: '{record.tagLifetimeSec}'
-                },
-                fieldLabel: 'Tag Lifetime (sec)'.t(),
-                allowBlank: false
+            Field.conditions, 
+            {
+                xtype: 'fieldset',
+                title: 'Perform the following action(s):'.t(),
+                items:[{
+                    xtype: 'combo',
+                    reference: 'actionType',
+                    publishes: 'value',
+                    fieldLabel: 'Action Type'.t(),
+                    bind: '{record.action}',
+                    allowBlank: false,
+                    editable: false,
+                    labelWidth: 160,
+                    store: [
+                        ['TAG_HOST', 'Tag Host'.t()],
+                        ['TAG_USER', 'Tag User'.t()],
+                        ['TAG_DEVICE', 'Tag Device'.t()]
+                    ],
+                    queryMode: 'local'
+                }, {
+                    xtype: 'textfield',
+                    bind: {
+                        value: '{record.tagTarget}'
+                    },
+                    fieldLabel: 'Tag Target'.t(),
+                    labelWidth: 160,
+                    allowBlank: false
+                }, {
+                    xtype: 'textfield',
+                    bind: {
+                        value: '{record.tagName}'
+                    },
+                    labelWidth: 160,
+                    fieldLabel: 'Tag Name'.t(),
+                    allowBlank: false
+                },{
+                    xtype: 'container',
+                    layout: 'column',
+                    margin: '0 0 5 0',
+                    items: [{
+                        xtype: 'numberfield',
+                        fieldLabel: 'Tag Lifetime'.t(),
+                        labelWidth: 160,
+                        bind: '{record.tagLifetimeSec}',
+                        allowBlank: false
+                    }, {
+                        xtype: 'label',
+                        html: '(seconds)'.t(),
+                        cls: 'boxlabel'
+                    }]
+                }]
             }]
     }]
 });
