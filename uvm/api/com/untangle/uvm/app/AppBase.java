@@ -421,6 +421,11 @@ public abstract class AppBase implements App
         return "App[" + getAppSettings().getId() + "," + getAppSettings().getAppName() + "]";
     }
     
+    public boolean isLicenseValid()
+    {
+        return UvmContextFactory.context().licenseManager().isLicenseValid( appProperties.getName() );
+    }
+
     // protected methods -------------------------------------------------
 
     /**

@@ -22,6 +22,6 @@
             "value": "127.0.0.1"
         }
     ],
-    "title": "Admin Logins",
+    "title": "Admin Login Events",
     "uniqueId": "administration-9cVz18dM"
 }

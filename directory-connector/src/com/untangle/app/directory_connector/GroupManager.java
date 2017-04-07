@@ -352,7 +352,7 @@ public class GroupManager
 
         private boolean isRenewEnabled()
         {
-            if ( !DirectoryConnectorApp.isLicenseValid()) {
+            if ( !isLicenseValid() ) {
                 logger.warn( "Invalid license, not renewing group cache.");
                 return false;
             }

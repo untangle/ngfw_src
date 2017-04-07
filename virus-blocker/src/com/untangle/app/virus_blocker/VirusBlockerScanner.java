@@ -90,7 +90,7 @@ public class VirusBlockerScanner implements VirusScanner
 
     public VirusScannerResult scanFile(File scanfile, AppSession session)
     {
-        if (!VirusBlockerApp.isLicenseValid()) {
+        if (!app.isLicenseValid()) {
             logger.warn("VirusBlocker scan circumvented: license expired.");
             return VirusScannerResult.ERROR;
         }

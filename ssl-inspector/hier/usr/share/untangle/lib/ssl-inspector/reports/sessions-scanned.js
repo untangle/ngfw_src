@@ -27,6 +27,6 @@
     ],
     "timeDataInterval": "AUTO",
     "timeStyle": "BAR",
-    "title": "Scanned Sessions",
+    "title": "Sessions Scanned",
     "type": "TIME_GRAPH"
 }

@@ -289,11 +289,4 @@ public class ConfigurationBackupApp extends AppBase
             return;
         }
     }
-
-    private boolean isLicenseValid()
-    {
-        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.CONFIGURATION_BACKUP))
-            return true;
-        return false;
-    }
 }

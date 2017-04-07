@@ -99,10 +99,4 @@ public class VirusBlockerApp extends VirusBlockerBaseApp
 
         super.postStop( isPermanentTransition );
     }
-
-    protected static boolean isLicenseValid()
-    {
-        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.VIRUS_BLOCKER)) return true;
-        return false;
-    }
 }
