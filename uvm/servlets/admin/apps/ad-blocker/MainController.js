@@ -45,5 +45,15 @@ Ext.define('Ung.apps.adblocker.MainController', {
             Util.successToast('Settings saved');
             me.getSettings();
         }, vm.get('settings'));
+    },
+
+    updateFilters: function() {
+        var me = this;
+        Ext.MessageBox.wait("Updating filters...".t(), "Please wait".t());
+        this.getView().appManager.updateList(function(result,ex) {
+            Ext.MessageBox.hide();
+            if (ex) { console.error(ex); Util.exceptionToast(ex); return; }
+            me.getSettings();
+        });
     }
 });
