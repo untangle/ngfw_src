@@ -1,6 +1,6 @@
 Ext.define('Ung.config.administration.view.Snmp', {
     extend: 'Ext.form.Panel',
-    alias: 'widget.config.administration.snmp',
+    alias: 'widget.config-administration-snmp',
     withValidation: true, // requires validation on save
     itemId: 'snmp',
 

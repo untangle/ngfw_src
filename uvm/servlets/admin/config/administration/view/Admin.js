@@ -1,6 +1,6 @@
 Ext.define('Ung.config.administration.view.Admin', {
     extend: 'Ext.panel.Panel',
-    alias: 'widget.config.administration.admin',
+    alias: 'widget.config-administration-admin',
     itemId: 'admin',
 
     viewModel: true,

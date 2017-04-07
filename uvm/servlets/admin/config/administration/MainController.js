@@ -1,7 +1,7 @@
 Ext.define('Ung.config.administration.MainController', {
     extend: 'Ext.app.ViewController',
 
-    alias: 'controller.config.administration',
+    alias: 'controller.config-administration',
 
     control: {
         '#': {

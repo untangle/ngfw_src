@@ -1,7 +1,7 @@
 Ext.define('Ung.config.network.view.NatRules', {
     extend: 'Ext.panel.Panel',
-    alias: 'widget.config.network.natrules',
-
+    alias: 'widget.config-network-natrules',
+    itemId: 'nat-rules',
     viewModel: true,
 
     title: 'NAT Rules'.t(),

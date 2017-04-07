@@ -1,7 +1,7 @@
 Ext.define('Ung.config.network.view.Routes', {
     extend: 'Ext.panel.Panel',
-    alias: 'widget.config.network.routes',
-
+    alias: 'widget.config-network-routes',
+    itemId: 'routes',
     viewModel: true,
 
     title: 'Routes'.t(),

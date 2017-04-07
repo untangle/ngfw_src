@@ -1,6 +1,6 @@
 Ext.define('Ung.config.system.view.Protocols', {
     extend: 'Ext.panel.Panel',
-    alias: 'widget.config.system.protocols',
+    alias: 'widget.config-system-protocols',
     itemId: 'protocols',
 
     viewModel: {

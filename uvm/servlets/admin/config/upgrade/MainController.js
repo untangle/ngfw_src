@@ -1,6 +1,6 @@
 Ext.define('Ung.config.upgrade.MainController', {
     extend: 'Ext.app.ViewController',
-    alias: 'controller.config.upgrade',
+    alias: 'controller.config-upgrade',
 
     control: {
         '#': {

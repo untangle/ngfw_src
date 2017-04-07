@@ -1,7 +1,7 @@
 Ext.define('Ung.config.events.view.Triggers', {
     extend: 'Ext.panel.Panel',
-    alias: 'widget.config.events.triggers',
-
+    alias: 'widget.config-events-triggers',
+    itemId: 'triggers',
     title: 'Triggers'.t(),
 
     bodyPadding: 10,
@@ -68,7 +68,7 @@ Ext.define('Ung.config.events.view.Triggers', {
         editorFields: [
             Field.enableRule(),
             Field.description,
-            Field.conditions, 
+            Field.conditions,
             {
                 xtype: 'fieldset',
                 title: 'Perform the following action(s):'.t(),

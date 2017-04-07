@@ -1,7 +1,7 @@
 Ext.define('Ung.config.network.view.Troubleshooting', {
     extend: 'Ext.panel.Panel',
-    alias: 'widget.config.network.troubleshooting',
-
+    alias: 'widget.config-network-troubleshooting',
+    itemId: 'troubleshooting',
     title: 'Troubleshooting'.t(),
 
     layout: 'fit',

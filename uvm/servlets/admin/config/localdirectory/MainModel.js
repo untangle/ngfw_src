@@ -1,7 +1,7 @@
 Ext.define('Ung.config.localdirectory.MainModel', {
     extend: 'Ext.app.ViewModel',
 
-    alias: 'viewmodel.config.localdirectory',
+    alias: 'viewmodel.config-localdirectory',
     // requires: ['Ung.model.LocalDirectoryUser'],
 
 

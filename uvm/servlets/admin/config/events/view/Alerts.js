@@ -1,7 +1,7 @@
 Ext.define('Ung.config.events.view.Alerts', {
     extend: 'Ext.panel.Panel',
-    alias: 'widget.config.events.alerts',
-
+    alias: 'widget.config-events-alerts',
+    itemId: 'alerts',
     title: 'Alerts'.t(),
 
     bodyPadding: 10,

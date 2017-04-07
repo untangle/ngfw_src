@@ -1,6 +1,6 @@
 Ext.define('Ung.config.system.view.Regional', {
     extend: 'Ext.panel.Panel',
-    alias: 'widget.config.system.regional',
+    alias: 'widget.config-system-regional',
     itemId: 'regional',
 
     viewModel: true,

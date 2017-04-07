@@ -1,7 +1,7 @@
 Ext.define('Ung.config.system.MainModel', {
     extend: 'Ext.app.ViewModel',
 
-    alias: 'viewmodel.config.system',
+    alias: 'viewmodel.config-system',
 
     data: {
         title: 'System'.t(),

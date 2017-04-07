@@ -1,6 +1,7 @@
 Ext.define('Ung.config.network.view.Hostname', {
     extend: 'Ext.form.Panel',
-    alias: 'widget.config.network.hostname',
+    alias: 'widget.config-network-hostname',
+    itemId: 'hostname',
     withValidation: true, // requires validation on save
     viewModel: true,
 
