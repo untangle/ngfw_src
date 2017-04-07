@@ -1,12 +1,17 @@
-#!@PREFIX@/usr/share/untangle/bin/ut-pycli -f
-
+#!/usr/bin/python -u
+import uvm
 import sys
+import traceback
+
+uvm = uvm.Uvm().getUvmContext(timeout=600)
 
 reportsApp = uvm.appManager().app("reports");
+if reportsApp == None:
+    print "Reports not installed"
+    sys.exit(1)
+
 try:
     reportsApp.runFixedReport()
 except:
-    # times out after 60 seconds
-    # just continue
+    # can timeout - just ignore
     pass
-    

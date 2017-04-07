@@ -1,10 +1,6 @@
-#!@PREFIX@/usr/share/untangle/bin/ut-pycli -f 
+#!/usr/bin/python -u
+import uvm
 
-# Reloads any plugins
+uvm.Uvm().getUvmContext().pluginManager().loadPlugins()
 
-import sys
-
-pluginManager = uvm.pluginManager()
-
-pluginManager.loadPlugins()
 
