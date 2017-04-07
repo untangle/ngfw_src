@@ -2249,11 +2249,20 @@ Ext.define('Ung.config.events.MainController', {
         var conditions = vm.get('conditions');
         var classesStoreData = [];
         for( var className in conditions ){
-            // classesStoreData.push([ '*' + className + '*', className, conditions[className].description]);
             classesStoreData.push([className, conditions[className].description]);
         }
 
         vm.set('classes', Ext.create('Ext.data.ArrayStore', {
+            fields: [ 'name', 'description' ],
+            sorters: [{
+                property: 'name',
+                direction: 'ASC'
+            }],
+            data: classesStoreData
+        }) );
+
+        classesStoreData.unshift(['All', 'Match all classes (NOT RECOMMENDED!)'.t()]);
+        vm.set('allClasses', Ext.create('Ext.data.ArrayStore', {
             fields: [ 'name', 'description' ],
             sorters: [{
                 property: 'name',
@@ -2374,11 +2383,15 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
         enableColumnHide: false,
         padding: '10 0',
         tbar: ['@addCondition'],
+        disabled: true,
+        hidden: true,
         bind: {
             store: {
                 model: 'Ung.model.EventCondition',
                 data: '{record.conditions.list}'
-            }
+            },
+            disabled: '{record.class == "All"}',
+            hidden: '{record.class == "All"}'
         },
         viewConfig: {
             emptyText: '<p style="text-align: center; margin: 0; line-height: 2"><i class="fa fa-exclamation-triangle fa-2x"></i> <br/>No Fields! Add from the menu...</p>',
@@ -2453,13 +2466,20 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
                 record.set( '_classCondition', conditions.list.splice(conditions.list.indexOf(condition), 1)[0] );
             }
         });
+        if(!record.get('class')){
+            record.set('class', 'All');
+        }
         record.set('conditions', conditions);
     },
     massageRecordOut: function(record, store){
         var conditionsList = Ext.Array.pluck( store.getRange(), 'data' );
-        var classCondition = record.get('_classCondition');
-        classCondition.fieldValue = '*' + record.get('class') + '*';
-        conditionsList.unshift(classCondition);
+        if(record.get('class') == 'All'){
+            conditionsList = [];
+        }else{
+            var classCondition = record.get('_classCondition');
+            classCondition.fieldValue = '*' + record.get('class') + '*';
+            conditionsList.unshift(classCondition);
+        }
 
         delete(record.data.class);
         delete(record.data._classCondition);
@@ -2528,7 +2548,7 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
                     queryMode: 'local',
                     bind:{
                         value: '{record.class}',
-                        store: '{classes}',
+                        store: ((fields[i].allowAllClasses == true) ? '{allClasses}' : '{classes}' ),
                     },
                     valueField: 'name',
                     displayField: 'name',
@@ -2589,15 +2609,17 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
         }, this.setMenuConditions, this);
 
         var menu = [];
-        vm.get('conditions')[vm.get('record.class')].fields.forEach(function(fieldCondition){
-            if(fieldCondition.name == 'class' || fieldCondition.name == 'timeStamp' ){
-                return;
-            }
-            menu.push({
-                text: fieldCondition.name,
-                tooltip: fieldCondition.description,
+        if( vm.get('conditions')[vm.get('record.class')] ){
+            vm.get('conditions')[vm.get('record.class')].fields.forEach(function(fieldCondition){
+                if(fieldCondition.name == 'class' || fieldCondition.name == 'timeStamp' ){
+                    return;
+                }
+                menu.push({
+                    text: fieldCondition.name,
+                    tooltip: fieldCondition.description,
+                });
             });
-        });
+        }
 
         var conditionsGrid = this.getView().down('grid');
         conditionsGrid.down('#addConditionBtn').setMenu({
