@@ -1,7 +1,7 @@
 Ext.define('Ung.config.email.Main', {
     extend: 'Ung.cmp.ConfigPanel',
-    alias: 'widget.config.email',
-
+    alias: 'widget.config-email',
+    name: 'email',
     /* requires-start */
     requires: [
         'Ung.config.email.MainController',
@@ -25,8 +25,8 @@ Ext.define('Ung.config.email.Main', {
     },
 
     items: [
-        { xtype: 'config.email.outgoingserver' },
-        { xtype: 'config.email.safelist' },
-        { xtype: 'config.email.quarantine' }
+        { xtype: 'config-email-outgoingserver' },
+        { xtype: 'config-email-safelist' },
+        { xtype: 'config-email-quarantine' }
     ]
 });

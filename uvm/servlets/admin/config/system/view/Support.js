@@ -1,7 +1,7 @@
 Ext.define('Ung.config.system.view.Support', {
     extend: 'Ext.panel.Panel',
-    alias: 'widget.config.system.support',
-
+    alias: 'widget.config-system-support',
+    itemId: 'support',
     viewModel: true,
 
     title: 'Support'.t(),

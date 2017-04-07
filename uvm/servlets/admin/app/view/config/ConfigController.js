@@ -68,7 +68,7 @@ Ext.define('Ung.view.config.ConfigController', {
     },
 
     onDeactivate: function (view) {
-        console.log('here');
+        // console.log('here');
         // if (view.down('#configCard')) {
         //     view.setActiveItem(0);
         //     view.down('#configCard').destroy();

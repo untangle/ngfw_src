@@ -1,7 +1,7 @@
 Ext.define('Ung.config.events.MainController', {
     extend: 'Ext.app.ViewController',
 
-    alias: 'controller.config.events',
+    alias: 'controller.config-events',
 
     control: {
         '#': {
@@ -2245,7 +2245,7 @@ Ext.define('Ung.config.events.MainController', {
     },        }
         );
 
-        
+
         var conditions = vm.get('conditions');
         var classesStoreData = [];
         for( var className in conditions ){
@@ -2358,7 +2358,7 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditor', {
         },
         items: [],
         buttons: ['@cancel', '@apply']
-    }],    
+    }],
 });
 
 Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
@@ -2413,7 +2413,7 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
                 valueField: 'name',
                 displayField: 'name',
                 forceSelection: true,
-                listConfig:   { 
+                listConfig:   {
                     itemTpl: '<div data-qtip="{description}">{name}</div>'
                 },
             },
@@ -2529,7 +2529,7 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
     },
 
     onAfterRender: function (view) {
-        var fields = this.mainGrid.editorFields, 
+        var fields = this.mainGrid.editorFields,
             form = view.down('form');
         // add editable column fields into the form
 
@@ -2548,12 +2548,12 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
                     queryMode: 'local',
                     bind:{
                         value: '{record.class}',
-                        store: ((fields[i].allowAllClasses == true) ? '{allClasses}' : '{classes}' ),
+                        store: ((fields[i].allowAllClasses === true) ? '{allClasses}' : '{classes}' ),
                     },
                     valueField: 'name',
                     displayField: 'name',
                     forceSelection: true,
-                    listConfig:   { 
+                    listConfig:   {
                         itemTpl: '<div data-qtip="{description}">{name}</div>'
                     },
                     listeners: {
@@ -2683,8 +2683,8 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
         if( newValue != oldValue ){
             var record = this.getViewModel().get('record');
             Ext.MessageBox.confirm(
-                    'Change Class'.t(), 
-                    'If you change the class, fields may be removed. Are you sure?'.t(), 
+                    'Change Class'.t(),
+                    'If you change the class, fields may be removed. Are you sure?'.t(),
                     Ext.bind(function(button){
                         if (button == 'no') {
                             record.set('class', oldValue );
@@ -2714,7 +2714,7 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
                     match = true;
                 }
             });
-            if(match == false){
+            if(match === false){
                 store.remove(record);
             }
         });

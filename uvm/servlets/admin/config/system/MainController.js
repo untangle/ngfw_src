@@ -1,6 +1,6 @@
 Ext.define('Ung.config.system.MainController', {
     extend: 'Ext.app.ViewController',
-    alias: 'controller.config.system',
+    alias: 'controller.config-system',
 
     control: {
         '#': { afterrender: 'loadSystem' },

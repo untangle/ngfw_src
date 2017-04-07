@@ -1,6 +1,6 @@
 Ext.define('Ung.config.upgrade.Main', {
     extend: 'Ung.cmp.ConfigPanel',
-    alias: 'widget.config.upgrade',
+    alias: 'widget.config-upgrade',
 
     /* requires-start */
     requires: [
@@ -8,7 +8,7 @@ Ext.define('Ung.config.upgrade.Main', {
         'Ung.overrides.form.CheckboxGroup'
     ],
     /* requires-end */
-    controller: 'config.upgrade',
+    controller: 'config-upgrade',
 
     viewModel: {
         data: {

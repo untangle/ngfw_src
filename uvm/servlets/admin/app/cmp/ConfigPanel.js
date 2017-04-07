@@ -42,4 +42,28 @@ Ext.define('Ung.cmp.ConfigPanel', {
         }]
     }],
 
+    listeners: {
+        // generic listener for all tabs in Apps, redirection
+        beforetabchange: function (tabPanel, newCard, oldCard) {
+            Ung.app.redirectTo('#config/' + tabPanel.name + '/' + newCard.getItemId());
+        },
+
+        // tabchange: function (tabPanel, newCard) {
+        //     var helpSource = tabPanel.getViewModel().get('props.name').replace(/-/g, '_');
+        //     if (newCard.getItemId() !== 'status') {
+        //         helpSource += '_' + newCard.getItemId();
+        //     }
+        //     tabPanel.down('#helpBtn').setHref(rpc.helpUrl + '?source=' + helpSource + '&' + Util.getAbout());
+        // },
+
+        // afterrender: function (tabPanel) {
+        //     var helpSource = tabPanel.getViewModel().get('props.name').replace(/-/g, '_');
+        //     var currentCard = tabPanel.getActiveTab();
+        //     if (currentCard.getItemId() !== 'status') {
+        //         helpSource += '_' + currentCard.getItemId();
+        //     }
+        //     tabPanel.down('#helpBtn').setHref(rpc.helpUrl + '?source=' + helpSource + '&' + Util.getAbout());
+        // }
+    }
+
 });

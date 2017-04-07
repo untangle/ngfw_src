@@ -1,7 +1,7 @@
 Ext.define('Ung.config.events.view.Syslog', {
     extend: 'Ext.panel.Panel',
-    alias: 'widget.config.events.syslog',
-
+    alias: 'widget.config-events-syslog',
+    itemId: 'syslog',
     title: 'Syslog'.t(),
 
     bodyPadding: 10,
@@ -76,7 +76,7 @@ Ext.define('Ung.config.events.view.Syslog', {
         xtype: 'uneventgrid',
         title: 'Syslog Rules'.t(),
         region: 'center',
-        
+
         controller: 'uneventsgrid',
 
         hidden: true,

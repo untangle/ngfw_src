@@ -1,14 +1,14 @@
 Ext.define('Ung.config.about.Main', {
     extend: 'Ung.cmp.ConfigPanel',
-    alias: 'widget.config.about',
-
+    alias: 'widget.config-about',
+    name: 'about',
     /* requires-start */
     requires: [
         'Ung.config.about.AboutController'
     ],
     /* requires-end */
 
-    controller: 'config.about',
+    controller: 'config-about',
 
     viewModel: {
         data: {
@@ -24,11 +24,11 @@ Ext.define('Ung.config.about.Main', {
     },
 
     items: [{
-        xtype: 'config.about.server'
+        xtype: 'config-about-server'
     }, {
-        xtype: 'config.about.licenses'
+        xtype: 'config-about-licenses'
     }, {
-        xtype: 'config.about.licenseagreement'
+        xtype: 'config-about-licenseagreement'
     }]
 
 });

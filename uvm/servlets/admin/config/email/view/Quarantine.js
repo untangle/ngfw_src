@@ -1,6 +1,6 @@
 Ext.define('Ung.config.email.view.Quarantine', {
     extend: 'Ext.panel.Panel',
-    alias: 'widget.config.email.quarantine',
+    alias: 'widget.config-email-quarantine',
     itemId: 'quarantine',
 
     title: 'Quarantine'.t(),

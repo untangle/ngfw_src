@@ -211,22 +211,31 @@ Ext.define('Ung.controller.Global', {
     },
 
 
-    onConfig: function (configName, configView) {
+    onConfig: function (config, view) {
         var me = this;
-
-        if (!configName) {
-            this.getMainView().getViewModel().set('activeItem', 'config');
-        } else {
+        me.getMainView().getViewModel().set('activeItem', 'config');
+        if (config) {
+            if (me.getMainView().down('config-' + config)) {
+                // if config card already exists activate it and select given view
+                me.getMainView().getViewModel().set('activeItem', 'configCard');
+                me.getMainView().down('config-' + config).setActiveItem(view || 0);
+                return;
+            } else {
+                me.getMainView().remove('configCard');
+            }
             me.getMainView().setLoading(true);
             Ext.Loader.loadScript({
-                url: 'script/config/' + configName + '.js',
+                url: 'script/config/' + config + '.js',
                 onLoad: function () {
-                    me.getMainView().setLoading(false);
                     me.getMainView().add({
-                        xtype: 'config.' + configName,
-                        itemId: 'configCard'
+                        xtype: 'config-' + config,
+                        name: config,
+                        itemId: 'configCard',
+                        activeTab: view || 0
                     });
                     me.getMainView().getViewModel().set('activeItem', 'configCard');
+                    me.getMainView().getViewModel().notify();
+                    me.getMainView().setLoading(false);
                 }
             });
         }

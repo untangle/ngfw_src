@@ -1,8 +1,7 @@
 Ext.define('Ung.config.network.view.BypassRules', {
     extend: 'Ext.panel.Panel',
-    // xtype: 'ung.config.network.bypassrules',
-    alias: 'widget.config.network.bypassrules',
-
+    alias: 'widget.config-network-bypassrules',
+    itemId: 'bypass_rules',
     viewModel: true,
 
     title: 'Bypass Rules'.t(),

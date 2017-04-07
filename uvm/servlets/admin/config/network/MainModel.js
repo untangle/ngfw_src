@@ -1,7 +1,7 @@
 Ext.define('Ung.config.network.MainModel', {
     extend: 'Ext.app.ViewModel',
 
-    alias: 'viewmodel.config.network',
+    alias: 'viewmodel.config-network',
 
     formulas: {
         // used in Interfaces view when showing/hiding interface specific configurations

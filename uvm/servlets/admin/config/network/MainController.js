@@ -1,7 +1,7 @@
 Ext.define('Ung.config.network.MainController', {
     extend: 'Ext.app.ViewController',
 
-    alias: 'controller.config.network',
+    alias: 'controller.config-network',
 
     control: {
         '#': { afterrender: 'loadSettings' },

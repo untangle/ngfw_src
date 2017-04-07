@@ -14,7 +14,7 @@ Ext.define('Ung.view.config.Config', {
     ],
     /* requires-end */
     controller: 'config',
-
+    viewModel: true,
     dockedItems: [{
         xtype: 'toolbar',
         ui: 'navigation',
