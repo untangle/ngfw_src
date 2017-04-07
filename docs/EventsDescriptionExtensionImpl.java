@@ -376,6 +376,14 @@ public class ExtensionImpl implements Runnable
                 System.out.println("        name: \"" + methodName + "\",");
                 System.out.println("        type: \"" + returnType + "\",");
                 System.out.println("        description: \"" + description + "\",");
+                Object[] enums = method.getReturnType().getEnumConstants();
+                if ( enums != null ) {
+                    System.out.print("        values: [");
+                    for ( Object o: enums ) {
+                        System.out.print(" \"" + o.toString() + "\", ");
+                    }
+                    System.out.println("],");
+                }
                 System.out.println("        },");
                 
             }
