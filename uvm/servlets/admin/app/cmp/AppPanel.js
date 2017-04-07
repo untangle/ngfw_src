@@ -3,32 +3,6 @@ Ext.define('Ung.cmp.AppPanel', {
     alias: 'widget.apppanel',
     layout: 'fit',
 
-    // dockedItems: [{
-    //     xtype: 'toolbar',
-    //     dock: 'top',
-    //     weight: -10,
-    //     border: false,
-    //     items: [{
-    //         text: 'Back'.t(),
-    //         iconCls: 'fa fa-arrow-circle-left fa-lg',
-    //         hrefTarget: '_self',
-    //         bind: { href: '#apps/{policyId}' }
-    //     }, '-', {
-    //         xtype: 'component',
-    //         padding: '0 5',
-    //         bind: {
-    //             html: '<img src="/skins/modern-rack/images/admin/apps/{props.name}_17x17.png" style="vertical-align: middle;" width="17" height="17"/> <strong>{props.displayName}</strong>' +
-    //                 ' <i class="fa fa-circle {!instance.targetState ? "fa-orange" : (instance.targetState === "RUNNING" ? "fa-green" : "fa-gray") }"></i>'
-    //         }
-    //     }
-    //     // '->', {
-    //     //     xtype: 'button',
-    //     //     text: 'View Reports'.t(),
-    //     //     iconCls: 'fa fa-line-chart fa-lg'
-    //     // }
-    //     ],
-    // }],
-
     dockedItems: [{
         xtype: 'toolbar',
         ui: 'navigation',
@@ -64,9 +38,12 @@ Ext.define('Ung.cmp.AppPanel', {
         xtype: 'toolbar',
         dock: 'bottom',
         // border: false,
-        items: ['->', {
+        items: [{
+            text: '<strong>' + 'Help'.t() + '</strong>',
+            itemId: 'helpBtn',
+            iconCls: 'fa fa-question-circle fa-lg'
+        },  '->', {
             text: '<strong>' + 'Save'.t() + '</strong>',
-            // scale: 'large',
             iconCls: 'fa fa-floppy-o fa-lg',
             handler: 'setSettings'
         }]
@@ -76,13 +53,30 @@ Ext.define('Ung.cmp.AppPanel', {
 
     listeners: {
         // generic listener for all tabs in Apps, redirection
-        beforetabchange: function (tab, newCard, oldCard) {
+        beforetabchange: function (tabPanel, newCard, oldCard) {
             var vm = this.getViewModel();
             if (vm.get('props.type') === 'FILTER') {
                 Ung.app.redirectTo('#apps/' + vm.get('policyId') + '/' + vm.get('urlName') + '/' + newCard.getItemId());
             } else {
                 Ung.app.redirectTo('#service/' + vm.get('props.name') + '/' + newCard.getItemId());
             }
+        },
+
+        tabchange: function (tabPanel, newCard) {
+            var helpSource = tabPanel.getViewModel().get('props.name').replace(/-/g, '_');
+            if (newCard.getItemId() !== 'status') {
+                helpSource += '_' + newCard.getItemId();
+            }
+            tabPanel.down('#helpBtn').setHref(rpc.helpUrl + '?source=' + helpSource + '&' + Util.getAbout());
+        },
+
+        afterrender: function (tabPanel) {
+            var helpSource = tabPanel.getViewModel().get('props.name').replace(/-/g, '_');
+            var currentCard = tabPanel.getActiveTab();
+            if (currentCard.getItemId() !== 'status') {
+                helpSource += '_' + currentCard.getItemId();
+            }
+            tabPanel.down('#helpBtn').setHref(rpc.helpUrl + '?source=' + helpSource + '&' + Util.getAbout());
         }
     }
 });
