@@ -12,7 +12,7 @@ Ext.define('Ung.config.events.Main', {
     controller: 'config.events',
 
     viewModel: {
-        type: 'config.events'
+        type: 'config.events',
     },
 
     items: [{
