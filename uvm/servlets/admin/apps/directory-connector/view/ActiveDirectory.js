@@ -1,7 +1,7 @@
 Ext.define('Ung.apps.directoryconnector.view.ActiveDirectory', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.app-directory-connector-activedirectory',
-    itemId: 'activedirectory',
+    itemId: 'active_directory',
     title: 'Active Directory'.t(),
 
     viewModel: true,

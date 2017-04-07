@@ -1,7 +1,7 @@
 Ext.define('Ung.apps.virusblockerlite.view.PassSites', {
     extend: 'Ung.cmp.Grid',
     alias: 'widget.app-virus-blocker-lite-passsites',
-    itemId: 'passsites',
+    itemId: 'pass_sites',
     title: 'Pass Sites'.t(),
 
     dockedItems: [{

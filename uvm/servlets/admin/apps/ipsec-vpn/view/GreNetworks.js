@@ -1,7 +1,7 @@
 Ext.define('Ung.apps.ipsecvpn.view.GreNetworks', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.app-ipsec-vpn-grenetworks',
-    itemId: 'grenetworks',
+    itemId: 'gre_networks',
     title: 'GRE Networks'.t(),
     viewModel: true,
 

@@ -1,7 +1,7 @@
 Ext.define('Ung.apps.wanbalancer.view.RouteRules', {
     extend: 'Ung.cmp.Grid',
     alias: 'widget.app-wan-balancer-routerules',
-    itemId: 'routerules',
+    itemId: 'route_rules',
     title: 'Route Rules'.t(),
     viewModel: true,
 

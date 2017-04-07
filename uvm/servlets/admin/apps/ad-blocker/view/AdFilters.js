@@ -1,7 +1,7 @@
 Ext.define('Ung.apps.ad-blocker.view.AdFilters', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.app-ad-blocker-adfilters',
-    itemId: 'adfilters',
+    itemId: 'ad_filters',
     title: 'Ad Filters'.t(),
 
     layout: 'border',
