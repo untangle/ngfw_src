@@ -25,6 +25,6 @@
     ],
     "timeDataInterval": "AUTO",
     "timeStyle": "BAR",
-    "title": "Inspected Sessions",
+    "title": "Sessions Inspected",
     "type": "TIME_GRAPH"
 }

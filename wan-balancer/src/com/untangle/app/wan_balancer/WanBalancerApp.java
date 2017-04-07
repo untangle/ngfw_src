@@ -248,13 +248,6 @@ public class WanBalancerApp extends AppBase
         }
     }
 
-    private boolean isLicenseValid()
-    {
-        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.WAN_BALANCER))
-            return true;
-        return false;
-    }
-
     private void syncToSystem( boolean enabled )
     {
         /**

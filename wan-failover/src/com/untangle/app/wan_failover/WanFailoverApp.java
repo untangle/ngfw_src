@@ -201,13 +201,6 @@ public class WanFailoverApp extends AppBase
         }
     }
     
-    protected boolean isLicenseValid()
-    {
-        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.WAN_FAILOVER))
-            return true;
-        return false;
-    }
-
     // private methods --------------------------------------------------------
     
     public void networkSettingsEvent( NetworkSettings settings ) throws Exception

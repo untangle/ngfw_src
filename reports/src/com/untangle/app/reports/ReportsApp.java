@@ -605,6 +605,28 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
                 }
             }
         }
+        HashMap<String, ReportEntry> names = new HashMap<String, ReportEntry>();
+        for ( ReportEntry entry : settings.getReportEntries() ) {
+            String name = entry.getCategory() + "/" + entry.getTitle();
+            ReportEntry existing = names.get( name );
+            if ( existing != null ) {
+                logger.warn("Duplicate report entry title: " + entry.getTitle());
+                for ( int i=2; i < 15; i++ ) {
+                    String newTitle = entry.getTitle() + " " + i;
+                    String newName = entry.getCategory() + "/" + newTitle;
+                    if ( names.get( newName ) == null ) {
+                        logger.warn("Changing title to: " + newTitle);
+                        entry.setTitle( newTitle );
+                        names.put( entry.getTitle(), entry );
+                        break;
+                    }
+                    // after 10 tries could not find a unique title
+                    throw new RuntimeException(I18nUtil.marktr("Invalid Settings") + ": " + I18nUtil.marktr("duplicate report entry title") + ": \"" + entry.getTitle() + "\"");
+                }
+            } else {
+                names.put( name, entry );
+            }
+        }
     }
 
     private int restoreData( FileItem item )

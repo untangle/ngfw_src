@@ -8,11 +8,11 @@
     "orderByColumn": "value",
     "orderDesc": true,
     "units": "bytes",
-    "pieGroupColumn": "web_filter_category",
+    "pieGroupColumn": "s2c_content_type",
     "pieSumColumn": "coalesce(sum(s2c_content_length),0)",
     "readOnly": true,
     "table": "http_events",
-    "title": "Top Categories (by size)",
+    "title": "Top Content (by size)",
     "pieStyle": "PIE",
     "type": "PIE_GRAPH"
 }

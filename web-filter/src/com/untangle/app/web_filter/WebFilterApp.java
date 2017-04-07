@@ -140,11 +140,4 @@ public class WebFilterApp extends WebFilterBase
         addCategories(categories);
         settings.setCategories(categories);
     }
-
-    private boolean isLicenseValid()
-    {
-        if (UvmContextFactory.context().licenseManager().isLicenseValid(License.WEB_FILTER))
-            return true;
-        return false;
-    }
 }

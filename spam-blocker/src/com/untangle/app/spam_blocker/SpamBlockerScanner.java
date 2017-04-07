@@ -107,6 +107,6 @@ public class SpamBlockerScanner implements SpamScanner
 
     protected boolean isLicenseValid()
     {
-        return SpamBlockerApp.isLicenseValid();
+        return UvmContextFactory.context().licenseManager().isLicenseValid(License.SPAM_BLOCKER);
     }
 }
