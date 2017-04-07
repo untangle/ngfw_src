@@ -1,11 +1,11 @@
-#!@PREFIX@/usr/share/untangle/bin/ut-pycli -f 
-
-# Looks for a rule named "Allow HTTPS on WANs" and enables it if it finds it.
-
+#!/usr/bin/python -u
+import uvm
 import sys
 
-networkManager = uvm.networkManager()
+uvm = uvm.Uvm().getUvmContext()
 
+# Looks for a rule named "Allow HTTPS on WANs" and enables it if it finds it.
+networkManager = uvm.networkManager()
 network_settings =  networkManager.getNetworkSettings()
 
 found = False

@@ -1,4 +1,5 @@
-#!@PREFIX@/usr/share/untangle/bin/ut-pycli -f 
+#!/usr/bin/python -u
+import uvm
 import sys
 
 appManager = uvm.appManager()
