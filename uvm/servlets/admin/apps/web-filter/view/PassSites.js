@@ -1,7 +1,7 @@
 Ext.define('Ung.apps.webfilter.view.PassSites', {
     extend: 'Ung.cmp.Grid',
     alias: 'widget.app-web-filter-passsites',
-    itemId: 'passsites',
+    itemId: 'pass_sites',
     title: 'Pass Sites'.t(),
 
     dockedItems: [{
