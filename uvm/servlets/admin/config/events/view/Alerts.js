@@ -7,11 +7,11 @@ Ext.define('Ung.config.events.view.Alerts', {
     bodyPadding: 10,
 
     items: [{
-        xtype: 'ungrid',
+        xtype: 'uneventgrid',
         title: 'Alert Rules'.t(),
         region: 'center',
 
-        bind: '{alertRules}',
+        controller: 'uneventsgrid',
 
         listProperty: 'settings.alertRules.list',
         tbar: ['@add'],
@@ -19,16 +19,26 @@ Ext.define('Ung.config.events.view.Alerts', {
         recordActions: ['edit', 'copy', 'delete', 'reorder'],
 
         ruleJavaClass: 'com.untangle.uvm.event.EventRuleCondition',
-        conditions: [
-            Condition.fieldCondition
-        ],
+        bind:{
+            store: '{alertRules}',
+            conditions: '{conditions}'
+        },
 
         emptyRow: {
             javaClass: 'com.untangle.uvm.event.AlertRule',
+            conditions: {
+                javaClass: 'java.util.LinkedList',
+                list: [{
+                    comparator: '=',
+                    field: 'class',
+                    fieldValue: '*SystemStatEvent*',
+                    javaClass: 'com.untangle.uvm.event.EventRuleCondition'
+                }]
+            },
             ruleId: -1,
             enabled: true,
             thresholdEnabled: false,
-            email: false,
+            email: true,
             alertLimitFrequency: false,
             alertLimitFrequencyMinutes: 0,
         },
@@ -67,8 +77,8 @@ Ext.define('Ung.config.events.view.Alerts', {
                 hidden: true,
                 disabled: true,
                 bind: {
-                    hidden: '{record.thresholdEnabled == false}',
-                    disabled: '{record.thresholdEnabled == false}'
+                    hidden: '{record.thresholdEnabled != true}',
+                    disabled: '{record.thresholdEnabled != true}'
                 },
                 items: [{
                     xtype:'numberfield',
@@ -85,7 +95,7 @@ Ext.define('Ung.config.events.view.Alerts', {
                         labelWidth: 160,
                         bind: '{record.thresholdTimeframeSec}',
                         allowDecimals: false,
-                        allowBlank: false,
+                        // allowBlank: false,
                         minValue: 60,
                         maxValue: 60*24*60*7, // 1 week
                     }, {

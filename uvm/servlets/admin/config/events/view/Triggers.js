@@ -8,11 +8,16 @@ Ext.define('Ung.config.events.view.Triggers', {
     layout: { type: 'vbox', align: 'stretch' },
 
     items: [{
-        xtype: 'ungrid',
+        xtype: 'uneventgrid',
         title: 'Trigger Rules'.t(),
         region: 'center',
 
-        bind: '{triggerRules}',
+        controller: 'uneventsgrid',
+
+        bind:{
+            store: '{triggerRules}',
+            conditions: '{conditions}'
+        },
 
         listProperty: 'settings.triggerRules.list',
         tbar: ['@add'],
@@ -20,12 +25,21 @@ Ext.define('Ung.config.events.view.Triggers', {
         recordActions: ['edit', 'copy', 'delete', 'reorder'],
 
         ruleJavaClass: 'com.untangle.uvm.event.EventRuleCondition',
-        conditions: [
-            Condition.fieldCondition
-        ],
+        // conditions: [
+        //     Condition.fieldCondition
+        // ],
 
         emptyRow: {
             javaClass: 'com.untangle.uvm.event.TriggerRule',
+            conditions: {
+                javaClass: 'java.util.LinkedList',
+                list: [{
+                    comparator: '=',
+                    field: 'class',
+                    fieldValue: '*SystemStatEvent*',
+                    javaClass: 'com.untangle.uvm.event.EventRuleCondition'
+                }]
+            },
             ruleId: -1,
             enabled: true
         },

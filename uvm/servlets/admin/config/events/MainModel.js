@@ -7,9 +7,11 @@ Ext.define('Ung.config.events.MainModel', {
         title: 'Events'.t(),
         iconName: 'icon_config_events',
 
-        settings: null
+        settings: null,
+        record: null
 
     },
+
     stores: {
         alertRules: { data: '{settings.alertRules.list}' },
         triggerRules: { data: '{settings.triggerRules.list}' },

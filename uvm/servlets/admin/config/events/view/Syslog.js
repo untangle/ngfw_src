@@ -73,16 +73,19 @@ Ext.define('Ung.config.events.view.Syslog', {
             }]
         }]
     }, {
-        xtype: 'ungrid',
+        xtype: 'uneventgrid',
         title: 'Syslog Rules'.t(),
         region: 'center',
+        
+        controller: 'uneventsgrid',
 
         hidden: true,
         disabled: true,
         bind: {
             store: '{syslogRules}',
             hidden: '{settings.syslogEnabled == false}',
-            disabled: '{settings.syslogEnabled == false}'
+            disabled: '{settings.syslogEnabled == false}',
+            conditions: '{conditions}'
         },
 
         listProperty: 'settings.syslogRules.list',
@@ -91,16 +94,27 @@ Ext.define('Ung.config.events.view.Syslog', {
         recordActions: ['edit', 'copy', 'delete', 'reorder'],
 
         ruleJavaClass: 'com.untangle.uvm.event.EventRuleCondition',
-        conditions: [
-            Condition.fieldCondition
-        ],
+        // conditions: [
+        //     Condition.fieldCondition
+        // ],
 
         emptyRow: {
-            javaClass: 'com.untangle.uvm.event.SyslogRule',
+            javaClass: 'com.untangle.uvm.event.AlertRule',
+            conditions: {
+                javaClass: 'java.util.LinkedList',
+                list: [{
+                    comparator: '=',
+                    field: 'class',
+                    fieldValue: '*SystemStatEvent*',
+                    javaClass: 'com.untangle.uvm.event.EventRuleCondition'
+                }]
+            },
             ruleId: -1,
             enabled: true,
             thresholdEnabled: false,
-            syslog: true
+            syslog: true,
+            alertLimitFrequency: false,
+            alertLimitFrequencyMinutes: 0,
         },
 
         columns: [
