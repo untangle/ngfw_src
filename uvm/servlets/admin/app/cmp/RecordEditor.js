@@ -14,6 +14,7 @@ Ext.define('Ung.cmp.RecordEditor', {
     /* requires-end */
     controller: 'recordeditor',
     closeAction: 'destroy',
+    closable: false,
 
     viewModel: true,
 
@@ -44,7 +45,6 @@ Ext.define('Ung.cmp.RecordEditor', {
             iconCls: 'fa fa-plus'
         }
     },
-
 
     bodyStyle: {
         // background: '#FFF'
