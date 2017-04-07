@@ -2590,7 +2590,7 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
 
         var menu = [];
         vm.get('conditions')[vm.get('record.class')].fields.forEach(function(fieldCondition){
-            if(fieldCondition.name == 'class' ){
+            if(fieldCondition.name == 'class' || fieldCondition.name == 'timeStamp' ){
                 return;
             }
             menu.push({
@@ -2727,7 +2727,7 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
             for( var conditionsClassName in  conditions ){
                 if( conditionsClassName == className ){
                     conditions[className].fields.forEach( function(field){
-                        if(field.name == 'class' ){
+                        if(field.name == 'class' || field.name == 'timeStamp'){
                             return;
                         }
                         fields.push( [field.name, field.description] ) ;
@@ -2801,7 +2801,6 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
         return this.classFieldStores[storeName];
     },
     comparatorWidgetAttach: function (column, container, record) {
-        // console.log('comparatorWidgetAttach');
         var vm = this.getViewModel();
         var className = vm.get('record').get('class');
         var conditions = vm.get('conditions');
@@ -2824,8 +2823,6 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
      * Adds specific condition editor based on it's defined type
      */
     fieldValueWidgetAttach: function (column, container, record) {
-        // console.log('fieldValueWidgetAttach');
-        // console.log(record);
         var vm = this.getViewModel();
         var className = vm.get('record').get('class');
         var conditions = vm.get('conditions');
