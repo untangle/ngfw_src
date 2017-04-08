@@ -181,6 +181,7 @@ public class DeviceTableEntry implements Serializable, JSONString
     {
         if ( tag == null || tag.getName() == null )
             return;
+        updateEvent( "addTag", "", tag.getName() );
         this.tags.put( tag.getName(), tag );
     }
 
@@ -191,6 +192,14 @@ public class DeviceTableEntry implements Serializable, JSONString
         for ( Tag tag : tags ) {
             addTag( tag );
         }
+    }
+
+    public synchronized Tag removeTag( Tag tag )
+    {
+        Tag t = this.tags.remove( tag.getName() );
+        if ( t != null )
+            updateEvent( "removeTag", "", t.getName() );
+        return t;
     }
 
     public synchronized boolean hasTag( String name )

@@ -58,8 +58,11 @@ Ext.define('Ung.config.events.view.Triggers', {
                     }
                     switch(value) {
                       case 'TAG_HOST': return 'Tag Host'.t();
+                      case 'UNTAG_HOST': return 'Untag Host'.t();
                       case 'TAG_USER':return 'Tag User'.t();
+                      case 'UNTAG_USER':return 'Untag User'.t();
                       case 'TAG_DEVICE':return 'Tag Device'.t();
+                      case 'UNTAG_DEVICE':return 'Untag Device'.t();
                     default: return 'Unknown Action: ' + value;
                     }
                 }
@@ -83,8 +86,11 @@ Ext.define('Ung.config.events.view.Triggers', {
                     labelWidth: 160,
                     store: [
                         ['TAG_HOST', 'Tag Host'.t()],
+                        ['UNTAG_HOST', 'Untag Host'.t()],
                         ['TAG_USER', 'Tag User'.t()],
-                        ['TAG_DEVICE', 'Tag Device'.t()]
+                        ['UNTAG_USER', 'Untag User'.t()],
+                        ['TAG_DEVICE', 'Tag Device'.t()],
+                        ['UNTAG_DEVICE', 'Untag Device'.t()]
                     ],
                     queryMode: 'local'
                 }, {
