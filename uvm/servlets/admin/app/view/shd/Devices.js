@@ -69,6 +69,8 @@ Ext.define('Ung.view.shd.Devices', {
             { header: 'Hostname'.t(), dataIndex: 'hostname' },
             { header: 'Hostname Last Known'.t(), dataIndex: 'hostnameLastKnown' },
             { header: 'Username'.t(), dataIndex: 'username' },
+            { header: 'Tags'.t(), dataIndex: 'tags' },
+            { header: 'Tags String'.t(), dataIndex: 'tagsString' },
             { header: 'HTTP'.t() + ' - ' + 'User Agent'.t(), dataIndex: 'httpUserAgent' },
             { header: 'Last Seen Time'.t(), dataIndex: 'lastSessionTimeDate' },
         ]
@@ -110,7 +112,9 @@ Ext.define('Ung.view.shd.Devices', {
             lastSeenInterfaceId: { displayName: 'Interface'.t() },
             lastSessionTime:     { displayName: 'Last Seen Time'.t(), renderer: 'timestampRenderer' },
             macAddress:          { displayName: 'MAC Address'.t() },
-            macVendor:           { displayName: 'MAC Vendor'.t() }
+            macVendor:           { displayName: 'MAC Vendor'.t() },
+            tags:                { displayName: 'Tags'.t() },
+            tagsString:          { displayName: 'Tags String'.t() },
         },
         listeners: {
             beforeedit: function () {

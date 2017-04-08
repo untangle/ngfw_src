@@ -94,6 +94,13 @@ Ext.define('Ung.view.shd.Sessions', {
             dataIndex: 'platform-username',
             hidden: true
         }, {
+            header: 'Tags'.t(),
+            dataIndex: 'tags'
+        }, {
+            header: 'Tags String'.t(),
+            dataIndex: 'tagsString',
+            hidden: true
+        }, {
             header: 'Client'.t(),
             columns: [{
                 header: 'Interface'.t(),
@@ -240,6 +247,8 @@ Ext.define('Ung.view.shd.Sessions', {
             serverLongitude:   { displayName: 'Server Longitude'.t() },
             sessionId:         { displayName: 'Session ID'.t() },
             state:             { displayName: 'State'.t() },
+            tags:              { displayName: 'Tags'.t() },
+            tagsString:        { displayName: 'Tags String'.t() },
             totalKBps:         { displayName: 'Total KB/s'.t() }
         },
         listeners: {

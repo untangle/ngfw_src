@@ -76,7 +76,7 @@ Ext.define('Ung.view.shd.Hosts', {
             { header: 'HTTP User Agent'.t(), dataIndex: 'httpUserAgent' },
             { header: 'Captive Portal Authenticated'.t(), dataIndex: 'captivePortalAuthenticated' },
             { header: 'Tags'.t(), dataIndex: 'tags' },
-            { header: 'TagsString'.t(), dataIndex: 'tagsString' },
+            { header: 'Tags String'.t(), dataIndex: 'tagsString' },
             { header: 'Hostname'.t(), dataIndex: 'hostname' },
             { header: 'Hostname Source'.t(), dataIndex: 'hostnameSource', hidden: true },
             { header: 'Hostname (DHCP)'.t(), dataIndex: 'hostnameDhcp', hidden: true },
@@ -155,7 +155,7 @@ Ext.define('Ung.view.shd.Hosts', {
             lastSessionTime:             { displayName: 'Last Session Time'.t(), renderer: 'timestampRenderer' },
             macAddress:                  { displayName: 'MAC Address'.t() },
             macVendor:                   { displayName: 'MAC Vendor'.t() },
-            tags:                        { displayName: 'Tags'.t() }, //FIXME renderer
+            tags:                        { displayName: 'Tags'.t() },
             tagsString:                  { displayName: 'Tags String'.t() },
             quotaExpirationTime:         { displayName: 'Quota Expiration Time'.t(), renderer: 'timestampRenderer' },
             quotaIssueTime:              { displayName: 'Quota Issue Time'.t(), renderer: 'timestampRenderer' },
