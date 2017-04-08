@@ -27,7 +27,8 @@ Ext.define('Ung.config.events.MainController', {
             v.setLoading(false);
         });
 
-        vm.set('conditions', {
+        vm.set('conditions', 
+this.eventsConfig = {
     HostTableEvent: {
     description: "These events are created by the base system and inserted to the [[Database_Schema#host_table_updates|host_table_updates]] table when the host table is modified.",
     fields: [
@@ -487,9 +488,9 @@ Ext.define('Ung.config.events.MainController', {
         description: "The class name",
         },
         {
-        name: "description:",
+        name: "description",
         type: "String",
-        description: "The description:",
+        description: "The description",
         },
         {
         name: "eventSent",
@@ -532,9 +533,9 @@ Ext.define('Ung.config.events.MainController', {
         description: "The class name",
         },
         {
-        name: "description:",
+        name: "description",
         type: "String",
-        description: "The description:",
+        description: "The description",
         },
         {
         name: "eventSent",
@@ -740,6 +741,7 @@ Ext.define('Ung.config.events.MainController', {
         name: "authenticationType",
         type: "CaptivePortalSettings$AuthenticationType",
         description: "The authentication type",
+        values: [ "ANY",  "ACTIVE_DIRECTORY",  "RADIUS",  "LOCAL_DIRECTORY",  "GOOGLE",  "FACEBOOK",  "CUSTOM",  "NONE", ],
         },
         {
         name: "authenticationTypeValue",
@@ -760,6 +762,7 @@ Ext.define('Ung.config.events.MainController', {
         name: "event",
         type: "CaptivePortalUserEvent$EventType",
         description: "The event (LOGIN, FAILED, TIMEOUT, INACTIVE, USER_LOGOUT, ADMIN_LOGOUT)",
+        values: [ "LOGIN",  "FAILED",  "TIMEOUT",  "INACTIVE",  "USER_LOGOUT",  "ADMIN_LOGOUT",  "HOST_CHANGE", ],
         },
         {
         name: "eventValue",
@@ -1235,6 +1238,7 @@ Ext.define('Ung.config.events.MainController', {
         name: "action",
         type: "Action",
         description: "The action",
+        values: [ "PASS",  "BLOCK", ],
         },
         {
         name: "class",
@@ -1345,6 +1349,7 @@ Ext.define('Ung.config.events.MainController', {
         name: "reason",
         type: "Reason",
         description: "The reason",
+        values: [ "BLOCK_CATEGORY",  "BLOCK_URL",  "BLOCK_IP_HOST",  "PASS_URL",  "PASS_REFERER_URL",  "PASS_CLIENT",  "PASS_UNBLOCK",  "FILTER_RULE",  "DEFAULT", ],
         },
         {
         name: "requestLine",
@@ -1402,9 +1407,9 @@ Ext.define('Ung.config.events.MainController', {
         description: "The class name",
         },
         {
-        name: "description:",
+        name: "description",
         type: "String",
-        description: "The description:",
+        description: "The description",
         },
         {
         name: "interfaceId",
@@ -1440,6 +1445,7 @@ Ext.define('Ung.config.events.MainController', {
         name: "action",
         type: "WanFailoverEvent$Action",
         description: "The action",
+        values: [ "CONNECTED",  "DISCONNECTED", ],
         },
         {
         name: "class",
@@ -1468,131 +1474,132 @@ Ext.define('Ung.config.events.MainController', {
         },
     ]
     },
-    SpamSmtpTarpitEvent: {
-    description: "These events are created by [[Spam Blocker]] and inserted to the [[Database_Schema#smtp_tarpit_events|smtp_tarpit_events]] table when a session is tarpitted.",
-    fields: [
-        {
-        name: "iPAddr",
-        type: "InetAddress",
-        description: "The IP address",
-        },
-        {
-        name: "class",
-        type: "Class",
-        description: "The class name",
-        },
-        {
-        name: "hostname",
-        type: "String",
-        description: "The hostname",
-        },
-        {
-        name: "sessionEvent",
-        type: "SessionEvent",
-        description: "The session event",
-        },
-        {
-        name: "sessionId",
-        type: "Long",
-        description: "The session ID",
-        },
-        {
-        name: "timeStamp",
-        type: "Timestamp",
-        description: "The timestamp",
-        },
-        {
-        name: "vendorName",
-        type: "String",
-        description: "The application name",
-        },
-    ]
-    },
-    SpamLogEvent: {
-    description: "These events are created by [[Spam Blocker]] and update the [[Database_Schema#mail_msgs|mail_msgs]] table when an email is scanned.",
-    fields: [
-        {
-        name: "action",
-        type: "SpamMessageAction",
-        description: "The action",
-        },
-        {
-        name: "class",
-        type: "Class",
-        description: "The class name",
-        },
-        {
-        name: "clientAddr",
-        type: "InetAddress",
-        description: "The client address",
-        },
-        {
-        name: "clientPort",
-        type: "int",
-        description: "The client port",
-        },
-        {
-        name: "messageId",
-        type: "Long",
-        description: "The message ID",
-        },
-        {
-        name: "receiver",
-        type: "String",
-        description: "The receiver",
-        },
-        {
-        name: "score",
-        type: "float",
-        description: "The score",
-        },
-        {
-        name: "sender",
-        type: "String",
-        description: "The sender",
-        },
-        {
-        name: "serverAddr",
-        type: "InetAddress",
-        description: "The server address",
-        },
-        {
-        name: "serverPort",
-        type: "int",
-        description: "The server port",
-        },
-        {
-        name: "smtpMessageEvent",
-        type: "SmtpMessageEvent",
-        description: "The parent SMTP message event",
-        },
-        {
-        name: "isSpam",
-        type: "boolean",
-        description: "True if spam, false otherwise",
-        },
-        {
-        name: "subject",
-        type: "String",
-        description: "The subject",
-        },
-        {
-        name: "testsString",
-        type: "String",
-        description: "The tests string from the spam engine",
-        },
-        {
-        name: "timeStamp",
-        type: "Timestamp",
-        description: "The timestamp",
-        },
-        {
-        name: "vendorName",
-        type: "String",
-        description: "The application name",
-        },
-    ]
-    },
+    // SpamSmtpTarpitEvent: {
+    // description: "These events are created by [[Spam Blocker]] and inserted to the [[Database_Schema#smtp_tarpit_events|smtp_tarpit_events]] table when a session is tarpitted.",
+    // fields: [
+    //     {
+    //     name: "iPAddr",
+    //     type: "InetAddress",
+    //     description: "The IP address",
+    //     },
+    //     {
+    //     name: "class",
+    //     type: "Class",
+    //     description: "The class name",
+    //     },
+    //     {
+    //     name: "hostname",
+    //     type: "String",
+    //     description: "The hostname",
+    //     },
+    //     {
+    //     name: "sessionEvent",
+    //     type: "SessionEvent",
+    //     description: "The session event",
+    //     },
+    //     {
+    //     name: "sessionId",
+    //     type: "Long",
+    //     description: "The session ID",
+    //     },
+    //     {
+    //     name: "timeStamp",
+    //     type: "Timestamp",
+    //     description: "The timestamp",
+    //     },
+    //     {
+    //     name: "vendorName",
+    //     type: "String",
+    //     description: "The application name",
+    //     },
+    // ]
+    // },
+    // SpamLogEvent: {
+    // description: "These events are created by [[Spam Blocker]] and update the [[Database_Schema#mail_msgs|mail_msgs]] table when an email is scanned.",
+    // fields: [
+    //     {
+    //     name: "action",
+    //     type: "SpamMessageAction",
+    //     description: "The action",
+    //     values: [ "PASS",  "MARK",  "DROP",  "BLOCK",  "QUARANTINE",  "SAFELIST",  "OVERSIZE",  "OUTBOUND",  "FAILED_BLOCKED",  "FAILED_PASSED",  "GREYLIST", ],
+    //     },
+    //     {
+    //     name: "class",
+    //     type: "Class",
+    //     description: "The class name",
+    //     },
+    //     {
+    //     name: "clientAddr",
+    //     type: "InetAddress",
+    //     description: "The client address",
+    //     },
+    //     {
+    //     name: "clientPort",
+    //     type: "int",
+    //     description: "The client port",
+    //     },
+    //     {
+    //     name: "messageId",
+    //     type: "Long",
+    //     description: "The message ID",
+    //     },
+    //     {
+    //     name: "receiver",
+    //     type: "String",
+    //     description: "The receiver",
+    //     },
+    //     {
+    //     name: "score",
+    //     type: "float",
+    //     description: "The score",
+    //     },
+    //     {
+    //     name: "sender",
+    //     type: "String",
+    //     description: "The sender",
+    //     },
+    //     {
+    //     name: "serverAddr",
+    //     type: "InetAddress",
+    //     description: "The server address",
+    //     },
+    //     {
+    //     name: "serverPort",
+    //     type: "int",
+    //     description: "The server port",
+    //     },
+    //     {
+    //     name: "smtpMessageEvent",
+    //     type: "SmtpMessageEvent",
+    //     description: "The parent SMTP message event",
+    //     },
+    //     {
+    //     name: "isSpam",
+    //     type: "boolean",
+    //     description: "True if spam, false otherwise",
+    //     },
+    //     {
+    //     name: "subject",
+    //     type: "String",
+    //     description: "The subject",
+    //     },
+    //     {
+    //     name: "testsString",
+    //     type: "String",
+    //     description: "The tests string from the spam engine",
+    //     },
+    //     {
+    //     name: "timeStamp",
+    //     type: "Timestamp",
+    //     description: "The timestamp",
+    //     },
+    //     {
+    //     name: "vendorName",
+    //     type: "String",
+    //     description: "The application name",
+    //     },
+    // ]
+    // },
     FirewallEvent: {
     description: "These events are created by [[Firewall]] and update the [[Database_Schema#sessions|sessions]] table when a firewall rule matches a session.",
     fields: [
@@ -1680,6 +1687,7 @@ Ext.define('Ung.config.events.MainController', {
         name: "kind",
         type: "AddressKind",
         description: "The type for this address (F=From, T=To, C=CC, G=Envelope From, B=Envelope To, X=Unknown)",
+        values: [ "FROM",  "TO",  "CC",  "ENVELOPE_FROM",  "ENVELOPE_TO",  "USER",  "", ],
         },
         {
         name: "messageId",
@@ -1878,131 +1886,132 @@ Ext.define('Ung.config.events.MainController', {
         },
     ]
     },
-    // SpamSmtpTarpitEvent: {
-    // description: "These events are created by [[Spam Blocker]] and inserted to the [[Database_Schema#smtp_tarpit_events|smtp_tarpit_events]] table when a session is tarpitted.",
-    // fields: [
-    //     {
-    //     name: "iPAddr",
-    //     type: "InetAddress",
-    //     description: "The IP address",
-    //     },
-    //     {
-    //     name: "class",
-    //     type: "Class",
-    //     description: "The class name",
-    //     },
-    //     {
-    //     name: "hostname",
-    //     type: "String",
-    //     description: "The hostname",
-    //     },
-    //     {
-    //     name: "sessionEvent",
-    //     type: "SessionEvent",
-    //     description: "The session event",
-    //     },
-    //     {
-    //     name: "sessionId",
-    //     type: "Long",
-    //     description: "The session ID",
-    //     },
-    //     {
-    //     name: "timeStamp",
-    //     type: "Timestamp",
-    //     description: "The timestamp",
-    //     },
-    //     {
-    //     name: "vendorName",
-    //     type: "String",
-    //     description: "The application name",
-    //     },
-    // ]
-    // },
-    // SpamLogEvent: {
-    // description: "These events are created by [[Spam Blocker]] and update the [[Database_Schema#mail_msgs|mail_msgs]] table when an email is scanned.",
-    // fields: [
-    //     {
-    //     name: "action",
-    //     type: "SpamMessageAction",
-    //     description: "The action",
-    //     },
-    //     {
-    //     name: "class",
-    //     type: "Class",
-    //     description: "The class name",
-    //     },
-    //     {
-    //     name: "clientAddr",
-    //     type: "InetAddress",
-    //     description: "The client address",
-    //     },
-    //     {
-    //     name: "clientPort",
-    //     type: "int",
-    //     description: "The client port",
-    //     },
-    //     {
-    //     name: "messageId",
-    //     type: "Long",
-    //     description: "The message ID",
-    //     },
-    //     {
-    //     name: "receiver",
-    //     type: "String",
-    //     description: "The receiver",
-    //     },
-    //     {
-    //     name: "score",
-    //     type: "float",
-    //     description: "The score",
-    //     },
-    //     {
-    //     name: "sender",
-    //     type: "String",
-    //     description: "The sender",
-    //     },
-    //     {
-    //     name: "serverAddr",
-    //     type: "InetAddress",
-    //     description: "The server address",
-    //     },
-    //     {
-    //     name: "serverPort",
-    //     type: "int",
-    //     description: "The server port",
-    //     },
-    //     {
-    //     name: "smtpMessageEvent",
-    //     type: "SmtpMessageEvent",
-    //     description: "The parent SMTP message event",
-    //     },
-    //     {
-    //     name: "isSpam",
-    //     type: "boolean",
-    //     description: "True if spam, false otherwise",
-    //     },
-    //     {
-    //     name: "subject",
-    //     type: "String",
-    //     description: "The subject",
-    //     },
-    //     {
-    //     name: "testsString",
-    //     type: "String",
-    //     description: "The tests string from the spam engine",
-    //     },
-    //     {
-    //     name: "timeStamp",
-    //     type: "Timestamp",
-    //     description: "The timestamp",
-    //     },
-    //     {
-    //     name: "vendorName",
-    //     type: "String",
-    //     description: "The application name",
-    //     },
-    // ]
-    // },
+    SpamSmtpTarpitEvent: {
+    description: "These events are created by [[Spam Blocker]] and inserted to the [[Database_Schema#smtp_tarpit_events|smtp_tarpit_events]] table when a session is tarpitted.",
+    fields: [
+        {
+        name: "iPAddr",
+        type: "InetAddress",
+        description: "The IP address",
+        },
+        {
+        name: "class",
+        type: "Class",
+        description: "The class name",
+        },
+        {
+        name: "hostname",
+        type: "String",
+        description: "The hostname",
+        },
+        {
+        name: "sessionEvent",
+        type: "SessionEvent",
+        description: "The session event",
+        },
+        {
+        name: "sessionId",
+        type: "Long",
+        description: "The session ID",
+        },
+        {
+        name: "timeStamp",
+        type: "Timestamp",
+        description: "The timestamp",
+        },
+        {
+        name: "vendorName",
+        type: "String",
+        description: "The application name",
+        },
+    ]
+    },
+    SpamLogEvent: {
+    description: "These events are created by [[Spam Blocker]] and update the [[Database_Schema#mail_msgs|mail_msgs]] table when an email is scanned.",
+    fields: [
+        {
+        name: "action",
+        type: "SpamMessageAction",
+        description: "The action",
+        values: [ "PASS",  "MARK",  "DROP",  "BLOCK",  "QUARANTINE",  "SAFELIST",  "OVERSIZE",  "OUTBOUND",  "FAILED_BLOCKED",  "FAILED_PASSED",  "GREYLIST", ],
+        },
+        {
+        name: "class",
+        type: "Class",
+        description: "The class name",
+        },
+        {
+        name: "clientAddr",
+        type: "InetAddress",
+        description: "The client address",
+        },
+        {
+        name: "clientPort",
+        type: "int",
+        description: "The client port",
+        },
+        {
+        name: "messageId",
+        type: "Long",
+        description: "The message ID",
+        },
+        {
+        name: "receiver",
+        type: "String",
+        description: "The receiver",
+        },
+        {
+        name: "score",
+        type: "float",
+        description: "The score",
+        },
+        {
+        name: "sender",
+        type: "String",
+        description: "The sender",
+        },
+        {
+        name: "serverAddr",
+        type: "InetAddress",
+        description: "The server address",
+        },
+        {
+        name: "serverPort",
+        type: "int",
+        description: "The server port",
+        },
+        {
+        name: "smtpMessageEvent",
+        type: "SmtpMessageEvent",
+        description: "The parent SMTP message event",
+        },
+        {
+        name: "isSpam",
+        type: "boolean",
+        description: "True if spam, false otherwise",
+        },
+        {
+        name: "subject",
+        type: "String",
+        description: "The subject",
+        },
+        {
+        name: "testsString",
+        type: "String",
+        description: "The tests string from the spam engine",
+        },
+        {
+        name: "timeStamp",
+        type: "Timestamp",
+        description: "The timestamp",
+        },
+        {
+        name: "vendorName",
+        type: "String",
+        description: "The application name",
+        },
+    ]
+    },
     HttpResponseEvent: {
     description: "These events are created by HTTP subsystem and update the [[Database_Schema#http_events|http_events]] table when a web response happens.",
     fields: [
@@ -2125,6 +2134,7 @@ Ext.define('Ung.config.events.MainController', {
         name: "type",
         type: "OpenVpnEvent$EventType",
         description: "The type",
+        values: [ "CONNECT",  "DISCONNECT", ],
         },
     ]
     },
@@ -2242,7 +2252,9 @@ Ext.define('Ung.config.events.MainController', {
         description: "The timestamp",
         },
     ]
-    },        }
+    },
+}
+        
         );
 
 
@@ -2782,7 +2794,7 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
         var storeName;
         switch(type.toLowerCase()){
             case 'string':
-            // case 'class':
+            case 'enum':
                 storeName = 'string';
                 break;
 
@@ -2832,7 +2844,11 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
             if( conditionsClassName == className ){
                 conditions[conditionsClassName].fields.forEach( function(field){
                     if(field.name == record.get('field')){
-                        type = field.type;
+                        if( field.values ){
+                            type = 'enum';
+                        }else{
+                            type = field.type;
+                        }
                     }
                 });
             }
@@ -2850,11 +2866,20 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
         var conditions = vm.get('conditions');
 
         var type = null;
+        var enumValues = null;
         for( var conditionsClassName in  conditions ){
             if( conditionsClassName == className ){
                 conditions[conditionsClassName].fields.forEach( function(field){
                     if(field.name == record.get('field')){
-                        type = field.type;
+                        if( field.values ){
+                            type = 'enum';
+                            enumValues = [];
+                            field.values.forEach( function(value){
+                                enumValues.push([ value ]);
+                            });
+                        }else{
+                            type = field.type;
+                        }
                     }
                 });
             }
@@ -2862,6 +2887,27 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
 
         container.removeAll(true);
         switch(type.toLowerCase()){
+            case 'enum':
+                container.add({
+                    xtype: 'combo',
+                    editable: false,
+                    queryMode: 'local',
+                    bind: '{record.fieldValue}',
+                    valueField: 'name',
+                    displayField: 'name',
+                    forceSelection: true,
+                    // store: enumStore
+                    store: {
+                        fields: [ 'name' ],
+                        sorters: [{
+                            property: 'name',
+                            direction: 'ASC'
+                        }],
+                        data: enumValues
+                    }
+                });
+                break;
+
             case 'string':
                 container.add({
                     xtype: 'textfield',
