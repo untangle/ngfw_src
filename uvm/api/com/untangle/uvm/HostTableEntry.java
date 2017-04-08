@@ -414,6 +414,7 @@ public class HostTableEntry implements Serializable, JSONString
             logger.info("Ignoring adding expired tag:" + tag);
             return;
         }
+        updateEvent( "addTag", "", tag.getName() );
         this.tags.put( tag.getName(), tag );
     }
 
@@ -424,6 +425,14 @@ public class HostTableEntry implements Serializable, JSONString
         for ( Tag tag : tags ) {
             addTag( tag );
         }
+    }
+
+    public synchronized Tag removeTag( Tag tag )
+    {
+        Tag t = this.tags.remove( tag.getName() );
+        if ( t != null )
+            updateEvent( "removeTag", "", t.getName() );
+        return t;
     }
 
     public synchronized boolean hasTag( String name )

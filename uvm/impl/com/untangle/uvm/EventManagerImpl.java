@@ -95,17 +95,12 @@ public class EventManagerImpl implements EventManager
         for (TriggerRule rule : newSettings.getTriggerRules()) {
             rule.setRuleId(++idx);
 
-            if (rule.getAction() == TriggerRule.TriggerAction.TAG_HOST ||
-                rule.getAction() == TriggerRule.TriggerAction.TAG_USER ||
-                rule.getAction() == TriggerRule.TriggerAction.TAG_DEVICE ) {
-
-                if ( rule.getTagName() == null )
-                    throw new RuntimeException("Missing tag name on trigger rule: " + idx);
-                if ( rule.getTagTarget() == null )
-                    throw new RuntimeException("Missing tag target on trigger rule: " + idx);
-                if ( rule.getTagLifetimeSec() == null )
-                    throw new RuntimeException("Missing tag lifetime on trigger rule: " + idx);
-            }
+            if ( rule.getTagName() == null )
+                throw new RuntimeException("Missing tag name on trigger rule: " + idx);
+            if ( rule.getTagTarget() == null )
+                throw new RuntimeException("Missing tag target on trigger rule: " + idx);
+            if ( rule.getTagLifetimeSec() == null )
+                throw new RuntimeException("Missing tag lifetime on trigger rule: " + idx);
         }
 
         /**
@@ -495,51 +490,82 @@ public class EventManagerImpl implements EventManager
 
             target = target.replaceAll("/",""); // remove annoying / from InetAddress toString()
 
-            HostTableEntry host = UvmContextFactory.context().hostTable().getHostTableEntry( target );
-            UserTableEntry user = UvmContextFactory.context().userTable().getUserTableEntry( target );
-            DeviceTableEntry device = UvmContextFactory.context().deviceTable().getDevice( target );
+            HostTableEntry host = null;
+            UserTableEntry user = null;
+            DeviceTableEntry device = null;
+            List<Tag> tags;
+
+            host = UvmContextFactory.context().hostTable().getHostTableEntry( target );
+            if ( rule.getAction().toString().contains("USER") ) {
+                user = UvmContextFactory.context().userTable().getUserTableEntry( target );
+                if ( user == null && host != null )
+                    user = UvmContextFactory.context().userTable().getUserTableEntry( host.getUsername() );
+            }
+            if ( rule.getAction().toString().contains("DEVICE") ) {
+                device = UvmContextFactory.context().deviceTable().getDevice( target );
+                if ( device == null && host != null )
+                    device = UvmContextFactory.context().deviceTable().getDevice( host.getMacAddress() );
+            }
+
+            if ( rule.getAction().toString().contains("_HOST") && host == null ) {
+                logger.info( "trigger: failed to find host \"" + target + "\"");
+                continue;
+            }
+            if ( rule.getAction().toString().contains("_USER") && user == null ) {
+                logger.info( "trigger: failed to find user \"" + target + "\"");
+                continue;
+            }
+            if ( rule.getAction().toString().contains("_DEVICE") && device == null ) {
+                logger.info( "trigger: failed to find device \"" + target + "\"");
+                continue;
+            }
 
             switch( rule.getAction() ) {
             case TAG_HOST:
-                if ( host != null ) {
-                    logger.info("Tagging host " + target + " with tag \"" + rule.getTagName() + "\"");
-                    host.addTag( new Tag( rule.getTagName(), rule.getTagLifetimeSec()*1000 ) );
-                    break;
+                logger.info("Tagging host " + target + " with tag \"" + rule.getTagName() + "\"");
+                host.addTag( new Tag( rule.getTagName(), rule.getTagLifetimeSec()*1000 ) );
+                break;
+            case UNTAG_HOST:
+                logger.info("Untagging host " + target + " with tag \"" + rule.getTagName() + "\"");
+                tags = host.getTags();
+                if ( tags == null ) break;
+                for ( Tag t : tags ) {
+                    if ( rule.nameMatches( t ) ) {
+                        logger.info("Untagging host " + target + " removing tag \"" + t.getName() + "\"");
+                        host.removeTag( t );
+                    }
                 }
-                logger.info( "trigger: failed to find host \"" + target + "\"");
-                continue;
+                break;
             case TAG_USER:
-                if ( user != null ) {
-                    logger.info("Tagging user " + target + " with tag \"" + rule.getTagName() + "\"" );
-                    user.addTag( new Tag( rule.getTagName(), rule.getTagLifetimeSec()*1000 ) );
-                    break;
-                } else if ( host != null ) {
-                    String hostUsername = host.getUsername();
-                    user = UvmContextFactory.context().userTable().getUserTableEntry( hostUsername );
-                    if ( user != null ) {
-                        logger.info("Tagging user " + hostUsername + " with tag \"" + rule.getTagName() + "\"" );
-                        user.addTag( new Tag( rule.getTagName(), rule.getTagLifetimeSec()*1000 ) );
-                        break;
+                logger.info("Tagging user " + target + " with tag \"" + rule.getTagName() + "\"" );
+                user.addTag( new Tag( rule.getTagName(), rule.getTagLifetimeSec()*1000 ) );
+                break;
+            case UNTAG_USER:
+                logger.info("Untagging user " + target + " with tag \"" + rule.getTagName() + "\"");
+                tags = user.getTags();
+                if ( tags == null ) break;
+                for ( Tag t : tags ) {
+                    if ( rule.nameMatches( t ) ) {
+                        logger.info("Untagging user " + target + " removing tag \"" + t.getName() + "\"");
+                        user.removeTag( t );
                     }
                 }
-                logger.info( "trigger: failed to find user \"" + target + "\"");
-                continue;
+                break;
             case TAG_DEVICE:
-                if ( device != null ) {
-                    logger.info("Tagging device " + target + " with tag \"" + rule.getTagName() + "\"" );
-                    device.addTag( new Tag( rule.getTagName(), rule.getTagLifetimeSec()*1000 ) );
-                    break;
-                } else if ( host != null ) {
-                    String macAddr = host.getMacAddress();
-                    device = UvmContextFactory.context().deviceTable().getDevice( macAddr );
-                    if ( device != null ) {
-                        logger.info("Tagging device " + macAddr + " with tag \"" + rule.getTagName() + "\"" );
-                        device.addTag( new Tag( rule.getTagName(), rule.getTagLifetimeSec()*1000 ) );
-                        break;
+                logger.info("Tagging device " + target + " with tag \"" + rule.getTagName() + "\"" );
+                device.addTag( new Tag( rule.getTagName(), rule.getTagLifetimeSec()*1000 ) );
+                break;
+            case UNTAG_DEVICE:
+                logger.info("Untagging device " + target + " with tag \"" + rule.getTagName() + "\"");
+                tags = device.getTags();
+                if ( tags == null ) break;
+                for ( Tag t : tags ) {
+                    if ( rule.nameMatches( t ) ) {
+                        logger.info("Untagging device " + target + " removing tag \"" + t.getName() + "\"");
+                        device.removeTag( t );
                     }
                 }
-                logger.info( "trigger: failed to find device \"" + target + "\"");
-                continue;
+                break;
             }
         }
     }

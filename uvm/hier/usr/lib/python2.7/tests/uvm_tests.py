@@ -230,7 +230,7 @@ class UvmTests(unittest2.TestCase):
         settings = uvmContext.eventManager().getSettings()
         orig_settings = copy.deepcopy(settings)
         new_rule = create_trigger_rule("TAG_HOST", "localAddr", "test-tag", 30, "test tag rule", "class", "=", "*SessionEvent*", "localAddr", "=", "*"+remote_control.clientIP+"*")
-        settings['triggerRules']['list'].append( new_rule )
+        settings['triggerRules']['list'] = [ new_rule ]
         uvmContext.eventManager().setSettings( settings )
 
         result = remote_control.is_online()
@@ -242,7 +242,33 @@ class UvmTests(unittest2.TestCase):
         
         uvmContext.eventManager().setSettings( orig_settings )
 
-    def test_041_alert_rule(self):
+    def test_041_trigger_rule_untag_host(self):
+        settings = uvmContext.eventManager().getSettings()
+        orig_settings = copy.deepcopy(settings)
+        new_rule = create_trigger_rule("TAG_HOST", "localAddr", "test-tag", 30, "test tag rule", "class", "=", "*SessionEvent*", "localAddr", "=", "*"+remote_control.clientIP+"*")
+        settings['triggerRules']['list'] = [ new_rule ]
+        uvmContext.eventManager().setSettings( settings )
+
+        result = remote_control.is_online()
+        time.sleep(1)
+
+        entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
+        assert( entry.get('tagsString') != None )
+        assert( "test-tag" in entry.get('tagsString') )
+
+        new_rule = create_trigger_rule("UNTAG_HOST", "localAddr", "test*", 30, "test tag rule", "class", "=", "*SessionEvent*", "localAddr", "=", "*"+remote_control.clientIP+"*")
+        settings['triggerRules']['list'] = [ new_rule ]
+        uvmContext.eventManager().setSettings( settings )
+
+        result = remote_control.is_online()
+        time.sleep(1)
+
+        entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
+        assert( entry.get('tagsString') == None or "test-tag" not in entry.get('tagsString'))
+
+        uvmContext.eventManager().setSettings( orig_settings )
+        
+    def test_050_alert_rule(self):
         settings = uvmContext.eventManager().getSettings()
         orig_settings = copy.deepcopy(settings)
         new_rule = create_alert_rule("test alert rule", "class", "=", "*SessionEvent*", "localAddr", "=", "*"+remote_control.clientIP+"*")

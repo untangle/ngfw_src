@@ -11,7 +11,9 @@ import org.json.JSONObject;
 import org.json.JSONString;
 import org.apache.log4j.Logger;
 
+import com.untangle.uvm.Tag;
 import com.untangle.uvm.vnet.AppSession;
+import com.untangle.uvm.app.GlobMatcher;
 import com.untangle.uvm.util.Load;
 
 import com.untangle.uvm.event.EventRule;
@@ -25,13 +27,17 @@ import com.untangle.uvm.event.EventRule;
 @SuppressWarnings("serial")
 public class TriggerRule extends EventRule
 {
-    public static enum TriggerAction { TAG_HOST, TAG_DEVICE, TAG_USER };
+    private static final Logger logger = Logger.getLogger( TriggerRule.class );
+
+    public static enum TriggerAction { TAG_HOST, TAG_DEVICE, TAG_USER, UNTAG_HOST, UNTAG_DEVICE, UNTAG_USER };
 
     private TriggerAction action;
     private String tagTarget; /* names the JSON entity for the target of the tag */
     private String tagName;
     private Long tagLifetimeSec;
-    
+
+    private GlobMatcher globMatcher;
+
     public TriggerRule()
     {
     }
@@ -53,10 +59,28 @@ public class TriggerRule extends EventRule
     public void setTagTarget( String newValue ) { this.tagTarget = newValue; }
 
     public String getTagName() { return this.tagName; }
-    public void setTagName( String newValue ) { this.tagName = newValue; }
+    public void setTagName( String newValue )
+    {
+        this.globMatcher = new GlobMatcher( newValue );
+        this.tagName = newValue;
+    }
 
     public Long getTagLifetimeSec() { return this.tagLifetimeSec; }
     public void setTagLifetimeSec( Long newValue ) { this.tagLifetimeSec = newValue; }
     
-    
+    /**
+     * If the trigger rules specifies a glob
+     * For example UNTAG "foo*"
+     * This funciton will tell if you if the supplied tag
+     * matches "foo*"
+     */
+    public boolean nameMatches( Tag t )
+    {
+        if ( globMatcher == null ) {
+            logger.warn("Missing globMatcher");
+            return false;
+        }
+
+        return globMatcher.isMatch( t.getName() );
+    }
 }
