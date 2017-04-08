@@ -29,7 +29,7 @@ import com.untangle.uvm.util.IOUtil;
 
 public class BrandingManagerApp extends AppBase implements com.untangle.uvm.BrandingManager
 {
-    private static final File DEFAULT_LOGO = new File("/var/www/images/Logo150x96.png");;
+    private static final File DEFAULT_LOGO = new File("/var/www/images/DefaultLogo.png");;
     private static final File BRANDING_LOGO = new File("/var/www/images/BrandingLogo.png");
     private static final String BRANDING_LOGO_WEB_PATH = "images/BrandingLogo.png";
 
