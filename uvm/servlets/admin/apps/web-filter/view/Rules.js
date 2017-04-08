@@ -112,8 +112,8 @@ Ext.define('Ung.apps.webfilter.view.Rules', {
             { name: 'WEB_FILTER_CATEGORY_DESCRIPTION',displayName: 'Web Filter: Category Description'.t(), type: 'textfield', visible: true},
             { name: 'WEB_FILTER_FLAGGED',displayName: 'Web Filter: Website is Flagged'.t(), type: 'boolean', visible: true},
             // { name: 'DIRECTORY_CONNECTOR_GROUP',displayName: 'Directory Connector: User in Group'.t(), type: "editor", editor: Ext.create('Ung.GroupEditorWindow',{}), visible: true},
-            // { name: 'CLIENT_COUNTRY',displayName: 'Client Country'.t(), type: "editor", editor: Ext.create('Ung.CountryEditorWindow',{}), visible: true},
-            // { name: 'SERVER_COUNTRY',displayName: 'Server Country'.t(), type: "editor", editor: Ext.create('Ung.CountryEditorWindow',{}), visible: true}
+            { name: 'CLIENT_COUNTRY',displayName: 'Client Country'.t(), type: "countryfield", visible: true},
+            { name: 'SERVER_COUNTRY',displayName: 'Server Country'.t(), type: "countryfield", visible: true}
     ]
 
 });

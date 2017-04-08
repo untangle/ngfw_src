@@ -1,5 +1,6 @@
 Ext.define('Ung.store.Countries', {
     extend: 'Ext.data.Store',
+    alias: 'store.countries',
     storeId: 'countries',
     data: [
         { code: 'AF', name: 'Afghanistan'.t() },
