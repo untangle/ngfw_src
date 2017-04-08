@@ -57,6 +57,7 @@ Ext.define('Ung.cmp.RecordEditorController', {
         }, {
             header: 'Value'.t(),
             xtype: 'widgetcolumn',
+            cellWrap: true,
             menuDisabled: true,
             sortable: false,
             flex: 1,
@@ -301,8 +302,110 @@ Ext.define('Ung.cmp.RecordEditorController', {
                 },
                 items: ckItems
             });
+            break;
+        case 'countryfield':
+            container.add({
+                xtype: 'container',
+                layout: {
+                    type: 'hbox',
+                    align: 'stretch'
+                },
+                items: [{
+                    xtype: 'textfield',
+                    editable: false,
+                    flex: 1,
+                    emptyText: 'Click down arrow to select ...',
+                    bind: '{record.value}',
+                    triggers: {
+                        edit: {
+                            handler: 'countrySelector'
+                        }
+                    }
+                }]
+            });
         }
     },
+
+    countrySelector: function (el) {
+        var me = this;
+        var pp = me.getView().add({
+            xtype: 'window',
+            scrollable: 'y',
+            viewModel: true,
+            title: 'Specify Countries'.t(),
+            modal: true,
+            width: 500,
+            height: 250,
+            layout: 'fit',
+            items: [{
+                xtype: 'form',
+                layout: 'anchor',
+                bodyPadding: 10,
+                border: false,
+                defaults: {
+                    anchor: '100%'
+                },
+                items: [{
+                    xtype: 'tagfield',
+                    itemId: 'countryField',
+                    emptyText: 'Select countries ...',
+                    store: { type: 'countries' },
+                    filterPickList: true,
+                    growMax: 100,
+                    value: el.getValue(),
+                    displayField: 'name',
+                    valueField: 'code',
+                    bind: {
+                        disabled: '{isCustom.value}'
+                    }
+                }, {
+                    xtype: 'checkbox',
+                    reference: 'isCustom',
+                    publishes: 'value',
+                    boxLabel: 'Specify a Custom Value'.t()
+                }, {
+                    xtype: 'textfield',
+                    itemId: 'customField',
+                    allowBlank: false,
+                    disabled: true,
+                    bind: {
+                        disabled: '{!isCustom.value}'
+                    }
+                }],
+                buttons: [{
+                    text: 'Cancel'.t(),
+                    iconCls: 'fa fa-ban',
+                    handler: function (btn) {
+                        btn.up('window').close();
+                    }
+                }, {
+                    text: 'Done'.t(),
+                    iconCls: 'fa fa-check',
+                    formBind: true,
+                    handler: function (btn) {
+                        var form = btn.up('form');
+                        if (!form.down('checkbox').getValue()) {
+                            el.setValue(form.down('#countryField').getValue().join(','));
+                        } else {
+                            el.setValue(form.down('#customField').getValue());
+                        }
+                        btn.up('window').close();
+                    }
+                }]
+            }],
+            listeners: {
+                afterrender: function (win) {
+                    if (el.getValue() && win.down('#countryField').getValue().length === 0) {
+                        win.down('checkbox').setValue(true);
+                        win.down('#customField').setValue(el.getValue());
+                    }
+                }
+            }
+        });
+        pp.show();
+        return false;
+    },
+
 
     onDestroy: function () {
         this.recordBind.destroy();
