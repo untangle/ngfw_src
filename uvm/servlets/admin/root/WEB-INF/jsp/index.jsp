@@ -90,15 +90,12 @@
                 if (!rpc.translations.date_fmt) { rpc.translations.date_fmt = 'Y-m-d'; }
                 if (!rpc.translations.timestamp_fmt) { rpc.translations.timestamp_fmt = 'Y-m-d h:i:s a'; }
 
-
                 String.prototype.t = function() {
-                    return rpc.translations[this.valueOf()] || '<cite>' + this.valueOf() + '</cite>';
+                    if (rpc.languageSettings.language !== 'en') {
+                        return rpc.translations[this.valueOf()] || '<cite>' + this.valueOf() + '</cite>';
+                    }
+                    return this.valueOf();
                 };
-
-                // Ext.application({
-                //     name: 'Ung',
-                //     extend: 'Ung.Application',
-                // });
 
                 // load the untangle app only after the rpc is in place and translations set
                 Ext.Loader.loadScript({
