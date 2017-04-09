@@ -28,7 +28,7 @@ class Ngfw:
             directories = Utility.get_base_path().split("/")
             while found == False and len(directories) > 0:
                 check_path = "/".join(directories)
-                if os.path.isdir(check_path + "/ngfw_src") and os.path.isdir(check_path + "/ngfw_hades-src"):
+                if os.path.isdir(check_path + "/ngfw_src"):
                     found = True
                     self.base_path = check_path
                 del directories[len(directories)-1]
@@ -68,12 +68,12 @@ class Ngfw:
         Determine module directory from name
         """
         module_names = module.split("-", 3)
-        if module_names[1] == "libuvm" or module_names[1] == "vm":
-            source_directory = "uvm"
-        elif module_names[1] == "base" or module_names[1] == "casing":
-            source_directory = "-".join(["-".join(module_names[2:]), module_names[1]])
-        else:
-            source_directory = "-".join(module_names[2:])
+        source_directory = module
+        if len(module_names) > 1:
+            if module_names[1] == "libuvm" or module_names[1] == "vm":
+                source_directory = "uvm"
+            elif module_names[1] == "base" or module_names[1] == "casing":
+                source_directory = "-".join(["-".join(module_names[2:]), module_names[1]])
 
         for path in self.search_paths:
             module_directory = path + "/" + source_directory
