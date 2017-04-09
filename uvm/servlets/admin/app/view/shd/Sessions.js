@@ -80,7 +80,7 @@ Ext.define('Ung.view.shd.Sessions', {
         }, {
             header: 'Hostname'.t(),
             dataIndex: 'platform-hostname',
-            flex: 1
+            width: 100
         }, {
             header: 'NATd'.t(),
             dataIndex: 'natted',
