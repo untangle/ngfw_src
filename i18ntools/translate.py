@@ -23,7 +23,17 @@ def process_test(po):
     for (record_index, record) in enumerate(po.records):
         if record.msg_id == "":
             continue
-        po.records[record_index].msg_str = ["X" + record.msg_id + "X"]
+        if record.msg_id == "date_fmt":
+            value = 'Y|m|d'
+        elif record.msg_id == "thousand_sep":
+            value = "."
+        elif record.msg_id == "decimal_sep":
+            value = ","
+        elif record.msg_id == "timestamp_fmt":
+            value = "Y|m|d g:i:s a"
+        else:
+            value = "X" + record.msg_id + "X"
+        po.records[record_index].msg_str = [value]
 
 def process_google(po):
     for (record_index, record) in enumerate(po.records):

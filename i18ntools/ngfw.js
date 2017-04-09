@@ -16,7 +16,9 @@
 	"modules": [
         "untangle-libuvm",
         "untangle-apache2-config",
-        "smtp",
+        "smtp-casing",
+        "http-casing",
+        "ftp-casing",
         "virus-blocker-base",
         "web-filter-base",
         "spam-blocker-base",
