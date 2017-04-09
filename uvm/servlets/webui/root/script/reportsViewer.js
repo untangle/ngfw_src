@@ -41,7 +41,7 @@ Ext.define('Ung.reportsViewer', {
                 text : i18n._('Administration'),
                 category : 'Administration',
                 leaf : true,
-                icon : '/skins/'+rpc.skinSettings.skinName+'/images/admin/config/icon_config_admin_16x16.png'
+                icon : '/skins/'+rpc.skinSettings.skinName+'/images/admin/config/icon_config_administration_16x16.png'
             }, {
                 text : i18n._('Events'),
                 category : 'Events',

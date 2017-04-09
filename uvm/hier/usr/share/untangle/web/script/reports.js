@@ -807,7 +807,7 @@ Ext.define('Ung.panel.Reports', {
                 { text : i18n._('Hosts'), category : 'Hosts', icon : _skinPath + 'config/icon_config_hosts.png' },
                 { text : i18n._('Devices'), category : 'Devices', icon : _skinPath + 'config/icon_config_devices.png'},
                 { text : i18n._('Network'), category : 'Network', icon : _skinPath + 'config/icon_config_network.png' },
-                { text : i18n._('Administration'), category : 'Administration', icon : _skinPath + 'config/icon_config_admin.png' },
+                { text : i18n._('Administration'), category : 'Administration', icon : _skinPath + 'config/icon_config_administration.png' },
                 { text : i18n._('Events'), category : 'Events', icon : _skinPath + 'config/icon_config_events.png' },
                 { text : i18n._('System'), category : 'System', icon : _skinPath + 'config/icon_config_system.png' },
                 { text : i18n._('Shield'), category : 'Shield', icon : _skinPath + 'config/icon_config_shield.png' }
