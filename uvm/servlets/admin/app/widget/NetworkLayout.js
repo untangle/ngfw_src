@@ -118,15 +118,15 @@ Ext.define('Ung.widget.NetworkLayout', {
     //         //             me.data.externalInterfaces.push({
     //         //                 id: iface.interfaceId,
     //         //                 name: iface.name,
-    //         //                 rx: 0,
-    //         //                 tx: 0
+    //         //                 inbound: 0,
+    //         //                 outbound: 0
     //         //             });
     //         //         } else {
     //         //             me.data.internalInterfaces.push({
     //         //                 id: iface.interfaceId,
     //         //                 name: iface.name,
-    //         //                 rx: 0,
-    //         //                 tx: 0
+    //         //                 inbound: 0,
+    //         //                 outbound: 0
     //         //             });
     //         //         }
     //         //     }
