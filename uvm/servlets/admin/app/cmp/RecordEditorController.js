@@ -50,6 +50,7 @@ Ext.define('Ung.cmp.RecordEditorController', {
             resizable: false,
             widget: {
                 xtype: 'combo',
+                // margin: 3,
                 editable: false,
                 bind: '{record.invert}',
                 store: [[true, 'is NOT'.t()], [false, 'is'.t()]]
@@ -63,8 +64,17 @@ Ext.define('Ung.cmp.RecordEditorController', {
             flex: 1,
             widget: {
                 xtype: 'container',
-                padding: '0 3'
+                padding: '1 3',
+                // height: 80,
+                layout: {
+                    type: 'hbox',
+                    align: 'stretch'
+                }
             },
+            // widget: {
+            //     xtype: 'container',
+            //     padding: '0 3'
+            // },
             onWidgetAttach: 'onWidgetAttach'
         }, {
             xtype: 'actioncolumn',
@@ -139,6 +149,7 @@ Ext.define('Ung.cmp.RecordEditorController', {
             }
         }
         form.isValid();
+        // setTimeout(view.center();
     },
 
     onApply: function () {
@@ -249,6 +260,7 @@ Ext.define('Ung.cmp.RecordEditorController', {
      * Adds specific condition editor based on it's defined type
      */
     onWidgetAttach: function (column, container, record) {
+        var me = this;
         container.removeAll(true);
 
         var condition = this.mainGrid.conditionsMap[record.get('conditionType')], i, ckItems = [];
@@ -305,107 +317,38 @@ Ext.define('Ung.cmp.RecordEditorController', {
             break;
         case 'countryfield':
             container.add({
-                xtype: 'container',
-                layout: {
-                    type: 'hbox',
-                    align: 'stretch'
+                xtype: 'tagfield',
+                flex: 1,
+                emptyText: 'Select countries or specify a custom value ...',
+                store: { type: 'countries' },
+                filterPickList: true,
+                forceSelection: false,
+                // typeAhead: true,
+                queryMode: 'local',
+                selectOnFocus: false,
+                // anyMatch: true,
+                createNewOnEnter: true,
+                createNewOnBlur: true,
+                value: record.get('value'),
+                displayField: 'name',
+                valueField: 'code',
+                listConfig: {
+                    itemTpl: ['<div>{name} <strong>[{code}]</strong></div>']
                 },
-                items: [{
-                    xtype: 'textfield',
-                    editable: false,
-                    flex: 1,
-                    emptyText: 'Click down arrow to select ...',
-                    bind: '{record.value}',
-                    triggers: {
-                        edit: {
-                            handler: 'countrySelector'
+                listeners: {
+                    change: function (field, newValue) {
+                        // transform array into comma separated values string
+                        if (newValue.length > 0) {
+                            record.set('value', newValue.join(','));
+                        } else {
+                            record.set('value', '');
                         }
+
                     }
-                }]
+                }
             });
         }
     },
-
-    countrySelector: function (el) {
-        var me = this;
-        var pp = me.getView().add({
-            xtype: 'window',
-            scrollable: 'y',
-            viewModel: true,
-            title: 'Specify Countries'.t(),
-            modal: true,
-            width: 500,
-            height: 250,
-            layout: 'fit',
-            items: [{
-                xtype: 'form',
-                layout: 'anchor',
-                bodyPadding: 10,
-                border: false,
-                defaults: {
-                    anchor: '100%'
-                },
-                items: [{
-                    xtype: 'tagfield',
-                    itemId: 'countryField',
-                    emptyText: 'Select countries ...',
-                    store: { type: 'countries' },
-                    filterPickList: true,
-                    growMax: 100,
-                    value: el.getValue(),
-                    displayField: 'name',
-                    valueField: 'code',
-                    bind: {
-                        disabled: '{isCustom.value}'
-                    }
-                }, {
-                    xtype: 'checkbox',
-                    reference: 'isCustom',
-                    publishes: 'value',
-                    boxLabel: 'Specify a Custom Value'.t()
-                }, {
-                    xtype: 'textfield',
-                    itemId: 'customField',
-                    allowBlank: false,
-                    disabled: true,
-                    bind: {
-                        disabled: '{!isCustom.value}'
-                    }
-                }],
-                buttons: [{
-                    text: 'Cancel'.t(),
-                    iconCls: 'fa fa-ban',
-                    handler: function (btn) {
-                        btn.up('window').close();
-                    }
-                }, {
-                    text: 'Done'.t(),
-                    iconCls: 'fa fa-check',
-                    formBind: true,
-                    handler: function (btn) {
-                        var form = btn.up('form');
-                        if (!form.down('checkbox').getValue()) {
-                            el.setValue(form.down('#countryField').getValue().join(','));
-                        } else {
-                            el.setValue(form.down('#customField').getValue());
-                        }
-                        btn.up('window').close();
-                    }
-                }]
-            }],
-            listeners: {
-                afterrender: function (win) {
-                    if (el.getValue() && win.down('#countryField').getValue().length === 0) {
-                        win.down('checkbox').setValue(true);
-                        win.down('#customField').setValue(el.getValue());
-                    }
-                }
-            }
-        });
-        pp.show();
-        return false;
-    },
-
 
     onDestroy: function () {
         this.recordBind.destroy();

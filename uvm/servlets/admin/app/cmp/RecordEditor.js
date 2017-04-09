@@ -1,7 +1,8 @@
 Ext.define('Ung.cmp.RecordEditor', {
     extend: 'Ext.window.Window',
     width: 800,
-    maxHeight: Ext.getBody().getViewSize().height - 20,
+    height: 400,
+    // maxHeight: Ext.getBody().getViewSize().height - 20,
 
     xtype: 'ung.cmp.recordeditor',
     /* requires-start */
