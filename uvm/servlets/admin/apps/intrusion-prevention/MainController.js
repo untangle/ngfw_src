@@ -190,6 +190,8 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             timeout: 600000,
             success: function(response){
                 vm.set('settings', Ext.decode( response.responseText ) );
+                vm.set('rulesStoreLoad', true);
+                vm.set('variablesStoreLoad', true);
                 v.setLoading(false);
             },
             failure: function(response){
@@ -218,6 +220,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
                 }
                 changed[record.get('_id')] = data;
             });
+            store.commitChanges();
         });
 
         return changed;
@@ -266,6 +269,8 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             timeout: 600000,
             success: function(response){
                 var r = Ext.decode( response.responseText );
+                vm.set('rulesStoreLoad', true);
+                vm.set('variablesStoreLoad', true);
                 if( !r.success) {
                     Ext.MessageBox.alert(i18n._("Error"), i18n._("Unable to save settings"));
                 } else {
@@ -308,13 +313,40 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         });
         return isUsed;
     },
+
     runWizard: function (btn) {
         this.wizard = this.getView().add({
             xtype: 'app-intrusion-prevention-wizard',
             appManager: this.getView().appManager
         });
         this.wizard.show();
-    }
+    },
+
+    storedatachanged: function( store ){
+        /*
+         * Inexplicably, extjs does not see 'inline' data loads as "proper" store
+         * reloads so it will never fire the 'load' event which logically sounds
+         * like the correct event to listen to.
+         *
+         * The problem occurs on saves where data is "reloade" but seen in
+         * the store as a wholesale change.  Which is ricidulous and on the next
+         * save in the same session, causes to see all records as modified
+         * and therefore, send send ALL data back.
+         *
+         * To get around this, we have the inline loader rouines set the 
+         * 'storeId'Load variable and if we see it here, cause all of those changes
+         * to be "commited" since nothing has changed.
+         *
+         * Thanks, ExtJs.
+         *
+         */
+        var vm = this.getViewModel();
+        var storeId = store.getStoreId();
+        if(vm.get( storeId + 'Load') == true){
+            store.commitChanges();
+            vm.set( storeId + 'Load', false);
+        }
+    },
 
 });
 
@@ -329,87 +361,6 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RulesRecordEditorController', {
     extend: 'Ung.cmp.RecordEditorController',
     alias: 'controller.unintrusionrulesrecordeditorcontroller',
 
-    updateRuleKeys: [{
-        key: 'classtype',
-        regex: /\s+classtype:([^;]+);/,
-        quoted: false
-    },{
-        key: 'msg',
-        regex: /\s+msg:([^;]+);/,
-        quoted: true
-    },{
-        key: 'sid',
-        regex: /\s+sid:([^;]+);/,
-        quoted: false
-    }],
-    actionRegexMatch: /^([#]+|)(alert|log|pass|activate|dynamic|drop|sdrop|reject)/,
-    updateRule: function( updatedKey, updatedValue){
-        // After a non-rule field change, update the rule record
-        var record = this.getViewModel().get('record');
-
-        var ruleValue = record.get('rule');
-
-        // Standard field (key:value;) replacements.
-        var key;
-        var value;
-        var regex;
-        var quoted;
-        var newField;
-        for( var i = 0; i < this.updateRuleKeys.length; i++ ){
-            key = this.updateRuleKeys[i]['key'];
-            regex = this.updateRuleKeys[i]['regex'];
-            quoted = this.updateRuleKeys[i]['quoted'];
-
-            if(updatedKey == key){
-                value = updatedValue;
-            }else{
-                value = record.get(key);
-            }
-            value = (quoted ? '"' : '' ) + value + (quoted ? '"' : '' );
-
-            newField = " " + key + ":" + value + ";";
-
-            if( regex.test( ruleValue )) {
-                ruleValue = ruleValue.replace( regex, newField );
-            } else {
-                var idx = ruleValue.lastIndexOf(")");
-                if(idx != -1) {
-                    ruleValue = ruleValue.slice(0, idx-1) + newField + ruleValue.slice(idx - 1);
-                } else {
-                    ruleValue += " (" + newField + " )";
-                }
-            }
-        }
-
-        // Action replacement
-        if(updatedKey == 'log' || updatedKey == 'block'){
-            var logVaue = record.get('log');
-            var blockValue = record.get('block');
-            if(updatedKey == 'log'){
-                logValue = updatedValue;
-            }
-            if(updatedKey == 'block'){
-                blockValue = updatedValue;
-            }
-
-            var actionField = "alert";
-            if( logValue === true && blockValue === true ) {
-                actionField = "drop";
-            } else if( logValue === false && blockValue === true ) {
-                actionField = "sdrop";
-            }else if( logValue === false && blockValue === false ) {
-                actionField = "#" + actionField;
-            }
-
-            if( this.actionRegexMatch.test( ruleValue ) === true ) {
-                ruleValue = ruleValue.replace( this.actionRegexMatch, actionField );
-            } else {
-                ruleValue = actionField + ruleValue;
-            }
-        }
-        record.set('rule', ruleValue );
-    },
-
     editorClasstypeChange: function( me, newValue, oldValue, eOpts ){
         var vm = this.getViewModel();
         if( newValue == null || vm.get('classtypes').findExact('name', newValue) == null ){
@@ -418,7 +369,7 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RulesRecordEditorController', {
         }
         me.setValidation(true);
 
-        this.updateRule('classtype', newValue );
+        this.getView().up('grid').getController().updateRule( this.getViewModel().get('record'), 'classtype', newValue );
     },
 
     editorMsgChange: function( me, newValue, oldValue, eOpts ){
@@ -427,7 +378,7 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RulesRecordEditorController', {
             return false;
         }
         me.setValidation(true);
-        this.updateRule('msg', newValue);
+        this.getView().up('grid').getController().updateRule( this.getViewModel().get('record'), 'msg', newValue );
     },
 
     sidRegex: /\s+sid:([^;]+);/,
@@ -473,7 +424,7 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RulesRecordEditorController', {
         }
 
         me.setValidation(true);
-        this.updateRule('sid', newValue);
+        this.getView().up('grid').getController().updateRule( this.getViewModel().get('record'), 'sid', newValue );
     },
 
     editorLogChange: function( me, newValue, oldValue, eOpts ) {
@@ -482,7 +433,7 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RulesRecordEditorController', {
         if( newValue === false) {
             record.set('block', false);
         }
-        this.updateRule('log', newValue);
+        this.getView().up('grid').getController().updateRule( this.getViewModel().get('record'), 'log', newValue );
     },
 
     editorBlockChange: function( me, newValue, oldValue, eOpts ) {
@@ -491,20 +442,22 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RulesRecordEditorController', {
         if( newValue === true ){
             record.set('log', true);
         }
-        this.updateRule('block', newValue);
+        this.getView().up('grid').getController().updateRule( this.getViewModel().get('record'), 'block', newValue );
     },
 
     actionRegex: /^([#]+|)\s*(alert|log|pass|activate|dynamic|drop|sdrop|reject)/,
     editorRuleChange: function( me, newValue, oldValue, eOpts ){
+        var gridController = this.getView().up('grid').getController();
         var record = this.getViewModel().get('record');
 
         newValue = newValue.replace( /(\r\n|\n|\r)/gm, "" );
 
         var recordValue;
-        for( var i = 0; i < this.updateRuleKeys.length; i++ ){
-            key = this.updateRuleKeys[i]['key'];
-            regex = this.updateRuleKeys[i]['regex'];
-            quoted = this.updateRuleKeys[i]['quoted'];
+        var updateRuleKeys = gridController.updateRuleKeys;
+        for( var i = 0; i < updateRuleKeys.length; i++ ){
+            key = updateRuleKeys[i]['key'];
+            regex = updateRuleKeys[i]['regex'];
+            quoted = updateRuleKeys[i]['quoted'];
 
             if( regex.test( newValue ) ){
                 match = regex.exec( newValue );
@@ -518,8 +471,9 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RulesRecordEditorController', {
 
         var logValue = null;
         var blockValue = null;
+        var actionRegexMatch = gridController.actionRegexMatch;
         if( this.actionRegex.test( newValue ) === true ){
-            match = this.actionRegexMatch.exec( newValue );
+            match = actionRegexMatch.exec( newValue );
             if( match[2] == "alert" ){
                 logValue = true;
                 blockValue = false;
@@ -630,8 +584,11 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
         if( !checked){
             record.set('log', false);
             record.set('block', false );
+            this.updateRule(record, 'block', false );
+            this.updateRule(record, 'log', false );
         }else{
             record.set('log', true);
+            this.updateRule(record, 'log', true );
         }
     },
 
@@ -640,8 +597,11 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
         if(checked) {
             record.set('log', true );
             record.set('block', true);
+            this.updateRule(record, 'log', true );
+            this.updateRule(record, 'block', true );
         }else{
             record.set('block', false);
+            this.updateRule(record, 'block', false );
         }
     },
 
@@ -748,6 +708,84 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
 
     rulesReconfigure: function( me , store , columns , oldStore , oldColumns , eOpts ){
         me.getController().updateSearchStatusBar();
+    },
+
+    updateRuleKeys: [{
+        key: 'classtype',
+        regex: /\s+classtype:([^;]+);/,
+        quoted: false
+    },{
+        key: 'msg',
+        regex: /\s+msg:([^;]+);/,
+        quoted: true
+    },{
+        key: 'sid',
+        regex: /\s+sid:([^;]+);/,
+        quoted: false
+    }],
+    actionRegexMatch: /^([#]+|)(alert|log|pass|activate|dynamic|drop|sdrop|reject)/,
+    updateRule: function( record, updatedKey, updatedValue){
+        var ruleValue = record.get('rule');
+
+        // Standard field (key:value;) replacements.
+        var key;
+        var value;
+        var regex;
+        var quoted;
+        var newField;
+        for( var i = 0; i < this.updateRuleKeys.length; i++ ){
+            key = this.updateRuleKeys[i]['key'];
+            regex = this.updateRuleKeys[i]['regex'];
+            quoted = this.updateRuleKeys[i]['quoted'];
+
+            if(updatedKey == key){
+                value = updatedValue;
+            }else{
+                value = record.get(key);
+            }
+            value = (quoted ? '"' : '' ) + value + (quoted ? '"' : '' );
+
+            newField = " " + key + ":" + value + ";";
+
+            if( regex.test( ruleValue )) {
+                ruleValue = ruleValue.replace( regex, newField );
+            } else {
+                var idx = ruleValue.lastIndexOf(")");
+                if(idx != -1) {
+                    ruleValue = ruleValue.slice(0, idx-1) + newField + ruleValue.slice(idx - 1);
+                } else {
+                    ruleValue += " (" + newField + " )";
+                }
+            }
+        }
+
+        // Action replacement
+        if(updatedKey == 'log' || updatedKey == 'block'){
+            var logValue = record.get('log');
+            var blockValue = record.get('block');
+            if(updatedKey == 'log'){
+                logValue = updatedValue;
+            }
+            if(updatedKey == 'block'){
+                blockValue = updatedValue;
+            }
+
+            var actionField = "alert";
+            if( logValue === true && blockValue === true ) {
+                actionField = "drop";
+            } else if( logValue === false && blockValue === true ) {
+                actionField = "sdrop";
+            }else if( logValue === false && blockValue === false ) {
+                actionField = "#" + actionField;
+            }
+
+            if( this.actionRegexMatch.test( ruleValue ) === true ) {
+                ruleValue = ruleValue.replace( this.actionRegexMatch, actionField );
+            } else {
+                ruleValue = actionField + ruleValue;
+            }
+        }
+        record.set('rule', ruleValue );
     }
 
 });
