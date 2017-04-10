@@ -689,7 +689,7 @@ public class OpenVpnManager
         if (argList == null) return(null);
 
         for ( OpenVpnConfigItem item : argList) {
-            if (item.getOptionName().equals(findName))
+            if (item.getOptionName().toLowerCase().equals(findName.toLowerCase()))
             return(item);
         }
 
@@ -706,7 +706,7 @@ public class OpenVpnManager
 
         for ( OpenVpnConfigItem item : argList) {
             if (item.getReadOnly() == true) continue;
-            if (item.getOptionName().equals(findName))
+            if (item.getOptionName().toLowerCase().equals(findName.toLowerCase()))
             return(item);
         }
 
