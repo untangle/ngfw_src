@@ -65,16 +65,8 @@ Ext.define('Ung.cmp.RecordEditorController', {
             widget: {
                 xtype: 'container',
                 padding: '1 3',
-                // height: 80,
-                layout: {
-                    type: 'hbox',
-                    align: 'stretch'
-                }
+                layout: 'fit'
             },
-            // widget: {
-            //     xtype: 'container',
-            //     padding: '0 3'
-            // },
             onWidgetAttach: 'onWidgetAttach'
         }, {
             xtype: 'actioncolumn',
@@ -263,7 +255,7 @@ Ext.define('Ung.cmp.RecordEditorController', {
         var me = this;
         container.removeAll(true);
 
-        var condition = this.mainGrid.conditionsMap[record.get('conditionType')], i, ckItems = [];
+        var condition = this.mainGrid.conditionsMap[record.get('conditionType')], i;
 
         switch (condition.type) {
         case 'boolean':
@@ -294,10 +286,10 @@ Ext.define('Ung.cmp.RecordEditorController', {
             });
             break;
         case 'checkboxgroup':
-            // console.log(condition.values);
-            // var values_arr = (cond.value !== null && cond.value.length > 0) ? cond.value.split(',') : [], i, ckItems = [];
+            var ckItems = [];
             for (i = 0; i < condition.values.length; i += 1) {
                 ckItems.push({
+                    // name: 'ck',
                     inputValue: condition.values[i][0],
                     boxLabel: condition.values[i][1]
                 });
@@ -307,7 +299,7 @@ Ext.define('Ung.cmp.RecordEditorController', {
                 bind: {
                     value: '{record.value}'
                 },
-                columns: 4,
+                columns: 3,
                 vertical: true,
                 defaults: {
                     padding: '0 10 0 0'
@@ -316,6 +308,7 @@ Ext.define('Ung.cmp.RecordEditorController', {
             });
             break;
         case 'countryfield':
+            // container.layout = { type: 'hbox', align: 'stretch'};
             container.add({
                 xtype: 'tagfield',
                 flex: 1,
@@ -437,6 +430,64 @@ Ext.define('Ung.cmp.RecordEditorController', {
                             record.set('value', newValue.join(','));
                         } else {
                             record.set('value', '');
+                        }
+                    }
+                }
+            });
+            break;
+        case 'timefield':
+            container.add({
+                xtype: 'container',
+                layout: { type: 'hbox', align: 'middle' },
+                hoursStore: (function () {
+                    var arr = [];
+                    for (var i = 0; i <= 23; i += 1) {
+                        arr.push(i < 10 ? '0' + i : i.toString());
+                    }
+                    return arr;
+                })(),
+                minutesStore: (function () {
+                    var arr = [];
+                    for (var i = 0; i <= 59; i += 1) {
+                        arr.push(i < 10 ? '0' + i : i.toString());
+                    }
+                    return arr;
+                })(),
+                defaults: {
+                    xtype: 'combo', store: [], width: 40, editable: false, queryMode: 'local', listeners: {
+                        change: function (combo, newValue) {
+                            var view = combo.up('container'), period = '';
+                            record.set('value', view.down('#hours1').getValue() + ':' + view.down('#minutes1').getValue() + '-' + view.down('#hours2').getValue() + ':' + view.down('#minutes2').getValue());
+                        }
+                    }
+                },
+                items: [
+                    { itemId: 'hours1', },
+                    { xtype: 'component', html: ' : ', width: 'auto', margin: '0 3' },
+                    { itemId: 'minutes1' },
+                    { xtype: 'component', html: 'to'.t(), width: 'auto', margin: '0 3' },
+                    { itemId: 'hours2' },
+                    { xtype: 'component', html: ' : ', width: 'auto', margin: '0 3' },
+                    { itemId: 'minutes2' }
+                ],
+                listeners: {
+                    afterrender: function (view) {
+                        view.down('#hours1').setStore(view.hoursStore);
+                        view.down('#minutes1').setStore(view.minutesStore);
+                        view.down('#hours2').setStore(view.hoursStore);
+                        view.down('#minutes2').setStore(view.minutesStore);
+                        if (!record.get('value')) {
+                            view.down('#hours1').setValue('12');
+                            view.down('#minutes1').setValue('00');
+                            view.down('#hours2').setValue('13');
+                            view.down('#minutes2').setValue('30');
+                        } else {
+                            startTime = record.get('value').split('-')[0];
+                            endTime = record.get('value').split('-')[1];
+                            view.down('#hours1').setValue(startTime.split(':')[0]);
+                            view.down('#minutes1').setValue(startTime.split(':')[1]);
+                            view.down('#hours2').setValue(endTime.split(':')[0]);
+                            view.down('#minutes2').setValue(endTime.split(':')[1]);
                         }
                     }
                 }
