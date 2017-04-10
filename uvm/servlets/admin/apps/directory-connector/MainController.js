@@ -84,7 +84,7 @@ Ext.define('Ung.apps.directory-connector.MainController', {
             try {
                 this.rpc.radiusManager = v.appManager.getRadiusManager();
             } catch (e) {
-                Ung.Util.rpcExHandler(e);
+                Util.exceptionToast(e);
             }
         }
         return this.rpc.radiusManager;

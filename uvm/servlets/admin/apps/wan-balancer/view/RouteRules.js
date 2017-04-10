@@ -26,11 +26,12 @@ Ext.define('Ung.apps.wanbalancer.view.RouteRules', {
     ruleJavaClass: 'com.untangle.app.wan_balancer.RouteRuleCondition',
 
     conditions: [
-        Condition.dstAddr,
-        Condition.dstPort,
-        Condition.srcAddr,
-        Condition.srcIntf,
-        Condition.protocol([['TCP','TCP'],['UDP','UDP'],['ICMP','ICMP'],['GRE','GRE'],['ESP','ESP'],['AH','AH'],['SCTP','SCTP']])
+        {name:"DST_ADDR",displayName: "Destination Address".t(), type: "text", visible: true, vtype:"ipMatcher"},
+        {name:"DST_PORT",displayName: "Destination Port".t(), type: "text",vtype:"portMatcher", visible: true},
+        {name:"SRC_ADDR",displayName: "Source Address".t(), type: "text", visible: true, vtype:"ipMatcher"},
+        {name:"SRC_PORT",displayName: "Source Port".t(), type: "text",vtype:"portMatcher", visible: rpc.isExpertMode},
+        {name:"SRC_INTF",displayName: "Source Interface".t(), type: "checkgroup", values: Util.getInterfaceList(true, false), visible: true},
+        {name:"PROTOCOL",displayName: "Protocol".t(), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["any", "any".t()]], visible: true}
     ],
 
     emptyRow: {
