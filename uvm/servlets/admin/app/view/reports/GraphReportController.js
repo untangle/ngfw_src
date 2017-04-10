@@ -423,19 +423,25 @@ Ext.define('Ung.view.reports.GraphReportController', {
      * set serie fro the pie chart
      */
     setPieSeries: function () {
-        var me = this, vm = this.getViewModel(),
-            slicesData = [], restValue = 0, i;
+        var me = this, vm = this.getViewModel(), seriesName,
+            slicesData = [], restValue = 0, seriesRenderer = null, i;
 
         if (!me.data) { return; }
 
-        if (me.data.length === 0) {
-
+        if (!Ext.isEmpty(vm.get('entry.seriesRenderer'))) {
+            seriesRenderer = ColumnRenderer[vm.get('entry.seriesRenderer')];
         }
 
         for (i = 0; i < me.data.length; i += 1) {
+            if (!seriesRenderer) {
+                seriesName = me.data[i][vm.get('entry.pieGroupColumn')] !== undefined ? me.data[i][vm.get('entry.pieGroupColumn')] : 'None'.t();
+            } else {
+                seriesName = seriesRenderer(me.data[i][vm.get('entry.seriesRenderer')]);
+            }
+
             if (i < vm.get('entry.pieNumSlices')) {
                 slicesData.push({
-                    name: me.data[i][vm.get('entry.pieGroupColumn')] !== undefined ? me.data[i][vm.get('entry.pieGroupColumn')] : 'None',
+                    name: seriesName,
                     y: me.data[i].value,
                 });
             } else {

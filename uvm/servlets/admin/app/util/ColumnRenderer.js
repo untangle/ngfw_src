@@ -144,18 +144,15 @@ Ext.define('Ung.util.ColumnRenderer', {
     },
 
     policy_id: function (value) {
-        // if (Ung.Main.webuiMode) {
-        //     var name = Ung.Main.getPolicyName(value);
-        //     if (name != null) {
-        //         return name;
-        //     }
-        //     return value;
-        // }
-        // return value;
+        var policy = Ext.getStore('policiestree').findRecord('policyId', value);
+        if (policy) {
+            return policy.get('name') + '[' + value + ']';
+        }
+        return 'None'.t() + ' [0]';
     },
 
     protocol: function (value) {
-        return value ? this.protocolsMap[value] || value.toString() : '';
+        return value ? ColumnRenderer.protocolsMap[value] || value.toString() : '';
     },
     protocolStore: function () {
         var store = [];
