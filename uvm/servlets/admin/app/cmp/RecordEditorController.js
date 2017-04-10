@@ -347,6 +347,101 @@ Ext.define('Ung.cmp.RecordEditorController', {
                     }
                 }
             });
+            break;
+        case 'userfield':
+            container.add({
+                xtype: 'tagfield',
+                flex: 1,
+                emptyText: 'Select a user or specify a custom value ...',
+                store: { data: [] },
+                filterPickList: true,
+                forceSelection: false,
+                // typeAhead: true,
+                queryMode: 'local',
+                selectOnFocus: false,
+                // anyMatch: true,
+                createNewOnEnter: true,
+                createNewOnBlur: true,
+                // value: record.get('value'),
+                displayField: 'uid',
+                valueField: 'uid',
+                listConfig: {
+                    itemTpl: ['<div>{uid}</div>']
+                },
+                listeners: {
+                    afterrender: function (field) {
+                        var app, data = [];
+                        try {
+                            app = rpc.appManager.app('directory-connector');
+                        } catch (e) {
+                            Util.exceptionToast(e);
+                        }
+                        if (app) {
+                            data = app.getUserEntries().list;
+                        } else {
+                            data.push({ firstName: '', lastName: null, uid: '[any]', displayName: 'Any User'});
+                            data.push({ firstName: '', lastName: null, uid: '[authenticated]', displayName: 'Any Authenticated User'});
+                            data.push({ firstName: '', lastName: null, uid: '[unauthenticated]', displayName: 'Any Unauthenticated/Unidentified User'});
+                        }
+                        field.getStore().loadData(data);
+                        field.setValue(record.get('value'));
+                    },
+                    change: function (field, newValue) {
+                        if (newValue.length > 0) {
+                            record.set('value', newValue.join(','));
+                        } else {
+                            record.set('value', '');
+                        }
+                    }
+                }
+            });
+            break;
+        case 'directorygroupfield':
+            container.add({
+                xtype: 'tagfield',
+                flex: 1,
+                emptyText: 'Select a group or specify a custom value ...',
+                store: { data: [] },
+                filterPickList: true,
+                forceSelection: false,
+                // typeAhead: true,
+                queryMode: 'local',
+                selectOnFocus: false,
+                // anyMatch: true,
+                createNewOnEnter: true,
+                createNewOnBlur: true,
+                // value: record.get('value'),
+                displayField: 'displayName',
+                valueField: 'SAMAccountName',
+                listConfig: {
+                    itemTpl: ['<div>{displayName} <strong>[{SAMAccountName}]</strong></div>']
+                },
+                listeners: {
+                    afterrender: function (field) {
+                        var app, data = [];
+                        try {
+                            app = rpc.appManager.app('directory-connector');
+                        } catch (e) {
+                            Util.exceptionToast(e);
+                        }
+                        if (app) {
+                            data = app.getGroupEntries().list;
+                        } else {
+                            data.push({ SAMAccountName: '*', displayName: 'Any Group'});
+                        }
+                        field.getStore().loadData(data);
+                        field.setValue(record.get('value'));
+                    },
+                    change: function (field, newValue) {
+                        if (newValue.length > 0) {
+                            record.set('value', newValue.join(','));
+                        } else {
+                            record.set('value', '');
+                        }
+                    }
+                }
+            });
+            break;
         }
     },
 

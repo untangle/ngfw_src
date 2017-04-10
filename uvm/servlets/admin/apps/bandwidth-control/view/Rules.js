@@ -154,7 +154,7 @@ Ext.define('Ung.apps.bandwidthcontrol.view.Rules', {
         {name:"SRC_INTF",displayName: "Source Interface".t(), type: "checkboxgroup", values: Util.getInterfaceList(true, false), visible: true},
         {name:"PROTOCOL",displayName: "Protocol".t(), type: "checkboxgroup", values: [["TCP","TCP"],["UDP","UDP"],["any","any".t()]], visible: true},
         {name:"TAGGED",displayName: "Tagged".t(), type: "textfield", visible: true},
-        // {name:"USERNAME",displayName: "Username".t(), type: "editor", editor: Ext.create('Ung.UserEditorWindow',{}), visible: true},
+        {name:"USERNAME",displayName: "Username".t(), type: "userfield", visible: true},
         {name:"HOST_HOSTNAME",displayName: "Host Hostname".t(), type: "textfield", visible: true},
         {name:"CLIENT_HOSTNAME",displayName: "Client Hostname".t(), type: "textfield", visible: rpc.isExpertMode},
         {name:"SERVER_HOSTNAME",displayName: "Server Hostname".t(), type: "textfield", visible: rpc.isExpertMode},
@@ -200,10 +200,10 @@ Ext.define('Ung.apps.bandwidthcontrol.view.Rules', {
         {name:"WEB_FILTER_CATEGORY",displayName: "Web Filter: Category".t(), type: "textfield", visible: true},
         {name:"WEB_FILTER_CATEGORY_DESCRIPTION",displayName: "Web Filter: Category Description".t(), type: "textfield", visible: true},
         {name:"WEB_FILTER_FLAGGED",displayName: "Web Filter: Website is Flagged".t(), type: "boolean", visible: true},
-        // {name:"DIRECTORY_CONNECTOR_GROUP",displayName: "Directory Connector: User in Group".t(), type: "editor", editor: Ext.create('Ung.GroupEditorWindow',{}), visible: true},
-        // {name:"REMOTE_HOST_COUNTRY",displayName: "Client Country".t(), type: "editor", editor: Ext.create('Ung.CountryEditorWindow',{}), visible: true},
-        // {name:"CLIENT_COUNTRY",displayName: "Client Country".t(), type: "editor", editor: Ext.create('Ung.CountryEditorWindow',{}), visible: rpc.isExpertMode},
-        // {name:"SERVER_COUNTRY",displayName: "Server Country".t(), type: "editor", editor: Ext.create('Ung.CountryEditorWindow',{}), visible: rpc.isExpertMode}
+        {name:"DIRECTORY_CONNECTOR_GROUP",displayName: 'Directory Connector: User in Group'.t(), type: 'directorygroupfield', visible: true},
+        {name:"REMOTE_HOST_COUNTRY",displayName: 'Client Country'.t(), type: 'countryfield', visible: true},
+        {name:"CLIENT_COUNTRY",displayName: 'Client Country'.t(), type: 'countryfield', visible: true},
+        {name:"SERVER_COUNTRY",displayName: 'Server Country'.t(), type: 'countryfield', visible: true}
     ],
 
 });
