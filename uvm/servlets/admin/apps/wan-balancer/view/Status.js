@@ -19,6 +19,11 @@ Ext.define('Ung.apps.wanbalancer.view.Status', {
         }, {
             xtype: 'appstate',
         }, {
+            xtype: 'button',
+            text: 'Configure additional WAN interfaces'.t(),
+            iconCls: 'fa fa-cogs',
+            handler: function() { Ung.app.redirectTo('#config/network'); }
+        }, {
             xtype: 'appreports'
         }]
     }, {
