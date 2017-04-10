@@ -40,12 +40,12 @@ public class OpenVpnManager
     private static final String GENERATE_EXE_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/openvpn-generate-client-exec";
     private static final String GENERATE_ONC_SCRIPT = System.getProperty( "uvm.bin.dir" ) + "/openvpn-generate-client-onc";
     private static final String IPTABLES_SCRIPT = "/etc/untangle-netd/iptables-rules.d/720-openvpn";
-    
+
     private static final String OPENVPN_CONF_DIR      = "/etc/openvpn";
     private static final String OPENVPN_SERVER_FILE   = OPENVPN_CONF_DIR + "/server.conf";
     private static final String OPENVPN_CCD_DIR       = OPENVPN_CONF_DIR + "/ccd";
 
-    private static final String CLIENT_CONF_FILE_DIR  = "/tmp/openvpn/client-packages/"; 
+    private static final String CLIENT_CONF_FILE_DIR  = "/tmp/openvpn/client-packages/";
     private static final String CLIENT_CONF_FILE_BASE = CLIENT_CONF_FILE_DIR + "/client-";
 
     private static final String WIN_EXTENSION          = "ovpn";
@@ -87,7 +87,7 @@ public class OpenVpnManager
 
         if ( result.getResult() != 0 )
             logger.error("Failed to stop OpenVPN daemon (return code: " + result.getResult() + ")");
-        
+
         insertIptablesRules(); // remove since openvpn is not running
     }
 
@@ -163,7 +163,7 @@ public class OpenVpnManager
         /* Strip off the port, (This guarantees if they set it to a hostname the value will be correct) */
         publicAddress = publicAddress.split( ":" )[0];
         publicAddress = publicAddress.trim();
-        
+
         cmdStr = GENERATE_ONC_SCRIPT + " " + "\"" + client.getName() + "\"" + " " + "\"" + settings.getSiteName() + "\"" + " " + "\"" + publicAddress + "\"";
         logger.debug( "Executing: " + cmdStr );
         result = UvmContextFactory.context().execManager().exec(cmdStr);
@@ -183,6 +183,9 @@ public class OpenVpnManager
         StringBuilder sb = new StringBuilder();
 
         for ( OpenVpnConfigItem item : settings.getServerConfiguration()) {
+            // ignore any default global config item when there is a custom global config item with the same option name
+            if (findCustomConfigItem(settings.getServerConfiguration(), item.getOptionName()) != null) continue;
+
             if (item.getConfigString() != null) sb.append( item.getConfigString() + "\n" );
         }
 
@@ -192,7 +195,7 @@ public class OpenVpnManager
 
         if ( settings.getClientToClient() )
             sb.append( "client-to-client" + "\n");
-        
+
         sb.append( "server" + " " +  settings.getAddressSpace().getMaskedAddress().getHostAddress() + " " + settings.getAddressSpace().getNetmask().getHostAddress() + "\n");
 
         /* Allow management from localhost */
@@ -236,7 +239,7 @@ public class OpenVpnManager
 
         sb.append("\n");
     }
-    
+
     /**
      * Write a client configuration file (unix or windows)
      */
@@ -249,22 +252,25 @@ public class OpenVpnManager
 
         /*
          * Insert all of the default parameters that have not been customized
-         * for the argumented client or the assigned group. 
+         * globally, or for the argumented client or the assigned group.
          */
         for ( OpenVpnConfigItem item : settings.getClientConfiguration()) {
+            // ignore any default global config item when there is a custom global config item with the same option name
+            if (findCustomConfigItem(settings.getClientConfiguration(), item.getOptionName()) != null) continue;
+
             // ignore global config items that exist in the client group config
-            if (findConfigItem(group.getGroupConfigItems(), item.getOptionName()) != null) continue;
-            
-            // ignore global config items that exist in the client config
-            if (findConfigItem(client.getClientConfigItems(), item.getOptionName()) != null) continue;
-            
+            if (findAnyConfigItem(group.getGroupConfigItems(), item.getOptionName()) != null) continue;
+
+            // ignore global config items that exist in the unique client config
+            if (findAnyConfigItem(client.getClientConfigItems(), item.getOptionName()) != null) continue;
+
             if (item.getConfigString() != null) sb.append( item.getConfigString() + "\n" );
         }
 
         /* Add any custom config items for the argumented client group */
         for ( OpenVpnConfigItem item : group.getGroupConfigItems()) {
             // ignore group config items that exist in the client config
-            if (findConfigItem(client.getClientConfigItems(), item.getOptionName()) != null) continue;
+            if (findAnyConfigItem(client.getClientConfigItems(), item.getOptionName()) != null) continue;
 
             if (item.getConfigString() != null) sb.append( item.getConfigString() + "\n" );
         }
@@ -304,7 +310,7 @@ public class OpenVpnManager
             if ( interfaceSettings.getIsWan() && interfaceSettings.getV4ConfigType() == InterfaceSettings.V4ConfigType.STATIC )
                 sb.append( "remote" + " " + interfaceSettings.getV4StaticAddress().getHostAddress() + " " + settings.getPort() + " # static WAN " + interfaceSettings.getInterfaceId() + "\n");
         }
-        
+
         File dir = new File( CLIENT_CONF_FILE_DIR );
         if ( ! dir.exists() )
             dir.mkdirs();
@@ -317,7 +323,7 @@ public class OpenVpnManager
         for ( OpenVpnRemoteClient client : settings.getRemoteClients() ) {
             OpenVpnGroup group = getGroup( settings, client.getGroupId() );
 
-            if ( !client.getEnabled() || ( group == null ) ) 
+            if ( !client.getEnabled() || ( group == null ) )
                 continue;
 
             String name = client.getName();
@@ -349,7 +355,7 @@ public class OpenVpnManager
                         sb.append( "push" + " " + "\"dhcp-option DNS " + dns2.getHostAddress() + "\"" + "\n");
                 }
                 String dnsDomain = group.getPushDnsDomain();
-                if ( dnsDomain != null && !"".equals(dnsDomain.trim()) ) 
+                if ( dnsDomain != null && !"".equals(dnsDomain.trim()) )
                     sb.append( "push" + " " + "\"dhcp-option DOMAIN " + dnsDomain + "\"" + "\n");
             }
 
@@ -363,7 +369,7 @@ public class OpenVpnManager
                     }
                 }
             }
-            
+
             writeFile( OPENVPN_CCD_DIR + "/" + name, sb );
         }
     }
@@ -371,7 +377,7 @@ public class OpenVpnManager
     private void deleteFiles( )
     {
         /**
-         * Delete the old server files 
+         * Delete the old server files
          * This is so that when we disable clients/servers the files will be removed.
          * Any enabled clients/servers will have their conf files re-written after this
          */
@@ -411,10 +417,10 @@ public class OpenVpnManager
             logger.error( "Unable to delete the previous client configuration files." );
         }
     }
-    
+
     private void writeRemoteServerFiles( OpenVpnSettings settings )
     {
-        
+
         /**
          * Copy the config file for all enabled remote servers
          */
@@ -439,7 +445,7 @@ public class OpenVpnManager
          */
         UvmContextFactory.context().execManager().exec( "cp -rf " + System.getProperty("uvm.settings.dir") + "/openvpn/remote-servers/untangle-vpn /etc/openvpn/" );
     }
-    
+
     private void writePushRoute( StringBuilder sb, InetAddress address, InetAddress netmask )
     {
         if ( address == null ) {
@@ -469,7 +475,7 @@ public class OpenVpnManager
     {
         writeRoute( sb, "route", address, netmask );
     }
-    
+
     private void writeRoute( StringBuilder sb, String type, InetAddress address, InetAddress netmask )
     {
         if ( address == null ) {
@@ -503,7 +509,7 @@ public class OpenVpnManager
         } catch ( UnknownHostException e ) {
             logger.error( "getByAddress failed: " + data.length + " bytes", e );
         }
-        return null;        
+        return null;
     }
 
     /**
@@ -519,7 +525,7 @@ public class OpenVpnManager
         } catch ( UnknownHostException e ) {
             logger.error( "getByAddress failed: " + data.length + " bytes", e );
         }
-        return null;        
+        return null;
     }
 
     private void writeFile( String fileName, StringBuilder sb )
@@ -547,7 +553,7 @@ public class OpenVpnManager
     {
         if ( settings.getGroups() == null )
             return null;
-        
+
         for ( OpenVpnGroup group : settings.getGroups() ) {
             if ( group.getGroupId() == groupId )
                 return group;
@@ -563,7 +569,7 @@ public class OpenVpnManager
             if ( server.getEnabled() )
                 maxNumTunDevices++;
         }
-        
+
         try {
             logger.info( "Writing File: " + IPTABLES_SCRIPT );
 
@@ -582,7 +588,7 @@ public class OpenVpnManager
 
             iptablesScript.write("ADDR=\"`ip addr show tun0 2>/dev/null| awk '/^ *inet.*scope global/ { interface = $2 ; sub( \"/.*\", \"\", interface ) ; print interface ; exit }'`\"" + "\n");
             iptablesScript.write("\n");
-            
+
             iptablesScript.write("# delete old mark rules (if they exist) (tun0-tun10) " + "\n");
             iptablesScript.write("for i in `seq 0 " + (maxNumTunDevices + 10 ) + "` ; do" + "\n");
             iptablesScript.write("    ${IPTABLES} -t mangle -D mark-src-intf -i tun$i -j MARK --set-mark 0xfa/0xff -m comment --comment \"Set src interface mark for openvpn\" >/dev/null 2>&1" + "\n");
@@ -611,7 +617,7 @@ public class OpenVpnManager
             iptablesScript.write("# delete old nat-reverse-filter rule" + "\n");
             iptablesScript.write("${IPTABLES} -t filter -D nat-reverse-filter -m mark --mark 0xfa/0xff -j RETURN -m comment --comment \"Allow OpenVPN\" >/dev/null 2>&1 \n");
             iptablesScript.write("\n");
-            
+
             iptablesScript.write("# mark traffic to/from openvpn interface" + "\n");
             iptablesScript.write("for i in `seq 0 " + (maxNumTunDevices-1) + "` ; do" + "\n");
             iptablesScript.write("    ${IPTABLES} -t mangle -I mark-src-intf 3 -i tun$i -j MARK --set-mark 0xfa/0xff -m comment --comment \"Set src interface mark for openvpn\"" + "\n");
@@ -629,7 +635,7 @@ public class OpenVpnManager
             iptablesScript.write("# insert nat-reverse-filter rule to allow openvpn to penetrate NATd networks " + "\n");
             iptablesScript.write("${IPTABLES} -t filter -I nat-reverse-filter -m mark --mark 0xfa/0xff -j RETURN -m comment --comment \"Allow OpenVPN\" \n");
             iptablesScript.write("\n");
-            
+
             if ( settings.getServerEnabled() && settings.getNatOpenVpnTraffic() ) {
                 iptablesScript.write("# NAT traffic from the server openvpn interface" + "\n");
                 iptablesScript.write("${IPTABLES} -t nat -I nat-rules -m mark --mark 0xfa/0xff -j MASQUERADE -m comment --comment \"NAT openvpn traffic to the server\"" + "\n");
@@ -643,7 +649,6 @@ public class OpenVpnManager
                 }
             }
 
-            
             iptablesScript.close();
 
             UvmContextFactory.context().execManager().execResult( "chmod 755 " + IPTABLES_SCRIPT );
@@ -677,13 +682,30 @@ public class OpenVpnManager
     }
 
     /**
-     * Searches a linked list of configuration items for a specific item 
+     * Searches a linked list of configuration items for a specific item.
      */
-    private OpenVpnConfigItem findConfigItem(LinkedList<OpenVpnConfigItem> argList, String findName)
+    private OpenVpnConfigItem findAnyConfigItem(LinkedList<OpenVpnConfigItem> argList, String findName)
     {
         if (argList == null) return(null);
 
         for ( OpenVpnConfigItem item : argList) {
+            if (item.getOptionName().equals(findName))
+            return(item);
+        }
+
+        return(null);
+    }
+
+    /**
+     * Searches a linked list of configuration items for a specific item that
+     * is not read only and thus was added by the end user.
+     */
+    private OpenVpnConfigItem findCustomConfigItem(LinkedList<OpenVpnConfigItem> argList, String findName)
+    {
+        if (argList == null) return(null);
+
+        for ( OpenVpnConfigItem item : argList) {
+            if (item.getReadOnly() == true) continue;
             if (item.getOptionName().equals(findName))
             return(item);
         }
