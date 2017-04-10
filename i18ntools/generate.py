@@ -67,6 +67,13 @@ def get_keys(module):
                     process_json_file = False
 
             if process_json_file == False:
+                # FIXME
+                # FIXME
+                # We need to update this key
+                # we now use "foo".t()
+                # instead of i18n._("foo")
+                # FIXME
+                # FIXME
                 call([
                     "xgettext",
                     "-j",
