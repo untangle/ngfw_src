@@ -14,8 +14,7 @@
         "title"
     ],
 	"modules": [
-        "untangle-libuvm",
-        "untangle-apache2-config",
+        "uvm",
         "smtp-casing",
         "http-casing",
         "ftp-casing",
