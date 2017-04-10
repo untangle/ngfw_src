@@ -21,6 +21,9 @@ Ext.define('Ung.apps.sslinspector.view.Status', {
         }, {
             xtype: 'appstate',
         }, {
+            xtype: 'component',
+            bind: { html: '{serverCertificateVerification}' }
+        }, {
             xtype: 'appreports'
         }]
     }, {
@@ -34,13 +37,6 @@ Ext.define('Ung.apps.sslinspector.view.Status', {
         //     type: 'hbox'
         // },
         items: [{
-            region: 'north',
-            height: 150,
-            resizable: false,
-            bind: {
-                html: '{serverCertificateVerification}'
-            }
-        }, {
             xtype: 'appsessions',
             region: 'center',
             height: 200
