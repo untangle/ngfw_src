@@ -101,6 +101,19 @@ Ext.define('Ung.cmp.GridController', {
             case 'WEB_FILTER_FLAGGED':
                 valueRenderer.push('true'.t());
                 break;
+            case 'DAY_OF_WEEK':
+                conds[i].value.toString().split(',').forEach(function (day) {
+                    valueRenderer.push(Util.weekdaysMap[day]);
+                });
+                break;
+            // case 'CLIENT_COUNTRY':
+            // case 'SERVER_COUNTRY':
+            // case 'REMOTE_HOST_COUNTRY':
+            //     conds[i].value.toString().split(',').forEach(function (code) {
+            //         var country = Ext.getStore('countries').findRecord('code', code);
+            //         valueRenderer.push(country ? country.get('name') : code);
+            //     });
+            //     break;
             default:
                 valueRenderer = conds[i].value.toString().split(',');
             }

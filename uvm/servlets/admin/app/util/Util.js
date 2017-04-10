@@ -416,6 +416,16 @@ Ext.define('Ung.util.Util', {
             rpc.about = query;
         }
         return rpc.about;
+    },
+
+    weekdaysMap: {
+        '1': 'Sunday'.t(),
+        '2': 'Monday'.t(),
+        '3': 'Tuesday'.t(),
+        '4': 'Wednesday'.t(),
+        '5': 'Thursday'.t(),
+        '6': 'Friday'.t(),
+        '7': 'Saturday'.t()
     }
 
 });
