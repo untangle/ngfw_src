@@ -6,12 +6,16 @@ package com.untangle.uvm;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.event.EventSettings;
 
+import org.json.JSONObject;
+
 /**
  * The API for interacting/viewing/editing events
  */
 public interface EventManager
 {
     public EventSettings getSettings();
+
+    public JSONObject getClassFields();
 
     public void setSettings( EventSettings newSettings );
 
