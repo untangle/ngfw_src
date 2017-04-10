@@ -272,7 +272,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
                 vm.set('rulesStoreLoad', true);
                 vm.set('variablesStoreLoad', true);
                 if( !r.success) {
-                    Ext.MessageBox.alert(i18n._("Error"), i18n._("Unable to save settings"));
+                    Ext.MessageBox.alert("Error".t(), "Unable to save settings".t());
                 } else {
                     v.setLoading(false);
                     Util.successToast('Settings saved...');
@@ -280,7 +280,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
                 }
             },
             failure: function(response){
-                Ext.MessageBox.alert(i18n._("Error"), i18n._("Unable to save settings"));
+                Ext.MessageBox.alert("Error".t(), "Unable to save settings".t());
                 v.setLoading(false);
                 Util.successToast('Unable to save settings...');
             }
