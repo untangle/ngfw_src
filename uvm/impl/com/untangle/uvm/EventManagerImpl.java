@@ -22,6 +22,10 @@ import com.untangle.uvm.AdminManager;
 import com.untangle.uvm.AdminSettings;
 import com.untangle.uvm.AdminUserSettings;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Iterator;
 import java.util.List;
@@ -29,6 +33,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.log4j.Logger;
+import org.apache.commons.io.IOUtils;
 
 import org.json.JSONObject;
 
@@ -39,6 +44,7 @@ public class EventManagerImpl implements EventManager
     private static EventManagerImpl instance = null;
 
     private final String settingsFilename = System.getProperty("uvm.settings.dir") + "/untangle-vm/" + "events.js";
+    private final String classesFilename = System.getProperty("uvm.lib.dir") + "/untangle-vm/events/" + "classFields.json";
 
     private EventWriter eventWriter = new EventWriter();
 
@@ -129,6 +135,22 @@ public class EventManagerImpl implements EventManager
     public EventSettings getSettings()
     {
         return this.settings;
+    }
+
+    public JSONObject getClassFields()
+    {
+        JSONObject classFields = null;
+        File f = new File(classesFilename);
+        if(f.exists()){
+            try{
+                InputStream is = new FileInputStream( classesFilename );
+                String jsonTxt = IOUtils.toString(is);
+                classFields = new JSONObject(jsonTxt);
+            }catch(Exception e){
+                logger.warn( "Unable to load event classes:", e);
+            }
+        }
+        return classFields;
     }
 
     private EventSettings defaultSettings()
