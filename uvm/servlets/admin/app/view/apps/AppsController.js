@@ -121,6 +121,7 @@ Ext.define('Ung.view.apps.AppsController', {
                     displayName: app.displayName,
                     route: app.type === 'FILTER' ? '#apps/' + policy.policyId + '/' + app.name : '#service/' + app.name,
                     type: app.type,
+                    hasPowerButton: app.hasPowerButton,
                     viewPosition: app.viewPosition,
                     status: null,
                 };
