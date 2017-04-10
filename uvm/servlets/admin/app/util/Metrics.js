@@ -22,13 +22,12 @@ Ext.define('Ung.util.Metrics', {
 
     run: function () {
         var data = [];
-        rpc.metricManager.getMetricsAndStats(Ext.bind(function(result, exception) {
-            if (exception) { console.log(exception); }
+        rpc.metricManager.getMetricsAndStats(Ext.bind(function(result, ex) {
+            if (ex) { Util.exceptionToast(ex); return; }
 
             data = [];
 
             Ext.getStore('stats').loadRawData(result.systemStats);
-            // console.log(result.systemStats);
 
             for (var appId in result.metrics) {
                 if (result.metrics.hasOwnProperty(appId)) {
@@ -40,8 +39,6 @@ Ext.define('Ung.util.Metrics', {
             }
 
             Ext.getStore('metrics').loadData(data);
-
-            //Ext.getStore('metrics').loadData([result.metrics]);
         }));
     }
 
