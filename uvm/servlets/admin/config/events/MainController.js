@@ -2839,6 +2839,9 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
                             field.values.forEach( function(value){
                                 enumValues.push([ value ]);
                             });
+                            if(!record.get('fieldValue')){
+                                record.set('fieldValue', enumValues[0]);
+                            }
                         }else{
                             type = field.type;
                         }
@@ -2852,13 +2855,11 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
             case 'enum':
                 container.add({
                     xtype: 'combo',
-                    editable: false,
+                    editable: true,
                     queryMode: 'local',
                     bind: '{record.fieldValue}',
                     valueField: 'name',
                     displayField: 'name',
-                    forceSelection: true,
-                    // store: enumStore
                     store: {
                         fields: [ 'name' ],
                         sorters: [{
