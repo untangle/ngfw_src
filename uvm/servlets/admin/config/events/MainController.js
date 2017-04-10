@@ -2411,25 +2411,11 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
         },
         columns: [{
             header: 'Field'.t(),
-            name: 'field',
-            xtype: 'widgetcolumn',
             menuDisabled: true,
+            dataIndex: 'field',
             align: 'right',
-            width: 150,
-            // renderer: 'conditionRenderer'
-            widget: {
-                xtype: 'combo',
-                editable: false,
-                queryMode: 'local',
-                bind: '{record.field}',
-                valueField: 'name',
-                displayField: 'name',
-                forceSelection: true,
-                listConfig:   {
-                    itemTpl: '<div data-qtip="{description}">{name}</div>'
-                },
-            },
-            onWidgetAttach: 'fieldWidgetAttach'
+            width: 200,
+            renderer: 'fieldRenderer'
         }, {
             header: 'Comparator'.t(),
             xtype: 'widgetcolumn',
@@ -2750,43 +2736,19 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
 
     },
 
-    classFieldStores: {},
-    buildClassFieldStore: function( className ){
-
-        if( !(className in this.classFieldStores) ){
-            var vm = this.getViewModel();
-
-            var fields = [];
-            var conditions = vm.get('conditions');
-            for( var conditionsClassName in  conditions ){
-                if( conditionsClassName == className ){
-                    conditions[className].fields.forEach( function(field){
-                        if(field.name == 'class' || field.name == 'timeStamp'){
-                            return;
-                        }
-                        fields.push( [field.name, field.description] ) ;
-                    });
-                }
-            }
-
-            this.classFieldStores[className] = Ext.create('Ext.data.ArrayStore', {
-                fields: [ 'name', 'description' ],
-                sorters: [{
-                    property: 'name',
-                    direction: 'ASC'
-                }],
-                data: fields
-            });
-        }
-        return this.classFieldStores[className];
-    },
-
     /*
      * Change the store for the widget to the appropriate class fieldset
      */
     fieldWidgetAttach: function (column, container, record) {
         var vm = this.getViewModel();
         container.setStore( this.buildClassFieldStore( vm.get('record').get('class') ) );
+    },
+
+    /**
+     * Renders the condition name in the grid
+     */
+    fieldRenderer: function (value) {
+        return '<strong>' + value + ':</strong>';
     },
 
     comparatorFieldStores: {},
@@ -2827,12 +2789,12 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
                     fields.push([ '!=', 'Does not equal (!=)'.t() ]);
             }
 
-            this.classFieldStores[storeName] = Ext.create('Ext.data.ArrayStore', {
+            this.comparatorFieldStores[storeName] = Ext.create('Ext.data.ArrayStore', {
                 fields: [ 'name', 'description' ],
                 data: fields
             });
         }
-        return this.classFieldStores[storeName];
+        return this.comparatorFieldStores[storeName];
     },
     comparatorWidgetAttach: function (column, container, record) {
         var vm = this.getViewModel();
