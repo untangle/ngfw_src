@@ -5,7 +5,8 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
 
     viewModel: {
         stores: {
-            rules: { 
+            rules: {
+                storeId: 'rulesStore',
                 fields: [{
                     name: 'sid',
                     sortType: 'asInt'
@@ -32,8 +33,12 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
                     property: 'sid',
                     direction: 'ASC'
                 }],
+                listeners:{
+                    datachanged: 'storedatachanged'
+                }
             },
             variables: { 
+                storeId: 'variablesStore',
                 fields: [{
                     name: 'variable',
                 },{
@@ -46,6 +51,9 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
                     property: 'variable',
                     direction: 'ASC'
                 }],
+                listeners:{
+                    datachanged: 'storedatachanged'
+                }
             }
         }
     },
