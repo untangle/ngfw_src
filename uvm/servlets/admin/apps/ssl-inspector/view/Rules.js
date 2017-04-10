@@ -84,7 +84,7 @@ Ext.define('Ung.apps.sslinspector.view.Rules', {
         { name: 'SRC_PORT', displayName: 'Source Port'.t(), type: 'textfield', vtype: 'portMatcher', visible: rpc.isExpertMode },
         { name: 'SRC_INTF', displayName: 'Source Interface'.t(), type: 'checkboxgroup', values: Util.getInterfaceList(true, false), visible: true },
         { name: 'PROTOCOL', displayName: 'Protocol'.t(), type: 'checkboxgroup', values: [['TCP', 'TCP'],['UDP', 'UDP'],['any', 'any'.t()]], visible: true},
-        // { name: 'USERNAME', displayName: 'Username'.t(), type: 'editor', editor: Ext.create('Ung.UserEditorWindow',{}), visible: true},
+        { name: 'USERNAME', displayName: 'Username'.t(), type: 'userfield', visible: true},
         { name: 'CLIENT_HOSTNAME', displayName: 'Client Hostname'.t(), type: 'textfield', visible: true },
         { name: 'SERVER_HOSTNAME', displayName: 'Server Hostname'.t(), type: 'textfield', visible: true },
         { name: 'SRC_MAC', displayName: 'Client MAC Address'.t(), type: 'textfield', visible: true },
@@ -101,12 +101,12 @@ Ext.define('Ung.apps.sslinspector.view.Rules', {
         { name: 'SERVER_QUOTA_ATTAINMENT', displayName: 'Server Quota Attainment'.t(), type: 'textfield', visible: rpc.isExpertMode },
         { name: 'HTTP_USER_AGENT', displayName: 'HTTP: Client User Agent'.t(), type: 'textfield', visible: true },
         { name: 'HTTP_USER_AGENT_OS', displayName: 'HTTP: Client User OS'.t(), type: 'textfield', visible: false },
-        // { name: 'DIRECTORY_CONNECTOR_GROUP', displayName: 'Directory Connector: User in Group'.t(), type: 'editor', editor: Ext.create('Ung.GroupEditorWindow',{}), visible: true},
+        { name: 'DIRECTORY_CONNECTOR_GROUP', displayName: 'Directory Connector: User in Group'.t(), type: 'directorygroupfield', visible: true},
         { name: 'SSL_INSPECTOR_SNI_HOSTNAME', displayName: 'SSL: SNI Host Name'.t(), type: 'textfield', visible: true },
         { name: 'SSL_INSPECTOR_SUBJECT_DN', displayName: 'SSL: Certificate Subject'.t(), type: 'textfield', visible: true },
         { name: 'SSL_INSPECTOR_ISSUER_DN', displayName: 'SSL: Certificate Issuer'.t(), type: 'textfield', visible: true },
-        // { name: 'CLIENT_COUNTRY', displayName: 'Client Country'.t(), type: 'editor', editor: Ext.create('Ung.CountryEditorWindow',{}), visible: true},
-        // { name: 'SERVER_COUNTRY', displayName: 'Server Country'.t(), type: 'editor', editor: Ext.create('Ung.CountryEditorWindow',{}), visible: true}
+        { name: 'CLIENT_COUNTRY', displayName: 'Client Country'.t(), type: 'countryfield', visible: true},
+        { name: 'SERVER_COUNTRY', displayName: 'Server Country'.t(), type: 'countryfield', visible: true}
     ],
 
 
