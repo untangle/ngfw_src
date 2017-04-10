@@ -524,14 +524,14 @@ Ext.define('Ung.view.reports.Entry', {
                     hidden: true,
                     bind: { hidden: '{!isTimeGraphDynamic}' }
                 }, {
-                    // TIME_GRAPH, TIME_GRAPH_DYNAMIC
+                    // GRAPH ENTRY
                     xtype: 'textfield',
                     anchor: '100%',
                     fieldLabel: 'Series Renderer'.t(),
                     hidden: true,
                     bind: {
                         value: '{entry.seriesRenderer}',
-                        hidden: '{!(isTimeGraph || isTimeGraphDynamic)}'
+                        hidden: '{!isGraphEntry}'
                     }
                 }, {
                     // PIE_GRAPH only
