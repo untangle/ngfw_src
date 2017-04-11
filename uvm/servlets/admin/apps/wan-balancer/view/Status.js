@@ -19,6 +19,8 @@ Ext.define('Ung.apps.wanbalancer.view.Status', {
         }, {
             xtype: 'appstate',
         }, {
+            xtype: 'app-wan-balancer-allocation',
+        }, {
             xtype: 'button',
             text: 'Configure additional WAN interfaces'.t(),
             iconCls: 'fa fa-cogs',
@@ -40,5 +42,24 @@ Ext.define('Ung.apps.wanbalancer.view.Status', {
             xtype: 'appremove',
             width: '100%'
         }]
+    }]
+});
+
+Ext.define('Ung.apps.wanbalancer.view.Allocation', {
+    extend: 'Ext.panel.Panel',
+    alias: 'widget.app-wan-balancer-allocation',
+    itemId: 'Allocation',
+    title: 'Current Traffic Allocation'.t(),
+    padding: '0 0 20 0',
+    border: false,
+
+    items: [{
+        xtype: 'component',
+        html: 'Currently, WAN Balancer is attempting to share traffic over the existing WAN interfaces with the ratio displayed below. To change this ratio click on Traffic Allocation.'.t(),
+        margin: '0 0 15 0'
+    }, {
+        xtype: 'component',
+        padding: '10 0 10 0',
+        bind: { html: '{trafficAllocation}' }
     }]
 });

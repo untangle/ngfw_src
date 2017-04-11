@@ -35,18 +35,19 @@ Ext.define('Ung.apps.wanbalancer.view.WeightGrid', {
     alias: 'widget.app-wan-balancer-weight-grid',
     itemId: 'weight-grid',
     title: 'Interface Weights'.t(),
-
-//    listProperty: null,
-//    bind: null,
+    bind: '{interfaceWeightList}',
 
     columns: [{
         header: 'Interface'.t(),
+        dataIndex: 'name',
         width: 150,
     }, {
         header: 'Weight'.t(),
+        dataIndex: 'weight',
         width: 120,
     }, {
         header: 'Resulting Traffic Allocation'.t(),
+        dataIndex: 'description',
         width: 150,
         flex: 1
     }]

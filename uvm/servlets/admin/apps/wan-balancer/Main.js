@@ -4,9 +4,18 @@ Ext.define('Ung.apps.wanbalancer.Main', {
     controller: 'app-wan-balancer',
 
     viewModel: {
+
+        data: {
+            autoRefresh: false,
+            interfaceWeightData: []
+        },
+
         stores: {
             routeRules: {
                 data: '{settings.routeRules.list}'
+            },
+            interfaceWeightList: {
+                data: '{interfaceWeightData}'
             }
         }
     },

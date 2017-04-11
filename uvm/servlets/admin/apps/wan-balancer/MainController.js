@@ -9,11 +9,12 @@ Ext.define('Ung.apps.wanbalancer.MainController', {
     },
 
     getSettings: function () {
-        var vm = this.getViewModel();
+        var me = this, vm = this.getViewModel();
         this.getView().appManager.getSettings(function (result, ex) {
             if (ex) { Util.exceptionToast(ex); return; }
             console.log(result);
             vm.set('settings', result);
+            me.afterGetSettings();
         });
     },
 
@@ -43,6 +44,48 @@ Ext.define('Ung.apps.wanbalancer.MainController', {
             Util.successToast('Settings saved');
             me.getSettings();
         }, vm.get('settings'));
-    }
+    },
+
+    afterGetSettings: function() {
+        var interfaceWeightData = [];
+        var trafficAllocation = "";
+        var total = 0, i, weight, intfCount;
+
+        var vm = this.getViewModel();
+        var weightArray = vm.get('settings.weights');
+        var networkSettings = rpc.networkManager.getNetworkSettings();
+
+        for (i = 0 ; i < networkSettings.interfaces.list.length ; i++) {
+            var intf = networkSettings.interfaces.list[i];
+            if (intf.configType != 'ADDRESSED' || !intf.isWan ) continue;
+            weight = weightArray[intf.interfaceId-1];
+            interfaceWeightData.push({
+                interfaceId: intf.interfaceId,
+                name: intf.name,
+                weight: weight,
+                description: ""
+            });
+            total += weight;
+        }
+
+        trafficAllocation += "<TABLE WIDTH=600 BORDER=1 CELLSPACING=0 CELLPADDING=5 STYLE=border-collapse:collapse;>";
+
+        intfCount = interfaceWeightData.length;
+        for(i = 0 ; i < intfCount ; i++) {
+            interfaceWeightData[i].description = this.getDescription(intfCount, total, interfaceWeightData[i].weight);
+            var item = interfaceWeightData[i];
+            trafficAllocation += "<TR><TD>" + Ext.String.format("{0} interface".t(), item.name) + "</TD><TD>" + item.description + "</TD></TR>";
+        }
+
+        trafficAllocation += "</TABLE>";
+
+        vm.set('interfaceWeightData', interfaceWeightData);
+        vm.set('trafficAllocation', trafficAllocation);
+    },
+
+    getDescription: function(intfCount, total, weight) {
+        var percent = ( total == 0 ) ? Math.round(( 1 / intfCount ) * 1000) / 10 : Math.round(( weight / total ) * 1000) / 10;
+        return Ext.String.format("{0}% of Internet traffic.".t(), percent);
+    },
 
 });
