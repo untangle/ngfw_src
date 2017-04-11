@@ -673,10 +673,6 @@ cite {
 
 
 
-.fa {
-    // font-size: initial;
-}
-
 .x-toolbar-navigation {
     background: #1b1e26;
     box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
@@ -694,12 +690,12 @@ cite {
     &.upper {
         .x-btn-inner {
             text-transform: uppercase;
-            font-weight: 600;
+            font-weight: 400;
         }
     }
     .x-btn-inner {
         font-family: $custom-font;
-        font-size: 12px;
+        font-size: 13px;
         color: #CCC;
         transition: color .3s cubic-bezier(0.23, 1, 0.32, 1);
     }
@@ -927,4 +923,30 @@ span.fa:before {
 
 .policy-menu {
     background: transparent !important;
+}
+
+.account-btn {
+    background: transparent !important;
+}
+.account-menu {
+    border: 0;
+    .x-menu-body {
+        background: #1b1e26;
+    }
+    .x-menu-item-focus {
+        background: none;
+        .x-menu-item-text, .x-menu-item-icon {
+            color: #FFF;
+        }
+    }
+    .x-menu-item-text {
+        font-family: $custom-font;
+        font-size: 13px;
+        color: #CCC;
+        line-height: 40px;
+    }
+    .x-menu-item-icon {
+        color: #CCC;
+        top: 15px;
+    }
 }

@@ -49,7 +49,7 @@ Ext.define('Ung.view.main.Main', {
         defaults: {
             xtype: 'button',
             border: false,
-            iconAlign: 'top',
+            // iconAlign: 'top',
             hrefTarget: '_self'
         },
         items: [{
@@ -87,8 +87,33 @@ Ext.define('Ung.view.main.Main', {
             text: 'Help'.t(),
             iconCls: 'fa fa-question-circle'
         }, {
-            text: 'Account'.t(),
-            iconCls: 'fa fa-user-circle'
+            text: 'Account'.t() + ' &nbsp;<i class="fa fa-angle-down fa-lg"></i>',
+            iconCls: 'fa fa-user-circle',
+            arrowVisible: false,
+            cls: 'account-btn',
+            menu: {
+                cls: 'account-menu',
+                minWidth: 150,
+                plain: true,
+                border: false,
+                bodyBorder: false,
+                frame: false,
+                shadow: false,
+                mouseLeaveDelay: 0,
+                defaults: {
+                    border: false,
+                },
+                items: [{
+                    text: 'My Account'.t(),
+                    iconCls: 'fa fa-cog fa-lg',
+                    hrefTarget: '_blank',
+                    href: Util.getStoreUrl() + '?action=my_account&' + Util.getAbout()
+                }, {
+                    text: 'Logout'.t(),
+                    iconCls: 'fa fa-sign-out fa-lg',
+                    href: '/auth/logout?url=/admin&realm=Administrator'
+                }]
+            }
         }]
     }]
 });
