@@ -1,10 +1,10 @@
-Ext.define('Ung.view.shd.Devices', {
+Ext.define('Ung.view.extra.Devices', {
     extend: 'Ext.panel.Panel',
     xtype: 'ung.devices',
 
     /* requires-start */
     requires: [
-        'Ung.view.shd.DevicesController'
+        'Ung.view.extra.DevicesController'
     ],
     /* requires-end */
     controller: 'devices',
@@ -31,7 +31,7 @@ Ext.define('Ung.view.shd.Devices', {
             style: {
                 color: '#CCC'
             },
-            html: '<strong>' + 'Current Devices'.t() + '</strong>'
+            html: 'Current Devices'.t()
         }])
     }],
 
@@ -139,5 +139,11 @@ Ext.define('Ung.view.shd.Devices', {
     }, '-', 'Filter:'.t(), {
         xtype: 'textfield',
         checkChangeBuffer: 200
+    }, '->', {
+        xtype: 'button',
+        text: 'View Reports'.t(),
+        iconCls: 'fa fa-line-chart',
+        href: '#reports/devices',
+        hrefTarget: '_self'
     }]
 });

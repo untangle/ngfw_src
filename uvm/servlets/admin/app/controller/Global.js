@@ -10,9 +10,9 @@ Ext.define('Ung.controller.Global', {
         'Ung.view.main.Main',
         'Ung.overrides.form.field.VTypes',
         'Ung.overrides.LoadMask',
-        'Ung.view.shd.Sessions',
-        'Ung.view.shd.Hosts',
-        'Ung.view.shd.Devices',
+        'Ung.view.extra.Sessions',
+        'Ung.view.extra.Hosts',
+        'Ung.view.extra.Devices',
         'Ung.config.network.Network'
     ],
     /* requires-end */
@@ -78,7 +78,9 @@ Ext.define('Ung.controller.Global', {
             'reports/:category/:entry': 'onReports',
             'sessions': 'onSessions',
             'hosts': 'onHosts',
-            'devices': 'onDevices'
+            'devices': 'onDevices',
+            'users': 'onUsers'
+
         },
 
         reportsEnabled: true
@@ -277,6 +279,14 @@ Ext.define('Ung.controller.Global', {
             itemId: 'devices'
         });
         this.getMainView().getViewModel().set('activeItem', 'devices');
+    },
+
+    onUsers: function () {
+        this.getMainView().add({
+            xtype: 'ung.users',
+            itemId: 'users'
+        });
+        this.getMainView().getViewModel().set('activeItem', 'users');
     }
 
 });

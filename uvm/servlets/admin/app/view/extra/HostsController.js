@@ -1,4 +1,4 @@
-Ext.define('Ung.view.shd.HostsController', {
+Ext.define('Ung.view.extra.HostsController', {
     extend: 'Ext.app.ViewController',
 
     alias: 'controller.hosts',
