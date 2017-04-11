@@ -51,28 +51,42 @@ Ext.define ('Ung.model.Stat', {
         }, {
             name: 'totalSwap',
             calculate: function (data) {
-                return Util.formatBytes(data.SwapTotal, 2);
+                if (data.SwapTotal) {
+                    return Util.formatBytes(data.SwapTotal, 2);
+                }
+                return 0;
             }
         }, {
             name: 'freeSwap',
             calculate: function (data) {
-                return Util.formatBytes(data.SwapFree, 2);
+                if (data.SwapTotal) {
+                    return Util.formatBytes(data.SwapFree, 2);
+                }
+                return 0;
             }
         }, {
             name: 'freeSwapPercent',
             calculate: function (data) {
-                // return (Math.random() * 100).toFixed(2);
-                return (data.SwapFree / data.SwapTotal * 100).toFixed(1);
+                if (data.SwapTotal) {
+                    return (data.SwapFree / data.SwapTotal * 100).toFixed(1);
+                }
+                return 0;
             }
         }, {
             name: 'usedSwap',
             calculate: function (data) {
-                return Util.formatBytes(data.SwapTotal - data.SwapFree, 2);
+                if (data.SwapTotal) {
+                    return Util.formatBytes(data.SwapTotal - data.SwapFree, 2);
+                }
+                return 0;
             }
         }, {
             name: 'usedSwapPercent',
             calculate: function (data) {
-                return ((1 - data.SwapFree / data.SwapTotal) * 100).toFixed(1);
+                if (data.SwapTotal) {
+                    return ((1 - data.SwapFree / data.SwapTotal) * 100).toFixed(1);
+                }
+                return 0;
             }
         }, {
             name: 'totalDisk',
