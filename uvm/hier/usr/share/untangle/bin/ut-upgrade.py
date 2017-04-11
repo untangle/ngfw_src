@@ -42,7 +42,7 @@ def printUsage():
     sys.exit(1)
 
 
-apt_log = open("/var/log/uvm/upgrade.log", "a")
+upgrade_log = open("/var/log/uvm/upgrade.log", "a")
 
 try:
      opts, args = getopt.getopt(sys.argv[1:], "q", ['quiet'])
@@ -61,8 +61,8 @@ def log(str):
     # if the parent dies, stdout might product a sigpipe
     # see we need to be careful with "print"
     try: 
-        apt_log.write(str + "\n")
-        apt_log.flush()
+        upgrade_log.write(str + "\n")
+        upgrade_log.flush()
     except:
         pass
     try:
