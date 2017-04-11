@@ -295,51 +295,7 @@ Ext.define('Ung.view.reports.EntryController', {
         }
     },
 
-    addGraphEntry: function () {
-        var me = this,
-            vm = this.getViewModel(),
-            entryContainer = me.getView().down('#entryContainer'),
-            entry = vm.get('entry');
 
-        if (entry.get('type') === 'TIME_GRAPH' || entry.get('type') === 'TIME_GRAPH_DYNAMIC') {
-            entryContainer.add({
-                xtype: 'timechart',
-                itemId: 'entry',
-                autoDestory: false
-            });
-        }
-
-        if (entry.get('type') === 'PIE_GRAPH') {
-            entryContainer.add({
-                xtype: 'piechart',
-                itemId: 'entry'
-            });
-        }
-
-        if (entry.get('type') === 'EVENT_LIST') {
-            // chartContainer.add({
-            //     xtype: 'eventchart',
-            //     itemId: 'chart',
-            //     entry: this.entry
-            // });
-        }
-
-        if (entry.get('type') === 'TEXT') {
-            // chartContainer.add({
-            //     xtype: 'component',
-            //     itemId: 'chart',
-            //     html: 'Not Implemented'
-            // });
-        }
-    },
-
-    addTextEntry: function () {
-        this.getView().down('#entryContainer').add({
-            xtype: 'textreport',
-            itemId: 'entry',
-            padding: 10
-        });
-    },
 
     updateColor: function (menu, color) {
         var vm = this.getViewModel(),
@@ -620,6 +576,19 @@ Ext.define('Ung.view.reports.EntryController', {
 
     onFilterEventClear: function (field) {
         field.setValue('');
+    },
+
+    downloadGraph: function () {
+        var view = this.getView(), vm = this.getViewModel(), now = new Date();
+        try {
+            this.getView().down('#graphreport').getController().chart.exportChart({
+                filename: (vm.get('entry.category') + '-' + vm.get('entry.title') + '-' + Ext.Date.format(now, 'd.m.Y-Hi')).replace(/ /g, '_'),
+                type: 'image/png'
+            });
+        } catch (ex) {
+            console.log(ex);
+            Util.exceptionToast('Unable to download!');
+        }
     }
 
 });

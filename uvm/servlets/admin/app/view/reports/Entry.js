@@ -167,6 +167,11 @@ Ext.define('Ung.view.reports.Entry', {
                 itemId: 'downloadBtn',
                 text: 'Download'.t(),
                 iconCls: 'fa fa-download',
+                handler: 'downloadGraph',
+                hidden: true,
+                bind: {
+                    hidden: '{!isGraphEntry}'
+                }
             }, '-', {
                 itemId: 'dashboardBtn',
                 bind: {

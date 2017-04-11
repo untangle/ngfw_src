@@ -88,7 +88,9 @@ Ext.define('Ung.view.reports.GraphReportController', {
             rangeSelector : { enabled: false },
             scrollbar: { enabled: false },
             credits: { enabled: false },
-            title: null,
+            title: {
+                text: null
+            },
 
             lang: { noData: '<i class="fa fa-info-circle fa-lg"></i><br/>No data!' },
             noData: {
