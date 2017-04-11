@@ -389,7 +389,7 @@ Ext.define('Ung.view.reports.GraphReportController', {
             seriesData = [];
             for (j = 0; j < me.data.length; j += 1) {
                 seriesData.push([
-                    me.data[j].time_trunc.time,
+                    me.data[j].time_trunc.time || me.data[j].time_trunc, // for sqlite is time_trunc, for postgres is time_trunc.time
                     me.data[j][column] || 0
                 ]);
             }
