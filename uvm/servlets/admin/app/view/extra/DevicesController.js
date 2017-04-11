@@ -1,4 +1,4 @@
-Ext.define('Ung.view.shd.DevicesController', {
+Ext.define('Ung.view.extra.DevicesController', {
     extend: 'Ext.app.ViewController',
 
     alias: 'controller.devices',

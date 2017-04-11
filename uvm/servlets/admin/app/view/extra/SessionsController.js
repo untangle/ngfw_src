@@ -1,4 +1,4 @@
-Ext.define('Ung.view.shd.SessionsController', {
+Ext.define('Ung.view.extra.SessionsController', {
     extend: 'Ext.app.ViewController',
 
     alias: 'controller.sessions',

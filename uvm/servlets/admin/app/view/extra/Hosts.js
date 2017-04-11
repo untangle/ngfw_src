@@ -1,10 +1,10 @@
-Ext.define('Ung.view.shd.Hosts', {
+Ext.define('Ung.view.extra.Hosts', {
     extend: 'Ext.panel.Panel',
     xtype: 'ung.hosts',
 
     /* requires-start */
     requires: [
-        'Ung.view.shd.HostsController'
+        'Ung.view.extra.HostsController'
     ],
     /* requires-end */
     controller: 'hosts',
@@ -31,7 +31,7 @@ Ext.define('Ung.view.shd.Hosts', {
             style: {
                 color: '#CCC'
             },
-            html: '<strong>' + 'Current Hosts'.t() + '</strong>'
+            html: 'Current Hosts'.t()
         }])
     }],
 
@@ -192,5 +192,11 @@ Ext.define('Ung.view.shd.Hosts', {
     }, '-', 'Filter:'.t(), {
         xtype: 'textfield',
         checkChangeBuffer: 200
+    }, '->', {
+        xtype: 'button',
+        text: 'View Reports'.t(),
+        iconCls: 'fa fa-line-chart',
+        href: '#reports/hosts',
+        hrefTarget: '_self'
     }]
 });

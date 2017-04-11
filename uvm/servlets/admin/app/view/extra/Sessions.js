@@ -1,11 +1,11 @@
-Ext.define('Ung.view.shd.Sessions', {
+Ext.define('Ung.view.extra.Sessions', {
     extend: 'Ext.panel.Panel',
     // extend: 'Ext.grid.Panel',
     xtype: 'ung.sessions',
     // layout: 'border',
     /* requires-start */
     requires: [
-        'Ung.view.shd.SessionsController'
+        'Ung.view.extra.SessionsController'
     ],
     /* requires-end */
     controller: 'sessions',
@@ -38,7 +38,7 @@ Ext.define('Ung.view.shd.Sessions', {
             style: {
                 color: '#CCC'
             },
-            html: '<strong>' + 'Current Sessions'.t() + '</strong>'
+            html: 'Current Sessions'.t()
         }])
     }],
 
