@@ -84,6 +84,9 @@ Ext.define('Ung.view.reports.GraphReportController', {
                 spacing: widgetDisplay ? [5, 5, 10, 5] : [10, 10, 15, 10],
                 style: { fontFamily: 'Source Sans Pro', fontSize: '12px' }
             },
+            exporting: {
+                enabled: false
+            },
             navigator: { enabled: false },
             rangeSelector : { enabled: false },
             scrollbar: { enabled: false },
