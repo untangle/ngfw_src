@@ -25,7 +25,7 @@ Ext.define('Ung.apps.sslinspector.view.Rules', {
     ruleJavaClass: 'com.untangle.app.ssl_inspector.SslInspectorRuleCondition',
 
     emptyRow: {
-        ruleId: null,
+        ruleId: 0,
         live: true,
         description: '',
         action: {
