@@ -392,10 +392,14 @@ Ext.define('Ung.util.Util', {
     // formats a timestamp - expects a timestamp integer or an onject literal with 'time' property
     timestampFormat: function(v) {
         if (!v || typeof v === 'string') {
-            return '';
+            return 0;
         }
         var date = new Date();
-        date.setTime(v.time === null ? v : v.time);
+        if (typeof v === 'object' && v.time) {
+            date.setTime(v.time);
+        } else {
+            date.setTime(v);
+        }
         return Ext.util.Format.date(date, 'timestamp_fmt'.t());
     },
 

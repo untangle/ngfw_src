@@ -91,6 +91,10 @@
                 if (!rpc.translations.timestamp_fmt) { rpc.translations.timestamp_fmt = 'Y-m-d h:i:s a'; }
 
                 String.prototype.t = function() {
+                    // special case formatters needed for all languages
+                    if (Ext.Array.contains(['decimal_sep', 'thousand_sep', 'date_fmt', 'timestamp_fmt'], this.valueOf())) {
+                        return rpc.translations[this.valueOf()];
+                    }
                     if (rpc.languageSettings.language !== 'en') {
                         return rpc.translations[this.valueOf()] || '<cite>' + this.valueOf() + '</cite>';
                     }
