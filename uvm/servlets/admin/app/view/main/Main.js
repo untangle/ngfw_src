@@ -66,13 +66,14 @@ Ext.define('Ung.view.main.Main', {
             text: 'Apps'.t(),
             iconCls: 'fa fa-th',
             cls: 'upper',
-            bind: { href: '#apps', userCls: '{(activeItem === "apps" || activeItem === "appCard") ? "pressed" : ""}' }
+            href: '#apps',
+            bind: { userCls: '{(activeItem === "apps" || activeItem === "appCard") ? "pressed" : ""}' }
         }, {
             text: 'Config'.t(),
             iconCls: 'fa fa-sliders',
             cls: 'upper',
             href: '#config',
-            bind: { userCls: '{activeItem === "config" ? "pressed" : ""}' }
+            bind: { userCls: '{(activeItem === "config" || activeItem === "configCard") ? "pressed" : ""}' }
         }, {
             text: 'Reports'.t(),
             iconCls: 'fa fa-line-chart',
@@ -85,7 +86,9 @@ Ext.define('Ung.view.main.Main', {
             }
         }, '->', {
             text: 'Help'.t(),
-            iconCls: 'fa fa-question-circle'
+            iconCls: 'fa fa-question-circle',
+            href: rpc.helpUrl + '?' + Util.getAbout(),
+            hrefTarget: '_blank'
         }, {
             text: 'Account'.t() + ' &nbsp;<i class="fa fa-angle-down fa-lg"></i>',
             iconCls: 'fa fa-user-circle',
