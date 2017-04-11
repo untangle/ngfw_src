@@ -60,9 +60,9 @@ Ext.define('Ung.config.network.view.Interfaces', {
             renderer: function (value) {
                 switch (value) {
                 case 'CONNECTED': return '<i class="fa fa-circle fa-green"></i>';
-                case 'DISCONNECTED': return '<i class="fa fa-circle fa-red"></i>';
+                case 'DISCONNECTED': return '<i class="fa fa-circle fa-gray"></i>';
                 case 'MISSING': return '<i class="fa fa-exclamation-triangle fa-orange"></i>';
-                default: return '<i class="fa fa-question-circle fa-red"></i>';
+                default: return '<i class="fa fa-question-circle fa-gray"></i>';
                 }
             }
         }, {
