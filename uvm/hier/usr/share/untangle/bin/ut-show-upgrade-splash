@@ -1,6 +1,6 @@
 #! /bin/bash
 
-UPGRADE_LOGS="/var/log/uvm/apt.log /var/log/uvm/uvm.log /var/log/uvm/wrapper.log"
+UPGRADE_LOGS="/var/log/uvm/upgrade.log /var/log/uvm/uvm.log"
 CONSOLIDATED_UPGRADE_LOG="/usr/share/untangle/web/upgrade/upgrade.log"
 
 # The PID file stores the pid of the tail process dumping to the log
