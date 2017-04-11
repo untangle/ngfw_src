@@ -329,7 +329,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
      * widget actions on add/remove/save
      */
     onWidgetAction: function (action, widget, entry, cb) {
-        var me = this, wg;
+        var me = this, wg, wgCmp;
         // var widgetsList = Ext.Array.pluck(Ext.getStore('widgets').getRange(), 'data');
         if (action === 'add') {
             Ung.dashboardSettings.widgets.list.push(widget.getData());
@@ -357,7 +357,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
             if (action === 'remove') {
                 me.lookup('dashboard').remove(wg2.get('entryId'));
                 wg2.drop();
-                cb();
+                cb(null);
                 return;
             }
 
@@ -365,7 +365,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                 Ext.getStore('widgets').add(wg2);
                 wg2.commit();
                 if (wg2.get('enabled')) {
-                    me.lookup('dashboard').add({
+                    wgCmp = me.lookup('dashboard').add({
                         xtype: 'reportwidget',
                         itemId: wg2.get('entryId'),
                         viewModel: {
@@ -375,6 +375,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                             }
                         }
                     });
+                    DashboardQueue.addFirst(wgCmp);
                 } else {
                     me.lookup('dashboard').add({
                         xtype: 'component',
@@ -388,7 +389,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                 wg2.copyFrom(widget);
                 wg2.commit();
 
-                var wgCmp = me.lookup('dashboard').down('#' + wg2.get('entryId'));
+                wgCmp = me.lookup('dashboard').down('#' + wg2.get('entryId'));
                 var idx = Ext.getStore('widgets').indexOf(wg2);
 
                 if (wgCmp.getXType() === 'component') {
@@ -407,7 +408,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                     }
                 } else {
                     if (wg2.get('enabled')) {
-                        DashboardQueue.add(wgCmp);
+                        DashboardQueue.addFirst(wgCmp);
                     } else {
                         wgCmp.destroy();
                         me.lookup('dashboard').insert(idx, {
@@ -418,7 +419,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                     }
                 }
             }
-            cb();
+            cb(wg2);
         });
     },
 

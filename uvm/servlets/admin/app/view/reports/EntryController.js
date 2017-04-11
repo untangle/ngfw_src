@@ -44,7 +44,6 @@ Ext.define('Ung.view.reports.EntryController', {
             dataGrid.setLoading(true);
 
             me.tableConfig = TableConfig.generate(entry.get('table'));
-            // widget = Ext.getStore('widgets').findRecord('entryId', entry.get('uniqueId')) || null;
 
             if (entry.get('type') === 'EVENT_LIST') {
                 me.lookupReference('dataBtn').setPressed(false);
@@ -60,7 +59,7 @@ Ext.define('Ung.view.reports.EntryController', {
 
             // check if widget
             // widget = Ext.getStore('widgets').findRecord('entryId', entry.get('uniqueId')) || null;
-            // vm.set('isWidget', Ext.getStore('widgets').findRecord('entryId', entry.get('uniqueId')) ? true : false);
+            vm.set('widget', Ext.getStore('widgets').findRecord('entryId', entry.get('uniqueId')));
 
 
 
@@ -528,15 +527,29 @@ Ext.define('Ung.view.reports.EntryController', {
 
 
     // // DASHBOARD ACTION
-    // dashboardAddRemove: function (btn) {
-    //     var vm = this.getViewModel();
-    //     if (vm.get('isWidget')) {
-    //         Ext.fireEvent('widgetaction', vm.get('Widget') ? 'remove' : 'add', vm.get('widget'), vm.get('entry'), function () {
-    //             vm.set('isWidget', !vm.get('isWidget'));
-    //             Util.successToast('<span style="color: yellow; font-weight: 600;">' + vm.get('entry.title') + '</span> ' + (vm.get('isWidget') ? 'added to' : 'removed from') + ' Dashboard!');
-    //         });
-    //     }
-    // },
+    dashboardAddRemove: function (btn) {
+        var vm = this.getViewModel(), widget = vm.get('widget'), entry = vm.get('entry'), action;
+
+        if (!widget) {
+            action = 'add';
+            widget = Ext.create('Ung.model.Widget', {
+                displayColumns: entry.get('displayColumns'),
+                enabled: true,
+                entryId: entry.get('uniqueId'),
+                javaClass: 'com.untangle.uvm.DashboardWidgetSettings',
+                refreshIntervalSec: 60,
+                timeframe: '',
+                type: 'ReportEntry'
+            });
+        } else {
+            action = 'remove';
+        }
+
+        Ext.fireEvent('widgetaction', action, widget, entry, function (wg) {
+            vm.set('widget', wg);
+            Util.successToast('<span style="color: yellow; font-weight: 600;">' + vm.get('entry.title') + '</span> ' + (action === 'add' ? 'added to' : 'removed from') + ' Dashboard!');
+        });
+    },
 
 
 
