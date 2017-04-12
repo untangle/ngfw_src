@@ -127,19 +127,14 @@ Ext.define('Ung.controller.Global', {
         }
 
         this.getMainView().getViewModel().set('activeItem', 'apps');
-        this.getAppsView().getViewModel().set('policyId', policyId);
-
+        this.getAppsView().setActiveItem('installedApps');
+        this.getAppsView().getViewModel().set({
+            policyId: policyId,
+            onInstalledApps: true
+        });
 
         if (app) {
-            if (app === 'install') {
-                this.getMainView().getViewModel().set('activeItem', 'apps');
-                this.getAppsView().setActiveItem('installableApps');
-            } else {
-                me.loadApp(policyId, app, view);
-            }
-        } else {
-            this.getAppsView().setActiveItem('installedApps');
-            this.getAppsView().getController().getApps();
+            me.loadApp(policyId, app, view);
         }
     },
 
