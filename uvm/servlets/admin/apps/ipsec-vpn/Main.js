@@ -36,6 +36,13 @@ Ext.define('Ung.apps.ipsecvpn.Main', {
             }
         },
 
+        data: {
+            autoRefresh: false,
+            tunnelStatusData: [],
+            virtualUserData: [],
+            wanListData: []
+        },
+
         stores: {
 
             tunnelList: {
@@ -48,6 +55,18 @@ Ext.define('Ung.apps.ipsecvpn.Main', {
 
             listenList: {
                 data: '{settings.virtualListenList.list}'
+            },
+
+            tunnelStatusStore: {
+                data: '{tunnelStatusData}'
+            },
+
+            virtualUserStore: {
+                data: '{virtualUserData}'
+            },
+
+            wanListStore: {
+                data: '{wanListData}'
             },
 
             P1CipherStore: {
@@ -137,11 +156,4 @@ Ext.define('Ung.apps.ipsecvpn.Main', {
         { xtype: 'app-ipsec-vpn-l2tplog' }
     ]
 
-});
-
-Ext.define('Ung.apps.ipsecvpn.Data', {
-    singleton: true,
-    wanList: [],
-    leftDefault: '0.0.0.0',
-    leftSubnetDefault: '0.0.0.0/0',
 });
