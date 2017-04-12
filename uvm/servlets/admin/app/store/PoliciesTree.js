@@ -11,7 +11,15 @@ Ext.define('Ung.store.PoliciesTree', {
         var policyManager = rpc.appManager.app('policy-manager');
 
         if (!policyManager) {
-            me.setRoot({});
+            me.setRoot({
+                name: 'Policies',
+                policyId: 'root', // used for path
+                expanded: true,
+                children: {
+                    policyId: 1,
+                    name: 'Default'
+                }
+            });
             return;
         }
 

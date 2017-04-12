@@ -72,6 +72,7 @@ Ext.define('Ung.apps.policymanager.MainController', {
             selNode = newRoot.findChild('policyId', me.selectedPolicyId, true);
             if (selNode) {
                 // short delay for node selection
+                // todo: fix some issue when removing PolicyManager but tries to select a path
                 setTimeout(function() {
                     me.lookup('tree').selectPath(selNode.getPath('policyId'), 'policyId');
                 }, 100);

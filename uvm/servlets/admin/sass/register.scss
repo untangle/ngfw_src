@@ -1,0 +1,223 @@
+.reg-field .x-form-error-wrap {
+    display: table-row !important;
+    height: 16px;
+}
+
+
+.reg-field-error {
+    background-image: none;
+    padding: 0;
+    line-height: 1;
+}
+
+.reg-field-error li {
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 12px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    padding: 2px 0;
+    /*test*/
+}
+
+
+/* registration */
+.reg {
+    opacity: 1;
+    transition: opacity .3s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.reg.fade {
+    opacity: 0;
+}
+
+.reg .branding {
+    background: #1b1e26;
+}
+.reg .branding img {
+    max-height: 70px;
+    margin: 15px;
+}
+
+/* reg close button */
+.reg .reg-close {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    z-index: 10;
+    cursor: pointer;
+}
+
+.reg .reg-close .x-btn-inner {
+    color: #999;
+    transition: color .3s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.reg .reg-close .x-btn-inner span {
+    opacity: 0;
+    transition: opacity .3s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.reg .reg-close:hover .x-btn-inner {
+    color: #FFF;
+}
+
+.reg .reg-close:hover .x-btn-inner span {
+    opacity: 1;
+}
+
+
+.reg .welcome {
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 14px;
+}
+.reg .welcome h1 {
+    font-weight: 100;
+    margin-bottom: 30px;
+    line-height: 1;
+}
+
+
+.reg-panel {
+    /*
+    display: inline-block;
+    width: 50% !important;
+    text-align: left;
+    */
+}
+.reg-panel.small {
+    width: 100% !important;
+    /*max-width: auto;*/
+}
+
+
+.reg-panel .x-panel-header {
+    background: #67bd4b;
+    background-image: none;
+    box-shadow: none;
+    padding: 9px 6px 8px 6px;
+}
+
+.reg-panel .x-title {
+    line-height: 1;
+}
+.reg-panel .x-panel-header .x-title-text {
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: #FFF;
+    text-transform: uppercase;
+}
+.reg-panel .x-panel-body {
+    font-family: 'Source Sans Pro', sans-serif;
+    background: #eaf3e7;
+    font-size: 14px;
+    color: #4C4C4C;
+}
+
+/*****************************/
+.reg .reg-body {
+    display: table-cell;
+    text-align: center;
+    background: #FFF;
+}
+
+.reg .card {
+    text-align: left;
+    display: inline-block;
+    padding: 5px;
+}
+
+/******************************/
+
+.reg .title {
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 30px;
+    color: #4C4C4C;
+    font-weight: 300;
+    margin: 10px;
+    text-align: left;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 10px;
+    line-height: 1;
+}
+
+.reg .login-error {
+    margin: 10px;
+    padding: 8px 10px;
+    color: red;
+    border-radius: 5px;
+    border: 2px solid #ed5565;
+}
+
+.reg-btn {
+    cursor: pointer;
+    background: #67bd4b;
+    border-radius: 5px;
+}
+.reg-btn .x-btn-inner {
+    font-family: 'Source Sans Pro', sans-serif;
+    padding: 7px 20px;
+    text-transform: uppercase;
+    color: #FFF;
+    font-size: 14px;
+    font-weight: 600;
+}
+.reg-btn.x-btn-disabled {
+    background: #DDD;
+}
+.reg-btn.x-btn-disabled .x-btn-inner {
+    color: #999;
+}
+
+.html-btn {
+    text-decoration: none;
+}
+
+.html-btn .x-btn-inner {
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    color: #67bd4b;
+    text-decoration: none;
+    font-weight: 600;
+}
+.html-btn:hover .x-btn-inner {
+    color: #3E772B;
+}
+
+.reg .reg-field {
+    width: 50%;
+    /*display: inline-block;*/
+    float: left;
+    padding: 0 10px;
+    margin-bottom: 0;
+    position: relative;
+}
+
+.reg .reg-field .x-form-field {
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 14px;
+    min-height: 24px;
+    background-image: none;
+}
+
+.reg .reg-field .x-form-item-label {
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #4C4C4C;
+}
+
+/*
+.reg .reg-field .x-form-error-wrap {
+    display: table-row !important;
+    height: 18px;
+}
+*/
+
+.reg .reg-field-error {
+    background-image: none;
+    padding: 0;
+}

@@ -11,10 +11,14 @@ Ext.define('Ung.view.apps.AppsController', {
             '#policiestree': {
                 rootchange: 'onRootChange'
             }
+        },
+        global: {
+            postregistration: 'onPostRegistration',
         }
     },
 
     onActivate: function () {
+        this.getViewModel().set('policyManagerInstalled', rpc.appManager.app('policy-manager') ? true : false);
         this.getApps();
     },
 
@@ -123,7 +127,7 @@ Ext.define('Ung.view.apps.AppsController', {
                     apps.push({
                         name: app.name,
                         displayName: app.displayName,
-                        route: app.type === 'FILTER' ? '#apps/' + policy.policyId + '/' + app.name : '#service/' + app.name,
+                        // route: app.type === 'FILTER' ? '#apps/' + policy.policyId + '/' + app.name : '#service/' + app.name,
                         type: app.type,
                         viewPosition: app.viewPosition,
                         targetState: null,
@@ -160,6 +164,15 @@ Ext.define('Ung.view.apps.AppsController', {
      */
     onInstallApp: function (view, record) {
         var me = this, vm = me.getViewModel();
+
+        if (!rpc.isRegistered) {
+            Ext.fireEvent('openregister');
+            return;
+        }
+
+        if (record.get('extraCls') === 'progress') {
+            return;
+        }
         record.set('extraCls', 'progress');
 
         // find and remove App item if it's from a parent policy
@@ -172,7 +185,7 @@ Ext.define('Ung.view.apps.AppsController', {
         .then(function (result) {
             record.set('extraCls', 'finish');
             record.set('targetState', result.getRunState());
-
+            record.set('route', record.get('type') === 'FILTER' ? '#apps/' + vm.get('policyId') + '/' + record.get('name') : '#service/' + record.get('name'));
             if (record.get('name') === 'reports') { // just reload the page for now
                 window.location.href = '/admin/index.do';
                 return;
@@ -180,6 +193,7 @@ Ext.define('Ung.view.apps.AppsController', {
 
             if (record.get('name') === 'policy-manager') { // build the policies tree
                 Ext.getStore('policiestree').build();
+                vm.set('policyManagerInstalled', true);
             }
 
             Rpc.asyncData('rpc.appManager.getAppsViews')
@@ -191,6 +205,109 @@ Ext.define('Ung.view.apps.AppsController', {
             me.updateCounters();
             Ext.fireEvent('appinstall');
             // me.getApps();
+        });
+    },
+
+    onPostRegistration: function () {
+        var me = this;
+        Ung.app.redirectTo('#apps');
+
+        var popup = Ext.create('Ext.window.MessageBox', {
+            buttons: [{
+                name: 'Yes',
+                text: 'Yes, install the recommended apps.'.t(),
+                handler: function () {
+                    var apps = [
+                        { displayName: 'Web Filter', name: 'web-filter'},
+                        { displayName: 'Bandwidth Control', name: 'bandwidth-control'},
+                        { displayName: 'SSL Inspector', name: 'ssl'},
+                        { displayName: 'Application Control', name: 'application-control'},
+                        { displayName: 'Captive Portal', name: 'captive-portal'},
+                        { displayName: 'Firewall', name: 'firewall'},
+                        { displayName: 'Reports', name: 'reports'},
+                        { displayName: 'Policy Manager', name: 'policy-manager'},
+                        { displayName: 'Directory Connector', name: 'directory-connector'},
+                        { displayName: 'IPsec VPN', name: 'ipsec-vpn'},
+                        { displayName: 'OpenVPN', name: 'openvpn'},
+                        { displayName: 'Configuration Backup', name: 'configuration-backup'},
+                        { displayName: 'Branding Manager', name: 'branding-manager'},
+                        { displayName: 'Live Support', name: 'live-support'}];
+
+                    // only install WAN failover/balancer apps if more than 2 interfaces
+                    try {
+                        Rpc.asyncData('rpc.networkManager.getNetworkSettings')
+                            .then(function (result) {
+                                if (result.interfaces.list.length > 2) {
+                                    apps.push({ displayName: 'WAN Failover', name: 'wan-failover'});
+                                    apps.push({ displayName: 'WAN Balancer', name: 'wan-balancer'});
+                                }
+                            });
+                    } catch (e) {}
+
+                    // only install this on 1gig+ machines
+                    if (me.totalMemoryMb > 900) {
+                        apps.splice(2, 0, { displayName: 'Phish Blocker', name: 'phish-blocker'});
+                        apps.splice(2, 0, { displayName: 'Spam Blocker', name: 'spam-blocker'});
+                        apps.splice(2, 0, { displayName: 'Virus Blocker Lite', name: 'virus-blocker-lite'});
+                        apps.splice(2, 0, { displayName: 'Virus Blocker', name: 'virus-blocker'});
+                    }
+
+                    popup.close();
+                    me.installRecommendedApps(apps);
+                }
+            }, {
+                name: 'No',
+                text: 'No, I will install the apps manually.',
+                handler: function () {
+                    popup.close();
+                    me.getView().setActiveItem('installableApps');
+                }
+            }]
+        });
+
+        popup.show({
+            title: 'Registration complete.'.t(),
+            width: 470,
+            msg: 'Thank you for using Untangle!'.t() + '<br/><br/>' +
+                'Applications can now be installed and configured.'.t() + '<br/>' +
+                'Would you like to install the recommended applications now?'.t(),
+            icon: Ext.MessageBox.QUESTION
+        });
+    },
+
+    installRecommendedApp: function (app, cb) {
+        var me = this, vm = me.getViewModel();
+
+        var record = vm.getStore('apps').findRecord('name', app.name);
+
+        record.set('extraCls', 'progress');
+
+        Rpc.asyncData('rpc.appManager.instantiate', record.get('name'), vm.get('policyId'))
+        .then(function (result) {
+            record.set('extraCls', 'finish');
+            record.set('targetState', result.getRunState());
+            record.set('route', record.get('type') === 'FILTER' ? '#apps/' + vm.get('policyId') + '/' + record.get('name') : '#service/' + record.get('name'));
+            me.updateCounters();
+            cb();
+        });
+    },
+
+    installRecommendedApps: function (apps) {
+        var me = this, appsToInstall = apps.length;
+
+        Ext.Array.each(apps, function (app) {
+            me.installRecommendedApp(app, function () {
+                appsToInstall--;
+                if (appsToInstall === 0) { // all apps installed
+                    Ext.MessageBox.alert('Installation Complete!'.t(),
+                        'The recommended applications have successfully been installed.'.t()  + '<br/><br/>' +
+                        'Thank you for using Untangle!'.t(),
+                        function () {
+                            window.location.href = '/admin/index.do';
+                        });
+                    return;
+                }
+            });
         });
     }
 

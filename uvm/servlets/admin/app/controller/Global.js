@@ -38,20 +38,12 @@ Ext.define('Ung.controller.Global', {
 
     listen: {
         global: {
-            appinstall: 'onAppInstall'
+            appinstall: 'onAppInstall',
+            openregister: 'onOpenRegister'
         }
     },
 
     config: {
-        control: {
-            '#main': {
-                beforerender: 'onBeforeRender'
-            },
-            '#apps': {
-                activate: 'onActivate'
-            }
-        },
-
         refs: {
             mainView: '#main',
             dashboardView: '#dashboard',
@@ -92,15 +84,6 @@ Ext.define('Ung.controller.Global', {
             Ext.getStore('categories').loadData(Ext.Array.merge(Util.baseCategories, result.list));
             Ext.getStore('reportstree').build();
         });
-    },
-
-
-    onBeforeRender: function () {
-        // console.log('init');
-    },
-
-    onActivate: function () {
-        // console.log('activate');
     },
 
     setExpertMode: function () {
@@ -282,6 +265,10 @@ Ext.define('Ung.controller.Global', {
             itemId: 'users'
         });
         this.getMainView().getViewModel().set('activeItem', 'users');
-    }
+    },
 
+    onOpenRegister: function () {
+        this.regView = Ext.create('Ung.view.main.Registration', {});
+        this.regView.show();
+    }
 });
