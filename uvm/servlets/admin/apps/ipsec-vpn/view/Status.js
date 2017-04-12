@@ -31,27 +31,16 @@ Ext.define('Ung.apps.ipsecvpn.view.Status', {
             trackMouseOver: false,
             sortableColumns: false,
             enableColumnHide: false,
-            // forceFit: true,
             minHeight: 150,
             maxHeight: 250,
             margin: '10 0 10 0',
             viewConfig: {
-                emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-2x"></i> <br/>' + 'No Virtual Users'.t() + ' ...</p>',
+                emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-2x"></i> <br/>' + 'No IPsec Tunnels'.t() + ' ...</p>',
                 stripeRows: false
             },
 
-            collapsed: true,
-            disabled: true,
-            collapsible: true,
-            // titleCollapse: true,
-            hideCollapseTool: true,
-            animCollapse: false,
             recordJavaClass: 'com.untangle.app.ipsec_vpn.ConnectionStatusRecord',
-            bind: {
-                collapsed: '{instance.targetState !== "RUNNING"}',
-                disabled: '{instance.targetState !== "RUNNING"}',
-                store: { data: '{tunnelStatus}' }
-            },
+            bind: '{tunnelStatusStore}',
 
             columns: [{
                 header: 'Local IP'.t(),
@@ -114,26 +103,16 @@ Ext.define('Ung.apps.ipsecvpn.view.Status', {
             trackMouseOver: false,
             sortableColumns: false,
             enableColumnHide: false,
-            // forceFit: true,
             minHeight: 150,
             maxHeight: 250,
             margin: '0 0 10 0',
             viewConfig: {
-                emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-2x"></i> <br/> ' + 'No IPsec Tunnels'.t() + ' ...</p>',
+                emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-2x"></i> <br/> ' + 'No VPN Sessions'.t() + ' ...</p>',
                 stripeRows: false
             },
 
-            collapsed: true,
-            disabled: true,
-            collapsible: true,
-            hideCollapseTool: true,
-            animCollapse: false,
             recordJavaClass: 'com.untangle.app.ipsec_vpn.VirtualUserEntry',
-            bind: {
-                collapsed: '{instance.targetState !== "RUNNING"}',
-                disabled: '{instance.targetState !== "RUNNING"}',
-                store: { data: '{virtualUsers}' }
-            },
+            bind: '{virtualUserStore}',
 
             columns: [{
                 header: 'IP Address'.t(),
@@ -155,32 +134,27 @@ Ext.define('Ung.apps.ipsecvpn.view.Status', {
             }, {
                 header: 'Connect Time'.t(),
                 dataIndex: 'sessionCreation',
-                width: 180
-                // renderer: function(value) { return i18n.timestampFormat(value); }
+                width: 180,
+                renderer: function(value) { return Util.timestampFormat(value); }
             }, {
                 header: 'Elapsed Time'.t(),
                 dataIndex: 'sessionElapsed',
-                width: 180
-                // renderer: elapsedFormat
+                width: 180,
+                renderer: function(value) {
+                    var total = parseInt(value / 1000,10);
+                    var hours = (parseInt(total / 3600,10) % 24);
+                    var minutes = (parseInt(total / 60,10) % 60);
+                    var seconds = parseInt(total % 60,10);
+                    var result = (hours < 10 ? "0" + hours : hours) + ":" + (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds  < 10 ? "0" + seconds : seconds);
+                    return result;
+                }
             },{
                 header: 'Disconnect'.t(),
                 xtype: 'actioncolumn',
-                width: 80
-                // items: [{
-                //     iconCls: 'icon-delete-row',
-                //     tooltip: i18n._("Click to disconnect client"),
-                //     handler: Ext.bind(function(view, rowIndex, colIndex, item, e, record) {
-                //         this.gridVirtualUsers.setLoading(i18n._("Disconnecting..."));
-                //         this.getRpcApp().virtualUserDisconnect(Ext.bind(function(result, exception) {
-                //             this.gridVirtualUsers.setLoading(false);
-                //             if(Ung.Util.handleException(exception)) return;
-                //             // it takes a second or two for the app to HUP the pppd daemon and the ip-down script
-                //             // to call the app to remove the client from the active user list so instead of
-                //             // calling reload here we just remove the disconnected row from the grid
-                //             this.gridVirtualUsers.getStore().remove(record);
-                //         }, this), record.get("clientAddress"), record.get("clientUsername"));
-                //     }, this)
-                // }]
+                width: 80,
+                align: 'center',
+                iconCls: 'fa fa-minus-circle',
+                handler: 'disconnectUser',
             }],
             bbar: [{
                 text: 'Refresh'.t(),

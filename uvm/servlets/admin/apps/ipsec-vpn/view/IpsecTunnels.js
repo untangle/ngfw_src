@@ -3,6 +3,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
     alias: 'widget.app-ipsec-vpn-ipsectunnels',
     itemId: 'ipsec_tunnels',
     title: 'IPsec Tunnels'.t(),
+    viewModel: true,
 
     dockedItems: [{
         xtype: 'toolbar',
@@ -37,9 +38,9 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         'phase2Hash': 'md5',
         'phase2Group': 'modp1024',
         'phase2Lifetime' : '3600',
-        'left': Ung.apps.ipsecvpn.Data.leftDefault,
+        'left': '', // FIXME - this should use vm.get('leftDefault')
         'leftId': '',
-        'leftSubnet': Ung.apps.ipsecvpn.Data.leftSubnetDefault,
+        'leftSubnet': '', // FIXME - this should use vm.get('leftSubnetDefault')
         'right': '',
         'rightId': '',
         'rightSubnet': '',
@@ -116,7 +117,9 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         xtype: 'combo',
         fieldLabel: 'Interface'.t(),
         editable: false,
-//        store: Ung.apps.ipsecvpn.Data.wanList,
+/* FIXME - Why doesn't this work???
+        store: '{wanListStore}'
+*/
     }, {
         xtype: 'textfield',
         bind: '{record.left}',
