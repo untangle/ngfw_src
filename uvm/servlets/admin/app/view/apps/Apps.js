@@ -12,12 +12,17 @@ Ext.define('Ung.view.apps.Apps', {
     viewModel: {
         data: {
             onInstalledApps: true,
-            policyName: ''
+            policyName: '',
+            appsCount: 0,
+            servicesCount: 0
         },
         stores: {
             apps: {
                 // data: '{appsData}',
-                fields: ['name', 'displayName', 'url', 'type', 'status']
+                fields: ['name', 'displayName', 'url', 'type', 'status'],
+                listeners: {
+                    datachanged: 'updateCounters'
+                }
             },
             installedApps: {
                 source: '{apps}',
@@ -113,9 +118,11 @@ Ext.define('Ung.view.apps.Apps', {
         items: [{
             xtype: 'component',
             cls: 'apps-title',
-            html: 'Apps'.t(),
             hidden: true,
-            bind: { hidden: '{!policyName}' }
+            bind: {
+                html: 'Apps'.t() + ' ({appsCount})',
+                hidden: '{!policyName}'
+            }
         }, {
             xtype: 'dataview',
             bind: '{installedApps}',
@@ -131,11 +138,28 @@ Ext.define('Ung.view.apps.Apps', {
                 '</tpl>',
             itemSelector: 'a'
         }, {
+            xtype: 'container',
+            padding: '20 40',
+            items: [{
+                xtype: 'button',
+                scale: 'large',
+                text: 'Install Apps'.t(),
+                padding: '0 20 0 0',
+                iconCls: 'fa fa-download',
+                handler: 'showInstall'
+            }],
+            hidden: true,
+            bind: {
+                hidden: '{appsCount > 0 || !policyName}'
+            }
+        }, {
             xtype: 'component',
             cls: 'apps-title',
-            html: 'Service Apps'.t(),
             hidden: true,
-            bind: { hidden: '{!policyName}' }
+            bind: {
+                html: 'Service Apps'.t() + ' ({servicesCount})',
+                hidden: '{!policyName}'
+            }
         }, {
             xtype: 'dataview',
             bind: '{installedServices}',
@@ -149,6 +173,21 @@ Ext.define('Ung.view.apps.Apps', {
                     '</a>' +
                 '</tpl>',
             itemSelector: 'a'
+        }, {
+            xtype: 'container',
+            padding: '20 40',
+            items: [{
+                xtype: 'button',
+                scale: 'large',
+                text: 'Install Apps'.t(),
+                padding: '0 20 0 0',
+                iconCls: 'fa fa-download',
+                handler: 'showInstall'
+            }],
+            hidden: true,
+            bind: {
+                hidden: '{servicesCount > 0 || !policyName}'
+            }
         }]
     }, {
         scrollable: true,
