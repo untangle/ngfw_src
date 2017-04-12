@@ -22,20 +22,24 @@ Ext.define('Ung.apps.wanbalancer.MainController', {
         var me = this, v = this.getView(), vm = this.getViewModel();
 
         v.query('ungrid').forEach(function (grid) {
+            if (grid.listProperty != null) {
             var store = grid.getStore();
-            if (store.getModifiedRecords().length > 0 ||
-                store.getNewRecords().length > 0 ||
-                store.getRemovedRecords().length > 0 ||
-                store.isReordered) {
-                store.each(function (record) {
-                    if (record.get('markedForDelete')) {
-                        record.drop();
-                    }
-                });
-                store.isReordered = undefined;
-                vm.set(grid.listProperty, Ext.Array.pluck(store.getRange(), 'data'));
+                if (store.getModifiedRecords().length > 0 ||
+                    store.getNewRecords().length > 0 ||
+                    store.getRemovedRecords().length > 0 ||
+                    store.isReordered) {
+                    store.each(function (record) {
+                        if (record.get('markedForDelete')) {
+                            record.drop();
+                        }
+                    });
+                    store.isReordered = undefined;
+                    vm.set(grid.listProperty, Ext.Array.pluck(store.getRange(), 'data'));
+                }
             }
         });
+
+        me.setWeights();
 
         v.setLoading(true);
         v.appManager.setSettings(function (result, ex) {
@@ -48,15 +52,16 @@ Ext.define('Ung.apps.wanbalancer.MainController', {
 
     afterGetSettings: function() {
         var interfaceWeightData = [];
+        var destinationWanData = [];
         var trafficAllocation = "";
-        var total = 0, i, weight, intfCount;
+        var total = 0, i, intf, weight, intfCount;
 
         var vm = this.getViewModel();
         var weightArray = vm.get('settings.weights');
         var networkSettings = rpc.networkManager.getNetworkSettings();
 
         for (i = 0 ; i < networkSettings.interfaces.list.length ; i++) {
-            var intf = networkSettings.interfaces.list[i];
+            intf = networkSettings.interfaces.list[i];
             if (intf.configType != 'ADDRESSED' || !intf.isWan ) continue;
             weight = weightArray[intf.interfaceId-1];
             interfaceWeightData.push({
@@ -79,13 +84,44 @@ Ext.define('Ung.apps.wanbalancer.MainController', {
 
         trafficAllocation += "</TABLE>";
 
+        for (var c = 0 ; c < networkSettings.interfaces.list.length ; c++) {
+            intf = networkSettings.interfaces.list[c];
+            var name = intf.name;
+            var key = intf.interfaceId;
+            if ( intf.configType == 'ADDRESSED' && intf.isWan) {
+                destinationWanData.push( [ key, name ] );
+            }
+        }
+        destinationWanData.unshift([0, 'Balance'.t()]);
+
         vm.set('interfaceWeightData', interfaceWeightData);
         vm.set('trafficAllocation', trafficAllocation);
+        vm.set('destinationWanData', destinationWanData);
     },
 
     getDescription: function(intfCount, total, weight) {
         var percent = ( total == 0 ) ? Math.round(( 1 / intfCount ) * 1000) / 10 : Math.round(( weight / total ) * 1000) / 10;
         return Ext.String.format("{0}% of Internet traffic.".t(), percent);
     },
+
+    setWeights: function() {
+        var me = this, v = this.getView(), vm = this.getViewModel();
+
+        // JSON serializes out empty elements
+        var weights = [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0 ];
+
+        var iwd = vm.get('interfaceWeightData');
+
+        iwd.forEach(function(record) {
+            weights[record.interfaceId - 1] = record.weight;
+        });
+
+        vm.set('settings.weights', weights);
+    }
 
 });

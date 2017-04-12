@@ -7,7 +7,8 @@ Ext.define('Ung.apps.wanbalancer.Main', {
 
         data: {
             autoRefresh: false,
-            interfaceWeightData: []
+            interfaceWeightData: [],
+            destinationWanData: []
         },
 
         stores: {
@@ -16,6 +17,9 @@ Ext.define('Ung.apps.wanbalancer.Main', {
             },
             interfaceWeightList: {
                 data: '{interfaceWeightData}'
+            },
+            destinationWanList: {
+                data: '{destinationWanData}'
             }
         }
     },

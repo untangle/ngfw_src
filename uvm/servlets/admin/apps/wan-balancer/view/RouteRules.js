@@ -26,12 +26,12 @@ Ext.define('Ung.apps.wanbalancer.view.RouteRules', {
     ruleJavaClass: 'com.untangle.app.wan_balancer.RouteRuleCondition',
 
     conditions: [
-        {name:"DST_ADDR",displayName: "Destination Address".t(), type: "text", visible: true, vtype:"ipMatcher"},
-        {name:"DST_PORT",displayName: "Destination Port".t(), type: "text",vtype:"portMatcher", visible: true},
-        {name:"SRC_ADDR",displayName: "Source Address".t(), type: "text", visible: true, vtype:"ipMatcher"},
-        {name:"SRC_PORT",displayName: "Source Port".t(), type: "text",vtype:"portMatcher", visible: rpc.isExpertMode},
-        {name:"SRC_INTF",displayName: "Source Interface".t(), type: "checkgroup", values: Util.getInterfaceList(true, false), visible: true},
-        {name:"PROTOCOL",displayName: "Protocol".t(), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["any", "any".t()]], visible: true}
+        {name:"DST_ADDR",displayName: "Destination Address".t(), type: "textfield", visible: true, vtype:"ipMatcher"},
+        {name:"DST_PORT",displayName: "Destination Port".t(), type: "textfield",vtype:"portMatcher", visible: true},
+        {name:"SRC_ADDR",displayName: "Source Address".t(), type: "textfield", visible: true, vtype:"ipMatcher"},
+        {name:"SRC_PORT",displayName: "Source Port".t(), type: "textfield",vtype:"portMatcher", visible: rpc.isExpertMode},
+        {name:"SRC_INTF",displayName: "Source Interface".t(), type: "checkboxgroup", values: Util.getInterfaceList(true, false), visible: true},
+        {name:"PROTOCOL",displayName: "Protocol".t(), type: "checkboxgroup", values: [["TCP","TCP"],["UDP","UDP"],["any", "any".t()]], visible: true}
     ],
 
     emptyRow: {
@@ -49,7 +49,7 @@ Ext.define('Ung.apps.wanbalancer.view.RouteRules', {
 
     columns: [
         Column.ruleId,
-        Column.live,
+        Column.enabled,
         Column.description,
         Column.conditions, {
             header: 'Destination WAN'.t(),
@@ -59,18 +59,17 @@ Ext.define('Ung.apps.wanbalancer.view.RouteRules', {
     ],
 
     editorFields: [
-        Field.live,
+        Field.enableRule(),
         Field.description,
         Field.conditions, {
             xtype: 'combo',
             fieldLabel: 'Destination WAN'.t(),
-            bind: '{record.destinationWan}',
+            bind: {
+                value: '{record.destinationWan}',
+                store: '{destinationWanList}'
+            },
             allowBlank: false,
-            editable: false,
-            store: [
-                ['0', 'Balance'.t()]
-            ],
-            queryMode: 'local',
+            editable: false
         }
     ]
 
