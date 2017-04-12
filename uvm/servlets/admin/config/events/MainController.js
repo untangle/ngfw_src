@@ -241,6 +241,7 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
         }
         record.set('conditions', conditions);
     },
+
     massageRecordOut: function(record, store){
         var conditionsList = Ext.Array.pluck( store.getRange(), 'data' );
         if(record.get('class') == 'All'){
@@ -345,14 +346,12 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
         if (v.down('grid')) {
             condStore = v.down('grid').getStore();
             /* Regardless of what changeed, we need to re-integrate the record. */
-            this.massageRecordOut(v.record, condStore);
+            this.massageRecordOut(vm.get('record'), condStore);
         }
 
         if (!this.action) {
             for (var field in vm.get('record').modified) {
-                if (field !== 'conditions') {
-                    v.record.set(field, vm.get('record').get(field));
-                }
+                v.record.set(field, vm.get('record').get(field));
             }
         }
         if (this.action === 'add') {
@@ -362,10 +361,11 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
     },
 
     onCancel: function () {
-        var v = this.getView();
+        var v = this.getView(),
+            vm = this.getViewModel();
         if (v.down('grid')) {
             condStore = v.down('grid').getStore();
-            this.massageRecordOut(v.record, condStore);
+            this.massageRecordOut(vm.get('record'), condStore);
         }
         this.getView().close();
     },
@@ -459,52 +459,60 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
                         if (button == 'no') {
                             record.set('class', oldValue );
                         } else {
-                            this.classChangeFields();
+                            this.classChangeFields(oldValue);
                         }
                     },this)
             );
         }
     },
 
-    classChangeFields: function(){
+    classChangeFields: function( oldClassName ){
         var vm = this.getViewModel();
 
         // Re-render add field menu
         this.onConditionsRender();
 
         // Remove fields if they do not exist in new class.
+        var oldFields = vm.get('classFields')[oldClassName].fields;
         var newFields = vm.get('classFields')[vm.get('record.class')].fields;
 
         var store = this.getView().down('grid').getStore();
         var match;
-        store.each(function(record){
+        store.each(Ext.bind( function( record ){
             match = false;
-            newFields.forEach(function(field){
+            newFields.forEach( Ext.bind( function( field ){
                 if(record.get('field') == field.name){
+                    // Provisionally match!
                     match = true;
+
+                    // But look for other reasons why it may not be true.
+                    oldFields.forEach( Ext.bind( function( oldField ){
+                        if(field.name == oldField.name){
+                            if( this.getRecordFieldType(field.type) != this.getRecordFieldType(oldField.type) ){
+                                // Form display is not the same.
+                                match = false;
+                            }
+                            if( field.values && oldField.values ){
+                                // Enumerated, but field value list is not the same.
+                                if(field.values.length != oldField.values.length){
+                                    match = false;
+                                }
+                                var i = field.values.length;
+                                while( i-- ){
+                                    if(field.values[i] != oldField.values[i]){
+                                        match = false;
+                                        break;
+                                    }
+                                }   
+                            }
+                        }
+                    }, this ) );
                 }
-            });
+            }, this ) );
             if(match === false){
                 store.remove(record);
             }
-        });
-
-        // Modify all grid fields to match store
-        console.log('look for grid field columns=');
-        console.log(this.getView().down('grid').down('[name=field]'));
-        var v = this.getView();
-
-        // if conditions
-        if (v.down('grid')) {
-            console.log('store range');
-            console.log(v.down('grid').getStore().getRange());
-            console.log(v.down('grid').getView().getRow(0) );
-            console.log(v.down('grid').getView() );
-        }
-
-        // Change value fields especially if fixed
-
-        // Remove field from Add field
+        }, this) );
 
     },
 
@@ -523,42 +531,52 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
         return '<strong>' + value + ':</strong>';
     },
 
-    comparatorFieldStores: {},
-    buildComperatorFieldStore: function( type ){
-        var storeName;
-        switch(type.toLowerCase()){
-            case 'string':
-            case 'enum':
-                storeName = 'string';
+    getRecordFieldType: function(recordType){
+        var fieldType = 'string';
+        switch(recordType.toLowerCase()){
+            case 'double':
+            case 'int':
+            case 'integer':
+            case 'long':
+            case 'short':
+                fieldType = 'numeric';
                 break;
 
             case 'boolean':
-                storeName = 'boolean';
-                break;
-
-            default:
-                storeName = 'numeric';
+                fieldType = 'boolean';
+                break;                
         }
+        return fieldType;
+    },
+
+    comparatorFieldStores: {},
+    buildComperatorFieldStore: function( type ){
+
+        var storeName = this.getRecordFieldType(type);
+
         if( !(storeName in this.comparatorFieldStores) ){
             var vm = this.getViewModel();
 
             var fields = [];
             switch(storeName){
-                case 'string':
-                    fields.push([ '=', 'Equals (=)'.t() ]);
-                    fields.push([ '!=', 'Does not equal (!=)'.t() ]);
-                    break;
-                case 'boolean':
-                    fields.push([ '=', 'Is'.t() ]);
-                    fields.push([ '!=', 'Is not'.t() ]);
-                    break;
-                default:
+                case 'numeric':
                     fields.push([ '>', 'Less (<)'.t() ]);
                     fields.push([ '>=', 'Less or equal (<=)'.t() ]);
                     fields.push([ '=', 'Equals (=)'.t() ]);
                     fields.push([ '<=', 'Greater or equal (>=)'.t() ]);
                     fields.push([ '<', 'Greater (>)'.t() ]);
                     fields.push([ '!=', 'Does not equal (!=)'.t() ]);
+                    break;
+
+                case 'boolean':
+                    fields.push([ '=', 'Is'.t() ]);
+                    fields.push([ '!=', 'Is not'.t() ]);
+                    break;
+
+                default:
+                    fields.push([ '=', 'Equals (=)'.t() ]);
+                    fields.push([ '!=', 'Does not equal (!=)'.t() ]);
+                    break;
             }
 
             this.comparatorFieldStores[storeName] = Ext.create('Ext.data.ArrayStore', {
@@ -623,44 +641,10 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
         }
 
         container.removeAll(true);
-        switch(type.toLowerCase()){
+
+        var fieldType = this.getRecordFieldType(type);
+        switch(fieldType){
             case 'enum':
-                container.add({
-                    xtype: 'combo',
-                    editable: true,
-                    queryMode: 'local',
-                    bind: '{record.fieldValue}',
-                    valueField: 'name',
-                    displayField: 'name',
-                    store: {
-                        fields: [ 'name' ],
-                        sorters: [{
-                            property: 'name',
-                            direction: 'ASC'
-                        }],
-                        data: enumValues
-                    }
-                });
-                break;
-
-            case 'string':
-                container.add({
-                    xtype: 'textfield',
-                    style: { margin: 0 },
-                    bind: {
-                        value: '{record.fieldValue}'
-                    },
-                    // vtype: condition.vtype
-                });
-                break;
-
-            case 'class':
-                container.add({
-                    xtype: 'component',
-                    padding: 3,
-                    html: className
-                    // mouseover?
-                });
                 break;
 
             case 'boolean':
@@ -671,7 +655,7 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
                 });
                 break;
 
-            default:
+            case 'numeric':
                 var allowDecimals = (type == 'float' ? true : false);
                 container.add({
                     xtype: 'numberfield',
@@ -682,6 +666,36 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
                     },
                     // vtype: condition.vtype
                 });
+                break;
+
+            default:
+                if( type == 'enum'){
+                    container.add({
+                        xtype: 'combo',
+                        editable: true,
+                        queryMode: 'local',
+                        bind: '{record.fieldValue}',
+                        valueField: 'name',
+                        displayField: 'name',
+                        store: {
+                            fields: [ 'name' ],
+                            sorters: [{
+                                property: 'name',
+                                direction: 'ASC'
+                            }],
+                            data: enumValues
+                        }
+                    });
+                }else{
+                    container.add({
+                        xtype: 'textfield',
+                        style: { margin: 0 },
+                        bind: {
+                            value: '{record.fieldValue}'
+                        },
+                        // vtype: condition.vtype
+                    });
+                }
         }
 
         // determine appropriate type
