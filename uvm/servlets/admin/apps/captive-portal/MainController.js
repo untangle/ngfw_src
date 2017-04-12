@@ -70,11 +70,14 @@ Ext.define('Ung.apps.captiveportal.MainController', {
         }
 
         var custfile = this.getViewModel().get('settings.customFilename');
-        if ( custfile == null || custfile.length === 0 ) {
+        var pagetype = vm.get('settings.pageType');
+
+        if ( (pagetype == 'CUSTOM') && ((custfile == null) || (custfile.length === 0)) ) {
             Ext.MessageBox.alert('Missing Custom Captive Page'.t(),
                 'You must upload a custom captive page to use this feature.'.t());
             return;
         }
+
         window.open('/capture/handler.py/index?appid=' + vm.get('instance.id') , '_blank');
     },
 
