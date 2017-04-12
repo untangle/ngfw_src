@@ -183,7 +183,7 @@ Ext.define('Ung.apps.ipsecvpn.MainController', {
         ipsecApp.virtualUserDisconnect(Ext.bind(function(result, exception) {
             // this gives the app a couple seconds to process the disconnect before we refresh the list
             var timer = setTimeout(function() {
-                me.getVirtualUsers()
+                me.getVirtualUsers();
                 v.setLoading(false);
             },2000);
         }, this), record.get("clientAddress"), record.get("clientUsername"));
