@@ -45,6 +45,12 @@ Ext.define('Ung.apps.wanbalancer.view.WeightGrid', {
         header: 'Weight'.t(),
         dataIndex: 'weight',
         width: 120,
+        editor: {
+            xtype: 'numberfield',
+            allowDecimals: false,
+            minValue: 0,
+            maxValue: 100
+        }
     }, {
         header: 'Resulting Traffic Allocation'.t(),
         dataIndex: 'description',
