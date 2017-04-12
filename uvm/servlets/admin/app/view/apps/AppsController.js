@@ -22,7 +22,19 @@ Ext.define('Ung.view.apps.AppsController', {
         var me = this, vm = this.getViewModel();
         // when policy changes get the apps, this is needed because
         vm.bind('{policyId}', function (val) {
-            me.getApps();
+            if (Ext.getStore('policiestree').getCount() > 0) {
+                var policyNode = Ext.getStore('policiestree').findNode('policyId', vm.get('policyId'));
+                vm.set('policyName', policyNode.get('name'));
+                me.getApps();
+            }
+        });
+    },
+
+    updateCounters: function () {
+        var vm = this.getViewModel();
+        vm.set({
+            appsCount: vm.getStore('installedApps').getCount(),
+            servicesCount: vm.getStore('installedServices').getCount()
         });
     },
 
@@ -54,11 +66,11 @@ Ext.define('Ung.view.apps.AppsController', {
                 mouseLeaveDelay: 0,
                 items: menuItems
             });
-            vm.set('policyMenu', true);
 
             var policyNode = Ext.getStore('policiestree').findNode('policyId', vm.get('policyId'));
             vm.set('policyName', policyNode.get('name'));
 
+            vm.set('policyMenu', true);
         } else {
             vm.set('policyMenu', false);
         }
@@ -83,7 +95,7 @@ Ext.define('Ung.view.apps.AppsController', {
             .then(function (policy) {
                 me.getView().setLoading(false);
                 var apps = [];
-                vm.getStore('apps').removeAll();
+                // vm.getStore('apps').removeAll();
 
                 Ext.Array.each(policy.appProperties.list, function (app) {
                     var _app = {
@@ -175,6 +187,8 @@ Ext.define('Ung.view.apps.AppsController', {
                     Ext.getStore('policies').loadData(policies);
                 });
 
+
+            me.updateCounters();
             Ext.fireEvent('appinstall');
             // me.getApps();
         });
