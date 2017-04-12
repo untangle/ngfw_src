@@ -91,7 +91,14 @@ Ext.define('Ung.apps.ipsecvpn.view.GreNetworksGrid', {
         bind: '{record.description}',
         xtype: 'textfield',
     }, {
-        fieldLabel: 'Local IP'.t(),
+        fieldLabel: 'Interface'.t(),
+        xtype: 'combobox',
+        editable: false,
+/* FIXME - Why doesn't this work???
+        store: '{wanListStore}',
+*/
+    }, {
+        fieldLabel: 'External IP'.t(),
         bind: '{record.localAddress}',
         xtype: 'textfield',
         vtype: 'ipAddress'
