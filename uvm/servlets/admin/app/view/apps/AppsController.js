@@ -3,12 +3,8 @@ Ext.define('Ung.view.apps.AppsController', {
     alias: 'controller.apps',
 
     control: {
-        '#': { activate: 'onActivate' },
-        '#installedApps': { activate: 'filterInstalled' },
-        '#installableApps': {
-            activate: 'filterInstallable',
-            select: 'onInstallApp'
-        }
+        '#': { afterrender: 'onAfterRender', activate: 'onActivate' },
+        '#installableApps > dataview': { select: 'onInstallApp' }
     },
     listen: {
         store: {
@@ -19,6 +15,15 @@ Ext.define('Ung.view.apps.AppsController', {
     },
 
     onActivate: function () {
+        this.getApps();
+    },
+
+    onAfterRender: function () {
+        var me = this, vm = this.getViewModel();
+        // when policy changes get the apps, this is needed because
+        vm.bind('{policyId}', function (val) {
+            me.getApps();
+        });
     },
 
     onRootChange: function () {
@@ -50,39 +55,15 @@ Ext.define('Ung.view.apps.AppsController', {
                 items: menuItems
             });
             vm.set('policyMenu', true);
+
+            var policyNode = Ext.getStore('policiestree').findNode('policyId', vm.get('policyId'));
+            vm.set('policyName', policyNode.get('name'));
+
         } else {
             vm.set('policyMenu', false);
         }
-        me.getApps(); // set when route changed
-    },
 
-    appDesc: {
-        'web-filter': 'Web Filter scans and categorizes web traffic to monitor and enforce network usage policies.'.t(),
-        'web-monitor': 'Web monitor scans and categorizes web traffic to monitor and enforce network usage policies.'.t(),
-        'virus-blocker': 'Virus Blocker detects and blocks malware before it reaches users desktops or mailboxes.'.t(),
-        'virus-blocker-lite': 'Virus Blocker Lite detects and blocks malware before it reaches users desktops or mailboxes.'.t(),
-        'spam-blocker': 'Spam Blocker detects, blocks, and quarantines spam before it reaches users mailboxes.'.t(),
-        'spam-blocker-lite': 'Spam Blocker Lite detects, blocks, and quarantines spam before it reaches users mailboxes.'.t(),
-        'phish-blocker': 'Phish Blocker detects and blocks phishing emails using signatures.'.t(),
-        'web-cache': 'Web Cache stores and serves web content from local cache for increased speed and reduced bandwidth usage.'.t(),
-        'bandwidth-control': 'Bandwidth Control monitors, manages, and shapes bandwidth usage on the network'.t(),
-        'ssl-inspector': 'SSL Inspector allows for full decryption of HTTPS and SMTPS so that other applications can process the encrytped streams.'.t(),
-        'application-control': 'Application Control scans sessions and identifies the associated applications allowing each to be flagged and/or blocked.'.t(),
-        'application-control-lite': 'Application Control Lite identifies, logs, and blocks sessions based on the session content using custom signatures.'.t(),
-        'captive-portal': 'Captive Portal allows administrators to require network users to complete a defined process, such as logging in or accepting a network usage policy, before accessing the internet.'.t(),
-        'firewall': 'Firewall is a simple application that flags and blocks sessions based on rules.'.t(),
-        'ad-blocker': 'Ad Blocker blocks advertising content and tracking cookies for scanned web traffic.'.t(),
-        'reports': 'Reports records network events to provide administrators the visibility and data necessary to investigate network activity.'.t(),
-        'policy-manager': 'Policy Manager enables administrators to create different policies and handle different sessions with different policies based on rules.'.t(),
-        'directory-connector': 'Directory Connector allows integration with external directories and services, such as Active Directory, RADIUS, or Google.'.t(),
-        'wan-failover': 'WAN Failover detects WAN outages and re-routes traffic to any other available WANs to maximize network uptime.'.t(),
-        'wan-balancer': 'WAN Balancer spreads network traffic across multiple internet connections for better performance.'.t(),
-        'ipsec-vpn': 'IPsec VPN provides secure network access and tunneling to remote users and sites using IPsec, GRE, L2TP, Xauth, and IKEv2 protocols.'.t(),
-        'openvpn': 'OpenVPN provides secure network access and tunneling to remote users and sites using the OpenVPN protocol.'.t(),
-        'intrusion-prevention': 'Intrusion Prevention blocks scans, detects, and blocks attacks and suspicious traffic using signatures.'.t(),
-        'configuration-backup': 'Configuration Backup automatically creates backups of settings uploads them to My Account and Google Drive.'.t(),
-        'branding-manager': 'The Branding Settings are used to set the logo and contact information that will be seen by users (e.g. reports).'.t(),
-        'live-support': 'Live Support provides on-demand help for any technical issues.'.t()
+        me.getApps(); // set when route changed
     },
 
     refs: {
@@ -90,160 +71,95 @@ Ext.define('Ung.view.apps.AppsController', {
         installableApps: '#installableApps'
     },
 
-    // listen: {
-    //     global: {
-    //         appstatechange: 'updateApps'
-    //     },
-    //     store: {
-    //         '#policies': {
-    //             datachanged: 'updateApps'
-    //         }
-    //     }
-    // },
-
     getApps: function () {
         var me = this, vm = this.getViewModel(), instance;
 
-        if (Ext.getStore('policiestree').getCount() > 0) {
-            var policyNode = Ext.getStore('policiestree').findNode('policyId', vm.get('policyId'));
-            this.lookup('policyBtn').setText(policyNode.get('name') + ' &nbsp;<i class="fa fa-angle-down fa-lg"></i>');
-        }
+        // we need policies store before fetching apps
+        if (Ext.getStore('policiestree').getCount() === 0) { return; }
+
+        me.getView().setLoading(true);
 
         Rpc.asyncData('rpc.appManager.getAppsView', vm.get('policyId'))
             .then(function (policy) {
+                me.getView().setLoading(false);
+                var apps = [];
+                vm.getStore('apps').removeAll();
 
-            var apps = [];
-            vm.getStore('apps').removeAll();
-
-            Ext.Array.each(policy.appProperties.list, function (app) {
-                var _app = {
-                    name: app.name,
-                    displayName: app.displayName,
-                    route: app.type === 'FILTER' ? '#apps/' + policy.policyId + '/' + app.name : '#service/' + app.name,
-                    type: app.type,
-                    hasPowerButton: app.hasPowerButton,
-                    viewPosition: app.viewPosition,
-                    status: null,
-                };
-                instance = Ext.Array.findBy(policy.instances.list, function(instance) { return instance.appName === app.name; });
-                if (instance) {
-                    _app.targetState = instance.targetState;
-                    if (instance.policyId && policy.policyId !== instance.policyId) {
-                        _app.parentPolicy = Ext.getStore('policiestree').findNode('policyId', instance.policyId).get('name');
+                Ext.Array.each(policy.appProperties.list, function (app) {
+                    var _app = {
+                        name: app.name,
+                        displayName: app.displayName,
+                        route: app.type === 'FILTER' ? '#apps/' + policy.policyId + '/' + app.name : '#service/' + app.name,
+                        type: app.type,
+                        hasPowerButton: app.hasPowerButton,
+                        viewPosition: app.viewPosition,
+                        targetState: null,
+                        desc: Util.appDescription[app.name],
+                        extraCls: 'installed'
+                    };
+                    instance = Ext.Array.findBy(policy.instances.list, function(instance) { return instance.appName === app.name; });
+                    if (instance) {
+                        _app.targetState = instance.targetState;
+                        if (instance.policyId && policy.policyId !== instance.policyId) {
+                            _app.parentPolicy = Ext.getStore('policiestree').findNode('policyId', instance.policyId).get('name');
+                        }
                     }
-                }
-                apps.push(_app);
-            });
-
-            Ext.Array.each(policy.installable.list, function (app) {
-                apps.push({
-                    name: app.name,
-                    displayName: app.displayName,
-                    // route: '#apps/' + policy.policyId + '/' + app.name,
-                    type: app.type,
-                    viewPosition: app.viewPosition,
-                    desc: me.appDesc[app.name],
-                    status: 'available'
+                    apps.push(_app);
                 });
+
+                Ext.Array.each(policy.installable.list, function (app) {
+                    apps.push({
+                        name: app.name,
+                        displayName: app.displayName,
+                        route: app.type === 'FILTER' ? '#apps/' + policy.policyId + '/' + app.name : '#service/' + app.name,
+                        type: app.type,
+                        viewPosition: app.viewPosition,
+                        targetState: null,
+                        desc: Util.appDescription[app.name],
+                        hasPowerButton: app.hasPowerButton,
+                        extraCls: 'installable'
+                    });
+                });
+                vm.getStore('apps').loadData(apps);
             });
-
-            vm.getStore('apps').loadData(apps);
-        });
     },
 
-    /**
-     * Based on which view is activated (Apps or Install Apps)
-     * the apps store is filtered to reflect current applications
-     */
-    filterInstalled: function () {
-        this.getViewModel().set('onInstalledApps', true);
-        var appsStore = this.getViewModel().getStore('apps');
-
-        appsStore.clearFilter();
-        appsStore.filterBy(function (rec) {
-            return !rec.get('status') || rec.get('status') === 'installing' || rec.get('status') === 'installed';
-        });
+    showInstall: function () {
+        var me = this, vm = this.getViewModel();
+        me.getView().setActiveItem('installableApps');
+        vm.set('onInstalledApps', false);
     },
 
-    filterInstallable: function () {
-        this.getViewModel().set('onInstalledApps', false);
-        var appsStore = this.getViewModel().getStore('apps');
-
-        // initially, after install the nide item is kept on the Install Apps, having status 'installed'
-        // when activating 'Install Apps', the 'installed' status is set as null so that app will not be shown
-        appsStore.each(function (rec) {
-            if (rec.get('status') === 'installed') {
-                rec.set('status', null);
-            }
-        });
-        appsStore.clearFilter();
-        appsStore.filterBy(function (rec) {
-            return Ext.Array.contains(['available', 'installing', 'installed'], rec.get('status'));
-        });
+    backToApps: function () {
+        var me = this, vm = this.getViewModel();
+        me.getView().setActiveItem('installedApps');
+        vm.set('onInstalledApps', true);
     },
-
-    // init: function (view) {
-    //     view.getViewModel().bind({
-    //         bindTo: '{policyId}'
-    //     }, this.onPolicy, this);
-    // },
-
-    // onAppStateChange: function (state, instance) {
-    //     console.log(instance);
-    // },
-
-    // updateApps: function () {
-    //     var vm = this.getViewModel(),
-    //         appInstance, i;
-
-    //     rpc.appManager.getAppsViews(function(result, exception) {
-    //         var policy = result.filter(function (p) {
-    //             return parseInt(p.policyId) === parseInt(vm.get('policyId'));
-    //         })[0];
-
-    //         var apps = policy.appProperties.list,
-    //             instances = policy.instances.list;
-
-    //         for (i = 0; i < apps.length; i += 1) {
-    //             appInstance = instances.filter(function (instance) {
-    //                 return instance.appName === apps[i].name;
-    //             })[0];
-    //             // console.log(appInstance.targetState);
-    //             apps[i].policyId = vm.get('policyId');
-    //             apps[i].state = appInstance.targetState.toLowerCase();
-    //         }
-    //         vm.set('apps', apps);
-    //     });
-    // },
-
-    // onPolicy: function () {
-    //     // this.getView().lookupReference('filters').removeAll();
-    //     // this.getView().lookupReference('services').removeAll();
-    //     // this.updateApps();
-    // },
 
     setPolicy: function (combo, newValue, oldValue) {
         if (oldValue !== null) {
             this.redirectTo('#apps/' + newValue, false);
-            this.updateApps();
+            // this.updateApps();
         }
     },
-
-    // onItemAfterRender: function (item) {
-    //     Ext.defer(function () {
-    //         item.removeCls('insert');
-    //     }, 50);
-    // },
 
     /**
      * method which initialize the app installation
      */
     onInstallApp: function (view, record) {
         var me = this, vm = me.getViewModel();
-        record.set('status', 'installing');
+        record.set('extraCls', 'progress');
+
+        // find and remove App item if it's from a parent policy
+        var parentAppIdx = vm.getStore('apps').findBy(function (rec) {
+            return rec.get('name') === record.get('name') && rec.get('parentPolicy');
+        });
+        if (parentAppIdx >= 0) { vm.getStore('apps').removeAt(parentAppIdx); }
+
         Rpc.asyncData('rpc.appManager.instantiate', record.get('name'), vm.get('policyId'))
         .then(function (result) {
-            // record.set('status', 'installed');
+            record.set('extraCls', 'finish');
+            record.set('targetState', result.getRunState());
 
             if (record.get('name') === 'reports') { // just reload the page for now
                 window.location.href = '/admin/index.do';
@@ -260,7 +176,7 @@ Ext.define('Ung.view.apps.AppsController', {
                 });
 
             Ext.fireEvent('appinstall');
-            me.getApps();
+            // me.getApps();
         });
     }
 

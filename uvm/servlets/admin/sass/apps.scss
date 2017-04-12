@@ -119,37 +119,37 @@
     &.insert {
         transform: scale(0)
     }
+
+    .loader {
+        display: none;
+        left: 50%;
+        top: 60px;
+    }
+
     &.progress {
-        background: #EEE;
-        .app-icon {
-            transform-origin: top;
-            transform: scale(0.9);
-            img {
-                filter: grayscale(100%);
-            }
+        img {
+            filter: grayscale(100%);
+            opacity: 0.2;
         }
-        .spinner {
+        .loader {
             display: block;
         }
     }
-    &.installed {
-        background: transparent;
-        box-shadow: none;
-        .app-icon {
-            transform-origin: top;
-            transform: scale(0.9);
-            img {
-                //opacity: 0.7
-            }
-        }
-        .app-name {
-            color: green;
-        }
-        .app-done {
-            opacity: 1;
-        }
-        .app-install {
-            opacity: 0;
+
+    .new {
+        display: none;
+        font-weight: 600;
+        font-size: 11px;
+        color: #FFF;
+        border-radius: 3px;
+        background: green;
+        padding: 0 3px;
+        line-height: 1.2;
+    }
+
+    &.finish {
+        .new {
+            display: inline-block;
         }
     }
     .app-icon {
@@ -301,7 +301,7 @@
         top: 50px;
     }
 
-    &.installing {
+    &.progress {
         img {
             opacity: 0.1;
         }
@@ -316,7 +316,7 @@
         }
     }
 
-    &.installed {
+    &.finish {
         img {
             opacity: 0.1;
         }
