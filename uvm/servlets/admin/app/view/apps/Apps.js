@@ -82,7 +82,7 @@ Ext.define('Ung.view.apps.Apps', {
             arrowVisible: false,
             bind: {
                 text: '{policyName} &nbsp;<i class="fa fa-angle-down fa-lg"></i>',
-                hidden: '{!onInstalledApps || !policyMenu}'
+                hidden: '{!onInstalledApps || !policyManagerInstalled}'
             }
         }, {
             xtype: 'button',
@@ -104,7 +104,7 @@ Ext.define('Ung.view.apps.Apps', {
             hidden: true,
             bind: {
                 html: '<i class="fa fa-angle-right fa-lg"></i> &nbsp;&nbsp;&nbsp;&nbsp; Install Apps in &nbsp;<i class="fa fa-file-text-o"></i> <strong>{policyName}</strong> policy',
-                hidden: '{onInstalledApps}'
+                hidden: '{onInstalledApps || !policyManagerInstalled}'
             }
         }])
     }],
@@ -127,7 +127,7 @@ Ext.define('Ung.view.apps.Apps', {
             xtype: 'dataview',
             bind: '{installedApps}',
             tpl: '<tpl for=".">' +
-                    '<tpl if="parentPolicy"><a class="app-item disabled"><tpl else><a href="{route}" class="app-item {extraCls}"></tpl>' +
+                    '<tpl if="parentPolicy"><a class="app-item disabled"><tpl elseif="route"><a href="{route}" class="app-item {extraCls}"><tpl else><a class="app-item {extraCls}"></tpl>' +
                     '<tpl if="hasPowerButton && targetState"><span class="state {targetState}"><i class="fa fa-power-off"></i></span></tpl>' +
                     '<img src="' + '/skins/modern-rack/images/admin/apps/{name}_80x80.png" width=80 height=80/>' +
                     '<span class="app-name">{displayName}</span>' +
@@ -138,20 +138,21 @@ Ext.define('Ung.view.apps.Apps', {
                 '</tpl>',
             itemSelector: 'a'
         }, {
-            xtype: 'container',
+            xtype: 'component',
             padding: '20 40',
-            items: [{
-                xtype: 'button',
-                scale: 'large',
-                text: 'Install Apps'.t(),
-                padding: '0 20 0 0',
-                iconCls: 'fa fa-download',
-                handler: 'showInstall'
-            }],
+            html: 'No Apps ...',
+            // items: [{
+            //     xtype: 'button',
+            //     scale: 'large',
+            //     text: 'Install Apps'.t(),
+            //     padding: '0 20 0 0',
+            //     iconCls: 'fa fa-download',
+            //     handler: 'showInstall'
+            // }],
             hidden: true,
-            bind: {
-                hidden: '{appsCount > 0 || !policyName}'
-            }
+            // bind: {
+            //     hidden: '{appsCount > 0 || !policyName}'
+            // }
         }, {
             xtype: 'component',
             cls: 'apps-title',
@@ -164,7 +165,7 @@ Ext.define('Ung.view.apps.Apps', {
             xtype: 'dataview',
             bind: '{installedServices}',
             tpl: '<tpl for=".">' +
-                    '<a href="{route}" class="app-item {extraCls}">' +
+                    '<tpl if="route"><a href="{route}" class="app-item {extraCls}"><tpl else><a class="app-item {extraCls}"></tpl>' +
                     '<tpl if="hasPowerButton && targetState"><span class="state {targetState}"><i class="fa fa-power-off"></i></span></tpl>' +
                     '<img src="' + '/skins/modern-rack/images/admin/apps/{name}_80x80.png" width=80 height=80/>' +
                     '<span class="app-name">{displayName}</span>' +
@@ -174,20 +175,21 @@ Ext.define('Ung.view.apps.Apps', {
                 '</tpl>',
             itemSelector: 'a'
         }, {
-            xtype: 'container',
+            xtype: 'component',
             padding: '20 40',
-            items: [{
-                xtype: 'button',
-                scale: 'large',
-                text: 'Install Apps'.t(),
-                padding: '0 20 0 0',
-                iconCls: 'fa fa-download',
-                handler: 'showInstall'
-            }],
+            html: 'No Service Apps ...',
+            // items: [{
+            //     xtype: 'button',
+            //     scale: 'large',
+            //     text: 'Install Apps'.t(),
+            //     padding: '0 20 0 0',
+            //     iconCls: 'fa fa-download',
+            //     handler: 'showInstall'
+            // }],
             hidden: true,
-            bind: {
-                hidden: '{servicesCount > 0 || !policyName}'
-            }
+            // bind: {
+            //     hidden: '{servicesCount > 0 || !policyName}'
+            // }
         }]
     }, {
         scrollable: true,
