@@ -31,7 +31,9 @@ Ext.define('Ung.apps.wanbalancer.view.RouteRules', {
         {name:"SRC_ADDR",displayName: "Source Address".t(), type: "textfield", visible: true, vtype:"ipMatcher"},
         {name:"SRC_PORT",displayName: "Source Port".t(), type: "textfield",vtype:"portMatcher", visible: rpc.isExpertMode},
         {name:"SRC_INTF",displayName: "Source Interface".t(), type: "checkboxgroup", values: Util.getInterfaceList(true, false), visible: true},
-        {name:"PROTOCOL",displayName: "Protocol".t(), type: "checkboxgroup", values: [["TCP","TCP"],["UDP","UDP"],["any", "any".t()]], visible: true}
+        {name:"PROTOCOL",displayName: "Protocol".t(), type: "checkboxgroup", values: [["TCP","TCP"],["UDP","UDP"],["any", "any".t()]], visible: true},
+        {name:"CLIENT_COUNTRY",displayName: 'Client Country'.t(), type: 'countryfield', visible: true},
+        {name:"SERVER_COUNTRY",displayName: 'Server Country'.t(), type: 'countryfield', visible: true}
     ],
 
     emptyRow: {
