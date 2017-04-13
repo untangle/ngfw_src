@@ -46,7 +46,7 @@ Ext.define('Ung.apps.openvpn.view.Server', {
     }]
 });
 
-Ext.define('Ung.apps.openvpn.view.ServerTabs', {
+Ext.define('Ung.apps.openvpn.cmp.ServerTabs', {
     extend: 'Ext.tab.Panel',
     alias: 'widget.app-openvpn-server-tab-panel',
     itemId: 'server-tab-panel',
@@ -73,10 +73,12 @@ Ext.define('Ung.apps.openvpn.view.ServerTabs', {
 
 });
 
-Ext.define('Ung.apps.openvpn.view.RemoteClientsGrid', {
+Ext.define('Ung.apps.openvpn.cmp.RemoteClientsGrid', {
     extend: 'Ung.cmp.Grid',
     alias: 'widget.app-openvpn-remote-clients-grid',
     itemId: 'remote-clients-grid',
+    viewModel: true,
+    controller: 'app-openvpn-special',
 
     dockedItems: [{
         xtype: 'toolbar',
@@ -117,6 +119,7 @@ Ext.define('Ung.apps.openvpn.view.RemoteClientsGrid', {
         width: 120,
         iconCls: 'fa fa-download',
         align: 'center',
+        handler: 'downloadClient',
     }],
 
     editorFields: [{
@@ -139,28 +142,15 @@ Ext.define('Ung.apps.openvpn.view.RemoteClientsGrid', {
         editable: false,
         bind: '{record.export}',
         store: [[false,'Individual Client'.t()],[true,'Network'.t()]],
-
-/* this doesn't work
-
-    }, {
-        title: 'Client Configuration'.t(),
-        xtype: 'app-openvpn-config-editor-grid',
-        padding: '20 20 20 20',
-        width: 800,
-        height: 300,
-        listProperty: 'record.clientConfigItems.list',
-        itemId: 'client-config-item-grid',
-        bind: 'record.clientConfigItems.list'
-*/
-
     }]
 
 });
 
-Ext.define('Ung.apps.openvpn.view.GroupsGrid', {
+Ext.define('Ung.apps.openvpn.cmp.GroupsGrid', {
     extend: 'Ung.cmp.Grid',
     alias: 'widget.app-openvpn-groups-grid',
     itemId: 'groups-grid',
+    viewModel: true,
 
     dockedItems: [{
         xtype: 'toolbar',
@@ -249,10 +239,11 @@ Ext.define('Ung.apps.openvpn.view.GroupsGrid', {
 
 });
 
-Ext.define('Ung.apps.openvpn.view.ExportedNetworksGrid', {
+Ext.define('Ung.apps.openvpn.cmp.ExportedNetworksGrid', {
     extend: 'Ung.cmp.Grid',
     alias: 'widget.app-openvpn-exported-networks-grid',
     itemId: 'exported-clients-grid',
+    viewModel: true,
 
     dockedItems: [{
         xtype: 'toolbar',
