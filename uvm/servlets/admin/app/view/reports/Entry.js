@@ -164,6 +164,15 @@ Ext.define('Ung.view.reports.Entry', {
                 itemId: 'refreshBtn',
                 handler: 'refreshData'
             }, '-', {
+                itemId: 'exportBtn',
+                text: 'Export'.t(),
+                iconCls: 'fa fa-sign-out',
+                handler: 'exportEventsHandler',
+                hidden: true,
+                bind: {
+                    hidden: '{entry.type !== "EVENT_LIST"}'
+                }
+            }, {
                 itemId: 'downloadBtn',
                 text: 'Download'.t(),
                 iconCls: 'fa fa-download',
@@ -763,7 +772,7 @@ Ext.define('Ung.view.reports.Entry', {
         region: 'south',
         xtype: 'grid',
         height: 280,
-        title: '<i class="fa fa-filter"></i> ' + 'Filters' + ' (0)',
+        title: Ext.String.format('Conditions: {0}'.t(), 0),
         itemId: 'sqlFilters',
         collapsible: true,
         collapsed: true,
