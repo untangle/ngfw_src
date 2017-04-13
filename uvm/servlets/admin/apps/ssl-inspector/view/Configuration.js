@@ -177,7 +177,7 @@ Ext.define('Ung.apps.sslinspector.view.Configuration', {
             xtype: 'button',
             text: "Upload Trusted Certificate".t(),
             margin: '0 20 0 20',
-            handler: Ext.bind(function() { this.handleCertificateUpload(); }, this)
+            handler: 'uploadTrustedCertificate',
         }, {
             xtype: 'displayfield',
             margin: '10 20 0 20',
@@ -195,9 +195,14 @@ Ext.define('Ung.apps.sslinspector.view.TrustedCertsGrid', {
     alias: 'widget.app-ssl-inspector-trusted-certs-grid',
     itemId: 'trusted-certs-grid',
     title: "Trusted Certificates &nbsp;&nbsp; (click any cell to see details)".t(),
-    recordActions: ['delete'],
-//    listProperty: 'settings.networks.list',
-//    bind: '{networkList}',
+    viewModel: true,
+    controller: 'app-sslinspector-special',
+    bind: '{trustedCertList}',
+
+    viewConfig: {
+        emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-2x"></i> <br/>' + 'No Trusted Certificates'.t() + ' ...</p>',
+        stripeRows: false
+    },
 
     columns: [{
         header: 'Alias'.t(),
@@ -224,5 +229,12 @@ Ext.define('Ung.apps.sslinspector.view.TrustedCertsGrid', {
         width: 180,
         flex: 1,
         dataIndex: 'dateExpire'
+    }, {
+        header: 'Delete'.t(),
+        xtype: 'actioncolumn',
+        width: 80,
+        align: 'center',
+        iconCls: 'fa fa-trash',
+        handler: 'deleteTrustedCertificate'
     }]
 });
