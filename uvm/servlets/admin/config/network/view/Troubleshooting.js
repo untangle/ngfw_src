@@ -199,18 +199,28 @@ Ext.define('Ung.config.network.view.Troubleshooting', {
             title: 'Packet Test'.t(),
 
             commandFields: [{
-                xtype: 'checkbox',
-                boxLabel: 'Advanced'.t(),
-                margin: '0 10 0 0',
-                bind: '{advanced}'
+                xtype: 'segmentedbutton',
+                bind: '{mode}',
+                margin: '0 5 0 0',
+                items:[{
+                    text: 'Basic'.t(),
+                    value: 'basic'
+                },{
+                    text: 'Advanced'.t(),
+                    value: 'advanced'
+                }]
             }, {
                 xtype: 'textfield',
-                width: 200,
+                fieldLabel: 'Host'.t(),
+                labelAlign: 'right',
+                width: 220,
                 emptyText : 'IP Address or Hostname'.t(),
                 disabled: true,
+                hidden: true,
                 bind: {
                     value: '{destination}',
-                    disabled: '{!advanced}'
+                    hidden: '{mode === "advanced"}',
+                    disabled: '{mode === "advanced"}'
                 }
             }, {
                 xtype: 'numberfield',
@@ -219,26 +229,48 @@ Ext.define('Ung.config.network.view.Troubleshooting', {
                 width: 80,
                 emptyText: 'Port'.t(),
                 disabled: true,
+                hidden: true,
                 bind: {
                     value: '{port}',
-                    disabled: '{!advanced}'
+                    disabled: '{mode === "advanced"}',
+                    hidden: '{mode === "advanced" }'
                 }
             }, {
                 xtype: 'combo',
                 fieldLabel: 'Interface'.t(),
+                width: 200,
                 labelAlign: 'right',
                 editable: false,
-                // width: 100,
+                disabled: true,
+                hidden: true,
                 forceSelection: true,
                 bind: {
                     store: '{interfacesListSystemDev}',
-                    value: '{interface}'
+                    value: '{interface}',
+                    disabled: '{mode === "advanced"}',
+                    hidden: '{mode === "advanced" }'
+                }
+            }, {
+                xtype: 'textfield',
+                fieldLabel: 'Arguments'.t(),
+                labelAlign: 'right',
+                width: 500,
+                emptyText : 'Tcpdump Arguments'.t(),
+                disabled: true,
+                hidden: true,
+                bind: {
+                    value: '{tcpdumpArguments}',
+                    hidden: '{mode === "basic"}',
+                    disabled: '{mode === "basic"}'
                 }
             }, {
                 xtype: 'combo',
                 fieldLabel: 'Timeout'.t(),
                 labelAlign: 'right',
-                editable: false,
+                // minValue : 1,
+                // maxValue : 3600,
+                // !!! true?
+                editable: true,
                 store: [[ 5, '5 seconds'.t()],
                         [ 30, '30 seconds'.t()],
                         [ 120, '120 seconds'.t()]],
@@ -249,29 +281,53 @@ Ext.define('Ung.config.network.view.Troubleshooting', {
                 data: {
                     description: 'The <b>Packet Test</b> can be used to view packets on the network wire for troubleshooting.'.t(),
                     emptyText: 'Packet Test Output'.t(),
-                    advanced: true,
+                    mode: 'basic',
                     destination: 'any',
                     port: '',
-                    timeout: 5
+                    timeout: 5,
+                    tcpdumpArguments: ''
                 },
                 formulas: {
                     command: function (get) {
+                        var timeout = parseInt(get('timeout'), 10);
+                        if(isNaN(timeout)){
+                            timeout = 5;
+                        }
+
                         var traceFixedOptionsTemplate = ['-U', '-l', '-v'];
                         var traceOverrideOptionsTemplate = ['-n', '-s 65535', '-i ' + get('interface')];
                         var traceOptions = traceFixedOptionsTemplate.concat(traceOverrideOptionsTemplate);
                         var traceExpression = [];
-                        if (get('advanced')) {
-                            // traceExpression = [this.advancedInput.getValue()];
+
+                        var traceArguments = '';
+                        if (get('mode') == "advanced") {
+                            traceArguments = get('tcpdumpArguments');
                         } else {
                             if (get('destination') !== null && get('destination').toLowerCase() !== 'any') {
                                 traceExpression.push('host ' + get('destination'));
                             }
-                            if (get('port') !== null) {
+                            if (get('port') !== null && get('port') != "") {
                                 traceExpression.push('port ' + get('port'));
                             }
+                            var traceArguments = traceOptions.join(' ') + ' ' + traceExpression.join( ' and ');
+                            this.set('tcpdumpArguments', traceArguments );
                         }
-                        var traceArguments = traceOptions.join(' ') + ' ' + traceExpression.join( ' and ');
-                        return traceArguments;
+
+                        // !!! path here is kind of dumb!
+                        var filename ="/tmp/network-tests/" +
+                            "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
+                                var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+                                return v.toString(16);
+                            }) + ".pcap";
+
+                        // !!! And so is filename...
+                        var script = [
+                            '/usr/share/untangle/bin/ut-network-tests-packet.py'+
+                                ' --timeout ' + timeout  +
+                                ' --filename ' + filename.replace('\'','') +
+                                ' --arguments \'' + traceArguments.replace('\'','') + '\''
+                        ];
+                        return ["/bin/bash","-c", script.join("")];
                     },
                     interfacesListSystemDev: function (get) {
                         var data = [], i,
