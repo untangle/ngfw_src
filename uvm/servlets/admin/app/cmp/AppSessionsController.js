@@ -183,6 +183,7 @@ Ext.define('Ung.cmp.AppSessionsController', {
                 }
             },
             series: [{
+                name: 'Sessions'.t(),
                 data: (function () {
                     var data = [], time = Date.now(), i;
                     try {
@@ -223,7 +224,7 @@ Ext.define('Ung.cmp.AppSessionsController', {
         })[0].value || 0;
 
         // random for testing
-        newVal = Math.floor(Math.random() * 20) + 15;
+        // newVal = Math.floor(Math.random() * 20) + 15;
 
         this.chart.series[0].addPoint({
             x: Date.now(),
