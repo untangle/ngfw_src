@@ -31,9 +31,9 @@ Ext.define('Ung.widget.WidgetController', {
                     me.addToQueue();
                 }
 
-                if (e.target.dataset.action === 'redirect') {
-                    Ung.app.redirectTo('#reports/' + me.getViewModel().get('entry.url'), true);
-                }
+                // if (e.target.dataset.action === 'redirect') {
+                //     Ung.app.redirectTo('#reports/' + me.getViewModel().get('entry.url'), true);
+                // }
 
                 if (e.target.dataset.action === 'style') {
                     var idx;
