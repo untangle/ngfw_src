@@ -419,9 +419,9 @@ Ext.define('Ung.cmp.RecordEditorController', {
                         }
                         if (app) {
                             data = app.getGroupEntries().list;
-                        } else {
-                            data.push({ SAMAccountName: '*', displayName: 'Any Group'});
                         }
+                        data.push({ SAMAccountName: '*', displayName: 'Any Group'});
+
                         field.getStore().loadData(data);
                         field.setValue(record.get('value'));
                     },
