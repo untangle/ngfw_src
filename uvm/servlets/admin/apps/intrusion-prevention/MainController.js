@@ -592,6 +592,29 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
         }
     },
 
+    logCheckAll: function(checkbox, checked){
+        Ext.MessageBox.wait(checked ? "Checking All ...".t() : "Unchecking All ...".t(), "Please wait".t());
+        Ext.Function.defer(function() {
+            var grid=checkbox.up("grid");
+            var records=grid.getStore().getRange();
+            grid.getStore().suspendEvents(true);
+            var record;
+            for(var i=0; i<records.length; i++) {
+                record = records[i];
+                if(checked == false ) {
+                    record.set('block', false);
+                    this.updateRule(records[i], 'block', checked );
+                }
+                record.set('log', checked);
+                this.updateRule(records[i], 'log', checked );
+            }
+            grid.getStore().resumeEvents();
+            grid.getStore().getFilters().notify('endupdate');
+            Ext.MessageBox.hide();
+        }, 100, this);
+
+    },
+
     blockBeforeCheckChange: function ( elem, rowIndex, checked ){
         var record = elem.getView().getRecord(rowIndex);
         if(checked) {
@@ -603,6 +626,28 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
             record.set('block', false);
             this.updateRule(record, 'block', false );
         }
+    },
+
+    blockCheckAll: function(checkbox, checked){
+        Ext.MessageBox.wait(checked ? "Checking All ...".t() : "Unchecking All ...".t(), "Please wait".t());
+        Ext.Function.defer(function() {
+            var grid=checkbox.up("grid");
+            var records=grid.getStore().getRange();
+            grid.getStore().suspendEvents(true);
+            var record;
+            for(var i=0; i<records.length; i++) {
+                record = records[i];
+                if(checked) {
+                    record.set('log', true);
+                    this.updateRule(records[i], 'log', checked );
+                }
+                record.set('block', checked);
+                this.updateRule(records[i], 'block', checked );
+            }
+            grid.getStore().resumeEvents();
+            grid.getStore().getFilters().notify('endupdate');
+            Ext.MessageBox.hide();
+        }, 100, this);
     },
 
     updateSearchStatusBar: function(){
