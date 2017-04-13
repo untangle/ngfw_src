@@ -107,8 +107,7 @@ Ext.define('Ung.view.reports.ReportsController', {
 
         me.buildStats();
         me.lookup('cards').setActiveItem('category');
-
-        // me.lookup('breadcrumb').setSelection('root');
+        me.getViewModel().set('hash', null);
     },
 
     /**
