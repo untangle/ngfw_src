@@ -267,9 +267,6 @@ Ext.define('Ung.config.network.view.Troubleshooting', {
                 xtype: 'combo',
                 fieldLabel: 'Timeout'.t(),
                 labelAlign: 'right',
-                // minValue : 1,
-                // maxValue : 3600,
-                // !!! true?
                 editable: true,
                 store: [[ 5, '5 seconds'.t()],
                         [ 30, '30 seconds'.t()],
@@ -309,7 +306,7 @@ Ext.define('Ung.config.network.view.Troubleshooting', {
                             if (get('port') !== null && get('port') != "") {
                                 traceExpression.push('port ' + get('port'));
                             }
-                            var traceArguments = traceOptions.join(' ') + ' ' + traceExpression.join( ' and ');
+                            traceArguments = traceOptions.join(' ') + ' ' + traceExpression.join( ' and ');
                             this.set('tcpdumpArguments', traceArguments );
                         }
 
