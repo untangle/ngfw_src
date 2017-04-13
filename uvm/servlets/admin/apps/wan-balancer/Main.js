@@ -19,6 +19,7 @@ Ext.define('Ung.apps.wanbalancer.Main', {
                 data: '{interfaceWeightData}'
             },
             destinationWanList: {
+                fields: [ 'index', 'name' ],
                 data: '{destinationWanData}'
             }
         }

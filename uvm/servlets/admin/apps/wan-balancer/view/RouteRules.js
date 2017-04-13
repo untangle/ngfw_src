@@ -56,7 +56,13 @@ Ext.define('Ung.apps.wanbalancer.view.RouteRules', {
         Column.conditions, {
             header: 'Destination WAN'.t(),
             dataIndex: 'destinationWan',
-            width: 250
+            width: 250,
+            renderer: function(value, meta, record, row, col, store, grid) {
+                var wanlist = this.getViewModel().get('destinationWanList');
+                var dstname = 'Unknown'.t();
+                wanlist.each(function(record) { if (record.get('index') == value) dstname = record.get('name'); });
+                return(dstname);
+            }
         }
     ],
 
@@ -71,7 +77,10 @@ Ext.define('Ung.apps.wanbalancer.view.RouteRules', {
                 store: '{destinationWanList}'
             },
             allowBlank: false,
-            editable: false
+            editable: false,
+            queryMode: 'local',
+            displayField: 'name',
+            valueField: 'index'
         }
     ]
 

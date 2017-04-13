@@ -84,6 +84,8 @@ Ext.define('Ung.apps.wanbalancer.MainController', {
 
         trafficAllocation += "</TABLE>";
 
+        destinationWanData.push([0, 'Balance'.t()]);
+
         for (var c = 0 ; c < networkSettings.interfaces.list.length ; c++) {
             intf = networkSettings.interfaces.list[c];
             var name = intf.name;
@@ -92,7 +94,6 @@ Ext.define('Ung.apps.wanbalancer.MainController', {
                 destinationWanData.push( [ key, name ] );
             }
         }
-        destinationWanData.unshift([0, 'Balance'.t()]);
 
         vm.set('interfaceWeightData', interfaceWeightData);
         vm.set('trafficAllocation', trafficAllocation);
