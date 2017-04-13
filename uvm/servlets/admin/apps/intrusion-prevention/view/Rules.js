@@ -101,27 +101,9 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
         listeners: {
             beforecheckchange: 'logBeforeCheckChange'
         },
-        // checkAll: {
-        //     handler: function(checkbox, checked) {
-        //         console.log("do checkall");
-        //         // Ext.MessageBox.wait(checked?i18n._("Checking All ..."):i18n._("Unchecking All ..."), i18n._("Please wait"));
-        //         // Ext.Function.defer(function() {
-        //         //     var grid=checkbox.up("grid");
-        //         //     var records=grid.getStore().getRange();
-        //         //     grid.getStore().suspendEvents(true);
-        //         //     for(var i=0; i<records.length; i++) {
-        //         //         records[i].set('log', checked);
-        //         //         if(!checked) {
-        //         //             records[i].set('block', false);
-        //         //         }
-        //         //         grid.updateRule(records[i], null );
-        //         //     }
-        //         //     grid.getStore().resumeEvents();
-        //         //     grid.getStore().getFilters().notify('endupdate');
-        //         //     Ext.MessageBox.hide();
-        //         // }, 100, this);
-        //     }
-        // }
+        checkAll: {
+            handler: 'logCheckAll'
+        }
     },{
         xtype:'checkcolumn',
         header: "Block".t(),
@@ -129,27 +111,10 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
         width:55,
         listeners: {
             beforecheckchange: 'blockBeforeCheckChange'
+        },
+        checkAll: {
+            handler: 'blockCheckAll'
         }
-        // checkAll: {
-        //     handler: function(checkbox, checked) {
-        //         Ext.MessageBox.wait(checked?i18n._("Checking All ..."):i18n._("Unchecking All ..."), i18n._("Please wait"));
-        //         Ext.Function.defer(function() {
-        //             var grid=checkbox.up("grid");
-        //             var records=grid.getStore().getRange();
-        //             grid.getStore().suspendEvents(true);
-        //             for(var i=0; i<records.length; i++) {
-        //                 records[i].set('block', checked);
-        //                 if(checked) {
-        //                     records[i].set('log', true);
-        //                 }
-        //                 grid.updateRule(records[i], null );
-        //             }
-        //             grid.getStore().resumeEvents();
-        //             grid.getStore().getFilters().notify('endupdate');
-        //             Ext.MessageBox.hide();
-        //         }, 100, this);
-        //     }
-        // }
     }],
 
     editorFields: [{

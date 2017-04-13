@@ -136,6 +136,35 @@ Ext.define('Ung.cmp.Grid', {
         // to revisit the way columns are attached
         var columns = Ext.clone(this.columns), i;
 
+        if (this.tbar == null) {
+            this.tbar=[];
+        }
+        var tbarSeparatorIndex = this.tbar.indexOf('->');
+        if(tbarSeparatorIndex == -1){
+            tbarSeparatorIndex = this.tbar.length;
+        }
+        columns.forEach( Ext.bind( function(column){
+            if( column.xtype == 'checkcolumn' && column.checkAll){
+                var columnDataIndex = column.dataIndex;
+
+                this.tbar.splice( tbarSeparatorIndex, 0, Ext.applyIf(column.checkAll, {
+                    xtype: 'checkbox',
+                    // hidden: !rpc.isExpertMode,
+                    hideLabel: true,
+                    margin: '0 5px 0 5px',
+                    boxLabel: Ext.String.format("{0} All".t(), column.header),
+                    // scope: {columnDataIndex: columnDataIndex},
+                    handler: function(checkbox, checked) {
+                        var records=checkbox.up("grid").getStore().getRange();
+                        for(var i=0; i<records.length; i++) {
+                            records[i].set(this.colDataIndex, checked);
+                        }
+                    },
+                }));
+                tbarSeparatorIndex++;
+            }
+        }, this));
+
         if (this.recordActions) {
             for (i = 0; i < this.recordActions.length; i += 1) {
                 var action = this.recordActions[i];
