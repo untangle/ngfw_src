@@ -4,8 +4,15 @@ Ext.define('Ung.apps.sslinspector.Main', {
     controller: 'app-ssl-inspector',
 
     viewModel: {
+
+        data: {
+            autoRefresh: false,
+            trustedCertData: []
+        },
+
         stores: {
-            ignoreRules: { data: '{settings.ignoreRules.list}' }
+            ignoreRules: { data: '{settings.ignoreRules.list}' },
+            trustedCertList: { data: '{trustedCertData}' }
         }
     },
 

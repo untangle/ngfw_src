@@ -33,9 +33,6 @@ Ext.define('Ung.apps.sslinspector.view.Status', {
         minWidth: 300,
         split: true,
         layout: 'border',
-        // layout: {
-        //     type: 'hbox'
-        // },
         items: [{
             xtype: 'appsessions',
             region: 'center',
