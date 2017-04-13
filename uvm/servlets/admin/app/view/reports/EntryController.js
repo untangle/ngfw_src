@@ -381,7 +381,7 @@ Ext.define('Ung.view.reports.EntryController', {
 
         me.getView().down('#filtersToolbar').remove('sqlFilterValue');
 
-        me.getView().down('#sqlFilters').setTitle('Filters'.t() + ' (' + vm.get('sqlFilterData').length + ')');
+        me.getView().down('#sqlFilters').setTitle(Ext.String.format('Conditions: {0}'.t(), vm.get('sqlFilterData').length));
         me.getView().down('#sqlFilters').getStore().reload();
         me.refreshData();
     },
@@ -392,7 +392,7 @@ Ext.define('Ung.view.reports.EntryController', {
 
         me.getView().down('#filtersToolbar').remove('sqlFilterValue');
 
-        me.getView().down('#sqlFilters').setTitle('Filters'.t() + ' (' + vm.get('sqlFilterData').length + ')');
+        me.getView().down('#sqlFilters').setTitle(Ext.String.format('Conditions: {0}'.t(), vm.get('sqlFilterData').length));
         me.getView().down('#sqlFilters').getStore().reload();
         me.refreshData();
     },
@@ -473,7 +473,7 @@ Ext.define('Ung.view.reports.EntryController', {
 
         me.getView().down('#filtersToolbar').remove('sqlFilterValue');
 
-        me.getView().down('#sqlFilters').setTitle('Filters'.t() + ' (' + vm.get('sqlFilterData').length + ')');
+        me.getView().down('#sqlFilters').setTitle(Ext.String.format('Conditions: {0}'.t(), vm.get('sqlFilterData').length));
         me.getView().down('#sqlFilters').getStore().reload();
         me.refreshData();
 
@@ -589,6 +589,35 @@ Ext.define('Ung.view.reports.EntryController', {
             console.log(ex);
             Util.exceptionToast('Unable to download!');
         }
+    },
+
+    exportEventsHandler: function () {
+        var me = this, vm = me.getViewModel(), entry = vm.get('entry').getData(), columns = [];
+        if (!entry) { return; }
+
+        Ext.Array.each(me.getView().down('#eventsGrid').getColumns(), function (col) {
+            if (col.dataIndex && !col.hidden) {
+                columns.push(col.dataIndex);
+            }
+        });
+
+        var conditions = [];
+        Ext.Array.each(Ext.clone(vm.get('sqlFilterData')), function (cnd) {
+            delete cnd._id;
+            conditions.push(cnd);
+        });
+
+        Ext.MessageBox.wait('Exporting Events...'.t(), 'Please wait'.t());
+        var downloadForm = document.getElementById('downloadForm');
+        downloadForm['type'].value = 'eventLogExport';
+        downloadForm['arg1'].value = (entry.category + '-' + entry.title + '-' + Ext.Date.format(new Date(), 'd.m.Y-Hi')).replace(/ /g, '_');
+        downloadForm['arg2'].value = Ext.encode(entry);
+        downloadForm['arg3'].value = conditions.length > 0 ? Ext.encode(conditions) : '';
+        downloadForm['arg4'].value = columns.join(',');
+        downloadForm['arg5'].value = vm.get('_sd') ? vm.get('_sd').getTime() : -1;
+        downloadForm['arg6'].value = vm.get('_ed') ? vm.get('_ed').getTime() : -1;
+        downloadForm.submit();
+        Ext.MessageBox.hide();
     }
 
 });
