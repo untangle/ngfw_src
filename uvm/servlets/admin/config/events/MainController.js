@@ -744,7 +744,7 @@ Ext.define('Ung.config.events.cmp.EventGridController', {
 
         var className;
         if(conditions.length == 0){
-            className = '*All*'
+            className = '*All*';
         }else{
             className = conditions[0].fieldValue;            
         }
