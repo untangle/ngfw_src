@@ -46,7 +46,7 @@ public class OpenVpnConfigItem
 
 // THIS IS FOR ECLIPSE - @formatter:on
 
-    public String getConfigString()
+    public String generateConfigString()
     {
         if (excludeFlag == true) return (null);
 

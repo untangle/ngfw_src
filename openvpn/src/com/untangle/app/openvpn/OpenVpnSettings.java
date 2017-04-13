@@ -74,7 +74,7 @@ public class OpenVpnSettings implements java.io.Serializable, JSONString
         serverConfiguration.add(new OpenVpnConfigItem("tls-server", true));
         serverConfiguration.add(new OpenVpnConfigItem("comp-lzo", true));
         serverConfiguration.add(new OpenVpnConfigItem("status", "openvpn-status.log", true));
-        serverConfiguration.add(new OpenVpnConfigItem("verb ", Integer.toString(DEFAULT_VERBOSITY), true));
+        serverConfiguration.add(new OpenVpnConfigItem("verb", Integer.toString(DEFAULT_VERBOSITY), true));
         serverConfiguration.add(new OpenVpnConfigItem("dev", "tun0", true));
         serverConfiguration.add(new OpenVpnConfigItem("max-routes", "500", true));
         serverConfiguration.add(new OpenVpnConfigItem("max-clients", "2048", true));

@@ -181,12 +181,20 @@ public class OpenVpnManager
             return;
 
         StringBuilder sb = new StringBuilder();
+        String cfgstr;
 
         for ( OpenVpnConfigItem item : settings.getServerConfiguration()) {
             // ignore any default global config item when there is a custom global config item with the same option name
-            if (findCustomConfigItem(settings.getServerConfiguration(), item.getOptionName()) != null) continue;
+            if ((item.getReadOnly() == true) && (findCustomConfigItem(settings.getServerConfiguration(), item.getOptionName()) != null)) {
+                logger.debug("FOUND server custom IGNORING default: " + item.getOptionName());
+                continue;
+            }
 
-            if (item.getConfigString() != null) sb.append( item.getConfigString() + "\n" );
+            cfgstr = item.generateConfigString();
+            if (cfgstr != null) {
+                logger.debug("ADDING server config: " + cfgstr);
+                sb.append(cfgstr + "\n");
+            }
         }
 
         sb.append( "proto" + " " + settings.getProtocol() + "\n" );
@@ -247,6 +255,7 @@ public class OpenVpnManager
     {
         final String KEY_DIR = "keys";
         StringBuilder sb = new StringBuilder();
+        String cfgstr;
 
         OpenVpnGroup group = getGroup( settings, client.getGroupId() );
 
@@ -256,28 +265,52 @@ public class OpenVpnManager
          */
         for ( OpenVpnConfigItem item : settings.getClientConfiguration()) {
             // ignore any default global config item when there is a custom global config item with the same option name
-            if (findCustomConfigItem(settings.getClientConfiguration(), item.getOptionName()) != null) continue;
+            if ((item.getReadOnly() == true) && (findCustomConfigItem(settings.getClientConfiguration(), item.getOptionName()) != null)) {
+                logger.debug("FOUND global custom IGNORING default: " + item.getOptionName());
+                continue;
+            }
 
             // ignore global config items that exist in the client group config
-            if (findAnyConfigItem(group.getGroupConfigItems(), item.getOptionName()) != null) continue;
+            if ((item.getReadOnly() == true) && (findAnyConfigItem(group.getGroupConfigItems(), item.getOptionName()) != null)) {
+                logger.debug("FOUND group custom IGNORING default: " + item.getOptionName());
+                continue;
+            }
 
             // ignore global config items that exist in the unique client config
-            if (findAnyConfigItem(client.getClientConfigItems(), item.getOptionName()) != null) continue;
+            if ((item.getReadOnly() == true) && (findAnyConfigItem(client.getClientConfigItems(), item.getOptionName()) != null)) {
+                logger.debug("FOUND client custom IGNORING default: " + item.getOptionName());
+                continue;
+            }
 
-            if (item.getConfigString() != null) sb.append( item.getConfigString() + "\n" );
+            cfgstr = item.generateConfigString();
+            if (cfgstr != null) {
+                logger.debug("ADDING global config: " + cfgstr);
+                sb.append( cfgstr + "\n" );
+            }
         }
 
         /* Add any custom config items for the argumented client group */
         for ( OpenVpnConfigItem item : group.getGroupConfigItems()) {
             // ignore group config items that exist in the client config
-            if (findAnyConfigItem(client.getClientConfigItems(), item.getOptionName()) != null) continue;
+            if (findAnyConfigItem(client.getClientConfigItems(), item.getOptionName()) != null) {
+                logger.debug("FOUND client custom IGNORING group: " + item.getOptionName());
+                continue;
+            }
 
-            if (item.getConfigString() != null) sb.append( item.getConfigString() + "\n" );
+            cfgstr = item.generateConfigString();
+            if (cfgstr != null) {
+                logger.debug("ADDING group config: " + cfgstr);
+                sb.append( cfgstr + "\n" );
+            }
         }
 
         /* Add any custom config items for the argumented client */
         for ( OpenVpnConfigItem item : client.getClientConfigItems()) {
-            if (item.getConfigString() != null) sb.append( item.getConfigString() + "\n" );
+            cfgstr = item.generateConfigString();
+            if (cfgstr != null) {
+                logger.debug("ADDING client config: " + cfgstr);
+                sb.append( cfgstr + "\n" );
+            }
         }
 
         sb.append( "proto" + " " + settings.getProtocol() + "\n" );
@@ -689,7 +722,7 @@ public class OpenVpnManager
         if (argList == null) return(null);
 
         for ( OpenVpnConfigItem item : argList) {
-            if (item.getOptionName().toLowerCase().equals(findName.toLowerCase()))
+            if (item.getOptionName().trim().toLowerCase().equals(findName.trim().toLowerCase()))
             return(item);
         }
 
@@ -706,7 +739,7 @@ public class OpenVpnManager
 
         for ( OpenVpnConfigItem item : argList) {
             if (item.getReadOnly() == true) continue;
-            if (item.getOptionName().toLowerCase().equals(findName.toLowerCase()))
+            if (item.getOptionName().trim().toLowerCase().equals(findName.trim().toLowerCase()))
             return(item);
         }
 
