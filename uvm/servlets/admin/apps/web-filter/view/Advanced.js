@@ -127,9 +127,6 @@ Ext.define('Ung.apps.webfilter.view.Advanced', {
         },
         items: [{
             xtype: 'container',
-            layout: {
-                type: 'hbox'
-            },
             items: [{
                 xtype: 'combo',
                 width: 200,
@@ -141,6 +138,30 @@ Ext.define('Ung.apps.webfilter.view.Advanced', {
                     ['Global', 'Permanent and Global'.t()]
                 ],
                 bind: '{settings.unblockMode}'
+            }, {
+                xtype: 'container',
+                margin: '0 0 0 10',
+                hidden: true,
+                disabled: true,
+                bind: {
+                    hidden: '{settings.unblockMode !== "Host"}',
+                    disabled: '{settings.unblockMode !== "Host"}'
+                },
+                items: [{
+                    xtype: 'container',
+                    layout: 'column',
+                    width: 500,
+                    items:[{
+                        xtype: 'textfield',
+                        fieldLabel: 'Timeout'.t(),
+                        bind: '{settings.unblockTimeout}'
+                    },{
+                        xtype: 'label',
+                        margin: '5 0 0 5',
+                        html: 'seconds'.t(),
+                        cls: 'boxlabel'
+                    }]
+                }]
             }, {
                 xtype: 'checkbox',
                 margin: '0 0 0 10',
@@ -164,6 +185,7 @@ Ext.define('Ung.apps.webfilter.view.Advanced', {
                 type: 'hbox',
                 align: 'center'
             },
+            margin: '0 0 0 20',
             hidden: true,
             disabled: true,
             bind: {
