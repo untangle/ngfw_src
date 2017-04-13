@@ -250,6 +250,10 @@ Ext.define('Ung.util.Util', {
         return Util.getInterfaceListSystemDev(wanMatchers, anyMatcher, false);
     },
 
+    bytesToMBs: function(value) {
+        return Math.round(value/10000)/100;
+    },
+
     // used for render purposes
     interfacesListNamesMap: function () {
         var map = {
