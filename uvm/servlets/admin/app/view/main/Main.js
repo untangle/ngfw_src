@@ -85,6 +85,15 @@ Ext.define('Ung.view.main.Main', {
                 hidden: '{!reportsInstalled}'
             }
         }, '->', {
+            iconCls: 'fa fa-exclamation-triangle fa-lg fa-orange',
+            itemId: 'notificationBtn',
+            cls: 'notification-btn',
+            scale: 'large',
+            arrowVisible: false,
+            margin: '0 20 0 0',
+            menuAlign: 'tr-br',
+            hidden: true
+        }, {
             text: 'Help'.t(),
             iconCls: 'fa fa-question-circle',
             href: rpc.helpUrl + '?' + Util.getAbout(),

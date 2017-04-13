@@ -653,7 +653,7 @@ span.fa:before {
 .fa {
     &-red { color: red; }
     &-green { color: green; }
-    &-orange { color: orange; }
+    &-orange { color: orange !important; }
     &-yellow { color: yellow; }
     &-gray { color: #999; }
 }
@@ -755,6 +755,30 @@ span.fa:before {
         color: #CCC;
         top: 15px;
     }
+}
+
+.notification-btn {
+    background: transparent !important;
+}
+.notification-menu {
+    .x-menu-body {
+        background: #1b1e26;
+        color: #CCC;
+    }
+    border: 0;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
+    font-family: $custom-font;
+    border-radius: 0 0 5px 5px;
+}
+
+.notification-menu ul {
+    margin: 0 5px 0 20px;
+    padding: 0;
+}
+
+.notification-menu h3 {
+    margin: 0 0 10px 0;
+    font-weight: normal;
 }
 
 .install-header {
