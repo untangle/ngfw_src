@@ -47,6 +47,8 @@ Ext.define('Ung.config.events.view.Alerts', {
             Column.ruleId,
             Column.enabled,
             Column.description,
+            EventColumn.conditionClass,
+            EventColumn.conditionFields,
         {
             xtype:'checkcolumn',
             header: 'Log'.t(),

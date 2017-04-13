@@ -121,6 +121,8 @@ Ext.define('Ung.config.events.view.Syslog', {
             Column.ruleId,
             Column.enabled,
             Column.description,
+            EventColumn.conditionClass,
+            EventColumn.conditionFields,
         {
             xtype:'checkcolumn',
             header: 'Log'.t(),
