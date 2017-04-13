@@ -28,8 +28,10 @@ Ext.define('Ung.view.main.MainController', {
                         notificationArr += '<li>' + result.list[i] + '</li>';
                     }
                     notificationArr += '</ul>';
+                    btn.setText(result.list.length);
                 } else {
                     btn.hide();
+                    return;
                 }
 
                 btn.setMenu({
