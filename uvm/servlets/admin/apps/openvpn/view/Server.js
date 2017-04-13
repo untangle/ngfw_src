@@ -92,7 +92,7 @@ Ext.define('Ung.apps.openvpn.cmp.RemoteClientsGrid', {
         javaClass: 'com.untangle.app.openvpn.OpenVpnRemoteClient',
         'enabled': true,
         'name': '',
-        'groupId': '1',
+        'groupId': 1,
         'export': false
         },
 
@@ -113,6 +113,12 @@ Ext.define('Ung.apps.openvpn.cmp.RemoteClientsGrid', {
         header: 'Group'.t(),
         width: 120,
         dataIndex: 'groupId',
+        renderer: function(value, meta, record, row, col, store, grid) {
+            var groupList = this.getViewModel().get('groups');
+            var grpname = 'Unknown'.t();
+            groupList.each(function(record) { if (record.get('groupId') == value) grpname = record.get('name'); });
+            return(grpname);
+        }
     }, {
         xtype: 'actioncolumn',
         header: 'Download Client'.t(),
@@ -131,11 +137,17 @@ Ext.define('Ung.apps.openvpn.cmp.RemoteClientsGrid', {
         bind: '{record.name}',
         fieldLabel: 'Client Name'.t()
     }, {
-        xtype:'combo',
+        xtype: 'combobox',
         fieldLabel: 'Group'.t(),
+        bind: {
+            value: '{record.groupId}',
+            store: '{groups}'
+        },
+        allowBlank: false,
         editable: false,
-        bind: '{record.groupId}',
-        store: [['1','Default Group']]
+        queryMode: 'local',
+        displayField: 'name',
+        valueField: 'groupId'
     }, {
         xtype:'combo',
         fieldLabel: 'Type'.t(),
@@ -164,7 +176,7 @@ Ext.define('Ung.apps.openvpn.cmp.GroupsGrid', {
         javaClass: 'com.untangle.app.openvpn.OpenVpnGroup',
         'enabled': true,
         'name': '',
-        'groupId': '1',
+        'groupId': -1,
         'export': false
         },
 
