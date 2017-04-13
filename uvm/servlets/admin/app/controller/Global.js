@@ -110,11 +110,10 @@ Ext.define('Ung.controller.Global', {
         }
 
         this.getMainView().getViewModel().set('activeItem', 'apps');
+        this.getMainView().getViewModel().set('policyId', policyId);
+
         this.getAppsView().setActiveItem('installedApps');
-        this.getAppsView().getViewModel().set({
-            policyId: policyId,
-            onInstalledApps: true
-        });
+        this.getAppsView().getViewModel().set('onInstalledApps', true);
 
         if (app) {
             me.loadApp(policyId, app, view);
@@ -148,10 +147,10 @@ Ext.define('Ung.controller.Global', {
 
         var policy = Ext.getStore('policies').findRecord('policyId', policyId);
         var appInstance = Ext.Array.findBy(policy.get('instances').list, function (inst) {
-            return inst.appName.replace('', '').replace('', '') === app;
+            return inst.appName === app;
         });
         var appProps = Ext.Array.findBy(policy.get('appProperties').list, function (prop) {
-            return prop.name.replace('', '').replace('', '') === app;
+            return prop.name === app;
         });
 
         // var appClass = Ext.ClassManager.getByAlias('widget.app-' + app);
@@ -173,6 +172,7 @@ Ext.define('Ung.controller.Global', {
                         activeTab: view || 0,
                         viewModel: {
                             data: {
+                                // policyId: policyId,
                                 instance: appInstance,
                                 props: appProps,
                                 urlName: app
