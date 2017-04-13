@@ -51,7 +51,10 @@ Ext.define('Ung.config.network.MainController', {
                 intfStatus = Ext.Array.findBy(result[1].list, function (intfSt) {
                     return intfSt.interfaceId === intf.interfaceId;
                 });
-                delete intfStatus.javaClass;
+
+                if(intfStatus != null){
+                    delete intfStatus.javaClass;
+                }
                 Ext.apply(intf, intfStatus);
 
                 devStatus = Ext.Array.findBy(result[2].list, function (devSt) {
@@ -230,7 +233,6 @@ Ext.define('Ung.config.network.MainController', {
     onInterfaces: function () {
         var me = this,
             vm = this.getViewModel();
-
         vm.bind('{interfacesGrid.selection}', function(interface) {
             if (interface) {
                 me.getInterfaceStatus();
