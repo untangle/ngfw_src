@@ -667,6 +667,7 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
                 container.add({
                     xtype: 'numberfield',
                     style: { margin: 0 },
+                    decimalPrecision: 13,
                     allowDecimals: allowDecimals,
                     bind: {
                         value: '{record.fieldValue}'
