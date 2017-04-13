@@ -6,9 +6,9 @@ Ext.define('Ung.apps.spamblocker.view.Email', {
 
     viewModel: {
         formulas: {
-            customStrength: {
+            strength: {
                 get: function (get) {
-                    return get('settings.smtpConfig.strength') / 10;
+                    return (get('settings.smtpConfig.strength') / 10).toFixed(1);
                 },
                 set: function (value) {
                     this.set('settings.smtpConfig.strength', Math.round(value * 10));
@@ -51,39 +51,53 @@ Ext.define('Ung.apps.spamblocker.view.Email', {
         },
         items: [{
             xtype: 'container',
+            layout: { type: 'vbox' },
             items: [{
-                xtype: 'combo',
-                editable: false,
-                fieldLabel: 'Strength'.t(),
-                width: 300,
-                store: [
-                    [50, 'Low (Threshold: 5.0)'.t()],
-                    [43, 'Medium (Threshold: 4.3)'.t()],
-                    [35, 'High (Threshold: 3.5)'.t()],
-                    [33, 'Very High (Threshold: 3.3)'.t()],
-                    [30, 'Extreme (Threshold: 3.0)'.t()],
-                    [0, 'Custom'.t()]
-                ],
-                queryMode: 'local',
-                bind: {
-                    value: '{settings.smtpConfig.strength}'
-                }
-            }, {
-                xtype: 'numberfield',
-                fieldLabel: 'Strength Value'.t(),
-                bind: {
-                    value: '{customStrength}',
-                    // disabled:
-                },
-                width: 200,
-                allowDecimals: true,
-                allowBlank: false,
-                blankText: 'Strength Value must be a number. Smaller value is higher strength.'.t(),
-                minValue: -2147483648,
-                maxValue: 2147483647,
-                listeners: {
-
-                }
+                xtype: 'container',
+                margin: '0 0 10 0',
+                layout: { type: 'hbox', align: 'middle' },
+                items: [{
+                    xtype: 'combo',
+                    reference: 'predefinedStrength',
+                    publishes: 'value',
+                    editable: false,
+                    fieldLabel: 'Strength'.t(),
+                    width: 300,
+                    store: [
+                        [50, 'Low (Threshold: 5.0)'.t()],
+                        [43, 'Medium (Threshold: 4.3)'.t()],
+                        [35, 'High (Threshold: 3.5)'.t()],
+                        [33, 'Very High (Threshold: 3.3)'.t()],
+                        [30, 'Extreme (Threshold: 3.0)'.t()],
+                        [0, 'Custom'.t()]
+                    ],
+                    queryMode: 'local',
+                    listeners: {
+                        change: 'setStrength'
+                    }
+                }, {
+                    xtype: 'numberfield',
+                    reference: 'customStrength',
+                    margin: '0 10',
+                    hidden: true,
+                    bind: {
+                        value: '{strength}',
+                        hidden: '{predefinedStrength.value !== 0}'
+                    },
+                    width: 80,
+                    allowDecimals: true,
+                    allowBlank: false,
+                    step: 0.1,
+                    minValue: -2147483648,
+                    maxValue: 2147483647
+                }, {
+                    xtype: 'component',
+                    html: 'Strength Value must be a number. Smaller value is higher strength.'.t(),
+                    hidden: true,
+                    bind: {
+                        hidden: '{predefinedStrength.value !== 0}'
+                    }
+                }]
             }, {
                 xtype: 'combo',
                 editable: false,

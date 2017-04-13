@@ -14,8 +14,8 @@ Ext.define('Ung.apps.spamblockerlite.MainController', {
         v.appManager.getSettings(function (result, ex) {
             v.setLoading(false);
             if (ex) { Util.exceptionToast(ex); return; }
-            console.log(result);
             vm.set('settings', result);
+            v.lookup('predefinedStrength').setValue(result.smtpConfig.strength);
         });
 
         var lastUpdate = v.appManager.getLastUpdate();
@@ -41,6 +41,16 @@ Ext.define('Ung.apps.spamblockerlite.MainController', {
             Util.successToast('Settings saved');
             me.getSettings();
         }, vm.get('settings'));
+    },
+
+    setStrength: function (combo, newValue, oldValue) {
+        var me = this, vm = this.getViewModel();
+        if (!Ext.Array.contains([30, 33, 35, 43, 50], newValue)) {
+            me.lookup('predefinedStrength').setValue(0);
+            vm.set('strength', oldValue/10);
+        } else {
+            vm.set('settings.smtpConfig.strength', newValue);
+        }
     }
 
 });
