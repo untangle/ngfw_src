@@ -697,114 +697,6 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
                     });
                 }
         }
-
-        // determine appropriate type
-        // build combo based on type:
-        // type: "boolean",
-        // type: "Boolean",
-            // true
-
-        // type: "Class",
-
-        // type: "double",
-        // type: "Double",
-        // type: "int",
-        // type: "Integer",
-        // type: "long",
-        // type: "Long",
-        // type: "short",
-        // type: "Short",
-        //  numeric with java limits
-
-        // type: "float",
-        //  numeric with decimal vtype
-
-        // type: "InetAddress",
-        //  string with IP vtype
-
-        // type: "String",
-        //  string
-
-        // type: "Timestamp",
-        //  ??
-
-        // type: "URI",
-        //  string with url vtype
-
-        // type: "Action",
-        // type: "AddressKind",
-        // type: "CaptivePortalSettings$AuthenticationType",
-        // type: "CaptivePortalUserEvent$EventType",
-        // type: "DeviceTableEntry",
-        // type: "EventRule",
-        // type: "File",
-        // type: "HttpMethod",
-        // type: "HttpRequestEvent",
-        // type: "LogEvent",
-        // type: "OpenVpnEvent$EventType",
-        // type: "Reason",
-        // type: "RequestLine",
-        // type: "SessionEvent",
-        // type: "Set",
-        // type: "SmtpMessageEvent",
-        // type: "SpamMessageAction",
-        // type: "WanFailoverEvent$Action",
-
-
-        // container.removeAll(true);
-
-        // var condition = this.mainGrid.conditionsMap[record.get('conditionType')], i, ckItems = [];
-
-        // switch (condition.type) {
-        // case 'boolean':
-        //     container.add({
-        //         xtype: 'component',
-        //         padding: 3,
-        //         html: 'True'.t()
-        //     });
-        //     break;
-        // case 'textfield':
-        //     container.add({
-        //         xtype: 'textfield',
-        //         style: { margin: 0 },
-        //         bind: {
-        //             value: '{record.value}'
-        //         },
-        //         vtype: condition.vtype
-        //     });
-        //     break;
-        // case 'numberfield':
-        //     container.add({
-        //         xtype: 'numberfield',
-        //         style: { margin: 0 },
-        //         bind: {
-        //             value: '{record.value}'
-        //         },
-        //         vtype: condition.vtype
-        //     });
-        //     break;
-        // case 'checkboxgroup':
-        //     // console.log(condition.values);
-        //     // var values_arr = (cond.value !== null && cond.value.length > 0) ? cond.value.split(',') : [], i, ckItems = [];
-        //     for (i = 0; i < condition.values.length; i += 1) {
-        //         ckItems.push({
-        //             inputValue: condition.values[i][0],
-        //             boxLabel: condition.values[i][1]
-        //         });
-        //     }
-        //     container.add({
-        //         xtype: 'checkboxgroup',
-        //         bind: {
-        //             value: '{record.value}'
-        //         },
-        //         columns: 4,
-        //         vertical: true,
-        //         defaults: {
-        //             padding: '0 10 0 0'
-        //         },
-        //         items: ckItems
-        //     });
-        // }
     },
 });
 
@@ -812,13 +704,6 @@ Ext.define('Ung.config.events.cmp.EventGridController', {
     extend: 'Ung.cmp.GridController',
 
     alias: 'controller.uneventsgrid',
-
-    onBeforeRender: function (view) {
-        // // create conditionsMap for later use
-        // if (view.conditions) {
-        //     view.conditionsMap = Ext.Array.toValueMap(view.conditions, 'name');
-        // }
-    },
 
     editorWin: function (record) {
         this.dialog = this.getView().add({
@@ -828,39 +713,39 @@ Ext.define('Ung.config.events.cmp.EventGridController', {
         this.dialog.show();
     },
 
-    conditionsRenderer: function (value) {
+    conditionFieldsRenderer: function (value) {
         var view = this.getView(),
-            conds = value.list,
-            resp = [], i, valueRenderer = [];
+            conditions = value.list,
+            fieldSummary = [], valueRenderer = [];
 
-        console.log('conditionsRenderer');
+        if(conditions.length){
+            var condition;
+            for(var i = 1; i < conditions.length; i++){
+                condition = conditions[i];
+                fieldSummary.push( condition.field + ' ' + '<strong>' + condition.comparator + ' <span class="cond-val">' + condition.fieldValue + '<span></strong>' );
+            }
+        }
 
-
-        // for (i = 0; i < conds.length; i += 1) {
-        //     valueRenderer = [];
-
-        //     switch (conds[i].conditionType) {
-        //     case 'SRC_INTF':
-        //     case 'DST_INTF':
-        //         conds[i].value.toString().split(',').forEach(function (intfff) {
-        //             valueRenderer.push(Util.interfacesListNamesMap()[intfff]);
-        //         });
-        //         break;
-        //     case 'DST_LOCAL':
-        //     case 'WEB_FILTER_FLAGGED':
-        //         valueRenderer.push('true'.t());
-        //         break;
-        //     default:
-        //         valueRenderer = conds[i].value.toString().split(',');
-        //     }
-        //     resp.push(view.conditionsMap[conds[i].conditionType].displayName + '<strong>' + (conds[i].invert ? ' &nrArr; ' : ' &rArr; ') + '<span class="cond-val ' + (conds[i].invert ? 'invert' : '') + '">' + valueRenderer.join(', ') + '</span>' + '</strong>');
-        // }
-        // return resp.length > 0 ? resp.join(' &nbsp;&bull;&nbsp; ') : '<em>' + 'No conditions' + '</em>';
+        return fieldSummary.length > 0 ? fieldSummary.join(' &nbsp;&bull;&nbsp; ') : '<em>' + 'Match all fields'.t() + '</em>';
     },
-    conditionRenderer: function (val) {
-        // return this.getView().conditionsMap[val].displayName;
-        return 'conditionRenderer';
-    },
+
+    conditionClassRenderer: function( value, metaData ){
+        var vm = this.getViewModel(),
+            conditions = value.list;
+            allClassesStore = vm.get('allClasses');
+
+        var className;
+        if(conditions.length == 0){
+            className = '*All*'
+        }else{
+            className = conditions[0].fieldValue;            
+        }
+        className = className.substring( 1, className.length - 1);
+
+        var classNameIndex = allClassesStore.find( 'name', className );
+        metaData.tdAttr = 'data-qtip="' + ( classNameIndex != -1 ? allClassesStore.getAt(classNameIndex).get('description') : 'Undefined class'.t() ) + '"';
+        return className;
+    }
 
 });
 
@@ -880,8 +765,6 @@ Ext.define('Ung.config.events.cmp.Grid', {
 Ext.define ('Ung.model.EventCondition', {
     extend: 'Ext.data.Model' ,
     fields: [
-        // { name: 'conditionType', type: 'string' },
-        // { name: 'invert', type: 'boolean', defaultValue: false },
         { name: 'field', type: 'string', defaultValue: '' },
         { name: 'comparator', type: 'string', defaultValue: '=' },
         { name: 'fieldValue', type: 'auto', defaultValue: '' },
@@ -893,5 +776,24 @@ Ext.define ('Ung.model.EventCondition', {
         reader: {
             type: 'json'
         }
+    }
+});
+
+Ext.define('Ung.cmp.EventGridColumns', {
+    singleton: true,
+    alternateClassName: 'EventColumn',
+
+    conditionClass: {
+        header: 'Class'.t(),
+        width: 100,
+        dataIndex: 'conditions',
+        renderer: 'conditionClassRenderer'
+    },
+
+    conditionFields: {
+        header: 'Conditions'.t(),
+        flex: 1,
+        dataIndex: 'conditions',
+        renderer: 'conditionFieldsRenderer'        
     }
 });

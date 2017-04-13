@@ -48,6 +48,8 @@ Ext.define('Ung.config.events.view.Triggers', {
             Column.ruleId,
             Column.enabled,
             Column.description,
+            EventColumn.conditionClass,
+            EventColumn.conditionFields,
             {
                 header: 'Action'.t(),
                 dataIndex: 'action',
