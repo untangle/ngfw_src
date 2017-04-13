@@ -84,11 +84,6 @@ Ext.define('Ung.view.main.Main', {
                 userCls: '{activeItem === "reports" ? "pressed" : ""}',
                 hidden: '{!reportsInstalled}'
             }
-        }, {
-            text: '<<< trigger postinstall >>>',
-            handler: function () {
-                Ext.fireEvent('postregistration');
-            }
         }, '->', {
             text: 'Help'.t(),
             iconCls: 'fa fa-question-circle',

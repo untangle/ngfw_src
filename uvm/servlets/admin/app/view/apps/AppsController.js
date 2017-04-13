@@ -235,22 +235,21 @@ Ext.define('Ung.view.apps.AppsController', {
 
                     // only install WAN failover/balancer apps if more than 2 interfaces
                     try {
-                        Rpc.asyncData('rpc.networkManager.getNetworkSettings')
-                            .then(function (result) {
-                                if (result.interfaces.list.length > 2) {
-                                    apps.push({ displayName: 'WAN Failover', name: 'wan-failover'});
-                                    apps.push({ displayName: 'WAN Balancer', name: 'wan-balancer'});
-                                }
-                            });
+                        if (rpc.networkSettings.interfaces.list.length > 2) {
+                            apps.push({ displayName: 'WAN Failover', name: 'wan-failover'});
+                            apps.push({ displayName: 'WAN Balancer', name: 'wan-balancer'});
+                        }
                     } catch (e) {}
 
-                    // only install this on 1gig+ machines
-                    if (me.totalMemoryMb > 900) {
-                        apps.splice(2, 0, { displayName: 'Phish Blocker', name: 'phish-blocker'});
-                        apps.splice(2, 0, { displayName: 'Spam Blocker', name: 'spam-blocker'});
-                        apps.splice(2, 0, { displayName: 'Virus Blocker Lite', name: 'virus-blocker-lite'});
-                        apps.splice(2, 0, { displayName: 'Virus Blocker', name: 'virus-blocker'});
-                    }
+                    try {
+                        var memTotal = Util.bytesToMBs(Ext.getStore('stats').first().get('MemTotal'));
+                        if (memTotal && memTotal > 900) {
+                            apps.splice(2, 0, { displayName: 'Phish Blocker', name: 'phish-blocker'});
+                            apps.splice(2, 0, { displayName: 'Spam Blocker', name: 'spam-blocker'});
+                            apps.splice(2, 0, { displayName: 'Virus Blocker Lite', name: 'virus-blocker-lite'});
+                            apps.splice(2, 0, { displayName: 'Virus Blocker', name: 'virus-blocker'});
+                        }
+                    } catch (e) {}
 
                     popup.close();
                     me.installRecommendedApps(apps);
