@@ -75,8 +75,19 @@ Ext.define('Ung.apps.captiveportal.view.Status', {
                 }, {
                     header: 'Login Time'.t(),
                     dataIndex: 'sessionCreation',
-                    width: 180
-                    // renderer: function(value) { return i18n.timestampFormat(value); }
+                    width: 180,
+                    renderer: function(value) { return Util.timestampFormat(value); }
+                }, {
+                    header: 'Session Count'.t(),
+                    dataIndex: 'sessionCounter',
+                    width: 120,
+                }, {
+                    header: 'Logout'.t(),
+                    xtype: 'actioncolumn',
+                    width: 80,
+                    align: 'center',
+                    iconCls: 'fa fa-minus-circle',
+                    handler: 'logoutUser',
                 }],
                 bbar: [{
                     text: 'Refresh'.t(),
@@ -94,9 +105,6 @@ Ext.define('Ung.apps.captiveportal.view.Status', {
         minWidth: 300,
         split: true,
         layout: 'border',
-        // layout: {
-        //     type: 'hbox'
-        // },
         items: [{
             xtype: 'appsessions',
             region: 'north',
