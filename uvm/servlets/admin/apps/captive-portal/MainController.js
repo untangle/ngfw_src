@@ -152,6 +152,34 @@ Ext.define('Ung.apps.captiveportal.MainController', {
                 Ext.MessageBox.alert('Custom Page Remove Failure'.t(), action.result.msg);
             }, this)
         });
+    },
+
+    logoutUser: function(view, row, col, item, e, record) {
+        var me = this, v = this.getView(), vm = this.getViewModel();
+
+        var netaddr = record.get("userNetAddress");
+        var macaddr = record.get("userMacAddress");
+        v.setLoading('Logging Out User...'.t());
+
+        if ( (vm.get('settings.useMacAddress') == true) && (macaddr != null) && (macaddr.length > 12) ) {
+            v.appManager.userAdminMacLogout(Ext.bind(function(result, ex) {
+                if (exception) { Util.exceptionToast(ex); return; }
+                // this gives the app a couple seconds to process the disconnect before we refresh the list
+                var timer = setTimeout(function() {
+                    me.getActiveUsers(view);
+                    v.setLoading(false);
+                },500);
+            }, this), macaddr);
+        } else {
+            v.appManager.userAdminNetLogout(Ext.bind(function(result, ex) {
+                if (ex) { Util.exceptionToast(ex); return; }
+                // this gives the app a couple seconds to process the disconnect before we refresh the list
+                var timer = setTimeout(function() {
+                    me.getActiveUsers(view);
+                    v.setLoading(false);
+                },500);
+            }, this), netaddr);
+        }
     }
 
 });

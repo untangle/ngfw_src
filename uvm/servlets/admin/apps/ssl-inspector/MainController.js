@@ -169,7 +169,8 @@ Ext.define('Ung.apps.sslinspector.SpecialGridController', {
         var app = rpc.appManager.app('ssl-inspector');
 
         v.setLoading('Deleting Certificate...'.t());
-        app.removeTrustedCertificate(Ext.bind(function(result, exception) {
+        app.removeTrustedCertificate(Ext.bind(function(result, ex) {
+        if (ex) { Util.exceptionToast(ex); return; }
             // this gives the app a little time to process the delete before we refresh
             var timer = setTimeout(function() {
                 me.getView().up('app-ssl-inspector').getController().getTrustedCerts();

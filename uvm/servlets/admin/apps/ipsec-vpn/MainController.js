@@ -179,7 +179,8 @@ Ext.define('Ung.apps.ipsecvpn.MainController', {
         var ipsecApp = rpc.appManager.app('ipsec-vpn');
 
         v.setLoading('Disconnecting...'.t());
-        ipsecApp.virtualUserDisconnect(Ext.bind(function(result, exception) {
+        ipsecApp.virtualUserDisconnect(Ext.bind(function(result, ex) {
+        if (ex) { Util.exceptionToast(ex); return; }
             // this gives the app a couple seconds to process the disconnect before we refresh the list
             var timer = setTimeout(function() {
                 me.getVirtualUsers();
