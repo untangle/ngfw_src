@@ -28,6 +28,8 @@ Ext.define('Ung.Application', {
         Ext.getStore('policies').loadData(rpc.appsViews);
         Metrics.start();
 
+        Ext.fireEvent('afterlaunch'); // used in Main view ctrl
+
         try {
             rpc.reportsManager = rpc.appManager.app('reports').getReportsManager();
         } catch (ex) {
@@ -70,17 +72,6 @@ Ext.define('Ung.Application', {
                     Ext.getStore('policiestree').build();
                     Ext.fireEvent('init');
                 });
-        }
-    },
-
-    loadMainView: function () {
-        Util.Metrics.start();
-        try {
-            Ung.app.setMainView('Ung.view.main.Main');
-        } catch (ex) {
-            console.error(ex);
-            Util.exceptionToast(ex);
-            return;
         }
     }
 });
