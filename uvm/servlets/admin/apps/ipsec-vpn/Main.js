@@ -66,6 +66,7 @@ Ext.define('Ung.apps.ipsecvpn.Main', {
             },
 
             wanListStore: {
+                fields: [ 'index' , 'address' , 'name' ],
                 data: '{wanListData}'
             },
 
