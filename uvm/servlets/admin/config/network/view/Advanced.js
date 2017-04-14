@@ -259,12 +259,12 @@ Ext.define('Ung.config.network.view.Advanced', {
 
                         conditions: [
                             {name:"DST_LOCAL",displayName: "Destined Local".t(), type: "boolean", visible: true},
-                            {name:"DST_ADDR",displayName: "Destination Address".t(), type: "text", visible: true, vtype:"ipMatcher"},
-                            {name:"DST_PORT",displayName: "Destination Port".t(), type: "text",vtype:"portMatcher", visible: true},
-                            {name:"PROTOCOL",displayName: "Protocol".t(), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"]], visible: true},
-                            {name:"SRC_INTF",displayName: "Source Interface".t(), type: "checkgroup", values: Util.getInterfaceList(true, true), visible: true},
-                            {name:"SRC_ADDR",displayName: "Source Address".t(), type: "text", visible: true, vtype:"ipMatcher"},
-                            {name:"SRC_PORT",displayName: "Source Port".t(), type: "text",vtype:"portMatcher", visible: rpc.isExpertMode}
+                            {name:"DST_ADDR",displayName: "Destination Address".t(), type: 'textfield', visible: true, vtype:"ipMatcher"},
+                            {name:"DST_PORT",displayName: "Destination Port".t(), type: 'textfield',vtype:"portMatcher", visible: true},
+                            {name:"PROTOCOL",displayName: "Protocol".t(), type: 'checkboxgroup', values: [["TCP","TCP"],["UDP","UDP"]], visible: true},
+                            {name:"SRC_INTF",displayName: "Source Interface".t(), type: 'checkboxgroup', values: Util.getInterfaceList(true, true), visible: true},
+                            {name:"SRC_ADDR",displayName: "Source Address".t(), type: 'textfield', visible: true, vtype:"ipMatcher"},
+                            {name:"SRC_PORT",displayName: "Source Port".t(), type: 'textfield',vtype:"portMatcher", visible: rpc.isExpertMode}
                         ],
 
                         label: 'Perform the following action(s):'.t(),
@@ -464,14 +464,14 @@ Ext.define('Ung.config.network.view.Advanced', {
 
                 conditions: [
                     {name:"DST_LOCAL",displayName: "Destined Local".t(), type: "boolean", visible: true},
-                    {name:"DST_ADDR",displayName: "Destination Address".t(), type: "text", visible: true, vtype:"ipMatcher"},
-                    {name:"DST_PORT",displayName: "Destination Port".t(), type: "text",vtype:"portMatcher", visible: true},
-                    {name:"DST_INTF",displayName: "Destination Interface".t(), type: "checkgroup", values: Util.getInterfaceList(true, true), visible: true},
-                    {name:"SRC_MAC" ,displayName: "Source MAC".t(), type: "text", visible: true},
-                    {name:"SRC_ADDR",displayName: "Source Address".t(), type: "text", visible: true, vtype:"ipMatcher"},
-                    {name:"SRC_PORT",displayName: "Source Port".t(), type: "text",vtype:"portMatcher", visible: rpc.isExpertMode},
-                    {name:"SRC_INTF",displayName: "Source Interface".t(), type: "checkgroup", values: Util.getInterfaceList(true, true), visible: true},
-                    {name:"PROTOCOL",displayName: "Protocol".t(), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true}
+                    {name:"DST_ADDR",displayName: "Destination Address".t(), type: 'textfield', visible: true, vtype:"ipMatcher"},
+                    {name:"DST_PORT",displayName: "Destination Port".t(), type: 'textfield',vtype:"portMatcher", visible: true},
+                    {name:"DST_INTF",displayName: "Destination Interface".t(), type: 'checkboxgroup', values: Util.getInterfaceList(true, true), visible: true},
+                    {name:"SRC_MAC" ,displayName: "Source MAC".t(), type: 'textfield', visible: true},
+                    {name:"SRC_ADDR",displayName: "Source Address".t(), type: 'textfield', visible: true, vtype:"ipMatcher"},
+                    {name:"SRC_PORT",displayName: "Source Port".t(), type: 'textfield',vtype:"portMatcher", visible: rpc.isExpertMode},
+                    {name:"SRC_INTF",displayName: "Source Interface".t(), type: 'checkboxgroup', values: Util.getInterfaceList(true, true), visible: true},
+                    {name:"PROTOCOL",displayName: "Protocol".t(), type: 'checkboxgroup', values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true}
                 ],
 
                 emptyRow: {
@@ -552,14 +552,14 @@ Ext.define('Ung.config.network.view.Advanced', {
 
                 conditions: [
                     {name:"DST_LOCAL",displayName: "Destined Local".t(), type: "boolean", visible: true},
-                    {name:"DST_ADDR",displayName: "Destination Address".t(), type: "text", visible: true, vtype:"ipMatcher"},
-                    {name:"DST_PORT",displayName: "Destination Port".t(), type: "text",vtype:"portMatcher", visible: true},
-                    {name:"DST_INTF",displayName: "Destination Interface".t(), type: "checkgroup", values: Util.getInterfaceList(true, true), visible: true},
-                    {name:"SRC_MAC" ,displayName: "Source MAC".t(), type: "text", visible: true},
-                    {name:"SRC_ADDR",displayName: "Source Address".t(), type: "text", visible: true, vtype:"ipMatcher"},
-                    {name:"SRC_PORT",displayName: "Source Port".t(), type: "text",vtype:"portMatcher", visible: rpc.isExpertMode},
-                    {name:"SRC_INTF",displayName: "Source Interface".t(), type: "checkgroup", values: Util.getInterfaceList(true, true), visible: true},
-                    {name:"PROTOCOL",displayName: "Protocol".t(), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true}
+                    {name:"DST_ADDR",displayName: "Destination Address".t(), type: 'textfield', visible: true, vtype:"ipMatcher"},
+                    {name:"DST_PORT",displayName: "Destination Port".t(), type: 'textfield',vtype:"portMatcher", visible: true},
+                    {name:"DST_INTF",displayName: "Destination Interface".t(), type: 'checkboxgroup', values: Util.getInterfaceList(true, true), visible: true},
+                    {name:"SRC_MAC" ,displayName: "Source MAC".t(), type: 'textfield', visible: true},
+                    {name:"SRC_ADDR",displayName: "Source Address".t(), type: 'textfield', visible: true, vtype:"ipMatcher"},
+                    {name:"SRC_PORT",displayName: "Source Port".t(), type: 'textfield',vtype:"portMatcher", visible: rpc.isExpertMode},
+                    {name:"SRC_INTF",displayName: "Source Interface".t(), type: 'checkboxgroup', values: Util.getInterfaceList(true, true), visible: true},
+                    {name:"PROTOCOL",displayName: "Protocol".t(), type: 'checkboxgroup', values: [["TCP","TCP"],["UDP","UDP"],["ICMP","ICMP"],["GRE","GRE"],["ESP","ESP"],["AH","AH"],["SCTP","SCTP"]], visible: true}
                 ],
 
                 emptyRow: {
@@ -750,9 +750,9 @@ Ext.define('Ung.config.network.view.Advanced', {
                 ruleJavaClass: 'com.untangle.uvm.network.UpnpRuleCondition',
 
                 conditions: [
-                    {name:"DST_PORT",displayName: "Destination Port".t(), type: "text", vtype:"portMatcher", visible: true},
-                    {name:"SRC_ADDR",displayName: "Source Address".t(), type: "text", vtype:"ipMatcher", visible: true},
-                    {name:"SRC_PORT",displayName: "Source Port".t(), type: "text", vtype:"portMatcher", visible: true}
+                    {name:"DST_PORT",displayName: "Destination Port".t(), type: 'textfield', vtype:"portMatcher", visible: true},
+                    {name:"SRC_ADDR",displayName: "Source Address".t(), type: 'textfield', vtype:"ipMatcher", visible: true},
+                    {name:"SRC_PORT",displayName: "Source Port".t(), type: 'textfield', vtype:"portMatcher", visible: true}
                 ],
 
                 label: 'Perform the following action(s):'.t(),
