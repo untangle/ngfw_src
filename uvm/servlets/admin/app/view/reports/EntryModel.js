@@ -111,38 +111,6 @@ Ext.define('Ung.view.reports.EntryModel', {
             }
         },
 
-        // startTime: {
-        //     get: function (get) {
-        //         return get('startDate');
-        //     },
-        //     set: function (value) {
-        //         console.log(this.get('startDate'));
-        //         var sd = new Date(this.get('startDate'));
-        //         sd.setHours(value.getHours());
-        //         sd.setMinutes(value.getMinutes());
-        //         this.set('startDate', sd);
-        //     }
-        // },
-        // endDate: function (get) {
-        //     var ed = new Date(rpc.systemManager.getMilliseconds());
-        //     ed.setSeconds(0);
-        //     ed.setMilliseconds(0);
-        //     return ed;
-        // },
-        // endTime: {
-        //     get: function (get) {
-        //         return get('endDate');
-        //     },
-        //     set: function (value) {
-        //         var ed = new Date(this.get('endDate'));
-        //         ed.setHours(value.getHours());
-        //         ed.setMinutes(value.getMinutes());
-        //         this.set('endDate', ed);
-        //     }
-        // },
-
-
-
 
         reportHeading: function (get) {
             if (get('entry.readOnly')) {
