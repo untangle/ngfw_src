@@ -57,16 +57,18 @@ Ext.define('Ung.cmp.AppRemove', {
 
                         vm.set('instance.targetState', null);
 
+                        Ung.app.redirectTo('#apps/' + vm.get('policyId'));
+
                         // remove card
                         if (Ung.app.getMainView().down('#appCard')) {
                             Ung.app.getMainView().remove('appCard');
                         }
 
-                        Rpc.asyncData('rpc.appManager.getAppsViews')
-                            .then(function (policies) {
-                                Ext.getStore('policies').loadData(policies);
-                                Ung.app.redirectTo('#apps/1');
-                            });
+                        // Rpc.asyncData('rpc.appManager.getAppsViews')
+                        //     .then(function (policies) {
+                        //         Ext.getStore('policies').loadData(policies);
+                        //         Ung.app.redirectTo('#apps/');
+                        //     });
 
                         // todo: fire global event
                         // Ext.GlobalEvents.fireEvent('appinstall', 'remove', appItem.app);

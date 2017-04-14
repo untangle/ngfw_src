@@ -15,15 +15,13 @@ Ext.define('Ung.cmp.AppPanel', {
         defaults: {
             border: false,
         },
-        items: Ext.Array.insert(Ext.clone(Util.subNav), 0, [
-        //     {
-        //     xtype: 'button',
-        //     text: 'Back'.t(),
-        //     iconCls: 'fa fa-arrow-circle-left fa-lg',
-        //     hrefTarget: '_self',
-        //     bind: { href: '#apps/{policyId}' }
-        // }, '-',
-        {
+        items: Ext.Array.insert(Ext.clone(Util.subNav), 0, [{
+            xtype: 'button',
+            text: 'Back to Apps',
+            iconCls: 'fa fa-arrow-circle-left fa-lg',
+            hrefTarget: '_self',
+            bind: { href: '#apps/{policyId}' }
+        }, '-', {
             xtype: 'component',
             padding: '0 5',
             style: {
