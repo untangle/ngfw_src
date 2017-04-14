@@ -116,10 +116,14 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
     }, {
         xtype: 'combo',
         fieldLabel: 'Interface'.t(),
+        bind: {
+            store: '{wanListStore}'
+        },
+        allowblank: true,
         editable: false,
-/* FIXME - Why doesn't this work???
-        store: '{wanListStore}'
-*/
+        queryMode: 'local',
+        displayField: 'name',
+        valueField: 'address'
     }, {
         xtype: 'textfield',
         bind: '{record.left}',

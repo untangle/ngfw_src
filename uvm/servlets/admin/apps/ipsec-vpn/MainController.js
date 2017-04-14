@@ -8,9 +8,6 @@ Ext.define('Ung.apps.ipsecvpn.MainController', {
         },
         '#status': {
             beforerender: 'onStatusBeforeRender'
-        },
-        '#ipsectunnels': {
-            beforerender: 'calculateNetworks'
         }
     },
 
@@ -48,12 +45,13 @@ Ext.define('Ung.apps.ipsecvpn.MainController', {
     },
 
     getSettings: function() {
-        var v = this.getView(), vm = this.getViewModel();
+        var me = this, v = this.getView(), vm = this.getViewModel();
         v.setLoading(true);
         v.appManager.getSettings(function(result, ex) {
             v.setLoading(false);
             if (ex) { Util.exceptionToast(ex); return; }
             vm.set('settings', result);
+            me.calculateNetworks();
         });
     },
 
@@ -95,8 +93,9 @@ Ext.define('Ung.apps.ipsecvpn.MainController', {
         // we need the interface list and the status list so we can get the IP address of active interfaces
         var netSettings = rpc.networkManager.getNetworkSettings();
         var intStatus = rpc.networkManager.getInterfaceStatus();
+        var counter = 0;
 
-        wanListData.push(['', '- ' + 'Custom'.t() + ' -']);
+        wanListData.push([counter++ , '' , '- ' + 'Custom'.t() + ' -']);
 
         // build the list of active WAN networks for the interface combo box and set the defaults for left and leftSubnet
         for( x = 0 ; x <  netSettings.interfaces.list.length ; x++ )
@@ -118,7 +117,7 @@ Ext.define('Ung.apps.ipsecvpn.MainController', {
                 if (device.isWan)
                 {
                     // add the address and name to the WAN list
-                    wanListData.push([ status.v4Address, device.name]);
+                    wanListData.push([ counter++ , status.v4Address , device.name]);
 
                     // save the first WAN address to use as the default for new tunnels
                     if (leftDefault === '0.0.0.0') { leftDefault = status.v4Address; }
