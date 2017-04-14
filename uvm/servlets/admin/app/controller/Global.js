@@ -38,8 +38,7 @@ Ext.define('Ung.controller.Global', {
 
     listen: {
         global: {
-            appinstall: 'onAppInstall',
-            openregister: 'onOpenRegister'
+            appinstall: 'onAppInstall'
         }
     },
 
@@ -265,10 +264,5 @@ Ext.define('Ung.controller.Global', {
             itemId: 'users'
         });
         this.getMainView().getViewModel().set('activeItem', 'users');
-    },
-
-    onOpenRegister: function () {
-        this.regView = Ext.create('Ung.view.main.Registration', {});
-        this.regView.show();
     }
 });

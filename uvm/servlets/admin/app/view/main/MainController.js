@@ -11,8 +11,43 @@ Ext.define('Ung.view.main.MainController', {
 
     listen: {
         global: {
-            init: 'checkNotifications'
+            afterlaunch: 'afterLaunch',
+            openregister: 'openRegister'
         }
+    },
+
+    afterLaunch: function () {
+        this.checkRegister();
+        this.checkNotifications();
+    },
+
+    checkRegister: function () {
+        var me = this;
+        if(!rpc.isRegistered) {
+            // Ext.MessageBox.wait('Determining Connectivity...'.t(), 'Please wait'.t());
+            rpc.UvmContext.isStoreAvailable(function (result, ex) {
+                if (ex) { Util.exceptionToast(ex); }
+                // Ext.MessageBox.hide();
+
+                // If box is not online - show error message.
+                // Otherwise show registration screen
+                if (!result) {
+                    me.openOffline();
+                } else {
+                    me.openRegister();
+                }
+            });
+        }
+    },
+
+    openRegister: function () {
+        var regView = Ext.create('Ung.view.main.Registration', {});
+        regView.show();
+    },
+
+    openOffline: function () {
+        var offView = Ext.create('Ung.view.main.Offline', {});
+        offView.show();
     },
 
     checkNotifications: function () {
