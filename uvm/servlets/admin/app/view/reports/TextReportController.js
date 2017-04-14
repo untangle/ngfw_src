@@ -33,9 +33,8 @@ Ext.define('Ung.view.reports.TextReportController', {
         me.entry = vm.get('entry');
         me.getView().setLoading(true);
 
-        // if it's rendered inside widget, set the widget timeframe for the report time interval
-        if (vm.get('widget.timeframe')) {
-            vm.set('startDate', new Date(rpc.systemManager.getMilliseconds() - vm.get('widget.timeframe') * 1000));
+        if (!me.getView().renderInReports) { // if not rendered in reports than treat as widget
+            vm.set('startDate', new Date(rpc.systemManager.getMilliseconds() - (vm.get('widget.timeframe') || 3600 * 24) * 1000));
             vm.set('endDate', new Date(rpc.systemManager.getMilliseconds()));
         }
 

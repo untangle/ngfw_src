@@ -21,13 +21,16 @@ Ext.define('Ung.view.reports.Entry', {
         },
         items: [{
             xtype: 'graphreport',
-            itemId: 'graphreport'
+            itemId: 'graphreport',
+            renderInReports: true
         }, {
             xtype: 'eventreport',
-            itemId: 'eventreport'
+            itemId: 'eventreport',
+            renderInReports: true
         }, {
             xtype: 'textreport',
-            itemId: 'textreport'
+            itemId: 'textreport',
+            renderInReports: true
         }],
 
         dockedItems: [{

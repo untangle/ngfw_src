@@ -77,6 +77,11 @@ Ext.define('Ung.view.reports.EventReportController', {
         var me = this, vm = this.getViewModel();
         me.entry = vm.get('entry');
 
+        if (!me.getView().renderInReports) { // if not rendered in reports than treat as widget
+            vm.set('startDate', new Date(rpc.systemManager.getMilliseconds() - (vm.get('widget.timeframe') || 3600 * 24) * 1000));
+            vm.set('endDate', new Date(rpc.systemManager.getMilliseconds()));
+        }
+
         me.getViewModel().set('eventsData', []);
         me.getView().setLoading(true);
         Rpc.asyncData('rpc.reportsManager.getEventsForDateRangeResultSet',
