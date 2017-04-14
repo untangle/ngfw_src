@@ -50,7 +50,14 @@ Ext.define('Ung.apps.wanfailover.view.TestGrid', {
         javaClass: 'com.untangle.app.wan_failover.WanTestSettings',
         'enabled': true,
         'description': '',
-        'type' :''
+        'type': 'ping',
+        'interfaceId': 1,
+        'timeoutMilliseconds': 2000,
+        'delayMilliseconds': 5000,
+        'failureThreshold': 3,
+        'pingHostname': '8.8.8.8',
+        'httpUrl': 'http://1.2.3.4/',
+        'testHistorySize': 10
         },
 
     bind: '{tests}',
@@ -65,6 +72,13 @@ Ext.define('Ung.apps.wanfailover.view.TestGrid', {
         header: 'Interface'.t(),
         width: 100,
         dataIndex: 'interfaceId',
+        renderer: function(value, meta, record, row, col, store, grid) {
+            var parent = this.getView().up('#tests');
+            var wanlist = parent.getViewModel().get('wanStatusStore');
+            var ifname = 'Unknown'.t();
+            wanlist.each(function(record) { if (record.get('interfaceId') == value) ifname = record.get('interfaceName'); });
+            return(ifname);
+            }
     }, {
         header: 'Test Type'.t(),
         width: 100,
@@ -81,9 +95,17 @@ Ext.define('Ung.apps.wanfailover.view.TestGrid', {
         fieldLabel: 'Enabled'.t(),
         bind: '{record.enabled}'
     }, {
-        xtype: 'textfield',
+        xtype: 'combobox',
         fieldLabel: 'Interface'.t(),
-        bind: '{record.interfaceId}'
+        bind: {
+            value: '{record.interfaceId}',
+            store: '{wanStatusStore}'
+        },
+        allowBlank: false,
+        editable: false,
+        queryMode: 'local',
+        displayField: 'interfaceName',
+        valueField: 'interfaceId'
     }, {
         xtype: 'textfield',
         fieldLabel: 'Description'.t(),
@@ -91,11 +113,11 @@ Ext.define('Ung.apps.wanfailover.view.TestGrid', {
     }, {
         xtype: 'textfield',
         fieldLabel: 'Testing Interval (seconds)'.t(),
-        bind: '{record.delayMilliseconds}'
+        bind: '{record.delayMilliseconds}',
     }, {
         xtype: 'textfield',
         fieldLabel: 'Timeout (seconds)'.t(),
-        bind: '{record.timeoutMilliseconds}'
+        bind: '{record.timeoutMilliseconds}',
     }, {
         xtype: 'combo',
         fieldLabel: 'Failure Threshold'.t(),
@@ -112,14 +134,25 @@ Ext.define('Ung.apps.wanfailover.view.TestGrid', {
         xtype: 'textfield',
         fieldLabel: 'IP'.t(),
         bind: {
-            value: '{record.pingHostname}'
+            value: '{record.pingHostname}',
+            hidden: '{record.type != "ping"}'
         }
     }, {
         xtype: 'textfield',
         fieldLabel: 'URL'.t(),
         bind: {
-            value: '{record.httpUrl}'
+            value: '{record.httpUrl}',
+            hidden: '{record.type != "http"}'
         }
+    }, {
+        xtype: 'button',
+        text: 'Run Test'.t(),
+        iconCls: 'fa fa-play',
+        handler: 'runWanTest',
+        anchor: 'left',
+        margin: '10 0 0 185',
+        width: 140,
+        height: 40
     }]
 
 });

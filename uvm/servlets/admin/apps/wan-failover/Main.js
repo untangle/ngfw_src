@@ -4,11 +4,21 @@ Ext.define('Ung.apps.wanfailover.Main', {
     controller: 'app-wan-failover',
 
     viewModel: {
+
+        data: {
+            autoReload: false,
+            wanStatusData: []
+        },
+
         stores: {
             tests: {
                 data: '{settings.tests.list}'
+            },
+            wanStatusStore: {
+                data: '{wanStatusData}'
             }
-        }
+        },
+
     },
 
     items: [

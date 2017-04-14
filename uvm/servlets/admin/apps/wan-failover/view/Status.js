@@ -3,6 +3,7 @@ Ext.define('Ung.apps.wanfailover.view.Status', {
     alias: 'widget.app-wan-failover-status',
     itemId: 'status',
     title: 'Status'.t(),
+    viewModel: true,
 
     layout: 'border',
     items: [{
@@ -68,11 +69,7 @@ Ext.define('Ung.apps.wanfailover.view.Status', {
                     stripeRows: false
                 },
 
-                bind: {
-                    store: {
-                        data: '{wans}'
-                    }
-                },
+                bind: '{wanStatusStore}',
 
                 columns: [{
                     header: 'Interface ID'.t(),
