@@ -5,8 +5,11 @@ Ext.define('Ung.config.about.MainController', {
 
     control: {
         '#': {
-            beforerender: 'onBeforeRender',
+            beforerender: 'onBeforeRender'
         },
+        '#licenses': {
+            afterrender: 'reloadLicenses'
+        }
     },
 
     onBeforeRender: function (view) {
@@ -26,10 +29,13 @@ Ext.define('Ung.config.about.MainController', {
 
     reloadLicenses: function () {
         rpc.licenseManager = rpc.UvmContext.licenseManager();
-        Rpc.asyncData('rpc.licenseManager.reloadLicenses')
-            .then(function(result) {
-                // todo
+        Rpc.asyncData('rpc.licenseManager.reloadLicenses', true).then(function(result) {
+            if (ex) { Util.exceptionToast(ex); return; }
+            Rpc.asyncData('rpc.licenseManager.getLicenses').then(function(result) {
+                if (ex) { Util.exceptionToast(ex); return; }
+                vm.set('licenses', result.list);
             });
+        });
     }
 
 });

@@ -13,6 +13,12 @@ Ext.define('Ung.config.about.view.Licenses', {
 
     items: [{
         xtype: 'grid',
+        itemId: 'licenses',
+        bind: {
+            store: {
+                data: '{licenses}'
+            }
+        },
         forceFit: true,
         columns: [{
             header: 'Name'.t(),
