@@ -282,7 +282,10 @@ Ext.define('Ung.config.network.view.Troubleshooting', {
                     destination: 'any',
                     port: '',
                     timeout: 5,
-                    tcpdumpArguments: ''
+                    tcpdumpArguments: '',
+                    exportAction: true,
+                    exportRunFilename: '',
+                    exportFilename: ''
                 },
                 formulas: {
                     command: function (get) {
@@ -311,17 +314,19 @@ Ext.define('Ung.config.network.view.Troubleshooting', {
                         }
 
                         // !!! path here is kind of dumb!
-                        var filename ="/tmp/network-tests/" +
-                            "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
-                                var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
-                                return v.toString(16);
-                            }) + ".pcap";
+                        if(get('exportRunFilename') == ''){
+                            this.set('exportRunFilename', "/tmp/network-tests/" +
+                                "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
+                                    var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+                                    return v.toString(16);
+                                }) + ".pcap" );
+                        }
 
                         // !!! And so is filename...
                         var script = [
                             '/usr/share/untangle/bin/ut-network-tests-packet.py'+
                                 ' --timeout ' + timeout  +
-                                ' --filename ' + filename.replace('\'','') +
+                                ' --filename ' + get('exportRunFilename').replace('\'','') +
                                 ' --arguments \'' + traceArguments.replace('\'','') + '\''
                         ];
                         return ["/bin/bash","-c", script.join("")];

@@ -450,8 +450,8 @@ Ext.define('Ung.config.network.MainController', {
         view.down('form').insert(0, view.commandFields);
     },
     runTest: function (btn) {
-        console.log(btn);
         var v = btn.up('networktest'),
+            vm = v.getViewModel(),
             output = v.down('textarea'),
             text = [],
             me = this;
@@ -463,26 +463,31 @@ Ext.define('Ung.config.network.MainController', {
 
         rpc.execManager.execEvil(function (result, ex) {
             if (ex) { console.error(ex); Util.exceptionToast(ex); return; }
-            me.readOutput(result, text, output, btn);
+            // Save the filename.
+            me.readOutput(result, text, output, btn, vm);
         }, v.getViewModel().get('command'));
 
     },
-    readOutput: function (resultReader, text, output, btn) {
+    readOutput: function (resultReader, text, output, btn, vm) {
         var me = this;
 
         if (!resultReader) {
             return;
         }
+
         resultReader.readFromOutput(function (res, ex) {
             if (ex) { console.error(ex); Util.exceptionToast(ex); return; }
-            // console.log(res);
             if (res !== null) {
                 text.push(res);
-                Ext.Function.defer(me.readOutput, 1000, me, [resultReader, text, output, btn]);
+                Ext.Function.defer(me.readOutput, 1000, me, [resultReader, text, output, btn, vm]);
             } else {
                 btn.setDisabled(false);
                 text.push('' + (new Date()) + ' - ' + 'Test Completed'.t());
                 text.push('\n\n--------------------------------------------------------\n\n');
+                if(vm.get('exportRunFilename') != '' ){
+                    vm.set('exportFilename', vm.get('exportRunFilename'));
+                    vm.set('exportRunFilename', '');
+                }
             }
             output.setValue(text.join(''));
             output.getEl().down('textarea').dom.scrollTop = 99999;
@@ -490,10 +495,25 @@ Ext.define('Ung.config.network.MainController', {
     },
 
     clearOutput: function (btn) {
+        var me = this,
+            vm = btn.up('networktest').getViewModel();
+
         var v = btn.up('networktest');
         v.down('textarea').setValue('');
+        vm.set('exportRunFilename', '');
+        vm.set('exportFilename', '');
     },
 
+    exportOutput: function(btn){
+        var vm = btn.up('networktest').getViewModel();
+
+        Ext.MessageBox.wait( "Exporting Packet Dump...".t(), "Please wait".t());
+        var downloadForm = document.getElementById('downloadForm');
+        downloadForm["type"].value = "NetworkTestExport";
+        downloadForm["arg1"].value = vm.get('exportFilename');
+        downloadForm.submit();
+        Ext.MessageBox.hide();
+    },
 
     editInterface: function (btn) {
         var v = this.getView();

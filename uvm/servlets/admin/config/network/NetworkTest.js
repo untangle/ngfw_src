@@ -46,6 +46,18 @@ Ext.define('Ung.config.network.NetworkTest', {
                     iconCls: 'fa fa-eraser',
                     margin: '0 0 0 10',
                     handler: 'clearOutput'
+                },{
+                    xtype: 'button',
+                    text: 'Export'.t(),
+                    iconCls: 'fa fa-eraser',
+                    margin: '0 0 0 10',
+                    handler: 'exportOutput',
+                    hidden: true,
+                    disabled: true,
+                    bind:{
+                        hidden: '{exportAction != true}',
+                        disabled: '{exportFilename == ""}'
+                    }
                 }]
             }]
         }]
