@@ -62,6 +62,7 @@ Ext.define('Ung.apps.webfilter.view.Rules', {
             { name: 'SRC_PORT',displayName: 'Source Port'.t(), type: 'textfield', vtype: 'portMatcher', visible: rpc.isExpertMode},
             { name: 'SRC_INTF',displayName: 'Source Interface'.t(), type: 'checkboxgroup', values: Util.getInterfaceList(true, false), visible: true},
             { name: 'PROTOCOL',displayName: 'Protocol'.t(), type: 'checkboxgroup', values: [['TCP','TCP'],['UDP','UDP'],['any', 'any'.t()]], visible: true},
+            { name: 'TAGGED',displayName: 'Tagged'.t(), type: 'textfield', visible: true},
             { name: 'USERNAME',displayName: 'Username'.t(), type: 'userfield', visible: true},
             { name: 'CLIENT_HOSTNAME',displayName: 'Client Hostname'.t(), type: 'textfield', visible: true},
             { name: 'SERVER_HOSTNAME',displayName: 'Server Hostname'.t(), type: 'textfield', visible: rpc.isExpertMode},
