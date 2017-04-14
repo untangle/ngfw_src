@@ -23,13 +23,13 @@ Ext.define('Ung.config.network.view.BypassRules', {
         listProperty: 'settings.bypassRules.list',
         ruleJavaClass: 'com.untangle.uvm.network.BypassRuleCondition',
         conditions: [
-            {name:"DST_ADDR",displayName: "Destination Address".t(), type: "text", visible: true, vtype:"ipMatcher"},
-            {name:"DST_PORT",displayName: "Destination Port".t(), type: "text",vtype:"portMatcher", visible: true},
-            {name:"DST_INTF",displayName: "Destination Interface".t(), type: "checkgroup", values: Util.getInterfaceList(true, true), visible: true},
-            {name:"SRC_ADDR",displayName: "Source Address".t(), type: "text", visible: true, vtype:"ipMatcher"},
-            {name:"SRC_PORT",displayName: "Source Port".t(), type: "text",vtype:"portMatcher", visible: rpc.isExpertMode},
-            {name:"SRC_INTF",displayName: "Source Interface".t(), type: "checkgroup", values: Util.getInterfaceList(true, true), visible: true},
-            {name:"PROTOCOL",displayName: "Protocol".t(), type: "checkgroup", values: [["TCP","TCP"],["UDP","UDP"]], visible: true}
+            {name:"DST_ADDR",displayName: "Destination Address".t(), type: 'textfield', visible: true, vtype:"ipMatcher"},
+            {name:"DST_PORT",displayName: "Destination Port".t(), type: 'textfield',vtype:"portMatcher", visible: true},
+            {name:"DST_INTF",displayName: "Destination Interface".t(), type: 'checkboxgroup', values: Util.getInterfaceList(true, true), visible: true},
+            {name:"SRC_ADDR",displayName: "Source Address".t(), type: 'textfield', visible: true, vtype:"ipMatcher"},
+            {name:"SRC_PORT",displayName: "Source Port".t(), type: 'textfield',vtype:"portMatcher", visible: rpc.isExpertMode},
+            {name:"SRC_INTF",displayName: "Source Interface".t(), type: 'checkboxgroup', values: Util.getInterfaceList(true, true), visible: true},
+            {name:"PROTOCOL",displayName: "Protocol".t(), type: 'checkboxgroup', values: [["TCP","TCP"],["UDP","UDP"]], visible: true}
         ],
         emptyRow: {
             ruleId: -1,
