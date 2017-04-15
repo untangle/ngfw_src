@@ -389,11 +389,23 @@ public class EventManagerImpl implements EventManager
         TriggerRule eventRule;
 
         matchers = new LinkedList<EventRuleCondition>();
+        matcher1 = new EventRuleCondition( "class", "=", "*AlertEvent*" );
+        matchers.add( matcher1 );
+        matcher2 = new EventRuleCondition( "description", "=", "*Suspicious Activity*" );
+        matchers.add( matcher2 );
+        eventRule = new TriggerRule( true, matchers, true, "Tag suspicious activity", false, 0 );
+        eventRule.setAction( TriggerRule.TriggerAction.TAG_HOST );
+        eventRule.setTagTarget( "cClientAddr" );
+        eventRule.setTagName( "suspicious" );
+        eventRule.setTagLifetimeSec( new Long(60*30) ); // 30 minutes
+        rules.add( eventRule );
+
+        matchers = new LinkedList<EventRuleCondition>();
         matcher1 = new EventRuleCondition( "class", "=", "*ApplicationControlLogEvent*");
         matchers.add( matcher1 );
         matcher2 = new EventRuleCondition( "category", "=", "Proxy" );
         matchers.add( matcher2 );
-        eventRule = new TriggerRule( true, matchers, true, "Tag proxy-using hosts", false, 0 );
+        eventRule = new TriggerRule( false, matchers, true, "Tag proxy-using hosts", false, 0 );
         eventRule.setAction( TriggerRule.TriggerAction.TAG_HOST );
         eventRule.setTagTarget( "localAddr" );
         eventRule.setTagName( "proxy-use" );
@@ -405,23 +417,11 @@ public class EventManagerImpl implements EventManager
         matchers.add( matcher1 );
         matcher2 = new EventRuleCondition( "application", "=", "BITTORRE" );
         matchers.add( matcher2 );
-        eventRule = new TriggerRule( true, matchers, true, "Tag bittorrent-using hosts", false, 0 );
+        eventRule = new TriggerRule( false, matchers, true, "Tag bittorrent-using hosts", false, 0 );
         eventRule.setAction( TriggerRule.TriggerAction.TAG_HOST );
         eventRule.setTagTarget( "localAddr" );
         eventRule.setTagName( "bittorrent-use" );
         eventRule.setTagLifetimeSec( new Long(60*5) ); // 5 minutes
-        rules.add( eventRule );
-
-        matchers = new LinkedList<EventRuleCondition>();
-        matcher1 = new EventRuleCondition( "class", "=", "*AlertEvent*" );
-        matchers.add( matcher1 );
-        matcher2 = new EventRuleCondition( "description", "=", "*Suspicious Activity*" );
-        matchers.add( matcher2 );
-        eventRule = new TriggerRule( true, matchers, true, "Tag suspicious activity", false, 0 );
-        eventRule.setAction( TriggerRule.TriggerAction.TAG_HOST );
-        eventRule.setTagTarget( "cClientAddr" );
-        eventRule.setTagName( "suspicious" );
-        eventRule.setTagLifetimeSec( new Long(60*30) ); // 30 minutes
         rules.add( eventRule );
 
         return rules;
@@ -502,11 +502,11 @@ public class EventManagerImpl implements EventManager
             if ( ! rule.isMatch( jsonObject ) )
                 continue;
 
-            logger.info( "trigger \"" + rule.getDescription() + "\" matches: " + event );
+            logger.debug( "trigger \"" + rule.getDescription() + "\" matches: " + event );
 
             String target = findAttribute( jsonObject, rule.getTagTarget(), 3 );
             if ( target == null ) {
-                logger.info( "trigger: failed to find target \"" + rule.getTagTarget() + "\"");
+                logger.debug( "trigger: failed to find target \"" + rule.getTagTarget() + "\"");
                 continue;
             }
 
@@ -530,60 +530,60 @@ public class EventManagerImpl implements EventManager
             }
 
             if ( rule.getAction().toString().contains("_HOST") && host == null ) {
-                logger.info( "trigger: failed to find host \"" + target + "\"");
+                logger.debug( "trigger: failed to find host \"" + target + "\"");
                 continue;
             }
             if ( rule.getAction().toString().contains("_USER") && user == null ) {
-                logger.info( "trigger: failed to find user \"" + target + "\"");
+                logger.debug( "trigger: failed to find user \"" + target + "\"");
                 continue;
             }
             if ( rule.getAction().toString().contains("_DEVICE") && device == null ) {
-                logger.info( "trigger: failed to find device \"" + target + "\"");
+                logger.debug( "trigger: failed to find device \"" + target + "\"");
                 continue;
             }
 
             switch( rule.getAction() ) {
             case TAG_HOST:
-                logger.info("Tagging host " + target + " with tag \"" + rule.getTagName() + "\"");
+                logger.debug("Tagging host " + target + " with tag \"" + rule.getTagName() + "\"");
                 host.addTag( new Tag( rule.getTagName(), rule.getTagLifetimeSec()*1000 ) );
                 break;
             case UNTAG_HOST:
-                logger.info("Untagging host " + target + " with tag \"" + rule.getTagName() + "\"");
+                logger.debug("Untagging host " + target + " with tag \"" + rule.getTagName() + "\"");
                 tags = host.getTags();
                 if ( tags == null ) break;
                 for ( Tag t : tags ) {
                     if ( rule.nameMatches( t ) ) {
-                        logger.info("Untagging host " + target + " removing tag \"" + t.getName() + "\"");
+                        logger.debug("Untagging host " + target + " removing tag \"" + t.getName() + "\"");
                         host.removeTag( t );
                     }
                 }
                 break;
             case TAG_USER:
-                logger.info("Tagging user " + target + " with tag \"" + rule.getTagName() + "\"" );
+                logger.debug("Tagging user " + target + " with tag \"" + rule.getTagName() + "\"" );
                 user.addTag( new Tag( rule.getTagName(), rule.getTagLifetimeSec()*1000 ) );
                 break;
             case UNTAG_USER:
-                logger.info("Untagging user " + target + " with tag \"" + rule.getTagName() + "\"");
+                logger.debug("Untagging user " + target + " with tag \"" + rule.getTagName() + "\"");
                 tags = user.getTags();
                 if ( tags == null ) break;
                 for ( Tag t : tags ) {
                     if ( rule.nameMatches( t ) ) {
-                        logger.info("Untagging user " + target + " removing tag \"" + t.getName() + "\"");
+                        logger.debug("Untagging user " + target + " removing tag \"" + t.getName() + "\"");
                         user.removeTag( t );
                     }
                 }
                 break;
             case TAG_DEVICE:
-                logger.info("Tagging device " + target + " with tag \"" + rule.getTagName() + "\"" );
+                logger.debug("Tagging device " + target + " with tag \"" + rule.getTagName() + "\"" );
                 device.addTag( new Tag( rule.getTagName(), rule.getTagLifetimeSec()*1000 ) );
                 break;
             case UNTAG_DEVICE:
-                logger.info("Untagging device " + target + " with tag \"" + rule.getTagName() + "\"");
+                logger.debug("Untagging device " + target + " with tag \"" + rule.getTagName() + "\"");
                 tags = device.getTags();
                 if ( tags == null ) break;
                 for ( Tag t : tags ) {
                     if ( rule.nameMatches( t ) ) {
-                        logger.info("Untagging device " + target + " removing tag \"" + t.getName() + "\"");
+                        logger.debug("Untagging device " + target + " removing tag \"" + t.getName() + "\"");
                         device.removeTag( t );
                     }
                 }
