@@ -32,11 +32,7 @@ Ext.define('Ung.config.about.MainController', {
         Rpc.asyncData('rpc.licenseManager.reloadLicenses', true).then(function(result) {
             Rpc.asyncData('rpc.licenseManager.getLicenses').then(function(result) {
                 vm.set('licenses', result.list);
-            }, function (ex) {
-                Util.exceptionToast(ex);
             });
-        }, function (ex) {
-            Util.exceptionToast(ex);
         });
     }
 
