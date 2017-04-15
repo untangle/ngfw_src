@@ -53,7 +53,6 @@
     <!-- static resource loading during development. -->
     <script type="text/javascript" src="script/config/about.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/config/administration.js?s=${buildStamp}"></script>
-    <script type="text/javascript" src="script/config/events.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/config/email.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/config/hostMonitor.js?s=${buildStamp}"></script>
     <script type="text/javascript" src="script/config/deviceMonitor.js?s=${buildStamp}"></script>
