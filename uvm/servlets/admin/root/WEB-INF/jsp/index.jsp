@@ -63,9 +63,7 @@
                 }
             });
 
-            // JSON Rpc client
-            var rpc = new JSONRpcClient('/admin/JSON-RPC');
-
+	    var rpc = {};
             Ext.QuickTips.init();
 
             // Disable Ext Area to avoid unwanted debug messages
@@ -78,6 +76,11 @@
             Ext.data.Model.prototype.idProperty = '_id';
 
             Ext.onReady(function () {
+                // JSON Rpc client
+	        var oldrpc = rpc
+                rpc = new JSONRpcClient('/admin/JSON-RPC');
+                Ext.apply(rpc, oldrpc);
+
                 try {
                     var startUpInfo = rpc.UvmContext.getWebuiStartupInfo();
                 } catch (ex) {
