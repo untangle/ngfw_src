@@ -1437,12 +1437,6 @@ Ext.define("Ung.Main", {
             helpSource: 'administration',
             className: 'Webui.config.administration'
         }, {
-            name: 'event',
-            displayName: i18n._('Events'),
-            iconClass: 'icon-config-events',
-            helpSource: 'events',
-            className: 'Webui.config.events'
-        }, {
             name: 'email',
             displayName: i18n._('Email'),
             iconClass: 'icon-config-email',

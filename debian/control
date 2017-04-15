@@ -332,8 +332,8 @@ Package: untangle-base-web-filter
 Architecture: all
 Conflicts: untangle-node-web-filter (<= 12.2.0~vcs2016~)
 Depends: untangle-vm, untangle-app-http
-Description: WebFilter Base
- The WebFilter Base.
+Description: Web Filter Base
+ The Web Filter Base.
 
 Package: untangle-libuvmthirdparty
 Architecture: all
