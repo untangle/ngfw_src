@@ -27,8 +27,8 @@ public class AlertRule extends EventRule
 {
 	private Boolean email = false;
 
-    private Boolean alertLimitFrequency = false;
-    private Integer alertLimitFrequencyMinutes = 0;
+    private Boolean emailLimitFrequency = false;
+    private Integer emailLimitFrequencyMinutes = 0;
 
     private long lastEventTime = 0; /* stores the last time this rule sent an event */
 
@@ -41,8 +41,8 @@ public class AlertRule extends EventRule
     {
         super(enabled, conditions, log, description, thresholdEnabled,  thresholdLimit, thresholdTimeframeSec, thresholdGroupingField);
         this.setEmail( email );
-        this.setAlertLimitFrequency( frequencyLimit );
-        this.setAlertLimitFrequencyMinutes( frequencyMinutes );
+        this.setEmailLimitFrequency( frequencyLimit );
+        this.setEmailLimitFrequencyMinutes( frequencyMinutes );
     }
 
     public AlertRule( boolean enabled, List<EventRuleCondition> conditions, boolean log, boolean email, String description, boolean frequencyLimit, int frequencyMinutes )
@@ -54,11 +54,11 @@ public class AlertRule extends EventRule
     public Boolean getEmail() { return email; }
     public void setEmail( Boolean newValue ) { this.email = newValue; }
 
-    public Boolean getAlertLimitFrequency() { return alertLimitFrequency; }
-    public void setAlertLimitFrequency( Boolean newValue ) { this.alertLimitFrequency = newValue; }
+    public Boolean getEmailLimitFrequency() { return emailLimitFrequency; }
+    public void setEmailLimitFrequency( Boolean newValue ) { this.emailLimitFrequency = newValue; }
 
-    public Integer getAlertLimitFrequencyMinutes() { return alertLimitFrequencyMinutes; }
-    public void setAlertLimitFrequencyMinutes( Integer newValue ) { this.alertLimitFrequencyMinutes = newValue; }
+    public Integer getEmailLimitFrequencyMinutes() { return emailLimitFrequencyMinutes; }
+    public void setEmailLimitFrequencyMinutes( Integer newValue ) { this.emailLimitFrequencyMinutes = newValue; }
 
     public long lastEventTime()
     {
@@ -72,12 +72,12 @@ public class AlertRule extends EventRule
     
     public Boolean frequencyCheck()
     {
-        if ( this.getAlertLimitFrequency() && this.getAlertLimitFrequencyMinutes() > 0 ) {
+        if ( this.getEmailLimitFrequency() && this.getEmailLimitFrequencyMinutes() > 0 ) {
             long currentTime = System.currentTimeMillis();
             long lastEventTime = this.lastEventTime();
             long secondsSinceLastEvent = ( currentTime - lastEventTime ) / 1000;
             // if not enough time has elapsed, just return
-            if ( secondsSinceLastEvent < ( this.getAlertLimitFrequencyMinutes() * 60 ) )
+            if ( secondsSinceLastEvent < ( this.getEmailLimitFrequencyMinutes() * 60 ) )
             {
                 return false;
             }

@@ -40,9 +40,9 @@ def get_latest_mail_pkg():
 
 def create_alert_rule(description, field, operator, value, field2, operator2, value2, thresholdEnabled=False, thresholdLimit=None, thresholdTimeframeSec=None, thresholdGroupingField=None):
     return {
-            "alert": True,
-            "alertLimitFrequency": False,
-            "alertLimitFrequencyMinutes": 60,
+            "email": False,
+            "emailLimitFrequency": False,
+            "emailLimitFrequencyMinutes": 60,
             "thresholdEnabled": thresholdEnabled,
             "thresholdLimit": thresholdLimit,
             "thresholdTimeframeSec": thresholdTimeframeSec,

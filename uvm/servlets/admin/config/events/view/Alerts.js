@@ -39,8 +39,8 @@ Ext.define('Ung.config.events.view.Alerts', {
             enabled: true,
             thresholdEnabled: false,
             email: true,
-            alertLimitFrequency: false,
-            alertLimitFrequencyMinutes: 0,
+            emailLimitFrequency: false,
+            emailLimitFrequencyMinutes: 0,
         },
 
         columns: [
@@ -148,7 +148,7 @@ Ext.define('Ung.config.events.view.Alerts', {
                     xtype:'checkbox',
                     fieldLabel: 'Limit Send Frequency'.t(),
                     labelWidth: 160,
-                    bind: '{record.alertLimitFrequency}'
+                    bind: '{record.emailLimitFrequency}'
                 },{
                     xtype: 'container',
                     layout: 'column',
@@ -157,7 +157,7 @@ Ext.define('Ung.config.events.view.Alerts', {
                         xtype: 'numberfield',
                         fieldLabel: 'To once per'.t(),
                         labelWidth: 160,
-                        bind: '{record.alertLimitFrequencyMinutes}',
+                        bind: '{record.emailLimitFrequencyMinutes}',
                         allowDecimals: false,
                         allowBlank: false,
                         minValue: 0,
