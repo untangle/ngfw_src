@@ -112,9 +112,7 @@ Ext.define('Ung.config.events.view.Syslog', {
             ruleId: -1,
             enabled: true,
             thresholdEnabled: false,
-            syslog: true,
-            alertLimitFrequency: false,
-            alertLimitFrequencyMinutes: 0,
+            syslog: true
         },
 
         columns: [

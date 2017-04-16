@@ -681,12 +681,18 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         String[] oldNames = new String[] {
                                 "com.untangle.node.reports.AlertRuleCondition",
                                 "com.untangle.node.reports.AlertRuleConditionField",
-                                "com.untangle.node.reports.AlertRule"
+                                "com.untangle.node.reports.AlertRule",
+                                "\"alert\":",
+                                "\"alertLimitFrequency\":",
+                                "\"alertLimitFrequencyMinutes\":"
                              };
         String[] newNames = new String[] {
                                 "com.untangle.uvm.event.EventRuleCondition",
                                 "com.untangle.uvm.event.EventRuleConditionField",
-                                "com.untangle.uvm.event.AlertRule"
+                                "com.untangle.uvm.event.AlertRule",
+                                "\"email\":",
+                                "\"emailLimitFrequency\":",
+                                "\"emailLimitFrequencyMinutes\":"
                              };
         for ( int i = 0 ; i < oldNames.length ; i++ ) {
             String oldStr = oldNames[i];
