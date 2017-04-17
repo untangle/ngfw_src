@@ -12,7 +12,8 @@ Ext.define('Ung.config.about.view.Licenses', {
     }],
 
     items: [{
-        xtype: 'grid',
+        xtype: 'ungrid',
+        controller: 'unaboutlicensegrid',
         itemId: 'licenses',
         bind: {
             store: {
@@ -36,12 +37,12 @@ Ext.define('Ung.config.about.view.Licenses', {
             header: 'Start Date'.t(),
             dataIndex: 'start',
             width: 240,
-            // renderer: function (value) { return i18n.timestampFormat(value*1000);}
+            formatter: 'this.dateRenderer'
         }, {
             header: 'End Date'.t(),
             dataIndex: 'end',
             width: 240,
-            // renderer: Ext.bind(function(value) { return i18n.timestampFormat(value*1000); }, this)
+            formatter: 'this.dateRenderer'
         }, {
             header: 'Seats'.t(),
             dataIndex: 'seats',
