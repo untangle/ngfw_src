@@ -107,6 +107,15 @@
     <script type="text/javascript">
     Ext.onReady(function() {
         Ung.Main.init({debugMode:${isDebug}, buildStamp:'${buildStamp}'})
+
+    Ext.MessageBox.confirm(
+        i18n._("Warning"),
+        i18n._("There is a new administrator interface!") + "<br/><br/>" + i18n._("Continue to the new administrator interace?"),
+        Ext.bind(function(btn, text) {
+            if (btn == 'yes') {
+                window.location.href = '/admin/';
+            }
+        }, this));
     });
     </script>
  </head>
