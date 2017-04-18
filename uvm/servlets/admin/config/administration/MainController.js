@@ -374,7 +374,7 @@ Ext.define('Ung.config.administration.MainController', {
         }
         certSubject = certSubject.join('');
 
-        if (altNames.length > 0) {
+        if ( (altNames != null)  && (altNames.length > 0) ) {
             var hostnameRegex = /^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$/;
             // Parse subject alt name list. For IP's prefix with both DNS: and IP:, for hostnames prefix with DNS:, otherwise is left unchanged
             var altNameTokens = altNames.split(',');
