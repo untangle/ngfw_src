@@ -109,6 +109,13 @@ Ext.define('Ung.apps.openvpn.SpecialGridController', {
     alias: 'controller.app-openvpn-special',
 
     downloadClient: function(view, row, colIndex, item, e, record) {
+        if( record.dirty ){
+            Ext.MessageBox.alert(
+                "Cannot download".t(), 
+                "Remote Client information has been modified.  You must Save before downloading the client.".t()
+            );
+            return;
+        }
         var me = this, v = this.getView(), vm = this.getViewModel();
         me.getDistributeWindow().populate(record);
     },
