@@ -28,7 +28,11 @@ Ext.define('Ung.cmp.GridController', {
         var v = this.getView(),
             newRecord = Ext.create('Ung.model.Rule', Ext.clone(v.emptyRow));
         newRecord.set('markedForNew', true);
-        v.getStore().add(newRecord);
+        if (v.topInsert) {
+            v.getStore().insert(0, newRecord);
+        } else {
+            v.getStore().add(newRecord);
+        }
     },
 
     editRecord: function (view, rowIndex, colIndex, item, e, record) {

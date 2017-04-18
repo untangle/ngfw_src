@@ -68,6 +68,7 @@ Ext.define('Ung.apps.openvpn.view.ConfigEditorGrid', {
     }],
 
     recordActions: ['delete'],
+    topInsert: true,
 
     emptyRow: {
         javaClass: 'com.untangle.app.openvpn.OpenVpnConfigItem',
