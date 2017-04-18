@@ -174,6 +174,24 @@ Ext.define('Ung.config.network.MainController', {
             return;
         }
 
+        if( vm.get('settings').qosSettings.qosEnabled == true ){
+            var bandwidthFound = false;
+            vm.get('wanInterfaces').each( function(interface){
+                if( interface.get('downloadBandwidthKbps') != null &&
+                    interface.get('uploadBandwidthKbps') != null){
+                    bandwidthFound = true;
+                }
+            })
+            if(bandwidthFound == false){
+                Ext.MessageBox.alert(
+                        "Failed".t(), 
+                        "QoS is Enabled. Please set valid Download Bandwidth and Upload Bandwidth limits in WAN Bandwidth for all WAN interfaces.".t()
+                );
+                view.setLoading(false);
+                return;
+            }
+        }
+
         me.setNetworkSettings();
     },
 
