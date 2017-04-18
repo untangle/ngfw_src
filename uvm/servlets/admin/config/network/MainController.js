@@ -181,7 +181,7 @@ Ext.define('Ung.config.network.MainController', {
                     interface.get('uploadBandwidthKbps') != null){
                     bandwidthFound = true;
                 }
-            })
+            });
             if(bandwidthFound == false){
                 Ext.MessageBox.alert(
                         "Failed".t(), 
