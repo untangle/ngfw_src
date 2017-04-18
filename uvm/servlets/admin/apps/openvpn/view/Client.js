@@ -29,8 +29,13 @@ Ext.define('Ung.apps.openvpn.view.Client', {
         items: [{
             xtype: 'fileuploadfield',
             name: 'uploadConfigFileName',
-            buttonText: 'Upload Remote Server Configuration File'.t(),
             buttonOnly: true,
+            buttonConfig: {
+                iconCls: 'fa fa-upload',
+                width: 300,
+                height: 40,
+                text: 'Upload Remote Server Configuration File'.t(),
+            },
             listeners: { 'change': 'uploadFile' }
         }]
     }]
