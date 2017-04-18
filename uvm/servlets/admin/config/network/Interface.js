@@ -1,8 +1,10 @@
 Ext.define('Ung.config.network.Interface', {
     extend: 'Ext.window.Window',
     alias: 'widget.config.interface',
-    width: 500,
-    height: 550,
+    width: 800,
+    minHeight: 400,
+    maxHeight: Ext.getBody().getViewSize().height - 20,
+    closable: false,
     // constrainTo: 'body',
     layout: 'fit',
 
@@ -104,8 +106,12 @@ Ext.define('Ung.config.network.Interface', {
                 hidden: '{!isBridged}'
             },
             fieldLabel: 'Bridged To'.t(),
-            // store: Util.getInterfaceAddressedList(),
-            queryMode: 'local'
+            valueField: 'id',
+            displayField: 'name',
+            queryMode: 'local',
+            listeners:{
+                afterrender: 'onBridgedInteface'
+            }
         }, {
             // is WAN
             xtype: 'checkbox',
@@ -245,7 +251,7 @@ Ext.define('Ung.config.network.Interface', {
                 fieldLabel: 'Netmask'.t(),
                 allowBlank: false,
                 editable: false,
-                store: Util.v4NetmaskList,
+                store: Util.getV4NetmaskList(false),
                 queryMode: 'local'
             }, {
                 // gateway
@@ -291,7 +297,7 @@ Ext.define('Ung.config.network.Interface', {
                 },
                 editable: false,
                 fieldLabel: 'Netmask Override'.t(),
-                store: Util.v4NetmaskList,
+                store: Util.getV4NetmaskList(true),
                 queryMode: 'local'
             }, {
                 // override gateway
@@ -571,7 +577,7 @@ Ext.define('Ung.config.network.Interface', {
                     bind: '{si.dhcpPrefixOverride}',
                     fieldLabel: 'Netmask Override'.t(),
                     editable: false,
-                    store: Util.v4NetmaskList,
+                    store: Util.getV4NetmaskList(false),
                     queryMode: 'local'
                 }, {
                     // dns override
