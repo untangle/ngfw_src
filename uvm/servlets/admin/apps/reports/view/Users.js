@@ -25,6 +25,7 @@ Ext.define('Ung.apps.reports.view.Users', {
     emptyRow: {
         emailAddress: '',
         emailSummaries: true,
+        emailAlerts: false,
         emailTemplateIds: {
             javaClass: 'java.util.LinkedList',
             list: [1]
@@ -47,6 +48,12 @@ Ext.define('Ung.apps.reports.view.Users', {
             allowBlank: false,
             blankText: 'The email address cannot be blank.'.t()
         }
+    }, {
+        xtype: 'checkcolumn',
+        width: 100,
+        header: 'Email Alerts'.t(),
+        dataIndex: 'emailAlerts',
+        resizable: false
     }, {
         xtype: 'checkcolumn',
         width: 100,
@@ -83,6 +90,10 @@ Ext.define('Ung.apps.reports.view.Users', {
         allowBlank: false,
         width: 300,
         blankText: 'The email address name cannot be blank.'.t(),
+    }, {
+        xtype: 'checkbox',
+        bind: '{record.emailAlerts}',
+        fieldLabel: 'Email Alerts'.t()
     }, {
         xtype: 'checkbox',
         bind: '{record.emailSummaries}',
