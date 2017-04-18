@@ -258,7 +258,7 @@ Ext.define('Ung.apps.directory-connector.MainController', {
         var username = v.down('textfield[name=google_test_username]').getValue();
         var password = v.down('textfield[name=google_test_password]').getValue();
 
-        var message = v.appManager.getGoogleManager().authenticate( Ext.bind(function(result, exception) {
+        var message = v.appManager.getGoogleManager().authenticateTest( Ext.bind(function(result, exception) {
             if (exception) { Util.exceptionToast(ex); return; }
             var message;
             if ( result ) {
@@ -276,7 +276,7 @@ Ext.define('Ung.apps.directory-connector.MainController', {
         var username = v.down('textfield[name=facebook_test_username]').getValue();
         var password = v.down('textfield[name=facebook_test_password]').getValue();
 
-        var message = v.appManager.getFacebookManager().authenticate( Ext.bind(function(result, exception) {
+        var message = v.appManager.getFacebookManager().authenticateTest( Ext.bind(function(result, exception) {
             if (exception) { Util.exceptionToast(ex); return; }
             var message;
             if ( result ) {

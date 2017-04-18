@@ -64,4 +64,12 @@ public class FacebookManagerImpl
 
         return FacebookAuthenticator.authenticate( username, pwd );
     }
+
+    public boolean authenticateTest( String username, String pwd )
+    {
+        if (username == null || username.equals("") || pwd == null || pwd.equals("")) 
+            return false;
+
+        return FacebookAuthenticator.authenticate( username, pwd );
+    }
 }
