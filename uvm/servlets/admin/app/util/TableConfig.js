@@ -1,8 +1,8 @@
-Ext.define('this', {
+Ext.define('TableConfig', {
     alternateClassName: 'TableConfig',
     singleton: true,
 
-    //Field width constants
+        //Field width constants
     timestampFieldWidth: 135,
     ipFieldWidth: 100,
     macFieldWidth: 100,
@@ -902,7 +902,7 @@ Ext.define('this', {
                     sortable: true,
                     dataIndex: 'time_stamp',
                     renderer: function(value) {
-                        // return Util.timestampFormat(value);
+                        return Util.timestampFormat(value);
                     }
                 }, {
                     header: 'Start Timestamp'.t(),
@@ -910,7 +910,7 @@ Ext.define('this', {
                     sortable: true,
                     dataIndex: 'start_time',
                     renderer: function(value) {
-                        // return i18n.timestampFormat(value);
+                        return Util.timestampFormat(value);
                     }
                 }, {
                     header: 'End Timestamp'.t(),
@@ -918,7 +918,7 @@ Ext.define('this', {
                     sortable: true,
                     dataIndex: 'end_time',
                     renderer: function(value) {
-                        // return i18n.timestampFormat(value);
+                        return Util.timestampFormat(value);
                     }
                 }, {
                     header: 'Bypassed'.t(),
@@ -1370,7 +1370,7 @@ Ext.define('this', {
                     sortable: true,
                     dataIndex: 'time_stamp',
                     renderer: function(value) {
-                        // return i18n.timestampFormat(value);
+                        return Util.timestampFormat(value);
                     }
                 }, {
                     header: 'Policy Id'.t(),
@@ -1667,7 +1667,7 @@ Ext.define('this', {
                     sortable: true,
                     dataIndex: 'time_stamp',
                     renderer: function(value) {
-                        // return i18n.timestampFormat(value);
+                        return Util.timestampFormat(value);
                     }
                 }, {
                     header: 'Policy Id'.t(),
@@ -1920,7 +1920,7 @@ Ext.define('this', {
                     sortable: true,
                     dataIndex: 'time_stamp',
                     renderer: function(value) {
-                        // return i18n.timestampFormat(value);
+                        return Util.timestampFormat(value);
                     }
                 }, {
                     header: 'Session Id'.t(),
@@ -2146,7 +2146,7 @@ Ext.define('this', {
                     sortable: true,
                     dataIndex: 'time_stamp',
                     renderer: function(value) {
-                        // return i18n.timestampFormat(value);
+                        return Util.timestampFormat(value);
                     }
                 }, {
                     header: 'Client'.t(),
@@ -2210,7 +2210,7 @@ Ext.define('this', {
                     sortable: true,
                     dataIndex: 'time_stamp',
                     renderer: function(value) {
-                        // return i18n.timestampFormat(value);
+                        return Util.timestampFormat(value);
                     }
                 }, {
                     header: 'Login'.t(),
@@ -2288,7 +2288,7 @@ Ext.define('this', {
                     sortable: true,
                     dataIndex: 'time_stamp',
                     renderer: function(value) {
-                        // return i18n.timestampFormat(value);
+                        return Util.timestampFormat(value);
                     }
                 }, {
                     header: 'Load (1-minute)'.t(),
@@ -2436,7 +2436,7 @@ Ext.define('this', {
                     sortable: true,
                     dataIndex: 'time_stamp',
                     renderer: function(value) {
-                        // return i18n.timestampFormat(value);
+                        return Util.timestampFormat(value);
                     }
                 }, {
                     header: 'Address'.t(),
@@ -2485,7 +2485,7 @@ Ext.define('this', {
                     sortable: true,
                     dataIndex: 'time_stamp',
                     renderer: function(value) {
-                        // return i18n.timestampFormat(value);
+                        return Util.timestampFormat(value);
                     }
                 }, {
                     header: 'MAC Address'.t(),
@@ -2534,7 +2534,7 @@ Ext.define('this', {
                     sortable: true,
                     dataIndex: 'time_stamp',
                     renderer: function(value) {
-                        // return i18n.timestampFormat(value);
+                        return Util.timestampFormat(value);
                     }
                 }, {
                     header: 'Username'.t(),
@@ -2590,7 +2590,7 @@ Ext.define('this', {
                     sortable: true,
                     dataIndex: 'time_stamp',
                     renderer: function(value) {
-                        // return i18n.timestampFormat(value);
+                        return Util.timestampFormat(value);
                     }
                 }, {
                     header: 'Result'.t(),
@@ -2636,7 +2636,7 @@ Ext.define('this', {
                     sortable: true,
                     dataIndex: 'time_stamp',
                     renderer: function(value) {
-                        // return i18n.timestampFormat(value);
+                        return Util.timestampFormat(value);
                     }
                 },{
                     header: 'Interface Name'.t(),
@@ -2692,7 +2692,7 @@ Ext.define('this', {
                     sortable: true,
                     dataIndex: 'time_stamp',
                     renderer: function(value) {
-                        // return i18n.timestampFormat(value);
+                        return Util.timestampFormat(value);
                     }
                 },{
                     header: 'Interface Name'.t(),
@@ -2752,7 +2752,7 @@ Ext.define('this', {
                     sortable: true,
                     dataIndex: 'time_stamp',
                     renderer: function(value) {
-                        // return i18n.timestampFormat(value);
+                        return Util.timestampFormat(value);
                     }
                 },{
                     header: 'Event Id'.t(),
@@ -2858,9 +2858,9 @@ Ext.define('this', {
                     width: this.timestampFieldWidth,
                     sortable: true,
                     dataIndex: 'time_stamp',
-                    renderer: Ext.bind(function(value) {
-                        // return i18n.timestampFormat(value);
-                    }, this )
+                    renderer: function(value) {
+                        return Util.timestampFormat(value);
+                    }
                 }, {
                     header: 'Tunnel Name'.t(),
                     width: 120,
@@ -2903,9 +2903,9 @@ Ext.define('this', {
                     width: this.timestampFieldWidth,
                     sortable: true,
                     dataIndex: 'time_stamp',
-                    renderer: Ext.bind(function(value) {
-                        // return i18n.timestampFormat(value);
-                    }, this )
+                    renderer: function(value) {
+                        return Util.timestampFormat(value);
+                    }
                 },{
                     header: 'Interface Id'.t(),
                     width: 120,
@@ -2954,7 +2954,7 @@ Ext.define('this', {
                     sortable: true,
                     dataIndex: 'time_stamp',
                     renderer: function(value) {
-                        // return i18n.timestampFormat(value);
+                        return Util.timestampFormat(value);
                     }
                 }, {
                     header: 'Policy Id'.t(),
@@ -3009,7 +3009,7 @@ Ext.define('this', {
                     sortable: true,
                     dataIndex: 'time_stamp',
                     renderer: function(value) {
-                        // return i18n.timestampFormat(value);
+                        return Util.timestampFormat(value);
                     }
                 }, {
                     header: 'Event Id'.t(),
@@ -3090,7 +3090,7 @@ Ext.define('this', {
                     sortable: true,
                     dataIndex: 'time_stamp',
                     renderer: function(value) {
-                        // return i18n.timestampFormat(value);
+                        return Util.timestampFormat(value);
                     }
                 }, {
                     header: 'Policy Id'.t(),
@@ -3204,7 +3204,7 @@ Ext.define('this', {
                     sortable: true,
                     dataIndex: 'time_stamp',
                     renderer: function(value) {
-                        // return i18n.timestampFormat(value);
+                        return Util.timestampFormat(value);
                     }
                 }, {
                     header: 'Sid'.t(),
@@ -3332,9 +3332,9 @@ Ext.define('this', {
                     width: this.timestampFieldWidth,
                     sortable: true,
                     dataIndex: 'time_stamp',
-                    renderer: Ext.bind(function(value) {
-                        // return i18n.timestampFormat(value);
-                    }, this )
+                    renderer: function(value) {
+                        return Util.timestampFormat(value);
+                    }
                 }, {
                     header: 'Type'.t(),
                     width: 120,
@@ -3399,9 +3399,9 @@ Ext.define('this', {
                     width: this.timestampFieldWidth,
                     sortable: true,
                     dataIndex: 'time_stamp',
-                    renderer: Ext.bind(function(value) {
-                        // return i18n.timestampFormat(value);
-                    }, this )
+                    renderer: function(value) {
+                        return Util.timestampFormat(value);
+                    }
                 }, {
                     header: 'Start Time'.t(),
                     width: this.timestampFieldWidth,
@@ -3476,7 +3476,7 @@ Ext.define('this', {
                     sortable: true,
                     dataIndex: 'time_stamp',
                     renderer: function(value) {
-                        // return i18n.timestampFormat(value);
+                        return Util.timestampFormat(value);
                     }
                 },{
                     header: 'Description'.t(),
@@ -3514,7 +3514,7 @@ Ext.define('this', {
                     sortable: true,
                     dataIndex: 'time_stamp',
                     renderer: function(value) {
-                        // return i18n.timestampFormat(value);
+                        return Util.timestampFormat(value);
                     }
                 },{
                     header: 'Description'.t(),
@@ -3593,7 +3593,7 @@ Ext.define('this', {
                     sortable: true,
                     dataIndex: 'time_stamp',
                     renderer: function(value) {
-                        // return i18n.timestampFormat(value);
+                        return Util.timestampFormat(value);
                     }
                 }, {
                     header: 'Policy Id'.t(),
@@ -3709,7 +3709,7 @@ Ext.define('this', {
                     sortable: true,
                     dataIndex: 'time_stamp',
                     renderer: function(value) {
-                        // return i18n.timestampFormat(value);
+                        return Util.timestampFormat(value);
                     }
                 }, {
                     header: 'Address'.t(),
@@ -3761,7 +3761,7 @@ Ext.define('this', {
                     sortable: true,
                     dataIndex: 'time_stamp',
                     renderer: function(value) {
-                        // return i18n.timestampFormat(value);
+                        return Util.timestampFormat(value);
                     }
                 }, {
                     header: 'Username'.t(),
