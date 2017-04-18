@@ -6,6 +6,7 @@ Ext.define('Ung.cmp.RecordEditorController', {
         '#': {
             beforerender: 'onBeforeRender',
             afterrender: 'onAfterRender',
+            afterlayout: 'onAfterLayout',
             // close: 'onDestroy'
             // beforerender: 'onBeforeRender',
             // close: 'onClose',
@@ -142,6 +143,16 @@ Ext.define('Ung.cmp.RecordEditorController', {
         }
         form.isValid();
         // setTimeout(view.center();
+    },
+
+    onAfterLayout: function( container, layout){
+        var bodyWindowHeight = Ext.getBody().getViewSize().height;
+        var windowY = container.getY();
+        var windowHeight = container.getHeight();
+        var windowBottom = windowY + windowHeight;
+        if(windowBottom > bodyWindowHeight){
+            container.setY(windowY - (windowBottom - bodyWindowHeight) );
+        }
     },
 
     onApply: function () {
