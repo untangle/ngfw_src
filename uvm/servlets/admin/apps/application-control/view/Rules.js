@@ -26,7 +26,6 @@ Ext.define('Ung.apps.applicationcontrol.view.Rules', {
 
 
     emptyRow: {
-        id: null,
         live: true,
         description: '',
         action: {
