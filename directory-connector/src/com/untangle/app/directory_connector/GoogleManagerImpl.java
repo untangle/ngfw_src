@@ -99,6 +99,14 @@ public class GoogleManagerImpl
         return GoogleAuthenticator.authenticate( username, pwd );
     }
     
+    public boolean authenticateTest( String username, String pwd )
+    {
+        if (username == null || username.equals("") || pwd == null || pwd.equals("")) 
+            return false;
+
+        return GoogleAuthenticator.authenticate( username, pwd );
+    }
+    
     /**
      * This returns true if google drive is configured.
      * False otherwise
