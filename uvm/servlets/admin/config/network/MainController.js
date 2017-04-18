@@ -440,12 +440,22 @@ Ext.define('Ung.config.network.MainController', {
                         clientId: lineparts[4]
                     });
                 }
-                //todo: handle leases data / store
+                view.getStore().loadData(leases);
             }).always(function () {
                 view.setLoading(false);
             });
-    },
 
+    },
+    addStaticDhcpLease: function (view, rowIndex, colIndex, item, e, record) {
+        var me = this; staticDhcpGrid = me.getView().down('#dhcpEntries');
+        var newDhcpEntry = {
+            macAddress: record.get('macAddress'),
+            address: record.get('address'),
+            description: record.get('hostname'),
+            javaClass: 'com.untangle.uvm.network.DhcpStaticEntry'
+        };
+        staticDhcpGrid.getStore().add(newDhcpEntry);
+    },
 
     // Network Tests
     networkTestRender: function (view) {
@@ -486,7 +496,7 @@ Ext.define('Ung.config.network.MainController', {
                 btn.setDisabled(false);
                 text.push('' + (new Date()) + ' - ' + 'Test Completed'.t());
                 text.push('\n\n--------------------------------------------------------\n\n');
-                if(vm.get('exportRunFilename') != '' ){
+                if(vm.get('exportRunFilename') !== '' ){
                     vm.set('exportFilename', vm.get('exportRunFilename'));
                     vm.set('exportRunFilename', '');
                 }
@@ -580,8 +590,8 @@ Ext.define('Ung.config.network.MainController', {
         var fields = [];
         vm.get('settings').interfaces.list.forEach( function(interface){
             if( ( interface.interfaceId == record.get('interfaceId') ) ||
-                ( interface.bridged != false ) ||
-                ( interface.disabled != false ) ||
+                ( interface.bridged !== false ) ||
+                ( interface.disabled !== false ) ||
                 ( interface.v4ConfigType != 'STATIC') ){
                 return;
             }

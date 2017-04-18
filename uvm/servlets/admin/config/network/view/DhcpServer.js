@@ -11,7 +11,7 @@ Ext.define('Ung.config.network.view.DhcpServer', {
     items: [{
         xtype: 'ungrid',
         region: 'center',
-
+        itemId: 'dhcpEntries',
         title: 'Static DHCP Entries'.t(),
 
         tbar: ['@add'],
@@ -71,6 +71,8 @@ Ext.define('Ung.config.network.view.DhcpServer', {
         region: 'south',
         height: '50%',
         split: true,
+        enableColumnHide: false,
+        enableColumnMove: false,
 
         viewConfig: {
             emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-exclamation-triangle fa-2x"></i> <br/>No Data!</p>',
@@ -82,9 +84,7 @@ Ext.define('Ung.config.network.view.DhcpServer', {
             handler: 'refreshDhcpLeases'
         }],
 
-        store: {
-            data: [] // todo: handle this store when available data
-        },
+        store: { data: [] },
 
         columns: [{
             header: 'MAC Address'.t(),
@@ -92,24 +92,25 @@ Ext.define('Ung.config.network.view.DhcpServer', {
             width: 150
         },{
             header: 'Address'.t(),
-            dataIndex:'address',
-            width: 200
+            dataIndex: 'address',
+            flex: 1
         },{
             header: 'Hostname'.t(),
-            dataIndex:'hostname',
+            dataIndex: 'hostname',
             width: 200
         },{
             header: 'Expiration Time'.t(),
-            dataIndex:'date',
+            dataIndex: 'date',
             width: 180,
-            // renderer: function(value) { return i18n.timestampFormat(value*1000); }
+            renderer: function(value) { return Util.timestampFormat(value*1000); }
         }, {
             xtype: 'actioncolumn',
             header: 'Add Static'.t(),
+            align: 'center',
             iconCls: 'fa fa-plus',
-            handler: function () {
-                alert('to add');
-            }
+            sortable: false,
+            resizable: false,
+            handler: 'addStaticDhcpLease'
         }],
         plugins: 'responsive',
         responsiveConfig: {
