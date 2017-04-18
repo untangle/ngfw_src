@@ -239,21 +239,36 @@ Ext.define('Ung.view.reports.EntryController', {
             align: 'center',
             items: [{
                 iconCls: 'fa fa-filter',
-                tooltip: 'Add Condition'.t()
-                // handler: Ext.bind(function (view, rowIndex, colIndex, item, e, record) {
-                //     this.buildWindowAddCondition();
-                //     data = {
-                //         column: this.entry.pieGroupColumn,
-                //         operator: "=",
-                //         value: record.get(this.entry.pieGroupColumn)
-                //     };
-                //     this.windowAddCondition.setCondition(data);
-                // }, this)
+                tooltip: 'Add Condition'.t(),
+                handler: 'addPieFilter'
             }]
         }]);
         dataGrid.getStore().loadData(data);
         // vm.set('_currentData', data);
 
+    },
+
+    addPieFilter: function (view, rowIndex, colIndex, item, e, record) {
+        var me = this, vm = me.getViewModel(),
+            gridFilters =  me.getView().down('#sqlFilters'),
+            col = vm.get('entry.pieGroupColumn');
+
+        if (col) {
+            vm.get('sqlFilterData').push({
+                column: col,
+                operator: '=',
+                value: record.get(col),
+                javaClass: 'com.untangle.app.reports.SqlCondition'
+            });
+        } else {
+            console.log('Issue with pie column!');
+            return;
+        }
+
+        gridFilters.setCollapsed(false);
+        gridFilters.setTitle(Ext.String.format('Conditions: {0}'.t(), vm.get('sqlFilterData').length));
+        gridFilters.getStore().reload();
+        me.refreshData();
     },
 
     formatTextData: function (data) {

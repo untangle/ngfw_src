@@ -690,7 +690,7 @@ Ext.define('Ung.view.reports.Entry', {
                             valueField: 'value',
                             store: { data: [] },
                             listConfig: {
-                                itemTpl: ['<div data-qtip="{value}"><strong>{text}</strong></div>']
+                                itemTpl: ['<div data-qtip="{value}"><strong>{text}</strong> <span style="float: right;">[{value}]</span></div>']
                             },
                         }, {
                             xtype: 'button',
@@ -826,7 +826,6 @@ Ext.define('Ung.view.reports.Entry', {
                 }
             }, '-',  {
                 xtype: 'combo',
-                // fieldLabel: 'Sessions',
                 emptyText: 'Select Column ...',
                 labelWidth: 100,
                 labelAlign: 'right',
