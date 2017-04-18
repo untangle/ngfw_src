@@ -14,44 +14,47 @@ Ext.define('Ung.view.extra.DevicesController', {
         view.destroy();
     },
 
-    setAutoRefresh: function (btn) {
-        var me = this,
-            vm = this.getViewModel();
-        vm.set('autoRefresh', btn.pressed);
-
-        if (btn.pressed) {
-            me.getDevices();
-            this.refreshInterval = setInterval(function () {
-                me.getDevices();
-            }, 5000);
-        } else {
-            clearInterval(this.refreshInterval);
-        }
-
-    },
-
     getDevices: function () {
-        var me = this,
-            grid = me.getView().down('#devicesgrid');
-        grid.getView().setLoading(true);
+        var me = this;
+        me.getView().setLoading(true);
         Rpc.asyncData('rpc.deviceTable.getDevices')
             .then(function(result) {
-                grid.getView().setLoading(false);
+                me.getView().setLoading(false);
                 Ext.getStore('devices').loadData(result.list);
-                grid.getSelectionModel().select(0);
-                // grid.getStore().setData(result.list);
             });
     },
 
-    timestampRenderer: function (timestamp) {
-        if (!timestamp) {
-            return '<i class="fa fa-minus"></i>';
-        }
-        return Ext.util.Format.date(new Date(timestamp), 'timestamp_fmt'.t());
-    },
+    saveDevices: function () {
+        var me = this, store = me.getView().down('ungrid').getStore(), list = [];
 
-    boolRenderer: function (value) {
-        return '<i class="fa ' + (value ? 'fa-check' : 'fa-minus') + '"></i>';
-    }
+        me.getView().query('ungrid').forEach(function (grid) {
+            var store = grid.getStore();
+            if (store.getModifiedRecords().length > 0 ||
+                store.getNewRecords().length > 0 ||
+                store.getRemovedRecords().length > 0 ||
+                store.isReordered) {
+                store.each(function (record) {
+                    if (record.get('markedForDelete')) {
+                        record.drop();
+                    }
+                });
+                store.isReordered = undefined;
+                list = Ext.Array.pluck(store.getRange(), 'data');
+            }
+        });
+
+
+        me.getView().setLoading(true);
+        Rpc.asyncData('rpc.deviceTable.setDevices', {
+            javaClass: 'java.util.LinkedList',
+            list: list
+        }).then(function(result, ex) {
+             me.getDevices();
+        }, function (ex) {
+            Util.exceptionToast(ex);
+        }).always(function () {
+            me.getView().setLoading(false);
+        });
+   }
 
 });
