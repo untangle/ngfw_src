@@ -70,6 +70,7 @@ Ext.define('Ung.apps.intrusionprevention.view.Variables', {
             xtype: 'label',
             name: 'activeVariable',
             hidden: true,
+            margin: '5 0 0 10',
             html: 'Variable is used by one or more rules.'.t(),
             cls: 'boxlabel'
         }]
