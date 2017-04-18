@@ -46,6 +46,7 @@ Ext.define('Ung.config.network.MainController', {
         ], this).then(function (result) {
             v.setLoading(false);
             var intfStatus, devStatus;
+
             result[0].interfaces.list.forEach(function (intf) {
                 Ext.apply(intf, me.additionalInterfaceProps);
                 intfStatus = Ext.Array.findBy(result[1].list, function (intfSt) {
@@ -62,6 +63,7 @@ Ext.define('Ung.config.network.MainController', {
                 });
                 delete devStatus.javaClass;
                 Ext.apply(intf, devStatus);
+
             });
             vm.set('settings', result[0]);
 
@@ -544,7 +546,15 @@ Ext.define('Ung.config.network.MainController', {
         });
         this.dialog.show();
     },
-    cancelEdit: function () {
+    cancelEdit: function (button) {
+        vm = button.up('window').getViewModel();
+
+        var record = this.dialog.getViewModel().get('si');
+        for (var field in record.modified) {
+            record.set(field, record.modified[field]);
+        }
+        record.commit();
+
         this.dialog.close();
     },
 
@@ -559,6 +569,33 @@ Ext.define('Ung.config.network.MainController', {
         // var t = store.findRecord('interfaceId', edited.get('interfaceId'));
         // t = edited.copy();
         // console.log(t);
+    },
+
+    onBridgedInteface: function( combo ){
+        var me = this,
+            vm = me.getViewModel();
+
+        var record = combo.up('window').getViewModel().get('si');
+
+        var fields = [];
+        vm.get('settings').interfaces.list.forEach( function(interface){
+            if( ( interface.interfaceId == record.get('interfaceId') ) ||
+                ( interface.bridged != false ) ||
+                ( interface.disabled != false ) ||
+                ( interface.v4ConfigType != 'STATIC') ){
+                return;
+            }
+            fields.push([interface.interfaceId, interface.name]);
+        });
+
+        combo.setStore(Ext.create('Ext.data.ArrayStore', {
+            fields: [ 'id', 'name' ],
+            sorters: [{
+                property: 'name',
+                direction: 'ASC'
+            }],
+            data: fields
+        }));
     }
 
 
