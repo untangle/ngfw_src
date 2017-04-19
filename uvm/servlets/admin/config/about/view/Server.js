@@ -18,6 +18,11 @@ Ext.define('Ung.config.about.view.Server', {
             xtype: 'component',
             html: 'Do not publicly post or share the UID or account information.'.t() + '<br/>' +
                 'UID'.t() + ': ' + rpc.serverUID
+        },{
+            xtype: 'component',
+            itemId: 'account',
+            html: '',
+            hidden: true
         }]
     }, {
         bind: {

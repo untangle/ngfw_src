@@ -5,7 +5,8 @@ Ext.define('Ung.config.about.MainController', {
 
     control: {
         '#': {
-            beforerender: 'onBeforeRender'
+            beforerender: 'onBeforeRender',
+            afterrender: 'onAfterRender'
         },
         '#licenses': {
             afterrender: 'reloadLicenses'
@@ -23,6 +24,31 @@ Ext.define('Ung.config.about.MainController', {
             });
         } catch (ex) {
 
+        }
+    },
+
+    onAfterRender: function(view){
+        var accountComponent = view.down('[itemId=account]');
+        if( accountComponent &&
+            accountComponent.isHidden() ){
+            var serverUID = rpc.serverUID;
+            if( serverUID &&
+                serverUID.length == 19 ) {
+                Ext.data.JsonP.request({
+                    url: Util.getStoreUrl() + '?action=find_account&uid=' + serverUID,
+                    type: 'GET',
+                    success: function(response, opts) {
+                        if( response!=null &&
+                            response.account) {
+                            accountComponent.setHtml('Account'.t() + ": " + response.account);
+                            accountComponent.setVisible(true);
+                        }
+                    },
+                    failure: function(response, opts) {
+                        console.log("Failed to get account info fro UID:", serverUID);
+                    }
+                });
+            }
         }
     },
 
