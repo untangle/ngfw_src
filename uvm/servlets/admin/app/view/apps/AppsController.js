@@ -110,12 +110,16 @@ Ext.define('Ung.view.apps.AppsController', {
                         hasPowerButton: app.hasPowerButton,
                         viewPosition: app.viewPosition,
                         targetState: null,
+                        runState: null,
                         desc: Util.appDescription[app.name],
                         extraCls: 'installed'
                     };
-                    instance = Ext.Array.findBy(policy.instances.list, function(instance) { return instance.appName === app.name; });
+                    instance = Ext.Array.findBy(policy.instances.list, function(instance) {
+                        return instance.appName === app.name;
+                    });
                     if (instance) {
                         _app.targetState = instance.targetState;
+                        _app.runState = rpc.appManager.app(instance.id).getRunState();
                         if (instance.policyId && policy.policyId !== instance.policyId) {
                             _app.parentPolicy = Ext.getStore('policiestree').findNode('policyId', instance.policyId).get('name');
                         }
@@ -131,6 +135,7 @@ Ext.define('Ung.view.apps.AppsController', {
                         type: app.type,
                         viewPosition: app.viewPosition,
                         targetState: null,
+                        runState: null,
                         desc: Util.appDescription[app.name],
                         hasPowerButton: app.hasPowerButton,
                         extraCls: 'installable'
