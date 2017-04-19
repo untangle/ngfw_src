@@ -198,7 +198,7 @@ public class ReportsManagerImpl implements ReportsManager
 
         ReportsSettings settings = app.getSettings();
         settings.setReportEntries( newReportEntries );
-        app.setSettings( settings );
+        app.setSettings( settings, false );
     }
 
     public ReportEntry getReportEntry( String category, String title )

@@ -95,7 +95,13 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
 
     public void setSettings( final ReportsSettings newSettings )
     {
-        this.sanityCheck( newSettings );
+        setSettings( newSettings, true );
+    }
+
+    public void setSettings( final ReportsSettings newSettings, final boolean sanityCheck )
+    {
+        if (sanityCheck)
+            this.sanityCheck( newSettings );
 
         /**
          * Set the Email Template Ids
@@ -372,21 +378,6 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
             logger.debug("Settings: " + this.settings.toJSONString());
         }
 
-        /**
-         * 12.1 conversion
-         */
-        if ( settings.getVersion() == 1 ) {
-            logger.warn("Running v12.1 conversion...");
-            conversion_12_1();
-        }
-
-        /**
-         * 12.2 conversion
-         */
-        if ( settings.getVersion() == 3 ) {
-            logger.warn("Running v12.2 conversion...");
-            conversion_12_2_0();
-        }
         /*
          * 13.3 conversion
          */
@@ -610,7 +601,7 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
             String name = entry.getCategory() + "/" + entry.getTitle();
             ReportEntry existing = names.get( name );
             if ( existing != null ) {
-                logger.warn("Duplicate report entry title: " + entry.getTitle());
+                logger.warn("Duplicate report entry title: " + name);
                 throw new RuntimeException(I18nUtil.marktr("Invalid Settings") + ": " + I18nUtil.marktr("duplicate report entry title") + ": \"" + entry.getTitle() + "\"");
             }
             names.put( name, entry );
@@ -637,38 +628,6 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
             logger.error(e);
             throw new RuntimeException("Restore Data Failed");
         }
-    }
-
-    private void conversion_12_1()
-    {
-        settings.setVersion( 2 );
-
-        for ( ReportEntry entry : settings.getReportEntries() ) {
-            if ( entry.getType() == ReportEntry.ReportEntryType.PIE_GRAPH && entry.getPieStyle() == null ) {
-                entry.setPieStyle( ReportEntry.PieStyle.PIE );
-            }
-        }
-        
-        setSettings( settings );
-    }
-
-    private void conversion_12_2_0()
-    {
-        settings.setVersion( 4 );
-
-        try {
-            settings.setEmailTemplates( defaultEmailTemplates() );
-        } catch (Exception e) {
-            logger.warn("Conversion Exception",e);
-        }
-
-        try {
-            settings.setReportsUsers( defaultReportsUsers(settings.getReportsUsers()) );
-        } catch (Exception e) {
-            logger.warn("Conversion Exception",e);
-        }
-
-        setSettings( settings );
     }
 
     private void conversion_paths_13_0_0()
@@ -763,7 +722,7 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
             logger.warn("Conversion Exception",e);
         }
 
-        setSettings( settings );
+        setSettings( settings, false );
     }
 
 
