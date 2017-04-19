@@ -14,6 +14,8 @@ Ext.define('Ung.config.administration.view.Admin', {
         title: 'Admin Accounts'.t(),
         region: 'center',
 
+        controller: 'unadmingrid',
+
         bind: '{accounts}',
 
         listProperty: 'adminSettings.users.list',

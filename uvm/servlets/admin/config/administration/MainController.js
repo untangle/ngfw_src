@@ -511,9 +511,15 @@ Ext.define('Ung.config.administration.MainController', {
                     }
                 }
             });
-    },
+    }
+});
 
-    addAccount: function () {
+Ext.define('Ung.cmp.AdminGridController', {
+    extend: 'Ung.cmp.GridController',
+
+    alias: 'controller.unadmingrid',
+
+    addRecord: function () {
         Ext.MessageBox.show({
             title: 'Administrator Warning'.t(),
             msg: 'This action will add an ADMINISTRATOR account.'.t() + '<br/>' + '<br/>' +
@@ -535,12 +541,11 @@ Ext.define('Ung.config.administration.MainController', {
             buttons: Ext.MessageBox.YESNO,
             fn: Ext.bind(function(btn) {
                 if (btn === 'yes') {
-                    // if (Ext.get('admin_understand').dom.checked) {
-                    //     Ung.grid.Panel.prototype.addHandler.call(this, button, e, rowData);
-                    // }
+                    if (Ext.get('admin_understand').dom.checked) {
+                        this.editorWin(null);
+                    }
                 }
             }, this)});
-    }
-
+    },
 
 });
