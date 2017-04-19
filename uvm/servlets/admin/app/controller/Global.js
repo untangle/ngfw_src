@@ -162,7 +162,6 @@ Ext.define('Ung.controller.Global', {
                     // Rpc.asyncPromise('rpc.networkManager.getInterfaceStatus'),
                     // Rpc.asyncPromise('rpc.networkManager.getDeviceStatus'),
                 ], this).then(function (result) {
-                    // console.log(result[0]);
                     me.getMainView().add({
                         xtype: 'app-' + app,
                         // region: 'center',
@@ -174,7 +173,8 @@ Ext.define('Ung.controller.Global', {
                                 // policyId: policyId,
                                 instance: appInstance,
                                 props: appProps,
-                                urlName: app
+                                urlName: app,
+                                runState: result[0].getRunState()
                             }
                         }
                     });

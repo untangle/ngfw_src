@@ -18,26 +18,38 @@ Ext.define('Ung.cmp.AppState', {
     viewModel: {
         formulas: {
             appState: function (get) {
-                if (get('instance.targetState') === 'RUNNING') {
+                var expectedState = get('instance.targetState');
+                var actualState = get('runState');
+                if ( ( expectedState === 'RUNNING' ) &&
+                     ( actualState == 'RUNNING' ) ) {
                     return Ext.String.format('{0} is enabled.'.t(), get('props.displayName'));
+                }else if( ( expectedState == 'RUNNING' ) &&
+                    ( actualState != expectedState ) ){
+                    return Ext.String.format('{0} should be enabled but is not active.'.t(), get('props.displayName'));
                 }
                 return Ext.String.format('{0} is disabled.'.t(), get('props.displayName'));
             },
             appStateIcon: function (get) {
-                if (!get('instance.targetState')) {
+                var expectedState = get('instance.targetState');
+                var actualState = get('runState');
+                if( !expectedState ||
+                    ( actualState != expectedState ) ){
                     return 'fa-orange';
                 }
-                if (get('instance.targetState') === 'RUNNING') {
+                if ( actualState === 'RUNNING') {
                     return 'fa-green';
                 }
                 return 'fa-flip-horizontal fa-gray';
             },
             appStateTitle: function (get) {
+                var expectedState = get('instance.targetState');
+                var actualState = get('runState');
                 var icon = '<i class="fa fa-power-off fa-gray"></i>';
-                if (!get('instance.targetState')) {
+                if (!expectedState) {
                     icon =  '<i class="fa fa-power-off fa-orange"></i>';
                 }
-                if (get('instance.targetState') === 'RUNNING') {
+                if ( ( actualState === 'RUNNING' ) &&
+                     ( expectedState === 'RUNNING' ) ) {
                     icon = '<i class="fa fa-power-off fa-green"></i>';
                 }
                 return icon + ' ' + 'Power'.t();
@@ -48,11 +60,14 @@ Ext.define('Ung.cmp.AppState', {
     controller: {
         onPower: function (btn) {
             var appManager = this.getView().up('#appCard').appManager,
-                vm = this.getViewModel();
+                vm = this.getViewModel(),
+                expectedState = get('instance.targetState'),
+                actualState = get('runState');
 
             btn.setDisabled(true);
 
-            if (vm.get('instance.targetState') === 'RUNNING') {
+            if ( ( expectedState === 'RUNNING' ) &&
+                 ( actualState === 'RUNNING' ) ) {
                 vm.set('instance.targetState', null);
                 // stop app
                 appManager.stop(function (result, ex) {
@@ -84,7 +99,6 @@ Ext.define('Ung.cmp.AppState', {
                     appManager.getRunState(function (result2, ex2) {
                         if (ex2) { Util.exceptionToast(ex2); return false; }
                         vm.set('instance.targetState', result2);
-                        console.log(vm.get('instance'));
                         // vm.notify();
                         btn.setDisabled(false);
 
