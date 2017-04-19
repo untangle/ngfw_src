@@ -378,6 +378,11 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
             logger.debug("Settings: " + this.settings.toJSONString());
         }
 
+        /**
+         * Report updates
+         */
+        ReportsManagerImpl.getInstance().updateSystemReportEntries( settings.getReportEntries(), true );
+
         /*
          * 13.3 conversion
          */
@@ -386,11 +391,6 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
             conversion_13_0_0();
         }
 
-        /**
-         * Report updates
-         */
-        ReportsManagerImpl.getInstance().updateSystemReportEntries( settings.getReportEntries(), true );
-        
         /* sync settings to disk if necessary */
         File settingsFile = new File( settingsFileName );
         if (settingsFile.lastModified() > CRON_FILE.lastModified()){
@@ -689,9 +689,13 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
 
             // Rename "Alert" report categories to "Event"
             if(settings.getReportEntries() != null){
-                for ( ReportEntry entry : settings.getReportEntries() ) {
-                    if ( entry.getTitle().contains("Alert") && entry.getCategory().equals("Reports") ){
+                for (Iterator<ReportEntry> i = settings.getReportEntries().iterator(); i.hasNext(); ) {
+                    ReportEntry entry = i.next();
+                    if ( entry.getTitle().contains("Alert") && entry.getCategory().equals("Reports") ) {
                         entry.setCategory( "Events" );
+                    }
+                    if ( entry.getUniqueId().startsWith("reporting-") ) {
+                        i.remove();
                     }
                 }
             }
