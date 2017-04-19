@@ -44,6 +44,11 @@ Ext.define('Ung.cmp.GridController', {
             xtype: 'ung.cmp.recordeditor',
             record: record
         });
+
+        // look for window overrides in the parent grid
+        if (this.dialog.ownerCt.editorWidth) this.dialog.width = this.dialog.ownerCt.editorWidth;
+        if (this.dialog.ownerCt.editorHeight) this.dialog.height = this.dialog.ownerCt.editorHeight;
+
         this.dialog.show();
     },
 
