@@ -15,6 +15,21 @@ Ext.define('Ung.config.localdirectory.MainController', {
         rpc.localDirectory = rpc.UvmContext.localDirectory();
         Rpc.asyncData('rpc.localDirectory.getUsers')
             .then(function (result) {
+
+                // set the local record fields we use to deal with the expiration time and add vs edit logic
+                for(var i = 0 ; i < result.list.length ; i++) {
+                    result.list[i].localEmpty = false;
+
+                    if (result.list[i].expirationTime == 0) {
+                        result.list[i].localPicker = new Date();
+                        result.list[i].localForever = true;
+                    }
+                    else {
+                        result.list[i].localPicker = new Date(result.list[i].expirationTime);
+                        result.list[i].localForever = false;
+                    }
+                }
+
                 me.getViewModel().set('usersData', result);
             });
     },
@@ -27,7 +42,6 @@ Ext.define('Ung.config.localdirectory.MainController', {
         if (!Util.validateForms(view)) {
             return;
         }
-
 
         view.setLoading('Saving ...');
         // used to update all tabs data
@@ -50,9 +64,30 @@ Ext.define('Ung.config.localdirectory.MainController', {
             }
         });
 
-        Rpc.asyncData('rpc.localDirectory.setUsers', me.getViewModel().get('usersData'))
+        var userlist = me.getViewModel().get('usersData');
+        var user;
+
+        for(var i = 0 ; i < userlist.list.length ; i++) {
+            user = userlist.list[i];
+
+            if(user.password == null) user.password = "";
+
+            // calculate the passwordBase64Hash for any changed passwords and remove cleartext
+            if(user.password.length > 0) {
+                user.passwordBase64Hash = Util.base64encode(user.password);
+                user.password = "";
+            }
+
+            // use localForever and localPicker to set the correct expirationTime
+            if (user.localForever == true) {
+                user.expirationTime = 0;
+            } else {
+                user.expirationTime = user.localPicker.getTime();
+            }
+        }
+
+        Rpc.asyncData('rpc.localDirectory.setUsers', userlist)
             .then(function (result) {
-                me.getViewModel().set('usersData', result);
                 Util.successToast('Local Directory'.t() + ' settings saved!');
             }).always(function () {
                 view.setLoading(false);

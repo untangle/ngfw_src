@@ -33,6 +33,9 @@ Ext.define('Ung.config.localdirectory.Main', {
             email: '',
             password: '',
             passwordBase64Hash: '',
+            localPicker: new Date(),
+            localForever: true,
+            localEmpty: true,
             expirationTime: 0,
             javaClass: 'com.untangle.uvm.LocalDirectoryUser'
         },
@@ -40,7 +43,7 @@ Ext.define('Ung.config.localdirectory.Main', {
         bind: '{users}',
 
         columns: [{
-            header: 'user/login ID'.t(),
+            header: 'User/Login ID'.t(),
             width: 140,
             dataIndex: 'username',
             editor: {
@@ -51,7 +54,7 @@ Ext.define('Ung.config.localdirectory.Main', {
                 regexText: 'The field user/login ID can have only alphanumeric characters.'.t()
             }
         }, {
-            header: 'first name'.t(),
+            header: 'First Name'.t(),
             width: 120,
             dataIndex: 'firstName',
             editor: {
@@ -60,7 +63,7 @@ Ext.define('Ung.config.localdirectory.Main', {
                 allowBlank: false
             }
         }, {
-            header: 'last name'.t(),
+            header: 'Last Name'.t(),
             width: 120,
             dataIndex: 'lastName',
             editor: {
@@ -68,7 +71,7 @@ Ext.define('Ung.config.localdirectory.Main', {
                 emptyText: '[last name]'.t()
             }
         }, {
-            header: 'email address'.t(),
+            header: 'Email Address'.t(),
             width: 250,
             dataIndex: 'email',
             flex:1,
@@ -78,12 +81,23 @@ Ext.define('Ung.config.localdirectory.Main', {
                 vtype: 'email'
             }
         }, {
-            header: 'datetime',
+            header: 'Password'.t(),
+            width: 180,
+            dataIndex: 'password',
+            renderer: Ext.bind(function(value, metadata, record) {
+                if (record.get("passwordBase64Hash") == null) return('');
+                if(Ext.isEmpty(value) && record.get("passwordBase64Hash").length > 0) return('*** ' + 'Unchanged'.t() + ' ***');
+                var result = "";
+                for(var i = 0 ; value != null && i < value.length ; i++) result = result + '*';
+                return result;
+            },this)
+        }, {
+            header: 'Expiration'.t(),
             dataIndex: 'expirationTime',
             width: 150,
             resizable: false,
-            renderer: function (time) {
-                return time > 0 ? new Date(time) : 'Never'.t();
+            renderer: function (value) {
+                return(value > 0 ? new Date(value) : 'Never'.t());
             }
         }],
         editorFields: [{
@@ -116,36 +130,45 @@ Ext.define('Ung.config.localdirectory.Main', {
             width: 300
         }, {
             xtype: 'container',
-            layout: {
-                type: 'hbox'
-            },
+            layout: 'column',
             items: [{
-                xtype: 'displayfield',
-                fieldLabel: 'Expiration Time'.t(),
+                xtype: 'textfield',
+                fieldLabel: 'Password'.t(),
                 labelAlign: 'right',
                 labelWidth: 180,
-                width: 185
+                bind: '{record.password}',
+// FIXME - allowBlank should be false on create, true on edit
+                allowBlank: true,
+                width: 300,
             }, {
-                xtype: 'checkbox',
-                boxLabel: 'Never'.t(),
-                bind: '{checked}'
+                xtype: 'displayfield',
+                margin: '0 0 0 10',
+                value: '(leave empty to keep the current password unchanged)'.t(),
+                bind: {
+                    hidden: '{record.localEmpty}'
+                }
             }, {
-                xtype: 'datefield',
-                format: 'time',
-                minValue: '',
-                margin: '0 10',
-                editable: false,
-                bind: '{record.expirationTime}'
+                xtype: 'displayfield',
+                margin: '0 0 0 10',
+                value: '',
+                bind: {
+                    hidden: '{!record.localEmpty}'
+                }
             }]
+        }, {
+            xtype: 'checkbox',
+            fieldLabel: 'User Never Expires'.t(),
+            bind: '{record.localForever}',
+        }, {
+            xtype: 'datetimefield',
+            fieldLabel: 'Expiration Date/Time'.t(),
+            format: 'm/d/Y h:i A',
+            editable: false,
+            bind: {
+                value: '{record.localPicker}',
+                hidden: '{record.localForever}'
+            }
         }]
-        // extraVM: {
-        //     formulas: {
-        //         checked: function (get) {
-        //             return 'test';
-        //         }
-        //     }
-        // }
-
     }]
 
 });
