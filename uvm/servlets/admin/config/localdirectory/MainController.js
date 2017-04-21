@@ -21,11 +21,11 @@ Ext.define('Ung.config.localdirectory.MainController', {
                     result.list[i].localEmpty = false;
 
                     if (result.list[i].expirationTime == 0) {
-                        result.list[i].localPicker = new Date();
+                        result.list[i].localExpires = new Date();
                         result.list[i].localForever = true;
                     }
                     else {
-                        result.list[i].localPicker = new Date(result.list[i].expirationTime);
+                        result.list[i].localExpires = new Date(result.list[i].expirationTime);
                         result.list[i].localForever = false;
                     }
                 }
@@ -78,11 +78,11 @@ Ext.define('Ung.config.localdirectory.MainController', {
                 user.password = "";
             }
 
-            // use localForever and localPicker to set the correct expirationTime
+            // use localForever and localExpires to set the correct expirationTime
             if (user.localForever == true) {
                 user.expirationTime = 0;
             } else {
-                user.expirationTime = user.localPicker.getTime();
+                user.expirationTime = user.localExpires.getTime();
             }
         }
 

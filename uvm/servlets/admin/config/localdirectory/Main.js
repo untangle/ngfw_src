@@ -33,7 +33,7 @@ Ext.define('Ung.config.localdirectory.Main', {
             email: '',
             password: '',
             passwordBase64Hash: '',
-            localPicker: new Date(),
+            localExpires: new Date(),
             localForever: true,
             localEmpty: true,
             expirationTime: 0,
@@ -161,17 +161,43 @@ Ext.define('Ung.config.localdirectory.Main', {
                 }
             }]
         }, {
+            xtype: 'numberfield',
+            fieldIndex: 'expirationTime',
+            hidden: true,
+            bind: '{record.expirationTime}'
+        }, {
             xtype: 'checkbox',
             fieldLabel: 'User Never Expires'.t(),
+            fieldIndex: 'localForever',
             bind: '{record.localForever}',
+            listeners: {
+                change: function(cmp, nval, oval, opts) {
+                    var target = this.ownerCt.down("[fieldIndex='expirationTime']");
+                    if (nval == true) {
+                        target.setValue(0);
+                    } else {
+                        var finder = this.ownerCt.down("[fieldIndex='DateTimePicker']");
+                        target.setValue(finder.getValue().getTime());
+                    }
+                }
+            }
         }, {
             xtype: 'datetimefield',
             fieldLabel: 'Expiration Date/Time'.t(),
-            format: 'm/d/Y h:i A',
+            fieldIndex: 'DateTimePicker',
+            format: 'timestamp_fmt'.t(),
             editable: false,
             bind: {
-                value: '{record.localPicker}',
-                hidden: '{record.localForever}'
+                value: '{record.localExpires}',
+                hidden: '{record.localForever}',
+                disabled: '{record.localForever}'
+            },
+            listeners: {
+                change: function(cmp, nval, oval, opts) {
+                    var finder = this.ownerCt.down("[fieldIndex='localForever']");
+                    var target = this.ownerCt.down("[fieldIndex='expirationTime']");
+                    if (finder.getValue() == false) target.setValue(nval.getTime());
+                }
             }
         }]
     }]
