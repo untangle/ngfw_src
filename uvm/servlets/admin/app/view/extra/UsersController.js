@@ -5,15 +5,11 @@ Ext.define('Ung.view.extra.UsersController', {
 
     control: {
         '#': {
-            afterrender: 'getUsers',
             deactivate: 'onDeactivate'
         },
-        // '#list': {
-        //     select: 'onSelect'
-        // },
-        // 'toolbar textfield': {
-        //     change: 'globalFilter'
-        // }
+        '#usersgrid': {
+            afterrender: 'getUsers',
+        }
     },
 
     refreshInterval: null,
@@ -40,7 +36,7 @@ Ext.define('Ung.view.extra.UsersController', {
 
     getUsers: function () {
         var me = this, vm = this.getViewModel(),
-            grid = me.getView().down('#list');
+            grid = me.getView().down('#usersgrid');
         grid.getView().setLoading(true);
         Rpc.asyncData('rpc.userTable.getUsers')
             .then(function(result) {
