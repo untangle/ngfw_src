@@ -243,6 +243,12 @@ Ext.define('Ung.view.extra.Devices', {
         bind: {
             disabled: '{autoRefresh}'
         }
+    }, {
+        xtype: 'button',
+        text: 'Reset View'.t(),
+        iconCls: 'fa fa-refresh',
+        itemId: 'resetBtn',
+        handler: 'resetView',
     }, '-', 'Filter:'.t(), {
         xtype: 'textfield',
         checkChangeBuffer: 200
