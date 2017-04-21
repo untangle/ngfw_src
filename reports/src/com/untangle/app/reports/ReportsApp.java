@@ -310,6 +310,26 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
     {
         return ReportsApp.eventWriter.getWriteDelaySec();
     }
+
+    public List<String> getAlertEmailAddresses(){
+        List<String> emailAddresses = new LinkedList<String>();
+
+        App reportsApp = UvmContextFactory.context().appManager().app("reports");
+        if(reportsApp == null || !AppState.RUNNING.equals(reportsApp.getRunState())){
+            return emailAddresses;
+        }
+
+        for ( ReportsUser user : settings.getReportsUsers() ) {
+            if( user.getEmailAddress().equals("admin") ){
+                continue;
+            }
+            if( user.getEmailAlerts()){
+                emailAddresses.add(user.getEmailAddress());
+            }
+        }
+
+        return emailAddresses;
+    }
     
     public Connection getDbConnection()
     {

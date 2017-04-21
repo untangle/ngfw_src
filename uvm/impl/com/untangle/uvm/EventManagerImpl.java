@@ -1,5 +1,5 @@
 /**
- * $Id: ReportsManagerImpl.java,v 1.00 2015/03/04 13:59:12 dmorris Exp $
+ * $Id: EventManagerImpl.java,v 1.00 2015/03/04 13:59:12 dmorris Exp $
  */
 package com.untangle.uvm;
 
@@ -14,6 +14,8 @@ import com.untangle.uvm.event.EventRuleCondition;
 import com.untangle.uvm.event.EventRuleConditionField;
 import com.untangle.uvm.app.App;
 import com.untangle.uvm.app.AppSettings;
+import com.untangle.uvm.app.AppSettings.AppState;
+import com.untangle.uvm.app.Reporting;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.SyslogManagerImpl;
@@ -698,8 +700,6 @@ public class EventManagerImpl implements EventManager
             jsonString = jsonObject.toString();
         }
 
-        LinkedList<AdminUserSettings> adminManagerUsers = UvmContextFactory.context().adminManager().getSettings().getUsers();
-
         String subject = serverName + " " +
             I18nUtil.marktr("Event!") +
             " [" + fullName + "] ";
@@ -715,6 +715,12 @@ public class EventManagerImpl implements EventManager
             "\r\n\r\n" +
             I18nUtil.marktr("This is an automated message sent because the event matched the configured Event Rules.");
 
+        LinkedList<String> alertRecipients = new LinkedList<String>();
+
+        /*
+         * Local admin users
+         */
+        LinkedList<AdminUserSettings> adminManagerUsers = UvmContextFactory.context().adminManager().getSettings().getUsers();
         if ( adminManagerUsers != null ) {
             for ( AdminUserSettings user : adminManagerUsers ) {
                 if ( user.getEmailAddress() == null || "".equals( user.getEmailAddress() ) ){
@@ -723,13 +729,25 @@ public class EventManagerImpl implements EventManager
                 if ( ! user.getEmailAlerts() ){
                     continue;
                 }
-                try {
-                    String[] recipients = null;
-                    recipients = new String[]{ user.getEmailAddress() };
-                    UvmContextFactory.context().mailSender().sendMessage( recipients, subject, messageBody);
-                } catch ( Exception e) {
-                    logger.warn("Failed to send mail.",e);
-                }
+                alertRecipients.add( user.getEmailAddress() );
+            }
+        }
+
+        /*
+         * Report users
+         */
+        App reportsApp = UvmContextFactory.context().appManager().app("reports");
+        List<String> reportsEmailAddresses = ((Reporting) reportsApp).getAlertEmailAddresses();
+        alertRecipients.addAll(reportsEmailAddresses);
+
+        for( String emailAddress : alertRecipients){
+            logger.warn("emailAddress=" + emailAddress);
+            try {
+                String[] recipients = null;
+                recipients = new String[]{ emailAddress };
+                UvmContextFactory.context().mailSender().sendMessage( recipients, subject, messageBody);
+            } catch ( Exception e) {
+                logger.warn("Failed to send mail.",e);
             }
         }
 
