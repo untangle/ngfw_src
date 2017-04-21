@@ -64,24 +64,7 @@ Ext.define('Ung.apps.openvpn.MainController', {
     setSettings: function () {
         var me = this, v = this.getView(), vm = this.getViewModel();
 
-        // make sure they don't try to delete a group with active remote clients
-        var clientStore = v.query('app-openvpn-remote-clients-grid')[0].getStore();
-        var groupStore = v.query('app-openvpn-groups-grid')[0].getStore();
-        var problem = 0;
-
-        groupStore.each(function(record) {
-            if (record.get('markedForDelete')) {
-                var finder = clientStore.findRecord('groupId' , record.get('groupId'));
-                if (finder != null) {
-                    var message = Ext.String.format("The group: {0} cannot be deleted because it is being used by the client: {1} in the Remote Clients list.".t(), record.get('name'), finder.get('name'));
-                    Ext.MessageBox.alert("Delete Group Failed".t(), message);
-                    record.set('markedForDelete', false);
-                    problem++;
-                }
-            }
-        });
-
-        if (problem != 0) return;
+        if (me.validateSettings() != true) return;
 
         v.query('ungrid').forEach(function (grid) {
             var store = grid.getStore();
@@ -106,6 +89,78 @@ Ext.define('Ung.apps.openvpn.MainController', {
             Util.successToast('Settings saved');
             me.getSettings();
         }, vm.get('settings'));
+    },
+
+    validateSettings: function() {
+        var me = this, v = this.getView(), vm = this.getViewModel();
+
+        // make sure they don't try to delete a group with active remote clients
+        var clientStore = v.query('app-openvpn-remote-clients-grid')[0].getStore();
+        var groupStore = v.query('app-openvpn-groups-grid')[0].getStore();
+        var message = "";
+        var problem = 0;
+        var counter = 0;
+        var clientNames = {};
+        var groupNames = {};
+
+        // make sure they don't try to delete all groups
+        counter = 0;
+        groupStore.each(function(record) {
+            if (!record.get('markedForDelete')) counter++;
+        });
+
+        if (counter < 1) {
+            groupStore.each(function(record) {
+                record.set('markedForDelete', false);
+            });
+            problem++;
+            Ext.MessageBox.alert("Delete Group Failed".t(), "There must be at least one group.".t());
+        }
+        if (problem != 0) return(false);
+
+        // make sure they don't try to delete a group with active remote clients
+        groupStore.each(function(record) {
+            if (record.get('markedForDelete')) {
+                var finder = clientStore.findRecord('groupId' , record.get('groupId'));
+                if ((finder != null) && (!finder.get('markedForDelete'))) {
+                    message = Ext.String.format("The group: {0} cannot be deleted because it is being used by the client: {1} in the Remote Clients list.".t(), record.get('name'), finder.get('name'));
+                    record.set('markedForDelete', false);
+                    problem++;
+                    Ext.MessageBox.alert("Delete Group Failed".t(), message);
+                }
+            }
+        });
+        if (problem != 0) return(false);
+
+        // check for duplicate client names
+        counter = 1;
+        clientStore.each(function(record) {
+            var clientName = record.get('name');
+            if (clientNames[clientName] != null) {
+                message = Ext.String.format("The client name: {0} in row: {1} already exists.", clientName, counter);
+                problem++;
+                Ext.MessageBox.alert("Add Remote Client Failed".t(), message);
+            }
+            if (! record.get('markedForDelete')) clientNames[clientName] = true;
+            counter++;
+        });
+        if (problem != 0) return(false);
+
+        // check for duplicate group names
+        counter = 1;
+        groupStore.each(function(record) {
+            var groupName = record.get('name');
+            if (groupNames[groupName] != null) {
+                message = Ext.String.format("The group name: {0} in row: {1} already exists.", groupName, counter);
+                problem++;
+                Ext.MessageBox.alert("Add Group Failed".t(), message);
+            }
+            if (! record.get('markedForDelete')) groupNames[groupName] = true;
+            counter++;
+        });
+        if (problem != 0) return(false);
+
+        return(true);
     },
 
     uploadFile: function(cmp) {
