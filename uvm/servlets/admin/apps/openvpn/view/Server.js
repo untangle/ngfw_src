@@ -4,6 +4,7 @@ Ext.define('Ung.apps.openvpn.view.Server', {
     itemId: 'server',
     title: 'Server'.t(),
     viewModel: true,
+    autoScroll: true,
 
     tbar: [{
         xtype: 'tbtext',
@@ -51,8 +52,7 @@ Ext.define('Ung.apps.openvpn.cmp.ServerTabs', {
     alias: 'widget.app-openvpn-server-tab-panel',
     itemId: 'server-tab-panel',
     viewModel: true,
-    width: 800,
-    height: 400,
+    layout: 'fit',
 
     items: [{
         title: 'Remote Clients'.t(),
