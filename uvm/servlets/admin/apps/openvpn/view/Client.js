@@ -4,6 +4,7 @@ Ext.define('Ung.apps.openvpn.view.Client', {
     itemId: 'openvpn-client',
     title: 'Client'.t(),
     viewModel: true,
+    autoScroll: true,
 
     tbar: [{
         xtype: 'tbtext',
@@ -19,8 +20,6 @@ Ext.define('Ung.apps.openvpn.view.Client', {
     items: [{
         xtype: 'app-openvpn-client-tab-panel',
         padding: '20 20 0 20',
-        width: 800,
-        height: 400
     },{
         xtype: 'form',
         name: 'upload_form',
@@ -46,8 +45,7 @@ Ext.define('Ung.apps.openvpn.view.ClientTabs', {
     alias: 'widget.app-openvpn-client-tab-panel',
     itemId: 'openvpn-client-tab-panel',
     viewModel: true,
-    width: 800,
-    height: 400,
+    layout: 'fit',
 
     items: [{
         title: 'Remote Servers'.t(),
