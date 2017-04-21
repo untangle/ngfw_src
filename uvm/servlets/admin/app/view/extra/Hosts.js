@@ -192,6 +192,12 @@ Ext.define('Ung.view.extra.Hosts', {
         iconCls: 'fa fa-refresh',
         enableToggle: true,
         toggleHandler: 'setAutoRefresh'
+    }, {
+        xtype: 'button',
+        text: 'Reset View'.t(),
+        iconCls: 'fa fa-refresh',
+        itemId: 'resetBtn',
+        handler: 'resetView',
     }, '-', 'Filter:'.t(), {
         xtype: 'textfield',
         checkChangeBuffer: 200

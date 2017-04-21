@@ -34,6 +34,12 @@ Ext.define('Ung.view.extra.UsersController', {
 
     },
 
+    resetView: function( btn ){
+        var grid = this.getView().down('#usersgrid');
+        Ext.state.Manager.clear(grid.stateId);
+        grid.reconfigure(null, grid.initialConfig.columns);
+    },
+
     getUsers: function () {
         var me = this, vm = this.getViewModel(),
             grid = me.getView().down('#usersgrid');

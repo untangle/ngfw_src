@@ -41,6 +41,12 @@ Ext.define('Ung.view.extra.SessionsController', {
 
     },
 
+    resetView: function( btn ){
+        var grid = this.getView().down('#sessionsgrid');
+        Ext.state.Manager.clear(grid.stateId);
+        grid.reconfigure(null, grid.initialConfig.columns);
+    },
+
     getSessions: function () {
         var me = this,
             grid = me.getView().down('#sessionsgrid');

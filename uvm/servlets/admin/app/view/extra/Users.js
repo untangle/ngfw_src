@@ -152,6 +152,12 @@ Ext.define('Ung.view.extra.Users', {
         iconCls: 'fa fa-refresh',
         enableToggle: true,
         toggleHandler: 'setAutoRefresh'
+    }, {
+        xtype: 'button',
+        text: 'Reset View'.t(),
+        iconCls: 'fa fa-refresh',
+        itemId: 'resetBtn',
+        handler: 'resetView',
     }, '->', {
         xtype: 'button',
         text: 'View Reports'.t(),

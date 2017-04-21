@@ -24,6 +24,13 @@ Ext.define('Ung.view.extra.DevicesController', {
             });
     },
 
+    resetView: function( btn ){
+        var grid = this.getView().down('#devicesgrid');
+        Ext.state.Manager.clear(grid.stateId);
+        grid.reconfigure(null, grid.initialConfig.columns);
+    },
+
+
     saveDevices: function () {
         var me = this, store = me.getView().down('ungrid').getStore(), list = [];
 
