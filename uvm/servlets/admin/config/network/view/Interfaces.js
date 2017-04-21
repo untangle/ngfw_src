@@ -27,6 +27,8 @@ Ext.define('Ung.config.network.view.Interfaces', {
         }, {
             text: 'Add Tagged VLAN Interface'.t(),
             iconCls: 'fa fa-plus',
+            hidden: true,
+            bind: { hidden: '{!settings.vlansEnabled}' },
             handler: 'editInterface'
         }],
 
