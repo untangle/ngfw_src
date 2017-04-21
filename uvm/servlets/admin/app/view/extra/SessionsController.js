@@ -5,10 +5,11 @@ Ext.define('Ung.view.extra.SessionsController', {
 
     control: {
         '#': {
-            afterrender: 'getSessions',
             deactivate: 'onDeactivate'
         },
-        '#list': {
+        // '#list': {
+        '#sessionsgrid': {
+            afterrender: 'getSessions',
             select: 'onSelect'
         },
         'toolbar textfield': {
@@ -41,16 +42,14 @@ Ext.define('Ung.view.extra.SessionsController', {
     },
 
     getSessions: function () {
-        console.log('get sessions');
         var me = this,
-            grid = me.getView().down('#list');
+            grid = me.getView().down('#sessionsgrid');
         grid.getView().setLoading(true);
         Rpc.asyncData('rpc.sessionMonitor.getMergedSessions')
             .then(function(result) {
                 grid.getView().setLoading(false);
                 Ext.getStore('sessions').loadData(result.list);
                 grid.getSelectionModel().select(0);
-                // grid.getStore().setData(result.list);
             });
     },
 
@@ -67,7 +66,7 @@ Ext.define('Ung.view.extra.SessionsController', {
     },
 
     globalFilter: function (field, value) {
-        var list = this.getView().down('#list'),
+        var list = this.getView().down('#sessionsgrid'),
             re = new RegExp(value, 'gi');
         if (value.length > 0) {
             list.getStore().clearFilter();
