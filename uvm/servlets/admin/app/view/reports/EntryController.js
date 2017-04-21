@@ -339,6 +339,12 @@ Ext.define('Ung.view.reports.EntryController', {
         }
     },
 
+    resetView: function(){
+        var grid = this.getView().down('grid');
+        Ext.state.Manager.clear(grid.stateId);
+        grid.reconfigure(null, grid.tableConfig.columns);
+    },
+
 
     // TABLE COLUMNS / CONDITIONS
     updateDefaultColumns: function (el, value) {

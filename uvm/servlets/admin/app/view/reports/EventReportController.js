@@ -48,10 +48,10 @@ Ext.define('Ung.view.reports.EventReportController', {
                 });
 
                 var identifier = 'eventsGrid-' + entry.get('uniqueId');
-                var grid = me.getView().down('grid'); 
+                var grid = me.getView().down('grid');
+                grid.tableConfig = me.tableConfig;
                 grid.itemId = identifier;
                 grid.stateId = identifier;
-                // grid._id = identifier;
                 grid.setColumns(me.tableConfig.columns);
                 // Force state processing for this renamed grid
                 grid.mixins.state.constructor.call(grid);
