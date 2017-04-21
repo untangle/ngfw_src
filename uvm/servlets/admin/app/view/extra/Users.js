@@ -55,9 +55,10 @@ Ext.define('Ung.view.extra.Users', {
 
     items: [{
         region: 'center',
-        xtype: 'grid',
-        itemId: 'list',
-        // store: 'sessions',
+        xtype: 'ungrid',
+        itemId: 'usersgrid',
+        reference: 'usersgrid',
+        stateful: true,
 
         sortField: 'username',
         sortOrder: 'ASC',
