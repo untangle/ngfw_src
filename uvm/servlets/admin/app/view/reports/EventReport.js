@@ -24,7 +24,8 @@ Ext.define('Ung.view.reports.EventReport', {
     },
 
     items: [{
-        xtype: 'grid',
+        xtype: 'ungrid',
+        stateful: true,
         itemId: 'eventsGrid',
         reference: 'eventsGrid',
         region: 'center',
