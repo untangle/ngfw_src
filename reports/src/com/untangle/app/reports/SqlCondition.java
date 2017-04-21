@@ -148,6 +148,11 @@ public class SqlCondition implements Serializable, JSONString
                     continue;
                 }
 
+                // count all "char(x)" as "char"
+                if (columnType.startsWith("char")) {
+                    columnType = "text";
+                }
+
                 switch (columnType) {
                 case "numeric":
                 case "integer":
