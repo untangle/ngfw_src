@@ -167,6 +167,14 @@ Ext.define('Ung.view.reports.Entry', {
                 itemId: 'refreshBtn',
                 handler: 'refreshData'
             }, '-', {
+                text: 'Reset View'.t(),
+                iconCls: 'fa fa-refresh',
+                itemId: 'resetBtn',
+                handler: 'resetView',
+                bind: {
+                    hidden: '{entry.type !== "EVENT_LIST"}'
+                }
+            }, '-', {
                 itemId: 'exportBtn',
                 text: 'Export'.t(),
                 iconCls: 'fa fa-sign-out',
