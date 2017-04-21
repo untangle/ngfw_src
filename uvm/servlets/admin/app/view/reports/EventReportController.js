@@ -40,7 +40,21 @@ Ext.define('Ung.view.reports.EventReportController', {
                     }
                 });
 
-                me.getView().down('grid').setColumns(me.tableConfig.columns);
+                me.tableConfig.columns.forEach( function(column){
+                    if( column.dataIndex &&
+                        !column.stateId ){
+                        column.stateId = column.dataIndex;
+                    }
+                });
+
+                var identifier = 'eventsGrid-' + entry.get('uniqueId');
+                var grid = me.getView().down('grid'); 
+                grid.itemId = identifier;
+                grid.stateId = identifier;
+                // grid._id = identifier;
+                grid.setColumns(me.tableConfig.columns);
+                // Force state processing for this renamed grid
+                grid.mixins.state.constructor.call(grid);
 
                 if (!me.getView().up('reportwidget')) {
                     me.fetchData();
