@@ -13,15 +13,6 @@ Ext.define('Ung.config.network.view.Interfaces', {
         html: '<strong>' + 'Interface configuration'.t() + '</strong> <br/>' +  'Use this page to configure each interface\'s configuration and its mapping to a physical network card.'.t()
     }],
 
-    actions: {
-        refresh: {
-            xtype: 'button',
-            iconCls: 'fa fa-refresh',
-            text: 'Refresh'.t(),
-            handler: 'loadSettings'
-        }
-    },
-
     items: [{
         xtype: 'grid',
         itemId: 'interfacesGrid',
@@ -29,7 +20,15 @@ Ext.define('Ung.config.network.view.Interfaces', {
         region: 'center',
         border: false,
         split: true,
-        tbar: ['@refresh'],
+        tbar: [{
+            text: 'Refresh'.t(),
+            iconCls: 'fa fa-refresh',
+            handler: 'loadSettings'
+        }, {
+            text: 'Add Tagged VLAN Interface'.t(),
+            iconCls: 'fa fa-plus',
+            handler: 'editInterface'
+        }],
 
         layout: 'fit',
         forceFit: true,
@@ -91,7 +90,13 @@ Ext.define('Ung.config.network.view.Interfaces', {
         }, {
             header: 'Device'.t(),
             dataIndex: 'physicalDev',
-            width: 100
+            width: 100,
+            renderer: function (value, metadata, record) {
+                if (record.get('isVlanInterface')) {
+                    return record.get('systemDev');
+                }
+                return value;
+            }
         }, {
             header: 'Speed'.t(),
             dataIndex: 'mbit',
@@ -239,9 +244,8 @@ Ext.define('Ung.config.network.view.Interfaces', {
                 txdrop: { displayName: 'Tx Drop'.t() }
             },
             tbar: [{
-                xtype: 'button',
+                text: 'Refresh'.t(),
                 iconCls: 'fa fa-refresh',
-                text: 'Refresh',
                 handler: 'getInterfaceStatus'
             }],
             listeners: {

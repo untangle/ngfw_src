@@ -52,39 +52,6 @@ Ext.define('Ung.util.Util', {
         'live-support': 'Live Support provides on-demand help for any technical issues.'.t()
     },
 
-    iconReportTitle: function (report) {
-        var icon;
-        switch (report.get('type')) {
-        case 'TEXT':
-            icon = 'subject';
-            break;
-        case 'EVENT_LIST':
-            icon = 'format_list_bulleted';
-            break;
-        case 'PIE_GRAPH':
-            icon = 'pie_chart';
-            if (report.get('pieStyle') === 'COLUMN' || report.get('pieStyle') === 'COLUMN_3D') {
-                icon = 'insert_chart';
-            } else {
-                if (report.get('pieStyle') === 'DONUT' || report.get('pieStyle') === 'DONUT_3D') {
-                    icon = 'donut_large';
-                }
-            }
-            break;
-        case 'TIME_GRAPH':
-        case 'TIME_GRAPH_DYNAMIC':
-            if (report.get('timeStyle').indexOf('BAR') >= 0) {
-                icon = 'insert_chart';
-            } else {
-                icon = 'show_chart';
-            }
-            break;
-        default:
-            icon = 'subject';
-        }
-        return '<i class="material-icons" style="font-size: 18px">' + icon + '</i>';
-    },
-
     bytesToHumanReadable: function (bytes, si) {
         var thresh = si ? 1000 : 1024;
         if(Math.abs(bytes) < thresh) {
@@ -247,6 +214,16 @@ Ext.define('Ung.util.Util', {
     },
     getInterfaceList: function (wanMatchers, anyMatcher) {
         return Util.getInterfaceListSystemDev(wanMatchers, anyMatcher, false);
+    },
+
+    getInterfaceAddressedList: function() {
+        var data = [];
+        Ext.Array.each(rpc.networkSettings.interfaces.list, function (intf) {
+            if (intf.configType === 'ADDRESSED') {
+                data.push([intf.interfaceId, intf.name]);
+            }
+        });
+        return data;
     },
 
     bytesToMBs: function(value) {

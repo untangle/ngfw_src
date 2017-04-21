@@ -14,26 +14,6 @@ Ext.define('Ung.config.network.MainController', {
         'networktest': { afterrender: 'networkTestRender' }
     },
 
-    additionalInterfaceProps: [{
-        // interface status
-        v4Address: null,
-        v4Netmask: null,
-        v4Gateway: null,
-        v4Dns1: null,
-        v4Dns2: null,
-        v4PrefixLength: null,
-        v6Address: null,
-        v6Gateway: null,
-        v6PrefixLength: null,
-        // device status
-        deviceName: null,
-        macAddress: null,
-        duplex: null,
-        vendor: null,
-        mbit: null,
-        connected: null
-    }],
-
     loadSettings: function () {
         var me = this,
             v = this.getView(),
@@ -48,10 +28,11 @@ Ext.define('Ung.config.network.MainController', {
             var intfStatus, devStatus;
 
             result[0].interfaces.list.forEach(function (intf) {
-                Ext.apply(intf, me.additionalInterfaceProps);
+                // Ext.apply(intf, me.additionalInterfaceProps);
                 intfStatus = Ext.Array.findBy(result[1].list, function (intfSt) {
                     return intfSt.interfaceId === intf.interfaceId;
                 });
+
 
                 if(intfStatus != null){
                     delete intfStatus.javaClass;
@@ -61,9 +42,9 @@ Ext.define('Ung.config.network.MainController', {
                 devStatus = Ext.Array.findBy(result[2].list, function (devSt) {
                     return devSt.deviceName === intf.physicalDev;
                 });
+
                 delete devStatus.javaClass;
                 Ext.apply(intf, devStatus);
-
             });
             vm.set('settings', result[0]);
 
@@ -90,7 +71,17 @@ Ext.define('Ung.config.network.MainController', {
             return;
         }
 
-        view.setLoading('Saving ...');
+        view.setLoading(true);
+
+        // update interfaces data
+        var interfacesStore = view.down('#interfacesGrid').getStore();
+        if (interfacesStore.getModifiedRecords().length > 0 ||
+            interfacesStore.getNewRecords().length > 0 ||
+            interfacesStore.getRemovedRecords().length > 0) {
+            vm.set('settings.interfaces.list', Ext.Array.pluck(interfacesStore.getRange(), 'data'));
+        }
+
+
         // used to update all tabs data
         view.query('ungrid').forEach(function (grid) {
             var store = grid.getStore();
@@ -174,7 +165,7 @@ Ext.define('Ung.config.network.MainController', {
             return;
         }
 
-        if( vm.get('settings').qosSettings.qosEnabled == true ){
+        if( vm.get('settings').qosSettings.qosEnabled === true ){
             var bandwidthFound = false;
             vm.get('wanInterfaces').each( function(interface){
                 if( interface.get('downloadBandwidthKbps') != null &&
@@ -182,9 +173,9 @@ Ext.define('Ung.config.network.MainController', {
                     bandwidthFound = true;
                 }
             });
-            if(bandwidthFound == false){
+            if(bandwidthFound === false){
                 Ext.MessageBox.alert(
-                        "Failed".t(), 
+                        "Failed".t(),
                         "QoS is Enabled. Please set valid Download Bandwidth and Upload Bandwidth limits in WAN Bandwidth for all WAN interfaces.".t()
                 );
                 view.setLoading(false);
@@ -202,9 +193,10 @@ Ext.define('Ung.config.network.MainController', {
 
         Rpc.asyncData('rpc.networkManager.setNetworkSettings', vm.get('settings'))
         .then(function(result) {
-            view.setLoading(false);
             me.loadSettings();
             Util.successToast('Network'.t() + ' settings saved!');
+        }).always(function () {
+            view.setLoading(false);
         });
     },
 
@@ -546,64 +538,109 @@ Ext.define('Ung.config.network.MainController', {
     },
 
     editInterface: function (btn) {
-        var v = this.getView();
-        // var win = Ext.create('config.interface');
-        // this.editingRecord = btn.getWidgetRecord();
-        this.dialog = v.add({
+        var me = this;
+        if (Ext.isFunction(btn.getWidgetRecord)) {
+            // editing existing interface from the grid
+            me.editIntf = btn.getWidgetRecord();
+        } else {
+            // adding a VLAN Interface
+            me.editIntf = Ext.create('Ung.model.Interface', {
+                isVlanInterface: true,
+                isWirelessInterface: false,
+                vlanTag: 1,
+                configType: 'ADDRESSED',
+                v4ConfigType: 'STATIC',
+                v6ConfigType: 'DISABLED'
+            });
+        }
+
+        var configTypesArr,
+            configTypesRadios = {
+                ADDRESSED: { boxLabel: '<i class="fa fa-file-text fa-gray"></i> <strong>' + 'Addressed'.t() + '</strong>', inputValue: 'ADDRESSED' },
+                BRIDGED: { boxLabel: '<i class="fa fa-link fa-gray"></i> <strong>' + 'Bridged'.t() + '</strong>', inputValue: 'BRIDGED' },
+                DISABLED: { boxLabel: '<i class="fa fa-ban fa-gray"></i> <strong>' + 'Disabled'.t() + '</strong>', inputValue: 'DISABLED' }
+            }, configTypes = [];
+
+
+        configTypesArr = me.editIntf.get('supportedConfigTypes') || ['ADDRESSED', 'BRIDGED', 'DISABLED'];
+
+        Ext.Array.each(configTypesArr, function (confType) {
+            configTypes.push(configTypesRadios[confType]);
+        });
+
+        me.dialog = me.getView().add({
             xtype: 'config.interface',
+            configTypesRadios: configTypes, // holds the radio buttons based on interface supported config types
+            title: me.editIntf.get('interfaceId') > 0 ? 'Edit Interface'.t() : 'Add VLAN Interface'.t(),
             viewModel: {
                 data: {
-                    // si: btn.getWidgetRecord().copy(null)
-                    si: btn.getWidgetRecord()
+                    // intf: btn.getWidgetRecord().copy(null)
+                    intf: me.editIntf
                 },
                 formulas: {
-                    isAddressed: function (get) { return get('si.configType') === 'ADDRESSED'; },
-                    isDisabled: function (get) { return get('si.configType') === 'DISABLED'; },
-                    isBridged: function (get) { return get('si.configType') === 'BRIDGED'; },
-                    isStaticv4: function (get) { return get('si.v4ConfigType') === 'STATIC'; },
-                    isAutov4: function (get) { return get('si.v4ConfigType') === 'AUTO'; },
-                    isPPPOEv4: function (get) { return get('si.v4ConfigType') === 'PPPOE'; },
-                    isDisabledv6: function (get) { return get('si.v6ConfigType') === 'DISABLED'; },
-                    isStaticv6: function (get) { return get('si.v6ConfigType') === 'STATIC'; },
-                    isAutov6: function (get) { return get('si.v6ConfigType') === 'AUTO'; },
-                    showRouterWarning: function (get) { return get('si.v6StaticPrefixLength') !== 64; },
-                    showWireless: function (get) { return get('si.isWirelessInterface') && get('si.configType') !== 'DISABLED'; },
-                    showWirelessPassword: function (get) { return get('si.wirelessEncryption') !== 'NONE' && get('si.wirelessEncryption') !== null; }
+                    isAddressed: function (get) { return get('intf.configType') === 'ADDRESSED'; },
+                    isDisabled: function (get) { return get('intf.configType') === 'DISABLED'; },
+                    isBridged: function (get) { return get('intf.configType') === 'BRIDGED'; },
+                    isStaticv4: function (get) { return get('intf.v4ConfigType') === 'STATIC'; },
+                    isAutov4: function (get) { return get('intf.v4ConfigType') === 'AUTO'; },
+                    isPPPOEv4: function (get) { return get('intf.v4ConfigType') === 'PPPOE'; },
+                    isDisabledv6: function (get) { return get('intf.v6ConfigType') === 'DISABLED'; },
+                    isStaticv6: function (get) { return get('intf.v6ConfigType') === 'STATIC'; },
+                    isAutov6: function (get) { return get('intf.v6ConfigType') === 'AUTO'; },
+                    showRouterWarning: function (get) { return get('intf.v6StaticPrefixLength') !== 64; },
+                    showWireless: function (get) { return get('intf.isWirelessInterface') && get('intf.configType') !== 'DISABLED'; },
+                    showWirelessPassword: function (get) { return get('intf.wirelessEncryption') !== 'NONE' && get('intf.wirelessEncryption') !== null; }
+                },
+                stores: {
+                    v4Aliases: { data: '{intf.v4Aliases.list}' },
+                    v6Aliases: { data: '{intf.v6Aliases.list}' },
+                    dhcpOptions: { data: '{intf.dhcpOptions.list}' },
+                    vrrpAliases: { data: '{intf.vrrpAliases.list}' }
                 }
             }
         });
-        this.dialog.show();
+        me.dialog.show();
     },
     cancelEdit: function (button) {
-        vm = button.up('window').getViewModel();
-
-        var record = this.dialog.getViewModel().get('si');
-        for (var field in record.modified) {
-            record.set(field, record.modified[field]);
-        }
-        record.commit();
-
+        this.editIntf.reject();
         this.dialog.close();
     },
 
-    doneEdit: function () {
+    doneEdit: function (btn) {
+        var me = this, dialogVm = me.dialog.getViewModel(), intf = dialogVm.get('intf');
+        this.dialog.query('ungrid').forEach(function (grid) {
+            var store = grid.getStore();
+            if (store.getModifiedRecords().length > 0 ||
+                store.getNewRecords().length > 0 ||
+                store.getRemovedRecords().length > 0) {
+                store.each(function (record) {
+                    if (record.get('markedForDelete')) {
+                        record.drop();
+                    }
+                });
+                if (grid.listProperty) {
+                    // console.log(intf);
+                    intf.set(grid.listProperty, {
+                        javaClass: 'java.util.LinkedList',
+                        list: Ext.Array.pluck(store.getRange(), 'data')
+                    });
+                }
+            }
+        });
+
+        // new VLAN interface
+        if (intf.get('interfaceId') === -1) {
+            me.lookup('interfacesGrid').getStore().add(intf);
+        }
+
         this.dialog.close();
-        // console.log(this.dialog.getViewModel());
-        // // Ext.apply(this.editingRecord, this.dialog.getViewModel().get('si'));
-        // var edited = this.dialog.getViewModel().get('si');
-        // console.log(edited);
-        // var store = this.getView().down('#interfacesGrid').getStore();
-        // console.log(store);
-        // var t = store.findRecord('interfaceId', edited.get('interfaceId'));
-        // t = edited.copy();
-        // console.log(t);
     },
 
     onBridgedInteface: function( combo ){
         var me = this,
             vm = me.getViewModel();
 
-        var record = combo.up('window').getViewModel().get('si');
+        var record = combo.up('window').getViewModel().get('intf');
 
         var fields = [];
         vm.get('settings').interfaces.list.forEach( function(interface){
@@ -624,8 +661,35 @@ Ext.define('Ung.config.network.MainController', {
             }],
             data: fields
         }));
+    },
+
+    onRenewDhcpLease: function () {
+        var me = this, interfaceId = me.editIntf.get('interfaceId');
+        // Ext.MessageBox.wait('Renewing DHCP Lease...'.t(), 'Please wait'.t());
+        me.dialog.setLoading(true);
+        Ext.Deferred.sequence([
+            Rpc.asyncPromise('rpc.networkManager.renewDhcpLease', interfaceId),
+            Rpc.asyncPromise('rpc.networkManager.getInterfaceStatus'),
+        ], this).then(function (result) {
+            var intfStatus = Ext.Array.findBy(result[1].list, function (intfSt) {
+                return intfSt.interfaceId === interfaceId;
+            });
+
+            if (intfStatus != null) {
+                delete intfStatus.javaClass;
+                delete intfStatus.interfaceId;
+            }
+            console.log(intfStatus);
+            Ext.apply(me.editIntf, intfStatus);
+        }, function (ex) {
+            console.error(ex);
+            Util.exceptionToast(ex);
+        }).always(function () {
+            me.dialog.setLoading(false);
+        });
+    },
+
+    addVlanInterface: function () {
+        console.log('add');
     }
-
-
-
 });
