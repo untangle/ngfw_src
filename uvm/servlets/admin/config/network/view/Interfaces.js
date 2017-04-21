@@ -161,7 +161,7 @@ Ext.define('Ung.config.network.view.Interfaces', {
             dataIndex: 'isWan',
             align: 'center',
             renderer: function (value, metaData, record) {
-                return (record.get('configType') === 'ADDRESSED') ? (value ? '<i class="fa fa-check fa-lg"></i>' : '<i class="fa fa-minus fa-lg"></i>') : '<i class="fa fa-minus fa-lg"></i>'; // if its addressed return value
+                return record.get('configType') === 'ADDRESSED' ? (value ? 'true'.t() : 'false'.t()) : '';
             }
         }, {
             header: 'is Vlan'.t(),
@@ -183,15 +183,43 @@ Ext.define('Ung.config.network.view.Interfaces', {
             dataIndex: 'vendor'
         }, {
             xtype: 'widgetcolumn',
-            width: 90,
+            header: 'Edit'.t(),
+            width: 80,
             resizable: false,
             sortable: false,
             menuEnabled: false,
+            align: 'center',
             widget: {
                 xtype: 'button',
-                text: 'Edit'.t(),
+                width: 40,
+                // text: 'Edit'.t(),
                 iconCls: 'fa fa-pencil',
                 handler: 'editInterface'
+            }
+        }, {
+            xtype: 'widgetcolumn',
+            header: 'Delete'.t(),
+            width: 80,
+            resizable: false,
+            sortable: false,
+            menuEnabled: false,
+            align: 'center',
+            widget: {
+                xtype: 'button',
+                width: 40,
+                // text: 'Delete'.t(),
+                bind: {
+                    disabled: '{!record.isVlanInterface}',
+                    iconCls: 'fa fa-trash' + '{record.isVlanInterface ? " fa-red" : ""}',
+                },
+                handler: function (btn) {
+                    var intf = btn.getWidgetRecord();
+                    Ext.Msg.confirm('Delete VLAN Interface',
+                        'Are you sure you want to delete <strong>' + intf.get('name') + '</strong> VLAN Interface?',
+                        function (button) {
+                            if (button === 'yes') { intf.drop(); }
+                        });
+                }
             }
         }]
     }, {
