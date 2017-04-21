@@ -94,7 +94,6 @@ Ext.define('Ung.apps.openvpn.MainController', {
     validateSettings: function() {
         var me = this, v = this.getView(), vm = this.getViewModel();
 
-        // make sure they don't try to delete a group with active remote clients
         var clientStore = v.query('app-openvpn-remote-clients-grid')[0].getStore();
         var groupStore = v.query('app-openvpn-groups-grid')[0].getStore();
         var message = "";
