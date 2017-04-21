@@ -40,8 +40,10 @@ import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.event.EventRule;
 import com.untangle.uvm.event.EventSettings;
 import com.untangle.uvm.network.FilterRule;
+import com.untangle.uvm.app.App;
 import com.untangle.uvm.app.AppProperties;
 import com.untangle.uvm.app.AppSettings;
+import com.untangle.uvm.app.AppSettings.AppState;
 import com.untangle.uvm.app.Reporting;
 import com.untangle.uvm.app.HostnameLookup;
 import com.untangle.uvm.servlet.DownloadHandler;
@@ -230,6 +232,11 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
     public void runFixedReport() throws Exception
     {
         flushEvents();
+
+        App reportsApp = UvmContextFactory.context().appManager().app("reports");
+        if(reportsApp == null || !AppState.RUNNING.equals(reportsApp.getRunState())){
+            return;
+        }
 
         synchronized (this) {
             String url = "https://" + UvmContextFactory.context().networkManager().getPublicUrl() + "/reports/";
