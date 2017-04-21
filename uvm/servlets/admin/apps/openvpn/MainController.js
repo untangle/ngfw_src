@@ -51,12 +51,37 @@ Ext.define('Ung.apps.openvpn.MainController', {
         v.appManager.getSettings(function (result, ex) {
             v.setLoading(false);
             if (ex) { Util.exceptionToast(ex); return; }
+
+            // set a flag on existing users to prevent changing the name
+            for(var i = 0 ; i < result.remoteClients.list.length ; i++) {
+                result.remoteClients.list[i].existing = true;
+            }
+
             vm.set('settings', result);
         });
     },
 
     setSettings: function () {
         var me = this, v = this.getView(), vm = this.getViewModel();
+
+        // make sure they don't try to delete a group with active remote clients
+        var clientStore = v.query('app-openvpn-remote-clients-grid')[0].getStore();
+        var groupStore = v.query('app-openvpn-groups-grid')[0].getStore();
+        var problem = 0;
+
+        groupStore.each(function(record) {
+            if (record.get('markedForDelete')) {
+                var finder = clientStore.findRecord('groupId' , record.get('groupId'));
+                if (finder != null) {
+                    var message = Ext.String.format("The group: {0} cannot be deleted because it is being used by the client: {1} in the Remote Clients list.".t(), record.get('name'), finder.get('name'));
+                    Ext.MessageBox.alert("Delete Group Failed".t(), message);
+                    record.set('markedForDelete', false);
+                    problem++;
+                }
+            }
+        });
+
+        if (problem != 0) return;
 
         v.query('ungrid').forEach(function (grid) {
             var store = grid.getStore();
@@ -111,7 +136,7 @@ Ext.define('Ung.apps.openvpn.SpecialGridController', {
     downloadClient: function(view, row, colIndex, item, e, record) {
         if( record.dirty ){
             Ext.MessageBox.alert(
-                "Cannot download".t(), 
+                "Cannot download".t(),
                 "Remote Client information has been modified.  You must Save before downloading the client.".t()
             );
             return;
