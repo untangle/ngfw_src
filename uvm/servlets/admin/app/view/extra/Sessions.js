@@ -50,10 +50,11 @@ Ext.define('Ung.view.extra.Sessions', {
 
     items: [{
         region: 'center',
-        xtype: 'grid',
-        itemId: 'list',
+        xtype: 'ungrid',
+        itemId: 'sessionsgrid',
+        reference: 'sessionsgrid',
         store: 'sessions',
-        // forceFit: true,
+        stateful: true,
 
         plugins: 'gridfilters',
         columnLines: true,
@@ -196,6 +197,7 @@ Ext.define('Ung.view.extra.Sessions', {
         shadow: false,
         animCollapse: false,
         titleCollapse: true,
+        collapsed: true,
 
         // columnLines: false,
 
