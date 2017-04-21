@@ -62,6 +62,7 @@ Ext.define('Ung.view.extra.Devices', {
         title: 'Current Devices'.t(),
         store: 'devices',
         forceFit: false,
+        stateful: true,
 
         tbar: ['@add', '->', '@import', '@export'],
         recordActions: ['edit', 'delete'],
