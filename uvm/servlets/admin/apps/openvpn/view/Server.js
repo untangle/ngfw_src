@@ -93,7 +93,8 @@ Ext.define('Ung.apps.openvpn.cmp.RemoteClientsGrid', {
         'enabled': true,
         'name': '',
         'groupId': 1,
-        'export': false
+        'export': false,
+        'existing': false
         },
 
     bind: '{remoteClients}',
@@ -130,12 +131,15 @@ Ext.define('Ung.apps.openvpn.cmp.RemoteClientsGrid', {
 
     editorFields: [{
         xtype: 'checkbox',
-        bind: '{record.enabled}',
-        fieldLabel: 'Enabled'.t()
+        fieldLabel: 'Enabled'.t(),
+        bind: '{record.enabled}'
     }, {
         xtype: 'textfield',
-        bind: '{record.name}',
-        fieldLabel: 'Client Name'.t()
+        fieldLabel: 'Client Name'.t(),
+        bind: {
+            value: '{record.name}',
+            readOnly: '{record.existing}'
+        }
     }, {
         xtype: 'combobox',
         fieldLabel: 'Group'.t(),
