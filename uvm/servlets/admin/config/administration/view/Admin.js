@@ -27,8 +27,7 @@ Ext.define('Ung.config.administration.view.Admin', {
             username: '',
             description: '',
             emailAddress: '',
-            // "emailAlerts": true,
-            // "emailSummaries": true,
+            emailAlerts: false,
             passwordHashBase64: null,
             passwordHashShadow: null,
             password: null
@@ -59,6 +58,10 @@ Ext.define('Ung.config.administration.view.Admin', {
                 vtype: 'email'
             }
         }, {
+            xtype: 'checkcolumn',
+            header: 'Email Alerts'.t(),
+            dataIndex: 'emailAlerts'
+        }, {
             dataIndex: 'passwordHashBase64',
             width: 250
         }],
@@ -69,12 +72,18 @@ Ext.define('Ung.config.administration.view.Admin', {
             allowBlank: false,
             emptyText: '[enter username]'.t(),
             blankText: 'The username cannot be blank.'.t()
-        }, Field.description, {
+        },
+        Field.description,
+        {
             xtype: 'textfield',
             bind: '{record.emailAddress}',
             fieldLabel: 'Email Address'.t(),
             emptyText: '[no email]'.t(),
             vtype: 'email'
+        },{
+            xtype: 'checkbox',
+            bind: '{record.emailAlerts}',
+            fieldLabel: 'Email Alerts'.t()
         }, {
             xtype: 'textfield',
             inputType: 'password',
