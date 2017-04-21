@@ -5,8 +5,10 @@ Ext.define('Ung.view.extra.HostsController', {
 
     control: {
         '#': {
-            afterrender: 'getHosts',
             deactivate: 'onDeactivate'
+        },
+        '#hostsgrid': {
+            afterrender: 'getHosts'
         }
     },
 
@@ -53,5 +55,14 @@ Ext.define('Ung.view.extra.HostsController', {
     boolRenderer: function (value) {
         return '<i class="fa ' + (value ? 'fa-check' : 'fa-minus') + '"></i>';
     }
+
+});
+
+Ext.define('Ung.view.extra.HostsGridController', {
+    extend: 'Ung.cmp.GridController',
+
+    alias: 'controller.unhostsgrid',
+
+    boolRenderer: Ung.view.extra.HostsController.prototype.boolRenderer
 
 });

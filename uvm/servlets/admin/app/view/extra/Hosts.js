@@ -42,7 +42,6 @@ Ext.define('Ung.view.extra.Hosts', {
     viewModel: {
         formulas: {
             hostDetails: function (get) {
-                // console.log(get('hostsgrid.selection').getData());
                 if (get('hostsgrid.selection')) {
                     var data = get('hostsgrid.selection').getData();
                     delete data._id;
@@ -55,12 +54,14 @@ Ext.define('Ung.view.extra.Hosts', {
     },
 
     items: [{
-        xtype: 'grid',
+        xtype: 'ungrid',
+        controller: 'unhostsgrid',
         region: 'center',
         itemId: 'hostsgrid',
         reference: 'hostsgrid',
         title: 'Current Hosts'.t(),
         store: 'hosts',
+        stateful: true,
         forceFit: true,
         columns: [
             { header: 'Address'.t(), dataIndex: 'address', resizable: false },
@@ -107,17 +108,21 @@ Ext.define('Ung.view.extra.Hosts', {
         region: 'east',
         xtype: 'propertygrid',
         itemId: 'details',
+        title: 'Host Details'.t(),
         editable: false,
         width: 400,
         split: true,
-        collapsible: false,
+        collapsible: true,
         resizable: true,
         shadow: false,
-        hidden: true,
+        animCollapse: false,
+        titleCollapse: true,
+        collapsed: true,
 
         cls: 'prop-grid',
 
         viewConfig: {
+            enableTextSelection: true,
             stripeRows: false,
             getRowClass: function(record) {
                 if (record.get('value') === null || record.get('value') === '') {
@@ -129,9 +134,7 @@ Ext.define('Ung.view.extra.Hosts', {
 
         nameColumnWidth: 200,
         bind: {
-            title: '{hostsgrid.selection.hostname} ({hostsgrid.selection.address})',
-            source: '{hostDetails}',
-            hidden: '{!hostsgrid.selection}'
+            source: '{hostDetails}'
         },
         sourceConfig: {
             active:                      { displayName: 'Active'.t(), renderer: 'boolRenderer' },
