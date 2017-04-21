@@ -61,8 +61,8 @@ Ext.define('Ung.cmp.AppState', {
         onPower: function (btn) {
             var appManager = this.getView().up('#appCard').appManager,
                 vm = this.getViewModel(),
-                expectedState = get('instance.targetState'),
-                actualState = get('runState');
+                expectedState = vm.get('instance.targetState'),
+                actualState = vm.get('runState');
 
             btn.setDisabled(true);
 
