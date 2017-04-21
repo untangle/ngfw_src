@@ -136,9 +136,14 @@ Ext.define('Ung.config.localdirectory.Main', {
                 fieldLabel: 'Password'.t(),
                 labelAlign: 'right',
                 labelWidth: 180,
-                bind: '{record.password}',
-// FIXME - allowBlank should be false on create, true on edit
-                allowBlank: true,
+                inputType: 'password',
+                bind: {
+                    value: '{record.password}',
+                    allowBlank: '{!record.localEmpty}'
+                },
+                setAllowBlank: function(value){
+                    this.allowBlank = value;
+                },
                 width: 300,
             }, {
                 xtype: 'displayfield',
