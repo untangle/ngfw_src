@@ -112,7 +112,7 @@ Ext.define('Ung.cmp.Grid', {
     },
     viewConfig: {
         enableTextSelection: true,
-        emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-exclamation-triangle fa-2x"></i> <br/>No Data! Add from the menu...</p>',
+        emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-lg"></i> No Data!</p>',
         stripeRows: false,
         getRowClass: function(record) {
             if (record.get('markedForDelete')) {
@@ -155,7 +155,7 @@ Ext.define('Ung.cmp.Grid', {
              */
             columns.forEach( Ext.bind( function(column){
                 if( this.stateful &&
-                    !column.stateId && 
+                    !column.stateId &&
                     column.dataIndex){
                     column.stateId = column.dataIndex;
                 }
