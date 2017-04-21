@@ -99,8 +99,7 @@ Ext.define('Ung.cmp.Grid', {
      */
     actionText: 'Perform the following action(s):'.t(),
 
-
-
+    stateful: false,
 
     layout: 'fit',
     trackMouseOver: false,
@@ -112,6 +111,7 @@ Ext.define('Ung.cmp.Grid', {
         type: 'cellmodel'
     },
     viewConfig: {
+        enableTextSelection: true,
         emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-exclamation-triangle fa-2x"></i> <br/>No Data! Add from the menu...</p>',
         stripeRows: false,
         getRowClass: function(record) {
@@ -136,6 +136,12 @@ Ext.define('Ung.cmp.Grid', {
         // to revisit the way columns are attached
         var columns = Ext.clone(this.columns), i;
 
+        if( this.stateful &&
+            ( this.itemId ||
+              this.reference ) ) {
+            this.stateId = "ungrid-" + this.itemId ? this.itemId : this.reference;
+        }
+
         if (this.tbar == null) {
             this.tbar=[];
         }
@@ -143,27 +149,37 @@ Ext.define('Ung.cmp.Grid', {
         if(tbarSeparatorIndex == -1){
             tbarSeparatorIndex = this.tbar.length;
         }
-        columns.forEach( Ext.bind( function(column){
-            if( column.xtype == 'checkcolumn' && column.checkAll){
-                var columnDataIndex = column.dataIndex;
+        if(columns){
+            /*
+             * Reports and others can set their columns manually.
+             */
+            columns.forEach( Ext.bind( function(column){
+                if( this.stateful &&
+                    !column.stateId && 
+                    column.dataIndex){
+                    column.stateId = column.dataIndex;
+                }
+                if( column.xtype == 'checkcolumn' && column.checkAll){
+                    var columnDataIndex = column.dataIndex;
 
-                this.tbar.splice( tbarSeparatorIndex, 0, Ext.applyIf(column.checkAll, {
-                    xtype: 'checkbox',
-                    hidden: !rpc.isExpertMode,
-                    hideLabel: true,
-                    margin: '0 5px 0 5px',
-                    boxLabel: Ext.String.format("{0} All".t(), column.header),
-                    // scope: {columnDataIndex: columnDataIndex},
-                    handler: function(checkbox, checked) {
-                        var records=checkbox.up("grid").getStore().getRange();
-                        for(var i=0; i<records.length; i++) {
-                            records[i].set(this.colDataIndex, checked);
-                        }
-                    },
-                }));
+                    this.tbar.splice( tbarSeparatorIndex, 0, Ext.applyIf(column.checkAll, {
+                        xtype: 'checkbox',
+                        hidden: !rpc.isExpertMode,
+                        hideLabel: true,
+                        margin: '0 5px 0 5px',
+                        boxLabel: Ext.String.format("{0} All".t(), column.header),
+                        // scope: {columnDataIndex: columnDataIndex},
+                        handler: function(checkbox, checked) {
+                            var records=checkbox.up("grid").getStore().getRange();
+                            for(var i=0; i<records.length; i++) {
+                                records[i].set(this.colDataIndex, checked);
+                            }
+                        },
+                    }));
                 tbarSeparatorIndex++;
-            }
-        }, this));
+                }
+            }, this));
+        }
 
         if (this.recordActions) {
             for (i = 0; i < this.recordActions.length; i += 1) {

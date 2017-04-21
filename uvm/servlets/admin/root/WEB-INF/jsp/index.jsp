@@ -63,7 +63,11 @@
                 }
             });
 
-	    var rpc = {};
+            var rpc = {};
+            if (Ext.supports.LocalStorage) {
+                Ext.state.Manager.setProvider(Ext.create('Ext.state.LocalStorageProvider'));
+            }
+
             Ext.QuickTips.init();
 
             // Disable Ext Area to avoid unwanted debug messages
