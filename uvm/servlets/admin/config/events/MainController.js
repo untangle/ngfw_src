@@ -252,6 +252,12 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
             conditionsList.unshift(classCondition);
         }
 
+        conditionsList.forEach( function(condition){
+            if( typeof(condition.fieldValue) != 'string' ){
+                condition.fieldValue = condition.fieldValue.toString();
+            }
+        });
+
         delete(record.data.class);
         delete(record.data._classCondition);
 
