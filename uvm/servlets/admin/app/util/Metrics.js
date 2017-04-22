@@ -7,6 +7,8 @@ Ext.define('Ung.util.Metrics', {
 
     start: function () {
         var me = this;
+        Ext.getStore('stats').loadRawData({});
+        Ext.getStore('metrics').loadData({});
         me.stop();
         me.run();
         me.interval = window.setInterval(function () {
