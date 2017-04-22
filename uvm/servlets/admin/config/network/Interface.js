@@ -1044,7 +1044,7 @@ Ext.define('Ung.config.network.Interface', {
                     width: 200,
                     editor : {
                         xtype: 'textfield',
-                        vtype: 'ip6Address',
+                        vtype: 'ip4Address',
                         emptyText: '[enter IPv4 address]'.t(),
                         allowBlank: false
                     }
