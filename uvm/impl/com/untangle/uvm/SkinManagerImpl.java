@@ -65,26 +65,21 @@ public class SkinManagerImpl implements SkinManager
             this.settings = readSettings;
 
             /**
-             * 12.1 conversion
-             * The "default" skin was renamed to "modern-rack"
-             * The "classic" skin was rename to "classic-rack"
+             * 13.0 conversion
+             * If the configured skin is anything other than one of the supported skins
+             * Change to simple-gray
              */
-            if ( "default".equals(this.settings.getSkinName()) ) {
-                logger.info("Switching \"default\" to \"modern-rack\"");
-                this.settings.setSkinName( "modern-rack" );
+            String skinName = this.settings.getSkinName();
+            if ( skinName == null ) {
+                this.settings.setSkinName("simple-gray");
+                skinName = "simple-gray";
+                this.setSettings( this.settings );
+            } else if ( !skinName.equals("simple-gray") &&
+                        !skinName.equals("modern-rack") ) {
+                this.settings.setSkinName("simple-gray");
                 this.setSettings( this.settings );
             }
-            if ( "classic".equals(this.settings.getSkinName()) ) {
-                logger.info("Switching \"classic\" to \"classic-rack\"");
-                this.settings.setSkinName( "classic-rack" );
-                this.setSettings( this.settings );
-            }
-            if ( "material".equals(this.settings.getSkinName()) ) {
-                logger.info("Switching \"material\" to \"simple-gray\"");
-                this.settings.setSkinName( "simple-gray" );
-                this.setSettings( this.settings );
-            }
-            
+
             logger.debug("Loading Settings: " + this.settings.toJSONString());
         }
 
