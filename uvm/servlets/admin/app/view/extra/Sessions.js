@@ -50,7 +50,7 @@ Ext.define('Ung.view.extra.Sessions', {
 
     items: [{
         region: 'center',
-        xtype: 'ungrid',
+        xtype: 'grid',
         itemId: 'sessionsgrid',
         reference: 'sessionsgrid',
         store: 'sessions',
@@ -197,7 +197,7 @@ Ext.define('Ung.view.extra.Sessions', {
         shadow: false,
         animCollapse: false,
         titleCollapse: true,
-        collapsed: true,
+        collapsed: false,
 
         // columnLines: false,
 

@@ -54,7 +54,7 @@ Ext.define('Ung.view.extra.Hosts', {
     },
 
     items: [{
-        xtype: 'ungrid',
+        xtype: 'grid',
         controller: 'unhostsgrid',
         region: 'center',
         itemId: 'hostsgrid',
@@ -117,7 +117,7 @@ Ext.define('Ung.view.extra.Hosts', {
         shadow: false,
         animCollapse: false,
         titleCollapse: true,
-        collapsed: true,
+        collapsed: false,
 
         cls: 'prop-grid',
 
