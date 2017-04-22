@@ -179,7 +179,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         }));
 
         Ext.Ajax.request({
-            url: "/webui/download",
+            url: "/admin/download",
             method: 'POST',
             params: {
                 type: "IntrusionPreventionSettings",
@@ -257,7 +257,7 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         v.setLoading(true);
 
         Ext.Ajax.request({
-            url: "/webui/download",
+            url: "/admin/download",
             jsonData: me.getChangedData(),
             method: 'POST',
             params: {

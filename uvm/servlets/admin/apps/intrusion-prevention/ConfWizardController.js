@@ -20,7 +20,7 @@ Ext.define('Ung.apps.intrusionprevention.ConfWizardController', {
 
         Ext.MessageBox.wait( "Determining recommended settings...".t(), "Please wait".t() );
         Ext.Ajax.request({
-            url: "/webui/download",
+            url: "/admin/download",
             method: 'POST',
             params: {
                 type: "IntrusionPreventionSettings",
