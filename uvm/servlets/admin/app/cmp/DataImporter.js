@@ -53,7 +53,7 @@ Ext.define('Ung.cmp.DataImporter', {
         bbar: ['->', '@cancel', '@import'],
         name: 'importSettingsForm',
         // url: 'gridSettings',
-        url: 'http://localhost:8002/webui/gridSettings',
+        url: 'http://localhost:8002/admin/gridSettings',
         border: false,
         items: [{
             xtype: 'radiogroup',
