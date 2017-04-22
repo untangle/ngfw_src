@@ -28,7 +28,7 @@ Ext.define('Ung.apps.openvpn.MainController', {
         grid.setLoading(true);
         this.getView().appManager.getActiveClients(function (result, ex) {
             grid.setLoading(false);
-            if (ex) { Util.exceptionToast(ex); return; }
+            if (ex) { Util.handleException(ex); return; }
             vm.set('activeClients', result.list);
         });
     },
@@ -39,7 +39,7 @@ Ext.define('Ung.apps.openvpn.MainController', {
         grid.setLoading(true);
         this.getView().appManager.getRemoteServersStatus(function (result, ex) {
             grid.setLoading(false);
-            if (ex) { Util.exceptionToast(ex); return; }
+            if (ex) { Util.handleException(ex); return; }
             vm.set('remoteServers', result.list);
             console.log(result);
         });
@@ -50,7 +50,7 @@ Ext.define('Ung.apps.openvpn.MainController', {
         v.setLoading(true);
         v.appManager.getSettings(function (result, ex) {
             v.setLoading(false);
-            if (ex) { Util.exceptionToast(ex); return; }
+            if (ex) { Util.handleException(ex); return; }
 
             // set a flag on existing users to prevent changing the name
             for(var i = 0 ; i < result.remoteClients.list.length ; i++) {
@@ -85,7 +85,7 @@ Ext.define('Ung.apps.openvpn.MainController', {
         v.setLoading(true);
         v.appManager.setSettings(function (result, ex) {
             v.setLoading(false);
-            if (ex) { Util.exceptionToast(ex); return; }
+            if (ex) { Util.handleException(ex); return; }
             Util.successToast('Settings saved');
             me.getSettings();
         }, vm.get('settings'));
@@ -268,19 +268,19 @@ getDistributeWindow: function() {
                     var loadSemaphore = 3;
 
                     openvpnApp.getClientDistributionDownloadLink( Ext.bind(function(result, exception) {
-                        if (exception) { Util.exceptionToast(exception); return; }
+                        if (exception) { Util.handleException(exception); return; }
                         windowsLink.update('<a href="'+result+'" target="_blank">'+'Click here to download this client\'s Windows setup.exe file.'.t() + '</a>');
                         if(--loadSemaphore == 0) { Ext.MessageBox.hide();}
                     }, this), this.record.data.name, "exe" );
 
                     openvpnApp.getClientDistributionDownloadLink( Ext.bind(function(result, exception) {
-                        if (exception) { Util.exceptionToast(exception); return; }
+                        if (exception) { Util.handleException(exception); return; }
                         chromebookLink.update('<a href="'+result+'" target="_blank">'+'Click here to download this client\'s configuration onc file for Chromebook.'.t() + '</a>');
                         if(--loadSemaphore == 0) { Ext.MessageBox.hide();}
                     }, this), this.record.data.name, "onc" );
 
                     openvpnApp.getClientDistributionDownloadLink( Ext.bind(function(result, exception) {
-                        if (exception) { Util.exceptionToast(exception); return; }
+                        if (exception) { Util.handleException(exception); return; }
                         genericLink.update('<a href="'+result+'" target="_blank">'+'Click here to download this client\'s configuration zip file for other OSs (apple/linux/etc).'.t() + '</a>');
                         untangleLink.update('<a href="'+result+'" target="_blank">'+'Click here to download this client\'s configuration file for remote Untangle OpenVPN clients.'.t() + '</a>');
                         if(--loadSemaphore == 0) { Ext.MessageBox.hide();}

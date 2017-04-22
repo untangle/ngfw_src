@@ -41,7 +41,7 @@ Ext.define('Ung.config.email.MainController', {
             me.originalMailSender = Ext.clone(result[0]);
         }, function(ex) {
             console.error(ex);
-            Util.exceptionToast(ex);
+            Util.handleException(ex);
         }).always(function() {
             view.setLoading(false);
         });
@@ -101,7 +101,7 @@ Ext.define('Ung.config.email.MainController', {
             deferred.resolve();
         }, function(ex) {
             console.error(ex);
-            Util.exceptionToast(ex);
+            Util.handleException(ex);
         }).always(function () {
             view.setLoading(false);
         });

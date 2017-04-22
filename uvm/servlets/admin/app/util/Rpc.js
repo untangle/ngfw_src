@@ -16,14 +16,14 @@ Ext.define('Ung.util.Rpc', {
 
         if (!context.hasOwnProperty(method) || !Ext.isFunction(context[method])) {
             console.error('Error: No such RPC method: \'' + expression + '\'');
-            Util.exceptionToast('No such RPC method: \'' + expression + '\'');
+            Util.handleException('No such RPC method: \'' + expression + '\'');
             return;
         }
 
         args.unshift(function (result, ex) {
             if (ex) {
                 console.error('Error: ' + ex);
-                Util.exceptionToast(ex);
+                Util.handleException(ex);
                 dfrd.reject(ex);
             }
             // console.info(expression + ' (async data) ... OK');
@@ -43,14 +43,14 @@ Ext.define('Ung.util.Rpc', {
 
         if (!context.hasOwnProperty(method) || !Ext.isFunction(context[method])) {
             console.error('Error: No such RPC method: \'' + expression + '\'');
-            Util.exceptionToast('No such RPC method: \'' + expression + '\'');
+            Util.handleException('No such RPC method: \'' + expression + '\'');
             return;
         }
 
         try {
             return context[method].call();
         } catch (ex) {
-            Util.exceptionToast(ex);
+            Util.handleException(ex);
         }
     },
 
@@ -64,7 +64,7 @@ Ext.define('Ung.util.Rpc', {
 
         if (!context.hasOwnProperty(method) || !Ext.isFunction(context[method])) {
             console.error('Error: No such RPC method: \'' + expression + '\'');
-            Util.exceptionToast('No such RPC method: \'' + expression + '\'');
+            Util.handleException('No such RPC method: \'' + expression + '\'');
             return;
         }
 
@@ -89,7 +89,7 @@ Ext.define('Ung.util.Rpc', {
 
         if (!context.hasOwnProperty(method) || !Ext.isFunction(context[method])) {
             console.error('Error: No such RPC method: \'' + expression + '\'');
-            Util.exceptionToast('No such RPC method: \'' + expression + '\'');
+            Util.handleException('No such RPC method: \'' + expression + '\'');
             return;
         }
 

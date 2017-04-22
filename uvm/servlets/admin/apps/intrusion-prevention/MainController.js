@@ -13,12 +13,12 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
         v.setLoading(true);
 
         v.appManager.getLastUpdateCheck(function (result, ex) {
-            if (ex) { Util.exceptionToast(ex); return; }
+            if (ex) { Util.handleException(ex); return; }
             var lastUpdateCheck = result;
             vm.set('lastUpdateCheck', (lastUpdateCheck !== null && lastUpdateCheck.time !== 0 ) ? Util.timestampFormat(lastUpdateCheck) : "Never".t() );
 
             v.appManager.getLastUpdate(function (result, ex) {
-                if (ex) { Util.exceptionToast(ex); return; }
+                if (ex) { Util.handleException(ex); return; }
                 var lastUpdate = result;
                 vm.set('lastUpdate', ( lastUpdateCheck != null && lastUpdateCheck.time !== 0 && lastUpdate !== null && lastUpdate.time !== 0 ) ? Util.timestampFormat(lastUpdate) : "Never".t() );
             });

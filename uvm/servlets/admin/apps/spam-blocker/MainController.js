@@ -13,7 +13,7 @@ Ext.define('Ung.apps.spamblocker.MainController', {
         v.setLoading(true);
         v.appManager.getSettings(function (result, ex) {
             v.setLoading(false);
-            if (ex) { Util.exceptionToast(ex); return; }
+            if (ex) { Util.handleException(ex); return; }
             vm.set('settings', result);
             v.lookup('predefinedStrength').setValue(result.smtpConfig.strength);
         });
@@ -37,7 +37,7 @@ Ext.define('Ung.apps.spamblocker.MainController', {
         v.setLoading(true);
         v.appManager.setSettings(function (result, ex) {
             v.setLoading(false);
-            if (ex) { Util.exceptionToast(ex); return; }
+            if (ex) { Util.handleException(ex); return; }
             Util.successToast('Settings saved');
             me.getSettings();
         }, vm.get('settings'));

@@ -73,7 +73,7 @@ Ext.define('Ung.cmp.AppRemove', {
                         // todo: fire global event
                         // Ext.GlobalEvents.fireEvent('appinstall', 'remove', appItem.app);
                     }, function (ex) {
-                        Util.exceptionToast(ex);
+                        Util.handleException(ex);
                     });
             }
         });

@@ -17,7 +17,7 @@ Ext.define('Ung.apps.reports.MainController', {
         v.setLoading(true);
         v.appManager.getSettings(function (result, ex) {
             v.setLoading(false);
-            if (ex) { Util.exceptionToast(ex); return; }
+            if (ex) { Util.handleException(ex); return; }
             console.log(result);
             vm.set('settings', result);
         });
@@ -45,7 +45,7 @@ Ext.define('Ung.apps.reports.MainController', {
         v.setLoading(true);
         v.appManager.setSettings(function (result, ex) {
             v.setLoading(false);
-            if (ex) { Util.exceptionToast(ex); return; }
+            if (ex) { Util.handleException(ex); return; }
             Util.successToast('Settings saved');
             me.getSettings();
         }, vm.get('settings'));
@@ -64,7 +64,7 @@ Ext.define('Ung.apps.reports.MainController', {
                 }
             }
         } catch (ex) {
-            Util.exceptionToast(ex);
+            Util.handleException(ex);
         }
         vm.set('googleDriveConfigured', googleDriveConfigured);
     },
@@ -106,7 +106,7 @@ Ext.define('Ung.apps.reports.MainController', {
             failure: function (form, action) {
                 // var errorMsg = 'Upload Data Failed'.t() + ' ' + action.result;
                 // Ext.MessageBox.alert('Failed'.t(), errorMsg);
-                Util.exceptionToast('Upload Data Failed'.t() + ' ' + action.result);
+                Util.handleException('Upload Data Failed'.t() + ' ' + action.result);
             }
         });
     },

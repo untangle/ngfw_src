@@ -1,7 +1,8 @@
 Ext.define('Ung.util.Util', {
     alternateClassName: 'Util',
     singleton: true,
-
+    ignoreExceptions: false,
+    
     defaultColors: ['#7cb5ec', '#434348', '#90ed7d', '#f7a35c', '#8085e9', '#f15c80', '#e4d354', '#2b908f', '#f45b5b', '#91e8e1'],
 
     subNav: [
@@ -105,17 +106,171 @@ Ext.define('Ung.util.Util', {
         });
     },
 
-    exceptionToast: function (message) {
+    showWarningMessage:function(message, details, errorHandler) {
+        var wnd = Ext.create('Ext.window.Window', {
+            title: 'Warning'.t(),
+            modal:true,
+            closable:false,
+            layout: "fit",
+            setSizeToRack: function () {
+                if(Ung.Main && Ung.Main.viewport) {
+                    var objSize = Ung.Main.viewport.getSize();
+                    objSize.height = objSize.height - 66;
+                    this.setPosition(0, 66);
+                    this.setSize(objSize);
+                } else {
+                    this.maximize();
+                }
+            },
+            doSize: function() {
+                var detailsComp = this.down('fieldset[name="details"]');
+                if(!detailsComp.isHidden()) {
+                    this.setSizeToRack();
+                } else {
+                    this.center();
+                }
+            },
+            items: {
+                xtype: "panel",
+                minWidth: 350,
+                autoScroll: true,
+                defaults: {
+                    border: false
+                },
+                items: [{
+                    xtype: "fieldset",
+                    padding: 10,
+                    items: [{
+                        xtype: "label",
+                        html: message,
+                    }]
+                }, {
+                    xtype: "fieldset",
+                    hidden: (typeof(interactiveMode) != "undefined" && interactiveMode == false),
+                    items: [{
+                        xtype: "button",
+                        name: "details_button",
+                        text: "Show details".t(),
+                        hidden: details==null,
+                        handler: function() {
+                            var detailsComp = wnd.down('fieldset[name="details"]');
+                            var detailsButton = wnd.down('button[name="details_button"]');
+                            if(detailsComp.isHidden()) {
+                                wnd.initialHeight = wnd.getHeight();
+                                wnd.initialWidth = wnd.getWidth();
+                                detailsComp.show();
+                                detailsButton.setText('Hide details'.t());
+                                wnd.setSizeToRack();
+                            } else {
+                                detailsComp.hide();
+                                detailsButton.setText('Show details'.t());
+                                wnd.restore();
+                                wnd.setHeight(wnd.initialHeight);
+                                wnd.setWidth(wnd.initialWidth);
+                                wnd.center();
+                            }
+                        },
+                        scope : this
+                    }]
+                }, {
+                    xtype: "fieldset",
+                    name: "details",
+                    hidden: true,
+                    html: details!=null ? details : ''
+                }]
+            },
+            buttons: [{
+                text: 'OK'.t(),
+                hidden: (typeof(interactiveMode) != "undefined" && interactiveMode == false),
+                handler: function() {
+                    if ( errorHandler) {
+                        errorHandler();
+                    } else {
+                        wnd.close();
+                    }
+                }
+            }]
+        });
+        wnd.show();
+        if(Ext.MessageBox.rendered) {
+            Ext.MessageBox.hide();
+        }
+    },
+
+    goToStartPage: function () {
+        Ext.MessageBox.wait("Redirecting to the start page...".t(), "Please wait".t());
+        window.location.href="/";
+    },
+
+    handleException: function (exception) {
+        if (Util.ignoreExceptions)
+            return;
+
+        var message = null;
+        var details = "";
+
+        if ( exception ) {
+            if ( exception.javaStack )
+                exception.name = exception.javaStack.split('\n')[0]; //override poor jsonrpc.js naming
+            if ( exception.name )
+                details += "<b>" + "Exception name".t() +":</b> " + exception.name + "<br/><br/>";
+            if ( exception.code )
+                details += "<b>" + "Exception code".t() +":</b> " + exception.code + "<br/><br/>";
+            if ( exception.message )
+                details += "<b>" + "Exception message".t() + ":</b> " + exception.message.replace(/\n/g, '<br/>') + "<br/><br/>";
+            if ( exception.javaStack )
+                details += "<b>" + "Exception java stack".t() +":</b> " + exception.javaStack.replace(/\n/g, '<br/>') + "<br/><br/>";
+            if ( exception.stack )
+                details += "<b>" + "Exception js stack".t() +":</b> " + exception.stack.replace(/\n/g, '<br/>') + "<br/><br/>";
+            if ( rpc.fullVersionAndRevision != null )
+                details += "<b>" + "Build".t() +":&nbsp;</b>" + rpc.fullVersionAndRevision + "<br/><br/>";
+            details +="<b>" + "Timestamp".t() +":&nbsp;</b>" + (new Date()).toString() + "<br/><br/>";
+            if ( exception.response )
+                details += "<b>" + "Exception response".t() +":</b> " + Ext.util.Format.stripTags(exception.response).replace(/\s+/g,'<br/>') + "<br/><br/>";
+        }
+
+        /* handle authorization lost */
+        if( exception.response && exception.response.includes("loginPage") ) {
+            message  = "Session timed out.".t() + "<br/>";
+            message += "Press OK to return to the login page.".t() + "<br/>";
+            Util.ignoreExceptions = true;
+            Util.showWarningMessage(message, details, Util.goToStartPage);
+            return;
+        }
+
+        /* handle connection lost */
+        if( exception.code==550 || exception.code == 12029 || exception.code == 12019 || exception.code == 0 ||
+            /* handle connection lost (this happens on windows only for some reason) */
+            (exception.name == "JSONRpcClientException" && exception.fileName != null && exception.fileName.indexOf("jsonrpc") != -1) ||
+            /* special text for "method not found" and "Service Temporarily Unavailable" */
+            exception.message.indexOf("method not found") != -1 ||
+            exception.message.indexOf("Service Unavailable") != -1 ||
+            exception.message.indexOf("Service Temporarily Unavailable") != -1 ||
+            exception.message.indexOf("This application is not currently available") != -1) {
+            message  = "The connection to the server has been lost.".t() + "<br/>";
+            message += "Press OK to return to the login page.".t() + "<br/>";
+            Util.ignoreExceptions = true;
+            Util.showWarningMessage(message, details, Util.goToStartPage);
+            return;
+        }
+
+        exceptionToast(exception);
+    },
+
+    exceptionToast: function (ex) {
         var msg = [];
-        if (typeof message === 'object') {
-            if (message.name && message.code) {
-                msg.push('<strong>Name:</strong> ' + message.name + ' (' + message.code + ')');
+        if (typeof ex === 'object') {
+            if (ex.name && ex.code) {
+                msg.push('<strong>Name:</strong> ' + ex.name + ' (' + ex.code + ')');
             }
-            if (message.message) {
-                msg.push('<strong>Error:</strong> ' + message.message);
+            if (ex.ex) {
+                msg.push('<strong>Error:</strong> ' + ex.ex);
+            }
+            if (ex.message) {
+                msg.push('<strong>Message:</strong> ' + ex.message);
             }
         } else {
-            msg = [message];
+            msg = [ex];
         }
         Ext.toast({
             html: '<i class="fa fa-exclamation-triangle fa-lg"></i> <span style="font-weight: bold; color: yellow;">Exception!</span><br/>' + msg.join('<br/>'),

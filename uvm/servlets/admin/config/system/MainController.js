@@ -56,9 +56,9 @@ Ext.define('Ung.config.system.MainController', {
                     Ext.MessageBox.wait('Syncing time with the internet...'.t(), 'Please wait'.t());
                     rpc.UvmContext.forceTimeSync(function (result, ex) {
                         Ext.MessageBox.hide();
-                        if (ex) { console.error(ex); Util.exceptionToast(ex); return; }
+                        if (ex) { console.error(ex); Util.handleException(ex); return; }
                         if (result !== 0) {
-                            Util.exceptionToast('Time synchronization failed. Return code:'.t() + ' ' + result);
+                            Util.handleException('Time synchronization failed. Return code:'.t() + ' ' + result);
                         } else {
                             me.getTime();
                             Util.successToast('Time was synchronized!');
@@ -87,7 +87,7 @@ Ext.define('Ung.config.system.MainController', {
         catch (ex) {
             v.setLoading(false);
             console.error(ex);
-            Util.exceptionToast(ex);
+            Util.handleException(ex);
         }
     },
 
@@ -125,7 +125,7 @@ Ext.define('Ung.config.system.MainController', {
         }, function (ex) {
             v.setLoading(false);
             console.error(ex);
-            Util.exceptionToast(ex);
+            Util.handleException(ex);
         });
     },
 
@@ -168,7 +168,7 @@ Ext.define('Ung.config.system.MainController', {
             function (btn) {
                 if (btn === 'yes') {
                     rpc.UvmContext.rebootBox(function (result, ex) {
-                        if (ex) { console.error(ex); Util.exceptionToast(Ext.String.format('Error: Unable to reboot {0} Server', rpc.companyName)); return; }
+                        if (ex) { console.error(ex); Util.handleException(Ext.String.format('Error: Unable to reboot {0} Server', rpc.companyName)); return; }
                         Ext.MessageBox.wait(
                             Ext.String.format('The {0} Server is rebooting.'.t(), rpc.companyName),
                             'Please wait'.t(), {
@@ -188,7 +188,7 @@ Ext.define('Ung.config.system.MainController', {
             function (btn) {
                 if (btn === 'yes') {
                     rpc.UvmContext.shutdownBox(function (result, ex) {
-                        if (ex) { console.error(ex); Util.exceptionToast(Ext.String.format('Error: Unable to shutdown {0} Server', rpc.companyName)); return; }
+                        if (ex) { console.error(ex); Util.handleException(Ext.String.format('Error: Unable to shutdown {0} Server', rpc.companyName)); return; }
                         Ext.MessageBox.wait(
                             Ext.String.format('The {0} Server is shutting down.'.t(), rpc.companyName),
                             'Please wait'.t(), {
@@ -220,7 +220,7 @@ Ext.define('Ung.config.system.MainController', {
                     });
                     rpc.execManager.exec(function (result, ex) {
                         Ext.MessageBox.hide();
-                        if (ex) { console.error(ex); Util.exceptionToast(ex); return; }
+                        if (ex) { console.error(ex); Util.handleException(ex); return; }
                         Ext.MessageBox.alert(
                             'Factory Defaults'.t(),
                             'All settings have been reset to factory defaults.', console.log('reload homepage'));
@@ -240,7 +240,7 @@ Ext.define('Ung.config.system.MainController', {
     restoreFromFile: function (btn) {
         var restoreFile = this.getView().down('#restoreFile').getValue();
         if (!restoreFile || restoreFile.length === 0) {
-            Util.exceptionToast('Please select a file to upload.'.t());
+            Util.handleException('Please select a file to upload.'.t());
             return;
         }
         btn.up('form').submit({
@@ -263,7 +263,7 @@ Ext.define('Ung.config.system.MainController', {
         try {
             vm.set('httpSettings', rpc.appManager.app('http').getHttpSettings());
         } catch (ex) {
-            if (ex) { console.error(ex); Util.exceptionToast(ex); return; }
+            if (ex) { console.error(ex); Util.handleException(ex); return; }
         }
     },
     getFtpSettings: function () {
@@ -271,7 +271,7 @@ Ext.define('Ung.config.system.MainController', {
         try {
             vm.set('ftpSettings', rpc.appManager.app('ftp').getFtpSettings());
         } catch (ex) {
-            if (ex) { console.error(ex); Util.exceptionToast(ex); return; }
+            if (ex) { console.error(ex); Util.handleException(ex); return; }
         }
     },
 
@@ -280,7 +280,7 @@ Ext.define('Ung.config.system.MainController', {
         try {
             vm.set('smtpSettings', rpc.appManager.app('smtp').getSmtpSettings());
         } catch (ex) {
-            if (ex) { console.error(ex); Util.exceptionToast(ex); return; }
+            if (ex) { console.error(ex); Util.handleException(ex); return; }
         }
     },
 

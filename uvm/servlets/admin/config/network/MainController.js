@@ -58,7 +58,7 @@ Ext.define('Ung.config.network.MainController', {
         }, function (ex) {
             v.setLoading(false);
             console.error(ex);
-            Util.exceptionToast(ex);
+            Util.handleException(ex);
         });
     },
 
@@ -406,7 +406,7 @@ Ext.define('Ung.config.network.MainController', {
                 try {
                     list = eval(result);
                 } catch (e) {
-                    Util.exceptionToast('Unable to get QoS statistics');
+                    Util.handleException('Unable to get QoS statistics');
                     console.error('Could not execute /usr/share/untangle-netd/bin/qos-status.py output: ', result, e);
                 }
             }).always(function () {
@@ -484,7 +484,7 @@ Ext.define('Ung.config.network.MainController', {
         text.push('' + (new Date()) + ' - ' + 'Test Started'.t() + '\n');
 
         rpc.execManager.execEvil(function (result, ex) {
-            if (ex) { console.error(ex); Util.exceptionToast(ex); return; }
+            if (ex) { console.error(ex); Util.handleException(ex); return; }
             // Save the filename.
             me.readOutput(result, text, output, btn, vm);
         }, v.getViewModel().get('command'));
@@ -498,7 +498,7 @@ Ext.define('Ung.config.network.MainController', {
         }
 
         resultReader.readFromOutput(function (res, ex) {
-            if (ex) { console.error(ex); Util.exceptionToast(ex); return; }
+            if (ex) { console.error(ex); Util.handleException(ex); return; }
             if (res !== null) {
                 text.push(res);
                 Ext.Function.defer(me.readOutput, 1000, me, [resultReader, text, output, btn, vm]);
@@ -683,7 +683,7 @@ Ext.define('Ung.config.network.MainController', {
             Ext.apply(me.editIntf, intfStatus);
         }, function (ex) {
             console.error(ex);
-            Util.exceptionToast(ex);
+            Util.handleException(ex);
         }).always(function () {
             me.dialog.setLoading(false);
         });

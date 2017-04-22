@@ -13,7 +13,7 @@ Ext.define('Ung.cmp.GoogleDrive', {
                 }
             }
         }catch(e){
-            Util.exceptionToast('isConfigured: Unable to determine \'' + e + '\'');
+            Util.handleException('isConfigured: Unable to determine \'' + e + '\'');
         }
         return googleDriveConfigured;
     },

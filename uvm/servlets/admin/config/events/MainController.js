@@ -49,7 +49,7 @@ Ext.define('Ung.config.events.MainController', {
             }) );
         }, function(ex) {
             console.error(ex);
-            Util.exceptionToast(ex);
+            Util.handleException(ex);
         }).always(function() {
             v.setLoading(false);
         });
@@ -94,7 +94,7 @@ Ext.define('Ung.config.events.MainController', {
             Util.successToast('Events'.t() + ' settings saved!');
         }, function(ex) {
             console.error(ex);
-            Util.exceptionToast(ex);
+            Util.handleException(ex);
         }).always(function() {
             view.setLoading(false);
         });

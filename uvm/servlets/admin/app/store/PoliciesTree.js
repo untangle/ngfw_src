@@ -24,7 +24,7 @@ Ext.define('Ung.store.PoliciesTree', {
         }
 
         policyManager.getSettings(function (result, ex) {
-            if (ex) { Util.exceptionToast(ex); return; }
+            if (ex) { Util.handleException(ex); return; }
             policies = result.policies.list;
 
             Ext.Array.each(policies, function (policy) {

@@ -137,7 +137,7 @@
 
                     return this.owner.then(onFulfilled, onRejected, onProgress).otherwise(function(ex) {
                         console.log(ex);
-                        Util.exceptionToast(ex);
+                        Util.handleException(ex);
 	                throw ex;
                     });
                 };

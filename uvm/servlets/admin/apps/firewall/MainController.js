@@ -13,7 +13,7 @@ Ext.define('Ung.apps.firewall.MainController', {
         v.setLoading(true);
         v.appManager.getSettings(function (result, ex) {
             v.setLoading(false);
-            if (ex) { Util.exceptionToast(ex); return; }
+            if (ex) { Util.handleException(ex); return; }
             console.log(result);
             vm.set('settings', result);
         });
@@ -41,7 +41,7 @@ Ext.define('Ung.apps.firewall.MainController', {
         v.setLoading(true);
         v.appManager.setSettings(function (result, ex) {
             v.setLoading(false);
-            if (ex) { Util.exceptionToast(ex); return; }
+            if (ex) { Util.handleException(ex); return; }
             Util.successToast('Settings saved');
             me.getSettings();
         }, vm.get('settings'));

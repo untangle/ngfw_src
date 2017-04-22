@@ -25,7 +25,7 @@ Ext.define('Ung.util.Metrics', {
     run: function () {
         var data = [];
         rpc.metricManager.getMetricsAndStats(Ext.bind(function(result, ex) {
-            if (ex) { Util.exceptionToast(ex); return; }
+            if (ex) { Util.handleException(ex); return; }
 
             data = [];
 
