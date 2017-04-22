@@ -56,7 +56,8 @@ def login(req, url=None, realm='Administrator', token=None):
 
     if token != None and get_uvm_settings_item('system','cloudEnabled'):
         if _valid_token(req, token):
-            sess = Session.Session(req)
+            sess = Session.Session(req, lock=0)
+            sess.lock()
             sess.set_timeout(uvm_login.SESSION_TIMEOUT)
             uvm_login.save_session_user(sess, realm, "token")
             sess.save()
@@ -78,7 +79,8 @@ def login(req, url=None, realm='Administrator', token=None):
         # req.log_error("User:Pass = %s %s" % (username,password))
 
         if _valid_login(req, realm, username, password):
-            sess = Session.Session(req)
+            sess = Session.Session(req, lock=0)
+            sess.lock()
             sess.set_timeout(uvm_login.SESSION_TIMEOUT)
             uvm_login.save_session_user(sess, realm, username)
             sess.save()
@@ -107,7 +109,8 @@ def login(req, url=None, realm='Administrator', token=None):
     _write_login_form(req, title, host, error_msg)
 
 def logout(req, url=None, realm='Administrator'):
-    sess = Session.Session(req)
+    sess = Session.Session(req, lock=0)
+    sess.lock()
     sess.set_timeout(uvm_login.SESSION_TIMEOUT)
     uvm_login.delete_session_user(sess, realm)
     sess.save()
