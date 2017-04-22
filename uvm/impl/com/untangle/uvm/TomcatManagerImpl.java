@@ -280,6 +280,7 @@ public class TomcatManagerImpl implements TomcatManager
             ctx.setCrossContext(true);
             ctx.setSessionTimeout(30); // 30 minutes
             ctx.setSessionCookieName(getCookieName());
+            ctx.setSessionCookiePath("/");
             if ( realm != null ) {
                 ctx.setRealm(realm);
             }

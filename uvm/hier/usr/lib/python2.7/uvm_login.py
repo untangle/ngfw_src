@@ -12,10 +12,25 @@ import urllib
 import os.path
 import sys
 import traceback
+import hashlib
 
 from mod_python import apache, Session, util
 from psycopg2 import connect
 
+def _get_cookie_name():
+    try:
+        uid=None
+        with open('@PREFIX@/usr/share/untangle/conf/uid', 'r') as uidfile:
+            uid=uidfile.read().replace('\n', '')
+            md5 = hashlib.md5()
+            md5.update(uid)
+            cookie_name = md5.hexdigest()
+            cookie_name = "auth-" + cookie_name[:8]
+            return cookie_name
+    except Exception,e:
+        raise e
+
+Session.COOKIE_NAME=_get_cookie_name()
 
 def authenhandler(req):
     if req.notes.get('authorized', 'false') == 'true':
@@ -69,9 +84,8 @@ def headerparserhandler(req):
             pass
 
     sess = Session.Session(req, lock=0)
-    sess.set_timeout(SESSION_TIMEOUT)
-
     sess.lock()
+    sess.set_timeout(SESSION_TIMEOUT)
 
     username = session_user(sess, realm)
 
@@ -89,6 +103,13 @@ def headerparserhandler(req):
         username = 'localadmin'
         log_login(req, username, True, True, None)
         save_session_user(sess, realm, username)
+
+    #if sess.has_key('apache_realms'):
+    #    apache.log_error('DEBUG apache_realms: %s' % sess['apache_realms'])
+    #    if sess['apache_realms'].has_key(realm):
+    #        apache.log_error('DEBUG apache_realms[%s]: %s' % (realm, sess['apache_realms'][realm]))
+    #else:
+    #    apache.log_error('DEBUG apache_realms: %s' % None)
 
     sess.save()
     sess.unlock()
@@ -236,9 +257,9 @@ def save_session_user(sess, realm, username):
     else:
         sess['apache_realms'] = apache_realms = {}
 
-    realm_record = {}
-    realm_record['username'] = username
-    apache_realms[realm] = realm_record
+    if not apache_realms.has_key(realm):
+        apache_realms[realm] = {}
+    apache_realms[realm]['username'] = username
 
 def setup_gettext():
     lang = get_uvm_language()
@@ -294,8 +315,11 @@ def log_login(req, login, local, succeeded, reason):
         apache.log_error('Log Exception %s' % e)
         pass
     finally:
-        if (conn != None):
-            conn.close()
+        try:
+            if (conn != None):
+                conn.close()
+        except:
+            pass
 
 def write_error_page(req, msg):
     req.content_type = "text/html; charset=utf-8"
