@@ -18,7 +18,7 @@ Ext.define('Ung.apps.sslinspector.MainController', {
             .then(function (result) {
                 vm.set('serverCertificateVerification', result);
             }, function (ex) {
-                Util.exceptionToast(ex);
+                Util.handleException(ex);
             });
         this.getSettings();
         this.getTrustedCerts();
@@ -29,7 +29,7 @@ Ext.define('Ung.apps.sslinspector.MainController', {
         v.setLoading(true);
         v.appManager.getSettings(function (result, ex) {
             v.setLoading(false);
-            if (ex) { Util.exceptionToast(ex); return; }
+            if (ex) { Util.handleException(ex); return; }
             console.log(result);
             vm.set('settings', result);
         });
@@ -57,7 +57,7 @@ Ext.define('Ung.apps.sslinspector.MainController', {
         v.setLoading(true);
         v.appManager.setSettings(function (result, ex) {
             v.setLoading(false);
-            if (ex) { Util.exceptionToast(ex); return; }
+            if (ex) { Util.handleException(ex); return; }
             Util.successToast('Settings saved');
             me.getSettings();
         }, vm.get('settings'));
@@ -67,7 +67,7 @@ Ext.define('Ung.apps.sslinspector.MainController', {
         var me = this, v = this.getView(), vm = this.getViewModel();
 
         v.appManager.getTrustCatalog(function(result, ex) {
-            if (ex) { Util.exceptionToast(ex); return; }
+            if (ex) { Util.handleException(ex); return; }
             vm.set('trustedCertData', result.list);
         });
     },
@@ -170,7 +170,7 @@ Ext.define('Ung.apps.sslinspector.SpecialGridController', {
 
         v.setLoading('Deleting Certificate...'.t());
         app.removeTrustedCertificate(Ext.bind(function(result, ex) {
-        if (ex) { Util.exceptionToast(ex); return; }
+        if (ex) { Util.handleException(ex); return; }
             // this gives the app a little time to process the delete before we refresh
             var timer = setTimeout(function() {
                 me.getView().up('app-ssl-inspector').getController().getTrustedCerts();

@@ -378,7 +378,7 @@ Ext.define('Ung.cmp.RecordEditorController', {
                         try {
                             app = rpc.appManager.app('directory-connector');
                         } catch (e) {
-                            Util.exceptionToast(e);
+                            Util.handleException(e);
                         }
                         if (app) {
                             data = app.getUserEntries().list;
@@ -426,7 +426,7 @@ Ext.define('Ung.cmp.RecordEditorController', {
                         try {
                             app = rpc.appManager.app('directory-connector');
                         } catch (e) {
-                            Util.exceptionToast(e);
+                            Util.handleException(e);
                         }
                         if (app) {
                             data = app.getGroupEntries().list;

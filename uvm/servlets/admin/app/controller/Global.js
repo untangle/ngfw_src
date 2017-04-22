@@ -183,7 +183,7 @@ Ext.define('Ung.controller.Global', {
                     me.getMainView().getViewModel().notify();
                     me.getMainView().setLoading(false);
                 }, function (ex) {
-                    Util.exceptionToast(ex);
+                    Util.handleException(ex);
                 });
             }
         });

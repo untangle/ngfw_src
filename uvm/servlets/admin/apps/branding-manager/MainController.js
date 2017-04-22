@@ -16,7 +16,7 @@ Ext.define('Ung.apps.brandingmanager.MainController', {
         v.setLoading(true);
         v.appManager.getSettings(function (result, ex) {
             v.setLoading(false);
-            if (ex) { Util.exceptionToast(ex); return; }
+            if (ex) { Util.handleException(ex); return; }
             vm.set('settings', result);
             me.originalDefaultLogo = vm.get('settings').defaultLogo;
         });
@@ -37,7 +37,7 @@ Ext.define('Ung.apps.brandingmanager.MainController', {
 
         v.appManager.setSettings(function (result, ex) {
             v.setLoading(false);
-            if (ex) { Util.exceptionToast(ex); return; }
+            if (ex) { Util.handleException(ex); return; }
             Util.successToast('Settings saved');
             me.getSettings();
         }, vm.get('settings'));

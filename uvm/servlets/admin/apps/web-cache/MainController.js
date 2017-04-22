@@ -16,7 +16,7 @@ Ext.define('Ung.apps.webcache.MainController', {
         v.setLoading(true);
         v.appManager.getSettings(function (result, ex) {
             v.setLoading(false);
-            if (ex) { Util.exceptionToast(ex); return; }
+            if (ex) { Util.handleException(ex); return; }
             console.log(result);
             vm.set('settings', result);
         });
@@ -44,7 +44,7 @@ Ext.define('Ung.apps.webcache.MainController', {
         v.setLoading(true);
         v.appManager.setSettings(function (result, ex) {
             v.setLoading(false);
-            if (ex) { Util.exceptionToast(ex); return; }
+            if (ex) { Util.handleException(ex); return; }
             Util.successToast('Settings saved');
             me.getSettings();
         }, vm.get('settings'));
@@ -53,7 +53,7 @@ Ext.define('Ung.apps.webcache.MainController', {
     statusAfterRender: function () {
         var me = this;
         me.getView().appManager.getStatistics(function (result, ex) {
-            if (ex) { Util.exceptionToast(ex); return; }
+            if (ex) { Util.handleException(ex); return; }
             me.getViewModel().set('statistics', result);
         });
     },
@@ -63,7 +63,7 @@ Ext.define('Ung.apps.webcache.MainController', {
         Ext.MessageBox.wait('Clearing Cache...'.t(), 'Please wait'.t());
         me.getView().appManager.clearSquidCache(function (result, ex) {
             Ext.MessageBox.hide();
-            if (ex) { Util.exceptionToast(ex); return; }
+            if (ex) { Util.handleException(ex); return; }
             me.lookupReference('clearCacheConsent').setValue(false);
         });
     }

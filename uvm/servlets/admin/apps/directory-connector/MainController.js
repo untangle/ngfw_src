@@ -15,7 +15,7 @@ Ext.define('Ung.apps.directory-connector.MainController', {
         v.setLoading(true);
         v.appManager.getSettings(function (result, ex) {
             v.setLoading(false);
-            if (ex) { Util.exceptionToast(ex); return; }
+            if (ex) { Util.handleException(ex); return; }
             vm.set('settings', result);
 
          });
@@ -38,7 +38,7 @@ Ext.define('Ung.apps.directory-connector.MainController', {
 
         v.appManager.setSettings(function (result, ex) {
             v.setLoading(false);
-            if (ex) { Util.exceptionToast(ex); return; }
+            if (ex) { Util.handleException(ex); return; }
             Util.successToast('Settings saved');
             me.getSettings();
         }, vm.get('settings'));
@@ -72,7 +72,7 @@ Ext.define('Ung.apps.directory-connector.MainController', {
             try {
                 this.rpc.activeDirectoryManager = v.appManager.getActiveDirectoryManager();
             } catch (e) {
-                Util.exceptionToast(e);
+                Util.handleException(e);
             }
         }
         return this.rpc.activeDirectoryManager;
@@ -84,7 +84,7 @@ Ext.define('Ung.apps.directory-connector.MainController', {
             try {
                 this.rpc.radiusManager = v.appManager.getRadiusManager();
             } catch (e) {
-                Util.exceptionToast(e);
+                Util.handleException(e);
             }
         }
         return this.rpc.radiusManager;
@@ -94,7 +94,7 @@ Ext.define('Ung.apps.directory-connector.MainController', {
         var me = this, v = this.getView(), vm = this.getViewModel();
         Ext.MessageBox.wait( "Testing...".t(), "Active Directory Test".t());
         this.getActiveDirectoryManager().getActiveDirectoryStatusForSettings( Ext.bind(function(result, exception) {
-            if (exception) { Util.exceptionToast(ex); return; }
+            if (exception) { Util.handleException(ex); return; }
             var message = result.t();
             Ext.MessageBox.alert( "Active Directory Test".t(), message);
         }, this), vm.get("settings"));
@@ -104,7 +104,7 @@ Ext.define('Ung.apps.directory-connector.MainController', {
         var me = this, v = this.getView(), vm = this.getViewModel();
         Ext.MessageBox.wait( "Obtaining users...".t(), "Active Directory Users".t());
         this.getActiveDirectoryManager().getActiveDirectoryUserEntries( Ext.bind(function( result, exception ) {
-            if (exception) { Util.exceptionToast(ex); return; }
+            if (exception) { Util.handleException(ex); return; }
 
             var userEntries = result.list;
             var usersList = "";
@@ -148,7 +148,7 @@ Ext.define('Ung.apps.directory-connector.MainController', {
 
         Ext.MessageBox.wait( "Obtaining user group map...".t(), "Active Directory Users".t());
         this.getActiveDirectoryManager().getUserGroupMap( Ext.bind(function(result, exception) {
-            if (exception) { Util.exceptionToast(ex); return; }
+            if (exception) { Util.handleException(ex); return; }
             var users = [];
             for ( var k in result.map) {
                 users.push({name: k, groups: result.map[k]});
@@ -163,7 +163,7 @@ Ext.define('Ung.apps.directory-connector.MainController', {
     activeDirectoryGroupRefreshCache: function(){
         var me = this, v = this.getView(), vm = this.getViewModel();
         v.appManager.refreshGroupCache(Ext.bind(function(result, exception) {
-            if (exception) { Util.exceptionToast(ex); return; }
+            if (exception) { Util.handleException(ex); return; }
         }, this));
     },
 
@@ -175,7 +175,7 @@ Ext.define('Ung.apps.directory-connector.MainController', {
         var password = v.down('textfield[name=radiusTestPassword]').getValue();
 
         var message = this.getRadiusManager().getRadiusStatusForSettings( Ext.bind(function(result, exception) {
-            if (exception) { Util.exceptionToast(ex); return; }
+            if (exception) { Util.handleException(ex); return; }
             var message = result.t();
             Ext.MessageBox.alert("RADIUS Test".t(), message);
         }, this), vm.get('settings'), username, password);
@@ -222,7 +222,7 @@ Ext.define('Ung.apps.directory-connector.MainController', {
                 }
 
                 v.appManager.getGoogleManager().isGoogleDriveConnected(Ext.bind(function(result, exception) {
-                    if (exception) { Util.exceptionToast(ex); return; }
+                    if (exception) { Util.handleException(ex); return; }
                     var isConnected = result;
 
                     v.down('[name=fieldsetDriveEnabled]').setVisible(isConnected);
@@ -259,7 +259,7 @@ Ext.define('Ung.apps.directory-connector.MainController', {
         var password = v.down('textfield[name=google_test_password]').getValue();
 
         var message = v.appManager.getGoogleManager().authenticateTest( Ext.bind(function(result, exception) {
-            if (exception) { Util.exceptionToast(ex); return; }
+            if (exception) { Util.handleException(ex); return; }
             var message;
             if ( result ) {
                 message = 'Login successful.'.t();
@@ -277,7 +277,7 @@ Ext.define('Ung.apps.directory-connector.MainController', {
         var password = v.down('textfield[name=facebook_test_password]').getValue();
 
         var message = v.appManager.getFacebookManager().authenticateTest( Ext.bind(function(result, exception) {
-            if (exception) { Util.exceptionToast(ex); return; }
+            if (exception) { Util.handleException(ex); return; }
             var message;
             if ( result ) {
                 message = 'Login successful.'.t();

@@ -16,7 +16,7 @@ Ext.define('Ung.apps.configurationbackup.MainController', {
         Ext.MessageBox.wait('Backing up... This may take a few minutes.'.t(), 'Please wait'.t());
         this.getView().appManager.sendBackup(function(result, ex) {
             Ext.MessageBox.hide();
-            if (ex) { Util.exceptionToast(ex); return; }
+            if (ex) { Util.handleException(ex); return; }
         });
     },
 
@@ -25,7 +25,7 @@ Ext.define('Ung.apps.configurationbackup.MainController', {
         v.setLoading(true);
         v.appManager.getSettings(function (result, ex) {
             v.setLoading(false);
-            if (ex) { Util.exceptionToast(ex); return; }
+            if (ex) { Util.handleException(ex); return; }
             vm.set('settings', result);
             var googleDrive = new Ung.cmp.GoogleDrive();
             vm.set( 'googleDriveIsConfigured', googleDrive.isConfigured() );
@@ -45,7 +45,7 @@ Ext.define('Ung.apps.configurationbackup.MainController', {
 
         v.appManager.setSettings(function (result, ex) {
             v.setLoading(false);
-            if (ex) { Util.exceptionToast(ex); return; }
+            if (ex) { Util.handleException(ex); return; }
             Util.successToast('Settings saved');
             me.getSettings();
         }, vm.get('settings'));

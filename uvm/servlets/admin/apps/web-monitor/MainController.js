@@ -13,7 +13,7 @@ Ext.define('Ung.apps.webmonitor.MainController', {
         v.setLoading(true);
         v.appManager.getSettings(function (result, ex) {
             v.setLoading(false);
-            if (ex) { Util.exceptionToast(ex); return; }
+            if (ex) { Util.handleException(ex); return; }
             vm.set('settings', result);
         });
     },
@@ -40,7 +40,7 @@ Ext.define('Ung.apps.webmonitor.MainController', {
         v.setLoading(true);
         v.appManager.setSettings(function (result, ex) {
             v.setLoading(false);
-            if (ex) { Util.exceptionToast(ex); return; }
+            if (ex) { Util.handleException(ex); return; }
             Util.successToast('Settings saved');
             me.getSettings();
         }, vm.get('settings'));
@@ -50,7 +50,7 @@ Ext.define('Ung.apps.webmonitor.MainController', {
         Ext.MessageBox.wait('Clearing Host Cache...'.t(), 'Please Wait'.t());
         this.getView().appManager.clearCache(function (result, ex) {
             Ext.MessageBox.hide();
-            if (ex) { Util.exceptionToast('There was an error clearing the host cache, please try again.'.t()); return; }
+            if (ex) { Util.handleException('There was an error clearing the host cache, please try again.'.t()); return; }
             Util.successToast('The Host Cache was cleared succesfully.'.t());
         }, true);
     }

@@ -28,7 +28,7 @@ Ext.define('Ung.apps.ipsecvpn.MainController', {
         grid.setLoading(true);
         this.getView().appManager.getVirtualUsers(function(result, ex) {
             grid.setLoading(false);
-            if (ex) { Util.exceptionToast(ex); return; }
+            if (ex) { Util.handleException(ex); return; }
             vm.set('virtualUserData', result.list);
         });
     },
@@ -39,7 +39,7 @@ Ext.define('Ung.apps.ipsecvpn.MainController', {
         grid.setLoading(true);
         this.getView().appManager.getTunnelStatus(function(result, ex) {
             grid.setLoading(false);
-            if (ex) { Util.exceptionToast(ex); return; }
+            if (ex) { Util.handleException(ex); return; }
             vm.set('tunnelStatusData', result.list);
         });
     },
@@ -49,7 +49,7 @@ Ext.define('Ung.apps.ipsecvpn.MainController', {
         v.setLoading(true);
         v.appManager.getSettings(function(result, ex) {
             v.setLoading(false);
-            if (ex) { Util.exceptionToast(ex); return; }
+            if (ex) { Util.handleException(ex); return; }
             vm.set('settings', result);
             me.calculateNetworks();
         });
@@ -77,7 +77,7 @@ Ext.define('Ung.apps.ipsecvpn.MainController', {
         v.setLoading(true);
         v.appManager.setSettings(function(result, ex) {
             v.setLoading(false);
-            if (ex) { Util.exceptionToast(ex); return; }
+            if (ex) { Util.handleException(ex); return; }
             Util.successToast('Settings saved');
             me.getSettings();
         }, vm.get('settings'));
@@ -180,7 +180,7 @@ Ext.define('Ung.apps.ipsecvpn.MainController', {
 
         v.setLoading('Disconnecting...'.t());
         ipsecApp.virtualUserDisconnect(Ext.bind(function(result, ex) {
-        if (ex) { Util.exceptionToast(ex); return; }
+        if (ex) { Util.handleException(ex); return; }
             // this gives the app a couple seconds to process the disconnect before we refresh the list
             var timer = setTimeout(function() {
                 me.getVirtualUsers();

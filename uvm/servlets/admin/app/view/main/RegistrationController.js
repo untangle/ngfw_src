@@ -46,7 +46,7 @@ Ext.define('Ung.view.main.RegistrationController', {
     finishReg: function() {
         me = this;
         rpc.UvmContext.setRegistered(function(result, ex) {
-            if (ex) { Util.exceptionToast(ex); return; }
+            if (ex) { Util.handleException(ex); return; }
             rpc.isRegistered = true;
             Ext.fireEvent('postregistration');
         });

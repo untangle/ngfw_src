@@ -16,7 +16,7 @@ Ext.define('Ung.apps.captiveportal.MainController', {
         v.setLoading(true);
         v.appManager.getSettings(function (result, ex) {
             v.setLoading(false);
-            if (ex) { Util.exceptionToast(ex); return; }
+            if (ex) { Util.handleException(ex); return; }
             console.log(result);
             vm.set('settings', result);
         });
@@ -44,7 +44,7 @@ Ext.define('Ung.apps.captiveportal.MainController', {
         v.setLoading(true);
         v.appManager.setSettings(function (result, ex) {
             v.setLoading(false);
-            if (ex) { Util.exceptionToast(ex); return; }
+            if (ex) { Util.handleException(ex); return; }
             Util.successToast('Settings saved');
             me.getSettings();
         }, vm.get('settings'));
@@ -56,7 +56,7 @@ Ext.define('Ung.apps.captiveportal.MainController', {
         grid.setLoading(true);
         this.getView().appManager.getActiveUsers(function (result, ex) {
             grid.setLoading(false);
-            if (ex) { Util.exceptionToast(ex); return; }
+            if (ex) { Util.handleException(ex); return; }
             vm.set('activeUsers', result.list);
         });
     },
@@ -163,7 +163,7 @@ Ext.define('Ung.apps.captiveportal.MainController', {
 
         if ( (vm.get('settings.useMacAddress') == true) && (macaddr != null) && (macaddr.length > 12) ) {
             v.appManager.userAdminMacLogout(Ext.bind(function(result, ex) {
-                if (exception) { Util.exceptionToast(ex); return; }
+                if (exception) { Util.handleException(ex); return; }
                 // this gives the app a couple seconds to process the disconnect before we refresh the list
                 var timer = setTimeout(function() {
                     me.getActiveUsers(view);
@@ -172,7 +172,7 @@ Ext.define('Ung.apps.captiveportal.MainController', {
             }, this), macaddr);
         } else {
             v.appManager.userAdminNetLogout(Ext.bind(function(result, ex) {
-                if (ex) { Util.exceptionToast(ex); return; }
+                if (ex) { Util.handleException(ex); return; }
                 // this gives the app a couple seconds to process the disconnect before we refresh the list
                 var timer = setTimeout(function() {
                     me.getActiveUsers(view);

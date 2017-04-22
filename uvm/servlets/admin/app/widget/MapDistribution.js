@@ -41,7 +41,7 @@ Ext.define('Ung.widget.MapDistribution', {
         if (me.chart && me.geographyManager) {
             me.geographyManager.getGeoSessionStats(function (result, ex) {
                 cb();
-                if (ex) { Util.exceptionToast(ex); return; }
+                if (ex) { Util.handleException(ex); return; }
                 for (i = 0; i < result.length; i += 1) {
                     data.push({
                         lat: result[i].latitude,

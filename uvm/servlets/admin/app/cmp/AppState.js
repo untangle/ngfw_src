@@ -71,9 +71,9 @@ Ext.define('Ung.cmp.AppState', {
                 vm.set('instance.targetState', null);
                 // stop app
                 appManager.stop(function (result, ex) {
-                    if (ex) { Util.exceptionToast(ex); return false; }
+                    if (ex) { Util.handleException(ex); return false; }
                     appManager.getRunState(function (result2, ex2) {
-                        if (ex2) { Util.exceptionToast(ex2); return false; }
+                        if (ex2) { Util.handleException(ex2); return false; }
                         vm.set('instance.targetState', result2);
                         // vm.notify();
                         btn.setDisabled(false);
@@ -97,7 +97,7 @@ Ext.define('Ung.cmp.AppState', {
                         return false;
                     }
                     appManager.getRunState(function (result2, ex2) {
-                        if (ex2) { Util.exceptionToast(ex2); return false; }
+                        if (ex2) { Util.handleException(ex2); return false; }
                         vm.set('instance.targetState', result2);
                         // vm.notify();
                         btn.setDisabled(false);

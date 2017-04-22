@@ -279,7 +279,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                         Ext.Msg.alert('Install required'.t(), Ext.String.format('To enable this Widget please install <strong>{0}</strong> app first!'.t(), entry.get('category')));
                     }
                 } else {
-                    Util.exceptionToast('This entry is not available and it should be removed!');
+                    Util.handleException('This entry is not available and it should be removed!');
                 }
 
             }
@@ -527,7 +527,7 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         // get devices
         // @todo: review this based on oler implementation
         rpc.deviceTable.getDevices(function (result, ex) {
-            if (ex) { Util.exceptionToast(ex); return false; }
+            if (ex) { Util.handleException(ex); return false; }
             vm.set('deviceCount', result.list.length);
         });
     },

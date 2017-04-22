@@ -100,7 +100,7 @@ Ext.define('Ung.config.administration.MainController', {
             });
         }, function(ex) {
             console.error(ex);
-            Util.exceptionToast(ex);
+            Util.handleException(ex);
         }).always(function() {
             v.setLoading(false);
         });
@@ -127,11 +127,11 @@ Ext.define('Ung.config.administration.MainController', {
                 var networkSettings = rpc.networkManager.getNetworkSettings();
                 vm.set('hostName', networkSettings.hostName + (networkSettings.domainName ? '.' + networkSettings.domainName : ''));
             } catch(ex) {
-                Util.exceptionToast(ex);
+                Util.handleException(ex);
             }
         }, function(ex) {
             console.error(ex);
-            Util.exceptionToast(ex);
+            Util.handleException(ex);
         }).always(function() {
             v.setLoading(false);
         });
@@ -145,7 +145,7 @@ Ext.define('Ung.config.administration.MainController', {
             .then(function (result) {
                 vm.set('rootCertificateInformation', result);
             }, function (ex) {
-                Util.exceptionToast(ex);
+                Util.handleException(ex);
             }).always(function () {
                 v.setLoading(false);
             });
@@ -159,7 +159,7 @@ Ext.define('Ung.config.administration.MainController', {
             .then(function (result) {
                 vm.set('serverCertificates', result);
             }, function (ex) {
-                Util.exceptionToast(ex);
+                Util.handleException(ex);
             }).always(function () {
                 v.setLoading(false);
             });
@@ -171,7 +171,7 @@ Ext.define('Ung.config.administration.MainController', {
     //         .then(function (result) {
     //             vm.set('serverCertificateVerification', result);
     //         }, function (ex) {
-    //             Util.exceptionToast(ex);
+    //             Util.handleException(ex);
     //         });
     // },
 
@@ -222,7 +222,7 @@ Ext.define('Ung.config.administration.MainController', {
             Util.successToast('Administration'.t() + ' settings saved!');
         }, function(ex) {
             console.error(ex);
-            Util.exceptionToast(ex);
+            Util.handleException(ex);
         }).always(function() {
             view.setLoading(false);
         });
@@ -237,7 +237,7 @@ Ext.define('Ung.config.administration.MainController', {
         try {
             netStatus = rpc.networkManager.getInterfaceStatus();
         } catch (e) {
-            Util.exceptionToast(e);
+            Util.handleException(e);
         }
 
         addressList = '';
@@ -400,7 +400,7 @@ Ext.define('Ung.config.administration.MainController', {
                     me.certDialog.close();
                     me.refreshRootCertificate();
                 }, function (ex) {
-                    Util.exceptionToast('Error during Certificate Authority generation.  Click OK to continue.'.t());
+                    Util.handleException('Error during Certificate Authority generation.  Click OK to continue.'.t());
                 }).always(function () {
                     me.certDialog.setLoading(false);
                 });
@@ -413,7 +413,7 @@ Ext.define('Ung.config.administration.MainController', {
                     me.certDialog.close();
                     me.refreshServerCertificate();
                 }, function (ex) {
-                    Util.exceptionToast('Error during certificate generation.'.t());
+                    Util.handleException('Error during certificate generation.'.t());
                 }).always(function () {
                     me.certDialog.setLoading(false);
                 });
@@ -474,7 +474,7 @@ Ext.define('Ung.config.administration.MainController', {
                             },
                             failure: function(form, action) {
                                 me.uploadDialog.close();
-                                Util.exceptionToast('Failure'.t() + '<br/>' + action.result.msg);
+                                Util.handleException('Failure'.t() + '<br/>' + action.result.msg);
                             }
                         });
                     }
@@ -507,7 +507,7 @@ Ext.define('Ung.config.administration.MainController', {
                         me.refreshServerCertificate();
                         Util.successToast('Certificate removed'.t());
                     } catch (ex) {
-                        Util.exceptionToast(ex);
+                        Util.handleException(ex);
                     }
                 }
             });

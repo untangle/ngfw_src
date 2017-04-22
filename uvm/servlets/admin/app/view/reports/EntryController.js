@@ -608,7 +608,7 @@ Ext.define('Ung.view.reports.EntryController', {
             });
         } catch (ex) {
             console.log(ex);
-            Util.exceptionToast('Unable to download!');
+            Util.handleException('Unable to download!');
         }
     },
 

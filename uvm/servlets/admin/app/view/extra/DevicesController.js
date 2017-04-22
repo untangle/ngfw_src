@@ -58,7 +58,7 @@ Ext.define('Ung.view.extra.DevicesController', {
         }).then(function(result, ex) {
              me.getDevices();
         }, function (ex) {
-            Util.exceptionToast(ex);
+            Util.handleException(ex);
         }).always(function () {
             me.getView().setLoading(false);
         });

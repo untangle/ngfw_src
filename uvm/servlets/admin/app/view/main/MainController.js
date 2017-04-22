@@ -26,7 +26,7 @@ Ext.define('Ung.view.main.MainController', {
         if(!rpc.isRegistered) {
             // Ext.MessageBox.wait('Determining Connectivity...'.t(), 'Please wait'.t());
             rpc.UvmContext.isStoreAvailable(function (result, ex) {
-                if (ex) { Util.exceptionToast(ex); }
+                if (ex) { Util.handleException(ex); }
                 // Ext.MessageBox.hide();
 
                 // If box is not online - show error message.
@@ -93,7 +93,7 @@ Ext.define('Ung.view.main.MainController', {
                     }]
                 });
             }, function (ex) {
-                Util.exceptionToast(ex);
+                Util.handleException(ex);
             });
     },
 

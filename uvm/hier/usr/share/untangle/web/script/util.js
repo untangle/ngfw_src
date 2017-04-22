@@ -121,6 +121,7 @@ Ext.define('Ung.Util', {
                     hidden: (typeof(interactiveMode) != "undefined" && interactiveMode == false),
                     items: [{
                         xtype: "button",
+                        border: false,
                         name: "details_button",
                         text: i18n._("Show details"),
                         hidden: details==null,

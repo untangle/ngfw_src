@@ -11,7 +11,7 @@ Ext.define('Ung.apps.applicationcontrol.MainController', {
     onAfterRender: function () {
         var me = this;
         me.getView().appManager.getStatistics(function (result, ex) {
-            if (ex) { Util.exceptionToast(ex); return; }
+            if (ex) { Util.handleException(ex); return; }
             console.log(result);
             me.getViewModel().set('statistics', result);
         });
@@ -23,7 +23,7 @@ Ext.define('Ung.apps.applicationcontrol.MainController', {
         v.setLoading(true);
         v.appManager.getSettings(function (result, ex) {
             v.setLoading(false);
-            if (ex) { Util.exceptionToast(ex); return; }
+            if (ex) { Util.handleException(ex); return; }
             console.log(result);
             vm.set('settings', result);
         });
@@ -51,7 +51,7 @@ Ext.define('Ung.apps.applicationcontrol.MainController', {
         v.setLoading(true);
         v.appManager.setSettings(function (result, ex) {
             v.setLoading(false);
-            if (ex) { Util.exceptionToast(ex); return; }
+            if (ex) { Util.handleException(ex); return; }
             Util.successToast('Settings saved');
             me.getSettings();
         }, vm.get('settings'));

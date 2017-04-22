@@ -32,7 +32,7 @@ Ext.define('Ung.apps.policymanager.MainController', {
         v.setLoading(true);
         v.appManager.getSettings(function (result, ex) {
             v.setLoading(false);
-            if (ex) { Util.exceptionToast(ex); return; }
+            if (ex) { Util.handleException(ex); return; }
             me.settings = result;
             vm.set('settings', result);
         });
@@ -60,7 +60,7 @@ Ext.define('Ung.apps.policymanager.MainController', {
         v.setLoading(true);
         v.appManager.setSettings(function (result, ex) {
             v.setLoading(false);
-            if (ex) { Util.exceptionToast(ex); return; }
+            if (ex) { Util.handleException(ex); return; }
             Util.successToast('Settings saved');
             me.getSettings();
         }, vm.get('settings'));
@@ -202,7 +202,7 @@ Ext.define('Ung.apps.policymanager.MainController', {
         // view.setLoading(true);
         me.getView().appManager.setSettings(function (result, ex) {
             // view.setLoading(false);
-            if (ex) { Util.exceptionToast(ex); return; }
+            if (ex) { Util.handleException(ex); return; }
             if (me.selectedPolicyId === record.get('policyId')) {
                 me.selectedPolicyId = null;
                 vm.set('appsData', []);
@@ -324,7 +324,7 @@ Ext.define('Ung.apps.policymanager.MainController', {
         win.setLoading(true);
         me.getView().appManager.setSettings(function (result, ex) {
             win.setLoading(false);
-            if (ex) { Util.exceptionToast(ex); return; }
+            if (ex) { Util.handleException(ex); return; }
             if (btn.action === 'add') {
                 me.selectedPolicyId = values.policyId;
             }

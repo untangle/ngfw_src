@@ -13,7 +13,7 @@ Ext.define('Ung.apps.adblocker.MainController', {
         v.setLoading(true);
         v.appManager.getSettings(function (result, ex) {
             v.setLoading(false);
-            if (ex) { Util.exceptionToast(ex); return; }
+            if (ex) { Util.handleException(ex); return; }
             console.log(result);
             vm.set('settings', result);
         });
@@ -41,7 +41,7 @@ Ext.define('Ung.apps.adblocker.MainController', {
         v.setLoading(true);
         v.appManager.setSettings(function (result, ex) {
             v.setLoading(false);
-            if (ex) { Util.exceptionToast(ex); return; }
+            if (ex) { Util.handleException(ex); return; }
             Util.successToast('Settings saved');
             me.getSettings();
         }, vm.get('settings'));
@@ -52,7 +52,7 @@ Ext.define('Ung.apps.adblocker.MainController', {
         Ext.MessageBox.wait("Updating filters...".t(), "Please wait".t());
         this.getView().appManager.updateList(function(result,ex) {
             Ext.MessageBox.hide();
-            if (ex) { console.error(ex); Util.exceptionToast(ex); return; }
+            if (ex) { console.error(ex); Util.handleException(ex); return; }
             me.getSettings();
         });
     }
