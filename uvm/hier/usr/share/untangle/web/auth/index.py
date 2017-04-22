@@ -66,7 +66,10 @@ def login(req, url=None, realm='Administrator', token=None):
                 return apache.OK
             else:
                 url = re.sub('[^A-Za-z0-9-_/.#?=]','',url) # sanitize input
-                util.redirect(req, url, text="Login Successful")
+                if req.form.has_key('fragment') and req.form['fragment'] != '':
+                    url = url + req.form['fragment']
+                util.redirect(req, url)
+                return
 
     if req.form.has_key('username') and req.form.has_key('password'):
         username = req.form['username']
@@ -85,7 +88,10 @@ def login(req, url=None, realm='Administrator', token=None):
                 return apache.OK
             else:
                 url = re.sub('[^A-Za-z0-9-_/.#?=]','',url) # sanitize input
-                util.redirect(req, url, text="Login Successful")
+                if req.form.has_key('fragment') and req.form['fragment'] != '':
+                    url = url + req.form['fragment']
+                util.redirect(req, url)
+                return
 
     company_name = uvm_login.get_company_name()
     title = _("Administrator Login")
@@ -111,7 +117,8 @@ def logout(req, url=None, realm='Administrator'):
         return apache.OK
     else:
         url = re.sub('[^A-Za-z0-9-_/.#?=]','',url) # sanitize input
-        util.redirect(req, url, text="Logout Successfull")
+        util.redirect(req, url)
+        return
 
 # internal methods ------------------------------------------------------------
 
@@ -263,13 +270,15 @@ def _write_login_form(req, title, host, error_msg):
         <p class="server">%s</p>
         <div class="banner">%s</div>
         <p class="error">%s</p>
-        <input id="username" type="text" name="username" value="%s" placeholder="%s"/>
+        <input id="fragment" type="hidden"   name="fragment" value=""/>
+        <input id="username" type="text"     name="username" value="%s" placeholder="%s"/>
         <input id="password" type="password" name="password" placeholder="%s"/>
         <button type="submit">%s</button>
     </form>
 </div>
 
 <script type="text/javascript">document.getElementById('%s').focus();</script>
+<script type="text/javascript">document.getElementById('fragment').value=window.location.hash;</script>
 
 </body>
 </html>""" % (title, login_url, title, host, banner_msg, error_msg, default_username, username_str, password_str, login_str, focus_field_id)
