@@ -12,25 +12,9 @@ import urllib
 import os.path
 import sys
 import traceback
-import hashlib
 
 from mod_python import apache, Session, util
 from psycopg2 import connect
-
-def _get_cookie_name():
-    try:
-        uid=None
-        with open('@PREFIX@/usr/share/untangle/conf/uid', 'r') as uidfile:
-            uid=uidfile.read().replace('\n', '')
-            md5 = hashlib.md5()
-            md5.update(uid)
-            cookie_name = md5.hexdigest()
-            cookie_name = "auth-" + cookie_name[:8]
-            return cookie_name
-    except Exception,e:
-        raise e
-
-Session.COOKIE_NAME=_get_cookie_name()
 
 def authenhandler(req):
     if req.notes.get('authorized', 'false') == 'true':

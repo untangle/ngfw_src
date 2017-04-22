@@ -10,6 +10,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.charset.StandardCharsets;
+import java.nio.charset.Charset;
 import java.net.JarURLConnection;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -208,6 +213,7 @@ public class TomcatManagerImpl implements TomcatManager
     protected void apacheReload()
     {
         writeIncludes();
+        writeModPythonConf();
 
         UvmContextFactory.context().execManager().exec("/usr/sbin/service apache2 reload");
     }
@@ -279,7 +285,7 @@ public class TomcatManagerImpl implements TomcatManager
 
             ctx.setCrossContext(true);
             ctx.setSessionTimeout(30); // 30 minutes
-            ctx.setSessionCookieName(getCookieName());
+            ctx.setSessionCookieName("session-"+getCookieSuffix());
             ctx.setSessionCookiePath("/");
             if ( realm != null ) {
                 ctx.setRealm(realm);
@@ -329,6 +335,26 @@ public class TomcatManagerImpl implements TomcatManager
         }
     }
 
+    private void writeModPythonConf()
+    {
+        try {
+            Path path = Paths.get("/etc/apache2/mods-available/python.load");
+            Charset charset = StandardCharsets.UTF_8;
+
+            /**
+             * Change the standard cookie name to something unique per server
+             */
+            String content = new String(Files.readAllBytes(path), charset);
+            String newContent = content.replaceAll("authsession", "auth-"+getCookieSuffix());
+            if (content.hashCode() != newContent.hashCode()) {
+                logger.info("Writing new /etc/apache2/mods-available/python.load");
+                Files.write(path, newContent.getBytes(charset));
+            }
+        } catch (Exception e) {
+            logger.warn("Failed to set python cookie name",e);
+        }
+    }
+
     private String getSecret()
     {
         Properties p = new Properties();
@@ -365,7 +391,7 @@ public class TomcatManagerImpl implements TomcatManager
      * So the cookie for this machine will be stored in "session-3e9f381d", for
      * example.
      */
-    private static String getCookieName()
+    private static String getCookieSuffix()
     {
         java.security.MessageDigest md;
         try {
@@ -374,6 +400,7 @@ public class TomcatManagerImpl implements TomcatManager
             logger.warn( "Unknown Algorith MD5", e);
             return "session";
         }
+
         String uid = UvmContextImpl.context().getServerUID().trim();
         if ( uid == null ) {
             logger.warn( "Missing UID!");
@@ -386,9 +413,7 @@ public class TomcatManagerImpl implements TomcatManager
             if (c < 0) c = c + 0x100;
             cookieName += String.format("%02x", c);
         }
-
-        cookieName = "session-" + cookieName.substring(0,8);
-        return cookieName;
+        return cookieName.substring(0,8);
     }
 
     private class AdministrationValve extends ValveBase
