@@ -4,7 +4,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-        <title>Untangle</title>
+        <title>${companyName}</title>
 
         <!-- JsonRPC -->
         <script src="/jsonrpc/jsonrpc.js"></script>
