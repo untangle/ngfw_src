@@ -254,7 +254,7 @@ Ext.define('Ung.util.Util', {
             return;
         }
 
-        exceptionToast(exception);
+        Util.exceptionToast(exception);
     },
 
     exceptionToast: function (ex) {
