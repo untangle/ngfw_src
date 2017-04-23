@@ -46,6 +46,13 @@ Ext.define('Ung.config.upgrade.Main', {
         },
 
         items: [{
+            xtype: "button",
+            name: 'upgradeButton',
+            hidden: true,
+            text: "Upgrade".t(),
+            iconCls: "icon-upgrade",
+            handler: 'downloadUpgrades'
+        }, {
             title: 'Automatic Upgrade'.t(),
             items: [{
                 xtype: 'radiogroup',
