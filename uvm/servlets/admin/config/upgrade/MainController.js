@@ -36,8 +36,7 @@ Ext.define('Ung.config.upgrade.MainController', {
 
     checkUpgrades: function () {
         var v = this.getView();
-        rpc.systemManager.upgradesAvailable(function (result, ex) {
-            if (ex) { Util.handleException(ex); return; }
+        Rpc.asyncData('rpc.systemManager.upgradesAvailable').then(function (result) {
             console.log(result);
             if(result) {
                 var upgradeButton = v.down('[name="upgradeButton"]');
@@ -49,46 +48,47 @@ Ext.define('Ung.config.upgrade.MainController', {
     },
 
     downloadUpgrades: function() {
+        var me = this;
         Ext.MessageBox.progress("Downloading packages... Please wait".t(), ".");
         this.checkDownloadStatus=true;
 
-        rpc.systemManager.downloadUpgrades(Ext.bind(function(result, ex) {
-            if (ex) { Util.handleException(ex); return; }
-            this.checkDownloadStatus=false;
+        Rpc.asyncData('rpc.systemManager.downloadUpgrades').then(function(result) {
+            me.checkDownloadStatus=false;
 
             console.log("rpc.systemManager.downloadUpgrades()", result);
             Ext.MessageBox.hide();
             if(result) {
-                this.upgrade();
+                me.upgrade();
             } else {
                 Ext.MessageBox.alert("Warning".t(), "Downloading upgrades failed.".t());
             }
-        }, this));
-        this.getDownloadStatus();
+        });
+        me.getDownloadStatus();
     },
 
     getDownloadStatus: function() {
-        if(!this.checkDownloadStatus) {
+        var me = this;
+        if(!me.checkDownloadStatus) {
             return;
         }
-        rpc.systemManager.getDownloadStatus(Ext.bind(function(result, ex) {
-            if (ex) { Util.handleException(ex); return; }
-            if(!this.checkDownloadStatus) {
+
+        Rpc.asyncData('rpc.systemManager.getDownloadStatus').then(function(result) {
+            if(!me.checkDownloadStatus) {
                 return;
             }
             var text=Ext.String.format("Package: {0} of {1}<br/>Speed: {2}".t(),
-                       result.downloadCurrentFileCount,
-                       result.downloadTotalFileCount,
-                       result.downloadCurrentFileRate);
-            if(!Ext.MessageBox.isVisible() || Ext.MessageBox.title!=this.msgTitle) {
-                Ext.MessageBox.progress(this.msgTitle, text);
+                                       result.downloadCurrentFileCount,
+                                       result.downloadTotalFileCount,
+                                       result.downloadCurrentFileRate);
+            if(!Ext.MessageBox.isVisible() || Ext.MessageBox.title!=me.msgTitle) {
+                Ext.MessageBox.progress(me.msgTitle, text);
             }
             var downloadCurrentFileProgress = 0;
             if(result.downloadCurrentFileProgress!=null && result.downloadCurrentFileProgress.length>0) {
                 try {
                     downloadCurrentFileProgress = parseFloat(result.downloadCurrentFileProgress.replace("%",""))/100;
                 } catch (e) {
-                }
+                    }
             }
             var downloadCurrentFileIndex = parseFloat(result.downloadCurrentFileCount);
             if(downloadCurrentFileIndex > 0) {
@@ -98,8 +98,8 @@ Ext.define('Ung.config.upgrade.MainController', {
             //console.log("downloadCurrentFileProgress:", downloadCurrentFileProgress,"currentPercentComplete",currentPercentComplete,"downloadCurrentFileCount",result.downloadCurrentFileCount);
             var progressIndex = parseFloat(0.99 * currentPercentComplete);
             Ext.MessageBox.updateProgress(progressIndex, "", text);
-            window.setTimeout( Ext.bind(this.getDownloadStatus, this), 500 );
-        }, this));
+            window.setTimeout( Ext.bind(me.getDownloadStatus, me), 500 );
+        });
     },
 
     upgrade: function () {
@@ -108,13 +108,11 @@ Ext.define('Ung.config.upgrade.MainController', {
 
         console.log("Applying Upgrades...");
 
-        Ext.MessageBox.wait({
-            title: "Please wait".t(),
-            msg: "Applying Upgrades...".t()
+        Ext.MessageBox.wait("Please wait".t(),"Launching Upgrades...".t(),{
+            interval: 1000,
+            increment: 200,
+            duration: 180000
         });
-
-        var doneFn = Ext.bind(function () {
-        }, this);
 
         rpc.systemManager.upgrade(Ext.bind(function (result, exception) {
             // the upgrade will shut down the untangle-vm so often this returns an exception
@@ -127,10 +125,10 @@ Ext.define('Ung.config.upgrade.MainController', {
 
             // the untangle-vm is shutdown, just show a message dialog box for 45 seconds so the user won't poke at things.
             // then refresh browser.
-            applyingUpgradesWindow.wait("Applying Upgrades...".t(), "Please wait".t(), {
-                interval: 500,
-                increment: 120,
-                duration: 120000,
+            applyingUpgradesWindow.wait("Upgrades in Progress...".t(), "Please wait".t(), {
+                interval: 1000,
+                increment: 200,
+                duration: 180000,
                 scope: this,
                 fn: function () {
                     console.log("Upgrade in Progress. Press ok to go to the Start Page...");
