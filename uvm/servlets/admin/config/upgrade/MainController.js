@@ -80,8 +80,8 @@ Ext.define('Ung.config.upgrade.MainController', {
                                        result.downloadCurrentFileCount,
                                        result.downloadTotalFileCount,
                                        result.downloadCurrentFileRate);
-            if(!Ext.MessageBox.isVisible() || Ext.MessageBox.title!=me.msgTitle) {
-                Ext.MessageBox.progress(me.msgTitle, text);
+            if(!Ext.MessageBox.isVisible()) {
+                Ext.MessageBox.progress("Downloading packages... Please wait".t(), text);
             }
             var downloadCurrentFileProgress = 0;
             if(result.downloadCurrentFileProgress!=null && result.downloadCurrentFileProgress.length>0) {
