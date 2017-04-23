@@ -209,25 +209,28 @@ Ext.define('Ung.util.Util', {
         var message = null;
         var details = "";
 
-        if ( exception ) {
-            if ( exception.javaStack )
-                exception.name = exception.javaStack.split('\n')[0]; //override poor jsonrpc.js naming
-            if ( exception.name )
-                details += "<b>" + "Exception name".t() +":</b> " + exception.name + "<br/><br/>";
-            if ( exception.code )
-                details += "<b>" + "Exception code".t() +":</b> " + exception.code + "<br/><br/>";
-            if ( exception.message )
-                details += "<b>" + "Exception message".t() + ":</b> " + exception.message.replace(/\n/g, '<br/>') + "<br/><br/>";
-            if ( exception.javaStack )
-                details += "<b>" + "Exception java stack".t() +":</b> " + exception.javaStack.replace(/\n/g, '<br/>') + "<br/><br/>";
-            if ( exception.stack )
-                details += "<b>" + "Exception js stack".t() +":</b> " + exception.stack.replace(/\n/g, '<br/>') + "<br/><br/>";
-            if ( rpc.fullVersionAndRevision != null )
-                details += "<b>" + "Build".t() +":&nbsp;</b>" + rpc.fullVersionAndRevision + "<br/><br/>";
-            details +="<b>" + "Timestamp".t() +":&nbsp;</b>" + (new Date()).toString() + "<br/><br/>";
-            if ( exception.response )
-                details += "<b>" + "Exception response".t() +":</b> " + Ext.util.Format.stripTags(exception.response).replace(/\s+/g,'<br/>') + "<br/><br/>";
+        if ( !exception ) {
+            console.log("Null Exception!");
+            return;
         }
+
+        if ( exception.javaStack )
+            exception.name = exception.javaStack.split('\n')[0]; //override poor jsonrpc.js naming
+        if ( exception.name )
+            details += "<b>" + "Exception name".t() +":</b> " + exception.name + "<br/><br/>";
+        if ( exception.code )
+            details += "<b>" + "Exception code".t() +":</b> " + exception.code + "<br/><br/>";
+        if ( exception.message )
+            details += "<b>" + "Exception message".t() + ":</b> " + exception.message.replace(/\n/g, '<br/>') + "<br/><br/>";
+        if ( exception.javaStack )
+            details += "<b>" + "Exception java stack".t() +":</b> " + exception.javaStack.replace(/\n/g, '<br/>') + "<br/><br/>";
+        if ( exception.stack )
+            details += "<b>" + "Exception js stack".t() +":</b> " + exception.stack.replace(/\n/g, '<br/>') + "<br/><br/>";
+        if ( rpc.fullVersionAndRevision != null )
+            details += "<b>" + "Build".t() +":&nbsp;</b>" + rpc.fullVersionAndRevision + "<br/><br/>";
+        details +="<b>" + "Timestamp".t() +":&nbsp;</b>" + (new Date()).toString() + "<br/><br/>";
+        if ( exception.response )
+            details += "<b>" + "Exception response".t() +":</b> " + Ext.util.Format.stripTags(exception.response).replace(/\s+/g,'<br/>') + "<br/><br/>";
 
         /* handle authorization lost */
         if( exception.response && exception.response.includes("loginPage") ) {
