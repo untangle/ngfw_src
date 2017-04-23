@@ -47,10 +47,12 @@ Ext.define('Ung.config.upgrade.Main', {
 
         items: [{
             xtype: "button",
+            padding: '5',
+            margin: 20,
             name: 'upgradeButton',
             hidden: true,
-            text: "Upgrade".t(),
-            iconCls: "icon-upgrade",
+            text: "Upgrade Now".t(),
+            iconCls: 'fa fa-play',
             handler: 'downloadUpgrades'
         }, {
             title: 'Automatic Upgrade'.t(),
