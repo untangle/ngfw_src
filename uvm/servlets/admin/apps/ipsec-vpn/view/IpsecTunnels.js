@@ -65,14 +65,6 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         width: 150,
         dataIndex: 'right',
     }, {
-        header: 'Local Identifier'.t(),
-        width: 150,
-        dataIndex: 'leftid',
-    }, {
-        header: 'Remote Identifier'.t(),
-        width: 150,
-        dataIndex: 'rightid',
-    }, {
         header: 'Local Network'.t(),
         width: 200,
         dataIndex: 'leftSubnet',
@@ -83,8 +75,8 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
     }, {
         header: 'Description'.t(),
         width:300,
-        flex: 1,
         dataIndex: 'description',
+        flex: 1,
     }],
 
     editorHeight: Ext.getBody().getViewSize().height - 60,
