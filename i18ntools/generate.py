@@ -72,9 +72,12 @@ def get_keys(module):
                 # So we grep for t() to only process lines with t() on it.
                 # We also remove empty strings so xgettext wont complain
                 # and also remove all \r and \n from inside strings
-                # print '''/bin/grep -F '.t()' %s | sed 's/\\\\r//g' | sed 's/\\\\n//g' | /bin/grep -v -F "''" | /bin/grep -v -F '""' | xgettext -j -LJavascript --no-location -a -o %s -'''%(full_file_name,pot.file_name)
-                call( '''/bin/grep -F '.t()' %s | sed 's/\\\\r//g' | sed 's/\\\\n//g' | /bin/grep -v -F "''" | /bin/grep -v -F '""' | xgettext -j -LJavascript --no-location -a -o %s -'''%(full_file_name,pot.file_name), shell=True)
 
+                # print '''/bin/cat %s | sed 's/\\\\r//g' | sed 's/\\\\n//g' | perl -pe 's/"(.*?)".t\(\)/_("\1")/g' | perl -pe "s/'(.*?)'.t\(\)/_('\1')/g" | xgettext -j -LJavascript --no-location -o %s -'''%(full_file_name,pot.file_name)
+                call( '''/bin/cat %s | sed 's/\\\\r//g' | sed 's/\\\\n//g' | perl -pe 's/"(.*?)".t\(\)/_("\1")/g' | perl -pe "s/'(.*?)'.t\(\)/_('\1')/g" | xgettext -j -LJavascript --no-location -o %s -'''%(full_file_name,pot.file_name), shell=True)
+
+
+                
         for file_name in fnmatch.filter(file_names, '*.py'):
             full_file_name = root + "/" + file_name
             call([
