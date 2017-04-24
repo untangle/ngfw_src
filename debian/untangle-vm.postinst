@@ -28,6 +28,11 @@ if [ -x "/etc/init.d/untangle-vm" ]; then
     update-rc.d untangle-vm defaults 95 5 > /dev/null
 fi
 
+# restore OEM settings if they exist
+if [ -f /usr/share/untangle/bin/oem-apply.sh ] ; then
+    /usr/share/untangle/bin/oem-apply.sh
+fi
+
 # 12.1 upgrade
 sed -e 's/stable-120\s/stable-121 /g' -i /etc/apt/sources.list.d/untangle.list
 sed -e 's/stable-120x\s/stable-121 /g' -i /etc/apt/sources.list.d/untangle.list
