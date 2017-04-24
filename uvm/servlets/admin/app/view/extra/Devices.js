@@ -70,6 +70,7 @@ Ext.define('Ung.view.extra.Devices', {
             macAddress: '',
             macVendor: '',
             hostname: '',
+            hostnameLastKnown: '',
             interfaceId: -1,
             lastSessionTime: 0,
             tags: {
@@ -108,6 +109,14 @@ Ext.define('Ung.view.extra.Devices', {
                     return Ext.String.format('Interface [{0}]'.t(), value);
                 }
                 return intf + ' [' + value + ']';
+            }
+        }, {
+            header: 'Last Hostname'.t(),
+            dataIndex: 'hostnameLastKnown',
+            width: 120,
+            editor: {
+                xtype: 'textfield',
+                emptyText: ''.t()
             }
         }, {
             header: 'Hostname'.t(),
@@ -169,6 +178,11 @@ Ext.define('Ung.view.extra.Devices', {
             bind: '{record.macVendor}',
             fieldLabel: 'MAC Vendor'.t(),
             emptyText: '[no MAC Vendor]'.t(),
+        }, {
+            xtype: 'textfield',
+            bind: '{record.hostnameLastKnown}',
+            fieldLabel: 'Last Hostname'.t(),
+            emptyText: '[no last hostname]'.t(),
         }, {
             xtype: 'textfield',
             bind: '{record.hostname}',
