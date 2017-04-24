@@ -9,7 +9,7 @@ Ext.define('Ung.apps.ipsecvpn.view.VpnConfig', {
            _btnConfigureDirectory: function (get) {
                 switch (get('settings.authenticationType')) {
                 case 'LOCAL_DIRECTORY': return 'Configure Local Directory'.t();
-                case 'RADIUS': return 'Configure RADIUS'.t();
+                case 'RADIUS_SERVER': return 'Configure RADIUS'.t();
                 default: return '';
                 }
             }
@@ -74,7 +74,7 @@ Ext.define('Ung.apps.ipsecvpn.view.VpnConfig', {
         vertical: true,
         items: [
             { boxLabel: '<strong>' + 'Local Directory'.t() + '</strong>', inputValue: 'LOCAL_DIRECTORY' },
-            { boxLabel: '<strong>' + 'RADIUS'.t() + '</strong> (' + 'requires'.t() + ' Directory Connector)', inputValue: 'RADIUS' }
+            { boxLabel: '<strong>' + 'RADIUS'.t() + '</strong> (' + 'requires'.t() + ' Directory Connector)', inputValue: 'RADIUS_SERVER' }
         ]
     },{
         xtype: 'button',
