@@ -108,6 +108,9 @@ task :targets => :download do
   require "#{SRC_HOME}/wan-failover/package.rb"
   require "#{SRC_HOME}/web-cache/package.rb"
   require "#{SRC_HOME}/license/package.rb"
+  if File.exists?("#{SRC_HOME}/plugins/package.rb")
+    require "#{SRC_HOME}/plugins/package.rb"
+  end
 end
 
 task :build => [:builduvmcore, :targets] do
