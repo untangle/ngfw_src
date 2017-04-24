@@ -118,7 +118,7 @@ Ext.define('Ung.view.extra.Devices', {
                 emptyText: '[no hostname]'.t()
             }
         }, {
-            header: 'Device Username'.t(),
+            header: 'Username'.t(),
             dataIndex: 'username',
             width: 150,
             editor: {

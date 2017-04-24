@@ -239,6 +239,13 @@ public class DeviceTableEntry implements Serializable, JSONString
         updateEvent( "username", this.username, newValue );
         this.username = newValue;
     }
+
+    /* 13.0 Deprecated */
+    public String getDeviceUsername() { return null; }
+    public void setDeviceUsername( String newValue )
+    {
+        setUsername( newValue );
+    }
     
     /**
      * Utility method to check that hostname is known
