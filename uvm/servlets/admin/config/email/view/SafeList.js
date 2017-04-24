@@ -53,7 +53,7 @@ Ext.define('Ung.config.email.view.SafeList', {
         }]
     }, {
         xtype: 'grid',
-        reference: 'userSafeList',
+        reference: 'userSafeListGrid',
         region: 'east',
 
         width: '50%',
@@ -76,7 +76,7 @@ Ext.define('Ung.config.email.view.SafeList', {
             handler: 'purgeUserSafeList',
             disabled: true,
             bind: {
-                disabled: '{!userSafeList.selection}'
+                disabled: '{!userSafeListGrid.selection}'
             }
         }],
 
