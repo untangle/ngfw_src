@@ -17,10 +17,12 @@ Ext.define('Ung.cmp.AppPanel', {
         },
         items: Ext.Array.insert(Ext.clone(Util.subNav), 0, [{
             xtype: 'button',
-            text: 'Back to Apps',
             iconCls: 'fa fa-arrow-circle-left fa-lg',
             hrefTarget: '_self',
-            bind: { href: '#apps/{policyId}' }
+            bind: {
+                text: 'Back to Apps (<strong>{policyName}</strong>)',
+                href: '#apps/{policyId}'
+            }
         }, '-', {
             xtype: 'component',
             padding: '0 5',
@@ -69,11 +71,23 @@ Ext.define('Ung.cmp.AppPanel', {
         },
 
         afterrender: function (tabPanel) {
+            var vm = tabPanel.getViewModel();
             var helpSource = tabPanel.getViewModel().get('props.name').replace(/-/g, '_');
             var currentCard = tabPanel.getActiveTab();
             if (currentCard.getItemId() !== 'status') {
                 helpSource += '_' + currentCard.getItemId();
             }
+
+            // add policy name in the tabbar, needs a small delay for policiestree to be available
+            Ext.defer(function () {
+                try {
+                    var p = Ext.getStore('policiestree').findRecord('policyId', vm.get('policyId'));
+                    vm.set('policyName', p.get('name'));
+                } catch (ex) {
+                    vm.set('policyName', '');
+                }
+
+            }, 500);
             tabPanel.down('#helpBtn').setHref(rpc.helpUrl + '?source=' + helpSource + '&' + Util.getAbout());
         }
     }
