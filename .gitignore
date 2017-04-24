@@ -1,7 +1,9 @@
 dist/*
 staging/*
+i18ntools/pot
 taskstamps.txt
 downloads/output
+*.pyc
 *~
 \#*#
 .#*
