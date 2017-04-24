@@ -84,7 +84,9 @@ Ext.define('Ung.config.system.view.Support', {
                 margin: '0 0 0 10',
                 text: 'Setup Wizard'.t(),
                 iconCls: 'fa fa-magic',
-                handler: 'setupWizard'
+                handler: function() {
+                    location.assign('/setup');
+                }
             }]
         }]
     }, {

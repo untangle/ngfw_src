@@ -202,10 +202,6 @@ Ext.define('Ung.config.system.MainController', {
             });
     },
 
-    setupWizard: function () {
-        Ext.Msg.alert('Status', 'Not yet implemented!');
-    },
-
     factoryDefaults: function () {
         Ext.MessageBox.confirm('Reset to Factory Defaults Warning'.t(),
             'This will RESET ALL SETTINGS to factory defaults. ALL current settings WILL BE LOST.'.t(),
