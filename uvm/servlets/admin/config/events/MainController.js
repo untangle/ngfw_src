@@ -282,9 +282,10 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
             windowTitle = 'Edit'.t();
         }
 
-        this.massageRecordIn(v.record);
+        vm.set('originalConditions', Ext.clone( v.record.get('conditions')) );
 
-        this.getViewModel().set({
+        this.massageRecordIn(v.record);
+        vm.set({
             record: ( this.action == 'add' ) ? v.record : v.record.copy(null),
             windowTitle: windowTitle
         });
@@ -368,7 +369,8 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
 
     onCancel: function () {
         var v = this.getView(),
-            vm = this.getViewModel();
+            vm = this.getViewModel(),
+            condStore;
 
         if (v.down('grid')) {
             condStore = v.down('grid').getStore();
@@ -377,6 +379,7 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
             for (var field in record.modified) {
                 v.record.set(field, record.get(field));
             }
+            v.record.set('conditions', vm.get('originalConditions') );
             v.record.commit();
         }
         this.getView().close();
