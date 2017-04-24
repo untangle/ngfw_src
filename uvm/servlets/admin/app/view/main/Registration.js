@@ -64,7 +64,7 @@ Ext.define('Ung.view.main.Registration', {
             items: [{
                 height: 100,
                 bodyCls: 'branding',
-                html: '<img src="/images/BrandingLogo.png?' + (new Date()).getTime() + '" border=0/>'
+                html: Ext.String.format('<img src="/images/BrandingLogo.png?%s" border=0/>',(new Date()).getTime())
             }, {
                 xtype: 'button',
                 baseCls: 'reg-close',

@@ -53,7 +53,7 @@ Ext.define('Ung.apps.sslinspector.view.Rules', {
                 switch (act.actionType) {
                 case 'INSPECT': return 'Inspect'.t();
                 case 'IGNORE': return 'Ignore'.t();
-                default: return 'Unknown Action: '.t() + act;
+                default: return 'Unknown Action'.t() + ': ' + act;
                 }
             }
         }

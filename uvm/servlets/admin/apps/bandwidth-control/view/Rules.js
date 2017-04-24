@@ -78,7 +78,7 @@ Ext.define('Ung.apps.bandwidthcontrol.view.Rules', {
                   case 'GIVE_CLIENT_HOST_QUOTA': return 'Give Client a Quota'.t();
                   case 'GIVE_HOST_QUOTA': return 'Give Host a Quota'.t();
                   case 'GIVE_USER_QUOTA': return 'Give User a Quota'.t();
-                default: return 'Unknown Action: ' + value;
+                default: return 'Unknown Action'.t() + ': ' + value;
                 }
             }
         }
