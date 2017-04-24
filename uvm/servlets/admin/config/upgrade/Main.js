@@ -95,9 +95,9 @@ Ext.define('Ung.config.upgrade.Main', {
                     { boxLabel: 'Monday'.t(), name: 'cb', inputValue: '2' },
                     { boxLabel: 'Tuesday'.t(), name: 'cb', inputValue: '3' },
                     { boxLabel: 'Wednesday'.t(), name: 'cb', inputValue: '4' },
-                    { boxLabel: 'Thursday', name: 'cb', inputValue: '5' },
-                    { boxLabel: 'Friday', name: 'cb', inputValue: '6' },
-                    { boxLabel: 'Saturday', name: 'cb', inputValue: '7' }
+                    { boxLabel: 'Thursday'.t(), name: 'cb', inputValue: '5' },
+                    { boxLabel: 'Friday'.t(), name: 'cb', inputValue: '6' },
+                    { boxLabel: 'Saturday'.t(), name: 'cb', inputValue: '7' }
                 ]
             }, {
                 xtype: 'timefield',

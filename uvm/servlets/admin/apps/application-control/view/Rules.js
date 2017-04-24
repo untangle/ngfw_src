@@ -62,7 +62,7 @@ Ext.define('Ung.apps.applicationcontrol.view.Rules', {
                 case 'ALLOW': return 'Allow'.t();
                 case 'BLOCK': return 'Block'.t();
                 case 'TARPIT': return 'Tarpit'.t();
-                default: return 'Unknown Action: '.t() + act;
+                default: return 'Unknown Action'.t() + ': ' + act;
                 }
             }
         }

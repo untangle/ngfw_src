@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-01-04 11:26-0700\n"
-"PO-Revision-Date: 2017-04-23 18:56\n"
+"PO-Revision-Date: 2017-04-23 20:13\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: ja\n"
@@ -11988,5 +11988,1005 @@ msgid "Sessions Inspected"
 msgstr ""
 
 #: Status: UNVERIFIED
-msgid ""
+msgid "HTTP User Agent"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Captive Portal Authenticated"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Tags String"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Hostname Source"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Hostname (Device Last Known)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Hostname (OpenVPN)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Username (Directory Connector)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Username (Captive Porrtal)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Username (Device)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Username (OpenVPN)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Username (IPsec VPN)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Quota"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Remaining"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Issue Time"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Host Details"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "(Device)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "(Device Last Known)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Pre-NAT"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Port (Pre-NAT)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Post-NAT"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Port (Post-NAT)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Latitude"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Longitude"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Speed (KB/s)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Total"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Session Details"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Session ID"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "State"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Widget"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "App Widget"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Install required"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "To enable App Widgets please install Reports first!"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "To view App Widgets enable the Reports App first!"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "To enable this Widget please install <strong>{0}</strong> app first!"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Others"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Filter"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Approximation"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Average"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Sum"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "default"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Min"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Max"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Remote Host Country"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Web monitor scans and categorizes web traffic to monitor and enforce network usage policies."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Virus Blocker detects and blocks malware before it reaches users desktops or mailboxes."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Virus Blocker Lite detects and blocks malware before it reaches users desktops or mailboxes."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Spam Blocker detects, blocks, and quarantines spam before it reaches users mailboxes."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Spam Blocker Lite detects, blocks, and quarantines spam before it reaches users mailboxes."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "SSL Inspector allows for full decryption of HTTPS and SMTPS so that other applications can process the encrytped streams."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Configuration Backup automatically creates backups of settings uploads them to My Account and Google Drive."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Exception response"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Session timed out."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Url missing or in wrong format!"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "False"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "[enter MAC name]"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "1.2.3.0"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "{0} should be enabled but is not active."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Conditions"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Time Format"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Unknown Action"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "System Certificate"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "This is the default system certificate and cannot be removed."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Certificate In Use"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "You can not delete a certificate that is assigned to one or more services."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Are you sure you want to delete this certificate?"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Certificate removed"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Certificate Details"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Server Certificate Verification"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Send"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Package"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Launching Upgrades..."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Upgrades in Progress..."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Upgrade Now"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Auto Upgrade Time"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Driver Defaults"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "First In, First Out (pfifo)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Fair/Flow Queueing + Codel (fq_codel)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Stochastic Fairness Queueing (sfq)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Input Filter Rules changed!"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "The Input Filter Rules have been changed!"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Improperly configuring the Input Filter Rules can be very dangerous."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Read the documentation for more details."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "SSH Access Enabled!"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "The 'Allow SSH' rule in Input Filter Rules has been enabled!"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "If the admin/root password is poorly chosen, enabling SSH is very dangerous."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Any changes made via the command line can be dangerous and destructive."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Any changes made via the command line are not supported and can limit your support options."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Add VLAN Interface"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Queue Discipline"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "QoS Enabled"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "is Vlan"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "ARP Entry List"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Arguments"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Tcpdump Arguments"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Expiration"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "User Never Expires"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Expiration Date/Time"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Match all classes (NOT RECOMMENDED!)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Add Field"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Field"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "If all of the following field conditions are met:"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Change Class"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "If you change the class, fields may be removed. Are you sure?"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Less (<)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Less or equal (<=)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Equals (=)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Greater or equal (>=)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Greater (>)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Does not equal (!=)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Is"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Is not"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Match all fields"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Undefined class"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Remote Syslog Configuration"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "If enabled logged events will be sent in real-time to a remote syslog for custom processing."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Enable Remote Syslog"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Host cannot be localhost address."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Syslog Rules"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Remote Syslog"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "As well as the following conditions:"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Enable Thresholds"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Exceeds Threshold Limit"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Over Timeframe"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Grouping Field"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Alert Rules"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Send Email"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Limit Send Frequency"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "To once per"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "(minutes)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Triggers"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Trigger Rules"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Unknown action"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Untag Host"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Tag User"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Untag User"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Tag Device"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Untag Device"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Tag Target"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Tag Name"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Tag Lifetime"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Select Image..."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "The Google Connector is configured"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Delete Group Failed"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "There must be at least one group."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "The group: {0} cannot be deleted because it is being used by the client: {1} in the Remote Clients list."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Add Remote Client Failed"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Add Group Failed"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Cannot download"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Remote Client information has been modified.  You must Save before downloading the client."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "The Advanced tab is used to configure advanced OpenVPN options."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Client Configuration"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Option Name"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Option Value"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Option Type"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Exclude"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "The Server tab is used to configure OpenVPN to operate as a server for remote clients"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "The Client tab is used to configure the servers that OpenVPN will connect as a client."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Upload Remote Server Configuration File"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "No Active Clients"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "No Remote Servers"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Obtaining user group map..."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Testing RADIUS..."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Enable Active Directory Connector"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Active Directory Group Map"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Enable RADIUS Connector"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Google Authentication Connector"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Enable Google Authentication Connector"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Google Drive Connector"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Enable User Notification API"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Facebook Authentication Connector"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Enable Facebook Authentication Connector"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Warning: Interface <i>{0}</i> needs a test configured!"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Testing Interval (seconds)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Timeout (seconds)"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "X1 of 10X"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "X2 of 10X"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "X3 of 10X"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "X4 of 10X"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "X5 of 10X"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "X6 of 10X"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "X7 of 10X"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "X8 of 10X"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "X9 of 10X"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "X10 of 10X"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Missing Custom Captive Page"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "You must upload a custom captive page to use this feature."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Service Not Installed"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "The Directory Connector application must be installed to use this feature."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Logging Out User..."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Upload Custom Captive Page ZIP File"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Active Custom File"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Enable ScoutIQ&trade; Cloud Scan"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Scan Options"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Invalid values"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Quotas for bandwidth can be set for hosts and users. This allows some hosts/users to be allocated high bandwidth, as long as it is remains within a certain usage quota; however, their bandwidth will be slowed if their quota is exceeded."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Congratulations"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Unknown Priority"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "This category is for rules that may indicate the presence of the DNS protocol or vulnerabilities in the DNS protocol on the network."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "This category is for rules that may indicate the presence of gaming protocols or vulnerabilities in the gaming protocols on the network."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "This category contains rules for the detection of traffic on mobile devices."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "This category is for rules that may indicate the presence of NetBIOS traffic or vulnerabilities in NetBIOS on the network."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "This category is for rules that may indicate the presence of the pop3 protocol or vulnerabilities in the pop3 protocol on the network."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "This category is for rules that may indicate the presence of the SMTP protocol or vulnerabilities in the SMTP protocol on the network."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "This category is for rules that may indicate the presence of the SNMP protocol or vulnerabilities in the SNMP protocol on the network."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "This category is for rules that may indicate the presence of the TFTP protocol or vulnerabilities in the TFTP protocol on the network."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "This category deals with vulnerabilities in or attacks against common application clients."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "This category deals with vulnerabilities in or attacks against Voice Over IP applications."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "This category deals with vulnerabilities in or attacks against Web clients."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "This category deals with vulnerabilities in or attacks against Web servers."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Unknown classtype"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Classtypes are a generalized grouping for rules, such as attempts to gain user access."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Recommended classtype settings"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Recommended category settings"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Run Intrusion Prevention Setup Wizard"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "{0}Note:{1} {2} continues to maintain the default signature settings through automatic updates. You are free to modify and add signatures, however it is not required."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "[enter mg]"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Enable BitDefender&reg; Scan"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "NOTE: Leave the Custom DNS fields empty to have clients automatically configured to use this server for DNS resolution."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "The IPsec Tunnels tab is used to create and manage IPsec tunnels"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Connect Mode"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "No IPsec Tunnels"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "No VPN Sessions"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Allocate traffic across WAN interfaces"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Traffic allocation across WAN interfaces is controlled by assigning a relative weight (1-100) to each interface."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "After entering the weight of each interface the resulting allocation is displayed."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "If all WAN interfaces have the same bandwidth it is best to assign the same weight to all WAN interfaces."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "If the WAN interfaces vary in bandwidth, enter numbers that correlate the relative available bandwidth."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "For example: 15 for a 1.5Mbit/sec T1, 60 for a 6 mbit link, and 100 for a 10mbit link."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Route Rules are used to assign specific sessions to a specific WAN interface. Rules are evaluated in order and the WAN interface of the first matching rule is used to route the matching session.<BR>If there is no matching rule or the rule is set to Balance the session will be routed according to the Traffic Allocation settings."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "seconds"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Administrator Password"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Custom Password"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Web Filter: Request Method"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Web Filter: Request File Path"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Web Filter: Request File Name"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Web Filter: Request File Extension"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Web Filter: Content Type"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Web Filter: Response File Name"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Web Filter: Response File Extension"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "The Google Connector must be configured in order to backup to Google Drive."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Enable upload to Google Drive"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Flag access to sites associated with the specified category."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Allow unflagged access for client networks regardless of matching policies."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Allow unflagged access to the specified site regardless of matching policies."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Flag Sites"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Flag access to specific sites."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Web Monitor scans and categorizes web traffic to monitor and enforce network usage policies."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Web Monitor rules allow creating flexible flag and pass conditions."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Traffic"
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "Deleting Certificate..."
+msgstr ""
+
+#: Status: UNVERIFIED
+msgid "No Trusted Certificates"
 msgstr ""

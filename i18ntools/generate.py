@@ -73,8 +73,8 @@ def get_keys(module):
                 # We also remove empty strings so xgettext wont complain
                 # and also remove all \r and \n from inside strings
 
-                # print '''/bin/cat %s | sed 's/\\\\r//g' | sed 's/\\\\n//g' | perl -pe 's/"(.*?)".t\(\)/_("\1")/g' | perl -pe "s/'(.*?)'.t\(\)/_('\1')/g" | xgettext -j -LJavascript --no-location -o %s -'''%(full_file_name,pot.file_name)
-                call( '''/bin/cat %s | sed 's/\\\\r//g' | sed 's/\\\\n//g' | perl -pe 's/"(.*?)".t\(\)/_("\1")/g' | perl -pe "s/'(.*?)'.t\(\)/_('\1')/g" | xgettext -j -LJavascript --no-location -o %s -'''%(full_file_name,pot.file_name), shell=True)
+                print '''/bin/cat %s | sed 's/\\\\r//g' | sed 's/\\\\n//g' | perl -pe 's/"([^"]+?)"\.t\(\)/_("\\1")/g' | perl -pe "s/'([^']+?)'\.t\(\)/_('\\1')/g" | xgettext -j -LJavascript --no-location -o %s -'''%(full_file_name,pot.file_name)
+                call( '''/bin/cat %s | sed 's/\\\\r//g' | sed 's/\\\\n//g' | perl -pe 's/"([^"]+?)"\.t\(\)/_("\\1")/g' | perl -pe "s/'([^']+?)'\.t\(\)/_('\\1')/g" | xgettext -j -LJavascript --no-location -o %s -'''%(full_file_name,pot.file_name), shell=True)
 
 
                 
@@ -157,8 +157,8 @@ def main(argv):
         print "Invalid string count: %d" % invalid_msg_id_count
     pot.save()
 
-    if os.path.isfile(pot_file_name):
-        os.remove(pot_file_name)
+    #if os.path.isfile(pot_file_name):
+    #    os.remove(pot_file_name)
     pot.rename(pot_file_name)
 
 if __name__ == "__main__":

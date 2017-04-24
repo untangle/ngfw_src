@@ -98,7 +98,7 @@ Ext.define('Ung.config.system.view.Shield', {
                 switch (value) {
                 case 'SCAN': action = 'Scan'.t(); break;
                 case 'PASS': action = 'Pass'.t(); break;
-                default: action = 'Unknown Action: ' + value;
+                default: action = 'Unknown Action'.t() + ': ' + value;
                 }
                 return action;
             }

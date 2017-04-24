@@ -65,7 +65,7 @@ Ext.define('Ung.config.events.view.Triggers', {
                       case 'UNTAG_USER':return 'Untag User'.t();
                       case 'TAG_DEVICE':return 'Tag Device'.t();
                       case 'UNTAG_DEVICE':return 'Untag Device'.t();
-                    default: return 'Unknown Action: ' + value;
+                    default: return 'Unknown Action'.t() + ': ' + value;
                     }
                 }
             }],
