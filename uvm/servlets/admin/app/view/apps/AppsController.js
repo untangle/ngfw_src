@@ -124,6 +124,11 @@ Ext.define('Ung.view.apps.AppsController', {
                             _app.parentPolicy = Ext.getStore('policiestree').findNode('policyId', instance.policyId).get('name');
                         }
                     }
+
+                    if (policy.licenseMap.map.hasOwnProperty(app.name)) {
+                        _app.licenseMessage = Util.getLicenseMessage(policy.licenseMap.map[app.name]);
+                    }
+
                     apps.push(_app);
                 });
 

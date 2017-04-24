@@ -129,6 +129,7 @@ Ext.define('Ung.view.apps.Apps', {
             tpl: '<tpl for=".">' +
                     '<tpl if="parentPolicy"><a class="app-item disabled"><tpl elseif="route"><a href="{route}" class="app-item {extraCls}"><tpl else><a class="app-item {extraCls}"></tpl>' +
                     '<tpl if="hasPowerButton && runState"><span class="state {runState}"><i class="fa fa-power-off"></i></span></tpl>' +
+                    '<tpl if="licenseMessage"><span class="license">{licenseMessage}</span></tpl>' +
                     '<img src="' + '/skins/modern-rack/images/admin/apps/{name}_80x80.png" width=80 height=80/>' +
                     '<span class="app-name">{displayName}</span>' +
                     '<tpl if="parentPolicy"><span class="parent-policy">[{parentPolicy}]</span></tpl>' +
@@ -167,6 +168,7 @@ Ext.define('Ung.view.apps.Apps', {
             tpl: '<tpl for=".">' +
                     '<tpl if="route"><a href="{route}" class="app-item {extraCls}"><tpl else><a class="app-item {extraCls}"></tpl>' +
                     '<tpl if="hasPowerButton && runState"><span class="state {runState}"><i class="fa fa-power-off"></i></span></tpl>' +
+                    '<tpl if="licenseMessage"><span class="license">{licenseMessage}</span></tpl>' +
                     '<img src="' + '/skins/modern-rack/images/admin/apps/{name}_80x80.png" width=80 height=80/>' +
                     '<span class="app-name">{displayName}</span>' +
                     '<span class="new">NEW</span>' +
