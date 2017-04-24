@@ -41,6 +41,9 @@ Ext.define('Ung.config.upgrade.MainController', {
             if(result) {
                 var upgradeButton = v.down('[name="upgradeButton"]');
                 upgradeButton.show();
+            } else {
+                var upgradeText = v.down('[name="upgradeText"]');
+                upgradeText.show();
             }
             v.down('progressbar').reset();
             v.down('progressbar').hide();
@@ -49,7 +52,7 @@ Ext.define('Ung.config.upgrade.MainController', {
 
     downloadUpgrades: function() {
         var me = this;
-        Ext.MessageBox.progress("Downloading packages... Please wait".t(), ".");
+        Ext.MessageBox.progress("Downloading upgrades...".t(), ".");
         this.checkDownloadStatus=true;
 
         Rpc.asyncData('rpc.systemManager.downloadUpgrades').then(function(result) {
@@ -76,12 +79,12 @@ Ext.define('Ung.config.upgrade.MainController', {
             if(!me.checkDownloadStatus) {
                 return;
             }
-            var text=Ext.String.format("Package".t() + ": {0} / {1}" + "<br/>" + "Speed".t() + ": {2}",
+            var text=Ext.String.format("Package".t() + ": {0} / {1}" + "<br/>" + "Speed".t() + ": {2} ",
                                        result.downloadCurrentFileCount,
                                        result.downloadTotalFileCount,
                                        result.downloadCurrentFileRate);
             if(!Ext.MessageBox.isVisible()) {
-                Ext.MessageBox.progress("Downloading packages... Please wait".t(), text);
+                Ext.MessageBox.progress("Downloading upgrades...".t(), text);
             }
             var downloadCurrentFileProgress = 0;
             if(result.downloadCurrentFileProgress!=null && result.downloadCurrentFileProgress.length>0) {
@@ -108,7 +111,7 @@ Ext.define('Ung.config.upgrade.MainController', {
 
         console.log("Applying Upgrades...");
 
-        Ext.MessageBox.wait("Please wait".t(),"Launching Upgrades...".t(),{
+        Ext.MessageBox.wait("Please wait".t(), "Launching Upgrades...".t(), {
             interval: 1000,
             increment: 200,
             duration: 180000
@@ -125,7 +128,7 @@ Ext.define('Ung.config.upgrade.MainController', {
 
             // the untangle-vm is shutdown, just show a message dialog box for 45 seconds so the user won't poke at things.
             // then refresh browser.
-            applyingUpgradesWindow.wait("Upgrades in Progress...".t(), "Please wait".t(), {
+            applyingUpgradesWindow.wait("Please wait".t(), "Upgrades in Progress...".t(), {
                 interval: 1000,
                 increment: 200,
                 duration: 180000,
