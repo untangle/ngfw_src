@@ -52,7 +52,7 @@ Ext.define('Ung.config.upgrade.MainController', {
 
     downloadUpgrades: function() {
         var me = this;
-        Ext.MessageBox.progress("Downloading upgrades...".t(), ".");
+        Ext.MessageBox.progress("Downloading Upgrade...".t(), ".");
         this.checkDownloadStatus=true;
 
         Rpc.asyncData('rpc.systemManager.downloadUpgrades').then(function(result) {
@@ -84,7 +84,7 @@ Ext.define('Ung.config.upgrade.MainController', {
                                        result.downloadTotalFileCount,
                                        result.downloadCurrentFileRate);
             if(!Ext.MessageBox.isVisible()) {
-                Ext.MessageBox.progress("Downloading upgrades...".t(), text);
+                Ext.MessageBox.progress("Downloading Upgrade...".t(), text);
             }
             var downloadCurrentFileProgress = 0;
             if(result.downloadCurrentFileProgress!=null && result.downloadCurrentFileProgress.length>0) {
@@ -111,7 +111,7 @@ Ext.define('Ung.config.upgrade.MainController', {
 
         console.log("Applying Upgrades...");
 
-        Ext.MessageBox.wait("Please wait".t(), "Launching Upgrades...".t(), {
+        Ext.MessageBox.wait("Please wait".t(), "Launching Upgrade...".t(), {
             interval: 1000,
             increment: 200,
             duration: 180000
@@ -128,7 +128,7 @@ Ext.define('Ung.config.upgrade.MainController', {
 
             // the untangle-vm is shutdown, just show a message dialog box for 45 seconds so the user won't poke at things.
             // then refresh browser.
-            applyingUpgradesWindow.wait("Please wait".t(), "Upgrades in Progress...".t(), {
+            applyingUpgradesWindow.wait("Please wait".t(), "Upgrade in Progress...".t(), {
                 interval: 1000,
                 increment: 200,
                 duration: 180000,
