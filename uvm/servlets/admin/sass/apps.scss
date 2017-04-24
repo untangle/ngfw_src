@@ -83,6 +83,16 @@
         }
     }
 
+    .license {
+        position: absolute;
+        top: 2px; left: 2px; right: 2px;
+        display: block;
+        font-size: 10px;
+        color: red;
+        font-weight: 600;
+    }
+
+
     &:hover {
         box-shadow: 0 1px 3px rgba(0,0,0,0.4);
         background: #EEE;

@@ -2,7 +2,7 @@ Ext.define('Ung.util.Util', {
     alternateClassName: 'Util',
     singleton: true,
     ignoreExceptions: false,
-    
+
     defaultColors: ['#7cb5ec', '#434348', '#90ed7d', '#f7a35c', '#8085e9', '#f15c80', '#e4d354', '#2b908f', '#f45b5b', '#91e8e1'],
 
     subNav: [
@@ -646,6 +646,27 @@ Ext.define('Ung.util.Util', {
             }
         }
         return utftext;
+    },
+
+    getLicenseMessage: function (license) {
+        var message = '';
+        if (!license) {
+            return message;
+        }
+        if (license.trial) {
+            if(license.expired) {
+                message = 'Free trial expired!'.t();
+            } else if (license.daysRemaining < 2) {
+                message = 'Free trial.'.t() + ' ' + 'Expires today.'.t();
+            } else if (license.daysRemaining < 32) {
+                message = 'Free trial.'.t() + ' ' + Ext.String.format('{0} ', license.daysRemaining) + 'days remain.'.t();
+            } else {
+                message = 'Free trial.'.t();
+            }
+        } else if (!license.valid) {
+            message = license.status;
+        }
+        return message;
     }
 
 });
