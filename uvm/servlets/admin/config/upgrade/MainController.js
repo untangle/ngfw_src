@@ -76,7 +76,7 @@ Ext.define('Ung.config.upgrade.MainController', {
             if(!me.checkDownloadStatus) {
                 return;
             }
-            var text=Ext.String.format("Package: {0} of {1}<br/>Speed: {2}".t(),
+            var text=Ext.String.format("Package".t() + ": {0} / {1}" + "<br/>" + "Speed".t() + ": {2}",
                                        result.downloadCurrentFileCount,
                                        result.downloadTotalFileCount,
                                        result.downloadCurrentFileRate);
