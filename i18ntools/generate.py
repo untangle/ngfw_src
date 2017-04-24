@@ -24,7 +24,7 @@ sys.setdefaultencoding('utf8')
 ngfw = i18n.Ngfw()
 languages = i18n.Languages()
 
-pot = i18n.PotFile(language="en", file_name="generated.pot")
+pot = i18n.PotFile(language="en", file_name="/tmp/generated.pot")
 # pot = i18n.PotFile(language="en", file_name="pot/en/untangle-en.pot")
 pot_file_name = "pot/en/untangle-en.pot"
 
@@ -67,22 +67,13 @@ def get_keys(module):
                     process_json_file = False
 
             if process_json_file == False:
-                # FIXME
-                # FIXME
-                # We need to update this key
-                # we now use "foo".t()
-                # instead of i18n._("foo")
-                # FIXME
-                # FIXME
-                call([
-                    "xgettext",
-                    "-j",
-                    "--copyright-holder=''" + ngfw.copyright + '"',
-                    "-L", "JavaScript",
-                    "-ki18n._",
-                    "-o", pot.file_name,
-                    full_file_name
-                ])
+                # xgettext does not support suffixes like "foo".t() only prefixes like _("foo")
+                # Instead we extract all strings with -a but we don't actually want ALL strings
+                # So we grep for t() to only process lines with t() on it.
+                # We also remove empty strings so xgettext wont complain
+                # and also remove all \r and \n from inside strings
+                # print '''/bin/grep -F '.t()' %s | sed 's/\\\\r//g' | sed 's/\\\\n//g' | /bin/grep -v -F "''" | /bin/grep -v -F '""' | xgettext -j -LJavascript --no-location -a -o %s -'''%(full_file_name,pot.file_name)
+                call( '''/bin/grep -F '.t()' %s | sed 's/\\\\r//g' | sed 's/\\\\n//g' | /bin/grep -v -F "''" | /bin/grep -v -F '""' | xgettext -j -LJavascript --no-location -a -o %s -'''%(full_file_name,pot.file_name), shell=True)
 
         for file_name in fnmatch.filter(file_names, '*.py'):
             full_file_name = root + "/" + file_name
@@ -91,6 +82,7 @@ def get_keys(module):
                 "-j",
                 "--copyright-holder=''" + ngfw.copyright + '"',
                 "-L", "Python",
+                "--no-location",
                 "-k_",
                 "-o", pot.file_name,
                 full_file_name
@@ -102,6 +94,7 @@ def get_keys(module):
                 "-j",
                 "--copyright-holder=''" + ngfw.copyright + '"',
                 "-L", "Java",
+                "--no-location",
                 "-ktr",
                 "-kmarktr",
                 "-o", pot.file_name,
