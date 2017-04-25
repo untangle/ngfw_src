@@ -655,7 +655,7 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
         for (ApplicationControlLogicRule logicRule : logicList) {
             Boolean result;
 
-            if (!logicRule.isLive())
+            if (!logicRule.getEnabled())
                 continue;
             result = logicRule.matches(sess);
 

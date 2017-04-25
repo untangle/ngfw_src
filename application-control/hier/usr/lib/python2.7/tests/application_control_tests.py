@@ -37,7 +37,7 @@ def create2ConditionRule( matcher1Type, matcher1Value, matcher2Type, matcher2Val
     return {
         "javaClass": "com.untangle.app.application_control.ApplicationControlLogicRule",
         "description": "2-ConditionRule: " + matcher1TypeStr + " = " + matcher1ValueStr + " && " + matcher2TypeStr + " = " + matcher2ValueStr,
-        "live": True,
+        "enabled": True,
         "id": 1,
         "action": {
             "javaClass": "com.untangle.app.application_control.ApplicationControlLogicRuleAction",
