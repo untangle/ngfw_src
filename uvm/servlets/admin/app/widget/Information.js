@@ -26,7 +26,7 @@ Ext.define('Ung.widget.Information', {
         cls: 'info-host',
         padding: 5,
         bind: {
-            html: '<p class="hostname">{stats.hostname}</p><p class="version">{stats.version}</p>'
+            html: '<p class="hostname">{stats.hostname}</p><p class="version">' + 'version'.t() + ': {stats.version}</p>'
         }
     }, {
         xtype: 'component',

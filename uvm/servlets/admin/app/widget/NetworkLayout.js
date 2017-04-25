@@ -57,16 +57,8 @@ Ext.define('Ung.widget.NetworkLayout', {
         }, {
             xtype: 'container',
             cls: 'ifaces',
-            height: 80,
+            height: 110,
             itemId: 'internalInterface'
-        }, {
-            xtype: 'component',
-            cls: 'devices',
-            margin: '5 0 0 0',
-            height: 40,
-            bind: {
-                html: '<img src="' + '/skins/default/images/admin/icons/interface-devices.png"><br/>{deviceCount}'
-            }
         }]
     }],
 
@@ -86,53 +78,27 @@ Ext.define('Ung.widget.NetworkLayout', {
                                 cls: 'iface wan',
                                 viewModel: {
                                     data: {
-                                        iface: iface
+                                        iface: iface,
+                                        devicesCount: 0
                                     }
                                 }
                             });
                         } else {
                             me.down('#internalInterface').add({
                                 xtype: 'interfaceitem',
+                                itemId: 'intf_' + iface.interfaceId,
                                 cls: 'iface',
                                 viewModel: {
                                     data: {
-                                        iface: iface
+                                        iface: iface,
+                                        devicesCount: 0
                                     }
                                 }
                             });
                         }
                     }
                 });
+                me.getController().onStatsUpdate(); // force fetching devices count
             });
     }
-
-    // fetchData: function () {
-    //     var me = this;
-    //     rpc.networkManager.getNetworkSettings(function (result, exception) {
-    //         me.fireEvent('afterdata');
-    //         //handler.call(this);
-
-    //         // Ext.each(result.interfaces.list, function (iface) {
-    //         //     if (!iface.disabled) {
-    //         //         if (iface.isWan) {
-    //         //             me.data.externalInterfaces.push({
-    //         //                 id: iface.interfaceId,
-    //         //                 name: iface.name,
-    //         //                 inbound: 0,
-    //         //                 outbound: 0
-    //         //             });
-    //         //         } else {
-    //         //             me.data.internalInterfaces.push({
-    //         //                 id: iface.interfaceId,
-    //         //                 name: iface.name,
-    //         //                 inbound: 0,
-    //         //                 outbound: 0
-    //         //             });
-    //         //         }
-    //         //     }
-    //         // });
-    //         // this.interfacesLoaded = true;
-    //         // this.update(me.data);
-    //     });
-    // }
 });
