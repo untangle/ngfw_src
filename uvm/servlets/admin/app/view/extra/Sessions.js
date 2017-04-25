@@ -257,7 +257,7 @@ Ext.define('Ung.view.extra.Sessions', {
                 hidden: true
             }, {
                 header: 'Longitude'.t(),
-                dataIndex: 'serverLlongitude',
+                dataIndex: 'serverLongitude',
                 filter: { type: 'numeric' },
                 hidden: true
             }]
