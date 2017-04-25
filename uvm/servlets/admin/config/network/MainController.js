@@ -6,8 +6,7 @@ Ext.define('Ung.config.network.MainController', {
     control: {
         '#': { afterrender: 'loadSettings' },
         '#interfaces': { beforerender: 'onInterfaces' },
-        '#portForwardRules': { beforerender: 'setPortForwardWarnings' },
-        '#currentRoutes': { afterrender: 'refreshRoutes' },
+        '#routes': { afterrender: 'refreshRoutes' },
         '#qosStatistics': { afterrender: 'refreshQosStatistics' },
         '#upnpStatus': { afterrender: 'refreshUpnpStatus' },
         '#dhcpLeases': { afterrender: 'refreshDhcpLeases' },
@@ -54,6 +53,8 @@ Ext.define('Ung.config.network.MainController', {
 
             var inputFilterRulesLength = me.getInputFilterRulesCount(vm.get('settings'));
             vm.set('inputFilterRulesLength', inputFilterRulesLength);
+
+            me.setPortForwardWarnings();
 
         }, function (ex) {
             v.setLoading(false);

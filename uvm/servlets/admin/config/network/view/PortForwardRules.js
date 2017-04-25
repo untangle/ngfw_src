@@ -104,7 +104,6 @@ Ext.define('Ung.config.network.view.PortForwardRules', {
         title: 'The following ports are currently reserved and can not be forwarded:'.t(),
         items: [{
             xtype: 'component',
-            // name: 'portForwardWarnings',
             bind: {
                 html: '{portForwardWarnings}'
             }
