@@ -9,48 +9,23 @@ import com.untangle.uvm.app.IPMatcher;
 @SuppressWarnings("serial")
 public class PassedAddress
 {
-    private boolean live = true;
+    private boolean enabled = true;
     private boolean log = false;
     private IPMatcher address = IPMatcher.getNilMatcher();
     private String description = null;
 
-    public IPMatcher getAddress()
-    {
-        return this.address;
-    }
+    public IPMatcher getAddress() { return this.address; }
+    public void setAddress(IPMatcher newValue) { this.address = newValue; }
 
-    public void setAddress(IPMatcher newValue)
-    {
-        this.address = newValue;
-    }
+    public boolean getEnabled() { return this.enabled; }
+    public void setEnabled( boolean newValue ) { this.enabled = newValue; }
 
-    public boolean getLive()
-    {
-        return live;
-    }
+    /* deprecated - live renamed to enabled - this remains so json serialization works */
+    public void setLive(boolean live) { this.enabled = live; }
 
-    public void setLive(boolean live)
-    {
-        this.live = live;
-    }
+    public boolean getLog() { return log; }
+    public void setLog(boolean log) { this.log = log; }
 
-    public boolean getLog()
-    {
-        return log;
-    }
-
-    public void setLog(boolean log)
-    {
-        this.log = log;
-    }
-
-    public String getDescription()
-    {
-        return description;
-    }
-
-    public void setDescription(String description)
-    {
-        this.description = description;
-    }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
 }

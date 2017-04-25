@@ -23,14 +23,14 @@ Ext.define('Ung.apps.captiveportal.view.PassedHosts', {
         listProperty: 'settings.passedClients.list',
 
         emptyRow: {
-            live: true,
+            enabled: true,
             log: false,
             address: '0.0.0.0',
             description: '',
             javaClass: 'com.untangle.app.captive_portal.PassedAddress'
         },
         columns: [
-            Column.live,{
+            Column.enabled,{
                 xtype: 'checkcolumn',
                 header: 'Log'.t(),
                 dataIndex: 'log',

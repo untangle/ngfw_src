@@ -686,7 +686,7 @@ public class CaptivePortalApp extends AppBase
         // see if the client is in the pass list
         for (int cc = 0; cc < clientList.size(); cc++) {
             checker = clientList.get(cc);
-            if (checker.getLive() != true) continue;
+            if (checker.getEnabled() != true) continue;
             if (checker.getAddress().isMatch(clientAddr) != true) continue;
             logger.debug("Client " + clientAddr.getHostAddress().toString() + " found in pass list");
             return (checker);
@@ -695,7 +695,7 @@ public class CaptivePortalApp extends AppBase
         // see if the server is in the pass list
         for (int ss = 0; ss < serverList.size(); ss++) {
             checker = serverList.get(ss);
-            if (checker.getLive() != true) continue;
+            if (checker.getEnabled() != true) continue;
             if (checker.getAddress().isMatch(serverAddr) != true) continue;
             logger.debug("Server " + serverAddr.getHostAddress().toString() + " found in pass list");
             return (checker);

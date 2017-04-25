@@ -529,7 +529,7 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
             logger.debug("Checking Rules against AppTCPSession : " + session.getProtocol() + " " + session.getClientAddr().getHostAddress() + ":" + session.getClientPort() + " -> " + session.getServerAddr().getHostAddress() + ":" + session.getServerPort());
 
             for (SslInspectorRule rule : ruleList) {
-                if (rule.isLive() == false) continue;
+                if (rule.getEnabled() == false) continue;
                 if (rule.matches(session) == false) continue;
                 ruleMatch = rule;
                 logDetail = (String) session.globalAttachment(AppTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME);
