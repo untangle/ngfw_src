@@ -49,26 +49,5 @@ Ext.define('Ung.view.extra.HostsController', {
                 grid.getSelectionModel().select(0);
                 // grid.getStore().setData(result.list);
             });
-    },
-
-    timestampRenderer: function (timestamp) {
-        if (!timestamp) {
-            return '<i class="fa fa-minus"></i>';
-        }
-        return Ext.util.Format.date(new Date(timestamp), 'timestamp_fmt'.t());
-    },
-
-    boolRenderer: function (value) {
-        return '<i class="fa ' + (value ? 'fa-check' : 'fa-minus') + '"></i>';
     }
-
-});
-
-Ext.define('Ung.view.extra.HostsGridController', {
-    extend: 'Ung.cmp.GridController',
-
-    alias: 'controller.unhostsgrid',
-
-    boolRenderer: Ung.view.extra.HostsController.prototype.boolRenderer
-
 });
