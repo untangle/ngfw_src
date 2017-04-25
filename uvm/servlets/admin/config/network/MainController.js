@@ -648,7 +648,7 @@ Ext.define('Ung.config.network.MainController', {
             if( ( interface.interfaceId == record.get('interfaceId') ) ||
                 ( interface.bridged !== false ) ||
                 ( interface.disabled !== false ) ||
-                ( interface.v4ConfigType == 'ADDRESSED') ){
+                ( interface.configType != 'ADDRESSED') ){
                 return;
             }
             fields.push([interface.interfaceId, interface.name]);
