@@ -17,7 +17,7 @@ Ext.define('Ung.apps.openvpn.MainController', {
         vm.bind('{instance.targetState}', function (state) {
             if (state === 'RUNNING') {
                 me.getActiveClients();
-                me.getRemoteServersStatus();
+                me.getActiveServers();
             }
         });
     },
@@ -29,19 +29,18 @@ Ext.define('Ung.apps.openvpn.MainController', {
         this.getView().appManager.getActiveClients(function (result, ex) {
             grid.setLoading(false);
             if (ex) { Util.handleException(ex); return; }
-            vm.set('activeClients', result.list);
+            vm.set('clientStatusData', result.list);
         });
     },
 
-    getRemoteServersStatus: function () {
+    getActiveServers: function () {
         var grid = this.getView().down('#remoteServers'),
             vm = this.getViewModel();
         grid.setLoading(true);
         this.getView().appManager.getRemoteServersStatus(function (result, ex) {
             grid.setLoading(false);
             if (ex) { Util.handleException(ex); return; }
-            vm.set('remoteServers', result.list);
-            console.log(result);
+            vm.set('serverStatusData', result.list);
         });
     },
 
@@ -108,7 +107,7 @@ Ext.define('Ung.apps.openvpn.MainController', {
             if (!record.get('markedForDelete')) counter++;
         });
 
-        if (counter < 1) {
+        if ((counter == 0) && (groupStore.data.length > 0)) {
             groupStore.each(function(record) {
                 record.set('markedForDelete', false);
             });
@@ -163,19 +162,23 @@ Ext.define('Ung.apps.openvpn.MainController', {
     },
 
     uploadFile: function(cmp) {
+        var me = this, v = this.getView(), vm = this.getViewModel();
         var form = Ext.ComponentQuery.query('form[name=upload_form]')[0];
         var file = Ext.ComponentQuery.query('textfield[name=uploadConfigFileName]')[0].value;
         if ( file == null || file.length === 0 ) {
             Ext.MessageBox.alert('Select File'.t(), 'Please choose a file to upload.'.t());
             return;
-            }
+        }
+        Ext.MessageBox.wait("Uploading File...".t(), "Please Wait".t());
         form.submit({
             url: "/openvpn/uploadConfig",
             success: Ext.bind(function( form, action ) {
+                Ext.MessageBox.hide();
                 Ext.MessageBox.alert('Success'.t(), 'The configuration has been imported.'.t());
-                this.getSettings();
+                me.getSettings();
             }, this),
             failure: Ext.bind(function( form, action ) {
+                Ext.MessageBox.hide();
                 Ext.MessageBox.alert('Failure'.t(), 'Import failure'.t() + ": " + action.result.code);
             }, this)
         });
