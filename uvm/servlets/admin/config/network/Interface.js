@@ -889,7 +889,7 @@ Ext.define('Ung.config.network.Interface', {
                 },
                 tbar: ['@addInline'],
                 recordActions: ['delete'],
-
+                listProperty: 'dhcpOptions',
                 emptyRow: {
                     enabled: true,
                     value: '66,1.2.3.4',
