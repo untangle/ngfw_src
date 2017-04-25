@@ -28,6 +28,7 @@ Ext.define('Ung.apps.openvpn.view.Client', {
         items: [{
             xtype: 'fileuploadfield',
             name: 'uploadConfigFileName',
+            anchor: '100%',
             buttonOnly: true,
             buttonConfig: {
                 iconCls: 'fa fa-upload',
