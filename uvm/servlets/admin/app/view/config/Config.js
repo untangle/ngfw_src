@@ -9,6 +9,7 @@ Ext.define('Ung.view.config.Config', {
         'Ung.cmp.GridEditorFields',
         'Ung.cmp.GridConditions',
         'Ung.cmp.GridColumns',
+        'Ung.cmp.GridRenderers',
         'Ung.overrides.form.field.Date'
         // 'Ung.view.config.ConfigModel'
     ],
