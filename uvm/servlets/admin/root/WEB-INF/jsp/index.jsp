@@ -98,13 +98,14 @@
                 if (!rpc.translations.date_fmt) { rpc.translations.date_fmt = 'Y-m-d'; }
                 if (!rpc.translations.timestamp_fmt) { rpc.translations.timestamp_fmt = 'Y-m-d h:i:s a'; }
 
+                var lang = rpc.languageSettings.language;
                 String.prototype.t = function() {
                     // special case formatters needed for all languages
                     if (Ext.Array.contains(['decimal_sep', 'thousand_sep', 'date_fmt', 'timestamp_fmt'], this.valueOf())) {
                         return rpc.translations[this.valueOf()];
                     }
-                    if (rpc.languageSettings.language !== 'en') {
-                        return rpc.translations[this.valueOf()] || '<cite>' + this.valueOf() + '</cite>';
+                    if (lang !== 'en') {
+                        return rpc.translations[this.valueOf()] || (lang === 'xx' ? '<cite>' + this.valueOf() + '</cite>' : this.valueOf());
                     }
                     return this.valueOf();
                 };
@@ -120,16 +121,16 @@
                         onProgress = ref.progress;
                         scope = ref.scope;
                     }
-	    
+
                     if (scope) {
                         if (onFulfilled) {
                             onFulfilled = Ext.Function.bind(onFulfilled, scope);
                         }
-                        
+
                         if (onRejected) {
                             onRejected = Ext.Function.bind(onRejected, scope);
                         }
-                        
+
                         if (onProgress) {
                             onProgress = Ext.Function.bind(onProgress, scope);
                         }
@@ -141,7 +142,7 @@
 	                throw ex;
                     });
                 };
-	    
+
                 // load the untangle app only after the rpc is in place and translations set
                 Ext.Loader.loadScript({
                     url: 'script/ung-all.js',
