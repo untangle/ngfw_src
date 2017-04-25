@@ -15,11 +15,12 @@ Ext.define('Ung.widget.WidgetController', {
     },
 
     listen: {
-        // store: {
-        //     '#stats': {
-        //         datachanged: 'onStatsUpdate'
-        //     }
-        // }
+        store: {
+            '#stats': {
+                // used just to fetch devices count for Network Layout widget
+                datachanged: 'onStatsUpdate'
+            }
+        }
     },
 
     headerRender: function (cmp) {
@@ -287,6 +288,31 @@ Ext.define('Ung.widget.WidgetController', {
             }
         }
         view.updateLayout();
+    },
+
+    // used only for Network Layout widget devices number update when stats change
+    onStatsUpdate: function () {
+        var me = this;
+        if (me.getView().getXType() === 'networklayoutwidget') {
+            // get devices
+            Rpc.asyncData('rpc.deviceTable.getDevices')
+                .then(function (result) {
+                    // reset the number of devices
+                    Ext.Array.each(me.getView().query('interfaceitem'), function (intfCmp) {
+                        intfCmp.getViewModel().set('devicesCount', 0);
+                    });
+
+                    Ext.Array.each(result.list, function (device) {
+                        var intfCmp = me.getView().down('#intf_' + device.interfaceId), devNo;
+                        if (intfCmp) {
+                            devNo = intfCmp.getViewModel().get('devicesCount') || 0;
+                            intfCmp.getViewModel().set('devicesCount', devNo += 1);
+                        }
+                    });
+                }, function (ex) {
+                    console.log(ex);
+                });
+        }
     }
 
 });
