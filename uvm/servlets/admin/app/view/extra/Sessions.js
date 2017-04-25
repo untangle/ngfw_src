@@ -50,11 +50,18 @@ Ext.define('Ung.view.extra.Sessions', {
 
     items: [{
         region: 'center',
-        xtype: 'grid',
+        xtype: 'ungrid',
         itemId: 'sessionsgrid',
         reference: 'sessionsgrid',
         store: 'sessions',
         stateful: true,
+
+        enableColumnHide: true,
+        forceFit: false,
+        viewConfig: {
+            stripeRows: true,
+            enableTextSelection: true
+        },
 
         plugins: ['gridfilters'],
         columnLines: true,
@@ -62,11 +69,6 @@ Ext.define('Ung.view.extra.Sessions', {
         features: [{
             ftype: 'grouping'
         }],
-
-        viewConfig: {
-            enableTextSelection: true,
-            stripeRows: true
-        },
 
         columns: [{
             header: 'Creation Time'.t(),
@@ -91,7 +93,8 @@ Ext.define('Ung.view.extra.Sessions', {
                 type: 'boolean',
                 yesText: 'true',
                 noText: 'false'
-            }
+            },
+            rtype: 'boolean'
         }, {
             header: 'Policy'.t(),
             dataIndex: 'policy',
@@ -123,26 +126,66 @@ Ext.define('Ung.view.extra.Sessions', {
             },
             hidden: true
         }, {
+            header: 'Hostname'.t(),
+            dataIndex: 'platform-hostname',
+            hidden: true
+        }, {
             header: 'Username'.t(),
             dataIndex: 'platform-username',
             hidden: true
         }, {
             header: 'Tags'.t(),
-            dataIndex: 'tags'
+            dataIndex: 'tags',
+            rtype: 'tags'
         }, {
             header: 'Tags String'.t(),
             dataIndex: 'tagsString',
             filter: { type: 'string' },
             hidden: true
         }, {
+            hidden: true,
+            header: 'Local Address'.t(),
+            dataIndex: "localAddr",
+            filter: { type: 'string' }
+        },{
+            hidden: true,
+            header: 'Remote Address'.t(),
+            dataIndex: "remoteAddr",
+            filter: { type: 'string' }
+        },{
+            hidden: true,
+            header: 'Priority'.t() + " " + "(Bandwidth Control)",
+            dataIndex: "priority",
+            // renderer: function(value) {
+            //     return (value < 1 || value > 7)?i18n._("None"):priorityList[value-1];
+            // },
+            // filter: {
+            //     type: 'list',
+            //     store: priorityOptionsStore
+            // }
+        },{
+            hidden: true,
+            header: 'Priority'.t() + " (QoS)",
+            dataIndex: "qosPriority",
+            // renderer: function(value) {
+            //     return (value < 1 || value > 7)?i18n._("None"):priorityList[value-1];
+            // },
+            // filter: {
+            //     type: 'list',
+            //     store: priorityOptionsStore
+            // }
+        },{
+            hidden: true,
+            header: 'Pipeline'.t(),
+            dataIndex: "pipeline",
+            filter: { type: 'string' }
+        }, {
             header: 'Client'.t(),
             columns: [{
                 header: 'Interface'.t(),
                 dataIndex: 'clientIntf',
                 filter: { type: 'string' },
-                renderer: function (val) {
-                    return Util.interfacesListNamesMap()[val];
-                }
+                rtype: 'interface'
             }, {
                 header: 'Pre-NAT'.t(),
                 dataIndex: 'preNatClient',
@@ -173,7 +216,7 @@ Ext.define('Ung.view.extra.Sessions', {
                 hidden: true
             }, {
                 header: 'Longitude'.t(),
-                dataIndex: 'clientLlongitude',
+                dataIndex: 'clientLongitude',
                 filter: { type: 'numeric' },
                 hidden: true
             }]
@@ -183,9 +226,7 @@ Ext.define('Ung.view.extra.Sessions', {
                 header: 'Interface'.t(),
                 dataIndex: 'serverIntf',
                 filter: { type: 'string' },
-                renderer: function (val) {
-                    return Util.interfacesListNamesMap()[val];
-                }
+                rtype: 'interface'
             }, {
                 header: 'Pre-NAT'.t(),
                 dataIndex: 'preNatServer',
@@ -238,80 +279,181 @@ Ext.define('Ung.view.extra.Sessions', {
                 filter: 'number',
                 align: 'right'
             }]
+        }, {
+            header: 'Application Control Lite'.t(),
+            hidden: true,
+            columns: [{
+                hidden: true,
+                header: 'Protocol'.t(),
+                dataIndex: "application-control-lite-protocol",
+                filter: { type: 'string' }
+            },{
+                hidden: true,
+                header: 'Category'.t(),
+                dataIndex: "application-control-lite-category",
+                filter: { type: 'string' }
+            },{
+                hidden: true,
+                header: 'Description'.t(),
+                dataIndex: "application-control-lite-description",
+                filter: { type: 'string' }
+            },{
+                hidden: true,
+                header: 'Matched?'.t(),
+                dataIndex: "application-control-lite-matched",
+                filter: {
+                    type: 'boolean',
+                    yesText: 'true',
+                    noText: 'false'
+                }
+            }]
+        }, {
+            header: 'Application Control'.t(),
+            columns: [{
+                hidden: true,
+                header: 'Protochain'.t(),
+                dataIndex: "application-control-protochain",
+                filter: { type: 'string' }
+            },{
+                hidden: true,
+                header: 'Application'.t(),
+                dataIndex: "application-control-application",
+                filter: { type: 'string' }
+            },{
+                hidden: true,
+                header: 'Category'.t(),
+                dataIndex: "application-control-category",
+                filter: { type: 'string' }
+            },{
+                hidden: true,
+                header: 'Detail'.t(),
+                dataIndex: "application-control-detail",
+                filter: { type: 'string' }
+            },{
+                hidden: true,
+                header: 'Confidence'.t(),
+                dataIndex: "application-control-confidence",
+                filter: { type: 'string' }
+            },{
+                hidden: true,
+                header: 'Productivity'.t(),
+                dataIndex: "application-control-productivity",
+                filter: { type: 'string' }
+            },{
+                hidden: true,
+                header: 'Risk'.t(),
+                dataIndex: "application-control-risk",
+                filter: { type: 'string' }
+            }]
+        }, {
+            header: 'Web Filter'.t(),
+            hidden: true,
+            columns: [{
+                hidden: true,
+                header: 'Category Name'.t(),
+                dataIndex: "web-filter-best-category-name",
+                filter: { type: 'string' }
+            },{
+                hidden: true,
+                header: 'Category Description'.t(),
+                dataIndex: "web-filter-best-category-description",
+                filter: { type: 'string' }
+            },{
+                hidden: true,
+                header: 'Category Flagged'.t(),
+                dataIndex: "web-filter-best-category-flagged",
+                filter: {
+                    type: 'boolean',
+                    yesText: 'true',
+                    noText: 'false'
+                }
+            },{
+                hidden: true,
+                header: 'Category Blocked'.t(),
+                dataIndex: "web-filter-best-category-blocked",
+                filter: {
+                    type: 'boolean',
+                    yesText: 'true',
+                    noText: 'false'
+                }
+            },{
+                hidden: true,
+                header: 'Content Type'.t(),
+                dataIndex: "web-filter-content-type",
+                filter: { type: 'string' }
+            },{
+                hidden: true,
+                header: 'Flagged'.t(),
+                dataIndex: "web-filter-flagged",
+                filter: {
+                    type: 'boolean',
+                    yesText: 'true',
+                    noText: 'false'
+                }
+            }]
+        }, {
+            header: 'HTTP'.t(),
+            hidden: true,
+            columns: [{
+                hidden: true,
+                header: 'Hostname'.t(),
+                dataIndex: "http-hostname",
+                filter: { type: 'string' }
+            },{
+                hidden: true,
+                header: 'URL'.t(),
+                dataIndex: "http-url",
+                filter: { type: 'string' }
+            },{
+                hidden: true,
+                header: 'User Agent'.t(),
+                dataIndex: "http-user-agent",
+                filter: { type: 'string' }
+            },{
+                hidden: true,
+                header: 'URI'.t(),
+                dataIndex: "http-uri",
+                filter: { type: 'string'}
+            },{
+                hidden: true,
+                header: 'Request Method'.t(),
+                dataIndex: "http-request-method",
+                filter: { type: 'string'}
+            },{
+                hidden: true,
+                header: 'Request File Name'.t(),
+                dataIndex: "http-request-file-name",
+                filter: { type: 'string'}
+            },{
+                hidden: true,
+                header: 'Request File Path'.t(),
+                dataIndex: "http-request-file-path",
+                filter: { type: 'string'}
+            },{
+                hidden: true,
+                header: 'Content Type'.t(),
+                dataIndex: "http-content-type",
+                filter: { type: 'string'}
+            },{
+                hidden: true,
+                header: 'Referer'.t(),
+                dataIndex: "http-referer",
+                filter: { type: 'string'}
+            },{
+                hidden: true,
+                header: 'Content Length'.t(),
+                dataIndex: "http-content-length",
+                filter: 'number'
+            }]
         }]
     }, {
         region: 'east',
-        xtype: 'propertygrid',
-        itemId: 'details',
-        editable: false,
-        width: 400,
+        xtype: 'unpropertygrid',
         title: 'Session Details'.t(),
-        split: true,
-        collapsible: true,
-        resizable: true,
-        shadow: false,
-        animCollapse: false,
-        titleCollapse: true,
-        collapsed: false,
+        itemId: 'details',
 
-        // columnLines: false,
-
-        cls: 'prop-grid',
-
-        viewConfig: {
-            stripeRows: false,
-            getRowClass: function(record) {
-                if (record.get('value') === null || record.get('value') === '') {
-                    return 'empty';
-                }
-                return;
-            }
-        },
-
-        nameColumnWidth: 150,
         bind: {
             source: '{selectedSession}'
-        },
-        sourceConfig: {
-            attachments:       { displayName: 'Attachments'.t() },
-            bypassed:          { displayName: 'Bypassed'.t() },
-            clientCountry:     { displayName: 'Client Country'.t() },
-            clientIntf:        { displayName: 'Client Interface'.t() },
-            clientKBps:        { displayName: 'Client KB/s'.t() },
-            clientLatitude:    { displayName: 'Client Latitude'.t() },
-            clientLongitude:   { displayName: 'Client Longitude'.t() },
-            creationTime:      { displayName: 'Creation Time'.t() },
-            hostname:          { displayName: 'Hostname'.t() },
-            natted:            { displayName: 'NATd'.t() },
-            pipeline:          { displayName: 'Pipeline'.t() },
-            policy:            { displayName: 'Policy'.t() },
-            portForwarded:     { displayName: 'Port Forwarded'.t() },
-            postNatClient:     { displayName: 'Client (Post-NAT)'.t() },
-            postNatClientPort: { displayName: 'Client Port (Post-NAT)'.t() },
-            postNatServer:     { displayName: 'Server (Post-NAT)'.t() },
-            postNatServerPort: { displayName: 'Server Port (Post-NAT)'.t() },
-            preNatClient:      { displayName: 'Client (Pre-NAT)'.t() },
-            preNatClientPort:  { displayName: 'Client Port (Pre-NAT)'.t() },
-            preNatServer:      { displayName: 'Server (Pre-NAT)'.t() },
-            preNatServerPort:  { displayName: 'Server Port (Pre-NAT)'.t() },
-            priority:          { displayName: 'Priority'.t() },
-            protocol:          { displayName: 'Protocol'.t() },
-            qosPriority:       { displayName: 'Priority'.t() + '(QoS)' },
-            serverCountry:     { displayName: 'Server Country'.t() },
-            serverIntf:        { displayName: 'Server Interface'.t() },
-            serverKBps:        { displayName: 'Server KB/s'.t() },
-            serverLatitude:    { displayName: 'Server Latitude'.t() },
-            serverLongitude:   { displayName: 'Server Longitude'.t() },
-            sessionId:         { displayName: 'Session ID'.t() },
-            state:             { displayName: 'State'.t() },
-            tags:              { displayName: 'Tags'.t() },
-            tagsString:        { displayName: 'Tags String'.t() },
-            totalKBps:         { displayName: 'Total KB/s'.t() }
-        },
-        listeners: {
-            beforeedit: function () {
-                return false;
-            }
         }
     }],
     tbar: [{

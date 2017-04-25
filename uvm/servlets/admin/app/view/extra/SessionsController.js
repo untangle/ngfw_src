@@ -7,7 +7,6 @@ Ext.define('Ung.view.extra.SessionsController', {
         '#': {
             deactivate: 'onDeactivate'
         },
-        // '#list': {
         '#sessionsgrid': {
             afterrender: 'getSessions',
             select: 'onSelect'
@@ -27,8 +26,6 @@ Ext.define('Ung.view.extra.SessionsController', {
         var me = this,
             vm = this.getViewModel();
         vm.set('autoRefresh', btn.pressed);
-
-        console.log(btn.pressed);
 
         if (btn.pressed) {
             me.getSessions();
@@ -54,7 +51,19 @@ Ext.define('Ung.view.extra.SessionsController', {
         Rpc.asyncData('rpc.sessionMonitor.getMergedSessions')
             .then(function(result) {
                 grid.getView().setLoading(false);
-                Ext.getStore('sessions').loadData(result.list);
+                var sessions = result.list;
+
+                sessions.forEach( function( session ){
+                    var key;
+                    if( session.attachments ){
+                        for(key in session.attachments.map ){
+                            session[key] = session.attachments.map[key];
+                        }
+                        delete session.attachments;
+                    }
+                });
+
+                Ext.getStore('sessions').loadData( sessions );
                 grid.getSelectionModel().select(0);
             });
     },
@@ -66,8 +75,15 @@ Ext.define('Ung.view.extra.SessionsController', {
         delete props._id;
         delete props.javaClass;
         delete props.mark;
-        delete props.localAddr;
-        delete props.remoteAddr;
+        for(var k in props){
+            /*
+             * Encode objects and arrays for details
+             */
+            if( ( typeof( props[k] ) == 'object' ) || 
+                ( typeof( props[k] ) == 'array' ) ){
+                props[k] = Ext.encode(props[k]);
+            }
+        }
         vm.set('selectedSession', props);
     },
 
