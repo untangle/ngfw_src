@@ -56,12 +56,25 @@ Ext.define('Ung.view.extra.Sessions', {
         store: 'sessions',
         stateful: true,
 
-        plugins: 'gridfilters',
+        plugins: ['gridfilters'],
         columnLines: true,
+
+        features: [{
+            ftype: 'grouping'
+        }],
+
+        viewConfig: {
+            enableTextSelection: true,
+            stripeRows: true
+        },
+
         columns: [{
             header: 'Creation Time'.t(),
             dataIndex: 'creationTime',
-            hidden: true
+            hidden: true,
+            renderer: function(value) {
+                return value ? Util.timestampFormat(value) : '';
+            }
         }, {
             header: 'Protocol'.t(),
             dataIndex: 'protocol',
@@ -73,22 +86,41 @@ Ext.define('Ung.view.extra.Sessions', {
         }, {
             header: 'Bypassed'.t(),
             dataIndex: 'bypassed',
-            width: 70
+            width: 70,
+            filter: {
+                type: 'boolean',
+                yesText: 'true',
+                noText: 'false'
+            }
         }, {
             header: 'Policy'.t(),
             dataIndex: 'policy',
-            hidden: true
+            hidden: true,
+            filter: {
+                type: 'string' // should be list
+            }
         }, {
             header: 'Hostname'.t(),
             dataIndex: 'hostname',
-            width: 100
+            width: 100,
+            filter: { type: 'string' }
         }, {
             header: 'NATd'.t(),
             dataIndex: 'natted',
+            filter: {
+                type: 'boolean',
+                yesText: 'true',
+                noText: 'false'
+            },
             hidden: true
         }, {
             header: 'Port Forwarded'.t(),
             dataIndex: 'portForwarded',
+            filter: {
+                type: 'boolean',
+                yesText: 'true',
+                noText: 'false'
+            },
             hidden: true
         }, {
             header: 'Username'.t(),
@@ -100,69 +132,92 @@ Ext.define('Ung.view.extra.Sessions', {
         }, {
             header: 'Tags String'.t(),
             dataIndex: 'tagsString',
+            filter: { type: 'string' },
             hidden: true
         }, {
             header: 'Client'.t(),
             columns: [{
                 header: 'Interface'.t(),
-                dataIndex: 'clientIntf'
+                dataIndex: 'clientIntf',
+                filter: { type: 'string' },
+                renderer: function (val) {
+                    return Util.interfacesListNamesMap()[val];
+                }
             }, {
                 header: 'Pre-NAT'.t(),
-                dataIndex: 'preNatClient'
+                dataIndex: 'preNatClient',
+                filter: { type: 'string' }
             }, {
                 header: 'Port (Pre-NAT)'.t(),
-                dataIndex: 'preNatClientPort'
+                dataIndex: 'preNatClientPort',
+                filter: { type: 'numeric' }
             }, {
                 header: 'Post-NAT'.t(),
                 dataIndex: 'postNatClient',
+                filter: { type: 'string' },
                 hidden: true
             }, {
                 header: 'Port (Post-NAT)'.t(),
                 dataIndex: 'postNatClientPort',
+                filter: { type: 'numeric' },
                 hidden: true
             }, {
                 header: 'Country'.t(),
                 dataIndex: 'clientCountry',
+                filter: { type: 'string' },
                 hidden: true
             }, {
                 header: 'Latitude'.t(),
                 dataIndex: 'clientLatitude',
+                filter: { type: 'numeric' },
                 hidden: true
             }, {
                 header: 'Longitude'.t(),
                 dataIndex: 'clientLlongitude',
+                filter: { type: 'numeric' },
                 hidden: true
             }]
         }, {
             header: 'Server'.t(),
             columns: [{
                 header: 'Interface'.t(),
-                dataIndex: 'serverIntf'
+                dataIndex: 'serverIntf',
+                filter: { type: 'string' },
+                renderer: function (val) {
+                    return Util.interfacesListNamesMap()[val];
+                }
             }, {
                 header: 'Pre-NAT'.t(),
                 dataIndex: 'preNatServer',
+                filter: { type: 'string' },
                 hidden: true
             }, {
                 header: 'Port (Pre-NAT)'.t(),
                 dataIndex: 'preNatServerPort',
+                filter: { type: 'numeric' },
                 hidden: true
             }, {
                 header: 'Post-NAT'.t(),
-                dataIndex: 'postNatServer'
+                dataIndex: 'postNatServer',
+                filter: { type: 'string' }
             }, {
                 header: 'Port (Post-NAT)'.t(),
-                dataIndex: 'postNatServerPort'
+                dataIndex: 'postNatServerPort',
+                filter: { type: 'numeric' }
             }, {
                 header: 'Country'.t(),
                 dataIndex: 'serverCountry',
+                filter: { type: 'string' },
                 hidden: true
             }, {
                 header: 'Latitude'.t(),
                 dataIndex: 'serverLatitude',
+                filter: { type: 'numeric' },
                 hidden: true
             }, {
                 header: 'Longitude'.t(),
                 dataIndex: 'serverLlongitude',
+                filter: { type: 'numeric' },
                 hidden: true
             }]
         }, {
