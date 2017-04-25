@@ -347,6 +347,13 @@ Ext.define('Ung.cmp.GridController', {
             }]
         });
         this.pswdDialog.show();
+    },
+
+    columnRenderer: function(value, metaData, record, rowIndex, columnIndex, store, view){
+        var rtype = view.grid.getColumns()[columnIndex].rtype;
+        if(rtype != null){
+            return Renderer[rtype](value);
+        }
     }
 
 });
