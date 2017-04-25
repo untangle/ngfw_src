@@ -126,7 +126,7 @@ Ext.define('Ung.view.reports.Entry', {
                 width: 80,
                 bind: {
                     value: '{_st}',
-                    maxValue: '{_ed}'
+                    // maxValue: '{_ed}'
                 }
             }, {
                 xtype: 'label',
@@ -158,9 +158,9 @@ Ext.define('Ung.view.reports.Entry', {
                 bind: {
                     value: '{_et}',
                     hidden: '{tillNow}',
-                    minValue: '{_sd}'
+                    // minValue: '{_sd}'
                 },
-                maxValue: new Date(Math.floor(rpc.systemManager.getMilliseconds()))
+                // maxValue: new Date(Math.floor(rpc.systemManager.getMilliseconds()))
             }, '->', {
                 text: 'Refresh'.t(),
                 iconCls: 'fa fa-refresh',
