@@ -6,6 +6,14 @@ Ext.define('Ung.cmp.GridRenderers', {
         return '<i class="fa ' + (value ? 'fa-check' : 'fa-minus') + '"></i>';
     },
 
+    timestamp: function( value ){
+        if( !value ){
+            return '<i class="fa fa-minus"></i>';
+        }
+        return Ext.util.Format.date(new Date( value ), 'timestamp_fmt'.t());
+
+    },
+
     interface: function( value ){
         return Util.interfacesListNamesMap()[value];
     },
