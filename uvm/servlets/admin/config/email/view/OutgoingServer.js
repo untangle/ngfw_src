@@ -41,6 +41,7 @@ Ext.define('Ung.config.email.view.OutgoingServer', {
             items: [{
                 xtype: 'textfield',
                 fieldLabel: 'Server Address or Hostname'.t(),
+                bind: '{mailSender.smtpHost}'
             }, {
                 xtype: 'textfield',
                 width: 260,
