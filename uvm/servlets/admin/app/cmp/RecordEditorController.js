@@ -417,10 +417,10 @@ Ext.define('Ung.cmp.RecordEditorController', {
                 createNewOnEnter: true,
                 createNewOnBlur: true,
                 // value: record.get('value'),
-                displayField: 'displayName',
+                displayField: 'CN',
                 valueField: 'SAMAccountName',
                 listConfig: {
-                    itemTpl: ['<div>{displayName} <strong>[{SAMAccountName}]</strong></div>']
+                    itemTpl: ['<div>{CN} <strong>[{SAMAccountName}]</strong></div>']
                 },
                 listeners: {
                     afterrender: function (field) {
@@ -433,7 +433,7 @@ Ext.define('Ung.cmp.RecordEditorController', {
                         if (app) {
                             data = app.getGroupEntries().list;
                         }
-                        data.push({ SAMAccountName: '*', displayName: 'Any Group'});
+                        data.push({ SAMAccountName: '*', CN: 'Any Group'});
 
                         field.getStore().loadData(data);
                         field.setValue(record.get('value'));
