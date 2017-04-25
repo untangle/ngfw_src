@@ -199,11 +199,13 @@ Ext.define('Ung.cmp.RecordEditorController', {
 
         // create and add conditions to the menu
         for (i = 0; i < conds.length; i += 1) {
-            menuConditions.push({
-                text: conds[i].displayName,
-                conditionType: conds[i].name,
-                index: i
-            });
+            if (conds[i].visible) {
+                menuConditions.push({
+                    text: conds[i].displayName,
+                    conditionType: conds[i].name,
+                    index: i
+                });
+            }
         }
 
         conditionsGrid.down('#addConditionBtn').setMenu({
