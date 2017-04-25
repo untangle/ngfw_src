@@ -88,18 +88,18 @@ Ext.define('Ung.view.apps.AppsController', {
     },
 
     getApps: function () {
-        var me = this, vm = this.getViewModel(), instance;
+        var me = this, vm = this.getViewModel(), instance, license;
 
         // we need policies store before fetching apps
         if (Ext.getStore('policiestree').getCount() === 0) { return; }
 
         me.getView().setLoading(true);
 
+        // vm.getStore('apps').removeAll();
         Rpc.asyncData('rpc.appManager.getAppsView', vm.get('policyId'))
             .then(function (policy) {
                 me.getView().setLoading(false);
                 var apps = [];
-                // vm.getStore('apps').removeAll();
 
                 Ext.Array.each(policy.appProperties.list, function (app) {
                     var _app = {
@@ -112,7 +112,9 @@ Ext.define('Ung.view.apps.AppsController', {
                         targetState: null,
                         runState: null,
                         desc: Util.appDescription[app.name],
-                        extraCls: 'installed'
+                        extraCls: 'installed',
+                        parentPolicy: null,
+                        licenseExpired: false
                     };
                     instance = Ext.Array.findBy(policy.instances.list, function(instance) {
                         return instance.appName === app.name;
@@ -125,10 +127,11 @@ Ext.define('Ung.view.apps.AppsController', {
                         }
                     }
 
-                    if (policy.licenseMap.map.hasOwnProperty(app.name)) {
-                        _app.licenseMessage = Util.getLicenseMessage(policy.licenseMap.map[app.name]);
+                    license = policy.licenseMap.map[app.name];
+                    if (license) {
+                        _app.licenseMessage = Util.getLicenseMessage(license);
+                        _app.licenseExpired = license.trial ? license.expired : false;
                     }
-
                     apps.push(_app);
                 });
 
