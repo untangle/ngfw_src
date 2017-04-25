@@ -48,7 +48,7 @@ Ext.define('Ung.apps.bandwidthcontrol.view.Rules', {
 
     columns: [
         Column.ruleId,
-        Column.live,
+        Column.enabled,
         Column.description,
         Column.conditions, {
             header: 'Action'.t(),
@@ -86,7 +86,7 @@ Ext.define('Ung.apps.bandwidthcontrol.view.Rules', {
 
     // todo: continue this stuff
     editorFields: [
-        Field.live,
+        Field.enabled,
         Field.description,
         Field.conditions, {
             xtype: 'combo',
