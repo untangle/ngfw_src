@@ -22,7 +22,19 @@ Ext.define('Ung.apps.openvpn.Main', {
             },
             clientConfiguration: {
                 data: '{settings.clientConfiguration.list}'
+            },
+            clientStatusList: {
+                data: '{clientStatusData}'
+            },
+            serverStatusList: {
+                data: '{serverStatusData}'
             }
+
+        },
+
+        data: {
+            clientStatusData: [],
+            serverStatusData: [],
         },
 
         formulas: {

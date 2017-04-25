@@ -50,7 +50,7 @@ Ext.define('Ung.apps.openvpn.view.Status', {
             bind: {
                 collapsed: '{instance.targetState !== "RUNNING"}',
                 disabled: '{instance.targetState !== "RUNNING"}',
-                store: { data: '{activeClients}' }
+                store: '{clientStatusList}'
             },
 
             columns: [{
@@ -114,7 +114,7 @@ Ext.define('Ung.apps.openvpn.view.Status', {
             bind: {
                 collapsed: '{instance.targetState !== "RUNNING"}',
                 disabled: '{instance.targetState !== "RUNNING"}',
-                store: { data: '{remoteServers}' }
+                store: '{serverStatusList}'
             },
 
             columns: [{
@@ -140,7 +140,7 @@ Ext.define('Ung.apps.openvpn.view.Status', {
             bbar: [{
                 text: 'Refresh'.t(),
                 iconCls: 'fa fa-refresh',
-                handler: 'getRemoteServersStatus'
+                handler: 'getActiveServers'
             }]
 
         }, {
