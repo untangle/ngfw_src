@@ -37,14 +37,6 @@ Ext.define('Ung.cmp.GridColumns', {
         width: 70
     },
 
-    live: {
-        xtype: 'checkcolumn',
-        header: 'Enabled'.t(),
-        dataIndex: 'live',
-        resizable: false,
-        width: 70
-    },
-
     description: {
         header: 'Description',
         width: 200,

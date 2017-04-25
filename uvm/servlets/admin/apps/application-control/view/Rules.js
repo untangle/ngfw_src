@@ -26,7 +26,7 @@ Ext.define('Ung.apps.applicationcontrol.view.Rules', {
 
 
     emptyRow: {
-        live: true,
+        enabled: true,
         description: '',
         action: {
             actionType: 'BLOCK',
@@ -51,7 +51,7 @@ Ext.define('Ung.apps.applicationcontrol.view.Rules', {
         renderer: function(value) {
             return value < 0 ? 'new'.t() : value;
         }
-    }, Column.live,
+    }, Column.enabled,
         Column.description,
         Column.conditions, {
             header: 'Action'.t(),
@@ -70,7 +70,7 @@ Ext.define('Ung.apps.applicationcontrol.view.Rules', {
 
     // todo: continue this stuff
     editorFields: [
-        Field.live,
+        Field.enabled,
         Field.description,
         Field.conditions, {
             xtype: 'combo',

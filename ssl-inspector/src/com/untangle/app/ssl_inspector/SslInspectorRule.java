@@ -21,62 +21,30 @@ public class SslInspectorRule implements JSONString, Serializable
     private SslInspectorRuleAction action;
 
     private int ruleId;
-    private boolean live;
+    private boolean enabled;
     private String description;
 
     public SslInspectorRule()
     {
     }
 
-    public List<SslInspectorRuleCondition> getConditions()
-    {
-        return this.matchers;
-    }
+    public List<SslInspectorRuleCondition> getConditions() { return this.matchers; }
+    public void setConditions(List<SslInspectorRuleCondition> matchers) { this.matchers = matchers; }
 
-    public void setConditions(List<SslInspectorRuleCondition> matchers)
-    {
-        this.matchers = matchers;
-    }
+    public boolean getEnabled() { return this.enabled; }
+    public void setEnabled( boolean newValue ) { this.enabled = newValue; }
 
-    public int getRuleId()
-    {
-        return this.ruleId;
-    }
+    /* deprecated - live renamed to enabled - this remains so json serialization works */
+    public void setLive(boolean live) { this.enabled = live; }
+    
+    public int getRuleId() { return this.ruleId; }
+    public void setRuleId(int ruleId) { this.ruleId = ruleId; }
 
-    public void setRuleId(int ruleId)
-    {
-        this.ruleId = ruleId;
-    }
+    public SslInspectorRuleAction getAction() { return this.action; }
+    public void setAction(SslInspectorRuleAction action) { this.action = action; }
 
-    public SslInspectorRuleAction getAction()
-    {
-        return this.action;
-    }
-
-    public void setAction(SslInspectorRuleAction action)
-    {
-        this.action = action;
-    }
-
-    public boolean isLive()
-    {
-        return live;
-    }
-
-    public void setLive(boolean live)
-    {
-        this.live = live;
-    }
-
-    public String getDescription()
-    {
-        return description;
-    }
-
-    public void setDescription(String description)
-    {
-        this.description = description;
-    }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
 
     public String toJSONString()
     {
@@ -86,7 +54,7 @@ public class SslInspectorRule implements JSONString, Serializable
 
     public boolean matches(AppSession sess)
     {
-        if (!isLive())
+        if (!getEnabled())
             return false;
 
         /**

@@ -26,7 +26,7 @@ Ext.define('Ung.apps.sslinspector.view.Rules', {
 
     emptyRow: {
         ruleId: 0,
-        live: true,
+        enabled: true,
         description: '',
         action: {
             actionType: 'IGNORE',
@@ -44,7 +44,7 @@ Ext.define('Ung.apps.sslinspector.view.Rules', {
 
     columns: [
         Column.ruleId,
-        Column.live,
+        Column.enabled,
         Column.description,
         Column.conditions, {
             header: 'Action'.t(),
@@ -61,7 +61,7 @@ Ext.define('Ung.apps.sslinspector.view.Rules', {
 
     // todo: continue this stuff
     editorFields: [
-        Field.live,
+        Field.enabled,
         Field.description,
         Field.conditions, {
             xtype: 'combo',

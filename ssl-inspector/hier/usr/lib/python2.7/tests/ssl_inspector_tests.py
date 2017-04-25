@@ -43,7 +43,7 @@ def createSSLInspectRule(url=testedServerDomainWildcard):
         },
         "description": url,
         "javaClass": "com.untangle.app.ssl_inspector.SslInspectorRule",
-        "live": True,
+        "enabled": True,
         "ruleId": 1
     };
 
