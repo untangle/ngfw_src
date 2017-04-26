@@ -42,14 +42,14 @@ Ext.define('Ung.apps.openvpn.view.Status', {
                 stripeRows: false
             },
 
-            collapsed: true,
-            disabled: true,
+//            collapsed: true,
+//            disabled: true,
             collapsible: true,
             hideCollapseTool: true,
             animCollapse: false,
             bind: {
-                collapsed: '{instance.targetState !== "RUNNING"}',
-                disabled: '{instance.targetState !== "RUNNING"}',
+//                collapsed: '{instance.targetState !== "RUNNING"}',
+//                disabled: '{instance.targetState !== "RUNNING"}',
                 store: '{clientStatusList}'
             },
 
@@ -68,8 +68,8 @@ Ext.define('Ung.apps.openvpn.view.Status', {
             }, {
                 header: 'Start Time'.t(),
                 dataIndex: 'start',
-                width: 100
-                // renderer: function(value) { return i18n.timestampFormat(value); }
+                width: 100,
+                renderer: function(value) { return Util.timestampFormat(value); }
             }, {
                 header: 'Rx Data'.t(),
                 dataIndex: 'bytesRxTotal',
@@ -105,15 +105,14 @@ Ext.define('Ung.apps.openvpn.view.Status', {
                 stripeRows: false
             },
 
-            collapsed: true,
-            disabled: true,
+//            collapsed: true,
+//            disabled: true,
             collapsible: true,
-            // titleCollapse: true,
             hideCollapseTool: true,
             animCollapse: false,
             bind: {
-                collapsed: '{instance.targetState !== "RUNNING"}',
-                disabled: '{instance.targetState !== "RUNNING"}',
+//                collapsed: '{instance.targetState !== "RUNNING"}',
+//                disabled: '{instance.targetState !== "RUNNING"}',
                 store: '{serverStatusList}'
             },
 
