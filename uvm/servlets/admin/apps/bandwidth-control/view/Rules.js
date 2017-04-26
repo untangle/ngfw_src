@@ -86,7 +86,7 @@ Ext.define('Ung.apps.bandwidthcontrol.view.Rules', {
 
     // todo: continue this stuff
     editorFields: [
-        Field.enabled,
+        Field.enableRule(),
         Field.description,
         Field.conditions, {
             xtype: 'combo',
@@ -123,26 +123,7 @@ Ext.define('Ung.apps.bandwidthcontrol.view.Rules', {
                 [7, 'Limited Severely'.t()]
             ],
             queryMode: 'local',
-        },
-        // {
-        //     xtype: 'container',
-        //     layout: {
-        //         type: 'hbox'
-        //     },
-        //     items: [{
-        //         xtype: 'numberfield',
-        //         bind: {
-        //             value: '{_action.tagTime}'
-        //         },
-        //         fieldLabel: 'Penalty Time'.t(),
-        //         allowBlank: false,
-        //         width: 350,
-        //         labelWidth: 150
-        //     }, {
-        //         xtype: 'displayfield',
-        //         html: 'seconds'.t()
-        //     }]
-        // }
+        }
     ],
 
     conditions: [
