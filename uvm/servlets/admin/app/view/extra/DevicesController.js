@@ -5,8 +5,10 @@ Ext.define('Ung.view.extra.DevicesController', {
 
     control: {
         '#': {
-            afterrender: 'getDevices',
             deactivate: 'onDeactivate'
+        },
+        '#devicesgrid': {
+            afterrender: 'getDevices'
         }
     },
 
@@ -15,12 +17,15 @@ Ext.define('Ung.view.extra.DevicesController', {
     },
 
     getDevices: function () {
-        var me = this;
+        var me = this,
+            grid = me.getView().down('#devicesgrid');
+
         me.getView().setLoading(true);
         Rpc.asyncData('rpc.deviceTable.getDevices')
             .then(function(result) {
                 me.getView().setLoading(false);
                 Ext.getStore('devices').loadData(result.list);
+                grid.getSelectionModel().select(0);
             });
     },
 
@@ -32,10 +37,16 @@ Ext.define('Ung.view.extra.DevicesController', {
 
 
     saveDevices: function () {
-        var me = this, store = me.getView().down('ungrid').getStore(), list = [];
+        var me = this,
+            store = me.getView().down('ungrid').getStore(),
+            list = [];
 
         me.getView().query('ungrid').forEach(function (grid) {
             var store = grid.getStore();
+
+            var filters = store.getFilters().clone();
+            store.clearFilter();
+
             if (store.getModifiedRecords().length > 0 ||
                 store.getNewRecords().length > 0 ||
                 store.getRemovedRecords().length > 0 ||
@@ -48,8 +59,11 @@ Ext.define('Ung.view.extra.DevicesController', {
                 store.isReordered = undefined;
                 list = Ext.Array.pluck(store.getRange(), 'data');
             }
-        });
 
+            filters.each( function(filter){
+                store.addFilter(filter);
+            });
+        });
 
         me.getView().setLoading(true);
         Rpc.asyncData('rpc.deviceTable.setDevices', {
@@ -63,5 +77,4 @@ Ext.define('Ung.view.extra.DevicesController', {
             me.getView().setLoading(false);
         });
    }
-
 });
