@@ -23,7 +23,7 @@ Ext.define('Ung.cmp.GridRenderers', {
     },
 
     tags: function( value ){
-        if(value != null){
+        if( value != null && value != "" ){
             if( typeof(value) == 'string' ){
                 value = Ext.decode( value );
             }
