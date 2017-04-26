@@ -19,6 +19,6 @@ Ext.define('Ung.config.administration.MainModel', {
     stores: {
         accounts: { data: '{adminSettings.users.list}' },
         certificates: { data: '{serverCertificates.list}' },
-        skins: { data: '{skinsList.list}' }
+        skins: { data: '{skinsList.list}', filters: [{ property: 'appsViewType', value: 'list' }] }
     }
 });
