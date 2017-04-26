@@ -766,12 +766,12 @@ Ext.define('Ung.config.network.Interface', {
             }, {
                 // channel
                 xtype: 'combo',
-                bind: '{intf.wirelessChannel}',
+                bind: {
+                    value: '{intf.wirelessChannel}',
+                    store: '{wirelessChannelsList}'
+                },
                 fieldLabel: 'Channel'.t(),
                 editable: false,
-                valueField: 'channel',
-                displayField: 'channelDescription',
-                store: { data: [] },
                 queryMode: 'local'
             }]
         }, {
