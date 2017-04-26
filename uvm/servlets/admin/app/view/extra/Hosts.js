@@ -94,22 +94,26 @@ Ext.define('Ung.view.extra.Hosts', {
             header: 'Creation Time'.t(),
             dataIndex: 'creationTimeDate',
             hidden: true,
-            rtype: 'timestamp'
+            rtype: 'timestamp',
+            filter: { type: 'date' },
         },{
             header: 'Last Access Time'.t(),
             dataIndex: 'lastAccessTime',
             hidden: true,
-            rtype: 'timestamp'
+            rtype: 'timestamp',
+            filter: { type: 'date' },
         },{
             header: 'Last Session Time'.t(),
             dataIndex: 'lastSessionTime',
             hidden: true,
-            rtype: 'timestamp'
+            rtype: 'timestamp',
+            filter: { type: 'date' },
         },{
             header: 'Last Completed TCP Session Time'.t(),
             dataIndex: 'lastCompletedTcpSessionTime',
             hidden: true,
-            rtype: 'timestamp'
+            rtype: 'timestamp',
+            filter: { type: 'date' },
         },{
             header: 'Entitled Status'.t(),
             dataIndex: 'entitled',
@@ -246,7 +250,8 @@ Ext.define('Ung.view.extra.Hosts', {
                 header: 'Expiration Time'.t(),
                 dataIndex: 'quotaExpirationTime',
                 hidden: true,
-                rtype: 'timestamp'
+                rtype: 'timestamp',
+                filter: { type: 'date' },
             }]
         }]
     }, {
