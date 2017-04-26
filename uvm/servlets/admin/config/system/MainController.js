@@ -3,20 +3,15 @@ Ext.define('Ung.config.system.MainController', {
     alias: 'controller.config-system',
 
     control: {
-        '#': { afterrender: 'loadSystem' },
-        '#regional': { afterrender: 'loadRegional' },
-        '#protocols': { beforerender: 'initProtocols' },
-        '#shield': { afterrender: 'loadShieldSettings' }
+        '#': { afterrender: 'loadSettings' }
     },
 
-    loadSystem: function (view) {
-        view.getViewModel().set('isExpertMode', rpc.isExpertMode);
-    },
-
-    // Regional
-    loadRegional: function (v) {
-        var vm = this.getViewModel(),
+    loadSettings: function (v) {
+        var me = this, vm = this.getViewModel(),
             timeZones = [];
+
+        vm.set('isExpertMode', rpc.isExpertMode);
+
         v.setLoading(true);
         Ext.Deferred.sequence([
             Rpc.directPromise('rpc.languageManager.getLanguageSettings'),
@@ -42,6 +37,18 @@ Ext.define('Ung.config.system.MainController', {
                 vm.set('timeZonesList', timeZones);
             }
         });
+
+        // get shield settings
+        try {
+            rpc.shieldSettings = rpc.appManager.app('shield').getSettings();
+            vm.set('shieldSettings', rpc.shieldSettings);
+        } catch (ex) {
+            Util.handleException(ex);
+        }
+
+        // get protocols
+        me.initProtocols();
+
     },
 
     syncTime: function () {
@@ -76,33 +83,12 @@ Ext.define('Ung.config.system.MainController', {
     },
 
 
-    // Shield
-    loadShieldSettings: function (v) {
-        var vm = this.getViewModel();
-        v.setLoading(true);
-        try {
-            vm.set('shieldSettings', rpc.appManager.app('shield').getSettings());
-            v.setLoading(false);
-        }
-        catch (ex) {
-            v.setLoading(false);
-            console.error(ex);
-            Util.handleException(ex);
-        }
-    },
-
-
-
-
-
-
-
 
     saveSettings: function () {
-        var v = this.getView(),
+        var me = this, v = this.getView(),
             vm = this.getViewModel();
 
-        v.setLoading('Saving...');
+        v.setLoading(true);
         if (vm.get('languageSettings.regionalFormats') === 'default') {
             // reset overrides
             vm.set('languageSettings.overrideDateFmt', '');
@@ -111,14 +97,32 @@ Ext.define('Ung.config.system.MainController', {
             vm.set('languageSettings.overrideTimestampFmt', '');
         }
 
+        rpc.shieldManager = rpc.appManager.app('shield');
+
+        v.query('ungrid').forEach(function (grid) {
+            var store = grid.getStore();
+            if (store.getModifiedRecords().length > 0 ||
+                store.getNewRecords().length > 0 ||
+                store.getRemovedRecords().length > 0 ||
+                store.isReordered) {
+                store.each(function (record) {
+                    if (record.get('markedForDelete')) {
+                        record.drop();
+                    }
+                });
+                store.isReordered = undefined;
+                vm.set(grid.listProperty, Ext.Array.pluck(store.getRange(), 'data'));
+            }
+        });
+
         // var newDate = new Date(v.down('#regional').down('datefield').getValue()).getTime();
 
         Ext.Deferred.sequence([
             Rpc.asyncPromise('rpc.languageManager.setLanguageSettings', vm.get('languageSettings')),
             Rpc.asyncPromise('rpc.systemManager.setSettings', vm.get('systemSettings')),
             Rpc.asyncPromise('rpc.systemManager.setTimeZone', vm.get('timeZone')),
+            Rpc.asyncPromise('rpc.shieldManager.setSettings', vm.get('shieldSettings')),
             // Rpc.asyncPromise('rpc.systemManager.setDate', newDate),
-            // this.setShield
         ], this).then(function () {
             v.setLoading(false);
             Util.successToast('System settings saved!');
@@ -128,32 +132,6 @@ Ext.define('Ung.config.system.MainController', {
             Util.handleException(ex);
         });
     },
-
-    setShield: function () {
-        var deferred = new Ext.Deferred(),
-            v = this.getView(), vm = this.getViewModel();
-        v.query('ungrid').forEach(function (grid) {
-            var store = grid.getStore();
-            console.log(store);
-            /**
-             * Important!
-             * update custom grids only if are modified records or it was reordered via drag/drop
-             */
-            if (store.getModifiedRecords().length > 0 || store.isReordered) {
-                store.each(function (record) {
-                    if (record.get('markedForDelete')) {
-                        record.drop();
-                    }
-                });
-                store.isReordered = undefined;
-                vm.set(grid.listProperty, Ext.Array.pluck(store.getRange(), 'data'));
-                // store.commitChanges();
-            }
-        });
-        rpc.appManager.app('shield').setSettings(function (result, ex) { if (ex) { console.log('exception'); deferred.reject(ex); } deferred.resolve(); }, vm.get('shieldSettings'));
-        return deferred.promise;
-    },
-
 
     // Support methods
     downloadSystemLogs: function () {
