@@ -40,18 +40,17 @@ Ext.define('Ung.view.extra.Devices', {
     },
 
     viewModel: {
-        // formulas: {
-        //     deviceDetails: function (get) {
-        //         if (get('devicesgrid.selection')) {
-        //             var data = get('devicesgrid.selection').getData();
-        //             console.log(data);
-        //             delete data._id;
-        //             delete data.javaClass;
-        //             return data;
-        //         }
-        //         return;
-        //     }
-        // }
+        formulas: {
+            deviceDetails: function (get) {
+                if (get('devicesgrid.selection')) {
+                    var data = get('devicesgrid.selection').getData();
+                    delete data._id;
+                    delete data.javaClass;
+                    return data;
+                }
+                return;
+            }
+        }
     },
 
     items: [{
@@ -61,8 +60,14 @@ Ext.define('Ung.view.extra.Devices', {
         reference: 'devicesgrid',
         title: 'Current Devices'.t(),
         store: 'devices',
-        forceFit: false,
         stateful: true,
+
+        enableColumnHide: true,
+        forceFit: false,
+        viewConfig: {
+            stripeRows: true,
+            enableTextSelection: true
+        },
 
         tbar: ['@add', '->', '@import', '@export'],
         recordActions: ['edit', 'delete'],
@@ -81,15 +86,15 @@ Ext.define('Ung.view.extra.Devices', {
             javaClass: 'com.untangle.uvm.DeviceTableEntry'
         },
 
+        plugins: ['gridfilters'],
+
         columns: [{
             header: 'MAC Address'.t(),
             dataIndex: 'macAddress',
-            width: 150,
             filter: { type: 'string' }
         }, {
             header: 'MAC Vendor'.t(),
             dataIndex: 'macVendor',
-            width: 150,
             filter: { type: 'string' },
             editor: {
                 xtype: 'textfield',
@@ -98,22 +103,12 @@ Ext.define('Ung.view.extra.Devices', {
         }, {
             header: 'Interface'.t(),
             dataIndex: 'interfaceId',
-            width: 120,
-            filter: { type: 'number' },
-            renderer: function (value) {
-                if (value === null || value < 0) {
-                    return '';
-                }
-                var intf = Util.interfacesListNamesMap()[value];
-                if (!intf) {
-                    return Ext.String.format('Interface [{0}]'.t(), value);
-                }
-                return intf + ' [' + value + ']';
-            }
+            filter: { type: 'string' },
+            rtype: 'interface'
         }, {
             header: 'Last Hostname'.t(),
             dataIndex: 'hostnameLastKnown',
-            width: 120,
+            filter: { type: 'string' },
             editor: {
                 xtype: 'textfield',
                 emptyText: ''.t()
@@ -121,7 +116,7 @@ Ext.define('Ung.view.extra.Devices', {
         }, {
             header: 'Hostname'.t(),
             dataIndex: 'hostname',
-            width: 120,
+            filter: { type: 'string' },
             editor: {
                 xtype: 'textfield',
                 emptyText: '[no hostname]'.t()
@@ -129,7 +124,7 @@ Ext.define('Ung.view.extra.Devices', {
         }, {
             header: 'Username'.t(),
             dataIndex: 'username',
-            width: 150,
+            filter: { type: 'string' },
             editor: {
                 xtype: 'textfield',
                 emptyText: '[no device username]'.t()
@@ -137,8 +132,8 @@ Ext.define('Ung.view.extra.Devices', {
         }, {
             header: 'HTTP'.t() + ' - ' + 'User Agent'.t(),
             dataIndex: 'httpUserAgent',
-            width: 200,
             flex: 1,
+            filter: { type: 'string' },
             editor: {
                 xtype: 'textfield',
                 emptyText: '[no HTTP user agent]'.t()
@@ -146,20 +141,12 @@ Ext.define('Ung.view.extra.Devices', {
         }, {
             header: 'Last Seen Time'.t(),
             dataIndex: 'lastSessionTime',
-            width: 150,
-            renderer: function (val, metaData, record) {
-                return val === 0 || val === '' ? '' : Util.timestampFormat(val);
-            },
-            filter: {
-                type: 'date'
-            }
+            filter: { type: 'date' },
+            rtype: 'timestamp'
         }, {
             header: 'Tags',
             dataIndex: 'tagsString',
-            width: 150,
-            filter: {
-                type: 'string'
-            }
+            filter: { type: 'string' },
         }],
         editorFields: [{
             xtype: 'textfield',
@@ -199,56 +186,17 @@ Ext.define('Ung.view.extra.Devices', {
             fieldLabel: 'HTTP'.t() + ' - ' + 'User Agent'.t(),
             emptyText: '[no HTTP user agent]'.t()
         }],
-    },
-    // {
-    //     region: 'east',
-    //     xtype: 'propertygrid',
-    //     itemId: 'details',
-    //     editable: false,
-    //     width: 400,
-    //     split: true,
-    //     collapsible: false,
-    //     resizable: true,
-    //     shadow: false,
-    //     hidden: true,
+    }, {
+        region: 'east',
+        xtype: 'unpropertygrid',
+        title: 'Device Details'.t(),
+        itemId: 'details',
+        collapsed: true,
 
-    //     cls: 'prop-grid',
-
-    //     viewConfig: {
-    //         stripeRows: false,
-    //         getRowClass: function(record) {
-    //             if (record.get('value') === null || record.get('value') === '') {
-    //                 return 'empty';
-    //             }
-    //             return;
-    //         }
-    //     },
-
-    //     nameColumnWidth: 200,
-    //     bind: {
-    //         // title: '{devicesgrid.selection.hostname} ({devicesgrid.selection.address})',
-    //         source: '{deviceDetails}',
-    //         hidden: '{!devicesgrid.selection}'
-    //     },
-    //     sourceConfig: {
-    //         username:            { displayName: 'Username'.t() },
-    //         hostname:            { displayName: 'Hostname'.t() },
-    //         hostnameLastKnown:   { displayName: 'HostnameLastKnown'.t() },
-    //         httpUserAgent:       { displayName: 'HTTP'.t() + ' - ' + 'User Agent'.t() },
-    //         lastSeenInterfaceId: { displayName: 'Interface'.t() },
-    //         lastSessionTime:     { displayName: 'Last Seen Time'.t(), renderer: 'timestampRenderer' },
-    //         macAddress:          { displayName: 'MAC Address'.t() },
-    //         macVendor:           { displayName: 'MAC Vendor'.t() },
-    //         tags:                { displayName: 'Tags'.t() },
-    //         tagsString:          { displayName: 'Tags String'.t() },
-    //     },
-    //     listeners: {
-    //         beforeedit: function () {
-    //             return false;
-    //         }
-    //     }
-    // }
-    ],
+        bind: {
+            source: '{deviceDetails}'
+        }
+    }],
     tbar: [{
         xtype: 'button',
         text: 'Refresh'.t(),
@@ -274,7 +222,7 @@ Ext.define('Ung.view.extra.Devices', {
         hrefTarget: '_self'
     }],
     bbar: ['->', {
-        text: 'Apply'.t(),
+        text: '<strong>' + 'Save'.t() + '</strong>',
         iconCls: 'fa fa-floppy-o',
         handler: 'saveDevices'
     }]
