@@ -6,13 +6,13 @@
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "orderDesc": false,
-    "units": "KB/s",
+    "units": "bytes/s",
     "readOnly": true,
     "table": "session_minutes",
     "timeDataColumns": [
-        "round(coalesce(sum(s2c_bytes + c2s_bytes), 0) / (1024*60*10),1) as total",
-        "round(coalesce(sum(c2s_bytes), 0) / (1024*60*10),1) as sent",
-        "round(coalesce(sum(s2c_bytes), 0) / (1024*60*10),1) as received"
+        "round(coalesce(sum(s2c_bytes + c2s_bytes), 0) / (60*10),1) as total",
+        "round(coalesce(sum(c2s_bytes), 0) / (60*10),1) as sent",
+        "round(coalesce(sum(s2c_bytes), 0) / (60*10),1) as received"
     ],
     "colors": [
         "#396c2b",
