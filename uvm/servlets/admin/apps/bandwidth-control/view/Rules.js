@@ -106,9 +106,11 @@ Ext.define('Ung.apps.bandwidthcontrol.view.Rules', {
         }, {
             xtype: 'combo',
             fieldLabel: 'Priority'.t(),
+            hidden: true,
             disabled: true,
             bind: {
                 value: '{_action.priority}',
+                hidden: '{actionType.value !== "SET_PRIORITY"}',
                 disabled: '{actionType.value !== "SET_PRIORITY"}'
             },
             allowBlank: false,
@@ -123,6 +125,61 @@ Ext.define('Ung.apps.bandwidthcontrol.view.Rules', {
                 [7, 'Limited Severely'.t()]
             ],
             queryMode: 'local',
+        }, {
+            xtype: 'combo',
+            fieldLabel: 'Quota Expiration'.t(),
+            hidden: true,
+            disabled: true,
+            bind: {
+                value: '{_action.quotaTime}',
+                hidden: '{actionType.value !== "GIVE_HOST_QUOTA" && actionType.value !== "GIVE_USER_QUOTA"}',
+                disabled: '{actionType.value !== "GIVE_HOST_QUOTA" && actionType.value !== "GIVE_USER_QUOTA"}'
+            },
+            allowBlank: false,
+            editable: true,
+            store:[
+             [-4, "End of Month".t()], //END_OF_MONTH from QuotaBoxEntry
+             [-3, "End of Week".t()], //END_OF_WEEK from QuotaBoxEntry
+             [-2, "End of Day".t()], //END_OF_DAY from QuotaBoxEntry
+             [-1, "End of Hour".t()] //END_OF_HOUR from QuotaBoxEntry
+            ],
+            queryMode: 'local',
+        }, {
+            xtype: 'numberfield',
+            fieldLabel: 'Quota Bytes'.t(),
+            hidden: true,
+            disabled: true,
+            bind: {
+                value: '{_action.quotaBytes}',
+                hidden: '{actionType.value !== "GIVE_HOST_QUOTA" && actionType.value !== "GIVE_USER_QUOTA"}',
+                disabled: '{actionType.value !== "GIVE_HOST_QUOTA" && actionType.value !== "GIVE_USER_QUOTA"}'
+            },
+            allowBlank: false,
+            editable: true,
+        }, {
+            xtype: 'textfield',
+            fieldLabel: 'Tag Name'.t(),
+            hidden: true,
+            disabled: true,
+            bind: {
+                value: '{_action.tagName}',
+                hidden: '{actionType.value !== "TAG_HOST"}',
+                disabled: '{actionType.value !== "TAG_HOST"}'
+            },
+            allowBlank: false,
+            editable: true,
+        }, {
+            xtype: 'numberfield',
+            fieldLabel: 'Tag Time (Seconds)'.t(),
+            hidden: true,
+            disabled: true,
+            bind: {
+                value: '{_action.tagTime}',
+                hidden: '{actionType.value !== "TAG_HOST"}',
+                disabled: '{actionType.value !== "TAG_HOST"}'
+            },
+            allowBlank: false,
+            editable: true,
         }
     ],
 
