@@ -538,6 +538,50 @@ Ext.define('Ung.config.network.MainController', {
         Ext.MessageBox.hide();
     },
 
+    wirelessChannelsMap: {
+        '-1':  [-1,  'Automatic 2.4 GHz'.t()],
+        '-2':  [-2,  'Automatic 5 GHz'.t()],
+        '1':   [1,   '1 - 2.412 GHz'.t()],
+        '2':   [2,   '2 - 2.417 GHz'.t()],
+        '3':   [3,   '3 - 2.422 GHz'.t()],
+        '4':   [4,   '4 - 2.427 GHz'.t()],
+        '5':   [5,   '5 - 2.432 GHz'.t()],
+        '6':   [6,   '6 - 2.437 GHz'.t()],
+        '7':   [7,   '7 - 2.442 GHz'.t()],
+        '8':   [8,   '8 - 2.447 GHz'.t()],
+        '9':   [9,   '9 - 2.452 GHz'.t()],
+        '10':  [10,  '10 - 2.457 GHz'.t()],
+        '11':  [11,  '11 - 2.462 GHz'.t()],
+        '12':  [12,  '12 - 2.467 GHz'.t()],
+        '13':  [13,  '13 - 2.472 GHz'.t()],
+        '14':  [14,  '14 - 2.484 GHz'.t()],
+        '36':  [36,  '36 - 5.180 GHz'.t()],
+        '40':  [40,  '40 - 5.200 GHz'.t()],
+        '44':  [44,  '44 - 5.220 GHz'.t()],
+        '48':  [48,  '48 - 5.240 GHz'.t()],
+        '52':  [52,  '52 - 5.260 GHz'.t()],
+        '56':  [56,  '56 - 5.280 GHz'.t()],
+        '60':  [60,  '60 - 5.300 GHz'.t()],
+        '64':  [64,  '64 - 5.320 GHz'.t()],
+        '100': [100, '100 - 5.500 GHz'.t()],
+        '104': [104, '104 - 5.520 GHz'.t()],
+        '108': [108, '108 - 5.540 GHz'.t()],
+        '112': [112, '112 - 5.560 GHz'.t()],
+        '116': [116, '116 - 5.580 GHz'.t()],
+        '120': [120, '120 - 5.600 GHz'.t()],
+        '124': [124, '124 - 5.620 GHz'.t()],
+        '128': [128, '128 - 5.640 GHz'.t()],
+        '132': [132, '132 - 5.660 GHz'.t()],
+        '136': [136, '136 - 5.680 GHz'.t()],
+        '140': [140, '140 - 5.700 GHz'.t()],
+        '144': [144, '144 - 5.720 GHz'.t()],
+        '149': [149, '149 - 5.745 GHz'.t()],
+        '153': [153, '153 - 5.765 GHz'.t()],
+        '157': [157, '157 - 5.785 GHz'.t()],
+        '161': [161, '161 - 5.805 GHz'.t()],
+        '165': [165, '165 - 5.825 GH'.t()]
+    },
+
     editInterface: function (btn) {
         var me = this;
         if (Ext.isFunction(btn.getWidgetRecord)) {
@@ -576,7 +620,8 @@ Ext.define('Ung.config.network.MainController', {
             viewModel: {
                 data: {
                     // intf: btn.getWidgetRecord().copy(null)
-                    intf: me.editIntf
+                    intf: me.editIntf,
+                    wirelessChannelsList: []
                 },
                 formulas: {
                     isAddressed: function (get) { return get('intf.configType') === 'ADDRESSED'; },
@@ -601,6 +646,25 @@ Ext.define('Ung.config.network.MainController', {
             }
         });
         me.dialog.show();
+
+        // wireless channels
+        var wirelessChannelsArr = [];
+        if (me.editIntf.get('isWirelessInterface')) {
+            Rpc.asyncData('rpc.networkManager.getWirelessChannels', me.editIntf.get('systemDev'))
+                .then(function(result) {
+                    if (result && result.list) {
+                        Ext.Array.each(result.list, function (ch) {
+                            if (me.wirelessChannelsMap[ch]) {
+                                wirelessChannelsArr.push(me.wirelessChannelsMap[ch]);
+                            }
+                        });
+                        me.dialog.getViewModel().set('wirelessChannelsList', wirelessChannelsArr);
+                    }
+                }, function (ex) {
+                    Util.handleException(ex);
+                });
+        }
+
     },
     cancelEdit: function (button) {
         this.editIntf.reject();
