@@ -47,7 +47,6 @@ Ext.define('Ung.view.extra.HostsController', {
                 grid.getView().setLoading(false);
                 Ext.getStore('hosts').loadData(result.list);
                 grid.getSelectionModel().select(0);
-                // grid.getStore().setData(result.list);
             });
     }
 });
