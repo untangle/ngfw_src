@@ -9,7 +9,10 @@ Ext.define('Ung.apps.openvpn.view.Advanced', {
         xtype: 'tbtext',
         padding: '8 5',
         style: { fontSize: '12px', fontWeight: 600 },
-        html: 'The Advanced tab is used to configure advanced OpenVPN options.'.t()
+        html: '<i class="fa fa-exclamation-triangle" style="color: red;"></i> ' +
+              'Advanced settings require careful configuration. ' +
+              'Misconfiguration can compromise the proper operation and security of your server. ' +
+              'Changes made on this tab are not officially supported.'.t()
     }],
 
     defaults: {
