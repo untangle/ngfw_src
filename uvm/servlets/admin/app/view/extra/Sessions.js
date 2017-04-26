@@ -101,7 +101,8 @@ Ext.define('Ung.view.extra.Sessions', {
             hidden: true,
             filter: {
                 type: 'string' // should be list
-            }
+            },
+            rtype: 'policy'
         }, {
             header: 'Hostname'.t(),
             dataIndex: 'hostname',

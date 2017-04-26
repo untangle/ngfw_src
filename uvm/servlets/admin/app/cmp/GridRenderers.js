@@ -15,7 +15,11 @@ Ext.define('Ung.cmp.GridRenderers', {
     },
 
     interface: function( value ){
-        return Util.interfacesListNamesMap()[value];
+        var interfaceName = Util.interfacesListNamesMap()[value];
+        if (interfaceName) {
+            return interfaceName + ' [' + value + ']';
+        }
+        return '';
     },
 
     tags: function( value ){
@@ -23,12 +27,20 @@ Ext.define('Ung.cmp.GridRenderers', {
             if( typeof(value) == 'string' ){
                 value = Ext.decode( value );
             }
-            if( value && 
+            if( value &&
                  value.list ){
                 return value.list.join(', ');
             }
         }
         return '';
+    },
+
+    policy: function ( value ) {
+        var policy = Ext.getStore('policiestree').findRecord('policyId', value);
+        if (policy) {
+            return policy.get('name') + ' [' + value + ']';
+        }
+        return value;
     }
 
 });
