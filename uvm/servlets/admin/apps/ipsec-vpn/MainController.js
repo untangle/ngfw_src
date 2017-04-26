@@ -46,12 +46,32 @@ Ext.define('Ung.apps.ipsecvpn.MainController', {
 
     getSettings: function() {
         var me = this, v = this.getView(), vm = this.getViewModel();
+        var x,y;
         v.setLoading(true);
         v.appManager.getSettings(function(result, ex) {
             v.setLoading(false);
             if (ex) { Util.handleException(ex); return; }
+            var wanListData = me.calculateNetworks();
+
+            for( x = 0 ; x < result.tunnels.list.length; x++ ) {
+                result.tunnels.list[x].localInterface = 0;
+                for( y = 0 ; y < wanListData.length ; y++) {
+                    if (result.tunnels.list[x].left == wanListData[y][1]) {
+                        result.tunnels.list[x].localInterface = wanListData[y][0];
+                    }
+                }
+            }
+
+            for( x = 0 ; x < result.networks.list.length; x++ ) {
+                result.networks.list[x].localInterface = 0;
+                for( y = 0 ; y < wanListData.length ; y++) {
+                    if (result.networks.list[x].localAddress == wanListData[y][1]) {
+                        result.networks.list[x].localInterface = wanListData[y][0];
+                    }
+                }
+            }
+
             vm.set('settings', result);
-            me.calculateNetworks();
         });
     },
 
@@ -95,7 +115,7 @@ Ext.define('Ung.apps.ipsecvpn.MainController', {
         var intStatus = rpc.networkManager.getInterfaceStatus();
         var counter = 0;
 
-        wanListData.push([counter++ , '' , '- ' + 'Custom'.t() + ' -']);
+        wanListData.push([ counter++ , '' , '- ' + 'Custom'.t() + ' -' ]);
 
         // build the list of active WAN networks for the interface combo box and set the defaults for left and leftSubnet
         for( x = 0 ; x <  netSettings.interfaces.list.length ; x++ )
@@ -117,7 +137,7 @@ Ext.define('Ung.apps.ipsecvpn.MainController', {
                 if (device.isWan)
                 {
                     // add the address and name to the WAN list
-                    wanListData.push([ counter++ , status.v4Address , device.name]);
+                    wanListData.push([ counter++ , status.v4Address , device.name ]);
 
                     // save the first WAN address to use as the default for new tunnels
                     if (leftDefault === '0.0.0.0') { leftDefault = status.v4Address; }
@@ -135,6 +155,8 @@ Ext.define('Ung.apps.ipsecvpn.MainController', {
         vm.set('leftDefault', leftDefault);
         vm.set('leftSubnetDefault', leftSubnetDefault);
         vm.set('wanListData', wanListData);
+
+        return(wanListData);
     },
 
     configureAuthTarget: function(btn)
