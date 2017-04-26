@@ -70,19 +70,25 @@ Ext.define('Ung.view.extra.Hosts', {
             enableTextSelection: true
         },
 
+        plugins: ['gridfilters'],
+
         columns: [{
             header: 'Address'.t(),
             dataIndex: 'address',
-            resizable: false
+            resizable: false,
+            filter: { type: 'string' }
         },{
             header: 'MAC Address'.t(),
-            dataIndex: 'macAddress'
+            dataIndex: 'macAddress',
+            filter: { type: 'string' }
         },{
             header: 'MAC Vendor'.t(),
-            dataIndex: 'macVendor'
+            dataIndex: 'macVendor',
+            filter: { type: 'string' }
         },{
             header: 'Interface'.t(),
             dataIndex: 'interfaceId',
+            filter: { type: 'string' },
             rtype: 'interface'
         },{
             header: 'Creation Time'.t(),
@@ -107,18 +113,36 @@ Ext.define('Ung.view.extra.Hosts', {
         },{
             header: 'Entitled Status'.t(),
             dataIndex: 'entitled',
-            hidden: true
+            hidden: true,
+            rtype: 'boolean',
+            filter: {
+                type: 'boolean',
+                yesText: 'true',
+                noText: 'false'
+            },
         },{
             header: 'Active'.t(),
             dataIndex: 'active',
             width: 80,
-            rtype: 'boolean'
+            rtype: 'boolean',
+            filter: {
+                type: 'boolean',
+                yesText: 'true',
+                noText: 'false'
+            },
         },{
             header: 'HTTP User Agent'.t(),
-            dataIndex: 'httpUserAgent'
+            dataIndex: 'httpUserAgent',
+            filter: { type: 'string' },
         },{
             header: 'Captive Portal Authenticated'.t(),
-            dataIndex: 'captivePortalAuthenticated'
+            dataIndex: 'captivePortalAuthenticated',
+            rtype: 'boolean',
+            filter: {
+                type: 'boolean',
+                yesText: 'true',
+                noText: 'false'
+            },
         },{
             header: 'Tags'.t(),
             dataIndex: 'tags',
@@ -128,74 +152,92 @@ Ext.define('Ung.view.extra.Hosts', {
             dataIndex: 'tagsString'
         },{
             header: 'Hostname'.t(),
-            dataIndex: 'hostname'
+            dataIndex: 'hostname',
+            filter: { type: 'string' },
         },{
             header: 'Hostname Source'.t(),
             dataIndex: 'hostnameSource',
-            hidden: true
+            hidden: true,
+            filter: { type: 'string' },
         },{
             header: 'Hostname (DHCP)'.t(),
             dataIndex: 'hostnameDhcp',
-            hidden: true
+            hidden: true,
+            filter: { type: 'string' },
         },{
             header: 'Hostname (DNS)'.t(),
             dataIndex: 'hostnameDns',
-            hidden: true
+            hidden: true,
+            filter: { type: 'string' },
         },{
             header: 'Hostname (Device)'.t(),
             dataIndex: 'hostnameDevice',
-            hidden: true
+            hidden: true,
+            filter: { type: 'string' },
         },{
             header: 'Hostname (Device Last Known)'.t(),
             dataIndex: 'hostnameDeviceLastKnown',
-            hidden: true
+            hidden: true,
+            filter: { type: 'string' },
         },{
             header: 'Hostname (OpenVPN)'.t(),
             dataIndex: 'hostnameOpenVpn',
-            hidden: true
+            hidden: true,
+            filter: { type: 'string' },
         },{
             header: 'Hostname (Reports)'.t(),
             dataIndex: 'hostnameReports',
-            hidden: true
+            hidden: true,
+            filter: { type: 'string' },
         },{
             header: 'Hostname (Directory Connector)'.t(),
             dataIndex: 'hostnameDirectoryConnector',
-            hidden: true
+            hidden: true,
+            filter: { type: 'string' },
         },{
             header: 'Username'.t(),
-            dataIndex: 'username'
+            dataIndex: 'username',
+            filter: { type: 'string' },
         },{
             header: 'Username Source'.t(),
             dataIndex: 'usernameSource',
-            hidden: true
+            hidden: true,
+            filter: { type: 'string' },
         },{
             header: 'Username (Directory Connector)'.t(),
             dataIndex: 'usernameDirectoryConnector',
-            hidden: true
+            hidden: true,
+            filter: { type: 'string' },
         },{
             header: 'Username (Captive Porrtal)'.t(),
             dataIndex: 'usernameCaptivePortal',
-            hidden: true
+            hidden: true,
+            filter: { type: 'string' },
         },{
             header: 'Username (Device)'.t(),
             dataIndex: 'usernameDevice',
-            hidden: true
+            hidden: true,
+            filter: { type: 'string' },
         },{
             header: 'Username (OpenVPN)'.t(),
             dataIndex: 'usernameOpenVpn',
-            hidden: true
+            hidden: true,
+            filter: { type: 'string' },
         },{
             header: 'Username (IPsec VPN)'.t(),
             dataIndex: 'usernameIpsecVpn',
-            hidden: true
+            hidden: true,
+            filter: { type: 'string' },
         },{
             header: 'Quota'.t(),
             columns: [{
                 header: 'Size'.t(),
-                dataIndex: 'quotaSize'
+                dataIndex: 'quotaSize',
+                filter: 'number',
             },{
                 header: 'Remaining'.t(),
-                dataIndex: 'quotaRemaining'
+                dataIndex: 'quotaRemaining',
+                filter: 'number',
             },{
                 header: 'Issue Time'.t(),
                 dataIndex: 'quotaIssueTime',
