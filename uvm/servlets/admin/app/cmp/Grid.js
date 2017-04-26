@@ -213,6 +213,8 @@ Ext.define('Ung.cmp.Grid', {
                         resizable: false,
                         tdCls: 'action-cell',
                         iconCls: 'fa fa-lock',
+                        menuDisabled: true,
+                        hideable: false,
                         handler: 'changePassword'
                     });
                 }
@@ -226,6 +228,8 @@ Ext.define('Ung.cmp.Grid', {
                         tdCls: 'action-cell',
                         iconCls: 'fa fa-pencil',
                         handler: 'editRecord',
+                        menuDisabled: true,
+                        hideable: false,
                         isDisabled: function (table, rowIndex, colIndex, item, record) {
                             return record.get('readOnly') || false;
                         }
@@ -241,6 +245,8 @@ Ext.define('Ung.cmp.Grid', {
                         tdCls: 'action-cell',
                         iconCls: 'fa fa-trash-o fa-red',
                         handler: 'deleteRecord',
+                        menuDisabled: true,
+                        hideable: false,
                         isDisabled: function (table, rowIndex, colIndex, item, record) {
                             return record.get('readOnly') || false;
                         }
@@ -268,6 +274,8 @@ Ext.define('Ung.cmp.Grid', {
                         width: 30,
                         resizable: false,
                         tdCls: 'action-cell',
+                        menuDisabled: true,
+                        hideable: false,
                         // iconCls: 'fa fa-arrows'
                         renderer: function() {
                             return '<i class="fa fa-arrows" style="cursor: move;"></i>';
