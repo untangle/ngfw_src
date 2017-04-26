@@ -10,9 +10,10 @@ Ext.define('Ung.apps.openvpn.view.Advanced', {
         padding: '8 5',
         style: { fontSize: '12px', fontWeight: 600 },
         html: '<i class="fa fa-exclamation-triangle" style="color: red;"></i> ' +
-              'Advanced settings require careful configuration. ' +
-              'Misconfiguration can compromise the proper operation and security of your server. ' +
-              'Changes made on this tab are not officially supported.'.t()
+              'Advanced settings require careful configuration.' +
+              ' <i class="fa fa-exclamation-triangle" style="color: red;"></i><br>' +
+              'Misconfiguration can compromise the proper operation and security of your server.<br>' +
+              'Changes made on this tab are not officially supported.<br>'.t()
     }],
 
     defaults: {
@@ -21,20 +22,49 @@ Ext.define('Ung.apps.openvpn.view.Advanced', {
     },
 
     items: [{
-        xtype: 'combo',
-        fieldLabel: 'Protocol'.t(),
-        bind: '{settings.protocol}',
-        store: [['udp','UDP'],['tcp','TCP']],
-        editable: false,
-        padding: '10 0 0 10'
+        xtype: 'container',
+        layout: 'column',
+        margin: '10 0 5 0',
+        items: [{
+            xtype: 'combo',
+            fieldLabel: 'Protocol'.t(),
+            labelWidth: 180,
+            bind: '{settings.protocol}',
+            store: [['udp','UDP'],['tcp','TCP']],
+            editable: false,
+        }, {
+            xtype: 'displayfield',
+            margin: '0 0 0 10',
+            value: '(default = UDP)'.t()
+        }]
     },{
-        fieldLabel: 'Port'.t(),
-        xtype: 'textfield',
-        bind: '{settings.port}'
+        xtype: 'container',
+        layout: 'column',
+        margin: '0 0 5 0',
+        items: [{
+            xtype: 'textfield',
+            fieldLabel: 'Port'.t(),
+            labelWidth: 180,
+            bind: '{settings.port}'
+        }, {
+            xtype: 'displayfield',
+            margin: '0 0 0 10',
+            value: '(default = 1194)'.t()
+        }]
     },{
-        fieldLabel: 'Cipher'.t(),
-        xtype: 'textfield',
-        bind: '{settings.cipher}',
+        xtype: 'container',
+        layout: 'column',
+        margin: '0 0 5 0',
+        items: [{
+            xtype: 'textfield',
+            fieldLabel: 'Cipher'.t(),
+            labelWidth: 180,
+            bind: '{settings.cipher}',
+        }, {
+            xtype: 'displayfield',
+            margin: '0 0 0 10',
+            value: '(default = AES-128-CBC)'.t()
+        }]
     },{
         fieldLabel: 'Client To Client Allowed'.t(),
         xtype: 'checkbox',
