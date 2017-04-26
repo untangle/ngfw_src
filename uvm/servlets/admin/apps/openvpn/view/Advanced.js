@@ -66,9 +66,19 @@ Ext.define('Ung.apps.openvpn.view.Advanced', {
             value: '(default = AES-128-CBC)'.t()
         }]
     },{
-        fieldLabel: 'Client To Client Allowed'.t(),
-        xtype: 'checkbox',
-        bind: '{settings.clientToClient}'
+        xtype: 'container',
+        layout: 'column',
+        margin: '0 0 5 0',
+        items: [{
+            xtype: 'checkbox',
+            fieldLabel: 'Client To Client Allowed'.t(),
+            labelWidth: 180,
+            bind: '{settings.clientToClient}'
+        }, {
+            xtype: 'displayfield',
+            margin: '0 0 0 10',
+            value: '(default = checked)'.t()
+        }]
     },{
         title: 'Server Configuration'.t(),
         xtype: 'app-openvpn-config-editor-grid',
