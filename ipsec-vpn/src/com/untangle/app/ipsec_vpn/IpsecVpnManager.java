@@ -36,6 +36,7 @@ public class IpsecVpnManager
     private static final String IKEV2_UPDOWN_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-ikev2-updown";
     private static final String IPTABLES_GRE_SCRIPT = "/etc/untangle-netd/iptables-rules.d/712-gre";
 
+    private static final String IPSEC_UNTANGLE_FILE = "/etc/ipsec.untangle";
     private static final String IPSEC_CONF_FILE = "/etc/ipsec.conf";
     private static final String IPSEC_SECRETS_FILE = "/etc/ipsec.secrets";
     private static final String OPTIONS_XL2TPD_FILE = "/etc/ppp/options.xl2tpd";
@@ -97,7 +98,22 @@ public class IpsecVpnManager
         IpsecVpnTunnel data;
         int x;
 
-        FileWriter ipsec_conf = new FileWriter(IPSEC_CONF_FILE, false);
+        /*
+         * Some customers want manual control of the ipsec.conf file to
+         * set low level features and options that we don't currently
+         * support in the user interface. To support them we added a special
+         * neverWriteconfig boolean that can be manually enabled in the
+         * settings file. When set, we write our config to ipsec.untangle
+         * instead of ipsec.conf, leaving manual modifications unchanged.
+         */
+        FileWriter ipsec_conf = null;
+
+        if (settings.getNeverWriteConfig() == true) {
+            ipsec_conf = new FileWriter(IPSEC_UNTANGLE_FILE, false);
+        } else {
+            ipsec_conf = new FileWriter(IPSEC_CONF_FILE, false);
+        }
+
         FileWriter ipsec_secrets = new FileWriter(IPSEC_SECRETS_FILE, false);
         FileWriter options_xl2tpd = new FileWriter(OPTIONS_XL2TPD_FILE, false);
         FileWriter xl2tpd_conf = new FileWriter(XL2TPD_CONF_FILE, false);
