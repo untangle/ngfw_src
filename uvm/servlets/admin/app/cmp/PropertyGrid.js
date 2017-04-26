@@ -2,11 +2,7 @@ Ext.define('Ung.cmp.PropertyGrid', {
     extend: 'Ext.grid.property.Grid',
     alias: 'widget.unpropertygrid',
 
-    // requires: [
-    //     'Ung.cmp.PropertyGridController'
-    // ],
     controller: 'unpropertygrid',
-
 
     editable: false,
     width: 400,
@@ -17,8 +13,6 @@ Ext.define('Ung.cmp.PropertyGrid', {
     animCollapse: false,
     titleCollapse: true,
     collapsed: false,
-
-    // columnLines: false,
 
     cls: 'prop-grid',
 
@@ -31,7 +25,12 @@ Ext.define('Ung.cmp.PropertyGrid', {
         }
     },
 
-    nameColumnWidth: 150,
+    nameColumnWidth: 200,
+
+    // features: [{
+    //     ftype: 'grouping',
+    //     groupHeaderTpl: '{name}'
+    // }],
 
     listeners: {
         beforeedit: function () {
@@ -44,9 +43,14 @@ Ext.define('Ung.cmp.PropertyGrid', {
             var columns = this.up().down('grid').getColumns();
             var sourceConfig = {};
             columns.forEach( function(column){
+                var displayName = column.text;
+                if( column.ownerCt.text ){
+                    displayName = column.ownerCt.text + ' &#151 ' + displayName;
+                }
                 var config = {
-                    displayName: column.text
+                    displayName: displayName
                 };
+
                 if( column.renderer && 
                     !column.rtype ){
                     config.renderer = column.renderer;
@@ -64,6 +68,27 @@ Ext.define('Ung.cmp.PropertyGrid', {
 
             this.configure(sourceConfig);
             this.reconfigure();
+
+            // this.getStore().sort('group');
+            // this.getStore().group('group');
+
+            // this.getStore().on({
+            //     datachanged: Ext.bind(function( store ){
+            //         var columns = this.up().down('grid').getColumns();
+            //         store.each(function(record){
+            //             var groupName = '';
+            //             var recordName = record.get('name');
+            //             columns.find( function(column){
+            //                 if( column.dataIndex == recordName ){
+            //                     if( column.ownerCt.text ){
+            //                         groupName = column.ownerCt.text;
+            //                     }
+            //                 } 
+            //             });
+            //             record.set('group', groupName);
+            //         });
+            //     },this)
+            // });
 
         }
     }
