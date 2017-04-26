@@ -391,18 +391,6 @@ public class EventManagerImpl implements EventManager
         TriggerRule eventRule;
 
         matchers = new LinkedList<EventRuleCondition>();
-        matcher1 = new EventRuleCondition( "class", "=", "*AlertEvent*" );
-        matchers.add( matcher1 );
-        matcher2 = new EventRuleCondition( "description", "=", "*Suspicious Activity*" );
-        matchers.add( matcher2 );
-        eventRule = new TriggerRule( true, matchers, true, "Tag suspicious activity", false, 0 );
-        eventRule.setAction( TriggerRule.TriggerAction.TAG_HOST );
-        eventRule.setTagTarget( "cClientAddr" );
-        eventRule.setTagName( "suspicious" );
-        eventRule.setTagLifetimeSec( new Long(60*30) ); // 30 minutes
-        rules.add( eventRule );
-
-        matchers = new LinkedList<EventRuleCondition>();
         matcher1 = new EventRuleCondition( "class", "=", "*ApplicationControlLogEvent*");
         matchers.add( matcher1 );
         matcher2 = new EventRuleCondition( "category", "=", "Proxy" );

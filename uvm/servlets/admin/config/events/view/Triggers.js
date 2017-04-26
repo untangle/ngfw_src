@@ -100,7 +100,7 @@ Ext.define('Ung.config.events.view.Triggers', {
                     bind: {
                         value: '{record.tagTarget}'
                     },
-                    fieldLabel: 'Tag Target'.t(),
+                    fieldLabel: 'Target'.t(),
                     labelWidth: 160,
                     allowBlank: false
                 }, {
@@ -114,12 +114,20 @@ Ext.define('Ung.config.events.view.Triggers', {
                 },{
                     xtype: 'container',
                     layout: 'column',
+                    hidden: true,
+                    bind: {
+                        hidden: '{record.action !== "TAG_HOST" && record.action !== "TAG_USER" && record.action !== "TAG_DEVICE"}'
+                    },
                     margin: '0 0 5 0',
                     items: [{
                         xtype: 'numberfield',
                         fieldLabel: 'Tag Lifetime'.t(),
                         labelWidth: 160,
-                        bind: '{record.tagLifetimeSec}',
+                        disabled: true,
+                        bind: {
+                            value: '{record.tagLifetimeSec}',
+                            disabled: '{record.action !== "TAG_HOST" && record.action !== "TAG_USER" && record.action !== "TAG_DEVICE"}'
+                        },
                         allowBlank: false
                     }, {
                         xtype: 'label',
