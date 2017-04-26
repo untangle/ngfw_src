@@ -74,9 +74,8 @@ Ext.define('Ung.view.extra.Sessions', {
             header: 'Creation Time'.t(),
             dataIndex: 'creationTime',
             hidden: true,
-            renderer: function(value) {
-                return value ? Util.timestampFormat(value) : '';
-            }
+            rtype: 'timestamp',
+            filter: { type: 'date' },
         }, {
             header: 'Protocol'.t(),
             dataIndex: 'protocol',
