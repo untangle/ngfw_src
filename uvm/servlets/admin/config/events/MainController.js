@@ -338,8 +338,8 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
                         change: 'classChange'
                     }
                 },
-                this.conditionsGrid
-                ]);
+                          this.conditionsGrid
+                         ]);
             }
         }
         form.isValid();
@@ -369,7 +369,7 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
 
     onCancel: function () {
         var v = this.getView(),
-            vm = this.getViewModel(),
+        vm = this.getViewModel(),
             condStore;
 
         if (v.down('grid')) {
@@ -421,9 +421,9 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
      * Updates the disabled/enabled status of the conditions in the menu
      */
     setMenuConditions: function () {
-        var conditionsGrid = this.getView().down('grid'),
-            menu = conditionsGrid.down('#addConditionBtn').getMenu(),
-            store = conditionsGrid.getStore();
+            var conditionsGrid = this.getView().down('grid'),
+        menu = conditionsGrid.down('#addConditionBtn').getMenu(),
+        store = conditionsGrid.getStore();
 
         menu.items.each(function (item) {
             item.setDisabled(store.findRecord('field', item.text) ? true : false);
@@ -465,9 +465,13 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
         if(newValue == combo.originalValue){
             return;
         }
-        if( newValue != oldValue ){
-            var record = this.getViewModel().get('record');
-            Ext.MessageBox.confirm(
+            var condition_length = 0;
+        var record = this.getViewModel().get('record');
+        if( record.get("conditions") != null)
+            condition_length = record.get("conditions").list.length;
+        if( newValue != oldValue ) {
+            if ( condition_length > 0 ) {
+                Ext.MessageBox.confirm(
                     'Change Class'.t(),
                     'If you change the class, fields may be removed. Are you sure?'.t(),
                     Ext.bind(function(button){
@@ -477,7 +481,11 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
                             this.classChangeFields(oldValue);
                         }
                     },this)
-            );
+                );
+            } else {
+                record.set('class', newValue );
+                this.classChangeFields(oldValue);
+            }
         }
     },
 
@@ -548,19 +556,21 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
 
     getRecordFieldType: function(recordType){
         var fieldType = 'string';
-        switch(recordType.toLowerCase()){
-            case 'double':
-            case 'float':
-            case 'int':
-            case 'integer':
-            case 'long':
-            case 'short':
+        if ( recordType != null ) {
+            switch(recordType.toLowerCase()) {
+              case 'double':
+              case 'float':
+              case 'int':
+              case 'integer':
+              case 'long':
+              case 'short':
                 fieldType = 'numeric';
                 break;
 
-            case 'boolean':
+              case 'boolean':
                 fieldType = 'boolean';
                 break;                
+            }
         }
         return fieldType;
     },
@@ -575,24 +585,24 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
 
             var fields = [];
             switch(storeName){
-                case 'numeric':
-                    fields.push([ '>', 'Less (<)'.t() ]);
-                    fields.push([ '>=', 'Less or equal (<=)'.t() ]);
-                    fields.push([ '=', 'Equals (=)'.t() ]);
-                    fields.push([ '<=', 'Greater or equal (>=)'.t() ]);
-                    fields.push([ '<', 'Greater (>)'.t() ]);
-                    fields.push([ '!=', 'Does not equal (!=)'.t() ]);
-                    break;
+              case 'numeric':
+                fields.push([ '>', 'Less (<)'.t() ]);
+                fields.push([ '>=', 'Less or equal (<=)'.t() ]);
+                fields.push([ '=', 'Equals (=)'.t() ]);
+                fields.push([ '<=', 'Greater or equal (>=)'.t() ]);
+                fields.push([ '<', 'Greater (>)'.t() ]);
+                fields.push([ '!=', 'Does not equal (!=)'.t() ]);
+                break;
 
-                case 'boolean':
-                    fields.push([ '=', 'Is'.t() ]);
-                    fields.push([ '!=', 'Is not'.t() ]);
-                    break;
+              case 'boolean':
+                fields.push([ '=', 'Is'.t() ]);
+                fields.push([ '!=', 'Is not'.t() ]);
+                break;
 
-                default:
-                    fields.push([ '=', 'Equals (=)'.t() ]);
-                    fields.push([ '!=', 'Does not equal (!=)'.t() ]);
-                    break;
+            default:
+                fields.push([ '=', 'Equals (=)'.t() ]);
+                fields.push([ '!=', 'Does not equal (!=)'.t() ]);
+                break;
             }
 
             this.comparatorFieldStores[storeName] = Ext.create('Ext.data.ArrayStore', {
@@ -608,19 +618,19 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
         var classes = vm.get('classFields');
 
         var type = null;
-        for( var classesClassName in  classes ){
-            if( classesClassName == className ){
-                classes[classesClassName].fields.forEach( function(field){
-                    if(field.name == record.get('field')){
-                        if( field.values ){
-                            type = 'enum';
-                        }else{
-                            type = field.type;
+            for( var classesClassName in  classes ){
+                if( classesClassName == className ){
+                    classes[classesClassName].fields.forEach( function(field){
+                        if(field.name == record.get('field')){
+                            if( field.values ){
+                                type = 'enum';
+                            }else{
+                                type = field.type;
+                            }
                         }
-                    }
-                });
+                    });
+                }
             }
-        }
 
         container.setStore( this.buildComperatorFieldStore( type ) );
     },
@@ -634,85 +644,85 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
         var classes = vm.get('classFields');
 
         var type = null;
-        var enumValues = null;
-        for( var classesClassName in classes ){
-            if( classesClassName == className ){
-                classes[classesClassName].fields.forEach( function(field){
-                    if(field.name == record.get('field')){
-                        if( field.values ){
-                            type = 'enum';
-                            enumValues = [];
-                            field.values.forEach( function(value){
-                                enumValues.push([ value ]);
-                            });
-                            if(!record.get('fieldValue')){
-                                record.set('fieldValue', enumValues[0]);
+            var enumValues = null;
+            for( var classesClassName in classes ){
+                if( classesClassName == className ){
+                    classes[classesClassName].fields.forEach( function(field){
+                        if(field.name == record.get('field')){
+                            if( field.values ){
+                                type = 'enum';
+                                enumValues = [];
+                                field.values.forEach( function(value){
+                                    enumValues.push([ value ]);
+                                });
+                                if(!record.get('fieldValue')){
+                                    record.set('fieldValue', enumValues[0]);
+                                }
+                            }else{
+                                type = field.type;
                             }
-                        }else{
-                            type = field.type;
                         }
-                    }
-                });
+                        });
+                }
             }
-        }
 
         container.removeAll(true);
 
         var fieldType = this.getRecordFieldType(type);
         switch(fieldType){
-            case 'enum':
-                break;
+          case 'enum':
+            break;
 
-            case 'boolean':
-                container.add({
-                    xtype: 'component',
-                    padding: 3,
+          case 'boolean':
+            container.add({
+                xtype: 'component',
+                padding: 3,
                     html: 'True'.t()
-                });
-                break;
+            });
+            break;
 
-            case 'numeric':
-                var allowDecimals = (type == 'float' ? true : false);
+          case 'numeric':
+            var allowDecimals = (type == 'float' ? true : false);
+            container.add({
+                xtype: 'numberfield',
+                style: { margin: 0 },
+                decimalPrecision: 13,
+                allowDecimals: allowDecimals,
+                bind: {
+                    value: '{record.fieldValue}'
+                },
+                // vtype: condition.vtype
+            });
+            break;
+
+        default:
+            if( type == 'enum'){
                 container.add({
-                    xtype: 'numberfield',
+                    xtype: 'combo',
+                    editable: true,
+                    queryMode: 'local',
+                    bind: '{record.fieldValue}',
+                    valueField: 'name',
+                    displayField: 'name',
+                    store: {
+                        fields: [ 'name' ],
+                        sorters: [{
+                            property: 'name',
+                            direction: 'ASC'
+                        }],
+                        data: enumValues
+                    }
+                });
+            }else{
+                container.add({
+                    xtype: 'textfield',
                     style: { margin: 0 },
-                    decimalPrecision: 13,
-                    allowDecimals: allowDecimals,
                     bind: {
                         value: '{record.fieldValue}'
                     },
                     // vtype: condition.vtype
                 });
-                break;
-
-            default:
-                if( type == 'enum'){
-                    container.add({
-                        xtype: 'combo',
-                        editable: true,
-                        queryMode: 'local',
-                        bind: '{record.fieldValue}',
-                        valueField: 'name',
-                        displayField: 'name',
-                        store: {
-                            fields: [ 'name' ],
-                            sorters: [{
-                                property: 'name',
-                                direction: 'ASC'
-                            }],
-                            data: enumValues
-                        }
-                    });
-                }else{
-                    container.add({
-                        xtype: 'textfield',
-                        style: { margin: 0 },
-                        bind: {
-                            value: '{record.fieldValue}'
-                        },
-                        // vtype: condition.vtype
-                    });
-                }
+            }
         }
     },
 });
@@ -728,12 +738,12 @@ Ext.define('Ung.config.events.cmp.EventGridController', {
             record: record
         });
         this.dialog.show();
-    },
+        },
 
     conditionFieldsRenderer: function (value) {
         var view = this.getView(),
-            conditions = value.list,
-            fieldSummary = [], valueRenderer = [];
+        conditions = value.list,
+        fieldSummary = [], valueRenderer = [];
 
         if(conditions.length){
             var condition;
@@ -748,8 +758,8 @@ Ext.define('Ung.config.events.cmp.EventGridController', {
 
     conditionClassRenderer: function( value, metaData ){
         var vm = this.getViewModel(),
-            conditions = value.list;
-            allClassesStore = vm.get('allClasses');
+        conditions = value.list;
+        allClassesStore = vm.get('allClasses');
 
         var className;
         if(conditions.length == 0){
@@ -757,7 +767,7 @@ Ext.define('Ung.config.events.cmp.EventGridController', {
         }else{
             className = conditions[0].fieldValue;            
         }
-        className = className.substring( 1, className.length - 1);
+            className = className.substring( 1, className.length - 1);
 
         var classNameIndex = allClassesStore.find( 'name', className );
         metaData.tdAttr = 'data-qtip="' + ( classNameIndex != -1 ? allClassesStore.getAt(classNameIndex).get('description') : 'Undefined class'.t() ) + '"';
