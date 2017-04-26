@@ -146,7 +146,9 @@ Ext.define('Ung.view.apps.AppsController', {
                         runState: null,
                         desc: Util.appDescription[app.name],
                         hasPowerButton: app.hasPowerButton,
-                        extraCls: 'installable'
+                        extraCls: 'installable',
+                        parentPolicy: null,
+                        licenseExpired: false
                     });
                 });
                 vm.getStore('apps').loadData(apps);

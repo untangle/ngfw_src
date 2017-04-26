@@ -79,10 +79,12 @@ Ext.define('Ung.controller.Global', {
 
     onAppInstall: function () {
         // refetch current applications and rebuild reports tree
-        Rpc.asyncData('rpc.reportsManager.getCurrentApplications').then(function (result) {
-            Ext.getStore('categories').loadData(Ext.Array.merge(Util.baseCategories, result.list));
-            Ext.getStore('reportstree').build();
-        });
+        if (rpc.reportsManager) {
+            Rpc.asyncData('rpc.reportsManager.getCurrentApplications').then(function (result) {
+                Ext.getStore('categories').loadData(Ext.Array.merge(Util.baseCategories, result.list));
+                Ext.getStore('reportstree').build();
+            });
+        }
     },
 
     setExpertMode: function () {
