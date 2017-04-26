@@ -249,12 +249,13 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
             bind: '{record.leftSubnet}',
             fieldLabel: 'Local Network'.t(),
             labelWidth: 120,
+            width: 500,
             allowBlank: false,
-            vtype: 'cidrBlock'
+            vtype: 'cidrBlockList'
         }, {
             xtype: 'displayfield',
             margin: '0 0 0 10',
-            value: '(The private network attached to the local side of the tunnel)'.t()
+            value: '(The private networks attached to the local side of the tunnel)'.t()
         }]
     }, {
         xtype: 'container',
@@ -265,12 +266,13 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
             bind: '{record.rightSubnet}',
             fieldLabel: 'Remote Network'.t(),
             labelWidth: 120,
+            width: 500,
             allowBlank: false,
-            vtype: 'cidrBlock'
+            vtype: 'cidrBlockList'
         }, {
             xtype: 'displayfield',
             margin: '0 0 0 10',
-            value: '(The private network attached to the remote side of the tunnel)'.t()
+            value: '(The private networks attached to the remote side of the tunnel)'.t()
         }]
     }, {
         xtype: 'container',
