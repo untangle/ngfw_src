@@ -142,21 +142,23 @@ Ext.define('Ung.cmp.Grid', {
         if( column.xtype == 'checkcolumn' && column.checkAll){
             var columnDataIndex = column.dataIndex;
 
-            this.tbar.splice( tbarSeparatorIndex, 0, Ext.applyIf(column.checkAll, {
-                xtype: 'checkbox',
-                hidden: !rpc.isExpertMode,
-                hideLabel: true,
-                margin: '0 5px 0 5px',
-                boxLabel: Ext.String.format("{0} All".t(), column.header),
-                // scope: {columnDataIndex: columnDataIndex},
-                handler: function(checkbox, checked) {
-                    var records=checkbox.up("grid").getStore().getRange();
-                    for(var i=0; i<records.length; i++) {
-                        records[i].set(this.colDataIndex, checked);
-                    }
-                },
-            }));
-            tbarSeparatorIndex++;
+            if( this.tbar ){
+                this.tbar.splice( this.tbarSeparatorIndex, 0, Ext.applyIf(column.checkAll, {
+                    xtype: 'checkbox',
+                    hidden: !rpc.isExpertMode,
+                    hideLabel: true,
+                    margin: '0 5px 0 5px',
+                    boxLabel: Ext.String.format("{0} All".t(), column.header),
+                    // scope: {columnDataIndex: columnDataIndex},
+                    handler: function(checkbox, checked) {
+                        var records=checkbox.up("grid").getStore().getRange();
+                        for(var i=0; i<records.length; i++) {
+                            records[i].set(this.colDataIndex, checked);
+                        }
+                    },
+                }));
+                this.tbarSeparatorIndex++;
+            }
         }
 
         if( column.rtype ){
@@ -177,9 +179,9 @@ Ext.define('Ung.cmp.Grid', {
         if (this.tbar == null) {
             this.tbar=[];
         }
-        var tbarSeparatorIndex = this.tbar.indexOf('->');
-        if(tbarSeparatorIndex == -1){
-            tbarSeparatorIndex = this.tbar.length;
+        this.tbarSeparatorIndex = this.tbar.indexOf('->');
+        if( this.tbarSeparatorIndex == -1 ){
+            this.tbarSeparatorIndex = this.tbar.length;
         }
         if(columns){
             /*
