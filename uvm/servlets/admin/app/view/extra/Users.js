@@ -18,6 +18,35 @@ Ext.define('Ung.view.extra.Users', {
             users: {
                 data: '{usersData}'
             }
+        },
+        formulas: {
+            userDetails: function (get) {
+                this.userDetailsGet = get;
+                this.getView().down('#usersgrid').getSelectionModel().select(0);
+                this.userDetailsSelectTask = new Ext.util.DelayedTask( Ext.bind(function(){
+                    this.getView().down('#usersgrid').getSelectionModel().select(0);
+                    if( !this.userDetailsGet('usersgrid.selection') ){
+                        this.userDetailsSelectTask.delay(100);
+                    }
+                }, this) );
+                this.userDetailsSelectTask.delay(100);
+                if (get('usersgrid.selection')) {
+                    var data = get('usersgrid.selection').getData();
+                    delete data._id;
+                    delete data.javaClass;
+                    for( var k in data ){
+                        /*
+                         * Encode objects and arrays for details
+                         */
+                        if( ( typeof( data[k] ) == 'object' ) || 
+                            ( typeof( data[k] ) == 'array' ) ){
+                            data[k] = Ext.encode(data[k]);
+                        }
+                    }
+                    return data;
+                }
+                return;
+            }
         }
     },
 
@@ -51,22 +80,25 @@ Ext.define('Ung.view.extra.Users', {
         border: false
     },
 
-    // title: 'Current Sessions'.t(),
-
     items: [{
         region: 'center',
         xtype: 'ungrid',
         itemId: 'usersgrid',
         reference: 'usersgrid',
+        title: 'Current Users'.t(),
         stateful: true,
 
         sortField: 'username',
         sortOrder: 'ASC',
 
-        plugins: 'gridfilters',
+        plugins: ['gridfilters'],
         columnLines: true,
 
+        enableColumnHide: true,
+        forceFit: false,
         viewConfig: {
+            stripeRows: true,
+            enableTextSelection: true,
             emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-2x"></i> <br/>No Data!</p>',
         },
 
@@ -75,68 +107,86 @@ Ext.define('Ung.view.extra.Users', {
         columns: [{
             header: 'Username'.t(),
             dataIndex: 'username',
-            width: 200,
             filter: {
                 type: 'string'
             }
         }, {
+            header: 'Creation Time'.t(),
+            dataIndex: 'creationTime',
+            rtype: 'timestamp',
+            filter: {
+                type: 'date'
+            }
+        }, {
             header: 'Last Access Time'.t(),
-            dataIndex: 'lastAccessTimeDate',
-            width: 150,
-            renderer: function (value, metaData, record) {
-                var val = record.get('lastAccessTime');
-                return val === 0 || val === '' ? '' : Util.timestampFormat(val);
-            },
+            dataIndex: 'lastAccessTime',
+            rtype: 'timestamp',
             filter: {
                 type: 'date'
             }
         }, {
-            header: 'Quota Size'.t(),
-            dataIndex: 'quotaSize',
-            width: 100,
-            renderer: function (value) {
-                return value === 0 || value === '' ? '' : value;
-            },
-            filter: {
-                type: 'numeric'
-            }
-        }, {
-            header: 'Quota Remaining'.t(),
-            dataIndex: 'quotaRemaining',
-            width: 150,
-            filter: {
-                type: 'numeric'
-            }
-        }, {
-            header: 'Quota Issue Time'.t(),
-            dataIndex: 'quotaIssueTimeDate',
-            width: 150,
-            renderer: function (value, metaData, record) {
-                var val = record.get('quotaIssueTime');
-                return val === 0 || val === '' ? '' : Util.timestampFormat(val);
-            },
+            header: 'Last Session Time'.t(),
+            dataIndex: 'lastSessionTime',
+            rtype: 'timestamp',
             filter: {
                 type: 'date'
             }
         }, {
-            header: 'Quota Expiration Time'.t(),
-            dataIndex: 'quotaExpirationTimeDate',
-            width: 150,
-            renderer: function (value, metaData, record) {
-                var val = record.get('quotaExpirationTime');
-                return val === 0 || val === '' ? '' : Util.timestampFormat(val);
-            },
-            filter: {
-                type: 'date'
-            }
+            header: 'Quota'.t(),
+            columns: [{
+                header: 'Quota Size'.t(),
+                dataIndex: 'quotaSize',
+                renderer: function (value) {
+                    return value === 0 || value === '' ? '' : value;
+                },
+                filter: {
+                    type: 'numeric'
+                }
+            }, {
+                header: 'Quota Remaining'.t(),
+                dataIndex: 'quotaRemaining',
+                filter: {
+                    type: 'numeric'
+                }
+            }, {
+                header: 'Quota Issue Time'.t(),
+                dataIndex: 'quotaIssueTime',
+                rtype: 'timestamp',
+                filter: {
+                    type: 'date'
+                }
+            }, {
+                header: 'Quota Expiration Time'.t(),
+                dataIndex: 'quotaExpirationTime',
+                rtype: 'timestamp',
+                filter: {
+                    type: 'date'
+                }
+            }]
         }, {
             header: 'Tags'.t(),
+            dataIndex: 'tags',
+            filter: {
+                type: 'string'
+            },
+            rtype: 'tags'
+        }, {
+            header: 'Tags String'.t(),
             dataIndex: 'tagsString',
-            flex: 1,
+            hidden: true,
             filter: {
                 type: 'string'
             }
         }]
+    }, {
+        region: 'east',
+        xtype: 'unpropertygrid',
+        title: 'User Details'.t(),
+        itemId: 'details',
+
+        bind: {
+            source: '{userDetails}'
+        }
     }],
     tbar: [{
         xtype: 'button',

@@ -41,8 +41,10 @@ Ext.define('Ung.view.extra.UsersController', {
     },
 
     getUsers: function () {
-        var me = this, vm = this.getViewModel(),
+        var me = this,
+            vm = this.getViewModel(),
             grid = me.getView().down('#usersgrid');
+
         grid.getView().setLoading(true);
         Rpc.asyncData('rpc.userTable.getUsers')
             .then(function(result) {
