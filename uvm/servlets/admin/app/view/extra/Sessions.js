@@ -155,7 +155,7 @@ Ext.define('Ung.view.extra.Sessions', {
             filter: { type: 'string' }
         },{
             hidden: true,
-            header: 'Priority'.t() + " " + "(Bandwidth Control)",
+            header: 'Bandwidth Control' + " - " + 'Priority'.t(),
             dataIndex: "priority",
             // renderer: function(value) {
             //     return (value < 1 || value > 7)?i18n._("None"):priorityList[value-1];
@@ -166,7 +166,7 @@ Ext.define('Ung.view.extra.Sessions', {
             // }
         },{
             hidden: true,
-            header: 'Priority'.t() + " (QoS)",
+            header: 'QoS' + " - " + 'Priority'.t(),
             dataIndex: "qosPriority",
             // renderer: function(value) {
             //     return (value < 1 || value > 7)?i18n._("None"):priorityList[value-1];
@@ -188,20 +188,20 @@ Ext.define('Ung.view.extra.Sessions', {
                 filter: { type: 'string' },
                 rtype: 'interface'
             }, {
-                header: 'Pre-NAT'.t(),
+                header: 'Pre-NAT'.t() + ' - ' + 'Address'.t(),
                 dataIndex: 'preNatClient',
                 filter: { type: 'string' }
             }, {
-                header: 'Port (Pre-NAT)'.t(),
+                header: 'Pre-NAT'.t() + ' - '  + 'Port'.t(),
                 dataIndex: 'preNatClientPort',
                 filter: { type: 'numeric' }
             }, {
-                header: 'Post-NAT'.t(),
+                header: 'Post-NAT'.t() + ' - '  + 'Address'.t(),
                 dataIndex: 'postNatClient',
                 filter: { type: 'string' },
                 hidden: true
             }, {
-                header: 'Port (Post-NAT)'.t(),
+                header: 'Post-NAT'.t() + ' - '  + 'Port'.t(),
                 dataIndex: 'postNatClientPort',
                 filter: { type: 'numeric' },
                 hidden: true
@@ -229,21 +229,21 @@ Ext.define('Ung.view.extra.Sessions', {
                 filter: { type: 'string' },
                 rtype: 'interface'
             }, {
-                header: 'Pre-NAT'.t(),
+                header: 'Pre-NAT'.t() + ' - ' + 'Address'.t(),
                 dataIndex: 'preNatServer',
                 filter: { type: 'string' },
                 hidden: true
             }, {
-                header: 'Port (Pre-NAT)'.t(),
+                header: 'Pre-NAT'.t() + ' - ' + 'Port'.t(),
                 dataIndex: 'preNatServerPort',
                 filter: { type: 'numeric' },
                 hidden: true
             }, {
-                header: 'Post-NAT'.t(),
+                header: 'Post-NAT'.t() + ' - '  + 'Address'.t(),
                 dataIndex: 'postNatServer',
                 filter: { type: 'string' }
             }, {
-                header: 'Port (Post-NAT)'.t(),
+                header: 'Post-NAT'.t() + ' - '  + 'Port'.t(),
                 dataIndex: 'postNatServerPort',
                 filter: { type: 'numeric' }
             }, {
@@ -281,7 +281,7 @@ Ext.define('Ung.view.extra.Sessions', {
                 align: 'right'
             }]
         }, {
-            header: 'Application Control Lite'.t(),
+            header: 'Application Control Lite',
             hidden: true,
             columns: [{
                 hidden: true,
@@ -309,7 +309,7 @@ Ext.define('Ung.view.extra.Sessions', {
                 }
             }]
         }, {
-            header: 'Application Control'.t(),
+            header: 'Application Control',
             columns: [{
                 hidden: true,
                 header: 'Protochain'.t(),
@@ -347,7 +347,7 @@ Ext.define('Ung.view.extra.Sessions', {
                 filter: { type: 'string' }
             }]
         }, {
-            header: 'Web Filter'.t(),
+            header: 'Web Filter',
             hidden: true,
             columns: [{
                 hidden: true,
@@ -393,7 +393,7 @@ Ext.define('Ung.view.extra.Sessions', {
                 }
             }]
         }, {
-            header: 'HTTP'.t(),
+            header: 'HTTP',
             hidden: true,
             columns: [{
                 hidden: true,
