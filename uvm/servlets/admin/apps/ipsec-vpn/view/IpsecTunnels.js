@@ -45,7 +45,8 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         'rightId': '',
         'rightSubnet': '',
         'description': '',
-        'secret': ''
+        'secret': '',
+        'localInterface': 0
         },
 
     bind: '{tunnelList}',
@@ -57,7 +58,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         dataIndex: 'active',
         resizable: false
     }, {
-        header: 'Local IP'.t(),
+        header: 'External IP'.t(),
         width: 150,
         dataIndex: 'left',
     }, {
@@ -158,13 +159,23 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
             fieldLabel: 'Interface'.t(),
             labelWidth: 120,
             bind: {
-                store: '{wanListStore}'
+                store: '{wanListStore}',
+                value: '{record.localInterface}'
             },
             allowblank: true,
             editable: false,
             queryMode: 'local',
             displayField: 'name',
-            valueField: 'address'
+            valueField: 'index',
+            listeners: {
+                change: function(cmp, nval, oval, opts) {
+                    var wanlist = this.ownerCt.ownerCt.ownerCt.getViewModel().get('wanListData'); // FIXME - this feels really ugly
+                    var finder = this.ownerCt.ownerCt.down("[fieldIndex='externalAddress']"); // FIXME - this feels ugly too
+                    for( var i = 1 ; i < wanlist.length ; i++ ) {
+                        if (nval == wanlist[i][0]) finder.setValue(wanlist[i][1]);
+                    }
+                }
+            }
         }]
     }, {
         xtype: 'container',
@@ -172,8 +183,12 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         margin: '0 0 5 0',
         items: [{
             xtype: 'textfield',
-            bind: '{record.left}',
+            bind: {
+                value: '{record.left}',
+                disabled: '{record.localInterface != 0}'
+                },
             fieldLabel: 'External IP'.t(),
+            fieldIndex: 'externalAddress',
             labelWidth: 120,
             allowBlank: false,
             vtype: 'ipAddress'

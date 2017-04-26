@@ -68,7 +68,7 @@ Ext.define('Ung.apps.ipsecvpn.view.GreNetworksGrid', {
         flex: 1,
         dataIndex: 'description'
     }, {
-        header: 'Local IP'.t(),
+        header: 'External IP'.t(),
         width: 150,
         dataIndex: 'localAddress',
     }, {
@@ -95,15 +95,29 @@ Ext.define('Ung.apps.ipsecvpn.view.GreNetworksGrid', {
         xtype: 'combobox',
         bind: {
             store: '{wanListStore}',
+            value: '{record.localInterface}'
         },
         allowblank: true,
         editable: false,
         queryMode: 'local',
         displayField: 'name',
-        valueField: 'address'
+        valueField: 'index',
+            listeners: {
+                change: function(cmp, nval, oval, opts) {
+                    var wanlist = this.ownerCt.ownerCt.getViewModel().get('wanListData'); // FIXME - this feels really ugly
+                    var finder = this.ownerCt.down("[fieldIndex='externalAddress']"); // FIXME - this feels ugly too
+                    for( var i = 1 ; i < wanlist.length ; i++ ) {
+                        if (nval == wanlist[i][0]) finder.setValue(wanlist[i][1]);
+                    }
+                }
+            }
     }, {
         fieldLabel: 'External IP'.t(),
-        bind: '{record.localAddress}',
+        fieldIndex: 'externalAddress',
+        bind: {
+            value: '{record.localAddress}',
+            disabled: '{record.localInterface != 0}'
+        },
         xtype: 'textfield',
         vtype: 'ipAddress'
     }, {
