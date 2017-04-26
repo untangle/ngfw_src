@@ -70,7 +70,7 @@ Ext.define('Ung.apps.applicationcontrol.view.Rules', {
 
     // todo: continue this stuff
     editorFields: [
-        Field.enabled,
+        Field.enableRule(),
         Field.description,
         Field.conditions, {
             xtype: 'combo',
