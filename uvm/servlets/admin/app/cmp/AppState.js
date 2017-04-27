@@ -1,7 +1,6 @@
 Ext.define('Ung.cmp.AppState', {
     extend: 'Ext.form.FieldSet',
     alias: 'widget.appstate',
-    // border: false,
     bind: {
         title: '{appStateTitle}'
     },
@@ -18,8 +17,10 @@ Ext.define('Ung.cmp.AppState', {
     viewModel: {
         formulas: {
             appState: function (get) {
+                var me = this;
                 var expectedState = get('instance.targetState');
                 var actualState = get('runState');
+
                 if ( ( expectedState === 'RUNNING' ) &&
                      ( actualState == 'RUNNING' ) ) {
                     return Ext.String.format('{0} is enabled.'.t(), get('props.displayName'));
@@ -58,59 +59,59 @@ Ext.define('Ung.cmp.AppState', {
     },
 
     controller: {
+        runStateMaxWait: 10000,
+        runStateWait: 0,
+        runStateDelay: 100,
+        runStateWantState: null,
+        runStateWantButton: null,
+        runStateTask: null,
+
         onPower: function (btn) {
-            var appManager = this.getView().up('#appCard').appManager,
-                vm = this.getViewModel(),
+            var me = this,
+                appManager = me.getView().up('#appCard').appManager,
+                vm = me.getViewModel(),
                 expectedState = vm.get('instance.targetState'),
                 actualState = vm.get('runState');
 
             btn.setDisabled(true);
 
+            if( !me.runStateTask ){
+                me.runStateTask = new Ext.util.DelayedTask( Ext.bind(function(){
+                    appManager.getRunState( Ext.bind( function (result, ex2) {
+                        if (ex2) { Util.handleException(ex2); return false; }
+                        this.runStateWait = this.runStateWait - this.runStateDelay;
+                        if(result != this.runStateWantState){
+                            this.runStateTask.delay( this.runStateDelay );
+                        }else{
+                            this.getViewModel().set( 'runState', result );
+                            this.getViewModel().set( 'instance.targetState', this.runStateWantState );
+                            this.runStateButton.setDisabled(false);
+                        }
+                    }, this) );
+                }, me) );
+            }
+            me.runStateWait = me.runStateMaxWait;
+            me.runStateButton = btn;
+
             if ( ( expectedState === 'RUNNING' ) &&
                  ( actualState === 'RUNNING' ) ) {
-                vm.set('instance.targetState', null);
                 // stop app
+                me.runStateWantState = 'INITIALIZED';
                 appManager.stop(function (result, ex) {
                     if (ex) { Util.handleException(ex); return false; }
-                    appManager.getRunState(function (result2, ex2) {
-                        if (ex2) { Util.handleException(ex2); return false; }
-                        vm.set('instance.targetState', result2);
-                        // vm.notify();
-                        btn.setDisabled(false);
-
-                        // if (appManager.getAppProperties().name === 'reports') {
-                        //     vm.getParent().set('reportsRunning', false);
-                        // }
-
-                        // Util.successToast(vm.get('powerMessage'));
-
-                        // Ext.GlobalEvents.fireEvent('appstatechange', result2, vm.get('appInstance'));
-                    });
                 });
             } else {
-                vm.set('instance.targetState', null);
                 // start app
+                me.runStateWantState = 'RUNNING';
                 appManager.start(function (result, ex) {
                     if (ex) {
                         Ext.Msg.alert('Error', ex.message);
                         btn.setDisabled(false);
                         return false;
                     }
-                    appManager.getRunState(function (result2, ex2) {
-                        if (ex2) { Util.handleException(ex2); return false; }
-                        vm.set('instance.targetState', result2);
-                        // vm.notify();
-                        btn.setDisabled(false);
-
-                        // if (appManager.getAppProperties().name === 'reports') {
-                        //     vm.getParent().set('reportsRunning', true);
-                        // }
-
-                        // Util.successToast(vm.get('powerMessage'));
-                        // Ext.GlobalEvents.fireEvent('appstatechange', result2, vm.get('appInstance'));
-                    });
                 });
             }
+            me.runStateTask.delay( this.getRunStateDelay );
         }
     },
 
