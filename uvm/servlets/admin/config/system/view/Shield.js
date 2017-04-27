@@ -2,7 +2,7 @@ Ext.define('Ung.config.system.view.Shield', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.config-system-shield',
     itemId: 'shield',
-
+    helpSource: 'system_shield',
 
     viewModel: true,
 

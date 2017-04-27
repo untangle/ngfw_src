@@ -2,6 +2,7 @@ Ext.define('Ung.config.network.view.Services', {
     extend: 'Ext.form.Panel',
     alias: 'widget.config-network-services',
     itemId: 'services',
+    helpSource: 'network_services',
     withValidation: true, // requires validation on save
     viewModel: true,
 

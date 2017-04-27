@@ -32,7 +32,11 @@ Ext.define('Ung.cmp.ConfigPanel', {
         xtype: 'toolbar',
         dock: 'bottom',
         // border: false,
-        items: ['->', {
+        items: [{
+            text: '<strong>' + 'Help'.t() + '</strong>',
+            itemId: 'helpBtn',
+            iconCls: 'fa fa-question-circle fa-lg'
+        }, '->', {
             text: '<strong>' + 'Save'.t() + '</strong>',
             // scale: 'large',
             iconCls: 'fa fa-floppy-o fa-lg',
@@ -46,22 +50,13 @@ Ext.define('Ung.cmp.ConfigPanel', {
             Ung.app.redirectTo('#config/' + tabPanel.name + '/' + newCard.getItemId());
         },
 
-        // tabchange: function (tabPanel, newCard) {
-        //     var helpSource = tabPanel.getViewModel().get('props.name').replace(/-/g, '_');
-        //     if (newCard.getItemId() !== 'status') {
-        //         helpSource += '_' + newCard.getItemId();
-        //     }
-        //     tabPanel.down('#helpBtn').setHref(rpc.helpUrl + '?source=' + helpSource + '&' + Util.getAbout());
-        // },
+        tabchange: function (tabPanel, newCard) {
+            tabPanel.down('#helpBtn').setHref(rpc.helpUrl + '?source=' + newCard.helpSource + '&' + Util.getAbout());
+        },
 
-        // afterrender: function (tabPanel) {
-        //     var helpSource = tabPanel.getViewModel().get('props.name').replace(/-/g, '_');
-        //     var currentCard = tabPanel.getActiveTab();
-        //     if (currentCard.getItemId() !== 'status') {
-        //         helpSource += '_' + currentCard.getItemId();
-        //     }
-        //     tabPanel.down('#helpBtn').setHref(rpc.helpUrl + '?source=' + helpSource + '&' + Util.getAbout());
-        // }
+        afterrender: function (tabPanel) {
+            tabPanel.down('#helpBtn').setHref(rpc.helpUrl + '?source=' + (tabPanel.getActiveTab().helpSource || tabPanel.helpSource) + '&' + Util.getAbout());
+        }
     }
 
 });
