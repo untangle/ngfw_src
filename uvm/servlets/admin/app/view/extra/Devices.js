@@ -86,20 +86,32 @@ Ext.define('Ung.view.extra.Devices', {
             javaClass: 'com.untangle.uvm.DeviceTableEntry'
         },
 
-        plugins: ['gridfilters'],
+        plugins: [
+        'gridfilters',
+        {
+            ptype: 'cellediting',
+            clicksToEdit: 1
+        }],
 
         columns: [{
-            header: 'MAC Address'.t(),
-            dataIndex: 'macAddress',
-            filter: { type: 'string' }
-        }, {
-            header: 'MAC Vendor'.t(),
-            dataIndex: 'macVendor',
-            filter: { type: 'string' },
-            editor: {
-                xtype: 'textfield',
-                emptyText: '[no MAC Vendor]'.t()
-            }
+            header: 'MAC'.t(),
+            columns:[{
+                header: 'Address'.t(),
+                dataIndex: 'macAddress',
+                filter: { type: 'string' },
+                editor: {
+                    xtype: 'textfield',
+                    emptyText: '[no MAC Address]'.t()
+                }
+            }, {
+                header: 'Vendor'.t(),
+                dataIndex: 'macVendor',
+                filter: { type: 'string' },
+                editor: {
+                    xtype: 'textfield',
+                    emptyText: '[no MAC Vendor]'.t()
+                }
+            }]
         }, {
             header: 'Interface'.t(),
             dataIndex: 'interfaceId',
