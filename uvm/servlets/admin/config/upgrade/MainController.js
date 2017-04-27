@@ -58,7 +58,6 @@ Ext.define('Ung.config.upgrade.MainController', {
         Rpc.asyncData('rpc.systemManager.downloadUpgrades').then(function(result) {
             me.checkDownloadStatus=false;
 
-            console.log("rpc.systemManager.downloadUpgrades()", result);
             Ext.MessageBox.hide();
             if(result) {
                 me.upgrade();
@@ -109,8 +108,6 @@ Ext.define('Ung.config.upgrade.MainController', {
         // start ignoring all exceptions
         Util.ignoreExceptions = true;
 
-        console.log("Applying Upgrades...");
-
         Ext.MessageBox.wait("Please wait".t(), "Launching Upgrade...".t(), {
             interval: 1000,
             increment: 200,
@@ -120,22 +117,17 @@ Ext.define('Ung.config.upgrade.MainController', {
         rpc.systemManager.upgrade(Ext.bind(function (result, exception) {
             // the upgrade will shut down the untangle-vm so often this returns an exception
             // either way show a wait dialog...
-
             Ext.MessageBox.hide();
-            var applyingUpgradesWindow = Ext.create('Ext.window.MessageBox', {
-                minProgressWidth: 360
-            });
 
             // the untangle-vm is shutdown, just show a message dialog box for 45 seconds so the user won't poke at things.
             // then refresh browser.
-            applyingUpgradesWindow.wait("Please wait".t(), "Upgrade in Progress...".t(), {
+            Ext.MessageBox.wait("Please wait".t(), "Processing Upgrade...".t(), {
                 interval: 1000,
                 increment: 200,
                 duration: 180000,
                 scope: this,
                 fn: function () {
                     console.log("Upgrade in Progress. Press ok to go to the Start Page...");
-                    applyingUpgradesWindow.hide();
                     Ext.MessageBox.hide();
                     Ext.MessageBox.alert(
                         "Upgrade in Progress".t(),
