@@ -494,7 +494,7 @@ public class EventManagerImpl implements EventManager
 
             logger.debug( "trigger \"" + rule.getDescription() + "\" matches: " + event );
 
-            String target = findAttribute( jsonObject, rule.getTagTarget(), 3 );
+            String target = findAttribute( jsonObject, rule.getTagTarget() );
             if ( target == null ) {
                 logger.debug( "trigger: failed to find target \"" + rule.getTagTarget() + "\"");
                 continue;
@@ -619,50 +619,31 @@ public class EventManagerImpl implements EventManager
         }
     }
 
-    private static String findAttribute( JSONObject json, String name, int maxDepth )
+    private static String findAttribute( JSONObject json, String name )
     {
         if ( json == null || name == null ) return null;
-        if ( maxDepth < 1 ) return null;
 
-        //logger.info("findAttribute( " + name + " , " + json + ")");
         try {
-            String[] keys = JSONObject.getNames(json);
-            if ( keys == null ) return null;
+            String[] parts = name.split("\\.",2);
+            if ( parts.length < 1 )
+                return null;
 
-            for( String key : keys ) {
-                if ("class".equals(key))
-                    continue;
-                if (name.equalsIgnoreCase(key)) {
-                    Object o = json.get(key);
-                    return (o == null ? null : o.toString());
-                }
-            }
+            String fieldName = parts[0];
 
-            for( String key : keys ) {
-                try {
-                    if ("class".equals(key))
-                        continue;
-                    Object o = json.get(key);
-                    if ( o == null )
-                        continue;
-                    if ( ! (o instanceof java.io.Serializable) )
-                        continue;
-                    JSONObject obj = new JSONObject(o);
-                    if ( obj.length() < 2 )
-                        continue;
+            Object o = json.get(fieldName);
+            if ( o == null )
+                return null;
 
-                    if ( o != null ) {
-                        String s = findAttribute(obj,name,maxDepth-1);
-                        if ( s != null )
-                            return s;
-                    }
-                } catch (Exception e) {}
+            if ( parts.length > 1 ) {
+                String subName = parts[1];
+                return findAttribute( new JSONObject(o), subName );
+            } else {
+                return o.toString();
             }
         } catch (Exception e) {
-            logger.warn("Exception",e);
+            logger.warn("Failed to find attribute: " + name,e);
+            return null;
         }
-
-        return null;
     }
 
     private static boolean sendEmailForEvent( AlertRule rule, LogEvent event )

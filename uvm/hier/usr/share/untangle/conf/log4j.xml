@@ -121,6 +121,10 @@
   <category name="com.untangle.uvm.ConntrackMonitorImpl">
     <priority value="INFO"/>
   </category>
+
+  <category name="com.untangle.uvm.EventManagerImpl">
+    <priority value="INFO"/>
+  </category>
   
   <category name="com.untangle.uvm.util.Pulse">
     <priority value="INFO"/>

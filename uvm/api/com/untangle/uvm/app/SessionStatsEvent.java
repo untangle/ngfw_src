@@ -84,7 +84,13 @@ public class SessionStatsEvent extends LogEvent
      */
     public Long getSessionId() { return sessionId; }
     public void setSessionId( Long sessionId ) { this.sessionId = sessionId; }
-    
+
+    /**
+     * The Session Event
+     */
+    public SessionEvent getSessionEvent() { return this.sessionEvent; }
+    public void setSessionEvent( SessionEvent newValue ) { this.sessionEvent = newValue; }
+
     @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {
