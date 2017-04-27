@@ -69,18 +69,9 @@ public class EventRuleCondition
         if ( field == null || comparator == null || fieldValue == null )
             return false;
 
-
-        Object actualValueObj = null;
-        try { actualValueObj = obj.get( field ); } catch (Exception e) {}
-
-        if ( actualValueObj == null && "class".equals(field) ) {
-            try { actualValueObj = obj.get( "javaClass" ); } catch (Exception e) {}
-        }
-        if ( actualValueObj == null && "javaClass".equals(field) ) {
-            try { actualValueObj = obj.get( "class" ); } catch (Exception e) {}
-        }
-        if ( actualValueObj == null ) {
-            //logger.warn("DEBUG missing field: " + field + " value: " + actualValueObj );
+        Object valueObj = getAttribute( obj, field);
+        if ( valueObj == null ) {
+            //logger.warn("DEBUG missing field: " + field + " value: " + valueObj );
             return false;
         }
 
@@ -88,26 +79,26 @@ public class EventRuleCondition
          * Handle all the different types
          * Number is handled specially > and < operators
          */
-        if ( actualValueObj instanceof Number ) {
-            //logger.warn("DEBUG number eval: " + actualValueObj);
+        if ( valueObj instanceof Number ) {
+            //logger.warn("DEBUG number eval: " + valueObj);
 
             try {
                 int specifiedValue = Integer.parseInt( fieldValue );
-                int actualValue = (int) actualValueObj;
-                //logger.warn("DEBUG integer check: " + specifiedValue + " against " + actualValueObj );
+                int value = (int) valueObj;
+                //logger.warn("DEBUG integer check: " + specifiedValue + " against " + valueObj );
 
                 if ( "=".equals(comparator) ) {
-                    return (actualValue == specifiedValue);
+                    return (value == specifiedValue);
                 } else if ( "!=".equals(comparator) ) {
-                    return (actualValue != specifiedValue);
+                    return (value != specifiedValue);
                 } else if ( ">".equals(comparator) ) {
-                    return (actualValue > specifiedValue);
+                    return (value > specifiedValue);
                 } else if ( ">=".equals(comparator) ) {
-                    return (actualValue >= specifiedValue);
+                    return (value >= specifiedValue);
                 } else if ( "<".equals(comparator) ) {
-                    return (actualValue < specifiedValue);
+                    return (value < specifiedValue);
                 } else if ( "<=".equals(comparator) ) {
-                    return (actualValue <= specifiedValue);
+                    return (value <= specifiedValue);
                 }
             } catch ( Exception e ) {
                 //logger.warn("DEBUG Exception",e );
@@ -115,21 +106,21 @@ public class EventRuleCondition
 
             try {
                 long specifiedValue = Long.parseLong( fieldValue );
-                long actualValue = (long) actualValueObj;
-                //logger.warn("DEBUG long check: " + specifiedValue + " against " + actualValueObj );
+                long value = (long) valueObj;
+                //logger.warn("DEBUG long check: " + specifiedValue + " against " + valueObj );
 
                 if ( "=".equals(comparator) ) {
-                    return (actualValue == specifiedValue);
+                    return (value == specifiedValue);
                 } else if ( "!=".equals(comparator) ) {
-                    return (actualValue != specifiedValue);
+                    return (value != specifiedValue);
                 } else if ( ">".equals(comparator) ) {
-                    return (actualValue > specifiedValue);
+                    return (value > specifiedValue);
                 } else if ( ">=".equals(comparator) ) {
-                    return (actualValue >= specifiedValue);
+                    return (value >= specifiedValue);
                 } else if ( "<".equals(comparator) ) {
-                    return (actualValue < specifiedValue);
+                    return (value < specifiedValue);
                 } else if ( "<=".equals(comparator) ) {
-                    return (actualValue <= specifiedValue);
+                    return (value <= specifiedValue);
                 }
             } catch ( Exception e ) {
                 //logger.warn("DEBUG Exception",e );
@@ -137,21 +128,21 @@ public class EventRuleCondition
 
             try {
                 double specifiedValue = Double.parseDouble( fieldValue );
-                double actualValue = (double)actualValueObj;
-                //logger.warn("DEBUG double check: " + specifiedValue + " against " + actualValueObj );
+                double value = (double)valueObj;
+                //logger.warn("DEBUG double check: " + specifiedValue + " against " + valueObj );
 
                 if ( "=".equals(comparator) ) {
-                    return (actualValue == specifiedValue);
+                    return (value == specifiedValue);
                 } else if ( "!=".equals(comparator) ) {
-                    return (actualValue != specifiedValue);
+                    return (value != specifiedValue);
                 } else if ( ">".equals(comparator) ) {
-                    return (actualValue > specifiedValue);
+                    return (value > specifiedValue);
                 } else if ( ">=".equals(comparator) ) {
-                    return (actualValue >= specifiedValue);
+                    return (value >= specifiedValue);
                 } else if ( "<".equals(comparator) ) {
-                    return (actualValue < specifiedValue);
+                    return (value < specifiedValue);
                 } else if ( "<=".equals(comparator) ) {
-                    return (actualValue <= specifiedValue);
+                    return (value <= specifiedValue);
                 }
             } catch ( Exception e ) {
                 //logger.warn("DEBUG Exception",e );
@@ -159,21 +150,21 @@ public class EventRuleCondition
 
             try {
                 float specifiedValue = Float.parseFloat( fieldValue );
-                float actualValue = (float)actualValueObj;
-                //logger.warn("DEBUG float check: " + specifiedValue + " against " + actualValueObj );
+                float value = (float)valueObj;
+                //logger.warn("DEBUG float check: " + specifiedValue + " against " + valueObj );
 
                 if ( "=".equals(comparator) ) {
-                    return (actualValue == specifiedValue);
+                    return (value == specifiedValue);
                 } else if ( "!=".equals(comparator) ) {
-                    return (actualValue != specifiedValue);
+                    return (value != specifiedValue);
                 } else if ( ">".equals(comparator) ) {
-                    return (actualValue > specifiedValue);
+                    return (value > specifiedValue);
                 } else if ( ">=".equals(comparator) ) {
-                    return (actualValue >= specifiedValue);
+                    return (value >= specifiedValue);
                 } else if ( "<".equals(comparator) ) {
-                    return (actualValue < specifiedValue);
+                    return (value < specifiedValue);
                 } else if ( "<=".equals(comparator) ) {
-                    return (actualValue <= specifiedValue);
+                    return (value <= specifiedValue);
                 }
             } catch ( Exception e ) {
                 //logger.warn("DEBUG Exception",e );
@@ -188,15 +179,15 @@ public class EventRuleCondition
          */
         if ( ! ( "=".equals( comparator ) || "!=".equals( comparator ) ) ) // String only supports "=" or "!=" operator
             return false;
-        String actualValueStr = actualValueObj.toString().toLowerCase();
-        //logger.warn("DEBUG string check: " + actualValueStr + " against " + value );
+        String valueStr = valueObj.toString().toLowerCase();
+        //logger.warn("DEBUG string check: " + valueStr + " against " + value );
 
         if ( this.stringGlobMatcher == null )
             this.stringGlobMatcher = new GlobMatcher( fieldValue );
         if ( this.stringGlobMatcher == null )
             return false;
 
-        boolean match = this.stringGlobMatcher.isMatch( actualValueStr );
+        boolean match = this.stringGlobMatcher.isMatch( valueStr );
         if ( "=".equals(comparator) ) {
             return match;
         } else if ( "!=".equals(comparator) ) {
@@ -206,4 +197,34 @@ public class EventRuleCondition
         logger.warn("constraint failed");
         return false;
     }
+
+    private Object getAttribute( JSONObject obj, String attributeName )
+    {
+        if ( attributeName == null )
+            return null;
+        String[] parts = attributeName.split("\\.",2);
+        if ( parts.length < 1 )
+            return null;
+
+        String fieldName = parts[0];
+        
+        Object value = null;
+        try { value = obj.get( fieldName ); } catch (Exception e) {}
+
+        if ( value == null && "class".equals(fieldName) ) {
+            try { value = obj.get( "javaClass" ); } catch (Exception e) {}
+        }
+        if ( value == null && "javaClass".equals(fieldName) ) {
+            try { value = obj.get( "class" ); } catch (Exception e) {}
+        }
+
+        // if the attributeName contains a "." then recurse
+        // "foo.bar" should get obj['foo']['bar']
+        if ( value != null && parts.length > 1 ) {
+            return getAttribute( new JSONObject( value ), parts[1] );
+        } else {
+            return value;
+        }
+    }
+    
 }

@@ -41,7 +41,7 @@ public class SessionMinuteEvent extends LogEvent
      * The number of bytes sent by the client during this minute
      */
     public long getS2cBytes() { return s2cBytes; }
-    
+
     @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {

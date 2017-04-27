@@ -67,6 +67,12 @@ public class SessionNatEvent extends LogEvent
     public Integer getSServerPort() { return sServerPort; }
     public void setSServerPort(Integer sServerPort) { this.sServerPort = sServerPort; }
 
+    /**
+     * The Session Event
+     */
+    public SessionEvent getSessionEvent() { return this.sessionEvent; }
+    public void setSessionEvent( SessionEvent newValue ) { this.sessionEvent = newValue; }
+
     @Override
     public void compileStatements( java.sql.Connection conn, java.util.Map<String,java.sql.PreparedStatement> statementCache ) throws Exception
     {

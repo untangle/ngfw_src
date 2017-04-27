@@ -267,6 +267,22 @@ class UvmTests(unittest2.TestCase):
         assert( entry.get('tagsString') == None or "test-tag" not in entry.get('tagsString'))
 
         uvmContext.eventManager().setSettings( orig_settings )
+
+    def test_042_trigger_rule_tag_host_subcondition(self):
+        settings = uvmContext.eventManager().getSettings()
+        orig_settings = copy.deepcopy(settings)
+        new_rule = create_trigger_rule("TAG_HOST", "sessionEvent.localAddr", "test-tag-2", 30, "test tag rule", "class", "=", "*SessionStatsEvent*", "sessionEvent.localAddr", "=", "*"+remote_control.clientIP+"*")
+        settings['triggerRules']['list'] = [ new_rule ]
+        uvmContext.eventManager().setSettings( settings )
+
+        result = remote_control.is_online()
+        time.sleep(1)
+
+        entry = uvmContext.hostTable().getHostTableEntry( remote_control.clientIP )
+        assert( entry.get('tagsString') != None )
+        assert( "test-tag-2" in entry.get('tagsString') )
+
+        uvmContext.eventManager().setSettings( orig_settings )
         
     def test_050_alert_rule(self):
         settings = uvmContext.eventManager().getSettings()
