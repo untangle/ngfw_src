@@ -20,12 +20,33 @@ Ext.define('Ung.apps.wanfailover.MainController', {
         this.getView().appManager.getSettings(function (result, ex) {
             if (ex) { Util.handleException(ex); return; }
             console.log(result);
+
+            var testList = result.tests.list;
+
+            // convert all milliseconds to seconds after load
+            for (var i = 0 ; i < testList.length;i++) {
+                test = testList[i];
+                test.timeoutMilliseconds = (test.timeoutMilliseconds / 1000);
+                test.delayMilliseconds = (test.delayMilliseconds / 1000);
+            }
+
             vm.set('settings', result);
         });
     },
 
     setSettings: function () {
         var me = this, v = this.getView(), vm = this.getViewModel();
+
+        // convert all seconds to milliseconds before save
+        var testStore = v.query('app-wan-failover-test-grid')[0].getStore();
+        var tval,dval;
+
+        testStore.each(function(record) {
+            tval = record.get('timeoutMilliseconds');
+            dval = record.get('delayMilliseconds');
+            record.set('timeoutMilliseconds', tval * 1000);
+            record.set('delayMilliseconds', dval * 1000);
+        });
 
         v.query('ungrid').forEach(function (grid) {
             var store = grid.getStore();
