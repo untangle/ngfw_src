@@ -5,21 +5,7 @@ Ext.define('Ung.apps.openvpn.MainController', {
     control: {
         '#': {
             afterrender: 'getSettings'
-        },
-        '#status': {
-            beforerender: 'onStatusBeforeRender'
         }
-    },
-
-    onStatusBeforeRender: function () {
-        var me = this,
-            vm = this.getViewModel();
-        vm.bind('{instance.targetState}', function (state) {
-            if (state === 'RUNNING') {
-                me.getActiveClients();
-                me.getActiveServers();
-            }
-        });
     },
 
     getActiveClients: function () {
@@ -45,7 +31,7 @@ Ext.define('Ung.apps.openvpn.MainController', {
     },
 
     getSettings: function () {
-        var v = this.getView(), vm = this.getViewModel();
+        var me = this, v = this.getView(), vm = this.getViewModel();
         v.setLoading(true);
         v.appManager.getSettings(function (result, ex) {
             v.setLoading(false);
@@ -57,6 +43,8 @@ Ext.define('Ung.apps.openvpn.MainController', {
             }
 
             vm.set('settings', result);
+            me.getActiveClients();
+            me.getActiveServers();
         });
     },
 
