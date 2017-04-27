@@ -400,7 +400,7 @@ Ext.define('Ung.view.reports.Entry', {
                     xtype: 'numberfield',
                     fieldLabel: 'Pie Slices Number'.t(),
                     labelWidth: 150,
-                    maxWidth: 200,
+                    width: 210,
                     labelAlign: 'right',
                     minValue: 1,
                     maxValue: 25,
@@ -412,20 +412,26 @@ Ext.define('Ung.view.reports.Entry', {
                         hidden: '{!isPieGraph}'
                     }
                 }, {
-                    xtype: 'checkbox',
-                    reference: 'defaultColors',
-                    fieldLabel: 'Colors'.t(),
-                    boxLabel: 'Default'.t(),
-                    bind: '{_defaultColors}'
-                }, {
-                    xtype: 'container',
-                    margin: '0 0 0 155',
-                    itemId: 'colors',
-                    hidden: true,
-                    bind: {
-                        hidden: '{defaultColors.checked}'
-                    }
+                    xtype: 'textarea',
+                    anchor: '100%',
+                    fieldLabel: 'Colors'.t() + ' (comma sep.)',
+                    bind: '{_colorsStr}'
                 }]
+                // {
+                //     xtype: 'checkbox',
+                //     reference: 'defaultColors',
+                //     fieldLabel: 'Colors'.t(),
+                //     boxLabel: 'Default'.t(),
+                //     bind: '{_defaultColors}'
+                // }, {
+                //     xtype: 'container',
+                //     margin: '0 0 0 155',
+                //     itemId: 'colors',
+                //     hidden: true,
+                //     bind: {
+                //         hidden: '{defaultColors.checked}'
+                //     }
+                // }]
             }, {
                 xtype: 'fieldset',
                 title: '<i class="fa fa-sliders"></i> ' + 'Advanced'.t(),

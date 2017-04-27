@@ -54,6 +54,25 @@ Ext.define('Ung.view.reports.EntryModel', {
         _props: function (get) {
             return get('entry').getData();
         },
+
+        _colorsStr: {
+            get: function (get) {
+                if (get('entry.colors')) {
+                    return get('entry.colors').join(',');
+                } else {
+                    return '';
+                }
+            },
+            set: function (value) {
+                var str = value.replace(/ /g, '');
+                if (value.length > 0) {
+                    this.set('entry.colors', value.split(','));
+                } else {
+                    this.set('entry.colors', null);
+                }
+            }
+        },
+
         // _colors: {
         //     get: function (get) {
         //         return get('report.colors');
