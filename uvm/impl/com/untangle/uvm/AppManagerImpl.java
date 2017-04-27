@@ -728,7 +728,13 @@ public class AppManagerImpl implements AppManager
         logger.info("Restarting unloaded apps...");
 
         for (AppSettings appSettings : settings.getApps()) {
-            unloadedAppsMap.put( appSettings.getId(), appSettings );
+            logger.debug("Restarting unloaded apps: " + appSettings.getAppName() + " [" + appSettings.getId() + "]");
+            if ( unloadedAppsMap.get( appSettings.getId() ) != null ) {
+                logger.error("DUPLICATE APP ID: " + appSettings.getId());
+                logger.error("DUPLICATE APPS: " + unloadedAppsMap.get(appSettings.getId()).getAppName() + " " + appSettings.getAppName());
+            } else {
+                unloadedAppsMap.put( appSettings.getId(), appSettings );
+            }
         }
 
         while ( unloadedAppsMap.size() > 0 || appsBeingLoaded > 0 ) {
@@ -828,6 +834,7 @@ public class AppManagerImpl implements AppManager
                 i.remove(); // remove from unloadedAppsMap because we can never load this one
                 continue;
             }
+            logger.debug("Checking loadable status for " + appSettings.getAppName() + "...");
             String name = appSettings.getAppName();
             if ( name == null ) {
                 logger.error("Missing name for: " + appSettings);
@@ -856,6 +863,7 @@ public class AppManagerImpl implements AppManager
             // app not loading this pass or already loaded in
             // previous pass (prevents classloader race).
             if (parentsLoaded && !thisPass.contains(name)) {
+                logger.debug(appProps.getName() + " is loadable.");
                 loadable.add(appSettings);
                 thisPass.add(name);
             }
