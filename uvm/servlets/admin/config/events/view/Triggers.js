@@ -25,9 +25,6 @@ Ext.define('Ung.config.events.view.Triggers', {
         recordActions: ['edit', 'copy', 'delete', 'reorder'],
 
         ruleJavaClass: 'com.untangle.uvm.event.EventRuleCondition',
-        // conditions: [
-        //     Condition.fieldCondition
-        // ],
 
         emptyRow: {
             javaClass: 'com.untangle.uvm.event.TriggerRule',
@@ -40,6 +37,10 @@ Ext.define('Ung.config.events.view.Triggers', {
                     javaClass: 'com.untangle.uvm.event.EventRuleCondition'
                 }]
             },
+            action: 'TAG_HOST',
+            tagName: 'tag',
+            tagTarget: 'activeHosts',
+            tagLifetimeSec: 300,
             ruleId: -1,
             enabled: true
         },
@@ -96,13 +97,20 @@ Ext.define('Ung.config.events.view.Triggers', {
                     ],
                     queryMode: 'local'
                 }, {
-                    xtype: 'textfield',
-                    bind: {
-                        value: '{record.tagTarget}'
-                    },
+                    xtype: 'combo',
+                    itemId: 'target',
                     fieldLabel: 'Target'.t(),
                     labelWidth: 160,
-                    allowBlank: false
+                    editable: false,
+                    queryMode: 'local',
+                    width: 350,
+                    bind:{
+                        value: '{record.tagTarget}',
+                        store: '{targetFields}',
+                    },
+                    valueField: 'name',
+                    displayField: 'description',
+                    forceSelection: true
                 }, {
                     xtype: 'textfield',
                     bind: {
