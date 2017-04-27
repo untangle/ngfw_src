@@ -775,9 +775,164 @@
         description: "The rule ID",
         },
         {
-        name: "sessionEvent",
-        type: "SessionEvent",
-        description: "The session event",
+        name: "sessionEvent.cClientAddr",
+        type: "InetAddress",
+        description: "The client-side (pre-NAT) client address",
+        },
+        {
+        name: "sessionEvent.cClientPort",
+        type: "Integer",
+        description: "The client-side (pre-NAT) client port",
+        },
+        {
+        name: "sessionEvent.cServerAddr",
+        type: "InetAddress",
+        description: "The client-side (pre-NAT) server address",
+        },
+        {
+        name: "sessionEvent.cServerPort",
+        type: "Integer",
+        description: "The client-side (pre-NAT) server port",
+        },
+        {
+        name: "sessionEvent.sClientAddr",
+        type: "InetAddress",
+        description: "The server-side (post-NAT) client address",
+        },
+        {
+        name: "sessionEvent.sClientPort",
+        type: "Integer",
+        description: "The server-side (post-NAT) client port",
+        },
+        {
+        name: "sessionEvent.sServerAddr",
+        type: "InetAddress",
+        description: "The server-side (post-NAT) server address",
+        },
+        {
+        name: "sessionEvent.sServerPort",
+        type: "Integer",
+        description: "The server-side (post-NAT) server port",
+        },
+        {
+        name: "sessionEvent.bypassed",
+        type: "boolean",
+        description: "True if bypassed, false otherwise",
+        },
+        {
+        name: "sessionEvent.class",
+        type: "Class",
+        description: "The class name",
+        },
+        {
+        name: "sessionEvent.clientCountry",
+        type: "String",
+        description: "The client country",
+        },
+        {
+        name: "sessionEvent.clientIntf",
+        type: "Integer",
+        description: "The client interface ID",
+        },
+        {
+        name: "sessionEvent.clientLatitude",
+        type: "Double",
+        description: "The client latitude",
+        },
+        {
+        name: "sessionEvent.clientLongitude",
+        type: "Double",
+        description: "The client longitude",
+        },
+        {
+        name: "sessionEvent.entitled",
+        type: "boolean",
+        description: "The entitled status",
+        },
+        {
+        name: "sessionEvent.filterPrefix",
+        type: "String",
+        description: "The filter prefix if blocked by the filter rules",
+        },
+        {
+        name: "sessionEvent.hostname",
+        type: "String",
+        description: "The hostname",
+        },
+        {
+        name: "sessionEvent.icmpType",
+        type: "Short",
+        description: "The ICMP type",
+        },
+        {
+        name: "sessionEvent.localAddr",
+        type: "InetAddress",
+        description: "The local host address",
+        },
+        {
+        name: "sessionEvent.policyId",
+        type: "Integer",
+        description: "The policy ID",
+        },
+        {
+        name: "sessionEvent.policyRuleId",
+        type: "Integer",
+        description: "The policy rule ID",
+        },
+        {
+        name: "sessionEvent.protocol",
+        type: "Short",
+        description: "The protocol",
+        },
+        {
+        name: "sessionEvent.protocolName",
+        type: "String",
+        description: "The protocol name",
+        },
+        {
+        name: "sessionEvent.remoteAddr",
+        type: "InetAddress",
+        description: "The remote host address",
+        },
+        {
+        name: "sessionEvent.serverCountry",
+        type: "String",
+        description: "The server country",
+        },
+        {
+        name: "sessionEvent.serverIntf",
+        type: "Integer",
+        description: "The server interface ID",
+        },
+        {
+        name: "sessionEvent.serverLatitude",
+        type: "Double",
+        description: "The server latitude",
+        },
+        {
+        name: "sessionEvent.serverLongitude",
+        type: "Double",
+        description: "The server longitude",
+        },
+        {
+        name: "sessionEvent.sessionId",
+        type: "Long",
+        description: "The session ID",
+        },
+        {
+        name: "sessionEvent.tagsString",
+        type: "String",
+        description: "The string value of all tags",
+        },
+        {
+        name: "sessionEvent.timeStamp",
+        type: "Timestamp",
+        description: "The timestamp",
+        },
+        {
+        name: "sessionEvent.username",
+        type: "String",
+        description: "The username",
         },
         {
         name: "timeStamp",
@@ -1060,9 +1215,164 @@
         description: "The rule ID",
         },
         {
-        name: "sessionEvent",
-        type: "SessionEvent",
-        description: "The session event",
+        name: "sessionEvent.cClientAddr",
+        type: "InetAddress",
+        description: "The client-side (pre-NAT) client address",
+        },
+        {
+        name: "sessionEvent.cClientPort",
+        type: "Integer",
+        description: "The client-side (pre-NAT) client port",
+        },
+        {
+        name: "sessionEvent.cServerAddr",
+        type: "InetAddress",
+        description: "The client-side (pre-NAT) server address",
+        },
+        {
+        name: "sessionEvent.cServerPort",
+        type: "Integer",
+        description: "The client-side (pre-NAT) server port",
+        },
+        {
+        name: "sessionEvent.sClientAddr",
+        type: "InetAddress",
+        description: "The server-side (post-NAT) client address",
+        },
+        {
+        name: "sessionEvent.sClientPort",
+        type: "Integer",
+        description: "The server-side (post-NAT) client port",
+        },
+        {
+        name: "sessionEvent.sServerAddr",
+        type: "InetAddress",
+        description: "The server-side (post-NAT) server address",
+        },
+        {
+        name: "sessionEvent.sServerPort",
+        type: "Integer",
+        description: "The server-side (post-NAT) server port",
+        },
+        {
+        name: "sessionEvent.bypassed",
+        type: "boolean",
+        description: "True if bypassed, false otherwise",
+        },
+        {
+        name: "sessionEvent.class",
+        type: "Class",
+        description: "The class name",
+        },
+        {
+        name: "sessionEvent.clientCountry",
+        type: "String",
+        description: "The client country",
+        },
+        {
+        name: "sessionEvent.clientIntf",
+        type: "Integer",
+        description: "The client interface ID",
+        },
+        {
+        name: "sessionEvent.clientLatitude",
+        type: "Double",
+        description: "The client latitude",
+        },
+        {
+        name: "sessionEvent.clientLongitude",
+        type: "Double",
+        description: "The client longitude",
+        },
+        {
+        name: "sessionEvent.entitled",
+        type: "boolean",
+        description: "The entitled status",
+        },
+        {
+        name: "sessionEvent.filterPrefix",
+        type: "String",
+        description: "The filter prefix if blocked by the filter rules",
+        },
+        {
+        name: "sessionEvent.hostname",
+        type: "String",
+        description: "The hostname",
+        },
+        {
+        name: "sessionEvent.icmpType",
+        type: "Short",
+        description: "The ICMP type",
+        },
+        {
+        name: "sessionEvent.localAddr",
+        type: "InetAddress",
+        description: "The local host address",
+        },
+        {
+        name: "sessionEvent.policyId",
+        type: "Integer",
+        description: "The policy ID",
+        },
+        {
+        name: "sessionEvent.policyRuleId",
+        type: "Integer",
+        description: "The policy rule ID",
+        },
+        {
+        name: "sessionEvent.protocol",
+        type: "Short",
+        description: "The protocol",
+        },
+        {
+        name: "sessionEvent.protocolName",
+        type: "String",
+        description: "The protocol name",
+        },
+        {
+        name: "sessionEvent.remoteAddr",
+        type: "InetAddress",
+        description: "The remote host address",
+        },
+        {
+        name: "sessionEvent.serverCountry",
+        type: "String",
+        description: "The server country",
+        },
+        {
+        name: "sessionEvent.serverIntf",
+        type: "Integer",
+        description: "The server interface ID",
+        },
+        {
+        name: "sessionEvent.serverLatitude",
+        type: "Double",
+        description: "The server latitude",
+        },
+        {
+        name: "sessionEvent.serverLongitude",
+        type: "Double",
+        description: "The server longitude",
+        },
+        {
+        name: "sessionEvent.sessionId",
+        type: "Long",
+        description: "The session ID",
+        },
+        {
+        name: "sessionEvent.tagsString",
+        type: "String",
+        description: "The string value of all tags",
+        },
+        {
+        name: "sessionEvent.timeStamp",
+        type: "Timestamp",
+        description: "The timestamp",
+        },
+        {
+        name: "sessionEvent.username",
+        type: "String",
+        description: "The username",
         },
         {
         name: "status",
@@ -1155,9 +1465,164 @@
         description: "The rule ID",
         },
         {
-        name: "sessionEvent",
-        type: "SessionEvent",
-        description: "The session event",
+        name: "sessionEvent.cClientAddr",
+        type: "InetAddress",
+        description: "The client-side (pre-NAT) client address",
+        },
+        {
+        name: "sessionEvent.cClientPort",
+        type: "Integer",
+        description: "The client-side (pre-NAT) client port",
+        },
+        {
+        name: "sessionEvent.cServerAddr",
+        type: "InetAddress",
+        description: "The client-side (pre-NAT) server address",
+        },
+        {
+        name: "sessionEvent.cServerPort",
+        type: "Integer",
+        description: "The client-side (pre-NAT) server port",
+        },
+        {
+        name: "sessionEvent.sClientAddr",
+        type: "InetAddress",
+        description: "The server-side (post-NAT) client address",
+        },
+        {
+        name: "sessionEvent.sClientPort",
+        type: "Integer",
+        description: "The server-side (post-NAT) client port",
+        },
+        {
+        name: "sessionEvent.sServerAddr",
+        type: "InetAddress",
+        description: "The server-side (post-NAT) server address",
+        },
+        {
+        name: "sessionEvent.sServerPort",
+        type: "Integer",
+        description: "The server-side (post-NAT) server port",
+        },
+        {
+        name: "sessionEvent.bypassed",
+        type: "boolean",
+        description: "True if bypassed, false otherwise",
+        },
+        {
+        name: "sessionEvent.class",
+        type: "Class",
+        description: "The class name",
+        },
+        {
+        name: "sessionEvent.clientCountry",
+        type: "String",
+        description: "The client country",
+        },
+        {
+        name: "sessionEvent.clientIntf",
+        type: "Integer",
+        description: "The client interface ID",
+        },
+        {
+        name: "sessionEvent.clientLatitude",
+        type: "Double",
+        description: "The client latitude",
+        },
+        {
+        name: "sessionEvent.clientLongitude",
+        type: "Double",
+        description: "The client longitude",
+        },
+        {
+        name: "sessionEvent.entitled",
+        type: "boolean",
+        description: "The entitled status",
+        },
+        {
+        name: "sessionEvent.filterPrefix",
+        type: "String",
+        description: "The filter prefix if blocked by the filter rules",
+        },
+        {
+        name: "sessionEvent.hostname",
+        type: "String",
+        description: "The hostname",
+        },
+        {
+        name: "sessionEvent.icmpType",
+        type: "Short",
+        description: "The ICMP type",
+        },
+        {
+        name: "sessionEvent.localAddr",
+        type: "InetAddress",
+        description: "The local host address",
+        },
+        {
+        name: "sessionEvent.policyId",
+        type: "Integer",
+        description: "The policy ID",
+        },
+        {
+        name: "sessionEvent.policyRuleId",
+        type: "Integer",
+        description: "The policy rule ID",
+        },
+        {
+        name: "sessionEvent.protocol",
+        type: "Short",
+        description: "The protocol",
+        },
+        {
+        name: "sessionEvent.protocolName",
+        type: "String",
+        description: "The protocol name",
+        },
+        {
+        name: "sessionEvent.remoteAddr",
+        type: "InetAddress",
+        description: "The remote host address",
+        },
+        {
+        name: "sessionEvent.serverCountry",
+        type: "String",
+        description: "The server country",
+        },
+        {
+        name: "sessionEvent.serverIntf",
+        type: "Integer",
+        description: "The server interface ID",
+        },
+        {
+        name: "sessionEvent.serverLatitude",
+        type: "Double",
+        description: "The server latitude",
+        },
+        {
+        name: "sessionEvent.serverLongitude",
+        type: "Double",
+        description: "The server longitude",
+        },
+        {
+        name: "sessionEvent.sessionId",
+        type: "Long",
+        description: "The session ID",
+        },
+        {
+        name: "sessionEvent.tagsString",
+        type: "String",
+        description: "The string value of all tags",
+        },
+        {
+        name: "sessionEvent.timeStamp",
+        type: "Timestamp",
+        description: "The timestamp",
+        },
+        {
+        name: "sessionEvent.username",
+        type: "String",
+        description: "The username",
         },
         {
         name: "state",
@@ -1190,9 +1655,164 @@
         description: "The request ID",
         },
         {
-        name: "sessionEvent",
-        type: "SessionEvent",
-        description: "The session event",
+        name: "sessionEvent.cClientAddr",
+        type: "InetAddress",
+        description: "The client-side (pre-NAT) client address",
+        },
+        {
+        name: "sessionEvent.cClientPort",
+        type: "Integer",
+        description: "The client-side (pre-NAT) client port",
+        },
+        {
+        name: "sessionEvent.cServerAddr",
+        type: "InetAddress",
+        description: "The client-side (pre-NAT) server address",
+        },
+        {
+        name: "sessionEvent.cServerPort",
+        type: "Integer",
+        description: "The client-side (pre-NAT) server port",
+        },
+        {
+        name: "sessionEvent.sClientAddr",
+        type: "InetAddress",
+        description: "The server-side (post-NAT) client address",
+        },
+        {
+        name: "sessionEvent.sClientPort",
+        type: "Integer",
+        description: "The server-side (post-NAT) client port",
+        },
+        {
+        name: "sessionEvent.sServerAddr",
+        type: "InetAddress",
+        description: "The server-side (post-NAT) server address",
+        },
+        {
+        name: "sessionEvent.sServerPort",
+        type: "Integer",
+        description: "The server-side (post-NAT) server port",
+        },
+        {
+        name: "sessionEvent.bypassed",
+        type: "boolean",
+        description: "True if bypassed, false otherwise",
+        },
+        {
+        name: "sessionEvent.class",
+        type: "Class",
+        description: "The class name",
+        },
+        {
+        name: "sessionEvent.clientCountry",
+        type: "String",
+        description: "The client country",
+        },
+        {
+        name: "sessionEvent.clientIntf",
+        type: "Integer",
+        description: "The client interface ID",
+        },
+        {
+        name: "sessionEvent.clientLatitude",
+        type: "Double",
+        description: "The client latitude",
+        },
+        {
+        name: "sessionEvent.clientLongitude",
+        type: "Double",
+        description: "The client longitude",
+        },
+        {
+        name: "sessionEvent.entitled",
+        type: "boolean",
+        description: "The entitled status",
+        },
+        {
+        name: "sessionEvent.filterPrefix",
+        type: "String",
+        description: "The filter prefix if blocked by the filter rules",
+        },
+        {
+        name: "sessionEvent.hostname",
+        type: "String",
+        description: "The hostname",
+        },
+        {
+        name: "sessionEvent.icmpType",
+        type: "Short",
+        description: "The ICMP type",
+        },
+        {
+        name: "sessionEvent.localAddr",
+        type: "InetAddress",
+        description: "The local host address",
+        },
+        {
+        name: "sessionEvent.policyId",
+        type: "Integer",
+        description: "The policy ID",
+        },
+        {
+        name: "sessionEvent.policyRuleId",
+        type: "Integer",
+        description: "The policy rule ID",
+        },
+        {
+        name: "sessionEvent.protocol",
+        type: "Short",
+        description: "The protocol",
+        },
+        {
+        name: "sessionEvent.protocolName",
+        type: "String",
+        description: "The protocol name",
+        },
+        {
+        name: "sessionEvent.remoteAddr",
+        type: "InetAddress",
+        description: "The remote host address",
+        },
+        {
+        name: "sessionEvent.serverCountry",
+        type: "String",
+        description: "The server country",
+        },
+        {
+        name: "sessionEvent.serverIntf",
+        type: "Integer",
+        description: "The server interface ID",
+        },
+        {
+        name: "sessionEvent.serverLatitude",
+        type: "Double",
+        description: "The server latitude",
+        },
+        {
+        name: "sessionEvent.serverLongitude",
+        type: "Double",
+        description: "The server longitude",
+        },
+        {
+        name: "sessionEvent.sessionId",
+        type: "Long",
+        description: "The session ID",
+        },
+        {
+        name: "sessionEvent.tagsString",
+        type: "String",
+        description: "The string value of all tags",
+        },
+        {
+        name: "sessionEvent.timeStamp",
+        type: "Timestamp",
+        description: "The timestamp",
+        },
+        {
+        name: "sessionEvent.username",
+        type: "String",
+        description: "The username",
         },
         {
         name: "timeStamp",
@@ -1271,9 +1891,164 @@
         description: "The request URI",
         },
         {
-        name: "sessionEvent",
-        type: "SessionEvent",
-        description: "The session event",
+        name: "sessionEvent.cClientAddr",
+        type: "InetAddress",
+        description: "The client-side (pre-NAT) client address",
+        },
+        {
+        name: "sessionEvent.cClientPort",
+        type: "Integer",
+        description: "The client-side (pre-NAT) client port",
+        },
+        {
+        name: "sessionEvent.cServerAddr",
+        type: "InetAddress",
+        description: "The client-side (pre-NAT) server address",
+        },
+        {
+        name: "sessionEvent.cServerPort",
+        type: "Integer",
+        description: "The client-side (pre-NAT) server port",
+        },
+        {
+        name: "sessionEvent.sClientAddr",
+        type: "InetAddress",
+        description: "The server-side (post-NAT) client address",
+        },
+        {
+        name: "sessionEvent.sClientPort",
+        type: "Integer",
+        description: "The server-side (post-NAT) client port",
+        },
+        {
+        name: "sessionEvent.sServerAddr",
+        type: "InetAddress",
+        description: "The server-side (post-NAT) server address",
+        },
+        {
+        name: "sessionEvent.sServerPort",
+        type: "Integer",
+        description: "The server-side (post-NAT) server port",
+        },
+        {
+        name: "sessionEvent.bypassed",
+        type: "boolean",
+        description: "True if bypassed, false otherwise",
+        },
+        {
+        name: "sessionEvent.class",
+        type: "Class",
+        description: "The class name",
+        },
+        {
+        name: "sessionEvent.clientCountry",
+        type: "String",
+        description: "The client country",
+        },
+        {
+        name: "sessionEvent.clientIntf",
+        type: "Integer",
+        description: "The client interface ID",
+        },
+        {
+        name: "sessionEvent.clientLatitude",
+        type: "Double",
+        description: "The client latitude",
+        },
+        {
+        name: "sessionEvent.clientLongitude",
+        type: "Double",
+        description: "The client longitude",
+        },
+        {
+        name: "sessionEvent.entitled",
+        type: "boolean",
+        description: "The entitled status",
+        },
+        {
+        name: "sessionEvent.filterPrefix",
+        type: "String",
+        description: "The filter prefix if blocked by the filter rules",
+        },
+        {
+        name: "sessionEvent.hostname",
+        type: "String",
+        description: "The hostname",
+        },
+        {
+        name: "sessionEvent.icmpType",
+        type: "Short",
+        description: "The ICMP type",
+        },
+        {
+        name: "sessionEvent.localAddr",
+        type: "InetAddress",
+        description: "The local host address",
+        },
+        {
+        name: "sessionEvent.policyId",
+        type: "Integer",
+        description: "The policy ID",
+        },
+        {
+        name: "sessionEvent.policyRuleId",
+        type: "Integer",
+        description: "The policy rule ID",
+        },
+        {
+        name: "sessionEvent.protocol",
+        type: "Short",
+        description: "The protocol",
+        },
+        {
+        name: "sessionEvent.protocolName",
+        type: "String",
+        description: "The protocol name",
+        },
+        {
+        name: "sessionEvent.remoteAddr",
+        type: "InetAddress",
+        description: "The remote host address",
+        },
+        {
+        name: "sessionEvent.serverCountry",
+        type: "String",
+        description: "The server country",
+        },
+        {
+        name: "sessionEvent.serverIntf",
+        type: "Integer",
+        description: "The server interface ID",
+        },
+        {
+        name: "sessionEvent.serverLatitude",
+        type: "Double",
+        description: "The server latitude",
+        },
+        {
+        name: "sessionEvent.serverLongitude",
+        type: "Double",
+        description: "The server longitude",
+        },
+        {
+        name: "sessionEvent.sessionId",
+        type: "Long",
+        description: "The session ID",
+        },
+        {
+        name: "sessionEvent.tagsString",
+        type: "String",
+        description: "The string value of all tags",
+        },
+        {
+        name: "sessionEvent.timeStamp",
+        type: "Timestamp",
+        description: "The timestamp",
+        },
+        {
+        name: "sessionEvent.username",
+        type: "String",
+        description: "The username",
         },
         {
         name: "term",
@@ -1327,9 +2102,164 @@
         description: "The request line",
         },
         {
-        name: "sessionEvent",
-        type: "SessionEvent",
-        description: "The session event",
+        name: "sessionEvent.cClientAddr",
+        type: "InetAddress",
+        description: "The client-side (pre-NAT) client address",
+        },
+        {
+        name: "sessionEvent.cClientPort",
+        type: "Integer",
+        description: "The client-side (pre-NAT) client port",
+        },
+        {
+        name: "sessionEvent.cServerAddr",
+        type: "InetAddress",
+        description: "The client-side (pre-NAT) server address",
+        },
+        {
+        name: "sessionEvent.cServerPort",
+        type: "Integer",
+        description: "The client-side (pre-NAT) server port",
+        },
+        {
+        name: "sessionEvent.sClientAddr",
+        type: "InetAddress",
+        description: "The server-side (post-NAT) client address",
+        },
+        {
+        name: "sessionEvent.sClientPort",
+        type: "Integer",
+        description: "The server-side (post-NAT) client port",
+        },
+        {
+        name: "sessionEvent.sServerAddr",
+        type: "InetAddress",
+        description: "The server-side (post-NAT) server address",
+        },
+        {
+        name: "sessionEvent.sServerPort",
+        type: "Integer",
+        description: "The server-side (post-NAT) server port",
+        },
+        {
+        name: "sessionEvent.bypassed",
+        type: "boolean",
+        description: "True if bypassed, false otherwise",
+        },
+        {
+        name: "sessionEvent.class",
+        type: "Class",
+        description: "The class name",
+        },
+        {
+        name: "sessionEvent.clientCountry",
+        type: "String",
+        description: "The client country",
+        },
+        {
+        name: "sessionEvent.clientIntf",
+        type: "Integer",
+        description: "The client interface ID",
+        },
+        {
+        name: "sessionEvent.clientLatitude",
+        type: "Double",
+        description: "The client latitude",
+        },
+        {
+        name: "sessionEvent.clientLongitude",
+        type: "Double",
+        description: "The client longitude",
+        },
+        {
+        name: "sessionEvent.entitled",
+        type: "boolean",
+        description: "The entitled status",
+        },
+        {
+        name: "sessionEvent.filterPrefix",
+        type: "String",
+        description: "The filter prefix if blocked by the filter rules",
+        },
+        {
+        name: "sessionEvent.hostname",
+        type: "String",
+        description: "The hostname",
+        },
+        {
+        name: "sessionEvent.icmpType",
+        type: "Short",
+        description: "The ICMP type",
+        },
+        {
+        name: "sessionEvent.localAddr",
+        type: "InetAddress",
+        description: "The local host address",
+        },
+        {
+        name: "sessionEvent.policyId",
+        type: "Integer",
+        description: "The policy ID",
+        },
+        {
+        name: "sessionEvent.policyRuleId",
+        type: "Integer",
+        description: "The policy rule ID",
+        },
+        {
+        name: "sessionEvent.protocol",
+        type: "Short",
+        description: "The protocol",
+        },
+        {
+        name: "sessionEvent.protocolName",
+        type: "String",
+        description: "The protocol name",
+        },
+        {
+        name: "sessionEvent.remoteAddr",
+        type: "InetAddress",
+        description: "The remote host address",
+        },
+        {
+        name: "sessionEvent.serverCountry",
+        type: "String",
+        description: "The server country",
+        },
+        {
+        name: "sessionEvent.serverIntf",
+        type: "Integer",
+        description: "The server interface ID",
+        },
+        {
+        name: "sessionEvent.serverLatitude",
+        type: "Double",
+        description: "The server latitude",
+        },
+        {
+        name: "sessionEvent.serverLongitude",
+        type: "Double",
+        description: "The server longitude",
+        },
+        {
+        name: "sessionEvent.sessionId",
+        type: "Long",
+        description: "The session ID",
+        },
+        {
+        name: "sessionEvent.tagsString",
+        type: "String",
+        description: "The string value of all tags",
+        },
+        {
+        name: "sessionEvent.timeStamp",
+        type: "Timestamp",
+        description: "The timestamp",
+        },
+        {
+        name: "sessionEvent.username",
+        type: "String",
+        description: "The username",
         },
         {
         name: "timeStamp",
@@ -1357,9 +2287,164 @@
         description: "The rule ID",
         },
         {
-        name: "sessionEvent",
-        type: "SessionEvent",
-        description: "The session event",
+        name: "sessionEvent.cClientAddr",
+        type: "InetAddress",
+        description: "The client-side (pre-NAT) client address",
+        },
+        {
+        name: "sessionEvent.cClientPort",
+        type: "Integer",
+        description: "The client-side (pre-NAT) client port",
+        },
+        {
+        name: "sessionEvent.cServerAddr",
+        type: "InetAddress",
+        description: "The client-side (pre-NAT) server address",
+        },
+        {
+        name: "sessionEvent.cServerPort",
+        type: "Integer",
+        description: "The client-side (pre-NAT) server port",
+        },
+        {
+        name: "sessionEvent.sClientAddr",
+        type: "InetAddress",
+        description: "The server-side (post-NAT) client address",
+        },
+        {
+        name: "sessionEvent.sClientPort",
+        type: "Integer",
+        description: "The server-side (post-NAT) client port",
+        },
+        {
+        name: "sessionEvent.sServerAddr",
+        type: "InetAddress",
+        description: "The server-side (post-NAT) server address",
+        },
+        {
+        name: "sessionEvent.sServerPort",
+        type: "Integer",
+        description: "The server-side (post-NAT) server port",
+        },
+        {
+        name: "sessionEvent.bypassed",
+        type: "boolean",
+        description: "True if bypassed, false otherwise",
+        },
+        {
+        name: "sessionEvent.class",
+        type: "Class",
+        description: "The class name",
+        },
+        {
+        name: "sessionEvent.clientCountry",
+        type: "String",
+        description: "The client country",
+        },
+        {
+        name: "sessionEvent.clientIntf",
+        type: "Integer",
+        description: "The client interface ID",
+        },
+        {
+        name: "sessionEvent.clientLatitude",
+        type: "Double",
+        description: "The client latitude",
+        },
+        {
+        name: "sessionEvent.clientLongitude",
+        type: "Double",
+        description: "The client longitude",
+        },
+        {
+        name: "sessionEvent.entitled",
+        type: "boolean",
+        description: "The entitled status",
+        },
+        {
+        name: "sessionEvent.filterPrefix",
+        type: "String",
+        description: "The filter prefix if blocked by the filter rules",
+        },
+        {
+        name: "sessionEvent.hostname",
+        type: "String",
+        description: "The hostname",
+        },
+        {
+        name: "sessionEvent.icmpType",
+        type: "Short",
+        description: "The ICMP type",
+        },
+        {
+        name: "sessionEvent.localAddr",
+        type: "InetAddress",
+        description: "The local host address",
+        },
+        {
+        name: "sessionEvent.policyId",
+        type: "Integer",
+        description: "The policy ID",
+        },
+        {
+        name: "sessionEvent.policyRuleId",
+        type: "Integer",
+        description: "The policy rule ID",
+        },
+        {
+        name: "sessionEvent.protocol",
+        type: "Short",
+        description: "The protocol",
+        },
+        {
+        name: "sessionEvent.protocolName",
+        type: "String",
+        description: "The protocol name",
+        },
+        {
+        name: "sessionEvent.remoteAddr",
+        type: "InetAddress",
+        description: "The remote host address",
+        },
+        {
+        name: "sessionEvent.serverCountry",
+        type: "String",
+        description: "The server country",
+        },
+        {
+        name: "sessionEvent.serverIntf",
+        type: "Integer",
+        description: "The server interface ID",
+        },
+        {
+        name: "sessionEvent.serverLatitude",
+        type: "Double",
+        description: "The server latitude",
+        },
+        {
+        name: "sessionEvent.serverLongitude",
+        type: "Double",
+        description: "The server longitude",
+        },
+        {
+        name: "sessionEvent.sessionId",
+        type: "Long",
+        description: "The session ID",
+        },
+        {
+        name: "sessionEvent.tagsString",
+        type: "String",
+        description: "The string value of all tags",
+        },
+        {
+        name: "sessionEvent.timeStamp",
+        type: "Timestamp",
+        description: "The timestamp",
+        },
+        {
+        name: "sessionEvent.username",
+        type: "String",
+        description: "The username",
         },
         {
         name: "timeStamp",
@@ -1463,9 +2548,164 @@
         description: "The hostname",
         },
         {
-        name: "sessionEvent",
-        type: "SessionEvent",
-        description: "The session event",
+        name: "sessionEvent.cClientAddr",
+        type: "InetAddress",
+        description: "The client-side (pre-NAT) client address",
+        },
+        {
+        name: "sessionEvent.cClientPort",
+        type: "Integer",
+        description: "The client-side (pre-NAT) client port",
+        },
+        {
+        name: "sessionEvent.cServerAddr",
+        type: "InetAddress",
+        description: "The client-side (pre-NAT) server address",
+        },
+        {
+        name: "sessionEvent.cServerPort",
+        type: "Integer",
+        description: "The client-side (pre-NAT) server port",
+        },
+        {
+        name: "sessionEvent.sClientAddr",
+        type: "InetAddress",
+        description: "The server-side (post-NAT) client address",
+        },
+        {
+        name: "sessionEvent.sClientPort",
+        type: "Integer",
+        description: "The server-side (post-NAT) client port",
+        },
+        {
+        name: "sessionEvent.sServerAddr",
+        type: "InetAddress",
+        description: "The server-side (post-NAT) server address",
+        },
+        {
+        name: "sessionEvent.sServerPort",
+        type: "Integer",
+        description: "The server-side (post-NAT) server port",
+        },
+        {
+        name: "sessionEvent.bypassed",
+        type: "boolean",
+        description: "True if bypassed, false otherwise",
+        },
+        {
+        name: "sessionEvent.class",
+        type: "Class",
+        description: "The class name",
+        },
+        {
+        name: "sessionEvent.clientCountry",
+        type: "String",
+        description: "The client country",
+        },
+        {
+        name: "sessionEvent.clientIntf",
+        type: "Integer",
+        description: "The client interface ID",
+        },
+        {
+        name: "sessionEvent.clientLatitude",
+        type: "Double",
+        description: "The client latitude",
+        },
+        {
+        name: "sessionEvent.clientLongitude",
+        type: "Double",
+        description: "The client longitude",
+        },
+        {
+        name: "sessionEvent.entitled",
+        type: "boolean",
+        description: "The entitled status",
+        },
+        {
+        name: "sessionEvent.filterPrefix",
+        type: "String",
+        description: "The filter prefix if blocked by the filter rules",
+        },
+        {
+        name: "sessionEvent.hostname",
+        type: "String",
+        description: "The hostname",
+        },
+        {
+        name: "sessionEvent.icmpType",
+        type: "Short",
+        description: "The ICMP type",
+        },
+        {
+        name: "sessionEvent.localAddr",
+        type: "InetAddress",
+        description: "The local host address",
+        },
+        {
+        name: "sessionEvent.policyId",
+        type: "Integer",
+        description: "The policy ID",
+        },
+        {
+        name: "sessionEvent.policyRuleId",
+        type: "Integer",
+        description: "The policy rule ID",
+        },
+        {
+        name: "sessionEvent.protocol",
+        type: "Short",
+        description: "The protocol",
+        },
+        {
+        name: "sessionEvent.protocolName",
+        type: "String",
+        description: "The protocol name",
+        },
+        {
+        name: "sessionEvent.remoteAddr",
+        type: "InetAddress",
+        description: "The remote host address",
+        },
+        {
+        name: "sessionEvent.serverCountry",
+        type: "String",
+        description: "The server country",
+        },
+        {
+        name: "sessionEvent.serverIntf",
+        type: "Integer",
+        description: "The server interface ID",
+        },
+        {
+        name: "sessionEvent.serverLatitude",
+        type: "Double",
+        description: "The server latitude",
+        },
+        {
+        name: "sessionEvent.serverLongitude",
+        type: "Double",
+        description: "The server longitude",
+        },
+        {
+        name: "sessionEvent.sessionId",
+        type: "Long",
+        description: "The session ID",
+        },
+        {
+        name: "sessionEvent.tagsString",
+        type: "String",
+        description: "The string value of all tags",
+        },
+        {
+        name: "sessionEvent.timeStamp",
+        type: "Timestamp",
+        description: "The timestamp",
+        },
+        {
+        name: "sessionEvent.username",
+        type: "String",
+        description: "The username",
         },
         {
         name: "sessionId",
@@ -1539,9 +2779,219 @@
         description: "The server port",
         },
         {
-        name: "smtpMessageEvent",
-        type: "SmtpMessageEvent",
-        description: "The parent SMTP message event",
+        name: "smtpMessageEvent.addresses",
+        type: "Set",
+        description: "The addresses",
+        },
+        {
+        name: "smtpMessageEvent.class",
+        type: "Class",
+        description: "The class name",
+        },
+        {
+        name: "smtpMessageEvent.envelopeFromAddress",
+        type: "String",
+        description: "The envelop FROM address",
+        },
+        {
+        name: "smtpMessageEvent.envelopeToAddress",
+        type: "String",
+        description: "The envelope TO address",
+        },
+        {
+        name: "smtpMessageEvent.messageId",
+        type: "Long",
+        description: "The message ID",
+        },
+        {
+        name: "smtpMessageEvent.receiver",
+        type: "String",
+        description: "The receiver",
+        },
+        {
+        name: "smtpMessageEvent.sender",
+        type: "String",
+        description: "The sender",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.cClientAddr",
+        type: "InetAddress",
+        description: "The client-side (pre-NAT) client address",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.cClientPort",
+        type: "Integer",
+        description: "The client-side (pre-NAT) client port",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.cServerAddr",
+        type: "InetAddress",
+        description: "The client-side (pre-NAT) server address",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.cServerPort",
+        type: "Integer",
+        description: "The client-side (pre-NAT) server port",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.sClientAddr",
+        type: "InetAddress",
+        description: "The server-side (post-NAT) client address",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.sClientPort",
+        type: "Integer",
+        description: "The server-side (post-NAT) client port",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.sServerAddr",
+        type: "InetAddress",
+        description: "The server-side (post-NAT) server address",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.sServerPort",
+        type: "Integer",
+        description: "The server-side (post-NAT) server port",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.bypassed",
+        type: "boolean",
+        description: "True if bypassed, false otherwise",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.class",
+        type: "Class",
+        description: "The class name",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.clientCountry",
+        type: "String",
+        description: "The client country",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.clientIntf",
+        type: "Integer",
+        description: "The client interface ID",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.clientLatitude",
+        type: "Double",
+        description: "The client latitude",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.clientLongitude",
+        type: "Double",
+        description: "The client longitude",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.entitled",
+        type: "boolean",
+        description: "The entitled status",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.filterPrefix",
+        type: "String",
+        description: "The filter prefix if blocked by the filter rules",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.hostname",
+        type: "String",
+        description: "The hostname",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.icmpType",
+        type: "Short",
+        description: "The ICMP type",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.localAddr",
+        type: "InetAddress",
+        description: "The local host address",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.policyId",
+        type: "Integer",
+        description: "The policy ID",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.policyRuleId",
+        type: "Integer",
+        description: "The policy rule ID",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.protocol",
+        type: "Short",
+        description: "The protocol",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.protocolName",
+        type: "String",
+        description: "The protocol name",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.remoteAddr",
+        type: "InetAddress",
+        description: "The remote host address",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.serverCountry",
+        type: "String",
+        description: "The server country",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.serverIntf",
+        type: "Integer",
+        description: "The server interface ID",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.serverLatitude",
+        type: "Double",
+        description: "The server latitude",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.serverLongitude",
+        type: "Double",
+        description: "The server longitude",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.sessionId",
+        type: "Long",
+        description: "The session ID",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.tagsString",
+        type: "String",
+        description: "The string value of all tags",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.timeStamp",
+        type: "Timestamp",
+        description: "The timestamp",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.username",
+        type: "String",
+        description: "The username",
+        },
+        {
+        name: "smtpMessageEvent.sessionId",
+        type: "Long",
+        description: "The session ID",
+        },
+        {
+        name: "smtpMessageEvent.subject",
+        type: "String",
+        description: "The subject",
+        },
+        {
+        name: "smtpMessageEvent.timeStamp",
+        type: "Timestamp",
+        description: "The timestamp",
+        },
+        {
+        name: "smtpMessageEvent.tmpFile",
+        type: "File",
+        description: "The /tmp file",
         },
         {
         name: "isSpam",
@@ -1715,9 +3165,164 @@
         description: "The sender",
         },
         {
-        name: "sessionEvent",
-        type: "SessionEvent",
-        description: "The session event",
+        name: "sessionEvent.cClientAddr",
+        type: "InetAddress",
+        description: "The client-side (pre-NAT) client address",
+        },
+        {
+        name: "sessionEvent.cClientPort",
+        type: "Integer",
+        description: "The client-side (pre-NAT) client port",
+        },
+        {
+        name: "sessionEvent.cServerAddr",
+        type: "InetAddress",
+        description: "The client-side (pre-NAT) server address",
+        },
+        {
+        name: "sessionEvent.cServerPort",
+        type: "Integer",
+        description: "The client-side (pre-NAT) server port",
+        },
+        {
+        name: "sessionEvent.sClientAddr",
+        type: "InetAddress",
+        description: "The server-side (post-NAT) client address",
+        },
+        {
+        name: "sessionEvent.sClientPort",
+        type: "Integer",
+        description: "The server-side (post-NAT) client port",
+        },
+        {
+        name: "sessionEvent.sServerAddr",
+        type: "InetAddress",
+        description: "The server-side (post-NAT) server address",
+        },
+        {
+        name: "sessionEvent.sServerPort",
+        type: "Integer",
+        description: "The server-side (post-NAT) server port",
+        },
+        {
+        name: "sessionEvent.bypassed",
+        type: "boolean",
+        description: "True if bypassed, false otherwise",
+        },
+        {
+        name: "sessionEvent.class",
+        type: "Class",
+        description: "The class name",
+        },
+        {
+        name: "sessionEvent.clientCountry",
+        type: "String",
+        description: "The client country",
+        },
+        {
+        name: "sessionEvent.clientIntf",
+        type: "Integer",
+        description: "The client interface ID",
+        },
+        {
+        name: "sessionEvent.clientLatitude",
+        type: "Double",
+        description: "The client latitude",
+        },
+        {
+        name: "sessionEvent.clientLongitude",
+        type: "Double",
+        description: "The client longitude",
+        },
+        {
+        name: "sessionEvent.entitled",
+        type: "boolean",
+        description: "The entitled status",
+        },
+        {
+        name: "sessionEvent.filterPrefix",
+        type: "String",
+        description: "The filter prefix if blocked by the filter rules",
+        },
+        {
+        name: "sessionEvent.hostname",
+        type: "String",
+        description: "The hostname",
+        },
+        {
+        name: "sessionEvent.icmpType",
+        type: "Short",
+        description: "The ICMP type",
+        },
+        {
+        name: "sessionEvent.localAddr",
+        type: "InetAddress",
+        description: "The local host address",
+        },
+        {
+        name: "sessionEvent.policyId",
+        type: "Integer",
+        description: "The policy ID",
+        },
+        {
+        name: "sessionEvent.policyRuleId",
+        type: "Integer",
+        description: "The policy rule ID",
+        },
+        {
+        name: "sessionEvent.protocol",
+        type: "Short",
+        description: "The protocol",
+        },
+        {
+        name: "sessionEvent.protocolName",
+        type: "String",
+        description: "The protocol name",
+        },
+        {
+        name: "sessionEvent.remoteAddr",
+        type: "InetAddress",
+        description: "The remote host address",
+        },
+        {
+        name: "sessionEvent.serverCountry",
+        type: "String",
+        description: "The server country",
+        },
+        {
+        name: "sessionEvent.serverIntf",
+        type: "Integer",
+        description: "The server interface ID",
+        },
+        {
+        name: "sessionEvent.serverLatitude",
+        type: "Double",
+        description: "The server latitude",
+        },
+        {
+        name: "sessionEvent.serverLongitude",
+        type: "Double",
+        description: "The server longitude",
+        },
+        {
+        name: "sessionEvent.sessionId",
+        type: "Long",
+        description: "The session ID",
+        },
+        {
+        name: "sessionEvent.tagsString",
+        type: "String",
+        description: "The string value of all tags",
+        },
+        {
+        name: "sessionEvent.timeStamp",
+        type: "Timestamp",
+        description: "The timestamp",
+        },
+        {
+        name: "sessionEvent.username",
+        type: "String",
+        description: "The username",
         },
         {
         name: "sessionId",
@@ -1800,9 +3405,164 @@
         description: "True if clean, false otherwise",
         },
         {
-        name: "sessionEvent",
-        type: "SessionEvent",
-        description: "The session event",
+        name: "sessionEvent.cClientAddr",
+        type: "InetAddress",
+        description: "The client-side (pre-NAT) client address",
+        },
+        {
+        name: "sessionEvent.cClientPort",
+        type: "Integer",
+        description: "The client-side (pre-NAT) client port",
+        },
+        {
+        name: "sessionEvent.cServerAddr",
+        type: "InetAddress",
+        description: "The client-side (pre-NAT) server address",
+        },
+        {
+        name: "sessionEvent.cServerPort",
+        type: "Integer",
+        description: "The client-side (pre-NAT) server port",
+        },
+        {
+        name: "sessionEvent.sClientAddr",
+        type: "InetAddress",
+        description: "The server-side (post-NAT) client address",
+        },
+        {
+        name: "sessionEvent.sClientPort",
+        type: "Integer",
+        description: "The server-side (post-NAT) client port",
+        },
+        {
+        name: "sessionEvent.sServerAddr",
+        type: "InetAddress",
+        description: "The server-side (post-NAT) server address",
+        },
+        {
+        name: "sessionEvent.sServerPort",
+        type: "Integer",
+        description: "The server-side (post-NAT) server port",
+        },
+        {
+        name: "sessionEvent.bypassed",
+        type: "boolean",
+        description: "True if bypassed, false otherwise",
+        },
+        {
+        name: "sessionEvent.class",
+        type: "Class",
+        description: "The class name",
+        },
+        {
+        name: "sessionEvent.clientCountry",
+        type: "String",
+        description: "The client country",
+        },
+        {
+        name: "sessionEvent.clientIntf",
+        type: "Integer",
+        description: "The client interface ID",
+        },
+        {
+        name: "sessionEvent.clientLatitude",
+        type: "Double",
+        description: "The client latitude",
+        },
+        {
+        name: "sessionEvent.clientLongitude",
+        type: "Double",
+        description: "The client longitude",
+        },
+        {
+        name: "sessionEvent.entitled",
+        type: "boolean",
+        description: "The entitled status",
+        },
+        {
+        name: "sessionEvent.filterPrefix",
+        type: "String",
+        description: "The filter prefix if blocked by the filter rules",
+        },
+        {
+        name: "sessionEvent.hostname",
+        type: "String",
+        description: "The hostname",
+        },
+        {
+        name: "sessionEvent.icmpType",
+        type: "Short",
+        description: "The ICMP type",
+        },
+        {
+        name: "sessionEvent.localAddr",
+        type: "InetAddress",
+        description: "The local host address",
+        },
+        {
+        name: "sessionEvent.policyId",
+        type: "Integer",
+        description: "The policy ID",
+        },
+        {
+        name: "sessionEvent.policyRuleId",
+        type: "Integer",
+        description: "The policy rule ID",
+        },
+        {
+        name: "sessionEvent.protocol",
+        type: "Short",
+        description: "The protocol",
+        },
+        {
+        name: "sessionEvent.protocolName",
+        type: "String",
+        description: "The protocol name",
+        },
+        {
+        name: "sessionEvent.remoteAddr",
+        type: "InetAddress",
+        description: "The remote host address",
+        },
+        {
+        name: "sessionEvent.serverCountry",
+        type: "String",
+        description: "The server country",
+        },
+        {
+        name: "sessionEvent.serverIntf",
+        type: "Integer",
+        description: "The server interface ID",
+        },
+        {
+        name: "sessionEvent.serverLatitude",
+        type: "Double",
+        description: "The server latitude",
+        },
+        {
+        name: "sessionEvent.serverLongitude",
+        type: "Double",
+        description: "The server longitude",
+        },
+        {
+        name: "sessionEvent.sessionId",
+        type: "Long",
+        description: "The session ID",
+        },
+        {
+        name: "sessionEvent.tagsString",
+        type: "String",
+        description: "The string value of all tags",
+        },
+        {
+        name: "sessionEvent.timeStamp",
+        type: "Timestamp",
+        description: "The timestamp",
+        },
+        {
+        name: "sessionEvent.username",
+        type: "String",
+        description: "The username",
         },
         {
         name: "timeStamp",
@@ -1875,9 +3635,164 @@
         description: "The hostname",
         },
         {
-        name: "sessionEvent",
-        type: "SessionEvent",
-        description: "The session event",
+        name: "sessionEvent.cClientAddr",
+        type: "InetAddress",
+        description: "The client-side (pre-NAT) client address",
+        },
+        {
+        name: "sessionEvent.cClientPort",
+        type: "Integer",
+        description: "The client-side (pre-NAT) client port",
+        },
+        {
+        name: "sessionEvent.cServerAddr",
+        type: "InetAddress",
+        description: "The client-side (pre-NAT) server address",
+        },
+        {
+        name: "sessionEvent.cServerPort",
+        type: "Integer",
+        description: "The client-side (pre-NAT) server port",
+        },
+        {
+        name: "sessionEvent.sClientAddr",
+        type: "InetAddress",
+        description: "The server-side (post-NAT) client address",
+        },
+        {
+        name: "sessionEvent.sClientPort",
+        type: "Integer",
+        description: "The server-side (post-NAT) client port",
+        },
+        {
+        name: "sessionEvent.sServerAddr",
+        type: "InetAddress",
+        description: "The server-side (post-NAT) server address",
+        },
+        {
+        name: "sessionEvent.sServerPort",
+        type: "Integer",
+        description: "The server-side (post-NAT) server port",
+        },
+        {
+        name: "sessionEvent.bypassed",
+        type: "boolean",
+        description: "True if bypassed, false otherwise",
+        },
+        {
+        name: "sessionEvent.class",
+        type: "Class",
+        description: "The class name",
+        },
+        {
+        name: "sessionEvent.clientCountry",
+        type: "String",
+        description: "The client country",
+        },
+        {
+        name: "sessionEvent.clientIntf",
+        type: "Integer",
+        description: "The client interface ID",
+        },
+        {
+        name: "sessionEvent.clientLatitude",
+        type: "Double",
+        description: "The client latitude",
+        },
+        {
+        name: "sessionEvent.clientLongitude",
+        type: "Double",
+        description: "The client longitude",
+        },
+        {
+        name: "sessionEvent.entitled",
+        type: "boolean",
+        description: "The entitled status",
+        },
+        {
+        name: "sessionEvent.filterPrefix",
+        type: "String",
+        description: "The filter prefix if blocked by the filter rules",
+        },
+        {
+        name: "sessionEvent.hostname",
+        type: "String",
+        description: "The hostname",
+        },
+        {
+        name: "sessionEvent.icmpType",
+        type: "Short",
+        description: "The ICMP type",
+        },
+        {
+        name: "sessionEvent.localAddr",
+        type: "InetAddress",
+        description: "The local host address",
+        },
+        {
+        name: "sessionEvent.policyId",
+        type: "Integer",
+        description: "The policy ID",
+        },
+        {
+        name: "sessionEvent.policyRuleId",
+        type: "Integer",
+        description: "The policy rule ID",
+        },
+        {
+        name: "sessionEvent.protocol",
+        type: "Short",
+        description: "The protocol",
+        },
+        {
+        name: "sessionEvent.protocolName",
+        type: "String",
+        description: "The protocol name",
+        },
+        {
+        name: "sessionEvent.remoteAddr",
+        type: "InetAddress",
+        description: "The remote host address",
+        },
+        {
+        name: "sessionEvent.serverCountry",
+        type: "String",
+        description: "The server country",
+        },
+        {
+        name: "sessionEvent.serverIntf",
+        type: "Integer",
+        description: "The server interface ID",
+        },
+        {
+        name: "sessionEvent.serverLatitude",
+        type: "Double",
+        description: "The server latitude",
+        },
+        {
+        name: "sessionEvent.serverLongitude",
+        type: "Double",
+        description: "The server longitude",
+        },
+        {
+        name: "sessionEvent.sessionId",
+        type: "Long",
+        description: "The session ID",
+        },
+        {
+        name: "sessionEvent.tagsString",
+        type: "String",
+        description: "The string value of all tags",
+        },
+        {
+        name: "sessionEvent.timeStamp",
+        type: "Timestamp",
+        description: "The timestamp",
+        },
+        {
+        name: "sessionEvent.username",
+        type: "String",
+        description: "The username",
         },
         {
         name: "sessionId",
@@ -1951,9 +3866,219 @@
         description: "The server port",
         },
         {
-        name: "smtpMessageEvent",
-        type: "SmtpMessageEvent",
-        description: "The parent SMTP message event",
+        name: "smtpMessageEvent.addresses",
+        type: "Set",
+        description: "The addresses",
+        },
+        {
+        name: "smtpMessageEvent.class",
+        type: "Class",
+        description: "The class name",
+        },
+        {
+        name: "smtpMessageEvent.envelopeFromAddress",
+        type: "String",
+        description: "The envelop FROM address",
+        },
+        {
+        name: "smtpMessageEvent.envelopeToAddress",
+        type: "String",
+        description: "The envelope TO address",
+        },
+        {
+        name: "smtpMessageEvent.messageId",
+        type: "Long",
+        description: "The message ID",
+        },
+        {
+        name: "smtpMessageEvent.receiver",
+        type: "String",
+        description: "The receiver",
+        },
+        {
+        name: "smtpMessageEvent.sender",
+        type: "String",
+        description: "The sender",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.cClientAddr",
+        type: "InetAddress",
+        description: "The client-side (pre-NAT) client address",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.cClientPort",
+        type: "Integer",
+        description: "The client-side (pre-NAT) client port",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.cServerAddr",
+        type: "InetAddress",
+        description: "The client-side (pre-NAT) server address",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.cServerPort",
+        type: "Integer",
+        description: "The client-side (pre-NAT) server port",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.sClientAddr",
+        type: "InetAddress",
+        description: "The server-side (post-NAT) client address",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.sClientPort",
+        type: "Integer",
+        description: "The server-side (post-NAT) client port",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.sServerAddr",
+        type: "InetAddress",
+        description: "The server-side (post-NAT) server address",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.sServerPort",
+        type: "Integer",
+        description: "The server-side (post-NAT) server port",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.bypassed",
+        type: "boolean",
+        description: "True if bypassed, false otherwise",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.class",
+        type: "Class",
+        description: "The class name",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.clientCountry",
+        type: "String",
+        description: "The client country",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.clientIntf",
+        type: "Integer",
+        description: "The client interface ID",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.clientLatitude",
+        type: "Double",
+        description: "The client latitude",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.clientLongitude",
+        type: "Double",
+        description: "The client longitude",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.entitled",
+        type: "boolean",
+        description: "The entitled status",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.filterPrefix",
+        type: "String",
+        description: "The filter prefix if blocked by the filter rules",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.hostname",
+        type: "String",
+        description: "The hostname",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.icmpType",
+        type: "Short",
+        description: "The ICMP type",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.localAddr",
+        type: "InetAddress",
+        description: "The local host address",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.policyId",
+        type: "Integer",
+        description: "The policy ID",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.policyRuleId",
+        type: "Integer",
+        description: "The policy rule ID",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.protocol",
+        type: "Short",
+        description: "The protocol",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.protocolName",
+        type: "String",
+        description: "The protocol name",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.remoteAddr",
+        type: "InetAddress",
+        description: "The remote host address",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.serverCountry",
+        type: "String",
+        description: "The server country",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.serverIntf",
+        type: "Integer",
+        description: "The server interface ID",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.serverLatitude",
+        type: "Double",
+        description: "The server latitude",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.serverLongitude",
+        type: "Double",
+        description: "The server longitude",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.sessionId",
+        type: "Long",
+        description: "The session ID",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.tagsString",
+        type: "String",
+        description: "The string value of all tags",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.timeStamp",
+        type: "Timestamp",
+        description: "The timestamp",
+        },
+        {
+        name: "smtpMessageEvent.sessionEvent.username",
+        type: "String",
+        description: "The username",
+        },
+        {
+        name: "smtpMessageEvent.sessionId",
+        type: "Long",
+        description: "The session ID",
+        },
+        {
+        name: "smtpMessageEvent.subject",
+        type: "String",
+        description: "The subject",
+        },
+        {
+        name: "smtpMessageEvent.timeStamp",
+        type: "Timestamp",
+        description: "The timestamp",
+        },
+        {
+        name: "smtpMessageEvent.tmpFile",
+        type: "File",
+        description: "The /tmp file",
         },
         {
         name: "isSpam",
@@ -2001,9 +4126,209 @@
         description: "The content type",
         },
         {
-        name: "httpRequestEvent",
-        type: "HttpRequestEvent",
-        description: "The corresponding HTTP request event",
+        name: "httpRequestEvent.class",
+        type: "Class",
+        description: "The class name",
+        },
+        {
+        name: "httpRequestEvent.contentLength",
+        type: "long",
+        description: "The content length",
+        },
+        {
+        name: "httpRequestEvent.domain",
+        type: "String",
+        description: "The domain",
+        },
+        {
+        name: "httpRequestEvent.host",
+        type: "String",
+        description: "The host",
+        },
+        {
+        name: "httpRequestEvent.method",
+        type: "HttpMethod",
+        description: "The HTTP method",
+        },
+        {
+        name: "httpRequestEvent.referer",
+        type: "String",
+        description: "The referer",
+        },
+        {
+        name: "httpRequestEvent.requestId",
+        type: "Long",
+        description: "The request ID",
+        },
+        {
+        name: "httpRequestEvent.requestUri",
+        type: "URI",
+        description: "The request URI",
+        },
+        {
+        name: "httpRequestEvent.sessionEvent.cClientAddr",
+        type: "InetAddress",
+        description: "The client-side (pre-NAT) client address",
+        },
+        {
+        name: "httpRequestEvent.sessionEvent.cClientPort",
+        type: "Integer",
+        description: "The client-side (pre-NAT) client port",
+        },
+        {
+        name: "httpRequestEvent.sessionEvent.cServerAddr",
+        type: "InetAddress",
+        description: "The client-side (pre-NAT) server address",
+        },
+        {
+        name: "httpRequestEvent.sessionEvent.cServerPort",
+        type: "Integer",
+        description: "The client-side (pre-NAT) server port",
+        },
+        {
+        name: "httpRequestEvent.sessionEvent.sClientAddr",
+        type: "InetAddress",
+        description: "The server-side (post-NAT) client address",
+        },
+        {
+        name: "httpRequestEvent.sessionEvent.sClientPort",
+        type: "Integer",
+        description: "The server-side (post-NAT) client port",
+        },
+        {
+        name: "httpRequestEvent.sessionEvent.sServerAddr",
+        type: "InetAddress",
+        description: "The server-side (post-NAT) server address",
+        },
+        {
+        name: "httpRequestEvent.sessionEvent.sServerPort",
+        type: "Integer",
+        description: "The server-side (post-NAT) server port",
+        },
+        {
+        name: "httpRequestEvent.sessionEvent.bypassed",
+        type: "boolean",
+        description: "True if bypassed, false otherwise",
+        },
+        {
+        name: "httpRequestEvent.sessionEvent.class",
+        type: "Class",
+        description: "The class name",
+        },
+        {
+        name: "httpRequestEvent.sessionEvent.clientCountry",
+        type: "String",
+        description: "The client country",
+        },
+        {
+        name: "httpRequestEvent.sessionEvent.clientIntf",
+        type: "Integer",
+        description: "The client interface ID",
+        },
+        {
+        name: "httpRequestEvent.sessionEvent.clientLatitude",
+        type: "Double",
+        description: "The client latitude",
+        },
+        {
+        name: "httpRequestEvent.sessionEvent.clientLongitude",
+        type: "Double",
+        description: "The client longitude",
+        },
+        {
+        name: "httpRequestEvent.sessionEvent.entitled",
+        type: "boolean",
+        description: "The entitled status",
+        },
+        {
+        name: "httpRequestEvent.sessionEvent.filterPrefix",
+        type: "String",
+        description: "The filter prefix if blocked by the filter rules",
+        },
+        {
+        name: "httpRequestEvent.sessionEvent.hostname",
+        type: "String",
+        description: "The hostname",
+        },
+        {
+        name: "httpRequestEvent.sessionEvent.icmpType",
+        type: "Short",
+        description: "The ICMP type",
+        },
+        {
+        name: "httpRequestEvent.sessionEvent.localAddr",
+        type: "InetAddress",
+        description: "The local host address",
+        },
+        {
+        name: "httpRequestEvent.sessionEvent.policyId",
+        type: "Integer",
+        description: "The policy ID",
+        },
+        {
+        name: "httpRequestEvent.sessionEvent.policyRuleId",
+        type: "Integer",
+        description: "The policy rule ID",
+        },
+        {
+        name: "httpRequestEvent.sessionEvent.protocol",
+        type: "Short",
+        description: "The protocol",
+        },
+        {
+        name: "httpRequestEvent.sessionEvent.protocolName",
+        type: "String",
+        description: "The protocol name",
+        },
+        {
+        name: "httpRequestEvent.sessionEvent.remoteAddr",
+        type: "InetAddress",
+        description: "The remote host address",
+        },
+        {
+        name: "httpRequestEvent.sessionEvent.serverCountry",
+        type: "String",
+        description: "The server country",
+        },
+        {
+        name: "httpRequestEvent.sessionEvent.serverIntf",
+        type: "Integer",
+        description: "The server interface ID",
+        },
+        {
+        name: "httpRequestEvent.sessionEvent.serverLatitude",
+        type: "Double",
+        description: "The server latitude",
+        },
+        {
+        name: "httpRequestEvent.sessionEvent.serverLongitude",
+        type: "Double",
+        description: "The server longitude",
+        },
+        {
+        name: "httpRequestEvent.sessionEvent.sessionId",
+        type: "Long",
+        description: "The session ID",
+        },
+        {
+        name: "httpRequestEvent.sessionEvent.tagsString",
+        type: "String",
+        description: "The string value of all tags",
+        },
+        {
+        name: "httpRequestEvent.sessionEvent.timeStamp",
+        type: "Timestamp",
+        description: "The timestamp",
+        },
+        {
+        name: "httpRequestEvent.sessionEvent.username",
+        type: "String",
+        description: "The username",
+        },
+        {
+        name: "httpRequestEvent.timeStamp",
+        type: "Timestamp",
+        description: "The timestamp",
         },
         {
         name: "requestLine",
@@ -2061,9 +4386,164 @@
         description: "The request URI",
         },
         {
-        name: "sessionEvent",
-        type: "SessionEvent",
-        description: "The session event",
+        name: "sessionEvent.cClientAddr",
+        type: "InetAddress",
+        description: "The client-side (pre-NAT) client address",
+        },
+        {
+        name: "sessionEvent.cClientPort",
+        type: "Integer",
+        description: "The client-side (pre-NAT) client port",
+        },
+        {
+        name: "sessionEvent.cServerAddr",
+        type: "InetAddress",
+        description: "The client-side (pre-NAT) server address",
+        },
+        {
+        name: "sessionEvent.cServerPort",
+        type: "Integer",
+        description: "The client-side (pre-NAT) server port",
+        },
+        {
+        name: "sessionEvent.sClientAddr",
+        type: "InetAddress",
+        description: "The server-side (post-NAT) client address",
+        },
+        {
+        name: "sessionEvent.sClientPort",
+        type: "Integer",
+        description: "The server-side (post-NAT) client port",
+        },
+        {
+        name: "sessionEvent.sServerAddr",
+        type: "InetAddress",
+        description: "The server-side (post-NAT) server address",
+        },
+        {
+        name: "sessionEvent.sServerPort",
+        type: "Integer",
+        description: "The server-side (post-NAT) server port",
+        },
+        {
+        name: "sessionEvent.bypassed",
+        type: "boolean",
+        description: "True if bypassed, false otherwise",
+        },
+        {
+        name: "sessionEvent.class",
+        type: "Class",
+        description: "The class name",
+        },
+        {
+        name: "sessionEvent.clientCountry",
+        type: "String",
+        description: "The client country",
+        },
+        {
+        name: "sessionEvent.clientIntf",
+        type: "Integer",
+        description: "The client interface ID",
+        },
+        {
+        name: "sessionEvent.clientLatitude",
+        type: "Double",
+        description: "The client latitude",
+        },
+        {
+        name: "sessionEvent.clientLongitude",
+        type: "Double",
+        description: "The client longitude",
+        },
+        {
+        name: "sessionEvent.entitled",
+        type: "boolean",
+        description: "The entitled status",
+        },
+        {
+        name: "sessionEvent.filterPrefix",
+        type: "String",
+        description: "The filter prefix if blocked by the filter rules",
+        },
+        {
+        name: "sessionEvent.hostname",
+        type: "String",
+        description: "The hostname",
+        },
+        {
+        name: "sessionEvent.icmpType",
+        type: "Short",
+        description: "The ICMP type",
+        },
+        {
+        name: "sessionEvent.localAddr",
+        type: "InetAddress",
+        description: "The local host address",
+        },
+        {
+        name: "sessionEvent.policyId",
+        type: "Integer",
+        description: "The policy ID",
+        },
+        {
+        name: "sessionEvent.policyRuleId",
+        type: "Integer",
+        description: "The policy rule ID",
+        },
+        {
+        name: "sessionEvent.protocol",
+        type: "Short",
+        description: "The protocol",
+        },
+        {
+        name: "sessionEvent.protocolName",
+        type: "String",
+        description: "The protocol name",
+        },
+        {
+        name: "sessionEvent.remoteAddr",
+        type: "InetAddress",
+        description: "The remote host address",
+        },
+        {
+        name: "sessionEvent.serverCountry",
+        type: "String",
+        description: "The server country",
+        },
+        {
+        name: "sessionEvent.serverIntf",
+        type: "Integer",
+        description: "The server interface ID",
+        },
+        {
+        name: "sessionEvent.serverLatitude",
+        type: "Double",
+        description: "The server latitude",
+        },
+        {
+        name: "sessionEvent.serverLongitude",
+        type: "Double",
+        description: "The server longitude",
+        },
+        {
+        name: "sessionEvent.sessionId",
+        type: "Long",
+        description: "The session ID",
+        },
+        {
+        name: "sessionEvent.tagsString",
+        type: "String",
+        description: "The string value of all tags",
+        },
+        {
+        name: "sessionEvent.timeStamp",
+        type: "Timestamp",
+        description: "The timestamp",
+        },
+        {
+        name: "sessionEvent.username",
+        type: "String",
+        description: "The username",
         },
         {
         name: "timeStamp",
