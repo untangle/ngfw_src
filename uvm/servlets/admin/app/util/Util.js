@@ -200,7 +200,7 @@ Ext.define('Ung.util.Util', {
 
     goToStartPage: function () {
         Ext.MessageBox.wait("Redirecting to the start page...".t(), "Please wait".t());
-        window.location.href="/";
+        location.reload();
     },
 
     handleException: function (exception) {
