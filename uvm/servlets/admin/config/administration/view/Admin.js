@@ -61,9 +61,6 @@ Ext.define('Ung.config.administration.view.Admin', {
             xtype: 'checkcolumn',
             header: 'Email Alerts'.t(),
             dataIndex: 'emailAlerts'
-        }, {
-            dataIndex: 'passwordHashBase64',
-            width: 250
         }],
         editorFields: [{
             xtype: 'textfield',
