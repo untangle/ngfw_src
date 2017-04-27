@@ -983,6 +983,15 @@ public class AppManagerImpl implements AppManager
         long newAppId = settings.getNextAppId();
 
         /**
+         * Keep incrementing until you get a free app ID
+         * This is just a safety mechanism in case nextAppId gets lost
+         */
+        App app = null;
+        while ( (app = app( newAppId )) != null) {
+            newAppId++;
+        }
+
+        /**
          * Increment the next app Id (not saved until later)
          */
         settings.setNextAppId( newAppId + 1 );
