@@ -342,6 +342,23 @@ Ext.define('Ung.util.Util', {
         });
     },
 
+    getNextHopList: function (getMap) {
+        var networkSettings = rpc.networkSettings;
+        var devList = [];
+        var devMap = {};
+
+        for (var i = 0 ; i < networkSettings.interfaces.list.length ; i++) {
+            var intf = networkSettings.interfaces.list[i];
+            var name = Ext.String.format("Local on {0} ({1})".t(), intf.name, intf.systemDev);
+            var key = ("" + intf.interfaceId);
+            devList.push([ key, name ]);
+            devMap[key] = name;
+        }
+        if (getMap) return(devMap);
+        return(devList);
+    },
+
+
     getInterfaceListSystemDev: function (wanMatchers, anyMatcher, systemDev) {
         var networkSettings = rpc.networkSettings,
             data = [], intf, i;

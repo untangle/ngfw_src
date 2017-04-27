@@ -34,7 +34,6 @@ Ext.define('Ung.config.network.view.Routes', {
             description: ''
         },
 
-
         bind: '{staticRoutes}',
 
         columns: [{
@@ -53,9 +52,15 @@ Ext.define('Ung.config.network.view.Routes', {
             header: 'Next Hop'.t(),
             width: 170,
             dataIndex: 'nextHop',
-            renderer: function (value) {
-                return value || '<em>no description<em>';
-            }
+            renderer: Ext.bind(function(value, metadata, record, rowIndex, colIndex, store, view) {
+                var devMap = Util.getNextHopList(true);
+                var intRegex = /^\d+$/;
+                if ( intRegex.test( value ) ) {
+                    return devMap[value]?devMap[value]:i18n._("Local interface");
+                } else {
+                    return value;
+                }
+            }, this)
         }],
         editorFields: [
             Field.description,
@@ -64,7 +69,7 @@ Ext.define('Ung.config.network.view.Routes', {
                 xtype: 'combo',
                 fieldLabel: 'Next Hop'.t(),
                 bind: '{record.nextHop}',
-                // store: Util.getV4NetmaskList(false),
+                store: Util.getNextHopList(false),
                 queryMode: 'local',
                 allowBlank: false,
                 editable: true
