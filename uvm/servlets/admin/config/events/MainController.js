@@ -425,7 +425,7 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
                             listeners: {
                                 click: 'addCondition'
                             }
-                        }
+                        };
                     }
                     subMenus[masterField].items.push({
                         text: fields[1],
