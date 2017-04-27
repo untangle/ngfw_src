@@ -235,6 +235,20 @@ Ext.define('Ung.cmp.Grid', {
                         }
                     });
                 }
+                if (action === 'copy') {
+                    columns.push({
+                        xtype: 'actioncolumn',
+                        width: 60,
+                        header: 'Copy'.t(),
+                        align: 'center',
+                        resizable: false,
+                        tdCls: 'action-cell',
+                        iconCls: 'fa fa-files-o',
+                        handler: 'copyRecord',
+                        menuDisabled: true,
+                        hideable: false,
+                    });
+                }
                 if (action === 'delete') {
                     columns.push({
                         xtype: 'actioncolumn',
