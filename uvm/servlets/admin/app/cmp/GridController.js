@@ -35,6 +35,18 @@ Ext.define('Ung.cmp.GridController', {
         }
     },
 
+    copyRecord: function (view, rowIndex, colIndex, item, e, record) {
+        var v = this.getView(),
+            newRecord = record.copy(null);
+        newRecord.set('markedForNew', true);
+
+        if (v.topInsert) {
+            v.getStore().insert(0, newRecord);
+        } else {
+            v.getStore().add(newRecord);
+        }
+    },
+
     editRecord: function (view, rowIndex, colIndex, item, e, record) {
         this.editorWin(record);
     },
