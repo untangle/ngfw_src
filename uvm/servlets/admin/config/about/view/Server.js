@@ -2,6 +2,7 @@ Ext.define('Ung.config.about.view.Server', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.config-about-server',
     itemId: 'server',
+    helpSource: 'about_server',
     title: 'Server'.t(),
 
     scrollable: true,

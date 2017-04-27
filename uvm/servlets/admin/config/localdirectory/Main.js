@@ -1,7 +1,7 @@
 Ext.define('Ung.config.localdirectory.Main', {
     extend: 'Ung.cmp.ConfigPanel',
     alias: 'widget.config-localdirectory',
-
+    helpSource: 'local_directory',
     /* requires-start */
     requires: [
         'Ung.config.localdirectory.MainController',
