@@ -11,11 +11,15 @@ package com.untangle.uvm;
 import java.util.HashMap;
 
 import org.apache.log4j.Logger;
+import org.json.JSONObject;
+import org.json.JSONString;
 
 import java.beans.Introspector;
 import java.beans.BeanInfo;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
+
+import com.untangle.uvm.logging.LogEvent;
 
 public class ExtensionImpl implements Runnable
 {
@@ -348,6 +352,24 @@ public class ExtensionImpl implements Runnable
         }
 
         System.out.println("    fields: [");
+        printFields( clazz, "" );
+        System.out.println("    ]");
+        System.out.println("    },");
+
+        // System.out.println("|}");
+        // System.out.println("<section end='" + shortName + "' />");
+        // System.out.println("");
+        // System.out.println("");
+    }
+
+    @SuppressWarnings("rawtypes")
+    private void printFields( Class clazz, String prefix )
+    {
+        if ( clazz == null )
+            return;
+
+        String shortName = clazz.getName().replaceAll(".*\\.","");
+        
         try {
             for(PropertyDescriptor propertyDescriptor : Introspector.getBeanInfo(clazz).getPropertyDescriptors()){
                 Method method = propertyDescriptor.getReadMethod();
@@ -356,7 +378,19 @@ public class ExtensionImpl implements Runnable
                 methodName = methodName.replaceAll("^get","");
                 methodName = Character.toLowerCase(methodName.charAt(0)) + methodName.substring(1);
 
-                String returnType = method.getReturnType().toString();
+                Class returnTypeClazz = method.getReturnType();
+                String returnType = returnTypeClazz.toString();
+                // not sure why this does not work correctly
+                // instead - use a ghetto hack to check the name
+                //if ( returnTypeClazz.isInstance(LogEvent.class) ) {
+                if ( returnType.contains("Event")
+                     && !returnType.contains("$")
+                     && !returnType.equals("class com.untangle.uvm.event.EventRule")
+                     && !methodName.equals("cause")
+                     ) {
+                    printFields( returnTypeClazz, prefix + methodName + "." );
+                    continue;
+                } 
                 returnType = returnType.replaceAll(".*\\.","");
 
                 String description = null;
@@ -367,13 +401,13 @@ public class ExtensionImpl implements Runnable
                 if ( description == null )
                     description = attributeDescriptions.get(methodName);
                 if (description == null ) {
-                    System.out.println("Missing attribute description: " + methodName + " " + shortName);
-                    throw new RuntimeException("Missing attribute description: " + methodName + " " + shortName);
+                    System.out.println("Missing attribute description: \"" + methodName + "\" \"" + shortName + "\"");
+                    throw new RuntimeException("Missing attribute description: \"" + methodName + "\" \"" + shortName + "\"");
                 }
                 if ("".equals(description))
                     continue;
                 System.out.println("        {");
-                System.out.println("        name: \"" + methodName + "\",");
+                System.out.println("        name: \"" + prefix + methodName + "\",");
                 System.out.println("        type: \"" + returnType + "\",");
                 System.out.println("        description: \"" + description + "\",");
                 Object[] enums = method.getReturnType().getEnumConstants();
@@ -385,18 +419,10 @@ public class ExtensionImpl implements Runnable
                     System.out.println("],");
                 }
                 System.out.println("        },");
-                
             }
-        } catch (java.beans.IntrospectionException e) {
+        } catch (Exception e) {
             System.out.println(e);
         }
-        System.out.println("    ]");
-        System.out.println("    },");
-
-        // System.out.println("|}");
-        // System.out.println("<section end='" + shortName + "' />");
-        // System.out.println("");
-        // System.out.println("");
     }
-}
 
+}
