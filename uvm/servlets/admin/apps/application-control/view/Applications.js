@@ -17,28 +17,22 @@ Ext.define('Ung.apps.applicationcontrol.view.Applications', {
         dataIndex: 'block',
         width: 50,
         resizable: false,
-        // listeners: {
-        //     checkchange: Ext.bind(function(elem, rowIndex, checked) {
-        //         if(checked) {
-        //             var record = elem.getView().getRecord(elem.getView().getRow(rowIndex));
-        //             record.set('tarpit', false);
-        //         }
-        //     }, this)
-        // }
+        listeners: {
+            checkchange: function(col, row, checked, record) {
+                if (checked) record.set('tarpit', false);
+            }
+        }
     }, {
         xtype: 'checkcolumn',
         header: 'Tarpit'.t(),
         dataIndex: 'tarpit',
         width: 50,
         resizable: false,
-        // listeners: {
-        //     checkchange: Ext.bind(function(elem, rowIndex, checked) {
-        //         if(checked) {
-        //             var record = elem.getView().getRecord(elem.getView().getRow(rowIndex));
-        //             record.set('block', false);
-        //         }
-        //     }, this)
-        // }
+         listeners: {
+            checkchange: function(col, row, checked, record) {
+                if (checked) record.set('block', false);
+            }
+        }
     }, {
         xtype: 'checkcolumn',
         header: 'Flag'.t(),
