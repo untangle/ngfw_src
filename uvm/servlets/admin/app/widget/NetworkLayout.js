@@ -57,7 +57,7 @@ Ext.define('Ung.widget.NetworkLayout', {
         }, {
             xtype: 'container',
             cls: 'ifaces',
-            height: 110,
+            height: 120,
             itemId: 'internalInterface'
         }]
     }],
