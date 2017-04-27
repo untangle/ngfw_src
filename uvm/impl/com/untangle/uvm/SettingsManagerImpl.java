@@ -100,7 +100,7 @@ public class SettingsManagerImpl implements SettingsManager
                                "/bin/sed " +
                                "-e 's/NodeManager/AppManager/g' " +
                                "-e 's/\"nodes\"/\"apps\"/g' " +
-                               "-e 's/\"nextNodeId\"/\"nextNodeId\"/g' " +
+                               "-e 's/\"nextNodeId\"/\"nextAppId\"/g' " +
                                "-e 's/NodeSettings/AppSettings/g' " +
                                "-e 's/nodeName/appName/g' " +
                                "-e 's/untangle-node-//g' " +
