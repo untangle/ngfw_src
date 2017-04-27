@@ -19,7 +19,7 @@ Ext.define('Ung.apps.reports.view.Users', {
         items: ['@add', '->', '@import', '@export']
     }],
 
-    recordActions: ['edit', 'delete'],
+    recordActions: ['changePassword', 'edit', 'delete'],
 
     listProperty: 'settings.reportsUsers.list',
     emptyRow: {
@@ -94,6 +94,14 @@ Ext.define('Ung.apps.reports.view.Users', {
         xtype: 'checkbox',
         bind: '{record.emailAlerts}',
         fieldLabel: 'Email Alerts'.t()
+    }, {
+        xtype: 'textfield',
+        inputType: 'password',
+        bind: '{record.password}',
+        fieldLabel: 'Password'.t(),
+        allowBlank: false,
+        minLength: 3,
+        minLengthText: Ext.String.format('The password is shorter than the minimum {0} characters.'.t(), 3)
     }, {
         xtype: 'checkbox',
         bind: '{record.emailSummaries}',

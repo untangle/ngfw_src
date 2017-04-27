@@ -289,7 +289,7 @@ Ext.define('Ung.cmp.GridController', {
         var me = this;
         this.pswdDialog = this.getView().add({
             xtype: 'window',
-            title: 'Change Password'.t() + ' for ' + record.get('username'),
+            title: 'Change Password'.t(),
             modal: true,
             resizable: false,
             layout: 'fit',
