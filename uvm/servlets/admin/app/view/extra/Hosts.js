@@ -78,13 +78,16 @@ Ext.define('Ung.view.extra.Hosts', {
             resizable: false,
             filter: { type: 'string' }
         },{
-            header: 'MAC Address'.t(),
-            dataIndex: 'macAddress',
-            filter: { type: 'string' }
-        },{
-            header: 'MAC Vendor'.t(),
-            dataIndex: 'macVendor',
-            filter: { type: 'string' }
+            header: 'MAC'.t(),
+            columns:[{
+                header: 'Address'.t(),
+                dataIndex: 'macAddress',
+                filter: { type: 'string' }
+            },{
+                header: 'Vendor'.t(),
+                dataIndex: 'macVendor',
+                filter: { type: 'string' }
+            }]
         },{
             header: 'Interface'.t(),
             dataIndex: 'interfaceId',
