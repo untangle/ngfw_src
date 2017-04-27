@@ -391,6 +391,18 @@ public class EventManagerImpl implements EventManager
         TriggerRule eventRule;
 
         matchers = new LinkedList<EventRuleCondition>();
+        matcher1 = new EventRuleCondition( "class", "=", "*AlertEvent*" );
+        matchers.add( matcher1 );
+        matcher2 = new EventRuleCondition( "description", "=", "*Suspicious Activity*" );
+        matchers.add( matcher2 );
+        eventRule = new TriggerRule( true, matchers, true, "Tag suspicious activity", false, 0 );
+        eventRule.setAction( TriggerRule.TriggerAction.TAG_HOST );
+        eventRule.setTagTarget( "cClientAddr" );
+        eventRule.setTagName( "suspicious" );
+        eventRule.setTagLifetimeSec( new Long(60*30) ); // 30 minutes
+        rules.add( eventRule );
+        
+        matchers = new LinkedList<EventRuleCondition>();
         matcher1 = new EventRuleCondition( "class", "=", "*ApplicationControlLogEvent*");
         matchers.add( matcher1 );
         matcher2 = new EventRuleCondition( "category", "=", "Proxy" );
@@ -621,6 +633,21 @@ public class EventManagerImpl implements EventManager
 
     private static String findAttribute( JSONObject json, String name )
     {
+        String s = null;
+        if ( (s = findAttributeRecursive( json, name )) != null )
+            return s;
+        if ( !name.contains(".") )
+            if ( (s = findAttributeFlatten( json, name, 3 )) != null )
+                return s;
+        return s;
+    }
+
+    /**
+     * This looks for a specific JSON attribute
+     * foo.bar.baz returns json['foo']['bar']['baz']
+     */
+    private static String findAttributeRecursive( JSONObject json, String name )
+    {
         if ( json == null || name == null ) return null;
 
         try {
@@ -630,13 +657,14 @@ public class EventManagerImpl implements EventManager
 
             String fieldName = parts[0];
 
-            Object o = json.get(fieldName);
+            Object o = null;
+            try {json.get(fieldName);} catch(Exception exc) {}
             if ( o == null )
                 return null;
 
             if ( parts.length > 1 ) {
                 String subName = parts[1];
-                return findAttribute( new JSONObject(o), subName );
+                return findAttributeRecursive( new JSONObject(o), subName );
             } else {
                 return o.toString();
             }
@@ -646,6 +674,56 @@ public class EventManagerImpl implements EventManager
         }
     }
 
+    /**
+     * This looks through JSONObjects recursively to find any attribute with the specified name
+     * It looks up to maxDepth levels to prevent cycles
+     */
+    private static String findAttributeFlatten( JSONObject json, String name, int maxDepth )
+    {
+        if ( json == null || name == null ) return null;
+        if ( maxDepth < 1 ) return null;
+
+        //logger.info("findAttributeFlatten( " + name + " , " + json + ")");
+        try {
+            String[] keys = JSONObject.getNames(json);
+            if ( keys == null ) return null;
+
+            for( String key : keys ) {
+                if ("class".equals(key))
+                    continue;
+                if (name.equalsIgnoreCase(key)) {
+                    Object o = json.get(key);
+                    return (o == null ? null : o.toString());
+                }
+            }
+
+            for( String key : keys ) {
+                try {
+                    if ("class".equals(key))
+                        continue;
+                    Object o = json.get(key);
+                    if ( o == null )
+                        continue;
+                    if ( ! (o instanceof java.io.Serializable) )
+                        continue;
+                    JSONObject obj = new JSONObject(o);
+                    if ( obj.length() < 2 )
+                        continue;
+
+                    if ( o != null ) {
+                        String s = findAttributeFlatten(obj,name,maxDepth-1);
+                        if ( s != null )
+                            return s;
+                    }
+                } catch (Exception e) {}
+            }
+        } catch (Exception e) {
+            logger.warn("Exception",e);
+        }
+
+        return null;
+    }
+    
     private static boolean sendEmailForEvent( AlertRule rule, LogEvent event )
     {
         if(rule.frequencyCheck() == false){
