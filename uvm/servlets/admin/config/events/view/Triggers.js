@@ -101,7 +101,8 @@ Ext.define('Ung.config.events.view.Triggers', {
                     itemId: 'target',
                     fieldLabel: 'Target'.t(),
                     labelWidth: 160,
-                    editable: false,
+                    editable: true,
+                    forceSelection: false,
                     queryMode: 'local',
                     width: 350,
                     bind:{
@@ -109,8 +110,7 @@ Ext.define('Ung.config.events.view.Triggers', {
                         store: '{targetFields}',
                     },
                     valueField: 'name',
-                    displayField: 'description',
-                    forceSelection: true
+                    displayField: 'description'
                 }, {
                     xtype: 'textfield',
                     bind: {
