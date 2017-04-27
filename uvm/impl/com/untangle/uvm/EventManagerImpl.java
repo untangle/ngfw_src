@@ -397,7 +397,7 @@ public class EventManagerImpl implements EventManager
         matchers.add( matcher2 );
         eventRule = new TriggerRule( false, matchers, true, "Tag proxy-using hosts", false, 0 );
         eventRule.setAction( TriggerRule.TriggerAction.TAG_HOST );
-        eventRule.setTagTarget( "localAddr" );
+        eventRule.setTagTarget( "sessionEvent.localAddr" );
         eventRule.setTagName( "proxy-use" );
         eventRule.setTagLifetimeSec( new Long(60*30) ); // 30 minutes
         rules.add( eventRule );
@@ -409,7 +409,7 @@ public class EventManagerImpl implements EventManager
         matchers.add( matcher2 );
         eventRule = new TriggerRule( false, matchers, true, "Tag bittorrent-using hosts", false, 0 );
         eventRule.setAction( TriggerRule.TriggerAction.TAG_HOST );
-        eventRule.setTagTarget( "localAddr" );
+        eventRule.setTagTarget( "sessionEvent.localAddr" );
         eventRule.setTagName( "bittorrent-use" );
         eventRule.setTagLifetimeSec( new Long(60*5) ); // 5 minutes
         rules.add( eventRule );

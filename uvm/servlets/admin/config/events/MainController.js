@@ -47,6 +47,15 @@ Ext.define('Ung.config.events.MainController', {
                 }],
                 data: classesStoreData
             }) );
+
+            vm.set('targetFields', Ext.create('Ext.data.ArrayStore', {
+                fields: [ 'name', 'description' ],
+                sorters: [{
+                    property: 'name',
+                    direction: 'ASC'
+                }],
+                data: []
+            }) );
         }, function(ex) {
             console.error(ex);
             Util.handleException(ex);
@@ -338,8 +347,8 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
                         change: 'classChange'
                     }
                 },
-                          this.conditionsGrid
-                         ]);
+                this.conditionsGrid
+                ]);
             }
         }
         form.isValid();
@@ -394,17 +403,69 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
         }, this.setMenuConditions, this);
 
         var menu = [];
+        var targetFields = [];
         if( vm.get('classFields')[vm.get('record.class')] ){
+            var subMenus = {};
             vm.get('classFields')[vm.get('record.class')].fields.forEach(function(fieldCondition){
                 if(fieldCondition.name == 'class' || fieldCondition.name == 'timeStamp' ){
                     return;
                 }
-                menu.push({
+                var fields = fieldCondition.name.split('.');
+                if( fields.length > 1){
+                    var masterField = fields[0];
+                    if(fields[1] == 'class' || fields[1] == 'timeStamp' ){
+                        return;
+                    }
+                    if( !subMenus[masterField] ){
+                        subMenus[masterField] = {
+                            showSeparator: false,
+                            plain: true,
+                            items: [],
+                            mouseLeaveDelay: 0,
+                            listeners: {
+                                click: 'addCondition'
+                            }
+                        }
+                    }
+                    subMenus[masterField].items.push({
+                        text: fields[1],
+                        value: fieldCondition.name,
+                        tooltip: fieldCondition.description
+                    });
+                }
+            });
+
+            vm.get('classFields')[vm.get('record.class')].fields.forEach(function(fieldCondition){
+                if(fieldCondition.name == 'class' || fieldCondition.name == 'timeStamp' ){
+                    return;
+                }
+                targetFields.push([
+                    fieldCondition.name, fieldCondition.name
+                ]);
+
+                var menuConfig = {
                     text: fieldCondition.name,
+                    value: fieldCondition.name,
                     tooltip: fieldCondition.description,
-                });
+                };
+
+                var fields = fieldCondition.name.split('.');
+                if( fields.length > 1){
+                    if( subMenus[fields[0]] ){
+                        menuConfig.text = fields[0];
+                        menuConfig.menu = subMenus[fields[0]];
+                        delete(subMenus[fields[0]]);
+                    }else{
+                        return;
+                    }
+
+                }
+
+                menu.push( menuConfig );
             });
         }
+
+        vm.set( 'targetFields', vm.get( 'targetFields' ).loadData( targetFields ) );
 
         var conditionsGrid = this.getView().down('grid');
         conditionsGrid.down('#addConditionBtn').setMenu({
@@ -426,7 +487,13 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
         store = conditionsGrid.getStore();
 
         menu.items.each(function (item) {
-            item.setDisabled(store.findRecord('field', item.text) ? true : false);
+            if(item.menu){
+                item.menu.items.each(function (subitem) {
+                    subitem.setDisabled(store.findRecord('field', subitem.value) ? true : false);
+                });
+            }else{
+                item.setDisabled(store.findRecord('field', item.value) ? true : false);
+            }
         });
     },
 
@@ -436,7 +503,8 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
     addCondition: function (menu, item) {
         if(item){
             var condition = {
-                field: item.text,
+                // field: item.text,
+                field: item.value,
                 comparator: '=',
                 javaClass: this.mainGrid.ruleJavaClass,
                 // ?? default values for enums and such?
@@ -465,10 +533,12 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
         if(newValue == combo.originalValue){
             return;
         }
-            var condition_length = 0;
+
+        var condition_length = 0;
         var record = this.getViewModel().get('record');
-        if( record.get("conditions") != null)
+        if( record.get("conditions") != null){
             condition_length = record.get("conditions").list.length;
+        }
         if( newValue != oldValue ) {
             if ( condition_length > 0 ) {
                 Ext.MessageBox.confirm(
@@ -536,6 +606,22 @@ Ext.define('Ung.config.events.cmp.EventsRecordEditorController', {
                 store.remove(record);
             }
         }, this) );
+
+        // While slightly out of place, this is the best place to check for trigger target field
+        // since it also depends on class fields.
+        var targetCombo = this.getView().down('#target');
+        if(targetCombo){
+            var comboValue = targetCombo.getValue();
+            match = false;
+            newFields.forEach( function( field ){
+                if( field.name == comboValue){
+                    match = true;
+                }
+            });
+            if( match == false ){
+                targetCombo.setValue( newFields[0].name );
+            }
+        }
 
     },
 
