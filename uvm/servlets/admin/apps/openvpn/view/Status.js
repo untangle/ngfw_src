@@ -41,22 +41,19 @@ Ext.define('Ung.apps.openvpn.view.Status', {
                 emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-2x"></i> <br/> ' + 'No Active Clients'.t() + ' ...</p>',
                 stripeRows: false
             },
-
-//            collapsed: true,
-//            disabled: true,
+            disabled: true,
             collapsible: true,
             hideCollapseTool: true,
             animCollapse: false,
             bind: {
-//                collapsed: '{instance.targetState !== "RUNNING"}',
-//                disabled: '{instance.targetState !== "RUNNING"}',
+                disabled: '{instance.targetState !== "RUNNING"}',
                 store: '{clientStatusList}'
             },
 
             columns: [{
                 header: 'Address'.t(),
                 dataIndex: 'address',
-                width: 150
+                flex: 1
             }, {
                 header: 'Client'.t(),
                 dataIndex: 'clientName',
@@ -68,7 +65,7 @@ Ext.define('Ung.apps.openvpn.view.Status', {
             }, {
                 header: 'Start Time'.t(),
                 dataIndex: 'start',
-                width: 100,
+                width: 150,
                 renderer: function(value) { return Util.timestampFormat(value); }
             }, {
                 header: 'Rx Data'.t(),
@@ -105,14 +102,12 @@ Ext.define('Ung.apps.openvpn.view.Status', {
                 stripeRows: false
             },
 
-//            collapsed: true,
-//            disabled: true,
+            disabled: true,
             collapsible: true,
             hideCollapseTool: true,
             animCollapse: false,
             bind: {
-//                collapsed: '{instance.targetState !== "RUNNING"}',
-//                disabled: '{instance.targetState !== "RUNNING"}',
+                disabled: '{instance.targetState !== "RUNNING"}',
                 store: '{serverStatusList}'
             },
 
