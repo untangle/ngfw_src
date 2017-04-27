@@ -16,6 +16,7 @@ Ext.define('Ung.apps.webfilter.Main', {
     items: [
         { xtype: 'app-web-filter-status' },
         { xtype: 'app-web-filter-categories' },
+        { xtype: 'app-web-filter-sitelookup' },
         { xtype: 'app-web-filter-blocksites' },
         { xtype: 'app-web-filter-passsites' },
         { xtype: 'app-web-filter-passclients' },
