@@ -24,14 +24,8 @@ function imgLoadFailure(isRequired) {
     var form = document.getElementsByTagName('form');
     var cont =  form[0];
 
-    var ufind = document.getElementsByName('username');
-    var uname = ufind[0];
-
-    var pfind = document.getElementsByName('password');
-    var upass = pfind[0];
-
-    var bfind = document.getElementsByName('submit');
-    var push = bfind[0];
+    var find = document.getElementsByName('submit');
+    var push = find[0];
 
     var newParagraph = document.createElement('H4');
     newParagraph.setAttribute('style', 'color: red');
@@ -44,10 +38,6 @@ function imgLoadFailure(isRequired) {
     }
 
     if (isRequired == true) {
-        uname.setAttribute('disabled', 'true');
-        uname.style.display = 'none';
-        upass.setAttribute('disabled', 'true');
-        upass.style.display = 'none';
         push.setAttribute('disabled', 'true');
         push.style.display = 'none';
     }
