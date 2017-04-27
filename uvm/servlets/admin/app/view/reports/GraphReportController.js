@@ -361,7 +361,7 @@ Ext.define('Ung.view.reports.GraphReportController', {
     setTimeSeries: function () {
         var me = this, vm = this.getViewModel(),
             timeDataColumns = Ext.clone(vm.get('entry.timeDataColumns')),
-            colors = vm.get('entry.colors') || Util.defaultColors,
+            colors = (vm.get('entry.colors') && vm.get('entry.colors').length > 0) ? vm.get('entry.colors') : Util.defaultColors,
             i, j, seriesData, series = [], seriesRenderer = null, column;
 
         if (!me.data) { return; }
