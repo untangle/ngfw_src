@@ -60,33 +60,6 @@ public class UserTableImpl implements UserTable
         UvmContextFactory.context().newThread(this.cleaner).start();
     }
     
-    public synchronized void setUsers( LinkedList<UserTableEntry> newUsers )
-    {
-        ConcurrentHashMap<String, UserTableEntry> oldUserTable = this.userTable;
-        this.userTable = new ConcurrentHashMap<String, UserTableEntry>();
-        
-        /**
-         * For each entry, copy the value on top of the exitsing objects so references are maintained
-         * If there aren't in the table, create new entries
-         */
-        for ( UserTableEntry entry : newUsers ) {
-            String username = entry.getUsername();
-            if (username == null)
-                continue;
-
-            UserTableEntry existingEntry = oldUserTable.get( username );
-            if ( existingEntry != null ) {
-                existingEntry.copy( entry );
-                this.userTable.put( existingEntry.getUsername(), existingEntry );
-            }
-            else {
-                this.userTable.put( username, entry );
-            }
-        }
-
-        saveUsers();
-    }
-
     public UserTableEntry getUserTableEntry( String username )
     {
         return getUserTableEntry( username, false );
@@ -100,8 +73,11 @@ public class UserTableImpl implements UserTable
         UserTableEntry entry = userTable.get( username );
 
         if ( entry == null && createIfNecessary ) {
-            entry = createNewUserTableEntry( username );
+            entry = new UserTableEntry();
+            entry.setUsername( username );
             userTable.put( username, entry );
+
+            UvmContextFactory.context().logEvent(new UserTableEvent( username, "add", null, null ));
             UvmContextFactory.context().hookManager().callCallbacks( HookManager.USER_TABLE_ADD, username );
         }
 
@@ -118,7 +94,7 @@ public class UserTableImpl implements UserTable
         return new LinkedList<UserTableEntry>(userTable.values());
     }
     
-    public synchronized void giveUserQuota( String username, long quotaBytes, int time_sec, String reason )
+    public void giveUserQuota( String username, long quotaBytes, int time_sec, String reason )
     {
         if (username == null) {
             logger.warn("Invalid argument: username is null");
@@ -141,7 +117,7 @@ public class UserTableImpl implements UserTable
         return;
     }
 
-    public synchronized void removeQuota( String username )
+    public void removeQuota( String username )
     {
         if (username == null) {
             logger.warn("Invalid argument: username is null");
@@ -217,7 +193,7 @@ public class UserTableImpl implements UserTable
         return ((double)quotaUsedK)/((double)quotaSizeK);
     }
     
-    public synchronized void refillQuota(String username)
+    public void refillQuota(String username)
     {
         if (username == null) {
             logger.warn("Invalid argument: username is null");
@@ -235,7 +211,7 @@ public class UserTableImpl implements UserTable
         UvmContextFactory.context().hookManager().callCallbacks( HookManager.USER_TABLE_QUOTA_GIVEN, username );
     }
 
-    public synchronized boolean decrementQuota( String username, long bytes )
+    public boolean decrementQuota( String username, long bytes )
     {
         if (username == null) {
             logger.warn("Invalid argument: username is null");
@@ -294,17 +270,6 @@ public class UserTableImpl implements UserTable
         return removed;
     }
     
-    private synchronized UserTableEntry createNewUserTableEntry( String username )
-    {
-        UserTableEntry entry = new UserTableEntry();
-
-        UserTableEvent event = new UserTableEvent( username, "add", null, null );
-        UvmContextFactory.context().logEvent(event);
-        
-        entry.setUsername( username );
-        return entry;
-    }
-
     @SuppressWarnings("unchecked")
     public void saveUsers()
     {
