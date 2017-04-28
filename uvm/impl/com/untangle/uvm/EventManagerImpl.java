@@ -658,7 +658,7 @@ public class EventManagerImpl implements EventManager
             String fieldName = parts[0];
 
             Object o = null;
-            try {json.get(fieldName);} catch(Exception exc) {}
+            try {o = json.get(fieldName);} catch(Exception exc) {}
             if ( o == null )
                 return null;
 
