@@ -7,7 +7,8 @@ Ext.define('Ung.apps.wanfailover.Main', {
 
         data: {
             autoReload: false,
-            wanStatusData: []
+            wanStatusData: [],
+            pingListData: []
         },
 
         stores: {
@@ -16,7 +17,11 @@ Ext.define('Ung.apps.wanfailover.Main', {
             },
             wanStatusStore: {
                 data: '{wanStatusData}'
-            }
+            },
+            pingListStore: {
+                fields: [ 'name' , 'addr' ],
+                data: '{pingListData}'
+            },
         },
 
     },

@@ -107,3 +107,37 @@ Ext.define('Ung.apps.wanfailover.MainController', {
         });
     }
 });
+
+Ext.define('Ung.apps.wanfailover.SpecialController', {
+    extend: 'Ung.cmp.GridController',
+    alias: 'controller.app-wanfailover-special',
+
+    generateSuggestions: function(btn) {
+        var parent = btn.up('#tests');
+        var vm = parent.getViewModel();
+        var faceCombo = parent.down("[fieldIndex='interfaceCombo']");
+        var pingCombo = parent.down("[fieldIndex='pingCombo']");
+
+        var wanApp = rpc.appManager.app('wan-failover');
+        wanApp.getPingableHosts(Ext.bind(function(result, ex) {
+            if (ex) { Util.handleException(ex); return; }
+            var pingData = [];
+            for(var i = 0 ; i < result.list.length ; i++) {
+                pingData.push([result.list[i],result.list[i]]);
+            }
+            vm.set('pingListData', pingData);
+            pingCombo.getStore().loadData(pingData);
+            pingCombo.select(pingData[0][0]);
+        }, this), faceCombo.getValue());
+    },
+
+    runWanTest: function(btn) {
+        var record = btn.up('panel').ownerCt.record.data;
+        var wanApp = rpc.appManager.app('wan-failover');
+        wanApp.runTest(Ext.bind(function(result, ex) {
+            if (ex) { Util.handleException(ex); return; }
+            Ext.MessageBox.alert('Test Results'.t(), result.t());
+        }, this), record);
+    }
+
+});
