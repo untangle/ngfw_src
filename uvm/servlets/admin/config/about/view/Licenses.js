@@ -58,11 +58,12 @@ Ext.define('Ung.config.about.view.Licenses', {
             width: 150
         }],
 
-        bbar: [{
-            text: 'Refresh'.t(),
-            iconCls: 'fa fa-refresh',
-            handler: 'reloadLicenses'
-        }]
+    }],
+
+    bbar: [{
+        text: 'Refresh'.t(),
+        iconCls: 'fa fa-refresh',
+        handler: 'reloadLicenses'
     }]
 
 });
