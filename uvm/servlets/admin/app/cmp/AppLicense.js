@@ -31,7 +31,7 @@ Ext.define('Ung.cmp.AppLicense', {
         html: 'Buy Now'.t(),
         iconCls: 'fa fa-shopping-cart',
         bind: {
-            href: rpc.storeUrl + '?action=buy&libitem={props.name}&' + Util.getAbout()
+            href: Util.getStoreUrl() + '?action=buy&libitem=untangle-libitem-{props.name}&' + Util.getAbout()
         }
     }]
 });
