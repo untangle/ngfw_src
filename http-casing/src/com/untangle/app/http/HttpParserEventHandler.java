@@ -626,6 +626,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
                      * -dmorris
                      */
                     String uri = state.requestLineToken.getRequestLine().getRequestUri().normalize().toString().replaceAll("(?<!:)/+", "/");
+                    String path = state.requestLineToken.getRequestLine().getRequestUri().normalize().getPath();
                     HostTableEntry hostEntry = null;
                     DeviceTableEntry deviceEntry = null;
                     if ( clientAddr != null )
@@ -645,7 +646,7 @@ public class HttpParserEventHandler extends AbstractEventHandler
                     int loc;
                     try {
                         // extract the full file path ignoring all params
-                        fpath = (new URI(uri)).toString();
+                        fpath = (new URI(path)).toString();
 
                         // find the last slash to extract the file name
                         loc = fpath.lastIndexOf("/");
