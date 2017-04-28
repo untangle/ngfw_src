@@ -8,6 +8,8 @@ Ext.define('Ung.view.reports.EntryController', {
         }
     },
 
+    refreshInterval: null,
+
     // colorPalette: [
     //     // red
     //     'B71C1C', 'C62828', 'D32F2F', 'E53935', 'F44336', 'EF5350', 'E57373', 'EF9A9A',
@@ -40,6 +42,8 @@ Ext.define('Ung.view.reports.EntryController', {
 
         vm.bind('{entry}', function (entry) {
             vm.set('_currentData', []);
+            vm.set('autoRefresh', false); // reset auto refresh
+
             dataGrid.setColumns([]);
             dataGrid.setLoading(true);
 
@@ -638,6 +642,22 @@ Ext.define('Ung.view.reports.EntryController', {
         downloadForm['arg6'].value = vm.get('_ed') ? vm.get('_ed').getTime() : -1;
         downloadForm.submit();
         Ext.MessageBox.hide();
-    }
+    },
+
+    setAutoRefresh: function (btn) {
+        var me = this,
+            vm = this.getViewModel();
+        vm.set('autoRefresh', btn.pressed);
+
+        if (btn.pressed) {
+            me.refreshData();
+            this.refreshInterval = setInterval(function () {
+                me.refreshData();
+            }, 5000);
+        } else {
+            clearInterval(this.refreshInterval);
+        }
+
+    },
 
 });
