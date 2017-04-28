@@ -21,7 +21,6 @@ Ext.define('Ung.config.events.view.Triggers', {
 
         listProperty: 'settings.triggerRules.list',
         tbar: ['@add'],
-        // !!! add copy action
         recordActions: ['edit', 'copy', 'delete', 'reorder'],
 
         ruleJavaClass: 'com.untangle.uvm.event.EventRuleCondition',

@@ -90,13 +90,9 @@ Ext.define('Ung.config.events.view.Syslog', {
 
         listProperty: 'settings.syslogRules.list',
         tbar: ['@add'],
-        // !!! add copy action
         recordActions: ['edit', 'copy', 'delete', 'reorder'],
 
         ruleJavaClass: 'com.untangle.uvm.event.EventRuleCondition',
-        // conditions: [
-        //     Condition.fieldCondition
-        // ],
 
         emptyRow: {
             javaClass: 'com.untangle.uvm.event.AlertRule',
