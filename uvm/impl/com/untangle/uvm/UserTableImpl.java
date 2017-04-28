@@ -60,6 +60,33 @@ public class UserTableImpl implements UserTable
         UvmContextFactory.context().newThread(this.cleaner).start();
     }
     
+    public synchronized void setUsers( LinkedList<UserTableEntry> newUsers )
+    {
+        ConcurrentHashMap<String, UserTableEntry> oldUserTable = this.userTable;
+        this.userTable = new ConcurrentHashMap<String, UserTableEntry>();
+        
+        /**
+         * For each entry, copy the value on top of the exitsing objects so references are maintained
+         * If there aren't in the table, create new entries
+         */
+        for ( UserTableEntry entry : newUsers ) {
+            String username = entry.getUsername();
+            if (username == null)
+                continue;
+
+            UserTableEntry existingEntry = oldUserTable.get( username );
+            if ( existingEntry != null ) {
+                existingEntry.copy( entry );
+                this.userTable.put( existingEntry.getUsername(), existingEntry );
+            }
+            else {
+                this.userTable.put( username, entry );
+            }
+        }
+
+        saveUsers();
+    }
+
     public UserTableEntry getUserTableEntry( String username )
     {
         return getUserTableEntry( username, false );

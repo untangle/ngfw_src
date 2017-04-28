@@ -81,6 +81,11 @@ public interface UserTable
     int getCurrentSize();
     
     /**
+     * Set the user table to these entries
+     */
+    void setUsers( LinkedList<UserTableEntry> users );
+
+    /**
      * save the users to disk
      */
     void saveUsers();
