@@ -1043,6 +1043,13 @@ class WebFilterTests(WebFilterBaseTests):
         self.rules_clear()
         assert (result == 0)
 
+    def test_010_0000_rule_condition_http_uri_search(self):
+        "test HTTP_URI"
+        self.rule_add("HTTP_URI","*search*")
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html?q=searchteam", expected="blockpage", extra_options="--header 'Uri: http://test.untangle.com/test/testPage1.html'")
+        self.rules_clear()
+        assert (result == 0)
+
     def test_010_0000_rule_condition_http_uri_inverse(self):
         "test HTTP_URI inverse (untangle string is not in URI)"
         self.rule_add("HTTP_URI","*untangle*")

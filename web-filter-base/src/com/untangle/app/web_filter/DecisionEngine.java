@@ -86,14 +86,16 @@ public abstract class DecisionEngine
      */
     public String checkRequest(AppTCPSession sess, InetAddress clientIp, int port, RequestLineToken requestLine, HeaderToken header)
     {
-        Boolean isFlagged = false; /*
-                                    * this stores whether this visit should be
-                                    * flagged for any reason
-                                    */
-        Reason reason = Reason.DEFAULT; /*
-                                         * this stores the corresponding reason
-                                         * for the flag/block
-                                         */
+        /*
+         * this stores whether this visit should be
+         * flagged for any reason
+         */
+        Boolean isFlagged = false;
+        /*
+         * this stores the corresponding reason
+         * for the flag/block
+         */
+        Reason reason = Reason.DEFAULT; 
         GenericRule bestCategory = null;
         String bestCategoryStr = null;
         String requestMethod = null;
@@ -101,6 +103,10 @@ public abstract class DecisionEngine
         URI uri = null;
 
         try {
+            /**
+             * XXX what is this: .replaceAll("(?<!:)/+", "/")
+             * -dmorris
+             */
             uri = new URI(requestLine.getRequestUri().normalize().toString().replaceAll("(?<!:)/+", "/"));
         } catch (URISyntaxException e) {
             logger.error("Could not parse URI '" + uri + "'", e);
