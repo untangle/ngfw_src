@@ -467,7 +467,9 @@ Ext.define('Ung.view.extra.Sessions', {
     }, {
         xtype: 'button',
         text: 'Auto Refresh'.t(),
-        iconCls: 'fa fa-refresh',
+        bind: {
+            iconCls: '{autoRefresh ? "fa fa-check-square-o" : "fa fa-square-o"}'
+        },
         enableToggle: true,
         toggleHandler: 'setAutoRefresh'
     }, {

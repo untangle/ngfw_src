@@ -165,8 +165,20 @@ Ext.define('Ung.view.reports.Entry', {
                 text: 'Refresh'.t(),
                 iconCls: 'fa fa-refresh',
                 itemId: 'refreshBtn',
-                handler: 'refreshData'
-            }, '-', {
+                handler: 'refreshData',
+                bind: {
+                    disabled: '{autoRefresh}'
+                }
+            }, {
+                xtype: 'button',
+                text: 'Auto Refresh'.t(),
+                enableToggle: true,
+                toggleHandler: 'setAutoRefresh',
+                bind: {
+                    iconCls: '{autoRefresh ? "fa fa-check-square-o" : "fa fa-square-o"}',
+                    pressed: '{autoRefresh}'
+                }
+            }, {
                 text: 'Reset View'.t(),
                 iconCls: 'fa fa-refresh',
                 itemId: 'resetBtn',
@@ -174,7 +186,7 @@ Ext.define('Ung.view.reports.Entry', {
                 bind: {
                     hidden: '{entry.type !== "EVENT_LIST"}'
                 }
-            }, '-', {
+            }, {
                 itemId: 'exportBtn',
                 text: 'Export'.t(),
                 iconCls: 'fa fa-sign-out',

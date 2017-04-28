@@ -38,7 +38,7 @@ Ext.define('Ung.view.extra.Users', {
                         /*
                          * Encode objects and arrays for details
                          */
-                        if( ( typeof( data[k] ) == 'object' ) || 
+                        if( ( typeof( data[k] ) == 'object' ) ||
                             ( typeof( data[k] ) == 'array' ) ){
                             data[k] = Ext.encode(data[k]);
                         }
@@ -199,7 +199,9 @@ Ext.define('Ung.view.extra.Users', {
     }, {
         xtype: 'button',
         text: 'Auto Refresh'.t(),
-        iconCls: 'fa fa-refresh',
+        bind: {
+            iconCls: '{autoRefresh ? "fa fa-check-square-o" : "fa fa-square-o"}'
+        },
         enableToggle: true,
         toggleHandler: 'setAutoRefresh'
     }, {

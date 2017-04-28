@@ -40,6 +40,9 @@ Ext.define('Ung.view.extra.Hosts', {
     },
 
     viewModel: {
+        data: {
+            autoRefresh: false
+        },
         formulas: {
             hostDetails: function (get) {
                 if (get('hostsgrid.selection')) {
@@ -278,7 +281,9 @@ Ext.define('Ung.view.extra.Hosts', {
     }, {
         xtype: 'button',
         text: 'Auto Refresh'.t(),
-        iconCls: 'fa fa-refresh',
+        bind: {
+            iconCls: '{autoRefresh ? "fa fa-check-square-o" : "fa fa-square-o"}'
+        },
         enableToggle: true,
         toggleHandler: 'setAutoRefresh'
     }, {
