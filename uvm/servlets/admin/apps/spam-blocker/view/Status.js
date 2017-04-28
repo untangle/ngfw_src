@@ -19,6 +19,12 @@ Ext.define('Ung.apps.spamblocker.view.Status', {
                 '<h3>Spam Blocker</h3>' +
                 '<p>' + 'Spam Blocker detects, blocks, and quarantines spam before it reaches users\' mailboxes.'.t() + '</p>'
         }, {
+            xtype: 'applicense',
+            hidden: true,
+            bind: {
+                hidden: '{!license || !license.trial}'
+            }
+        }, {
             xtype: 'appstate',
         }, {
             xtype: 'appreports'

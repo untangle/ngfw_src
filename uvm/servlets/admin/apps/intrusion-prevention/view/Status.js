@@ -24,6 +24,12 @@ Ext.define('Ung.apps.intrusionprevention.view.Status', {
                 '<h3>Intrusion Prevention</h3>' +
                 '<p>' + 'Intrusion Prevention blocks scans, detects, and blocks attacks and suspicious traffic using signatures.'.t() + '</p>'
         }, {
+            xtype: 'applicense',
+            hidden: true,
+            bind: {
+                hidden: '{!license || !license.trial}'
+            }
+        }, {
             xtype: 'appstate',
             hidden: true,
             bind: {

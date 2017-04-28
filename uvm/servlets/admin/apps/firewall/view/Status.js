@@ -17,6 +17,12 @@ Ext.define('Ung.apps.firewall.view.Status', {
                 '<h3>Firewall</h3>' +
                 '<p>' + 'Firewall is a simple application that flags and blocks sessions based on rules.'.t() + '</p>'
         }, {
+            xtype: 'applicense',
+            hidden: true,
+            bind: {
+                hidden: '{!license || !license.trial}'
+            }
+        }, {
             xtype: 'appstate',
         }, {
             xtype: 'appreports'

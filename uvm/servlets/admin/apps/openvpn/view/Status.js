@@ -23,6 +23,12 @@ Ext.define('Ung.apps.openvpn.view.Status', {
                 '<h3>OpenVPN</h3>' +
                 '<p>' + 'OpenVPN provides secure network access and tunneling to remote users and sites using the OpenVPN protocol.'.t() + '</p>'
         }, {
+            xtype: 'applicense',
+            hidden: true,
+            bind: {
+                hidden: '{!license || !license.trial}'
+            }
+        }, {
             xtype: 'appstate',
         }, {
             xtype: 'grid',

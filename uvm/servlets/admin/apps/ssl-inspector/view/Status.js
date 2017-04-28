@@ -19,6 +19,12 @@ Ext.define('Ung.apps.sslinspector.view.Status', {
                 '<h3>SSL Inspector</h3>' +
                 '<p>' + 'SSL Inspector allows for full decryption of HTTPS and SMTPS so that other applications can process the encrytped streams.'.t() + '</p>'
         }, {
+            xtype: 'applicense',
+            hidden: true,
+            bind: {
+                hidden: '{!license || !license.trial}'
+            }
+        }, {
             xtype: 'appstate',
         }, {
             xtype: 'component',

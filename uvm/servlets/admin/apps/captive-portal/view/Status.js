@@ -17,6 +17,12 @@ Ext.define('Ung.apps.captiveportal.view.Status', {
                 '<h3>Captive Portal</h3>' +
                 '<p>' + 'Captive Portal allows administrators to require network users to complete a defined process, such as logging in or accepting a network usage policy, before accessing the internet.'.t() + '</p>'
         }, {
+            xtype: 'applicense',
+            hidden: true,
+            bind: {
+                hidden: '{!license || !license.trial}'
+            }
+        }, {
             xtype: 'appstate',
         }, {
             xtype: 'fieldset',

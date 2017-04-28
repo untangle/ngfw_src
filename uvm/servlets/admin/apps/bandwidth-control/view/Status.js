@@ -24,6 +24,12 @@ Ext.define('Ung.apps.bandwidthcontrol.view.Status', {
                 '<h3>Bandwidth Control</h3>' +
                 '<p>' + 'Bandwidth Control monitors, manages, and shapes bandwidth usage on the network'.t() + '</p>'
         }, {
+            xtype: 'applicense',
+            hidden: true,
+            bind: {
+                hidden: '{!license || !license.trial}'
+            }
+        }, {
             xtype: 'appstate',
             hidden: true,
             bind: {

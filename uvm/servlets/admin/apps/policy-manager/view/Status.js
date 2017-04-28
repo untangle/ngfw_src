@@ -22,6 +22,12 @@ Ext.define('Ung.apps.policymanager.view.Status', {
                 '<h3>Policy Manager</h3>' +
                 '<p>' + 'Policy Manager enables administrators to create different policies and handle different sessions with different policies based on rules.'.t() + '</p>'
         }, {
+            xtype: 'applicense',
+            hidden: true,
+            bind: {
+                hidden: '{!license || !license.trial}'
+            }
+        }, {
             xtype: 'appreports',
         }, {
             xtype: 'appremove'

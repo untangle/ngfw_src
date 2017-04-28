@@ -19,6 +19,12 @@ Ext.define('Ung.apps.virusblocker.view.Status', {
                 '<h3>Virus Blocker</h3>' +
                 '<p>' + 'Virus Blocker detects and blocks malware before it reaches users\' desktops or mailboxes.'.t() + '</p>'
         }, {
+            xtype: 'applicense',
+            hidden: true,
+            bind: {
+                hidden: '{!license || !license.trial}'
+            }
+        }, {
             xtype: 'appstate',
         }, {
             xtype: 'displayfield',

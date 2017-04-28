@@ -23,6 +23,12 @@ Ext.define('Ung.apps.ipsecvpn.view.Status', {
                 '<h3>IPsec VPN</h3>' +
                 '<p>' + 'IPsec VPN provides secure network access and tunneling to remote users and sites using IPsec, GRE, L2TP, Xauth, and IKEv2 protocols.'.t() + '</p>'
         }, {
+            xtype: 'applicense',
+            hidden: true,
+            bind: {
+                hidden: '{!license || !license.trial}'
+            }
+        }, {
             xtype: 'appstate',
         }, {
             xtype: 'grid',

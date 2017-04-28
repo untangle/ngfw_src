@@ -39,6 +39,12 @@ Ext.define('Ung.apps.ad-blocker.view.Status', {
                 '<h3>Ad Blocker</h3>' +
                 '<p>' + 'Ad Blocker blocks advertising content and tracking cookies for scanned web traffic.'.t() + '</p>'
         }, {
+            xtype: 'applicense',
+            hidden: true,
+            bind: {
+                hidden: '{!license || !license.trial}'
+            }
+        }, {
             xtype: 'appstate',
         }, {
             xtype: 'appreports'
