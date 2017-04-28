@@ -19,6 +19,12 @@ Ext.define('Ung.apps.webmonitor.view.Status', {
                 '<h3>Web Monitor</h3>' +
                 '<p>' + 'Web Monitor scans and categorizes web traffic to monitor and enforce network usage policies.'.t() + '</p>'
         }, {
+            xtype: 'applicense',
+            hidden: true,
+            bind: {
+                hidden: '{!license || !license.trial}'
+            }
+        }, {
             xtype: 'appstate',
         }, {
             xtype: 'appreports'

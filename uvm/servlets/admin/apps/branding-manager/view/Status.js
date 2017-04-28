@@ -17,6 +17,12 @@ Ext.define('Ung.apps.brandingmanager.view.Status', {
                 '<h3>Branding Manager</h3>' +
                 '<p>' + 'The Branding Settings are used to set the logo and contact information that will be seen by users (e.g. reports).'.t() + '</p>'
         }, {
+            xtype: 'applicense',
+            hidden: true,
+            bind: {
+                hidden: '{!license || !license.trial}'
+            }
+        }, {
             xtype: 'appremove'
         }]
     }]

@@ -17,6 +17,12 @@ Ext.define('Ung.apps.wanbalancer.view.Status', {
                 '<h3>WAN Balancer</h3>' +
                 '<p>' + 'WAN Balancer spreads network traffic across multiple internet connections for better performance.'.t() + '</p>'
         }, {
+            xtype: 'applicense',
+            hidden: true,
+            bind: {
+                hidden: '{!license || !license.trial}'
+            }
+        }, {
             xtype: 'appstate',
         }, {
             xtype: 'app-wan-balancer-allocation',

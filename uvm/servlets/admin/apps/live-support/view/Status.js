@@ -20,6 +20,12 @@ Ext.define('Ung.apps.livesupport.view.Status', {
                 '<h3>Live Support</h3>' +
                 '<p>' + 'Live Support provides on-demand help for any technical issues.'.t() + '</p>'
         }, {
+            xtype: 'applicense',
+            hidden: true,
+            bind: {
+                hidden: '{!license || !license.trial}'
+            }
+        }, {
             xtype: 'fieldset',
             title: '<i class="fa fa-life-ring"></i> ' + 'Live Support'.t(),
             padding: 10,

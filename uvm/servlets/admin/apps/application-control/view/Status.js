@@ -44,6 +44,12 @@ Ext.define('Ung.apps.applicationcontrol.view.Status', {
                 '<h3>Application Control</h3>' +
                 '<p>' + 'Application Control scans sessions and identifies the associated applications allowing each to be flagged and/or blocked.'.t() + '</p>'
         }, {
+            xtype: 'applicense',
+            hidden: true,
+            bind: {
+                hidden: '{!license || !license.trial}'
+            }
+        }, {
             xtype: 'appstate',
         }, {
             xtype: 'appreports'

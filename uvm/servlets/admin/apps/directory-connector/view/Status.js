@@ -17,6 +17,12 @@ Ext.define('Ung.apps.directoryconnector.view.Status', {
                 '<h3>Directory Connector</h3>' +
                 '<p>' + 'Directory Connector allows integration with external directories and services, such as Active Directory, RADIUS, or Google.'.t() + '</p>'
         }, {
+            xtype: 'applicense',
+            hidden: true,
+            bind: {
+                hidden: '{!license || !license.trial}'
+            }
+        }, {
             xtype: 'appreports'
         }, {
             xtype: 'appremove'

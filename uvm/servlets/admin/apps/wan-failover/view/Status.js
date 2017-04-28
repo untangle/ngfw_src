@@ -19,6 +19,12 @@ Ext.define('Ung.apps.wanfailover.view.Status', {
                 '<p>' + 'WAN Failover detects WAN outages and re-routes traffic to any other available WANs to maximize network uptime.'.t() + '</p>' +
                 '<p>' + '<b>NOTE:</b> Tests must be configured using the <i>Tests</i> tab to determine the connectivity of each WAN.'.t() + '</p>'
         }, {
+            xtype: 'applicense',
+            hidden: true,
+            bind: {
+                hidden: '{!license || !license.trial}'
+            }
+        }, {
             xtype: 'appstate',
         }, {
             xtype: 'fieldset',

@@ -17,6 +17,12 @@ Ext.define('Ung.apps.reports.view.Status', {
                 '<h3>Reports</h3>' +
                 '<p>' + 'Reports records network events to provide administrators the visibility and data necessary to investigate network activity.'.t() + '</p>'
         }, {
+            xtype: 'applicense',
+            hidden: true,
+            bind: {
+                hidden: '{!license || !license.trial}'
+            }
+        }, {
             xtype: 'appstate',
         }, {
             xtype: 'appremove'

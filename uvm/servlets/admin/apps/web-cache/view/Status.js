@@ -32,6 +32,12 @@ Ext.define('Ung.apps.webcache.view.Status', {
                 '<h3>Web Cache</h3>' +
                 '<p>' + 'Web Cache stores and serves web content from local cache for increased speed and reduced bandwidth usage.'.t() + '</p>'
         }, {
+            xtype: 'applicense',
+            hidden: true,
+            bind: {
+                hidden: '{!license || !license.trial}'
+            }
+        }, {
             xtype: 'appstate',
         }, {
             xtype: 'fieldset',
