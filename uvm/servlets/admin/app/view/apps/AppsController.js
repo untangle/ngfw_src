@@ -113,8 +113,7 @@ Ext.define('Ung.view.apps.AppsController', {
                         runState: null,
                         desc: Util.appDescription[app.name],
                         extraCls: 'installed',
-                        parentPolicy: null,
-                        licenseExpired: false
+                        parentPolicy: null
                     };
                     instance = Ext.Array.findBy(policy.instances.list, function(instance) {
                         return instance.appName === app.name;
@@ -130,7 +129,6 @@ Ext.define('Ung.view.apps.AppsController', {
                     license = policy.licenseMap.map[app.name];
                     if (license) {
                         _app.licenseMessage = Util.getLicenseMessage(license);
-                        _app.licenseExpired = license.trial ? license.expired : false;
                     }
                     apps.push(_app);
                 });
@@ -147,8 +145,7 @@ Ext.define('Ung.view.apps.AppsController', {
                         desc: Util.appDescription[app.name],
                         hasPowerButton: app.hasPowerButton,
                         extraCls: 'installable',
-                        parentPolicy: null,
-                        licenseExpired: false
+                        parentPolicy: null
                     });
                 });
                 vm.getStore('apps').loadData(apps);
