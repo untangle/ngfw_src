@@ -353,7 +353,7 @@ class WebFilterBaseTests(unittest2.TestCase):
     def test_052_pass_url_overrides_rule_content_type(self):
         """verify that an entry in the pass list overrides a blocked category"""
         self.rules_clear()
-        self.rule_add("WEB_FILTER_RESPONSE_CONTENT_TYPE","text/plain")
+        self.rule_add("HTTP_CONTENT_TYPE","text/plain")
         self.pass_url_list_add("test.untangle.com/test/")
         # this test URL should NOT be blocked
         result = remote_control.run_command("wget -q -O - http://test.untangle.com/test/test.txt 2>&1 | grep -q text123")
@@ -364,7 +364,7 @@ class WebFilterBaseTests(unittest2.TestCase):
     def test_053_pass_url_overrides_url_extension(self):
         """verify that an entry in the pass list overrides a blocked category"""
         self.rules_clear()
-        self.rule_add("WEB_FILTER_REQUEST_FILE_EXTENSION","txt")
+        self.rule_add("HTTP_REQUEST_FILE_EXTENSION","txt")
         self.pass_url_list_add("test.untangle.com/test/")
         # this test URL should NOT be blocked
         result = remote_control.run_command("wget -q -O - http://test.untangle.com/test/test.txt 2>&1 | grep -q text123")
@@ -375,9 +375,9 @@ class WebFilterBaseTests(unittest2.TestCase):
         assert( found )
 
     def test_060_rule_condition_response_content_type(self):
-        """verify that WEB_FILTER_RESPONSE_CONTENT_TYPE matches"""
+        """verify that HTTP_CONTENT_TYPE matches"""
         self.rules_clear()
-        self.rule_add("WEB_FILTER_RESPONSE_CONTENT_TYPE","text/plain")
+        self.rule_add("HTTP_CONTENT_TYPE","text/plain")
         # this test URL should be blocked
         result = self.get_web_request_results(url="http://test.untangle.com/test/test.txt", expected="blockpage")
         self.rules_clear()
@@ -386,9 +386,9 @@ class WebFilterBaseTests(unittest2.TestCase):
         assert( found )
 
     def test_061_rule_condition_response_content_type_inverse(self):
-        """verify that WEB_FILTER_RESPONSE_CONTENT_TYPE does not overmatch"""
+        """verify that HTTP_CONTENT_TYPE does not overmatch"""
         self.rules_clear()
-        self.rule_add("WEB_FILTER_RESPONSE_CONTENT_TYPE","text/plain")
+        self.rule_add("HTTP_CONTENT_TYPE","text/plain")
         # this test URL should NOT be blocked (its text/html not text/plain)
         result = remote_control.run_command("wget -q -O - http://test.untangle.com/test/test.html 2>&1 | grep -q text123")
         self.rules_clear()
@@ -397,9 +397,9 @@ class WebFilterBaseTests(unittest2.TestCase):
         assert( found )
 
     def test_070_rule_condition_request_file_extension(self):
-        """verify that WEB_FILTER_REQUEST_FILE_EXTENSION matches"""
+        """verify that HTTP_REQUEST_FILE_EXTENSION matches"""
         self.rules_clear()
-        self.rule_add("WEB_FILTER_REQUEST_FILE_EXTENSION","txt")
+        self.rule_add("HTTP_REQUEST_FILE_EXTENSION","txt")
         # this test URL should be blocked
         result = self.get_web_request_results(url="http://test.untangle.com/test/test.txt", expected="blockpage")
         self.rules_clear()
@@ -408,9 +408,9 @@ class WebFilterBaseTests(unittest2.TestCase):
         assert( found )
 
     def test_071_rule_condition_request_file_extension_inverse(self):
-        """verify that WEB_FILTER_REQUEST_FILE_EXTENSION does not overmatch"""
+        """verify that HTTP_REQUEST_FILE_EXTENSION does not overmatch"""
         self.rules_clear()
-        self.rule_add("WEB_FILTER_REQUEST_FILE_EXTENSION","txt")
+        self.rule_add("HTTP_REQUEST_FILE_EXTENSION","txt")
         # this test URL should NOT be blocked (its text/html not text/plain)
         result = remote_control.run_command("wget -q -O - http://test.untangle.com/test/test.html 2>&1 | grep -q text123")
         self.rules_clear()
@@ -419,9 +419,9 @@ class WebFilterBaseTests(unittest2.TestCase):
         assert( found )
 
     def test_072_rule_condition_request_file_extension_anchored(self):
-        """verify that WEB_FILTER_REQUEST_FILE_EXTENSION does not overmatch by assuming a ."""
+        """verify that HTTP_REQUEST_FILE_EXTENSION does not overmatch by assuming a ."""
         self.rules_clear()
-        self.rule_add("WEB_FILTER_REQUEST_FILE_EXTENSION","tml") # not this should only block ".tml" not ".html"
+        self.rule_add("HTTP_REQUEST_FILE_EXTENSION","tml") # not this should only block ".tml" not ".html"
         # this test URL should NOT be blocked (its text/html not text/plain)
         result = remote_control.run_command("wget -q -O - http://test.untangle.com/test/test.html 2>&1 | grep -q text123")
         self.rules_clear()
@@ -430,9 +430,9 @@ class WebFilterBaseTests(unittest2.TestCase):
         assert( found )
 
     def test_073_rule_condition_request_file_extension_with_arguments(self):
-        """verify that WEB_FILTER_REQUEST_FILE_EXTENSION matches with arguments"""
+        """verify that HTTP_REQUEST_FILE_EXTENSION matches with arguments"""
         self.rules_clear()
-        self.rule_add("WEB_FILTER_REQUEST_FILE_EXTENSION","txt")
+        self.rule_add("HTTP_REQUEST_FILE_EXTENSION","txt")
         # this test URL should be blocked
         result = self.get_web_request_results(url="http://test.untangle.com/test/test.txt?argument", expected="blockpage")
         self.rules_clear()
