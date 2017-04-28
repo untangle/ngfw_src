@@ -38,8 +38,7 @@ Ext.define('Ung.apps.webmonitor.view.PassSites', {
         editor: {
             xtype: 'textfield',
             emptyText: '[enter site]'.t(),
-            allowBlank: false,
-            validator: Util.urlValidator
+            allowBlank: false
         }
     }, {
         xtype: 'checkcolumn',
@@ -63,8 +62,7 @@ Ext.define('Ung.apps.webmonitor.view.PassSites', {
         fieldLabel: 'Site'.t(),
         emptyText: '[enter site]'.t(),
         allowBlank: false,
-        width: 400,
-        validator: Util.urlValidator
+        width: 400
     }, {
         xtype: 'checkbox',
         bind: '{record.enabled}',

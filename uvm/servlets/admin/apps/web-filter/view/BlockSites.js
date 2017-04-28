@@ -39,8 +39,7 @@ Ext.define('Ung.apps.webfilter.view.BlockSites', {
         editor: {
             xtype: 'textfield',
             emptyText: '[enter site]'.t(),
-            allowBlank: false,
-            validator: Util.urlValidator
+            allowBlank: false
         }
     }, {
         xtype: 'checkcolumn',
@@ -71,8 +70,7 @@ Ext.define('Ung.apps.webfilter.view.BlockSites', {
         fieldLabel: 'Site'.t(),
         emptyText: '[enter site]'.t(),
         allowBlank: false,
-        width: 400,
-        validator: Util.urlValidator
+        width: 400
     }, {
         xtype: 'checkbox',
         bind: '{record.blocked}',
