@@ -621,7 +621,11 @@ public class HttpParserEventHandler extends AbstractEventHandler
                     String host = state.header.getValue("host");
                     String referer = state.header.getValue("referer");
                     String userAgent = state.header.getValue("user-agent");
-                    String uri = state.requestLineToken.getRequestLine().getRequestUri().normalize().getPath();
+                    /**
+                     * XXX what is this: .replaceAll("(?<!:)/+", "/")
+                     * -dmorris
+                     */
+                    String uri = state.requestLineToken.getRequestLine().getRequestUri().normalize().toString().replaceAll("(?<!:)/+", "/");
                     HostTableEntry hostEntry = null;
                     DeviceTableEntry deviceEntry = null;
                     if ( clientAddr != null )
