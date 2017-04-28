@@ -13,9 +13,6 @@ Ext.define('Ung.config.network.Interface', {
     items: [{
         region: 'north',
         height: 'auto',
-        bind: {
-            height: '{isAddressed ? "auto" : "100%"}',
-        },
         // xtype: 'form',
         border: false,
         // scrollable: 'vertical',
@@ -89,6 +86,15 @@ Ext.define('Ung.config.network.Interface', {
                 listeners: {
                     afterrender: function (rg) {
                         rg.add(rg.up('window').configTypesRadios);
+                    },
+                    change: function (rg, newValue) {
+                        var win = rg.up('window');
+                        if (newValue === 'ADDRESSED') {
+                            win.down('tabpanel').setActiveItem(0);
+                        }
+                        if (newValue === 'BRIDGED' && win.getViewModel().get('intf.isWirelessInterface')) { // in case of Wireless interface
+                            win.down('tabpanel').setActiveItem(2);
+                        }
                     }
                 }
             }, {
@@ -161,11 +167,17 @@ Ext.define('Ung.config.network.Interface', {
         bodyBorder: false,
         hidden: true,
         bind: {
-            hidden: '{!isAddressed}'
+            hidden: '{isDisabled || (isBridged && !intf.isWirelessInterface)}'
         },
         items: [{
             bind: {
                 title: 'IPv4 Configuration'.t() // + ' ({intf.v4ConfigType})'
+            },
+            tabConfig: {
+                hidden: true,
+                bind: {
+                    hidden: '{!isAddressed}'
+                }
             },
             tbar: [{
                 xtype: 'radiogroup',
@@ -554,6 +566,12 @@ Ext.define('Ung.config.network.Interface', {
             bind: {
                 title: 'IPv6 Configuration'.t() // + ' ({intf.v6ConfigType})',
             },
+            tabConfig: {
+                hidden: true,
+                bind: {
+                    hidden: '{!isAddressed}'
+                }
+            },
             tbar: [{
                 xtype: 'radiogroup',
                 itemId: 'ipv6ConfigType',
@@ -779,7 +797,7 @@ Ext.define('Ung.config.network.Interface', {
             tabConfig: {
                 hidden: true,
                 bind: {
-                    hidden: '{!isAddressed || intf.isWan}'
+                    hidden: '{intf.isWan || !isAddressed}'
                 },
             },
             tbar: [{
@@ -928,12 +946,12 @@ Ext.define('Ung.config.network.Interface', {
             }]
         }, {
             title: 'Redundancy (VRRP) Configuration'.t(),
-            // tabConfig: {
-            //     hidden: true,
-            //     bind: {
-            //         hidden: '{intf.isWan}'
-            //     },
-            // },
+            tabConfig: {
+                hidden: true,
+                bind: {
+                    hidden: '{!isAddressed}'
+                }
+            },
             tbar: [{
                 // VRRP enabled
                 xtype: 'checkbox',
