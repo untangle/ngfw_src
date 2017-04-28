@@ -78,7 +78,10 @@ Ext.define('Ung.cmp.AppState', {
             if( !me.runStateTask ){
                 me.runStateTask = new Ext.util.DelayedTask( Ext.bind(function(){
                     appManager.getRunState( Ext.bind( function (result, ex2) {
-                        if (ex2) { Util.handleException(ex2); return false; }
+                        if (ex2) {
+                            Util.handleException(ex2);
+                            return false;
+                        }
                         this.runStateWait = this.runStateWait - this.runStateDelay;
                         if(result != this.runStateWantState){
                             this.runStateTask.delay( this.runStateDelay );
@@ -98,7 +101,11 @@ Ext.define('Ung.cmp.AppState', {
                 // stop app
                 me.runStateWantState = 'INITIALIZED';
                 appManager.stop(function (result, ex) {
-                    if (ex) { Util.handleException(ex); return false; }
+                    if (ex) {
+                        Util.handleException(ex);
+                        return false;
+                    }
+                    me.runStateTask.delay( this.getRunStateDelay );
                 });
             } else {
                 // start app
@@ -106,12 +113,16 @@ Ext.define('Ung.cmp.AppState', {
                 appManager.start(function (result, ex) {
                     if (ex) {
                         Ext.Msg.alert('Error', ex.message);
+                        // Likely due to an invalid licnese.
+                        // Expect the app to shutdown
+                        me.runStateWantState = 'INITIALIZED';
+                        me.runStateTask.delay( this.getRunStateDelay );
                         btn.setDisabled(false);
                         return false;
                     }
+                    me.runStateTask.delay( this.getRunStateDelay );
                 });
             }
-            me.runStateTask.delay( this.getRunStateDelay );
         }
     },
 
