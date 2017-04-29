@@ -26,7 +26,7 @@ case "$1" in
     a2ensite -q uvm
     a2dissite -q upgrade
 
-    /etc/init.d/apache2 reload
+    /etc/init.d/apache2 restart
     if [ -f $PIDFILE ] ; then
         kill $(cat $PIDFILE)
         rm -f $PIDFILE
