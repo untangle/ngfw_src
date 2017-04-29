@@ -19,14 +19,14 @@ case "$1" in
     nohup tail -f --retry $UPGRADE_LOGS >> $CONSOLIDATED_UPGRADE_LOG 2>/dev/null &
     echo $! >| $PIDFILE
 
-    /etc/init.d/apache2 reload
+    service apache2 reload
     ;;
 
   stop)
     a2ensite -q uvm
     a2dissite -q upgrade
 
-    /etc/init.d/apache2 restart
+    service apache2 restart
     if [ -f $PIDFILE ] ; then
         kill $(cat $PIDFILE)
         rm -f $PIDFILE
