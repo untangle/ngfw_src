@@ -125,12 +125,14 @@ public class SslInspectorSettings implements Serializable
 
     public boolean getServerFakeHostname()
     {
-        return (serverFakeHostname);
+//        return (serverFakeHostname);
+        return(false);
     }
 
     public void setServerFakeHostname(boolean flag)
     {
-        this.serverFakeHostname = flag;
+//        this.serverFakeHostname = flag;
+        this.serverFakeHostname = false;
     }
 
     public boolean getServerBlindTrust()
