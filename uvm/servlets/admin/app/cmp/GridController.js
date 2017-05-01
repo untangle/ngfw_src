@@ -26,7 +26,8 @@ Ext.define('Ung.cmp.GridController', {
 
     addRecordInline: function () {
         var v = this.getView(),
-            newRecord = Ext.create('Ung.model.Rule', Ext.clone(v.emptyRow));
+//            newRecord = Ext.create('Ung.model.Rule', Ext.clone(v.emptyRow));
+            newRecord = Ext.create('Ung.model.Rule', Ung.util.Util.activeClone(v.emptyRow));
         newRecord.set('markedForNew', true);
         if (v.topInsert) {
             v.getStore().insert(0, newRecord);
