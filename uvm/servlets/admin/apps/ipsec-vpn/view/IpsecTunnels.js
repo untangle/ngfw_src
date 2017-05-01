@@ -38,9 +38,9 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         'phase2Hash': 'md5',
         'phase2Group': 'modp1024',
         'phase2Lifetime' : '3600',
-        'left': '', // FIXME - this should use vm.get('leftDefault')
+        'left': [['Ung.util.Util.getAppStorageValue'],['ipsec.leftDefault']],
         'leftId': '',
-        'leftSubnet': '', // FIXME - this should use vm.get('leftSubnetDefault')
+        'leftSubnet': [['Ung.util.Util.getAppStorageValue'],['ipsec.leftSubnetDefault']],
         'right': '',
         'rightId': '',
         'rightSubnet': '',
@@ -110,7 +110,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         layout: 'column',
         margin: '0 0 5 0',
         items: [{
-            xtype:'combo',
+            xtype:'combobox',
             fieldLabel: 'Connection Type'.t(),
             labelWidth: 120,
             editable: false,
@@ -127,7 +127,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         layout: 'column',
         margin: '0 0 5 0',
         items: [{
-            xtype:'combo',
+            xtype:'combobox',
             fieldLabel: 'IKE Version'.t(),
             labelWidth: 120,
             editable: false,
@@ -143,7 +143,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         layout: 'column',
         margin: '0 0 5 0',
         items: [{
-            xtype:'combo',
+            xtype:'combobox',
             fieldLabel: 'Connect Mode'.t(),
             labelWidth: 120,
             editable: false,
@@ -155,7 +155,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         layout: 'column',
         margin: '0 0 5 0',
         items: [{
-            xtype: 'combo',
+            xtype: 'combobox',
             fieldLabel: 'Interface'.t(),
             labelWidth: 120,
             bind: {

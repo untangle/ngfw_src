@@ -152,9 +152,10 @@ Ext.define('Ung.apps.ipsecvpn.MainController', {
             }
         }
 
-        vm.set('leftDefault', leftDefault);
-        vm.set('leftSubnetDefault', leftSubnetDefault);
         vm.set('wanListData', wanListData);
+
+        Ung.util.Util.setAppStorageValue('ipsec.leftDefault', leftDefault);
+        Ung.util.Util.setAppStorageValue('ipsec.leftSubnetDefault', leftSubnetDefault);
 
         return(wanListData);
     },

@@ -25,6 +25,8 @@ Ext.define('Ung.util.Util', {
         { name: 'users', type: 'system', displayName: 'Users' }
     ],
 
+    appStorage: { },
+
     appDescription: {
         'web-filter': 'Web Filter scans and categorizes web traffic to monitor and enforce network usage policies.'.t(),
         'web-monitor': 'Web monitor scans and categorizes web traffic to monitor and enforce network usage policies.'.t(),
@@ -685,6 +687,29 @@ Ext.define('Ung.util.Util', {
             message = license.status;
         }
         return message;
+    },
+
+    activeClone: function(source) {
+        // clone the source record which will usually be emptyRow
+        var target = Ext.clone(source);
+        // look at each item in the source record
+        Ext.iterate(source, function(key, value) {
+            // look for items in the record that are arrays
+            if ( (value !== null) && (typeof(value) === 'object') && (value.length) && (value.length === 2) && (typeof(value[0] === 'string')) ) {
+                // found an array so evaluate first string as the function with the second string as the argument and put result in target record
+                target[key] = eval(value[0] + "('" + value[1] + "')");
+            }
+        });
+        return(target);
+    },
+
+    getAppStorageValue: function(itemName) {
+        var data = Ung.util.Util.appStorage[itemName];
+        return(data);
+    },
+
+    setAppStorageValue: function(itemName, itemValue) {
+        Ung.util.Util.appStorage[itemName] = itemValue;
     }
 
 });

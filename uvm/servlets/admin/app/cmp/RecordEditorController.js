@@ -87,7 +87,8 @@ Ext.define('Ung.cmp.RecordEditorController', {
         this.mainGrid = v.up('grid');
 
         if (!v.record) {
-            v.record = Ext.create('Ung.model.Rule', Ext.clone(this.mainGrid.emptyRow));
+//            v.record = Ext.create('Ung.model.Rule', Ext.clone(this.mainGrid.emptyRow));
+            v.record = Ext.create('Ung.model.Rule', Ung.util.Util.activeClone(this.mainGrid.emptyRow));
             v.record.set('markedForNew', true);
             this.action = 'add';
             vm.set({
