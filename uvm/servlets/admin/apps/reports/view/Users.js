@@ -4,6 +4,8 @@ Ext.define('Ung.apps.reports.view.Users', {
     itemId: 'users',
     title: 'Reports Users'.t(),
 
+    controller: 'unreportsusersgrid',
+
     dockedItems: [{
         xtype: 'toolbar',
         dock: 'top',
@@ -63,18 +65,8 @@ Ext.define('Ung.apps.reports.view.Users', {
     }, {
         header: 'Email Templates'.t(),
         flex: 1,
-        dataIndex: 'emailTemplateIds'
-        // renderer: Ext.bind(function(value){
-        //     console.log(this.getViewModel());
-        //     var titles = [];
-        //     for(var i = 0; i < this.settings["emailTemplates"].list.length; i++){
-        //         var template = this.settings["emailTemplates"].list[i];
-        //         if(value.list.indexOf(template.templateId) > -1){
-        //             titles.push(template.title);
-        //         }
-        //     }
-        //     return titles.join(", ");
-        // }, this)
+        dataIndex: 'emailTemplateIds',
+        renderer: 'emailTemplatesRenderer'
     }, {
         xtype: 'checkcolumn',
         header: 'Online Access'.t(),
