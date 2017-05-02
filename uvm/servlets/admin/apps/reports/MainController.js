@@ -6,11 +6,10 @@ Ext.define('Ung.apps.reports.MainController', {
         '#': {
             afterrender: 'getSettings',
             activate: 'checkGoogleDrive'
-        }
+        },
     },
 
     getSettings: function () {
-        console.log('afterrender');
         var me = this, v = me.getView(), vm = me.getViewModel();
         vm.set('isExpertMode', rpc.isExpertMode);
 
@@ -18,9 +17,9 @@ Ext.define('Ung.apps.reports.MainController', {
         v.appManager.getSettings(function (result, ex) {
             v.setLoading(false);
             if (ex) { Util.handleException(ex); return; }
-            console.log(result);
             vm.set('settings', result);
         });
+
     },
 
     setSettings: function () {
@@ -111,14 +110,25 @@ Ext.define('Ung.apps.reports.MainController', {
         });
     },
 
-    // Users
-    templatesRenderer: function (value) {
+});
+
+Ext.define('Ung.apps.reports.cmp.UsersGridController', {
+    extend: 'Ung.cmp.GridController',
+
+    alias: 'controller.unreportsusersgrid',
+
+    emailTemplatesRenderer: function (value) {
         var vm = this.getViewModel(),
             templates = vm.get('settings.emailTemplates.list');
-        console.log(value);
-        Ext.Array.each(templates, function (template) {
 
+        var titles = [];
+        Ext.Array.each(templates, function (template) {
+            if(value.list.indexOf(template.templateId) > -1){
+                titles.push(template.title);
+            }
         });
+
+        return titles.join( ', ' );
     }
 
 });
