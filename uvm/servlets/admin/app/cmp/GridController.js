@@ -365,8 +365,13 @@ Ext.define('Ung.cmp.GridController', {
     columnRenderer: function(value, metaData, record, rowIndex, columnIndex, store, view){
         var rtype = view.grid.getColumns()[columnIndex].rtype;
         if(rtype != null){
-            return Renderer[rtype](value);
+            if( !Renderer[rtype] ){
+                console.log('Missing renderer for rtype=' + rtype);
+            }else{
+                return Renderer[rtype](value);
+            }
         }
+        return value;
     }
 
 });
