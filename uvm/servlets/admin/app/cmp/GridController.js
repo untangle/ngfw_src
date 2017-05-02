@@ -366,6 +366,15 @@ Ext.define('Ung.cmp.GridController', {
         this.pswdDialog.show();
     },
 
+    beforeEdit: function( editor, context ){
+        if( context &&
+            context.record &&
+            context.record.get('readOnly') === true ){
+            return false;
+        }
+        return true;
+    },
+
     columnRenderer: function(value, metaData, record, rowIndex, columnIndex, store, view){
         var rtype = view.grid.getColumns()[columnIndex].rtype;
         if(rtype != null){

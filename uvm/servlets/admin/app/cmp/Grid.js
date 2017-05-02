@@ -166,6 +166,10 @@ Ext.define('Ung.cmp.Grid', {
         }
     },
 
+    listeners: {
+        beforeedit: 'beforeEdit'
+    },
+
     initComponent: function () {
         // to revisit the way columns are attached
         var columns = Ext.clone(this.columns), i;
