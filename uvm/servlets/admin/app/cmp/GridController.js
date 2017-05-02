@@ -41,6 +41,10 @@ Ext.define('Ung.cmp.GridController', {
             newRecord = record.copy(null);
         newRecord.set('markedForNew', true);
 
+        if( newRecord.get('readOnly') == true){
+            delete newRecord.data['readOnly'];
+        }
+
         if (v.topInsert) {
             v.getStore().insert(0, newRecord);
         } else {
