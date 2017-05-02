@@ -109,7 +109,6 @@ Ext.define('Ung.view.apps.AppsController', {
                         type: app.type,
                         hasPowerButton: app.hasPowerButton,
                         viewPosition: app.viewPosition,
-                        targetState: null,
                         runState: null,
                         desc: Util.appDescription[app.name],
                         extraCls: 'installed',
@@ -119,7 +118,6 @@ Ext.define('Ung.view.apps.AppsController', {
                         return instance.appName === app.name;
                     });
                     if (instance) {
-                        _app.targetState = instance.targetState;
                         _app.runState = rpc.appManager.app(instance.id).getRunState();
                         if (instance.policyId && policy.policyId !== instance.policyId) {
                             _app.parentPolicy = Ext.getStore('policiestree').findNode('policyId', instance.policyId).get('name');
@@ -137,13 +135,12 @@ Ext.define('Ung.view.apps.AppsController', {
                     apps.push({
                         name: app.name,
                         displayName: app.displayName,
-                        // route: app.type === 'FILTER' ? '#apps/' + policy.policyId + '/' + app.name : '#service/' + app.name,
+                        // route: null,
                         type: app.type,
+                        hasPowerButton: app.hasPowerButton,
                         viewPosition: app.viewPosition,
-                        targetState: null,
                         runState: null,
                         desc: Util.appDescription[app.name],
-                        hasPowerButton: app.hasPowerButton,
                         extraCls: 'installable',
                         parentPolicy: null
                     });
@@ -196,8 +193,9 @@ Ext.define('Ung.view.apps.AppsController', {
         Rpc.asyncData('rpc.appManager.instantiate', record.get('name'), vm.get('policyId'))
         .then(function (result) {
             record.set('extraCls', 'finish');
-            record.set('targetState', result.getRunState());
+            record.set('runState', result.getRunState());
             record.set('route', record.get('type') === 'FILTER' ? '#apps/' + vm.get('policyId') + '/' + record.get('name') : '#service/' + record.get('name'));
+
             if (record.get('name') === 'reports') { // just reload the page for now
                 window.location.href = '/admin/index.do';
                 return;
@@ -296,7 +294,7 @@ Ext.define('Ung.view.apps.AppsController', {
         Rpc.asyncData('rpc.appManager.instantiate', record.get('name'), vm.get('policyId'))
         .then(function (result) {
             record.set('extraCls', 'finish');
-            record.set('targetState', result.getRunState());
+            record.set('runState', result.getRunState());
             record.set('route', record.get('type') === 'FILTER' ? '#apps/' + vm.get('policyId') + '/' + record.get('name') : '#service/' + record.get('name'));
             me.updateCounters();
             cb();
