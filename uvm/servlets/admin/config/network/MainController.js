@@ -621,7 +621,8 @@ Ext.define('Ung.config.network.MainController', {
                 data: {
                     // intf: btn.getWidgetRecord().copy(null)
                     intf: me.editIntf,
-                    wirelessChannelsList: []
+                    wirelessChannelsList: [],
+                    vrrpmaster: false
                 },
                 formulas: {
                     isAddressed: function (get) { return get('intf.configType') === 'ADDRESSED'; },
@@ -665,6 +666,15 @@ Ext.define('Ung.config.network.MainController', {
                 });
         }
 
+        // check VRRP master
+        if (me.editIntf.get('vrrpEnabled') && me.editIntf.get('interfaceId') > 0) {
+            Rpc.asyncData('rpc.networkManager.isVrrpMaster', me.editIntf.get('interfaceId'))
+                .then(function(result) {
+                    me.dialog.getViewModel().set('vrrpmaster', result);
+                }, function (ex) {
+                    Util.handleException(ex);
+                });
+        }
     },
     cancelEdit: function (button) {
         this.editIntf.reject();
