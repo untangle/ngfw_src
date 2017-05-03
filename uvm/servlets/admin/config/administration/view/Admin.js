@@ -19,7 +19,7 @@ Ext.define('Ung.config.administration.view.Admin', {
         bind: '{accounts}',
 
         listProperty: 'adminSettings.users.list',
-        tbar: ['@add'],
+        tbar: ['@add', '->', '@import', '@export'],
         recordActions: ['changePassword', 'delete'],
 
         emptyRow: {

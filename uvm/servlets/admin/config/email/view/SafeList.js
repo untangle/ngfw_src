@@ -32,7 +32,7 @@ Ext.define('Ung.config.email.view.SafeList', {
 
         bind: '{globalSL}',
 
-        tbar: ['@addInline'],
+        tbar: ['@addInline', '->', '@import', '@export'],
         recordActions: ['delete'],
         // listProperty: '',
         emptyRow: {

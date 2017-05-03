@@ -21,7 +21,7 @@ Ext.define('Ung.config.network.view.Routes', {
         region: 'center',
         title: 'Static Routes'.t(),
 
-        tbar: ['@add'],
+        tbar: ['@add', '->', '@import', '@export'],
         recordActions: ['edit', 'delete', 'reorder'],
 
         listProperty: 'settings.staticRoutes.list',

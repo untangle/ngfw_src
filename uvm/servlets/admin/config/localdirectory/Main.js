@@ -21,7 +21,7 @@ Ext.define('Ung.config.localdirectory.Main', {
         border: false,
         title: 'Local Users'.t(),
 
-        tbar: ['@add'],
+        tbar: ['@add', '->', '@import', '@export'],
         recordActions: ['edit', 'delete'],
 
         listProperty: 'usersData.list',

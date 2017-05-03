@@ -107,7 +107,7 @@ Ext.define('Ung.apps.openvpn.view.ConfigEditorGrid', {
     dockedItems: [{
         xtype: 'toolbar',
         dock: 'top',
-        items: ['@addInline']
+        items: ['@addInline', '->', '@import', '@export']
     }],
 
     recordActions: ['delete'],
