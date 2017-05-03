@@ -141,27 +141,29 @@ Ext.define('Ung.view.extra.Users', {
                 },
                 filter: {
                     type: 'numeric'
-                }
+                },
+                rtype: 'datasize'
             }, {
                 header: 'Quota Remaining'.t(),
                 dataIndex: 'quotaRemaining',
                 filter: {
                     type: 'numeric'
-                }
+                },
+                rtype: 'datasize'
             }, {
                 header: 'Quota Issue Time'.t(),
                 dataIndex: 'quotaIssueTime',
-                rtype: 'timestamp',
                 filter: {
                     type: 'date'
-                }
+                },
+                rtype: 'timestamp'
             }, {
                 header: 'Quota Expiration Time'.t(),
                 dataIndex: 'quotaExpirationTime',
-                rtype: 'timestamp',
                 filter: {
                     type: 'date'
-                }
+                },
+                rtype: 'timestamp'
             }]
         }, {
             header: 'Tags'.t(),
