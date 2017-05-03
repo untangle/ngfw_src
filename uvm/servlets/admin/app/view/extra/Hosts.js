@@ -98,7 +98,7 @@ Ext.define('Ung.view.extra.Hosts', {
             rtype: 'interface'
         },{
             header: 'Creation Time'.t(),
-            dataIndex: 'creationTimeDate',
+            dataIndex: 'creationTime',
             hidden: true,
             rtype: 'timestamp',
             filter: { type: 'date' },
@@ -244,7 +244,7 @@ Ext.define('Ung.view.extra.Hosts', {
                 header: 'Size'.t(),
                 dataIndex: 'quotaSize',
                 filter: 'number',
-                rype: 'datasize'
+                rtype: 'datasize'
             },{
                 header: 'Remaining'.t(),
                 dataIndex: 'quotaRemaining',
