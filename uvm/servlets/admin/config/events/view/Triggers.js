@@ -20,7 +20,7 @@ Ext.define('Ung.config.events.view.Triggers', {
         },
 
         listProperty: 'settings.triggerRules.list',
-        tbar: ['@add'],
+        tbar: ['@add', '->', '@import', '@export'],
         recordActions: ['edit', 'copy', 'delete', 'reorder'],
 
         ruleJavaClass: 'com.untangle.uvm.event.EventRuleCondition',

@@ -156,7 +156,7 @@ Ext.define('Ung.config.email.view.Quarantine', {
 
                 bind: '{qAddresses}',
 
-                tbar: ['@addInline'],
+                tbar: ['@addInline', '->', '@import', '@export'],
                 recordActions: ['delete'],
                 listProperty: 'smtpSettings.quarantineSettings.allowedAddressPatterns.list',
                 emptyRow: {
@@ -204,7 +204,7 @@ Ext.define('Ung.config.email.view.Quarantine', {
 
                 bind: '{qForwards}',
 
-                tbar: ['@addInline'],
+                tbar: ['@addInline', '->', '@import', '@export'],
                 recordActions: ['delete'],
 
                 listProperty: 'smtpSettings.quarantineSettings.addressRemaps.list',

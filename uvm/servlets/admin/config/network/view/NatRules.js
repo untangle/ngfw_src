@@ -20,7 +20,7 @@ Ext.define('Ung.config.network.view.NatRules', {
         xtype: 'ungrid',
         flex: 3,
 
-        tbar: ['@add'],
+        tbar: ['@add', '->', '@import', '@export'],
         recordActions: ['edit', 'delete', 'reorder'],
 
         listProperty: 'settings.natRules.list',

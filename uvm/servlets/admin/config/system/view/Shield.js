@@ -34,7 +34,7 @@ Ext.define('Ung.config.system.view.Shield', {
             store: '{shieldRules}'
         },
 
-        tbar: ['@add'],
+        tbar: ['@add', '->', '@import', '@export'],
         recordActions: ['edit', 'delete', 'reorder'],
 
         listProperty: 'shieldSettings.rules.list',

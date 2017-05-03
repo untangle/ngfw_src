@@ -235,10 +235,9 @@ Ext.define('Ung.config.network.view.Advanced', {
 
                         tbar: ['@add', '->', {
                             xtype: 'tbtext',
-                            padding: '8 5',
                             style: { fontSize: '12px' },
                             html: Ext.String.format('{0}Note{1}: Custom Rules only match <b>Bypassed</b> traffic.'.t(), '<font color="red">','</font>')
-                        }],
+                        }, '@import', '@export'],
 
                         recordActions: ['edit', 'delete', 'reorder'],
 
@@ -456,7 +455,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                 region: 'center',
                 title: 'Forward Filter Rules'.t(),
 
-                tbar: ['@add'],
+                tbar: ['@add', '->', '@import', '@export'],
                 recordActions: ['edit', 'delete', 'reorder'],
 
                 listProperty: 'settings.forwardFilterRules.list',
@@ -544,7 +543,7 @@ Ext.define('Ung.config.network.view.Advanced', {
 
                 title: 'Input Filter Rules'.t(),
 
-                tbar: ['@add'],
+                tbar: ['@add', '->', '@import', '@export'],
                 recordActions: ['edit', 'delete', 'reorder'],
 
                 listProperty: 'settings.inputFilterRules.list',
@@ -743,7 +742,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                 split: true,
                 title: 'Access Control Rules'.t(),
 
-                tbar: ['@add'],
+                tbar: ['@add', '->', '@import', '@export'],
                 recordActions: ['edit', 'delete', 'reorder'],
 
                 listProperty: 'settings.upnpSettings.upnpRules.list',
