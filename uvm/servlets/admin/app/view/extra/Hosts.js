@@ -244,14 +244,17 @@ Ext.define('Ung.view.extra.Hosts', {
                 header: 'Size'.t(),
                 dataIndex: 'quotaSize',
                 filter: 'number',
+                rype: 'datasize'
             },{
                 header: 'Remaining'.t(),
                 dataIndex: 'quotaRemaining',
                 filter: 'number',
+                rtype: 'datasize'
             },{
                 header: 'Issue Time'.t(),
                 dataIndex: 'quotaIssueTime',
-                hidden: true
+                hidden: true,
+                rtype: 'timestamp'
             },{
                 header: 'Expiration Time'.t(),
                 dataIndex: 'quotaExpirationTime',
