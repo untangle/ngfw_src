@@ -90,6 +90,7 @@ Ext.define('Ung.config.localdirectory.MainController', {
             .then(function (result) {
                 Util.successToast('Local Directory'.t() + ' settings saved!');
             }).always(function () {
+                me.loadSettings();
                 view.setLoading(false);
             });
     }
