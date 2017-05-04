@@ -20,8 +20,9 @@ Ext.define('Ung.config.localdirectory.Main', {
         xtype: 'ungrid',
         border: false,
         title: 'Local Users'.t(),
+        itemId: 'local-users-grid',
 
-        tbar: ['@add', '->', '@import', '@export'],
+        tbar: ['@add'],
         recordActions: ['edit', 'delete'],
 
         listProperty: 'usersData.list',
@@ -136,15 +137,27 @@ Ext.define('Ung.config.localdirectory.Main', {
                 fieldLabel: 'Password'.t(),
                 labelAlign: 'right',
                 labelWidth: 180,
+                width: 300,
                 inputType: 'password',
+                allowBlank: true,
                 bind: {
                     value: '{record.password}',
-                    allowBlank: '{!record.localEmpty}'
+                    hidden: '{record.localEmpty}',
+                    disabled: '{record.localEmpty}',
                 },
-                setAllowBlank: function(value){
-                    this.allowBlank = value;
-                },
+            }, {
+                xtype: 'textfield',
+                fieldLabel: 'Password'.t(),
+                labelAlign: 'right',
+                labelWidth: 180,
                 width: 300,
+                inputType: 'password',
+                allowBlank: false,
+                bind: {
+                    value: '{record.password}',
+                    hidden: '{!record.localEmpty}',
+                    disabled: '{!record.localEmpty}',
+                },
             }, {
                 xtype: 'displayfield',
                 margin: '0 0 0 10',
