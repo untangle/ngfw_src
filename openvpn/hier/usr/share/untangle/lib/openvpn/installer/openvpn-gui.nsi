@@ -32,7 +32,6 @@ SetCompressor lzma
 
 ; Default service settings
 !define OPENVPN_CONFIG_EXT   "ovpn"
-!define UNTANGLE_SETTINGS_DIR "/usr/share/untangle/settings/openvpn"
 !define UNTANGLE_PACKAGE_DIR "/tmp/openvpn/client-packages"
 !define OPENVPN_ROOT "openvpn"
 !define PACKAGE_NAME "OpenVPN"
@@ -41,6 +40,10 @@ SetCompressor lzma
 !define VERSION "${OPENVPN_VERSION}-gui-${GUI_VERSION}"
 !define OUTFILE_LABEL ""
 
+; Should be passed on command line but check and use default if missing
+!ifndef OPENVPN_SETTINGS_DIR
+!define OPENVPN_SETTINGS_DIR "/usr/share/untangle/settings/openvpn"
+!endif
 ;--------------------------------
 ;Configuration
 
@@ -368,9 +371,9 @@ Function CoreSetup
 
         # Copy crt and key files
         SetOutPath "$INSTDIR\config\keys"
-        File /oname=${SITE_NAME}-${COMMON_NAME}.crt "${UNTANGLE_SETTINGS_DIR}/remote-clients/client-${COMMON_NAME}.crt"
-        File /oname=${SITE_NAME}-${COMMON_NAME}.key "${UNTANGLE_SETTINGS_DIR}/remote-clients/client-${COMMON_NAME}.key"
-        File /oname=${SITE_NAME}-${COMMON_NAME}-ca.crt "${UNTANGLE_SETTINGS_DIR}/ca.crt"
+        File /oname=${SITE_NAME}-${COMMON_NAME}.crt "${OPENVPN_SETTINGS_DIR}/remote-clients/client-${COMMON_NAME}.crt"
+        File /oname=${SITE_NAME}-${COMMON_NAME}.key "${OPENVPN_SETTINGS_DIR}/remote-clients/client-${COMMON_NAME}.key"
+        File /oname=${SITE_NAME}-${COMMON_NAME}-ca.crt "${OPENVPN_SETTINGS_DIR}/ca.crt"
 
 	CreateDirectory "$INSTDIR\log"
 	FileOpen $R1 "$INSTDIR\log\README.txt" w
