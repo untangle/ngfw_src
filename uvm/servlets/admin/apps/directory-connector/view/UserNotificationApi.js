@@ -12,6 +12,7 @@ Ext.define('Ung.apps.directoryconnector.view.UserNotificationApi', {
         title: 'User Notification API'.t(),
         items: [{
             xtype: 'component',
+            margin: '10 0 10 0',
             html: Ext.String.format(
                 "The User Notification API provides a web-based app/API to allow scripts and agents to update the server's username-to-IP address mapping in order to properly identify users for Policy Manager, Reports, and other applications.".t(),
                 '<b>','</b>')
@@ -20,6 +21,7 @@ Ext.define('Ung.apps.directoryconnector.view.UserNotificationApi', {
             bind: '{settings.apiEnabled}',
             fieldLabel: 'Enable User Notification API'.t(),
             labelWidth: 200,
+            margin: '10 0 10 0',
             listeners: {
                 disable: function (ck) {
                     ck.setValue(false);
@@ -47,12 +49,14 @@ Ext.define('Ung.apps.directoryconnector.view.UserNotificationApi', {
                 },{
                     xtype: 'label',
                     html: '(blank means no secret key is required)'.t(),
+                    margin: '5 0 0 10',
                     cls: 'boxlabel'
                 }]
             }, {
                 xtype: 'button',
                 text: 'Download User Notification Login Script'.t(),
-                iconCls: 'action-icon',
+                iconCls: 'fa fa-download',
+                margin: '10 0 10 0',
                 handler: 'downloadUserApiScript'
             }]
         }]
