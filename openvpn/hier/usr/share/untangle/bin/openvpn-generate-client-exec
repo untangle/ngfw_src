@@ -27,7 +27,7 @@ if [ -f $EXE_FILE ] && [ $EXE_FILE -nt $CLI_CRT_FILE ] && [ $EXE_FILE -nt /etc/o
     echo "$EXE_FILE already exists and is up to date"
 else
     ## Run NSIS to create client distro.
-    makensis -V1 -DCOMMON_NAME="${commonName}" -DSITE_NAME="${siteName}" ${NSI_SCRIPT}
+    makensis -V1 -DCOMMON_NAME="${commonName}" -DSITE_NAME="${siteName}" -DOPENVPN_SETTINGS_DIR="@PREFIX@/usr/share/untangle/settings/openvpn" ${NSI_SCRIPT}
 fi
 
 
