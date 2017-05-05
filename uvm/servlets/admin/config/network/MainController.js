@@ -613,6 +613,12 @@ Ext.define('Ung.config.network.MainController', {
             configTypes.push(configTypesRadios[confType]);
         });
 
+        // if non-wan set v4, v6 configs to STATIC
+        if (!me.editIntf.get('isWan')) {
+            me.editIntf.set('v4ConfigType', 'STATIC');
+            me.editIntf.set('v6ConfigType', 'STATIC');
+        }
+
         me.dialog = me.getView().add({
             xtype: 'config.interface',
             configTypesRadios: configTypes, // holds the radio buttons based on interface supported config types
