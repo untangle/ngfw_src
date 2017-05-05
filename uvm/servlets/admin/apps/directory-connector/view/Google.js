@@ -15,9 +15,11 @@ Ext.define('Ung.apps.directoryconnector.view.Google', {
         collapsible: false,
         items: [{
             xtype: 'container',
+            margin: '10 0 0 0',
             html: Ext.String.format( 'This allows your server to connect to {0}Google{1} in order to identify users for use by Captive Portal.'.t(),'<b>','</b>')
         }, {
             xtype: 'component',
+            margin: '10 0 0 0',
             html: 'WARNING: Google Authentication is experimental and uses an unofficial API. Read the documentation for details.'.t(),
             style: {color:'red'},
             cls: 'warning'
@@ -26,6 +28,7 @@ Ext.define('Ung.apps.directoryconnector.view.Google', {
             bind: '{settings.googleSettings.authenticationEnabled}',
             fieldLabel: 'Enable Google Authentication Connector'.t(),
             labelWidth: 250,
+            margin: '10 0 10 0',
             listeners: {
                 disable: function (ck) {
                     ck.setValue(false);
@@ -42,6 +45,7 @@ Ext.define('Ung.apps.directoryconnector.view.Google', {
             },
             items: [{
                 xtype: 'component',
+                margin: '10 0 10 0',
                 html: Ext.String.format( 'The {0}Google Authentication Test{1} verifies that the server can authenticate the provided username/password.'.t(),'<b>','</b>')
             },{
                 xtype:'textfield',
@@ -55,7 +59,8 @@ Ext.define('Ung.apps.directoryconnector.view.Google', {
             },{
                 xtype: 'button',
                 text: 'Google Authentication Test'.t(),
-                iconCls: 'test-icon',
+                margin: '10 0 10 0',
+                iconCls: 'fa fa-cogs',
                 handler: 'googleAuthenticationTest'
             }]
         }]
@@ -74,11 +79,14 @@ Ext.define('Ung.apps.directoryconnector.view.Google', {
             items: [{
                 xtype: 'component',
                 html: 'The Google Drive is unconfigured.'.t(),
+                margin: '10 0 0 0',
                 style: {color:'red'},
                 cls: 'warning'
             }, {
                 xtype: "button",
                 text: 'Configure Google Drive'.t(),
+                iconCls: "fa fa-check-circle",
+                margin: '10 0 10 0',
                 handler: 'googleDriveConfigure'
             }]
         },{
@@ -93,15 +101,19 @@ Ext.define('Ung.apps.directoryconnector.view.Google', {
             items: [{
                 xtype: 'component',
                 html: 'The Google Drive is configured.'.t(),
+                margin: '10 0 0 0',
                 style: {color:'green'}
             }, {
                 xtype: "button",
                 text: 'Reconfigure Google Drive'.t(),
+                iconCls: "fa fa-refresh",
+                margin: '10 0 10 0',
                 handler: 'googleDriveConfigure'
             }, {
                 xtype: "button",
                 text: "Disconnect Google Drive".t(),
-                iconCls: "action-icon",
+                margin: '10 0 10 0',
+                iconCls: "fa fa-ban",
                 handler: 'googleDriveDisconnect'
             }]
         }]
