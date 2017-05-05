@@ -221,16 +221,16 @@ Ext.define('Ung.apps.policymanager.MainController', {
     },
 
     showEditor: function (rec) {
-        var me = this, policiesStore = [{ value: 0, text: 'None'.t() }];
+        var me = this, policiesStore = [[0, 'None'.t()]];
         if (!me.lookup('tree')) { return; }
         me.lookup('tree').getRootNode().cascadeBy(function (node) {
             if (node.isRoot()) { return; }
             if (rec) {
                 if (node.get('policyId') !== rec.get('policyId') && !node.isAncestor(rec)) {
-                    policiesStore.push({ value: node.get('policyId'), text: node.get('name') });
+                    policiesStore.push([node.get('policyId'), node.get('name')]);
                 }
             } else {
-                policiesStore.push({ value: node.get('policyId'), text: node.get('name') });
+                policiesStore.push([node.get('policyId'), node.get('name')]);
             }
         });
 
@@ -276,10 +276,8 @@ Ext.define('Ung.apps.policymanager.MainController', {
                     fieldLabel: '<strong>' + 'Parent'.t() + '</strong>',
                     reference: 'policiesCombo',
                     labelAlign: 'top',
-                    displayField: 'text',
-                    valueField: 'value',
                     value: rec ? rec.get('parentPolicyId') : 0,
-                    store: { data: policiesStore },
+                    store: policiesStore,
                     emptyText: 'Select parent',
                     allowBlank: false,
                     disabled: rec && rec.get('policyId') === 1,
@@ -308,9 +306,8 @@ Ext.define('Ung.apps.policymanager.MainController', {
         var me = this, win = btn.up('window'), values = btn.up('form').getValues();
 
         values.policyId = parseInt(values.policyId, 10);
-        if (values.parentId === 0) {
-            values.parentId = null;
-        }
+        values.parentId = parseInt(values.parentId, 10);
+
 
         if (btn.action === 'save') {
             var editPolicy = Ext.Array.findBy(me.settings.policies.list, function (policy) {
