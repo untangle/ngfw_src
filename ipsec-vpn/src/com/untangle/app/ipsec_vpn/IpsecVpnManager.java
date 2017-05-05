@@ -120,6 +120,18 @@ public class IpsecVpnManager
         FileWriter strongswan_conf = new FileWriter(STRONGSWAN_CONF_FILE, false);
 
         AddressCalculator calculator = new AddressCalculator(settings.getVirtualAddressPool());
+
+        /*
+         * When running on ARM we have to disable the TCP replay protection,
+         * otherwise we see massive packet loss. The tunnel is up but when
+         * testing with ping only 1 in 1000 or so replies are actually received
+         * properly. Using tcpdump we see all the replies and everything looks
+         * correct, but almost all seem to be ignored by charon. Our best guess
+         * is the unique switch/network setup on this device is somehow
+         * triggering the replay detection, so our current solution is adding
+         * this config option.
+         */
+
         String osArch = System.getProperty("os.arch", "unknown");
 
         ipsec_conf.write("# " + IPSEC_CONF_FILE + RET + FILE_DISCLAIMER);
@@ -178,16 +190,6 @@ public class IpsecVpnManager
             ipsec_conf.write(TAB + "rekey=yes" + RET);
             ipsec_conf.write(TAB + "keyingtries=%forever" + RET);
 
-            /*
-             * When running on the ASUS we have to disable the TCP replay
-             * protection, otherwise we see massive packet loss. The tunnel is
-             * up but when testing with ping only 1 in 1000 or so replies are
-             * actually received properly. Using tcpdump we see all the replies
-             * and everything looks correct, but almost all seem to be ignored
-             * by charon. Our best guess is the unique switch/network setup on
-             * this device is somehow triggering the replay detection, so our
-             * current solution is adding this config option.
-             */
             if (osArch.equals("arm") == true) {
                 ipsec_conf.write(TAB + "replay_window=0" + RET);
             }
@@ -275,6 +277,11 @@ public class IpsecVpnManager
                 ipsec_conf.write(TAB + "auto=add" + RET);
                 ipsec_conf.write(TAB + "keyingtries=3" + RET);
                 ipsec_conf.write(TAB + "rekey=no" + RET);
+
+                if (osArch.equals("arm") == true) {
+                    ipsec_conf.write(TAB + "replay_window=0" + RET);
+                }
+                
                 ipsec_conf.write(TAB + "ikelifetime=8h" + RET);
                 ipsec_conf.write(TAB + "keylife=1h" + RET);
                 ipsec_conf.write(TAB + "dpddelay=10" + RET);
@@ -309,6 +316,11 @@ public class IpsecVpnManager
                 ipsec_conf.write(TAB + "compress=yes" + RET);
                 ipsec_conf.write(TAB + "auto=add" + RET);
                 ipsec_conf.write(TAB + "rekey=yes" + RET);
+
+                if (osArch.equals("arm") == true) {
+                    ipsec_conf.write(TAB + "replay_window=0" + RET);
+                }
+
                 ipsec_conf.write(TAB + "ikelifetime=15m" + RET);
                 ipsec_conf.write(TAB + "lifetime=15m" + RET);
                 ipsec_conf.write(TAB + "left=" + listen.getAddress() + RET);
@@ -347,6 +359,11 @@ public class IpsecVpnManager
                 ipsec_conf.write(TAB + "keyexchange=ikev2" + RET);
                 ipsec_conf.write(TAB + "auto=add" + RET);
                 ipsec_conf.write(TAB + "type=tunnel" + RET);
+                
+                if (osArch.equals("arm") == true) {
+                    ipsec_conf.write(TAB + "replay_window=0" + RET);
+                }
+
                 ipsec_conf.write(TAB + "left=" + listen.getAddress() + RET);
 
                 if ((domainName == null) || (hostName == null)) {
