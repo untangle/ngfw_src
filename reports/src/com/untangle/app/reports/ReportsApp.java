@@ -714,14 +714,19 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
                 }
             }
 
-            // Rename "Alert" report categories to "Event"
             if(settings.getReportEntries() != null){
+                // Rename "Alert" report categories to "Event"
+                // Remove reporting-* entries
+                // Remove Web Filter Lite reports
                 for (Iterator<ReportEntry> i = settings.getReportEntries().iterator(); i.hasNext(); ) {
                     ReportEntry entry = i.next();
                     if ( entry.getTitle().contains("Alert") && entry.getCategory().equals("Reports") ) {
                         entry.setCategory( "Events" );
                     }
                     if ( entry.getUniqueId().startsWith("reporting-") ) {
+                        i.remove();
+                    }
+                    if ( "Web Filter Lite".equals(entry.getCategory()) ) {
                         i.remove();
                     }
                 }
