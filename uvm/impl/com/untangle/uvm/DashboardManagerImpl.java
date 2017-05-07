@@ -43,6 +43,9 @@ public class DashboardManagerImpl implements DashboardManager
             logger.debug("Loading Settings: " + this.settings.toJSONString());
         }
 
+        /**
+         * 12.2 Conversion
+         */
         if ( settings.getVersion() == null || settings.getVersion() < 2 ) {
             logger.info("Migrating dashboard settings to v2...");
 
