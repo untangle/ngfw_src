@@ -985,8 +985,11 @@ public class AppManagerImpl implements AppManager
         /**
          * Keep incrementing until you get a free app ID
          * This is just a safety mechanism in case nextAppId gets lost
+         * This is a hack that we adde for a messed up 13.0 conversion
          */
         App app = null;
+        if ( newAppId < appInstances().size() )
+            newAppId = 100;
         while ( (app = app( newAppId )) != null) {
             newAppId++;
         }
