@@ -276,7 +276,7 @@ Architecture: all
 Conflicts: untangle-node-openvpn
 Replaces: untangle-node-openvpn
 Provides: untangle-node-openvpn
-Depends: untangle-vm, untangle-nsis-addons, openssl, openvpn
+Depends: untangle-vm, untangle-nsis-addons, openssl, openvpn, zip
 Description: OpenVPN
  The OpenVPN application.
 
