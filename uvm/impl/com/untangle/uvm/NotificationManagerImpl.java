@@ -776,7 +776,7 @@ public class NotificationManagerImpl implements NotificationManager
         String notificationText = "";
         notificationText += i18nUtil.tr("The shield is disabled. This can cause performance and stability problems.");
 
-        if ( shield.getRunState() != AppSettings.AppState.RUNNING ) {
+        if ( shield == null || shield.getRunState() != AppSettings.AppState.RUNNING ) {
             notificationList.add(notificationText);
             return;
         }
