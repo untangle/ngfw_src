@@ -80,7 +80,9 @@ public class ResultSetReader implements Runnable
             if ( resultSet.isClosed() ) {
                 return newList;
             }
-
+            if ( !resultSet.isBeforeFirst() ) { // if is empty
+                return newList;
+            }
             ResultSetMetaData metadata = this.resultSet.getMetaData();
             int numColumns = metadata.getColumnCount();
 
