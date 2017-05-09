@@ -88,7 +88,13 @@ Ext.define('Ung.view.reports.EventReportController', {
     },
 
     fetchData: function (reset, cb) {
-        var me = this, vm = this.getViewModel(), limit = me.getView().up('reports-entry').down('#eventsLimitSelector').getValue();
+        var me = this,
+            vm = this.getViewModel();
+
+        var limit = 0;
+        if( me.getView().up('reports-entry') ){
+            limit = me.getView().up('reports-entry').down('#eventsLimitSelector').getValue();
+        }
         me.entry = vm.get('entry');
 
         if (!me.getView().renderInReports) { // if not rendered in reports than treat as widget
