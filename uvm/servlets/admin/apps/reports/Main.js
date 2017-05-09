@@ -11,19 +11,24 @@ Ext.define('Ung.apps.reports.Main', {
         formulas: {
             driveConfiguredText: function (get) {
                 return get('googleDriveConfigured') ? 'The Google Connector is configured'.t() : 'The Google Connector is unconfigured.'.t();
+            },
+            emailIntervals: function( get ){
+                var availableIntervals = [];
+                var dbRetentionTime = get('settings').dbRetention * 86400;
+                for(var interval in Renderer.timeIntervalMap ){
+                    if( interval <= dbRetentionTime ){
+                        availableIntervals.push( [ Number(interval), Renderer.timeIntervalMap[interval] ] );
+                    }
+                }
+                return availableIntervals;
             }
         },
         stores: {
             users: { data: '{settings.reportsUsers.list}' },
-            hostnames: { data: '{settings.hostnameMap.list}' }
+            hostnames: { data: '{settings.hostnameMap.list}' },
+            emailTemplates: { data: '{settings.emailTemplates.list}' },
+            reportEntries: { data: '{settings.reportEntries.list}' }
         }
-        // stores: {
-        //     reports: {
-        //         model: 'Ung.model.Report',
-        //         data: '{settings.reportEntries.list}',
-        //         groupField: 'category'
-        //     }
-        // }
     },
 
     items: [
