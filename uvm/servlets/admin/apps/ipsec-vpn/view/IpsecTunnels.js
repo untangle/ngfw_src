@@ -132,7 +132,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
             labelWidth: 120,
             editable: false,
             bind: '{record.ikeVersion}',
-            store: [['1','IKEv1'],['2','IKEv2']]
+            store: [[1,'IKEv1'],[2,'IKEv2']]
         }, {
             xtype: 'displayfield',
             margin: '0 0 0 10',
@@ -246,7 +246,23 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         margin: '0 0 5 0',
         items: [{
             xtype: 'textfield',
-            bind: '{record.leftSubnet}',
+            bind: {
+                value: '{record.leftSubnet}',
+                hidden: '{record.ikeVersion !== 1}',
+                disabled: '{record.ikeVersion !== 1}'
+            },
+            fieldLabel: 'Local Network'.t(),
+            labelWidth: 120,
+            width: 500,
+            allowBlank: false,
+            vtype: 'cidrBlock'
+        }, {
+            xtype: 'textfield',
+            bind: {
+                value: '{record.leftSubnet}',
+                hidden: '{record.ikeVersion !== 2}',
+                disabled: '{record.ikeVersion !== 2}'
+            },
             fieldLabel: 'Local Network'.t(),
             labelWidth: 120,
             width: 500,
@@ -255,7 +271,13 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         }, {
             xtype: 'displayfield',
             margin: '0 0 0 10',
-            value: '(The private networks attached to the local side of the tunnel)'.t()
+            value: '(The private network attached to the local side of the tunnel)'.t(),
+            bind: { hidden: '{record.ikeVersion !== 1}' }
+        }, {
+            xtype: 'displayfield',
+            margin: '0 0 0 10',
+            value: '(The private networks attached to the local side of the tunnel)'.t(),
+            bind: { hidden: '{record.ikeVersion !== 2}' }
         }]
     }, {
         xtype: 'container',
@@ -263,7 +285,23 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         margin: '0 0 5 0',
         items: [{
             xtype: 'textfield',
-            bind: '{record.rightSubnet}',
+            bind: {
+                value: '{record.rightSubnet}',
+                hidden: '{record.ikeVersion !== 1}',
+                disabled: '{record.ikeVersion !== 1}'
+            },
+            fieldLabel: 'Remote Network'.t(),
+            labelWidth: 120,
+            width: 500,
+            allowBlank: false,
+            vtype: 'cidrBlock'
+        }, {
+            xtype: 'textfield',
+            bind: {
+                value: '{record.rightSubnet}',
+                hidden: '{record.ikeVersion !== 2}',
+                disabled: '{record.ikeVersion !== 2}'
+            },
             fieldLabel: 'Remote Network'.t(),
             labelWidth: 120,
             width: 500,
@@ -272,7 +310,13 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         }, {
             xtype: 'displayfield',
             margin: '0 0 0 10',
-            value: '(The private networks attached to the remote side of the tunnel)'.t()
+            value: '(The private network attached to the remote side of the tunnel)'.t(),
+            bind: { hidden: '{record.ikeVersion !== 1}' }
+        }, {
+            xtype: 'displayfield',
+            margin: '0 0 0 10',
+            value: '(The private networks attached to the remote side of the tunnel)'.t(),
+            bind: { hidden: '{record.ikeVersion !== 2}' }
         }]
     }, {
         xtype: 'container',
