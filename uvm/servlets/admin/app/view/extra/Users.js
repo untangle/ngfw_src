@@ -104,14 +104,33 @@ Ext.define('Ung.view.extra.Users', {
 
         bind: '{users}',
 
+        tbar: ['@add', '->', '@import', '@export'],
+        recordActions: ['edit', 'delete'],
+        emptyRow: {
+            username: '',
+            lastAccessTime: 0,
+            lastSessionTime: 0,
+            quotaSize: 0,
+            quotaRemaining: 0,
+            quotaIssueTime: 0,
+            quotaExpirationTime: 0,
+            tags: {
+                javaClass: 'java.util.LinkedList',
+                list: []
+            },
+            javaClass: 'com.untangle.uvm.UserTableEntry'
+        },
+
         columns: [{
             header: 'Username'.t(),
+            width: 200,
             dataIndex: 'username',
             filter: {
                 type: 'string'
             }
         }, {
             header: 'Creation Time'.t(),
+            width: 160,
             dataIndex: 'creationTime',
             rtype: 'timestamp',
             filter: {
@@ -119,6 +138,7 @@ Ext.define('Ung.view.extra.Users', {
             }
         }, {
             header: 'Last Access Time'.t(),
+            width: 160,
             dataIndex: 'lastAccessTime',
             rtype: 'timestamp',
             filter: {
@@ -126,48 +146,47 @@ Ext.define('Ung.view.extra.Users', {
             }
         }, {
             header: 'Last Session Time'.t(),
+            width: 160,
             dataIndex: 'lastSessionTime',
             rtype: 'timestamp',
             filter: {
                 type: 'date'
             }
         }, {
-            header: 'Quota'.t(),
-            columns: [{
-                header: 'Quota Size'.t(),
-                dataIndex: 'quotaSize',
-                renderer: function (value) {
-                    return value === 0 || value === '' ? '' : value;
-                },
-                filter: {
-                    type: 'numeric'
-                },
-                rtype: 'datasize'
-            }, {
-                header: 'Quota Remaining'.t(),
-                dataIndex: 'quotaRemaining',
-                filter: {
-                    type: 'numeric'
-                },
-                rtype: 'datasize'
-            }, {
-                header: 'Quota Issue Time'.t(),
-                dataIndex: 'quotaIssueTime',
-                filter: {
-                    type: 'date'
-                },
-                rtype: 'timestamp'
-            }, {
-                header: 'Quota Expiration Time'.t(),
-                dataIndex: 'quotaExpirationTime',
-                filter: {
-                    type: 'date'
-                },
-                rtype: 'timestamp'
-            }]
+            header: 'Quota Size'.t(),
+            dataIndex: 'quotaSize',
+            renderer: function (value) {
+                return value === 0 || value === '' ? '' : value;
+            },
+            filter: {
+                type: 'numeric'
+            },
+            rtype: 'datasize'
+        }, {
+            header: 'Quota Remaining'.t(),
+            dataIndex: 'quotaRemaining',
+            filter: {
+                type: 'numeric'
+            },
+            rtype: 'datasize'
+        }, {
+            header: 'Quota Issue Time'.t(),
+            dataIndex: 'quotaIssueTime',
+            filter: {
+                type: 'date'
+            },
+            rtype: 'timestamp'
+        }, {
+            header: 'Quota Expiration Time'.t(),
+            dataIndex: 'quotaExpirationTime',
+            filter: {
+                type: 'date'
+            },
+            rtype: 'timestamp'
         }, {
             header: 'Tags'.t(),
             dataIndex: 'tags',
+            flex: 1,
             filter: {
                 type: 'string'
             },
@@ -179,15 +198,23 @@ Ext.define('Ung.view.extra.Users', {
             filter: {
                 type: 'string'
             }
+        }],
+        editorFields: [{
+            xtype: 'textfield',
+            bind: '{record.username}',
+            fieldLabel: 'Username'.t(),
+            emptyText: '[enter Username]'.t(),
+            allowBlank: false,
         }]
     }, {
         region: 'east',
         xtype: 'unpropertygrid',
         title: 'User Details'.t(),
         itemId: 'details',
-
+        hidden: true,
         bind: {
-            source: '{userDetails}'
+            source: '{userDetails}',
+            hidden: '{!usersgrid.selection}'
         }
     }],
     tbar: [{
@@ -218,5 +245,10 @@ Ext.define('Ung.view.extra.Users', {
         iconCls: 'fa fa-line-chart',
         href: '#reports/users',
         hrefTarget: '_self'
+    }],
+    bbar: ['->', {
+        text: '<strong>' + 'Save'.t() + '</strong>',
+        iconCls: 'fa fa-floppy-o',
+        handler: 'saveUsers'
     }]
 });
