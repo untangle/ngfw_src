@@ -106,6 +106,24 @@ Ext.define('Ung.view.reports.Entry', {
                 hidden: '{!entry}'
             },
             items: [{
+                xtype: 'combo',
+                itemId: 'eventsLimitSelector',
+                hidden: true,
+                bind: {
+                    hidden: '{entry.type !== "EVENT_LIST"}'
+                },
+                editable: false,
+                value: 1000,
+                store: [
+                    [1000, '1000 ' + 'Events'.t()],
+                    [10000, '10000 ' + 'Events'.t()],
+                    [50000, '50000 ' + 'Events'.t()]
+                ],
+                queryMode: 'local',
+                listeners: {
+                    change: 'refreshData'
+                }
+            }, {
                 xtype: 'label',
                 margin: '0 5',
                 text: 'From'.t() + ':'

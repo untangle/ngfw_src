@@ -88,7 +88,7 @@ Ext.define('Ung.view.reports.EventReportController', {
     },
 
     fetchData: function (reset, cb) {
-        var me = this, vm = this.getViewModel();
+        var me = this, vm = this.getViewModel(), limit = me.getView().up('reports-entry').down('#eventsLimitSelector').getValue();
         me.entry = vm.get('entry');
 
         if (!me.getView().renderInReports) { // if not rendered in reports than treat as widget
@@ -101,7 +101,7 @@ Ext.define('Ung.view.reports.EventReportController', {
         Rpc.asyncData('rpc.reportsManager.getEventsForDateRangeResultSet',
                         vm.get('entry').getData(), // entry
                         vm.get('sqlFilterData'), // etra conditions
-                        1000, // limit
+                        limit,
                         vm.get('startDate'), // start date
                         vm.get('tillNow') ? null : vm.get('endDate')) // end date
             .then(function(result) {
