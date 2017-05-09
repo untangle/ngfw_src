@@ -58,7 +58,7 @@ Ext.define('Ung.apps.bandwidthcontrol.MainController', {
     },
 
     runWizard: function (btn) {
-        me = this;
+        var me = this;
         me.wizard = me.getView().add({
             xtype: 'app-bandwidth-control-wizard',
             appManager: me.getView().appManager,
