@@ -73,6 +73,12 @@ Ext.define('Ung.cmp.Grid', {
      */
     editorFields: null,
 
+    /**
+     * @cfg {string} editorXtype
+     * Override the default record editor xtype of 'ung.cmp.recordeditor'.
+     * Almost certainly a defintion you'll extend from ung.cmp.recordeditor.
+     */
+    editorXtype: 'ung.cmp.recordeditor',
 
     /**
      * @cfg {Object} emptyRow

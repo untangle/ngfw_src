@@ -58,7 +58,7 @@ Ext.define('Ung.cmp.GridController', {
 
     editorWin: function (record) {
         this.dialog = this.getView().add({
-            xtype: 'ung.cmp.recordeditor',
+            xtype: this.getView().editorXtype,
             record: record
         });
 
