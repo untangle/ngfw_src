@@ -619,7 +619,14 @@ Ext.define('Ung.view.reports.EntryController', {
         var me = this, vm = me.getViewModel(), entry = vm.get('entry').getData(), columns = [];
         if (!entry) { return; }
 
-        Ext.Array.each(me.getView().down('#eventsGrid').getColumns(), function (col) {
+        var grid = me.getView().down('eventreport > ungrid');
+
+        if (!grid) {
+            console.log('Grid not found');
+            return;
+        }
+
+        Ext.Array.each(grid.getColumns(), function (col) {
             if (col.dataIndex && !col.hidden) {
                 columns.push(col.dataIndex);
             }
