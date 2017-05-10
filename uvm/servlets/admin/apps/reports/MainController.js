@@ -455,7 +455,6 @@ Ext.define('Ung.cmp.ReportTemplateSelectController', {
         var description = [];
         description.push( 'Description'.t() + ': ' + record.get('description') );
         description.push( 'Type'.t() + ': ' + this.getView().up('app-reports').getController().reportTypeRenderer( record.get('type') ) );
-        description.push( 'Type'.t() + ': ' + record.get('type') );
         description.push( 'Units'.t() + ': ' + record.get('units') );
         description.push( 'Display Order'.t() + ': ' + record.get('displayOrder') );
         return description.join( "<br>" );
@@ -565,5 +564,166 @@ Ext.define('Ung.apps.reports.cmp.EmailTemplatesRecordEditorController', {
         }
         v.close();
     }
+
+});
+
+Ext.define('Ung.cmp.EmailTemplateSelectController', {
+    extend: 'Ext.app.ViewController',
+    alias: 'controller.unemailtemplateselect',
+
+    control: {
+        '#': {
+            afterrender: 'onAfterRender',
+        }
+    },
+
+    onAfterRender: function(){
+        var me = this,
+            v = this.getView(),
+            vm = this.getViewModel();
+
+        this.recordBind = vm.bind({
+            bindTo: '{record}',
+        }, this.setMenuTemplates, this);
+
+        var emailTemplates = vm.get('emailTemplates');
+
+        var menu = [];
+        emailTemplates.each( function(record){
+            menu.push({
+                text: record.get('title'),
+                value: record.get('templateId'),
+                // tooltip: me.getTooltip( record )
+            });
+        });
+
+        v.down('#addTemplateBtn').setMenu({
+            showSeparator: false,
+            plain: true,
+            items: menu,
+            mouseLeaveDelay: 0,
+            listeners: {
+                click: 'addTemplate'
+            }
+        });
+    },
+
+    addTemplate: function( menu, item ){
+        var me = this,
+            v = me.getView(),
+            vm = me.getViewModel();
+
+        if(item){
+            vm.get('emailTemplates').each(function( record ){
+                if( record.get('templateId') == item.value ){
+                    v.getStore().add( {
+                        field1: item.value
+                    } );
+                }
+            }, this, { filtered: true } );
+            this.setMenuTemplates();
+        }
+    },
+
+    /**
+     * Removes a condition from the rule
+     */
+    removeReport: function (view, rowIndex, colIndex, item, e, record) {
+        this.getView().getStore().remove( record );
+        this.setMenuTemplates();
+    },
+
+    /**
+     * Updates the disabled/enabled status of the conditions in the menu
+     */
+    setMenuTemplates: function () {
+        var me = this,
+            v = this.getView(),
+            vm = this.getViewModel(),
+            menu = v.down('#addTemplateBtn').getMenu(),
+            store = v.getStore();
+
+        menu.items.each(function (item) {
+            item.setDisabled(store.findRecord('field1', item.value) ? true : false);
+        });
+
+        var ids = [];
+        store.each( function(record){
+            ids.push( record.get('field1'));
+        });
+        var fieldValue = {
+            javaClass: 'java.util.LinkedList',
+            list: ids
+        };
+        var bindPath = v.initialConfig.bind.store.split('.');
+        var fieldName = bindPath[1];
+        vm.get('record').set(fieldName, fieldValue);
+
+    },
+
+    getTooltip: function(record){
+        var me = this,
+            vm = this.getViewModel(),
+            emailTemplates = vm.get('emailTemplates');
+
+        var emailTemplate = emailTemplates.findRecord('templateId', record.get('field1') );
+
+        var description = [];
+        description.push( 'Description'.t() + ': ' + emailTemplate.get('description') );
+        return description.join( "<br>" );
+    },
+
+    templateRenderer: function( value, metaData, record ){
+        var me = this,
+            vm = me.getViewModel(),
+            emailTemplates = vm.get('emailTemplates');
+
+        metaData.tdAttr = 'data-qtip="' + this.getTooltip( record ) + '"';
+
+        value = record.get('field1');
+        var emailTemplate = emailTemplates.findRecord('templateId', value );
+
+        return emailTemplate ? emailTemplate.get('title') : value;
+    }
+});
+
+
+Ext.define('Ung.cmp.EmailTemplateSelect', {
+    extend: 'Ext.grid.Panel',
+    alias: 'widget.unemailtemplateselect',
+
+    controller: 'unemailtemplateselect',
+
+    actions: {
+        addTemplate: {
+            itemId: 'addTemplateBtn',
+            text: 'Add Email Template'.t(),
+            iconCls: 'fa fa-plus'
+        }
+    },
+
+    trackMouseOver: false,
+    disableSelection: true,
+    sortableColumns: false,
+    enableColumnHide: false,
+    padding: '10 0',
+    tbar: ['@addTemplate'],
+
+    columns: [{
+        header: 'Email Template'.t(),
+        menuDisabled: true,
+        align: 'right',
+        flex: 1,
+        renderer: 'templateRenderer'
+    }, {
+        xtype: 'actioncolumn',
+        menuDisabled: true,
+        sortable: false,
+        width: 30,
+        align: 'center',
+        iconCls: 'fa fa-minus-circle fa-red',
+        tdCls: 'action-cell-cond',
+        handler: 'removeReport'
+    }],
 
 });
