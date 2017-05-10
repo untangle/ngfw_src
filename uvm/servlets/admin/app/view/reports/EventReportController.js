@@ -97,9 +97,11 @@ Ext.define('Ung.view.reports.EventReportController', {
         }
         me.entry = vm.get('entry');
 
+        var startDate = vm.get('startDate');
+        var endDate = vm.get('tillNow') ? null : vm.get('endDate');
         if (!me.getView().renderInReports) { // if not rendered in reports than treat as widget
-            vm.set('startDate', new Date(rpc.systemManager.getMilliseconds() - (vm.get('widget.timeframe') || 3600 * 24) * 1000));
-            vm.set('endDate', new Date(rpc.systemManager.getMilliseconds()));
+            startDate = new Date(rpc.systemManager.getMilliseconds() - (vm.get('widget.timeframe') || 3600 * 24) * 1000);
+            endDate = new Date(rpc.systemManager.getMilliseconds());
         }
 
         me.getViewModel().set('eventsData', []);
@@ -108,8 +110,8 @@ Ext.define('Ung.view.reports.EventReportController', {
                         vm.get('entry').getData(), // entry
                         vm.get('sqlFilterData'), // etra conditions
                         limit,
-                        vm.get('startDate'), // start date
-                        vm.get('tillNow') ? null : vm.get('endDate')) // end date
+                        startDate, // start date
+                        endDate) // end date
             .then(function(result) {
                 if (me.getView().up('reports-entry')) {
                     me.getView().up('reports-entry').down('#currentData').setLoading(false);
