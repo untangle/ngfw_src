@@ -74,6 +74,7 @@ Ext.define('Ung.apps.reports.view.Users', {
         dataIndex: 'onlineAccess',
         resizable: false
     }],
+
     editorFields: [{
         xtype: 'textfield',
         bind: '{record.emailAddress}',
@@ -87,23 +88,18 @@ Ext.define('Ung.apps.reports.view.Users', {
         bind: '{record.emailAlerts}',
         fieldLabel: 'Email Alerts'.t()
     }, {
-        xtype: 'textfield',
-        inputType: 'password',
-        bind: '{record.password}',
-        fieldLabel: 'Password'.t(),
-        allowBlank: false,
-        minLength: 3,
-        minLengthText: Ext.String.format('The password is shorter than the minimum {0} characters.'.t(), 3)
-    }, {
         xtype: 'checkbox',
         bind: '{record.emailSummaries}',
         fieldLabel: 'Email Reports'.t()
     }, {
-        xtype: 'checkboxgroup',
-        bind: '{record.emailTemplateIds}',
+        xtype: 'unemailtemplateselect',
+        bind: {
+            store: '{record.emailTemplateIds.list}',
+            disabled: '{record.emailSummaries == false}',
+            hidden: '{record.emailSummaries == false}',
+        },
         fieldLabel: 'Email Templates'.t(),
-        columns: 1,
-        vertical: true,
-        items: []
+        disabled: true,
+        hidden: true,
     }]
 });
