@@ -11,43 +11,42 @@ Ext.define('Ung.view.extra.Users', {
 
     viewModel: {
         data: {
-            autoRefresh: false,
             usersData: []
         },
         stores: {
             users: {
                 data: '{usersData}'
             }
-        },
-        formulas: {
-            userDetails: function (get) {
-                this.userDetailsGet = get;
-                this.getView().down('#usersgrid').getSelectionModel().select(0);
-                this.userDetailsSelectTask = new Ext.util.DelayedTask( Ext.bind(function(){
-                    this.getView().down('#usersgrid').getSelectionModel().select(0);
-                    if( !this.userDetailsGet('usersgrid.selection') ){
-                        this.userDetailsSelectTask.delay(100);
-                    }
-                }, this) );
-                this.userDetailsSelectTask.delay(100);
-                if (get('usersgrid.selection')) {
-                    var data = get('usersgrid.selection').getData();
-                    delete data._id;
-                    delete data.javaClass;
-                    for( var k in data ){
-                        /*
-                         * Encode objects and arrays for details
-                         */
-                        if( ( typeof( data[k] ) == 'object' ) ||
-                            ( typeof( data[k] ) == 'array' ) ){
-                            data[k] = Ext.encode(data[k]);
-                        }
-                    }
-                    return data;
-                }
-                return;
-            }
         }
+        // formulas: {
+        //     userDetails: function (get) {
+        //         this.userDetailsGet = get;
+        //         this.getView().down('#usersgrid').getSelectionModel().select(0);
+        //         this.userDetailsSelectTask = new Ext.util.DelayedTask( Ext.bind(function(){
+        //             this.getView().down('#usersgrid').getSelectionModel().select(0);
+        //             if( !this.userDetailsGet('usersgrid.selection') ){
+        //                 this.userDetailsSelectTask.delay(100);
+        //             }
+        //         }, this) );
+        //         this.userDetailsSelectTask.delay(100);
+        //         if (get('usersgrid.selection')) {
+        //             var data = get('usersgrid.selection').getData();
+        //             delete data._id;
+        //             delete data.javaClass;
+        //             for( var k in data ){
+        //                 /*
+        //                  * Encode objects and arrays for details
+        //                  */
+        //                 if( ( typeof( data[k] ) == 'object' ) ||
+        //                     ( typeof( data[k] ) == 'array' ) ){
+        //                     data[k] = Ext.encode(data[k]);
+        //                 }
+        //             }
+        //             return data;
+        //         }
+        //         return;
+        //     }
+        // }
     },
 
     layout: 'border',
@@ -96,11 +95,6 @@ Ext.define('Ung.view.extra.Users', {
 
         enableColumnHide: true,
         forceFit: false,
-        viewConfig: {
-            stripeRows: true,
-            enableTextSelection: true,
-            emptyText: '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-2x"></i> <br/>No Data!</p>',
-        },
 
         bind: '{users}',
 
@@ -205,34 +199,28 @@ Ext.define('Ung.view.extra.Users', {
             fieldLabel: 'Username'.t(),
             emptyText: '[enter Username]'.t(),
             allowBlank: false,
+        }, {
+            xtype: 'numberfield',
+            bind: '{record.quotaSize}',
+            fieldLabel: 'Quota Size'.t(),
+            emptyText: '[enter quota]'.t()
         }]
     }, {
-        region: 'east',
-        xtype: 'unpropertygrid',
-        title: 'User Details'.t(),
-        itemId: 'details',
-        hidden: true,
-        bind: {
-            source: '{userDetails}',
-            hidden: '{!usersgrid.selection}'
-        }
+        // region: 'east',
+        // xtype: 'unpropertygrid',
+        // title: 'User Details'.t(),
+        // itemId: 'details',
+        // hidden: true,
+        // bind: {
+        //     source: '{userDetails}',
+        //     hidden: '{!usersgrid.selection}'
+        // }
     }],
     tbar: [{
         xtype: 'button',
         text: 'Refresh'.t(),
         iconCls: 'fa fa-repeat',
-        handler: 'getUsers',
-        bind: {
-            disabled: '{autoRefresh}'
-        }
-    }, {
-        xtype: 'button',
-        text: 'Auto Refresh'.t(),
-        bind: {
-            iconCls: '{autoRefresh ? "fa fa-check-square-o" : "fa fa-square-o"}'
-        },
-        enableToggle: true,
-        toggleHandler: 'setAutoRefresh'
+        handler: 'getUsers'
     }, {
         xtype: 'button',
         text: 'Reset View'.t(),
